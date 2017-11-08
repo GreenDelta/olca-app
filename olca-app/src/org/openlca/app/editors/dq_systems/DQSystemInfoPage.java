@@ -29,7 +29,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQScore;
 import org.openlca.core.model.DQSystem;
-import org.openlca.core.model.ModelType;
 
 class DQSystemInfoPage extends ModelPage<DQSystem> {
 
@@ -62,7 +61,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
-		createDropComponent(M.Source, "source", ModelType.SOURCE, infoSection.getContainer());
+		dropComponent(infoSection.getContainer(), M.Source, "source");
 		createAdditionalInfo(body);
 		body.setFocus();
 		form.reflow(true);
@@ -81,12 +80,12 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			Collections.sort(indicator.scores);
 		}
 		indicatorSection = UI.section(body, toolkit, M.IndicatorsScores);
-		Composite indicatorClient = UI.sectionClient(indicatorSection, toolkit);
+		Composite indicatorClient = UI.sectionClient(indicatorSection, toolkit, 1);
 		createIndicatorMatrix(indicatorClient);
 		if (!getModel().hasUncertainties)
 			return;
 		uncertaintySection = UI.section(body, toolkit, M.Uncertainties);
-		Composite uncertaintyClient = UI.sectionClient(uncertaintySection, toolkit);
+		Composite uncertaintyClient = UI.sectionClient(uncertaintySection, toolkit, 1);
 		createUncertaintyMatrix(uncertaintyClient);
 	}
 

@@ -7,7 +7,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Project;
 
 class ProjectInfoPage extends ModelPage<Project> {
@@ -38,22 +37,16 @@ class ProjectInfoPage extends ModelPage<Project> {
 	}
 
 	private void createGoalAndScopeSection(Composite parent) {
-		Composite composite = UI.formSection(parent, toolkit,
-				M.GoalAndScope);
-
-		createMultiText(M.Goal, "goal", composite);
-		createMultiText(M.FunctionalUnit, "functionalUnit", composite);
+		Composite composite = UI.formSection(parent, toolkit, M.GoalAndScope, 3);
+		multiText(composite, M.Goal, "goal");
+		multiText(composite, M.FunctionalUnit, "functionalUnit");
 	}
 
 	private void createTimeInfoSection(Composite parent) {
-		Composite composite = UI.formSection(parent, toolkit,
-				M.TimeAndAuthor);
-
-		createReadOnly(M.CreationDate, "creationDate", composite);
-		createReadOnly(M.LastModificationDate, "lastModificationDate",
-				composite);
-		createDropComponent(M.Author, "author", ModelType.ACTOR,
-				composite);
+		Composite composite = UI.formSection(parent, toolkit, M.TimeAndAuthor, 3);
+		readOnly(composite, M.CreationDate, "creationDate");
+		readOnly(composite, M.LastModificationDate, "lastModificationDate");
+		dropComponent(composite, M.Author, "author");
 	}
 
 }

@@ -8,7 +8,6 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ModelParameterPage;
@@ -22,7 +21,7 @@ import org.openlca.util.AllocationCleanup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessEditor extends ModelEditor<Process>implements IEditor {
+public class ProcessEditor extends ModelEditor<Process> {
 
 	/**
 	 * An event message that indicates the removal or addition of one or more

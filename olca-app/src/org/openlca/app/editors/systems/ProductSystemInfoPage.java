@@ -14,6 +14,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
@@ -69,36 +70,34 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	}
 
 	private void createReferenceSection(Composite body, FormToolkit tk) {
-		Composite composite = UI.formSection(body, tk, M.Reference);
-		createLink(M.Process, "referenceProcess", composite);
+		Composite composite = UI.formSection(body, tk, M.Reference, 3);
+		link(composite, M.Process, "referenceProcess");
 		tk.createLabel(composite, M.Product);
 		productViewer = new ExchangeViewer(composite);
-		tk.createLabel(composite, M.FlowProperty);
-		propertyViewer = new FlowPropertyFactorViewer(composite);
-		tk.createLabel(composite, M.Unit);
-		unitViewer = new UnitViewer(composite);
-
 		productViewer.addSelectionChangedListener(e -> {
 			Flow flow = e.flow;
 			propertyViewer.setInput(flow);
 			propertyViewer.select(flow.getReferenceFactor());
 		});
-		propertyViewer.addSelectionChangedListener(this::propertyChanged);
-
 		productViewer.setInput(getRefCandidates(getModel().getReferenceProcess()));
-		targetAmountText = UI.formText(composite,
-				getManagedForm().getToolkit(), M.TargetAmount);
+		new CommentControl(composite, getToolkit(), "referenceExchange", getComments());
+		tk.createLabel(composite, M.FlowProperty);
+		propertyViewer = new FlowPropertyFactorViewer(composite);
+		propertyViewer.addSelectionChangedListener(this::propertyChanged);
+		new CommentControl(composite, getToolkit(), "targetFlowPropertyFactor", getComments());
+		tk.createLabel(composite, M.Unit);
+		unitViewer = new UnitViewer(composite);
+		new CommentControl(composite, getToolkit(), "targetUnit", getComments());
+		targetAmountText = UI.formText(composite, getManagedForm().getToolkit(), M.TargetAmount);
+		new CommentControl(composite, getToolkit(), "targetAmount", getComments());
 		createBindings();
 	}
 
 	private void createBindings() {
-		getBinding().onModel(() -> getModel(), "referenceExchange",
-				productViewer);
-		getBinding().onModel(() -> getModel(), "targetFlowPropertyFactor",
-				propertyViewer);
+		getBinding().onModel(() -> getModel(), "referenceExchange", productViewer);
+		getBinding().onModel(() -> getModel(), "targetFlowPropertyFactor", propertyViewer);
 		getBinding().onModel(() -> getModel(), "targetUnit", unitViewer);
-		getBinding().onDouble(() -> getModel(), "targetAmount",
-				targetAmountText);
+		getBinding().onDouble(() -> getModel(), "targetAmount", targetAmountText);
 	}
 
 	private List<Exchange> getRefCandidates(Process p) {

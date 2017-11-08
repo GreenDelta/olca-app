@@ -90,8 +90,7 @@ public class ModelSelectionDialog extends FormDialog {
 		Section section = UI.section(body, tk, M.Content);
 		addSectionActions(section);
 		UI.gridData(section, true, true);
-		Composite composite = UI.sectionClient(section, tk);
-		UI.gridLayout(composite, 1);
+		Composite composite = UI.sectionClient(section, tk, 1);
 		createViewer(composite);
 	}
 

@@ -3,7 +3,7 @@ package org.openlca.app.viewers.table.modify.field;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.openlca.app.editors.IEditor;
+import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.Bean;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.slf4j.Logger;
@@ -13,14 +13,14 @@ public class BooleanModifier<T> extends CheckBoxCellModifier<T> {
 
 	private static final Logger log = LoggerFactory.getLogger(BooleanModifier.class);
 	private final String field;
-	private final IEditor editor;
+	private final ModelEditor<?> editor;
 	private final Consumer<T> onChange;
 
 	public BooleanModifier(String field) {
 		this(null, field, null);
 	}
 
-	public BooleanModifier(IEditor editor, String field) {
+	public BooleanModifier(ModelEditor<?> editor, String field) {
 		this(editor, field, null);
 	}
 
@@ -28,7 +28,7 @@ public class BooleanModifier<T> extends CheckBoxCellModifier<T> {
 		this(null, field, onChange);
 	}
 
-	public BooleanModifier(IEditor editor, String field, Consumer<T> onChange) {
+	public BooleanModifier(ModelEditor<?> editor, String field, Consumer<T> onChange) {
 		this.field = field;
 		this.editor = editor;
 		this.onChange = onChange;

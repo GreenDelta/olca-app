@@ -75,7 +75,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	private void createImpactCategoryViewer(Composite body) {
 		Section section = UI.section(body, toolkit, M.ImpactCategories);
 		UI.gridData(section, true, true);
-		Composite client = UI.sectionClient(section, toolkit);
+		Composite client = UI.sectionClient(section, toolkit, 1);
 		String[] properties = { NAME, DESCRIPTION, REFERENCE_UNIT };
 		viewer = Tables.createViewer(client, properties);
 		viewer.setLabelProvider(new CategoryLabelProvider());

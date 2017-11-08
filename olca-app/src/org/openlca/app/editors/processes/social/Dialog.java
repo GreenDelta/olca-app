@@ -96,11 +96,10 @@ class Dialog extends FormDialog {
 	}
 
 	private void sourceRow(Composite body, FormToolkit tk) {
-		TextDropComponent drop = UIFactory.createDropComponent(body,
-				M.Source, tk, ModelType.SOURCE);
+		TextDropComponent drop = UIFactory.createDropComponent(body, M.Source, tk, ModelType.SOURCE);
 		if (aspect.source != null)
 			drop.setContent(Descriptors.toDescriptor(aspect.source));
-		drop.setHandler(d -> {
+		drop.addHandler(d -> {
 			if (d == null) {
 				aspect.source = null;
 			} else {

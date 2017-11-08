@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.openlca.app.M;
-import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -133,9 +133,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 			if (column != 3)
 				return null;
 			CloudConfiguration config = (CloudConfiguration) element;
-			if (config.isDefault)
-				return Icon.CHECK_TRUE.get();
-			return Icon.CHECK_FALSE.get();
+			return Images.get(config.isDefault);
 		}
 
 	}

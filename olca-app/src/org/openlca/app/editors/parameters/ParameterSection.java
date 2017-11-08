@@ -1,6 +1,7 @@
 package org.openlca.app.editors.parameters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +20,11 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.UncertaintyCellEditor;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.editors.comments.CommentAction;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
@@ -102,19 +107,16 @@ public class ParameterSection {
 	}
 
 	private String[] getProperties() {
+		List<String> properties = new ArrayList<>();
 		if (forInputParameters)
-			if (sourceHandler != null)
-				return new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION,
-						EXTERNAL_SOURCE };
-			else
-				return new String[] { NAME, VALUE, UNCERTAINTY, DESCRIPTION };
-		else {
-			if (sourceHandler != null)
-				return new String[] { NAME, FORMULA, VALUE, DESCRIPTION,
-						EXTERNAL_SOURCE };
-			else
-				return new String[] { NAME, FORMULA, VALUE, DESCRIPTION };
-		}
+			properties = new ArrayList<>(Arrays.asList(NAME, VALUE, UNCERTAINTY, DESCRIPTION));
+		else
+			properties = new ArrayList<>(Arrays.asList(NAME, FORMULA, VALUE, DESCRIPTION));
+		if (sourceHandler != null)
+			properties.add(EXTERNAL_SOURCE);
+		if (Database.isConnected())
+			properties.add("");
+		return properties.toArray(new String[properties.size()]);
 	}
 
 	public void setSupplier(Supplier<List<Parameter>> supplier,
@@ -132,13 +134,11 @@ public class ParameterSection {
 		});
 	}
 
-	private void createComponents(Composite body, FormToolkit toolkit,
-			String[] properties) {
-		String title = forInputParameters ? M.InputParameters
-				: M.DependentParameters;
+	private void createComponents(Composite body, FormToolkit toolkit, String[] properties) {
+		String title = forInputParameters ? M.InputParameters : M.DependentParameters;
 		Section section = UI.section(body, toolkit, title);
 		UI.gridData(section, true, true);
-		Composite parent = UI.sectionClient(section, toolkit);
+		Composite parent = UI.sectionClient(section, toolkit, 1);
 		viewer = Tables.createViewer(parent, properties);
 		ParameterLabelProvider label = new ParameterLabelProvider();
 		viewer.setLabelProvider(label);
@@ -151,10 +151,16 @@ public class ParameterSection {
 
 	private void bindColumnWidths(TableViewer viewer) {
 		if (sourceHandler != null)
-			Tables.bindColumnWidths(viewer, 0.25, 0.25, 0.15, 0.15, 0.2);
-		else
-			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
-
+			if (Database.isConnected())
+				Tables.bindColumnWidths(viewer, 0.25, 0.25, 0.15, 0.15, 0.17);
+			else
+				Tables.bindColumnWidths(viewer, 0.25, 0.25, 0.15, 0.15, 0.2);
+		else {
+			if (Database.isConnected())
+				Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17, 0.03);
+			else
+				Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
+		}
 	}
 
 	private void addSorters(TableViewer table, ParameterLabelProvider label) {
@@ -172,7 +178,11 @@ public class ParameterSection {
 		Action removeAction = Actions.onRemove(() -> onRemove());
 		Action copy = TableClipboard.onCopy(viewer);
 		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
-		Actions.bind(section, addAction, removeAction);
+		if (Database.isConnected()) {
+			Actions.bind(section, addAction, removeAction, new CommentAction("parameters", editor.getComments()));
+		} else {
+			Actions.bind(section, addAction, removeAction);
+		}
 		Actions.bind(viewer, addAction, removeAction, copy, paste);
 		Tables.onDeletePressed(viewer, (e) -> onRemove());
 	}
@@ -182,15 +192,14 @@ public class ParameterSection {
 		ms.bind(NAME, new NameModifier());
 		ms.bind(DESCRIPTION, new StringModifier<>(editor, "description"));
 		if (forInputParameters) {
-			ms.bind(VALUE, new DoubleModifier<>(editor, "value",
-					(elem) -> support.evaluate()));
-			ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(),
-					editor));
+			ms.bind(VALUE, new DoubleModifier<>(editor, "value", (elem) -> support.evaluate()));
+			ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
 		} else
-			ms.bind(FORMULA, new StringModifier<>(editor, "formula",
-					(elem) -> support.evaluate()));
+			ms.bind(FORMULA, new StringModifier<>(editor, "formula", (elem) -> support.evaluate()));
 		if (sourceHandler != null)
 			ms.bind(EXTERNAL_SOURCE, new ExternalSourceModifier());
+		if (Database.isConnected())
+			ms.bind("", new CommentDialogModifier<Parameter>(editor.getComments(), CommentPaths::get));
 	}
 
 	private void fillInitialInput() {
@@ -284,13 +293,15 @@ public class ParameterSection {
 			ITableLabelProvider {
 		@Override
 		public Image getColumnImage(Object element, int col) {
-			if (col != 0 || !(element instanceof Parameter))
-				return null;
 			Parameter parameter = (Parameter) element;
-			if (parameter.getExternalSource() == null)
-				return null;
-			// currently the only external sources are shape files
-			return Images.get(ModelType.IMPACT_METHOD);
+			if (col == 0) {
+				if (parameter.getExternalSource() == null)
+					return null;
+				// currently the only external sources are shape files
+				return Images.get(ModelType.IMPACT_METHOD);
+			} else if (col == getProperties().length - 1 && Database.isConnected())
+				return Images.get(editor.getComments(), CommentPaths.get(parameter));
+			return null;
 		}
 
 		@Override

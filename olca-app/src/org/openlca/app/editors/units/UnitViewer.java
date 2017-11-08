@@ -1,5 +1,8 @@
 package org.openlca.app.editors.units;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -14,7 +17,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -44,20 +49,25 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 	public UnitViewer(Composite parent, UnitGroupEditor editor) {
 		super(parent);
 		this.editor = editor;
-		ModifySupport<Unit> ms = getModifySupport();
-		ms.bind(NAME, new NameModifier());
-		ms.bind(DESCRIPTION, new StringModifier<>(editor, "description"));
-		ms.bind(SYNONYMS, new StringModifier<>(editor, "synonyms"));
-		ms.bind(CONVERSION_FACTOR, new ConversionModifier());
-		ms.bind(IS_REFERENCE, new ReferenceModifier());
 		getViewer().refresh(true);
-		Tables.bindColumnWidths(getViewer(), 0.25, 0.15, 0.15, 0.15, 0.15, 0.15);
 		Tables.onDoubleClick(getViewer(), (event) -> {
 			TableItem item = Tables.getItem(getViewer(), event);
 			if (item == null)
 				onCreate();
 		});
 		getViewer().getTable().getColumns()[3].setAlignment(SWT.RIGHT);
+		ModifySupport<Unit> ms = getModifySupport();
+		ms.bind(NAME, new NameModifier());
+		ms.bind(DESCRIPTION, new StringModifier<>(editor, "description"));
+		ms.bind(SYNONYMS, new StringModifier<>(editor, "synonyms"));
+		ms.bind(CONVERSION_FACTOR, new ConversionModifier());
+		ms.bind(IS_REFERENCE, new ReferenceModifier());
+		if (Database.isConnected()) {
+			ms.bind("", new CommentDialogModifier<Unit>(editor.getComments(), CommentPaths::get));
+			Tables.bindColumnWidths(getViewer(), 0.25, 0.15, 0.15, 0.15, 0.15, 0.12);
+		} else {
+			Tables.bindColumnWidths(getViewer(), 0.25, 0.15, 0.15, 0.15, 0.15, 0.15);
+		}
 	}
 
 	@Override
@@ -67,8 +77,11 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { NAME, DESCRIPTION, SYNONYMS, CONVERSION_FACTOR,
-				FORMULA, IS_REFERENCE };
+		String[] h = { NAME, DESCRIPTION, SYNONYMS, CONVERSION_FACTOR, FORMULA, IS_REFERENCE };
+		List<String> headers = new ArrayList<>(Arrays.asList(h));
+		if (Database.isConnected())
+			headers.add("");
+		return headers.toArray(new String[headers.size()]);
 	}
 
 	@OnAdd
@@ -114,13 +127,18 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 		@Override
 		public Image getColumnImage(Object element, int column) {
-			if (column != 5)
+			if (column < 5)
 				return null;
-			UnitGroup group = editor.getModel();
-			Unit refUnit = group != null ? group.getReferenceUnit() : null;
-			if (refUnit != null && refUnit.equals(element))
-				return Icon.CHECK_TRUE.get();
-			return Icon.CHECK_FALSE.get();
+			if (column == 5) {
+				UnitGroup group = editor.getModel();
+				Unit refUnit = group != null ? group.getReferenceUnit() : null;
+				boolean isRef = refUnit != null && refUnit.equals(element);
+				return Images.get(isRef);
+			} else if (column == 6) {
+				String path = CommentPaths.get((Unit) element);
+				return Images.get(editor.getComments(), path);
+			}
+			return null;
 		}
 
 		@Override

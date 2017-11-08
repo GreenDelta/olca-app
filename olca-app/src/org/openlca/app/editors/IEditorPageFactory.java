@@ -7,6 +7,4 @@ public interface IEditorPageFactory {
 
 	FormPage createEditorPage(FormEditor editor);
 
-	
-	
 }

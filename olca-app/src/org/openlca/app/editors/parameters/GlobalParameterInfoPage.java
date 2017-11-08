@@ -45,8 +45,8 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 		List<String> errors = Formulas.eval(parameters);
 		hasErrors = errors.size() > 0;
 		for (String error : errors)
-			form.getMessageManager().addMessage("invalidFormula",
-					M.InvalidFormula + ": " + error, null, IMessage.ERROR);
+			form.getMessageManager()
+					.addMessage("invalidFormula", M.InvalidFormula + ": " + error, null, IMessage.ERROR);
 	}
 
 	boolean hasErrors() {
@@ -74,38 +74,38 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 	}
 
 	private void createAdditionalInfo(Composite body) {
-		Composite comp = UI.formSection(body, toolkit, M.AdditionalInformation);
+		Composite comp = UI.formSection(body, toolkit, M.AdditionalInformation, 3);
 		UI.formLabel(comp, toolkit, M.Type);
 		if (getModel().isInputParameter()) {
 			UI.formLabel(comp, toolkit, M.InputParameter);
+			UI.filler(comp, toolkit);
 			forInputParameter(comp);
 		} else {
 			UI.formLabel(comp, toolkit, M.DependentParameter);
+			UI.filler(comp, toolkit);
 			forDependentParameter(comp);
 		}
 	}
 
 	private void forInputParameter(Composite comp) {
-		createDoubleText(M.Value, "value", comp);
+		doubleText(comp, M.Value, "value");
 		UI.formLabel(comp, toolkit, M.Uncertainty);
-		Hyperlink link = UI.formLink(comp, toolkit,
-				UncertaintyLabel.get(getModel().getUncertainty()));
+		Hyperlink link = UI.formLink(comp, toolkit, UncertaintyLabel.get(getModel().getUncertainty()));
 		Controls.onClick(link, e -> {
-			UncertaintyDialog dialog = new UncertaintyDialog(UI.shell(),
-					getModel().getUncertainty());
+			UncertaintyDialog dialog = new UncertaintyDialog(UI.shell(), getModel().getUncertainty());
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return;
 			getModel().setUncertainty(dialog.getUncertainty());
 			link.setText(UncertaintyLabel.get(getModel().getUncertainty()));
 			getEditor().setDirty(true);
 		});
+		UI.filler(comp, toolkit);
 	}
 
 	private void forDependentParameter(Composite comp) {
-		Text text = createText(M.Formula, "formula", comp);
+		Text text = text(comp, M.Formula, "formula");
 		UI.formLabel(comp, toolkit, M.Value);
-		Label label = UI.formLabel(comp, toolkit,
-				Double.toString(getModel().getValue()));
+		Label label = UI.formLabel(comp, toolkit, Double.toString(getModel().getValue()));
 		text.addModifyListener(e -> {
 			support.evaluate();
 			label.setText(Double.toString(getModel().getValue()));

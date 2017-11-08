@@ -87,10 +87,8 @@ public class ModelParameterPage extends FormPage {
 
 	private void createGlobalParamterSection(Composite body) {
 		Section section = UI.section(body, toolkit, M.GlobalParameters);
-		Composite client = UI.sectionClient(section, toolkit);
-		UI.gridLayout(client, 1);
-		String[] columns = { M.Name, M.Value,
-				M.Uncertainty, M.Description };
+		Composite client = UI.sectionClient(section, toolkit, 1);
+		String[] columns = { M.Name, M.Value, M.Uncertainty, M.Description };
 		TableViewer table = Tables.createViewer(client, columns);
 		ParameterLabel label = new ParameterLabel();
 		table.setLabelProvider(label);

@@ -116,8 +116,7 @@ class ProjectParameterTable {
 	}
 
 	public void render(Section section, FormToolkit toolkit) {
-		Composite composite = UI.sectionClient(section, toolkit);
-		UI.gridLayout(composite, 1);
+		Composite composite = UI.sectionClient(section, toolkit, 1);
 		viewer = Tables.createViewer(composite, getColumnTitles());
 		viewer.setLabelProvider(new LabelProvider());
 		Tables.bindColumnWidths(viewer, 0.15, 0.15, 0.15, 0.15);
@@ -257,8 +256,7 @@ class ProjectParameterTable {
 			return null;
 		for (ParameterRedef variantRedef : variant.getParameterRedefs()) {
 			if (Objects.equals(variantRedef.getName(), redef.getName())
-					&& Objects.equals(variantRedef.getContextId(),
-							redef.getContextId()))
+					&& Objects.equals(variantRedef.getContextId(), redef.getContextId()))
 				return variantRedef;
 		}
 		return null;
@@ -306,7 +304,7 @@ class ProjectParameterTable {
 			ParameterRedef redef = (ParameterRedef) element;
 			BaseDescriptor model = getModel(redef);
 			if (model == null)
-				return Images.get(ModelType.PARAMETER); 
+				return Images.get(ModelType.PARAMETER);
 			else
 				return Images.get(model);
 		}

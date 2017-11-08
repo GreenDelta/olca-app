@@ -1,5 +1,7 @@
 package org.openlca.app.editors.flows;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,7 +18,8 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
@@ -53,10 +56,15 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		super(parent);
 		ModifySupport<FlowPropertyFactor> ms = getModifySupport();
 		this.editor = editor;
+		this.cache = cache;
 		ms.bind(CONVERSION_FACTOR, new ConversionModifier());
 		ms.bind(IS_REFERENCE, new ReferenceModifier());
-		this.cache = cache;
-		Tables.bindColumnWidths(getViewer(), 0.2, 0.2, 0.2, 0.2, 0.2);
+		if (Database.isConnected()) {
+			ms.bind("", new CommentDialogModifier<FlowPropertyFactor>(editor.getComments(), CommentPaths::get));
+			Tables.bindColumnWidths(getViewer(), 0.2, 0.2, 0.2, 0.2, 0.17);
+		} else {
+			Tables.bindColumnWidths(getViewer(), 0.2, 0.2, 0.2, 0.2, 0.2);
+		}
 		addDoubleClickHandler();
 		getViewer().getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 	}
@@ -88,14 +96,16 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { NAME, CONVERSION_FACTOR, REFERENCE_UNIT, FORMULA,
-				IS_REFERENCE };
+		String[] h = { NAME, CONVERSION_FACTOR, REFERENCE_UNIT, FORMULA, IS_REFERENCE };
+		List<String> headers = new ArrayList<>(Arrays.asList(h));
+		if (Database.isConnected())
+			headers.add("");
+		return headers.toArray(new String[headers.size()]);
 	}
 
 	@OnAdd
 	protected void onCreate() {
-		BaseDescriptor[] descriptors = ModelSelectionDialog
-				.multiSelect(ModelType.FLOW_PROPERTY);
+		BaseDescriptor[] descriptors = ModelSelectionDialog.multiSelect(ModelType.FLOW_PROPERTY);
 		if (descriptors == null)
 			return;
 		for (BaseDescriptor descriptor : descriptors) {
@@ -106,8 +116,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	}
 
 	private void add(FlowPropertyDescriptor descriptor) {
-		FlowProperty property = cache.get(FlowProperty.class,
-				descriptor.getId());
+		FlowProperty property = cache.get(FlowProperty.class, descriptor.getId());
 		Flow flow = editor.getModel();
 		if (flow.getFactor(property) != null)
 			return;
@@ -158,15 +167,18 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 				return Images.get(ModelType.FLOW_PROPERTY);
 			if (column == 2)
 				return Images.get(ModelType.UNIT_GROUP);
-			if (column != 4)
-				return null;
-			Flow flow = editor.getModel();
-			if (flow == null || flow.getReferenceFactor() == null)
-				return Icon.CHECK_FALSE.get();
-			FlowPropertyFactor refFactor = flow.getReferenceFactor();
-			if (refFactor == null || !refFactor.equals(element))
-				return Icon.CHECK_FALSE.get();
-			return Icon.CHECK_TRUE.get();
+			if (column == 4) {
+				Flow flow = editor.getModel();
+				if (flow == null || flow.getReferenceFactor() == null)
+					return Images.get(false);
+				FlowPropertyFactor refFactor = flow.getReferenceFactor();
+				boolean isRef = refFactor != null && refFactor.equals(element);
+				return Images.get(isRef);
+			} else if (column == 5) {
+				String path = CommentPaths.get((FlowPropertyFactor) element);
+				Images.get(editor.getComments(), path);
+			}
+			return null;
 		}
 
 		@Override

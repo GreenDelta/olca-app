@@ -40,8 +40,7 @@ class ProcessContributionSection {
 
 	void create(Composite body, FormToolkit toolkit) {
 		Section section = UI.section(body, toolkit, M.ProcessContributions);
-		Composite composite = UI.sectionClient(section, toolkit);
-		UI.gridLayout(composite, 1);
+		Composite composite = UI.sectionClient(section, toolkit, 1);
 		String[] properties = { M.Process, M.ReportName, M.Description };
 		viewer = Tables.createViewer(composite, properties);
 		viewer.setLabelProvider(new Label());

@@ -30,7 +30,7 @@ public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.Parameters);
 		UI.gridData(section, true, true);
-		Composite composite = UI.sectionClient(section, toolkit);
+		Composite composite = UI.sectionClient(section, toolkit, 1);
 		table = new ParameterRedefTable(editor);
 		table.create(toolkit, composite);
 		table.bindActions(section);

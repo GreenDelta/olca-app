@@ -10,6 +10,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
@@ -35,11 +36,10 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.FlowProperties);
 		UI.gridData(section, true, true);
-		Composite client = UI.sectionClient(section, toolkit);
-		FlowPropertyFactorViewer viewer = new FlowPropertyFactorViewer(client,
-				Cache.getEntityCache(), editor);
+		Composite client = UI.sectionClient(section, toolkit, 1);
+		FlowPropertyFactorViewer viewer = new FlowPropertyFactorViewer(client, Cache.getEntityCache(), editor);
 		setInitialInput(viewer);
-		viewer.bindTo(section);
+		CommentAction.bindTo(section, viewer, "flowPropertyFactors", editor.getComments());
 		editor.onSaved(() -> viewer.setInput(getModel()));
 		body.setFocus();
 		form.reflow(true);

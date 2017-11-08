@@ -21,8 +21,7 @@ class SFParameterTable {
 	List<ShapeFileParameter> params;
 
 	SFParameterTable(ImpactMethodEditor editor, String shapeFile, Composite parent) {
-		viewer = Tables.createViewer(parent, M.Name, M.Minimum,
-				M.Maximum);
+		viewer = Tables.createViewer(parent, M.Name, M.Minimum, M.Maximum);
 		viewer.setLabelProvider(new Label());
 		Tables.bindColumnWidths(viewer, 0.4, 0.3, 0.3);
 		try {
@@ -30,8 +29,7 @@ class SFParameterTable {
 			viewer.setInput(params);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to read parameteres for shape file "
-					+ shapeFile, e);
+			log.error("failed to read parameteres for shape file " + shapeFile, e);
 		}
 	}
 

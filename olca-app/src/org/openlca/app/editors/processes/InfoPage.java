@@ -26,6 +26,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.editors.processes.data_quality.DataQualityShell;
 import org.openlca.app.editors.processes.kml.EditorHandler;
 import org.openlca.app.editors.processes.kml.KmlUtil;
@@ -71,13 +72,12 @@ class InfoPage extends ModelPage<Process> {
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
-		createCheckBox(M.InfrastructureProcess, "infrastructureProcess",
-				infoSection.getContainer());
+		checkBox(infoSection.getContainer(), M.InfrastructureProcess, "infrastructureProcess");
 		createSystemButton(infoSection.getContainer());
 		createTimeSection(body);
 		createGeographySection(body);
 		createTechnologySection(body);
-		createDQSection(body);
+		createDqSection(body);
 		body.setFocus();
 		form.reflow(true);
 	}
@@ -91,8 +91,7 @@ class InfoPage extends ModelPage<Process> {
 
 	private void createSystemButton(Composite container) {
 		toolkit.createLabel(container, "");
-		Button button = toolkit.createButton(container,
-				M.CreateProductSystem, SWT.NONE);
+		Button button = toolkit.createButton(container, M.CreateProductSystem, SWT.NONE);
 		button.setImage(Images.get(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
 		Controls.onSelect(button, (e) -> {
 			SystemCreation.run(getModel());
@@ -100,63 +99,57 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	private void createTechnologySection(Composite body) {
-		Composite composite = UI
-				.formSection(body, toolkit, M.Technology);
-		createMultiText(M.Description, "documentation.technology",
-				composite);
+		Composite composite = UI.formSection(body, toolkit, M.Technology, 3);
+		multiText(composite, M.Description, "documentation.technology");
 	}
 
 	private void createTimeSection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit, M.Time);
-		createDate(M.StartDate, "documentation.validFrom", composite);
-		createDate(M.EndDate, "documentation.validUntil", composite);
-		createMultiText(M.Description, "documentation.time", composite);
+		Composite composite = UI.formSection(body, toolkit, M.Time, 3);
+		date(composite, M.StartDate, "documentation.validFrom");
+		date(composite, M.EndDate, "documentation.validUntil");
+		multiText(composite, M.Description, "documentation.time");
 	}
 
-	private void createDQSection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit, M.DataQuality);
-		toolkit.createLabel(composite, M.ProcessSchema);
-		DQSystemViewer processSystemViewer = new DQSystemViewer(composite);
+	private void createDqSection(Composite body) {
+		Composite composite = UI.formSection(body, toolkit, M.DataQuality, 3);
+		createDqViewer(composite, M.ProcessSchema, "dqSystem");
+		createDqEntryRow(composite);
+		createDqViewer(composite, M.FlowSchema, "exchangeDqSystem");
+		createDqViewer(composite, M.SocialSchema, "socialDqSystem");
+	}
+
+	private void createDqViewer(Composite parent, String label, String property) {
+		toolkit.createLabel(parent, M.ProcessSchema);
+		DQSystemViewer processSystemViewer = new DQSystemViewer(parent);
 		processSystemViewer.setNullable(true);
 		processSystemViewer.setInput(Database.get());
-		getBinding().onModel(() -> getModel(), "dqSystem", processSystemViewer);
-		createDqEntryRow(composite);
-		toolkit.createLabel(composite, M.FlowSchema);
-		DQSystemViewer ioSystemViewer = new DQSystemViewer(composite);
-		ioSystemViewer.setNullable(true);
-		ioSystemViewer.setInput(Database.get());
-		getBinding().onModel(() -> getModel(), "exchangeDqSystem", ioSystemViewer);
-		toolkit.createLabel(composite, M.SocialSchema);
-		DQSystemViewer socialSystemViewer = new DQSystemViewer(composite);
-		socialSystemViewer.setNullable(true);
-		socialSystemViewer.setInput(Database.get());
-		getBinding().onModel(() -> getModel(), "socialDqSystem", socialSystemViewer);
+		getBinding().onModel(() -> getModel(), property, processSystemViewer);
+		new CommentControl(parent, getToolkit(), property, getComments());
 	}
 
 	private Hyperlink createDqEntryRow(Composite parent) {
 		UI.formLabel(parent, toolkit, M.DataQualityEntry);
 		Hyperlink link = UI.formLink(parent, toolkit, getDqEntryLabel());
-		Controls.onClick(
-				link,
-				e -> {
-					if (getModel().dqSystem == null) {
-						Error.showBox("Please select a data quality system first");
-						return;
-					}
-					String oldVal = getModel().dqEntry;
-					DQSystem system = getModel().dqSystem;
-					String entry = getModel().dqEntry;
-					DataQualityShell shell = DataQualityShell.withoutUncertainty(parent.getShell(), system, entry);
-					shell.onOk = InfoPage.this::onDqEntryDialogOk;
-					shell.onDelete = InfoPage.this::onDqEntryDialogDelete;
-					shell.addDisposeListener(e2 -> {
-						if (Objects.equals(oldVal, getModel().dqEntry))
-							return;
-						link.setText(getDqEntryLabel());
-						getEditor().setDirty(true);
-					});
-					shell.open();
-				});
+		Controls.onClick(link, e -> {
+			if (getModel().dqSystem == null) {
+				Error.showBox("Please select a data quality system first");
+				return;
+			}
+			String oldVal = getModel().dqEntry;
+			DQSystem system = getModel().dqSystem;
+			String entry = getModel().dqEntry;
+			DataQualityShell shell = DataQualityShell.withoutUncertainty(parent.getShell(), system, entry);
+			shell.onOk = InfoPage.this::onDqEntryDialogOk;
+			shell.onDelete = InfoPage.this::onDqEntryDialogDelete;
+			shell.addDisposeListener(e2 -> {
+				if (Objects.equals(oldVal, getModel().dqEntry))
+					return;
+				link.setText(getDqEntryLabel());
+				getEditor().setDirty(true);
+			});
+			shell.open();
+		});
+		new CommentControl(parent, getToolkit(), "dqEntry", getComments());
 		return link;
 	}
 
@@ -176,17 +169,16 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	private void createGeographySection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit, M.Geography);
+		Composite composite = UI.formSection(body, toolkit, M.Geography, 3);
 		toolkit.createLabel(composite, M.Location);
 		locationViewer = new LocationViewer(composite);
 		locationViewer.setNullable(true);
 		locationViewer.setInput(Database.get());
 		getBinding().onModel(() -> getModel(), "location", locationViewer);
-		locationViewer.addSelectionChangedListener((s) -> kmlLink
-				.setText(getKmlDisplayText()));
+		locationViewer.addSelectionChangedListener((s) -> kmlLink.setText(getKmlDisplayText()));
+		new CommentControl(composite, getToolkit(), "location", getComments());
 		createKmlSection(composite);
-		createMultiText(M.Description, "documentation.geography",
-				composite);
+		multiText(composite, M.Description, "documentation.geography");
 	}
 
 	private void createKmlSection(Composite parent) {
@@ -200,6 +192,7 @@ class InfoPage extends ModelPage<Process> {
 		kmlLink.addHyperlinkListener(new MapEditorDispatch());
 		UI.gridData(kmlLink, true, false).horizontalSpan = 2;
 		kmlLink.setText(getKmlDisplayText());
+		UI.filler(parent);
 	}
 
 	private String getKmlDisplayText() {

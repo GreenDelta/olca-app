@@ -6,9 +6,11 @@ import java.util.Objects;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
@@ -33,9 +35,9 @@ public class ModifySupport<T> {
 	private Map<String, ICellModifier<T>> cellModifiers;
 	private CellEditor[] editors;
 	private String[] columnProperties;
-	private TableViewer viewer;
+	private ColumnViewer viewer;
 
-	public ModifySupport(TableViewer viewer) {
+	public ModifySupport(ColumnViewer viewer) {
 		this.viewer = viewer;
 		initCellEditors();
 	}
@@ -112,22 +114,30 @@ public class ModifySupport<T> {
 		return index;
 	}
 
+	private Composite getComponent() {
+		if (viewer instanceof TableViewer)
+			return ((TableViewer) viewer).getTable();
+		else if (viewer instanceof TreeViewer)
+			return ((TreeViewer) viewer).getTree();
+		return null;
+	}
+
 	private void setEditor(ICellModifier<T> modifier, int index) {
 		switch (modifier.getCellEditingType()) {
 		case TEXTBOX:
 			if (modifier.getStyle() != SWT.NONE)
-				editors[index] = new TextCellEditor(viewer.getTable(), modifier.getStyle());
+				editors[index] = new TextCellEditor(getComponent(), modifier.getStyle());
 			else
-				editors[index] = new TextCellEditor(viewer.getTable());
+				editors[index] = new TextCellEditor(getComponent());
 			break;
 		case COMBOBOX:
-			editors[index] = new ComboEditor(viewer.getTable(), new String[0]);
+			editors[index] = new ComboEditor(getComponent(), new String[0]);
 			break;
 		case CHECKBOX:
 			if (modifier.getStyle() != SWT.NONE)
-				editors[index] = new CheckboxCellEditor(viewer.getTable(), modifier.getStyle());
+				editors[index] = new CheckboxCellEditor(getComponent(), modifier.getStyle());
 			else
-				editors[index] = new CheckboxCellEditor(viewer.getTable());
+				editors[index] = new CheckboxCellEditor(getComponent());
 			break;
 		default:
 			break;

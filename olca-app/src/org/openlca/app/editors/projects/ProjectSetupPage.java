@@ -113,8 +113,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private void initialInput() {
 		List<ProjectVariant> variants = project.getVariants();
-		Collections.sort(variants,
-				(v1, v2) -> Strings.compare(v1.getName(), v2.getName()));
+		Collections.sort(variants, (v1, v2) -> Strings.compare(v1.getName(), v2.getName()));
 		variantViewer.setInput(variants);
 	}
 
@@ -126,24 +125,20 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void createReportButton(Composite composite) {
-		Button button = toolkit.createButton(composite, M.Report,
-				SWT.NONE);
+		Button button = toolkit.createButton(composite, M.Report, SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
 		button.setImage(Images.get(ModelType.PROJECT));
 		Controls.onSelect(button, (e) -> {
-			App.run(M.Calculate,
-					new ReportCalculator(getModel(), editor.getReport()),
-					() -> {
-						Reports.save(getModel(), editor.getReport(), database);
-						ReportViewer.open(editor.getReport());
-					});
+			App.run(M.Calculate, new ReportCalculator(getModel(), editor.getReport()), () -> {
+				Reports.save(getModel(), editor.getReport(), database);
+				ReportViewer.open(editor.getReport());
+			});
 		});
 	}
 
 	private void createVariantsSection(Composite body) {
 		Section section = UI.section(body, toolkit, M.Variants);
-		Composite composite = UI.sectionClient(section, toolkit);
-		UI.gridLayout(composite, 1);
+		Composite composite = UI.sectionClient(section, toolkit, 1);
 		String[] properties = { M.Name, M.ProductSystem,
 				M.AllocationMethod, M.Flow, M.Amount,
 				M.Unit, M.Description };
@@ -187,8 +182,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private void addVariant() {
 		log.trace("add variant");
-		BaseDescriptor d = ModelSelectionDialog
-				.select(ModelType.PRODUCT_SYSTEM);
+		BaseDescriptor d = ModelSelectionDialog.select(ModelType.PRODUCT_SYSTEM);
 		if (d == null)
 			return;
 		ProductSystemDao dao = new ProductSystemDao(database);

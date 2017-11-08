@@ -38,7 +38,7 @@ class SFSection {
 
 	void render(Composite body, FormToolkit tk) {
 		section = UI.section(body, tk, M.Parameters + " - " + shapeFile);
-		Composite comp = UI.sectionClient(section, tk);
+		Composite comp = UI.sectionClient(section, tk, 1);
 		parameterTable = new SFParameterTable(page.editor, shapeFile, comp);
 		Action delete = Actions.onRemove(() -> {
 			if (delete(false)) {

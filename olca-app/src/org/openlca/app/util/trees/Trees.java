@@ -70,6 +70,7 @@ public class Trees {
 		if (labelProvider instanceof CellLabelProvider) {
 			ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
 		}
+		viewer.setColumnProperties(labels);
 		for (String label : labels) {
 			TreeViewerColumn c = new TreeViewerColumn(viewer, SWT.NULL);
 			c.getColumn().setText(label);

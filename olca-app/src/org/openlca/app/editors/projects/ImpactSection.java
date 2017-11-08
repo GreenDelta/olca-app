@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
@@ -29,10 +30,9 @@ class ImpactSection {
 	}
 
 	public void render(Composite body, FormToolkit toolkit) {
-		Composite composite = UI
-				.formSection(body, toolkit, M.LCIAMethod);
-		UI.gridLayout(composite, 1);
+		Composite composite = UI.formSection(body, toolkit, M.LCIAMethod, 1);
 		Composite form = UI.formComposite(composite, toolkit);
+		UI.gridLayout(form, 3);
 		UI.gridData(form, true, false);
 		createViewers(toolkit, form);
 		indicatorTable = new IndicatorTable(editor);
@@ -47,15 +47,16 @@ class ImpactSection {
 		methodViewer = new ImpactMethodViewer(composite);
 		methodViewer.setNullable(true);
 		methodViewer.setInput(Database.get());
+		new CommentControl(composite, toolkit, "impactMethodId", editor.getComments());
 		UI.formLabel(composite, toolkit, M.NormalizationAndWeightingSet);
 		nwViewer = new NwSetComboViewer(composite);
 		nwViewer.setNullable(true);
 		nwViewer.setDatabase(Database.get());
+		new CommentControl(composite, toolkit, "nwSetId", editor.getComments());
 	}
 
 	private void addListeners() {
-		methodViewer.addSelectionChangedListener(
-				(selection) -> handleMethodChange(selection));
+		methodViewer.addSelectionChangedListener((selection) -> handleMethodChange(selection));
 		nwViewer.addSelectionChangedListener((selection) -> {
 			Project project = editor.getModel();
 			if (selection == null) {
@@ -71,9 +72,7 @@ class ImpactSection {
 		Project project = editor.getModel();
 		if (selection == null && project.getImpactMethodId() == null)
 			return;
-		if (selection != null
-				&& Objects.equals(selection.getId(),
-						project.getImpactMethodId()))
+		if (selection != null && Objects.equals(selection.getId(), project.getImpactMethodId()))
 			return;
 		project.setNwSetId(null);
 		if (selection == null)
@@ -94,20 +93,17 @@ class ImpactSection {
 			return;
 		IDatabase database = Database.get();
 		ImpactMethodDao methodDao = new ImpactMethodDao(database);
-		ImpactMethodDescriptor method = methodDao.getDescriptor(project
-				.getImpactMethodId());
+		ImpactMethodDescriptor method = methodDao.getDescriptor(project.getImpactMethodId());
 		if (method == null)
 			return;
 		methodViewer.select(method);
 		NwSetDao dao = new NwSetDao(database);
-		List<NwSetDescriptor> nwSets = dao.getDescriptorsForMethod(
-				method.getId());
+		List<NwSetDescriptor> nwSets = dao.getDescriptorsForMethod(method.getId());
 		nwViewer.setInput(nwSets);
 		nwViewer.select(getInitialNwSet(project, nwSets));
 	}
 
-	private NwSetDescriptor getInitialNwSet(Project project,
-			List<NwSetDescriptor> nwSets) {
+	private NwSetDescriptor getInitialNwSet(Project project, List<NwSetDescriptor> nwSets) {
 		if (project.getNwSetId() == null)
 			return null;
 		for (NwSetDescriptor d : nwSets)

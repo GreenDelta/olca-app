@@ -10,8 +10,8 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.util.Strings;
@@ -48,15 +48,12 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 	}
 
 	protected void createAdditionalInfo(InfoSection infoSection, Composite body) {
-		createDropComponent(M.DefaultFlowProperty,
-				"defaultFlowProperty", ModelType.FLOW_PROPERTY,
-				infoSection.getContainer());
-		Section section = UI.section(body, toolkit,
-				M.Units);
+		dropComponent(infoSection.getContainer(), M.DefaultFlowProperty, "defaultFlowProperty");
+		Section section = UI.section(body, toolkit, M.Units);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 		UnitViewer unitViewer = new UnitViewer(client, editor);
-		unitViewer.bindTo(section);
+		CommentAction.bindTo(section, unitViewer, "units", getComments());
 		List<Unit> units = getModel().getUnits();
 		units.sort((u1, u2) -> Strings.compare(u1.getName(), u2.getName()));
 		unitViewer.setInput(units);
