@@ -119,7 +119,7 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	private void createDqViewer(Composite parent, String label, String property) {
-		toolkit.createLabel(parent, M.ProcessSchema);
+		toolkit.createLabel(parent, label);
 		DQSystemViewer processSystemViewer = new DQSystemViewer(parent);
 		processSystemViewer.setNullable(true);
 		processSystemViewer.setInput(Database.get());
