@@ -18,6 +18,10 @@ import org.openlca.core.model.Unit;
 
 public class CommentPaths {
 
+	public static String get(String path) {
+		return path;
+	}
+	
 	public static String get(Unit unit) {
 		return "units[" + unit.getName() + "]";
 	}
@@ -44,7 +48,7 @@ public class CommentPaths {
 		if (exchange != null) {
 			id += "-" + exchange.internalId;
 		}
-		return "allocationFactors[" + type + "-" + id + "]";
+		return "allocationFactors[" + type.toLowerCase() + "-" + id + "]";
 	}
 
 	public static String get(Parameter parameter) {

@@ -27,7 +27,7 @@ public class CommentDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
-		form.getForm().setText("#Comments on " + path);
+		form.getForm().setText("#Comments: " + CommentLabels.get(path));
 		Composite body = UI.formBody(form.getForm(), form.getToolkit());
 		List<CommentDescriptor> comments = this.comments.get(path);
 		int count = 0;
@@ -50,4 +50,6 @@ public class CommentDialog extends FormDialog {
 		}
 	}
 
+	
+	
 }
