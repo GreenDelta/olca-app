@@ -158,7 +158,7 @@ public class AllocationPage extends FormPage {
 		} else {
 			Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0.3);
 		}
-		if (Database.isConnected() && editor.getComments().has("parameters")) {
+		if (Database.isConnected() && editor.getComments().has("allocationFactors")) {
 			Actions.bind(factorViewer, copy, new CommentAction("allocationFactors", editor.getComments()));
 		} else {
 			Actions.bind(factorViewer, copy);
