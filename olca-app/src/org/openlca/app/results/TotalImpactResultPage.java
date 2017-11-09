@@ -166,12 +166,16 @@ public class TotalImpactResultPage extends FormPage {
 			case 1:
 				return label.getText(item, 1);
 			case 2:
-				return Numbers.format(item.flowAmount());
+				return format(item.flowAmount());
 			case 3:
+				if (item.flowAmount() == null)
+					return "";
 				return item.flowAmountUnit();
 			case 4:
-				return Numbers.format(item.impactFactor());
+				return format(item.impactFactor());
 			case 5:
+				if (item.impactFactor() == null)
+					return "";
 				return item.impactFactorUnit();
 			case 6:
 				return label.getText(item, 4);
@@ -181,6 +185,12 @@ public class TotalImpactResultPage extends FormPage {
 			return null;
 		}
 
+		private String format(Double d) {
+			if (d == null)
+				return "";
+			return Numbers.format(d);
+		}
+		
 	}
 
 	private class LabelProvider extends DQLabelProvider {
@@ -351,9 +361,11 @@ public class TotalImpactResultPage extends FormPage {
 			return ModelType.IMPACT_CATEGORY;
 		}
 
-		double impactFactor() {
+		Double impactFactor() {
 			// note that process can be null if we want to get the
 			// total flow contribution
+			if (flow == null)
+				return null;
 			return impactFactors.get(impact, process, flow);
 		}
 
@@ -372,9 +384,9 @@ public class TotalImpactResultPage extends FormPage {
 			return f + " " + unit;
 		}
 
-		double flowAmount() {
+		Double flowAmount() {
 			if (flow == null)
-				return 0;
+				return null;
 			if (process == null)
 				return result.getTotalFlowResult(flow).value;
 			return result.getSingleFlowResult(process, flow).value;
