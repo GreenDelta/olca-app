@@ -74,7 +74,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		Action add = Actions.onAdd(this::addIndicator);
 		Action edit = Actions.create(M.Edit, Icon.EDIT.descriptor(), this::editAspect);
 		Action delete = Actions.onRemove(this::deleteAspect);
-		if (Database.isConnected()) {
+		if (Database.isConnected() && editor.getComments().has("socialAspects")) {
 			Actions.bind(section, add, edit, delete, new CommentAction("socialAspects", editor.getComments()));
 		} else {
 			Actions.bind(section, add, edit, delete);

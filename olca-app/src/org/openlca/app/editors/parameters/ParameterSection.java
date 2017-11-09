@@ -178,7 +178,7 @@ public class ParameterSection {
 		Action removeAction = Actions.onRemove(() -> onRemove());
 		Action copy = TableClipboard.onCopy(viewer);
 		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
-		if (Database.isConnected()) {
+		if (Database.isConnected() && editor.getComments().has("parameters")) {
 			Actions.bind(section, addAction, removeAction, new CommentAction("parameters", editor.getComments()));
 		} else {
 			Actions.bind(section, addAction, removeAction);

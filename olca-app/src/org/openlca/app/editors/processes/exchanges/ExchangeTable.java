@@ -142,7 +142,7 @@ class ExchangeTable {
 		});
 		Action formulaSwitch = new FormulaSwitchAction();
 		Action clipboard = TableClipboard.onCopy(viewer);
-		if (Database.isConnected()) {
+		if (Database.isConnected() && editor.getComments().has("exchanges")) {
 			Actions.bind(section, add, remove, formulaSwitch, new CommentAction("exchanges", editor.getComments()));
 		} else {
 			Actions.bind(section, add, remove, formulaSwitch);

@@ -155,10 +155,12 @@ public class AllocationPage extends FormPage {
 			modifySupport.bind(M.Physical + "-comment", createCommentModifier(AllocationMethod.PHYSICAL));
 			modifySupport.bind(M.Economic + "-comment", createCommentModifier(AllocationMethod.ECONOMIC));
 			Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0, 0.3, 0);
-			CommentAction commentAction = new CommentAction("allocationFactors", editor.getComments());
-			Actions.bind(factorViewer, copy, commentAction);
 		} else {
 			Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0.3);
+		}
+		if (Database.isConnected() && editor.getComments().has("parameters")) {
+			Actions.bind(factorViewer, copy, new CommentAction("allocationFactors", editor.getComments()));
+		} else {
 			Actions.bind(factorViewer, copy);
 		}
 		factorViewer.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
