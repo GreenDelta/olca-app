@@ -26,18 +26,15 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 public class ProductSystemFigure extends Figure {
 
 	private boolean firstTime = true;
-	private ProductSystemNode productSystemNode;
-	private Font infoFont;
+	private ProductSystemNode node;
+	/** Must be disposed when the edit part is deactivated */
+	Font infoFont;
 
 	public ProductSystemFigure(ProductSystemNode node) {
 		setForegroundColor(ColorConstants.black);
 		setBorder(new LineBorder(1));
-		productSystemNode = node;
+		this.node = node;
 		addMouseListener(new SelectionChange());
-	}
-
-	Font getInfoFont() {
-		return infoFont;
 	}
 
 	@Override
@@ -57,14 +54,13 @@ public class ProductSystemFigure extends Figure {
 		Font normalFont = graphics.getFont();
 		Font infoFont = getInfoFont(normalFont);
 		graphics.setFont(infoFont);
-
-		Object selection = productSystemNode.getSelection();
-		double cutoffValue = productSystemNode.getCutoff() * 100;
+		Object selection = node.selection;
+		double cutoffValue = node.cutoff * 100;
 		String cutoffText = M.Cutoff + ": "
 				+ Numbers.format(cutoffValue, 3) + "%";
 		if (selection != null) {
 			graphics.drawText(M.ProductSystem + ": "
-					+ productSystemNode.getProductSystem().getName(),
+					+ node.productSystem.getName(),
 					new Point(5, 5));
 			String label = selectionLabel(selection);
 			graphics.drawText(label, new Point(5, 30));
@@ -72,12 +68,9 @@ public class ProductSystemFigure extends Figure {
 
 		} else {
 			graphics.drawText(M.NoAnalysisOptionsSet, new Point(5, 5));
-			graphics.drawText(M.ClickHereToChangeDisplay, new Point(5,
-					30));
+			graphics.drawText(M.ClickHereToChangeDisplay, new Point(5, 30));
 		}
-
 		graphics.setFont(normalFont);
-
 		drawColorScale(graphics);
 		graphics.popState();
 	}
@@ -160,7 +153,7 @@ public class ProductSystemFigure extends Figure {
 			int y = arg0.getLocation().y;
 			if (in(x, 350) && in(y, 120)) {
 				SankeySelectionAction psa = new SankeySelectionAction();
-				psa.setSankeyDiagram(productSystemNode.getEditor());
+				psa.setSankeyDiagram(node.editor);
 				psa.run();
 			}
 		}

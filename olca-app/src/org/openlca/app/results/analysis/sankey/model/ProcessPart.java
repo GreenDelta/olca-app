@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPolicy;
@@ -27,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 
-public class ProcessEditPart extends AbstractGraphicalEditPart implements
+public class ProcessPart extends AbstractGraphicalEditPart implements
 		NodeEditPart, PropertyChangeListener {
 
 	private EntityCache cache = Cache.getEntityCache();
@@ -35,7 +36,7 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 	@Override
 	public void activate() {
 		super.activate();
-		((Node) getModel()).addPropertyChangeListener(this);
+		((Node) getModel()).listeners.addPropertyChangeListener(this);
 	}
 
 	@Override
@@ -46,6 +47,7 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 	@Override
 	protected IFigure createFigure() {
 		ProcessNode process = getModel();
+		process.editPart = this;
 		ProcessFigure figure = new ProcessFigure(process);
 		figure.addPropertyChangeListener(this);
 		return figure;
@@ -57,21 +59,21 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 	}
 
 	@Override
-	protected List<ConnectionLink> getModelSourceConnections() {
-		List<ConnectionLink> sourceConnections = new ArrayList<>();
+	protected List<Link> getModelSourceConnections() {
+		List<Link> sourceConnections = new ArrayList<>();
 		ProcessNode thisNode = getModel();
-		for (ConnectionLink link : thisNode.links) {
-			if (link.getSourceNode().equals(thisNode))
+		for (Link link : thisNode.links) {
+			if (link.sourceNode.equals(thisNode))
 				sourceConnections.add(link);
 		}
 		return sourceConnections;
 	}
 
 	@Override
-	protected List<ConnectionLink> getModelTargetConnections() {
-		List<ConnectionLink> targetConnections = new ArrayList<>();
-		for (ConnectionLink link : getModel().links) {
-			if (link.getTargetNode().equals(getModel())) {
+	protected List<Link> getModelTargetConnections() {
+		List<Link> targetConnections = new ArrayList<>();
+		for (Link link : getModel().links) {
+			if (link.targetNode.equals(getModel())) {
 				targetConnections.add(link);
 			}
 		}
@@ -83,58 +85,53 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 		IFigure figure = getFigure();
 		if (figure instanceof ProcessFigure) {
 			ProcessFigure pFigure = (ProcessFigure) figure;
-			Font boldFont = pFigure.getBoldFont();
+			Font boldFont = pFigure.boldFont;
 			if (boldFont != null && !boldFont.isDisposed())
 				boldFont.dispose();
 		}
 		super.deactivate();
-		((Node) getModel()).removePropertyChangeListener(this);
+		((Node) getModel()).listeners.removePropertyChangeListener(this);
 	}
 
 	@Override
 	public Command getCommand(Request request) {
-		Command requested = null;
-		if (request instanceof ChangeBoundsRequest) {
-			ChangeBoundsRequest req = (ChangeBoundsRequest) request;
-			if (req.getSizeDelta().height == 0 && req.getSizeDelta().width == 0) {
-				Command commandChain = null;
-				for (Object o : req.getEditParts()) {
-					if (o instanceof ProcessEditPart) {
-						ProcessEditPart part = (ProcessEditPart) o;
-						XYLayoutCommand command = new XYLayoutCommand();
-						command.setProcessNode(part.getModel());
-
-						Rectangle bounds = (part.getModel()).figure
-								.getBounds().getCopy();
-						part.getModel().figure.translateToAbsolute(bounds);
-						Rectangle moveResize = new Rectangle(
-								req.getMoveDelta(), req.getSizeDelta());
-						bounds.resize(moveResize.getSize());
-						bounds.translate(moveResize.getLocation());
-						part.getModel().figure.translateToRelative(bounds);
-						command.setConstraint(bounds);
-						if (commandChain == null) {
-							commandChain = command;
-						} else {
-							commandChain = commandChain.chain(command);
-						}
-					}
-				}
-				requested = commandChain;
+		if (!(request instanceof ChangeBoundsRequest))
+			return null;
+		ChangeBoundsRequest req = (ChangeBoundsRequest) request;
+		Dimension sizeDelta = req.getSizeDelta();
+		if (sizeDelta.height != 0 || sizeDelta.width != 0)
+			return null;
+		Command commandChain = null;
+		for (Object o : req.getEditParts()) {
+			if (!(o instanceof ProcessPart))
+				continue;
+			ProcessPart part = (ProcessPart) o;
+			XYLayoutCommand command = new XYLayoutCommand();
+			command.setProcessNode(part.getModel());
+			Rectangle bounds = (part.getModel()).figure.getBounds().getCopy();
+			part.getModel().figure.translateToAbsolute(bounds);
+			Rectangle moveResize = new Rectangle(req.getMoveDelta(), sizeDelta);
+			bounds.resize(moveResize.getSize());
+			bounds.translate(moveResize.getLocation());
+			part.getModel().figure.translateToRelative(bounds);
+			command.setConstraint(bounds);
+			if (commandChain == null) {
+				commandChain = command;
+			} else {
+				commandChain = commandChain.chain(command);
 			}
 		}
-		return requested;
+		return commandChain;
 	}
 
 	@Override
 	public List<Node> getModelChildren() {
-		return getModel().getChildrenArray();
+		return getModel().children;
 	}
 
 	@Override
-	public ConnectionAnchor getSourceConnectionAnchor(
-			ConnectionEditPart connection) {
-		ConnectionLink link = (ConnectionLink) connection.getModel();
+	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connection) {
+		Link link = (Link) connection.getModel();
 		return new ProcessLinkAnchor(link, false);
 	}
 
@@ -144,9 +141,8 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 	}
 
 	@Override
-	public ConnectionAnchor getTargetConnectionAnchor(
-			ConnectionEditPart connection) {
-		ConnectionLink link = (ConnectionLink) connection.getModel();
+	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connection) {
+		Link link = (Link) connection.getModel();
 		return new ProcessLinkAnchor(link, true);
 	}
 
@@ -161,29 +157,36 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 	}
 
 	@Override
+	public void setSelected(int value) {
+		if (!getFigure().isVisible())
+			return;
+		super.setSelected(value);
+		for (Link link : getModel().links) {
+			if (!link.isVisible())
+				continue;
+			link.setSelected(value);
+		}
+	}
+
+	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (evt.getPropertyName().equals(ProcessNode.CONNECTION))
 			refreshConnections(evt);
 		else {
-			GraphicalEditPart part = (GraphicalEditPart) getViewer()
-					.getContents();
+			GraphicalEditPart part = (GraphicalEditPart) getViewer().getContents();
 			IFigure figure = part.getFigure();
 			figure.revalidate();
 		}
 	}
 
 	private void refreshConnections(PropertyChangeEvent evt) {
-		Object linkObj = evt.getOldValue() != null ? evt.getOldValue() : evt
-				.getNewValue();
-		if (!(linkObj instanceof ConnectionLink))
+		Object linkObj = evt.getOldValue() != null ? evt.getOldValue() : evt.getNewValue();
+		if (!(linkObj instanceof Link))
 			return;
-		ConnectionLink link = (ConnectionLink) linkObj;
+		Link link = (Link) linkObj;
 		ProcessDescriptor thisProcess = getModel().process;
-
-		ProcessDescriptor provider = cache.get(ProcessDescriptor.class, link
-				.getProcessLink().providerId);
-		ProcessDescriptor recipient = cache.get(ProcessDescriptor.class, link
-				.getProcessLink().processId);
+		ProcessDescriptor provider = cache.get(ProcessDescriptor.class, link.processLink.providerId);
+		ProcessDescriptor recipient = cache.get(ProcessDescriptor.class, link.processLink.processId);
 		boolean isLoop = Objects.equal(provider, recipient);
 		try {
 			if (thisProcess.equals(provider)) {
@@ -195,8 +198,7 @@ public class ProcessEditPart extends AbstractGraphicalEditPart implements
 			}
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("Failed to refresh connections for process "
-					+ thisProcess, e);
+			log.error("Failed to refresh connections for process " + thisProcess, e);
 		}
 	}
 }

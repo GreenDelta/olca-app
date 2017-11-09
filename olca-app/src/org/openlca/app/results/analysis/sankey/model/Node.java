@@ -1,40 +1,26 @@
 package org.openlca.app.results.analysis.sankey.model;
 
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Node implements Comparable<Node> {
+abstract class Node implements Comparable<Node> {
 
 	public static String PROPERTY_ADD = "NodeAddChild";
 	public static String PROPERTY_LAYOUT = "Layout";
 	public static String PROPERTY_REMOVE = "NodeRemoveChild";
 
-	private List<Node> children;
-	private String name;
-	private Node parent;
-
-	protected PropertyChangeSupport listeners;
-
-	public Node() {
-		name = "Unknown";
-		children = new ArrayList<>();
-		parent = null;
-		listeners = new PropertyChangeSupport(this);
-	}
+	public List<Node> children = new ArrayList<>();
+	Node parent;
+	PropertyChangeSupport listeners = new PropertyChangeSupport(this);;
 
 	public boolean addChild(Node child) {
 		boolean b = children.add(child);
 		if (b) {
-			child.setParent(this);
+			child.parent = this;
 			listeners.firePropertyChange(PROPERTY_ADD, null, child);
 		}
 		return b;
-	}
-
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		listeners.addPropertyChangeListener(listener);
 	}
 
 	@Override
@@ -55,31 +41,8 @@ public abstract class Node implements Comparable<Node> {
 		return 0;
 	}
 
-	public boolean contains(Node child) {
-		return children.contains(child);
-	}
-
-	public void dispose() {
-	}
-
-	public List<Node> getChildrenArray() {
-		return children;
-	}
-
 	public String getName() {
-		return name;
-	}
-
-	public Node getParent() {
-		return parent;
-	}
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		listeners.removePropertyChangeListener(listener);
-	}
-
-	public void setParent(Node parent) {
-		this.parent = parent;
+		return "Unknown";
 	}
 
 }

@@ -9,7 +9,7 @@ import org.eclipse.swt.graphics.Font;
 import org.openlca.app.results.analysis.sankey.layout.GraphLayoutManager;
 import org.openlca.app.results.analysis.sankey.layout.LayoutPolicy;
 
-public class ProductSystemEditPart extends AbstractGraphicalEditPart {
+public class ProductSystemPart extends AbstractGraphicalEditPart {
 
 	@Override
 	protected void createEditPolicies() {
@@ -21,14 +21,13 @@ public class ProductSystemEditPart extends AbstractGraphicalEditPart {
 		final ProductSystemFigure figure = new ProductSystemFigure(
 				(ProductSystemNode) getModel());
 		figure.setLayoutManager(new GraphLayoutManager(this));
-		figure.addPropertyChangeListener(((ProductSystemNode) getModel())
-				.getEditor());
+		figure.addPropertyChangeListener(((ProductSystemNode) getModel()).editor);
 		return figure;
 	}
 
 	@Override
 	public List<Node> getModelChildren() {
-		return ((ProductSystemNode) getModel()).getChildrenArray();
+		return ((ProductSystemNode) getModel()).children;
 	}
 
 	@Override
@@ -41,7 +40,7 @@ public class ProductSystemEditPart extends AbstractGraphicalEditPart {
 		IFigure figure = getFigure();
 		if (figure instanceof ProductSystemFigure) {
 			ProductSystemFigure pFigure = (ProductSystemFigure) figure;
-			Font infoFont = pFigure.getInfoFont();
+			Font infoFont = pFigure.infoFont;
 			if (infoFont != null && !infoFont.isDisposed())
 				infoFont.dispose();
 		}

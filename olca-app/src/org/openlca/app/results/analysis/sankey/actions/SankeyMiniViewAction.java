@@ -34,7 +34,7 @@ import org.openlca.app.util.UI;
 
 public class SankeyMiniViewAction extends Action {
 
-	private SankeyDiagram diagram;
+	private final SankeyDiagram diagram;
 
 	public SankeyMiniViewAction(SankeyDiagram diagram) {
 		setId(ActionIds.OPEN_MINIATURE_VIEW);
@@ -94,10 +94,8 @@ public class SankeyMiniViewAction extends Action {
 			toolkit.paintBordersFor(body);
 			SashForm sash = new SashForm(body, SWT.VERTICAL);
 			toolkit.adapt(sash, true, true);
-			Section section = toolkit
-					.createSection(sash,
-							ExpandableComposite.NO_TITLE
-									| ExpandableComposite.EXPANDED);
+			Section section = toolkit.createSection(sash,
+					ExpandableComposite.NO_TITLE | ExpandableComposite.EXPANDED);
 			section.setText("");
 			Composite composite = toolkit.createComposite(section, SWT.NONE);
 			composite.setLayout(new GridLayout());

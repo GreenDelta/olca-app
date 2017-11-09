@@ -6,9 +6,9 @@ import org.eclipse.draw2d.AbstractLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.app.results.analysis.sankey.model.ProcessEditPart;
+import org.openlca.app.results.analysis.sankey.model.ProcessPart;
 import org.openlca.app.results.analysis.sankey.model.ProcessNode;
-import org.openlca.app.results.analysis.sankey.model.ProductSystemEditPart;
+import org.openlca.app.results.analysis.sankey.model.ProductSystemPart;
 import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +18,10 @@ public class GraphLayoutManager extends AbstractLayout {
 	public static int horizontalSpacing = 100;
 	public static int verticalSpacing = 200;
 
-	private ProductSystemEditPart diagram;
+	private ProductSystemPart diagram;
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	public GraphLayoutManager(ProductSystemEditPart diagram) {
+	public GraphLayoutManager(ProductSystemPart diagram) {
 		this.diagram = diagram;
 	}
 
@@ -31,8 +31,8 @@ public class GraphLayoutManager extends AbstractLayout {
 		if (diagram == null)
 			return;
 		for (Object aPart : diagram.getChildren()) {
-			if (aPart instanceof ProcessEditPart) {
-				ProcessEditPart part = (ProcessEditPart) aPart;
+			if (aPart instanceof ProcessPart) {
+				ProcessPart part = (ProcessPart) aPart;
 				ProcessNode node = (ProcessNode) part.getModel();
 				part.getFigure().setBounds(node.getXyLayoutConstraints());
 			}
@@ -44,13 +44,11 @@ public class GraphLayoutManager extends AbstractLayout {
 			int hint2) {
 		container.validate();
 		List<?> children = container.getChildren();
-		Rectangle result = new Rectangle().setLocation(container
-				.getClientArea().getLocation());
+		Rectangle result = new Rectangle().setLocation(container.getClientArea().getLocation());
 		for (int i = 0; i < children.size(); i++) {
 			result.union(((IFigure) children.get(i)).getBounds());
 		}
-		result.resize(container.getInsets().getWidth(), container.getInsets()
-				.getHeight());
+		result.resize(container.getInsets().getWidth(), container.getInsets().getHeight());
 		return result.getSize();
 	}
 

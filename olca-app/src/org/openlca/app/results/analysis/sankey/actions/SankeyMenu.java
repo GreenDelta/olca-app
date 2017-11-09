@@ -14,14 +14,10 @@ public class SankeyMenu {
 		selectionAction.setSankeyDiagram(diagram);
 		manager.add(selectionAction);
 		SankeyImageAction imageAction = new SankeyImageAction();
-		imageAction.setSankeyDiagram(diagram);
+		imageAction.sankeyDiagram = diagram;
 		manager.add(imageAction);
 		manager.add(new SankeyMiniViewAction(diagram));
-		// ZoomManager zoom = ((ScalableRootEditPart)
-		// diagram.getGraphicalViewer()
-		// .getRootEditPart()).getZoomManager();
-		// manager.add(new ZoomInAction(zoom));
-		// manager.add(new ZoomOutAction(zoom));
+		manager.add(new SwitchRoutingAction(diagram));
 		return manager;
 	}
 
