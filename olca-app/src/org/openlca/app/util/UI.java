@@ -157,9 +157,9 @@ public class UI {
 	public static ScrolledForm formHeader(ModelPage<?> page) {
 		Image image = Images.get(page.getEditor().getModel());
 		ScrolledForm form = formHeader(page.getManagedForm(), page.getFormTitle(), image);
-		Editors.addRefresh(form, page.getEditor());
 		// "" is 'general' comment on data set
 		form.getToolBarManager().add(new CommentAction("", page.getEditor().getComments()));
+		Editors.addRefresh(form, page.getEditor());
 		form.getToolBarManager().update(true);
 		return form;
 	}
