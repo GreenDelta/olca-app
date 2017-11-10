@@ -17,6 +17,7 @@ import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.EventHandler;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
@@ -51,6 +52,10 @@ public class InfoSection {
 		if (entity.getCategory() != null) {
 			new Label(container, SWT.NONE).setText(M.Category);
 			createBreadcrumb(container);
+			new CommentControl(container, toolkit, "category", editor.getComments());
+		} else if (Database.isConnected() && editor.getComments().has("category")) {
+			new Label(container, SWT.NONE).setText(M.Category);
+			UI.filler(container);		
 			new CommentControl(container, toolkit, "category", editor.getComments());
 		}
 		createVersionText(toolkit);

@@ -55,8 +55,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
-			form = UI.formHeader(managedForm);
-			updateFormTitle();
+			form = UI.formHeader(this);
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
 			InfoSection infoSection = new InfoSection(getEditor());
@@ -65,13 +64,6 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 			createActivitySection(toolkit, body);
 			body.setFocus();
 			form.reflow(true);
-		}
-
-		@Override
-		protected void updateFormTitle() {
-			if (form == null)
-				return;
-			form.setText(M.SocialIndicator + ": " + getModel().getName());
 		}
 
 		private void createAdditionalInfo(Composite body, FormToolkit tk) {

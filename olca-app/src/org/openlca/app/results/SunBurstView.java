@@ -15,8 +15,11 @@ import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.html.WebPage;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -34,11 +37,12 @@ public class SunBurstView extends FormPage implements WebPage {
 	private FullResultProvider result;
 	private ResultTypeSelection flowImpactSelection;
 	private boolean loaded;
+	private CalculationSetup setup;
 
-	public SunBurstView(FormEditor editor, FullResultProvider result) {
+	public SunBurstView(FormEditor editor, FullResultProvider result, CalculationSetup setup) {
 		super(editor, "analysis.SunBurstView", "Sun burst");
 		this.result = result;
-
+		this.setup = setup;
 	}
 
 	@Override
@@ -72,7 +76,7 @@ public class SunBurstView extends FormPage implements WebPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "Sun burst");
+		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Composite comp = toolkit.createComposite(body);

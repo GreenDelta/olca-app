@@ -17,11 +17,9 @@ import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.app.wizards.ProcessWizard;
@@ -42,10 +40,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
-		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
-			Editors.addRefresh(form, getEditor());
+		form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -56,13 +51,6 @@ class FlowInfoPage extends ModelPage<Flow> {
 		processButton(infoSection);
 		body.setFocus();
 		form.reflow(true);
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.Flow + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(InfoSection infoSection, Composite body) {
@@ -82,7 +70,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 		viewer.setNullable(true);
 		viewer.setInput(Database.get());
 		getBinding().onModel(() -> getModel(), "location", viewer);
-		new CommentControl(composite, getToolkit(),  "location", getComments());
+		new CommentControl(composite, getToolkit(), "location", getComments());
 	}
 
 	private void processButton(InfoSection infoSection) {

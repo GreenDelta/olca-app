@@ -38,8 +38,7 @@ public class LocationInfoPage extends ModelPage<Location> implements WebPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
+		form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -48,13 +47,6 @@ public class LocationInfoPage extends ModelPage<Location> implements WebPage {
 		createMapEditorArea(body);
 		body.setFocus();
 		form.reflow(true);
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.Location + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(Composite body) {

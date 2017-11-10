@@ -55,8 +55,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
+		form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -65,13 +64,6 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		createAdditionalInfo(body);
 		body.setFocus();
 		form.reflow(true);
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.DataQualitySystem + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(Composite body) {

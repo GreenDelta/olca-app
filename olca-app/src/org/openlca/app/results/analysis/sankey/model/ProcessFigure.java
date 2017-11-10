@@ -27,21 +27,17 @@ public class ProcessFigure extends Figure {
 
 	public static final int HEIGHT = 120;
 	public static final int WIDTH = 200;
-	private ProcessNode processNode;
-	private Font boldFont;
+	public final ProcessNode node;
+	/** Must be disposed when the edit part is deactivated */
+	Font boldFont;
 
 	public ProcessFigure(ProcessNode processNode) {
 		setToolTip(new Label(Labels.getDisplayName(processNode.process)));
 		processNode.figure = this;
-		this.processNode = processNode;
+		this.node = processNode;
 		setSize(WIDTH, HEIGHT);
 		processNode.setXyLayoutConstraints(getBounds());
 		addMouseListener(new ProcessMouseClick(processNode));
-	}
-
-	/** Must be disposed when the edit part is deactivated */
-	Font getBoldFont() {
-		return boldFont;
 	}
 
 	@Override
@@ -53,7 +49,7 @@ public class ProcessFigure extends Figure {
 	}
 
 	private Color getColor() {
-		double contribution = processNode.upstreamContribution;
+		double contribution = node.upstreamContribution;
 		RGB rgb = FaviColor.getForContribution(contribution);
 		return Colors.get(rgb);
 	}
@@ -61,10 +57,10 @@ public class ProcessFigure extends Figure {
 	private void paintBody(Graphics g) {
 		Rectangle rect = new Rectangle(getLocation(), getSize());
 		g.fillRoundRectangle(rect, 15, 15);
-		String singleVal = format(processNode.directResult);
-		String singlePerc = format(processNode.directContribution * 100);
-		String totalVal = format(processNode.upstreamResult);
-		String totalPerc = format(processNode.upstreamContribution * 100);
+		String singleVal = format(node.directResult);
+		String singlePerc = format(node.directContribution * 100);
+		String totalVal = format(node.upstreamResult);
+		String totalPerc = format(node.upstreamContribution * 100);
 		String single = singleVal + " (" + singlePerc + "%)";
 		String total = totalVal + " (" + totalPerc + "%)";
 		drawTexts(g, single, total);
@@ -78,7 +74,7 @@ public class ProcessFigure extends Figure {
 		g.setFont(boldFont);
 		Color black = g.getForegroundColor();
 		g.setForegroundColor(Colors.white());
-		String name = Strings.cut(processNode.getName(), 30);
+		String name = Strings.cut(node.getName(), 30);
 		g.drawText(name, loc.x + 5, loc.y + 5);
 		g.setFont(normalFont);
 		g.drawText(M.DirectContribution + ":", loc.x + 5, loc.y + 35);
@@ -89,7 +85,7 @@ public class ProcessFigure extends Figure {
 	}
 
 	private void drawDqBar(Graphics g) {
-		DQResult dqResult = ((ProductSystemNode) processNode.getParent()).getEditor().getDqResult();
+		DQResult dqResult = ((ProductSystemNode) node.parent).editor.dqResult;
 		if (!DQUI.displayProcessQuality(dqResult))
 			return;
 		Point loc = getLocation();
@@ -103,7 +99,7 @@ public class ProcessFigure extends Figure {
 		int w = 20;
 		DQSystem system = dqResult.setup.processDqSystem;
 		int h = (size.height - 20) / system.indicators.size();
-		double[] values = dqResult.get(processNode.process);
+		double[] values = dqResult.get(node.process);
 		for (int i = 0; i < values.length; i++) {
 			Color color = DQUI.getColor(values[i], system.getScoreCount(), dqResult.setup.roundingMode);
 			g.setBackgroundColor(color);
@@ -135,10 +131,6 @@ public class ProcessFigure extends Figure {
 		if (HEIGHT > size.height || WIDTH > size.width)
 			return new Dimension(WIDTH, HEIGHT);
 		return size;
-	}
-
-	public ProcessNode getProcessNode() {
-		return processNode;
 	}
 
 }

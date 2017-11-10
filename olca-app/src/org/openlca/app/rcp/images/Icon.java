@@ -8,7 +8,8 @@ public enum Icon {
 	ACCEPT("graphical/accept.png"),
 	ADD("add.png"),
 	ADD_DISABLED("add_disabled.png"),
-
+	ANALYSIS_RESULT("analysis.png"),
+	
 	BUILD_SUPPLY_CHAIN("graphical/build_supply_chain.gif"),
 
 	CALCULATE_COSTS("calculation/calculate_costs.png"),
@@ -90,8 +91,11 @@ public enum Icon {
 	PROCESS_BG_MARKED("graphical/process_bg_marked.jpg"),
 	PYTHON("python.png"),
 
+	QUICK_RESULT("quick_calculation.png"),
+
 	REDO("redo.png"),
 	REDO_DISABLED("redo_disabled.png"),
+	REGIONALIZED_RESULT("model/impact_method.png"),
 	REMOVE_SUPPLY_CHAIN("graphical/remove_supply_chain.png"),
 	REFRESH("refresh.png"),
 	RESET_ALL_CHANGES("cloud/reset_all.png"),

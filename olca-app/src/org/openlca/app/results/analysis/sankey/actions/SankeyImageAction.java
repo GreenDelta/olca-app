@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class SankeyImageAction extends Action {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	private SankeyDiagram sankeyDiagram;
+	public SankeyDiagram sankeyDiagram;
 
 	@Override
 	public String getText() {
@@ -39,10 +39,6 @@ public class SankeyImageAction extends Action {
 	@Override
 	public ImageDescriptor getImageDescriptor() {
 		return Icon.SAVE_AS_IMAGE.descriptor();
-	}
-
-	public void setSankeyDiagram(SankeyDiagram sankeyDiagram) {
-		this.sankeyDiagram = sankeyDiagram;
 	}
 
 	@Override
@@ -61,16 +57,13 @@ public class SankeyImageAction extends Action {
 
 	private Image createImage() {
 		try {
-			ScalableRootEditPart rootEditPart = (ScalableRootEditPart) sankeyDiagram
-					.getGraphicalViewer().getRootEditPart();
-			IFigure rootFigure = rootEditPart
-					.getLayer(LayerConstants.PRINTABLE_LAYERS);
-			Rectangle rootFigureBounds = rootFigure.getBounds();
-			Image img = new Image(null, rootFigureBounds.width,
-					rootFigureBounds.height);
+			ScalableRootEditPart root = (ScalableRootEditPart) sankeyDiagram.getGraphicalViewer().getRootEditPart();
+			IFigure figure = root.getLayer(LayerConstants.PRINTABLE_LAYERS);
+			Rectangle bounds = figure.getBounds();
+			Image img = new Image(null, bounds.width, bounds.height);
 			GC imageGC = new GC(img);
 			Graphics graphics = new SWTGraphics(imageGC);
-			rootFigure.paint(graphics);
+			figure.paint(graphics);
 			return img;
 		} catch (Exception e) {
 			log.error("Could not create image", e);

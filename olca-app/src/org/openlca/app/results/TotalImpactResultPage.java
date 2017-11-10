@@ -32,6 +32,7 @@ import org.openlca.app.util.trees.TreeClipboard;
 import org.openlca.app.util.trees.TreeClipboard.ClipboardLabelProvider;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -48,20 +49,22 @@ public class TotalImpactResultPage extends FormPage {
 	private FormToolkit toolkit;
 	private TreeViewer viewer;
 	private ContributionCutoff spinner;
+	private CalculationSetup setup;
 
 	private boolean subgroupByProcesses = true;
 
 	public TotalImpactResultPage(FormEditor editor, ContributionResultProvider<?> result,
-			DQResult dqResult, ImpactFactorProvider impactFactors) {
+			DQResult dqResult, CalculationSetup setup, ImpactFactorProvider impactFactors) {
 		super(editor, "ImpactTreePage", M.ImpactAnalysis);
 		this.result = result;
+		this.setup = setup;
 		this.dqResult = dqResult;
 		this.impactFactors = impactFactors;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, M.ImpactAnalysis);
+		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.ImpactAnalysis);
@@ -166,12 +169,16 @@ public class TotalImpactResultPage extends FormPage {
 			case 1:
 				return label.getText(item, 1);
 			case 2:
-				return Numbers.format(item.flowAmount());
+				return format(item.flowAmount());
 			case 3:
+				if (item.flowAmount() == null)
+					return "";
 				return item.flowAmountUnit();
 			case 4:
-				return Numbers.format(item.impactFactor());
+				return format(item.impactFactor());
 			case 5:
+				if (item.impactFactor() == null)
+					return "";
 				return item.impactFactorUnit();
 			case 6:
 				return label.getText(item, 4);
@@ -179,6 +186,12 @@ public class TotalImpactResultPage extends FormPage {
 				return label.getText(item, 5);
 			}
 			return null;
+		}
+
+		private String format(Double d) {
+			if (d == null)
+				return "";
+			return Numbers.format(d);
 		}
 
 	}
@@ -351,9 +364,11 @@ public class TotalImpactResultPage extends FormPage {
 			return ModelType.IMPACT_CATEGORY;
 		}
 
-		double impactFactor() {
+		Double impactFactor() {
 			// note that process can be null if we want to get the
 			// total flow contribution
+			if (flow == null)
+				return null;
 			return impactFactors.get(impact, process, flow);
 		}
 
@@ -372,9 +387,9 @@ public class TotalImpactResultPage extends FormPage {
 			return f + " " + unit;
 		}
 
-		double flowAmount() {
+		Double flowAmount() {
 			if (flow == null)
-				return 0;
+				return null;
 			if (process == null)
 				return result.getTotalFlowResult(flow).value;
 			return result.getSingleFlowResult(process, flow).value;

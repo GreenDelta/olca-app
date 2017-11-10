@@ -44,7 +44,8 @@ public class DbCloseAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		Editors.closeAll();
+		if (!Editors.closeAll())
+			return;
 		App.run(M.CloseDatabase, new Runnable() {
 			public void run() {
 				try {

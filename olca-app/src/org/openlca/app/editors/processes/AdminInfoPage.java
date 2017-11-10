@@ -20,20 +20,12 @@ class AdminInfoPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
+		form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createAdminInfoSection(body);
 		body.setFocus();
 		form.reflow(true);
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.Process + ": " + getModel().getName());
 	}
 
 	private void createAdminInfoSection(Composite parent) {

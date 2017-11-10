@@ -38,21 +38,20 @@ public class TreeLayout {
 
 	private ProcessLinkSearchMap linkSearchMap;
 
-	public void layout(final ProductSystemNode productSystemNode) {
-		linkSearchMap = productSystemNode.getEditor().getLinkSearchMap();
+	public void layout(ProductSystemNode productSystemNode) {
+		linkSearchMap = productSystemNode.editor.linkSearchMap;
 		prepare(productSystemNode);
-		final List<Node> nodes = new ArrayList<>();
-		final Node mainNode = build(productSystemNode.getProductSystem());
+		List<Node> nodes = new ArrayList<>();
+		Node mainNode = build(productSystemNode.productSystem);
 		mainNode.sort();
 		nodes.add(mainNode);
-		for (final Object o : productSystemNode.getChildrenArray()) {
+		for (Object o : productSystemNode.children) {
 			if (o instanceof ProcessNode) {
-				final ProcessNode processNode = (ProcessNode) o;
+				ProcessNode processNode = (ProcessNode) o;
 				if (!containing.contains(processNode.process.getId())) {
-					final Node node = new Node();
+					Node node = new Node();
 					node.processId = processNode.process.getId();
-					build(productSystemNode.getProductSystem(),
-							new Node[] { node });
+					build(productSystemNode.productSystem, new Node[] { node });
 					node.sort();
 					nodes.add(node);
 				}
@@ -84,11 +83,10 @@ public class TreeLayout {
 				}
 			}
 			final Map<Long, ProcessFigure> figures = new HashMap<>();
-			for (final Object n : productSystemNode.getChildrenArray()) {
+			for (Object n : productSystemNode.children) {
 				if (n instanceof ProcessNode) {
-					final ProcessFigure figure = ((ProcessNode) n).figure;
-					figures.put(figure.getProcessNode().process.getId(),
-							figure);
+					ProcessFigure figure = ((ProcessNode) n).figure;
+					figures.put(figure.node.process.getId(), figure);
 				}
 			}
 
@@ -109,10 +107,10 @@ public class TreeLayout {
 					if (processKey != null) {
 						final ProcessFigure figure = figures.get(processKey);
 						if (figure != null) {
-							figure.getProcessNode().setXyLayoutConstraints(
+							figure.node.setXyLayoutConstraints(
 									new Rectangle(xPosition, yPosition
 											+ additionalHeight, figure
-													.getSize().width,
+											.getSize().width,
 											figure.getSize().height));
 							newAdditionalHeight = Math.max(
 									newAdditionalHeight,
@@ -210,7 +208,7 @@ public class TreeLayout {
 	}
 
 	private void prepare(final ProductSystemNode productSystemNode) {
-		for (final Object node : productSystemNode.getChildrenArray()) {
+		for (Object node : productSystemNode.children) {
 			if (node instanceof ProcessNode) {
 				final ProcessNode processNode = (ProcessNode) node;
 				paintedProcesses.add(processNode.process.getId());

@@ -37,8 +37,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
+		form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit,
@@ -56,13 +55,6 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 		form.reflow(true);
 		editor.getEventBus().register(this);
 		editor.onSaved(() -> updateInput());
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.ImpactAssessmentMethod + ": " + getModel().getName());
 	}
 
 	@Subscribe

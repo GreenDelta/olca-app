@@ -42,8 +42,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
+		form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.ImpactFactors);
@@ -56,13 +55,6 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 		factorTable.render(client, section);
 		categoryViewer.selectFirst();
 		form.reflow(true);
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.ImpactAssessmentMethod + ": " + getModel().getName());
 	}
 
 	private void onSaved() {

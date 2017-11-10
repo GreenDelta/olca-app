@@ -71,14 +71,14 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new QuickResultInfoPage(this, result, dqResult));
-			addPage(new InventoryPage(this, result, dqResult));
+			addPage(new QuickResultInfoPage(this, result, dqResult, setup));
+			addPage(new InventoryPage(this, result, dqResult, setup));
 			if (result.hasImpactResults())
-				addPage(new TotalImpactResultPage(this, result, dqResult, this::getImpactFactor));
+				addPage(new TotalImpactResultPage(this, result, dqResult, setup, this::getImpactFactor));
 			if (result.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, result, setup));
-			addPage(new LocationPage(this, result));
-			addPage(new GroupPage(this, result));
+			addPage(new LocationPage(this, result, setup));
+			addPage(new GroupPage(this, result, setup));
 		} catch (Exception e) {
 			log.error("failed to add pages", e);
 		}

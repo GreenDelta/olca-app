@@ -6,11 +6,13 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.DQInfoSection;
 import org.openlca.app.results.InfoSection;
 import org.openlca.app.results.contributions.ContributionChartSection;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.results.SimpleResultProvider;
 
@@ -20,18 +22,19 @@ class QuickResultInfoPage extends FormPage {
 	private SimpleResultProvider<?> result;
 	private DQResult dqResult;
 	private FormToolkit tk;
+	private CalculationSetup setup;
 
-	public QuickResultInfoPage(QuickResultEditor editor, SimpleResultProvider<?> result, DQResult dqResult) {
+	public QuickResultInfoPage(QuickResultEditor editor, SimpleResultProvider<?> result, DQResult dqResult, CalculationSetup setup) {
 		super(editor, "QuickResultInfoPage", M.GeneralInformation);
 		this.editor = editor;
 		this.result = result;
 		this.dqResult = dqResult;
+		this.setup = setup;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		String label = M.ResultsOf + " " + Labels.getDisplayName(editor.getSetup().productSystem);
-		ScrolledForm form = UI.formHeader(mform, label);
+		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
 		this.tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		InfoSection.create(body, tk, editor.getSetup(), "Quick result");

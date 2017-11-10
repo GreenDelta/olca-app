@@ -29,8 +29,7 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
+		form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -40,12 +39,6 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 		form.reflow(true);
 	}
 
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.UnitGroup + ": " + getModel().getName());
-	}
 
 	protected void createAdditionalInfo(InfoSection infoSection, Composite body) {
 		dropComponent(infoSection.getContainer(), M.DefaultFlowProperty, "defaultFlowProperty");

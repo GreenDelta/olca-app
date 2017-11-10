@@ -66,7 +66,8 @@ public class DbCompressAction extends Action implements INavigationAction {
 		try {
 			DerbyDatabase db = null;
 			if (isActive) {
-				Editors.closeAll();
+				if (!Editors.closeAll())
+					return;
 				ValidationView.clear();
 				db = (DerbyDatabase) Database.get();
 			} else {

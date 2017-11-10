@@ -32,7 +32,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.openlca.app.App;
 import org.openlca.app.results.analysis.sankey.actions.SankeyMenu;
-import org.openlca.app.results.analysis.sankey.model.ConnectionLink;
+import org.openlca.app.results.analysis.sankey.model.Link;
 import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
 import org.openlca.core.math.CalculationSetup;
@@ -45,44 +45,29 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResultProvider;
 
-public class SankeyDiagram extends GraphicalEditor implements
-		PropertyChangeListener {
+public class SankeyDiagram extends GraphicalEditor implements PropertyChangeListener {
 
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 
+	public final DQResult dqResult;
+	public final ProcessLinkSearchMap linkSearchMap;
+	public final FullResultProvider result;
+	public ProductSystemNode node;
+	public double zoom = 1;
 	private SankeyResult sankeyResult;
-	private ProcessLinkSearchMap linkSearchMap;
-	private Map<ProcessLink, ConnectionLink> createdLinks = new HashMap<>();
+	private Map<ProcessLink, Link> createdLinks = new HashMap<>();
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
-	private ProductSystemNode systemNode;
 	private ProductSystem productSystem;
-	private FullResultProvider result;
-	private DQResult dqResult;
 
-	private double zoom = 1;
-
-	public SankeyDiagram(CalculationSetup setUp, FullResultProvider result, DQResult dqResult) {
+	public SankeyDiagram(FullResultProvider result, DQResult dqResult, CalculationSetup setup) {
 		this.dqResult = dqResult;
 		setEditDomain(new DefaultEditDomain(this));
 		this.result = result;
-		productSystem = setUp.productSystem;
-		linkSearchMap = new ProcessLinkSearchMap(
-				productSystem.getProcessLinks());
+		productSystem = setup.productSystem;
+		linkSearchMap = new ProcessLinkSearchMap(productSystem.getProcessLinks());
 		sankeyResult = new SankeyResult(productSystem, result);
 		if (productSystem != null)
 			setPartName(productSystem.getName());
-	}
-
-	public FullResultProvider getResult() {
-		return result;
-	}
-
-	public DQResult getDqResult() {
-		return dqResult;
-	}
-
-	public ProcessLinkSearchMap getLinkSearchMap() {
-		return linkSearchMap;
 	}
 
 	private void createConnections(long startProcessId) {
@@ -100,7 +85,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 				if (createdLinks.containsKey(processLink))
 					continue;
 				double ratio = sankeyResult.getLinkContribution(processLink);
-				ConnectionLink link = new ConnectionLink(sourceNode, targetNode, processLink, ratio);
+				Link link = new Link(sourceNode, targetNode, processLink, ratio);
 				createdLinks.put(processLink, link);
 				if (processed.contains(sourceNode.process.getId()))
 					continue;
@@ -114,19 +99,15 @@ public class SankeyDiagram extends GraphicalEditor implements
 		long processId = process.getId();
 		node.directContribution = sankeyResult.getDirectContribution(processId);
 		node.directResult = sankeyResult.getDirectResult(processId);
-		node.upstreamContribution = sankeyResult
-				.getUpstreamContribution(processId);
+		node.upstreamContribution = sankeyResult.getUpstreamContribution(processId);
 		node.upstreamResult = sankeyResult.getUpstreamResult(processId);
 		createdProcesses.put(process.getId(), node);
 		return node;
 	}
 
-	/**
-	 * Updates the connection links
-	 */
 	private void updateConnections() {
 		createConnections(productSystem.getReferenceProcess().getId());
-		for (final ConnectionLink link : createdLinks.values()) {
+		for (final Link link : createdLinks.values()) {
 			link.link();
 		}
 	}
@@ -139,7 +120,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 			for (Long processId : productSystem.getProcesses()) {
 				ProcessDescriptor descriptor = descriptors.get(processId);
 				if (descriptor != null) {
-					systemNode.addChild(createNode(descriptor));
+					node.addChild(createNode(descriptor));
 				}
 			}
 		} else {
@@ -149,7 +130,7 @@ public class SankeyDiagram extends GraphicalEditor implements
 			for (final Long processId : processesToDraw) {
 				ProcessDescriptor process = descriptors.get(processId);
 				if (process != null) {
-					systemNode.addChild(createNode(process));
+					node.addChild(createNode(process));
 				}
 			}
 		}
@@ -191,7 +172,6 @@ public class SankeyDiagram extends GraphicalEditor implements
 
 		viewer.setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
 				MouseWheelZoomHandler.SINGLETON);
-
 	}
 
 	@Override
@@ -217,7 +197,6 @@ public class SankeyDiagram extends GraphicalEditor implements
 		// zoom listener
 		((ScalableRootEditPart) getGraphicalViewer().getRootEditPart())
 				.getZoomManager().addZoomListener(new ZoomListener() {
-
 					@Override
 					public void zoomChanged(final double arg0) {
 						zoom = arg0;
@@ -228,7 +207,6 @@ public class SankeyDiagram extends GraphicalEditor implements
 				10.0, 20.0, 40.0, 80.0, 150.0, 300.0, 500.0, 1000.0 };
 		((ScalableRootEditPart) getGraphicalViewer().getRootEditPart())
 				.getZoomManager().setZoomLevels(zoomLevels);
-
 		initContent();
 	}
 
@@ -261,28 +239,11 @@ public class SankeyDiagram extends GraphicalEditor implements
 	}
 
 	@Override
-	public void dispose() {
-		if (systemNode != null)
-			systemNode.dispose();
-		result = null;
-		super.dispose();
-	}
-
-	@Override
 	public void doSave(IProgressMonitor monitor) {
 	}
 
-	public ProductSystemNode getModel() {
-		return systemNode;
-	}
-
 	public double getProductSystemResult() {
-		return sankeyResult.getUpstreamResult(productSystem
-				.getReferenceProcess().getId());
-	}
-
-	public double getZoom() {
-		return zoom;
+		return sankeyResult.getUpstreamResult(productSystem.getReferenceProcess().getId());
 	}
 
 	@Override
@@ -306,15 +267,13 @@ public class SankeyDiagram extends GraphicalEditor implements
 	public void update(Object selection, double cutoff) {
 		if (selection == null || cutoff < 0d || cutoff > 1d)
 			return;
-		App.run("Calculate sankey results", () -> sankeyResult
-				.calculate(selection), () -> {
-			systemNode = new ProductSystemNode(productSystem,
-					SankeyDiagram.this, selection, cutoff);
+		App.run("Calculate sankey results", () -> sankeyResult.calculate(selection), () -> {
+			node = new ProductSystemNode(productSystem, this, selection, cutoff);
 			createdProcesses.clear();
 			createdLinks.clear();
 			updateModel(cutoff);
 			getGraphicalViewer().deselectAll();
-			getGraphicalViewer().setContents(systemNode);
+			getGraphicalViewer().setContents(node);
 		});
 	}
 

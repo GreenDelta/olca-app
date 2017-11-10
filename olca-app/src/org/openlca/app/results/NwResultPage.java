@@ -16,6 +16,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Database;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -45,8 +46,7 @@ public class NwResultPage extends FormPage {
 	private Composite body;
 	private FormToolkit toolkit;
 
-	public NwResultPage(FormEditor editor, SimpleResultProvider<?> result,
-			CalculationSetup setup) {
+	public NwResultPage(FormEditor editor, SimpleResultProvider<?> result, CalculationSetup setup) {
 		super(editor, "NwResultPage", M.NormalizationWeighting);
 		this.result = result;
 		this.setup = setup;
@@ -54,8 +54,7 @@ public class NwResultPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm,
-				M.NormalizationWeighting);
+		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
 		toolkit = managedForm.getToolkit();
 		body = UI.formBody(form, toolkit);
 		nwSetTable = loadNwSetTable();

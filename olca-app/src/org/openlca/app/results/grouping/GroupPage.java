@@ -41,6 +41,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.ProcessGroupSetDao;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessGroup;
 import org.openlca.core.model.ProcessGroupSet;
@@ -65,10 +66,12 @@ public class GroupPage extends FormPage {
 	private Menu groupMoveMenu;
 	private GroupResultSection resultSection;
 	private Section groupingSection;
+	private CalculationSetup setup;
 
-	public GroupPage(FormEditor editor, ContributionResultProvider<?> result) {
+	public GroupPage(FormEditor editor, ContributionResultProvider<?> result, CalculationSetup setup) {
 		super(editor, "analysis.GroupPage", M.Grouping);
 		this.result = result;
+		this.setup = setup;
 		initGroups(result);
 	}
 
@@ -120,7 +123,7 @@ public class GroupPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, M.Grouping);
+		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createGroupingSection(toolkit, body);

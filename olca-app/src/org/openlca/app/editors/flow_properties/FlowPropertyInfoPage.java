@@ -7,8 +7,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.preferencepages.FeatureFlag;
-import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.FlowProperty;
 
@@ -26,10 +24,7 @@ class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
-		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
-			Editors.addRefresh(form, getEditor());
+		form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -37,13 +32,6 @@ class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 		createAdditionalInfo(infoSection);
 		body.setFocus();
 		form.reflow(true);
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.FlowProperty + ": " + getModel().getName());
 	}
 
 	private void createAdditionalInfo(InfoSection infoSection) {

@@ -5,15 +5,12 @@ import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.swt.SWT;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 
-/**
- * Figure for connection links.
- */
-public class ConnectionLinkFigure extends PolylineConnection {
+class LinkFigure extends PolylineConnection {
 
-	private int lineWidth;
-	public SankeyDiagram diagram;
+	private final int lineWidth;
+	private final SankeyDiagram diagram;
 
-	public ConnectionLinkFigure(int lineWidth, SankeyDiagram diagram) {
+	LinkFigure(int lineWidth, SankeyDiagram diagram) {
 		super();
 		setAntialias(SWT.ON);
 		this.diagram = diagram;
@@ -22,7 +19,7 @@ public class ConnectionLinkFigure extends PolylineConnection {
 
 	@Override
 	public void paint(Graphics graphics) {
-		setLineWidth((int) (lineWidth * diagram.getZoom()));
+		setLineWidth((int) (lineWidth * diagram.zoom));
 		super.paint(graphics);
 	}
 }

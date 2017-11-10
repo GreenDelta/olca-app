@@ -40,7 +40,7 @@ public class SankeySelectionAction extends Action {
 	public void run() {
 		if (sankeyDiagram == null)
 			return;
-		FullResultProvider result = sankeyDiagram.getResult();
+		FullResultProvider result = sankeyDiagram.result;
 		if (result == null)
 			return;
 		openAndUpdate(result);
@@ -48,13 +48,13 @@ public class SankeySelectionAction extends Action {
 
 	private void openAndUpdate(FullResultProvider result) {
 		SankeySelectionDialog dialog = new SankeySelectionDialog(result);
-		dialog.setCutoff(sankeyDiagram.getModel().getCutoff());
-		dialog.setSelection(lastSelection);
+		dialog.cutoff = sankeyDiagram.node.cutoff;
+		dialog.selection = lastSelection;
 		if (dialog.open() == Window.OK) {
-			lastSelection = dialog.getSelection();
+			lastSelection = dialog.selection;
 			if (lastSelection == null)
 				return;
-			sankeyDiagram.update(lastSelection, dialog.getCutoff());
+			sankeyDiagram.update(lastSelection, dialog.cutoff);
 		}
 	}
 }

@@ -34,7 +34,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 			setPageText(gIdx, M.ModelGraph);
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
 				addPage(new StatisticsPage(this));
-				addPage(new HtmlGraph(this, getModel()));
+				addPage(new HtmlGraph(this));
 			}
 		} catch (Exception e) {
 			log.error("failed to add page", e);

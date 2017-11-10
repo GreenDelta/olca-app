@@ -5,12 +5,12 @@ import javafx.scene.web.WebEngine;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
+import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.UI;
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-public class StatisticsPage extends FormPage implements WebPage {
+public class StatisticsPage extends ModelPage<ProductSystem> implements WebPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -35,8 +35,7 @@ public class StatisticsPage extends FormPage implements WebPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm,
-				M.ProductSystemStatistics);
+		ScrolledForm form = UI.formHeader(this);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		body.setLayout(new FillLayout());

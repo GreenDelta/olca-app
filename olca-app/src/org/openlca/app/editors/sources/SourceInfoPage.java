@@ -51,8 +51,7 @@ class SourceInfoPage extends ModelPage<Source> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		form = UI.formHeader(mform);
-		updateFormTitle();
+		form = UI.formHeader(this);
 		tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -60,13 +59,6 @@ class SourceInfoPage extends ModelPage<Source> {
 		additionalInfo(body);
 		body.setFocus();
 		form.reflow(true);
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.Source + ": " + getModel().getName());
 	}
 
 	protected void additionalInfo(Composite body) {

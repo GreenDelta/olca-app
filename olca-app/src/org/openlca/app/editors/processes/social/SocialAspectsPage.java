@@ -50,19 +50,11 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	protected void createFormContent(IManagedForm managedForm) {
 		for (SocialAspect a : getModel().socialAspects)
 			treeModel.addAspect(a);
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
+		form = UI.formHeader(this);
 		FormToolkit tk = managedForm.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		createEntrySection(tk, body);
 		form.reflow(true);
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.SocialAspects + ": " + getModel().getName());
 	}
 
 	private void createEntrySection(FormToolkit tk, Composite body) {

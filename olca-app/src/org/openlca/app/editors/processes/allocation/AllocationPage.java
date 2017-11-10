@@ -9,13 +9,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 
-public class AllocationPage extends FormPage {
+public class AllocationPage extends ModelPage<Process> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private ProcessEditor editor;
@@ -92,7 +92,7 @@ public class AllocationPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, M.Allocation);
+		ScrolledForm form = UI.formHeader(this);
 		tk = managedForm.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		Composite composite = UI.formComposite(body, tk);

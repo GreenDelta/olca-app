@@ -27,11 +27,9 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.reports.ReportViewer;
 import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.editors.reports.model.ReportCalculator;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Editors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
@@ -86,10 +84,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
-		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
-			Editors.addRefresh(form, editor);
+		form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -103,14 +98,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		body.setFocus();
 		form.reflow(true);
 	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.Project + ": " + getModel().getName());
-	}
-
+	
 	private void initialInput() {
 		List<ProjectVariant> variants = project.getVariants();
 		Collections.sort(variants, (v1, v2) -> Strings.compare(v1.getName(), v2.getName()));

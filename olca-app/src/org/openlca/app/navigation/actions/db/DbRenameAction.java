@@ -82,7 +82,8 @@ public class DbRenameAction extends Action implements INavigationAction {
 		boolean isActive = Database.isActive(config);
 		try {
 			if (isActive) {
-				Editors.closeAll();
+				if (!Editors.closeAll())
+					return;
 				Database.close();
 				ValidationView.clear();
 			}

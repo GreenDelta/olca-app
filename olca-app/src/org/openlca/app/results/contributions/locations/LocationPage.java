@@ -16,9 +16,12 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.db.Cache;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.results.ContributionResultProvider;
 
 /**
@@ -36,21 +39,22 @@ public class LocationPage extends FormPage {
 	private boolean showMap;
 	boolean skipZeros = true;
 	double cutoff = 0.01;
+	private CalculationSetup setup;
 
-	public LocationPage(FormEditor editor, ContributionResultProvider<?> result) {
-		this(editor, result, true);
+	public LocationPage(FormEditor editor, ContributionResultProvider<?> result, CalculationSetup setup) {
+		this(editor, result, setup, true);
 	}
 
-	public LocationPage(FormEditor editor, ContributionResultProvider<?> result,
-			boolean showMap) {
+	public LocationPage(FormEditor editor, ContributionResultProvider<?> result, CalculationSetup setup, boolean showMap) {
 		super(editor, "analysis.MapPage", M.Locations);
+		this.setup = setup;
 		this.showMap = showMap;
 		this.result = result;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, M.Locations);
+		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		createCombos(body, tk);

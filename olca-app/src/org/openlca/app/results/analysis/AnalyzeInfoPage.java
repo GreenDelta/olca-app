@@ -7,6 +7,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.DQInfoSection;
 import org.openlca.app.results.InfoSection;
 import org.openlca.app.results.contributions.ContributionChartSection;
@@ -35,8 +36,7 @@ public class AnalyzeInfoPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, M.AnalysisResultOf + " "
-				+ Labels.getDisplayName(setup.productSystem));
+		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
 		tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		InfoSection.create(body, tk, setup, "Analysis result");

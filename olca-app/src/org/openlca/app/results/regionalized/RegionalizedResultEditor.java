@@ -98,20 +98,20 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 		try {
 			FullResultProvider regioResult = this.result.result;
 			addPage(new AnalyzeInfoPage(this, regioResult, dqResult, setup));
-			addPage(new InventoryPage(this, regioResult, dqResult));
+			addPage(new InventoryPage(this, regioResult, dqResult, setup));
 			if (regioResult.hasImpactResults())
-				addPage(new TotalImpactResultPage(this, regioResult, dqResult, this::getImpactFactor));
+				addPage(new TotalImpactResultPage(this, regioResult, dqResult, setup, this::getImpactFactor));
 			if (regioResult.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, regioResult, setup));
-			addPage(new KmlResultView(this, this.result));
-			addPage(new LocationPage(this, regioResult, false));
-			addPage(new ProcessResultPage(this, regioResult));
-			addPage(new ContributionTreePage(this, regioResult));
-			addPage(new GroupPage(this, regioResult));
+			addPage(new KmlResultView(this, result, setup));
+			addPage(new LocationPage(this, regioResult, setup, false));
+			addPage(new ProcessResultPage(this, regioResult, setup));
+			addPage(new ContributionTreePage(this, regioResult, setup));
+			addPage(new GroupPage(this, regioResult, setup));
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
-				addPage(new SunBurstView(this, regioResult));
+				addPage(new SunBurstView(this, regioResult, setup));
 			}
-			diagram = new SankeyDiagram(setup, regioResult, dqResult);
+			diagram = new SankeyDiagram(regioResult, dqResult, setup);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, M.SankeyDiagram);
 		} catch (Exception e) {

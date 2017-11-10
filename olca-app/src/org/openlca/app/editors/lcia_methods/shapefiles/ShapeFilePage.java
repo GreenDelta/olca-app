@@ -10,12 +10,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * Shows imported shape-files and parameters from these shape-files that can be
  * used in a localized LCIA method.
  */
-public class ShapeFilePage extends FormPage {
+public class ShapeFilePage extends ModelPage<ImpactMethod> {
 
 	final ImpactMethodEditor editor;
 
@@ -48,7 +48,7 @@ public class ShapeFilePage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm, "Shape file parameters");
+		form = UI.formHeader(this);
 		tk = managedForm.getToolkit();
 		body = UI.formBody(form, tk);
 		new SFParamMeanSection(this).render(body, tk);
