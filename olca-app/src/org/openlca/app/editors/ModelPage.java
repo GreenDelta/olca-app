@@ -38,7 +38,13 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		editor.onSaved(this::updateFormTitle);
 	}
 
-	protected abstract void updateFormTitle();
+	private final void updateFormTitle() {
+		getManagedForm().getForm().setText(getFormTitle());
+	}
+
+	public String getFormTitle() {
+		return getTitle() + ": " + getModel().getName();
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

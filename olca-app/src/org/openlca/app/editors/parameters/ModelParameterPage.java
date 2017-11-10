@@ -12,13 +12,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
 import org.openlca.app.editors.lcia_methods.ImpactMethodSourceHandler;
 import org.openlca.app.editors.processes.ProcessEditor;
@@ -31,14 +31,17 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
+import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
+import org.openlca.core.model.Process;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Parameter page for LCIA methods or processes. */
-public class ModelParameterPage extends FormPage {
+public class ModelParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
 
 	public static final String ID = "ParameterPage";
 
@@ -50,26 +53,31 @@ public class ModelParameterPage extends FormPage {
 	private ParameterScope scope;
 	private SourceHandler sourceHandler;
 
-	public ModelParameterPage(ProcessEditor editor) {
+	private ModelParameterPage(ModelEditor<T> editor) {
 		super(editor, ID, M.Parameters);
-		this.support = editor.getParameterSupport();
 		this.editor = editor;
-		this.supplier = () -> editor.getModel().getParameters();
-		this.scope = ParameterScope.PROCESS;
 	}
 
-	public ModelParameterPage(ImpactMethodEditor editor) {
-		super(editor, ID, M.Parameters);
-		this.support = editor.getParameterSupport();
-		this.editor = editor;
-		this.supplier = () -> editor.getModel().parameters;
-		this.scope = ParameterScope.IMPACT_METHOD;
-		this.sourceHandler = new ImpactMethodSourceHandler(editor);
+	public static ModelParameterPage<Process> create(ProcessEditor editor) {
+		ModelParameterPage<Process> page = new ModelParameterPage<>(editor);
+		page.support = editor.getParameterSupport();
+		page.supplier = () -> editor.getModel().getParameters();
+		page.scope = ParameterScope.PROCESS;
+		return page;
+	}
+
+	public static ModelParameterPage<ImpactMethod> create(ImpactMethodEditor editor) {
+		ModelParameterPage<ImpactMethod> page = new ModelParameterPage<>(editor);
+		page.support = editor.getParameterSupport();
+		page.supplier = () -> editor.getModel().parameters;
+		page.scope = ParameterScope.IMPACT_METHOD;
+		page.sourceHandler = new ImpactMethodSourceHandler(editor);
+		return page;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, M.Parameters);
+		ScrolledForm form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		try {

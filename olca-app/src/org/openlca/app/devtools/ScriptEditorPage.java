@@ -2,6 +2,7 @@ package org.openlca.app.devtools;
 
 import javafx.scene.web.WebEngine;
 
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -18,9 +19,11 @@ public abstract class ScriptEditorPage extends FormPage implements WebPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private WebEngine webkit;
-
-	public ScriptEditorPage(FormEditor editor, String id, String title) {
+	private Image image;
+	
+	public ScriptEditorPage(FormEditor editor, String id, String title, Image image) {
 		super(editor, id, title);
+		this.image = image;
 	}
 
 	@Override
@@ -30,7 +33,7 @@ public abstract class ScriptEditorPage extends FormPage implements WebPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, getTitle());
+		ScrolledForm form = UI.formHeader(managedForm, getTitle(), image);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		body.setLayout(new FillLayout());

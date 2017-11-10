@@ -79,7 +79,7 @@ public class ProcessEditor extends ModelEditor<Process>implements IEditor {
 			addPage(new ProcessExchangePage(this));
 			addPage(new AdminInfoPage(this));
 			addPage(new ProcessModelingPage(this));
-			addPage(new ModelParameterPage(this));
+			addPage(ModelParameterPage.create(this));
 			addPage(new AllocationPage(this));
 			addPage(new SocialAspectsPage(this));
 		} catch (Exception e) {

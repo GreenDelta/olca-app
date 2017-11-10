@@ -24,8 +24,7 @@ public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
+		form = UI.formHeader(this);
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.Parameters);
@@ -34,13 +33,6 @@ public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 		table = new ParameterRedefTable(editor);
 		table.create(toolkit, composite);
 		table.bindActions(section);
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.ProductSystem + ": " + getModel().getName());
 	}
 
 	void refreshBindings() {

@@ -52,8 +52,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
-			form = UI.formHeader(managedForm);
-			updateFormTitle();
+			form = UI.formHeader(this);
 			FormToolkit tk = managedForm.getToolkit();
 			Composite body = UI.formBody(form, tk);
 			InfoSection infoSection = new InfoSection(getEditor());
@@ -63,13 +62,6 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 			table.create(body, tk);
 			body.setFocus();
 			form.reflow(true);
-		}
-
-		@Override
-		protected void updateFormTitle() {
-			if (form == null)
-				return;
-			form.setText(M.CostCategory + ": " + getModel().getName());
 		}
 
 		private void createAdditionalInfo(Composite body, FormToolkit tk) {

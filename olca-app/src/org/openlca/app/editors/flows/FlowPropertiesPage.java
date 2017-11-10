@@ -29,8 +29,7 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
+		form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.FlowProperties);
@@ -45,12 +44,6 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 		form.reflow(true);
 	}
 
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.Flow + ": " + getModel().getName());
-	}
 
 	private void setInitialInput(FlowPropertyFactorViewer viewer) {
 		List<FlowPropertyFactor> factors = getModel().getFlowPropertyFactors();

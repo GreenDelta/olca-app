@@ -59,11 +59,11 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
 	private ProductSystem productSystem;
 
-	public SankeyDiagram(CalculationSetup setUp, FullResultProvider result, DQResult dqResult) {
+	public SankeyDiagram(FullResultProvider result, DQResult dqResult, CalculationSetup setup) {
 		this.dqResult = dqResult;
 		setEditDomain(new DefaultEditDomain(this));
 		this.result = result;
-		productSystem = setUp.productSystem;
+		productSystem = setup.productSystem;
 		linkSearchMap = new ProcessLinkSearchMap(productSystem.getProcessLinks());
 		sankeyResult = new SankeyResult(productSystem, result);
 		if (productSystem != null)

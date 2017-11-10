@@ -34,8 +34,7 @@ public class ProcessExchangePage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		form = UI.formHeader(mform);
-		updateFormTitle();
+		form = UI.formHeader(this);
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		SashForm sash = new SashForm(body, SWT.VERTICAL);
@@ -52,13 +51,6 @@ public class ProcessExchangePage extends ModelPage<Process> {
 			inputTable.setInput(getModel());
 			outputTable.setInput(getModel());
 		});
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.Process + ": " + getModel().getName());
 	}
 
 	private void sortExchanges() {

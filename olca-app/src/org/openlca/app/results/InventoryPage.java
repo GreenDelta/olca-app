@@ -35,6 +35,7 @@ import org.openlca.app.util.trees.TreeClipboard;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -50,19 +51,21 @@ public class InventoryPage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
 	private FormToolkit toolkit;
+	private CalculationSetup setup;
 	private ContributionResultProvider<?> result;
 	private DQResult dqResult;
 
-	public InventoryPage(FormEditor editor, ContributionResultProvider<?> result,
-			DQResult dqResult) {
+	public InventoryPage(FormEditor editor, ContributionResultProvider<?> result, DQResult dqResult,
+			CalculationSetup setup) {
 		super(editor, "InventoryPage", M.InventoryResults);
 		this.result = result;
+		this.setup = setup;
 		this.dqResult = dqResult;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, M.InventoryResults);
+		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		TreeViewer inputTree = createSectionAndViewer(body, true);

@@ -49,15 +49,13 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 		private ScrolledForm form;
 
 		Page() {
-			super(SocialIndicatorEditor.this, "SocialIndicatorPage",
-					M.GeneralInformation);
+			super(SocialIndicatorEditor.this, "SocialIndicatorPage", M.GeneralInformation);
 			editor = SocialIndicatorEditor.this;
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
-			form = UI.formHeader(managedForm);
-			updateFormTitle();
+			form = UI.formHeader(this);
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
 			InfoSection infoSection = new InfoSection(getEditor());
@@ -68,16 +66,8 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 			form.reflow(true);
 		}
 
-		@Override
-		protected void updateFormTitle() {
-			if (form == null)
-				return;
-			form.setText(M.SocialIndicator + ": " + getModel().getName());
-		}
-
 		private void createAdditionalInfo(Composite body, FormToolkit tk) {
-			Composite comp = UI.formSection(body, tk,
-					M.AdditionalInformation);
+			Composite comp = UI.formSection(body, tk, M.AdditionalInformation);
 			Text ut = UI.formText(comp, tk, M.UnitOfMeasurement);
 			if (getModel().unitOfMeasurement != null)
 				ut.setText(getModel().unitOfMeasurement);

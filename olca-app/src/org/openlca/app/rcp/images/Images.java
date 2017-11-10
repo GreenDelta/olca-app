@@ -18,6 +18,8 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.results.FullResultProvider;
+import org.openlca.core.results.IResultProvider;
 
 public class Images {
 
@@ -113,6 +115,14 @@ public class Images {
 		if (overlay == null)
 			return ImageManager.get(icon);
 		return ImageManager.get(icon, overlay);
+	}
+
+	public static Image get(IResultProvider result) {
+		if (result == null)
+			return null;
+		if (result instanceof FullResultProvider)
+			return Icon.ANALYSIS_RESULT.get();
+		return Icon.QUICK_RESULT.get();
 	}
 
 	public static Image getForCategory(ModelType type) {

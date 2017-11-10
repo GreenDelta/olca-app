@@ -5,18 +5,19 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.editors.DataBinding;
+import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.Project;
 
-public class ReportEditorPage extends FormPage {
+public class ReportEditorPage extends ModelPage<Project> {
 
 	private Report report;
 	private ProjectEditor editor;
@@ -34,7 +35,7 @@ public class ReportEditorPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, M.ReportSections);
+		ScrolledForm form = UI.formHeader(this);
 		tk = managedForm.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		createInfoSection(body);

@@ -32,6 +32,7 @@ import org.openlca.app.util.trees.TreeClipboard;
 import org.openlca.app.util.trees.TreeClipboard.ClipboardLabelProvider;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -48,20 +49,22 @@ public class TotalImpactResultPage extends FormPage {
 	private FormToolkit toolkit;
 	private TreeViewer viewer;
 	private ContributionCutoff spinner;
+	private CalculationSetup setup;
 
 	private boolean subgroupByProcesses = true;
 
 	public TotalImpactResultPage(FormEditor editor, ContributionResultProvider<?> result,
-			DQResult dqResult, ImpactFactorProvider impactFactors) {
+			DQResult dqResult, CalculationSetup setup, ImpactFactorProvider impactFactors) {
 		super(editor, "ImpactTreePage", M.ImpactAnalysis);
 		this.result = result;
+		this.setup = setup;
 		this.dqResult = dqResult;
 		this.impactFactors = impactFactors;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, M.ImpactAnalysis);
+		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.ImpactAnalysis);
@@ -190,7 +193,7 @@ public class TotalImpactResultPage extends FormPage {
 				return "";
 			return Numbers.format(d);
 		}
-		
+
 	}
 
 	private class LabelProvider extends DQLabelProvider {

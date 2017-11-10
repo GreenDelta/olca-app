@@ -84,19 +84,19 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 	protected void addPages() {
 		try {
 			addPage(new AnalyzeInfoPage(this, result, dqResult, setup));
-			addPage(new InventoryPage(this, result, dqResult));
+			addPage(new InventoryPage(this, result, dqResult, setup));
 			if (result.hasImpactResults())
-				addPage(new TotalImpactResultPage(this, result, dqResult, this::getImpactFactor));
+				addPage(new TotalImpactResultPage(this, result, dqResult, setup, this::getImpactFactor));
 			if (result.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, result, setup));
-			addPage(new ProcessResultPage(this, result));
-			addPage(new ContributionTreePage(this, result));
-			addPage(new GroupPage(this, result));
-			addPage(new LocationPage(this, result));
+			addPage(new ProcessResultPage(this, result, setup));
+			addPage(new ContributionTreePage(this, result, setup));
+			addPage(new GroupPage(this, result, setup));
+			addPage(new LocationPage(this, result, setup));
 			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
-				addPage(new SunBurstView(this, result));
+				addPage(new SunBurstView(this, result, setup));
 			}
-			diagram = new SankeyDiagram(setup, result, dqResult);
+			diagram = new SankeyDiagram(result, dqResult, setup);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, M.SankeyDiagram);
 		} catch (final PartInitException e) {

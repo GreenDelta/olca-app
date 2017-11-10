@@ -54,7 +54,6 @@ public class Editors {
 				});
 		IToolBarManager toolbar = form.getToolBarManager();
 		toolbar.add(refresh);
-		toolbar.update(true);
 	}
 
 	/**

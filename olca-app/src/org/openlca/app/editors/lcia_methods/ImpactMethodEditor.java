@@ -69,7 +69,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> implements
 			addPage(new ImpactMethodInfoPage(this));
 			addPage(new ImpactFactorPage(this));
 			addPage(new ImpactNwPage(this));
-			addPage(new ModelParameterPage(this));
+			addPage(ModelParameterPage.create(this));
 			addPage(new ShapeFilePage(this));
 		} catch (Exception e) {
 			log.error("failed to add page", e);

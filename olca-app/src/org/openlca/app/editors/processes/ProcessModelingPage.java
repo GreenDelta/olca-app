@@ -27,8 +27,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
+		form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createModelingSection(body);
@@ -37,13 +36,6 @@ class ProcessModelingPage extends ModelPage<Process> {
 		createSourcesSection(body);
 		body.setFocus();
 		form.reflow(true);
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.Process + ": " + getModel().getName());
 	}
 
 	private void createModelingSection(Composite parent) {

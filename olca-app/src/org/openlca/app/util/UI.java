@@ -14,6 +14,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -29,12 +30,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.editors.ModelPage;
+import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.html.WebPage;
+import org.openlca.app.rcp.images.Images;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,19 +154,35 @@ public class UI {
 		return data;
 	}
 
-	/** Creates a nice form header and returns the form. */
-	public static ScrolledForm formHeader(IManagedForm managedForm) {
-		return formHeader(managedForm, null);
+	public static ScrolledForm formHeader(ModelPage<?> page) {
+		Image image = Images.get(page.getEditor().getModel());
+		ScrolledForm form = formHeader(page.getManagedForm(), page.getFormTitle(), image);
+		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled()) {
+			Editors.addRefresh(form, page.getEditor());
+			form.getToolBarManager().update(true);
+		}
+		return form;
 	}
 
 	/** Creates a nice form header with the given title and returns the form. */
 	public static ScrolledForm formHeader(IManagedForm managedForm, String title) {
+		return formHeader(managedForm, title, null);
+	}
+
+	/** Creates a nice form header with the given title and returns the form. */
+	public static ScrolledForm formHeader(FormPage page, String subtitle, Image image) {
+		return formHeader(page.getManagedForm(), page.getTitle() + ": " + subtitle, image);
+	}
+
+	public static ScrolledForm formHeader(IManagedForm managedForm, String title, Image image) {
 		ScrolledForm form = managedForm.getForm();
 		FormToolkit toolkit = managedForm.getToolkit();
 		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
 		if (title != null)
 			form.setText(title);
+		if (image != null)
+			form.setImage(image);
 		toolkit.decorateFormHeading(form.getForm());
 		return form;
 	}

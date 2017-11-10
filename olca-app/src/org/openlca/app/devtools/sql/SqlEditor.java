@@ -81,7 +81,7 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
-			ScrolledForm form = UI.formHeader(managedForm, "SQL Query Browser");
+			ScrolledForm form = UI.formHeader(managedForm, "SQL Query Browser", Icon.SQL.get());
 			FormToolkit toolkit = managedForm.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
 			createStatementSection(body, toolkit);

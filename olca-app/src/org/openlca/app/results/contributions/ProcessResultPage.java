@@ -26,6 +26,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Cache;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
@@ -36,6 +37,7 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ProcessViewer;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -61,8 +63,8 @@ public class ProcessResultPage extends FormPage {
 	private TableViewer impactTable;
 	private Spinner flowSpinner;
 	private Spinner impactSpinner;
-	private ContributionImage image = new ContributionImage(
-			Display.getCurrent());
+	private CalculationSetup setup;
+	private ContributionImage image = new ContributionImage(Display.getCurrent());
 	private double flowCutOff = 0.01;
 	private double impactCutOff = 0.01;
 
@@ -75,10 +77,10 @@ public class ProcessResultPage extends FormPage {
 			M.ImpactCategory, M.UpstreamInclDirect,
 			M.Direct, M.Unit };
 
-	public ProcessResultPage(FormEditor editor, FullResultProvider result) {
-		super(editor, ProcessResultPage.class.getName(),
-				M.ProcessResults);
+	public ProcessResultPage(FormEditor editor, FullResultProvider result, CalculationSetup setup) {
+		super(editor, ProcessResultPage.class.getName(), M.ProcessResults);
 		this.result = result;
+		this.setup = setup;
 		for (ProcessDescriptor desc : result.getProcessDescriptors())
 			processDescriptors.put(desc.getId(), desc);
 		this.flowResult = new ResultProvider(result);
@@ -94,7 +96,7 @@ public class ProcessResultPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		toolkit = managedForm.getToolkit();
-		ScrolledForm form = UI.formHeader(managedForm, M.ProcessResults);
+		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
 		Composite body = UI.formBody(form, toolkit);
 		createFlowSection(body);
 		if (result.hasImpactResults())

@@ -21,20 +21,12 @@ class ProjectInfoPage extends ModelPage<Project> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
+		form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createGoalAndScopeSection(body);
 		createTimeInfoSection(body);
 		form.reflow(true);
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.Project + ": " + getModel().getName());
 	}
 
 	private void createGoalAndScopeSection(Composite parent) {

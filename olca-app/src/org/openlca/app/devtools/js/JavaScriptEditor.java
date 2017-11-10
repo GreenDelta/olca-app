@@ -7,6 +7,7 @@ import org.openlca.app.devtools.IScriptEditor;
 import org.openlca.app.devtools.ScriptEditorPage;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Editors;
 
@@ -31,7 +32,7 @@ public class JavaScriptEditor extends SimpleFormEditor implements IScriptEditor 
 	private class Page extends ScriptEditorPage {
 
 		public Page() {
-			super(JavaScriptEditor.this, "JavaScriptEditorPage", "JavaScript");
+			super(JavaScriptEditor.this, "JavaScriptEditorPage", "JavaScript", Icon.JAVASCRIPT.get());
 		}
 
 		@Override

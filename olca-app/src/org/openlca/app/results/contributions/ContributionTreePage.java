@@ -39,6 +39,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -56,15 +57,15 @@ public class ContributionTreePage extends FormPage {
 	private FullResultProvider result;
 	private TreeViewer tree;
 	private Object selection;
-
+	private CalculationSetup setup;
+	
 	private static final String[] HEADERS = { M.Contribution,
 			M.Process, M.Amount, M.Unit };
 
-	public ContributionTreePage(FormEditor editor,
-			FullResultProvider result) {
-		super(editor, "analysis.ContributionTreePage",
-				M.ContributionTree);
+	public ContributionTreePage(FormEditor editor, FullResultProvider result, CalculationSetup setup) {
+		super(editor, "analysis.ContributionTreePage", M.ContributionTree);
 		this.result = result;
+		this.setup = setup;
 		for (ProcessDescriptor desc : result.getProcessDescriptors())
 			processDescriptors.put(desc.getId(), desc);
 		Iterator<FlowDescriptor> it = result.getFlowDescriptors().iterator();
@@ -75,8 +76,7 @@ public class ContributionTreePage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		FormToolkit toolkit = managedForm.getToolkit();
-		ScrolledForm form = UI.formHeader(managedForm,
-				M.ContributionTree);
+		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);

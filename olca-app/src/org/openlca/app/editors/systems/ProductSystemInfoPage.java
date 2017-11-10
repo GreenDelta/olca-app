@@ -14,10 +14,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Editors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
@@ -47,10 +45,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
-		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
-			Editors.addRefresh(form, getEditor());
+		form = UI.formHeader(this);
 		FormToolkit tk = managedForm.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -59,13 +54,6 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		createReferenceSection(body, tk);
 		body.setFocus();
 		form.reflow(true);
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.ProductSystem + ": " + getModel().getName());
 	}
 
 	private void createReferenceSection(Composite body, FormToolkit tk) {

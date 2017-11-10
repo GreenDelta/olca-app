@@ -31,11 +31,9 @@ import org.openlca.app.editors.processes.kml.EditorHandler;
 import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.editors.processes.kml.MapEditor;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Editors;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LocationViewer;
@@ -49,7 +47,6 @@ import org.openlca.util.KeyGen;
 
 class InfoPage extends ModelPage<Process> {
 
-	private ProcessEditor editor;
 	private FormToolkit toolkit;
 	private ImageHyperlink kmlLink;
 	private ScrolledForm form;
@@ -57,16 +54,12 @@ class InfoPage extends ModelPage<Process> {
 
 	InfoPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage", M.GeneralInformation);
-		this.editor = editor;
 		editor.getEventBus().register(this);
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(managedForm);
-		updateFormTitle();
-		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled())
-			Editors.addRefresh(form, editor);
+		form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -80,13 +73,6 @@ class InfoPage extends ModelPage<Process> {
 		createDQSection(body);
 		body.setFocus();
 		form.reflow(true);
-	}
-
-	@Override
-	protected void updateFormTitle() {
-		if (form == null)
-			return;
-		form.setText(M.Process + ": " + getModel().getName());
 	}
 
 	private void createSystemButton(Composite container) {

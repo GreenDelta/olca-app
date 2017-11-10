@@ -21,7 +21,10 @@ import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.html.WebPage;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.geo.RegionalizedResultProvider;
 import org.slf4j.Logger;
@@ -38,10 +41,12 @@ class KmlResultView extends FormPage implements WebPage {
 	private ResultTypeSelection flowImpactSelection;
 	private boolean incompleteData = false;
 	private boolean loaded;
+	private CalculationSetup setup;
 
-	public KmlResultView(FormEditor editor, RegionalizedResultProvider result) {
+	public KmlResultView(FormEditor editor, RegionalizedResultProvider result, CalculationSetup setup) {
 		super(editor, "KmlResultView", "Result map");
 		this.result = result;
+		this.setup = setup;
 	}
 
 	@Override
@@ -62,7 +67,7 @@ class KmlResultView extends FormPage implements WebPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(managedForm, "Result map");
+		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result.result));
 		FormToolkit toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
