@@ -80,7 +80,8 @@ public class DbDeleteAction extends Action implements INavigationAction {
 		}
 		if (createMessageDialog().open() != MessageDialog.OK)
 			return;
-		checkCloseEditors();
+		if (!checkCloseEditors())
+			return;
 		App.run(M.DeleteDatabase, () -> doDelete(), () -> {
 			Navigator.refresh();
 			HistoryView.refresh();
@@ -88,13 +89,11 @@ public class DbDeleteAction extends Action implements INavigationAction {
 		});
 	}
 
-	private void checkCloseEditors() {
-		for (IDatabaseConfiguration config : this.configs) {
-			if (Database.isActive(config)) {
-				Editors.closeAll();
-				break;
-			}
-		}
+	private boolean checkCloseEditors() {
+		for (IDatabaseConfiguration config : this.configs) 
+			if (Database.isActive(config)) 
+				return Editors.closeAll();
+		return true;
 	}
 
 	private void doDelete() {

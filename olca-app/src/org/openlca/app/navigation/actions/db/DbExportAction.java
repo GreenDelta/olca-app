@@ -78,7 +78,8 @@ public class DbExportAction extends Action implements INavigationAction {
 			}
 		}
 		if (active)
-			Editors.closeAll();
+			if (!Editors.closeAll())
+				return;
 		log.trace("run database export to file {}", zip);
 		App.runWithProgress(M.ExportDatabase, () -> realExport(config, zip, active));
 		updateUI(zip, active);

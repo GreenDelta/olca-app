@@ -65,7 +65,8 @@ public class DbActivateAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		if (Database.get() != null)
-			Editors.closeAll();
+			if (!Editors.closeAll())
+				return;
 
 		Activation activation = new Activation();
 		// App.run does not work as we have to show a modal dialog in the

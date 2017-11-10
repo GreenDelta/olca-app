@@ -38,7 +38,8 @@ public class DatabaseWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		try {
-			Editors.closeAll();
+			if (!Editors.closeAll())
+				return false;
 			IDatabaseConfiguration config = page.getPageData();
 			Runner runner = (config instanceof DerbyConfiguration) ? new Runner(
 					config, page.getSelectedContent()) : new Runner(config);

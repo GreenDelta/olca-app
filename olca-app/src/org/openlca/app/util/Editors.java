@@ -59,7 +59,7 @@ public class Editors {
 	/**
 	 * Closes all editors (except start page, Log editor and script editors)
 	 */
-	public static void closeAll() {
+	public static boolean closeAll() {
 		try {
 			List<IEditorReference> rest = new ArrayList<>();
 			for (IEditorReference ref : getReferences()) {
@@ -71,10 +71,13 @@ public class Editors {
 				}
 				rest.add(ref);
 			}
+			if (rest.size() == 0)
+				return true;
 			IEditorReference[] restArray = rest.toArray(new IEditorReference[rest.size()]);
-			getActivePage().closeEditors(restArray, true);
+			return getActivePage().closeEditors(restArray, true);
 		} catch (Exception e) {
 			log.error("Failed to close editors", e);
+			return false;
 		}
 	}
 
