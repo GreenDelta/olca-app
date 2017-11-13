@@ -36,6 +36,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.rcp.html.WebPage;
@@ -158,7 +159,9 @@ public class UI {
 		Image image = Images.get(page.getEditor().getModel());
 		ScrolledForm form = formHeader(page.getManagedForm(), page.getFormTitle(), image);
 		// "" is 'general' comment on data set
-		form.getToolBarManager().add(new CommentAction("", page.getEditor().getComments()));
+		if (Database.isConnected() && page.getEditor().getComments().has("")) {
+			form.getToolBarManager().add(new CommentAction("", page.getEditor().getComments()));
+		}
 		Editors.addRefresh(form, page.getEditor());
 		form.getToolBarManager().update(true);
 		return form;
