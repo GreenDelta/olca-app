@@ -22,6 +22,8 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 	}
 
 	private final void updateFormTitle() {
+		if (getManagedForm() == null || getManagedForm().getForm() == null)
+			return;
 		getManagedForm().getForm().setText(getFormTitle());
 	}
 
