@@ -10,11 +10,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.comments.CommentDialog;
+import org.openlca.app.editors.comments.CommentPaths;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
@@ -33,6 +39,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 	private ImpactFactorTable factorTable;
 	private ImpactCategoryViewer categoryViewer;
 	private ScrolledForm form;
+	private ImageHyperlink commentControl;
 
 	ImpactFactorPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactFactorsPage", M.ImpactFactors);
@@ -75,7 +82,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 
 	private void createCategoryViewer(Composite client) {
 		Composite container = toolkit.createComposite(client);
-		UI.gridLayout(container, 2, 10, 0);
+		UI.gridLayout(container, Database.isConnected() ? 3 : 2, 10, 0);
 		UI.gridData(container, true, false);
 		new Label(container, SWT.NONE).setText(M.ImpactCategory);
 		categoryViewer = new ImpactCategoryViewer(container);
@@ -83,6 +90,33 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 		categoryViewer.addSelectionChangedListener(categoryChange);
 		categoryViewer.setInput(getDescriptorList());
 		editor.getEventBus().register(categoryChange);
+		commentControl = new ImageHyperlink(container, SWT.NONE);
+		UI.gridData(commentControl, false, false).verticalAlignment = SWT.TOP;
+		Controls.onClick(commentControl, (e) -> {
+			ImpactCategoryDescriptor category = categoryViewer.getSelected();
+			if (category == null)
+				return;
+			String path = CommentPaths.get(category) + ".impactFactors";
+			if (!editor.getComments().has(path))
+				return;
+			new CommentDialog(path, editor.getComments()).open();
+		});
+		if (!Database.isConnected())
+			return;
+		commentControl.setImage(Icon.SHOW_COMMENTS.get());
+		commentControl.setToolTipText("#Show comments");
+	}
+
+	private void updateCommentControl() {
+		if (!Database.isConnected())
+			return;
+		ImpactCategoryDescriptor category = categoryViewer.getSelected();
+		if (category == null) {
+			commentControl.setVisible(false);
+			return;
+		}
+		String path = CommentPaths.get(category) + ".impactFactors";
+		commentControl.setVisible(editor.getComments().has(path));
 	}
 
 	private List<ImpactCategoryDescriptor> getDescriptorList() {
@@ -118,6 +152,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 		public void selectionChanged(ImpactCategoryDescriptor selection) {
 			if (selection == null) {
 				factorTable.setImpactCategory(null, false);
+				updateCommentControl();
 				return;
 			}
 			for (ImpactCategory cat : getModel().impactCategories) {
@@ -126,6 +161,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 					break;
 				}
 			}
+			updateCommentControl();
 		}
 
 		@Subscribe

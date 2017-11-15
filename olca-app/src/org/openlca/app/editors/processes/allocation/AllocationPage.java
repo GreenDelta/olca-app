@@ -181,6 +181,9 @@ public class AllocationPage extends ModelPage<Process> {
 		UI.gridData(section, true, true);
 		causalFactorTable = new CausalFactorTable(editor);
 		causalFactorTable.render(section, tk);
+		if (Database.isConnected() && editor.getComments().has("allocationFactors")) {
+			Actions.bind(section, new CommentAction("allocationFactors", editor.getComments()));
+		}
 	}
 
 	private String productText(Exchange exchange) {

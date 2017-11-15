@@ -71,7 +71,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 		section.setClient(composite);
 		SourceViewer viewer = new SourceViewer(composite, Database.get(), editor, form);
 		viewer.setInput(getModel());
-		CommentAction.bindTo(section, viewer, "sources", editor.getComments());
+		CommentAction.bindTo(section, viewer, "documentation.sources", editor.getComments());
 		editor.onSaved(() -> viewer.setInput(getModel()));
 	}
 }

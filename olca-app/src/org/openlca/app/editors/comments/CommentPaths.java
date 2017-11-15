@@ -1,7 +1,6 @@
 package org.openlca.app.editors.comments;
 
 import org.openlca.core.model.AllocationFactor;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQScore;
 import org.openlca.core.model.Exchange;
@@ -9,25 +8,29 @@ import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.NwFactor;
+import org.openlca.core.model.NwSet;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.Unit;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 
 public class CommentPaths {
 
 	public static String get(String path) {
 		return path;
 	}
-	
+
 	public static String get(Unit unit) {
 		return "units[" + unit.getName() + "]";
 	}
 
 	public static String get(Source source) {
-		return "sources[" + source.getRefId() + "]";
+		return "documentation.sources[" + source.getRefId() + "]";
 	}
 
 	public static String get(SocialAspect aspect) {
@@ -59,16 +62,24 @@ public class CommentPaths {
 		return "flowPropertyFactors[" + factor.getFlowProperty().getRefId() + "]";
 	}
 
-	public static String get(ImpactFactor factor) {
-		return "impactFactors[" + factor.flow.getRefId() + "]";
+	public static String get(NwSet nwSet) {
+		return "nwSets[" + nwSet.getRefId() + "]";
 	}
 
-	public static String get(NwFactor factor) {
-		return "factors[" + factor.getImpactCategory().getRefId() + "]";
+	public static String get(NwSet nwSet, NwFactor factor) {
+		return get(nwSet) + ".factors[" + factor.getImpactCategory().getRefId() + "]";
 	}
 
 	public static String get(ImpactCategory category) {
+		return get(Descriptors.toDescriptor(category));
+	}
+
+	public static String get(ImpactCategoryDescriptor category) {
 		return "impactCategories[" + category.getRefId() + "]";
+	}
+
+	public static String get(ImpactCategory category, ImpactFactor factor) {
+		return get(category) + ".impactFactors[" + factor.flow.getRefId() + "]";
 	}
 
 	public static String get(DQIndicator indicator) {
@@ -83,7 +94,7 @@ public class CommentPaths {
 		return get(indicator) + "." + get(score);
 	}
 
-	public static String get(ParameterRedef redef, CategorizedEntity contextElement) {
+	public static String get(ParameterRedef redef, CategorizedDescriptor contextElement) {
 		String context = contextElement != null ? contextElement.getRefId() : "global";
 		return "parameterRedefs[" + context + "-" + redef.getName() + "]";
 	}
@@ -92,7 +103,7 @@ public class CommentPaths {
 		return "variants[" + variant.getProductSystem().getRefId() + "-" + variant.getName() + "]";
 	}
 
-	public static String get(ProjectVariant variant, ParameterRedef redef, CategorizedEntity contextElement) {
+	public static String get(ProjectVariant variant, ParameterRedef redef, CategorizedDescriptor contextElement) {
 		return get(variant) + "." + get(redef, contextElement);
 	}
 }

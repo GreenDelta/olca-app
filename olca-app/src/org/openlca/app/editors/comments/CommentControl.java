@@ -12,7 +12,6 @@ import org.openlca.cloud.model.Comments;
 
 public class CommentControl {
 
-	private ImageHyperlink control;
 	private String path;
 	private Comments comments;
 
@@ -27,7 +26,7 @@ public class CommentControl {
 			UI.filler(parent, toolkit);
 			return;
 		}
-		control = new ImageHyperlink(parent, SWT.NONE);
+		ImageHyperlink control = new ImageHyperlink(parent, SWT.NONE);
 		UI.gridData(control, false, false).verticalAlignment = SWT.TOP;
 		Controls.onClick(control, (e) -> {
 			new CommentDialog(path, comments).open();

@@ -47,12 +47,12 @@ class ImpactSection {
 		methodViewer = new ImpactMethodViewer(composite);
 		methodViewer.setNullable(true);
 		methodViewer.setInput(Database.get());
-		new CommentControl(composite, toolkit, "impactMethodId", editor.getComments());
+		new CommentControl(composite, toolkit, "impactMethod", editor.getComments());
 		UI.formLabel(composite, toolkit, M.NormalizationAndWeightingSet);
 		nwViewer = new NwSetComboViewer(composite);
 		nwViewer.setNullable(true);
 		nwViewer.setDatabase(Database.get());
-		new CommentControl(composite, toolkit, "nwSetId", editor.getComments());
+		new CommentControl(composite, toolkit, "nwSet", editor.getComments());
 	}
 
 	private void addListeners() {

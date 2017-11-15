@@ -176,7 +176,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 				return Images.get(isRef);
 			} else if (column == 5) {
 				String path = CommentPaths.get((FlowPropertyFactor) element);
-				Images.get(editor.getComments(), path);
+				return Images.get(editor.getComments(), path);
 			}
 			return null;
 		}

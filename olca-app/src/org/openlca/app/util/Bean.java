@@ -51,6 +51,9 @@ public class Bean {
 				bean, property);
 		if (descriptor != null)
 			return descriptor.getPropertyType();
+		Field field = findField(bean, property);
+		if (field != null)
+			return field.getType();
 		return null;
 	}
 

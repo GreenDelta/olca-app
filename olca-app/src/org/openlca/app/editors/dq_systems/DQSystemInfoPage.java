@@ -21,8 +21,11 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.comments.CommentAction;
+import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.DQUI;
 import org.openlca.app.util.UI;
@@ -72,6 +75,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			Collections.sort(indicator.scores);
 		}
 		indicatorSection = UI.section(body, toolkit, M.IndicatorsScores);
+		CommentAction.bindTo(indicatorSection, "indicators", getEditor().getComments());
 		Composite indicatorClient = UI.sectionClient(indicatorSection, toolkit, 1);
 		createIndicatorMatrix(indicatorClient);
 		if (!getModel().hasUncertainties)
@@ -82,7 +86,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	private void createIndicatorMatrix(Composite composite) {
-		UI.gridLayout(composite, getModel().getScoreCount() + 2);
+		UI.gridLayout(composite, 2 * getModel().getScoreCount() + 3);
 		createHeader(composite, true);
 		createAddScoreButton(composite);
 		for (DQIndicator indicator : getModel().indicators) {
@@ -90,22 +94,25 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			((GridData) nameText.getLayoutData()).verticalAlignment = SWT.TOP;
 			getBinding().onString(() -> indicator, "name", nameText);
 			indicatorTexts.put(indicator.position, nameText);
+			commentControl(composite, "indicators[" + indicator.position + "]");
 			for (DQScore score : indicator.scores) {
 				Text descriptionText = createTextCell(composite, 8, 8);
 				getBinding().onString(() -> score, "description", descriptionText);
 				descriptionText.setBackground(DQUI.getColor(score.position, getModel().getScoreCount()));
-
+				commentControl(composite, "indicators[" + indicator.position + "].scores[" + score.position
+						+ "].description");
 			}
 			createRemoveIndicatorButton(composite, indicator.position);
 		}
 		createAddIndicatorButton(composite);
 		for (int i = 1; i <= getModel().getScoreCount(); i++) {
+			UI.filler(composite);
 			createRemoveScoreButton(composite, i);
 		}
 	}
 
 	private void createUncertaintyMatrix(Composite composite) {
-		UI.gridLayout(composite, getModel().getScoreCount() + 1);
+		UI.gridLayout(composite, 2 * getModel().getScoreCount() + 1);
 		createHeader(composite, false);
 		for (DQIndicator indicator : getModel().indicators) {
 			String name = indicator.name != null ? indicator.name : "";
@@ -120,12 +127,17 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			for (DQScore score : indicator.scores) {
 				Text uncertaintyText = createTextCell(composite, 1, 8);
 				getBinding().onDouble(() -> score, "uncertainty", uncertaintyText);
+				commentControl(composite, "indicators[" + indicator.position + "].scores[" + score.position
+						+ "].uncertainty");
 			}
 		}
 	}
 
 	private void createHeader(Composite composite, boolean editable) {
-		UI.formLabel(composite, "");
+		UI.filler(composite);
+		if (editable) {
+			UI.filler(composite);
+		}
 		for (int i = 1; i <= getModel().getScoreCount(); i++) {
 			String scoreLabel = getModel().getScoreLabel(i);
 			if (scoreLabel == null) {
@@ -140,6 +152,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 					getEditor().setDirty(true);
 				});
 				scoreTexts.put(i, labelText);
+				commentControl(composite, "scores[" + i + "]");
 			} else {
 				Label label = UI.formLabel(composite, scoreLabel);
 				label.setToolTipText(scoreLabel);
@@ -150,6 +163,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 					label.setText(scoreText.getText());
 					label.setToolTipText(scoreText.getText());
 				});
+				UI.filler(composite);
 			}
 		}
 	}
@@ -255,4 +269,13 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			redraw();
 		});
 	}
+
+	private void commentControl(Composite parent, String path) {
+		if (Database.isConnected() && getEditor().getComments().has(path)) {
+			new CommentControl(parent, toolkit, path, getEditor().getComments());
+		} else {
+			UI.filler(parent);
+		}
+	}
+
 }

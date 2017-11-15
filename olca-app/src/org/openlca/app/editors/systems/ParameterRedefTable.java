@@ -1,5 +1,7 @@
 package org.openlca.app.editors.systems;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -17,6 +19,10 @@ import org.openlca.app.M;
 import org.openlca.app.components.ParameterRedefDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
+import org.openlca.app.editors.comments.CommentAction;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
@@ -26,11 +32,13 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.field.DoubleModifier;
+import org.openlca.core.database.Daos;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
@@ -59,18 +67,39 @@ class ParameterRedefTable {
 	}
 
 	public void create(FormToolkit toolkit, Composite composite) {
-		viewer = Tables.createViewer(composite, new String[] { CONTEXT,
-				PARAMETER, AMOUNT, UNCERTAINTY });
+		viewer = Tables.createViewer(composite, getColumnHeaders());
 		viewer.setLabelProvider(new LabelProvider());
 		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(
 				viewer);
 		modifySupport.bind(AMOUNT, new DoubleModifier<>(editor, "value"));
 		modifySupport.bind(UNCERTAINTY,
 				new UncertaintyCellEditor(viewer.getTable(), editor));
-		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
+		if (Database.isConnected()) {
+			modifySupport.bind(
+					"",
+					new CommentDialogModifier<ParameterRedef>(editor.getComments(),
+							(p) -> CommentPaths.get(p, getContext(p))));
+			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17);
+		} else {
+			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
+		}
 		List<ParameterRedef> redefs = editor.getModel().getParameterRedefs();
 		Collections.sort(redefs, new ParameterComparator());
 		viewer.setInput(redefs);
+	}
+
+	private CategorizedDescriptor getContext(ParameterRedef p) {
+		if (p.getContextId() == null)
+			return null;
+		return Daos.categorized(Database.get(), p.getContextType()).getDescriptor(p.getContextId());
+	}
+
+	private String[] getColumnHeaders() {
+		String[] h = { CONTEXT, PARAMETER, AMOUNT, UNCERTAINTY };
+		List<String> headers = new ArrayList<>(Arrays.asList(h));
+		if (Database.isConnected())
+			headers.add("");
+		return headers.toArray(new String[headers.size()]);
 	}
 
 	public void setInput(List<ParameterRedef> redefinitions) {
@@ -82,7 +111,7 @@ class ParameterRedefTable {
 		Action addAction = Actions.onAdd(this::add);
 		Action removeAction = Actions.onRemove(this::remove);
 		Action copy = TableClipboard.onCopy(viewer);
-		Actions.bind(section, addAction, removeAction);
+		CommentAction.bindTo(section, "parameterRedefs", editor.getComments(), addAction, removeAction);
 		Actions.bind(viewer, addAction, removeAction, copy);
 		Tables.onDeletePressed(viewer, (e) -> remove());
 		Tables.onDoubleClick(viewer, (event) -> {
@@ -136,17 +165,22 @@ class ParameterRedefTable {
 		private EntityCache cache = Cache.getEntityCache();
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			if (columnIndex != 0)
-				return null;
+		public Image getColumnImage(Object element, int column) {
 			if (!(element instanceof ParameterRedef))
 				return null;
 			ParameterRedef redef = (ParameterRedef) element;
 			BaseDescriptor model = getModel(redef);
-			if (model == null)
-				return Images.get(ModelType.PARAMETER); 
-			else
+			switch (column) {
+			case 0:
+				if (model == null)
+					return Images.get(ModelType.PARAMETER);
 				return Images.get(model);
+			case 4:
+				String path = CommentPaths.get(redef, getContext(redef));
+				return Images.get(editor.getComments(), path);
+			default:
+				return null;
+			}
 		}
 
 		@Override

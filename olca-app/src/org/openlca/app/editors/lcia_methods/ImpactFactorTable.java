@@ -19,6 +19,8 @@ import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
@@ -69,19 +71,34 @@ class ImpactFactorTable {
 	}
 
 	public void render(Composite parent, Section section) {
-		viewer = Tables.createViewer(parent, new String[] { FLOW, CATEGORY, FLOW_PROPERTY, FACTOR, UNIT, UNCERTAINTY });
+		viewer = Tables.createViewer(parent, getColumnHeaders());
 		FactorLabelProvider label = new FactorLabelProvider();
 		Viewers.sortByLabels(viewer, label, 0, 1, 2, 4, 5);
 		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.value, 3);
 		viewer.setLabelProvider(label);
-		Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.15, 0.15, 0.15, 0.15);
 		ModifySupport<ImpactFactor> support = new ModifySupport<>(viewer);
 		support.bind(FLOW_PROPERTY, new FlowPropertyModifier());
 		support.bind(UNIT, new UnitModifier());
 		support.bind(FACTOR, new ValueModifier());
 		support.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
+		if (Database.isConnected()) {
+			support.bind("", new CommentDialogModifier<ImpactFactor>(editor.getComments(),
+					f -> CommentPaths.get(category, f)));
+			Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.15, 0.15, 0.15, 0.12);
+		} else {
+			Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.15, 0.15, 0.15, 0.15);
+		}
 		bindActions(viewer, section);
 		viewer.getTable().getColumns()[3].setAlignment(SWT.RIGHT);
+	}
+
+	private String[] getColumnHeaders() {
+		String[] h = new String[] { FLOW, CATEGORY, FLOW_PROPERTY, FACTOR, UNIT, UNCERTAINTY };
+		List<String> headers = new ArrayList<>(Arrays.asList(h));
+		if (Database.isConnected()) {
+			headers.add("");
+		}
+		return headers.toArray(new String[headers.size()]);
 	}
 
 	void setImpactCategory(ImpactCategory impact, boolean sort) {
@@ -110,12 +127,10 @@ class ImpactFactorTable {
 		});
 	}
 
-	private void bindActions(TableViewer viewer, Section section) {
+	void bindActions(TableViewer viewer, Section section) {
+		Action copy = TableClipboard.onCopy(viewer);
 		Action add = Actions.onAdd(this::onAdd);
 		Action remove = Actions.onRemove(this::onRemove);
-		Action formulaSwitch = new FormulaSwitchAction();
-		Action copy = TableClipboard.onCopy(viewer);
-		Actions.bind(section, add, remove, formulaSwitch);
 		Actions.bind(viewer, add, remove, copy);
 		Tables.onDeletePressed(viewer, (e) -> onRemove());
 		Tables.addDropSupport(viewer, (descriptors) -> createFactors(descriptors));
@@ -124,6 +139,8 @@ class ImpactFactorTable {
 			if (item == null)
 				onAdd();
 		});
+		Action formulaSwitch = new FormulaSwitchAction();
+		Actions.bind(section, add, remove, formulaSwitch);
 	}
 
 	private void onAdd() {
@@ -167,12 +184,14 @@ class ImpactFactorTable {
 
 		@Override
 		public Image getColumnImage(Object o, int column) {
-			if (column != 0)
-				return null;
 			if (!(o instanceof ImpactFactor))
 				return null;
 			ImpactFactor f = (ImpactFactor) o;
-			return Images.get(f.flow);
+			if (column == 0)
+				return Images.get(f.flow);
+			if (column == 6)
+				return Images.get(editor.getComments(), CommentPaths.get(category, f));
+			return null;
 		}
 
 		@Override
