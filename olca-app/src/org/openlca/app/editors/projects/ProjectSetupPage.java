@@ -1,6 +1,5 @@
 package org.openlca.app.editors.projects;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -140,24 +139,15 @@ class ProjectSetupPage extends ModelPage<Project> {
 		support.bind(M.Amount, new DoubleModifier<>(editor, "amount"));
 		support.bind(M.Unit, new VariantUnitEditor());
 		support.bind(M.Description, new VariantDescriptionEditor());
-		if (Database.isConnected()) {
-			support.bind("", new CommentDialogModifier<ProjectVariant>(editor.getComments(), v -> CommentPaths.get(v)));
-			Tables.bindColumnWidths(variantViewer, 0.15, 0.15, 0.15, 0.15, 0.125, 0.125, 0.12);
-		} else {
-			Tables.bindColumnWidths(variantViewer, 0.15, 0.15, 0.15, 0.15, 0.125, 0.125, 0.15);
-		}
+		support.bind("", new CommentDialogModifier<ProjectVariant>(editor.getComments(), v -> CommentPaths.get(v)));
+		Tables.bindColumnWidths(variantViewer, 0.15, 0.15, 0.15, 0.15, 0.125, 0.125, 0.12);
 		addVariantActions(variantViewer, section);
 	}
 
 	private String[] getProperties() {
-		String[] p = { M.Name, M.ProductSystem,
+		return new String[] { M.Name, M.ProductSystem,
 				M.AllocationMethod, M.Flow, M.Amount,
-				M.Unit, M.Description };
-		List<String> properties = new ArrayList<>(Arrays.asList(p));
-		if (Database.isConnected()) {
-			properties.add("");
-		}
-		return properties.toArray(new String[properties.size()]);
+				M.Unit, M.Description, "" };
 	}
 
 	private void createParameterSection(Composite body) {

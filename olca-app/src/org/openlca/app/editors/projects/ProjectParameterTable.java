@@ -141,16 +141,17 @@ class ProjectParameterTable {
 	}
 
 	private String[] getColumnTitles() {
-		int colSize = Database.isConnected() ? 2 * columns.length : columns.length;
+		boolean showComments = editor.hasAnyComment("variants.parameterRedefs");
+		int colSize = showComments ? 2 * columns.length : columns.length;
 		String[] titles = new String[LABEL_COLS + colSize];
 		titles[0] = PARAMETER;
 		titles[1] = CONTEXT;
 		titles[2] = NAME;
 		titles[3] = DESCRIPTION;
 		for (int i = 0; i < columns.length; i++) {
-			int index = Database.isConnected() ? 2 * i : i;
+			int index = showComments ? 2 * i : i;
 			titles[LABEL_COLS + index] = columns[i].getTitle();
-			if (Database.isConnected()) {
+			if (showComments) {
 				titles[LABEL_COLS + index + 1] = "";
 			}
 		}
@@ -159,16 +160,17 @@ class ProjectParameterTable {
 
 	private void createModifySupport() {
 		// we use unique key to map the columns / editors to project variants
-		int colSize = Database.isConnected() ? 2 * columns.length : columns.length;
+		boolean showComments = editor.hasAnyComment("variants.parameterRedefs");
+		int colSize = showComments ? 2 * columns.length : columns.length;
 		String[] keys = new String[LABEL_COLS + colSize];
 		keys[0] = PARAMETER;
 		keys[1] = CONTEXT;
 		keys[2] = NAME;
 		keys[3] = DESCRIPTION;
 		for (int i = 0; i < columns.length; i++) {
-			int index = Database.isConnected() ? 2 * i : i;
+			int index = showComments ? 2 * i : i;
 			keys[LABEL_COLS + index] = columns[i].getKey();
-			if (Database.isConnected()) {
+			if (showComments) {
 				keys[LABEL_COLS + index + 1] = columns[i].getKey() + "_COMMENT";
 			}
 		}
@@ -177,7 +179,7 @@ class ProjectParameterTable {
 		modifySupport.bind(NAME, new NameModifier());
 		modifySupport.bind(DESCRIPTION, new DescriptionModifier());
 		for (int i = LABEL_COLS; i < keys.length; i++) {
-			if (i % 2 == 0) {
+			if (!showComments || i % 2 == 0) {
 				modifySupport.bind(keys[i], new ValueModifier(keys[i]));
 			} else {
 				ProjectVariant variant = columns[(i - LABEL_COLS - 1) / 2].variant;

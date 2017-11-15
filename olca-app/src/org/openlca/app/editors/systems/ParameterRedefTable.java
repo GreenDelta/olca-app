@@ -1,7 +1,5 @@
 package org.openlca.app.editors.systems;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -55,10 +53,11 @@ class ParameterRedefTable {
 
 	private ProductSystemEditor editor;
 
-	private final String PARAMETER = M.Parameter;
-	private final String CONTEXT = M.Context;
-	private final String AMOUNT = M.Amount;
-	private final String UNCERTAINTY = M.Uncertainty;
+	private static final String PARAMETER = M.Parameter;
+	private static final String CONTEXT = M.Context;
+	private static final String AMOUNT = M.Amount;
+	private static final String UNCERTAINTY = M.Uncertainty;
+	private static final String COMMENT = "";
 
 	private TableViewer viewer;
 
@@ -69,20 +68,12 @@ class ParameterRedefTable {
 	public void create(FormToolkit toolkit, Composite composite) {
 		viewer = Tables.createViewer(composite, getColumnHeaders());
 		viewer.setLabelProvider(new LabelProvider());
-		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(
-				viewer);
+		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(viewer);
 		modifySupport.bind(AMOUNT, new DoubleModifier<>(editor, "value"));
-		modifySupport.bind(UNCERTAINTY,
-				new UncertaintyCellEditor(viewer.getTable(), editor));
-		if (Database.isConnected()) {
-			modifySupport.bind(
-					"",
-					new CommentDialogModifier<ParameterRedef>(editor.getComments(),
-							(p) -> CommentPaths.get(p, getContext(p))));
-			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17);
-		} else {
-			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
-		}
+		modifySupport.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
+		modifySupport.bind("", new CommentDialogModifier<ParameterRedef>(editor.getComments(),
+				(p) -> CommentPaths.get(p, getContext(p))));
+		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17);
 		List<ParameterRedef> redefs = editor.getModel().getParameterRedefs();
 		Collections.sort(redefs, new ParameterComparator());
 		viewer.setInput(redefs);
@@ -95,11 +86,7 @@ class ParameterRedefTable {
 	}
 
 	private String[] getColumnHeaders() {
-		String[] h = { CONTEXT, PARAMETER, AMOUNT, UNCERTAINTY };
-		List<String> headers = new ArrayList<>(Arrays.asList(h));
-		if (Database.isConnected())
-			headers.add("");
-		return headers.toArray(new String[headers.size()]);
+		return new String[] { CONTEXT, PARAMETER, AMOUNT, UNCERTAINTY, COMMENT };
 	}
 
 	public void setInput(List<ParameterRedef> redefinitions) {

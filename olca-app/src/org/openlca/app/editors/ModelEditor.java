@@ -57,6 +57,14 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends FormEdito
 		return comments;
 	}
 
+	public boolean hasComment(String path) {
+		return App.isCommentingEnabled() && comments != null && comments.has(path);
+	}
+
+	public boolean hasAnyComment(String path) {
+		return App.isCommentingEnabled() && comments != null && comments.hasAny(path);
+	}
+
 	/**
 	 * Calls the given event handler AFTER the model in this editor was saved.
 	 */
@@ -96,7 +104,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends FormEdito
 	}
 
 	private void loadComments(ModelType type, String refId) {
-		if (!Database.isConnected())
+		if (!App.isCommentingEnabled())
 			return;
 		try {
 			comments = Database.getRepositoryClient().getComments(type, refId);

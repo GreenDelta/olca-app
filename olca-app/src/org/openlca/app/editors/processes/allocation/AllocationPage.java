@@ -14,7 +14,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentDialogModifier;
@@ -22,7 +21,6 @@ import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
@@ -137,13 +135,15 @@ public class AllocationPage extends ModelPage<Process> {
 		Section section = UI.section(body, tk, M.PhysicalAndEconomicAllocation);
 		Composite composite = UI.sectionClient(section, tk, 1);
 		String[] colNames = { M.Product, M.Physical, M.Economic };
-		if (Database.isConnected()) {
+		if (editor.hasAnyComment("allocationFactors")) {
 			colNames = new String[] { M.Product, M.Physical, "", M.Economic, "" };
 		}
 		factorViewer = Tables.createViewer(composite, colNames);
 		// set keys for modifier binding
-		colNames[2] = M.Physical + "-comment";
-		colNames[4] = M.Economic + "-comment";
+		if (editor.hasAnyComment("allocationFactors")) {
+			colNames[2] = M.Physical + "-comment";
+			colNames[4] = M.Economic + "-comment";
+		}
 		factorViewer.setColumnProperties(colNames);
 		factorViewer.setLabelProvider(new FactorLabel());
 		factorViewer.setInput(Util.getProviderFlows(process()));
@@ -151,18 +151,14 @@ public class AllocationPage extends ModelPage<Process> {
 		ModifySupport<Exchange> modifySupport = new ModifySupport<>(factorViewer);
 		modifySupport.bind(M.Physical, new ValueModifier(AllocationMethod.PHYSICAL));
 		modifySupport.bind(M.Economic, new ValueModifier(AllocationMethod.ECONOMIC));
-		if (Database.isConnected()) {
+		if (editor.hasComment("allocationFactors")) {
 			modifySupport.bind(M.Physical + "-comment", createCommentModifier(AllocationMethod.PHYSICAL));
 			modifySupport.bind(M.Economic + "-comment", createCommentModifier(AllocationMethod.ECONOMIC));
 			Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0, 0.3, 0);
 		} else {
 			Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0.3);
 		}
-		if (Database.isConnected() && editor.getComments().has("allocationFactors")) {
-			Actions.bind(factorViewer, copy, new CommentAction("allocationFactors", editor.getComments()));
-		} else {
-			Actions.bind(factorViewer, copy);
-		}
+		CommentAction.bindTo(factorViewer, "allocationFactors", editor.getComments(), copy);
 		factorViewer.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 		factorViewer.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 	}
@@ -181,9 +177,7 @@ public class AllocationPage extends ModelPage<Process> {
 		UI.gridData(section, true, true);
 		causalFactorTable = new CausalFactorTable(editor);
 		causalFactorTable.render(section, tk);
-		if (Database.isConnected() && editor.getComments().has("allocationFactors")) {
-			Actions.bind(section, new CommentAction("allocationFactors", editor.getComments()));
-		}
+		CommentAction.bindTo(section, "allocationFactors", editor.getComments());
 	}
 
 	private String productText(Exchange exchange) {

@@ -66,11 +66,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		Action add = Actions.onAdd(this::addIndicator);
 		Action edit = Actions.create(M.Edit, Icon.EDIT.descriptor(), this::editAspect);
 		Action delete = Actions.onRemove(this::deleteAspect);
-		if (Database.isConnected() && editor.getComments().has("socialAspects")) {
-			Actions.bind(section, add, edit, delete, new CommentAction("socialAspects", editor.getComments()));
-		} else {
-			Actions.bind(section, add, edit, delete);
-		}
+		CommentAction.bindTo(section, "socialAspects", editor.getComments(), add, edit, delete);
 		Actions.bind(tree, add, edit, delete);
 	}
 
@@ -90,20 +86,16 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	private void createTree(Composite comp) {
 		List<String> headers = new ArrayList<>(Arrays.asList(M.Name, M.RawValue, M.RiskLevel, M.ActivityVariable,
 				M.DataQuality, M.Comment, M.Source));
-		if (Database.isConnected()) {
+		if (editor.hasAnyComment("socialAspects")) {
 			headers.add("");
 		}
 		tree = Trees.createViewer(comp, headers.toArray(new String[headers.size()]), new TreeLabel(editor));
 		tree.setContentProvider(new TreeContent());
 		tree.setAutoExpandLevel(3);
 		tree.setInput(treeModel);
-		if (Database.isConnected()) {
-			new ModifySupport<SocialAspect>(tree).bind("", new CommentDialogModifier<SocialAspect>(
-					editor.getComments(), CommentPaths::get));
-			Trees.bindColumnWidths(tree.getTree(), 0.2, 0.15, 0.15, 0.15, 0.12, 0.1, 0.1);
-		} else {
-			Trees.bindColumnWidths(tree.getTree(), 0.2, 0.15, 0.15, 0.15, 0.15, 0.1, 0.1);
-		}
+		new ModifySupport<SocialAspect>(tree).bind("", new CommentDialogModifier<SocialAspect>(
+				editor.getComments(), CommentPaths::get));
+		Trees.bindColumnWidths(tree.getTree(), 0.2, 0.15, 0.15, 0.15, 0.12, 0.1, 0.1);
 	}
 
 	private void addIndicator() {

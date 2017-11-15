@@ -85,7 +85,8 @@ class CausalFactorTable {
 		columns = newColumns;
 		Table table = viewer.getTable();
 		table.getColumn(col + 4).dispose();
-		table.getColumn(col + 5).dispose();
+		if (editor.hasAnyComment("allocationFactors"))
+			table.getColumn(col + 5).dispose();
 	}
 
 	private void addColumn(Exchange product) {
@@ -125,7 +126,7 @@ class CausalFactorTable {
 			if (i < 4)
 				continue;
 			TableColumn column = table.getColumn(i);
-			if (i % 2 == 0) {
+			if (!editor.hasAnyComment("allocationFactors") || i % 2 == 0) {
 				column.setWidth(80);
 				column.setToolTipText(columnTitles[i]);
 			} else {
@@ -143,35 +144,50 @@ class CausalFactorTable {
 
 	private void createModifySupport() {
 		String[] keys = getColumnTitles();
+		boolean showComments = editor.hasAnyComment("allocationFactors");
 		for (int i = 0; i < columns.length; i++) {
-			keys[2 * i + 4] = columns[i].key;
-			keys[2 * i + 5] = columns[i].key + "-comment";
+			int index = showComments ? 2 * i : i;
+			keys[index + 4] = columns[i].key;
+			if (showComments) {
+				keys[index + 5] = columns[i].key + "-comment";
+			}
 		}
 		viewer.setColumnProperties(keys);
 		ModifySupport<Exchange> modifySupport = new ModifySupport<>(viewer);
 		for (int i = 0; i < columns.length; i++) {
-			modifySupport.bind(keys[2 * i + 4], new ValueModifier(columns[i].product));
-			Exchange product = columns[i].product;
-			modifySupport.bind(keys[2 * i + 5], new CommentDialogModifier<Exchange>(editor.getComments(),
-					(e) -> CommentPaths.get(getFactor(product, e), product, e)));
+			int index = showComments ? 2 * i : i;
+			modifySupport.bind(keys[index + 4], new ValueModifier(columns[i].product));
+			if (showComments) {
+				Exchange product = columns[i].product;
+				modifySupport.bind(keys[index + 5], new CommentDialogModifier<Exchange>(editor.getComments(),
+						(e) -> CommentPaths.get(getFactor(product, e), product, e)));
+			}
 		}
 	}
 
 	private String[] getColumnTitles() {
-		String[] titles = new String[columns.length * 2 + 4];
+		boolean showComments = editor.hasAnyComment("allocationFactors");
+		int cols = showComments ? columns.length * 2 : columns.length;
+		String[] titles = new String[cols + 4];
 		titles[0] = M.Flow;
 		titles[1] = M.Direction;
 		titles[2] = M.Category;
 		titles[3] = M.Amount;
 		for (int i = 0; i < columns.length; i++) {
-			titles[2 * i + 4] = columns[i].getTitle();
-			titles[2 * i + 5] = "";
+			int index = showComments ? 2 * i : i;
+			titles[index + 4] = columns[i].getTitle();
+			if (showComments) {
+				titles[index + 5] = "";
+			}
 		}
 		return titles;
 	}
-	
+
 	private Exchange getProduct(int col) {
-		int idx = (col - 4) / 2;
+		int idx = (col - 4);
+		if (editor.hasAnyComment("allocationFactors")) {
+			idx /= 2;
+		}
 		if (idx < 0 || idx > (columns.length - 1))
 			return null;
 		return columns[idx].product;
@@ -202,7 +218,7 @@ class CausalFactorTable {
 				return null;
 			if (col == 0)
 				return Images.get(exchange.flow);
-			if (col > 3 && col % 2 == 1) {
+			if (col > 3 && col % 2 == 1 && editor.hasAnyComment("allocationFactors")) {
 				Exchange product = getProduct(col);
 				AllocationFactor factor = getFactor(product, exchange);
 				if (factor == null)
@@ -230,7 +246,7 @@ class CausalFactorTable {
 				return Numbers.format(exchange.amount) + " "
 						+ exchange.unit.getName();
 			default:
-				if (col % 2 == 0)
+				if (col % 2 == 0 || !editor.hasAnyComment("allocationFactors"))
 					return getFactorLabel(exchange, col);
 				return null;
 			}

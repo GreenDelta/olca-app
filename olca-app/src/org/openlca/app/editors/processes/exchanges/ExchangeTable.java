@@ -55,15 +55,16 @@ class ExchangeTable {
 	private final ProcessEditor editor;
 	private final ProcessExchangePage page;
 
-	private final String FLOW = M.Flow;
-	private final String CATEGORY = M.Category;
-	private final String AMOUNT = M.Amount;
-	private final String UNIT = M.Unit;
-	private final String COSTS = M.CostsRevenues;
-	private final String PEDIGREE = M.DataQualityEntry;
-	private final String PROVIDER = M.DefaultProvider;
-	private final String UNCERTAINTY = M.Uncertainty;
-	private final String DESCRIPTION = M.Description;
+	private static final String FLOW = M.Flow;
+	private static final String CATEGORY = M.Category;
+	private static final String AMOUNT = M.Amount;
+	private static final String UNIT = M.Unit;
+	private static final String COSTS = M.CostsRevenues;
+	private static final String PEDIGREE = M.DataQualityEntry;
+	private static final String PROVIDER = M.DefaultProvider;
+	private static final String UNCERTAINTY = M.Uncertainty;
+	private static final String DESCRIPTION = M.Description;
+	private static final String COMMENT = "";
 	private final String AVOIDED;
 
 	private ExchangeLabel label;
@@ -99,7 +100,7 @@ class ExchangeTable {
 		viewer.addFilter(new Filter());
 		bindActions(section);
 		bindDoubleClick(viewer);
-		if (Database.isConnected()) {
+		if (editor.hasAnyComment("exchanges")) {
 			Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.08, 0.08, 0.08, 0.08, 0.07, 0.07, 0.06);
 		} else {
 			Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.07);
@@ -124,9 +125,7 @@ class ExchangeTable {
 		ms.bind(DESCRIPTION, new CommentEditor(viewer, editor));
 		ms.bind(PROVIDER, new ProviderCombo(editor));
 		ms.bind(AVOIDED, new AvoidedCheck(editor));
-		if (Database.isConnected()) {
-			ms.bind("", new CommentDialogModifier<Exchange>(editor.getComments(), CommentPaths::get));
-		}
+		ms.bind("", new CommentDialogModifier<Exchange>(editor.getComments(), CommentPaths::get));
 	}
 
 	private void bindActions(Section section) {
@@ -142,11 +141,7 @@ class ExchangeTable {
 		});
 		Action formulaSwitch = new FormulaSwitchAction();
 		Action clipboard = TableClipboard.onCopy(viewer);
-		if (Database.isConnected() && editor.getComments().has("exchanges")) {
-			Actions.bind(section, add, remove, formulaSwitch, new CommentAction("exchanges", editor.getComments()));
-		} else {
-			Actions.bind(section, add, remove, formulaSwitch);
-		}
+		CommentAction.bindTo(section, "exchanges", editor.getComments(), add, remove, formulaSwitch);
 		Actions.bind(viewer, add, remove, qRef, clipboard);
 		Tables.onDeletePressed(viewer, e -> onRemove());
 	}
@@ -165,11 +160,12 @@ class ExchangeTable {
 	}
 
 	private String[] getColumns() {
-		List<String> headers = new ArrayList<>(Arrays.asList(FLOW, CATEGORY, AMOUNT, UNIT, COSTS, UNCERTAINTY, AVOIDED,
-				PROVIDER, PEDIGREE, DESCRIPTION));
-		if (Database.isConnected())
-			headers.add("");
-		return headers.toArray(new String[headers.size()]);
+		List<String> columns = new ArrayList<>(Arrays.asList(new String[] { FLOW, CATEGORY, AMOUNT, UNIT, COSTS,
+				UNCERTAINTY, AVOIDED, PROVIDER, PEDIGREE, DESCRIPTION }));
+		if (editor.hasAnyComment("exchanges")) {
+			columns.add(COMMENT);
+		}
+		return columns.toArray(new String[columns.size()]);
 	}
 
 	private void onAdd() {

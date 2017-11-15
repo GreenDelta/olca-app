@@ -5,8 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.db.Database;
+import org.openlca.app.App;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.viewers.table.AbstractTableViewer;
@@ -18,16 +19,26 @@ public class CommentAction extends Action {
 	private final Comments comments;
 
 	public static void bindTo(Section section, AbstractTableViewer<?> viewer, String path, Comments comments) {
-		if (!Database.isConnected() || !comments.has(path)) {
+		if (!App.isCommentingEnabled() || !comments.has(path)) {
 			viewer.bindTo(section);
 			return;
 		}
 		viewer.bindTo(section, new CommentAction(path, comments));
 	}
 
+	public static void bindTo(TableViewer viewer, String path, Comments comments, Action... other) {
+		List<Action> actions = new ArrayList<>(Arrays.asList(other));
+		if (App.isCommentingEnabled() && comments.has(path)) {
+			actions.add(new CommentAction(path, comments));
+		}
+		if (actions.isEmpty())
+			return;
+		Actions.bind(viewer, actions.toArray(new Action[actions.size()]));
+	}
+
 	public static void bindTo(Section section, String path, Comments comments, Action... other) {
 		List<Action> actions = new ArrayList<>(Arrays.asList(other));
-		if (Database.isConnected() && comments.has(path)) {
+		if (App.isCommentingEnabled() && comments.has(path)) {
 			actions.add(new CommentAction(path, comments));
 		}
 		if (actions.isEmpty())

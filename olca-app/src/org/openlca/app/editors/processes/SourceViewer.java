@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.components.ModelSelectionDialog;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
@@ -39,10 +38,8 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		this.sourceDao = new SourceDao(database);
 		this.editor = editor;
 		this.form = form;
-		if (Database.isConnected()) {
-			getModifySupport().bind("", new CommentDialogModifier<Source>(editor.getComments(), CommentPaths::get));
-			Tables.bindColumnWidths(getViewer(), 0.97);
-		}
+		getModifySupport().bind("", new CommentDialogModifier<Source>(editor.getComments(), CommentPaths::get));
+		Tables.bindColumnWidths(getViewer(), 0.97);
 		addDoubleClickHandler();
 	}
 
@@ -61,9 +58,7 @@ class SourceViewer extends AbstractTableViewer<Source> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		if (Database.isConnected())
-			return new String[] { "Name", "" };
-		return null;
+		return new String[] { "Name", "" };
 	}
 
 	public void setInput(Process process) {

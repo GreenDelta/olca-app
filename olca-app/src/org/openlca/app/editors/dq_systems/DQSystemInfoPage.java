@@ -21,7 +21,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
@@ -271,7 +270,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	private void commentControl(Composite parent, String path) {
-		if (Database.isConnected() && getEditor().getComments().has(path)) {
+		if (getEditor().hasComment(path)) {
 			new CommentControl(parent, toolkit, path, getEditor().getComments());
 		} else {
 			UI.filler(parent);

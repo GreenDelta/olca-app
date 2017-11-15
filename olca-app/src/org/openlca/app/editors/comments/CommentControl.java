@@ -4,7 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
-import org.openlca.app.db.Database;
+import org.openlca.app.App;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -22,7 +22,7 @@ public class CommentControl {
 	}
 
 	private void initControl(Composite parent, FormToolkit toolkit) {
-		if (!Database.isConnected() || !comments.has(path)) {
+		if (!App.isCommentingEnabled() || !comments.has(path)) {
 			UI.filler(parent, toolkit);
 			return;
 		}

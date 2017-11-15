@@ -20,7 +20,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.UncertaintyCellEditor;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentDialogModifier;
@@ -114,7 +113,7 @@ public class ParameterSection {
 			properties = new ArrayList<>(Arrays.asList(NAME, FORMULA, VALUE, DESCRIPTION));
 		if (sourceHandler != null)
 			properties.add(EXTERNAL_SOURCE);
-		if (Database.isConnected())
+		if (editor.hasAnyComment("parameters"))
 			properties.add("");
 		return properties.toArray(new String[properties.size()]);
 	}
@@ -151,15 +150,9 @@ public class ParameterSection {
 
 	private void bindColumnWidths(TableViewer viewer) {
 		if (sourceHandler != null)
-			if (Database.isConnected())
-				Tables.bindColumnWidths(viewer, 0.25, 0.25, 0.15, 0.15, 0.17);
-			else
-				Tables.bindColumnWidths(viewer, 0.25, 0.25, 0.15, 0.15, 0.2);
+			Tables.bindColumnWidths(viewer, 0.25, 0.25, 0.15, 0.15, 0.17);
 		else {
-			if (Database.isConnected())
-				Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17, 0.03);
-			else
-				Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.2);
+			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17, 0.03);
 		}
 	}
 
@@ -178,11 +171,7 @@ public class ParameterSection {
 		Action removeAction = Actions.onRemove(() -> onRemove());
 		Action copy = TableClipboard.onCopy(viewer);
 		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
-		if (Database.isConnected() && editor.getComments().has("parameters")) {
-			Actions.bind(section, addAction, removeAction, new CommentAction("parameters", editor.getComments()));
-		} else {
-			Actions.bind(section, addAction, removeAction);
-		}
+		CommentAction.bindTo(section, "parameters", editor.getComments(), addAction, removeAction);
 		Actions.bind(viewer, addAction, removeAction, copy, paste);
 		Tables.onDeletePressed(viewer, (e) -> onRemove());
 	}
@@ -191,15 +180,11 @@ public class ParameterSection {
 		ModifySupport<Parameter> ms = new ModifySupport<>(viewer);
 		ms.bind(NAME, new NameModifier());
 		ms.bind(DESCRIPTION, new StringModifier<>(editor, "description"));
-		if (forInputParameters) {
-			ms.bind(VALUE, new DoubleModifier<>(editor, "value", (elem) -> support.evaluate()));
-			ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
-		} else
-			ms.bind(FORMULA, new StringModifier<>(editor, "formula", (elem) -> support.evaluate()));
-		if (sourceHandler != null)
-			ms.bind(EXTERNAL_SOURCE, new ExternalSourceModifier());
-		if (Database.isConnected())
-			ms.bind("", new CommentDialogModifier<Parameter>(editor.getComments(), CommentPaths::get));
+		ms.bind(VALUE, new DoubleModifier<>(editor, "value", (elem) -> support.evaluate()));
+		ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
+		ms.bind(FORMULA, new StringModifier<>(editor, "formula", (elem) -> support.evaluate()));
+		ms.bind(EXTERNAL_SOURCE, new ExternalSourceModifier());
+		ms.bind("", new CommentDialogModifier<Parameter>(editor.getComments(), CommentPaths::get));
 	}
 
 	private void fillInitialInput() {
@@ -299,7 +284,7 @@ public class ParameterSection {
 					return null;
 				// currently the only external sources are shape files
 				return Images.get(ModelType.IMPACT_METHOD);
-			} else if (col == getProperties().length - 1 && Database.isConnected())
+			} else if (col == getProperties().length - 1 && editor.hasAnyComment("parameters"))
 				return Images.get(editor.getComments(), CommentPaths.get(parameter));
 			return null;
 		}

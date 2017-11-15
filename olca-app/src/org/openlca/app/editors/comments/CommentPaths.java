@@ -59,7 +59,7 @@ public class CommentPaths {
 	}
 
 	public static String get(FlowPropertyFactor factor) {
-		return "flowPropertyFactors[" + factor.getFlowProperty().getRefId() + "]";
+		return "flowProperties[" + factor.getFlowProperty().getRefId() + "]";
 	}
 
 	public static String get(NwSet nwSet) {

@@ -29,6 +29,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 	public static final String ID = "preferencepages.cloud";
 	private List<CloudConfiguration> configs;
 	private Button libraryCheckBox;
+	private Button commentCheckBox;
 
 	@Override
 	public void init(IWorkbench workbench) {
@@ -43,6 +44,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 		Composite general = new Composite(body, SWT.NONE);
 		UI.gridLayout(general, 2, 0, 0);
 		createLibraryCheckBox(general);
+		createCommentCheckBox(general);
 		UI.formLabel(body, M.ServerConfigurations);
 		ConfigurationViewer viewer = new ConfigurationViewer(body);
 		viewer.setInput(configs);
@@ -54,10 +56,16 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 		libraryCheckBox.setSelection(CloudPreference.doCheckAgainstLibraries());
 	}
 
+	private void createCommentCheckBox(Composite parent) {
+		commentCheckBox = UI.formCheckBox(parent, "#Display comments");
+		commentCheckBox.setSelection(CloudPreference.doDisplayComments());
+	}
+
 	@Override
 	public boolean performOk() {
 		IPreferenceStore store = CloudPreference.getStore();
 		store.setValue(CloudPreference.CHECK_AGAINST_LIBRARIES, libraryCheckBox.getSelection());
+		store.setValue(CloudPreference.DISPLAY_COMMENTS, commentCheckBox.getSelection());
 		CloudConfigurations.save(configs);
 		return true;
 	}

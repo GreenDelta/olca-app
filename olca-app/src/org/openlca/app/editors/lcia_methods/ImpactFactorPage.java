@@ -13,9 +13,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.Event;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentDialog;
 import org.openlca.app.editors.comments.CommentPaths;
@@ -82,7 +82,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 
 	private void createCategoryViewer(Composite client) {
 		Composite container = toolkit.createComposite(client);
-		UI.gridLayout(container, Database.isConnected() ? 3 : 2, 10, 0);
+		UI.gridLayout(container, App.isCommentingEnabled() ? 3 : 2, 10, 0);
 		UI.gridData(container, true, false);
 		new Label(container, SWT.NONE).setText(M.ImpactCategory);
 		categoryViewer = new ImpactCategoryViewer(container);
@@ -101,14 +101,14 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 				return;
 			new CommentDialog(path, editor.getComments()).open();
 		});
-		if (!Database.isConnected())
+		if (!App.isCommentingEnabled())
 			return;
 		commentControl.setImage(Icon.SHOW_COMMENTS.get());
 		commentControl.setToolTipText("#Show comments");
 	}
 
 	private void updateCommentControl() {
-		if (!Database.isConnected())
+		if (!App.isCommentingEnabled())
 			return;
 		ImpactCategoryDescriptor category = categoryViewer.getSelected();
 		if (category == null) {

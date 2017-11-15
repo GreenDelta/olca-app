@@ -48,12 +48,13 @@ import org.openlca.util.Strings;
 
 class ImpactFactorTable {
 
-	private final String FLOW = M.Flow;
-	private final String CATEGORY = M.Category;
-	private final String FLOW_PROPERTY = M.FlowProperty;
-	private final String UNIT = M.Unit;
-	private final String FACTOR = M.Factor;
-	private final String UNCERTAINTY = M.Uncertainty;
+	private static final String FLOW = M.Flow;
+	private static final String CATEGORY = M.Category;
+	private static final String FLOW_PROPERTY = M.FlowProperty;
+	private static final String UNIT = M.Unit;
+	private static final String FACTOR = M.Factor;
+	private static final String UNCERTAINTY = M.Uncertainty;
+	private static final String COMMENT = "";
 
 	private boolean showFormulas = true;
 	private IDatabase database = Database.get();
@@ -81,24 +82,15 @@ class ImpactFactorTable {
 		support.bind(UNIT, new UnitModifier());
 		support.bind(FACTOR, new ValueModifier());
 		support.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
-		if (Database.isConnected()) {
-			support.bind("", new CommentDialogModifier<ImpactFactor>(editor.getComments(),
-					f -> CommentPaths.get(category, f)));
-			Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.15, 0.15, 0.15, 0.12);
-		} else {
-			Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.15, 0.15, 0.15, 0.15);
-		}
+		support.bind("", new CommentDialogModifier<ImpactFactor>(editor.getComments(),
+				f -> CommentPaths.get(category, f)));
+		Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.15, 0.15, 0.15, 0.12);
 		bindActions(viewer, section);
 		viewer.getTable().getColumns()[3].setAlignment(SWT.RIGHT);
 	}
 
 	private String[] getColumnHeaders() {
-		String[] h = new String[] { FLOW, CATEGORY, FLOW_PROPERTY, FACTOR, UNIT, UNCERTAINTY };
-		List<String> headers = new ArrayList<>(Arrays.asList(h));
-		if (Database.isConnected()) {
-			headers.add("");
-		}
-		return headers.toArray(new String[headers.size()]);
+		return new String[] { FLOW, CATEGORY, FLOW_PROPERTY, FACTOR, UNIT, UNCERTAINTY, COMMENT };
 	}
 
 	void setImpactCategory(ImpactCategory impact, boolean sort) {

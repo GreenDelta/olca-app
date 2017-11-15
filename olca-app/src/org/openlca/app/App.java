@@ -9,7 +9,9 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
+import org.openlca.app.cloud.ui.preferences.CloudPreference;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.RcpActivator;
@@ -73,6 +75,10 @@ public class App {
 		if (version != null)
 			return version;
 		return RcpActivator.getDefault().getBundle().getVersion().toString();
+	}
+
+	public static boolean isCommentingEnabled() {
+		return Database.isConnected() && CloudPreference.doDisplayComments();
 	}
 
 	/**

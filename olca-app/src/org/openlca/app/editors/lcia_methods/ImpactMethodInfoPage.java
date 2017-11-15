@@ -1,7 +1,5 @@
 package org.openlca.app.editors.lcia_methods;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +16,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
@@ -40,9 +37,10 @@ import org.openlca.util.Strings;
 
 class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
-	private final String NAME = M.Name;
-	private final String DESCRIPTION = M.Description;
-	private final String REFERENCE_UNIT = M.ReferenceUnit;
+	private static final String NAME = M.Name;
+	private static final String DESCRIPTION = M.Description;
+	private static final String REFERENCE_UNIT = M.ReferenceUnit;
+	private static final String COMMENT = "";
 
 	private TableViewer viewer;
 	private FormToolkit toolkit;
@@ -74,22 +72,14 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		viewer = Tables.createViewer(client, properties);
 		viewer.setLabelProvider(new CategoryLabelProvider());
 		viewer.setInput(getCategories(true));
-		if (Database.isConnected()) {
-			Tables.bindColumnWidths(viewer, 0.5, 0.25, 0.22);
-		} else {
-			Tables.bindColumnWidths(viewer, 0.5, 0.25, 0.25);
-		}
+		Tables.bindColumnWidths(viewer, 0.5, 0.25, 0.22);
 		bindModifySupport();
 		bindActions(viewer, section);
 		editor.onSaved(() -> viewer.setInput(getCategories(false)));
 	}
 
 	private String[] getProperties() {
-		String[] p = { NAME, DESCRIPTION, REFERENCE_UNIT };
-		List<String> props = new ArrayList<>(Arrays.asList(p));
-		if (Database.isConnected())
-			props.add("");
-		return props.toArray(new String[props.size()]);
+		return new String[] { NAME, DESCRIPTION, REFERENCE_UNIT, COMMENT };
 	}
 
 	private void bindModifySupport() {

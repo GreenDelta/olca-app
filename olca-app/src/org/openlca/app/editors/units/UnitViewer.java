@@ -1,8 +1,5 @@
 package org.openlca.app.editors.units;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -43,6 +40,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 	private static final String IS_REFERENCE = M.IsReference;
 	private static final String NAME = M.Name;
 	private static final String SYNONYMS = M.Synonyms;
+	private static final String COMMENT = "";
 
 	private final UnitGroupEditor editor;
 
@@ -62,12 +60,8 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		ms.bind(SYNONYMS, new StringModifier<>(editor, "synonyms"));
 		ms.bind(CONVERSION_FACTOR, new ConversionModifier());
 		ms.bind(IS_REFERENCE, new ReferenceModifier());
-		if (Database.isConnected()) {
-			ms.bind("", new CommentDialogModifier<Unit>(editor.getComments(), CommentPaths::get));
-			Tables.bindColumnWidths(getViewer(), 0.25, 0.15, 0.15, 0.15, 0.15, 0.12);
-		} else {
-			Tables.bindColumnWidths(getViewer(), 0.25, 0.15, 0.15, 0.15, 0.15, 0.15);
-		}
+		ms.bind("", new CommentDialogModifier<Unit>(editor.getComments(), CommentPaths::get));
+		Tables.bindColumnWidths(getViewer(), 0.25, 0.15, 0.15, 0.15, 0.15, 0.12);
 	}
 
 	@Override
@@ -77,11 +71,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		String[] h = { NAME, DESCRIPTION, SYNONYMS, CONVERSION_FACTOR, FORMULA, IS_REFERENCE };
-		List<String> headers = new ArrayList<>(Arrays.asList(h));
-		if (Database.isConnected())
-			headers.add("");
-		return headers.toArray(new String[headers.size()]);
+		return new String[] { NAME, DESCRIPTION, SYNONYMS, CONVERSION_FACTOR, FORMULA, IS_REFERENCE, COMMENT };
 	}
 
 	@OnAdd

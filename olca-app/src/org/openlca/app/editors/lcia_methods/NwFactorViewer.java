@@ -1,7 +1,5 @@
 package org.openlca.app.editors.lcia_methods;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -11,7 +9,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.lcia_methods.NwFactorViewer.Wrapper;
@@ -28,6 +25,7 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 	private static final String IMPACT_CATEGORY = M.ImpactCategory;
 	private static final String NORMALIZATION = M.NormalizationFactor;
 	private static final String WEIGHTING = M.WeightingFactor;
+	private static final String COMMENT = "";
 
 	private NwSet set;
 	private final ImpactMethodEditor editor;
@@ -37,10 +35,8 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 		this.editor = editor;
 		getModifySupport().bind(NORMALIZATION, new NormalizationModifier());
 		getModifySupport().bind(WEIGHTING, new WeightingModifier());
-		if (Database.isConnected()) {
-			getModifySupport().bind("", new CommentDialogModifier<Wrapper>(editor.getComments(),
-					w -> CommentPaths.get(set, w.factor)));
-		}
+		getModifySupport().bind("", new CommentDialogModifier<Wrapper>(editor.getComments(),
+				w -> CommentPaths.get(set, w.factor)));
 		getViewer().getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 		getViewer().getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 	}
@@ -69,12 +65,7 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		String[] h = new String[] { IMPACT_CATEGORY, NORMALIZATION, WEIGHTING };
-		List<String> headers = new ArrayList<>(Arrays.asList(h));
-		if (Database.isConnected()) {
-			headers.add("");
-		}
-		return headers.toArray(new String[headers.size()]);
+		return new String[] { IMPACT_CATEGORY, NORMALIZATION, WEIGHTING, COMMENT };
 	}
 
 	public class Wrapper {

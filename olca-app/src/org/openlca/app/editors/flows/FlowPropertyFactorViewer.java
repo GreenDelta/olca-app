@@ -1,7 +1,5 @@
 package org.openlca.app.editors.flows;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,6 +45,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	private static final String REFERENCE_UNIT = M.ReferenceUnit;
 	private static final String FORMULA = M.Formula;
 	private static final String IS_REFERENCE = M.IsReference;
+	private static final String COMMENT = "";
 
 	private final EntityCache cache;
 	private final FlowEditor editor;
@@ -59,12 +58,8 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		this.cache = cache;
 		ms.bind(CONVERSION_FACTOR, new ConversionModifier());
 		ms.bind(IS_REFERENCE, new ReferenceModifier());
-		if (Database.isConnected()) {
-			ms.bind("", new CommentDialogModifier<FlowPropertyFactor>(editor.getComments(), CommentPaths::get));
-			Tables.bindColumnWidths(getViewer(), 0.2, 0.2, 0.2, 0.2, 0.17);
-		} else {
-			Tables.bindColumnWidths(getViewer(), 0.2, 0.2, 0.2, 0.2, 0.2);
-		}
+		ms.bind("", new CommentDialogModifier<FlowPropertyFactor>(editor.getComments(), CommentPaths::get));
+		Tables.bindColumnWidths(getViewer(), 0.2, 0.2, 0.2, 0.2, 0.17);
 		addDoubleClickHandler();
 		getViewer().getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 	}
@@ -96,11 +91,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		String[] h = { NAME, CONVERSION_FACTOR, REFERENCE_UNIT, FORMULA, IS_REFERENCE };
-		List<String> headers = new ArrayList<>(Arrays.asList(h));
-		if (Database.isConnected())
-			headers.add("");
-		return headers.toArray(new String[headers.size()]);
+		return new String[] { NAME, CONVERSION_FACTOR, REFERENCE_UNIT, FORMULA, IS_REFERENCE, COMMENT };
 	}
 
 	@OnAdd
