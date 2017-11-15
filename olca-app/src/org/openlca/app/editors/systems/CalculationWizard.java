@@ -2,16 +2,21 @@ package org.openlca.app.editors.systems;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.ui.IEditorPart;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.results.quick.QuickResultEditor;
@@ -19,6 +24,7 @@ import org.openlca.app.results.regionalized.RegionalizedResultEditor;
 import org.openlca.app.results.simulation.SimulationInit;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.Info;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
@@ -27,6 +33,7 @@ import org.openlca.core.math.data_quality.DQCalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.math.data_quality.ProcessingType;
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.results.ContributionResult;
@@ -62,9 +69,42 @@ public class CalculationWizard extends Wizard {
 	public static void open(ProductSystem productSystem) {
 		if (productSystem == null)
 			return;
+		boolean doContinue = checkForUnsavedContent(productSystem);
+		if (!doContinue)
+			return;
 		CalculationWizard wizard = new CalculationWizard(productSystem);
 		WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
 		dialog.open();
+	}
+
+	private static boolean checkForUnsavedContent(ProductSystem system) {
+		IEditorPart[] dirty = Editors.getActivePage().getDirtyEditors();
+		if (dirty.length == 0)
+			return true;
+		List<IEditorPart> relevant = new ArrayList<>();
+		for (IEditorPart part : dirty) {
+			if (!(part.getEditorInput() instanceof ModelEditorInput))
+				continue;
+			ModelEditorInput input = (ModelEditorInput) part.getEditorInput();
+			ModelType type = input.getDescriptor().getModelType();
+			if (type == ModelType.PROJECT || type == ModelType.ACTOR || type == ModelType.SOURCE)
+				continue;
+			if (type == ModelType.PRODUCT_SYSTEM && input.getDescriptor().getId() != system.getId())
+				continue;
+			relevant.add(part);
+		}
+		if (relevant.isEmpty())
+			return true;
+		String text = "#Some elements referenced by the product system are not saved yet. The calculation will not take these into account. Do you want to save them now?";
+		int answer = Question.askWithCancel("#Unsaved changes", text);
+		if (answer == IDialogConstants.NO_ID)
+			return true;
+		if (answer == IDialogConstants.CANCEL_ID)
+			return false;
+		for (IEditorPart part : relevant) {
+			Editors.getActivePage().saveEditor(part, false);
+		}
+		return true;
 	}
 
 	@Override

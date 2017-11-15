@@ -112,7 +112,7 @@ public class Editors {
 		}
 	}
 
-	private static IWorkbenchPage getActivePage() {
+	public static IWorkbenchPage getActivePage() {
 		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 	}
 
