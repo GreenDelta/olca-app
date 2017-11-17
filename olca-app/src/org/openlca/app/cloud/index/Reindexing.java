@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.index;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -21,14 +22,18 @@ import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.util.Strings;
 
-public class IndexSync {
+public class Reindexing {
 
 	private IDatabase database;
 	private DiffIndex index;
 	private RepositoryClient client;
 	private CategoryDao categoryDao;
 
-	public void run() {
+	public static void execute() {
+		new Reindexing().run();
+	}
+
+	private void run() {
 		Map<ModelType, Map<String, FetchRequestData>> datasets = init();
 		if (datasets == null)
 			return;
@@ -38,28 +43,13 @@ public class IndexSync {
 			Map<String, CategorizedDescriptor> descriptorMap = getDescriptors(type);
 			Map<String, FetchRequestData> dataMap = datasets.get(type);
 			if (dataMap != null) {
-				for (FetchRequestData data : dataMap.values()) {
-					CategorizedDescriptor descriptor = descriptorMap.get(data.refId);
-					if (descriptor == null && !data.isDeleted()) {
-						put(data.asDataset());
-					} else {
-						put(data.asDataset(), descriptor);
-					}
-				}
+				remoteSync(dataMap.values(), descriptorMap);
 			}
-			if (type == ModelType.PARAMETER)
-				continue; // handle global parameters seperately
-			for (CategorizedDescriptor descriptor : descriptorMap.values()) {
-				if (dataMap != null && dataMap.containsKey(descriptor.getRefId()))
-					continue;
-				put(descriptor);
+			if (type == ModelType.PARAMETER) {
+				localSync(dataMap, new ParameterDao(database).getGlobalDescriptors());
+			} else {
+				localSync(dataMap, descriptorMap.values());
 			}
-		}
-		Map<String, FetchRequestData> dataMap = datasets.get(ModelType.PARAMETER);
-		for (CategorizedDescriptor descriptor : new ParameterDao(database).getGlobalDescriptors()) {
-			if (dataMap != null && dataMap.containsKey(descriptor.getRefId()))
-				continue;
-			put(descriptor);
 		}
 		index.commit();
 	}
@@ -79,18 +69,44 @@ public class IndexSync {
 		if (client.getConfig().getLastCommitId() == null)
 			return new HashMap<>();
 		try {
-			Map<ModelType, Map<String, FetchRequestData>> mapped = new HashMap<>();
-			Set<FetchRequestData> data = client.sync(client.getConfig().getLastCommitId());
-			for (FetchRequestData d : data) {
-				Map<String, FetchRequestData> forType = mapped.get(d.type);
-				if (forType == null) {
-					mapped.put(d.type, forType = new HashMap<>());
-				}
-				forType.put(d.refId, d);
-			}
-			return mapped;
+			return initDataMap();
 		} catch (WebRequestException e) {
 			return null;
+		}
+	}
+
+	private Map<ModelType, Map<String, FetchRequestData>> initDataMap() throws WebRequestException {
+		Map<ModelType, Map<String, FetchRequestData>> mapped = new HashMap<>();
+		Set<FetchRequestData> data = client.sync(client.getConfig().getLastCommitId());
+		for (FetchRequestData d : data) {
+			Map<String, FetchRequestData> forType = mapped.get(d.type);
+			if (forType == null) {
+				mapped.put(d.type, forType = new HashMap<>());
+			}
+			forType.put(d.refId, d);
+		}
+		return mapped;
+	}
+
+	private void remoteSync(Collection<FetchRequestData> datasets, Map<String, CategorizedDescriptor> descriptorMap) {
+		for (FetchRequestData data : datasets) {
+			CategorizedDescriptor descriptor = descriptorMap.get(data.refId);
+			if (descriptor == null) {
+				if (!data.isDeleted()) {
+					put(data.asDataset());
+				}
+			} else {
+				put(data.asDataset(), descriptor, data.isDeleted());
+			}
+		}
+	}
+
+	private void localSync(Map<String, FetchRequestData> dataMap,
+			Collection<? extends CategorizedDescriptor> descriptors) {
+		for (CategorizedDescriptor descriptor : descriptors) {
+			if (dataMap != null && dataMap.containsKey(descriptor.getRefId()))
+				continue;
+			put(descriptor);
 		}
 	}
 
@@ -108,8 +124,12 @@ public class IndexSync {
 		index.update(dataset, DiffType.DELETED);
 	}
 
-	private void put(Dataset dataset, CategorizedDescriptor descriptor) {
+	private void put(Dataset dataset, CategorizedDescriptor descriptor, boolean deletedOnRemote) {
 		index.add(dataset, descriptor.getId());
+		if (deletedOnRemote) {
+			index.update(dataset, DiffType.NEW);
+			return;
+		}
 		if (areEqual(dataset, descriptor))
 			return;
 		index.update(dataset, DiffType.CHANGED);

@@ -3,7 +3,8 @@ package org.openlca.app.navigation.actions.cloud;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.openlca.app.cloud.index.IndexSync;
+import org.openlca.app.App;
+import org.openlca.app.cloud.index.Reindexing;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -22,7 +23,7 @@ public class RebuildIndexAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		new IndexSync().run();
+		App.runWithProgress("#Rebuild index", Reindexing::execute);
 		Navigator.refresh(Navigator.getNavigationRoot());
 	}
 

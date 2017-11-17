@@ -17,20 +17,15 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.TokenDialog;
-import org.openlca.app.cloud.index.DiffIndex;
-import org.openlca.app.cloud.index.DiffType;
+import org.openlca.app.cloud.index.Reindexing;
 import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.cloud.ui.preferences.CloudConfiguration;
 import org.openlca.app.cloud.ui.preferences.CloudConfigurations;
 import org.openlca.app.cloud.ui.preferences.CloudPreferencePage;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Colors;
@@ -40,7 +35,6 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.cloud.api.CredentialSupplier;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
-import org.openlca.cloud.model.data.Dataset;
 
 import com.google.common.base.Strings;
 
@@ -59,7 +53,7 @@ public class ConnectAction extends Action implements INavigationAction {
 		if (runner.error != null)
 			Error.showBox(runner.error.getMessage());
 		else {
-			indexDatabase();
+			App.runWithProgress("#Rebuild index", Reindexing::execute);
 			Navigator.refresh(Navigator.getNavigationRoot());
 		}
 	}
@@ -95,29 +89,6 @@ public class ConnectAction extends Action implements INavigationAction {
 				config.disconnect();
 		}
 
-	}
-
-	private void indexDatabase() {
-		IDatabaseConfiguration db = Database.getActiveConfiguration();
-		INavigationElement<?> element = Navigator.findElement(db);
-		DiffIndex index = Database.getDiffIndex();
-		indexElement(index, element);
-		index.commit();
-	}
-
-	private void indexElement(DiffIndex index, INavigationElement<?> element) {
-		long id = 0;
-		if (element instanceof CategoryElement)
-			id = ((CategoryElement) element).getContent().getId();
-		if (element instanceof ModelElement)
-			id = ((ModelElement) element).getContent().getId();
-		if (id != 0l) {
-			Dataset dataset = CloudUtil.toDataset(element);
-			index.add(dataset, id);
-			index.update(dataset, DiffType.NEW);
-		}
-		for (INavigationElement<?> child : element.getChildren())
-			indexElement(index, child);
 	}
 
 	private class InputDialog extends Dialog {
