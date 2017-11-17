@@ -33,12 +33,12 @@ import org.slf4j.LoggerFactory;
 public class DataBinding {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	private IEditor editor;
+	private ModelEditor<?> editor;
 
 	public DataBinding() {
 	}
 
-	public DataBinding(IEditor editor) {
+	public DataBinding(ModelEditor<?> editor) {
 		this.editor = editor;
 	}
 
@@ -73,13 +73,12 @@ public class DataBinding {
 		}
 	}
 
-	public void onModel(final Supplier<?> supplier, final String property,
-			final TextDropComponent text) {
+	public void onModel(final Supplier<?> supplier, final String property, final TextDropComponent text) {
 		log.trace("Register data binding - base descriptor - {} ", property);
 		if (supplier == null || property == null || text == null)
 			return;
 		initValue(supplier.get(), property, text);
-		text.setHandler((descriptor) -> {
+		text.addHandler((descriptor) -> {
 			setModel(supplier.get(), property, text);
 		});
 	}

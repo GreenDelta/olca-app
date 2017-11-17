@@ -74,8 +74,7 @@ public class ShapeFilePage extends ModelPage<ImpactMethod> {
 				checkRunImport(file);
 		});
 		UI.filler(comp, tk);
-		Button evaluateButton = tk.createButton(comp,
-				M.EvaluateLocations, SWT.NONE);
+		Button evaluateButton = tk.createButton(comp, M.EvaluateLocations, SWT.NONE);
 		evaluateButton.setImage(Icon.EXPRESSION.get());
 		Controls.onSelect(evaluateButton, (e) -> {
 			try {

@@ -112,6 +112,7 @@ public enum Icon {
 	SAVE_AS_IMAGE("save_as_image.png"),
 	SEARCH("search.png"),
 	SIMULATE("calculation/simulate.png"),
+	SHOW_COMMENTS("cloud/show_comments.png"),
 	SQL("sql.png"),
 
 	UNDO("undo.png"),

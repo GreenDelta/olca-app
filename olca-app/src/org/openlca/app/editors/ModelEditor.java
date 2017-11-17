@@ -21,10 +21,13 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.cloud.model.Comments;
+import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.util.Strings;
@@ -33,8 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 
-public abstract class ModelEditor<T extends CategorizedEntity> extends
-		FormEditor implements IEditor {
+public abstract class ModelEditor<T extends CategorizedEntity> extends FormEditor {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private boolean dirty;
@@ -42,11 +44,25 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 	private BaseDao<T> dao;
 	private Class<T> modelClass;
 	private EventBus eventBus = new EventBus();
+	private Comments comments;
+	private DataBinding binding = new DataBinding(this);
 
 	private List<EventHandler> savedHandlers = new ArrayList<>();
 
 	public ModelEditor(Class<T> modelClass) {
 		this.modelClass = modelClass;
+	}
+
+	public Comments getComments() {
+		return comments;
+	}
+
+	public boolean hasComment(String path) {
+		return App.isCommentingEnabled() && comments != null && comments.has(path);
+	}
+
+	public boolean hasAnyComment(String path) {
+		return App.isCommentingEnabled() && comments != null && comments.hasAny(path);
 	}
 
 	/**
@@ -64,6 +80,10 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 		eventBus.post(new Event(message, source));
 	}
 
+	public DataBinding getBinding() {
+		return binding;
+	}
+
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
@@ -75,10 +95,21 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 		try {
 			dao = Daos.base(Database.get(), modelClass);
 			model = dao.getForId(i.getDescriptor().getId());
+			loadComments(i.getDescriptor().getModelType(), i.getDescriptor().getRefId());
 			eventBus.register(this);
 		} catch (Exception e) {
 			log.error("failed to load " + modelClass.getSimpleName()
 					+ " from editor input", e);
+		}
+	}
+
+	private void loadComments(ModelType type, String refId) {
+		if (!App.isCommentingEnabled())
+			return;
+		try {
+			comments = Database.getRepositoryClient().getComments(type, refId);
+		} catch (WebRequestException e) {
+			log.error("Error loading comments from repository", e);
 		}
 	}
 
@@ -95,6 +126,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 			if (monitor != null)
 				monitor.done();
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			log.error("failed to update " + modelClass.getSimpleName());
 		}
 	}
@@ -125,7 +157,6 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends
 		return (ModelEditorInput) super.getEditorInput();
 	}
 
-	@Override
 	public void setDirty(boolean b) {
 		if (dirty != b) {
 			dirty = b;

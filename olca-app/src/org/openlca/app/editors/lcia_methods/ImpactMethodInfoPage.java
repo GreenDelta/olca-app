@@ -18,6 +18,9 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.comments.CommentAction;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
@@ -34,9 +37,10 @@ import org.openlca.util.Strings;
 
 class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
-	private final String NAME = M.Name;
-	private final String DESCRIPTION = M.Description;
-	private final String REFERENCE_UNIT = M.ReferenceUnit;
+	private static final String NAME = M.Name;
+	private static final String DESCRIPTION = M.Description;
+	private static final String REFERENCE_UNIT = M.ReferenceUnit;
+	private static final String COMMENT = "";
 
 	private TableViewer viewer;
 	private FormToolkit toolkit;
@@ -63,15 +67,19 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	private void createImpactCategoryViewer(Composite body) {
 		Section section = UI.section(body, toolkit, M.ImpactCategories);
 		UI.gridData(section, true, true);
-		Composite client = UI.sectionClient(section, toolkit);
-		String[] properties = { NAME, DESCRIPTION, REFERENCE_UNIT };
+		Composite client = UI.sectionClient(section, toolkit, 1);
+		String[] properties = getProperties();
 		viewer = Tables.createViewer(client, properties);
 		viewer.setLabelProvider(new CategoryLabelProvider());
 		viewer.setInput(getCategories(true));
-		Tables.bindColumnWidths(viewer, 0.5, 0.25, 0.25);
+		Tables.bindColumnWidths(viewer, 0.5, 0.25, 0.22);
 		bindModifySupport();
 		bindActions(viewer, section);
 		editor.onSaved(() -> viewer.setInput(getCategories(false)));
+	}
+
+	private String[] getProperties() {
+		return new String[] { NAME, DESCRIPTION, REFERENCE_UNIT, COMMENT };
 	}
 
 	private void bindModifySupport() {
@@ -89,6 +97,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 			c.referenceUnit = text;
 			fireCategoryChange();
 		});
+		support.bind("", new CommentDialogModifier<ImpactCategory>(editor.getComments(), c -> CommentPaths.get(c)));
 	}
 
 	private List<ImpactCategory> getCategories(boolean sorted) {
@@ -106,7 +115,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		Action remove = Actions.onRemove(() -> onRemove());
 		Action copy = TableClipboard.onCopy(viewer);
 		Actions.bind(viewer, add, remove, copy);
-		Actions.bind(section, add, remove);
+		CommentAction.bindTo(section, "impactCategories", editor.getComments(), add, remove);
 		Tables.onDeletePressed(viewer, (event) -> onRemove());
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
@@ -151,8 +160,13 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 		@Override
 		public Image getColumnImage(Object element, int column) {
+			if (!(element instanceof ImpactCategory))
+				return null;
+			ImpactCategory category = (ImpactCategory) element;
 			if (column == 0)
 				return Images.get(ModelType.IMPACT_CATEGORY);
+			if (column == 3)
+				return Images.get(editor.getComments(), CommentPaths.get(category));
 			return null;
 		}
 

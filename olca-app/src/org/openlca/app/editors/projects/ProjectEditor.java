@@ -6,7 +6,6 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.Config;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.reports.ReportEditorPage;
 import org.openlca.app.editors.reports.Reports;
@@ -17,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ibm.icu.util.Calendar;
 
-public class ProjectEditor extends ModelEditor<Project> implements IEditor {
+public class ProjectEditor extends ModelEditor<Project> {
 
 	public static String ID = "editors.project";
 	private Logger log = LoggerFactory.getLogger(getClass());

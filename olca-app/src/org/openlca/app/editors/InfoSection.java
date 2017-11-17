@@ -17,6 +17,7 @@ import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.EventHandler;
 import org.openlca.app.M;
+import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -33,7 +34,6 @@ import org.openlca.core.model.Version;
 public class InfoSection {
 
 	private CategorizedEntity entity;
-	private final DataBinding binding;
 	private final ModelEditor<?> editor;
 
 	private Composite container;
@@ -42,26 +42,27 @@ public class InfoSection {
 	public InfoSection(ModelEditor<?> editor) {
 		this.entity = editor.getModel();
 		this.editor = editor;
-		this.binding = new DataBinding(editor);
 	}
 
 	public void render(Composite body, FormToolkit toolkit) {
-		container = UI.formSection(body, toolkit, M.GeneralInformation);
-		Text nameText = UI.formText(container, toolkit, M.Name);
-		binding.onString(() -> editor.getModel(), "name", nameText);
-		Text descriptionText = UI.formMultiText(container, toolkit,
-				M.Description);
-		binding.onString(() -> editor.getModel(), "description",
-				descriptionText);
+		container = UI.formSection(body, toolkit, M.GeneralInformation, 3);
+		Widgets.text(container, M.Name, "name", editor, toolkit);
+		Widgets.multiText(container, M.Description, "description", editor, toolkit);
 		if (entity.getCategory() != null) {
 			new Label(container, SWT.NONE).setText(M.Category);
 			createBreadcrumb(container);
+			new CommentControl(container, toolkit, "category", editor.getComments());
+		} else if (editor.hasComment("category")) {
+			new Label(container, SWT.NONE).setText(M.Category);
+			UI.filler(container);		
+			new CommentControl(container, toolkit, "category", editor.getComments());
 		}
 		createVersionText(toolkit);
 		Text uuidText = UI.formText(container, toolkit, "UUID");
 		uuidText.setEditable(false);
 		if (entity.getRefId() != null)
 			uuidText.setText(entity.getRefId());
+		UI.filler(container, toolkit);
 		createDateText(toolkit);
 	}
 
@@ -82,6 +83,7 @@ public class InfoSection {
 		});
 		new VersionLink(composite, toolkit, VersionLink.MAJOR);
 		new VersionLink(composite, toolkit, VersionLink.MINOR);
+		UI.filler(container, toolkit);
 	}
 
 	private void createDateText(FormToolkit tk) {
@@ -95,6 +97,7 @@ public class InfoSection {
 			entity = editor.getModel();
 			text.setText(format.format(new Date(entity.getLastChange())));
 		});
+		UI.filler(container, tk);
 	}
 
 	private void createBreadcrumb(Composite parent) {

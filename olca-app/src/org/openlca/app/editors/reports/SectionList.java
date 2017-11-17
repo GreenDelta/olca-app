@@ -87,8 +87,7 @@ class SectionList {
 			this.model = model;
 			String title = model.title != null ? model.title : "";
 			String text = model.text != null ? model.text : "";
-			ReportComponent component = ReportComponent.getForId(
-					model.componentId);
+			ReportComponent component = ReportComponent.getForId(model.componentId);
 			ui.setText(title);
 			titleText.setText(title);
 			descriptionText.setText(text);
@@ -138,10 +137,10 @@ class SectionList {
 				ReportComponent c = Viewers.getFirst(evt.getSelection());
 				if (c == null || c == ReportComponent.NONE)
 					model.componentId = null;
-				else
-					model.componentId = c.getId();
-				editor.setDirty(true);
-			});
+					else
+						model.componentId = c.getId();
+					editor.setDirty(true);
+				});
 			if (model.componentId != null)
 				componentViewer.setSelection(new StructuredSelection(
 						ReportComponent.getForId(model.componentId)));

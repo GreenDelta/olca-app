@@ -8,7 +8,6 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
-import org.openlca.app.editors.DataBinding;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.reports.model.Report;
@@ -21,7 +20,6 @@ public class ReportEditorPage extends ModelPage<Project> {
 
 	private Report report;
 	private ProjectEditor editor;
-	private DataBinding binding;
 
 	private FormToolkit tk;
 	private SectionList sectionList;
@@ -30,7 +28,6 @@ public class ReportEditorPage extends ModelPage<Project> {
 		super(editor, "ReportInfoPage", M.ReportSections);
 		this.editor = editor;
 		this.report = report;
-		this.binding = new DataBinding(editor);
 	}
 
 	@Override
@@ -55,7 +52,7 @@ public class ReportEditorPage extends ModelPage<Project> {
 	private void createInfoSection(Composite body) {
 		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
 		Text titleText = UI.formText(comp, tk, M.Title);
-		binding.onString(() -> report, "title", titleText);
+		editor.getBinding().onString(() -> report, "title", titleText);
 	}
 
 }

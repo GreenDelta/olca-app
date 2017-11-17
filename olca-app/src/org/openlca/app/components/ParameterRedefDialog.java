@@ -193,8 +193,7 @@ public class ParameterRedefDialog extends FormDialog {
 
 		Section section = UI.section(body, toolkit, M.Parameters);
 		UI.gridData(section, true, true);
-		Composite composite = UI.sectionClient(section, toolkit);
-		UI.gridLayout(composite, 1);
+		Composite composite = UI.sectionClient(section, toolkit, 1);
 		createViewer(composite);
 	}
 

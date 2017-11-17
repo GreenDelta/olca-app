@@ -17,8 +17,7 @@ class SFParamMeanSection {
 	}
 
 	void render(Composite body, FormToolkit tk) {
-		Composite comp = UI.formSection(body, tk,
-				"#Parameter aggregation function");
+		Composite comp = UI.formSection(body, tk, "#Parameter aggregation function");
 		Combo combo = UI.formCombo(comp, tk, "#Function");
 		UI.gridData(combo, false, false).widthHint = 160;
 		combo.setItems(new String[] {

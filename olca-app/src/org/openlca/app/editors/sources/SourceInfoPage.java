@@ -8,7 +8,6 @@ import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -20,6 +19,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
@@ -62,9 +62,9 @@ class SourceInfoPage extends ModelPage<Source> {
 	}
 
 	protected void additionalInfo(Composite body) {
-		Composite comp = UI.formSection(body, tk, M.AdditionalInformation);
-		UI.gridLayout(comp, 3);
-		createText(M.URL, "url", comp);
+		Composite comp = UI.formSection(body, tk, M.AdditionalInformation, 3);
+		UI.gridLayout(comp, 4);
+		text(comp, M.URL, "url");
 		Button urlButton = tk.createButton(comp, M.Open, SWT.NONE);
 		urlButton.setImage(Icon.MAP.get());
 		Controls.onSelect(urlButton, e -> {
@@ -73,10 +73,9 @@ class SourceInfoPage extends ModelPage<Source> {
 				return;
 			Desktop.browse(url);
 		});
-		createText(M.TextReference, "textReference", comp);
+		text(comp, M.TextReference, "textReference");
 		UI.filler(comp, tk);
-		Text text = UI.formText(comp, getManagedForm().getToolkit(), M.Year);
-		getBinding().onShort(() -> getModel(), "year", text);
+		shortText(comp, M.Year, "year");
 		UI.filler(comp, tk);
 		fileSection(comp);
 	}
@@ -84,7 +83,6 @@ class SourceInfoPage extends ModelPage<Source> {
 	private void fileSection(Composite parent) {
 		UI.formLabel(parent, M.File);
 		Composite comp = tk.createComposite(parent);
-		UI.filler(parent);
 		GridLayout layout = new GridLayout();
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
@@ -96,6 +94,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		Controls.onSelect(browseButton, e -> selectFile());
 		fileLink(comp);
 		deleteLink(comp);
+		new CommentControl(parent, tk, "externalFile", getComments());
 	}
 
 	private void deleteLink(Composite comp) {

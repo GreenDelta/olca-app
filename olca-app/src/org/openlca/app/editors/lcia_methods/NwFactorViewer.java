@@ -9,6 +9,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.lcia_methods.NwFactorViewer.Wrapper;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.viewers.table.AbstractTableViewer;
@@ -23,6 +25,7 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 	private static final String IMPACT_CATEGORY = M.ImpactCategory;
 	private static final String NORMALIZATION = M.NormalizationFactor;
 	private static final String WEIGHTING = M.WeightingFactor;
+	private static final String COMMENT = "";
 
 	private NwSet set;
 	private final ImpactMethodEditor editor;
@@ -32,6 +35,8 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 		this.editor = editor;
 		getModifySupport().bind(NORMALIZATION, new NormalizationModifier());
 		getModifySupport().bind(WEIGHTING, new WeightingModifier());
+		getModifySupport().bind("", new CommentDialogModifier<Wrapper>(editor.getComments(),
+				w -> CommentPaths.get(set, w.factor)));
 		getViewer().getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 		getViewer().getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 	}
@@ -60,7 +65,7 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { IMPACT_CATEGORY, NORMALIZATION, WEIGHTING };
+		return new String[] { IMPACT_CATEGORY, NORMALIZATION, WEIGHTING, COMMENT };
 	}
 
 	public class Wrapper {
@@ -79,8 +84,13 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 
 		@Override
 		public Image getColumnImage(Object element, int column) {
+			if (!(element instanceof Wrapper))
+				return null;
+			Wrapper wrapper = (Wrapper) element;
 			if (column == 0)
 				return Images.get(ModelType.IMPACT_CATEGORY);
+			if (column == 3)
+				return Images.get(editor.getComments(), CommentPaths.get(set, wrapper.factor));
 			return null;
 		}
 

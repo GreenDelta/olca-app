@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Cache;
+import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -55,6 +56,9 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			return Images.get(ModelType.PROCESS);
 		if (col == 6)
 			return getAvoidedCheck(e);
+		if (col == 10) {
+			return Images.get(editor.getComments(), CommentPaths.get(e));
+		}
 		return null;
 	}
 

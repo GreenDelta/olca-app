@@ -26,8 +26,7 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 		super(parent);
 		this.editor = editor;
 		getModifySupport().bind(NAME, new StringModifier<>(editor, "name"));
-		getModifySupport().bind(UNIT,
-				new StringModifier<>(editor, "weightedScoreUnit"));
+		getModifySupport().bind(UNIT, new StringModifier<>(editor, "weightedScoreUnit"));
 		Tables.onDoubleClick(getViewer(), (event) -> {
 			TableItem item = Tables.getItem(getViewer(), event);
 			if (item == null)

@@ -256,6 +256,8 @@ public class Tables {
 					additional += minimum - colWidth;
 					colWidth = minimum;
 				}
+				if (colWidth == 0)
+					continue;
 				columns[i].setWidth((int) colWidth);
 			}
 			if (additional == 0 || longest == -1)

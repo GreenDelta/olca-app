@@ -23,6 +23,10 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ParameterRedefDialog;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
+import org.openlca.app.editors.comments.CommentAction;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
@@ -32,12 +36,14 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.core.database.Daos;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
@@ -116,8 +122,7 @@ class ProjectParameterTable {
 	}
 
 	public void render(Section section, FormToolkit toolkit) {
-		Composite composite = UI.sectionClient(section, toolkit);
-		UI.gridLayout(composite, 1);
+		Composite composite = UI.sectionClient(section, toolkit, 1);
 		viewer = Tables.createViewer(composite, getColumnTitles());
 		viewer.setLabelProvider(new LabelProvider());
 		Tables.bindColumnWidths(viewer, 0.15, 0.15, 0.15, 0.15);
@@ -126,7 +131,7 @@ class ProjectParameterTable {
 		Action add = Actions.onAdd(this::onAdd);
 		Action remove = Actions.onRemove(this::onRemove);
 		Action copy = TableClipboard.onCopy(viewer);
-		Actions.bind(section, add, remove);
+		CommentAction.bindTo(section, "parameters", editor.getComments(), add, remove);
 		Actions.bind(viewer, add, remove, copy);
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
@@ -136,32 +141,58 @@ class ProjectParameterTable {
 	}
 
 	private String[] getColumnTitles() {
-		String[] titles = new String[LABEL_COLS + columns.length];
+		boolean showComments = editor.hasAnyComment("variants.parameterRedefs");
+		int colSize = showComments ? 2 * columns.length : columns.length;
+		String[] titles = new String[LABEL_COLS + colSize];
 		titles[0] = PARAMETER;
 		titles[1] = CONTEXT;
 		titles[2] = NAME;
 		titles[3] = DESCRIPTION;
-		for (int i = 0; i < columns.length; i++)
-			titles[i + LABEL_COLS] = columns[i].getTitle();
+		for (int i = 0; i < columns.length; i++) {
+			int index = showComments ? 2 * i : i;
+			titles[LABEL_COLS + index] = columns[i].getTitle();
+			if (showComments) {
+				titles[LABEL_COLS + index + 1] = "";
+			}
+		}
 		return titles;
 	}
 
 	private void createModifySupport() {
 		// we use unique key to map the columns / editors to project variants
-		String[] keys = new String[LABEL_COLS + columns.length];
+		boolean showComments = editor.hasAnyComment("variants.parameterRedefs");
+		int colSize = showComments ? 2 * columns.length : columns.length;
+		String[] keys = new String[LABEL_COLS + colSize];
 		keys[0] = PARAMETER;
 		keys[1] = CONTEXT;
 		keys[2] = NAME;
 		keys[3] = DESCRIPTION;
-		for (int i = 0; i < columns.length; i++)
-			keys[i + LABEL_COLS] = columns[i].getKey();
+		for (int i = 0; i < columns.length; i++) {
+			int index = showComments ? 2 * i : i;
+			keys[LABEL_COLS + index] = columns[i].getKey();
+			if (showComments) {
+				keys[LABEL_COLS + index + 1] = columns[i].getKey() + "_COMMENT";
+			}
+		}
 		viewer.setColumnProperties(keys);
-		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(
-				viewer);
+		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(viewer);
 		modifySupport.bind(NAME, new NameModifier());
 		modifySupport.bind(DESCRIPTION, new DescriptionModifier());
-		for (int i = LABEL_COLS; i < keys.length; i++)
-			modifySupport.bind(keys[i], new ValueModifier(keys[i]));
+		for (int i = LABEL_COLS; i < keys.length; i++) {
+			if (!showComments || i % 2 == 0) {
+				modifySupport.bind(keys[i], new ValueModifier(keys[i]));
+			} else {
+				ProjectVariant variant = columns[(i - LABEL_COLS - 1) / 2].variant;
+				modifySupport.bind(keys[i], new CommentDialogModifier<>(editor.getComments(),
+						redef -> CommentPaths.get(variant, redef, getContext(redef))));
+			}
+		}
+	}
+
+	private CategorizedDescriptor getContext(ParameterRedef p) {
+		if (p.getContextId() == null)
+			return null;
+		return Daos.categorized(Database.get(), p.getContextType()).getDescriptor(p.getContextId());
 	}
 
 	private void onAdd() {
@@ -257,8 +288,7 @@ class ProjectParameterTable {
 			return null;
 		for (ParameterRedef variantRedef : variant.getParameterRedefs()) {
 			if (Objects.equals(variantRedef.getName(), redef.getName())
-					&& Objects.equals(variantRedef.getContextId(),
-							redef.getContextId()))
+					&& Objects.equals(variantRedef.getContextId(), redef.getContextId()))
 				return variantRedef;
 		}
 		return null;
@@ -298,17 +328,22 @@ class ProjectParameterTable {
 			implements ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			if (columnIndex != 0)
-				return null;
+		public Image getColumnImage(Object element, int column) {
 			if (!(element instanceof ParameterRedef))
 				return null;
 			ParameterRedef redef = (ParameterRedef) element;
 			BaseDescriptor model = getModel(redef);
-			if (model == null)
-				return Images.get(ModelType.PARAMETER); 
-			else
+			if (column == 0) {
+				if (model == null)
+					return Images.get(ModelType.PARAMETER);
 				return Images.get(model);
+			}
+			if (column > LABEL_COLS && column % 2 == 1) {
+				ProjectVariant variant = columns[(column - LABEL_COLS - 1) / 2].variant;
+				String path = CommentPaths.get(variant, redef, getContext(redef));
+				return Images.get(editor.getComments(), path);
+			}
+			return null;
 		}
 
 		@Override
@@ -324,12 +359,13 @@ class ProjectParameterTable {
 				return reportSync.getName(redef);
 			if (col == 3)
 				return reportSync.getDescription(redef);
-			else
+			if (col % 2 == 0)
 				return getVariantValue(col, redef);
+			return null;
 		}
 
 		private String getVariantValue(int col, ParameterRedef redef) {
-			int idx = col - LABEL_COLS;
+			int idx = (col - LABEL_COLS) / 2;
 			if (idx < 0 || idx >= columns.length)
 				return null;
 			ProjectVariant variant = columns[idx].getVariant();

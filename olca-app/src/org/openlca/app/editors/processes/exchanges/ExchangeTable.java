@@ -1,5 +1,6 @@
 package org.openlca.app.editors.processes.exchanges;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,6 +17,9 @@ import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.comments.CommentAction;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
@@ -51,15 +55,16 @@ class ExchangeTable {
 	private final ProcessEditor editor;
 	private final ProcessExchangePage page;
 
-	private final String FLOW = M.Flow;
-	private final String CATEGORY = M.Category;
-	private final String AMOUNT = M.Amount;
-	private final String UNIT = M.Unit;
-	private final String COSTS = M.CostsRevenues;
-	private final String PEDIGREE = M.DataQualityEntry;
-	private final String PROVIDER = M.DefaultProvider;
-	private final String UNCERTAINTY = M.Uncertainty;
-	private final String DESCRIPTION = M.Description;
+	private static final String FLOW = M.Flow;
+	private static final String CATEGORY = M.Category;
+	private static final String AMOUNT = M.Amount;
+	private static final String UNIT = M.Unit;
+	private static final String COSTS = M.CostsRevenues;
+	private static final String PEDIGREE = M.DataQualityEntry;
+	private static final String PROVIDER = M.DefaultProvider;
+	private static final String UNCERTAINTY = M.Uncertainty;
+	private static final String DESCRIPTION = M.Description;
+	private static final String COMMENT = "";
 	private final String AVOIDED;
 
 	private ExchangeLabel label;
@@ -82,13 +87,11 @@ class ExchangeTable {
 		this.page = page;
 		this.editor = page.editor;
 		this.AVOIDED = forInputs ? "#Avoided waste" : M.AvoidedProduct;
-		editor.getParameterSupport().afterEvaluation(
-				() -> viewer.refresh());
+		editor.getParameterSupport().afterEvaluation(() -> viewer.refresh());
 	}
 
 	private void render(Section section) {
-		Composite composite = UI.sectionClient(section, page.toolkit);
-		UI.gridLayout(composite, 1);
+		Composite composite = UI.sectionClient(section, page.toolkit, 1);
 		viewer = Tables.createViewer(composite, getColumns());
 		label = new ExchangeLabel(editor);
 		viewer.setLabelProvider(label);
@@ -97,8 +100,11 @@ class ExchangeTable {
 		viewer.addFilter(new Filter());
 		bindActions(section);
 		bindDoubleClick(viewer);
-		Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.08, 0.08, 0.08, 0.08,
-				0.08, 0.08, 0.07);
+		if (editor.hasAnyComment("exchanges")) {
+			Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.08, 0.08, 0.08, 0.08, 0.07, 0.07, 0.06);
+		} else {
+			Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.07);
+		}
 		Viewers.sortByLabels(viewer, label, 0, 1, 3, 4, 5, 6, 7, 8);
 		Viewers.sortByDouble(viewer, (Exchange e) -> e.amount, 2);
 		viewer.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
@@ -115,11 +121,11 @@ class ExchangeTable {
 		ms.bind(UNIT, new UnitCell(editor));
 		ms.bind(COSTS, new CostCellEditor(viewer, editor));
 		ms.bind(PEDIGREE, new DataQualityCellEditor(viewer, editor));
-		ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(),
-				editor));
+		ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
 		ms.bind(DESCRIPTION, new CommentEditor(viewer, editor));
 		ms.bind(PROVIDER, new ProviderCombo(editor));
 		ms.bind(AVOIDED, new AvoidedCheck(editor));
+		ms.bind("", new CommentDialogModifier<Exchange>(editor.getComments(), CommentPaths::get));
 	}
 
 	private void bindActions(Section section) {
@@ -135,7 +141,7 @@ class ExchangeTable {
 		});
 		Action formulaSwitch = new FormulaSwitchAction();
 		Action clipboard = TableClipboard.onCopy(viewer);
-		Actions.bind(section, add, remove, formulaSwitch);
+		CommentAction.bindTo(section, "exchanges", editor.getComments(), add, remove, formulaSwitch);
 		Actions.bind(viewer, add, remove, qRef, clipboard);
 		Tables.onDeletePressed(viewer, e -> onRemove());
 	}
@@ -154,8 +160,12 @@ class ExchangeTable {
 	}
 
 	private String[] getColumns() {
-		return new String[] { FLOW, CATEGORY, AMOUNT, UNIT, COSTS,
-				UNCERTAINTY, AVOIDED, PROVIDER, PEDIGREE, DESCRIPTION };
+		List<String> columns = new ArrayList<>(Arrays.asList(new String[] { FLOW, CATEGORY, AMOUNT, UNIT, COSTS,
+				UNCERTAINTY, AVOIDED, PROVIDER, PEDIGREE, DESCRIPTION }));
+		if (editor.hasAnyComment("exchanges")) {
+			columns.add(COMMENT);
+		}
+		return columns.toArray(new String[columns.size()]);
 	}
 
 	private void onAdd() {
@@ -202,15 +212,15 @@ class ExchangeTable {
 		editor.setDirty(true);
 		editor.postEvent(editor.EXCHANGES_CHANGED, this);
 	}
-	
+
 	private boolean canAdd(Flow flow) {
-		if (forInputs && flow.getFlowType() == FlowType.WASTE_FLOW) 
-			for (Exchange ex : editor.getModel().getExchanges()) 
-				if (ex.isInput && ex.flow.equals(flow)) 
+		if (forInputs && flow.getFlowType() == FlowType.WASTE_FLOW)
+			for (Exchange ex : editor.getModel().getExchanges())
+				if (ex.isInput && ex.flow.equals(flow))
 					return false;
-		if (!forInputs && flow.getFlowType() == FlowType.PRODUCT_FLOW) 
-			for (Exchange ex : editor.getModel().getExchanges()) 
-				if (!ex.isInput && ex.flow.equals(flow)) 
+		if (!forInputs && flow.getFlowType() == FlowType.PRODUCT_FLOW)
+			for (Exchange ex : editor.getModel().getExchanges())
+				if (!ex.isInput && ex.flow.equals(flow))
 					return false;
 		return true;
 	}

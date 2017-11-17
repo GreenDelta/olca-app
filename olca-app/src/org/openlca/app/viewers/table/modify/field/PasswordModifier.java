@@ -3,7 +3,7 @@ package org.openlca.app.viewers.table.modify.field;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
-import org.openlca.app.editors.IEditor;
+import org.openlca.app.editors.ModelEditor;
 
 public class PasswordModifier<T> extends StringModifier<T> {
 
@@ -11,7 +11,7 @@ public class PasswordModifier<T> extends StringModifier<T> {
 		this(null, field);
 	}
 
-	public PasswordModifier(IEditor editor, String field) {
+	public PasswordModifier(ModelEditor<?> editor, String field) {
 		this(editor, field, null);
 	}
 
@@ -19,7 +19,7 @@ public class PasswordModifier<T> extends StringModifier<T> {
 		this(null, field, onChange);
 	}
 
-	public PasswordModifier(IEditor editor, String field, Consumer<T> onChange) {
+	public PasswordModifier(ModelEditor<?> editor, String field, Consumer<T> onChange) {
 		super(editor, field, onChange);
 		style = SWT.PASSWORD;
 	}

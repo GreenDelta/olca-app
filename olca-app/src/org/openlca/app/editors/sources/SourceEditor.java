@@ -1,12 +1,11 @@
 package org.openlca.app.editors.sources;
 
-import org.openlca.app.editors.IEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.core.model.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SourceEditor extends ModelEditor<Source> implements IEditor {
+public class SourceEditor extends ModelEditor<Source> {
 
 	public static String ID = "editors.source";
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -14,7 +13,7 @@ public class SourceEditor extends ModelEditor<Source> implements IEditor {
 	public SourceEditor() {
 		super(Source.class);
 	}
-	
+
 	@Override
 	protected void addPages() {
 		try {

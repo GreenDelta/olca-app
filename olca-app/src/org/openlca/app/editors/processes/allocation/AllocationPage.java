@@ -15,10 +15,12 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.comments.CommentAction;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
@@ -130,26 +132,44 @@ public class AllocationPage extends ModelPage<Process> {
 	}
 
 	private void createPhysicalEconomicSection(Composite body) {
-		Section section = UI.section(body, tk,
-				M.PhysicalAndEconomicAllocation);
-		Composite composite = UI.sectionClient(section, tk);
-		UI.gridLayout(composite, 1);
-		String[] colNames = { M.Product, M.Physical,
-				M.Economic };
+		Section section = UI.section(body, tk, M.PhysicalAndEconomicAllocation);
+		Composite composite = UI.sectionClient(section, tk, 1);
+		String[] colNames = { M.Product, M.Physical, M.Economic };
+		if (editor.hasAnyComment("allocationFactors")) {
+			colNames = new String[] { M.Product, M.Physical, "", M.Economic, "" };
+		}
 		factorViewer = Tables.createViewer(composite, colNames);
-		Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0.3);
+		// set keys for modifier binding
+		if (editor.hasAnyComment("allocationFactors")) {
+			colNames[2] = M.Physical + "-comment";
+			colNames[4] = M.Economic + "-comment";
+		}
+		factorViewer.setColumnProperties(colNames);
 		factorViewer.setLabelProvider(new FactorLabel());
 		factorViewer.setInput(Util.getProviderFlows(process()));
-		ModifySupport<Exchange> modifySupport = new ModifySupport<>(
-				factorViewer);
-		modifySupport.bind(M.Physical, new ValueModifier(
-				AllocationMethod.PHYSICAL));
-		modifySupport.bind(M.Economic, new ValueModifier(
-				AllocationMethod.ECONOMIC));
 		Action copy = TableClipboard.onCopy(factorViewer);
-		Actions.bind(factorViewer, copy);
+		ModifySupport<Exchange> modifySupport = new ModifySupport<>(factorViewer);
+		modifySupport.bind(M.Physical, new ValueModifier(AllocationMethod.PHYSICAL));
+		modifySupport.bind(M.Economic, new ValueModifier(AllocationMethod.ECONOMIC));
+		if (editor.hasComment("allocationFactors")) {
+			modifySupport.bind(M.Physical + "-comment", createCommentModifier(AllocationMethod.PHYSICAL));
+			modifySupport.bind(M.Economic + "-comment", createCommentModifier(AllocationMethod.ECONOMIC));
+			Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0, 0.3, 0);
+		} else {
+			Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0.3);
+		}
+		CommentAction.bindTo(factorViewer, "allocationFactors", editor.getComments(), copy);
 		factorViewer.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 		factorViewer.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
+	}
+
+	private CommentDialogModifier<Exchange> createCommentModifier(AllocationMethod method) {
+		return new CommentDialogModifier<>(editor.getComments(), (e) -> {
+			AllocationFactor factor = getFactor(e, method);
+			if (factor == null)
+				return null;
+			return CommentPaths.get(factor, e);
+		});
 	}
 
 	private void createCausalSection(Composite body) {
@@ -157,6 +177,7 @@ public class AllocationPage extends ModelPage<Process> {
 		UI.gridData(section, true, true);
 		causalFactorTable = new CausalFactorTable(editor);
 		causalFactorTable.render(section, tk);
+		CommentAction.bindTo(section, "allocationFactors", editor.getComments());
 	}
 
 	private String productText(Exchange exchange) {
@@ -170,27 +191,24 @@ public class AllocationPage extends ModelPage<Process> {
 		return editor.getModel();
 	}
 
-	private AllocationFactor getFactor(Exchange exchange,
-			AllocationMethod method) {
+	private AllocationFactor getFactor(Exchange exchange, AllocationMethod method) {
 		if (exchange == null || method == null)
 			return null;
-		AllocationFactor factor = null;
-		for (AllocationFactor f : process().getAllocationFactors()) {
-			if (f.getAllocationType() == method
-					&& f.getProductId() == exchange.flow.getId()) {
-				factor = f;
-				break;
-			}
+		for (AllocationFactor factor : process().getAllocationFactors()) {
+			if (factor.getAllocationType() != method)
+				continue;
+			if (factor.getProductId() != exchange.flow.getId())
+				continue;
+			return factor;
 		}
-		return factor;
+		return null;
 	}
 
 	private String getFactorLabel(Exchange exchange, AllocationMethod method) {
 		AllocationFactor factor = getFactor(exchange, method);
 		if (factor == null)
 			return Double.toString(1);
-		else
-			return Double.toString(factor.getValue());
+		return Double.toString(factor.getValue());
 	}
 
 	private class FactorLabel extends LabelProvider implements
@@ -206,7 +224,7 @@ public class AllocationPage extends ModelPage<Process> {
 				return productText(exchange);
 			case 1:
 				return getFactorLabel(exchange, AllocationMethod.PHYSICAL);
-			case 2:
+			case 3:
 				return getFactorLabel(exchange, AllocationMethod.ECONOMIC);
 			default:
 				return null;
@@ -217,6 +235,22 @@ public class AllocationPage extends ModelPage<Process> {
 		public Image getColumnImage(Object element, int col) {
 			if (col == 0)
 				return Images.get(FlowType.PRODUCT_FLOW);
+			if (col == 2) {
+				Exchange exchange = (Exchange) element;
+				AllocationFactor factor = getFactor(exchange, AllocationMethod.PHYSICAL);
+				if (factor == null)
+					return null;
+				String path = CommentPaths.get(factor, exchange);
+				return Images.get(editor.getComments(), path);
+			}
+			if (col == 4) {
+				Exchange exchange = (Exchange) element;
+				AllocationFactor factor = getFactor(exchange, AllocationMethod.ECONOMIC);
+				if (factor == null)
+					return null;
+				String path = CommentPaths.get(factor, exchange);
+				return Images.get(editor.getComments(), path);
+			}
 			return null;
 		}
 	}

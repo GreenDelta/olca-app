@@ -73,18 +73,14 @@ public class SimulationPage extends FormPage {
 
 	private void createSettingsSection(FormToolkit toolkit, Composite body) {
 		Composite settings = UI.formSection(body, toolkit, M.Settings);
-		Text systemText = UI
-				.formText(settings, toolkit, M.ProductSystem);
+		Text systemText = UI.formText(settings, toolkit, M.ProductSystem);
 		Text processText = UI.formText(settings, toolkit, M.Process);
-		Text qRefText = UI.formText(settings, toolkit,
-				M.QuantitativeReference);
-		Text simCountText = UI.formText(settings, toolkit,
-				M.NumberOfSimulations);
+		Text qRefText = UI.formText(settings, toolkit, M.QuantitativeReference);
+		Text simCountText = UI.formText(settings, toolkit, M.NumberOfSimulations);
 		if (editor.getSetup() != null) {
 			CalculationSetup setup = editor.getSetup();
 			systemText.setText(setup.productSystem.getName());
-			processText.setText(setup.productSystem.getReferenceProcess()
-					.getName());
+			processText.setText(setup.productSystem.getReferenceProcess().getName());
 			qRefText.setText(getQRefText());
 			simCountText.setText(Integer.toString(setup.numberOfRuns));
 		}

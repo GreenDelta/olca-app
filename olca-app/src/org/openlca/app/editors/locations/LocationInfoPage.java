@@ -50,16 +50,16 @@ public class LocationInfoPage extends ModelPage<Location> implements WebPage {
 	}
 
 	private void createAdditionalInfo(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
-				M.AdditionalInformation);
-		createText(M.Code, "code", composite);
-		createDoubleText(M.Longitude, "longitude", composite);
-		createDoubleText(M.Latitude, "latitude", composite);
+		Composite composite = UI.formSection(body, toolkit, M.AdditionalInformation, 3);
+		text(composite, M.Code, "code");
+		doubleText(composite, M.Longitude, "longitude");
+		doubleText(composite, M.Latitude, "latitude");
 	}
 
 	private void createMapEditorArea(Composite body) {
 		Section section = toolkit.createSection(body,
-				ExpandableComposite.TITLE_BAR | ExpandableComposite.FOCUS_TITLE
+				ExpandableComposite.TITLE_BAR
+						| ExpandableComposite.FOCUS_TITLE
 						| ExpandableComposite.EXPANDED
 						| ExpandableComposite.TWISTIE);
 		UI.gridData(section, true, true);

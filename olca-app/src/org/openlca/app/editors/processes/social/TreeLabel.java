@@ -3,6 +3,8 @@ package org.openlca.app.editors.processes.social;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.editors.comments.CommentPaths;
+import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ModelType;
@@ -10,6 +12,12 @@ import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.SocialIndicator;
 
 class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
+
+	private final ProcessEditor editor;
+
+	TreeLabel(ProcessEditor editor) {
+		this.editor = editor;
+	}
 
 	@Override
 	public Image getColumnImage(Object obj, int col) {
@@ -22,6 +30,8 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 		SocialAspect a = (SocialAspect) obj;
 		if (col == 6 && a.source != null)
 			return Images.get(ModelType.SOURCE);
+		if (col == 7)
+			return Images.get(editor.getComments(), CommentPaths.get(a));
 		return null;
 	}
 

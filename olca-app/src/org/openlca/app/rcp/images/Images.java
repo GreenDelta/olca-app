@@ -6,6 +6,7 @@ import org.eclipse.ui.PlatformUI;
 import org.openlca.app.navigation.Group;
 import org.openlca.app.navigation.GroupType;
 import org.openlca.app.util.FileType;
+import org.openlca.cloud.model.Comments;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
@@ -117,6 +118,18 @@ public class Images {
 		return ImageManager.get(icon, overlay);
 	}
 
+	public static Image get(Boolean value) {
+		if (value == null || !value)
+			return Icon.CHECK_FALSE.get();
+		return Icon.CHECK_TRUE.get();
+	}
+
+	public static Image get(Comments comments, String path) {
+		if (comments.has(path))
+			return Icon.SHOW_COMMENTS.get();
+		return null;
+	}
+
 	public static Image get(IResultProvider result) {
 		if (result == null)
 			return null;
@@ -222,6 +235,18 @@ public class Images {
 		if (overlay == null)
 			return ImageManager.descriptor(icon);
 		return ImageManager.descriptor(icon, overlay);
+	}
+
+	public static ImageDescriptor descriptor(Boolean value) {
+		if (value == null || !value)
+			return Icon.CHECK_FALSE.descriptor();
+		return Icon.CHECK_TRUE.descriptor();
+	}
+
+	public static ImageDescriptor descriptor(Comments comments, String path) {
+		if (comments.has(path))
+			return Icon.SHOW_COMMENTS.descriptor();
+		return null;
 	}
 
 	public static ImageDescriptor descriptorForCategory(ModelType type) {

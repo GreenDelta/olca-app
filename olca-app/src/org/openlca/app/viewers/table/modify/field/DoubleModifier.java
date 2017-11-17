@@ -2,15 +2,15 @@ package org.openlca.app.viewers.table.modify.field;
 
 import java.util.function.Consumer;
 
-import org.openlca.app.editors.IEditor;
+import org.openlca.app.editors.ModelEditor;
 
 public class DoubleModifier<T> extends TextFieldModifier<T, Double> {
 
-	public DoubleModifier(IEditor editor, String field) {
+	public DoubleModifier(ModelEditor<?> editor, String field) {
 		super(editor, field);
 	}
 
-	public DoubleModifier(IEditor editor, String field, Consumer<T> onChange) {
+	public DoubleModifier(ModelEditor<?> editor, String field, Consumer<T> onChange) {
 		super(editor, field, onChange);
 	}
 

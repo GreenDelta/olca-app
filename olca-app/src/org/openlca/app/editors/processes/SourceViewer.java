@@ -2,12 +2,18 @@ package org.openlca.app.editors.processes;
 
 import java.util.List;
 
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.SourceDao;
@@ -24,12 +30,16 @@ class SourceViewer extends AbstractTableViewer<Source> {
 	private final SourceDao sourceDao;
 	private final ScrolledForm form;
 
-	public SourceViewer(Composite parent, IDatabase database,
-			ProcessEditor editor, ScrolledForm form) {
+	public SourceViewer(Composite parent, IDatabase database, ProcessEditor editor, ScrolledForm form) {
 		super(parent);
+		getViewer().getTable().setLinesVisible(false);
+		getViewer().getTable().setHeaderVisible(false);
+		getViewer().setLabelProvider(new LabelProvider());
 		this.sourceDao = new SourceDao(database);
 		this.editor = editor;
 		this.form = form;
+		getModifySupport().bind("", new CommentDialogModifier<Source>(editor.getComments(), CommentPaths::get));
+		Tables.bindColumnWidths(getViewer(), 0.97);
 		addDoubleClickHandler();
 	}
 
@@ -46,6 +56,11 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		});
 	}
 
+	@Override
+	protected String[] getColumnHeaders() {
+		return new String[] { "Name", "" };
+	}
+
 	public void setInput(Process process) {
 		if (process == null || process.getDocumentation() == null)
 			setInput(new Source[0]);
@@ -57,8 +72,7 @@ class SourceViewer extends AbstractTableViewer<Source> {
 
 	@OnAdd
 	protected void onCreate() {
-		BaseDescriptor[] descriptors = ModelSelectionDialog
-				.multiSelect(ModelType.SOURCE);
+		BaseDescriptor[] descriptors = ModelSelectionDialog.multiSelect(ModelType.SOURCE);
 		if (descriptors == null)
 			return;
 		for (BaseDescriptor descriptor : descriptors) {
@@ -103,6 +117,24 @@ class SourceViewer extends AbstractTableViewer<Source> {
 	protected void onDrop(SourceDescriptor descriptor) {
 		if (descriptor != null)
 			add(descriptor);
+	}
+
+	private class LabelProvider extends BaseLabelProvider implements ITableLabelProvider {
+
+		@Override
+		public Image getColumnImage(Object element, int column) {
+			if (column == 0)
+				return getImage(element);
+			return Images.get(editor.getComments(), CommentPaths.get((Source) element));
+		}
+
+		@Override
+		public String getColumnText(Object element, int column) {
+			if (column == 0)
+				return getText(element);
+			return null;
+		}
+
 	}
 
 }

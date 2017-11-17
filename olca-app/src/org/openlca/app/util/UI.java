@@ -37,7 +37,7 @@ import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.preferencepages.FeatureFlag;
+import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.rcp.images.Images;
 import org.slf4j.Logger;
@@ -157,10 +157,12 @@ public class UI {
 	public static ScrolledForm formHeader(ModelPage<?> page) {
 		Image image = Images.get(page.getEditor().getModel());
 		ScrolledForm form = formHeader(page.getManagedForm(), page.getFormTitle(), image);
-		if (FeatureFlag.SHOW_REFRESH_BUTTONS.isEnabled()) {
-			Editors.addRefresh(form, page.getEditor());
-			form.getToolBarManager().update(true);
+		// "" is 'general' comment on data set
+		if (page.getEditor().hasComment("")) {
+			form.getToolBarManager().add(new CommentAction("", page.getEditor().getComments()));
 		}
+		Editors.addRefresh(form, page.getEditor());
+		form.getToolBarManager().update(true);
 		return form;
 	}
 
@@ -187,15 +189,17 @@ public class UI {
 		return form;
 	}
 
-	public static Composite formSection(Composite parent, FormToolkit toolkit,
-			String label) {
+	public static Composite formSection(Composite parent, FormToolkit toolkit, String label) {
+		return formSection(parent, toolkit, label, 2);
+	}
+
+	public static Composite formSection(Composite parent, FormToolkit toolkit, String label, int columns) {
 		Section section = section(parent, toolkit, label);
-		Composite client = sectionClient(section, toolkit);
+		Composite client = sectionClient(section, toolkit, columns);
 		return client;
 	}
 
-	public static Section section(Composite parent, FormToolkit toolkit,
-			String label) {
+	public static Section section(Composite parent, FormToolkit toolkit, String label) {
 		Section section = toolkit.createSection(parent,
 				ExpandableComposite.TITLE_BAR | ExpandableComposite.FOCUS_TITLE
 						| ExpandableComposite.EXPANDED
@@ -210,9 +214,17 @@ public class UI {
 	 * The created composite gets a 2-column grid-layout.
 	 */
 	public static Composite sectionClient(Section section, FormToolkit toolkit) {
+		return sectionClient(section, toolkit, 2);
+	}
+
+	/**
+	 * Creates a composite and sets it as section client of the given section.
+	 * The created composite gets a n-column grid-layout.
+	 */
+	public static Composite sectionClient(Section section, FormToolkit toolkit, int columns) {
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
-		gridLayout(composite, 2);
+		gridLayout(composite, columns);
 		return composite;
 	}
 
@@ -359,13 +371,19 @@ public class UI {
 
 	public static Text formMultiText(Composite comp, FormToolkit tk, String label) {
 		formLabel(comp, tk, label);
+		return formMultiText(comp, tk);
+	}
+
+	public static Text formMultiText(Composite comp) {
+		return formMultiText(comp, (FormToolkit) null);
+	}
+
+	public static Text formMultiText(Composite comp, FormToolkit tk) {
 		Text text = null;
 		if (tk != null) {
-			text = tk.createText(comp, null, SWT.BORDER
-					| SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
+			text = tk.createText(comp, null, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
 		} else {
-			text = new Text(comp, SWT.BORDER | SWT.V_SCROLL
-					| SWT.WRAP | SWT.MULTI);
+			text = new Text(comp, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
 		}
 		GridData gd = gridData(text, true, false);
 		gd.minimumHeight = 100;

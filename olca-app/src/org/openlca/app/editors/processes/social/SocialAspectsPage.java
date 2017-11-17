@@ -1,5 +1,9 @@
 package org.openlca.app.editors.processes.social;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
@@ -12,12 +16,16 @@ import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.comments.CommentAction;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
+import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.core.database.SocialIndicatorDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
@@ -51,16 +59,14 @@ public class SocialAspectsPage extends ModelPage<Process> {
 
 	private void createEntrySection(FormToolkit tk, Composite body) {
 		Section section = UI.section(body, tk, M.SocialAssessment);
-		Composite comp = UI.sectionClient(section, tk);
+		Composite comp = UI.sectionClient(section, tk, 1);
 		UI.gridData(section, true, true);
-		UI.gridLayout(comp, 1);
 		createTree(comp);
 		Trees.onDoubleClick(tree, (e) -> editAspect());
 		Action add = Actions.onAdd(this::addIndicator);
-		Action edit = Actions.create(M.Edit,
-				Icon.EDIT.descriptor(), this::editAspect);
+		Action edit = Actions.create(M.Edit, Icon.EDIT.descriptor(), this::editAspect);
 		Action delete = Actions.onRemove(this::deleteAspect);
-		Actions.bind(section, add, edit, delete);
+		CommentAction.bindTo(section, "socialAspects", editor.getComments(), add, edit, delete);
 		Actions.bind(tree, add, edit, delete);
 	}
 
@@ -78,12 +84,18 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	}
 
 	private void createTree(Composite comp) {
-		String[] headers = { M.Name, M.RawValue, M.RiskLevel, M.ActivityVariable, M.DataQuality, M.Comment, M.Source };
-		tree = Trees.createViewer(comp, headers, new TreeLabel());
+		List<String> headers = new ArrayList<>(Arrays.asList(M.Name, M.RawValue, M.RiskLevel, M.ActivityVariable,
+				M.DataQuality, M.Comment, M.Source));
+		if (editor.hasAnyComment("socialAspects")) {
+			headers.add("");
+		}
+		tree = Trees.createViewer(comp, headers.toArray(new String[headers.size()]), new TreeLabel(editor));
 		tree.setContentProvider(new TreeContent());
 		tree.setAutoExpandLevel(3);
 		tree.setInput(treeModel);
-		Trees.bindColumnWidths(tree.getTree(), 0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1);
+		new ModifySupport<SocialAspect>(tree).bind("", new CommentDialogModifier<SocialAspect>(
+				editor.getComments(), CommentPaths::get));
+		Trees.bindColumnWidths(tree.getTree(), 0.2, 0.15, 0.15, 0.15, 0.12, 0.1, 0.1);
 	}
 
 	private void addIndicator() {

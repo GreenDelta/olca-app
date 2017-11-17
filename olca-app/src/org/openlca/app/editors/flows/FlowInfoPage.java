@@ -15,6 +15,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
@@ -44,8 +45,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
-		FlowUseSection useSection = new FlowUseSection(getModel(),
-				Database.get());
+		FlowUseSection useSection = new FlowUseSection(getModel(), Database.get());
 		useSection.render(body, toolkit);
 		createAdditionalInfo(infoSection, body);
 		processButton(infoSection);
@@ -54,16 +54,13 @@ class FlowInfoPage extends ModelPage<Flow> {
 	}
 
 	private void createAdditionalInfo(InfoSection infoSection, Composite body) {
-		createCheckBox(M.InfrastructureFlow, "infrastructureFlow",
-				infoSection.getContainer());
-		createReadOnly(M.FlowType,
-				Images.get(getModel()), "flowType",
-				infoSection.getContainer());
-		Composite composite = UI.formSection(body, toolkit,
-				M.AdditionalInformation);
-		createText(M.CASNumber, "casNumber", composite);
-		createText(M.Formula, "formula", composite);
-		createText(M.Synonyms, "synonyms", composite);
+		Composite container = infoSection.getContainer();
+		checkBox(container, M.InfrastructureFlow, "infrastructureFlow");
+		readOnly(container, M.FlowType, Images.get(getModel()), "flowType");
+		Composite composite = UI.formSection(body, toolkit, M.AdditionalInformation, 3);
+		text(composite, M.CASNumber, "casNumber");
+		text(composite, M.Formula, "formula");
+		text(composite, M.Synonyms, "synonyms");
 		createLocationViewer(composite);
 	}
 
@@ -73,6 +70,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 		viewer.setNullable(true);
 		viewer.setInput(Database.get());
 		getBinding().onModel(() -> getModel(), "location", viewer);
+		new CommentControl(composite, getToolkit(), "location", getComments());
 	}
 
 	private void processButton(InfoSection infoSection) {
@@ -90,8 +88,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 		Flow flow = getModel();
 		try {
 			String wizardId = "wizards.new.process";
-			IWorkbenchWizard w = PlatformUI.getWorkbench()
-					.getNewWizardRegistry().findWizard(wizardId).createWizard();
+			IWorkbenchWizard w = PlatformUI.getWorkbench().getNewWizardRegistry().findWizard(wizardId).createWizard();
 			if (!(w instanceof ProcessWizard))
 				return;
 			ProcessWizard wizard = (ProcessWizard) w;

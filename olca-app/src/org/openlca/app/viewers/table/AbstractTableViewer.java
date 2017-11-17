@@ -149,8 +149,16 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	 * Binds the create and remove actions of the table viewer to the given
 	 * section.
 	 */
-	public void bindTo(Section section) {
-		Actions.bind(section, actions.toArray(new Action[actions.size()]));
+	public void bindTo(Section section, Action... additionalActions) {
+		List<Action> all = actions;
+		if (additionalActions != null && additionalActions.length > 0) {
+			all = new ArrayList<>();
+			all.addAll(actions);
+			for (Action action : additionalActions) {
+				all.add(action);
+			}
+		}
+		Actions.bind(section, all.toArray(new Action[all.size()]));
 	}
 
 	@SuppressWarnings("unchecked")

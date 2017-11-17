@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NwSet;
@@ -75,7 +76,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 
 	private NwSetViewer createNwSetViewer(Section section, SashForm sashForm) {
 		NwSetViewer viewer = new NwSetViewer(sashForm, editor);
-		viewer.bindTo(section);
+		CommentAction.bindTo(section, viewer, "nwSets", editor.getComments());
 		viewer.addSelectionChangedListener((selection) -> factorViewer.setInput(selection));
 		viewer.setInput(getModel());
 		return viewer;

@@ -18,6 +18,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
@@ -71,6 +73,7 @@ class CausalFactorTable {
 			addColumn(product);
 		viewer.setInput(Util.getNonProviderFlows(process()));
 		createModifySupport();
+		viewer.refresh(true);
 	}
 
 	private void removeColumn(int col) {
@@ -82,6 +85,8 @@ class CausalFactorTable {
 		columns = newColumns;
 		Table table = viewer.getTable();
 		table.getColumn(col + 4).dispose();
+		if (editor.hasAnyComment("allocationFactors"))
+			table.getColumn(col + 5).dispose();
 	}
 
 	private void addColumn(Exchange product) {
@@ -89,7 +94,9 @@ class CausalFactorTable {
 		Table table = viewer.getTable();
 		TableColumn tableColumn = new TableColumn(table, SWT.VIRTUAL);
 		tableColumn.setText(newColumn.getTitle());
-		tableColumn.setWidth(150);
+		tableColumn.setToolTipText(newColumn.getTitle());
+		tableColumn.setWidth(80);
+		new TableColumn(table, SWT.VIRTUAL).setWidth(24);
 		Column[] newColumns = new Column[columns.length + 1];
 		System.arraycopy(columns, 0, newColumns, 0, columns.length);
 		newColumns[columns.length] = newColumn;
@@ -106,8 +113,7 @@ class CausalFactorTable {
 	}
 
 	public void render(Section section, FormToolkit toolkit) {
-		Composite composite = UI.sectionClient(section, toolkit);
-		UI.gridLayout(composite, 1);
+		Composite composite = UI.sectionClient(section, toolkit, 1);
 		String[] columnTitles = getColumnTitles();
 		viewer = Tables.createViewer(composite, columnTitles);
 		viewer.setLabelProvider(new FactorLabel());
@@ -120,8 +126,12 @@ class CausalFactorTable {
 			if (i < 4)
 				continue;
 			TableColumn column = table.getColumn(i);
-			column.setWidth(80);
-			column.setToolTipText(columnTitles[i]);
+			if (!editor.hasAnyComment("allocationFactors") || i % 2 == 0) {
+				column.setWidth(80);
+				column.setToolTipText(columnTitles[i]);
+			} else {
+				column.setWidth(24);
+			}
 		}
 		for (int i = 3; i < table.getColumnCount(); i++) {
 			viewer.getTable().getColumns()[i].setAlignment(SWT.RIGHT);
@@ -134,38 +144,66 @@ class CausalFactorTable {
 
 	private void createModifySupport() {
 		String[] keys = getColumnTitles();
-		for (int i = 0; i < columns.length; i++)
-			keys[i + 4] = columns[i].getKey();
+		boolean showComments = editor.hasAnyComment("allocationFactors");
+		for (int i = 0; i < columns.length; i++) {
+			int index = showComments ? 2 * i : i;
+			keys[index + 4] = columns[i].key;
+			if (showComments) {
+				keys[index + 5] = columns[i].key + "-comment";
+			}
+		}
 		viewer.setColumnProperties(keys);
 		ModifySupport<Exchange> modifySupport = new ModifySupport<>(viewer);
-		for (int i = 0; i < columns.length; i++)
-			modifySupport.bind(keys[i + 4], new ValueModifier(
-					columns[i].product));
+		for (int i = 0; i < columns.length; i++) {
+			int index = showComments ? 2 * i : i;
+			modifySupport.bind(keys[index + 4], new ValueModifier(columns[i].product));
+			if (showComments) {
+				Exchange product = columns[i].product;
+				modifySupport.bind(keys[index + 5], new CommentDialogModifier<Exchange>(editor.getComments(),
+						(e) -> CommentPaths.get(getFactor(product, e), product, e)));
+			}
+		}
 	}
 
 	private String[] getColumnTitles() {
-		String[] titles = new String[columns.length + 4];
+		boolean showComments = editor.hasAnyComment("allocationFactors");
+		int cols = showComments ? columns.length * 2 : columns.length;
+		String[] titles = new String[cols + 4];
 		titles[0] = M.Flow;
 		titles[1] = M.Direction;
 		titles[2] = M.Category;
 		titles[3] = M.Amount;
-		for (int i = 0; i < columns.length; i++)
-			titles[i + 4] = columns[i].getTitle();
+		for (int i = 0; i < columns.length; i++) {
+			int index = showComments ? 2 * i : i;
+			titles[index + 4] = columns[i].getTitle();
+			if (showComments) {
+				titles[index + 5] = "";
+			}
+		}
 		return titles;
 	}
 
-	private AllocationFactor getFactor(Exchange product, Exchange exchange) {
-		AllocationFactor factor = null;
-		for (AllocationFactor f : process().getAllocationFactors()) {
-			if (f.getAllocationType() != AllocationMethod.CAUSAL)
-				continue;
-			if (product.flow.getId() == f.getProductId()
-					&& Objects.equals(f.getExchange(), exchange)) {
-				factor = f;
-				break;
-			}
+	private Exchange getProduct(int col) {
+		int idx = (col - 4);
+		if (editor.hasAnyComment("allocationFactors")) {
+			idx /= 2;
 		}
-		return factor;
+		if (idx < 0 || idx > (columns.length - 1))
+			return null;
+		return columns[idx].product;
+	}
+
+	private AllocationFactor getFactor(Exchange product, Exchange exchange) {
+		for (AllocationFactor factor : process().getAllocationFactors()) {
+			if (factor.getAllocationType() != AllocationMethod.CAUSAL)
+				continue;
+			if (product.flow.getId() != factor.getProductId())
+				continue;
+			if (!Objects.equals(factor.getExchange(), exchange))
+				continue;
+			return factor;
+		}
+		return null;
 	}
 
 	private class FactorLabel extends LabelProvider implements
@@ -173,14 +211,21 @@ class CausalFactorTable {
 
 		@Override
 		public Image getColumnImage(Object element, int col) {
-			if (col != 0)
-				return null;
 			if (!(element instanceof Exchange))
 				return null;
 			Exchange exchange = (Exchange) element;
 			if (exchange.flow == null)
 				return null;
-			return Images.get(exchange.flow);
+			if (col == 0)
+				return Images.get(exchange.flow);
+			if (col > 3 && col % 2 == 1 && editor.hasAnyComment("allocationFactors")) {
+				Exchange product = getProduct(col);
+				AllocationFactor factor = getFactor(product, exchange);
+				if (factor == null)
+					return null;
+				return Images.get(editor.getComments(), CommentPaths.get(factor, product, exchange));
+			}
+			return null;
 		}
 
 		@Override
@@ -201,20 +246,17 @@ class CausalFactorTable {
 				return Numbers.format(exchange.amount) + " "
 						+ exchange.unit.getName();
 			default:
-				return getFactorLabel(exchange, col);
+				if (col % 2 == 0 || !editor.hasAnyComment("allocationFactors"))
+					return getFactorLabel(exchange, col);
+				return null;
 			}
 		}
 
 		private String getFactorLabel(Exchange exchange, int col) {
-			int idx = col - 4;
-			if (idx < 0 || idx > (columns.length - 1))
-				return null;
-			Column column = columns[idx];
-			AllocationFactor factor = getFactor(column.getProduct(), exchange);
+			AllocationFactor factor = getFactor(getProduct(col), exchange);
 			if (factor == null)
 				return Double.toString(1.0);
-			else
-				return Double.toString(factor.getValue());
+			return Double.toString(factor.getValue());
 		}
 	}
 
@@ -226,14 +268,6 @@ class CausalFactorTable {
 		public Column(Exchange product) {
 			this.product = product;
 			key = UUID.randomUUID().toString();
-		}
-
-		public Exchange getProduct() {
-			return product;
-		}
-
-		public String getKey() {
-			return key;
 		}
 
 		public String getTitle() {
@@ -261,8 +295,7 @@ class CausalFactorTable {
 			AllocationFactor factor = getFactor(product, exchange);
 			if (factor == null)
 				return Double.toString(1);
-			else
-				return Double.toString(factor.getValue());
+			return Double.toString(factor.getValue());
 		}
 
 		@Override

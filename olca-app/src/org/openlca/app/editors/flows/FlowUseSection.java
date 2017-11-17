@@ -65,10 +65,8 @@ class FlowUseSection {
 		parent = UI.sectionClient(section, toolkit);
 		this.toolkit = toolkit;
 		App.runInUI("Render usage links", () -> {
-			renderLinks(M.ConsumedBy, recipients,
-					Icon.INPUT.get());
-			renderLinks(M.ProducedBy, providers,
-					Icon.OUTPUT.get());
+			renderLinks(M.ConsumedBy, recipients, Icon.INPUT.get());
+			renderLinks(M.ProducedBy, providers, Icon.OUTPUT.get());
 		});
 	}
 

@@ -7,7 +7,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 
 class AdminInfoPage extends ModelPage<Process> {
@@ -30,24 +29,16 @@ class AdminInfoPage extends ModelPage<Process> {
 	}
 
 	private void createAdminInfoSection(Composite parent) {
-		Composite composite = UI.formSection(parent, toolkit,
-				M.AdministrativeInformation);
-		createMultiText(M.IntendedApplication,
-				"documentation.intendedApplication", composite);
-		createDropComponent(M.DataSetOwner,
-				"documentation.dataSetOwner", ModelType.ACTOR, composite);
-		createDropComponent(M.DataGenerator,
-				"documentation.dataGenerator", ModelType.ACTOR, composite);
-		createDropComponent(M.DataDocumentor,
-				"documentation.dataDocumentor", ModelType.ACTOR, composite);
-		createDropComponent(M.Publication, "documentation.publication",
-				ModelType.SOURCE, composite);
-		createMultiText(M.AccessAndUseRestrictions,
-				"documentation.restrictions", composite);
-		createMultiText(M.Project, "documentation.project", composite);
-		createReadOnly(M.CreationDate, "documentation.creationDate",
-				composite);
-		createCheckBox(M.Copyright, "documentation.copyright", composite);
+		Composite composite = UI.formSection(parent, toolkit, M.AdministrativeInformation, 3);
+		multiText(composite, M.IntendedApplication, "documentation.intendedApplication");
+		dropComponent(composite, M.DataSetOwner, "documentation.dataSetOwner");
+		dropComponent(composite, M.DataGenerator, "documentation.dataGenerator");
+		dropComponent(composite, M.DataDocumentor, "documentation.dataDocumentor");
+		dropComponent(composite, M.Publication, "documentation.publication");
+		multiText(composite, M.AccessAndUseRestrictions, "documentation.restrictions");
+		multiText(composite, M.Project, "documentation.project");
+		readOnly(composite, M.CreationDate, "documentation.creationDate");
+		checkBox(composite, M.Copyright, "documentation.copyright");
 	}
 
 }

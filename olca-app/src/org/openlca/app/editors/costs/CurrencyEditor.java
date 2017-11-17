@@ -6,9 +6,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
@@ -45,8 +43,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 		private ScrolledForm form;
 
 		private Page() {
-			super(CurrencyEditor.this, "CurrencyPage",
-					M.GeneralInformation);
+			super(CurrencyEditor.this, "CurrencyPage", M.GeneralInformation);
 			editor = CurrencyEditor.this;
 		}
 
@@ -65,41 +62,19 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 		}
 
 		private void createAdditionalInfo(Composite body, FormToolkit tk) {
-			Composite comp = UI.formSection(body, tk,
-					M.AdditionalInformation);
-			Text codeText = UI.formText(comp, tk, M.CurrencyCode);
-			if (getModel().code != null)
-				codeText.setText(getModel().code);
+			Composite comp = UI.formSection(body, tk, M.AdditionalInformation, 3);
+			Text codeText = text(comp, M.CurrencyCode, "code");
 			codeText.addModifyListener(e -> {
-				getModel().code = codeText.getText();
 				table.refresh();
 				editor.setDirty(true);
 			});
-			Text factorText = UI.formText(comp, tk, M.ConversionFactor);
-			factorText.setText(Double.toString(getModel().conversionFactor));
+			Text factorText = doubleText(comp, M.ConversionFactor, "conversionFactor");
 			factorText.addModifyListener(e -> {
-				try {
-					getModel().conversionFactor = Double.parseDouble(
-							factorText.getText());
-					table.refresh();
-					editor.setDirty(true);
-				} catch (Exception ex) {
-					log.trace("not a number (currency conversion factor)", e);
-				}
+				table.refresh();
+				editor.setDirty(true);
 			});
-			createRefLink(comp, tk);
+			link(comp, M.ReferenceCurrency, "referenceCurrency");
 			createRefButton(comp, tk);
-		}
-
-		private void createRefLink(Composite comp, FormToolkit tk) {
-			UI.formLabel(comp, tk, M.ReferenceCurrency);
-			Currency ref = getModel().referenceCurrency;
-			if (ref == null || ref.getName() == null)
-				return;
-			ImageHyperlink link = tk.createImageHyperlink(comp, SWT.TOP);
-			link.setText(ref.getName());
-			link.setImage(Images.get(ModelType.CURRENCY));
-			Controls.onClick(link, e -> App.openEditor(ref));
 		}
 
 		private void createRefButton(Composite comp, FormToolkit tk) {
@@ -109,6 +84,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 			Controls.onSelect(b, e -> {
 				RefCurrencyUpdate.run(getModel());
 			});
+			UI.filler(comp, tk);
 		}
 	}
 }

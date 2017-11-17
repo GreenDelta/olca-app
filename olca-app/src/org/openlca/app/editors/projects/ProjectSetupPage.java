@@ -24,6 +24,9 @@ import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.editors.comments.CommentAction;
+import org.openlca.app.editors.comments.CommentDialogModifier;
+import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.reports.ReportViewer;
 import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.editors.reports.model.ReportCalculator;
@@ -101,8 +104,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private void initialInput() {
 		List<ProjectVariant> variants = project.getVariants();
-		Collections.sort(variants,
-				(v1, v2) -> Strings.compare(v1.getName(), v2.getName()));
+		Collections.sort(variants, (v1, v2) -> Strings.compare(v1.getName(), v2.getName()));
 		variantViewer.setInput(variants);
 	}
 
@@ -114,39 +116,38 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void createReportButton(Composite composite) {
-		Button button = toolkit.createButton(composite, M.Report,
-				SWT.NONE);
+		Button button = toolkit.createButton(composite, M.Report, SWT.NONE);
 		UI.gridData(button, false, false).widthHint = 100;
 		button.setImage(Images.get(ModelType.PROJECT));
 		Controls.onSelect(button, (e) -> {
-			App.run(M.Calculate,
-					new ReportCalculator(getModel(), editor.getReport()),
-					() -> {
-						Reports.save(getModel(), editor.getReport(), database);
-						ReportViewer.open(editor.getReport());
-					});
+			App.run(M.Calculate, new ReportCalculator(getModel(), editor.getReport()), () -> {
+				Reports.save(getModel(), editor.getReport(), database);
+				ReportViewer.open(editor.getReport());
+			});
 		});
 	}
 
 	private void createVariantsSection(Composite body) {
 		Section section = UI.section(body, toolkit, M.Variants);
-		Composite composite = UI.sectionClient(section, toolkit);
-		UI.gridLayout(composite, 1);
-		String[] properties = { M.Name, M.ProductSystem,
-				M.AllocationMethod, M.Flow, M.Amount,
-				M.Unit, M.Description };
+		Composite composite = UI.sectionClient(section, toolkit, 1);
+		String[] properties = getProperties();
 		variantViewer = Tables.createViewer(composite, properties);
 		variantViewer.setLabelProvider(new VariantLabelProvider());
-		Tables.bindColumnWidths(variantViewer, 0.15, 0.15, 0.15, 0.15, 0.125,
-				0.125, 0.15);
-		ModifySupport<ProjectVariant> support = new ModifySupport<>(
-				variantViewer);
+		ModifySupport<ProjectVariant> support = new ModifySupport<>(variantViewer);
 		support.bind(M.Name, new VariantNameEditor());
 		support.bind(M.AllocationMethod, new VariantAllocationEditor());
 		support.bind(M.Amount, new DoubleModifier<>(editor, "amount"));
 		support.bind(M.Unit, new VariantUnitEditor());
 		support.bind(M.Description, new VariantDescriptionEditor());
+		support.bind("", new CommentDialogModifier<ProjectVariant>(editor.getComments(), v -> CommentPaths.get(v)));
+		Tables.bindColumnWidths(variantViewer, 0.15, 0.15, 0.15, 0.15, 0.125, 0.125, 0.12);
 		addVariantActions(variantViewer, section);
+	}
+
+	private String[] getProperties() {
+		return new String[] { M.Name, M.ProductSystem,
+				M.AllocationMethod, M.Flow, M.Amount,
+				M.Unit, M.Description, "" };
 	}
 
 	private void createParameterSection(Composite body) {
@@ -159,7 +160,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Action add = Actions.onAdd(this::addVariant);
 		Action remove = Actions.onRemove(this::removeVariant);
 		Action copy = TableClipboard.onCopy(viewer);
-		Actions.bind(section, add, remove);
+		CommentAction.bindTo(section, "variants", editor.getComments(), add, remove);
 		Actions.bind(viewer, add, remove, copy);
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
@@ -175,8 +176,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private void addVariant() {
 		log.trace("add variant");
-		BaseDescriptor d = ModelSelectionDialog
-				.select(ModelType.PRODUCT_SYSTEM);
+		BaseDescriptor d = ModelSelectionDialog.select(ModelType.PRODUCT_SYSTEM);
 		if (d == null)
 			return;
 		ProductSystemDao dao = new ProductSystemDao(database);
@@ -330,6 +330,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 				return Images.get(FlowType.PRODUCT_FLOW);
 			if (columnIndex == 5)
 				return Images.get(ModelType.UNIT);
+			ProjectVariant v = (ProjectVariant) element;
+			if (columnIndex == 7)
+				return Images.get(editor.getComments(), CommentPaths.get(v));
 			return null;
 		}
 

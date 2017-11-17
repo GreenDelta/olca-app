@@ -12,7 +12,6 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportIndicator;
-import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
@@ -98,8 +97,7 @@ class IndicatorTable {
 			if (!(element instanceof ReportIndicator))
 				return null;
 			ReportIndicator indicator = (ReportIndicator) element;
-			return indicator.displayed ? Icon.CHECK_TRUE.get()
-					: Icon.CHECK_FALSE.get();
+			return Images.get(indicator.displayed);
 		}
 
 		@Override

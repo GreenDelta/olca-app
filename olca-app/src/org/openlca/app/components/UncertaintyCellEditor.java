@@ -3,7 +3,7 @@ package org.openlca.app.components;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.openlca.app.editors.IEditor;
+import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.model.Exchange;
@@ -20,7 +20,7 @@ import org.openlca.expressions.FormulaInterpreter;
  */
 public class UncertaintyCellEditor extends DialogCellEditor {
 
-	private IEditor editor;
+	private ModelEditor<?> editor;
 	private FormulaInterpreter interpreter;
 	private long interpreterScope = -1;
 
@@ -30,7 +30,7 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 	private Parameter parameter;
 	private ParameterRedef parameterRedef;
 
-	public UncertaintyCellEditor(Composite parent, IEditor editor) {
+	public UncertaintyCellEditor(Composite parent, ModelEditor<?> editor) {
 		super(parent);
 		this.editor = editor;
 		if (editor instanceof ProcessEditor) {

@@ -3,7 +3,7 @@ package org.openlca.app.viewers.table.modify.field;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
-import org.openlca.app.editors.IEditor;
+import org.openlca.app.editors.ModelEditor;
 
 public class StringModifier<T> extends TextFieldModifier<T, String> {
 
@@ -13,7 +13,7 @@ public class StringModifier<T> extends TextFieldModifier<T, String> {
 		super(null, field);
 	}
 
-	public StringModifier(IEditor editor, String field) {
+	public StringModifier(ModelEditor<?> editor, String field) {
 		super(editor, field);
 	}
 
@@ -21,7 +21,7 @@ public class StringModifier<T> extends TextFieldModifier<T, String> {
 		super(null, field, onChange);
 	}
 
-	public StringModifier(IEditor editor, String field, Consumer<T> onChange) {
+	public StringModifier(ModelEditor<?> editor, String field, Consumer<T> onChange) {
 		super(editor, field, onChange);
 	}
 

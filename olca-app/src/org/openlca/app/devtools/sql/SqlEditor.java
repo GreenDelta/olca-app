@@ -55,7 +55,7 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 	public void clearResults() {
 		page.resultText.setText("");
 	}
-	
+
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 	}
@@ -90,8 +90,7 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 
 		private void createStatementSection(Composite body, FormToolkit toolkit) {
 			Section section = UI.section(body, toolkit, "SQL Statement");
-			Composite composite = UI.sectionClient(section, toolkit);
-			UI.gridLayout(composite, 1);
+			Composite composite = UI.sectionClient(section, toolkit, 1);
 			queryText = new StyledText(composite, SWT.BORDER);
 			toolkit.adapt(queryText);
 			UI.gridData(queryText, true, false).heightHint = 150;
@@ -102,10 +101,9 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 		private void createResultSection(Composite body, FormToolkit toolkit) {
 			Section section = UI.section(body, toolkit, "Results");
 			UI.gridData(section, true, true);
-			Composite composite = UI.sectionClient(section, toolkit);
+			Composite composite = UI.sectionClient(section, toolkit, 1);
 			composite.setLayout(new FillLayout());
-			resultText = toolkit.createText(composite, null, SWT.MULTI
-					| SWT.H_SCROLL | SWT.V_SCROLL);
+			resultText = toolkit.createText(composite, null, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		}
 
 		private class RunAction extends Action {
