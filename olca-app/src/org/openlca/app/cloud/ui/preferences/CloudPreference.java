@@ -13,6 +13,7 @@ public class CloudPreference extends AbstractPreferenceInitializer {
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = getStore();
 		store.setDefault(CHECK_AGAINST_LIBRARIES, true);
+		store.setDefault(DISPLAY_COMMENTS, false);
 	}
 
 	public static boolean doCheckAgainstLibraries() {
