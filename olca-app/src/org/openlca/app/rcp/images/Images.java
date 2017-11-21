@@ -125,7 +125,7 @@ public class Images {
 	}
 
 	public static Image get(Comments comments, String path) {
-		if (comments.has(path))
+		if (comments.hasPath(path))
 			return Icon.SHOW_COMMENTS.get();
 		return null;
 	}
@@ -244,7 +244,7 @@ public class Images {
 	}
 
 	public static ImageDescriptor descriptor(Comments comments, String path) {
-		if (comments.has(path))
+		if (comments.hasPath(path))
 			return Icon.SHOW_COMMENTS.descriptor();
 		return null;
 	}

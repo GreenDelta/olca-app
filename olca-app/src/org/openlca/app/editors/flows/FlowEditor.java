@@ -27,6 +27,7 @@ public class FlowEditor extends ModelEditor<Flow> {
 		try {
 			addPage(new FlowInfoPage(this));
 			addPage(new FlowPropertiesPage(this));
+			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}

@@ -36,6 +36,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 	protected void addPages() {
 		try {
 			addPage(new Page());
+			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}

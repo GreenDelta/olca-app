@@ -22,7 +22,7 @@ public class CommentControl {
 	}
 
 	private void initControl(Composite parent, FormToolkit toolkit) {
-		if (!App.isCommentingEnabled() || !comments.has(path)) {
+		if (!App.isCommentingEnabled() || !comments.hasPath(path)) {
 			UI.filler(parent, toolkit);
 			return;
 		}

@@ -19,6 +19,7 @@ public class DQSystemEditor extends ModelEditor<DQSystem> {
 	protected void addPages() {
 		try {
 			addPage(infoPage = new DQSystemInfoPage(this));
+			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}

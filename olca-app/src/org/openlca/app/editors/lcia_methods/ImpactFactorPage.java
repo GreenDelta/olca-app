@@ -97,7 +97,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 			if (category == null)
 				return;
 			String path = CommentPaths.get(category) + ".impactFactors";
-			if (!editor.getComments().has(path))
+			if (!editor.getComments().hasPath(path))
 				return;
 			new CommentDialog(path, editor.getComments()).open();
 		});
@@ -116,7 +116,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 			return;
 		}
 		String path = CommentPaths.get(category) + ".impactFactors";
-		commentControl.setVisible(editor.getComments().has(path));
+		commentControl.setVisible(editor.getComments().hasPath(path));
 	}
 
 	private List<ImpactCategoryDescriptor> getDescriptorList() {

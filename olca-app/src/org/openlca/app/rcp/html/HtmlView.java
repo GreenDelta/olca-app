@@ -24,7 +24,9 @@ public enum HtmlView {
 
 	SUNBURST_CHART("sunburst_chart.html"),
 
-	USAGES_VIEW("usages_view.html");
+	USAGES_VIEW("usages_view.html"),
+
+	COMMENTS("comments.html");
 
 	private final String fileName;
 

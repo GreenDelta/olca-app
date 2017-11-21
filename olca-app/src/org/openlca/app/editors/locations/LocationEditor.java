@@ -32,6 +32,7 @@ public class LocationEditor extends ModelEditor<Location> {
 	protected void addPages() {
 		try {
 			addPage(infoPage = new LocationInfoPage(this));
+			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}

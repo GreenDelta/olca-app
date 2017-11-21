@@ -18,6 +18,7 @@ public class ActorEditor extends ModelEditor<Actor> {
 	protected void addPages() {
 		try {
 			addPage(new ActorInfoPage(this));
+			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}

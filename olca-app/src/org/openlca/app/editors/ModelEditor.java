@@ -17,6 +17,7 @@ import org.openlca.app.EventHandler;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.comments.CommentsPage;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
@@ -58,11 +59,17 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends FormEdito
 	}
 
 	public boolean hasComment(String path) {
-		return App.isCommentingEnabled() && comments != null && comments.has(path);
+		return App.isCommentingEnabled() && comments != null && comments.hasPath(path);
 	}
 
 	public boolean hasAnyComment(String path) {
-		return App.isCommentingEnabled() && comments != null && comments.hasAny(path);
+		return App.isCommentingEnabled() && comments != null && comments.hasAnyPath(path);
+	}
+
+	protected void addCommentPage() throws PartInitException {
+		if (!App.isCommentingEnabled() || !comments.hasRefId(model.getRefId()))
+			return;
+		addPage(new CommentsPage<T>(this));
 	}
 
 	/**

@@ -26,6 +26,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 	protected void addPages() {
 		try {
 			addPage(infoPage = new GlobalParameterInfoPage(this));
+			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}

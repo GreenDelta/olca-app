@@ -4,31 +4,27 @@ import javafx.scene.web.WebEngine;
 
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.model.CommentDescriptor;
-import org.openlca.cloud.model.Comments;
+import org.openlca.core.model.CategorizedEntity;
 
 import com.google.gson.Gson;
 
-public class CommentDialog extends FormDialog implements WebPage {
+public class CommentsPage<T extends CategorizedEntity> extends ModelPage<T> implements WebPage {
 
-	private final String path;
-	private final Comments comments;
-
-	public CommentDialog(String path, Comments comments) {
-		super(UI.shell());
-		this.path = path;
-		this.comments = comments;
+	public CommentsPage(ModelEditor<T> editor) {
+		super(editor, "CommentsPage", "#Comments");
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		ScrolledForm form = UI.formHeader(mForm, "#Comments: " + CommentLabels.get(path));
+		ScrolledForm form = UI.formHeader(this);
 		Composite body = UI.formBody(form, mForm.getToolkit());
 		body.setLayout(new FillLayout());
 		UI.createWebView(body, this);
@@ -44,8 +40,9 @@ public class CommentDialog extends FormDialog implements WebPage {
 	public void onLoaded(WebEngine webkit) {
 		UI.bindVar(webkit, "java", new Js());
 		Gson gson = new Gson();
-		for (CommentDescriptor comment : comments.getForPath(path)) {
-			webkit.executeScript("add(" + gson.toJson(comment) + ", true);");
+		String refId = getEditor().getModel().getRefId();
+		for (CommentDescriptor comment : getComments().getForRefId(refId)) {
+			webkit.executeScript("add(" + gson.toJson(comment) + ", false);");
 		}
 	}
 

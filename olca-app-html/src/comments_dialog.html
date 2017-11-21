@@ -1,0 +1,73 @@
+<html> 
+	<head>
+		<style>
+			body {
+				font-family: sans-serif;
+				color: #54565b;
+				line-height: 1.42857143;
+				font-size: 14px;
+			}
+			small {
+				font-size: 85%;
+			}
+			.comment-entry {
+				padding: 20px;
+			}
+			.comment-entry:not(.released):not(.approved) {
+				background-color: rgb(245, 245, 245);
+			}
+			.comment-entry:not(.approved) {
+				background-color: rgb(255, 255, 221);
+			}
+			.comment-entry.reply {
+				margin-left: 42px;
+			}
+			.user-info {
+				font-weight: bold;
+			}
+			.username {
+				font-size: 90%;
+			}
+			hr {
+				margin: 0;
+				border: 0;
+				border-top: 1px solid #eeeeee;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="comment-entry-template" class="comment-entry" style="display:none">
+			<span class="user-info">
+				<span class="username"></span>
+			</span>
+			<span>
+				<small>wrote on <span class="date"></span></small>
+			</span>
+			<div class="comment-text comment-layer">#{text}</div>
+		</div>
+		<script src="libs/jquery.min.js"></script>
+		<script>
+			function add(comment) {
+				if ($('.comment-entry').length > 1) {
+					$('body').append('<hr>');
+				}
+				template = $('#comment-entry-template').clone();
+				template.attr('id', comment.id);
+				$('.username', template).html(comment.user);
+				$('.date', template).html(comment.date);
+				$('.comment-text', template).html(comment.text);				
+				if (comment.released) {
+					template.addClass('released');
+				}
+				if (comment.approved) {
+					template.addClass('approved');
+				}
+				if (comment.replyTo) {
+					template.addClass('reply');
+				}
+				template.removeAttr('style');
+				$('body').append(template);
+			}
+		</script>
+	</body>
+</html>

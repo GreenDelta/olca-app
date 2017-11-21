@@ -36,6 +36,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 				addPage(new StatisticsPage(this));
 				addPage(new HtmlGraph(this));
 			}
+			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}

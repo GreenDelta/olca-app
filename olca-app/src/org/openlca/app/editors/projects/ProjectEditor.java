@@ -47,6 +47,7 @@ public class ProjectEditor extends ModelEditor<Project> {
 			} else {
 				addPage(new ProjectInfoPage(this));
 			}
+			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);
 		}
