@@ -125,7 +125,7 @@ public class Images {
 	}
 
 	public static Image get(Comments comments, String path) {
-		if (comments.hasPath(path))
+		if (comments != null && comments.hasPath(path))
 			return Icon.SHOW_COMMENTS.get();
 		return null;
 	}
