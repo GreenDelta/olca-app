@@ -6,6 +6,7 @@
 				color: #54565b;
 				line-height: 1.42857143;
 				font-size: 14px;
+				margin: 0;
 			}
 			small {
 				font-size: 85%;
@@ -22,11 +23,17 @@
 			.comment-entry.reply {
 				margin-left: 42px;
 			}
+			.comment-text {
+				padding-left: 10px;
+			}
 			.user-info {
 				font-weight: bold;
 			}
 			.username {
 				font-size: 90%;
+			}
+			.dataset-field {
+				font-weight: bold;
 			}
 			hr {
 				margin: 0;
@@ -41,13 +48,15 @@
 				<span class="username"></span>
 			</span>
 			<span>
-				<small>wrote on <span class="date"></span></small>
+				<small>
+					wrote on <span class="date"></span><span class="dataset-info" style="display:none"> on '<span class="dataset-field"></span>'</span>
+				</small>
 			</span>
 			<div class="comment-text comment-layer">#{text}</div>
 		</div>
 		<script src="libs/jquery.min.js"></script>
 		<script>
-			function add(comment) {
+			function add(comment, inDialog) {
 				if ($('.comment-entry').length > 1) {
 					$('body').append('<hr>');
 				}
@@ -56,6 +65,10 @@
 				$('.username', template).html(comment.user);
 				$('.date', template).html(comment.date);
 				$('.comment-text', template).html(comment.text);				
+				if (!inDialog) {
+					$('.dataset-field').html(java.getLabel(comment.path));
+					$('.dataset-info').removeAttr('style');
+				}
 				if (comment.released) {
 					template.addClass('released');
 				}

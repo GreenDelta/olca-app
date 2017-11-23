@@ -69,7 +69,7 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends FormEdito
 	protected void addCommentPage() throws PartInitException {
 		if (!App.isCommentingEnabled() || comments == null || !comments.hasRefId(model.getRefId()))
 			return;
-		addPage(new CommentsPage<T>(this));
+		addPage(new CommentsPage(this, comments, model));
 	}
 
 	/**

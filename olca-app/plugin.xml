@@ -71,6 +71,14 @@
 			icon="icons/home.png">      
       </editor>
       
+      <editor 
+			class="org.openlca.app.editors.CommentsEditor"
+			default="false"
+			id="CommentsEditor"
+			name="%Comments"
+			icon="icons/cloud/show_comments.png">      
+      </editor>
+      
       <!-- developer tools -->
       <editor
             class="org.openlca.app.devtools.sql.SqlEditor"

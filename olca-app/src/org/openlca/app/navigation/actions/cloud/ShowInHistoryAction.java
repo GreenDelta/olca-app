@@ -14,11 +14,11 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenHistoryViewAction extends Action implements INavigationAction {
+public class ShowInHistoryAction extends Action implements INavigationAction {
 
-	private final static Logger log = LoggerFactory.getLogger(OpenHistoryViewAction.class);
+	private final static Logger log = LoggerFactory.getLogger(ShowInHistoryAction.class);
 
-	public OpenHistoryViewAction() {
+	public ShowInHistoryAction() {
 		setText(M.ShowInHistory);
 	}
 
