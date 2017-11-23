@@ -19,7 +19,7 @@ public class CommentAction extends Action {
 	private final Comments comments;
 
 	public static void bindTo(Section section, AbstractTableViewer<?> viewer, String path, Comments comments) {
-		if (!App.isCommentingEnabled() || !comments.hasPath(path)) {
+		if (!App.isCommentingEnabled() || comments == null || !comments.hasPath(path)) {
 			viewer.bindTo(section);
 			return;
 		}
@@ -28,7 +28,7 @@ public class CommentAction extends Action {
 
 	public static void bindTo(TableViewer viewer, String path, Comments comments, Action... other) {
 		List<Action> actions = new ArrayList<>(Arrays.asList(other));
-		if (App.isCommentingEnabled() && comments.hasPath(path)) {
+		if (App.isCommentingEnabled() && comments != null && comments.hasPath(path)) {
 			actions.add(new CommentAction(path, comments));
 		}
 		if (actions.isEmpty())
@@ -38,7 +38,7 @@ public class CommentAction extends Action {
 
 	public static void bindTo(Section section, String path, Comments comments, Action... other) {
 		List<Action> actions = new ArrayList<>(Arrays.asList(other));
-		if (App.isCommentingEnabled() && comments.hasPath(path)) {
+		if (App.isCommentingEnabled() && comments != null && comments.hasPath(path)) {
 			actions.add(new CommentAction(path, comments));
 		}
 		if (actions.isEmpty())

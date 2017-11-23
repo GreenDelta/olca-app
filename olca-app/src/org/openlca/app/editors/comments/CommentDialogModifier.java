@@ -18,7 +18,7 @@ public class CommentDialogModifier<T> extends DialogModifier<T> {
 	@Override
 	protected void openDialog(T element) {
 		String path = getPath.apply(element);
-		if (path == null || !comments.hasPath(path))
+		if (path == null || comments == null || !comments.hasPath(path))
 			return;
 		new CommentDialog(path, comments).open();
 	}

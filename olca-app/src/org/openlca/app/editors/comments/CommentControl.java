@@ -22,7 +22,7 @@ public class CommentControl {
 	}
 
 	private void initControl(Composite parent, FormToolkit toolkit) {
-		if (!App.isCommentingEnabled() || !comments.hasPath(path)) {
+		if (!App.isCommentingEnabled() || comments == null || !comments.hasPath(path)) {
 			UI.filler(parent, toolkit);
 			return;
 		}
@@ -34,6 +34,5 @@ public class CommentControl {
 		control.setImage(Icon.SHOW_COMMENTS.get());
 		control.setToolTipText("#Comment");
 	}
-
 
 }
