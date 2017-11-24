@@ -57,6 +57,7 @@
 				</small>
 			</span>
 			<div>
+				<img class="dataset-icon">
 				<a class="dataset-link" href="#"></a>
 			</div>
 			<div class="comment-text comment-layer">#{text}</div>
@@ -79,6 +80,7 @@
 					}
 					if (fullPath) {
 						$('.dataset-link', template).html(fullPath);
+						$('.dataset-icon', template).attr('src', 'images/' + comment.type.toLowerCase() + '.png');
 					}
 				}
 				if (comment.released) {
