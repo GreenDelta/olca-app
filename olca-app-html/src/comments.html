@@ -29,9 +29,13 @@
 			.user-info {
 				font-weight: bold;
 			}
-			.username {
+			.username, .dataset-link {
 				font-size: 90%;
 			}
+			.dataset-link {
+				color: #337ab7;
+				text-decoration: none;
+			}			
 			.dataset-field {
 				font-weight: bold;
 			}
@@ -49,25 +53,33 @@
 			</span>
 			<span>
 				<small>
-					wrote on <span class="date"></span><span class="dataset-info" style="display:none"> on '<span class="dataset-field"></span>'</span>
+					wrote on <span class="date"></span><span class="dataset-info"></span>
 				</small>
 			</span>
+			<div>
+				<a class="dataset-link" href="#"></a>
+			</div>
 			<div class="comment-text comment-layer">#{text}</div>
 		</div>
 		<script src="libs/jquery.min.js"></script>
 		<script>
-			function add(comment, inDialog) {
+			function add(comment, inDialog, fullPath) {
 				if ($('.comment-entry').length > 1) {
 					$('body').append('<hr>');
 				}
-				template = $('#comment-entry-template').clone();
+				var template = $('#comment-entry-template').clone();
 				template.attr('id', comment.id);
 				$('.username', template).html(comment.user);
 				$('.date', template).html(comment.date);
 				$('.comment-text', template).html(comment.text);				
 				if (!inDialog) {
-					$('.dataset-field').html(java.getLabel(comment.path));
-					$('.dataset-info').removeAttr('style');
+					var label = window.java.getLabel(comment.path);
+					if (label) {
+						$('.dataset-info', template).html(" on '" + label + "'");
+					}
+					if (fullPath) {
+						$('.dataset-link', template).html(fullPath);
+					}
 				}
 				if (comment.released) {
 					template.addClass('released');
@@ -80,6 +92,10 @@
 				}
 				template.removeAttr('style');
 				$('body').append(template);
+				$('.dataset-link', template).on('click', function(event) {
+					event.preventDefault();
+					window.java.openModel(comment.type, comment.refId);
+				});
 			}
 		</script>
 	</body>

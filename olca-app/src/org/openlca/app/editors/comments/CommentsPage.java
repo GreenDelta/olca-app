@@ -11,13 +11,21 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.App;
+import org.openlca.app.cloud.CloudUtil;
+import org.openlca.app.db.Database;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.model.CommentDescriptor;
 import org.openlca.cloud.model.Comments;
+import org.openlca.core.database.CategoryDao;
+import org.openlca.core.database.Daos;
 import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.Category;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 import com.google.gson.Gson;
 
@@ -64,14 +72,36 @@ public class CommentsPage extends FormPage implements WebPage {
 		UI.bindVar(webkit, "java", new Js());
 		Gson gson = new Gson();
 		for (CommentDescriptor comment : comments) {
-			webkit.executeScript("add(" + gson.toJson(comment) + ", false);");
+			webkit.executeScript("add(" + gson.toJson(comment) + ", false, '" + getFullPath(comment) + "');");
 		}
 	}
-	
+
+	private String getFullPath(CommentDescriptor comment) {
+		if (model != null) // not needed
+			return null;
+		CategorizedDescriptor descriptor = getDescriptor(comment.type, comment.refId);
+		Category category = getCategory(descriptor);
+		return CloudUtil.getFullPath(descriptor, category);
+	}
+
+	private CategorizedDescriptor getDescriptor(ModelType type, String refId) {
+		return Daos.categorized(Database.get(), type).getDescriptorForRefId(refId);
+	}
+
+	private Category getCategory(CategorizedDescriptor descriptor) {
+		if (descriptor.getCategory() == null)
+			return null;
+		return new CategoryDao(Database.get()).getForId(descriptor.getCategory());
+	}
+
 	public class Js {
 
 		public String getLabel(String path) {
 			return CommentLabels.get(path);
+		}
+
+		public void openModel(String type, String refId) {
+			App.openEditor(getDescriptor(ModelType.valueOf(type), refId));
 		}
 
 	}
