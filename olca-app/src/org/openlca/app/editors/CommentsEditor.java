@@ -11,7 +11,7 @@ import org.openlca.app.editors.comments.CommentsPage;
 import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Editors;
 import org.openlca.cloud.api.RepositoryClient;
-import org.openlca.cloud.model.CommentDescriptor;
+import org.openlca.cloud.model.Comment;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ public class CommentsEditor extends SimpleFormEditor {
 	@Override
 	protected FormPage getPage() {
 		RepositoryClient client = Database.getRepositoryClient();
-		List<CommentDescriptor> comments = new ArrayList<>();
+		List<Comment> comments = new ArrayList<>();
 		try {
 			comments = client.getAllComments();
 		} catch (WebRequestException e) {

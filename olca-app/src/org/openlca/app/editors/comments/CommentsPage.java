@@ -18,7 +18,7 @@ import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
-import org.openlca.cloud.model.CommentDescriptor;
+import org.openlca.cloud.model.Comment;
 import org.openlca.cloud.model.Comments;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
@@ -32,9 +32,9 @@ import com.google.gson.Gson;
 public class CommentsPage extends FormPage implements WebPage {
 
 	private final CategorizedEntity model;
-	private final List<CommentDescriptor> comments;
+	private final List<Comment> comments;
 
-	public CommentsPage(FormEditor editor, List<CommentDescriptor> comments) {
+	public CommentsPage(FormEditor editor, List<Comment> comments) {
 		super(editor, "CommentsPage", "#Comments");
 		this.model = null;
 		Comments.sort(comments);
@@ -71,12 +71,12 @@ public class CommentsPage extends FormPage implements WebPage {
 	public void onLoaded(WebEngine webkit) {
 		UI.bindVar(webkit, "java", new Js());
 		Gson gson = new Gson();
-		for (CommentDescriptor comment : comments) {
+		for (Comment comment : comments) {
 			webkit.executeScript("add(" + gson.toJson(comment) + ", false, '" + getFullPath(comment) + "');");
 		}
 	}
 
-	private String getFullPath(CommentDescriptor comment) {
+	private String getFullPath(Comment comment) {
 		if (model != null) // not needed
 			return null;
 		CategorizedDescriptor descriptor = getDescriptor(comment.type, comment.refId);

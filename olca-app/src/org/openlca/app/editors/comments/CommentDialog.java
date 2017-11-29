@@ -10,7 +10,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.UI;
-import org.openlca.cloud.model.CommentDescriptor;
+import org.openlca.cloud.model.Comment;
 import org.openlca.cloud.model.Comments;
 
 import com.google.gson.Gson;
@@ -44,7 +44,7 @@ public class CommentDialog extends FormDialog implements WebPage {
 	public void onLoaded(WebEngine webkit) {
 		UI.bindVar(webkit, "java", new Js());
 		Gson gson = new Gson();
-		for (CommentDescriptor comment : comments.getForPath(path)) {
+		for (Comment comment : comments.getForPath(path)) {
 			webkit.executeScript("add(" + gson.toJson(comment) + ", true);");
 		}
 	}
