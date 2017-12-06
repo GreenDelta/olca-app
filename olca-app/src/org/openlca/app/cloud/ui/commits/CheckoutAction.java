@@ -66,7 +66,7 @@ class CheckoutAction extends Action {
 					RepositoryClient client = Database.getRepositoryClient();
 					client.checkout(commit.id, monitor);
 				} catch (WebRequestException e) {
-					throw new InvocationTargetException(e);
+					throw new InvocationTargetException(e, e.getMessage());
 				}
 			}
 		});

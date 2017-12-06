@@ -171,7 +171,7 @@ public class FetchAction extends Action implements INavigationAction {
 							FetchIndexHelper.index(differences, index, (e) -> monitor.worked());
 							monitor.done();
 						} catch (WebRequestException e) {
-							throw new InvocationTargetException(e);
+							throw new InvocationTargetException(e, e.getMessage());
 						}
 					}
 				});

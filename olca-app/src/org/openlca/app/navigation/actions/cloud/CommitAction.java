@@ -141,7 +141,7 @@ public class CommitAction extends Action implements INavigationAction {
 					try {
 						client.commit(message, datasets, (dataset) -> monitor.worked());
 					} catch (Exception e) {
-						throw new InvocationTargetException(e);
+						throw new InvocationTargetException(e, e.getMessage());
 					}
 					monitor.done();
 				});

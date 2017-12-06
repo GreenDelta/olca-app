@@ -137,7 +137,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			getContainer().run(true, false, (m) -> {
 				Exception e = runnable.apply(m);
 				if (e != null)
-					throw new InvocationTargetException(e);
+					throw new InvocationTargetException(e, e.getMessage());
 			});
 			return null;
 		} catch (Exception e) {

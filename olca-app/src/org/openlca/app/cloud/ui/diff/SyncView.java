@@ -193,7 +193,7 @@ public class SyncView extends ViewPart {
 							FetchNotifierMonitor monitor = new FetchNotifierMonitor(m, M.DownloadingData);
 							client.download(remotes, currentCommitId, monitor);
 						} catch (WebRequestException e) {
-							throw new InvocationTargetException(e);
+							throw new InvocationTargetException(e, e.getMessage());
 						}
 					}
 				});
