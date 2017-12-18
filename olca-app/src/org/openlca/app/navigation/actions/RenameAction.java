@@ -10,36 +10,38 @@ import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
+import org.openlca.core.database.Daos;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Rename a category via the navigation tree.
  */
-class RenameCategoryAction extends Action implements INavigationAction {
+class RenameAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private Category category;
 	private INavigationElement<?> element;
 
-	public RenameCategoryAction() {
+	public RenameAction() {
 		setText(M.Rename);
 		setImageDescriptor(Icon.CHANGE.descriptor());
 	}
 
 	@Override
 	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof CategoryElement))
+		if (!(element instanceof ModelElement || element instanceof CategoryElement))
 			return false;
-		CategoryElement e = (CategoryElement) element;
-		category = e.getContent();
 		this.element = element;
 		return true;
 	}
@@ -51,8 +53,14 @@ class RenameCategoryAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
+		String name = null;
+		if (element instanceof CategoryElement) {
+			name = ((CategoryElement) element).getContent().getName();
+		} else {
+			name = ((ModelElement) element).getContent().getName();
+		}
 		InputDialog dialog = new InputDialog(UI.shell(), M.Rename,
-				M.PleaseEnterANewName, category.getName(), null);
+				M.PleaseEnterANewName, name, null);
 		if (dialog.open() != Window.OK)
 			return;
 		String newName = dialog.getValue();
@@ -60,10 +68,14 @@ class RenameCategoryAction extends Action implements INavigationAction {
 			Error.showBox(M.NameCannotBeEmpty);
 			return;
 		}
-		doUpdate(newName);
+		if (element instanceof CategoryElement) {
+			doUpdate(((CategoryElement) element).getContent(), newName);
+		} else {
+			doUpdate(((ModelElement) element).getContent(), newName);
+		}
 	}
 
-	private void doUpdate(String newName) {
+	private void doUpdate(Category category, String newName) {
 		try {
 			// updates of category names are treated as if the user would:
 			// 1) create a new category
@@ -80,4 +92,15 @@ class RenameCategoryAction extends Action implements INavigationAction {
 			log.error("Update category failed", e);
 		}
 	}
+
+	private <T extends CategorizedEntity> void doUpdate(CategorizedDescriptor descriptor, String newName) {
+		@SuppressWarnings("unchecked")
+		CategorizedEntityDao<T, ?> dao = (CategorizedEntityDao<T, ?>) Daos.categorized(Database.get(),
+				descriptor.getModelType());
+		T entity = dao.getForId(descriptor.getId());
+		entity.setName(newName.trim());
+		entity = dao.update(entity);
+		Navigator.refresh(element.getParent());
+	}
+
 }
