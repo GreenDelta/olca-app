@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -18,6 +19,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Images;
@@ -111,6 +113,7 @@ public class TotalImpactResultPage extends FormPage {
 		toolkit.adapt(viewer.getTree(), false, false);
 		toolkit.paintBordersFor(viewer.getTree());
 		Actions.bind(viewer, TreeClipboard.onCopy(viewer, new ClipboardLabel()));
+		Trees.onDoubleClick(viewer, this::openElement);
 		createColumnSorters(labelProvider);
 		double[] widths = { .35, .2, .10, .10, .15, .05 };
 		if (DQUI.displayExchangeQuality(dqResult)) {
@@ -121,6 +124,18 @@ public class TotalImpactResultPage extends FormPage {
 		viewer.getTree().getColumns()[4].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(viewer.getTree(), widths);
 		setInput();
+	}
+	
+	private void openElement(MouseEvent e) {
+		Item item = Viewers.getFirstSelected(viewer);
+		if (item == null) 
+			return;
+		if (item.flow != null)
+			App.openEditor(item.flow);
+		else if (item.process != null) 
+			App.openEditor(item.process);
+		else if (item.impact != null)
+			App.openEditor(setup.impactMethod);
 	}
 
 	private void createColumnSorters(LabelProvider p) {
