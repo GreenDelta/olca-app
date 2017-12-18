@@ -15,6 +15,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
@@ -128,8 +129,13 @@ class ImpactFactorTable {
 		Tables.addDropSupport(viewer, (descriptors) -> createFactors(descriptors));
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
-			if (item == null)
+			if (item == null) {
 				onAdd();
+				return;
+			}
+			ImpactFactor factor = Viewers.getFirstSelected(viewer);
+			if (factor != null && factor.flow != null)
+				App.openEditor(factor.flow);
 		});
 		Action formulaSwitch = new FormulaSwitchAction();
 		Actions.bind(section, add, remove, formulaSwitch);
@@ -149,6 +155,8 @@ class ImpactFactorTable {
 		for (BaseDescriptor descriptor : descriptors) {
 			if (descriptors == null || descriptor.getModelType() != ModelType.FLOW)
 				continue;
+			if (contains(descriptor))
+				continue;
 			Flow flow = new FlowDao(database).getForId(descriptor.getId());
 			ImpactFactor f = new ImpactFactor();
 			f.flow = flow;
@@ -160,6 +168,13 @@ class ImpactFactorTable {
 		}
 		viewer.setInput(category.impactFactors);
 		editor.setDirty(true);
+	}
+
+	private boolean contains(BaseDescriptor flow) {
+		for (ImpactFactor f : category.impactFactors)
+			if (f.flow.getId() == flow.getId())
+				return true;
+		return false;
 	}
 
 	private void onRemove() {
