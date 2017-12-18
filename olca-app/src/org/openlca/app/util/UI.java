@@ -370,8 +370,12 @@ public class UI {
 	}
 
 	public static Text formMultiText(Composite comp, FormToolkit tk, String label) {
+		return formMultiText(comp, tk, label, 100);
+	}
+
+	public static Text formMultiText(Composite comp, FormToolkit tk, String label, int heightHint) {
 		formLabel(comp, tk, label);
-		return formMultiText(comp, tk);
+		return formMultiText(comp, tk, heightHint);
 	}
 
 	public static Text formMultiText(Composite comp) {
@@ -379,6 +383,10 @@ public class UI {
 	}
 
 	public static Text formMultiText(Composite comp, FormToolkit tk) {
+		return formMultiText(comp, tk, 100);
+	}
+
+	public static Text formMultiText(Composite comp, FormToolkit tk, int heightHint) {
 		Text text = null;
 		if (tk != null) {
 			text = tk.createText(comp, null, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
@@ -386,9 +394,9 @@ public class UI {
 			text = new Text(comp, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
 		}
 		GridData gd = gridData(text, true, false);
-		gd.minimumHeight = 100;
-		gd.heightHint = 100;
-		gd.widthHint = 100;
+		gd.minimumHeight = heightHint;
+		gd.heightHint = heightHint;
+		gd.widthHint = heightHint;
 		return text;
 	}
 

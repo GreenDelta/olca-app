@@ -36,7 +36,7 @@ class AdminInfoPage extends ModelPage<Process> {
 		dropComponent(composite, M.DataDocumentor, "documentation.dataDocumentor");
 		dropComponent(composite, M.Publication, "documentation.publication");
 		multiText(composite, M.AccessAndUseRestrictions, "documentation.restrictions");
-		multiText(composite, M.Project, "documentation.project");
+		multiText(composite, M.Project, "documentation.project", 40);
 		readOnly(composite, M.CreationDate, "documentation.creationDate");
 		checkBox(composite, M.Copyright, "documentation.copyright");
 	}

@@ -70,7 +70,7 @@ public class Tables {
 			viewer.setLabelProvider(labelProvider);
 		}
 		GridData data = UI.gridData(table, true, true);
-		data.minimumHeight = 150;
+		data.minimumHeight = 120;
 		return viewer;
 	}
 

@@ -86,14 +86,14 @@ class InfoPage extends ModelPage<Process> {
 
 	private void createTechnologySection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit, M.Technology, 3);
-		multiText(composite, M.Description, "documentation.technology");
+		multiText(composite, M.Description, "documentation.technology", 40);
 	}
 
 	private void createTimeSection(Composite body) {
 		Composite composite = UI.formSection(body, toolkit, M.Time, 3);
 		date(composite, M.StartDate, "documentation.validFrom");
 		date(composite, M.EndDate, "documentation.validUntil");
-		multiText(composite, M.Description, "documentation.time");
+		multiText(composite, M.Description, "documentation.time", 40);
 	}
 
 	private void createDqSection(Composite body) {
@@ -164,7 +164,7 @@ class InfoPage extends ModelPage<Process> {
 		locationViewer.addSelectionChangedListener((s) -> kmlLink.setText(getKmlDisplayText()));
 		new CommentControl(composite, getToolkit(), "location", getComments());
 		createKmlSection(composite);
-		multiText(composite, M.Description, "documentation.geography");
+		multiText(composite, M.Description, "documentation.geography", 40);
 	}
 
 	private void createKmlSection(Composite parent) {

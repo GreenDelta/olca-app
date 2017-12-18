@@ -44,23 +44,23 @@ class ProcessModelingPage extends ModelPage<Process> {
 		ProcessTypeViewer typeViewer = new ProcessTypeViewer(composite);
 		getBinding().onModel(() -> getModel(), "processType", typeViewer);
 		new CommentControl(composite, getToolkit(), "processType", getComments());
-		multiText(composite, M.LCIMethod, "documentation.inventoryMethod");
-		multiText(composite, M.ModelingConstants, "documentation.modelingConstants");
-		multiText(composite, M.DataCompleteness, "documentation.completeness");
-		multiText(composite, M.DataSelection, "documentation.dataSelection");
-		multiText(composite, M.DataTreatment, "documentation.dataTreatment");
+		multiText(composite, M.LCIMethod, "documentation.inventoryMethod", 40);
+		multiText(composite, M.ModelingConstants, "documentation.modelingConstants", 40);
+		multiText(composite, M.DataCompleteness, "documentation.completeness", 40);
+		multiText(composite, M.DataSelection, "documentation.dataSelection", 40);
+		multiText(composite, M.DataTreatment, "documentation.dataTreatment", 40);
 	}
 
 	private void createDataSourceSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit, M.DataSourceInformation, 3);
-		multiText(composite, M.SamplingProcedure, "documentation.sampling");
-		multiText(composite, M.DataCollectionPeriod, "documentation.dataCollectionPeriod");
+		multiText(composite, M.SamplingProcedure, "documentation.sampling", 40);
+		multiText(composite, M.DataCollectionPeriod, "documentation.dataCollectionPeriod", 40);
 	}
 
 	private void createEvaluationSection(Composite parent) {
 		Composite composite = UI.formSection(parent, toolkit, M.ProcessEvaluationAndValidation, 3);
 		dropComponent(composite, M.Reviewer, "documentation.reviewer");
-		multiText(composite, M.DataSetOtherEvaluation, "documentation.reviewDetails");
+		multiText(composite, M.DataSetOtherEvaluation, "documentation.reviewDetails", 40);
 	}
 
 	private void createSourcesSection(Composite parent) {

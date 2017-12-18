@@ -115,6 +115,14 @@ public class Widgets {
 		return text;
 	}
 
+	public static Text multiText(Composite parent, String label, String property, ModelEditor<?> editor,
+			FormToolkit toolkit, int heightHint) {
+		Text text = UI.formMultiText(parent, toolkit, label, heightHint);
+		editor.getBinding().onString(() -> editor.getModel(), property, text);
+		new CommentControl(parent, toolkit, property, editor.getComments());
+		return text;
+	}
+
 	public static DateTime date(Composite parent, String label, String property, ModelEditor<?> editor,
 			FormToolkit toolkit) {
 		toolkit.createLabel(parent, label, SWT.NONE);

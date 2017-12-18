@@ -81,6 +81,10 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		return Widgets.multiText(parent, label, property, getEditor(), getToolkit());
 	}
 
+	protected Text multiText(Composite parent, String label, String property, int heightHint) {
+		return Widgets.multiText(parent, label, property, getEditor(), getToolkit(), heightHint);
+	}
+
 	protected DateTime date(Composite parent, String label, String property) {
 		return Widgets.date(parent, label, property, getEditor(), getToolkit());
 	}
