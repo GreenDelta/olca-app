@@ -30,6 +30,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 	private List<ProcessNode> nodes;
 	private ProductSystemNode systemNode;
 	private ProcessType preferredType = ProcessType.UNIT_PROCESS;
+	private boolean linkProvidedOnly;
 
 	BuildNextTierAction() {
 		setId(ActionIds.BUILD_NEXT_TIER);
@@ -49,6 +50,10 @@ class BuildNextTierAction extends Action implements IBuildAction {
 
 	void setPreferredType(ProcessType preferredType) {
 		this.preferredType = preferredType;
+	}
+
+	void setLinkProvidedOnly(boolean linkProvidedOnly) {
+		this.linkProvidedOnly = linkProvidedOnly;
 	}
 
 	@Override
@@ -106,7 +111,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 
 	private ProcessDescriptor findProvider(Exchange exchange) {
 		ProcessDescriptor defaultProvider = getDefaultProvider(exchange);
-		if (defaultProvider != null)
+		if (defaultProvider != null || linkProvidedOnly)
 			return defaultProvider;
 		List<ProcessDescriptor> providers = getProviders(exchange);
 		if (providers.isEmpty())

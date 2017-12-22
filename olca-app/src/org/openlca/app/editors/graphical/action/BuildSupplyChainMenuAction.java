@@ -35,10 +35,11 @@ class BuildSupplyChainMenuAction extends EditorAction {
 			new MenuItem(menu, SWT.SEPARATOR);
 			createSelectTypeItem(menu, ProcessType.UNIT_PROCESS);
 			createSelectTypeItem(menu, ProcessType.LCI_RESULT);
+			createSelectLinkProvidedOnlyItem(menu);
 			return menu;
 		}
 
-		private void createSelectTypeItem(Menu menu, final ProcessType type) {
+		private void createSelectTypeItem(Menu menu, ProcessType type) {
 			MenuItem treeItem = new MenuItem(menu, SWT.RADIO);
 			treeItem.setText(M.bind(M.Prefer, getDisplayName(type)));
 			Controls.onSelect(treeItem, (e) -> {
@@ -46,6 +47,16 @@ class BuildSupplyChainMenuAction extends EditorAction {
 				nextTierAction.setPreferredType(type);
 			});
 			treeItem.setSelection(type == ProcessType.UNIT_PROCESS);
+		}
+
+		private void createSelectLinkProvidedOnlyItem(Menu menu) {
+			MenuItem treeItem = new MenuItem(menu, SWT.RADIO);
+			treeItem.setText("#Only connect default providers");
+			Controls.onSelect(treeItem, (e) -> {
+				supplyChainAction.setLinkProvidedOnly(treeItem.getSelection());
+				nextTierAction.setLinkProvidedOnly(treeItem.getSelection());
+			});
+			treeItem.setSelection(false);
 		}
 
 		private String getDisplayName(ProcessType type) {

@@ -41,6 +41,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	private TreeViewer processTree;
 	private Process refProcess;
 	private Button systemProcessesCheck;
+	private Button linkProvidedOnlyCheck;
 	private Text filterText;
 
 	Double cutoff;
@@ -85,6 +86,10 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	public boolean useSystemProcesses() {
 		return systemProcessesCheck.getSelection();
+	}
+
+	public boolean linkProvidedOnly() {
+		return linkProvidedOnlyCheck.getSelection();
 	}
 
 	@Override
@@ -159,11 +164,24 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		supplyChainCheck = UI.checkBox(comp, M.AddConnectedProcesses);
 		supplyChainCheck.setSelection(true);
 		UI.filler(comp);
-		systemProcessesCheck = UI.checkBox(comp,
-				M.ConnectWithSystemProcessesIfPossible);
+		systemProcessesCheck = UI.checkBox(comp, M.ConnectWithSystemProcessesIfPossible);
 		systemProcessesCheck.setSelection(true);
+		UI.filler(comp);
+		linkProvidedOnlyCheck = UI.checkBox(comp, "#Only connect default providers");
+		linkProvidedOnlyCheck.setSelection(false);
 		Controls.onSelect(supplyChainCheck, e -> {
 			systemProcessesCheck.setEnabled(supplyChainCheck.getSelection());
+			linkProvidedOnlyCheck.setEnabled(supplyChainCheck.getSelection());
+		});
+		Controls.onSelect(systemProcessesCheck, e -> {
+			if (!systemProcessesCheck.getSelection())
+				return;
+			linkProvidedOnlyCheck.setSelection(false);
+		});
+		Controls.onSelect(linkProvidedOnlyCheck, e -> {
+			if (!linkProvidedOnlyCheck.getSelection())
+				return;
+			systemProcessesCheck.setSelection(false);
 		});
 		createCutoffText(comp);
 	}

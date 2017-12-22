@@ -28,7 +28,8 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 
 	private List<ProcessNode> nodes;
 	private ProcessType preferredType = ProcessType.UNIT_PROCESS;
-
+	private boolean linkProvidedOnly;
+	
 	BuildSupplyChainAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN);
 		setText(M.Complete);
@@ -41,6 +42,10 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 
 	void setPreferredType(ProcessType preferredType) {
 		this.preferredType = preferredType;
+	}
+
+	void setLinkProvidedOnly(boolean linkProvidedOnly) {
+		this.linkProvidedOnly = linkProvidedOnly;
 	}
 
 	@Override
@@ -78,7 +83,9 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 			monitor.beginTask(M.CreatingProductSystem, IProgressMonitor.UNKNOWN);
 			boolean preferSystems = preferredType == ProcessType.LCI_RESULT;
-			ProductSystemBuilder builder = new ProductSystemBuilder(Cache.getMatrixCache(), preferSystems);
+			ProductSystemBuilder builder = new ProductSystemBuilder(Cache.getMatrixCache());
+			builder.setPreferSystemProcesses(preferSystems);
+			builder.setLinkProvidedOnly(linkProvidedOnly);
 			for (ProcessNode node : nodes) {
 				LongPair idPair = new LongPair(node.process.getId(), node.process.getQuantitativeReference());
 				system = builder.autoComplete(system, idPair);

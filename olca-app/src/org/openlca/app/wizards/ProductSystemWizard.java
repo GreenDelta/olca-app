@@ -51,7 +51,8 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 				return true;
 			}
 			boolean preferSystems = page.useSystemProcesses();
-			Runner runner = new Runner(system, preferSystems);
+			boolean linkProvidedOnly = page.linkProvidedOnly();
+			Runner runner = new Runner(system, preferSystems, linkProvidedOnly);
 			getContainer().run(true, true, runner);
 			system = runner.system;
 			Cache.registerNew(Descriptors.toDescriptor(system));
@@ -72,12 +73,14 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
 		private ProductSystem system;
 		private boolean preferSystemProcesses;
+		private boolean linkProvidedOnly;
 		private MatrixCache cache;
 
-		public Runner(ProductSystem system, boolean preferSystemProcesses) {
+		public Runner(ProductSystem system, boolean preferSystemProcesses, boolean linkProvidedOnly) {
 			this.system = system;
 			this.preferSystemProcesses = preferSystemProcesses;
 			this.cache = Cache.getMatrixCache();
+			this.linkProvidedOnly = linkProvidedOnly;
 		}
 
 		@Override
@@ -86,8 +89,9 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			try {
 				monitor.beginTask(M.CreatingProductSystem,
 						IProgressMonitor.UNKNOWN);
-				ProductSystemBuilder builder = new ProductSystemBuilder(cache,
-						preferSystemProcesses);
+				ProductSystemBuilder builder = new ProductSystemBuilder(cache);
+				builder.setPreferSystemProcesses(preferSystemProcesses);
+				builder.setLinkProvidedOnly(linkProvidedOnly);
 				if (system.cutoff != null)
 					builder.setCutoff(system.cutoff);
 				system = builder.autoComplete(system);
