@@ -89,7 +89,7 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 			Wrapper wrapper = (Wrapper) element;
 			if (column == 0)
 				return Images.get(ModelType.IMPACT_CATEGORY);
-			if (column == 3)
+			if (column == 3 && wrapper.factor != null)
 				return Images.get(editor.getComments(), CommentPaths.get(set, wrapper.factor));
 			return null;
 		}
