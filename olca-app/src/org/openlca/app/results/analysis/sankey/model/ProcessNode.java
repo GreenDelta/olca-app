@@ -19,7 +19,7 @@ public class ProcessNode extends Node {
 	public double directResult;
 	public double directContribution;
 	ProcessPart editPart;
-	private Rectangle xyLayoutConstraints;
+	private Rectangle xyLayoutConstraints = new Rectangle(0, 0, 0, 0);
 
 	public ProcessNode(ProcessDescriptor process) {
 		this.process = process;

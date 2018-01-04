@@ -48,7 +48,6 @@ import org.openlca.core.results.FullResultProvider;
 public class SankeyDiagram extends GraphicalEditor implements PropertyChangeListener {
 
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
-
 	public final DQResult dqResult;
 	public final ProcessLinkSearchMap linkSearchMap;
 	public final FullResultProvider result;
@@ -215,8 +214,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	private void initContent() {
 		Object defaultSelection = getDefaultSelection();
 		if (defaultSelection == null) {
-			getGraphicalViewer().setContents(
-					new ProductSystemNode(productSystem, this, null, 0.1));
+			getGraphicalViewer().setContents(new ProductSystemNode(productSystem, this, null, 0.1));
 			return;
 		}
 		sankeyResult.calculate(defaultSelection);
@@ -289,5 +287,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 			node.setRouted(routed);
 		}
 	}
+
+	
 	
 }

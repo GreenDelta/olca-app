@@ -20,12 +20,14 @@ import org.openlca.app.results.analysis.sankey.layout.GraphLayoutManager;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Numbers;
+import org.openlca.app.util.Question;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 
 public class ProductSystemFigure extends Figure {
 
 	private boolean firstTime = true;
+	private boolean doPaint = true;
 	private ProductSystemNode node;
 	/** Must be disposed when the edit part is deactivated */
 	Font infoFont;
@@ -39,14 +41,35 @@ public class ProductSystemFigure extends Figure {
 
 	@Override
 	public void paint(Graphics graphics) {
-		if (firstTime)
-			firePropertyChange("firstTimeInitialized", null, "not null");
-		super.paint(graphics);
 		if (firstTime) {
-			((GraphLayoutManager) getLayoutManager()).layoutTree();
-			firstTime = false;
+			if (doPaint) {
+				doPaint = checkAndAsk();
+			}
+		}
+		if (doPaint) {
+			for (Node node : node.children) {
+				ProcessNode pNode = (ProcessNode) node;
+				if (!pNode.figure.isVisible()) {
+					pNode.figure.setVisible(true);
+				}
+			}
+			if (firstTime) {
+				firePropertyChange("firstTimeInitialized", null, "not null");
+			}
+			super.paint(graphics);
+			if (firstTime) {
+				((GraphLayoutManager) getLayoutManager()).layoutTree();
+				firstTime = false;
+			}
 		}
 		paintInfoBox(graphics);
+	}
+
+	private boolean checkAndAsk() {
+		if (node.children.size() <= 2000)
+			return true;
+		return Question.ask(M.SankeyDiagram,
+				"#More than 2000 processes will be displayed, this will take a while. Continue anyway?");
 	}
 
 	private void paintInfoBox(Graphics graphics) {
@@ -56,12 +79,9 @@ public class ProductSystemFigure extends Figure {
 		graphics.setFont(infoFont);
 		Object selection = node.selection;
 		double cutoffValue = node.cutoff * 100;
-		String cutoffText = M.Cutoff + ": "
-				+ Numbers.format(cutoffValue, 3) + "%";
+		String cutoffText = M.Cutoff + ": " + Numbers.format(cutoffValue, 3) + "%";
 		if (selection != null) {
-			graphics.drawText(M.ProductSystem + ": "
-					+ node.productSystem.getName(),
-					new Point(5, 5));
+			graphics.drawText(M.ProductSystem + ": " + node.productSystem.getName(), new Point(5, 5));
 			String label = selectionLabel(selection);
 			graphics.drawText(label, new Point(5, 30));
 			graphics.drawText(cutoffText, new Point(5, 60));
@@ -79,8 +99,7 @@ public class ProductSystemFigure extends Figure {
 		if (infoFont != null)
 			return infoFont;
 		infoFont = new Font(Display.getCurrent(),
-				new FontData[] { new FontData(
-						normalFont.getFontData()[0].getName(), 16, SWT.NONE) });
+				new FontData[] { new FontData(normalFont.getFontData()[0].getName(), 16, SWT.NONE) });
 		return infoFont;
 	}
 

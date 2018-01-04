@@ -38,6 +38,7 @@ public class ProcessFigure extends Figure {
 		setSize(WIDTH, HEIGHT);
 		processNode.setXyLayoutConstraints(getBounds());
 		addMouseListener(new ProcessMouseClick(processNode));
+		setVisible(false);
 	}
 
 	@Override
