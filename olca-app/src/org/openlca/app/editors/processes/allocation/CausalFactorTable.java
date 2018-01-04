@@ -96,11 +96,13 @@ class CausalFactorTable {
 		tableColumn.setText(newColumn.getTitle());
 		tableColumn.setToolTipText(newColumn.getTitle());
 		tableColumn.setWidth(80);
-		new TableColumn(table, SWT.VIRTUAL).setWidth(24);
 		Column[] newColumns = new Column[columns.length + 1];
 		System.arraycopy(columns, 0, newColumns, 0, columns.length);
 		newColumns[columns.length] = newColumn;
 		columns = newColumns;
+		if (editor.hasAnyComment("allocationFactors")) {
+			new TableColumn(table, SWT.VIRTUAL).setWidth(24);
+		}
 	}
 
 	private void initColumns() {

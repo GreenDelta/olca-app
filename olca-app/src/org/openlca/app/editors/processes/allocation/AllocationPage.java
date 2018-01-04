@@ -224,7 +224,13 @@ public class AllocationPage extends ModelPage<Process> {
 				return productText(exchange);
 			case 1:
 				return getFactorLabel(exchange, AllocationMethod.PHYSICAL);
+			case 2:
+				if (editor.hasAnyComment("allocationFactors"))
+					return null;
+				return getFactorLabel(exchange, AllocationMethod.ECONOMIC);
 			case 3:
+				if (!editor.hasAnyComment("allocationFactors"))
+					return null;
 				return getFactorLabel(exchange, AllocationMethod.ECONOMIC);
 			default:
 				return null;
