@@ -17,13 +17,17 @@ import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.Warning;
 import org.openlca.core.model.Location;
 import org.openlca.core.results.ContributionItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
 class LocationMap implements WebPage {
 
+	private static final Logger log = LoggerFactory.getLogger(LocationMap.class);
 	private LocationPage page;
 	private WebEngine webkit;
 
@@ -73,7 +77,12 @@ class LocationMap implements WebPage {
 			points.get(0).weight = 1;
 		}
 		String json = new Gson().toJson(points);
-		webkit.executeScript("setData(" + json + ")");
+		try {
+			webkit.executeScript("setData(" + json + ")");
+		} catch (Exception e) {
+			log.warn("Error setting location data", e);
+			Warning.showBox("#Map can not be displayed, do you have an active internet connection?");
+		}
 	}
 
 	private boolean showInMap(ContributionItem<Location> ci) {
