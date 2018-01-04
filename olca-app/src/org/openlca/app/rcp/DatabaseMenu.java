@@ -41,12 +41,12 @@ class DatabaseMenu implements IMenuListener {
 				new DbExportAction(),
 				new DbValidateAction(),
 				new DbCopyAction(),
+				new DbRenameAction(),
+				new DbDeleteAction(),
 				new DbCloseAction(),
 				new DbPropertiesAction(),
 				new DbCompressAction(),
-				new DbUpdateManagerAction(),
-				new DbRenameAction(),
-				new DbDeleteAction()
+				new DbUpdateManagerAction()
 		};
 		for (IAction a : actions) {
 			menu.add(a);

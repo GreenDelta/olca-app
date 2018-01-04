@@ -139,8 +139,7 @@ public class UI {
 		toolkit.paintBordersFor(composite);
 	}
 
-	public static GridData gridData(Control control, boolean hFill,
-			boolean vFill) {
+	public static GridData gridData(Control control, boolean hFill, boolean vFill) {
 		int hStyle = hFill ? SWT.FILL : SWT.LEFT;
 		int vStyle = vFill ? SWT.FILL : SWT.CENTER;
 		GridData data = new GridData(hStyle, vStyle, hFill, vFill);
