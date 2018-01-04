@@ -16,6 +16,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -28,9 +29,11 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 
 	public static final String ID = "preferencepages.cloud";
 	private List<CloudConfiguration> configs;
+	private Button enableCheckBox;
 	private Button libraryCheckBox;
 	private Button commentCheckBox;
-
+	private ConfigurationViewer configViewer;
+	
 	@Override
 	public void init(IWorkbench workbench) {
 		setPreferenceStore(CloudPreference.getStore());
@@ -43,27 +46,45 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 		UI.gridLayout(body, 1);
 		Composite general = new Composite(body, SWT.NONE);
 		UI.gridLayout(general, 2, 0, 0);
+		createEnableCheckBox(general);
 		createLibraryCheckBox(general);
 		createCommentCheckBox(general);
 		UI.formLabel(body, M.ServerConfigurations);
-		ConfigurationViewer viewer = new ConfigurationViewer(body);
-		viewer.setInput(configs);
+		configViewer = new ConfigurationViewer(body);
+		configViewer.setInput(configs);
+		checkEnabled();
 		return body;
+	}
+	
+	private void createEnableCheckBox(Composite parent) {
+		enableCheckBox = UI.formCheckBox(parent, "#Enable collaboration");
+		UI.gridData(enableCheckBox, true, false).horizontalIndent = 5;
+		Controls.onSelect(enableCheckBox, (e) -> checkEnabled());
+		enableCheckBox.setSelection(CloudPreference.doEnable());
 	}
 
 	private void createLibraryCheckBox(Composite parent) {
 		libraryCheckBox = UI.formCheckBox(parent, M.CheckAgainstLibraries);
+		UI.gridData(libraryCheckBox, true, false).horizontalIndent = 5;
 		libraryCheckBox.setSelection(CloudPreference.doCheckAgainstLibraries());
 	}
 
 	private void createCommentCheckBox(Composite parent) {
-		commentCheckBox = UI.formCheckBox(parent, "#Display comments");
+		commentCheckBox = UI.formCheckBox(parent, "#Show comments");
+		UI.gridData(commentCheckBox, true, false).horizontalIndent = 5;
 		commentCheckBox.setSelection(CloudPreference.doDisplayComments());
+	}
+	
+	private void checkEnabled() {
+		libraryCheckBox.setEnabled(enableCheckBox.getSelection());
+		commentCheckBox.setEnabled(enableCheckBox.getSelection());
+		configViewer.setEnabled(enableCheckBox.getSelection());
 	}
 
 	@Override
 	public boolean performOk() {
 		IPreferenceStore store = CloudPreference.getStore();
+		store.setValue(CloudPreference.ENABLE, enableCheckBox.getSelection());
 		store.setValue(CloudPreference.CHECK_AGAINST_LIBRARIES, libraryCheckBox.getSelection());
 		store.setValue(CloudPreference.DISPLAY_COMMENTS, commentCheckBox.getSelection());
 		CloudConfigurations.save(configs);
