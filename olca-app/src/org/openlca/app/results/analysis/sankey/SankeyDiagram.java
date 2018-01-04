@@ -54,6 +54,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	public final FullResultProvider result;
 	public ProductSystemNode node;
 	public double zoom = 1;
+	private boolean routed = true;
 	private SankeyResult sankeyResult;
 	private Map<ProcessLink, Link> createdLinks = new HashMap<>();
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
@@ -274,7 +275,19 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 			updateModel(cutoff);
 			getGraphicalViewer().deselectAll();
 			getGraphicalViewer().setContents(node);
+			node.setRouted(routed);
 		});
 	}
 
+	public boolean isRouted() {
+		return routed;
+	}
+
+	public void switchRouting() {
+		routed = !routed;
+		if (node != null) {
+			node.setRouted(routed);
+		}
+	}
+	
 }

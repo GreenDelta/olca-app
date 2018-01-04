@@ -7,6 +7,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
+import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.analysis.sankey.layout.ConnectionRouterImp;
 
 public class LinkPart extends AbstractConnectionEditPart {
@@ -23,9 +24,13 @@ public class LinkPart extends AbstractConnectionEditPart {
 	protected IFigure createFigure() {
 		Link link = (Link) getModel();
 		link.editPart = this;
-		PolylineConnection conn = new LinkFigure(link.getWidth(),
-				((ProductSystemNode) link.sourceNode.parent).editor);
-		conn.setConnectionRouter(ROUTER);
+		SankeyDiagram editor = ((ProductSystemNode) link.sourceNode.parent).editor;
+		PolylineConnection conn = new LinkFigure(link.getWidth(), editor);
+		if (editor.isRouted()) {
+			conn.setConnectionRouter(ROUTER);
+		} else {
+			conn.setConnectionRouter(ConnectionRouter.NULL);
+		}
 		link.figure = conn;
 		conn.setTolerance(0);
 		conn.setForegroundColor(link.getColor());
