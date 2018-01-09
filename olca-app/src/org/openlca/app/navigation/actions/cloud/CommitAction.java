@@ -147,7 +147,7 @@ public class CommitAction extends Action implements INavigationAction {
 				});
 				dialog.run(true, false, (m) -> {
 					TimeEstimatingMonitor monitor = new TimeEstimatingMonitor(m);
-					monitor.beginTask("#Indexing datasets", datasets.size());
+					monitor.beginTask(M.IndexingDatasets, datasets.size());
 					orderResults();
 					for (DiffResult change : selected) {
 						Dataset dataset = change.getDataset();

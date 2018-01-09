@@ -1,5 +1,7 @@
 package org.openlca.app.editors.comments;
 
+import org.openlca.app.M;
+
 import javafx.scene.web.WebEngine;
 
 import org.eclipse.swt.layout.FillLayout;
@@ -28,7 +30,7 @@ public class CommentDialog extends FormDialog implements WebPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		ScrolledForm form = UI.formHeader(mForm, "#Comments: " + CommentLabels.get(path));
+		ScrolledForm form = UI.formHeader(mForm, M.Comments + CommentLabels.get(path));
 		Composite body = UI.formBody(form, mForm.getToolkit());
 		body.setLayout(new FillLayout());
 		UI.createWebView(body, this);

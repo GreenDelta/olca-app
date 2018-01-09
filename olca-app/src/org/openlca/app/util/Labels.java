@@ -419,9 +419,9 @@ public class Labels {
 			return null;
 		switch (mean) {
 		case ARITHMETIC_MEAN:
-			return "#Arithmetic mean";
+			return M.ArithmeticMean;
 		case WEIGHTED_MEAN:
-			return "#Weighted arithmetic mean";
+			return M.WeightedArithmeticMean;
 		default:
 			return null;
 		}

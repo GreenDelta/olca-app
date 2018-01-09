@@ -1,5 +1,7 @@
 package org.openlca.app.editors.comments;
 
+import org.openlca.app.M;
+
 import java.util.List;
 
 import javafx.scene.web.WebEngine;
@@ -35,14 +37,14 @@ public class CommentsPage extends FormPage implements WebPage {
 	private final List<Comment> comments;
 
 	public CommentsPage(FormEditor editor, List<Comment> comments) {
-		super(editor, "CommentsPage", "#Comments");
+		super(editor, "CommentsPage", M.Comments);
 		this.model = null;
 		Comments.sort(comments);
 		this.comments = comments;
 	}
 
 	public CommentsPage(FormEditor editor, Comments comments, CategorizedEntity model) {
-		super(editor, "CommentsPage", "#Comments");
+		super(editor, "CommentsPage", M.Comments);
 		this.model = model;
 		this.comments = comments.getForRefId(model.getRefId());
 	}

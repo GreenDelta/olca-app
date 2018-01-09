@@ -1,5 +1,7 @@
 package org.openlca.app.editors.comments;
 
+import org.openlca.app.M;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +51,7 @@ public class CommentAction extends Action {
 	public CommentAction(String path, Comments comments) {
 		this.path = path;
 		this.comments = comments;
-		setText("#Show comments");
+		setText(M.ShowComments);
 		setImageDescriptor(Icon.SHOW_COMMENTS.descriptor());
 	}
 

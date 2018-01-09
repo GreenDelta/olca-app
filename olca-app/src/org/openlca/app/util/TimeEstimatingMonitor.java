@@ -1,5 +1,7 @@
 package org.openlca.app.util;
 
+import org.openlca.app.M;
+
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -63,7 +65,7 @@ public class TimeEstimatingMonitor {
 		if (remaining.isEmpty()) {
 			monitor.subTask("");
 		} else {
-			monitor.subTask("#Estimated time remaining: " + remaining);
+			monitor.subTask(M.EstimatedTimeRemaining + remaining);
 		}
 		lastTimeSet = current;
 	}

@@ -1,5 +1,7 @@
 package org.openlca.app.navigation.actions;
 
+import org.openlca.app.M;
+
 import java.util.List;
 
 import org.eclipse.jface.action.IMenuManager;
@@ -124,13 +126,13 @@ public class NavigationActionProvider extends CommonActionProvider {
 		if (!CloudPreference.doEnable())
 			return;
 		int registered = 0;
-		IMenuManager subMenu = new MenuManager("#Repository");
+		IMenuManager subMenu = new MenuManager(M.Repository);
 		if (elements.size() == 1)
 			registered += registerSingleActions(elements.get(0), subMenu, cloudActions);
 		else if (elements.size() > 1)
 			registered += registerMultiActions(elements, subMenu, cloudActions);
 		int subRegistered = 0;
-		IMenuManager compareMenu = new MenuManager("#Compare with");
+		IMenuManager compareMenu = new MenuManager(M.CompareWith);
 		if (elements.size() == 1)
 			subRegistered += registerSingleActions(elements.get(0), compareMenu, cloudCompareActions);
 		else if (elements.size() > 1)

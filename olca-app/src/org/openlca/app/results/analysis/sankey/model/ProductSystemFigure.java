@@ -68,8 +68,7 @@ public class ProductSystemFigure extends Figure {
 	private boolean checkAndAsk() {
 		if (node.children.size() <= 2000)
 			return true;
-		return Question.ask(M.SankeyDiagram,
-				"#More than 2000 processes will be displayed, this will take a while. Continue anyway?");
+		return Question.ask(M.SankeyDiagram, M.MoreThanXProcesses);
 	}
 
 	private void paintInfoBox(Graphics graphics) {

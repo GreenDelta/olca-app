@@ -1,5 +1,7 @@
 package org.openlca.app.results.analysis.sankey.actions;
 
+import org.openlca.app.M;
+
 import org.eclipse.jface.action.Action;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
@@ -10,7 +12,7 @@ class SwitchRoutingAction extends Action {
 
 	SwitchRoutingAction(SankeyDiagram diagram) {
 		this.diagram = diagram;
-		setText("#Routing enabled");
+		setText(M.RoutingEnabled);
 		updateIcon();
 	}
 

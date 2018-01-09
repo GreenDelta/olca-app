@@ -45,10 +45,10 @@ class CheckoutAction extends Action {
 			doCheckout(commit);
 		} catch (Exception e) {
 			log.error("Error while receiving commit data", e);
-			Error.showBox(M.AnErrorOccuredWhileReceivingCommitData);
+			Error.showBox(M.CommitError);
 		} finally {
 			Navigator.refresh();
-			App.runWithProgress("#Rebuild index", Reindexing::execute);
+			App.runWithProgress(M.RebuildIndex, Reindexing::execute);
 			Database.getIndexUpdater().enable();
 			Navigator.refresh();
 			HistoryView.refresh();

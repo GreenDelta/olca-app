@@ -81,7 +81,7 @@ class LocationMap implements WebPage {
 			webkit.executeScript("setData(" + json + ")");
 		} catch (Exception e) {
 			log.warn("Error setting location data", e);
-			Warning.showBox("#Map can not be displayed, do you have an active internet connection?");
+			Warning.showBox(M.MapCanNotBeDisplayed);
 		}
 	}
 

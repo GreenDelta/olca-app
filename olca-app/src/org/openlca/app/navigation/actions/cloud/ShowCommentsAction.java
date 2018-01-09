@@ -1,5 +1,7 @@
 package org.openlca.app.navigation.actions.cloud;
 
+import org.openlca.app.M;
+
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -16,7 +18,7 @@ public class ShowCommentsAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "#Show comments";
+		return M.ShowComments;
 	}
 
 	@Override

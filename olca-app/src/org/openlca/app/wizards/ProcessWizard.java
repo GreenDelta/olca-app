@@ -132,7 +132,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		private void createWasteCheck(Composite comp) {
 			UI.filler(comp);
 			wasteCheck = new Button(comp, SWT.CHECK);
-			wasteCheck.setText("#Create a waste treatment process");
+			wasteCheck.setText(M.CreateAWasteTreatmentProcess);
 			Controls.onSelect(wasteCheck, e -> {
 				if (wasteCheck.getSelection()) {
 					flowTree.removeFilter(productFilter);
@@ -149,7 +149,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		private void createRefFlowCheck(Composite comp) {
 			UI.filler(comp);
 			createRefFlowCheck = new Button(comp, SWT.CHECK);
-			createRefFlowCheck.setText("#Create a new flow for the process");
+			createRefFlowCheck.setText(M.CreateANewFlowForTheProcess);
 			Controls.onSelect(createRefFlowCheck, e -> {
 				boolean createFlow = createRefFlowCheck.getSelection();
 				StackLayout labelLayout = (StackLayout) labelStack.getLayout();

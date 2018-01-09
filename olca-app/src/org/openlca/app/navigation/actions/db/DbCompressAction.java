@@ -1,5 +1,7 @@
 package org.openlca.app.navigation.actions.db;
 
+import org.openlca.app.M;
+
 import java.io.File;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -40,7 +42,7 @@ public class DbCompressAction extends Action implements INavigationAction {
 	private DerbyConfiguration config;
 
 	public DbCompressAction() {
-		setText("#Compress database");
+		setText(M.CompressDatabase);
 	}
 
 	@Override
@@ -84,18 +86,17 @@ public class DbCompressAction extends Action implements INavigationAction {
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			FormToolkit toolkit = mform.getToolkit();
-			ScrolledForm form = UI.formHeader(mform, "#Compress database", Icon.DATABASE.get());
+			ScrolledForm form = UI.formHeader(mform, M.CompressDatabase, Icon.DATABASE.get());
 			Composite body = UI.formBody(form, toolkit);
-			UI.formLabel(body, toolkit,
-					"#This will compress the database and free up unsused space. For bigger databases this might take a while.");
-			UI.formLabel(body, toolkit, "#Size before compression: " + getSize() + " MB");
-			afterLabel = UI.formLabel(body, toolkit, "Size after compression: -");
+			UI.formLabel(body, toolkit, M.ThisWillCompressTheDatabase);
+			UI.formLabel(body, toolkit, M.SizeBeforeCompression + ": " + getSize() + " MB");
+			afterLabel = UI.formLabel(body, toolkit, M.SizeAfterCompression + ": -");
 		}
-		
+
 		@Override
 		protected void createButtonsForButtonBar(Composite parent) {
 			super.createButtonsForButtonBar(parent);
-			getButton(IDialogConstants.OK_ID).setText("#Compress");
+			getButton(IDialogConstants.OK_ID).setText(M.Compress);
 		}
 
 		private long getSize() {
@@ -107,7 +108,7 @@ public class DbCompressAction extends Action implements INavigationAction {
 		@Override
 		protected void okPressed() {
 			doIt();
-			afterLabel.setText("#Size after compression: " + getSize() + " MB");
+			afterLabel.setText(M.SizeAfterCompression + ": " + getSize() + " MB");
 			afterLabel.getParent().layout();
 			getButton(IDialogConstants.OK_ID).setVisible(false);
 			getButton(IDialogConstants.CANCEL_ID).setText("Close");
@@ -126,7 +127,7 @@ public class DbCompressAction extends Action implements INavigationAction {
 					db = (DerbyDatabase) Database.activate(config);
 				}
 				final DerbyDatabase _db = db;
-				App.runWithProgress("#Compressing database...", () -> compressTables(_db));
+				App.runWithProgress(M.CompressingDatabase, () -> compressTables(_db));
 				db.close();
 				if (isActive)
 					Database.activate(config);

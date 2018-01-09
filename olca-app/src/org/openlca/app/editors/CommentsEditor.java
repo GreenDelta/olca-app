@@ -1,5 +1,7 @@
 package org.openlca.app.editors;
 
+import org.openlca.app.M;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class CommentsEditor extends SimpleFormEditor {
 	private static final Logger log = LoggerFactory.getLogger(CommentsEditor.class);
 	
 	public static void open() {
-		Editors.open(new DefaultInput(TYPE, TYPE, "#Comments"), TYPE);
+		Editors.open(new DefaultInput(TYPE, TYPE, M.Comments), TYPE);
 	}
 
 	public static void close() {

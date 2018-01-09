@@ -1,5 +1,7 @@
 package org.openlca.app.editors.comments;
 
+import org.openlca.app.M;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -32,7 +34,7 @@ public class CommentControl {
 			new CommentDialog(path, comments).open();
 		});
 		control.setImage(Icon.SHOW_COMMENTS.get());
-		control.setToolTipText("#Comment");
+		control.setToolTipText(M.Comment);
 	}
 
 }

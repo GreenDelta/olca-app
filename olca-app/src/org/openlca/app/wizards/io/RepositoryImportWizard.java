@@ -66,7 +66,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setNeedsProgressMonitor(true);
-		setWindowTitle("#Repository import");
+		setWindowTitle(M.RepositoryImport);
 	}
 
 	@Override
@@ -153,8 +153,8 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			super(RepositoryWizardPage.class.getCanonicalName());
 			setPageComplete(false);
 			setImageDescriptor(Icon.CLOUD_LOGO.descriptor());
-			setTitle("#Select repository");
-			setDescription("#Please specify the complete url of the repository you want to import from. If the repository is not publicly accessible you need to enter your credentials to connect.");
+			setTitle(M.SelectRepository);
+			setDescription(M.PleaseSpecifyCompleteUrl);
 		}
 
 		@Override
@@ -195,8 +195,8 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			super(ModelSelectionPage.class.getCanonicalName());
 			setPageComplete(false);
 			setImageDescriptor(Icon.CLOUD_LOGO.descriptor());
-			setTitle("#Select data sets");
-			setDescription("#Please select the elements, that you want to import. Required references will be loaded as well, if not selected.");
+			setTitle(M.SelectDataSets);
+			setDescription(M.PleaseSelectElements);
 		}
 
 		@Override
@@ -220,7 +220,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			currentPage = this;
 			boolean initialized = initClient();
 			if (!initialized) {
-				setErrorMessage("#Could not connect, please check your internet connection and the provided url");
+				setErrorMessage(M.CouldNotConnect);
 				super.setVisible(visible);
 				return;
 			}
@@ -236,7 +236,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 
 		private Exception scanRepository(IProgressMonitor m) {
 			try {
-				m.beginTask("#Scanning repository", IProgressMonitor.UNKNOWN);
+				m.beginTask(M.ScanningRepository, IProgressMonitor.UNKNOWN);
 				List<FetchRequestData> data = new ArrayList<>(client.list());
 				total = data.size();
 				Collections.sort(data, new DataComparator());

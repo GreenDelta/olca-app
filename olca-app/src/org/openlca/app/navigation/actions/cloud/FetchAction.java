@@ -167,7 +167,7 @@ public class FetchAction extends Action implements INavigationAction {
 							m.beginTask(M.Preparing, IProgressMonitor.UNKNOWN);
 							FetchNotifierMonitor monitor = new FetchNotifierMonitor(m, M.FetchingData);
 							client.fetch(toFetch, mergedData, monitor);
-							monitor.beginTask("#Indexing datasets", differences.size());
+							monitor.beginTask(M.IndexingDatasets, differences.size());
 							FetchIndexHelper.index(differences, index, (e) -> monitor.worked());
 							monitor.done();
 						} catch (WebRequestException e) {

@@ -86,7 +86,7 @@ class ExchangeTable {
 		this.forInputs = forInputs;
 		this.page = page;
 		this.editor = page.editor;
-		this.AVOIDED = forInputs ? "#Avoided waste" : M.AvoidedProduct;
+		this.AVOIDED = forInputs ? M.AvoidedWaste : M.AvoidedProduct;
 		editor.getParameterSupport().afterEvaluation(() -> viewer.refresh());
 	}
 
@@ -131,7 +131,7 @@ class ExchangeTable {
 	private void bindActions(Section section) {
 		Action add = Actions.onAdd(() -> onAdd());
 		Action remove = Actions.onRemove(() -> onRemove());
-		Action qRef = Actions.create("#Set as quantitative reference", null, () -> {
+		Action qRef = Actions.create(M.SetAsQuantitativeReference, null, () -> {
 			Exchange e = Viewers.getFirstSelected(viewer);
 			if (e == null)
 				return;

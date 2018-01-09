@@ -95,8 +95,7 @@ public class CalculationWizard extends Wizard {
 		}
 		if (relevant.isEmpty())
 			return true;
-		String text = "#Some elements referenced by the product system are not saved yet. The calculation will not take these into account. Do you want to save them now?";
-		int answer = Question.askWithCancel("#Unsaved changes", text);
+		int answer = Question.askWithCancel(M.UnsavedChanges, M.SomeElementsAreNotSaved);
 		if (answer == IDialogConstants.NO_ID)
 			return true;
 		if (answer == IDialogConstants.CANCEL_ID)
@@ -252,7 +251,7 @@ public class CalculationWizard extends Wizard {
 			RegionalizedResult result = calc.calculate(
 					Database.get(), Cache.getMatrixCache());
 			if (result == null) {
-				Info.showBox("#No regionalized information "
+				Info.showBox(M.NoRegionalizedInformation
 						+ "available for this system");
 				return;
 			}

@@ -51,7 +51,7 @@ class BuildSupplyChainMenuAction extends EditorAction {
 
 		private void createSelectLinkProvidedOnlyItem(Menu menu) {
 			MenuItem treeItem = new MenuItem(menu, SWT.RADIO);
-			treeItem.setText("#Only connect default providers");
+			treeItem.setText(M.OnlyConnectDefaultProviders);
 			Controls.onSelect(treeItem, (e) -> {
 				supplyChainAction.setLinkProvidedOnly(treeItem.getSelection());
 				nextTierAction.setLinkProvidedOnly(treeItem.getSelection());

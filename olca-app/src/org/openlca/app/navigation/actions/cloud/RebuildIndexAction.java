@@ -1,5 +1,7 @@
 package org.openlca.app.navigation.actions.cloud;
 
+import org.openlca.app.M;
+
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -18,12 +20,12 @@ public class RebuildIndexAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "#Rebuild index";
+		return M.RebuildIndex;
 	}
 
 	@Override
 	public void run() {
-		App.runWithProgress("#Rebuild index", Reindexing::execute);
+		App.runWithProgress(M.RebuildIndex, Reindexing::execute);
 		Navigator.refresh(Navigator.getNavigationRoot());
 	}
 

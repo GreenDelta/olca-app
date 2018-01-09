@@ -41,7 +41,7 @@ class DQSettingsPage extends WizardPage {
 	public DQSettingsPage() {
 		super("DQSettingsPage");
 		setTitle(M.DataQualityProperties);
-		setDescription(M.PleaseSelectThePropertiesForTheDataQualityAssessment);
+		setDescription(M.PleaseSelectProperties);
 	}
 
 	@Override

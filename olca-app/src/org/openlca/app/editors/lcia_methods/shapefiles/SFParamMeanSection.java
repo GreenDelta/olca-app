@@ -1,5 +1,7 @@
 package org.openlca.app.editors.lcia_methods.shapefiles;
 
+import org.openlca.app.M;
+
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -17,12 +19,12 @@ class SFParamMeanSection {
 	}
 
 	void render(Composite body, FormToolkit tk) {
-		Composite comp = UI.formSection(body, tk, "#Parameter aggregation function");
-		Combo combo = UI.formCombo(comp, tk, "#Function");
+		Composite comp = UI.formSection(body, tk, M.ParameterAggregationFunction);
+		Combo combo = UI.formCombo(comp, tk, M.Function);
 		UI.gridData(combo, false, false).widthHint = 160;
 		combo.setItems(new String[] {
-				"#Weighted arithmetic mean",
-				"#Arithmetic mean"
+				M.WeightedArithmeticMean,
+				M.ArithmeticMean
 		});
 		ImpactMethod m = page.editor.getModel();
 		int idx = m.parameterMean == ParameterMean.ARITHMETIC_MEAN ? 1 : 0;

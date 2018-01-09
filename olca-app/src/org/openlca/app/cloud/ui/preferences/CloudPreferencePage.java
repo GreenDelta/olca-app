@@ -57,7 +57,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 	}
 	
 	private void createEnableCheckBox(Composite parent) {
-		enableCheckBox = UI.formCheckBox(parent, "#Enable collaboration");
+		enableCheckBox = UI.formCheckBox(parent, M.EnableCollaboration);
 		UI.gridData(enableCheckBox, true, false).horizontalIndent = 5;
 		Controls.onSelect(enableCheckBox, (e) -> checkEnabled());
 		enableCheckBox.setSelection(CloudPreference.doEnable());
@@ -70,7 +70,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 	}
 
 	private void createCommentCheckBox(Composite parent) {
-		commentCheckBox = UI.formCheckBox(parent, "#Show comments");
+		commentCheckBox = UI.formCheckBox(parent, M.ShowComments);
 		UI.gridData(commentCheckBox, true, false).horizontalIndent = 5;
 		commentCheckBox.setSelection(CloudPreference.doDisplayComments());
 	}

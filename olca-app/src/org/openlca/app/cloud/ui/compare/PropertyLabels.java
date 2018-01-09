@@ -317,7 +317,7 @@ public class PropertyLabels {
 		put(clazz, "impactCategories", M.ImpactCategories);
 		put(clazz, "nwSets", M.NormalizationWeightingSets);
 		put(clazz, "parameters", M.Parameters);
-		put(clazz, "parameterMean", "#Parameter aggregation function");
+		put(clazz, "parameterMean", M.ParameterAggregationFunction);
 	}
 
 	private static void putImpactCategoryLabels() {

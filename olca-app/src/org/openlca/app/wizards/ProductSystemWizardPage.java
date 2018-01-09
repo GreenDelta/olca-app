@@ -167,7 +167,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		systemProcessesCheck = UI.checkBox(comp, M.ConnectWithSystemProcessesIfPossible);
 		systemProcessesCheck.setSelection(false);
 		UI.filler(comp);
-		linkProvidedOnlyCheck = UI.checkBox(comp, "#Only connect default providers");
+		linkProvidedOnlyCheck = UI.checkBox(comp, M.OnlyConnectDefaultProviders);
 		linkProvidedOnlyCheck.setSelection(true);
 		Controls.onSelect(supplyChainCheck, e -> {
 			systemProcessesCheck.setEnabled(supplyChainCheck.getSelection());

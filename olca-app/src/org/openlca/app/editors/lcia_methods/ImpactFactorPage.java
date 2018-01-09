@@ -104,7 +104,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 		if (!App.isCommentingEnabled())
 			return;
 		commentControl.setImage(Icon.SHOW_COMMENTS.get());
-		commentControl.setToolTipText("#Show comments");
+		commentControl.setToolTipText(M.ShowComments);
 	}
 
 	private void updateCommentControl() {

@@ -53,7 +53,7 @@ public class ConnectAction extends Action implements INavigationAction {
 		if (runner.error != null)
 			Error.showBox(runner.error.getMessage());
 		else {
-			App.runWithProgress("#Rebuild index", Reindexing::execute);
+			App.runWithProgress(M.RebuildIndex, Reindexing::execute);
 			Navigator.refresh(Navigator.getNavigationRoot());
 		}
 	}
@@ -122,7 +122,7 @@ public class ConnectAction extends Action implements INavigationAction {
 				checkValid();
 			});
 			configViewer.select(CloudConfigurations.getDefault());
-			Hyperlink editConfig = UI.formLink(container, "#Edit");
+			Hyperlink editConfig = UI.formLink(container, M.Edit);
 			editConfig.setForeground(Colors.linkBlue());
 			editConfig.addHyperlinkListener(new HyperlinkAdapter() {
 				@Override
