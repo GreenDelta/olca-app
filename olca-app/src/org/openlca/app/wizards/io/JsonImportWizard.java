@@ -12,7 +12,6 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.input.JsonImport;
@@ -22,20 +21,25 @@ import org.slf4j.LoggerFactory;
 
 public class JsonImportWizard extends Wizard implements IImportWizard {
 
-	private FileImportPage page;
+	private FileImportPage filePage;
+	private JsonImportPage settingsPage;
+
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setNeedsProgressMonitor(true);
 		setWindowTitle("openLCA JSON-LD");
-		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
-				.descriptor());
+		setDefaultPageImageDescriptor(
+				Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}
 
 	@Override
 	public void addPages() {
-		page = new FileImportPage(new String[] { "zip" }, false);
-		addPage(page);
+		filePage = new FileImportPage(new String[] { "zip" }, false);
+		addPage(filePage);
+		settingsPage = new JsonImportPage();
+		addPage(settingsPage);
 	}
 
 	@Override
@@ -59,7 +63,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private File getZip() {
-		File[] files = page.getFiles();
+		File[] files = filePage.getFiles();
 		if (files == null || files.length == 0)
 			return null;
 		File file = files[0];
@@ -70,14 +74,13 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private void doRun(File zip) throws Exception {
+		UpdateMode mode = settingsPage.updateMode;
+		log.info("Import JSON LD package {} with update mode = {}", zip, mode);
 		getContainer().run(true, true, (monitor) -> {
 			monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
 			try (ZipStore store = ZipStore.open(zip)) {
 				JsonImport importer = new JsonImport(store, Database.get());
-				UpdateMode updateMode = UpdateMode.NEVER;
-				if (FeatureFlag.JSONLD_UPDATES.isEnabled())
-					updateMode = UpdateMode.IF_NEWER;
-				importer.setUpdateMode(updateMode);
+				importer.setUpdateMode(mode);
 				importer.run();
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
