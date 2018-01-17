@@ -18,9 +18,7 @@ public enum FeatureFlag {
 
 	MATRIX_IMAGE_EXPORT("Enable matrix image export"),
 
-	ECOSPOLD1_EXPORT_CONFIG("EcoSpold 1 export configuration"),
-
-	JSONLD_UPDATES("Enable flow updates in JSON-LD import");
+	ECOSPOLD1_EXPORT_CONFIG("EcoSpold 1 export configuration");
 
 	private final String description;
 
