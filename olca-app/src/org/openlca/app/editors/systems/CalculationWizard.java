@@ -3,7 +3,11 @@ package org.openlca.app.editors.systems;
 import java.lang.reflect.InvocationTargetException;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -26,6 +30,8 @@ import org.openlca.app.util.Editors;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.math.data_quality.AggregationType;
@@ -33,13 +39,18 @@ import org.openlca.core.math.data_quality.DQCalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.math.data_quality.ProcessingType;
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.Exchange;
+import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.ContributionResultProvider;
+import org.openlca.core.results.FlowResult;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.FullResultProvider;
+import org.openlca.core.results.SimpleResultProvider;
 import org.openlca.geo.RegionalizedCalculator;
 import org.openlca.geo.RegionalizedResult;
 import org.openlca.geo.RegionalizedResultProvider;
@@ -55,7 +66,7 @@ public class CalculationWizard extends Wizard {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	final ProductSystem productSystem;
+	ProductSystem productSystem;
 
 	private CalculationWizardPage page;
 	private DQSettingsPage dqPage;
@@ -186,8 +197,7 @@ public class CalculationWizard extends Wizard {
 		}
 
 		@Override
-		public void run(IProgressMonitor monitor)
-				throws InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 			outOfMemory = false;
 			monitor.beginTask(M.RunCalculation, IProgressMonitor.UNKNOWN);
 			int size = productSystem.getProcesses().size();
@@ -221,6 +231,7 @@ public class CalculationWizard extends Wizard {
 			FullResult result = calculator.calculateFull(setup);
 			log.trace("calculation done, open editor");
 			FullResultProvider resultProvider = new FullResultProvider(result, Cache.getEntityCache());
+			setInventory(resultProvider);
 			DQResult dqResult = DQResult.calculate(Database.get(), result, dqSetup);
 			ResultEditorInput input = getEditorInput(resultProvider, setup, null, dqResult);
 			Editors.open(input, AnalyzeEditor.ID);
@@ -233,6 +244,7 @@ public class CalculationWizard extends Wizard {
 			log.trace("calculation done, open editor");
 			ContributionResultProvider<ContributionResult> resultProvider = new ContributionResultProvider<>(result,
 					Cache.getEntityCache());
+			setInventory(resultProvider);
 			DQResult dqResult = DQResult.calculate(Database.get(), result, dqSetup);
 			ResultEditorInput input = getEditorInput(resultProvider, setup, null, dqResult);
 			Editors.open(input, QuickResultEditor.ID);
@@ -246,24 +258,43 @@ public class CalculationWizard extends Wizard {
 
 		private void calcRegionalized() {
 			log.trace("calculate regionalized result");
-			RegionalizedCalculator calc = new RegionalizedCalculator(
-					setup, App.getSolver());
-			RegionalizedResult result = calc.calculate(
-					Database.get(), Cache.getMatrixCache());
+			RegionalizedCalculator calc = new RegionalizedCalculator(setup, App.getSolver());
+			RegionalizedResult result = calc.calculate(Database.get(), Cache.getMatrixCache());
 			if (result == null) {
-				Info.showBox(M.NoRegionalizedInformation
-						+ "available for this system");
+				Info.showBox(M.NoRegionalizedInformation + "available for this system");
 				return;
 			}
 			RegionalizedResultProvider provider = new RegionalizedResultProvider();
-			provider.result = new FullResultProvider(
-					result.result, Cache.getEntityCache());
+			provider.result = new FullResultProvider(result.result, Cache.getEntityCache());
 			provider.kmlData = result.kmlData;
-			DQResult dqResult = DQResult.calculate(
-					Database.get(), result.result, dqSetup);
-			ResultEditorInput input = getEditorInput(
-					provider, setup, result.parameterSet, dqResult);
+			setInventory(provider.result);
+			DQResult dqResult = DQResult.calculate(Database.get(), result.result, dqSetup);
+			ResultEditorInput input = getEditorInput(provider, setup, result.parameterSet, dqResult);
 			Editors.open(input, RegionalizedResultEditor.ID);
+		}
+
+		private void setInventory(SimpleResultProvider<?> result) {
+			productSystem.inventory.clear();
+			Map<Long, Flow> flows = new HashMap<>();
+			Set<Long> ids = new HashSet<>();
+			for (FlowDescriptor flow : result.getFlowDescriptors()) {
+				ids.add(flow.getId());
+			}
+			for (Flow flow : new FlowDao(Database.get()).getForIds(ids)) {
+				flows.put(flow.getId(), flow);
+			}
+			for (FlowDescriptor d : result.getFlowDescriptors()) {
+				Flow flow = flows.get(d.getId());
+				FlowResult flowResult = result.getTotalFlowResult(d);
+				Exchange exchange = new Exchange();
+				exchange.amount = flowResult.value;
+				exchange.isInput = flowResult.input;
+				exchange.flow = flow;
+				exchange.flowPropertyFactor = flow.getReferenceFactor();
+				exchange.unit = exchange.flowPropertyFactor.getFlowProperty().getUnitGroup().getReferenceUnit();
+				productSystem.inventory.add(exchange);				
+			}
+			productSystem = new ProductSystemDao(Database.get()).update(productSystem);
 		}
 
 	}
