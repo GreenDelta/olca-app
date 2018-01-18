@@ -48,7 +48,7 @@ class CheckoutAction extends Action {
 			Error.showBox(M.CommitError);
 		} finally {
 			Navigator.refresh();
-			App.runWithProgress(M.RebuildIndex, Reindexing::execute);
+			App.runWithProgress(M.RebuildingIndex, Reindexing::execute);
 			Database.getIndexUpdater().enable();
 			Navigator.refresh();
 			HistoryView.refresh();

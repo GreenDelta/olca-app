@@ -92,6 +92,7 @@ public class M extends NLS {
 	public static String Causal;
 	public static String CausalAllocation;
 	public static String Change;
+	public static String ChangesToBeFetched;
 	public static String CheckAgainstLibraries;
 	public static String CheckingAgainstLibraries;
 	public static String CheckingOutCommit;
@@ -308,7 +309,6 @@ public class M extends NLS {
 	public static String FailedToLoadFlowProperty;
 	public static String Fetch;
 	public static String FetchRemoteModel;
-	public static String FetchedChanges;
 	public static String FetchingChanges;
 	public static String FetchingCommits;
 	public static String FetchingData;
@@ -656,6 +656,7 @@ public class M extends NLS {
 	public static String RawValue;
 	public static String ReallyDeleteShapeFile;
 	public static String RebuildIndex;
+	public static String RebuildingIndex;
 	public static String RecalculateQuestion;
 	public static String RecognizedLibraryDatasetsDescription;
 	public static String ReconnectProcesslink;
@@ -690,8 +691,8 @@ public class M extends NLS {
 	public static String ReportSections;
 	public static String ReportView;
 	public static String Repository;
-	public static String RepositoryId;
 	public static String RepositoryImport;
+	public static String RepositoryPath;
 	public static String Reset;
 	public static String ResetAll;
 	public static String ResetSelection;

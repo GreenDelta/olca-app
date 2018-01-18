@@ -53,7 +53,7 @@ public class ConnectAction extends Action implements INavigationAction {
 		if (runner.error != null)
 			Error.showBox(runner.error.getMessage());
 		else {
-			App.runWithProgress(M.RebuildIndex, Reindexing::execute);
+			App.runWithProgress(M.RebuildingIndex, Reindexing::execute);
 			Navigator.refresh(Navigator.getNavigationRoot());
 		}
 	}
@@ -136,7 +136,7 @@ public class ConnectAction extends Action implements INavigationAction {
 					configViewer.select(CloudConfigurations.getDefault());
 				}
 			});
-			Text repoText = UI.formText(container, M.RepositoryId);
+			Text repoText = UI.formText(container, M.RepositoryPath);
 			repoText.addModifyListener((event) -> {
 				repositoryId = repoText.getText();
 				if (repositoryId != null)

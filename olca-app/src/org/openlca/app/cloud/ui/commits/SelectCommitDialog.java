@@ -1,6 +1,7 @@
 package org.openlca.app.cloud.ui.commits;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
@@ -23,6 +24,11 @@ public class SelectCommitDialog extends FormDialog {
 
 	public SelectCommitDialog() {
 		super(UI.shell());
+	}
+
+	@Override
+	protected Point getInitialSize() {
+		return new Point(800, 600);
 	}
 
 	@Override
