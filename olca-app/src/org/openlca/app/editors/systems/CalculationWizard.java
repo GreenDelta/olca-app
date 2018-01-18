@@ -132,9 +132,10 @@ public class CalculationWizard extends Wizard {
 		DQCalculationSetup dqSetup = null;
 		if (page.doDqAssessment())
 			dqSetup = dqPage.getSetup(productSystem);
+		boolean storeInventoryResult = page.doStoreInventoryResult();
 		saveDefaults(setup, dqSetup, type);
 		try {
-			Calculation calculation = new Calculation(setup, type, dqSetup);
+			Calculation calculation = new Calculation(setup, type, dqSetup, storeInventoryResult);
 			getContainer().run(true, true, calculation);
 			if (calculation.outOfMemory)
 				MemoryError.show();
@@ -187,13 +188,15 @@ public class CalculationWizard extends Wizard {
 		private CalculationSetup setup;
 		private CalculationType type;
 		private DQCalculationSetup dqSetup;
+		private boolean storeInventoryResult;
 		private boolean outOfMemory;
 
 		public Calculation(CalculationSetup setup, CalculationType type,
-				DQCalculationSetup dqSetup) {
+				DQCalculationSetup dqSetup, boolean storeInventoryResult) {
 			this.setup = setup;
 			this.type = type;
 			this.dqSetup = dqSetup;
+			this.storeInventoryResult = storeInventoryResult;
 		}
 
 		@Override
@@ -274,6 +277,8 @@ public class CalculationWizard extends Wizard {
 		}
 
 		private void setInventory(SimpleResultProvider<?> result) {
+			if (!storeInventoryResult)
+				return;
 			productSystem.inventory.clear();
 			Map<Long, Flow> flows = new HashMap<>();
 			Set<Long> ids = new HashSet<>();
@@ -292,7 +297,7 @@ public class CalculationWizard extends Wizard {
 				exchange.flow = flow;
 				exchange.flowPropertyFactor = flow.getReferenceFactor();
 				exchange.unit = exchange.flowPropertyFactor.getFlowProperty().getUnitGroup().getReferenceUnit();
-				productSystem.inventory.add(exchange);				
+				productSystem.inventory.add(exchange);
 			}
 			productSystem = new ProductSystemDao(Database.get()).update(productSystem);
 		}

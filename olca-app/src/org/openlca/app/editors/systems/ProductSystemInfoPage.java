@@ -38,6 +38,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	private FlowPropertyFactorViewer propertyViewer;
 	private UnitViewer unitViewer;
 	private Text targetAmountText;
+	private Composite inventoryInfo;
 	private ScrolledForm form;
 
 	ProductSystemInfoPage(ProductSystemEditor editor) {
@@ -52,6 +53,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, tk);
 		addCalculationButton(infoSection.getContainer(), tk);
+		addInventoryInfo(infoSection.getContainer(), tk);
 		createReferenceSection(body, tk);
 		body.setFocus();
 		form.reflow(true);
@@ -111,7 +113,26 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		tk.createLabel(comp, "");
 		Button button = tk.createButton(comp, M.Calculate, SWT.NONE);
 		button.setImage(Icon.RUN.get());
-		Controls.onSelect(button, e -> CalculationWizard.open(getModel()));
+		Controls.onSelect(button, e -> {
+			CalculationWizard.open(getModel());	
+			inventoryInfo.setVisible(!getModel().inventory.isEmpty());			
+		});
+		tk.createLabel(comp, "");
+	}
+
+	private void addInventoryInfo(Composite comp, FormToolkit tk) {
+		tk.createLabel(comp, "");
+		inventoryInfo = UI.formComposite(comp, tk);
+		UI.gridLayout(inventoryInfo, 2, 10, 0);
+		tk.createLabel(inventoryInfo, M.HasInventoryResult);
+		Button button = tk.createButton(inventoryInfo, M.Clear, SWT.NONE);
+		Controls.onSelect(button, e -> {
+			getModel().inventory.clear();
+			inventoryInfo.setVisible(false);
+			getEditor().setDirty(true);
+		});
+		tk.createLabel(comp, "");
+		inventoryInfo.setVisible(!getModel().inventory.isEmpty());
 	}
 
 	private void propertyChanged(FlowPropertyFactor f) {

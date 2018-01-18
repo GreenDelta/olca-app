@@ -98,6 +98,7 @@ public class M extends NLS {
 	public static String Checkout;
 	public static String ChooseDirectory;
 	public static String City;
+	public static String Clear;
 	public static String ClearData;
 	public static String ClickHereToChangeDisplay;
 	public static String Close;
@@ -357,6 +358,7 @@ public class M extends NLS {
 	public static String HEADRevision;
 	public static String HTMLGraph;
 	public static String HalfUp;
+	public static String HasInventoryResult;
 	public static String HasUncertainties;
 	public static String Help;
 	public static String Hide;
@@ -800,6 +802,7 @@ public class M extends NLS {
 	public static String Start;
 	public static String StartDate;
 	public static String Statistics;
+	public static String StoreInventoryResult;
 	public static String SubCategory;
 	public static String SubgroupByProcesses;
 	public static String Synonyms;
