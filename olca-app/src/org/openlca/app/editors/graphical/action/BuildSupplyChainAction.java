@@ -16,6 +16,7 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.matrix.ProductSystemBuilder;
+import org.openlca.core.matrix.product.index.LinkingMethod;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -28,8 +29,8 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 
 	private List<ProcessNode> nodes;
 	private ProcessType preferredType = ProcessType.UNIT_PROCESS;
-	private boolean linkProvidedOnly;
-	
+	private LinkingMethod linkingMethod = LinkingMethod.ONLY_LINK_PROVIDERS;
+
 	BuildSupplyChainAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN);
 		setText(M.Complete);
@@ -40,12 +41,14 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 		this.nodes = nodes;
 	}
 
-	void setPreferredType(ProcessType preferredType) {
+	@Override
+	public void setPreferredType(ProcessType preferredType) {
 		this.preferredType = preferredType;
 	}
 
-	void setLinkProvidedOnly(boolean linkProvidedOnly) {
-		this.linkProvidedOnly = linkProvidedOnly;
+	@Override
+	public void setLinkingMethod(LinkingMethod linkingMethod) {
+		this.linkingMethod = linkingMethod;
 	}
 
 	@Override
@@ -82,10 +85,9 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 		@Override
 		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 			monitor.beginTask(M.CreatingProductSystem, IProgressMonitor.UNKNOWN);
-			boolean preferSystems = preferredType == ProcessType.LCI_RESULT;
 			ProductSystemBuilder builder = new ProductSystemBuilder(Cache.getMatrixCache());
-			builder.setPreferSystemProcesses(preferSystems);
-			builder.setLinkProvidedOnly(linkProvidedOnly);
+			builder.setPreferredType(preferredType);
+			builder.setLinkingMethod(linkingMethod);
 			for (ProcessNode node : nodes) {
 				LongPair idPair = new LongPair(node.process.getId(), node.process.getQuantitativeReference());
 				system = builder.autoComplete(system, idPair);

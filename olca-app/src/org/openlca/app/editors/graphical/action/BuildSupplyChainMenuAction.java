@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
@@ -12,6 +13,8 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Labels;
+import org.openlca.core.matrix.product.index.LinkingMethod;
 import org.openlca.core.model.ProcessType;
 
 class BuildSupplyChainMenuAction extends EditorAction {
@@ -32,50 +35,49 @@ class BuildSupplyChainMenuAction extends EditorAction {
 		private Menu createMenu(Menu menu) {
 			createItem(menu, supplyChainAction);
 			createItem(menu, nextTierAction);
-			new MenuItem(menu, SWT.SEPARATOR);
-			createSelectTypeItem(menu, ProcessType.UNIT_PROCESS);
-			createSelectTypeItem(menu, ProcessType.LCI_RESULT);
-			createSelectLinkProvidedOnlyItem(menu);
 			return menu;
 		}
 
-		private void createSelectTypeItem(Menu menu, ProcessType type) {
-			MenuItem treeItem = new MenuItem(menu, SWT.RADIO);
-			treeItem.setText(M.bind(M.Prefer, getDisplayName(type)));
-			Controls.onSelect(treeItem, (e) -> {
-				supplyChainAction.setPreferredType(type);
-				nextTierAction.setPreferredType(type);
-			});
-			treeItem.setSelection(type == ProcessType.UNIT_PROCESS);
-		}
-
-		private void createSelectLinkProvidedOnlyItem(Menu menu) {
-			MenuItem treeItem = new MenuItem(menu, SWT.RADIO);
-			treeItem.setText(M.OnlyConnectDefaultProviders);
-			Controls.onSelect(treeItem, (e) -> {
-				supplyChainAction.setLinkProvidedOnly(treeItem.getSelection());
-				nextTierAction.setLinkProvidedOnly(treeItem.getSelection());
-			});
-			treeItem.setSelection(false);
-		}
-
-		private String getDisplayName(ProcessType type) {
-			switch (type) {
-			case UNIT_PROCESS:
-				return M.UnitProcess;
-			case LCI_RESULT:
-				return M.SystemProcess;
-			}
-			return "";
-		}
-
 		private void createItem(Menu menu, IBuildAction action) {
-			MenuItem item = new MenuItem(menu, SWT.NONE);
+			MenuItem item = new MenuItem(menu, SWT.CASCADE);
 			item.setText(action.getText());
+			Menu subMenu = new Menu(item);
+			createSubItem(subMenu, action, LinkingMethod.IGNORE_PROVIDERS, ProcessType.UNIT_PROCESS);
+			createSubItem(subMenu, action, LinkingMethod.IGNORE_PROVIDERS, ProcessType.LCI_RESULT);
+			createSubItem(subMenu, action, LinkingMethod.PREFER_PROVIDERS, ProcessType.UNIT_PROCESS);
+			createSubItem(subMenu, action, LinkingMethod.PREFER_PROVIDERS, ProcessType.LCI_RESULT);
+			createSubItem(subMenu, action, LinkingMethod.ONLY_LINK_PROVIDERS, null);
+			item.setMenu(subMenu);
+		}
+
+		private void createSubItem(Menu menu, IBuildAction action, LinkingMethod method, ProcessType type) {
+			MenuItem item = new MenuItem(menu, SWT.NONE);
+			String label = getLabel(method);
+			if (type != null) {
+				label += "/" + NLS.bind(M.Prefer, Labels.processType(type));
+			}
+			item.setText(label);
 			Controls.onSelect(item, (e) -> {
 				action.setProcessNodes(nodes);
+				action.setLinkingMethod(method);
+				action.setPreferredType(type);
 				action.run();
 			});
+		}
+
+		private String getLabel(LinkingMethod method) {
+			if (method == null)
+				return null;
+			switch (method) {
+			case IGNORE_PROVIDERS:
+				return M.IgnoreDefaultProviders;
+			case PREFER_PROVIDERS:
+				return M.PreferDefaultProviders;
+			case ONLY_LINK_PROVIDERS:
+				return M.OnlyLinkDefaultProviders;
+			default:
+				return null;
+			}
 		}
 
 		public void dispose() {

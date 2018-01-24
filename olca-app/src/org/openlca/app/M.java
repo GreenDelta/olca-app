@@ -22,7 +22,6 @@ public class M extends NLS {
 	public static String Actor;
 	public static String Actors;
 	public static String Add;
-	public static String AddConnectedProcesses;
 	public static String AddIndicator;
 	public static String AddNewChildCategory;
 	public static String AddScore;
@@ -40,7 +39,6 @@ public class M extends NLS {
 	public static String AlreadyConnected;
 	public static String AlreadyPresent;
 	public static String Amount;
-	public static String CommitError;
 	public static String Analysis;
 	public static String AnalysisResultOf;
 	public static String AnalyzingForProblems;
@@ -52,6 +50,7 @@ public class M extends NLS {
 	public static String AssessDataQuality;
 	public static String AssignUnits;
 	public static String Author;
+	public static String AutoLinkProcesses;
 	public static String AvoidedProduct;
 	public static String AvoidedProductFlow;
 	public static String AvoidedWaste;
@@ -114,6 +113,7 @@ public class M extends NLS {
 	public static String Commit;
 	public static String CommitChangesToRepository;
 	public static String CommitDate;
+	public static String CommitError;
 	public static String CommitMessage;
 	public static String CommitReferenceNotice;
 	public static String CommitingChanges;
@@ -133,7 +133,6 @@ public class M extends NLS {
 	public static String ConnectProviders;
 	public static String ConnectRecipients;
 	public static String ConnectToRepository;
-	public static String ConnectWithSystemProcessesIfPossible;
 	public static String ConnectingToRepository;
 	public static String Connection;
 	public static String ConnectionFailed;
@@ -380,6 +379,7 @@ public class M extends NLS {
 	public static String ILCD_SearchFailedMessage;
 	public static String ILCD_SearchPageDescription;
 	public static String Id;
+	public static String IgnoreDefaultProviders;
 	public static String ImageExport;
 	public static String ImpactAnalysis;
 	public static String ImpactAssessmentMethod;
@@ -575,7 +575,7 @@ public class M extends NLS {
 	public static String OK;
 	public static String OfProduct;
 	public static String OnlineHelp;
-	public static String OnlyConnectDefaultProviders;
+	public static String OnlyLinkDefaultProviders;
 	public static String Open;
 	public static String OpenDatabase;
 	public static String OpenEditor;
@@ -620,6 +620,8 @@ public class M extends NLS {
 	public static String Port;
 	public static String Position;
 	public static String Prefer;
+	public static String PreferDefaultProviders;
+	public static String PreferredProcessType;
 	public static String Preparing;
 	public static String PreviousCommit;
 	public static String Price;
@@ -648,6 +650,7 @@ public class M extends NLS {
 	public static String ProjectSetup;
 	public static String Projects;
 	public static String Properties;
+	public static String ProviderLinking;
 	public static String Providers;
 	public static String Publication;
 	public static String QuantitativeReference;
