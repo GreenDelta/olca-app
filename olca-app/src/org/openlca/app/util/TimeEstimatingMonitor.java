@@ -65,7 +65,7 @@ public class TimeEstimatingMonitor {
 		if (remaining.isEmpty()) {
 			monitor.subTask("");
 		} else {
-			monitor.subTask(M.EstimatedTimeRemaining + remaining);
+			monitor.subTask(M.EstimatedTimeRemaining + " " + remaining);
 		}
 		lastTimeSet = current;
 	}
