@@ -33,9 +33,11 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void addPages() {
-		ModelType[] types = { ModelType.IMPACT_METHOD, ModelType.PROCESS,
-				ModelType.FLOW, ModelType.FLOW_PROPERTY, ModelType.UNIT_GROUP,
-				ModelType.ACTOR, ModelType.SOURCE };
+		ModelType[] types = { ModelType.PRODUCT_SYSTEM,
+				ModelType.IMPACT_METHOD, ModelType.PROCESS,
+				ModelType.FLOW, ModelType.FLOW_PROPERTY,
+				ModelType.UNIT_GROUP, ModelType.ACTOR,
+				ModelType.SOURCE };
 		exportPage = ModelSelectionPage.forFile("zip", types);
 		addPage(exportPage);
 	}
@@ -67,14 +69,15 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 		monitor.beginTask(M.Export, descriptors.size());
 		int worked = 0;
 		ILCDExport export = new ILCDExport(config);
-		for (BaseDescriptor descriptor : descriptors) {
+		for (BaseDescriptor d : descriptors) {
 			if (monitor.isCanceled())
 				break;
-			monitor.setTaskName(descriptor.getName());
+			monitor.setTaskName(d.getName());
 			try {
-				Object component = Daos.root(config.db, descriptor.getModelType()).getForId(descriptor.getId());
-				if (component instanceof CategorizedEntity)
-					export.export((CategorizedEntity) component);
+				Object obj = Daos.root(config.db,
+						d.getModelType()).getForId(d.getId());
+				if (obj instanceof CategorizedEntity)
+					export.export((CategorizedEntity) obj);
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
 			} finally {
