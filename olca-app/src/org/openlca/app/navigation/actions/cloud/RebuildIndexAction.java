@@ -25,7 +25,7 @@ public class RebuildIndexAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		App.runWithProgress(M.RebuildIndex, Reindexing::execute);
+		App.runWithProgress(M.RebuildingIndex, Reindexing::execute);
 		Navigator.refresh(Navigator.getNavigationRoot());
 	}
 

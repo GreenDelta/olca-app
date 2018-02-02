@@ -22,7 +22,6 @@ public class M extends NLS {
 	public static String Actor;
 	public static String Actors;
 	public static String Add;
-	public static String AddConnectedProcesses;
 	public static String AddIndicator;
 	public static String AddNewChildCategory;
 	public static String AddScore;
@@ -40,7 +39,6 @@ public class M extends NLS {
 	public static String AlreadyConnected;
 	public static String AlreadyPresent;
 	public static String Amount;
-	public static String CommitError;
 	public static String Analysis;
 	public static String AnalysisResultOf;
 	public static String AnalyzingForProblems;
@@ -52,6 +50,7 @@ public class M extends NLS {
 	public static String AssessDataQuality;
 	public static String AssignUnits;
 	public static String Author;
+	public static String AutoLinkProcesses;
 	public static String AvoidedProduct;
 	public static String AvoidedProductFlow;
 	public static String AvoidedWaste;
@@ -92,12 +91,14 @@ public class M extends NLS {
 	public static String Causal;
 	public static String CausalAllocation;
 	public static String Change;
+	public static String ChangesToBeFetched;
 	public static String CheckAgainstLibraries;
 	public static String CheckingAgainstLibraries;
 	public static String CheckingOutCommit;
 	public static String Checkout;
 	public static String ChooseDirectory;
 	public static String City;
+	public static String Clear;
 	public static String ClearData;
 	public static String ClickHereToChangeDisplay;
 	public static String Close;
@@ -112,6 +113,7 @@ public class M extends NLS {
 	public static String Commit;
 	public static String CommitChangesToRepository;
 	public static String CommitDate;
+	public static String CommitError;
 	public static String CommitMessage;
 	public static String CommitReferenceNotice;
 	public static String CommitingChanges;
@@ -131,7 +133,6 @@ public class M extends NLS {
 	public static String ConnectProviders;
 	public static String ConnectRecipients;
 	public static String ConnectToRepository;
-	public static String ConnectWithSystemProcessesIfPossible;
 	public static String ConnectingToRepository;
 	public static String Connection;
 	public static String ConnectionFailed;
@@ -307,7 +308,6 @@ public class M extends NLS {
 	public static String FailedToLoadFlowProperty;
 	public static String Fetch;
 	public static String FetchRemoteModel;
-	public static String FetchedChanges;
 	public static String FetchingChanges;
 	public static String FetchingCommits;
 	public static String FetchingData;
@@ -357,6 +357,7 @@ public class M extends NLS {
 	public static String HEADRevision;
 	public static String HTMLGraph;
 	public static String HalfUp;
+	public static String HasInventoryResult;
 	public static String HasUncertainties;
 	public static String Help;
 	public static String Hide;
@@ -378,6 +379,7 @@ public class M extends NLS {
 	public static String ILCD_SearchFailedMessage;
 	public static String ILCD_SearchPageDescription;
 	public static String Id;
+	public static String IgnoreDefaultProviders;
 	public static String ImageExport;
 	public static String ImpactAnalysis;
 	public static String ImpactAssessmentMethod;
@@ -573,7 +575,7 @@ public class M extends NLS {
 	public static String OK;
 	public static String OfProduct;
 	public static String OnlineHelp;
-	public static String OnlyConnectDefaultProviders;
+	public static String OnlyLinkDefaultProviders;
 	public static String Open;
 	public static String OpenDatabase;
 	public static String OpenEditor;
@@ -618,6 +620,8 @@ public class M extends NLS {
 	public static String Port;
 	public static String Position;
 	public static String Prefer;
+	public static String PreferDefaultProviders;
+	public static String PreferredProcessType;
 	public static String Preparing;
 	public static String PreviousCommit;
 	public static String Price;
@@ -646,6 +650,7 @@ public class M extends NLS {
 	public static String ProjectSetup;
 	public static String Projects;
 	public static String Properties;
+	public static String ProviderLinking;
 	public static String Providers;
 	public static String Publication;
 	public static String QuantitativeReference;
@@ -654,6 +659,7 @@ public class M extends NLS {
 	public static String RawValue;
 	public static String ReallyDeleteShapeFile;
 	public static String RebuildIndex;
+	public static String RebuildingIndex;
 	public static String RecalculateQuestion;
 	public static String RecognizedLibraryDatasetsDescription;
 	public static String ReconnectProcesslink;
@@ -688,8 +694,8 @@ public class M extends NLS {
 	public static String ReportSections;
 	public static String ReportView;
 	public static String Repository;
-	public static String RepositoryId;
 	public static String RepositoryImport;
+	public static String RepositoryPath;
 	public static String Reset;
 	public static String ResetAll;
 	public static String ResetSelection;
@@ -800,6 +806,7 @@ public class M extends NLS {
 	public static String Start;
 	public static String StartDate;
 	public static String Statistics;
+	public static String StoreInventoryResult;
 	public static String SubCategory;
 	public static String SubgroupByProcesses;
 	public static String Synonyms;

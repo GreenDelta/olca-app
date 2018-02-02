@@ -33,7 +33,7 @@ public class CommitEntryDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, M.FetchedChanges);
+		ScrolledForm form = UI.formHeader(mform, M.ChangesToBeFetched);
 		FormToolkit toolkit = mform.getToolkit();
 		Composite body = form.getBody();
 		body.setLayout(new GridLayout());

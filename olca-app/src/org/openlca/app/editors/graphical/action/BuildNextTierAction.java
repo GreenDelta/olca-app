@@ -15,9 +15,9 @@ import org.openlca.app.editors.graphical.command.MassCreationCommand;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.core.database.ExchangeDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.matrix.product.index.LinkingMethod;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -26,34 +26,30 @@ class BuildNextTierAction extends Action implements IBuildAction {
 
 	private final FlowDao flowDao;
 	private final ProcessDao processDao;
-	private final ExchangeDao exchangeDao;
 	private List<ProcessNode> nodes;
-	private ProductSystemNode systemNode;
 	private ProcessType preferredType = ProcessType.UNIT_PROCESS;
-	private boolean linkProvidedOnly;
+	private LinkingMethod linkingMethod = LinkingMethod.ONLY_LINK_PROVIDERS;
 
 	BuildNextTierAction() {
 		setId(ActionIds.BUILD_NEXT_TIER);
 		setText(M.BuildNextTier);
 		flowDao = new FlowDao(Database.get());
 		processDao = new ProcessDao(Database.get());
-		exchangeDao = new ExchangeDao(Database.get());
 	}
 
 	@Override
 	public void setProcessNodes(List<ProcessNode> nodes) {
 		this.nodes = nodes;
-		if (nodes == null || nodes.isEmpty())
-			return;
-		this.systemNode = nodes.get(0).parent();
 	}
 
-	void setPreferredType(ProcessType preferredType) {
+	@Override
+	public void setPreferredType(ProcessType preferredType) {
 		this.preferredType = preferredType;
 	}
 
-	void setLinkProvidedOnly(boolean linkProvidedOnly) {
-		this.linkProvidedOnly = linkProvidedOnly;
+	@Override
+	public void setLinkingMethod(LinkingMethod linkingMethod) {
+		this.linkingMethod = linkingMethod;
 	}
 
 	@Override
@@ -110,65 +106,29 @@ class BuildNextTierAction extends Action implements IBuildAction {
 	}
 
 	private ProcessDescriptor findProvider(Exchange exchange) {
-		ProcessDescriptor defaultProvider = getDefaultProvider(exchange);
-		if (defaultProvider != null || linkProvidedOnly)
-			return defaultProvider;
-		List<ProcessDescriptor> providers = getProviders(exchange);
-		if (providers.isEmpty())
+		if (exchange.flow == null)
 			return null;
-		long flowId = exchange.flow.getId();
-		ProcessDescriptor matching = findMatching(providers, flowId);
-		if (matching != null)
-			return matching;
-		ProcessDescriptor existing = findExisting(providers);
-		if (existing != null)
-			return existing;
-		ProcessDescriptor preferred = findPreferred(providers);
-		if (preferred != null)
-			return preferred;
-		return providers.get(0);
-	}
-
-	private ProcessDescriptor findMatching(List<ProcessDescriptor> providers,
-			long flowId) {
-		ProcessDescriptor candidate = null;
-		for (ProcessDescriptor descriptor : providers) {
-			Exchange reference = exchangeDao.getForId(descriptor
-					.getQuantitativeReference());
-			if (reference.flow.getId() != flowId)
-				continue;
-			if (descriptor.getProcessType() == preferredType)
-				return descriptor;
-			else if (candidate == null)
-				candidate = descriptor;
+		if (linkingMethod == LinkingMethod.ONLY_LINK_PROVIDERS) {
+			if (exchange.defaultProviderId == 0l)
+				return null;
+			return processDao.getDescriptor(exchange.defaultProviderId);
 		}
-		return candidate;
-	}
-
-	private ProcessDescriptor findExisting(List<ProcessDescriptor> providers) {
-		Set<Long> existing = systemNode.getProductSystem().getProcesses();
-		for (ProcessDescriptor descriptor : providers)
-			if (existing.contains(descriptor.getId()))
+		List<ProcessDescriptor> providers = getProviders(exchange);
+		ProcessDescriptor bestMatch = null;
+		for (ProcessDescriptor descriptor : providers) {
+			if (linkingMethod != LinkingMethod.IGNORE_PROVIDERS && descriptor.getId() == exchange.defaultProviderId)
 				return descriptor;
-		return null;
-	}
-
-	private ProcessDescriptor findPreferred(List<ProcessDescriptor> providers) {
-		for (ProcessDescriptor descriptor : providers)
-			if (descriptor.getProcessType() == preferredType)
+			if (linkingMethod == LinkingMethod.IGNORE_PROVIDERS && descriptor.getProcessType() == preferredType)
 				return descriptor;
-		return null;
-	}
-
-	private ProcessDescriptor getDefaultProvider(Exchange exchange) {
-		if (exchange.defaultProviderId == 0)
-			return null;
-		return processDao.getDescriptor(exchange.defaultProviderId);
+			if (bestMatch != null)
+				continue;
+			bestMatch = descriptor;
+		}
+		return bestMatch;
 	}
 
 	private List<ProcessDescriptor> getProviders(Exchange exchange) {
-		Set<Long> providerIds = flowDao
-				.getWhereOutput(exchange.flow.getId());
+		Set<Long> providerIds = flowDao.getWhereOutput(exchange.flow.getId());
 		return processDao.getDescriptors(providerIds);
 	}
 

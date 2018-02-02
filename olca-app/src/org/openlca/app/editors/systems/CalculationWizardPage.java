@@ -43,6 +43,7 @@ class CalculationWizardPage extends WizardPage {
 	private Text iterationText;
 	private Button costCheck;
 	private Button dqAssessment;
+	private Button storeInventoryResult;
 	private Composite optionStack;
 	private Composite monteCarloOptions;
 	private Composite commonOptions;
@@ -51,7 +52,7 @@ class CalculationWizardPage extends WizardPage {
 	private CalculationType type;
 	private int iterationCount;
 
-	public CalculationWizardPage() {
+	CalculationWizardPage() {
 		super(CalculationWizardPage.class.getCanonicalName());
 		setTitle(M.CalculationProperties);
 		setDescription(M.CalculationWizardDescription);
@@ -131,6 +132,11 @@ class CalculationWizardPage extends WizardPage {
 		dqAssessment.setSelection(false);
 		dqAssessment.setText(M.AssessDataQuality);
 		Controls.onSelect(dqAssessment, e -> dqAssessmentChanged());
+		if (Database.isConnected()) {
+			storeInventoryResult = new Button(commonOptions, SWT.CHECK);
+			storeInventoryResult.setSelection(true);
+			storeInventoryResult.setText(M.StoreInventoryResult);
+		}
 	}
 
 	private void createMonteCarloOptions(Composite parent) {
@@ -217,7 +223,7 @@ class CalculationWizardPage extends WizardPage {
 		if (getControl().isVisible())
 			getContainer().updateButtons();
 	}
-
+	
 	@Override
 	public boolean canFlipToNextPage() {
 		if (!isPageComplete())
@@ -288,7 +294,7 @@ class CalculationWizardPage extends WizardPage {
 		return value;
 	}
 
-	public CalculationSetup getSetup(ProductSystem system) {
+	CalculationSetup getSetup(ProductSystem system) {
 		CalculationSetup setUp = new CalculationSetup(system);
 		setUp.withCosts = costCheck.getSelection();
 		setUp.allocationMethod = allocationViewer.getSelected();
@@ -300,12 +306,18 @@ class CalculationWizardPage extends WizardPage {
 		return setUp;
 	}
 
-	public CalculationType getCalculationType() {
+	CalculationType getCalculationType() {
 		return type;
 	}
 
-	public boolean doDqAssessment() {
+	boolean doDqAssessment() {
 		return dqAssessment.getSelection();
+	}
+	
+	boolean doStoreInventoryResult() {
+		if (!Database.isConnected() || storeInventoryResult == null)
+			return false;
+		return storeInventoryResult.getSelection();
 	}
 
 }

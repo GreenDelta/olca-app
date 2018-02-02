@@ -9,8 +9,10 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.matrix.cache.MatrixCache;
+import org.openlca.core.matrix.product.index.LinkingMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
@@ -41,8 +43,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		if (system == null)
 			return false;
 		system.setCategory(getCategory());
-		if (page.cutoff != null)
-			system.cutoff = page.cutoff;
+		system.cutoff = page.getCutoff();
 		try {
 			createDao().insert(system);
 			boolean autoComplete = page.addSupplyChain();
@@ -50,9 +51,9 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 				App.openEditor(system);
 				return true;
 			}
-			boolean preferSystems = page.useSystemProcesses();
-			boolean linkProvidedOnly = page.linkProvidedOnly();
-			Runner runner = new Runner(system, preferSystems, linkProvidedOnly);
+			ProcessType preferredType = page.getPreferredType();
+			LinkingMethod linkingMethod = page.getLinkingMethod();
+			Runner runner = new Runner(system, preferredType, linkingMethod);
 			getContainer().run(true, true, runner);
 			system = runner.system;
 			Cache.registerNew(Descriptors.toDescriptor(system));
@@ -72,15 +73,15 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 	private class Runner implements IRunnableWithProgress {
 
 		private ProductSystem system;
-		private boolean preferSystemProcesses;
-		private boolean linkProvidedOnly;
+		private ProcessType preferredType;
+		private LinkingMethod linkingMethod;
 		private MatrixCache cache;
 
-		public Runner(ProductSystem system, boolean preferSystemProcesses, boolean linkProvidedOnly) {
+		public Runner(ProductSystem system, ProcessType preferredType, LinkingMethod linkingMethod) {
 			this.system = system;
-			this.preferSystemProcesses = preferSystemProcesses;
+			this.preferredType = preferredType;
 			this.cache = Cache.getMatrixCache();
-			this.linkProvidedOnly = linkProvidedOnly;
+			this.linkingMethod = linkingMethod;
 		}
 
 		@Override
@@ -90,8 +91,8 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 				monitor.beginTask(M.CreatingProductSystem,
 						IProgressMonitor.UNKNOWN);
 				ProductSystemBuilder builder = new ProductSystemBuilder(cache);
-				builder.setPreferSystemProcesses(preferSystemProcesses);
-				builder.setLinkProvidedOnly(linkProvidedOnly);
+				builder.setPreferredType(preferredType);
+				builder.setLinkingMethod(linkingMethod);
 				if (system.cutoff != null)
 					builder.setCutoff(system.cutoff);
 				system = builder.autoComplete(system);

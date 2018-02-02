@@ -409,6 +409,7 @@
             class="org.openlca.app.cloud.ui.diff.SyncView"
             id="views.cloud.sync"
             name="Sync repository"
+            icon="icons/cloud/sync.png"
             restorable="true">
       </view>  
    </extension>
