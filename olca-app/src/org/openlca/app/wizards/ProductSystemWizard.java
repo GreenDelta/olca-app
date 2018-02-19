@@ -1,6 +1,8 @@
 package org.openlca.app.wizards;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -17,6 +19,8 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
@@ -44,6 +48,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			return false;
 		system.setCategory(getCategory());
 		system.cutoff = page.getCutoff();
+		addCreationInfo(system, page);
 		try {
 			createDao().insert(system);
 			boolean autoComplete = page.addSupplyChain();
@@ -62,6 +67,43 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		} catch (Exception e) {
 			log.error("Failed to create model", e);
 			return false;
+		}
+	}
+
+	private void addCreationInfo(ProductSystem system, ProductSystemWizardPage page) {
+		if (system == null)
+			return;
+		String text = system.getDescription();
+		if (Strings.isNullOrEmpty(text))
+			text = "";
+		else
+			text += "\n\n~~~~~~\n\n";
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		text += "First created: " + format.format(new Date()) + "\n";
+		text += "Linking approach during creation: " + getLinkingInfo(page);
+		system.setDescription(text);
+	}
+
+	private String getLinkingInfo(ProductSystemWizardPage page) {
+		LinkingMethod method = page.getLinkingMethod();
+		if (!page.addSupplyChain() || method == null)
+			return M.None;
+		String suffix = "; " + M.PreferredProcessType + ": ";
+		if (page.getPreferredType() == ProcessType.LCI_RESULT)
+			suffix += M.SystemProcess;
+		else
+			suffix += M.UnitProcess;
+		if (page.getCutoff() != null)
+			suffix += "; cutoff = " + page.getCutoff().toString();
+		switch (method) {
+		case IGNORE_PROVIDERS:
+			return M.IgnoreDefaultProviders + suffix;
+		case ONLY_LINK_PROVIDERS:
+			return M.OnlyLinkDefaultProviders + suffix;
+		case PREFER_PROVIDERS:
+			return M.PreferDefaultProviders + suffix;
+		default:
+			return "???" + suffix;
 		}
 	}
 
