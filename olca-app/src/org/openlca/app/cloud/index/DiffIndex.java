@@ -153,10 +153,13 @@ public class DiffIndex {
 			index.put(parentId, parent);
 			parentId = parent.dataset.categoryRefId;
 		}
+		ModelType categoryType = dataset.categoryType;
+		if(categoryType == null)
+			categoryType = dataset.type;
 		if (add)
-			updateChangedTopLevelElements(dataset.categoryType.name(), dataset.refId, DiffType.CHANGED);
+			updateChangedTopLevelElements(categoryType.name(), dataset.refId, DiffType.CHANGED);
 		else
-			updateChangedTopLevelElements(dataset.categoryType.name(), dataset.refId, DiffType.NO_DIFF);
+			updateChangedTopLevelElements(categoryType.name(), dataset.refId, DiffType.NO_DIFF);
 	}
 
 	public void commit() {
