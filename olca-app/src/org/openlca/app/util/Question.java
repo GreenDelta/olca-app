@@ -32,7 +32,7 @@ public class Question {
 
 	public static int askWithAll(String title, String message) {
 		String[] labels = new String[] { IDialogConstants.YES_LABEL, IDialogConstants.YES_TO_ALL_LABEL,
-				IDialogConstants.NO_LABEL, IDialogConstants.NO_TO_ALL_LABEL, IDialogConstants.CANCEL_LABEL };
+				IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL };
 		MessageDialog dialog = new MessageDialog(UI.shell(), title, null, message, MessageDialog.QUESTION, labels, 0);
 		int result = dialog.open();
 		if (result == 0)
