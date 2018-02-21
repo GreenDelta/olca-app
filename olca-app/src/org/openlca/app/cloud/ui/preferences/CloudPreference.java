@@ -8,6 +8,7 @@ public class CloudPreference extends AbstractPreferenceInitializer {
 
 	public static final String ENABLE = "olca-cloud-enable";
 	public static final String CHECK_AGAINST_LIBRARIES = "olca-cloud-check-against-libraries";
+	public static final String CHECK_REFERENCES = "olca-cloud-check-references";
 	public static final String DISPLAY_COMMENTS = "olca-cloud-display-comments";
 
 	@Override
@@ -15,6 +16,7 @@ public class CloudPreference extends AbstractPreferenceInitializer {
 		IPreferenceStore store = getStore();
 		store.setDefault(ENABLE, false);
 		store.setDefault(CHECK_AGAINST_LIBRARIES, true);
+		store.setDefault(CHECK_REFERENCES, true);
 		store.setDefault(DISPLAY_COMMENTS, false);
 	}
 
@@ -29,7 +31,11 @@ public class CloudPreference extends AbstractPreferenceInitializer {
 	public static boolean doDisplayComments() {
 		return is(DISPLAY_COMMENTS);
 	}
-	
+
+	public static boolean doCheckReferences() {
+		return is(CHECK_REFERENCES);
+	}
+
 	private static boolean is(String key) {
 		IPreferenceStore store = getStore();
 		return store.getBoolean(key);		

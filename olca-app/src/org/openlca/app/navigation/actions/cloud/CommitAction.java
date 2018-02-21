@@ -105,10 +105,12 @@ public class CommitAction extends Action implements INavigationAction {
 			boolean doContinue = openCommitDialog();
 			if (!doContinue)
 				return;
-			App.runWithProgress(M.SearchingForReferencedChanges, this::searchForReferences);
-			doContinue = showReferences();
-			if (!doContinue)
-				return;
+			if (CloudPreference.doCheckReferences()) {
+				App.runWithProgress(M.SearchingForReferencedChanges, this::searchForReferences);
+				doContinue = showReferences();
+				if (!doContinue)
+					return;
+			}
 			if (CloudPreference.doCheckAgainstLibraries()) {
 				App.runWithProgress(M.CheckingAgainstLibraries, this::checkAgainstLibraries);
 				doContinue = openLibraryResultDialog();
@@ -122,7 +124,7 @@ public class CommitAction extends Action implements INavigationAction {
 			for (DiffResult change : selected) {
 				Dataset dataset = change.getDataset();
 				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE) {
-					dataset.fullPath = change.local.dataset.fullPath;
+					dataset.categories = new ArrayList<>(change.local.dataset.categories);
 				}
 				datasets.add(dataset);
 			}
@@ -170,18 +172,8 @@ public class CommitAction extends Action implements INavigationAction {
 		// parent updating always works
 		private void orderResults() {
 			Collections.sort(selected, (d1, d2) -> {
-				int depth1 = 0;
-				String path = d1.getDataset().fullPath;
-				while (path.contains("/")) {
-					path = path.substring(path.indexOf("/") + 1);
-					depth1++;
-				}
-				int depth2 = 0;
-				path = d2.getDataset().fullPath;
-				while (path.contains("/")) {
-					path = path.substring(path.indexOf("/") + 1);
-					depth2++;
-				}
+				int depth1 = d1.getDataset().categories != null ? d1.getDataset().categories.size() : 0;
+				int depth2 = d2.getDataset().categories != null ? d2.getDataset().categories.size() : 0;
 				return Integer.compare(depth2, depth1);
 			});
 		}

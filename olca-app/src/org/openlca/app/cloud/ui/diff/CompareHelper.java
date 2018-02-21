@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.ui.compare.ModelLabelProvider;
 import org.openlca.app.cloud.ui.compare.ModelNodeBuilder;
@@ -120,7 +121,7 @@ class CompareHelper {
 		if (node.isModelTypeNode())
 			return null;
 		DiffResult result = (DiffResult) node.content;
-		return result.getDataset().fullPath;
+		return CloudUtil.toFullPath(result.getDataset());
 	}
 
 	private Image getLogo(DiffNode node) {

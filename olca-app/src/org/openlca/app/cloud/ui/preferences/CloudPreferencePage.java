@@ -31,6 +31,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 	private List<CloudConfiguration> configs;
 	private Button enableCheckBox;
 	private Button libraryCheckBox;
+	private Button referenceCheckBox;
 	private Button commentCheckBox;
 	private ConfigurationViewer configViewer;
 	
@@ -48,6 +49,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 		UI.gridLayout(general, 2, 0, 0);
 		createEnableCheckBox(general);
 		createLibraryCheckBox(general);
+		createReferenceCheckBox(general);
 		createCommentCheckBox(general);
 		UI.formLabel(body, M.ServerConfigurations);
 		configViewer = new ConfigurationViewer(body);
@@ -69,6 +71,13 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 		libraryCheckBox.setSelection(CloudPreference.doCheckAgainstLibraries());
 	}
 
+
+	private void createReferenceCheckBox(Composite parent) {
+		referenceCheckBox = UI.formCheckBox(parent, "#Check referenced changes");
+		UI.gridData(referenceCheckBox, true, false).horizontalIndent = 5;
+		referenceCheckBox.setSelection(CloudPreference.doCheckReferences());
+	}
+
 	private void createCommentCheckBox(Composite parent) {
 		commentCheckBox = UI.formCheckBox(parent, M.ShowComments);
 		UI.gridData(commentCheckBox, true, false).horizontalIndent = 5;
@@ -77,6 +86,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 	
 	private void checkEnabled() {
 		libraryCheckBox.setEnabled(enableCheckBox.getSelection());
+		referenceCheckBox.setEnabled(enableCheckBox.getSelection());
 		commentCheckBox.setEnabled(enableCheckBox.getSelection());
 		configViewer.setEnabled(enableCheckBox.getSelection());
 	}
@@ -86,6 +96,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 		IPreferenceStore store = CloudPreference.getStore();
 		store.setValue(CloudPreference.ENABLE, enableCheckBox.getSelection());
 		store.setValue(CloudPreference.CHECK_AGAINST_LIBRARIES, libraryCheckBox.getSelection());
+		store.setValue(CloudPreference.CHECK_REFERENCES, referenceCheckBox.getSelection());
 		store.setValue(CloudPreference.DISPLAY_COMMENTS, commentCheckBox.getSelection());
 		CloudConfigurations.save(configs);
 		return true;

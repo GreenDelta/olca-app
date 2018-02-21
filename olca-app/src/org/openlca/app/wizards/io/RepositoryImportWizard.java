@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
+import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.ui.FetchNotifierMonitor;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.ModelTypeComparison;
@@ -244,7 +245,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 				root = new Node();
 				for (FetchRequestData frd : data) {
 					Node parent = null;
-					if (frd.fullPath.length() != frd.name.length()) {
+					if (frd.categories != null && frd.categories.size() > 0) {
 						parent = categoryNodes.get(toCategoryKey(frd));
 					} else if (frd.type == ModelType.CATEGORY) {
 						parent = getTypeNode(root, frd.categoryType, categoryNodes);
@@ -254,7 +255,12 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 					Node node = new Node(parent, frd);
 					if (frd.type != ModelType.CATEGORY)
 						continue;
-					categoryNodes.put(frd.categoryType.name() + "/" + frd.fullPath, node);
+					String key = frd.categoryType.name();
+					if (frd.categories != null && frd.categories.size() > 0) {
+						key += "/" + org.openlca.util.Strings.join(frd.categories, '/');
+					}
+					key += "/" + frd.name;
+					categoryNodes.put(key, node);
 				}
 				m.done();
 				return null;
@@ -276,9 +282,9 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			String path = data.type.name();
 			if (data.type == ModelType.CATEGORY)
 				path = data.categoryType.name();
-			if (data.fullPath.length() == data.name.length())
+			if (data.categories == null || data.categories.size() == 0)
 				return path;
-			return path + "/" + data.fullPath.substring(0, data.fullPath.length() - data.name.length() - 1);
+			return path + "/" + org.openlca.util.Strings.join(data.categories, '/');
 		}
 
 		private void checkCompletion() {
@@ -293,7 +299,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 		public int compare(FetchRequestData o1, FetchRequestData o2) {
 			if (o1.type == o2.type)
 				if (o1.type != ModelType.CATEGORY || o1.categoryType == o2.categoryType)
-					return o1.fullPath.toLowerCase().compareTo(o2.fullPath.toLowerCase());
+					return CloudUtil.toFullPath(o1).toLowerCase().compareTo(CloudUtil.toFullPath(o2).toLowerCase());
 				else
 					return ModelTypeComparison.compare(o1.categoryType, o2.categoryType);
 			return ModelTypeComparison.compare(o1.type, o2.type);

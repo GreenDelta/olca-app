@@ -121,8 +121,7 @@ public class SyncView extends ViewPart {
 				if (category.getRefId().equals(dataset.refId))
 					return true;
 			if (dataset.type == category.getModelType()) {
-				String fullPath = CloudUtil.getFullPath(category);
-				if (dataset.fullPath != null && dataset.fullPath.startsWith(fullPath + "/"))
+				if (isContainedIn(category, dataset.categories))
 					return true;
 			}
 		}
@@ -135,7 +134,20 @@ public class SyncView extends ViewPart {
 			if (isContainedIn(dataset, child))
 				return true;
 		return false;
+	}
 
+	private boolean isContainedIn(Category category, List<String> categories) {
+		List<String> categoryPath = new ArrayList<>();
+		while (category != null) {
+			categoryPath.add(0, category.getName());
+			category = category.getCategory();
+		}
+		if (categoryPath.size() > categories.size())
+			return false;
+		for (int i = 0; i < categoryPath.size(); i++)
+			if (!categoryPath.get(i).equals(categories.get(i)))
+				return false;
+		return true;
 	}
 
 	private List<DiffResult> createDifferences(Set<FetchRequestData> remotes, List<INavigationElement<?>> elements) {
@@ -164,7 +176,7 @@ public class SyncView extends ViewPart {
 		}
 		return differences;
 	}
-	
+
 	@Override
 	public void setFocus() {
 

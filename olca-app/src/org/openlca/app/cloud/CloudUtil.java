@@ -1,6 +1,8 @@
 package org.openlca.app.cloud;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -16,6 +18,7 @@ import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.util.Strings;
 
 public class CloudUtil {
 
@@ -58,26 +61,32 @@ public class CloudUtil {
 				categoryType = descriptor.getModelType();
 		}
 		dataset.categoryType = categoryType;
-		dataset.fullPath = getFullPath(descriptor, category);
+		dataset.categories = getCategories(descriptor, category);
 		return dataset;
 	}
 
-	public static String getFullPath(Category category) {
-		return getFullPath(Descriptors.toDescriptor(category), category.getCategory());
+	public static List<String> getCategories(Category category) {
+		return getCategories(Descriptors.toDescriptor(category), category.getCategory());
 	}
 
-	public static String getFullPath(CategorizedDescriptor entity, Category category) {
-		String path = entity.getName();
+	public static List<String> getCategories(CategorizedDescriptor entity, Category category) {
+		List<String> categories = new ArrayList<>();
 		while (category != null) {
-			path = category.getName() + "/" + path;
+			categories.add(0, category.getName());
 			category = category.getCategory();
 		}
-		return path;
+		return categories;
 	}
 
 	public static String getFileReferenceText(FetchRequestData reference) {
 		String modelType = Labels.modelType(reference.categoryType);
-		return modelType + "/" + reference.fullPath;
+		return modelType + "/" + toFullPath(reference);
+	}
+
+	public static String toFullPath(Dataset dataset) {
+		if (dataset.categories == null || dataset.categories.size() == 0)
+			return dataset.name;
+		return Strings.join(dataset.categories, '/') + "/" + dataset.name;
 	}
 
 	public static JsonLoader getJsonLoader(RepositoryClient client) {

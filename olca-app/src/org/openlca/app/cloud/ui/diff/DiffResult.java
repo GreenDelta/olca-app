@@ -1,5 +1,7 @@
 package org.openlca.app.cloud.ui.diff;
 
+import java.util.ArrayList;
+
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
@@ -45,7 +47,7 @@ public class DiffResult {
 		Dataset dataset = new Dataset();
 		dataset.categoryType = data.categoryType;
 		dataset.categoryRefId = data.categoryRefId;
-		dataset.fullPath = data.fullPath;
+		dataset.categories = data.categories != null ? new ArrayList<>(data.categories) : null;
 		dataset.type = data.type;
 		dataset.refId = data.refId;
 		dataset.name = data.name;
