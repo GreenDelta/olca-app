@@ -1,9 +1,20 @@
-openLCA build
-=============
-This project contains the scripts for building the openLCA executables for Windows, Mac OS, and Linux platforms. The build is based on Eclipse PDE and 
-requires a set of Ant scripts and property files which are located in the build directory. You can run the build using the `build.xml` script. It is important to run the build within the same JRE as the Eclipse platform because otherwise the PDE scripts cannot be found (`Run AS/Ant Build/JRE/Run in same JRE as the workspace`). Before you run the build you have to prepare the build directory with the resources described below. The build currently only runs on Windows machines.
+# openLCA build
+This project contains the scripts for building the openLCA distribution packages
+for Windows, Mac OS, and Linux. The build is based on Eclipse PDE and a set of
+Ant scripts and property files which are located in the `olca-app-build`
+directory. You can run the build by executing the `build.xml` script as
+`Ant Build` directly in Eclipse. It is important to run the build within the
+same JRE as the Eclipse platform because otherwise the PDE scripts cannot be
+found (`Run AS -> Ant Build -> JRE -> Run in same JRE as the workspace`).
+However, it seems that the PDE build stopped working in newer Eclipse versions.
+The last version where it should work (and which we use to build the
+distribution packages) is [Eclipse Luna](https://www.eclipse.org/luna/). With
+the [Eclipse Luna package for RCP and RAP developers](https://www.eclipse.org/downloads/packages/release/luna/sr2) the build
+should work.
 
-*Currently the build scripts do not work with Eclipse Mars; we use [Eclipse Luna](https://eclipse.org/downloads/packages/release/Luna/SR2) for the build.*
+The build of the distribution packages currently works on Windows only and
+requires some additional tools and a quite complicated folder setup as
+described in the following.
 
 
 NSIS for Windows installers
