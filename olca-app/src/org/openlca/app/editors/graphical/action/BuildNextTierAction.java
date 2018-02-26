@@ -83,7 +83,8 @@ class BuildNextTierAction extends Action implements IBuildAction {
 				providers.add(provider);
 			long flowId = exchange.exchange.flow.getId();
 			long exchangeId = exchange.exchange.getId();
-			ConnectionInput connectionInput = new ConnectionInput(provider.getId(), flowId, targetId, exchangeId);
+			ConnectionInput connectionInput = new ConnectionInput(provider.getId(), flowId, targetId, exchangeId,
+					!exchange.exchange.isInput && !exchange.exchange.isAvoided);
 			if (newConnections.contains(connectionInput))
 				continue;
 			newConnections.add(connectionInput);
@@ -113,12 +114,12 @@ class BuildNextTierAction extends Action implements IBuildAction {
 				return null;
 			return processDao.getDescriptor(exchange.defaultProviderId);
 		}
+		if (linkingMethod == LinkingMethod.PREFER_PROVIDERS && exchange.defaultProviderId != 0l)
+			return processDao.getDescriptor(exchange.defaultProviderId);
 		List<ProcessDescriptor> providers = getProviders(exchange);
 		ProcessDescriptor bestMatch = null;
 		for (ProcessDescriptor descriptor : providers) {
-			if (linkingMethod != LinkingMethod.IGNORE_PROVIDERS && descriptor.getId() == exchange.defaultProviderId)
-				return descriptor;
-			if (linkingMethod == LinkingMethod.IGNORE_PROVIDERS && descriptor.getProcessType() == preferredType)
+			if (descriptor.getProcessType() == preferredType)
 				return descriptor;
 			if (bestMatch != null)
 				continue;
@@ -128,7 +129,12 @@ class BuildNextTierAction extends Action implements IBuildAction {
 	}
 
 	private List<ProcessDescriptor> getProviders(Exchange exchange) {
-		Set<Long> providerIds = flowDao.getWhereOutput(exchange.flow.getId());
+		Set<Long> providerIds = null;
+		if (!exchange.isInput) {
+			providerIds = flowDao.getWhereInput(exchange.flow.getId());
+		} else {
+			providerIds = flowDao.getWhereOutput(exchange.flow.getId());			
+		}
 		return processDao.getDescriptors(providerIds);
 	}
 

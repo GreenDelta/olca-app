@@ -238,6 +238,8 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 			return LinkingMethod.IGNORE_PROVIDERS;
 		if (preferProvidersRadio.getSelection())
 			return LinkingMethod.PREFER_PROVIDERS;
+		if (onlyLinkProvidersRadio.getSelection())
+			return LinkingMethod.ONLY_LINK_PROVIDERS;
 		return LinkingMethod.ONLY_LINK_PROVIDERS;
 	}
 

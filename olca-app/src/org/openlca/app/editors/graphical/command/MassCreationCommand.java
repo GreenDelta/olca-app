@@ -55,7 +55,7 @@ public class MassCreationCommand extends Command {
 		for (ProcessDescriptor process : toCreate)
 			addNode(process);
 		for (ConnectionInput input : newConnections)
-			link(input.sourceId, input.flowId, input.targetId, input.exchangeId);
+			link(input);
 		for (ProcessNode node : model.getChildren())
 			if (node.figure.isVisible())
 				oldConstraints.put(node.figure, node.figure.getBounds().getCopy());
@@ -74,27 +74,28 @@ public class MassCreationCommand extends Command {
 		createdNodes.add(node);
 	}
 
-	private void link(long sourceId, long flowId, long targetId, long exchangeId) {
+	private void link(ConnectionInput input) {
 		ProductSystem system = model.getProductSystem();
-		ProcessLink processLink = createProcessLink(sourceId, flowId, targetId, exchangeId);
+		ProcessLink processLink = createProcessLink(input);
 		system.getProcessLinks().add(processLink);
 		model.linkSearch.put(processLink);
+		long sourceId = input.isWaste ? input.targetId : input.sourceId;
+		long targetId = input.isWaste ? input.sourceId : input.targetId;
 		Link link = createLink(sourceId, targetId, processLink);
 		link.link();
 		createdLinks.add(link);
 	}
 
-	private ProcessLink createProcessLink(long sourceId, long flowId, long targetId, long exchangeId) {
+	private ProcessLink createProcessLink(ConnectionInput input) {
 		ProcessLink processLink = new ProcessLink();
-		processLink.processId = targetId;
-		processLink.providerId = sourceId;
-		processLink.flowId = flowId;
-		processLink.exchangeId = exchangeId;
+		processLink.processId = input.targetId;
+		processLink.providerId = input.sourceId;
+		processLink.flowId = input.flowId;
+		processLink.exchangeId = input.exchangeId;
 		return processLink;
 	}
 
-	private Link createLink(long sourceId, long targetId,
-			ProcessLink processLink) {
+	private Link createLink(long sourceId, long targetId, ProcessLink processLink) {
 		ProcessNode sourceNode = model.getProcessNode(sourceId);
 		ProcessNode targetNode = model.getProcessNode(targetId);
 		Link link = new Link();

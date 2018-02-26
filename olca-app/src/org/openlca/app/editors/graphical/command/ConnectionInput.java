@@ -6,12 +6,18 @@ public class ConnectionInput {
 	final long flowId;
 	final long targetId;
 	final long exchangeId;
-
+	final boolean isWaste;
+	
 	public ConnectionInput(long sourceId, long flowId, long targetId, long exchangeId) {
+		this(sourceId, flowId, targetId, exchangeId, false);
+	}
+
+	public ConnectionInput(long sourceId, long flowId, long targetId, long exchangeId, boolean isWaste) {
 		this.sourceId = sourceId;
 		this.flowId = flowId;
 		this.targetId = targetId;
 		this.exchangeId = exchangeId;
+		this.isWaste = isWaste;
 	}
 
 	@Override
