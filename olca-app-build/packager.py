@@ -5,6 +5,10 @@ import shutil
 
 
 def main():
+    print('Create the distribution packages')
+    if os.path.exists('packages'):
+        shutil.rmtree('packages', ignore_errors=True)
+        os.mkdir('packages')
     pack_macos()
 
 
@@ -14,7 +18,7 @@ def pack_macos():
         print('ERROR: could not find macOS package')
         return
     pack_dir = os.path.join('packages', 'macos')
-    # unzip(app_pack[0], pack_dir)
+    unzip(app_pack[0], pack_dir)
     # TODO: delete `p2/*/.lock` files
     app_dir = os.path.join(pack_dir, 'openLCA', 'openLCA.app')
     moves = ['configuration', 'p2', 'plugins', '.eclipseproduct',
@@ -25,11 +29,12 @@ def pack_macos():
     if len(jre_tar) == 0:
         print('ERROR: no JRE for Mac OSX found')
         return
-    """
+
+    # package the JRE
     unzip(jre_tar[0], app_dir)
     jre_dir = glob.glob(app_dir + '/*jre*')
     os.rename(jre_dir[0], os.path.join(app_dir, 'jre'))
-    """
+
     # write the ini file
     launcher_jar = os.path.basename(
         glob.glob(app_dir + '/plugins/*launcher*.jar')[0])
@@ -54,8 +59,11 @@ en
     ini_file = os.path.join(app_dir, 'Contents', 'MacOS', 'openLCA.ini')
     with(open(ini_file, 'w', encoding='utf-8', newline='\n')) as f:
         f.write(ini.replace('\r\n', '\n'))
-    targz(app_dir, os.path.join('packages', 'openLCA_macOS_1.7.0'))
-    # move(os.path.join())
+
+    # create the distribution package
+    targz('.\\packages\\macos\\openLCA\\*',
+          os.path.join('packages', 'openLCA_macOS_1.7.0'))
+    shutil.rmtree(pack_dir)
 
 
 def unzip(zip_file, to_dir):
@@ -104,14 +112,12 @@ def check(code, msg):
 
 
 def targz(folder, tar_file):
-    if not os.path.exists(folder):
-        return
     print('targz %s to %s' % (folder, tar_file))
     tar_app = os.path.join('7zip', '7za.exe')
     cmd = [tar_app, 'a', '-ttar', tar_file + '.tar', folder]
-    code = subprocess.call(cmd)
+    subprocess.call(cmd)
     cmd = [tar_app, 'a', '-tgzip', tar_file + '.tar.gz', tar_file + '.tar']
-    code = subprocess.call(cmd)
+    subprocess.call(cmd)
 
 
 if __name__ == '__main__':
