@@ -18,59 +18,78 @@ def main():
     version = get_version()
     version_date = '%s_%d-%02d-%02d' % (version, now.year,
                                         now.month, now.day)
-    pack_linux(version_date)
-    pack_macos(version_date)
-    pack_win32(version_date, version)
+    # pack_linux(version_date)
+    # pack_macos(version_date)
+    pack_win('win32', version_date, version)
+    pack_win('win64', version_date, version)
 
 
-def pack_win32(version_date, version):
-    app_pack = glob.glob('builds/openlca_*.win32.x86.zip')
-    if len(app_pack) == 0:
-        print('ERROR: could not find Win32 package')
+def pack_win(arch, version_date, version):
+    if arch != 'win32' and arch != 'win64':
+        print('ERROR: unknown Windows arch: %s' % arch)
         return
-    unzip(app_pack[0], p('packages/win32'))
-    app_dir = p('packages/win32/openLCA')
+
+    print('Package the %s distribution' % arch)
+
+    # setting the build variables
+    build_zip = '.win32.x86.zip'
+    pack_dir = 'packages/' + arch
+    app_dir = p(pack_dir + '/openLCA')
+    heap_memory = '1024M'
+    jre_dir = p('runtime/jre/win32')
+    if arch == 'win64':
+        build_zip = '.win32.x86_64.zip'
+        heap_memory = '3248M'
+        jre_dir = p('runtime/jre/win64')
+
+    # extract the build
+    app_pack = glob.glob('builds/openlca_*' + build_zip)
+    if len(app_pack) == 0:
+        print('ERROR: could not find build package', build_zip)
+        return
+    unzip(app_pack[0], pack_dir)
 
     # copy ini and licenses
     ini = fill_template(p('templates/openLCA_win.ini'),
-                        lang='en', heap='1024M')
+                        lang='en', heap=heap_memory)
     with open(p(app_dir + '/openLCA.ini'), 'w', encoding='iso-8859-1') as f:
         f.write(ini)
     shutil.copy2(p('legal/OPENLCA_README.txt'), app_dir)
     shutil.copytree(p('legal/licenses'), p(app_dir + '/licenses'))
 
     # package the JRE
-    shutil.copytree(p('runtime/jre/win32'), p(app_dir + '/jre'))
+    shutil.copytree(jre_dir, p(app_dir + '/jre'))
 
     # create the non-installer zip
-    print('Create the win32 zip ...')
-    shutil.make_archive(p('packages/openLCA_win32_' + version_date), 'zip',
-                        p('packages/win32'))
+    print('Create the %s zip ...' % arch)
+    shutil.make_archive(p('packages/openLCA_' + arch + '_' + version_date),
+                        'zip', pack_dir)
 
     # create the win32 installer
     inst_files = glob.glob('installer_static_win/*')
     for res in inst_files:
         if os.path.isfile(res):
-            shutil.copy2(res, p('packages/win32/' + os.path.basename(res)))
-    os.mkdir(p('packages/win32/english'))
-    with open(p('packages/win32/english/openLCA.ini'), 'w',
+            shutil.copy2(res, p(pack_dir + '/' + os.path.basename(res)))
+    os.mkdir(p(pack_dir + '/english'))
+    with open(p(pack_dir + '/english/openLCA.ini'), 'w',
               encoding='iso-8859-1') as f:
         f.write(ini)
-    os.mkdir(p('packages/win32/german'))
+    os.mkdir(p(pack_dir + '/german'))
     ini_de = fill_template(p('templates/openLCA_win.ini'),
-                           lang='de', heap='1024M')
-    with open(p('packages/win32/german/openLCA.ini'), 'w',
+                           lang='de', heap=heap_memory)
+    with open(p(pack_dir + '/german/openLCA.ini'), 'w',
               encoding='iso-8859-1') as f:
         f.write(ini_de)
     setup = fill_template('templates/setup.nsi', version=version)
-    with open(p('packages/win32/setup.nsi'), 'w',
+    with open(p(pack_dir + '/setup.nsi'), 'w',
               encoding='iso-8859-1') as f:
         f.write(setup)
-    cmd = [p('nsis-2.46/makensis.exe'), p('packages/win32/setup.nsi')]
+    cmd = [p('nsis-2.46/makensis.exe'), p(pack_dir + '/setup.nsi')]
     subprocess.call(cmd)
-    shutil.move(p('packages/win32/setup.exe'),
-                p('packages/openLCA_win32_installer_' + version_date + ".exe"))
-    shutil.rmtree(p('packages/win32'))
+    shutil.move(p(pack_dir + '/setup.exe'),
+                p('packages/openLCA_' + arch + '_installer_' +
+                  version_date + ".exe"))
+    shutil.rmtree(pack_dir)
 
 
 def pack_linux(version_date):
