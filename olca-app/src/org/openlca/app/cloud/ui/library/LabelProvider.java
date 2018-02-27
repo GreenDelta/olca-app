@@ -4,6 +4,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.model.ModelType;
@@ -29,7 +30,7 @@ class LabelProvider extends org.eclipse.jface.viewers.LabelProvider implements I
 		switch (column) {
 		case 0:
 			Dataset dataset = entry.getKey();
-			return dataset.fullPath;
+			return CloudUtil.toFullPath(dataset);
 		case 1:
 			return entry.getValue();
 		default:

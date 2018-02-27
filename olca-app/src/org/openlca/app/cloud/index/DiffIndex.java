@@ -13,6 +13,7 @@ import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.model.ModelType;
+import org.openlca.util.Dirs;
 
 // NOT SYNCHRONIZED //
 public class DiffIndex {
@@ -24,7 +25,11 @@ public class DiffIndex {
 
 	public static DiffIndex getFor(RepositoryClient client) {
 		RepositoryConfig config = client.getConfig();
-		return new DiffIndex(new File(config.database.getFileStorageLocation(), "cloud/" + config.repositoryId));
+		return new DiffIndex(getIndexFile(config));
+	}
+
+	public static File getIndexFile(RepositoryConfig config) {
+		return new File(config.database.getFileStorageLocation(), "cloud/" + config.repositoryId);
 	}
 
 	private DiffIndex(File indexDirectory) {
@@ -46,9 +51,12 @@ public class DiffIndex {
 	}
 
 	public void clear() {
-		index.clear();
-		changedTopLevelElements.clear();
-		commit();
+		close();
+		File dir = file.getParentFile();
+		Dirs.delete(dir.toPath());
+		dir.mkdirs();
+		file = new File(dir, "indexFile");
+		createDb(file);
 	}
 
 	public void add(Dataset dataset, long localId) {
@@ -74,7 +82,7 @@ public class DiffIndex {
 		updateDiff(diff, dataset, newType);
 	}
 
-	private void updateDiff(Diff diff, Dataset dataset, DiffType newType) {		
+	private void updateDiff(Diff diff, Dataset dataset, DiffType newType) {
 		diff.type = newType;
 		if (newType == DiffType.NO_DIFF) {
 			updateParents(diff, false);
@@ -84,8 +92,13 @@ public class DiffIndex {
 			diff.changed = dataset;
 			updateParents(diff, true);
 		}
-		if (dataset.categoryRefId == null)
-			updateChangedTopLevelElements(dataset.categoryType.name(), dataset.refId, newType);
+		if (dataset.categoryRefId == null) {
+			ModelType type = dataset.type;
+			if (type == ModelType.CATEGORY) {
+				type = dataset.categoryType;
+			}
+			updateChangedTopLevelElements(type.name(), dataset.refId, newType);
+		}
 		index.put(dataset.refId, diff);
 	}
 
@@ -154,7 +167,7 @@ public class DiffIndex {
 			parentId = parent.dataset.categoryRefId;
 		}
 		ModelType categoryType = dataset.categoryType;
-		if(categoryType == null)
+		if (categoryType == null)
 			categoryType = dataset.type;
 		if (add)
 			updateChangedTopLevelElements(categoryType.name(), dataset.refId, DiffType.CHANGED);

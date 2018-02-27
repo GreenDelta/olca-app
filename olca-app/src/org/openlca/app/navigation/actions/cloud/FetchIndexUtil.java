@@ -23,6 +23,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.util.KeyGen;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,10 @@ class FetchIndexHelper {
 				for (DiffResult r : changed) {
 					if (r.getType() != DiffResponse.ADD_TO_LOCAL || !ids.contains(r.remote.refId))
 						continue;
-					String newId = KeyGen.get((r.remote.categoryType.name() + "/" + r.remote.fullPath).split("/"));
+					String[] categories = r.remote.categories.toArray(new String[r.remote.categories.size()]);
+					String[] path = Strings.prepend(categories, r.remote.categoryType.name());
+					path = Strings.append(path, r.remote.name);
+					String newId = KeyGen.get(path);
 					r.remote.refId = newId;
 					correctedIds.add(newId);
 				}

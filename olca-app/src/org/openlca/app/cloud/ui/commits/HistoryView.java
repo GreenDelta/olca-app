@@ -203,7 +203,7 @@ public class HistoryView extends ViewPart {
 			if (!(element instanceof FetchRequestData))
 				return null;
 			FetchRequestData data = (FetchRequestData) element;
-			return data.fullPath;
+			return CloudUtil.toFullPath(data);
 		}
 
 		@Override

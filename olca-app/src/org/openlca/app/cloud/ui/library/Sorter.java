@@ -4,6 +4,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.navigation.ModelTypeComparison;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.model.ModelType;
@@ -33,6 +34,6 @@ public class Sorter extends ViewerSorter {
 			return -1;
 		if (d1.type != ModelType.CATEGORY && d2.type == ModelType.CATEGORY)
 			return 1;
-		return Strings.compare(d1.fullPath, d2.fullPath);
+		return Strings.compare(CloudUtil.toFullPath(d1), CloudUtil.toFullPath(d2));
 	}
 }

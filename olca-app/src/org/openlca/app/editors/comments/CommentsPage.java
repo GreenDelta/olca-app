@@ -1,7 +1,5 @@
 package org.openlca.app.editors.comments;
 
-import org.openlca.app.M;
-
 import java.util.List;
 
 import javafx.scene.web.WebEngine;
@@ -14,6 +12,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.html.HtmlView;
@@ -28,6 +27,7 @@ import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
 
@@ -83,7 +83,10 @@ public class CommentsPage extends FormPage implements WebPage {
 			return null;
 		CategorizedDescriptor descriptor = getDescriptor(comment.type, comment.refId);
 		Category category = getCategory(descriptor);
-		return CloudUtil.getFullPath(descriptor, category);
+		List<String> categories = CloudUtil.getCategories(category);
+		if (categories == null || categories.size() == 0)
+			return descriptor.getName();
+		return Strings.join(categories, '/') + "/" + descriptor.getName();
 	}
 
 	private CategorizedDescriptor getDescriptor(ModelType type, String refId) {
