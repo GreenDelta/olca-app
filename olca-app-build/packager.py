@@ -17,7 +17,35 @@ def main():
     now = datetime.datetime.now()
     version_date = '%s_%d-%02d-%02d' % (get_version(), now.year,
                                         now.month, now.day)
+    pack_linux(version_date)
     pack_macos(version_date)
+
+
+def pack_linux(version_date):
+    app_pack = glob.glob('builds/openlca_*-linux.gtk.x86_64.zip')
+    if len(app_pack) == 0:
+        print('ERROR: could not find Linux package')
+        return
+    unzip(app_pack[0], p('packages/linux'))
+    app_dir = p('packages/linux/openLCA')
+
+    # copy ini and licenses
+    shutil.copy2(p('templates/openLCA_Linux.ini'), p(app_dir + '/openLCA.ini'))
+    shutil.copy2(p('legal/OPENLCA_README.txt'), app_dir)
+    shutil.copytree(p('legal/licenses'), p(app_dir + '/licenses'))
+
+    # package the JRE
+    jre_tar = glob.glob('runtime/jre/jre-*-linux-x64.tar')
+    if len(jre_tar) == 0:
+        print('ERROR: no JRE for Linux found')
+        return
+    unzip(jre_tar[0], app_dir)
+    jre_dir = glob.glob(app_dir + '/*jre*')
+    os.rename(jre_dir[0], p(app_dir + '/jre'))
+
+    targz('.\\packages\\linux\\*',
+          p('packages/openLCA_linux_' + version_date))
+    shutil.rmtree(pack_dir)
 
 
 def pack_macos(version_date):
@@ -32,12 +60,12 @@ def pack_macos(version_date):
              'artifacts.xml']
     for m in moves:
         move(p('packages/macos/openLCA/' + m), app_dir)
+
+    # package the JRE
     jre_tar = glob.glob('runtime/jre/jre-*-macosx-x64.tar')
     if len(jre_tar) == 0:
         print('ERROR: no JRE for Mac OSX found')
         return
-
-    # package the JRE
     unzip(jre_tar[0], app_dir)
     jre_dir = glob.glob(app_dir + '/*jre*')
     os.rename(jre_dir[0], p(app_dir + '/jre'))
@@ -81,22 +109,6 @@ def move(f_path, target_dir):
     shutil.move(f_path, target_dir)
     # cmd = ['move', f_path, target_dir]
     # code = subprocess.call(cmd)
-
-
-def delete(f_path):
-    "Deletes the given file or folder"
-    if not os.path.exists(f_path):
-        return
-    if os.path.isfile(f_path):
-        print('Delete file %s' % f_path)
-        cmd = ['del', '/Q', f_path]
-        code = subprocess.call(cmd)
-        check(code, "Failed to delete file %s" % f_path)
-    elif os.path.isdir:
-        print('Delete folder %s' % f_path)
-        cmd = ['rmdir', '/s', '/q', f_path]
-        code = subprocess.call(cmd)
-        check(code, "Failed to delete folder %s" % f_path)
 
 
 def check(code, msg):
