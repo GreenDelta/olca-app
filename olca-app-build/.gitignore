@@ -2,7 +2,5 @@
 builds
 nsis-2.46
 packages
-runtime
+jre
 sources
-
-*.exe

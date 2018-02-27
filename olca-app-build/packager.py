@@ -13,7 +13,7 @@ def main():
     print('Create the distribution packages')
     if os.path.exists('packages'):
         shutil.rmtree('packages', ignore_errors=True)
-        os.mkdir('packages')
+        mkdir('packages')
     now = datetime.datetime.now()
     version = get_version()
     version_date = '%s_%d-%02d-%02d' % (version, now.year,
@@ -36,11 +36,11 @@ def pack_win(arch, version_date, version):
     pack_dir = 'packages/' + arch
     app_dir = p(pack_dir + '/openLCA')
     heap_memory = '1024M'
-    jre_dir = p('runtime/jre/win32')
+    jre_dir = p('jre/win32')
     if arch == 'win64':
         build_zip = '.win32.x86_64.zip'
         heap_memory = '3248M'
-        jre_dir = p('runtime/jre/win64')
+        jre_dir = p('jre/win64')
 
     # extract the build
     app_pack = glob.glob('builds/openlca_*' + build_zip)
@@ -54,8 +54,8 @@ def pack_win(arch, version_date, version):
                         lang='en', heap=heap_memory)
     with open(p(app_dir + '/openLCA.ini'), 'w', encoding='iso-8859-1') as f:
         f.write(ini)
-    shutil.copy2(p('legal/OPENLCA_README.txt'), app_dir)
-    shutil.copytree(p('legal/licenses'), p(app_dir + '/licenses'))
+    shutil.copy2(p('resources/OPENLCA_README.txt'), app_dir)
+    shutil.copytree(p('resources/licenses'), p(app_dir + '/licenses'))
 
     # package the JRE
     shutil.copytree(jre_dir, p(app_dir + '/jre'))
@@ -66,15 +66,15 @@ def pack_win(arch, version_date, version):
                         'zip', pack_dir)
 
     # create the win32 installer
-    inst_files = glob.glob('installer_static_win/*')
+    inst_files = glob.glob('resources/installer_static_win/*')
     for res in inst_files:
         if os.path.isfile(res):
             shutil.copy2(res, p(pack_dir + '/' + os.path.basename(res)))
-    os.mkdir(p(pack_dir + '/english'))
+    mkdir(p(pack_dir + '/english'))
     with open(p(pack_dir + '/english/openLCA.ini'), 'w',
               encoding='iso-8859-1') as f:
         f.write(ini)
-    os.mkdir(p(pack_dir + '/german'))
+    mkdir(p(pack_dir + '/german'))
     ini_de = fill_template(p('templates/openLCA_win.ini'),
                            lang='de', heap=heap_memory)
     with open(p(pack_dir + '/german/openLCA.ini'), 'w',
@@ -102,11 +102,11 @@ def pack_linux(version_date):
 
     # copy ini and licenses
     shutil.copy2(p('templates/openLCA_linux.ini'), p(app_dir + '/openLCA.ini'))
-    shutil.copy2(p('legal/OPENLCA_README.txt'), app_dir)
-    shutil.copytree(p('legal/licenses'), p(app_dir + '/licenses'))
+    shutil.copy2(p('resources/OPENLCA_README.txt'), app_dir)
+    shutil.copytree(p('resources/licenses'), p(app_dir + '/licenses'))
 
     # package the JRE
-    jre_tar = glob.glob('runtime/jre/jre-*-linux-x64.tar')
+    jre_tar = glob.glob('jre/jre-*-linux-x64.tar')
     if len(jre_tar) == 0:
         print('ERROR: no JRE for Linux found')
         return
@@ -133,7 +133,7 @@ def pack_macos(version_date):
         move(p('packages/macos/openLCA/' + m), app_dir)
 
     # package the JRE
-    jre_tar = glob.glob('runtime/jre/jre-*-macosx-x64.tar')
+    jre_tar = glob.glob('jre/jre-*-macosx-x64.tar')
     if len(jre_tar) == 0:
         print('ERROR: no JRE for Mac OSX found')
         return
@@ -178,8 +178,6 @@ def move(f_path, target_dir):
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
     shutil.move(f_path, target_dir)
-    # cmd = ['move', f_path, target_dir]
-    # code = subprocess.call(cmd)
 
 
 def check(code, msg):
@@ -194,6 +192,7 @@ def targz(folder, tar_file):
     subprocess.call(cmd)
     cmd = [tar_app, 'a', '-tgzip', tar_file + '.tar.gz', tar_file + '.tar']
     subprocess.call(cmd)
+    os.remove(tar_file + '.tar')
 
 
 def get_version():
@@ -219,6 +218,15 @@ def p(path):
     if os.sep != '/':
         return path.replace('/', os.sep)
     return path
+
+
+def mkdir(path):
+    if os.path.exists(path):
+        return
+    try:
+        os.mkdir(path)
+    except Exception as e:
+        print('Failed to create folder ' + path, e)
 
 
 if __name__ == '__main__':
