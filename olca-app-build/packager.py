@@ -15,10 +15,62 @@ def main():
         shutil.rmtree('packages', ignore_errors=True)
         os.mkdir('packages')
     now = datetime.datetime.now()
-    version_date = '%s_%d-%02d-%02d' % (get_version(), now.year,
+    version = get_version()
+    version_date = '%s_%d-%02d-%02d' % (version, now.year,
                                         now.month, now.day)
     pack_linux(version_date)
     pack_macos(version_date)
+    pack_win32(version_date, version)
+
+
+def pack_win32(version_date, version):
+    app_pack = glob.glob('builds/openlca_*.win32.x86.zip')
+    if len(app_pack) == 0:
+        print('ERROR: could not find Win32 package')
+        return
+    unzip(app_pack[0], p('packages/win32'))
+    app_dir = p('packages/win32/openLCA')
+
+    # copy ini and licenses
+    ini = fill_template(p('templates/openLCA_win.ini'),
+                        lang='en', heap='1024M')
+    with open(p(app_dir + '/openLCA.ini'), 'w', encoding='iso-8859-1') as f:
+        f.write(ini)
+    shutil.copy2(p('legal/OPENLCA_README.txt'), app_dir)
+    shutil.copytree(p('legal/licenses'), p(app_dir + '/licenses'))
+
+    # package the JRE
+    shutil.copytree(p('runtime/jre/win32'), p(app_dir + '/jre'))
+
+    # create the non-installer zip
+    print('Create the win32 zip ...')
+    shutil.make_archive(p('packages/openLCA_win32_' + version_date), 'zip',
+                        p('packages/win32'))
+
+    # create the win32 installer
+    inst_files = glob.glob('installer_static_win/*')
+    for res in inst_files:
+        if os.path.isfile(res):
+            shutil.copy2(res, p('packages/win32/' + os.path.basename(res)))
+    os.mkdir(p('packages/win32/english'))
+    with open(p('packages/win32/english/openLCA.ini'), 'w',
+              encoding='iso-8859-1') as f:
+        f.write(ini)
+    os.mkdir(p('packages/win32/german'))
+    ini_de = fill_template(p('templates/openLCA_win.ini'),
+                           lang='de', heap='1024M')
+    with open(p('packages/win32/german/openLCA.ini'), 'w',
+              encoding='iso-8859-1') as f:
+        f.write(ini_de)
+    setup = fill_template('templates/setup.nsi', version=version)
+    with open(p('packages/win32/setup.nsi'), 'w',
+              encoding='iso-8859-1') as f:
+        f.write(setup)
+    cmd = [p('nsis-2.46/makensis.exe'), p('packages/win32/setup.nsi')]
+    subprocess.call(cmd)
+    shutil.move(p('packages/win32/setup.exe'),
+                p('packages/openLCA_win32_installer_' + version_date + ".exe"))
+    shutil.rmtree(p('packages/win32'))
 
 
 def pack_linux(version_date):
@@ -30,7 +82,7 @@ def pack_linux(version_date):
     app_dir = p('packages/linux/openLCA')
 
     # copy ini and licenses
-    shutil.copy2(p('templates/openLCA_Linux.ini'), p(app_dir + '/openLCA.ini'))
+    shutil.copy2(p('templates/openLCA_linux.ini'), p(app_dir + '/openLCA.ini'))
     shutil.copy2(p('legal/OPENLCA_README.txt'), app_dir)
     shutil.copytree(p('legal/licenses'), p(app_dir + '/licenses'))
 
@@ -45,7 +97,7 @@ def pack_linux(version_date):
 
     targz('.\\packages\\linux\\*',
           p('packages/openLCA_linux_' + version_date))
-    shutil.rmtree(pack_dir)
+    shutil.rmtree(p('packages/linux'))
 
 
 def pack_macos(version_date):
@@ -75,7 +127,7 @@ def pack_macos(version_date):
         glob.glob(app_dir + '/plugins/*launcher*.jar')[0])
     launcher_lib = os.path.basename(
         glob.glob(app_dir + '/plugins/*launcher.cocoa.macosx*')[0])
-    ini = fill_template(p('templates/openLCA_macOS.ini'),
+    ini = fill_template(p('templates/openLCA_mac.ini'),
                         launcher_jar=launcher_jar, launcher_lib=launcher_lib)
     ini_file = p(app_dir + '/Contents/MacOS/openLCA.ini')
     with(open(ini_file, 'w', encoding='utf-8', newline='\n')) as f:
@@ -84,7 +136,7 @@ def pack_macos(version_date):
     # create the distribution package
     targz('.\\packages\\macos\\openLCA\\*',
           p('packages/openLCA_macOS_' + version_date))
-    shutil.rmtree(pack_dir)
+    shutil.rmtree(p('packages/macos'))
 
 
 def unzip(zip_file, to_dir):
@@ -130,7 +182,7 @@ def get_version():
     with open('build.properties', 'r', encoding='utf-8') as f:
         for line in f:
             text = line.strip()
-            if not text.startswith('openlca_version_id'):
+            if not text.startswith('openlca_version'):
                 continue
             version = text.split('=')[1].strip()
             break
