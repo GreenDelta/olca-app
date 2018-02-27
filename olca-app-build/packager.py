@@ -18,8 +18,8 @@ def main():
     version = get_version()
     version_date = '%s_%d-%02d-%02d' % (version, now.year,
                                         now.month, now.day)
-    # pack_linux(version_date)
-    # pack_macos(version_date)
+    pack_linux(version_date)
+    pack_macos(version_date)
     pack_win('win32', version_date, version)
     pack_win('win64', version_date, version)
 

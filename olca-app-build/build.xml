@@ -15,14 +15,9 @@
 	<property file="build.properties" />
 
 	<target name="main" depends="compile">
-		<mkdir dir="${basedir}/packages" />
-		<delete>
-			<fileset dir="${basedir}/packages" includes="*.exe,*.zip">
-			</fileset>
-		</delete>
-		<ant antfile="${basedir}/buildWinInstallers.xml" />
-		<ant antfile="${basedir}/buildMacOSX.xml" />
-		<ant antfile="${basedir}/buildLinuxZips.xml" />
+		<exec executable="python">
+			<arg file="packager.py" />
+		</exec>
 		<eclipse.refreshLocal resource="olca-app-build" depth="infinite" />
 	</target>
 
