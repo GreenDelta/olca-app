@@ -74,7 +74,9 @@ public class CommentsPage extends FormPage implements WebPage {
 		UI.bindVar(webkit, "java", new Js());
 		Gson gson = new Gson();
 		for (Comment comment : comments) {
-			webkit.executeScript("add(" + gson.toJson(comment) + ", false, '" + getFullPath(comment) + "');");
+			String fullPath = getFullPath(comment);
+			fullPath = fullPath != null ? "'" + fullPath + "'" : fullPath;
+			webkit.executeScript("add(" + gson.toJson(comment) + ", false, " + fullPath + ");");
 		}
 	}
 
