@@ -55,7 +55,7 @@ public class CommitAction extends Action implements INavigationAction {
 	public void run() {
 		Runner runner = new Runner();
 		runner.run();
-		if (!runner.upToDate)
+		if (!runner.upToDate && runner.error == null)
 			Error.showBox(M.RejectMessage);
 		else if (runner.error != null) {
 			log.error("Error during commit action", runner.error);
