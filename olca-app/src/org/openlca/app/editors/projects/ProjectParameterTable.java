@@ -131,7 +131,8 @@ class ProjectParameterTable {
 		Action add = Actions.onAdd(this::onAdd);
 		Action remove = Actions.onRemove(this::onRemove);
 		Action copy = TableClipboard.onCopy(viewer);
-		CommentAction.bindTo(section, "parameters", editor.getComments(), add, remove);
+		CommentAction.bindTo(section, "parameters", editor.getComments(), add,
+				remove);
 		Actions.bind(viewer, add, remove, copy);
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
@@ -175,7 +176,8 @@ class ProjectParameterTable {
 			}
 		}
 		viewer.setColumnProperties(keys);
-		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(viewer);
+		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(
+				viewer);
 		modifySupport.bind(NAME, new NameModifier());
 		modifySupport.bind(DESCRIPTION, new DescriptionModifier());
 		for (int i = LABEL_COLS; i < keys.length; i++) {
@@ -183,8 +185,11 @@ class ProjectParameterTable {
 				modifySupport.bind(keys[i], new ValueModifier(keys[i]));
 			} else {
 				ProjectVariant variant = columns[(i - LABEL_COLS - 1) / 2].variant;
-				modifySupport.bind(keys[i], new CommentDialogModifier<>(editor.getComments(),
-						redef -> CommentPaths.get(variant, redef, getContext(redef))));
+				modifySupport.bind(
+						keys[i],
+						new CommentDialogModifier<>(editor.getComments(),
+								redef -> CommentPaths.get(variant, redef,
+										getContext(redef))));
 			}
 		}
 	}
@@ -192,7 +197,8 @@ class ProjectParameterTable {
 	private CategorizedDescriptor getContext(ParameterRedef p) {
 		if (p.getContextId() == null)
 			return null;
-		return Daos.categorized(Database.get(), p.getContextType()).getDescriptor(p.getContextId());
+		return Daos.categorized(Database.get(), p.getContextType())
+				.getDescriptor(p.getContextId());
 	}
 
 	private void onAdd() {
@@ -288,7 +294,8 @@ class ProjectParameterTable {
 			return null;
 		for (ParameterRedef variantRedef : variant.getParameterRedefs()) {
 			if (Objects.equals(variantRedef.getName(), redef.getName())
-					&& Objects.equals(variantRedef.getContextId(), redef.getContextId()))
+					&& Objects.equals(variantRedef.getContextId(),
+							redef.getContextId()))
 				return variantRedef;
 		}
 		return null;
@@ -338,7 +345,8 @@ class ProjectParameterTable {
 					return Images.get(ModelType.PARAMETER);
 				return Images.get(model);
 			}
-			if (column > LABEL_COLS && column % 2 == 1) {
+			boolean showComments = editor.hasAnyComment("variants.parameterRedefs");
+			if (column > LABEL_COLS && showComments && column % 2 == 1) {
 				ProjectVariant variant = columns[(column - LABEL_COLS - 1) / 2].variant;
 				String path = CommentPaths.get(variant, redef, getContext(redef));
 				return Images.get(editor.getComments(), path);
@@ -359,13 +367,17 @@ class ProjectParameterTable {
 				return reportSync.getName(redef);
 			if (col == 3)
 				return reportSync.getDescription(redef);
-			if (col % 2 == 0)
+			boolean showComments = editor.hasAnyComment("variants.parameterRedefs");
+			if (!showComments || col % 2 == 0)
 				return getVariantValue(col, redef);
 			return null;
 		}
 
 		private String getVariantValue(int col, ParameterRedef redef) {
-			int idx = (col - LABEL_COLS) / 2;
+			boolean showComments = editor.hasAnyComment("variants.parameterRedefs");
+			int idx = (col - LABEL_COLS);
+			if (showComments)
+				idx /= 2;
 			if (idx < 0 || idx >= columns.length)
 				return null;
 			ProjectVariant variant = columns[idx].getVariant();
@@ -431,8 +443,8 @@ class ProjectParameterTable {
 				reportSync.valueChanged(redef, variant, d);
 				editor.setDirty(true);
 			} catch (Exception e) {
-				org.openlca.app.util.Error.showBox(M.InvalidNumber, text
-						+ " " + M.IsNotValidNumber);
+				org.openlca.app.util.Error.showBox(M.InvalidNumber, text + " "
+						+ M.IsNotValidNumber);
 			}
 		}
 	}
