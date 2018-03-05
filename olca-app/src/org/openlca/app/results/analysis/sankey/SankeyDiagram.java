@@ -53,7 +53,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	public final FullResultProvider result;
 	public ProductSystemNode node;
 	public double zoom = 1;
-	private boolean routed = true;
+	private boolean routed = false;
 	private SankeyResult sankeyResult;
 	private Map<ProcessLink, Link> createdLinks = new HashMap<>();
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
