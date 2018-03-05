@@ -33,11 +33,12 @@ project and other open source software.
 
    <splash
       location="olca-app"
-      startupProgressRect="0,387,540,5"
+      startupProgressRect="0,382,540,5"
       startupMessageRect="7,525,445,20"
       startupForegroundColor="000000" />
    <launcher name="openLCA">
       <macosx icon="/olca-app/icons/logo/logo.icns"/>
+      <solaris/>
       <win useIco="false">
          <bmp
             winSmallHigh="/olca-app/icons/logo/16_32bit.bmp"
@@ -54,6 +55,7 @@ project and other open source software.
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
+
 
    <plugins>
       <plugin id="com.google.gson"/>
@@ -612,12 +614,5 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="5" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
    </configurations>
-   
-   <preferencesInfo>
-      <targetfile overwrite="false"/>
-   </preferencesInfo>
-
-   <cssInfo>
-   </cssInfo>
 
 </product>
