@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="libs/derby-10.14.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/HikariCP-2.7.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/javax.persistence-2.2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.antlr-2.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.asm-2.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.core-2.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa-2.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa.jpql-2.7.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-cloud-1.7.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.7.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.7.0.jar" />
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-1.7.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-1.7.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-1.7.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-geo-1.7.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.7.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.7.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-jsonld-1.7.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.7.0.jar" />
+	<classpathentry exported="true" kind="lib" path="libs/olca-jsonld-1.7.0.jar" />
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-1.7.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-updates-1.7.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/guava-21.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-math3-3.6.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/derby-10.13.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/HikariCP-2.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/javax.json-1.0.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/javax.persistence-2.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.antlr-2.6.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.asm-2.6.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.core-2.6.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa-2.6.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa.jpql-2.6.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-collections-3.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jython-standalone-2.7.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-codec-1.9.jar"/>
