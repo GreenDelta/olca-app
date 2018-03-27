@@ -21,11 +21,11 @@ public class CommitDiffViewer extends DiffTreeViewer {
 	private List<DiffNode> selected = new ArrayList<>();
 	// The option fixNewElements will prevent the user to uncheck "NEW"
 	// elements, used in ReferencesResultDialog
-	private boolean fixNewElements;
+	private boolean lockNewElements;
 
-	public CommitDiffViewer(Composite parent, JsonLoader jsonLoader, boolean fixNewElements) {
+	public CommitDiffViewer(Composite parent, JsonLoader jsonLoader, boolean lockNewElements) {
 		super(parent, jsonLoader);
-		this.fixNewElements = fixNewElements;
+		this.lockNewElements = lockNewElements;
 	}
 
 	public void setInitialSelection(Set<String> initialSelection) {
@@ -97,7 +97,7 @@ public class CommitDiffViewer extends DiffTreeViewer {
 			if (e.getChecked()) {
 				selected.add(node);
 			} else {
-				if (fixNewElements && node.getContent().local.type == DiffType.NEW) {
+				if (lockNewElements && node.getContent().local.type == DiffType.NEW) {
 					viewer.setChecked(node, true);
 					return;
 				}
