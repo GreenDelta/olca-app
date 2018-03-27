@@ -8,11 +8,10 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.SocialAspect;
-import org.openlca.core.model.Unit;
-import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.ContributionResultProvider;
 import org.openlca.core.results.FlowResult;
@@ -49,14 +48,10 @@ final class SaveProcessUtil {
 
 	private void addRefFlow(Process p) {
 		CalculationSetup setup = editor.getSetup();
-		Exchange qRef = new Exchange();
-		qRef.flow = getProduct(setup);
+		Flow product = getProduct(setup);
+		FlowProperty property = setup.getFlowPropertyFactor().getFlowProperty();
+		Exchange qRef = p.exchange(product, property, setup.getUnit());
 		qRef.amount = setup.getAmount();
-		qRef.flowPropertyFactor = setup.getFlowPropertyFactor();
-		qRef.isInput = false;
-		qRef.unit = setup.getUnit();
-		qRef.internalId = p.drawNextInternalId();
-		p.getExchanges().add(qRef);
 		p.setQuantitativeReference(qRef);
 	}
 
@@ -79,22 +74,10 @@ final class SaveProcessUtil {
 			Flow flow = dao.getForId(d.getId());
 			if (flow == null)
 				continue;
-			Exchange e = new Exchange();
-			e.flow = flow;
+			Exchange e = p.exchange(flow);
 			e.isInput = result.input;
 			e.amount = result.value;
-			e.flowPropertyFactor = flow.getReferenceFactor();
-			e.unit = getRefUnit(flow);
-			e.internalId = p.drawNextInternalId();
-			p.getExchanges().add(e);
 		}
-	}
-
-	private Unit getRefUnit(Flow flow) {
-		if (flow == null || flow.getReferenceFlowProperty() == null)
-			return null;
-		UnitGroup ug = flow.getReferenceFlowProperty().getUnitGroup();
-		return ug == null ? null : ug.getReferenceUnit();
 	}
 
 	private void copyMetaData(Process p) {

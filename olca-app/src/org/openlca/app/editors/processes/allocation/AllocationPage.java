@@ -164,12 +164,14 @@ public class AllocationPage extends ModelPage<Process> {
 	}
 
 	private CommentDialogModifier<Exchange> createCommentModifier(AllocationMethod method) {
-		return new CommentDialogModifier<>(editor.getComments(), (e) -> {
-			AllocationFactor factor = getFactor(e, method);
-			if (factor == null)
-				return null;
-			return CommentPaths.get(factor, e);
-		});
+		return new CommentDialogModifier<>(editor.getComments(), (e) -> getPath(e, method));
+	}
+
+	private String getPath(Exchange e, AllocationMethod m) {
+		AllocationFactor factor = getFactor(e, m);
+		if (factor == null)
+			return null;
+		return CommentPaths.get(factor, e);
 	}
 
 	private void createCausalSection(Composite body) {

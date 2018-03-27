@@ -13,7 +13,6 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 import com.google.common.base.Strings;
@@ -61,7 +60,9 @@ class ProcessCreator {
 			p.setLastChange(System.currentTimeMillis());
 			p.setProcessType(ProcessType.UNIT_PROCESS);
 			Flow flow = getFlow();
-			addQuantitativeReference(p, flow);
+			Exchange qRef = p.exchange(flow);
+			qRef.isInput = flow.getFlowType() == FlowType.WASTE_FLOW;
+			p.setQuantitativeReference(qRef);
 			ProcessDocumentation doc = new ProcessDocumentation();
 			doc.setCreationDate(Calendar.getInstance().getTime());
 			doc.setId(p.getId());
@@ -99,18 +100,4 @@ class ProcessCreator {
 		return flow;
 	}
 
-	private void addQuantitativeReference(Process process, Flow flow) {
-		Exchange qRef = new Exchange();
-		qRef.amount = 1.0;
-		qRef.flow = flow;
-		FlowProperty refProp = flow.getReferenceFlowProperty();
-		qRef.flowPropertyFactor = flow.getReferenceFactor();
-		UnitGroup unitGroup = refProp.getUnitGroup();
-		if (unitGroup != null)
-			qRef.unit = unitGroup.getReferenceUnit();
-		qRef.isInput = flow.getFlowType() == FlowType.WASTE_FLOW;
-		qRef.internalId = process.drawNextInternalId();
-		process.getExchanges().add(qRef);
-		process.setQuantitativeReference(qRef);
-	}
 }

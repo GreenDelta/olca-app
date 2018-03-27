@@ -126,7 +126,6 @@ public class CreateLinkCommand extends Command {
 		return link;
 	}
 
-	@Deprecated
 	public void completeWith(ExchangeNode node) {
 		if (startedFromOutput) {
 			input = node;
