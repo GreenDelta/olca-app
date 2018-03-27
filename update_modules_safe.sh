@@ -9,11 +9,11 @@ updates_path=$(pwd)/../olca-updates
 
 echo "install olca-modules from $modules_path" 
 cd $modules_path
-mvn install -DskipTests=true
+mvn install
 
 echo "install olca-updates from $updates_path"
 cd $updates_path
-mvn install -DskipTests=true
+mvn install
 
 echo "update packages in $app_path/libs"
 cd $app_path
