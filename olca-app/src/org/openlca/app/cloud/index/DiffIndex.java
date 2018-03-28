@@ -46,8 +46,10 @@ public class DiffIndex {
 	}
 
 	public void close() {
-		if (!db.isClosed())
-			db.close();
+		if (db.isClosed())
+			return;
+		db.commit();
+		db.close();
 	}
 
 	public void clear() {
@@ -55,8 +57,9 @@ public class DiffIndex {
 		File dir = file.getParentFile();
 		Dirs.delete(dir.toPath());
 		dir.mkdirs();
-		file = new File(dir, "indexFile");
+		file = new File(dir, "indexfile");
 		createDb(file);
+		db.commit();
 	}
 
 	public void add(Dataset dataset, long localId) {
