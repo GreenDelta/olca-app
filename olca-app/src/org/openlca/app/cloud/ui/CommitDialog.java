@@ -67,7 +67,7 @@ public class CommitDialog extends FormDialog {
 		createModelViewer(body, toolkit);
 		form.reflow(true);
 		viewer.setInput(Collections.singleton(node));
-		viewer.setInitialSelection(initialSelection);
+		viewer.setSelection(initialSelection);
 	}
 
 	private void createCommitMessage(Composite parent, FormToolkit toolkit) {

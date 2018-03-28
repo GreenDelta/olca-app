@@ -1,6 +1,5 @@
 package org.openlca.app.navigation.actions.cloud;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -61,20 +60,20 @@ class RefIdListBuilder {
 	}
 
 	private Set<String> toRefIdList(INavigationElement<?> element) {
-		if (!DiffUtil.hasChanged(element))
-			return Collections.emptySet();
-		String id = toId(element);
-		if (id != null)
-			map.put(id, element);
 		Set<String> refIds = new HashSet<>();
-		if (element instanceof CategoryElement) {
-			Category category = ((CategoryElement) element).getContent();
-			Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(category));
-			if (diff.hasChanged())
-				refIds.add(category.getRefId());
+		if (DiffUtil.hasChanged(element)) {
+			String id = toId(element);
+			if (id != null)
+				map.put(id, element);
+			if (element instanceof CategoryElement) {
+				Category category = ((CategoryElement) element).getContent();
+				Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(category));
+				if (diff.hasChanged())
+					refIds.add(category.getRefId());
+			}
+			if (element instanceof ModelElement)
+				refIds.add(((ModelElement) element).getContent().getRefId());
 		}
-		if (element instanceof ModelElement)
-			refIds.add(((ModelElement) element).getContent().getRefId());
 		for (INavigationElement<?> child : element.getChildren())
 			refIds.addAll(toRefIdList(child));
 		return refIds;
