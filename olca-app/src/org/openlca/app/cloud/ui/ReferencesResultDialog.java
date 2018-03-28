@@ -56,7 +56,7 @@ public class ReferencesResultDialog extends FormDialog {
 		form.reflow(true);
 		viewer.setInput(Collections.singleton(node));
 		Set<String> initialSelection = getNewElements(node);
-		viewer.setInitialSelection(initialSelection);
+		viewer.setSelection(initialSelection);
 	}
 
 	private Set<String> getNewElements(DiffNode node) {

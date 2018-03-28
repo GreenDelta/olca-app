@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: olca-app
 Bundle-SymbolicName: olca-app;singleton:=true
-Bundle-Version: 1.7.0
+Bundle-Version: 1.7.1
 Bundle-Activator: org.openlca.app.rcp.RcpActivator
 Bundle-Vendor: openLCA.org
 Eclipse-BundleShape: dir
@@ -83,17 +83,17 @@ Bundle-ClassPath: .,
  libs/commons-math3-3.6.1.jar,
  libs/javax.json-1.0.4.jar,
  libs/guava-21.0.jar,
- libs/olca-cloud-1.7.0.jar,
- libs/olca-core-1.7.0.jar,
- libs/olca-ecospold-1-1.7.0.jar,
- libs/olca-ecospold-2-1.7.0.jar,
- libs/olca-formula-1.7.0.jar,
- libs/olca-geo-1.7.0.jar,
- libs/olca-ilcd-1.7.0.jar,
- libs/olca-io-1.7.0.jar,
- libs/olca-jsonld-1.7.0.jar,
- libs/olca-simapro-csv-1.7.0.jar,
- libs/olca-updates-1.7.0.jar,
+ libs/olca-cloud-1.7.1.jar,
+ libs/olca-core-1.7.1.jar,
+ libs/olca-ecospold-1-1.7.1.jar,
+ libs/olca-ecospold-2-1.7.1.jar,
+ libs/olca-formula-1.7.1.jar,
+ libs/olca-geo-1.7.1.jar,
+ libs/olca-ilcd-1.7.1.jar,
+ libs/olca-io-1.7.1.jar,
+ libs/olca-jsonld-1.7.1.jar,
+ libs/olca-simapro-csv-1.7.1.jar,
+ libs/olca-updates-1.7.1.jar,
  libs/derby-10.14.1.0.jar,
  libs/HikariCP-2.7.8.jar,
  libs/javax.persistence-2.2.0.jar,

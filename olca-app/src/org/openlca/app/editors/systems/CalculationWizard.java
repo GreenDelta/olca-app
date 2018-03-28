@@ -291,12 +291,9 @@ public class CalculationWizard extends Wizard {
 			for (FlowDescriptor d : result.getFlowDescriptors()) {
 				Flow flow = flows.get(d.getId());
 				FlowResult flowResult = result.getTotalFlowResult(d);
-				Exchange exchange = new Exchange();
+				Exchange exchange = Exchange.from(flow);
 				exchange.amount = flowResult.value;
 				exchange.isInput = flowResult.input;
-				exchange.flow = flow;
-				exchange.flowPropertyFactor = flow.getReferenceFactor();
-				exchange.unit = exchange.flowPropertyFactor.getFlowProperty().getUnitGroup().getReferenceUnit();
 				productSystem.inventory.add(exchange);
 			}
 			productSystem = new ProductSystemDao(Database.get()).update(productSystem);

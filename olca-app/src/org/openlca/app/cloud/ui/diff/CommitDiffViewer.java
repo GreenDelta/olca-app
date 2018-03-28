@@ -21,14 +21,14 @@ public class CommitDiffViewer extends DiffTreeViewer {
 	private List<DiffNode> selected = new ArrayList<>();
 	// The option fixNewElements will prevent the user to uncheck "NEW"
 	// elements, used in ReferencesResultDialog
-	private boolean fixNewElements;
+	private boolean lockNewElements;
 
-	public CommitDiffViewer(Composite parent, JsonLoader jsonLoader, boolean fixNewElements) {
+	public CommitDiffViewer(Composite parent, JsonLoader jsonLoader, boolean lockNewElements) {
 		super(parent, jsonLoader);
-		this.fixNewElements = fixNewElements;
+		this.lockNewElements = lockNewElements;
 	}
 
-	public void setInitialSelection(Set<String> initialSelection) {
+	public void setSelection(Set<String> initialSelection) {
 		selected = findNodes(initialSelection, root);
 		Set<String> expanded = new HashSet<>();
 		Tree tree = getViewer().getTree();
@@ -48,10 +48,10 @@ public class CommitDiffViewer extends DiffTreeViewer {
 		tree.setRedraw(true);
 	}
 
-	// can't use setChecked(Object[]) for performance reasons. Original
-	// reveals path internally for all elements, which is unnecessary
-	// because this is already done in a more efficient way in
-	// setInitialSelection
+	// // can't use setChecked(Object[]) for performance reasons. Original
+	// method
+	// // reveals path internally for all elements, which is unnecessary because
+	// // this is already done in a more efficient way in setInitialSelection
 	private void setChecked(Set<String> refIds, TreeItem[] items) {
 		for (TreeItem item : items) {
 			DiffNode node = (DiffNode) item.getData();
@@ -66,7 +66,7 @@ public class CommitDiffViewer extends DiffTreeViewer {
 	}
 
 	public void selectAll() {
-		setInitialSelection(null);
+		setSelection(null);
 	}
 
 	private List<DiffNode> findNodes(Set<String> refIds, DiffNode node) {
@@ -87,25 +87,21 @@ public class CommitDiffViewer extends DiffTreeViewer {
 	protected TreeViewer createViewer(Composite parent) {
 		CheckboxTreeViewer viewer = new CheckboxTreeViewer(parent, SWT.BORDER);
 		configureViewer(viewer, true);
-		viewer.addCheckStateListener((e) -> {
-			DiffNode node = (DiffNode) e.getElement();
-			if (!isCheckable(node)) {
-				if (e.getChecked())
-					viewer.setChecked(node, false);
-				return;
-			}
-			if (e.getChecked()) {
-				selected.add(node);
-			} else {
-				if (fixNewElements && node.getContent().local.type == DiffType.NEW) {
-					viewer.setChecked(node, true);
-					return;
-				}
-				selected.remove(node);
-			}
-		});
+		viewer.addCheckStateListener((e) -> setChecked(viewer, (DiffNode) e.getElement(), e.getChecked(), false));
 		UI.gridData(viewer.getTree(), true, true);
 		return viewer;
+	}
+
+	private void setChecked(CheckboxTreeViewer viewer, DiffNode node, boolean value, boolean selectChildren) {
+		if (node.isModelTypeNode() || node.getContent().getType() == DiffResponse.NONE) {
+			viewer.setChecked(node, false);
+		} else if (value) {
+			selected.add(node);
+		} else if (lockNewElements && node.getContent().local.type == DiffType.NEW) {
+			viewer.setChecked(node, true);
+		} else {
+			selected.remove(node);
+		}
 	}
 
 	@Override
@@ -113,20 +109,12 @@ public class CommitDiffViewer extends DiffTreeViewer {
 		return (CheckboxTreeViewer) super.getViewer();
 	}
 
-	private boolean isCheckable(DiffNode node) {
-		if (node.isModelTypeNode())
-			return false;
-		if (node.getContent().getType() == DiffResponse.NONE)
-			return false;
-		return true;
-	}
-
 	public List<DiffNode> getChecked() {
 		return selected;
 	}
 
 	public boolean hasChecked() {
-		return !getChecked().isEmpty();
+		return !selected.isEmpty();
 	}
 
 }

@@ -62,28 +62,30 @@ class TreeContentBuilder {
 				continue;
 			items.add(new LocationItem(contribution));
 		}
-		Contributions.calculate(index.keySet(), total, location -> {
-			LocationItem elem = getItem(items, location);
-			if (elem == null)
-				return 0;
-			List<ProcessDescriptor> list = index.get(location);
-			double amount = 0;
-			for (ProcessDescriptor p : list) {
-				double r = getSingleResult(p, selection);
-				if (r == 0 && page.skipZeros)
-					continue;
-				ContributionItem<ProcessDescriptor> item = new ContributionItem<>();
-				item.rest = p == null;
-				item.item = p;
-				item.amount = r;
-				item.share = r / total;
-				elem.processContributions.add(item);
-				amount += r;
-			}
-			Contributions.sortDescending(elem.processContributions);
-			return amount;
-		});
+		Contributions.calculate(index.keySet(), total, (location) -> getAmount(location, items, selection, total));
 		return items;
+	}
+
+	private double getAmount(Location location, List<LocationItem> items, BaseDescriptor selection, double total) {
+		LocationItem elem = getItem(items, location);
+		if (elem == null)
+			return 0;
+		List<ProcessDescriptor> list = index.get(location);
+		double amount = 0;
+		for (ProcessDescriptor p : list) {
+			double r = getSingleResult(p, selection);
+			if (r == 0 && page.skipZeros)
+				continue;
+			ContributionItem<ProcessDescriptor> item = new ContributionItem<>();
+			item.rest = p == null;
+			item.item = p;
+			item.amount = r;
+			item.share = r / total;
+			elem.processContributions.add(item);
+			amount += r;
+		}
+		Contributions.sortDescending(elem.processContributions);
+		return amount;
 	}
 
 	private double getSingleResult(ProcessDescriptor process,
