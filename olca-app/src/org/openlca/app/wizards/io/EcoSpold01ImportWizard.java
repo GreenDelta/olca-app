@@ -19,6 +19,7 @@ import org.openlca.io.UnitMapping;
 import org.openlca.io.UnitMappingEntry;
 import org.openlca.io.UnitMappingSync;
 import org.openlca.io.ecospold1.input.EcoSpold01Import;
+import org.openlca.io.ecospold1.input.ImportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,8 +101,9 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 			UnitMapping unitMapping) {
 		monitor.beginTask(M.ImportEcoSpold01DataSets,
 				IProgressMonitor.UNKNOWN);
-		EcoSpold01Import importer = new EcoSpold01Import(Database.get(),
-				unitMapping);
+		ImportConfig config = new ImportConfig(Database.get());
+		config.setUnitMapping(unitMapping);
+		EcoSpold01Import importer = new EcoSpold01Import(config);
 		importer.setProcessCategory(category);
 		importer.setFiles(files);
 		ImportHandler handler = new ImportHandler(monitor);
