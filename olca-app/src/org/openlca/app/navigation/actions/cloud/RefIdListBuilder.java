@@ -1,13 +1,10 @@
 package org.openlca.app.navigation.actions.cloud;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openlca.app.cloud.CloudUtil;
-import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffUtil;
 import org.openlca.app.cloud.ui.diff.DiffResult;
@@ -16,8 +13,8 @@ import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTypeElement;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.cloud.model.data.Dataset;
-import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 
 class RefIdListBuilder {
@@ -36,15 +33,25 @@ class RefIdListBuilder {
 
 	Set<String> build() {
 		map.clear();
-		Set<String> refIds = new HashSet<>();
-		for (INavigationElement<?> element : selection)
-			refIds.addAll(toRefIdList(element));
+		Set<String> refIds = Navigator.collect(selection, this::unwrap);
 		for (DiffResult result : changes)
 			if (result.getType() == DiffResponse.DELETE_FROM_REMOTE) {
 				if (findExistingParent(result.getDataset()) != null)
 					refIds.add(result.getDataset().refId);
 			}
 		return refIds;
+	}
+
+	private String unwrap(INavigationElement<?> element) {
+		String id = toId(element);
+		if (id == null)
+			return null;
+		map.put(id, element);
+		if (!DiffUtil.hasChanged(element))
+			return null;
+		if (!(element instanceof ModelElement || element instanceof CategoryElement))
+			return null;
+		return id;
 	}
 
 	private INavigationElement<?> findExistingParent(Dataset dataset) {
@@ -57,26 +64,6 @@ class RefIdListBuilder {
 		if (map.containsKey(parent.refId))
 			return map.get(parent.refId);
 		return findExistingParent(parent);
-	}
-
-	private Set<String> toRefIdList(INavigationElement<?> element) {
-		Set<String> refIds = new HashSet<>();
-		if (DiffUtil.hasChanged(element)) {
-			String id = toId(element);
-			if (id != null)
-				map.put(id, element);
-			if (element instanceof CategoryElement) {
-				Category category = ((CategoryElement) element).getContent();
-				Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(category));
-				if (diff.hasChanged())
-					refIds.add(category.getRefId());
-			}
-			if (element instanceof ModelElement)
-				refIds.add(((ModelElement) element).getContent().getRefId());
-		}
-		for (INavigationElement<?> child : element.getChildren())
-			refIds.addAll(toRefIdList(child));
-		return refIds;
 	}
 
 	private String toId(INavigationElement<?> element) {

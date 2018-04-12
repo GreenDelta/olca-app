@@ -1,6 +1,7 @@
 package org.openlca.app.validation;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -77,7 +78,7 @@ public class ValidationView extends ViewPart {
 		Trees.bindColumnWidths(viewer.getTree(), 0.5, 0.5);
 	}
 
-	public static void refresh() {
+	public static void validate(Collection<CategorizedDescriptor> descriptors) {
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		try {
 			ValidationView instance = (ValidationView) page.showView("views.problems");
@@ -85,7 +86,7 @@ public class ValidationView extends ViewPart {
 			ProgressMonitorDialog dialog = new ProgressMonitorDialog(UI.shell());
 			dialog.run(true, true, (monitor) -> {
 				DatabaseValidation validation = DatabaseValidation.with(monitor);
-				result.addAll(validation.evaluateAll());				
+				result.addAll(validation.evaluate(descriptors));				
 			});
 			StatusList[] model = createModel(result);
 			instance.viewer.setInput(model);

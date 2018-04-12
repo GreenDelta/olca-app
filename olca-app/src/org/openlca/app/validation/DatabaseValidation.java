@@ -2,7 +2,6 @@ package org.openlca.app.validation;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,10 +12,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
+import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.FlowDao;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ParameterDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.database.UnitGroupDao;
@@ -26,14 +24,19 @@ import org.openlca.core.database.references.IReferenceSearch;
 import org.openlca.core.database.references.IReferenceSearch.Reference;
 import org.openlca.core.model.AbstractEntity;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Process;
+import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class DatabaseValidation {
 
 	private IProgressMonitor monitor;
 	private static final List<Class<? extends AbstractEntity>> nesting = new ArrayList<>();
+	private static final Map<Class<? extends AbstractEntity>, BaseDao<?>> daos = new HashMap<>();
 
 	static {
 		nesting.add(FlowPropertyFactor.class);
@@ -46,78 +49,31 @@ public class DatabaseValidation {
 		return e;
 	}
 
-	public List<ModelStatus> evaluateAll() {
-		IDatabase db = Database.get();
-		if (db == null)
-			return Collections.emptyList();
-		Map<ModelType, Set<Long>> toEval = new HashMap<>();
-		if (monitor != null)
-			monitor.beginTask(M.Preparing, IProgressMonitor.UNKNOWN);
-		for (ModelType type : ModelType.values()) {
-			if (monitor != null && monitor.isCanceled())
-				continue;
-			if (!type.isCategorized())
-				continue;
-			Set<Long> ids = getAll(type);
-			if (ids.isEmpty())
-				continue;
-			toEval.put(type, ids);
+	public List<ModelStatus> evaluate(Collection<CategorizedDescriptor> descriptors) {
+		Map<ModelType, Set<Long>> byType = new HashMap<>();
+		for (CategorizedDescriptor descriptor : descriptors) {
+			Set<Long> forType = byType.get(descriptor.getModelType());
+			if (forType == null) {
+				byType.put(descriptor.getModelType(), forType = new HashSet<>());
+			}
+			forType.add(descriptor.getId());
 		}
-		if (monitor != null && !monitor.isCanceled())
-			monitor.beginTask(M.ValidatingDatabase, toEval.size() * 3);
 		List<ModelStatus> result = new ArrayList<>();
-		for (ModelType type : toEval.keySet()) {
+		if (monitor != null && !monitor.isCanceled())
+			monitor.beginTask(M.ValidatingDatabase, byType.size() * 3);
+		for (ModelType type : byType.keySet()) {
 			if (monitor != null && monitor.isCanceled())
 				continue;
 			if (monitor != null)
 				monitor.subTask(Labels.modelType(type));
-			result.addAll(eval(type, toEval.get(type)));
+			result.addAll(evaluate(type, byType.get(type)));
 		}
 		if (monitor != null)
 			monitor.done();
 		return result;
 	}
 
-	private Set<Long> getAll(ModelType type) {
-		Set<Long> ids = new HashSet<>();
-		for (CategorizedDescriptor d : loadDescriptors(type))
-			ids.add(d.getId());
-		return ids;
-	}
-
-	private List<? extends CategorizedDescriptor> loadDescriptors(ModelType type) {
-		IDatabase db = Database.get();
-		if (type == ModelType.PARAMETER)
-			return new ParameterDao(db).getGlobalDescriptors();
-		return Daos.categorized(db, type).getDescriptors();
-	}
-
-	public ModelStatus evaluate(ModelType type, long id) {
-		IDatabase db = Database.get();
-		if (db == null)
-			return null;
-		if (monitor != null && !monitor.isCanceled())
-			monitor.beginTask("Validating model", IProgressMonitor.UNKNOWN);
-		ModelStatus result = eval(type, Collections.singleton(id)).get(0);
-		if (monitor != null)
-			monitor.done();
-		return result;
-	}
-
-	public List<ModelStatus> evaluate(ModelType type) {
-		IDatabase db = Database.get();
-		if (db == null)
-			return Collections.emptyList();
-		if (monitor != null && !monitor.isCanceled())
-			monitor.beginTask("Validating model", IProgressMonitor.UNKNOWN);
-		Set<Long> ids = getAll(type);
-		List<ModelStatus> result = eval(type, ids);
-		if (monitor != null)
-			monitor.done();
-		return result;
-	}
-
-	private List<ModelStatus> eval(ModelType type, Set<Long> ids) {
+	private List<ModelStatus> evaluate(ModelType type, Set<Long> ids) {
 		List<ModelStatus> result = new ArrayList<>();
 		if (monitor != null && monitor.isCanceled())
 			return result;
@@ -147,13 +103,13 @@ public class DatabaseValidation {
 	private Map<Long, Boolean> checkReferenceSet(ModelType type, Set<Long> ids) {
 		switch (type) {
 		case PRODUCT_SYSTEM:
-			return new ProductSystemDao(Database.get()).hasReferenceProcess(ids);
+			return ((ProductSystemDao) getDao(ProductSystem.class)).hasReferenceProcess(ids);
 		case PROCESS:
-			return new ProcessDao(Database.get()).hasQuantitativeReference(ids);
+			return ((ProcessDao) getDao(Process.class)).hasQuantitativeReference(ids);
 		case FLOW:
-			return new FlowDao(Database.get()).hasReferenceFactor(ids);
+			return ((FlowDao) getDao(Flow.class)).hasReferenceFactor(ids);
 		case UNIT_GROUP:
-			return new UnitGroupDao(Database.get()).hasReferenceUnit(ids);
+			return ((UnitGroupDao) getDao(UnitGroup.class)).hasReferenceUnit(ids);
 		default:
 			return null;
 		}
@@ -193,7 +149,6 @@ public class DatabaseValidation {
 	}
 
 	private List<Reference> checkExistence(List<Reference> references) {
-		IDatabase db = Database.get();
 		List<Reference> notExisting = new ArrayList<>();
 		Map<Class<? extends AbstractEntity>, Map<Long, List<Reference>>> byType = splitByType(references);
 		for (Class<? extends AbstractEntity> type : byType.keySet()) {
@@ -202,7 +157,7 @@ public class DatabaseValidation {
 			Map<Long, List<Reference>> refMap = byType.get(type);
 			Collection<List<Reference>> values = refMap.values();
 			Set<Long> ids = toIdSet(values);
-			Map<Long, Boolean> map = Daos.base(db, type).contains(ids);
+			Map<Long, Boolean> map = getDao(type).contains(ids);
 			for (Long id : map.keySet())
 				if (map.get(id) == false)
 					notExisting.addAll(refMap.get(id));
@@ -241,8 +196,7 @@ public class DatabaseValidation {
 	}
 
 	private List<Reference> findReferences(ModelType type, Set<Long> ids) {
-		IDatabase db = Database.get();
-		List<Reference> refs = IReferenceSearch.FACTORY.createFor(type, db, true).findReferences(ids);
+		List<Reference> refs = IReferenceSearch.FACTORY.createFor(type, Database.get(), true).findReferences(ids);
 		return evalNested(refs);
 	}
 
@@ -264,4 +218,13 @@ public class DatabaseValidation {
 					ownerTypes, ownerIds).findReferences(ids);
 		return evalNested(nestedRefs);
 	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends AbstractEntity> BaseDao<T> getDao(Class<T> type) {
+		if (!daos.containsKey(type)) {
+			daos.put(type, Daos.base(Database.get(), type));
+		}
+		return (BaseDao<T>) daos.get(type);
+	}
+
 }

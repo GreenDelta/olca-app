@@ -2,6 +2,7 @@ package org.openlca.app.components;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -28,11 +29,12 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class ModelSelectionDialog extends FormDialog {
 
@@ -40,13 +42,14 @@ public class ModelSelectionDialog extends FormDialog {
 	private boolean multiSelection = false;
 	private TreeViewer viewer;
 	private Text filterText;
-	private BaseDescriptor[] selection;
+	private CategorizedDescriptor[] selection;
 
-	public static BaseDescriptor select(ModelType type) {
-		ModelSelectionDialog dialog = new ModelSelectionDialog(UI.shell(),
-				type);
+	public static CategorizedDescriptor select(ModelType type) {
+		if (type == null || !type.isCategorized())
+			return null;
+		ModelSelectionDialog dialog = new ModelSelectionDialog(UI.shell(), type);
 		if (dialog.open() == OK) {
-			BaseDescriptor[] selection = dialog.getSelection();
+			CategorizedDescriptor[] selection = dialog.getSelection();
 			if (selection == null || selection.length == 0)
 				return null;
 			return selection[0];
@@ -54,9 +57,10 @@ public class ModelSelectionDialog extends FormDialog {
 		return null;
 	}
 
-	public static BaseDescriptor[] multiSelect(ModelType type) {
-		ModelSelectionDialog dialog = new ModelSelectionDialog(UI.shell(),
-				type);
+	public static CategorizedDescriptor[] multiSelect(ModelType type) {
+		if (type == null || !type.isCategorized())
+			return null;
+		ModelSelectionDialog dialog = new ModelSelectionDialog(UI.shell(), type);
 		dialog.multiSelection = true;
 		if (dialog.open() == OK)
 			return dialog.getSelection();
@@ -71,11 +75,9 @@ public class ModelSelectionDialog extends FormDialog {
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
-				false);
+		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
 		getButton(IDialogConstants.OK_ID).setEnabled(false);
-		createButton(parent, IDialogConstants.CANCEL_ID,
-				IDialogConstants.CANCEL_LABEL, true);
+		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
 	}
 
 	@Override
@@ -103,21 +105,17 @@ public class ModelSelectionDialog extends FormDialog {
 		case FLOW:
 			return multiSelection ? M.Flows : M.Flow;
 		case FLOW_PROPERTY:
-			return multiSelection ? M.FlowProperties
-					: M.FlowProperty;
+			return multiSelection ? M.FlowProperties : M.FlowProperty;
 		case IMPACT_METHOD:
-			return multiSelection ? M.ImpactAssessmentMethods
-					: M.ImpactAssessmentMethod;
+			return multiSelection ? M.ImpactAssessmentMethods : M.ImpactAssessmentMethod;
 		case PROCESS:
 			return multiSelection ? M.Processes : M.Process;
 		case PRODUCT_SYSTEM:
-			return multiSelection ? M.ProductSystems
-					: M.ProductSystem;
+			return multiSelection ? M.ProductSystems : M.ProductSystem;
 		case PROJECT:
 			return multiSelection ? M.Projects : M.Project;
 		case SOCIAL_INDICATOR:
-			return multiSelection ? M.SocialIndicators
-					: M.SocialIndicator;
+			return multiSelection ? M.SocialIndicators : M.SocialIndicator;
 		case SOURCE:
 			return multiSelection ? M.Sources : M.Source;
 		case UNIT_GROUP:
@@ -174,13 +172,8 @@ public class ModelSelectionDialog extends FormDialog {
 		return new Point(loc.x, loc.y + marginTop);
 	}
 
-	private BaseDescriptor[] getSelection() {
+	private CategorizedDescriptor[] getSelection() {
 		return selection;
-	}
-
-	private boolean matches(ModelElement element) {
-		return element.getContent().getName().toLowerCase()
-				.contains(filterText.getText().toLowerCase());
 	}
 
 	private class SelectionChangedListener
@@ -188,34 +181,30 @@ public class ModelSelectionDialog extends FormDialog {
 
 		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
-			if (event.getSelection() != null
-					&& !event.getSelection().isEmpty()) {
-				IStructuredSelection s = (IStructuredSelection) event
-						.getSelection();
-
-				List<BaseDescriptor> currentSelection = new ArrayList<>();
+			if (event.getSelection() != null && !event.getSelection().isEmpty()) {
+				IStructuredSelection s = (IStructuredSelection) event.getSelection();
+				List<INavigationElement<?>> elements = new ArrayList<>();
 				for (Object selected : s.toArray())
-					currentSelection
-							.addAll(getSelection(
-									(INavigationElement<?>) selected));
-				selection = currentSelection
-						.toArray(new BaseDescriptor[currentSelection.size()]);
+					elements.add((INavigationElement<?>) selected);
+				Set<CategorizedDescriptor> descriptors = Navigator.collect(elements, this::unwrap);
+				selection = descriptors.toArray(new CategorizedDescriptor[descriptors.size()]);
 			}
-			getButton(IDialogConstants.OK_ID).setEnabled(
-					selection != null && selection.length > 0);
+			getButton(IDialogConstants.OK_ID).setEnabled(selection != null && selection.length > 0);
 		}
-	}
 
-	private List<BaseDescriptor> getSelection(INavigationElement<?> element) {
-		List<BaseDescriptor> currentSelection = new ArrayList<>();
-		if (element instanceof ModelElement) {
+		private CategorizedDescriptor unwrap(INavigationElement<?> element) {
+			if (!(element instanceof ModelElement))
+				return null;
 			ModelElement modelElement = (ModelElement) element;
-			if (matches(modelElement))
-				currentSelection.add(modelElement.getContent());
-		} else
-			for (INavigationElement<?> child : element.getChildren())
-				currentSelection.addAll(getSelection(child));
-		return currentSelection;
+			if (!matches(modelElement))
+				return null;
+			return modelElement.getContent();
+		}
+
+		private boolean matches(ModelElement element) {
+			return element.getContent().getName().toLowerCase()
+					.contains(filterText.getText().toLowerCase());
+		}
 	}
 
 	private class DoubleClickListener implements IDoubleClickListener {
@@ -225,10 +214,9 @@ public class ModelSelectionDialog extends FormDialog {
 			IStructuredSelection currentSelection = (IStructuredSelection) event
 					.getSelection();
 			if (currentSelection.getFirstElement() instanceof ModelElement) {
-				ModelElement element = (ModelElement) currentSelection
-						.getFirstElement();
-				BaseDescriptor modelComponent = element.getContent();
-				selection = new BaseDescriptor[] { modelComponent };
+				ModelElement element = (ModelElement) currentSelection.getFirstElement();
+				CategorizedDescriptor modelComponent = element.getContent();
+				selection = new CategorizedDescriptor[] { modelComponent };
 				okPressed();
 			}
 		}

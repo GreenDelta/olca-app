@@ -1,10 +1,14 @@
 package org.openlca.app.navigation;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
+import java.util.function.Function;
 
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -28,6 +32,7 @@ import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.viewers.Viewers;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 import com.google.common.base.Objects;
 
@@ -250,4 +255,28 @@ public class Navigator extends CommonNavigator {
 		return selection.toArray(new INavigationElement[selection.size()]);
 	}
 
+	public static Set<CategorizedDescriptor> collectDescriptors(Collection<INavigationElement<?>> elements) {
+		return collect(elements, e -> {
+			if (!(e instanceof ModelElement))
+				return null;
+			return ((ModelElement) e).getContent();
+		});
+	}
+
+	/**
+	 * Collects content from the navigation elements, to skip an element return
+	 * null in the unwrap function
+	 */
+	public static <T> Set<T> collect(Collection<INavigationElement<?>> elements,
+			Function<INavigationElement<?>, T> unwrap) {
+		Set<T> set = new HashSet<>();
+		for (INavigationElement<?> element : elements) {
+			T content = unwrap.apply(element);
+			if (content != null) {
+				set.add(content);
+			}
+			set.addAll(collect(element.getChildren(), unwrap));
+		}
+		return set;
+	}
 }
