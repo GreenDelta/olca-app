@@ -14,14 +14,10 @@ import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.diff.DiffResult;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.references.ExchangeReferenceSearch;
-import org.openlca.core.database.references.FlowPropertyFactorReferenceSearch;
 import org.openlca.core.database.references.IReferenceSearch;
 import org.openlca.core.database.references.IReferenceSearch.Reference;
 import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.AbstractEntity;
-import org.openlca.core.model.Exchange;
-import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
@@ -134,19 +130,12 @@ class ReferenceSearcher {
 			set.add(reference.id);
 		}
 		Set<CategorizedDescriptor> descriptors = new HashSet<>();
-		List<Reference> newRefs = new ArrayList<>();
 		for (Class<? extends AbstractEntity> clazz : map.keySet()) {
 			ModelType type = ModelType.forModelClass(clazz);
 			if (type != null && type.isCategorized()) {
 				descriptors.addAll(Daos.categorized(database, type).getDescriptors(map.get(clazz)));
-			} else if (clazz == FlowPropertyFactor.class) {
-				newRefs.addAll(new FlowPropertyFactorReferenceSearch(database).findReferences(map.get(clazz)));
-			} else if (clazz == Exchange.class) {
-				newRefs.addAll(new ExchangeReferenceSearch(database).findReferences(map.get(clazz)));
 			}
 		}
-		if (!newRefs.isEmpty())
-			descriptors.addAll(loadDescriptors(newRefs));
 		for (CategorizedDescriptor descriptor : descriptors)
 			idToRefId.put(descriptor.getId(), descriptor.getRefId());
 		return descriptors;

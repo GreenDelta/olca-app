@@ -18,14 +18,10 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.database.UnitGroupDao;
-import org.openlca.core.database.references.ExchangeReferenceSearch;
-import org.openlca.core.database.references.FlowPropertyFactorReferenceSearch;
 import org.openlca.core.database.references.IReferenceSearch;
 import org.openlca.core.database.references.IReferenceSearch.Reference;
 import org.openlca.core.model.AbstractEntity;
-import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
@@ -35,13 +31,8 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 public class DatabaseValidation {
 
 	private IProgressMonitor monitor;
-	private static final List<Class<? extends AbstractEntity>> nesting = new ArrayList<>();
+	private FlowChainValidation flowChainValidation;
 	private static final Map<Class<? extends AbstractEntity>, BaseDao<?>> daos = new HashMap<>();
-
-	static {
-		nesting.add(FlowPropertyFactor.class);
-		nesting.add(Exchange.class);
-	}
 
 	public static DatabaseValidation with(IProgressMonitor monitor) {
 		DatabaseValidation e = new DatabaseValidation();
@@ -74,25 +65,32 @@ public class DatabaseValidation {
 	}
 
 	private List<ModelStatus> evaluate(ModelType type, Set<Long> ids) {
-		List<ModelStatus> result = new ArrayList<>();
 		if (monitor != null && monitor.isCanceled())
-			return result;
+			return new ArrayList<>();
 		List<Reference> references = findReferences(type, ids);
 		if (monitor != null && monitor.isCanceled())
-			return result;
+			return new ArrayList<>();
 		if (monitor != null)
 			monitor.worked(2);
-		List<Reference> notExisting = checkExistence(references);
+		Set<Reference> notExisting = checkExistence(references);
 		if (monitor != null && monitor.isCanceled())
-			return result;
+			return new ArrayList<>();
+		if (type == ModelType.PROCESS || type == ModelType.IMPACT_METHOD) {
+			if (flowChainValidation == null) {
+				flowChainValidation = new FlowChainValidation(Database.get());
+			}
+			notExisting.addAll(flowChainValidation.run(type.getModelClass(), references));
+		}
 		Map<Long, Boolean> referenceSet = checkReferenceSet(type, ids);
 		if (monitor != null && monitor.isCanceled())
-			return result;
+			return new ArrayList<>();
+		List<ModelStatus> result = new ArrayList<>();
 		for (Long id : ids) {
 			if (monitor != null && monitor.isCanceled())
 				continue;
 			boolean validReferenceSet = referenceSet == null || referenceSet.get(id);
-			ModelStatus status = new ModelStatus(type, id, filter(notExisting, id), validReferenceSet);
+			List<Reference> missing = filter(notExisting, id);
+			ModelStatus status = new ModelStatus(type, id, new ArrayList<>(missing), validReferenceSet);
 			result.add(status);
 		}
 		if (monitor != null && !monitor.isCanceled())
@@ -115,32 +113,7 @@ public class DatabaseValidation {
 		}
 	}
 
-	private List<Reference> evalNested(List<Reference> references) {
-		List<Reference> result = new ArrayList<>();
-		result.addAll(references);
-		Map<Class<? extends AbstractEntity>, List<Reference>> nested = new HashMap<>();
-		for (Reference ref : references) {
-			if (monitor != null && monitor.isCanceled())
-				continue;
-			if (!nesting.contains(ref.getType()))
-				continue;
-			List<Reference> ids = nested.get(ref.getType());
-			if (ids == null)
-				nested.put(ref.getType(), ids = new ArrayList<>());
-			ids.add(ref);
-		}
-		for (Class<? extends AbstractEntity> nestingType : nesting) {
-			if (monitor != null && monitor.isCanceled())
-				continue;
-			if (!nested.containsKey(nestingType))
-				continue;
-			List<Reference> nestedRefs = findReferences(nestingType, nested.get(nestingType));
-			result.addAll(nestedRefs);
-		}
-		return result;
-	}
-
-	private List<Reference> filter(List<Reference> references, long ownerId) {
+	private List<Reference> filter(Collection<Reference> references, long ownerId) {
 		List<Reference> filtered = new ArrayList<>();
 		for (Reference ref : references)
 			if (ref.ownerId == ownerId)
@@ -148,8 +121,8 @@ public class DatabaseValidation {
 		return filtered;
 	}
 
-	private List<Reference> checkExistence(List<Reference> references) {
-		List<Reference> notExisting = new ArrayList<>();
+	private Set<Reference> checkExistence(List<Reference> references) {
+		Set<Reference> notExisting = new HashSet<>();
 		Map<Class<? extends AbstractEntity>, Map<Long, List<Reference>>> byType = splitByType(references);
 		for (Class<? extends AbstractEntity> type : byType.keySet()) {
 			if (monitor != null && monitor.isCanceled())
@@ -196,27 +169,7 @@ public class DatabaseValidation {
 	}
 
 	private List<Reference> findReferences(ModelType type, Set<Long> ids) {
-		List<Reference> refs = IReferenceSearch.FACTORY.createFor(type, Database.get(), true).findReferences(ids);
-		return evalNested(refs);
-	}
-
-	private List<Reference> findReferences(Class<? extends AbstractEntity> type, List<Reference> refs) {
-		List<Reference> nestedRefs = null;
-		Map<Long, Class<? extends AbstractEntity>> ownerTypes = new HashMap<>();
-		Map<Long, Long> ownerIds = new HashMap<>();
-		Set<Long> ids = new HashSet<>();
-		for (Reference ref : refs) {
-			ids.add(ref.id);
-			ownerIds.put(ref.id, ref.ownerId);
-			ownerTypes.put(ref.id, ref.getOwnerType());
-		}
-		if (type == FlowPropertyFactor.class)
-			nestedRefs = new FlowPropertyFactorReferenceSearch(Database.get(),
-					ownerTypes, ownerIds).findReferences(ids);
-		else if (type == Exchange.class)
-			nestedRefs = new ExchangeReferenceSearch(Database.get(),
-					ownerTypes, ownerIds).findReferences(ids);
-		return evalNested(nestedRefs);
+		return IReferenceSearch.FACTORY.createFor(type, Database.get(), true).findReferences(ids);
 	}
 
 	@SuppressWarnings("unchecked")
