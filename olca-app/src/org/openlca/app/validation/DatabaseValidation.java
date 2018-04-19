@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
@@ -21,18 +20,13 @@ import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.database.references.IReferenceSearch;
 import org.openlca.core.database.references.IReferenceSearch.Reference;
 import org.openlca.core.model.AbstractEntity;
-import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Process;
-import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class DatabaseValidation {
 
 	private IProgressMonitor monitor;
 	private FlowChainValidation flowChainValidation;
-	private static final Map<Class<? extends AbstractEntity>, BaseDao<?>> daos = new HashMap<>();
 
 	public static DatabaseValidation with(IProgressMonitor monitor) {
 		DatabaseValidation e = new DatabaseValidation();
@@ -101,13 +95,13 @@ public class DatabaseValidation {
 	private Map<Long, Boolean> checkReferenceSet(ModelType type, Set<Long> ids) {
 		switch (type) {
 		case PRODUCT_SYSTEM:
-			return ((ProductSystemDao) getDao(ProductSystem.class)).hasReferenceProcess(ids);
+			return new ProductSystemDao(Database.get()).hasReferenceProcess(ids);
 		case PROCESS:
-			return ((ProcessDao) getDao(Process.class)).hasQuantitativeReference(ids);
+			return new ProcessDao(Database.get()).hasQuantitativeReference(ids);
 		case FLOW:
-			return ((FlowDao) getDao(Flow.class)).hasReferenceFactor(ids);
+			return new FlowDao(Database.get()).hasReferenceFactor(ids);
 		case UNIT_GROUP:
-			return ((UnitGroupDao) getDao(UnitGroup.class)).hasReferenceUnit(ids);
+			return new UnitGroupDao(Database.get()).hasReferenceUnit(ids);
 		default:
 			return null;
 		}
@@ -130,7 +124,7 @@ public class DatabaseValidation {
 			Map<Long, List<Reference>> refMap = byType.get(type);
 			Collection<List<Reference>> values = refMap.values();
 			Set<Long> ids = toIdSet(values);
-			Map<Long, Boolean> map = getDao(type).contains(ids);
+			Map<Long, Boolean> map = Daos.base(Database.get(), type).contains(ids);
 			for (Long id : map.keySet())
 				if (map.get(id) == false)
 					notExisting.addAll(refMap.get(id));
@@ -170,14 +164,6 @@ public class DatabaseValidation {
 
 	private List<Reference> findReferences(ModelType type, Set<Long> ids) {
 		return IReferenceSearch.FACTORY.createFor(type, Database.get(), true).findReferences(ids);
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T extends AbstractEntity> BaseDao<T> getDao(Class<T> type) {
-		if (!daos.containsKey(type)) {
-			daos.put(type, Daos.base(Database.get(), type));
-		}
-		return (BaseDao<T>) daos.get(type);
 	}
 
 }
