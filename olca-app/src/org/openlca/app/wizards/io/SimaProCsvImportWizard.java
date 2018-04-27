@@ -1,10 +1,8 @@
 package org.openlca.app.wizards.io;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
@@ -37,34 +35,29 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public boolean performFinish() {
 		File[] files = importPage.getFiles();
-		IDatabase database = Database.get();
-		if (files == null || files.length == 0 || database == null)
+		IDatabase db = Database.get();
+		if (files == null || files.length == 0 || db == null)
 			return false;
-		final SimaProCsvImport importer = new SimaProCsvImport(database,
-				files[0]);
+		SimaProCsvImport importer = new SimaProCsvImport(db, files);
 		try {
 			Database.getIndexUpdater().beginTransaction();
-			getContainer().run(true, true, new IRunnableWithProgress() {
-				@Override
-				public void run(final IProgressMonitor monitor)
-						throws InvocationTargetException, InterruptedException {
-					monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
-					ImportHandler handler = new ImportHandler(monitor);
-					handler.run(importer);
-				}
+			getContainer().run(true, true, monitor -> {
+				monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
+				ImportHandler handler = new ImportHandler(monitor);
+				handler.run(importer);
 			});
 			Navigator.refresh();
 		} catch (Exception e) {
 			log.error("SimaPro CSV import failed", e);
 		} finally {
-			Database.getIndexUpdater().endTransaction();			
+			Database.getIndexUpdater().endTransaction();
 		}
 		return true;
 	}
 
 	@Override
 	public void addPages() {
-		importPage = new FileImportPage(new String[] { "csv" }, false);
+		importPage = new FileImportPage(new String[] { "csv" }, true);
 		addPage(importPage);
 	}
 
