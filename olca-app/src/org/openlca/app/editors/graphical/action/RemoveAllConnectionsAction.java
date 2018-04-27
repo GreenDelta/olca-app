@@ -30,7 +30,7 @@ class RemoveAllConnectionsAction extends EditorAction {
 		List<Link> links = new ArrayList<>();
 		// create new link search to avoid problems with missing entries before
 		// ConnectionLink.unlink is called
-		List<ProcessLink> pLinks = systemNode.getProductSystem().getProcessLinks();
+		List<ProcessLink> pLinks = systemNode.getProductSystem().processLinks;
 		MutableProcessLinkSearchMap linkSearch = new MutableProcessLinkSearchMap(pLinks);
 		for (ProcessNode processNode : processNodes) {
 			List<ProcessLink> processLinks = linkSearch.getLinks(processNode.process.getId());

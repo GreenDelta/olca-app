@@ -51,7 +51,7 @@ public class TreeLayout {
 
 	private Node build(ProductSystem productSystem) {
 		Node node = new Node();
-		node.processId = productSystem.getReferenceProcess().getId();
+		node.processId = productSystem.referenceProcess.getId();
 		build(productSystem, new Node[] { node });
 		return node;
 	}
@@ -104,7 +104,7 @@ public class TreeLayout {
 			containing.put(id, 1);
 			processNode.setXyLayoutConstraints(new Rectangle(0, 0, size.width, size.height));
 		}
-		for (long processId : productSystemNode.getProductSystem().getProcesses())
+		for (long processId : productSystemNode.getProductSystem().processes)
 			if (productSystemNode.getProcessNode(processId) == null)
 				containing.put(processId, 1);
 	}

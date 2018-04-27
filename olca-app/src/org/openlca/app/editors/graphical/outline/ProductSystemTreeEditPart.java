@@ -20,7 +20,7 @@ public class ProductSystemTreeEditPart extends AbstractTreeEditPart {
 
 	@Override
 	protected List<ProcessDescriptor> getModelChildren() {
-		Set<Long> ids = getModel().getProcesses();
+		Set<Long> ids = getModel().processes;
 		Map<Long, ProcessDescriptor> resultMap = Cache.getEntityCache().getAll(ProcessDescriptor.class, ids);
 		List<ProcessDescriptor> descriptors = new ArrayList<>(resultMap.values());
 		Collections.sort(descriptors, (d1, d2) -> {

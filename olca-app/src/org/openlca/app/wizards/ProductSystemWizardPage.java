@@ -1,7 +1,5 @@
 package org.openlca.app.wizards;
 
-import java.util.UUID;
-
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -178,23 +176,9 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	@Override
 	public ProductSystem createModel() {
-		ProductSystem system = new ProductSystem();
-		system.setRefId(UUID.randomUUID().toString());
+		ProductSystem system = ProductSystem.from(refProcess);
 		system.setName(getModelName());
 		system.setDescription(getModelDescription());
-		try {
-			system.getProcesses().add(refProcess.getId());
-			system.setReferenceProcess(refProcess);
-			Exchange qRef = refProcess.getQuantitativeReference();
-			system.setReferenceExchange(qRef);
-			if (qRef == null)
-				return system;
-			system.setTargetAmount(qRef.amount);
-			system.setTargetUnit(qRef.unit);
-			system.setTargetFlowPropertyFactor(qRef.flowPropertyFactor);
-		} catch (final Exception e) {
-			log.error("Loading reference process failed / no selected", e);
-		}
 		return system;
 	}
 

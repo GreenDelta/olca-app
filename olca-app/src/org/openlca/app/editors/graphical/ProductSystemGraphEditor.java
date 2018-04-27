@@ -32,6 +32,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
@@ -104,9 +105,10 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	}
 
 	private ProductSystemNode createModel() {
-		if (getSystemEditor().getModel().getReferenceProcess() == null)
+		Process refProcess = getSystemEditor().getModel().referenceProcess;
+		if (refProcess == null)
 			return new ProductSystemNode(this);
-		long referenceId = getSystemEditor().getModel().getReferenceProcess().getId();
+		long referenceId = refProcess.getId();
 		ProductSystemNode node = new ProductSystemNode(this);
 		node.add(createProcessNode(referenceId));
 		return node;
@@ -114,7 +116,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	private ProductSystemNode expandModel() {
 		ProductSystemNode node = new ProductSystemNode(this);
-		for (Long id : getSystemEditor().getModel().getProcesses())
+		for (Long id : getSystemEditor().getModel().processes)
 			node.add(createProcessNode(id));
 		return node;
 	}

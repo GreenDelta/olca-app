@@ -69,7 +69,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 			propertyViewer.setInput(flow);
 			propertyViewer.select(flow.getReferenceFactor());
 		});
-		productViewer.setInput(getRefCandidates(getModel().getReferenceProcess()));
+		productViewer.setInput(getRefCandidates(getModel().referenceProcess));
 		new CommentControl(composite, getToolkit(), "referenceExchange", getComments());
 		tk.createLabel(composite, M.FlowProperty);
 		propertyViewer = new FlowPropertyFactorViewer(composite);
@@ -114,8 +114,8 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		Button button = tk.createButton(comp, M.Calculate, SWT.NONE);
 		button.setImage(Icon.RUN.get());
 		Controls.onSelect(button, e -> {
-			CalculationWizard.open(getModel());	
-			inventoryInfo.setVisible(!getModel().inventory.isEmpty());			
+			CalculationWizard.open(getModel());
+			inventoryInfo.setVisible(!getModel().inventory.isEmpty());
 		});
 		tk.createLabel(comp, "");
 	}
@@ -140,7 +140,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 			return;
 		UnitGroup unitGroup = f.getFlowProperty().getUnitGroup();
 		unitViewer.setInput(unitGroup);
-		Unit previousSelection = getModel().getTargetUnit();
+		Unit previousSelection = getModel().targetUnit;
 		if (unitGroup.getUnits().contains(previousSelection))
 			unitViewer.select(previousSelection);
 		else

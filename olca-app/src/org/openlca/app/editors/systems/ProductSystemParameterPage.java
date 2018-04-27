@@ -37,7 +37,7 @@ public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 
 	void refreshBindings() {
 		if (table != null)
-			table.setInput(editor.getModel().getParameterRedefs());
+			table.setInput(editor.getModel().parameterRedefs);
 	}
 
 }

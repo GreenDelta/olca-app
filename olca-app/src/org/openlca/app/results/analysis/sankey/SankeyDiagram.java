@@ -64,7 +64,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		setEditDomain(new DefaultEditDomain(this));
 		this.result = result;
 		productSystem = setup.productSystem;
-		linkSearchMap = new ProcessLinkSearchMap(productSystem.getProcessLinks());
+		linkSearchMap = new ProcessLinkSearchMap(productSystem.processLinks);
 		sankeyResult = new SankeyResult(productSystem, result);
 		if (productSystem != null)
 			setPartName(productSystem.getName());
@@ -106,7 +106,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	}
 
 	private void updateConnections() {
-		createConnections(productSystem.getReferenceProcess().getId());
+		createConnections(productSystem.referenceProcess.getId());
 		for (final Link link : createdLinks.values()) {
 			link.link();
 		}
@@ -117,14 +117,14 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		for (ProcessDescriptor descriptor : result.getProcessDescriptors())
 			descriptors.put(descriptor.getId(), descriptor);
 		if (cutoff == 0) {
-			for (Long processId : productSystem.getProcesses()) {
+			for (Long processId : productSystem.processes) {
 				ProcessDescriptor descriptor = descriptors.get(processId);
 				if (descriptor != null) {
 					node.addChild(createNode(descriptor));
 				}
 			}
 		} else {
-			long refProcess = productSystem.getReferenceProcess().getId();
+			long refProcess = productSystem.referenceProcess.getId();
 			Set<Long> processesToDraw = SankeyProcessList.calculate(
 					sankeyResult, refProcess, cutoff, linkSearchMap);
 			for (final Long processId : processesToDraw) {
@@ -242,7 +242,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	}
 
 	public double getProductSystemResult() {
-		return sankeyResult.getUpstreamResult(productSystem.getReferenceProcess().getId());
+		return sankeyResult.getUpstreamResult(productSystem.referenceProcess.getId());
 	}
 
 	@Override
@@ -288,6 +288,4 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		}
 	}
 
-	
-	
 }

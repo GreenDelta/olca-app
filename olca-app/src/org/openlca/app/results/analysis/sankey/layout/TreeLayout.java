@@ -109,8 +109,9 @@ public class TreeLayout {
 						if (figure != null) {
 							figure.node.setXyLayoutConstraints(
 									new Rectangle(xPosition, yPosition
-											+ additionalHeight, figure
-											.getSize().width,
+											+ additionalHeight,
+											figure
+													.getSize().width,
 											figure.getSize().height));
 							newAdditionalHeight = Math.max(
 									newAdditionalHeight,
@@ -161,7 +162,7 @@ public class TreeLayout {
 
 	private Node build(final ProductSystem productSystem) {
 		final Node node = new Node();
-		node.processId = productSystem.getReferenceProcess().getId();
+		node.processId = productSystem.referenceProcess.getId();
 		build(productSystem, new Node[] { node });
 		return node;
 	}

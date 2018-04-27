@@ -38,7 +38,7 @@ public class InfoSection {
 	}
 
 	private static String targetAmountText(CalculationSetup setup) {
-		String refFlowName = setup.productSystem.getReferenceExchange().flow.getName();
+		String refFlowName = setup.productSystem.referenceExchange.flow.getName();
 		return setup.getAmount() + " " + setup.getUnit().getName() + " " + refFlowName;
 	}
 

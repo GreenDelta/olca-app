@@ -74,7 +74,7 @@ class ParameterRedefTable {
 		modifySupport.bind("", new CommentDialogModifier<ParameterRedef>(editor.getComments(),
 				(p) -> CommentPaths.get(p, getContext(p))));
 		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17);
-		List<ParameterRedef> redefs = editor.getModel().getParameterRedefs();
+		List<ParameterRedef> redefs = editor.getModel().parameterRedefs;
 		Collections.sort(redefs, new ParameterComparator());
 		viewer.setInput(redefs);
 	}
@@ -110,9 +110,9 @@ class ParameterRedefTable {
 
 	private void add() {
 		ProductSystem system = editor.getModel();
-		List<ParameterRedef> systemRedefs = system.getParameterRedefs();
-		List<ParameterRedef> redefs = ParameterRedefDialog.select(system
-				.getProcesses());
+		List<ParameterRedef> systemRedefs = system.parameterRedefs;
+		List<ParameterRedef> redefs = ParameterRedefDialog.select(
+				system.processes);
 		if (redefs.isEmpty())
 			return;
 		log.trace("add new parameter redef");
@@ -138,7 +138,7 @@ class ParameterRedefTable {
 	private void remove() {
 		log.trace("remove parameter redef");
 		ProductSystem system = editor.getModel();
-		List<ParameterRedef> systemRedefs = system.getParameterRedefs();
+		List<ParameterRedef> systemRedefs = system.parameterRedefs;
 		List<ParameterRedef> redefs = Viewers.getAllSelected(viewer);
 		for (ParameterRedef redef : redefs)
 			systemRedefs.remove(redef);

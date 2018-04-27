@@ -110,8 +110,8 @@ class DQSettingsPage extends WizardPage {
 		CalculationWizard wizard = (CalculationWizard) getWizard();
 		processSystemViewer.setInput(dao.getProcessDqSystems(wizard.productSystem.getId()));
 		exchangeSystemViewer.setInput(dao.getExchangeDqSystems(wizard.productSystem.getId()));
-		DQSystem processSystem = wizard.productSystem.getReferenceProcess().dqSystem;
-		DQSystem exchangeSystem = wizard.productSystem.getReferenceProcess().exchangeDqSystem;
+		DQSystem processSystem = wizard.productSystem.referenceProcess.dqSystem;
+		DQSystem exchangeSystem = wizard.productSystem.referenceProcess.exchangeDqSystem;
 		if (processSystem != null) {
 			processSystemViewer.select(Descriptors.toDescriptor(processSystem));
 		} else {

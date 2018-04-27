@@ -54,13 +54,13 @@ class Statistics {
 	}
 
 	private void doCalc(ProductSystem system, EntityCache cache) {
-		processCount = system.getProcesses().size();
-		linkCount = system.getProcessLinks().size();
-		refProcess = Descriptors.toDescriptor(system.getReferenceProcess());
+		processCount = system.processes.size();
+		linkCount = system.processLinks.size();
+		refProcess = Descriptors.toDescriptor(system.referenceProcess);
 		HashSet<LongPair> processProducts = new HashSet<>();
 		Multimap<Long, Long> inEdges = HashMultimap.create();
 		Multimap<Long, Long> outEdges = HashMultimap.create();
-		for (ProcessLink link : system.getProcessLinks()) {
+		for (ProcessLink link : system.processLinks) {
 			processProducts.add(LongPair.of(link.providerId, link.flowId));
 			inEdges.put(link.processId, link.providerId);
 			outEdges.put(link.providerId, link.processId);
@@ -78,11 +78,11 @@ class Statistics {
 	 */
 	private static boolean isConnectedGraph(ProductSystem system,
 			Multimap<Long, Long> inEdges) {
-		if (system.getReferenceProcess() == null)
+		if (system.referenceProcess == null)
 			return false;
 		HashMap<Long, Boolean> visited = new HashMap<>();
 		Queue<Long> queue = new ArrayDeque<>();
-		queue.add(system.getReferenceProcess().getId());
+		queue.add(system.referenceProcess.getId());
 		while (!queue.isEmpty()) {
 			Long recipient = queue.poll();
 			visited.put(recipient, Boolean.TRUE);
@@ -93,7 +93,7 @@ class Statistics {
 					queue.add(provider);
 			}
 		}
-		for (Long processId : system.getProcesses()) {
+		for (Long processId : system.processes) {
 			Boolean val = visited.get(processId);
 			if (!Objects.equals(val, Boolean.TRUE))
 				return false;

@@ -80,7 +80,7 @@ public class SimulationPage extends FormPage {
 		if (editor.getSetup() != null) {
 			CalculationSetup setup = editor.getSetup();
 			systemText.setText(setup.productSystem.getName());
-			processText.setText(setup.productSystem.getReferenceProcess().getName());
+			processText.setText(setup.productSystem.referenceProcess.getName());
 			qRefText.setText(getQRefText());
 			simCountText.setText(Integer.toString(setup.numberOfRuns));
 		}
@@ -94,10 +94,10 @@ public class SimulationPage extends FormPage {
 		try {
 			CalculationSetup setup = editor.getSetup();
 			ProductSystem system = setup.productSystem;
-			Exchange exchange = system.getReferenceExchange();
-			double amount = system.getTargetAmount();
+			Exchange exchange = system.referenceExchange;
+			double amount = system.targetAmount;
 			Flow flow = exchange.flow;
-			Unit unit = system.getTargetUnit();
+			Unit unit = system.targetUnit;
 			return String.format("%s %s %s", Numbers.format(amount, 2),
 					unit.getName(), Labels.getDisplayName(flow));
 		} catch (Exception e) {

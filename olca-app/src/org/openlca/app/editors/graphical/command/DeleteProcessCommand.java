@@ -18,7 +18,7 @@ public class DeleteProcessCommand extends Command {
 	public boolean canExecute() {
 		if (node == null)
 			return false;
-		if (node.parent().getProductSystem().getReferenceProcess().getId() == node.process.getId())
+		if (node.parent().getProductSystem().referenceProcess.getId() == node.process.getId())
 			return false;
 		return node.links.size() == 0;
 	}
@@ -26,7 +26,7 @@ public class DeleteProcessCommand extends Command {
 	@Override
 	public void execute() {
 		oldLayout = node.getXyLayoutConstraints();
-		node.parent().getProductSystem().getProcesses().remove(node.process.getId());
+		node.parent().getProductSystem().processes.remove(node.process.getId());
 		node.parent().remove(node);
 		if (node.parent().editor.getOutline() != null)
 			node.parent().editor.getOutline().refresh();
@@ -47,7 +47,7 @@ public class DeleteProcessCommand extends Command {
 	public void undo() {
 		node.parent().add(node);
 		node.setXyLayoutConstraints(oldLayout);
-		node.parent().getProductSystem().getProcesses().add(node.process.getId());
+		node.parent().getProductSystem().processes.add(node.process.getId());
 		if (node.parent().editor.getOutline() != null)
 			node.parent().editor.getOutline().refresh();
 		node.parent().editor.setDirty(true);

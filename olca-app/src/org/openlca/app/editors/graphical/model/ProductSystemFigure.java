@@ -51,7 +51,7 @@ class ProductSystemFigure extends Figure {
 		}
 		if (layoutLoaded)
 			return;
-		long refId = node.getProductSystem().getReferenceProcess().getId();
+		long refId = node.getProductSystem().referenceProcess.getId();
 		ProcessNode refNode = node.getProcessNode(refId);
 		refNode.expandLeft();
 		refNode.expandRight();

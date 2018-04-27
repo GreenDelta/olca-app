@@ -75,7 +75,7 @@ class SankeyResult {
 
 	public List<Long> getProcesseIdsAboveCutoff(double cutoff) {
 		List<Long> processes = new ArrayList<>();
-		for (Long process : system.getProcesses()) {
+		for (Long process : system.processes) {
 			double contr = getUpstreamContribution(process);
 			if (Math.abs(contr) >= cutoff)
 				processes.add(process);

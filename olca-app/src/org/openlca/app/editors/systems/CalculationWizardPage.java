@@ -223,7 +223,7 @@ class CalculationWizardPage extends WizardPage {
 		if (getControl().isVisible())
 			getContainer().updateButtons();
 	}
-	
+
 	@Override
 	public boolean canFlipToNextPage() {
 		if (!isPageComplete())
@@ -302,7 +302,7 @@ class CalculationWizardPage extends WizardPage {
 		NwSetDescriptor set = nwViewer.getSelected();
 		setUp.nwSet = set;
 		setUp.numberOfRuns = iterationCount;
-		setUp.parameterRedefs.addAll(system.getParameterRedefs());
+		setUp.parameterRedefs.addAll(system.parameterRedefs);
 		return setUp;
 	}
 
@@ -313,7 +313,7 @@ class CalculationWizardPage extends WizardPage {
 	boolean doDqAssessment() {
 		return dqAssessment.getSelection();
 	}
-	
+
 	boolean doStoreInventoryResult() {
 		if (!Database.isConnected() || storeInventoryResult == null)
 			return false;

@@ -19,7 +19,7 @@ public class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
 
 	public void setInput(ProductSystem productSystem) {
 		Collection<ProcessDescriptor> descriptors = cache.getAll(
-				ProcessDescriptor.class, productSystem.getProcesses()).values();
+				ProcessDescriptor.class, productSystem.processes).values();
 		setInput(descriptors.toArray(new ProcessDescriptor[descriptors.size()]));
 	}
 

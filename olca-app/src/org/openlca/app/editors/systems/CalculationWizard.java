@@ -203,7 +203,7 @@ public class CalculationWizard extends Wizard {
 		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 			outOfMemory = false;
 			monitor.beginTask(M.RunCalculation, IProgressMonitor.UNKNOWN);
-			int size = productSystem.getProcesses().size();
+			int size = productSystem.processes.size();
 			log.trace("calculate a {} x {} system", size, size);
 			try {
 				switch (type) {

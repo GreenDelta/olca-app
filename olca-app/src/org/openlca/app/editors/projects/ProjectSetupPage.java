@@ -199,10 +199,10 @@ class ProjectSetupPage extends ModelPage<Project> {
 		variant.setProductSystem(system);
 		variant.setName(M.Variant + i);
 		variant.setAllocationMethod(AllocationMethod.NONE);
-		variant.setAmount(system.getTargetAmount());
-		variant.setFlowPropertyFactor(system.getTargetFlowPropertyFactor());
-		variant.setUnit(system.getTargetUnit());
-		for (ParameterRedef redef : system.getParameterRedefs())
+		variant.setAmount(system.targetAmount);
+		variant.setFlowPropertyFactor(system.targetFlowPropertyFactor);
+		variant.setUnit(system.targetUnit);
+		for (ParameterRedef redef : system.parameterRedefs)
 			variant.getParameterRedefs().add(redef.clone());
 		return variant;
 	}
@@ -366,9 +366,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 		}
 
 		private String getFlowText(ProductSystem system) {
-			if (system == null || system.getReferenceExchange() == null)
+			if (system == null || system.referenceExchange == null)
 				return null;
-			Exchange refExchange = system.getReferenceExchange();
+			Exchange refExchange = system.referenceExchange;
 			return Labels.getDisplayName(refExchange.flow);
 		}
 	}

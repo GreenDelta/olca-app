@@ -58,7 +58,7 @@ final class SaveProcessUtil {
 	private Flow getProduct(CalculationSetup setup) {
 		if (setup == null || setup.productSystem == null)
 			return null;
-		Exchange ref = setup.productSystem.getReferenceExchange();
+		Exchange ref = setup.productSystem.referenceExchange;
 		return ref == null ? null : ref.flow;
 	}
 
@@ -81,8 +81,7 @@ final class SaveProcessUtil {
 	}
 
 	private void copyMetaData(Process p) {
-		Process refProc = editor.getSetup().productSystem
-				.getReferenceProcess();
+		Process refProc = editor.getSetup().productSystem.referenceProcess;
 		if (refProc == null)
 			return;
 		for (SocialAspect sa : refProc.socialAspects)

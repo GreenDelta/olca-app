@@ -38,7 +38,7 @@ public class CreateLinkCommand extends Command {
 		ProductSystemNode systemNode = output.parent().parent();
 		ProductSystem system = systemNode.getProductSystem();
 		processLink = getProcessLink();
-		system.getProcessLinks().add(processLink);
+		system.processLinks.add(processLink);
 		systemNode.linkSearch.put(processLink);
 		link = getLink();
 		link.link();
@@ -110,7 +110,7 @@ public class CreateLinkCommand extends Command {
 		ProductSystemNode sys = sysNode();
 		ProductSystem system = sys.getProductSystem();
 		link.unlink();
-		system.getProcessLinks().remove(processLink);
+		system.processLinks.remove(processLink);
 		sys.linkSearch.remove(processLink);
 		sys.editor.setDirty(true);
 	}

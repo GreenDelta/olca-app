@@ -69,7 +69,7 @@ public class MassCreationCommand extends Command {
 		if (model.getProcessNode(process.getId()) != null)
 			return;
 		ProcessNode node = new ProcessNode(process);
-		model.getProductSystem().getProcesses().add(process.getId());
+		model.getProductSystem().processes.add(process.getId());
 		model.add(node);
 		createdNodes.add(node);
 	}
@@ -77,7 +77,7 @@ public class MassCreationCommand extends Command {
 	private void link(ConnectionInput input) {
 		ProductSystem system = model.getProductSystem();
 		ProcessLink processLink = createProcessLink(input);
-		system.getProcessLinks().add(processLink);
+		system.processLinks.add(processLink);
 		model.linkSearch.put(processLink);
 		long sourceId = input.isWaste ? input.targetId : input.sourceId;
 		long targetId = input.isWaste ? input.sourceId : input.targetId;
@@ -128,13 +128,13 @@ public class MassCreationCommand extends Command {
 	}
 
 	private void removeNode(ProcessNode node) {
-		model.getProductSystem().getProcesses().remove(node.process.getId());
+		model.getProductSystem().processes.remove(node.process.getId());
 		model.remove(node);
 	}
 
 	private void unlink(Link link) {
 		ProductSystem system = model.getProductSystem();
-		system.getProcessLinks().remove(link.processLink);
+		system.processLinks.remove(link.processLink);
 		model.linkSearch.remove(link.processLink);
 		link.unlink();
 	}

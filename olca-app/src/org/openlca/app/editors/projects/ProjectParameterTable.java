@@ -226,7 +226,7 @@ class ProjectParameterTable {
 		for (ProjectVariant variant : project.getVariants()) {
 			if (variant.getProductSystem() == null)
 				continue;
-			contexts.addAll(variant.getProductSystem().getProcesses());
+			contexts.addAll(variant.getProductSystem().processes);
 		}
 		return contexts;
 	}

@@ -17,7 +17,7 @@ public class ProductSystemNode extends Node {
 
 	public ProductSystemNode(ProductSystemGraphEditor editor) {
 		List<ProcessLink> links = editor.getSystemEditor()
-				.getModel().getProcessLinks();
+				.getModel().processLinks;
 		this.linkSearch = new MutableProcessLinkSearchMap(links);
 		this.editor = editor;
 	}

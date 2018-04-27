@@ -66,7 +66,7 @@ public class ConnectionDialog extends Dialog {
 		exchange = exchangeNode.exchange;
 		processId = exchangeNode.parent().process.getId();
 		ProductSystemNode systemNode = exchangeNode.parent().parent();
-		existingProcesses = systemNode.getProductSystem().getProcesses();
+		existingProcesses = systemNode.getProductSystem().processes;
 		linkSearch = systemNode.linkSearch;
 		selectProvider = exchangeNode.exchange.isInput;
 		boolean foundLink = false;

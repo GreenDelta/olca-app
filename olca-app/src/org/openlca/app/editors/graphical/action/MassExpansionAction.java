@@ -34,7 +34,7 @@ class MassExpansionAction extends EditorAction {
 	}
 
 	private boolean areYouSure() {
-		int amount = editor.getModel().getProductSystem().getProcesses().size();
+		int amount = editor.getModel().getProductSystem().processes.size();
 		if (amount < 500)
 			return true;
 		String title = M.ExpandAll;
@@ -47,5 +47,5 @@ class MassExpansionAction extends EditorAction {
 	protected boolean accept(ISelection selection) {
 		return true;
 	}
-	
+
 }

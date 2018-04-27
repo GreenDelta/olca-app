@@ -42,14 +42,14 @@ public class ReconnectLinkCommand extends Command {
 	public void execute() {
 		ProductSystemNode systemNode = sourceNode.parent();
 		oldLink.unlink();
-		systemNode.getProductSystem().getProcessLinks().remove(oldLink.processLink);
+		systemNode.getProductSystem().processLinks.remove(oldLink.processLink);
 		systemNode.linkSearch.remove(oldLink.processLink);
 		ProcessLink processLink = new ProcessLink();
 		processLink.providerId = sourceNode.process.getId();
 		processLink.flowId = oldLink.processLink.flowId;
 		processLink.processId = targetNode.parent().process.getId();
 		processLink.exchangeId = targetNode.exchange.getId();
-		systemNode.getProductSystem().getProcessLinks().add(processLink);
+		systemNode.getProductSystem().processLinks.add(processLink);
 		systemNode.linkSearch.put(processLink);
 		link = new Link();
 		link.outputNode = sourceNode;
@@ -69,9 +69,9 @@ public class ReconnectLinkCommand extends Command {
 		ProductSystemNode systemNode = sourceNode.parent();
 		ProductSystem system = systemNode.getProductSystem();
 		oldLink.unlink();
-		system.getProcessLinks().remove(oldLink.processLink);
+		system.processLinks.remove(oldLink.processLink);
 		systemNode.linkSearch.remove(oldLink.processLink);
-		system.getProcessLinks().add(link.processLink);
+		system.processLinks.add(link.processLink);
 		systemNode.linkSearch.put(link.processLink);
 		link.link();
 		systemNode.editor.setDirty(true);
@@ -82,9 +82,9 @@ public class ReconnectLinkCommand extends Command {
 		ProductSystemNode systemNode = sourceNode.parent();
 		ProductSystem system = systemNode.getProductSystem();
 		link.unlink();
-		system.getProcessLinks().remove(link.processLink);
+		system.processLinks.remove(link.processLink);
 		systemNode.linkSearch.remove(link.processLink);
-		system.getProcessLinks().add(oldLink.processLink);
+		system.processLinks.add(oldLink.processLink);
 		systemNode.linkSearch.put(oldLink.processLink);
 		oldLink.link();
 		sourceNode.parent().editor.setDirty(true);
