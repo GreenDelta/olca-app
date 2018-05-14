@@ -15,7 +15,7 @@ public class AppCache {
 	}
 
 	public void put(String key, Object val) {
-		map.put(key, val);
+		map.put(key, val);			
 	}
 
 	/**

@@ -18,6 +18,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Process;
 import org.openlca.core.results.ContributionResultProvider;
+import org.openlca.core.results.SystemProcess;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,12 @@ public final class SaveProcessDialog extends Wizard {
 		try {
 			getContainer().run(true, false, m -> {
 				m.beginTask(M.CreateProcess, IProgressMonitor.UNKNOWN);
-				Process p = SaveProcessUtil.create(editor, name, createMeta);
+				Process p = null;
+				if (createMeta) {
+					p = SystemProcess.create(Database.get(), editor.getSetup(), editor.getResult(), name);
+				} else {
+					p = SystemProcess.createWithMetaData(Database.get(), editor.getSetup(), editor.getResult(), name);
+				}
 				ProcessDao dao = new ProcessDao(Database.get());
 				p = dao.insert(p);
 				App.openEditor(p);
