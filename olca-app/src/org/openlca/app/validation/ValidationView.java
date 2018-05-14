@@ -3,7 +3,9 @@ package org.openlca.app.validation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -21,6 +23,8 @@ import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
@@ -78,13 +82,15 @@ public class ValidationView extends ViewPart {
 		Trees.bindColumnWidths(viewer.getTree(), 0.5, 0.5);
 	}
 
-	public static void validate(Collection<CategorizedDescriptor> descriptors) {
+	public static void validate(Collection<INavigationElement<?>> selection) {
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		try {
 			ValidationView instance = (ValidationView) page.showView("views.problems");
 			List<ModelStatus> result = new ArrayList<>();
 			ProgressMonitorDialog dialog = new ProgressMonitorDialog(UI.shell());
 			dialog.run(true, true, (monitor) -> {
+				monitor.beginTask(M.Initializing, IProgressMonitor.UNKNOWN);
+				Set<CategorizedDescriptor> descriptors = Navigator.collectDescriptors(selection);
 				DatabaseValidation validation = DatabaseValidation.with(monitor);
 				result.addAll(validation.evaluate(descriptors));				
 			});

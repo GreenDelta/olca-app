@@ -1,7 +1,5 @@
 package org.openlca.app.navigation.actions;
 
-import org.openlca.app.M;
-
 import java.util.List;
 
 import org.eclipse.jface.action.IMenuManager;
@@ -11,6 +9,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.cloud.ui.preferences.CloudPreference;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
