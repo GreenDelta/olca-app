@@ -101,7 +101,9 @@ Bundle-ClassPath: .,
  libs/org.eclipse.persistence.asm-2.7.1.jar,
  libs/org.eclipse.persistence.core-2.7.1.jar,
  libs/org.eclipse.persistence.jpa-2.7.1.jar,
- libs/org.eclipse.persistence.jpa.jpql-2.7.1.jar
+ libs/org.eclipse.persistence.jpa.jpql-2.7.1.jar,
+ libs/nanohttpd-2.3.1.jar,
+ libs/olca-ipc-1.7.1.jar
 Export-Package: com.google.common.collect,
  com.google.common.eventbus,
  com.google.gson,
