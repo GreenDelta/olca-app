@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Error;
@@ -52,7 +53,8 @@ public class IpcDialog extends FormDialog {
 		String portStr = portText.getText();
 		try {
 			int port = Integer.parseInt(portStr);
-			Server server = new Server(port, Database.get());
+			Server server = new Server(port,
+					Database.get(), App.getSolver());
 			// TODO: need a UI for managing the server
 			super.okPressed();
 		} catch (Exception e) {
