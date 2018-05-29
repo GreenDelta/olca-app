@@ -53,8 +53,10 @@ public class IpcDialog extends FormDialog {
 		String portStr = portText.getText();
 		try {
 			int port = Integer.parseInt(portStr);
-			Server server = new Server(port,
+			Server server = new Server(port);
+			server.withDefaultHandlers(
 					Database.get(), App.getSolver());
+			server.start();
 			// TODO: need a UI for managing the server
 			super.okPressed();
 		} catch (Exception e) {
