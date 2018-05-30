@@ -24,6 +24,7 @@ project and other open source software.
       </programArgs>
       <vmArgs>-Xmx4048M
 -Dosgi.framework.extensions=org.eclipse.fx.osgi
+--add-modules=ALL-SYSTEM
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
