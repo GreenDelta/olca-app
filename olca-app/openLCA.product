@@ -22,7 +22,7 @@ project and other open source software.
    <launcherArgs>
       <programArgs>-nl en -data @noDefault
       </programArgs>
-      <vmArgs>-Xmx1024M
+      <vmArgs>-Xmx4048M
 -Dosgi.framework.extensions=org.eclipse.fx.osgi
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
@@ -38,7 +38,6 @@ project and other open source software.
       startupForegroundColor="000000" />
    <launcher name="openLCA">
       <macosx icon="/olca-app/icons/logo/logo.icns"/>
-      <solaris/>
       <win useIco="false">
          <bmp
             winSmallHigh="/olca-app/icons/logo/16_32bit.bmp"
@@ -56,9 +55,9 @@ project and other open source software.
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
 
-
    <plugins>
       <plugin id="com.google.gson"/>
+      <plugin id="com.google.guava"/>
       <plugin id="com.ibm.icu"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
@@ -68,171 +67,343 @@ project and other open source software.
       <plugin id="org.apache.batik.util"/>
       <plugin id="org.apache.batik.util.gui"/>
       <plugin id="org.apache.commons.codec"/>
+      <plugin id="org.apache.commons.jxpath"/>
+      <plugin id="org.apache.commons.lang"/>
+      <plugin id="org.apache.felix.scr"/>
       <plugin id="org.eclipse.compare.core"/>
+      <plugin id="org.eclipse.compare.core.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.compare.core.nl_de" fragment="true"/>
       <plugin id="org.eclipse.compare.core.nl_es" fragment="true"/>
       <plugin id="org.eclipse.compare.core.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.compare.core.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.compare.core.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.compare.core.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.compare.core.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.core.commands"/>
+      <plugin id="org.eclipse.core.commands.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.core.commands.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.commands.nl_es" fragment="true"/>
       <plugin id="org.eclipse.core.commands.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.core.commands.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.commands.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.commands.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.core.commands.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.core.contenttype"/>
+      <plugin id="org.eclipse.core.contenttype.nl_bg" fragment="true"/>
+      <plugin id="org.eclipse.core.contenttype.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.contenttype.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.core.contenttype.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.core.contenttype.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.contenttype.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.contenttype.nl_tr" fragment="true"/>
+      <plugin id="org.eclipse.core.contenttype.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.core.databinding"/>
+      <plugin id="org.eclipse.core.databinding.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.nl_es" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.databinding.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.databinding.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.observable"/>
+      <plugin id="org.eclipse.core.databinding.observable.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.observable.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.observable.nl_es" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.observable.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.observable.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.databinding.observable.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.databinding.observable.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.observable.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.property"/>
+      <plugin id="org.eclipse.core.databinding.property.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.property.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.property.nl_es" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.property.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.property.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.databinding.property.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.databinding.property.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.core.databinding.property.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.core.expressions"/>
+      <plugin id="org.eclipse.core.expressions.nl_bg" fragment="true"/>
+      <plugin id="org.eclipse.core.expressions.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.expressions.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.core.expressions.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.core.expressions.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.expressions.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.expressions.nl_tr" fragment="true"/>
+      <plugin id="org.eclipse.core.expressions.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.core.jobs"/>
+      <plugin id="org.eclipse.core.jobs.nl_bg" fragment="true"/>
+      <plugin id="org.eclipse.core.jobs.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.jobs.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.core.jobs.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.core.jobs.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.jobs.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.jobs.nl_tr" fragment="true"/>
+      <plugin id="org.eclipse.core.jobs.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.core.net"/>
       <plugin id="org.eclipse.core.net.linux.x86" fragment="true"/>
+      <plugin id="org.eclipse.core.net.linux.x86.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.core.net.linux.x86.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.net.linux.x86.nl_es" fragment="true"/>
       <plugin id="org.eclipse.core.net.linux.x86.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.core.net.linux.x86.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.net.linux.x86.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.net.linux.x86.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.core.net.linux.x86.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.core.net.linux.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.core.net.linux.x86_64.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.core.net.linux.x86_64.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.net.linux.x86_64.nl_es" fragment="true"/>
       <plugin id="org.eclipse.core.net.linux.x86_64.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.core.net.linux.x86_64.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.net.linux.x86_64.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.net.linux.x86_64.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.core.net.linux.x86_64.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.core.net.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.core.net.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.net.nl_es" fragment="true"/>
       <plugin id="org.eclipse.core.net.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.core.net.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.net.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.net.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.core.net.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.core.net.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.core.net.win32.x86.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.core.net.win32.x86.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.net.win32.x86.nl_es" fragment="true"/>
       <plugin id="org.eclipse.core.net.win32.x86.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.core.net.win32.x86.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.net.win32.x86.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.net.win32.x86.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.core.net.win32.x86.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.core.net.win32.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.core.net.win32.x86_64.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.core.net.win32.x86_64.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.net.win32.x86_64.nl_es" fragment="true"/>
       <plugin id="org.eclipse.core.net.win32.x86_64.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.core.net.win32.x86_64.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.net.win32.x86_64.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.net.win32.x86_64.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.core.net.win32.x86_64.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.core.runtime"/>
-      <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
+      <plugin id="org.eclipse.core.runtime.nl_bg" fragment="true"/>
+      <plugin id="org.eclipse.core.runtime.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.core.runtime.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.core.runtime.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.core.runtime.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.runtime.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.runtime.nl_tr" fragment="true"/>
+      <plugin id="org.eclipse.core.runtime.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.core.variables"/>
+      <plugin id="org.eclipse.core.variables.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.core.variables.nl_de" fragment="true"/>
       <plugin id="org.eclipse.core.variables.nl_es" fragment="true"/>
       <plugin id="org.eclipse.core.variables.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.core.variables.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.core.variables.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.core.variables.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.core.variables.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.draw2d"/>
       <plugin id="org.eclipse.e4.core.commands"/>
+      <plugin id="org.eclipse.e4.core.commands.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.core.commands.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.core.commands.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.core.commands.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.core.commands.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.commands.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.commands.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.core.commands.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.core.contexts"/>
+      <plugin id="org.eclipse.e4.core.contexts.nl_bg" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.contexts.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.contexts.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.contexts.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.contexts.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.contexts.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.contexts.nl_tr" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.contexts.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.core.di"/>
+      <plugin id="org.eclipse.e4.core.di.annotations"/>
+      <plugin id="org.eclipse.e4.core.di.annotations.nl_bg" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.annotations.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.annotations.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.annotations.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.annotations.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.annotations.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.annotations.nl_tr" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.annotations.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.core.di.extensions"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.nl_bg" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.nl_tr" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.supplier"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.supplier.nl_bg" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.supplier.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.supplier.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.supplier.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.supplier.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.supplier.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.supplier.nl_tr" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.supplier.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.nl_bg" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.nl_tr" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.di.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.core.services"/>
+      <plugin id="org.eclipse.e4.core.services.nl_bg" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.services.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.services.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.services.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.services.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.services.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.services.nl_tr" fragment="true"/>
+      <plugin id="org.eclipse.e4.core.services.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.e4.emf.xpath"/>
+      <plugin id="org.eclipse.e4.emf.xpath.nl_bg" fragment="true"/>
+      <plugin id="org.eclipse.e4.emf.xpath.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.e4.emf.xpath.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.e4.emf.xpath.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.e4.emf.xpath.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.emf.xpath.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.emf.xpath.nl_tr" fragment="true"/>
+      <plugin id="org.eclipse.e4.emf.xpath.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.bindings"/>
+      <plugin id="org.eclipse.e4.ui.bindings.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.bindings.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.bindings.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.bindings.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.bindings.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.bindings.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.bindings.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.bindings.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.core"/>
+      <plugin id="org.eclipse.e4.ui.css.core.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.core.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.core.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.core.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.core.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.css.core.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.css.core.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.core.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.swt"/>
+      <plugin id="org.eclipse.e4.ui.css.swt.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.swt.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.swt.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.swt.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.swt.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.css.swt.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.css.swt.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.swt.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.swt.theme"/>
+      <plugin id="org.eclipse.e4.ui.css.swt.theme.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.swt.theme.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.swt.theme.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.swt.theme.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.swt.theme.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.css.swt.theme.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.css.swt.theme.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.css.swt.theme.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.di"/>
+      <plugin id="org.eclipse.e4.ui.di.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.di.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.di.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.di.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.di.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.di.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.di.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.di.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.model.workbench"/>
+      <plugin id="org.eclipse.e4.ui.model.workbench.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.model.workbench.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.model.workbench.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.model.workbench.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.model.workbench.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.model.workbench.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.model.workbench.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.model.workbench.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.services"/>
+      <plugin id="org.eclipse.e4.ui.services.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.services.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.services.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.services.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.services.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.services.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.services.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.services.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.swt.gtk" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.widgets"/>
+      <plugin id="org.eclipse.e4.ui.widgets.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.widgets.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.widgets.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.widgets.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.widgets.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.widgets.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.widgets.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.widgets.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench"/>
       <plugin id="org.eclipse.e4.ui.workbench.addons.swt"/>
+      <plugin id="org.eclipse.e4.ui.workbench.addons.swt.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.addons.swt.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.addons.swt.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.addons.swt.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.addons.swt.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench.addons.swt.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench.addons.swt.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.addons.swt.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.cocoa" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.cocoa.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.cocoa.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.cocoa.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.cocoa.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.cocoa.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.cocoa.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.cocoa.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.cocoa.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.swt"/>
+      <plugin id="org.eclipse.e4.ui.workbench.swt.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.swt.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.swt.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.swt.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.swt.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench.swt.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench.swt.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.swt.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench3"/>
+      <plugin id="org.eclipse.e4.ui.workbench3.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench3.nl_de" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench3.nl_es" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench3.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench3.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench3.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.e4.ui.workbench3.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench3.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.emf.common"/>
       <plugin id="org.eclipse.emf.ecore"/>
@@ -249,12 +420,16 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.frameworkadmin.equinox.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.equinox.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.equinox.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.frameworkadmin.equinox.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.frameworkadmin.equinox.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.equinox.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.frameworkadmin.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.frameworkadmin.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.artifact.repository"/>
       <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_bg" fragment="true"/>
@@ -262,6 +437,8 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.artifact.repository.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.core"/>
       <plugin id="org.eclipse.equinox.p2.core.nl_bg" fragment="true"/>
@@ -269,6 +446,8 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.core.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.core.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.core.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.core.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.core.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.core.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.director"/>
       <plugin id="org.eclipse.equinox.p2.director.nl_bg" fragment="true"/>
@@ -276,6 +455,8 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.director.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.director.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.director.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.director.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.director.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.director.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.directorywatcher"/>
       <plugin id="org.eclipse.equinox.p2.directorywatcher.nl_bg" fragment="true"/>
@@ -283,6 +464,8 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.directorywatcher.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.directorywatcher.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.directorywatcher.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.directorywatcher.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.directorywatcher.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.directorywatcher.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.engine"/>
       <plugin id="org.eclipse.equinox.p2.engine.nl_bg" fragment="true"/>
@@ -290,6 +473,8 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.engine.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.engine.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.engine.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.engine.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.engine.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.engine.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.extensionlocation"/>
       <plugin id="org.eclipse.equinox.p2.extensionlocation.nl_bg" fragment="true"/>
@@ -297,6 +482,8 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.extensionlocation.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.extensionlocation.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.extensionlocation.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.extensionlocation.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.extensionlocation.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.extensionlocation.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.garbagecollector"/>
       <plugin id="org.eclipse.equinox.p2.garbagecollector.nl_bg" fragment="true"/>
@@ -304,6 +491,8 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.garbagecollector.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.garbagecollector.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.garbagecollector.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.garbagecollector.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.garbagecollector.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.garbagecollector.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.jarprocessor"/>
       <plugin id="org.eclipse.equinox.p2.jarprocessor.nl_bg" fragment="true"/>
@@ -311,6 +500,8 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.jarprocessor.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.jarprocessor.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.jarprocessor.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.jarprocessor.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.jarprocessor.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.jarprocessor.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata"/>
       <plugin id="org.eclipse.equinox.p2.metadata.nl_bg" fragment="true"/>
@@ -318,6 +509,8 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.metadata.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.metadata.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.metadata.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata.repository"/>
       <plugin id="org.eclipse.equinox.p2.metadata.repository.nl_bg" fragment="true"/>
@@ -325,6 +518,8 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.metadata.repository.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata.repository.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata.repository.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.metadata.repository.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.metadata.repository.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.metadata.repository.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.publisher"/>
       <plugin id="org.eclipse.equinox.p2.publisher.eclipse"/>
@@ -333,12 +528,16 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.publisher.eclipse.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.publisher.eclipse.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.publisher.eclipse.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.publisher.eclipse.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.publisher.eclipse.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.publisher.eclipse.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.publisher.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.publisher.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.publisher.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.publisher.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.publisher.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.publisher.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.publisher.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.publisher.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins"/>
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins.nl_bg" fragment="true"/>
@@ -346,6 +545,8 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.reconciler.dropins.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.reconciler.dropins.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.repository"/>
       <plugin id="org.eclipse.equinox.p2.repository.nl_bg" fragment="true"/>
@@ -353,6 +554,8 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.repository.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.repository.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.repository.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.repository.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.repository.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.repository.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_bg" fragment="true"/>
@@ -360,10 +563,14 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.preferences"/>
+      <plugin id="org.eclipse.equinox.region" fragment="true"/>
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.equinox.security"/>
+      <plugin id="org.eclipse.equinox.security.linux.x86_64" fragment="true"/>
       <plugin id="org.eclipse.equinox.security.macosx" fragment="true"/>
       <plugin id="org.eclipse.equinox.security.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.equinox.security.win32.x86_64" fragment="true"/>
@@ -374,40 +581,58 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.nl_de" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.nl_es" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.equinox.simpleconfigurator.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.equinox.supplement"/>
+      <plugin id="org.eclipse.equinox.transforms.hook" fragment="true"/>
       <plugin id="org.eclipse.equinox.util"/>
-      <plugin id="org.eclipse.fx.osgi" fragment="true"/>
+      <plugin id="org.eclipse.equinox.weaving.hook" fragment="true"/>
       <plugin id="org.eclipse.fx.ui.workbench3"/>
       <plugin id="org.eclipse.gef"/>
       <plugin id="org.eclipse.help"/>
+      <plugin id="org.eclipse.help.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.help.nl_de" fragment="true"/>
       <plugin id="org.eclipse.help.nl_es" fragment="true"/>
       <plugin id="org.eclipse.help.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.help.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.help.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.help.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.help.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
+      <plugin id="org.eclipse.jface.databinding.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.jface.databinding.nl_de" fragment="true"/>
       <plugin id="org.eclipse.jface.databinding.nl_es" fragment="true"/>
       <plugin id="org.eclipse.jface.databinding.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.jface.databinding.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.jface.databinding.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.jface.databinding.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.jface.databinding.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.jface.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.jface.nl_de" fragment="true"/>
       <plugin id="org.eclipse.jface.nl_es" fragment="true"/>
       <plugin id="org.eclipse.jface.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.jface.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.jface.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.jface.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.jface.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.jface.text"/>
+      <plugin id="org.eclipse.jface.text.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.jface.text.nl_de" fragment="true"/>
       <plugin id="org.eclipse.jface.text.nl_es" fragment="true"/>
       <plugin id="org.eclipse.jface.text.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.jface.text.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.jface.text.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.jface.text.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.jface.text.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.mylyn.commons.core"/>
       <plugin id="org.eclipse.mylyn.commons.screenshots"/>
@@ -420,6 +645,8 @@ project and other open source software.
       <plugin id="org.eclipse.osgi.nl_es" fragment="true"/>
       <plugin id="org.eclipse.osgi.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.osgi.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.osgi.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.osgi.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.osgi.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.osgi.services"/>
       <plugin id="org.eclipse.osgi.services.nl_bg" fragment="true"/>
@@ -427,162 +654,131 @@ project and other open source software.
       <plugin id="org.eclipse.osgi.services.nl_es" fragment="true"/>
       <plugin id="org.eclipse.osgi.services.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.osgi.services.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.osgi.services.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.osgi.services.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.osgi.services.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.osgi.util"/>
+      <plugin id="org.eclipse.osgi.util.nl_bg" fragment="true"/>
+      <plugin id="org.eclipse.osgi.util.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.osgi.util.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.osgi.util.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.osgi.util.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.osgi.util.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.osgi.util.nl_tr" fragment="true"/>
+      <plugin id="org.eclipse.osgi.util.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.pde.ds.lib"/>
+      <plugin id="org.eclipse.pde.ds.lib.nl_bg" fragment="true"/>
+      <plugin id="org.eclipse.pde.ds.lib.nl_de" fragment="true"/>
+      <plugin id="org.eclipse.pde.ds.lib.nl_es" fragment="true"/>
+      <plugin id="org.eclipse.pde.ds.lib.nl_fr" fragment="true"/>
+      <plugin id="org.eclipse.pde.ds.lib.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.pde.ds.lib.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.pde.ds.lib.nl_tr" fragment="true"/>
+      <plugin id="org.eclipse.pde.ds.lib.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.platform"/>
+      <plugin id="org.eclipse.platform.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.platform.nl_de" fragment="true"/>
       <plugin id="org.eclipse.platform.nl_es" fragment="true"/>
       <plugin id="org.eclipse.platform.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.platform.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.platform.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.platform.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.platform.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.swt"/>
-      <plugin id="org.eclipse.swt.carbon.macosx.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.carbon.macosx.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.carbon.macosx.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.carbon.macosx.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.carbon.macosx.nl_zh" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.swt.cocoa.macosx.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64.nl_zh" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc.nl_zh" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc64" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc64.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc64.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc64.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc64.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.aix.ppc64.nl_zh" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64_32.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64_32.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64_32.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64_32.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.hpux.ia64_32.nl_zh" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc" fragment="true"/>
       <plugin id="org.eclipse.swt.gtk.linux.ppc64" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc64.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc64.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc64.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc64.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.ppc64.nl_zh" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.s390" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.s390.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.s390.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.s390.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.s390.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.s390.nl_zh" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.s390x" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.s390x.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.s390x.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.s390x.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.s390x.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.s390x.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.ppc64le" fragment="true"/>
       <plugin id="org.eclipse.swt.gtk.linux.x86" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.swt.gtk.linux.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86_64.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86_64.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86_64.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86_64.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86_64.nl_zh" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.solaris.sparc" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.solaris.sparc.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.solaris.sparc.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.solaris.sparc.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.solaris.sparc.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.solaris.sparc.nl_zh" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.solaris.x86" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.solaris.x86.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.solaris.x86.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.solaris.x86.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.solaris.x86.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.solaris.x86.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.swt.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.swt.nl_de" fragment="true"/>
       <plugin id="org.eclipse.swt.nl_es" fragment="true"/>
       <plugin id="org.eclipse.swt.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.swt.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.swt.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.swt.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.swt.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.swt.win32.win32.x86" fragment="true"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.swt.win32.win32.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86_64.nl_de" fragment="true"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86_64.nl_es" fragment="true"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86_64.nl_fr" fragment="true"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86_64.nl_it" fragment="true"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86_64.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.text"/>
+      <plugin id="org.eclipse.text.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.text.nl_de" fragment="true"/>
       <plugin id="org.eclipse.text.nl_es" fragment="true"/>
       <plugin id="org.eclipse.text.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.text.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.text.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.text.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.text.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.ui"/>
       <plugin id="org.eclipse.ui.cocoa" fragment="true"/>
+      <plugin id="org.eclipse.ui.cocoa.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.ui.cocoa.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.cocoa.nl_es" fragment="true"/>
       <plugin id="org.eclipse.ui.cocoa.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.ui.cocoa.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.ui.cocoa.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.ui.cocoa.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.ui.cocoa.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.ui.console"/>
+      <plugin id="org.eclipse.ui.console.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.ui.console.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.console.nl_es" fragment="true"/>
       <plugin id="org.eclipse.ui.console.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.ui.console.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.ui.console.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.ui.console.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.ui.console.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.ui.forms"/>
+      <plugin id="org.eclipse.ui.forms.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.ui.forms.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.forms.nl_es" fragment="true"/>
       <plugin id="org.eclipse.ui.forms.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.ui.forms.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.ui.forms.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.ui.forms.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.ui.forms.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.ui.intro"/>
+      <plugin id="org.eclipse.ui.intro.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.ui.intro.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.intro.nl_es" fragment="true"/>
       <plugin id="org.eclipse.ui.intro.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.ui.intro.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.ui.intro.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.ui.intro.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.ui.intro.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.ui.navigator"/>
+      <plugin id="org.eclipse.ui.navigator.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.ui.navigator.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.navigator.nl_es" fragment="true"/>
       <plugin id="org.eclipse.ui.navigator.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.ui.navigator.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.ui.navigator.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.ui.navigator.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.ui.navigator.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.ui.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.ui.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.nl_es" fragment="true"/>
       <plugin id="org.eclipse.ui.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.ui.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.ui.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.ui.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.ui.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.ui.views"/>
+      <plugin id="org.eclipse.ui.views.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.ui.views.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.views.nl_es" fragment="true"/>
       <plugin id="org.eclipse.ui.views.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.ui.views.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.ui.views.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.ui.views.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.ui.views.nl_zh" fragment="true"/>
+      <plugin id="org.eclipse.ui.win32.nl_bg" fragment="true"/>
       <plugin id="org.eclipse.ui.win32.nl_de" fragment="true"/>
       <plugin id="org.eclipse.ui.win32.nl_es" fragment="true"/>
       <plugin id="org.eclipse.ui.win32.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.ui.win32.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.ui.win32.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.ui.win32.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.ui.win32.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.ui.workbench.nl_bg" fragment="true"/>
@@ -590,6 +786,8 @@ project and other open source software.
       <plugin id="org.eclipse.ui.workbench.nl_es" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.ui.workbench.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.ui.workbench.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench.nl_zh" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
       <plugin id="org.eclipse.ui.workbench.texteditor.nl_bg" fragment="true"/>
@@ -597,9 +795,12 @@ project and other open source software.
       <plugin id="org.eclipse.ui.workbench.texteditor.nl_es" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench.texteditor.nl_fr" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench.texteditor.nl_it" fragment="true"/>
+      <plugin id="org.eclipse.ui.workbench.texteditor.nl_pt" fragment="true"/>
+      <plugin id="org.eclipse.ui.workbench.texteditor.nl_tr" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench.texteditor.nl_zh" fragment="true"/>
       <plugin id="org.sat4j.core"/>
       <plugin id="org.sat4j.pb"/>
+      <plugin id="org.tukaani.xz"/>
       <plugin id="org.w3c.css.sac"/>
       <plugin id="org.w3c.dom.events"/>
       <plugin id="org.w3c.dom.smil"/>
@@ -607,10 +808,10 @@ project and other open source software.
    </plugins>
 
    <configurations>
-      <plugin id="olca-app" autoStart="false" startLevel="5" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="5" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
    </configurations>
