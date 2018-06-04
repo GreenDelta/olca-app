@@ -7,7 +7,6 @@ var concat = require('gulp-concat');
 var stylus = require('gulp-stylus');
 var nib = require('nib');
 var pug = require('gulp-pug');
-var jadeClient = require('gulp-clientjade');
 var coffee = require('gulp-coffee');
 var foreach = require('gulp-foreach');
 var rename = require('gulp-rename');
