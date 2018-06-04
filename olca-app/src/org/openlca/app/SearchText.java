@@ -33,6 +33,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 	@Override
 	protected Control createControl(Composite parent) {
+		parent.getParent().setRedraw(true); // fix tool-bar size on Windows
 		parent.setLayout(new FillLayout());
 		log.trace("create search text control");
 		Composite composite = new Composite(parent, SWT.NONE);
