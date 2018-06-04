@@ -1,12 +1,10 @@
-olca-app-html
-=============
-This repository contains the HTML and JavaScript resources of the openLCA 
-application.  
+# olca-app-html
+This project contains the HTML and JavaScript resources of the openLCA 
+application.
 
-Libraries
----------
-Most of the libraries are managed via [Bower](http://bower.io/) except of the
-following:
+## Libraries
+Most of the libraries are managed via [npm](https://www.npmjs.com/) except of
+the following:
 
 * [Chart.js](http://www.chartjs.org/): We use a 
   [patched version](https://github.com/msrocka/Chart.js). 
@@ -15,8 +13,7 @@ following:
   [Chart.StackedBar.js](https://github.com/Regaddi/Chart.StackedBar.js), 
   which is a plugin for Chart.js.
 
-Build
------
+# Build
 The build of the HTML package is managed by [gulp.js](http://gulpjs.com/) via
 the following tasks (see [gulpfile.js](./gulpfile.js)):
 
