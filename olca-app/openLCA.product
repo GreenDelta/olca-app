@@ -58,7 +58,7 @@ project and other open source software.
 
    <plugins>
       <plugin id="com.google.gson"/>
-      <plugin id="com.google.guava"/>
+      <plugin id="com.google.guava" version="21.0.0.v20170206-1425"/>
       <plugin id="com.ibm.icu"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
