@@ -6,13 +6,12 @@ var zip = require('gulp-zip');
 var concat = require('gulp-concat');
 var stylus = require('gulp-stylus');
 var nib = require('nib');
-var jade = require('gulp-jade');
+var pug = require('gulp-pug');
 var jadeClient = require('gulp-clientjade');
 var coffee = require('gulp-coffee');
 var foreach = require('gulp-foreach');
 var rename = require('gulp-rename');
 var fs = require('fs');
-$ = require('gulp-load-plugins')()
 
 gulp.task('default', function() {
 	runSequence('clean', 'precompile', 'build', 'zip');
@@ -47,7 +46,7 @@ gulp.task('html_pages', function() {
 
 gulp.task('jade_pages', function() {
 	return gulp.src(['src/plugin_manager/jade/plugin_manager.jade', 'src/update_manager/jade/update_manager.jade'])
-		.pipe(jade({ locals: {} }))
+		.pipe(pug({ locals: {}, compileDebug: false, verbose: true }))
 		.pipe(gulp.dest('build'));
 });
 
@@ -94,13 +93,15 @@ gulp.task('update_manager_scripts', function() {
 
 gulp.task('plugin_manager_templates', function() {
 	return gulp.src('src/plugin_manager/jade/templates/*.jade')
-		.pipe(jadeClient('templates.js'))
+		.pipe(pug({client: true, compileDebug: false, verbose: true}))
+		.pipe(rename('templates.js'))
 		.pipe(gulp.dest('src/plugin_manager/precompiled'));
 });
 
 gulp.task('update_manager_templates', function() {
 	return gulp.src('src/update_manager/jade/templates/*.jade')
-		.pipe(jadeClient('templates.js'))
+		.pipe(pug({client: true, compileDebug: false, verbose: true}))
+		.pipe(rename('templates.js'))
 		.pipe(gulp.dest('src/update_manager/precompiled'));
 });
 
@@ -160,8 +161,8 @@ gulp.task('start-page-templates', function() {
 			var newName = 'start_page' + suffix + '.html';
 			var msg = readMessages(file, defaultMsg);
 			return gulp.src('./src/start_page/start_page.jade')
-				.pipe($.jade({
-					locals: {msg: msg}
+				.pipe(pug({
+					locals: {msg: msg}, compileDebug: false, verbose: true
 				}))
 				.pipe(rename(newName))
 				.pipe(gulp.dest('./build'));
