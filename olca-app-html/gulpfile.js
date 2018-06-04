@@ -12,7 +12,7 @@ var foreach = require('gulp-foreach');
 var rename = require('gulp-rename');
 var fs = require('fs');
 
-gulp.task('default', function () {
+gulp.task('default', () => {
 	runSequence('clean', 'precompile', 'build', 'zip');
 });
 
@@ -35,7 +35,7 @@ gulp.task('build', [
 gulp.task('resources', ['images', 'fonts']);
 gulp.task('libs', ['base_libs', 'bootstrap']);
 
-gulp.task('clean', function () {
+gulp.task('clean', () => {
 	return gulp.src([
 		'build',
 		'src/update_manager/precompiled',
@@ -44,7 +44,7 @@ gulp.task('clean', function () {
 		.pipe(clean());
 });
 
-gulp.task('html_pages', function () {
+gulp.task('html_pages', () => {
 	return gulp.src([
 		'src/report_view/report_view.html',
 		'src/start_page/*.html',
@@ -60,23 +60,23 @@ gulp.task('html_pages', function () {
 
 gulp.task('pug_pages', () => {
 	return gulp.src([
-		'src/plugin_manager/jade/plugin_manager.jade',
-		'src/update_manager/jade/update_manager.jade'])
+		'src/plugin_manager/pug/plugin_manager.pug',
+		'src/update_manager/pug/update_manager.pug'])
 		.pipe(pug({ locals: {}, compileDebug: false, verbose: true }))
 		.pipe(gulp.dest('build'));
 });
 
-gulp.task('images', function () {
+gulp.task('images', () => {
 	return gulp.src('images/*')
 		.pipe(gulp.dest('build/images'));
 });
 
-gulp.task('fonts', function () {
+gulp.task('fonts', () => {
 	return gulp.src('fonts/*')
 		.pipe(gulp.dest('build/fonts'));
 });
 
-gulp.task('base_libs', function () {
+gulp.task('base_libs', () => {
 	return gulp.src([
 		'node_modules/angular/angular.min.js',
 		'node_modules/angular-sanitize/angular-sanitize.min.js',
@@ -90,45 +90,45 @@ gulp.task('base_libs', function () {
 		.pipe(gulp.dest('build/libs'));
 });
 
-gulp.task('bootstrap', function () {
+gulp.task('bootstrap', () => {
 	return gulp.src(['node_modules/bootstrap/dist/**'])
 		.pipe(gulp.dest('build/libs/bootstrap'));
 });
 
-gulp.task('plugin_manager_scripts', function () {
+gulp.task('plugin_manager_scripts', () => {
 	return gulp.src('src/plugin_manager/coffeescript/*.coffee')
 		.pipe(coffee({ bare: true }))
 		.pipe(gulp.dest('src/plugin_manager/precompiled'));
 });
 
-gulp.task('update_manager_scripts', function () {
+gulp.task('update_manager_scripts', () => {
 	return gulp.src('src/update_manager/coffeescript/*.coffee')
 		.pipe(coffee({ bare: true }))
 		.pipe(gulp.dest('src/update_manager/precompiled'));
 });
 
-gulp.task('plugin_manager_templates', function () {
-	return gulp.src('src/plugin_manager/jade/templates/*.jade')
+gulp.task('plugin_manager_templates', () => {
+	return gulp.src('src/plugin_manager/pug/templates/*.pug')
 		.pipe(pug({ client: true, compileDebug: false, verbose: true }))
 		.pipe(rename('templates.js'))
 		.pipe(gulp.dest('src/plugin_manager/precompiled'));
 });
 
-gulp.task('update_manager_templates', function () {
-	return gulp.src('src/update_manager/jade/templates/*.jade')
+gulp.task('update_manager_templates', () => {
+	return gulp.src('src/update_manager/pug/templates/*.pug')
 		.pipe(pug({ client: true, compileDebug: false, verbose: true }))
 		.pipe(rename('templates.js'))
 		.pipe(gulp.dest('src/update_manager/precompiled'));
 });
 
-gulp.task('plugin_manager_styles', function () {
+gulp.task('plugin_manager_styles', () => {
 	return gulp.src('src/plugin_manager/stylus/*.styl')
 		.pipe(stylus({ use: [nib()] }))
 		.pipe(concat('main.css'))
 		.pipe(gulp.dest('src/plugin_manager/precompiled'));
 });
 
-gulp.task('update_manager_styles', function () {
+gulp.task('update_manager_styles', () => {
 	return gulp.src('src/update_manager/stylus/*.styl')
 		.pipe(stylus({ use: [nib()] }))
 		.pipe(concat('main.css'))
@@ -163,7 +163,7 @@ const readMessages = (file, defaultMsg) => {
 	return msg;
 };
 
-gulp.task('start-page-templates', function () {
+gulp.task('start-page-templates', () => {
 	var defaultMsg = readMessages(__dirname + '/src/start_page/msg/messages.properties', {});
 	return gulp.src('./src/start_page/msg/*.properties')
 		.pipe(foreach((stream, f) => {
@@ -185,12 +185,12 @@ gulp.task('start-page-templates', function () {
 		}));
 });
 
-gulp.task('start-page-styles', function () {
+gulp.task('start-page-styles', () => {
 	return gulp.src('./src/start_page/start_page.css')
 		.pipe(gulp.dest('./build'));
 });
 
-gulp.task('zip', function () {
+gulp.task('zip', () => {
 	return gulp.src('build/**')
 		.pipe(zip('base_html.zip'))
 		.pipe(gulp.dest('../olca-app/html'));
