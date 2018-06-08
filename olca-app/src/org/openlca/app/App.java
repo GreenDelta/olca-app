@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
@@ -27,7 +28,10 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.eigen.NativeLibrary;
+import org.openlca.julia.Julia;
+import org.openlca.julia.JuliaDenseSolver;
 import org.openlca.updates.script.CalculationContext;
+import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +50,20 @@ public class App {
 	public static IMatrixSolver getSolver() {
 		if (solver != null)
 			return solver;
+		try {
+			File installDir = new File(Platform.getInstallLocation().getURL().toURI());
+			File juliaDir = new File(installDir, "julia");
+			if (juliaDir.exists()) {
+				if (Julia.load(juliaDir)) {
+					solver = new JuliaDenseSolver();
+					return solver;
+				}
+			} 
+			log.info("Folder with Julia libraries not found in {}", juliaDir);
+		} catch (Exception e) {
+			log.error("Failed to load libraries from folder <openLCA>/julia");
+		}
+		
 		if (!NativeLibrary.isLoaded()) {
 			log.warn(
 					"could not load a high-performance library for calculations");
