@@ -18,7 +18,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.draw2d,
  org.eclipse.gef,
  com.ibm.icu,
- org.eclipse.fx.ui.workbench3;bundle-version="2.4.0"
+ org.eclipse.fx.ui.workbench3
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  libs/common-2.6.0.jar,
