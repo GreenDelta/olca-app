@@ -31,7 +31,6 @@ import org.openlca.eigen.NativeLibrary;
 import org.openlca.julia.Julia;
 import org.openlca.julia.JuliaDenseSolver;
 import org.openlca.updates.script.CalculationContext;
-import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,19 +50,16 @@ public class App {
 		if (solver != null)
 			return solver;
 		try {
-			File installDir = new File(Platform.getInstallLocation().getURL().toURI());
-			File juliaDir = new File(installDir, "julia");
-			if (juliaDir.exists()) {
-				if (Julia.load(juliaDir)) {
-					solver = new JuliaDenseSolver();
-					return solver;
-				}
-			} 
-			log.info("Folder with Julia libraries not found in {}", juliaDir);
+			File dir = new File(Platform.getInstallLocation().getURL().toURI());
+			if (Julia.load(dir)) {
+				solver = new JuliaDenseSolver();
+				return solver;
+			}
+			log.info("Folder with Julia libraries not found in {}", dir);
 		} catch (Exception e) {
 			log.error("Failed to load libraries from folder <openLCA>/julia");
 		}
-		
+
 		if (!NativeLibrary.isLoaded()) {
 			log.warn(
 					"could not load a high-performance library for calculations");
@@ -80,7 +76,8 @@ public class App {
 	}
 
 	public static CalculationContext getCalculationContext() {
-		return new CalculationContext(Cache.getMatrixCache(), Cache.getEntityCache(), getSolver());
+		return new CalculationContext(Cache.getMatrixCache(),
+				Cache.getEntityCache(), getSolver());
 	}
 
 	/**
@@ -145,8 +142,8 @@ public class App {
 		}
 		for (IEditorReference ref : Editors.getReferences())
 			try {
-				if (new ModelEditorInput(descriptor).equals(ref
-						.getEditorInput())) {
+				if (new ModelEditorInput(descriptor)
+						.equals(ref.getEditorInput())) {
 					Editors.close(ref);
 					break;
 				}
