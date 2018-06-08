@@ -27,7 +27,7 @@
 <repository location="http://download.eclipse.org/eclipse/updates/4.7"/>
 </location>
 <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.fx.target.rcp.feature.feature.group" version="3.3.0.201805300600"/>
+<unit id="org.eclipse.fx.target.rcp.feature.feature.group" version="3.3.0.201806080600"/>
 <repository location="http://download.eclipse.org/efxclipse/runtime-nightly/site"/>
 </location>
 </locations>
