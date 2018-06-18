@@ -29,7 +29,7 @@ following tools installed:
 * [Git](https://git-scm.com/) (optional)
 * a [Java Development Kit 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 * [Maven](http://maven.apache.org/)
-* the [Eclipse package for RCP developers](https://www.eclipse.org/downloads/)
+* the [Eclipse package for RCP developers](https://www.eclipse.org/downloads/eclipse-packages/)
 * [Node.js](https://nodejs.org/) and [Gulp](http://gulpjs.com/) (for building
   the HTML5 user interface components)
 
@@ -116,16 +116,21 @@ projects into Eclipse via `Import > General > Existing Projects into Workspace`
 (select the `olca/olca-app` directory). You should now see the `olca-app`, 
 `olca-app-build`, and `olca-app-runtime` projects in your Eclipse workspace.
 
-#### Build the Eclipse runtime
-Within Eclipse right-click on the `olca-app-runtime/build.xml` file and select
-`Run as.../Ant build`. This will download the RCP platform on which openLCA is
-built. When this script is finished (note that this could take a while) open the
-file `olca-app-runtime/platform.target` within Eclipse. Modify the current
-location to an absolute path which points to the `olca-app-runtime/platform`
-folder. After this click on `Set as target platform` on the top right of the
-editor.
+#### Loading the target platform and 
+The file `platform.target` in the `olca-app` project contains the definition of
+the [target platform](https://help.eclipse.org/oxygen/index.jsp?topic=%2Forg.eclipse.pde.doc.user%2Fconcepts%2Ftarget.htm)
+of the openLCA RCP application. Just open the file with the `Target Editor`
+and click on `Set as target platform` on the top right of the editor.
 
-After this, go back to the command line and navigate to the 
+This will download the resources of the target platform into your local
+workspace and, thus, may take a while. Unfortunately, setting up and
+configuring Eclipse can be quite challenging. If you get errors like
+`Unable locate installable unit in target definition`,
+[this discussion](https://stackoverflow.com/questions/10547007/unable-locate-installable-unit-in-target-definition)
+may help. 
+
+### Copy the Maven modules
+Go back to the command line and navigate to the 
 `olca-app/olca-app` folder:
 
 ```bash

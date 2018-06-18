@@ -1,9 +1,27 @@
 # openLCA build
 This project contains the scripts for building the openLCA distribution packages
-for Windows, Mac OS, and Linux. The build is based on an Ant script for an
-Eclipse PDE build and a Python script `packager.py` that creates the
-distribution packages and installers. Thus, you need to have Python 3 installed
-in order to run the build. You can run the build by executing the `build.xml`
+for Windows, Mac OS, and Linux. It is based on the Eclipse product export and
+and a Python script `packager.py` that creates the distribution packages and
+installers. Thus, you need to have Python 3 installed in order to run the build.
+
+## Export the products
+The first thing you need to do, is to export the Eclipse RCP products. Right click
+on the `olca-app` project and select `Export > Ecliplse product`. In the
+export wizard select the folder `olca-app-build/build` as export folder as
+this is the folder where the `packager.py` script expects to find the product
+builds. Also, set the following options for the build:
+
+* [x] uncheck create p2 repository
+* [x] enable multi-platform build
+* [x] allow binary cycles in target platform
+
+The packager script can build distribution packages for the following platforms
+(but you do not need to build them all, if a platform product is missing it is
+simply ignored in the package):
+
+
+
+You can run the build by executing the `build.xml`
 script as `Ant Build` directly in Eclipse (this will also call the Python
 packager). It is important to run the build within the same JRE as the Eclipse
 platform because otherwise the PDE scripts cannot be found (

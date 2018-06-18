@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.openlca.app.App;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
 import org.openlca.app.devtools.python.Python;
@@ -82,6 +83,7 @@ public class RcpActivator extends AbstractUIPlugin {
 				MissingLibraryMessage.checkAndShow();
 		}
 		log.trace("olca-eigen loaded: {}", NativeLibrary.isLoaded());
+		App.getSolver();
 	}
 
 	@Override
