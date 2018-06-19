@@ -1,7 +1,5 @@
 package org.openlca.app.editors.locations;
 
-import javafx.scene.web.WebEngine;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -23,7 +21,9 @@ import org.openlca.core.model.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LocationInfoPage extends ModelPage<Location> implements WebPage {
+import javafx.scene.web.WebEngine;
+
+class LocationInfoPage extends ModelPage<Location> implements WebPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
@@ -50,7 +50,8 @@ public class LocationInfoPage extends ModelPage<Location> implements WebPage {
 	}
 
 	private void createAdditionalInfo(Composite body) {
-		Composite composite = UI.formSection(body, toolkit, M.AdditionalInformation, 3);
+		Composite composite = UI.formSection(body, toolkit,
+				M.AdditionalInformation, 3);
 		text(composite, M.Code, "code");
 		doubleText(composite, M.Longitude, "longitude");
 		doubleText(composite, M.Latitude, "latitude");
@@ -89,10 +90,16 @@ public class LocationInfoPage extends ModelPage<Location> implements WebPage {
 	@Override
 	public void onLoaded(WebEngine webkit) {
 		this.webkit = webkit;
-		UI.bindVar(webkit, "java", new KmlChangedFunction());
+		UI.bindVar(webkit, "java", new JavaCallback());
 		UI.bindVar(webkit, "prettifier", new KmlPrettifyFunction(b -> {
 			isValidKml = b;
 		}));
+		try {
+			webkit.executeScript("setEmbedded()");
+			webkit.executeScript("bridgeConsole()");
+		} catch (Exception e) {
+			log.error("failed to initialize KML editor", e);
+		}
 		updateKml();
 	}
 
@@ -103,13 +110,12 @@ public class LocationInfoPage extends ModelPage<Location> implements WebPage {
 		kml = kml.replace("\r\n", "").replace("\n", "").replace("\r", "");
 		try {
 			webkit.executeScript("setKML('" + kml + "')");
-			webkit.executeScript("setEmbedded()");
 		} catch (Exception e) {
 			log.error("failed to set KML data", e);
 		}
 	}
 
-	public class KmlChangedFunction {
+	public class JavaCallback {
 
 		public void kmlChanged(String data) {
 			kml = data;
@@ -120,6 +126,10 @@ public class LocationInfoPage extends ModelPage<Location> implements WebPage {
 				Logger log = LoggerFactory.getLogger(getClass());
 				log.error("failed to call isValidKml", e);
 			}
+		}
+
+		public void log(String message) {
+			log.debug(message);
 		}
 	}
 
