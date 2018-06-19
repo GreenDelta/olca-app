@@ -170,9 +170,12 @@
                 java.doOpenEditor();
             });
             textEditor.on('change', function () {
-                if (window.java) {
-                    java.kmlChanged(textEditor.getValue());
+                console.log("js: call Java::kmlChanged");
+                if (!window.java) {
+                    console.log("js: Java callback not bound");
+                    return;
                 }
+                java.kmlChanged(textEditor.getValue());
             });
             $('.nav-tabs a').click(function (e) {
                 e.preventDefault();
@@ -181,20 +184,21 @@
         }
 
         function showTabContent(tab) {
+            console.log("js: show tab " + tab);
             var id = $(tab).attr("href");
             $(".tab-pane").hide();
             $(id).show();
+            var kml = getKML();
             if (id == "#textDiv") {
                 inTextEditor = true;
-                var kml = getKML(false);
                 if (kml && window.prettifier) {
                     kml = prettifier.prettifyKML(kml);
                 }
                 textEditor.setValue(kml);
             } else if (id == "#mapDiv") {
                 inTextEditor = false;
-                onDestroyFeatures()
-                setKML(getKML(true))
+                onDestroyFeatures();
+                setKML(kml);
             }
         }
 
@@ -223,8 +227,8 @@
             java.doSave(kml);
         }
 
-        function getKML(fromText) {
-            if (fromText)
+        function getKML() {
+            if (inTextEditor)
                 return textEditor.getValue();
             if (!editLayer.features || editLayer.features.length == 0)
                 return "";
@@ -245,6 +249,7 @@
         }
 
         function setKML(kml) {
+            console.log("js: exec setKML");
             if (kml) {
                 var features = format.read(kml);
                 var valid = [];
@@ -275,8 +280,8 @@
             });
             editLayer.events.register("featureadded", null, function (f) {
                 if (window.java) {
-                    java.kmlChanged(getKML(false));
-                }                
+                    java.kmlChanged(getKML());
+                }
             });
             listenersRegistered = true;
         }
@@ -293,10 +298,11 @@
         }
 
         function isValidKml() {
-            var kml = getKML(inTextEditor);
+            console.log("js: exec isValidKml")
+            var kml = getKML();
             var features = format.read(kml);
             if (inTextEditor)
-                return !kml || features.length > 0
+                return !kml || features.length > 0;
             currentType = null;
             for (var i = 0; i < features.length; i++) {
                 var type = getFeatureType(features[i])
@@ -312,7 +318,7 @@
                 console.log("No Java callback defined");
                 return;
             }
-            console.log = function(message) {
+            console.log = function (message) {
                 java.log(message);
             };
             console.log("Bridged console to Java callback");

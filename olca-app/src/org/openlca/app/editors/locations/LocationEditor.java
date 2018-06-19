@@ -40,22 +40,25 @@ public class LocationEditor extends ModelEditor<Location> {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		if (!infoPage.isValidKml()) {
-			Info.showBox("Kml editor", "The provided kml is invalid, please check your input");
+		if (!infoPage.hasValidKml) {
+			Info.showBox("Kml editor",
+					"The provided kml is invalid, please check your input");
 			return;
 		}
-		String kml = infoPage.getKml();
-		if (Strings.isNullOrEmpty(kml)) {
+		String kml = infoPage.kml;
+		if (!Strings.isNullOrEmpty(kml)) {
+			getModel().setKmz(Geometries.kmlToKmz(kml));
+		} else {
 			double latitude = getModel().getLatitude();
 			double longitude = getModel().getLongitude();
 			if (latitude != 0 || longitude != 0) {
 				kml = Geometries.pointToKml(latitude, longitude);
 				getModel().setKmz(Geometries.kmlToKmz(kml));
 				infoPage.updateKml();
-			} else
+			} else {
 				getModel().setKmz(null);
-		} else
-			getModel().setKmz(Geometries.kmlToKmz(kml));
+			}
+		}
 		invalidateIntersections();
 		super.doSave(monitor);
 	}

@@ -15,6 +15,7 @@ import org.openlca.app.editors.processes.kml.KmlPrettifyFunction;
 import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.html.WebPage;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
@@ -25,11 +26,12 @@ import javafx.scene.web.WebEngine;
 
 class LocationInfoPage extends ModelPage<Location> implements WebPage {
 
+	String kml;
+	boolean hasValidKml = true;
+
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
 	private WebEngine webkit;
-	private String kml;
-	private boolean isValidKml = true;
 	private ScrolledForm form;
 
 	LocationInfoPage(LocationEditor editor) {
@@ -67,7 +69,7 @@ class LocationInfoPage extends ModelPage<Location> implements WebPage {
 		section.setText(M.KmlEditor);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
-		Actions.bind(section, new ClearAction());
+		Actions.bind(section, new UploadKmlAction(), new ClearAction());
 		UI.gridLayout(composite, 1);
 		UI.gridData(composite, true, true);
 		Control canvas = UI.createWebView(composite, this);
@@ -79,20 +81,12 @@ class LocationInfoPage extends ModelPage<Location> implements WebPage {
 		return HtmlView.KML_EDITOR.getUrl();
 	}
 
-	String getKml() {
-		return kml;
-	}
-
-	boolean isValidKml() {
-		return isValidKml;
-	}
-
 	@Override
 	public void onLoaded(WebEngine webkit) {
 		this.webkit = webkit;
 		UI.bindVar(webkit, "java", new JavaCallback());
 		UI.bindVar(webkit, "prettifier", new KmlPrettifyFunction(b -> {
-			isValidKml = b;
+			hasValidKml = b;
 		}));
 		try {
 			webkit.executeScript("setEmbedded()");
@@ -120,7 +114,7 @@ class LocationInfoPage extends ModelPage<Location> implements WebPage {
 		public void kmlChanged(String data) {
 			kml = data;
 			try {
-				isValidKml = (Boolean) webkit.executeScript("isValidKml();");
+				hasValidKml = (Boolean) webkit.executeScript("isValidKml();");
 				getEditor().setDirty(true);
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(getClass());
@@ -137,12 +131,38 @@ class LocationInfoPage extends ModelPage<Location> implements WebPage {
 
 		private ClearAction() {
 			super(M.ClearData);
+			setImageDescriptor(Icon.DELETE.descriptor());
 		}
 
 		@Override
 		public void run() {
 			try {
 				webkit.executeScript("onClear();");
+			} catch (Exception e) {
+				Logger log = LoggerFactory.getLogger(getClass());
+				log.error("failed to call onClear", e);
+			}
+		}
+	}
+
+	private class UploadKmlAction extends Action {
+		private UploadKmlAction() {
+			super("#Upload KML");
+			setImageDescriptor(Icon.UP.descriptor());
+		}
+
+		@Override
+		public void run() {
+			try {
+				Object kmlObj = webkit.executeScript("getKML()");
+				if (!(kmlObj instanceof String)) {
+					log.debug("KML editor did not returned a string");
+					kml = "";
+				} else {
+					kml = (String) kmlObj;
+				}
+				new KmlPrettifyFunction(b -> hasValidKml = b).prettifyKML(kml);
+				getEditor().setDirty(true);
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(getClass());
 				log.error("failed to call onClear", e);
