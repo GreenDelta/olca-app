@@ -170,7 +170,6 @@
                 java.doOpenEditor();
             });
             textEditor.on('change', function () {
-                console.log("js: call Java::kmlChanged");
                 if (!window.java) {
                     console.log("js: Java callback not bound");
                     return;
@@ -184,16 +183,12 @@
         }
 
         function showTabContent(tab) {
-            console.log("js: show tab " + tab);
             var id = $(tab).attr("href");
             $(".tab-pane").hide();
             $(id).show();
             var kml = getKML();
             if (id == "#textDiv") {
                 inTextEditor = true;
-                if (kml && window.prettifier) {
-                    kml = prettifier.prettifyKML(kml);
-                }
                 textEditor.setValue(kml);
             } else if (id == "#mapDiv") {
                 inTextEditor = false;
