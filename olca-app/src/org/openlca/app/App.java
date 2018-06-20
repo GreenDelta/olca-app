@@ -30,6 +30,7 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.eigen.NativeLibrary;
 import org.openlca.julia.Julia;
 import org.openlca.julia.JuliaDenseSolver;
+import org.openlca.julia.JuliaModule;
 import org.openlca.updates.script.CalculationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,8 @@ public class App {
 			return solver;
 		try {
 			File dir = new File(Platform.getInstallLocation().getURL().toURI());
-			if (Julia.load(dir)) {
+			if (Julia.loadFromDir(dir) // execution order is important
+					&& Julia.isLoaded(JuliaModule.OPEN_BLAS)) {
 				solver = new JuliaDenseSolver();
 				return solver;
 			}

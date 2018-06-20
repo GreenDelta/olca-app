@@ -1,34 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="platform" sequenceNumber="4">
+<?pde version="3.8"?><target name="platform" sequenceNumber="6">
 <locations>
-<location path="${eclipse_home}" type="Profile"/>
-<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.4.v20180322-2228"/>
-<unit id="org.eclipse.rcp.feature.group" version="4.7.3.v20180330-0640"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.7"/>
-</location>
-<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.babel.nls_eclipse_bg.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_tr.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_eclipse_zh.feature.group" version="4.7.0.v20171231020002"/>
-<repository location="http://download.eclipse.org/technology/babel/update-site/R0.15.1/oxygen"/>
-</location>
-<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.gef.all.feature.group" version="3.11.0.201606061308"/>
-<repository location="http://download.eclipse.org/tools/gef/updates/legacy/releases/"/>
-</location>
-<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.platform.ide" version="4.7.3.M20180330-0640"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.7"/>
-</location>
-<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.fx.target.rcp.feature.feature.group" version="3.3.0.201806080600"/>
-<repository location="http://download.eclipse.org/efxclipse/runtime-nightly/site"/>
-</location>
+  <location path="${eclipse_home}" type="Profile"/>
+  <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+    <unit id="org.eclipse.equinox.sdk.feature.group" version="3.13.4.v20180322-2228"/>
+    <unit id="org.eclipse.rcp.feature.group" version="4.7.3.v20180330-0640"/>
+    <repository location="http://download.eclipse.org/eclipse/updates/4.7"/>
+  </location>
+  <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+    <unit id="org.eclipse.babel.nls_eclipse_bg.feature.group" version="4.7.0.v20171231020002"/>
+    <unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.7.0.v20171231020002"/>
+    <unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.7.0.v20171231020002"/>
+    <unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.7.0.v20171231020002"/>
+    <unit id="org.eclipse.babel.nls_eclipse_it.feature.group" version="4.7.0.v20171231020002"/>
+    <unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.7.0.v20171231020002"/>
+    <unit id="org.eclipse.babel.nls_eclipse_tr.feature.group" version="4.7.0.v20171231020002"/>
+    <unit id="org.eclipse.babel.nls_eclipse_zh.feature.group" version="4.7.0.v20171231020002"/>
+    <repository location="http://download.eclipse.org/technology/babel/update-site/R0.15.1/oxygen"/>
+  </location>
+  <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+    <unit id="org.eclipse.gef.all.feature.group" version="3.11.0.201606061308"/>
+    <repository location="http://download.eclipse.org/tools/gef/updates/legacy/releases/"/>
+  </location>
+  <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+    <unit id="org.eclipse.fx.ide.basic.feature.feature.group" version="3.3.0.201805280700"/>
+    <unit id="org.eclipse.fx.ide.pde.feature.feature.group" version="3.3.0.201805280700"/>
+    <repository location="http://download.eclipse.org/efxclipse/updates-released/3.3.0/site"/>
+  </location>
 </locations>
 </target>
