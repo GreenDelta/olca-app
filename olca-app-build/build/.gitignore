@@ -2,3 +2,6 @@
 linux.*/
 macosx.*/
 win32.*/
+
+# the distribution packages
+dist/

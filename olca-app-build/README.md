@@ -6,20 +6,30 @@ installers. Thus, you need to have Python 3 installed in order to run the build.
 
 ## Export the products
 The first thing you need to do, is to export the Eclipse RCP products. Right click
-on the `olca-app` project and select `Export > Ecliplse product`. In the
+on the `olca-app` project and select `Export > Eclipse product`. In the
 export wizard select the folder `olca-app-build/build` as export folder as
 this is the folder where the `packager.py` script expects to find the product
-builds. Also, set the following options for the build:
+builds. The export should be done with the following settings:
 
-* [x] uncheck create p2 repository
-* [x] enable multi-platform build
-* [x] allow binary cycles in target platform
+* Configuration: `/olca-app/openLCA.product`
+* Root directory: `openLCA`
+* Destination directory: `../olca-app-build/build`
+* Uncheck: `Generate p2 repository`
+* Check: `Export for multiple platforms`
 
 The packager script can build distribution packages for the following platforms
 (but you do not need to build them all, if a platform product is missing it is
 simply ignored in the package):
 
+* Linux gtk x86_64
+* macOS cocoa x86_64
+* Windows win32 x86_64
 
+## Runtime packaging
+...
+
+
+TODO: old content starts here ...
 
 You can run the build by executing the `build.xml`
 script as `Ant Build` directly in Eclipse (this will also call the Python

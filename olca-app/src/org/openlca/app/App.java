@@ -57,7 +57,7 @@ public class App {
 				solver = new JuliaDenseSolver();
 				return solver;
 			}
-			log.info("Folder with Julia libraries not found in {}", dir);
+			log.info("Julia libraries could not be loaded from {}", dir);
 		} catch (Exception e) {
 			log.error("Failed to load libraries from folder <openLCA>/julia");
 		}
