@@ -145,7 +145,6 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		supplyChainCheck.setSelection(true);
 		preferProvidersRadio.setSelection(true);
 		preferSystemRadio.setSelection(true);
-		preferUnitRadio.setEnabled(false);
 		cutoffText.setEnabled(false);
 	}
 

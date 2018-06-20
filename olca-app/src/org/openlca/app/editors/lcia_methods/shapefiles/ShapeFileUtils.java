@@ -41,6 +41,7 @@ import org.openlca.core.database.FileStore;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.geo.kml.FeatureType;
+import org.openlca.util.Dirs;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,10 +116,13 @@ public class ShapeFileUtils {
 		File methodFolder = getFolder(method);
 		if (!methodFolder.exists())
 			methodFolder.mkdirs();
-		List<File> importFiles = getAllFiles(shapeFile);
-		for (File importFile : importFiles) {
-			File file = new File(methodFolder, importFile.getName());
-			Files.copy(importFile, file);
+		for (File f : getAllFiles(shapeFile)) {
+			File to = new File(methodFolder, f.getName());
+			if (f.isFile()) {
+				Files.copy(f, to);
+			} else {
+				Dirs.copy(f.toPath(), to.toPath());
+			}
 		}
 		String shapeFileName = FilenameUtils.removeExtension(shapeFile
 				.getName());
@@ -131,7 +135,7 @@ public class ShapeFileUtils {
 
 	/**
 	 * Get all related files of the given shape-file including the given file
-	 * itself.
+	 * itself and directories.
 	 */
 	private static List<File> getAllFiles(File shapeFile) {
 		if (shapeFile == null || !shapeFile.exists())
@@ -141,14 +145,9 @@ public class ShapeFileUtils {
 		List<File> files = new ArrayList<>();
 		for (File file : folder.listFiles()) {
 			String fName = FilenameUtils.removeExtension(file.getName());
-			if (Strings.nullOrEqual(rawName, fName))
-				if (!file.isDirectory())
-					files.add(file);
-				else {
-					for (File file2 : file.listFiles())
-						files.add(file2);
-					files.add(file);
-				}
+			if (Strings.nullOrEqual(rawName, fName)) {
+				files.add(file);
+			}
 		}
 		return files;
 	}
@@ -193,11 +192,14 @@ public class ShapeFileUtils {
 		if (folder == null || !folder.exists())
 			return;
 		File shapeFile = new File(folder, shapeFileName + ".shp");
-		List<File> files = getAllFiles(shapeFile);
-		for (File file : files) {
-			boolean b = file.delete();
-			if (!b) {
-				file.deleteOnExit();
+		for (File file : getAllFiles(shapeFile)) {
+			if (file.isDirectory()) {
+				Dirs.delete(file.getPath());
+			} else {
+				boolean b = file.delete();
+				if (!b) {
+					file.deleteOnExit();
+				}
 			}
 		}
 	}
@@ -228,7 +230,7 @@ public class ShapeFileUtils {
 
 	private static void writeParameters(ImpactMethod method,
 			String shapeFileName, Collection<ShapeFileParameter> parameters)
-					throws IOException {
+			throws IOException {
 		File folder = getFolder(method);
 		if (!folder.exists())
 			folder.mkdirs();

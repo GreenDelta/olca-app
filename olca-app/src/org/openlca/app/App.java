@@ -55,6 +55,7 @@ public class App {
 			if (Julia.loadFromDir(dir) // execution order is important
 					&& Julia.isLoaded(JuliaModule.OPEN_BLAS)) {
 				solver = new JuliaDenseSolver();
+				log.info("Loaded Julia-BLAS solver as default matrix solver");
 				return solver;
 			}
 			log.info("Julia libraries could not be loaded from {}", dir);

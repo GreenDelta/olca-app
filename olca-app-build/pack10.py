@@ -74,7 +74,13 @@ def pack_win(version, version_date):
         print("  Copy Julia libraries", end=' ... ', flush=True)
         for f in glob.glob('julia/win64/*.*'):
             shutil.copy2(p(f), product_dir)
-        print("done")
+        print('done')
+
+    # zip file
+    zip_file = p('build/dist/openLCA_win64_' + version_date)
+    print('  Create zip %s' % zip_file, end=' ... ', flush=True)
+    shutil.make_archive(zip_file, 'zip', 'build/win32.win32.x86_64')
+    print('done')
 
 
 def mkdir(path):
