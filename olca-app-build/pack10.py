@@ -4,6 +4,7 @@ import datetime
 import glob
 import os
 import shutil
+import subprocess
 import tarfile
 
 from os.path import exists
@@ -27,7 +28,8 @@ def main():
 
     # create packages
     # pack_win(version, version_date)
-    pack_linux(version_date)
+    # pack_linux(version_date)
+    pack_macos(version_date)
 
     print('All done\n')
 
@@ -110,6 +112,33 @@ def pack_linux(version_date):
     print('done')
 
 
+def pack_macos(version_date):
+    product_dir = 'build/macosx.cocoa.x86_64/openLCA'
+    if not exists(product_dir):
+        print('folder %s does not exist; skip macOS version' % product_dir)
+
+    print('Create macOS package')
+
+    app_dir = p(product_dir + '/' + 'openLCA.app')
+    moves = ['configuration', 'plugins', '.eclipseproduct']
+    for m in moves:
+        printw('  Move %s' % m)
+        move(p(product_dir + '/' + m), app_dir)
+        print('done')
+
+    # package the JRE
+    if not exists(app_dir + '/jre'):
+        jre_tar = glob.glob('jre/jre-*osx*x64*.tar')
+        if len(jre_tar) == 0:
+            print('  WARNING: No macOS JRE found')
+        else:
+            printw('  Copy JRE')
+            unzip(jre_tar[0], app_dir)
+            jre_dir = glob.glob(app_dir + '/*jre*')
+            os.rename(jre_dir[0], p(app_dir + '/jre'))
+            print('done')
+
+
 def copy_licenses(product_dir: str):
     # licenses
     printw('  Copy licenses')
@@ -126,6 +155,31 @@ def mkdir(path):
         os.mkdir(path)
     except Exception as e:
         print('Failed to create folder ' + path, e)
+
+
+def unzip(zip_file, to_dir):
+    """ Extracts the given file to the given folder using 7zip."""
+    print('unzip %s to %s' % (zip_file, to_dir))
+    if not os.path.exists(to_dir):
+        os.makedirs(to_dir)
+    zip_app = p('7zip/7za.exe')
+    cmd = [zip_app, 'x', zip_file, '-o%s' % to_dir]
+    code = subprocess.call(cmd)
+    print(code)
+
+
+def move(f_path, target_dir):
+    """ Moves the given file or directory to the given folder. """
+    if not os.path.exists(f_path):
+        # source file does not exist
+        return
+    base = os.path.basename(f_path)
+    if os.path.exists(target_dir + '/' + base):
+        # target file or dir already exsists
+        return
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+    shutil.move(f_path, target_dir)
 
 
 def p(path):
