@@ -4,17 +4,20 @@ import datetime
 import glob
 import os
 import shutil
+import tarfile
+
+from os.path import exists
 
 
 def main():
     print('Create the openLCA distribution packages')
 
     # delete the old versions
-    if os.path.exists('build/dist'):
+    if exists('build/dist'):
         print('Delete the old packages under build/dist', end=' ... ')
         shutil.rmtree('build/dist', ignore_errors=True)
-        mkdir('build/dist')
         print('done')
+    mkdir('build/dist')
 
     # version and time
     version = get_version()
@@ -23,7 +26,8 @@ def main():
                                         now.month, now.day)
 
     # create packages
-    pack_win(version, version_date)
+    # pack_win(version, version_date)
+    pack_linux(version_date)
 
     print('All done\n')
 
@@ -31,7 +35,7 @@ def main():
 def get_version():
     version = ''
     manifest = '../olca-app/META-INF/MANIFEST.MF'
-    print('Read version from %s' % manifest, end=' ... ', flush=True)
+    printw('Read version from %s' % manifest)
     with open(manifest, 'r', encoding='utf-8') as f:
         for line in f:
             text = line.strip()
@@ -45,46 +49,78 @@ def get_version():
 
 def pack_win(version, version_date):
     product_dir = 'build/win32.win32.x86_64/openLCA'
-    if not os.path.exists(product_dir):
+    if not exists(product_dir):
         print('folder %s does not exist; skip Windows version' % product_dir)
 
     print('Create Windows package')
-
-    # licenses
-    print('  Copy licenses', end=' ... ')
-    shutil.copy2(p('resources/OPENLCA_README.txt'), product_dir)
-    if not os.path.exists(p(product_dir + '/licenses')):
-        shutil.copytree(p('resources/licenses'), p(product_dir + '/licenses'))
-    print('done')
+    copy_licenses(product_dir)
 
     # jre
     jre_dir = p('jre/win64')
-    if not os.path.exists(jre_dir):
-        print('  WARNING: Java runtime not found in %s' % jre_dir)
+    if not exists(jre_dir):
+        print('  WARNING: No JRE found %s' % jre_dir)
     else:
-        if not os.path.exists(p(product_dir + '/jre')):
-            print('  Copy JRE', end=' ... ', flush=True)
+        if not exists(p(product_dir + '/jre')):
+            printw('  Copy JRE')
             shutil.copytree(jre_dir, p(product_dir + '/jre'))
             print('done')
 
     # julia libs
-    if not os.path.exists('julia/win64'):
+    if not exists('julia/win64'):
         print('  WARNING: Julia libraries not found in julia/win64')
     else:
-        print("  Copy Julia libraries", end=' ... ', flush=True)
+        printw("  Copy Julia libraries")
         for f in glob.glob('julia/win64/*.*'):
             shutil.copy2(p(f), product_dir)
         print('done')
 
     # zip file
     zip_file = p('build/dist/openLCA_win64_' + version_date)
-    print('  Create zip %s' % zip_file, end=' ... ', flush=True)
+    printw('  Create zip %s' % zip_file)
     shutil.make_archive(zip_file, 'zip', 'build/win32.win32.x86_64')
     print('done')
 
 
+def pack_linux(version_date):
+    product_dir = 'build/linux.gtk.x86_64/openLCA'
+    if not exists(product_dir):
+        print('folder %s does not exist; skip Linux version' % product_dir)
+
+    print('Create Linux package')
+    copy_licenses(product_dir)
+
+    # package the JRE
+    if not exists(product_dir + '/jre'):
+        jre_tar = glob.glob('jre/jre-*linux*x64*.tar')
+        if len(jre_tar) == 0:
+            print('  WARNING: No Linux JRE found')
+        else:
+            printw('  Copy JRE')
+            tar = tarfile.open(jre_tar[0])
+            tar.extractall(product_dir)
+            tar.close()
+            jre_dir = glob.glob(product_dir + '/*jre*')
+            os.rename(jre_dir[0], p(product_dir + '/jre'))
+            print('done')
+
+    printw('  Create distribtuion package')
+    dist_pack = p('build/dist/openLCA_linux64_%s.tar.gz' % version_date)
+    with tarfile.open(dist_pack, 'w:gz') as tar:
+        tar.add(p('build/linux.gtk.x86_64'), arcname='openLCA')
+    print('done')
+
+
+def copy_licenses(product_dir: str):
+    # licenses
+    printw('  Copy licenses')
+    shutil.copy2(p('resources/OPENLCA_README.txt'), product_dir)
+    if not exists(p(product_dir + '/licenses')):
+        shutil.copytree(p('resources/licenses'), p(product_dir + '/licenses'))
+    print('done')
+
+
 def mkdir(path):
-    if os.path.exists(path):
+    if exists(path):
         return
     try:
         os.mkdir(path)
@@ -97,6 +133,10 @@ def p(path):
     if os.sep != '/':
         return path.replace('/', os.sep)
     return path
+
+
+def printw(msg: str):
+    print(msg, end=' ... ', flush=True)
 
 
 if __name__ == '__main__':
