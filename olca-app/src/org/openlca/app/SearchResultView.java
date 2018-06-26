@@ -117,7 +117,7 @@ public class SearchResultView extends SimpleFormEditor {
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			ScrolledForm form = UI.formHeader(mform, M.SearchResults + ": "
-					+ term + " (" + results.size() + M.Results + ")");
+					+ term + " (" + results.size() + " " + M.Results + ")");
 			FormToolkit tk = mform.getToolkit();
 			Composite body = UI.formBody(form, tk);
 			UI.gridLayout(body, 1).verticalSpacing = 5;
