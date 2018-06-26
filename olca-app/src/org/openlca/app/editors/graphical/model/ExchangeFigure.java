@@ -8,11 +8,14 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.M;
+import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.layout.Animation;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.descriptors.Descriptors;
 
 class ExchangeFigure extends Label {
 
@@ -29,7 +32,20 @@ class ExchangeFigure extends Label {
 		setBorder(new LineBorder(ColorConstants.white, 1));
 		setForegroundColor(exchange.isAvoided ? BACKGROUND_COLOR : TEXT_COLOR);
 		setBackgroundColor(BACKGROUND_COLOR);
-		setToolTip(new Label(getPrefix() + ": " + node.getName()));
+		setToolTip(new Label(getToolTipText()));
+	}
+
+	private String getToolTipText() {
+		String text = getPrefix() + ": " + node.getName() + "\n";
+		if (node.exchange.flow == null)
+			return text;
+		if (node.exchange.flow.getCategory() != null) {
+			text += M.Category + ": " + Labels.getShortCategory(
+					Descriptors.toDescriptor(node.exchange.flow),
+					Cache.getEntityCache()) + "\n";
+		}
+		text += M.Amount + ": " + Numbers.format(node.exchange.amount);
+		return text;
 	}
 
 	private String getPrefix() {
