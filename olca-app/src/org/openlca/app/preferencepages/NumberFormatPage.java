@@ -55,7 +55,7 @@ public class NumberFormatPage extends PreferencePage implements
 		new DataBinding().onInt(() -> this, "accuracy", numberText);
 		numberText.addModifyListener((e) -> setSampleLabel());
 		createExample(parent);
-		applyFormatCheck = UI.formCheckBox(parent, M.ApplyFormatToInputsOutputs);
+		applyFormatCheck = UI.formCheckBox(parent, M.ApplyFormat);
 		new DataBinding().onBoolean(() -> this, "applyFormat", applyFormatCheck);
 		return parent;
 	}
