@@ -41,6 +41,10 @@ class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelPr
 			if (con.alreadyConnected)
 				return Icon.ACCEPT.get();
 			return null; // just show a - (getColumnText)
+		case 5:
+			if (con.defaultProvider)
+				return Icon.ACCEPT.get();
+			return null; // just show a - (getColumnText)
 		default:
 			return null;
 		}
@@ -60,6 +64,10 @@ class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelPr
 			return null; // show checkmark icon (getColumnImage)
 		case 4:
 			if (!con.alreadyConnected)
+				return "-";
+			return null; // show checkmark icon (getColumnImage)
+		case 5:
+			if (!con.defaultProvider)
 				return "-";
 			return null; // show checkmark icon (getColumnImage)
 		}

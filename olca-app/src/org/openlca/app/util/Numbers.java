@@ -5,6 +5,8 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import org.openlca.app.Preferences;
+
 /**
  * Provides methods for number formatting.
  */
@@ -31,6 +33,8 @@ public class Numbers {
 	}
 
 	public static String format(double number) {
+		if (!Preferences.is(Preferences.FORMAT_INPUT_VALUES)) 
+			return Double.toString(number);
 		if (applySimpleFormat(number, lowerBound, upperBound))
 			return apply(simpleFormat, number);
 		return apply(scienceFormat, number);

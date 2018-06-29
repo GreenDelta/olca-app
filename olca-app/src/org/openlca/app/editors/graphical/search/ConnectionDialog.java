@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical.search;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.Tuple;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
@@ -46,7 +48,8 @@ public class ConnectionDialog extends Dialog {
 		String CONNECT = M.Connect;
 		String EXISTS = M.AlreadyPresent;
 		String CONNECTED = M.AlreadyConnected;
-		String[] ALL = new String[] { NAME, CREATE, CONNECT, EXISTS, CONNECTED };
+		String DEFAULT_PROVIDER = M.IsDefaultProvider;
+		String[] ALL = new String[] { NAME, CREATE, CONNECT, EXISTS, CONNECTED, DEFAULT_PROVIDER };
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(ConnectionDialog.class);
@@ -144,10 +147,13 @@ public class ConnectionDialog extends Dialog {
 			ProcessDescriptor process = idToProcess.get(exchange.second);
 			boolean existing = existingProcesses.contains(process.getId());
 			boolean connected = false;
+			boolean defaultProvider = this.exchange.defaultProviderId == process.getId();
 			if (existing)
 				connected = isAlreadyConnected(process);
-			availableConnections.add(new AvailableConnection(process, exchange.first, existing, connected));
+			availableConnections.add(new AvailableConnection(process, exchange.first, existing, connected,
+					defaultProvider));
 		}
+		Collections.sort(availableConnections);
 	}
 
 	private boolean isAlreadyConnected(ProcessDescriptor process) {
@@ -225,21 +231,23 @@ public class ConnectionDialog extends Dialog {
 		return toConnect;
 	}
 
-	class AvailableConnection {
+	class AvailableConnection implements Comparable<AvailableConnection> {
 
 		final ProcessDescriptor process;
 		final long exchangeId;
 		final boolean alreadyExisting;
 		final boolean alreadyConnected;
+		final boolean defaultProvider;
 		boolean connect;
 		boolean create;
 
 		AvailableConnection(ProcessDescriptor process, long exchangeId,
-				boolean existing, boolean connected) {
+				boolean existing, boolean connected, boolean defaultProvider) {
 			this.process = process;
 			this.exchangeId = exchangeId;
 			this.alreadyExisting = existing;
 			this.alreadyConnected = connected;
+			this.defaultProvider = defaultProvider;
 		}
 
 		@Override
@@ -250,6 +258,13 @@ public class ConnectionDialog extends Dialog {
 			if (other.process == null)
 				return process == null;
 			return Objects.equals(other.process, process) && exchangeId == other.exchangeId;
+		}
+
+		@Override
+		public int compareTo(AvailableConnection o) {
+			String n1 = Labels.getDisplayName(process);
+			String n2 = Labels.getDisplayName(o.process);
+			return n1.toLowerCase().compareTo(n2.toLowerCase());
 		}
 
 	}

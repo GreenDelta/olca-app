@@ -42,7 +42,7 @@ public class M extends NLS {
 	public static String Analysis;
 	public static String AnalysisResultOf;
 	public static String AnalyzingForProblems;
-	public static String ApplyFormatToInputsOutputs;
+	public static String ApplyFormat;
 	public static String ApplyingDatabaseUpdates;
 	public static String AreYouSureYouWantToCheckout;
 	public static String ArithmeticMean;
@@ -431,6 +431,7 @@ public class M extends NLS {
 	public static String InventoryResult;
 	public static String InventoryResults;
 	public static String IsDefault;
+	public static String IsDefaultProvider;
 	public static String IsInvalidFormula;
 	public static String IsNotValidNumber;
 	public static String IsNotValidParameterName;

@@ -10,7 +10,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.Preferences;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.processes.ProcessEditor;
@@ -123,11 +122,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 
 	private String getAmountText(Exchange e) {
 		if (!showFormulas || e.amountFormula == null) {
-			if (Preferences.is(Preferences.FORMAT_INPUT_VALUES)) {
-				return Numbers.format(e.amount);
-			} else {
-				return Double.toString(e.amount);
-			}
+			return Numbers.format(e.amount);
 		}
 		return e.amountFormula;
 	}
@@ -138,10 +133,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		String unit = e.currency == null ? "" : " " + e.currency.code;
 		if (showFormulas && e.costFormula != null)
 			return e.costFormula + unit;
-		if (Preferences.is(Preferences.FORMAT_INPUT_VALUES))
-			return Numbers.format(e.costs) + unit;
-		else
-			return Double.toString(e.costs) + unit;
+		return Numbers.format(e.costs) + unit;
 	}
 
 	@Override
