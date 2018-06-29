@@ -138,6 +138,17 @@ def pack_macos(version_date):
             os.rename(jre_dir[0], p(app_dir + '/jre'))
             print('done')
 
+    # write the ini file
+    launcher_jar = os.path.basename(
+        glob.glob(app_dir + '/plugins/*launcher*.jar')[0])
+    launcher_lib = os.path.basename(
+        glob.glob(app_dir + '/plugins/*launcher.cocoa.macosx*')[0])
+    ini = fill_template(p('templates/openLCA_mac.ini'),
+                        launcher_jar=launcher_jar, launcher_lib=launcher_lib)
+    ini_file = p(app_dir + '/Contents/MacOS/openLCA.ini')
+    with(open(ini_file, 'w', encoding='utf-8', newline='\n')) as f:
+        f.write(ini.replace('\r\n', '\n'))
+
 
 def copy_licenses(product_dir: str):
     # licenses

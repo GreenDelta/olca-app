@@ -1,5 +1,5 @@
 renderTemplate = (templateName, data) ->
-	return jade.templates[templateName] data
+	return template data
 
 setData = (data, online) ->
 	$('#container').empty()

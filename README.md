@@ -71,8 +71,8 @@ Your development directory should now look like this:
       ...
 
 #### Building the HTML pages
-To build the HTML pages of the user interface navigate to the `olca-app-html`
-folder:
+To build the HTML pages of the user interface navigate to the
+[olca-app-html](./olca-app-html) folder:
 
 ```bash
 cd olca-app/olca-app-html

@@ -2,12 +2,12 @@ renderUpdate = (update) ->
 	unless update.parentRefId
 		update.parentRefId = null
 	update.hasAttachment = window.java.hasAttachment update.refId
-	template = $ jade.templates['update'] update
+	t = $ template update
 	for depRefId in update.dependencies
 		dependency = JSON.parse window.java.getUpdate depRefId
 		dependency.parentRefId = update.refId
-		template.append renderUpdate dependency
-	return template
+		t.append renderUpdate dependency
+	return t
 
 setData = (data) ->
 	$('#container').empty()
