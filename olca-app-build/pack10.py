@@ -98,17 +98,14 @@ def pack_linux(version_date):
             print('  WARNING: No Linux JRE found')
         else:
             printw('  Copy JRE')
-            tar = tarfile.open(jre_tar[0])
-            tar.extractall(product_dir)
-            tar.close()
+            unzip(jre_tar[0], product_dir)
             jre_dir = glob.glob(product_dir + '/*jre*')
             os.rename(jre_dir[0], p(product_dir + '/jre'))
             print('done')
 
     printw('  Create distribtuion package')
-    dist_pack = p('build/dist/openLCA_linux64_%s.tar.gz' % version_date)
-    with tarfile.open(dist_pack, 'w:gz') as tar:
-        tar.add(p('build/linux.gtk.x86_64'), arcname='openLCA')
+    dist_pack = p('build/dist/openLCA_linux64_%s' % version_date)
+    targz('.\\build\\linux.gtk.x86_64\\*', dist_pack)
     print('done')
 
 
@@ -119,12 +116,20 @@ def pack_macos(version_date):
 
     print('Create macOS package')
 
+    printw('Move folders around')
     app_dir = p(product_dir + '/' + 'openLCA.app')
     moves = ['configuration', 'plugins', '.eclipseproduct']
     for m in moves:
-        printw('  Move %s' % m)
         move(p(product_dir + '/' + m), app_dir)
-        print('done')
+    move(p(product_dir + '/MacOS/openLCA'),
+         p(app_dir + '/Contents/MacOS'))
+    if exists(p(product_dir + '/MacOS/')):
+        shutil.rmtree(p(product_dir + '/MacOS/'))
+    move(p(product_dir + '/Resources'),
+         p(app_dir + '/Contents'))
+    move(p(product_dir + '/Info.plist'),
+         p(app_dir + '/Contents'))
+    print('done')
 
     # package the JRE
     if not exists(app_dir + '/jre'):
@@ -149,6 +154,11 @@ def pack_macos(version_date):
     with(open(ini_file, 'w', encoding='utf-8', newline='\n')) as f:
         f.write(ini.replace('\r\n', '\n'))
 
+    printw('  Create distribtuion package')
+    dist_pack = p('build/dist/openLCA_macOS_%s' % version_date)
+    targz('.\\build\\macosx.cocoa.x86_64\\*', dist_pack)
+    print('done')
+
 
 def copy_licenses(product_dir: str):
     # licenses
@@ -166,6 +176,16 @@ def mkdir(path):
         os.mkdir(path)
     except Exception as e:
         print('Failed to create folder ' + path, e)
+
+
+def targz(folder, tar_file):
+    print('targz %s to %s' % (folder, tar_file))
+    tar_app = p('7zip/7za.exe')
+    cmd = [tar_app, 'a', '-ttar', tar_file + '.tar', folder]
+    subprocess.call(cmd)
+    cmd = [tar_app, 'a', '-tgzip', tar_file + '.tar.gz', tar_file + '.tar']
+    subprocess.call(cmd)
+    os.remove(tar_file + '.tar')
 
 
 def unzip(zip_file, to_dir):
@@ -191,6 +211,12 @@ def move(f_path, target_dir):
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
     shutil.move(f_path, target_dir)
+
+
+def fill_template(file_path, **kwargs):
+    with open(file_path, mode='r', encoding='utf-8') as f:
+        text = f.read()
+        return text.format(**kwargs)
 
 
 def p(path):
