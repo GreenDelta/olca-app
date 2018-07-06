@@ -289,10 +289,13 @@ class CalculationWizardPage extends WizardPage {
 		String name = Preferences.get("calc." + type.getSimpleName());
 		if (Strings.isNullOrEmpty(name))
 			return defaultValue;
-		T value = Enum.valueOf(type, name);
-		if (value == null)
-			return defaultValue;
-		return value;
+		try {
+			T value = Enum.valueOf(type, name);
+			if (value != null)
+				return value;
+		} catch (Exception e) {
+		}
+		return defaultValue;
 	}
 
 	CalculationSetup getSetup(ProductSystem system) {

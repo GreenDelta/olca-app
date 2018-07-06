@@ -41,7 +41,8 @@ public class ExcelExportAction extends Action {
 		if (file == null)
 			return;
 		ResultExport export = new ResultExport(editor.getSetup(),
-				editor.getResult(), editor.getDqResult(), file);
+				editor.getResult(), file);
+		export.setDQResult(editor.getDqResult());
 		App.run(M.Export, export, () -> {
 			if (export.doneWithSuccess()) {
 				InformationPopup.show(M.ExportDone);
