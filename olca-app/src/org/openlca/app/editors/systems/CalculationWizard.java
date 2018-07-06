@@ -33,6 +33,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.CalculationType;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.DQCalculationSetup;
@@ -128,14 +129,13 @@ public class CalculationWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		CalculationSetup setup = page.getSetup(productSystem);
-		CalculationType type = page.getCalculationType();
 		DQCalculationSetup dqSetup = null;
 		if (page.doDqAssessment())
 			dqSetup = dqPage.getSetup(productSystem);
 		boolean storeInventoryResult = page.doStoreInventoryResult();
-		saveDefaults(setup, dqSetup, type);
+		saveDefaults(setup, dqSetup);
 		try {
-			Calculation calculation = new Calculation(setup, type, dqSetup, storeInventoryResult);
+			Calculation calculation = new Calculation(setup, dqSetup, storeInventoryResult);
 			getContainer().run(true, true, calculation);
 			if (calculation.outOfMemory)
 				MemoryError.show();
@@ -154,7 +154,7 @@ public class CalculationWizard extends Wizard {
 		return input;
 	}
 
-	private void saveDefaults(CalculationSetup setup, DQCalculationSetup dqSetup, CalculationType type) {
+	private void saveDefaults(CalculationSetup setup, DQCalculationSetup dqSetup) {
 		if (setup == null)
 			return;
 		AllocationMethod am = setup.allocationMethod;
@@ -166,7 +166,7 @@ public class CalculationWizard extends Wizard {
 		BaseDescriptor nws = setup.nwSet;
 		String nwsVal = nws == null ? "" : nws.getRefId();
 		Preferences.set("calc.nwset", nwsVal);
-		saveDefault(CalculationType.class, type);
+		saveDefault(CalculationType.class, setup.type);
 		Preferences.set("calc.numberOfRuns", Integer.toString(setup.numberOfRuns));
 		Preferences.set("calc.costCalculation", Boolean.toString(setup.withCosts));
 		if (dqSetup == null) {
@@ -186,15 +186,13 @@ public class CalculationWizard extends Wizard {
 	private class Calculation implements IRunnableWithProgress {
 
 		private CalculationSetup setup;
-		private CalculationType type;
 		private DQCalculationSetup dqSetup;
 		private boolean storeInventoryResult;
 		private boolean outOfMemory;
 
-		public Calculation(CalculationSetup setup, CalculationType type,
-				DQCalculationSetup dqSetup, boolean storeInventoryResult) {
+		public Calculation(CalculationSetup setup, DQCalculationSetup dqSetup,
+				boolean storeInventoryResult) {
 			this.setup = setup;
-			this.type = type;
 			this.dqSetup = dqSetup;
 			this.storeInventoryResult = storeInventoryResult;
 		}
@@ -206,17 +204,17 @@ public class CalculationWizard extends Wizard {
 			int size = productSystem.processes.size();
 			log.trace("calculate a {} x {} system", size, size);
 			try {
-				switch (type) {
-				case ANALYSIS:
+				switch (setup.type) {
+				case UPSTREAM_ANALYSIS:
 					analyse();
 					break;
-				case MONTE_CARLO:
+				case MONTE_CARLO_SIMULATION:
 					simulate();
 					break;
-				case QUICK:
+				case CONTRIBUTION_ANALYSIS:
 					solve();
 					break;
-				case REGIONALIZED:
+				case REGIONALIZED_CALCULATION:
 					calcRegionalized();
 					break;
 				default:

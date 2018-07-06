@@ -24,6 +24,7 @@ import org.openlca.app.viewers.combo.NwSetComboViewer;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NwSetDao;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.CalculationType;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -91,7 +92,12 @@ class CalculationWizardPage extends WizardPage {
 
 	private void createRadios(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NO_RADIO_GROUP);
-		CalculationType[] types = getCalculationTypes();
+		CalculationType[] types = {
+				CalculationType.CONTRIBUTION_ANALYSIS,
+				CalculationType.UPSTREAM_ANALYSIS,
+				CalculationType.REGIONALIZED_CALCULATION,
+				CalculationType.MONTE_CARLO_SIMULATION,
+		};
 		UI.gridLayout(composite, types.length, 10, 0);
 		for (CalculationType cType : types) {
 			Button button = new Button(composite, SWT.RADIO);
@@ -109,7 +115,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void updateOptions() {
-		if (type == CalculationType.MONTE_CARLO) {
+		if (type == CalculationType.MONTE_CARLO_SIMULATION) {
 			setTopControl(optionStack, monteCarloOptions);
 		} else {
 			setTopControl(optionStack, commonOptions);
@@ -158,21 +164,15 @@ class CalculationWizardPage extends WizardPage {
 		}
 	}
 
-	private CalculationType[] getCalculationTypes() {
-		return new CalculationType[] { CalculationType.QUICK,
-				CalculationType.ANALYSIS, CalculationType.REGIONALIZED,
-				CalculationType.MONTE_CARLO };
-	}
-
 	private String getLabel(CalculationType type) {
 		switch (type) {
-		case ANALYSIS:
+		case UPSTREAM_ANALYSIS:
 			return M.Analysis;
-		case MONTE_CARLO:
+		case MONTE_CARLO_SIMULATION:
 			return M.MonteCarloSimulation;
-		case QUICK:
+		case CONTRIBUTION_ANALYSIS:
 			return M.QuickResults;
-		case REGIONALIZED:
+		case REGIONALIZED_CALCULATION:
 			return M.RegionalizedLCIA;
 		default:
 			return M.Unknown;
@@ -203,7 +203,8 @@ class CalculationWizardPage extends WizardPage {
 		NwSetDescriptor nwset = getDefaultNwSet();
 		if (nwset != null)
 			nwViewer.select(nwset);
-		type = getDefaultValue(CalculationType.class, CalculationType.QUICK);
+		type = getDefaultValue(CalculationType.class,
+				CalculationType.CONTRIBUTION_ANALYSIS);
 		calculationRadios.get(type).setSelection(true);
 		String itCount = Preferences.get("calc.numberOfRuns");
 		if (Strings.isNullOrEmpty(itCount))
@@ -214,7 +215,7 @@ class CalculationWizardPage extends WizardPage {
 		boolean doDqAssessment = getDefaultBoolean("calc.dqAssessment");
 		dqAssessment.setSelection(doDqAssessment);
 		updateOptions();
-		if (type == CalculationType.MONTE_CARLO)
+		if (type == CalculationType.MONTE_CARLO_SIMULATION)
 			return;
 		dqAssessmentChanged();
 	}
@@ -295,7 +296,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	CalculationSetup getSetup(ProductSystem system) {
-		CalculationSetup setUp = new CalculationSetup(system);
+		CalculationSetup setUp = new CalculationSetup(type, system);
 		setUp.withCosts = costCheck.getSelection();
 		setUp.allocationMethod = allocationViewer.getSelected();
 		setUp.impactMethod = methodViewer.getSelected();
@@ -304,10 +305,6 @@ class CalculationWizardPage extends WizardPage {
 		setUp.numberOfRuns = iterationCount;
 		setUp.parameterRedefs.addAll(system.parameterRedefs);
 		return setUp;
-	}
-
-	CalculationType getCalculationType() {
-		return type;
 	}
 
 	boolean doDqAssessment() {
