@@ -74,6 +74,6 @@ public class InfoSection {
 		toolkit.createLabel(composite, "");
 		Button button = toolkit.createButton(composite, M.ExportToExcel, SWT.NONE);
 		button.setImage(Images.get(FileType.EXCEL));
-		Controls.onSelect(button, (e) -> new ExcelExportAction(type).run());
+		Controls.onSelect(button, (e) -> new ExcelExportAction().run());
 	}
 }

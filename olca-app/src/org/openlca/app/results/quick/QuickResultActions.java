@@ -8,7 +8,7 @@ public class QuickResultActions extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		toolBarManager.add(new ExcelExportAction("Quick result"));
+		toolBarManager.add(new ExcelExportAction());
 	}
 
 }

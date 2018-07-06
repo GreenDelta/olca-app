@@ -8,7 +8,7 @@ public class RegionalizedResultActions extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		toolBarManager.add(new ExcelExportAction("Regionalized analysis result"));
+		toolBarManager.add(new ExcelExportAction());
 	}
 
 }

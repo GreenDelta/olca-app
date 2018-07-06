@@ -8,7 +8,7 @@ public class AnalyzeResultActions extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		toolBarManager.add(new ExcelExportAction("Analysis result"));
+		toolBarManager.add(new ExcelExportAction());
 	}
 
 }

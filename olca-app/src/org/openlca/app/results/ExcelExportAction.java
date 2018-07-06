@@ -17,13 +17,11 @@ import org.slf4j.LoggerFactory;
 public class ExcelExportAction extends Action {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private final String type;
 
-	public ExcelExportAction(String type) {
+	public ExcelExportAction() {
 		setImageDescriptor(Images.descriptor(FileType.EXCEL));
 		setText(M.ExportToExcel);
 		setToolTipText(M.ExportToExcel);
-		this.type = type;
 	}
 
 	@Override
@@ -37,22 +35,18 @@ public class ExcelExportAction extends Action {
 	}
 
 	private void runExport(IResultEditor<?> editor) {
-		File file = FileChooser.forExport("*.xlsx", toFileName(type));
+		String fileName = editor.getSetup().productSystem.getName();
+		fileName = fileName.replaceAll("[^A-Za-z0-9]", "_") + ".xlsx";
+		File file = FileChooser.forExport("*.xlsx", fileName);
 		if (file == null)
 			return;
-		ResultExport export = new ResultExport(editor.getSetup(), editor.getResult(), editor.getDqResult(), type, file);
-		App.run(M.Export, export, new Runnable() {
-			@Override
-			public void run() {
-				if (export.doneWithSuccess()) {
-					InformationPopup.show(M.ExportDone);
-				}
+		ResultExport export = new ResultExport(editor.getSetup(),
+				editor.getResult(), editor.getDqResult(), file);
+		App.run(M.Export, export, () -> {
+			if (export.doneWithSuccess()) {
+				InformationPopup.show(M.ExportDone);
 			}
 		});
-	}
-
-	private String toFileName(String type) {
-		return type.toLowerCase().replace(' ', '_') + ".xlsx";
 	}
 
 }
