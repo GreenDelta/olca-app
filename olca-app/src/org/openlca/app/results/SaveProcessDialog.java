@@ -56,9 +56,11 @@ public final class SaveProcessDialog extends Wizard {
 				m.beginTask(M.CreateProcess, IProgressMonitor.UNKNOWN);
 				Process p = null;
 				if (createMeta) {
-					p = SystemProcess.create(Database.get(), editor.getSetup(), editor.getResult(), name);
+					p = SystemProcess.createWithMetaData(
+							Database.get(), editor.getSetup(), editor.getResult(), name);
 				} else {
-					p = SystemProcess.createWithMetaData(Database.get(), editor.getSetup(), editor.getResult(), name);
+					p = SystemProcess.create(
+							Database.get(), editor.getSetup(), editor.getResult(), name);
 				}
 				ProcessDao dao = new ProcessDao(Database.get());
 				p = dao.insert(p);
