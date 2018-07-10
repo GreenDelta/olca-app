@@ -27,9 +27,9 @@ def main():
                                         now.month, now.day)
 
     # create packages
-    # pack_win(version, version_date)
+    pack_win(version, version_date)
     # pack_linux(version_date)
-    pack_macos(version_date)
+    # pack_macos(version_date)
 
     print('All done\n')
 
@@ -81,6 +81,33 @@ def pack_win(version, version_date):
     printw('  Create zip %s' % zip_file)
     shutil.make_archive(zip_file, 'zip', 'build/win32.win32.x86_64')
     print('done')
+
+    # create installer
+    pack_dir = 'build/win32.win32.x86_64'
+    inst_files = glob.glob('resources/installer_static_win/*')
+    for res in inst_files:
+        if os.path.isfile(res):
+            shutil.copy2(res, p(pack_dir + '/' + os.path.basename(res)))
+    mkdir(p(pack_dir + '/english'))
+    ini = fill_template(p('templates/openLCA_win.ini'),
+                        lang='en', heap='3584M')
+    with open(p(pack_dir + '/english/openLCA.ini'), 'w',
+              encoding='iso-8859-1') as f:
+        f.write(ini)
+    mkdir(p(pack_dir + '/german'))
+    ini_de = fill_template(p('templates/openLCA_win.ini'),
+                           lang='de', heap='3584M')
+    with open(p(pack_dir + '/german/openLCA.ini'), 'w',
+              encoding='iso-8859-1') as f:
+        f.write(ini_de)
+    setup = fill_template('templates/setup.nsi', version=version)
+    with open(p(pack_dir + '/setup.nsi'), 'w',
+              encoding='iso-8859-1') as f:
+        f.write(setup)
+    cmd = [p('nsis-2.46/makensis.exe'), p(pack_dir + '/setup.nsi')]
+    subprocess.call(cmd)
+    shutil.move(p(pack_dir + '/setup.exe'),
+                p('build/dist/openLCA_win64_' + version_date + ".exe"))
 
 
 def pack_linux(version_date):
