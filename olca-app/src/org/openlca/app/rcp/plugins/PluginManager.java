@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javafx.scene.web.WebEngine;
-import netscape.javascript.JSObject;
-
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
@@ -32,6 +29,10 @@ import org.openlca.app.util.UI;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import javafx.scene.web.WebEngine;
+import netscape.javascript.JSObject;
+
+@Deprecated
 public class PluginManager extends FormDialog implements WebPage {
 
 	private final static Gson mapper = new GsonBuilder().serializeNulls()

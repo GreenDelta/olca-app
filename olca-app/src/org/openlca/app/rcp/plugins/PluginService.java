@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+@Deprecated
 class PluginService {
 
 	public final static String BASE_URL = "http://www.openlca.org/files/openlca";

@@ -13,6 +13,7 @@ import org.openlca.app.rcp.Workspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 class JsonLoader {
 
 	private final static Logger log = LoggerFactory

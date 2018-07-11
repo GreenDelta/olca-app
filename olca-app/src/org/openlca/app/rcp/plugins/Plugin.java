@@ -1,5 +1,6 @@
 package org.openlca.app.rcp.plugins;
 
+@Deprecated
 class Plugin {
 
 	// <json>

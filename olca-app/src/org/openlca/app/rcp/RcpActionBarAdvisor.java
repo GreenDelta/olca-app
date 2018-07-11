@@ -115,7 +115,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(closeAllAction);
 		menu.add(new Separator());
 		menu.add(preferencesAction);
-		menu.add(new OpenPluginManagerAction());
+		// menu.add(new OpenPluginManagerAction());
 		menu.add(new Separator());
 		menu.add(importAction);
 		menu.add(exportAction);
@@ -143,7 +143,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		devMenu.add(Actions.create("SQL", Icon.SQL.descriptor(), SqlEditor::open));
 		devMenu.add(Actions.create("JavaScript", Icon.JAVASCRIPT.descriptor(), JavaScriptEditor::open));
 		devMenu.add(Actions.create("Python", Icon.PYTHON.descriptor(), PythonEditor::open));
-		devMenu.add(Actions.create("#IPC Server", Icon.DATABASE.descriptor(), IpcDialog::show));
+		devMenu.add(Actions.create("IPC Server", Icon.DATABASE.descriptor(), IpcDialog::show));
 	}
 
 	private void createMassReplaceMenu(MenuManager windowMenu) {
@@ -205,6 +205,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		}
 	}
 
+	@Deprecated
 	private class OpenPluginManagerAction extends Action {
 		public OpenPluginManagerAction() {
 			setText(M.ManagePlugins);
