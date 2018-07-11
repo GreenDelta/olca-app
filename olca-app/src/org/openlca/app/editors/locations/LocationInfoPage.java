@@ -3,6 +3,8 @@ package org.openlca.app.editors.locations;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -17,6 +19,7 @@ import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
 import org.slf4j.Logger;
@@ -69,7 +72,7 @@ class LocationInfoPage extends ModelPage<Location> implements WebPage {
 		section.setText(M.KmlEditor);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
-		Actions.bind(section, new UploadKmlAction(), new ClearAction());
+		Actions.bind(section, new SaveKmlAction(), new ClearAction());
 		UI.gridLayout(composite, 1);
 		UI.gridData(composite, true, true);
 		Control canvas = UI.createWebView(composite, this);
@@ -138,6 +141,7 @@ class LocationInfoPage extends ModelPage<Location> implements WebPage {
 		public void run() {
 			try {
 				webkit.executeScript("onClear();");
+				getEditor().setDirty(true);
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(getClass());
 				log.error("failed to call onClear", e);
@@ -145,10 +149,10 @@ class LocationInfoPage extends ModelPage<Location> implements WebPage {
 		}
 	}
 
-	private class UploadKmlAction extends Action {
-		private UploadKmlAction() {
-			super("#Upload KML");
-			setImageDescriptor(Icon.UP.descriptor());
+	private class SaveKmlAction extends Action {
+		private SaveKmlAction() {
+			super(M.Save);
+			setImageDescriptor(Icon.SAVE.descriptor());
 		}
 
 		@Override
@@ -163,9 +167,13 @@ class LocationInfoPage extends ModelPage<Location> implements WebPage {
 				}
 				new KmlPrettifyFunction(b -> hasValidKml = b).prettifyKML(kml);
 				getEditor().setDirty(true);
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
+				page.saveEditor(getEditor(), true);
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(getClass());
-				log.error("failed to call onClear", e);
+				log.error("failed to save KM", e);
+				Error.showBox("Failed to save KML: " + e.getMessage());
 			}
 		}
 	}

@@ -7,7 +7,6 @@ import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
 import org.openlca.app.App;
-import org.openlca.app.Config;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.RcpActivator;
 import org.slf4j.Logger;
@@ -67,7 +66,7 @@ public class Python {
 			return false;
 		byte[] bytes = Files.readAllBytes(versionFile.toPath());
 		String v = new String(bytes, "utf-8");
-		return Objects.equals(v, Config.VERSION);
+		return Objects.equals(v, App.getVersion());
 	}
 
 	private static void initPythonDir(File pyDir) throws Exception {
@@ -85,6 +84,6 @@ public class Python {
 			});
 		}
 		File file = new File(pyDir, ".version");
-		Files.write(file.toPath(), Config.VERSION.getBytes("utf-8"));
+		Files.write(file.toPath(), App.getVersion().getBytes("utf-8"));
 	}
 }

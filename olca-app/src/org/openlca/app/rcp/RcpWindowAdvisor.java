@@ -10,6 +10,7 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
+import org.openlca.app.App;
 import org.openlca.app.Config;
 import org.openlca.app.editors.StartPage;
 
@@ -32,7 +33,7 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 		configurer.setShowStatusLine(true);
 		configurer.setShowProgressIndicator(true);
 		configurer.setShowMenuBar(true);
-		configurer.setTitle(Config.APPLICATION_NAME + " " + Config.VERSION);
+		configurer.setTitle(Config.APPLICATION_NAME + " " + App.getVersion());
 	}
 
 	@Override
