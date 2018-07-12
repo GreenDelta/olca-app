@@ -8,10 +8,12 @@ import os
 import subprocess
 import shutil
 
+from os.path import exists
+
 
 def main():
     print('Create the distribution packages')
-    if os.path.exists('packages'):
+    if exists('packages'):
         shutil.rmtree('packages', ignore_errors=True)
         mkdir('packages')
     now = datetime.datetime.now()
@@ -59,6 +61,11 @@ def pack_win(arch, version_date, version):
 
     # package the JRE
     shutil.copytree(jre_dir, p(app_dir + '/jre'))
+    # julia libs
+    if arch == 'win64':
+        if exists('julia/win64'):
+            for f in glob.glob('julia/win64/*.*'):
+                shutil.copy2(p(f), p(app_dir))
 
     # create the non-installer zip
     print('Create the %s zip ...' % arch)
@@ -114,6 +121,11 @@ def pack_linux(version_date):
     jre_dir = glob.glob(app_dir + '/*jre*')
     os.rename(jre_dir[0], p(app_dir + '/jre'))
 
+    # copy Julia libs
+    if exists('julia/linux'):
+        for f in glob.glob('julia/linux/*.*'):
+            shutil.copy2(p(f), p(app_dir))
+
     targz('.\\packages\\linux\\*',
           p('packages/openLCA_linux_' + version_date))
     shutil.rmtree(p('packages/linux'))
@@ -161,7 +173,7 @@ def pack_macos(version_date):
 def unzip(zip_file, to_dir):
     """ Extracts the given file to the given folder using 7zip."""
     print('unzip %s to %s' % (zip_file, to_dir))
-    if not os.path.exists(to_dir):
+    if not exists(to_dir):
         os.makedirs(to_dir)
     zip_app = p('7zip/7za.exe')
     cmd = [zip_app, 'x', zip_file, '-o%s' % to_dir]
@@ -171,11 +183,11 @@ def unzip(zip_file, to_dir):
 
 def move(f_path, target_dir):
     """ Moves the given file or directory to the given folder. """
-    if not os.path.exists(f_path):
+    if not exists(f_path):
         print('File or folder %s does not exist' % f_path)
         return
     print('Move %s to %s' % (f_path, target_dir))
-    if not os.path.exists(target_dir):
+    if not exists(target_dir):
         os.makedirs(target_dir)
     shutil.move(f_path, target_dir)
 
@@ -197,13 +209,16 @@ def targz(folder, tar_file):
 
 def get_version():
     version = ''
-    with open('build.properties', 'r', encoding='utf-8') as f:
+    manifest = '../olca-app/META-INF/MANIFEST.MF'
+    printw('Read version from %s' % manifest)
+    with open(manifest, 'r', encoding='utf-8') as f:
         for line in f:
             text = line.strip()
-            if not text.startswith('openlca_version'):
+            if not text.startswith('Bundle-Version'):
                 continue
-            version = text.split('=')[1].strip()
+            version = text.split(':')[1].strip()
             break
+    print("done version=%s" % version)
     return version
 
 
@@ -221,12 +236,16 @@ def p(path):
 
 
 def mkdir(path):
-    if os.path.exists(path):
+    if exists(path):
         return
     try:
         os.mkdir(path)
     except Exception as e:
         print('Failed to create folder ' + path, e)
+
+
+def printw(msg: str):
+    print(msg, end=' ... ', flush=True)
 
 
 if __name__ == '__main__':
