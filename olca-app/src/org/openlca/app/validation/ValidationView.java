@@ -39,6 +39,7 @@ import org.openlca.core.database.Daos;
 import org.openlca.core.database.references.IReferenceSearch.Reference;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Parameter;
+import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +93,7 @@ public class ValidationView extends ViewPart {
 				monitor.beginTask(M.Initializing, IProgressMonitor.UNKNOWN);
 				Set<CategorizedDescriptor> descriptors = Navigator.collectDescriptors(selection);
 				DatabaseValidation validation = DatabaseValidation.with(monitor);
-				result.addAll(validation.evaluate(descriptors));				
+				result.addAll(validation.evaluate(descriptors));
 			});
 			StatusList[] model = createModel(result);
 			instance.viewer.setInput(model);
@@ -210,7 +211,8 @@ public class ValidationView extends ViewPart {
 		}
 
 		private String getText(ModelStatus status, int column) {
-			CategorizedDescriptor descriptor = Daos.categorized(Database.get(), status.modelType).getDescriptor(status.id);
+			CategorizedDescriptor descriptor = Daos.categorized(Database.get(), status.modelType).getDescriptor(
+					status.id);
 			Category category = null;
 			if (descriptor.getCategory() != null)
 				category = new CategoryDao(Database.get()).getForId(descriptor.getCategory());
@@ -247,6 +249,8 @@ public class ValidationView extends ViewPart {
 				text = "Broken ";
 			if (ref.getType() == Parameter.class) {
 				return text += "parameter '" + ref.property + "' in formula";
+			} else if (ref.getType() == ParameterRedef.class) {
+				return text += "parameter '" + ref.property + "' for parameter redefintion";
 			} else {
 				text += ref.property;
 				if (ref.id != 0)
