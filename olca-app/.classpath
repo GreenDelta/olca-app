@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="libs/mysql-connector-java-8.0.11.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/protobuf-java-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-beanutils-1.8.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-codec-1.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-collections-3.2.2.jar"/>
@@ -88,7 +90,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/log4j-1.2.17.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mapdb-2.0-beta7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/mysql-connector-java-5.1.25.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/nanohttpd-2.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-cloud-1.7.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.7.1.jar"/>
