@@ -233,7 +233,7 @@ public class CopyPaste {
 		CategorizedDescriptor entity = element.getContent();
 		Category category = getCategory(categoryElement);
 		Optional<Category> parent = Optional.fromNullable(category);
-		Daos.categorized(Database.get(), entity.getModelType()).updateCategory(entity, parent);
+		entity = Daos.categorized(Database.get(), entity.getModelType()).updateCategory(entity, parent);
 		// need to notifiy index updater manually here
 		Dataset dataset = CloudUtil.toDataset(entity, category);
 		Database.getIndexUpdater().update(dataset, entity.getId());
