@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -140,8 +141,15 @@ public class CommitAction extends Action implements INavigationAction {
 				dialog.run(true, false, (m) -> {
 					TimeEstimatingMonitor monitor = new TimeEstimatingMonitor(m);
 					monitor.beginTask(M.CommitingChanges, datasets.size());
+					MutableInteger counter = new MutableInteger();
 					try {
-						client.commit(message, datasets, (dataset) -> monitor.worked());
+						client.commit(message, datasets, (dataset) -> {
+							monitor.worked();
+							counter.value++;
+							if (counter.value == datasets.size()) {
+								monitor.beginTask(M.WaitingForServerToIndexDatasets, IProgressMonitor.UNKNOWN);
+							}
+						});
 					} catch (Exception e) {
 						throw new InvocationTargetException(e, e.getMessage());
 					}
@@ -260,6 +268,12 @@ public class CommitAction extends Action implements INavigationAction {
 			}
 			return differences;
 		}
+
+	}
+
+	private class MutableInteger {
+
+		public int value = 0;
 
 	}
 

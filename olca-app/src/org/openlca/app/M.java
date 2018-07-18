@@ -885,6 +885,7 @@ public class M extends NLS {
 	public static String VersionNewer;
 	public static String VeryHighRisk;
 	public static String VeryLowRisk;
+	public static String WaitingForServerToIndexDatasets;
 	public static String Warning;
 	public static String Warnings;
 	public static String Waste;
