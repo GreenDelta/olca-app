@@ -50,7 +50,6 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 				CopyPaste.copy(elements);
 			else
 				CopyPaste.cut(elements);
-			System.out.println("paste");
 			CopyPaste.pasteTo(targetElement);
 		}
 	}
