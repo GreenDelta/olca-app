@@ -29,7 +29,6 @@ import org.openlca.app.navigation.actions.db.DbDeleteAction;
 import org.openlca.app.navigation.actions.db.DbExportAction;
 import org.openlca.app.navigation.actions.db.DbImportAction;
 import org.openlca.app.navigation.actions.db.DbRenameAction;
-import org.openlca.app.navigation.actions.db.DbValidateAction;
 import org.openlca.app.util.viewers.Viewers;
 
 /**
@@ -47,7 +46,8 @@ public class NavigationActionProvider extends CommonActionProvider {
 					new CalculateSystemAction(),
 					new CreateModelAction(),
 					new OpenUsageAction(),
-					new DeleteModelAction()
+					new DeleteModelAction(),
+					ValidateAction.forModel()
 			},
 			// transfer actions
 			new INavigationAction[] {
@@ -150,7 +150,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 		INavigationAction[] actions = new INavigationAction[count];
 		actions[0] = new DbExportAction();
 		actions[1] = new DbActivateAction();
-		actions[2] = new DbValidateAction();
+		actions[2] = ValidateAction.forDatabase();
 		actions[3] = new DbCopyAction();
 		actions[4] = new DbRenameAction();
 		actions[5] = new DbDeleteAction();

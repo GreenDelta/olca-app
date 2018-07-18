@@ -6,6 +6,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.actions.ValidateAction;
 import org.openlca.app.navigation.actions.db.DbCloseAction;
 import org.openlca.app.navigation.actions.db.DbCompressAction;
 import org.openlca.app.navigation.actions.db.DbCopyAction;
@@ -16,7 +17,6 @@ import org.openlca.app.navigation.actions.db.DbImportAction;
 import org.openlca.app.navigation.actions.db.DbPropertiesAction;
 import org.openlca.app.navigation.actions.db.DbRenameAction;
 import org.openlca.app.navigation.actions.db.DbUpdateManagerAction;
-import org.openlca.app.navigation.actions.db.DbValidateAction;
 
 class DatabaseMenu implements IMenuListener {
 
@@ -39,7 +39,7 @@ class DatabaseMenu implements IMenuListener {
 			return;
 		IAction[] actions = new IAction[] {
 				new DbExportAction(),
-				new DbValidateAction(),
+				ValidateAction.forDatabase(),
 				new DbCopyAction(),
 				new DbRenameAction(),
 				new DbDeleteAction(),
