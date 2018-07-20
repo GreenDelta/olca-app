@@ -180,8 +180,57 @@ cd olca-app/olca-refdata
 mvn package
 ```
 
-License
--------
+## Building with Eclipse Oxygen and Julia libraries
+For Windows, it is now possible to build openLCA so that it runs on the
+Eclipse Oxygen platform and uses some math libraries for high performance
+computing from the [Julia](https://julialang.org/) project. This is currently
+tested with [Eclipse Oxygen 3A](https://www.eclipse.org/downloads/packages/release/Oxygen/3A)
+package for RCP/RAP development.
+
+The initial steps for this build are the same as before:
+
+* install/update the openLCA core and update modules
+* build the HTML pages
+* build the database templates
+
+The current master branch of the `olca-app` project contains now a new target
+platform definition `olca-app/olca-app/platform.target`. When you open this
+file the first time with the Eclipse `Target Editor`, Eclipse will
+download the resources of this target platform into your workspace. You may
+get errors like `Unable locate installable unit in target definition` when
+Eclipse fails to download some resources or the like (for possible fixes, see
+[here](https://stackoverflow.com/questions/10547007/unable-locate-installable-unit-in-target-definition)).
+But when it is downloaded it should work quite stable. Click on the
+`Set as Target Platform` link in the upper right corner of the `Target Editor`
+to use this as the target platform.
+
+To build the Windows version, we currently use the standard PDE Export wizard.
+Click on the `olca-app` project and then on `Export...` from the context menu.
+Select `Plug-in Development > Eclipse Product` from the export wizard and
+select the following options in the export dialog:
+
+* Configuration: `/olca-app/openLCA.product` (should be the default)
+* Root directory: `openLCA`
+* Synchronize before exporting: yes [x]
+* Destination directory: choose the `olca-app-build/build` folder of this project
+* Generate p2 repository: no [ ] (would be just overhead)
+* Export for multiple platforms: yes [x]
+* (take the defaults for the others)
+
+In the next page, select the platforms for which you want to build the product.
+However, only the Windows `x86_64` version is currently fully supported. After
+the export, you need to run the package script `pack10.py` to copy resources
+like the Java runtime, Julia libraries, etc. to the application folder and to
+create the installers. The layout of the build folder (with tools and runtime
+libraries) is the same as for the old build (see the `olca-app-build` project)
+but additionally contains a `julia` folder which contains the julia libraries.
+
+The distribution packages for Linux and macOS are still build as before. There
+is a `olca_platform` branch which contains the build configuration for the old
+target platform. Switch to this branch and merge the current master into this
+branch and the old build should work.
+
+## License
 Unless stated otherwise, all source code of the openLCA project is licensed
 under the [Mozilla Public License, v. 2.0](http://mozilla.org/MPL/2.0/). Please
 see the LICENSE.txt file in the root directory of the source code.
