@@ -24,6 +24,7 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
+import org.openlca.app.editors.parameters.clipboard.Clipboard;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
