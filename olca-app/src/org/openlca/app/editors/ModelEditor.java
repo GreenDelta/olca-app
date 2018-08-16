@@ -37,7 +37,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 
-public abstract class ModelEditor<T extends CategorizedEntity> extends FormEditor {
+public abstract class ModelEditor<T extends CategorizedEntity>
+		extends FormEditor {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private boolean dirty;
@@ -59,15 +60,18 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends FormEdito
 	}
 
 	public boolean hasComment(String path) {
-		return App.isCommentingEnabled() && comments != null && comments.hasPath(path);
+		return App.isCommentingEnabled() && comments != null
+				&& comments.hasPath(path);
 	}
 
 	public boolean hasAnyComment(String path) {
-		return App.isCommentingEnabled() && comments != null && comments.hasAnyPath(path);
+		return App.isCommentingEnabled() && comments != null
+				&& comments.hasAnyPath(path);
 	}
 
 	protected void addCommentPage() throws PartInitException {
-		if (!App.isCommentingEnabled() || comments == null || !comments.hasRefId(model.getRefId()))
+		if (!App.isCommentingEnabled() || comments == null
+				|| !comments.hasRefId(model.getRefId()))
 			return;
 		addPage(new CommentsPage(this, comments, model));
 	}
@@ -102,7 +106,8 @@ public abstract class ModelEditor<T extends CategorizedEntity> extends FormEdito
 		try {
 			dao = Daos.base(Database.get(), modelClass);
 			model = dao.getForId(i.getDescriptor().getId());
-			loadComments(i.getDescriptor().getModelType(), i.getDescriptor().getRefId());
+			loadComments(i.getDescriptor().getModelType(),
+					i.getDescriptor().getRefId());
 			eventBus.register(this);
 		} catch (Exception e) {
 			log.error("failed to load " + modelClass.getSimpleName()
