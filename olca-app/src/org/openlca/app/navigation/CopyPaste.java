@@ -3,6 +3,7 @@ package org.openlca.app.navigation;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Queue;
 
 import org.openlca.app.cloud.CloudUtil;
@@ -18,8 +19,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 public class CopyPaste {
 
@@ -232,7 +231,7 @@ public class CopyPaste {
 	private static void move(ModelElement element, INavigationElement<?> categoryElement) {
 		CategorizedDescriptor entity = element.getContent();
 		Category category = getCategory(categoryElement);
-		Optional<Category> parent = Optional.fromNullable(category);
+		Optional<Category> parent = Optional.ofNullable(category);
 		entity = Daos.categorized(Database.get(), entity.getModelType()).updateCategory(entity, parent);
 		// need to notifiy index updater manually here
 		Dataset dataset = CloudUtil.toDataset(entity, category);

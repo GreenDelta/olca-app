@@ -6,13 +6,13 @@ import java.util.UUID;
 
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
+import org.openlca.core.model.Uncertainty;
 
 import com.google.common.base.Strings;
 
 public class Clipboard {
 
 	private final ClipboardText text;
-	private final UncertaintyParser uncertainties = new UncertaintyParser();
 
 	private Clipboard(ClipboardText text) {
 		this.text = text;
@@ -88,7 +88,7 @@ public class Clipboard {
 		p.setName(name);
 		p.setValue(val);
 		if (fields.length > 2)
-			p.setUncertainty(uncertainties.read(fields[2]));
+			p.setUncertainty(Uncertainty.fromString(fields[2]));
 		if (fields.length > 3)
 			p.setDescription(fields[3]);
 		return p;

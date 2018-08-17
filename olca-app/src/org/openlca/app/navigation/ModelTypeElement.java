@@ -2,6 +2,7 @@ package org.openlca.app.navigation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.openlca.app.db.Database;
 import org.openlca.core.database.CategorizedEntityDao;
@@ -12,8 +13,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 public class ModelTypeElement extends NavigationElement<ModelType> {
 
@@ -50,8 +49,8 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 			CategorizedEntityDao<?, ?> entityDao = Daos.categorized(Database.get(), type);
 			if (entityDao == null)
 				return;
-			Optional<Category> nil = Optional.absent();
-			for (CategorizedDescriptor descriptor : entityDao.getDescriptors(nil)) 
+			Optional<Category> nil = Optional.empty();
+			for (CategorizedDescriptor descriptor : entityDao.getDescriptors(nil))
 				elements.add(new ModelElement(this, descriptor));
 		} catch (Exception e) {
 			log.error("Failed to add model elements: " + type, e);
