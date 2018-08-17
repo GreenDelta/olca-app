@@ -16,10 +16,10 @@ class UncertaintyParser {
 	};
 
 	private String[] uncertaintyPatterns = {
-			"\\s*lognormal:\\s+gmean=([0-9,\\.]+)\\s+gsigma=([0-9,\\.]+)\\s*",
-			"\\s*normal:\\s+mean=([0-9,\\.]+)\\s+sigma=([0-9,\\.]+)\\s*",
-			"\\s*triangular:\\s+min=([0-9,\\.]+)\\s+mode=([0-9,\\.]+)\\s+max=([0-9,\\.]+)\\s*",
-			"\\s*uniform:\\s+min=([0-9,\\.]+)\\s+max=([0-9,\\.]+)\\s*"
+			"\\s*lognormal:\\s+gmean=([0-9,\\.,\\-,E,e]+)\\s+gsigma=([0-9,\\.,\\-,E,e]+)\\s*",
+			"\\s*normal:\\s+mean=([0-9,\\.,\\-,E,e]+)\\s+sigma=([0-9,\\.]+,\\-,E,e)\\s*",
+			"\\s*triangular:\\s+min=([0-9,\\.,\\-,E,e]+)\\s+mode=([0-9,\\.,\\-,E,e]+)\\s+max=([0-9,\\.,\\-,E,e]+)\\s*",
+			"\\s*uniform:\\s+min=([0-9,\\.,\\-,E,e]+)\\s+max=([0-9,\\.,\\-,E,e]+)\\s*"
 	};
 
 	Uncertainty read(String field) {

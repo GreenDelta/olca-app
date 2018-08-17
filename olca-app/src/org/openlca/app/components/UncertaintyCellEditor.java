@@ -5,7 +5,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.processes.ProcessEditor;
-import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.Parameter;
@@ -46,21 +45,21 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 
 	@Override
 	protected void doSetValue(Object value) {
-		Uncertainty uncertainty = null;
+		Uncertainty u = null;
 		if (value instanceof ImpactFactor) {
 			factor = (ImpactFactor) value;
-			uncertainty = factor.uncertainty;
+			u = factor.uncertainty;
 		} else if (value instanceof Exchange) {
 			exchange = (Exchange) value;
-			uncertainty = exchange.uncertainty;
+			u = exchange.uncertainty;
 		} else if (value instanceof Parameter) {
 			parameter = (Parameter) value;
-			uncertainty = parameter.getUncertainty();
+			u = parameter.getUncertainty();
 		} else if (value instanceof ParameterRedef) {
 			parameterRedef = (ParameterRedef) value;
-			uncertainty = parameterRedef.getUncertainty();
+			u = parameterRedef.getUncertainty();
 		}
-		super.doSetValue(UncertaintyLabel.get(uncertainty));
+		super.doSetValue(u == null ? "none" : u.toString());
 	}
 
 	@Override
@@ -78,7 +77,7 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 	}
 
 	private void setUncertainty(Uncertainty u) {
-		if (u.getDistributionType() == UncertaintyType.NONE)
+		if (u.distributionType == UncertaintyType.NONE)
 			u = null;
 		if (exchange != null)
 			exchange.uncertainty = u;
@@ -88,7 +87,7 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 			parameter.setUncertainty(u);
 		else if (parameterRedef != null)
 			parameterRedef.setUncertainty(u);
-		updateContents(UncertaintyLabel.get(u));
+		updateContents(Uncertainty.string(u));
 		if (editor != null)
 			editor.setDirty(true);
 	}

@@ -25,7 +25,6 @@ import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -36,6 +35,7 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.Uncertainty;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,24 +137,24 @@ public class ModelParameterPage<T extends CategorizedEntity> extends ModelPage<T
 			ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
+		public Image getColumnImage(Object obj, int col) {
 			return null;
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof Parameter))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof Parameter))
 				return null;
-			Parameter parameter = (Parameter) element;
-			switch (columnIndex) {
+			Parameter p = (Parameter) obj;
+			switch (col) {
 			case 0:
-				return parameter.getName();
+				return p.getName();
 			case 1:
-				return Double.toString(parameter.getValue());
+				return Double.toString(p.getValue());
 			case 2:
-				return UncertaintyLabel.get(parameter.getUncertainty());
+				return Uncertainty.string(p.getUncertainty());
 			case 3:
-				return parameter.getDescription();
+				return p.getDescription();
 			default:
 				return null;
 			}

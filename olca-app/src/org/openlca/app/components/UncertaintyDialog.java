@@ -48,8 +48,8 @@ public class UncertaintyDialog extends Dialog {
 		if (initial == null)
 			initial = new Uncertainty();
 		this.uncertainty = initial.clone();
-		if (uncertainty.getParameter1Value() != null)
-			defaultMean = uncertainty.getParameter1Value();
+		if (uncertainty.parameter1 != null)
+			defaultMean = uncertainty.parameter1;
 	}
 
 	public Uncertainty getUncertainty() {
@@ -100,22 +100,22 @@ public class UncertaintyDialog extends Dialog {
 
 	private NumberGenerator makeGenerator() {
 		Uncertainty uncertainty = selectedClient.fetchUncertainty();
-		switch (uncertainty.getDistributionType()) {
+		switch (uncertainty.distributionType) {
 		case LOG_NORMAL:
-			return NumberGenerator.logNormal(uncertainty.getParameter1Value(),
-					uncertainty.getParameter2Value());
+			return NumberGenerator.logNormal(uncertainty.parameter1,
+					uncertainty.parameter2);
 		case NONE:
-			return NumberGenerator.discrete(uncertainty.getParameter1Value());
+			return NumberGenerator.discrete(uncertainty.parameter1);
 		case NORMAL:
-			return NumberGenerator.normal(uncertainty.getParameter1Value(),
-					uncertainty.getParameter2Value());
+			return NumberGenerator.normal(uncertainty.parameter1,
+					uncertainty.parameter2);
 		case TRIANGLE:
-			return NumberGenerator.triangular(uncertainty.getParameter1Value(),
-					uncertainty.getParameter2Value(),
-					uncertainty.getParameter3Value());
+			return NumberGenerator.triangular(uncertainty.parameter1,
+					uncertainty.parameter2,
+					uncertainty.parameter3);
 		case UNIFORM:
-			return NumberGenerator.uniform(uncertainty.getParameter1Value(),
-					uncertainty.getParameter2Value());
+			return NumberGenerator.uniform(uncertainty.parameter1,
+					uncertainty.parameter2);
 		default:
 			return NumberGenerator.discrete(1);
 		}
@@ -150,7 +150,7 @@ public class UncertaintyDialog extends Dialog {
 			UncertaintyType type = types[i];
 			items[i] = Labels.uncertaintyType(type);
 			if (uncertainty != null
-					&& uncertainty.getDistributionType() == type)
+					&& uncertainty.distributionType == type)
 				idx = i;
 		}
 		combo.setItems(items);
@@ -197,7 +197,7 @@ public class UncertaintyDialog extends Dialog {
 
 		UncertaintyPanel(Composite composite, UncertaintyType type) {
 			this.composite = composite;
-			if (type == uncertainty.getDistributionType())
+			if (type == uncertainty.distributionType)
 				_uncertainty = uncertainty;
 			else
 				_uncertainty = createUncertainty(type);
@@ -226,14 +226,14 @@ public class UncertaintyDialog extends Dialog {
 		private String initialValue(int param) {
 			switch (param) {
 			case 1:
-				return initialValue(_uncertainty.getParameter1Value(),
-						_uncertainty.getParameter1Formula());
+				return initialValue(_uncertainty.parameter1,
+						_uncertainty.formula1);
 			case 2:
-				return initialValue(_uncertainty.getParameter2Value(),
-						_uncertainty.getParameter2Formula());
+				return initialValue(_uncertainty.parameter2,
+						_uncertainty.formula2);
 			case 3:
-				return initialValue(_uncertainty.getParameter3Value(),
-						_uncertainty.getParameter3Formula());
+				return initialValue(_uncertainty.parameter3,
+						_uncertainty.formula3);
 			default:
 				return "";
 			}
@@ -250,7 +250,7 @@ public class UncertaintyDialog extends Dialog {
 		}
 
 		private String[] getLabels() {
-			switch (_uncertainty.getDistributionType()) {
+			switch (_uncertainty.distributionType) {
 			case LOG_NORMAL:
 				return new String[] { M.GeometricMean,
 						M.GeometricStandardDeviation };
@@ -287,7 +287,7 @@ public class UncertaintyDialog extends Dialog {
 		}
 
 		private boolean hasParameter(int parameter) {
-			switch (_uncertainty.getDistributionType()) {
+			switch (_uncertainty.distributionType) {
 			case LOG_NORMAL:
 				return parameter == 1 || parameter == 2;
 			case NONE:
@@ -324,16 +324,16 @@ public class UncertaintyDialog extends Dialog {
 		private void set(int param, double val, String s) {
 			switch (param) {
 			case 1:
-				_uncertainty.setParameter1Formula(s);
-				_uncertainty.setParameter1Value(val);
+				_uncertainty.formula1 = s;
+				_uncertainty.parameter1 = val;
 				break;
 			case 2:
-				_uncertainty.setParameter2Formula(s);
-				_uncertainty.setParameter2Value(val);
+				_uncertainty.formula2 = s;
+				_uncertainty.parameter2 = val;
 				break;
 			case 3:
-				_uncertainty.setParameter3Formula(s);
-				_uncertainty.setParameter3Value(val);
+				_uncertainty.formula3 = s;
+				_uncertainty.parameter3 = val;
 				break;
 			default:
 				break;

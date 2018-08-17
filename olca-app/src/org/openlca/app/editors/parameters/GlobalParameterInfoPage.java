@@ -18,9 +18,9 @@ import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
+import org.openlca.core.model.Uncertainty;
 
 class GlobalParameterInfoPage extends ModelPage<Parameter> {
 
@@ -82,13 +82,13 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 	private void forInputParameter(Composite comp) {
 		doubleText(comp, M.Value, "value");
 		UI.formLabel(comp, toolkit, M.Uncertainty);
-		Hyperlink link = UI.formLink(comp, toolkit, UncertaintyLabel.get(getModel().getUncertainty()));
+		Hyperlink link = UI.formLink(comp, toolkit, Uncertainty.string(getModel().getUncertainty()));
 		Controls.onClick(link, e -> {
 			UncertaintyDialog dialog = new UncertaintyDialog(UI.shell(), getModel().getUncertainty());
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return;
 			getModel().setUncertainty(dialog.getUncertainty());
-			link.setText(UncertaintyLabel.get(getModel().getUncertainty()));
+			link.setText(Uncertainty.string(getModel().getUncertainty()));
 			getEditor().setDirty(true);
 		});
 		UI.filler(comp, toolkit);

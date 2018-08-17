@@ -24,7 +24,6 @@ import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -35,6 +34,7 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -171,11 +171,11 @@ class ParameterRedefTable {
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof ParameterRedef))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof ParameterRedef))
 				return null;
-			ParameterRedef redef = (ParameterRedef) element;
-			switch (columnIndex) {
+			ParameterRedef redef = (ParameterRedef) obj;
+			switch (col) {
 			case 0:
 				BaseDescriptor model = getModel(redef);
 				if (model != null)
@@ -186,7 +186,7 @@ class ParameterRedefTable {
 			case 2:
 				return Double.toString(redef.getValue());
 			case 3:
-				return UncertaintyLabel.get(redef.getUncertainty());
+				return Uncertainty.string(redef.getUncertainty());
 			default:
 				return null;
 			}

@@ -64,9 +64,11 @@ public class DbActivateAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (Database.get() != null)
+		log.trace("Run database activation");
+		if (Database.get() != null) {
 			if (!Editors.closeAll())
 				return;
+		}
 
 		Activation activation = new Activation();
 		// App.run does not work as we have to show a modal dialog in the
@@ -90,8 +92,11 @@ public class DbActivateAction extends Action implements INavigationAction {
 				throws InvocationTargetException, InterruptedException {
 			try {
 				monitor.beginTask(M.OpenDatabase, IProgressMonitor.UNKNOWN);
+				log.trace("Close other database if open");
 				Database.close();
+				log.trace("Activate selected database");
 				IDatabase db = Database.activate(config);
+				log.trace("Get version state");
 				versionState = VersionState.checkVersion(db);
 				monitor.done();
 			} catch (Exception e) {
@@ -121,6 +126,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 		}
 
 		private void handleVersionState(VersionState state) {
+			log.trace("Check version state");
 			switch (state) {
 			case HIGHER_VERSION:
 				error(M.DatabaseNeedsUpdate);
@@ -144,12 +150,14 @@ public class DbActivateAction extends Action implements INavigationAction {
 		}
 
 		private void refresh() {
+			log.trace("Refresh navigation");
 			Navigator.refresh();
 			if (Database.get() == null)
 				return;
 			INavigationElement<?> dbElem = Navigator.findElement(config);
 			INavigationElement<?> firstModelType = dbElem.getChildren().get(0);
 			Navigator.getInstance().getCommonViewer().reveal(firstModelType);
+			log.trace("Refresh history view (if open)");
 			HistoryView.refresh();
 		}
 
@@ -165,6 +173,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 				closeDatabase();
 				return;
 			}
+			log.trace("Run database updates");
 			AtomicBoolean failed = new AtomicBoolean(false);
 			App.run(M.UpdateDatabase,
 					() -> runUpgrades(db, failed),

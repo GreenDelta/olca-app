@@ -27,7 +27,6 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -42,6 +41,7 @@ import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.io.CategoryPath;
@@ -223,7 +223,7 @@ class ImpactFactorTable {
 			case 4:
 				return getFactorUnit(f);
 			case 5:
-				return UncertaintyLabel.get(f.uncertainty);
+				return Uncertainty.string(f.uncertainty);
 			default:
 				return null;
 			}

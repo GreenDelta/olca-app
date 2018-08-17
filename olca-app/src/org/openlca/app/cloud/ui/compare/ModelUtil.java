@@ -8,7 +8,6 @@ import java.util.Map;
 import org.openlca.app.cloud.ui.compare.json.IDependencyResolver;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil.ElementFinder;
-import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQScore;
@@ -129,8 +128,8 @@ public class ModelUtil {
 	}
 
 	private static String getUncertaintyLabel(JsonObject o) {
-		Uncertainty uncertainty = Uncertainties.read(o);
-		return UncertaintyLabel.get(uncertainty);
+		Uncertainty u = Uncertainties.read(o);
+		return Uncertainty.string(u);
 	}
 
 	private static boolean isGlobalParameter(JsonObject parameter) {

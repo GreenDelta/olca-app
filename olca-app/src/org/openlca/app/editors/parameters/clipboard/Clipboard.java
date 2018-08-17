@@ -35,6 +35,9 @@ public class Clipboard {
 		for (Parameter param : params) {
 			param.setScope(scope);
 			param.setInputParameter(false);
+			if (param.getFormula() == null) {
+				param.setFormula(Double.toString(param.getValue()));
+			}
 			param.setUncertainty(null);
 		}
 		return params;

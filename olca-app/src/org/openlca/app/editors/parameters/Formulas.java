@@ -116,12 +116,12 @@ public class Formulas {
 	private void eval(Uncertainty u, Scope s) {
 		if (u == null)
 			return;
-		if (u.getParameter1Formula() != null)
-			u.setParameter1Value(eval(u.getParameter1Formula(), s));
-		if (u.getParameter2Formula() != null)
-			u.setParameter2Value(eval(u.getParameter2Formula(), s));
-		if (u.getParameter3Formula() != null)
-			u.setParameter3Value(eval(u.getParameter3Formula(), s));
+		if (u.formula1 != null)
+			u.parameter1 = eval(u.formula1, s);
+		if (u.formula2 != null)
+			u.parameter2 = eval(u.formula2, s);
+		if (u.formula3 != null)
+			u.parameter3 = eval(u.formula3, s);
 	}
 
 	private double eval(String formula, Scope s) {

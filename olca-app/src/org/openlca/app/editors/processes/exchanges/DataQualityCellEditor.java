@@ -82,9 +82,9 @@ class DataQualityCellEditor extends DialogCellEditor {
 
 	private void onUseUncertainties(DataQualityShell shell) {
 		Uncertainty u = new Uncertainty();
-		u.setDistributionType(UncertaintyType.LOG_NORMAL);
-		u.setParameter1Value(exchange.amount);
-		u.setParameter2Value(shell.updateSigmaG());
+		u.distributionType = UncertaintyType.LOG_NORMAL;
+		u.parameter1 = exchange.amount;
+		u.parameter2 = shell.updateSigmaG();
 		exchange.uncertainty = u;
 		viewer.refresh();
 	}

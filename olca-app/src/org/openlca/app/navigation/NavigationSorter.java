@@ -12,7 +12,6 @@ import org.openlca.core.model.ModelType;
 public class NavigationSorter extends ViewerSorter {
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public int compare(Viewer viewer, Object e1, Object e2) {
 		if (e1 == null || e2 == null)
 			return 0;
@@ -25,7 +24,7 @@ public class NavigationSorter extends ViewerSorter {
 		String name1 = getLabel(viewer, e1);
 		String name2 = getLabel(viewer, e2);
 
-		// TODO: document why this here is makes sense: (?)
+		// TODO: document why this here makes sense: (?)
 		if (e1 instanceof DatabaseElement && name1.contains(" "))
 			name1 = name1.substring(0, name1.indexOf(" "));
 		if (e2 instanceof DatabaseElement && name2.contains(" "))

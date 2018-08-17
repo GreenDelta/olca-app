@@ -33,7 +33,7 @@ public class Numbers {
 	}
 
 	public static String format(double number) {
-		if (!Preferences.is(Preferences.FORMAT_INPUT_VALUES)) 
+		if (!Preferences.is(Preferences.FORMAT_INPUT_VALUES))
 			return Double.toString(number);
 		if (applySimpleFormat(number, lowerBound, upperBound))
 			return apply(simpleFormat, number);
@@ -85,7 +85,8 @@ public class Numbers {
 
 	private static boolean applySimpleFormat(double number, double lower,
 			double upper) {
-		return number == 0 || (number >= -upper && number <= -lower)
+		return number == 0
+				|| (number >= -upper && number <= -lower)
 				|| (number >= lower && number <= upper);
 	}
 

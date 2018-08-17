@@ -30,7 +30,6 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.app.util.Warning;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
@@ -44,6 +43,7 @@ import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
+import org.openlca.core.model.Uncertainty;
 import org.openlca.util.Strings;
 
 /**
@@ -292,27 +292,27 @@ public class ParameterSection {
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof Parameter))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof Parameter))
 				return null;
-			Parameter parameter = (Parameter) element;
-			switch (columnIndex) {
+			Parameter p = (Parameter) obj;
+			switch (col) {
 			case 0:
-				return parameter.getName();
+				return p.getName();
 			case 1:
 				if (forInputParameters)
-					return Double.toString(parameter.getValue());
+					return Double.toString(p.getValue());
 				else
-					return parameter.getFormula();
+					return p.getFormula();
 			case 2:
 				if (forInputParameters)
-					return UncertaintyLabel.get(parameter.getUncertainty());
+					return Uncertainty.string(p.getUncertainty());
 				else
-					return Double.toString(parameter.getValue());
+					return Double.toString(p.getValue());
 			case 3:
-				return parameter.getDescription();
+				return p.getDescription();
 			case 4:
-				return parameter.getExternalSource();
+				return p.getExternalSource();
 			default:
 				return null;
 			}

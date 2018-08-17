@@ -19,12 +19,12 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.UncertaintyLabel;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
 
@@ -98,7 +98,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		case 4:
 			return getCostValue(e);
 		case 5:
-			return UncertaintyLabel.get(e.uncertainty);
+			return Uncertainty.string(e.uncertainty);
 		case 7:
 			return getDefaultProvider(e);
 		case 8:
