@@ -35,6 +35,7 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 	private void addCategoryElements(ModelType type,
 			List<INavigationElement<?>> elements) {
 		try {
+			log.trace("get root categories for {}", type);
 			CategoryDao dao = new CategoryDao(Database.get());
 			for (Category category : dao.getRootCategories(type)) {
 				elements.add(new CategoryElement(this, category));
@@ -46,6 +47,7 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 
 	private void addModelElements(ModelType type, List<INavigationElement<?>> elements) {
 		try {
+			log.trace("get model elements without category for {}", type);
 			CategorizedEntityDao<?, ?> entityDao = Daos.categorized(Database.get(), type);
 			if (entityDao == null)
 				return;

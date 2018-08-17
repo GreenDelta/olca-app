@@ -2,8 +2,11 @@ package org.openlca.app.logging;
 
 import java.io.PrintStream;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 import org.eclipse.ui.console.ConsolePlugin;
@@ -60,11 +63,20 @@ public class Console extends AppenderSkeleton {
 
 	@Override
 	protected void append(LoggingEvent evt) {
-		if (!logStream.isClosed()) {
-			String message = "" + evt.getLevel().toString() + " - "
-					+ evt.getMessage();
-			tryPrintMessage(message, evt.getThrowableInformation());
+		if (logStream.isClosed())
+			return;
+		String message;
+		if (evt.getLevel().toInt() <= Level.DEBUG_INT) {
+			LocationInfo info = evt.getLocationInformation();
+			message = "" + evt.getLevel().toString()
+					+ " [" + DateFormatUtils.format(evt.timeStamp, "HH:mm:ss.SS") + "]"
+					+ " @" + info.getClassName() + ">" + info.getMethodName() + ">" + info.getLineNumber()
+					+ " - " + evt.getMessage();
+		} else {
+			message = "" + evt.getLevel().toString()
+					+ " - " + evt.getMessage();
 		}
+		tryPrintMessage(message, evt.getThrowableInformation());
 	}
 
 	private void tryPrintMessage(String message,
