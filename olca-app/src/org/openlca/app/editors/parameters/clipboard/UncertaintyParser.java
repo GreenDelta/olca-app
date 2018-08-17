@@ -53,8 +53,8 @@ class UncertaintyParser {
 
 	private Uncertainty matchUniform(Matcher m) {
 		try {
-			double min = Clipboard.parseValue(m.group(1));
-			double max = Clipboard.parseValue(m.group(2));
+			double min = Clipboard.readDouble(m.group(1));
+			double max = Clipboard.readDouble(m.group(2));
 			return Uncertainty.uniform(min, max);
 		} catch (Exception e) {
 			return null;
@@ -63,9 +63,9 @@ class UncertaintyParser {
 
 	private Uncertainty matchTriangle(Matcher m) {
 		try {
-			double min = Clipboard.parseValue(m.group(1));
-			double mode = Clipboard.parseValue(m.group(2));
-			double max = Clipboard.parseValue(m.group(3));
+			double min = Clipboard.readDouble(m.group(1));
+			double mode = Clipboard.readDouble(m.group(2));
+			double max = Clipboard.readDouble(m.group(3));
 			return Uncertainty.triangle(min, mode, max);
 		} catch (Exception e) {
 			return null;
@@ -74,8 +74,8 @@ class UncertaintyParser {
 
 	private Uncertainty matchNormal(Matcher m) {
 		try {
-			double mean = Clipboard.parseValue(m.group(1));
-			double sigma = Clipboard.parseValue(m.group(2));
+			double mean = Clipboard.readDouble(m.group(1));
+			double sigma = Clipboard.readDouble(m.group(2));
 			return Uncertainty.normal(mean, sigma);
 		} catch (Exception e) {
 			return null;
@@ -84,8 +84,8 @@ class UncertaintyParser {
 
 	private Uncertainty matchLogNormal(Matcher m) {
 		try {
-			double gmean = Clipboard.parseValue(m.group(1));
-			double gsigma = Clipboard.parseValue(m.group(2));
+			double gmean = Clipboard.readDouble(m.group(1));
+			double gsigma = Clipboard.readDouble(m.group(2));
 			return Uncertainty.logNormal(gmean, gsigma);
 		} catch (Exception e) {
 			return null;

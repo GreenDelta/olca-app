@@ -256,8 +256,9 @@ public class ParameterSection {
 	private void onPaste(String text) {
 		if (supplier == null)
 			return;
-		List<Parameter> params = forInputParameters ? Clipboard
-				.readInputParams(text) : Clipboard.readCalculatedParams(text);
+		List<Parameter> params = forInputParameters
+				? Clipboard.readAsInputParams(text, scope)
+				: Clipboard.readAsCalculatedParams(text, scope);
 		boolean skipped = false;
 		for (Parameter param : params) {
 			String name = param.getName();
@@ -265,11 +266,11 @@ public class ParameterSection {
 				skipped = true;
 				continue;
 			}
-			param.setScope(scope);
 			supplier.get().add(param);
 		}
-		if (skipped)
+		if (skipped) {
 			Warning.showBox(M.SomeParametersWereNotAdded);
+		}
 		setInput();
 		editor.setDirty(true);
 		support.evaluate();
