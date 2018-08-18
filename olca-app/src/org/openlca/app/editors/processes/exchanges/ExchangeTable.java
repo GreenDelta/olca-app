@@ -138,9 +138,10 @@ class ExchangeTable {
 			editor.setDirty(true);
 		});
 		Action formulaSwitch = new FormulaSwitchAction();
-		Action clipboard = TableClipboard.onCopy(viewer, Clipboard::converter);
+		Action copy = TableClipboard.onCopy(viewer, Clipboard::converter);
+		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
 		CommentAction.bindTo(section, "exchanges", editor.getComments(), add, remove, formulaSwitch);
-		Actions.bind(viewer, add, remove, qRef, clipboard);
+		Actions.bind(viewer, add, remove, qRef, copy, paste);
 		Tables.onDeletePressed(viewer, e -> onRemove());
 	}
 
@@ -158,8 +159,10 @@ class ExchangeTable {
 	}
 
 	private String[] getColumns() {
-		List<String> columns = new ArrayList<>(Arrays.asList(new String[] { FLOW, CATEGORY, AMOUNT, UNIT, COSTS,
-				UNCERTAINTY, AVOIDED, PROVIDER, PEDIGREE, DESCRIPTION }));
+		List<String> columns = new ArrayList<>(
+				Arrays.asList(FLOW, CATEGORY, AMOUNT, UNIT,
+						COSTS, UNCERTAINTY, AVOIDED, PROVIDER,
+						PEDIGREE, DESCRIPTION));
 		if (editor.hasAnyComment("exchanges")) {
 			columns.add(COMMENT);
 		}
@@ -169,8 +172,9 @@ class ExchangeTable {
 	private void onAdd() {
 		BaseDescriptor[] descriptors = ModelSelectionDialog
 				.multiSelect(ModelType.FLOW);
-		if (descriptors != null)
+		if (descriptors != null) {
 			add(Arrays.asList(descriptors));
+		}
 	}
 
 	private void onRemove() {
@@ -204,7 +208,25 @@ class ExchangeTable {
 		editor.postEvent(editor.EXCHANGES_CHANGED, this);
 	}
 
+	private void onPaste(String text) {
+		List<Exchange> exchanges = Clipboard.read(text, forInputs);
+		if (exchanges.isEmpty())
+			return;
+		Process process = editor.getModel();
+		for (Exchange e : exchanges) {
+			if (!canAdd(e.flow))
+				continue;
+			e.internalId = ++process.lastInternalId;
+			process.getExchanges().add(e);
+		}
+		viewer.setInput(process.getExchanges());
+		editor.setDirty(true);
+		editor.postEvent(editor.EXCHANGES_CHANGED, this);
+	}
+
 	private boolean canAdd(Flow flow) {
+		if (flow == null)
+			return false;
 		if (forInputs && flow.getFlowType() == FlowType.WASTE_FLOW)
 			for (Exchange ex : editor.getModel().getExchanges())
 				if (ex.isInput && ex.flow.equals(flow))
