@@ -1,4 +1,4 @@
-package org.openlca.app.editors.parameters.clipboard;
+package org.openlca.app.editors.parameters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,17 +10,11 @@ import org.openlca.core.model.Uncertainty;
 
 import com.google.common.base.Strings;
 
-public class Clipboard {
+class Clipboard {
 
-	private final ClipboardText text;
-
-	private Clipboard(ClipboardText text) {
-		this.text = text;
-	}
-
-	public static List<Parameter> readAsInputParams(String text, ParameterScope scope) {
+	static List<Parameter> readAsInputParams(String text, ParameterScope scope) {
 		ClipboardText ct = ClipboardText.split(text);
-		List<Parameter> params = new Clipboard(ct).readParams();
+		List<Parameter> params = readParams(ct);
 		for (Parameter param : params) {
 			param.setScope(scope);
 			param.setInputParameter(true);
@@ -29,9 +23,9 @@ public class Clipboard {
 		return params;
 	}
 
-	public static List<Parameter> readAsCalculatedParams(String text, ParameterScope scope) {
+	static List<Parameter> readAsCalculatedParams(String text, ParameterScope scope) {
 		ClipboardText ct = ClipboardText.split(text);
-		List<Parameter> params = new Clipboard(ct).readParams();
+		List<Parameter> params = readParams(ct);
 		for (Parameter param : params) {
 			param.setScope(scope);
 			param.setInputParameter(false);
@@ -43,7 +37,7 @@ public class Clipboard {
 		return params;
 	}
 
-	private List<Parameter> readParams() {
+	private static List<Parameter> readParams(ClipboardText text) {
 		List<Parameter> list = new ArrayList<>();
 		for (String[] row : text.rows) {
 			Parameter param = text.forInputParameters
@@ -56,7 +50,7 @@ public class Clipboard {
 		return list;
 	}
 
-	private Parameter readCalcParam(String[] row) {
+	private static Parameter readCalcParam(String[] row) {
 		if (row == null || row.length < 2)
 			return null;
 		String name = row[0];
@@ -75,7 +69,7 @@ public class Clipboard {
 		return p;
 	}
 
-	private Parameter readInputParam(String[] fields) {
+	private static Parameter readInputParam(String[] fields) {
 		if (fields == null || fields.length < 2)
 			return null;
 		String name = fields[0];

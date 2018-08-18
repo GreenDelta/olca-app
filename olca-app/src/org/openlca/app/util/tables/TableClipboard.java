@@ -23,11 +23,20 @@ public final class TableClipboard {
 	}
 
 	/**
-	 * Registers Ctr+c for copying table content to clipboard and returns an
-	 * action which also calls this function.
+	 * Registers Ctr+c for copying table content to clipboard and returns an action
+	 * which also calls this function.
 	 */
 	public static Action onCopy(TableViewer viewer) {
-		return onCopy(viewer.getTable());
+		return onCopy(viewer.getTable(), TableClipboard::text);
+	}
+
+	/**
+	 * Registers Ctr+c for copying table content to clipboard and returns an action
+	 * which also calls this function. The given converter function is used to
+	 * transform the respective table columns into string representations.
+	 */
+	public static Action onCopy(TableViewer viewer, Converter converter) {
+		return onCopy(viewer.getTable(), converter);
 	}
 
 	/**
@@ -38,25 +47,17 @@ public final class TableClipboard {
 		return onPaste(viewer.getTable(), fn);
 	}
 
-	/**
-	 * Registers Ctr+c for copying table content to clipboard and returns an
-	 * action which also calls this function.
-	 */
-	public static Action onCopy(Table table) {
+	private static Action onCopy(Table table, Converter converter) {
 		table.addListener(SWT.KeyUp, (event) -> {
 			if (event.stateMask == SWT.CTRL && event.keyCode == 'c') {
-				copy(table);
+				copy(table, converter);
 			}
 		});
 		ImageDescriptor image = Icon.COPY.descriptor();
-		return Actions.create(M.Copy, image, () -> copy(table));
+		return Actions.create(M.Copy, image, () -> copy(table, converter));
 	}
 
-	/**
-	 * Registers Ctr+v for pasting table content from clipboard and returns an
-	 * action which also calls this function.
-	 */
-	public static Action onPaste(Table table, Consumer<String> fn) {
+	private static Action onPaste(Table table, Consumer<String> fn) {
 		table.addListener(SWT.KeyUp, (event) -> {
 			if (event.stateMask == SWT.CTRL && event.keyCode == 'v') {
 				paste(table, fn);
@@ -66,12 +67,12 @@ public final class TableClipboard {
 		return Actions.create(M.Paste, image, () -> paste(table, fn));
 	}
 
-	private static void copy(Table table) {
+	private static void copy(Table table, Converter converter) {
 		if (table == null)
 			return;
 		StringBuilder text = new StringBuilder();
 		copyHeaders(table, text);
-		copyItems(table, text);
+		copyItems(table, converter, text);
 		Clipboard clipboard = new Clipboard(UI.shell().getDisplay());
 		clipboard.setContents(new String[] { text.toString() },
 				new Transfer[] { TextTransfer.getInstance() });
@@ -90,16 +91,18 @@ public final class TableClipboard {
 		text.append('\n');
 	}
 
-	private static void copyItems(Table table, StringBuilder text) {
+	private static void copyItems(Table table, Converter converter,
+			StringBuilder buffer) {
 		int cols = table.getColumnCount();
 		for (TableItem item : table.getSelection()) {
 			for (int col = 0; col < cols; col++) {
-				String s = item.getText(col);
-				text.append(s == null ? "" : s);
-				if (col != (cols - 1))
-					text.append('\t');
+				String s = converter.asString(item, col);
+				buffer.append(s);
+				if (col != (cols - 1)) {
+					buffer.append('\t');
+				}
 			}
-			text.append('\n');
+			buffer.append('\n');
 		}
 	}
 
@@ -116,5 +119,25 @@ public final class TableClipboard {
 		} finally {
 			clipboard.dispose();
 		}
+	}
+
+	/**
+	 * A converter function returns the string presentation of a given column for a
+	 * table item. This function can be used to write specific converter functions
+	 * for table clipboards.
+	 */
+	@FunctionalInterface
+	public interface Converter {
+		String asString(TableItem item, int col);
+	}
+
+	/**
+	 * Returns the text of the table item in the given column.
+	 */
+	public static String text(TableItem item, int col) {
+		if (item == null || col < 0)
+			return "";
+		String s = item.getText(col);
+		return s.replace('\n', ' ');
 	}
 }

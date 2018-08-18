@@ -138,7 +138,7 @@ class ExchangeTable {
 			editor.setDirty(true);
 		});
 		Action formulaSwitch = new FormulaSwitchAction();
-		Action clipboard = TableClipboard.onCopy(viewer);
+		Action clipboard = TableClipboard.onCopy(viewer, Clipboard::converter);
 		CommentAction.bindTo(section, "exchanges", editor.getComments(), add, remove, formulaSwitch);
 		Actions.bind(viewer, add, remove, qRef, clipboard);
 		Tables.onDeletePressed(viewer, e -> onRemove());

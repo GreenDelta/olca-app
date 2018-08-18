@@ -1,4 +1,4 @@
-package org.openlca.app.editors.parameters.clipboard;
+package org.openlca.app.editors.parameters;
 
 import java.util.ArrayList;
 import java.util.Collections;
