@@ -209,7 +209,9 @@ class ExchangeTable {
 	}
 
 	private void onPaste(String text) {
-		List<Exchange> exchanges = Clipboard.read(text, forInputs);
+		List<Exchange> exchanges = new ArrayList<>();
+		App.runWithProgress("Paste exchanges ...",
+				() -> exchanges.addAll(Clipboard.read(text, forInputs)));
 		if (exchanges.isEmpty())
 			return;
 		Process process = editor.getModel();
