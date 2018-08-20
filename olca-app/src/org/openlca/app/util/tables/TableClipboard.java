@@ -23,17 +23,18 @@ public final class TableClipboard {
 	}
 
 	/**
-	 * Registers Ctr+c for copying table content to clipboard and returns an action
-	 * which also calls this function.
+	 * Registers Ctr+c for copying table content to clipboard and returns an
+	 * action which also calls this function.
 	 */
 	public static Action onCopy(TableViewer viewer) {
 		return onCopy(viewer.getTable(), TableClipboard::text);
 	}
 
 	/**
-	 * Registers Ctr+c for copying table content to clipboard and returns an action
-	 * which also calls this function. The given converter function is used to
-	 * transform the respective table columns into string representations.
+	 * Registers Ctr+c for copying table content to clipboard and returns an
+	 * action which also calls this function. The given converter function is
+	 * used to transform the respective table columns into string
+	 * representations.
 	 */
 	public static Action onCopy(TableViewer viewer, Converter converter) {
 		return onCopy(viewer.getTable(), converter);
@@ -122,9 +123,9 @@ public final class TableClipboard {
 	}
 
 	/**
-	 * A converter function returns the string presentation of a given column for a
-	 * table item. This function can be used to write specific converter functions
-	 * for table clipboards.
+	 * A converter function returns the string presentation of a given column
+	 * for a table item. This function can be used to write specific converter
+	 * functions for table clipboards.
 	 */
 	@FunctionalInterface
 	public interface Converter {
@@ -137,7 +138,7 @@ public final class TableClipboard {
 	public static String text(TableItem item, int col) {
 		if (item == null || col < 0)
 			return "";
-		String s = item.getText(col);
-		return s.replace('\n', ' ');
+		String s = item.getText(col).replaceAll("\\t", "   ");
+		return s.replaceAll("(\\r|\\n|\\r\\n)+", " ");
 	}
 }
