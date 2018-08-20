@@ -214,8 +214,6 @@ class ExchangeTable {
 			return;
 		Process process = editor.getModel();
 		for (Exchange e : exchanges) {
-			if (!canAdd(e.flow))
-				continue;
 			e.internalId = ++process.lastInternalId;
 			process.getExchanges().add(e);
 		}

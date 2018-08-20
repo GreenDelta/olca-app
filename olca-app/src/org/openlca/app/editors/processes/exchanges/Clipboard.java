@@ -8,11 +8,14 @@ import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.tables.TableClipboard;
+import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.FlowDao;
+import org.openlca.core.model.Currency;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
@@ -26,13 +29,23 @@ class Clipboard {
 	static String converter(TableItem item, int col) {
 		if (item == null)
 			return "";
-		if (col != 2)
-			return TableClipboard.text(item, col);
 		Object data = item.getData();
 		if (!(data instanceof Exchange))
 			return TableClipboard.text(item, col);
 		Exchange e = (Exchange) data;
-		return Double.toString(e.amount);
+		switch (col) {
+		case 2:
+			return Double.toString(e.amount);
+		case 4:
+			if (e.costs == null || e.currency == null)
+				return "";
+			else
+				return e.costs.toString() + " " + e.currency.code;
+		case 6:
+			return e.isAvoided ? "TRUE" : "";
+		default:
+			return TableClipboard.text(item, col);
+		}
 	}
 
 	static List<Exchange> read(String text, boolean forInputs) {
@@ -59,6 +72,7 @@ class Clipboard {
 	private static class Mapper {
 		final Logger log = LoggerFactory.getLogger(getClass());
 		final FlowDao flowDao = new FlowDao(Database.get());
+		final CurrencyDao currencyDao = new CurrencyDao(Database.get());
 
 		Exchange doIt(String[] row, boolean isInput) {
 			if (row == null || row.length == 0)
@@ -72,11 +86,15 @@ class Clipboard {
 			e.isInput = isInput;
 			mapAmount(e, row);
 			mapUnit(e, row);
+			mapCosts(e, row);
 			if (row.length > 5)
 				e.uncertainty = Uncertainty.fromString(row[5]);
+			mapIsAvoided(e, row);
+			if (row.length > 8 && !Strings.nullOrEmpty(row[8]))
+				e.dqEntry = row[8];
 			if (row.length > 9)
 				e.description = row[9];
-			// TODO: costs/revenues; avoided tech. flows; data quality
+			// TODO: provider
 			return e;
 		}
 
@@ -195,6 +213,59 @@ class Clipboard {
 			e.flowPropertyFactor = factor;
 			e.unit = u;
 			return true;
+		}
+
+		/**
+		 * It is important that the flow direction is already specified before
+		 * calling this method because if the exchange is an avoided product or
+		 * waste flow the flow direction will change in this method.
+		 */
+		private void mapIsAvoided(Exchange e, String[] row) {
+			if (e == null || e.flow == null || row.length < 7)
+				return;
+			String s = row[6];
+			if (Strings.nullOrEmpty(s))
+				return;
+			if ((e.isInput && e.flow.getFlowType() != FlowType.WASTE_FLOW)
+					|| (!e.isInput && e.flow.getFlowType() != FlowType.PRODUCT_FLOW))
+				return;
+			try {
+				if (Boolean.parseBoolean(s)) {
+					e.isAvoided = true;
+					e.isInput = !e.isInput;
+				}
+			} catch (Exception ex) {
+			}
+		}
+
+		private void mapCosts(Exchange e, String[] row) {
+			if (e == null || row.length < 5)
+				return;
+			String s = row[4];
+			if (Strings.nullOrEmpty(s))
+				return;
+			String[] parts = row[4].trim().split("[\\s]+", 2);
+			if (parts.length < 2)
+				return;
+			try {
+				double amount = Double.parseDouble(parts[0]);
+				String code = parts[1].trim();
+				Currency currency = null;
+				for (Currency cu : currencyDao.getAll()) {
+					if (Strings.nullOrEqual(code, cu.code)) {
+						currency = cu;
+						break;
+					}
+				}
+				if (currency == null) {
+					log.warn("Could not find currency for code={}", code);
+					return;
+				}
+				e.currency = currency;
+				e.costs = amount;
+			} catch (Exception ex) {
+				log.warn("Failed to parse costs/revenues {}", s);
+			}
 		}
 
 	}
