@@ -274,8 +274,12 @@ class Clipboard {
 		}
 
 		private void mapProvider(Exchange e, String[] row) {
-			if (e == null || row.length < 8)
+			if (e == null || e.flow == null || row.length < 8)
 				return;
+			if ((e.isInput && e.flow.getFlowType() != FlowType.PRODUCT_FLOW)
+					|| (!e.isInput && e.flow.getFlowType() != FlowType.WASTE_FLOW))
+				return;
+
 			String fullName = row[7];
 			if (Strings.nullOrEmpty(fullName))
 				return;
