@@ -16,7 +16,6 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
-import org.openlca.app.components.DialogCellEditor;
 import org.openlca.app.viewers.table.modify.ICellModifier.CellEditingType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,21 +50,20 @@ public class ModifySupport<T> {
 	}
 
 	/**
-	 * Binds a dialog cell editor to the given property. It is assumed that the
-	 * editor directly operates on the values in the respective table and that
-	 * the values are set in the respective editor.
+	 * Binds directly a cell editor to the given property. It is assumed that the
+	 * editor directly operates on the values in the respective table and that the
+	 * values are set in the respective editor.
 	 */
-	public void bind(String property, DialogCellEditor dialog) {
+	public void bind(String property, CellEditor editor) {
 		int idx = findIndex(property);
 		if (idx == -1)
 			return;
-		editors[idx] = dialog;
+		editors[idx] = editor;
 	}
 
 	/**
-	 * Binds the given getter and setter to the given table property. Null
-	 * values for the getter are allowed. The setter is only called if text was
-	 * changed.
+	 * Binds the given getter and setter to the given table property. Null values
+	 * for the getter are allowed. The setter is only called if text was changed.
 	 */
 	public void bind(String property, Getter<T> getter, Setter<T> setter) {
 		TextCellModifier<T> modifier = new TextCellModifier<T>() {
@@ -174,7 +172,7 @@ public class ModifySupport<T> {
 				return modifier != null && modifier.canModify((T) element);
 			}
 			CellEditor editor = getCellEditor(property);
-			return editor instanceof DialogCellEditor;
+			return editor != null;
 		}
 
 		@Override
@@ -272,8 +270,8 @@ public class ModifySupport<T> {
 
 	/**
 	 * Overwrites the getValue method from the JFace combo editor so that also
-	 * entered strings that are elements of the respective combo-items are
-	 * accepted as user input.
+	 * entered strings that are elements of the respective combo-items are accepted
+	 * as user input.
 	 */
 	private class ComboEditor extends ComboBoxCellEditor {
 

@@ -41,36 +41,41 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Parameter page for LCIA methods or processes. */
-public class ModelParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
+public class ParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
 
 	public static final String ID = "ParameterPage";
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	private Logger log = LoggerFactory.getLogger(getClass());
-	private FormToolkit toolkit;
-	private ParameterChangeSupport support;
-	private ModelEditor<?> editor;
-	private Supplier<List<Parameter>> supplier;
-	private ParameterScope scope;
-	private SourceHandler sourceHandler;
+	final ModelEditor<?> editor;
+	final ParameterScope scope;
+	final Supplier<List<Parameter>> supplier;
 
-	private ModelParameterPage(ModelEditor<T> editor) {
+	ParameterChangeSupport support;
+	SourceHandler sourceHandler;
+	Composite body;
+	FormToolkit toolkit;
+
+	private ParameterPage(ModelEditor<T> editor,
+			ParameterScope scope, Supplier<List<Parameter>> supplier) {
 		super(editor, ID, M.Parameters);
 		this.editor = editor;
+		this.scope = scope;
+		this.supplier = supplier;
 	}
 
-	public static ModelParameterPage<Process> create(ProcessEditor editor) {
-		ModelParameterPage<Process> page = new ModelParameterPage<>(editor);
+	public static ParameterPage<Process> create(ProcessEditor editor) {
+		ParameterPage<Process> page = new ParameterPage<>(
+				editor, ParameterScope.PROCESS,
+				() -> editor.getModel().getParameters());
 		page.support = editor.getParameterSupport();
-		page.supplier = () -> editor.getModel().getParameters();
-		page.scope = ParameterScope.PROCESS;
 		return page;
 	}
 
-	public static ModelParameterPage<ImpactMethod> create(ImpactMethodEditor editor) {
-		ModelParameterPage<ImpactMethod> page = new ModelParameterPage<>(editor);
+	public static ParameterPage<ImpactMethod> create(ImpactMethodEditor editor) {
+		ParameterPage<ImpactMethod> page = new ParameterPage<>(
+				editor, ParameterScope.IMPACT_METHOD,
+				() -> editor.getModel().parameters);
 		page.support = editor.getParameterSupport();
-		page.supplier = () -> editor.getModel().parameters;
-		page.scope = ParameterScope.IMPACT_METHOD;
 		page.sourceHandler = new ImpactMethodSourceHandler(editor);
 		return page;
 	}
@@ -79,13 +84,11 @@ public class ModelParameterPage<T extends CategorizedEntity> extends ModelPage<T
 	protected void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
+		body = UI.formBody(form, toolkit);
 		try {
-			createGlobalParamterSection(body);
-			ParameterSection.forInputParameters(editor, support, body, toolkit,
-					sourceHandler).setSupplier(supplier, scope);
-			ParameterSection.forDependentParameters(editor, support, body,
-					toolkit).setSupplier(supplier, scope);
+			createGlobalParamterSection();
+			ParameterSection.forInputParameters(this);
+			ParameterSection.forDependentParameters(this);
 			body.setFocus();
 			form.reflow(true);
 		} catch (Exception e) {
@@ -93,7 +96,7 @@ public class ModelParameterPage<T extends CategorizedEntity> extends ModelPage<T
 		}
 	}
 
-	private void createGlobalParamterSection(Composite body) {
+	private void createGlobalParamterSection() {
 		Section section = UI.section(body, toolkit, M.GlobalParameters);
 		Composite client = UI.sectionClient(section, toolkit);
 		UI.gridLayout(client, 1);

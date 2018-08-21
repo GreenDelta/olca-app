@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
-import org.openlca.app.editors.parameters.ModelParameterPage;
+import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
@@ -98,7 +98,7 @@ class SFAddParamAction extends Action {
 		section.method().parameters.add(p);
 		ImpactMethodEditor editor = section.page.editor;
 		editor.setDirty(true);
-		editor.setActivePage(ModelParameterPage.ID);
+		editor.setActivePage(ParameterPage.ID);
 		editor.getParameterSupport().evaluate();
 	}
 }

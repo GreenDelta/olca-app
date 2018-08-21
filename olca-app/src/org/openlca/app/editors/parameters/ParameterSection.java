@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.components.FormulaCellEditor;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.comments.CommentAction;
@@ -38,10 +39,8 @@ import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.app.viewers.table.modify.field.DoubleModifier;
 import org.openlca.app.viewers.table.modify.field.StringModifier;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
-import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.util.Strings;
 
@@ -55,74 +54,49 @@ public class ParameterSection {
 
 	private TableViewer viewer;
 
-	private final String NAME = M.Name;
-	private final String VALUE = M.Value;
-	private final String FORMULA = M.Formula;
-	private final String UNCERTAINTY = M.Uncertainty;
-	private final String DESCRIPTION = M.Description;
-	private final String EXTERNAL_SOURCE = M.ExternalSource;
-
 	private boolean forInputParameters = true;
+	private final ParameterPage<?> page;
+	private final ModelEditor<?> editor;
+	private final Supplier<List<Parameter>> supplier;
 	private ParameterChangeSupport support;
-	private ModelEditor<? extends CategorizedEntity> editor;
-	private Supplier<List<Parameter>> supplier;
-	private ParameterScope scope;
-	private SourceHandler sourceHandler;
 
-	public static ParameterSection forInputParameters(
-			ModelEditor<? extends CategorizedEntity> editor,
-			ParameterChangeSupport support, Composite body,
-			FormToolkit toolkit, SourceHandler sourceHandler) {
-		return new ParameterSection(editor, support, body, toolkit,
-				sourceHandler, true);
+	static ParameterSection forInputParameters(ParameterPage<?> page) {
+		return new ParameterSection(page, true);
 	}
 
-	public static ParameterSection forInputParameters(
-			ModelEditor<? extends CategorizedEntity> editor,
-			ParameterChangeSupport support, Composite body, FormToolkit toolkit) {
-		return new ParameterSection(editor, support, body, toolkit, null, true);
+	static ParameterSection forDependentParameters(ParameterPage<?> page) {
+		return new ParameterSection(page, false);
 	}
 
-	public static ParameterSection forDependentParameters(
-			ModelEditor<? extends CategorizedEntity> editor,
-			ParameterChangeSupport support, Composite body, FormToolkit toolkit) {
-		return new ParameterSection(editor, support, body, toolkit, null, false);
-	}
-
-	private ParameterSection(ModelEditor<? extends CategorizedEntity> editor,
-			ParameterChangeSupport support, Composite body,
-			FormToolkit toolkit, SourceHandler sourceHandler,
-			boolean forInputParameters) {
+	private ParameterSection(ParameterPage<?> page, boolean forInputParameters) {
 		this.forInputParameters = forInputParameters;
-		this.sourceHandler = sourceHandler;
-		this.editor = editor;
-		this.support = support;
+		this.editor = page.editor;
+		this.supplier = page.supplier;
+		this.page = page;
+		this.support = page.support;
 		String[] props = getProperties();
-		createComponents(body, toolkit, props);
+		createComponents(page.body, page.toolkit, props);
 		createCellModifiers();
 		addDoubleClickHandler();
 		support.afterEvaluation(this::setInput);
 		editor.onSaved(this::setInput);
+		fillInitialInput();
 	}
 
 	private String[] getProperties() {
-		List<String> properties = new ArrayList<>();
-		if (forInputParameters)
-			properties = new ArrayList<>(Arrays.asList(NAME, VALUE, UNCERTAINTY, DESCRIPTION));
-		else
-			properties = new ArrayList<>(Arrays.asList(NAME, FORMULA, VALUE, DESCRIPTION));
-		if (sourceHandler != null)
-			properties.add(EXTERNAL_SOURCE);
+		List<String> props;
+		if (forInputParameters) {
+			props = new ArrayList<>(Arrays.asList(
+					M.Name, M.Value, M.Uncertainty, M.Description));
+		} else {
+			props = new ArrayList<>(Arrays.asList(
+					M.Name, M.Formula, M.Value, M.Description));
+		}
+		if (page.sourceHandler != null)
+			props.add(M.ExternalSource);
 		if (editor.hasAnyComment("parameters"))
-			properties.add("");
-		return properties.toArray(new String[properties.size()]);
-	}
-
-	public void setSupplier(Supplier<List<Parameter>> supplier,
-			ParameterScope scope) {
-		this.supplier = supplier;
-		this.scope = scope;
-		fillInitialInput();
+			props.add("");
+		return props.toArray(new String[props.size()]);
 	}
 
 	private void addDoubleClickHandler() {
@@ -142,18 +116,14 @@ public class ParameterSection {
 		ParameterLabelProvider label = new ParameterLabelProvider();
 		viewer.setLabelProvider(label);
 		addSorters(viewer, label);
-		bindColumnWidths(viewer);
 		bindActions(section);
-		int col = forInputParameters ? 1 : 2;
-		viewer.getTable().getColumns()[col].setAlignment(SWT.RIGHT);
-	}
-
-	private void bindColumnWidths(TableViewer viewer) {
-		if (sourceHandler != null)
+		if (page.sourceHandler != null)
 			Tables.bindColumnWidths(viewer, 0.25, 0.25, 0.15, 0.15, 0.17);
 		else {
 			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17, 0.03);
 		}
+		int col = forInputParameters ? 1 : 2;
+		viewer.getTable().getColumns()[col].setAlignment(SWT.RIGHT);
 	}
 
 	private void addSorters(TableViewer table, ParameterLabelProvider label) {
@@ -171,20 +141,23 @@ public class ParameterSection {
 		Action removeAction = Actions.onRemove(() -> onRemove());
 		Action copy = TableClipboard.onCopy(viewer);
 		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
-		CommentAction.bindTo(section, "parameters", editor.getComments(), addAction, removeAction);
+		CommentAction.bindTo(section, "parameters",
+				editor.getComments(), addAction, removeAction);
 		Actions.bind(viewer, addAction, removeAction, copy, paste);
 		Tables.onDeletePressed(viewer, (e) -> onRemove());
 	}
 
 	private void createCellModifiers() {
+		ModelEditor<?> editor = page.editor;
 		ModifySupport<Parameter> ms = new ModifySupport<>(viewer);
-		ms.bind(NAME, new NameModifier());
-		ms.bind(DESCRIPTION, new StringModifier<>(editor, "description"));
-		ms.bind(VALUE, new DoubleModifier<>(editor, "value", (elem) -> support.evaluate()));
-		ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
-		ms.bind(FORMULA, new StringModifier<>(editor, "formula", (elem) -> support.evaluate()));
-		ms.bind(EXTERNAL_SOURCE, new ExternalSourceModifier());
+		ms.bind(M.Name, new NameModifier());
+		ms.bind(M.Description, new StringModifier<>(editor, "description"));
+		ms.bind(M.Value, new DoubleModifier<>(editor, "value", (elem) -> support.evaluate()));
+		ms.bind(M.Uncertainty, new UncertaintyCellEditor(viewer.getTable(), editor));
+		ms.bind(M.ExternalSource, new ExternalSourceModifier());
 		ms.bind("", new CommentDialogModifier<Parameter>(editor.getComments(), CommentPaths::get));
+		FormulaCellEditor formulaEditor = new FormulaCellEditor(viewer, supplier);
+		ms.bind(M.Formula, formulaEditor);
 	}
 
 	private void fillInitialInput() {
@@ -217,7 +190,7 @@ public class ParameterSection {
 		Parameter p = new Parameter();
 		p.setRefId(UUID.randomUUID().toString());
 		p.setName(name);
-		p.setScope(scope);
+		p.setScope(page.scope);
 		p.setInputParameter(forInputParameters);
 		p.setValue(1.0);
 		if (!forInputParameters)
@@ -256,8 +229,8 @@ public class ParameterSection {
 		if (supplier == null)
 			return;
 		List<Parameter> params = forInputParameters
-				? Clipboard.readAsInputParams(text, scope)
-				: Clipboard.readAsCalculatedParams(text, scope);
+				? Clipboard.readAsInputParams(text, page.scope)
+				: Clipboard.readAsCalculatedParams(text, page.scope);
 		boolean skipped = false;
 		for (Parameter param : params) {
 			String name = param.getName();
@@ -352,7 +325,7 @@ public class ParameterSection {
 
 		@Override
 		protected String[] getItems(Parameter element) {
-			return sourceHandler.getSources(element);
+			return page.sourceHandler.getSources(element);
 		}
 
 		@Override
@@ -370,9 +343,7 @@ public class ParameterSection {
 			if (!Question.ask(M.ExternalSourceChange, M.RecalculateQuestion))
 				return;
 			element.setExternalSource(item);
-			sourceHandler.sourceChanged(element, item);
+			page.sourceHandler.sourceChanged(element, item);
 		}
-
 	}
-
 }

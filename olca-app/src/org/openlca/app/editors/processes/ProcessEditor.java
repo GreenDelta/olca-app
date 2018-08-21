@@ -10,7 +10,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.parameters.Formulas;
-import org.openlca.app.editors.parameters.ModelParameterPage;
+import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
 import org.openlca.app.editors.processes.allocation.AllocationPage;
 import org.openlca.app.editors.processes.exchanges.ProcessExchangePage;
@@ -78,7 +78,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 			addPage(new ProcessExchangePage(this));
 			addPage(new AdminInfoPage(this));
 			addPage(new ProcessModelingPage(this));
-			addPage(ModelParameterPage.create(this));
+			addPage(ParameterPage.create(this));
 			addPage(new AllocationPage(this));
 			addPage(new SocialAspectsPage(this));
 			addCommentPage();

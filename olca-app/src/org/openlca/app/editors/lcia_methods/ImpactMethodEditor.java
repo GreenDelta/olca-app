@@ -11,7 +11,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFilePage;
 import org.openlca.app.editors.parameters.Formulas;
-import org.openlca.app.editors.parameters.ModelParameterPage;
+import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ImpactCategory;
@@ -67,7 +67,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> {
 			addPage(new ImpactMethodInfoPage(this));
 			addPage(new ImpactFactorPage(this));
 			addPage(new ImpactNwPage(this));
-			addPage(ModelParameterPage.create(this));
+			addPage(ParameterPage.create(this));
 			addPage(new ShapeFilePage(this));
 			addCommentPage();
 		} catch (Exception e) {
