@@ -53,7 +53,6 @@ import org.openlca.util.Strings;
 public class ParameterSection {
 
 	private TableViewer viewer;
-
 	private boolean forInputParameters = true;
 	private final ParameterPage<?> page;
 	private final ModelEditor<?> editor;
@@ -158,6 +157,15 @@ public class ParameterSection {
 		ms.bind("", new CommentDialogModifier<Parameter>(editor.getComments(), CommentPaths::get));
 		FormulaCellEditor formulaEditor = new FormulaCellEditor(viewer, supplier);
 		ms.bind(M.Formula, formulaEditor);
+		formulaEditor.onEdited((obj, formula) -> {
+			if (!(obj instanceof Parameter))
+				return;
+			Parameter param = (Parameter) obj;
+			param.setFormula(formula);
+			support.evaluate();
+			viewer.refresh();
+			editor.setDirty(true);
+		});
 	}
 
 	private void fillInitialInput() {
