@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<geotools.version>19.1</geotools.version>
+		<geotools.version>10.3</geotools.version>
 	</properties>
 
 	<repositories>
@@ -244,8 +244,6 @@
 					</filesets>
 				</configuration>
 			</plugin>
-
 		</plugins>
-
 	</build>
 </project>
