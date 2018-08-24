@@ -6,6 +6,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ShowOutlineAction extends EditorAction {
 
@@ -23,9 +25,11 @@ class ShowOutlineAction extends EditorAction {
 	@Override
 	public void run() {
 		try {
-			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(IPageLayout.ID_OUTLINE);
+			PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+					.getActivePage().showView(IPageLayout.ID_OUTLINE);
 		} catch (PartInitException e) {
-			e.printStackTrace();
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("showing the outline failed", e);
 		}
 	}
 

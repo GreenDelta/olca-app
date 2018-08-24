@@ -13,6 +13,8 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -34,8 +36,9 @@ public final class NodeLayoutStore {
 		try {
 			File layoutFile = createLayoutFile(model);
 			writeAsJson(layoutInfo, layoutFile);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(NodeLayoutStore.class);
+			log.error("Failed to save layout", e);
 		}
 	}
 
@@ -83,7 +86,8 @@ public final class NodeLayoutStore {
 				apply(layout, node);
 			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logger log = LoggerFactory.getLogger(NodeLayoutStore.class);
+			log.error("Failed to load layout", e);
 			return false;
 		}
 	}

@@ -13,6 +13,8 @@ import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ContentProvider implements ITreeContentProvider {
 
@@ -54,8 +56,8 @@ class ContentProvider implements ITreeContentProvider {
 			});
 			return filterNonCategorized(references).toArray();
 		} catch (WebRequestException e) {
-			// TODO handle errors
-			e.printStackTrace();
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("calling `getChildren` failed", e);
 		}
 		return null;
 	}

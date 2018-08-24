@@ -16,6 +16,8 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.wizards.io.FileImportPage;
 import org.openlca.core.model.ModelType;
 import org.openlca.geo.io.MultiKmlImport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KmlImportWizard extends Wizard implements IImportWizard {
 
@@ -39,7 +41,8 @@ public class KmlImportWizard extends Wizard implements IImportWizard {
 			getContainer().run(true, false, (monitor) -> runImport(monitor));
 			Navigator.refresh(Navigator.findElement(ModelType.LOCATION));
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("Failed to import KML", e);
 			return false;
 		}
 		return true;
