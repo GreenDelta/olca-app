@@ -6,13 +6,11 @@ import java.util.List;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.core.database.LocationDao;
-import org.openlca.core.database.ProcessDao;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.util.Processes;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,54 +85,11 @@ class ParameterClipboard {
 		private ProcessDescriptor findProcess(String fullName) {
 			if (Strings.nullOrEmpty(fullName))
 				return null;
-
-			// the full name may contains a location code
-			String name = null;
-			Location location = null;
-			if (fullName.contains(" - ")) {
-				int splitIdx = fullName.lastIndexOf(" - ");
-				name = fullName.substring(0, splitIdx).trim();
-				String locationCode = fullName.substring(splitIdx + 3).trim();
-				LocationDao dao = new LocationDao(Database.get());
-				for (Location loc : dao.getAll()) {
-					if (Strings.nullOrEqual(loc.getCode(), locationCode)) {
-						location = loc;
-						break;
-					}
-				}
-			}
-
-			ProcessDescriptor selected = null;
-			for (ProcessDescriptor d : new ProcessDao(Database.get()).getDescriptors()) {
-				if (!Strings.nullOrEqual(fullName, d.getName())
-						&& !Strings.nullOrEqual(name, d.getName()))
-					continue;
-				if (selected == null) {
-					selected = d;
-					if (matchLocation(selected, location))
-						break;
-					else
-						continue;
-				}
-				if (matchLocation(d, location) && !matchLocation(selected, location)) {
-					selected = d;
-					break;
-				}
-			}
-			if (selected == null) {
+			ProcessDescriptor d = Processes.findForLabel(Database.get(), fullName);
+			if (d == null) {
 				log.warn("Could not find process '{}' in database", fullName);
 			}
-			return selected;
-		}
-
-		private boolean matchLocation(ProcessDescriptor process, Location loc) {
-			if (process == null)
-				return false;
-			if (process.getLocation() == null)
-				return loc == null;
-			if (loc == null)
-				return process.getLocation() == null;
-			return process.getLocation().longValue() == loc.getId();
+			return d;
 		}
 	}
 }
