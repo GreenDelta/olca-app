@@ -12,6 +12,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
+import org.openlca.app.components.ParameterProposals;
 import org.openlca.app.components.UncertaintyDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
@@ -104,6 +105,7 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 			getEditor().setDirty(true);
 			comp.layout();
 		});
+		ParameterProposals.on(text);
 		support.evaluate();
 		label.setText(Double.toString(getModel().getValue()));
 	}

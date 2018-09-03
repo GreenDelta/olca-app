@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
+import org.openlca.app.components.ParameterProposals;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.util.Controls;
@@ -53,6 +54,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 
 		private List<Parameter> parameters;
 		private double lastCalculated = 0d;
+		private boolean contentAssistEnabled = false;
 
 		public ParameterWizardPage() {
 			super("ParameterWizardPage");
@@ -74,6 +76,11 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 			Controls.onSelect(inputButton, (e) -> {
 				formulaLabels.switchControls();
 				checkInput();
+				if (!inputButton.getSelection()
+						&& !contentAssistEnabled) {
+					ParameterProposals.on(formulaText);
+					contentAssistEnabled = true;
+				}
 			});
 			createFormulaAndAmount(container);
 		}
