@@ -38,6 +38,8 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.io.CategoryPath;
+import org.openlca.util.Strings;
 
 /**
  * The table for the display and editing of inputs or outputs of process
@@ -138,7 +140,7 @@ class ExchangeTable {
 			editor.setDirty(true);
 		});
 		Action formulaSwitch = new FormulaSwitchAction();
-		Action copy = TableClipboard.onCopy(viewer, Clipboard::converter);
+		Action copy = TableClipboard.onCopy(viewer, this::toClipboard);
 		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
 		CommentAction.bindTo(section, "exchanges", editor.getComments(), add, remove, formulaSwitch);
 		Actions.bind(viewer, add, remove, qRef, copy, paste);
@@ -222,6 +224,38 @@ class ExchangeTable {
 		viewer.setInput(process.getExchanges());
 		editor.setDirty(true);
 		editor.postEvent(editor.EXCHANGES_CHANGED, this);
+		editor.getParameterSupport().evaluate();
+	}
+
+	private String toClipboard(TableItem item, int col) {
+		if (item == null)
+			return "";
+		Object data = item.getData();
+		if (!(data instanceof Exchange))
+			return TableClipboard.text(item, col);
+		Exchange e = (Exchange) data;
+		switch (col) {
+		case 1:
+			if (e.flow != null && e.flow.getCategory() != null)
+				return CategoryPath.getFull(e.flow.getCategory());
+			else
+				return "";
+		case 2:
+			if (label.showFormulas
+					&& Strings.notEmpty(e.amountFormula))
+				return e.amountFormula;
+			else
+				return Double.toString(e.amount);
+		case 4:
+			if (e.costs == null || e.currency == null)
+				return "";
+			else
+				return e.costs.toString() + " " + e.currency.code;
+		case 6:
+			return e.isAvoided ? "TRUE" : "";
+		default:
+			return TableClipboard.text(item, col);
+		}
 	}
 
 	private boolean canAdd(Flow flow) {
