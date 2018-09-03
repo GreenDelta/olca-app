@@ -12,16 +12,18 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Editors;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class InfoSection {
 
-	public static void create(Composite body, FormToolkit toolkit, CalculationSetup setup, String type) {
+	public static void create(Composite body, FormToolkit toolkit, CalculationSetup setup) {
 		if (setup == null || setup.productSystem == null)
 			return;
 		Composite comp = UI.formSection(body, toolkit, M.GeneralInformation);
@@ -34,7 +36,7 @@ public class InfoSection {
 		if (setup.nwSet != null) {
 			text(comp, toolkit, M.NormalizationAndWeightingSet, setup.nwSet.getName());
 		}
-		exportButton(comp, toolkit, type);
+		buttons(comp, toolkit);
 	}
 
 	private static String targetAmountText(CalculationSetup setup) {
@@ -70,10 +72,24 @@ public class InfoSection {
 		Controls.onClick(link, (e) -> App.openEditor(entity));
 	}
 
-	private static void exportButton(Composite composite, FormToolkit toolkit, String type) {
-		toolkit.createLabel(composite, "");
-		Button button = toolkit.createButton(composite, M.ExportToExcel, SWT.NONE);
-		button.setImage(Images.get(FileType.EXCEL));
-		Controls.onSelect(button, (e) -> new ExcelExportAction().run());
+	private static void buttons(Composite comp, FormToolkit tk) {
+		tk.createLabel(comp, "");
+		Composite inner = tk.createComposite(comp);
+		UI.gridLayout(inner, 2, 5, 0);
+		Button excel = tk.createButton(inner,
+				M.ExportToExcel, SWT.NONE);
+		excel.setImage(Images.get(FileType.EXCEL));
+		Controls.onSelect(excel,
+				e -> new ExcelExportAction().run());
+		Button lci = tk.createButton(inner,
+				M.SaveAsLCIResult, SWT.NONE);
+		lci.setImage(Images.get(ProcessType.LCI_RESULT));
+		Controls.onSelect(lci, e -> {
+			IResultEditor<?> editor = Editors.getActive();
+			if (editor == null)
+				return;
+			SaveProcessDialog.open(editor);
+		});
+
 	}
 }

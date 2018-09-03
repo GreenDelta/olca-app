@@ -39,7 +39,7 @@ public class AnalyzeInfoPage extends FormPage {
 		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
 		tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
-		InfoSection.create(body, tk, setup, "Analysis result");
+		InfoSection.create(body, tk, setup);
 		resultSections(body);
 		if (dqResult != null) {
 			new DQInfoSection(body, tk, result, dqResult);
