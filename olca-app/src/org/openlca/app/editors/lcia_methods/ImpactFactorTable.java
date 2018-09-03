@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.components.FormulaCellEditor;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
@@ -25,14 +26,12 @@ import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
@@ -81,7 +80,7 @@ class ImpactFactorTable {
 		ModifySupport<ImpactFactor> support = new ModifySupport<>(viewer);
 		support.bind(FLOW_PROPERTY, new FlowPropertyModifier());
 		support.bind(UNIT, new UnitModifier());
-		support.bind(FACTOR, new ValueModifier());
+		bindFactorModifier(support);
 		support.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
 		support.bind("", new CommentDialogModifier<ImpactFactor>(editor.getComments(),
 				f -> CommentPaths.get(category, f)));
@@ -92,6 +91,28 @@ class ImpactFactorTable {
 
 	private String[] getColumnHeaders() {
 		return new String[] { FLOW, CATEGORY, FLOW_PROPERTY, FACTOR, UNIT, UNCERTAINTY, COMMENT };
+	}
+
+	private void bindFactorModifier(ModifySupport<ImpactFactor> ms) {
+		// factor editor with auto-completion support for parameter names
+		FormulaCellEditor factorEditor = new FormulaCellEditor(viewer,
+				() -> editor.getModel().parameters);
+		ms.bind(FACTOR, factorEditor);
+		factorEditor.onEdited((obj, factor) -> {
+			if (!(obj instanceof ImpactFactor))
+				return;
+			ImpactFactor f = (ImpactFactor) obj;
+			try {
+				double value = Double.parseDouble(factor);
+				f.formula = null;
+				f.value = value;
+			} catch (NumberFormatException ex) {
+				f.formula = factor;
+				editor.getParameterSupport().evaluate();
+			}
+			editor.setDirty(true);
+			viewer.refresh();
+		});
 	}
 
 	void setImpactCategory(ImpactCategory impact, boolean sort) {
@@ -305,37 +326,6 @@ class ImpactFactorTable {
 			if (!Objects.equals(u, f.unit)) {
 				f.unit = u;
 				editor.setDirty(true);
-			}
-		}
-	}
-
-	private class ValueModifier extends TextCellModifier<ImpactFactor> {
-
-		@Override
-		protected String getText(ImpactFactor factor) {
-			if (factor.formula == null)
-				return Double.toString(factor.value);
-			else
-				return factor.formula;
-		}
-
-		@Override
-		protected void setText(ImpactFactor factor, String text) {
-			try {
-				double value = Double.parseDouble(text);
-				if (value == factor.value && factor.formula == null)
-					return; // nothing changed
-				factor.value = value;
-				factor.formula = null;
-				editor.setDirty(true);
-			} catch (NumberFormatException e) {
-				try {
-					factor.formula = text;
-					editor.setDirty(true);
-					editor.getParameterSupport().evaluate();
-				} catch (Exception ex) {
-					Error.showBox(M.InvalidFormula, text + " " + M.IsInvalidFormula);
-				}
 			}
 		}
 	}

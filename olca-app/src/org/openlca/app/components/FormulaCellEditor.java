@@ -16,6 +16,7 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.Parameter;
 import org.openlca.util.Strings;
 
@@ -93,6 +94,13 @@ public class FormulaCellEditor extends TextCellEditor {
 				formula = e.amountFormula;
 			} else {
 				formula = Double.toString(e.amount);
+			}
+		} else if (value instanceof ImpactFactor) {
+			ImpactFactor f = (ImpactFactor) value;
+			if (Strings.notEmpty(f.formula)) {
+				formula = f.formula;
+			} else {
+				formula = Double.toString(f.value);
 			}
 		}
 		formula = formula == null ? "" : formula;
