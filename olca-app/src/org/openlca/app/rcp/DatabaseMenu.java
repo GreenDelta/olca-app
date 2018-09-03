@@ -1,11 +1,13 @@
 package org.openlca.app.rcp;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.LinkingPropertiesPage;
 import org.openlca.app.navigation.actions.ValidateAction;
 import org.openlca.app.navigation.actions.db.DbCloseAction;
 import org.openlca.app.navigation.actions.db.DbCompressAction;
@@ -17,6 +19,7 @@ import org.openlca.app.navigation.actions.db.DbImportAction;
 import org.openlca.app.navigation.actions.db.DbPropertiesAction;
 import org.openlca.app.navigation.actions.db.DbRenameAction;
 import org.openlca.app.navigation.actions.db.DbUpdateManagerAction;
+import org.openlca.app.util.Actions;
 
 class DatabaseMenu implements IMenuListener {
 
@@ -37,6 +40,10 @@ class DatabaseMenu implements IMenuListener {
 		menu.add(new DbImportAction());
 		if (Database.getActiveConfiguration() == null)
 			return;
+		Action checkLinksAction = Actions.create(
+				"#Check linking properties", null, () -> {
+					LinkingPropertiesPage.show();
+				});
 		IAction[] actions = new IAction[] {
 				new DbExportAction(),
 				ValidateAction.forDatabase(),
@@ -44,9 +51,10 @@ class DatabaseMenu implements IMenuListener {
 				new DbRenameAction(),
 				new DbDeleteAction(),
 				new DbCloseAction(),
+				checkLinksAction,
 				new DbPropertiesAction(),
 				new DbCompressAction(),
-				new DbUpdateManagerAction()
+				new DbUpdateManagerAction(),
 		};
 		for (IAction a : actions) {
 			menu.add(a);

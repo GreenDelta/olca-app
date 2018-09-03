@@ -276,6 +276,14 @@
             name="Global parameter editor">
       </editor>	  
 
+      <editor
+            class="org.openlca.app.db.LinkingPropertiesPage"
+            default="false"
+            icon="icons/model/database.png"
+            id="editors.LinkingPropertiesPage"
+            name="Linking properties">
+      </editor>
+
    </extension>
    
    <extension
