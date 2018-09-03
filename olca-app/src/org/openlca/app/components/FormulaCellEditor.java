@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.ParameterDao;
+import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Parameter;
 import org.openlca.util.Strings;
 
@@ -72,8 +73,10 @@ public class FormulaCellEditor extends TextCellEditor {
 	@Override
 	protected boolean dependsOnExternalFocusListener() {
 		// Always return false;
-		// Otherwise, the ColumnViewerEditor will install an additional focus listener
-		// that cancels cell editing on focus lost, even if focus gets lost due to
+		// Otherwise, the ColumnViewerEditor will install an additional focus
+		// listener
+		// that cancels cell editing on focus lost, even if focus gets lost due
+		// to
 		// activation of the completion proposal popup. See also bug 58777.
 		return false;
 	}
@@ -84,6 +87,13 @@ public class FormulaCellEditor extends TextCellEditor {
 		String formula = null;
 		if (value instanceof Parameter) {
 			formula = ((Parameter) value).getFormula();
+		} else if (value instanceof Exchange) {
+			Exchange e = (Exchange) value;
+			if (Strings.notEmpty(e.amountFormula)) {
+				formula = e.amountFormula;
+			} else {
+				formula = Double.toString(e.amount);
+			}
 		}
 		formula = formula == null ? "" : formula;
 		super.doSetValue(formula);

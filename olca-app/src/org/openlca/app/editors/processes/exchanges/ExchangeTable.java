@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.components.FormulaCellEditor;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
@@ -23,13 +24,11 @@ import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -117,7 +116,6 @@ class ExchangeTable {
 
 	private void bindModifiers() {
 		ModifySupport<Exchange> ms = new ModifySupport<>(viewer);
-		ms.bind(AMOUNT, new AmountModifier());
 		ms.bind(UNIT, new UnitCell(editor));
 		ms.bind(COSTS, new CostCellEditor(viewer, editor));
 		ms.bind(PEDIGREE, new DataQualityCellEditor(viewer, editor));
@@ -125,7 +123,31 @@ class ExchangeTable {
 		ms.bind(DESCRIPTION, new CommentEditor(viewer, editor));
 		ms.bind(PROVIDER, new ProviderCombo(editor));
 		ms.bind(AVOIDED, new AvoidedCheck(editor));
-		ms.bind("", new CommentDialogModifier<Exchange>(editor.getComments(), CommentPaths::get));
+		ms.bind("", new CommentDialogModifier<Exchange>(
+				editor.getComments(), CommentPaths::get));
+		bindAmountModifier(ms);
+	}
+
+	private void bindAmountModifier(ModifySupport<Exchange> ms) {
+		// amount editor with auto-completion support for parameter names
+		FormulaCellEditor amountEditor = new FormulaCellEditor(viewer,
+				() -> editor.getModel().getParameters());
+		ms.bind(AMOUNT, amountEditor);
+		amountEditor.onEdited((obj, amount) -> {
+			if (!(obj instanceof Exchange))
+				return;
+			Exchange e = (Exchange) obj;
+			try {
+				double value = Double.parseDouble(amount);
+				e.amountFormula = null;
+				e.amount = value;
+			} catch (NumberFormatException ex) {
+				e.amountFormula = amount;
+				editor.getParameterSupport().evaluate();
+			}
+			editor.setDirty(true);
+			viewer.refresh();
+		});
 	}
 
 	private void bindActions(Section section) {
@@ -270,35 +292,6 @@ class ExchangeTable {
 				if (!ex.isInput && ex.flow.equals(flow))
 					return false;
 		return true;
-	}
-
-	private class AmountModifier extends TextCellModifier<Exchange> {
-
-		@Override
-		protected String getText(Exchange e) {
-			if (e.amountFormula == null)
-				return Double.toString(e.amount);
-			return e.amountFormula;
-		}
-
-		@Override
-		protected void setText(Exchange exchange, String text) {
-			try {
-				double value = Double.parseDouble(text);
-				exchange.amountFormula = null;
-				exchange.amount = value;
-				editor.setDirty(true);
-			} catch (NumberFormatException e) {
-				try {
-					exchange.amountFormula = text;
-					editor.setDirty(true);
-					editor.getParameterSupport().evaluate();
-				} catch (Exception ex) {
-					Error.showBox(M.InvalidFormula, text + " "
-							+ M.IsInvalidFormula);
-				}
-			}
-		}
 	}
 
 	private class Filter extends ViewerFilter {
