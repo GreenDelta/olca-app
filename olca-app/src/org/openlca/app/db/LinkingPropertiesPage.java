@@ -3,6 +3,7 @@ package org.openlca.app.db;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -50,6 +51,9 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 	}
 
 	private class Page extends FormPage {
+
+		private FormToolkit tk;
+
 		public Page() {
 			super(LinkingPropertiesPage.this,
 					"LinkingPropertiesPage.Page",
@@ -59,9 +63,37 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			ScrolledForm form = UI.formHeader(mform, "#Linking properties");
-			FormToolkit tk = mform.getToolkit();
+			tk = mform.getToolkit();
 			Composite body = UI.formBody(form, tk);
+			Composite comp = UI.formSection(body, tk,
+					"#General database properties");
+			if (props.processesWithoutProviders.isEmpty()) {
+				check(comp, Icon.ACCEPT, "#All product inputs "
+						+ "and waste outputs are linked to a "
+						+ "default provider.");
+			} else {
+				check(comp, Icon.WARNING, "#There are processes "
+						+ "in the database without default providers"
+						+ " for product inputs and/or waste outputs "
+						+ "(see table below).");
+			}
+			if (props.multiProviderFlows.isEmpty()) {
+				check(comp, Icon.ACCEPT, "#All product and waste"
+						+ " flows in the database have a single "
+						+ "provider.");
+			} else {
+				check(comp, Icon.WARNING, "#There are product "
+						+ "and/or waste flows in the database "
+						+ "that have multiple providers "
+						+ "(see table below).");
+			}
 			form.reflow(true);
+		}
+
+		private void check(Composite comp, Icon icon, String message) {
+			tk.createLabel(comp, "").setImage(icon.get());
+			tk.createLabel(comp, message, SWT.WRAP); // TODO WRAP currently does
+														// not work
 		}
 	}
 
