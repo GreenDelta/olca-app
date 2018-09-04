@@ -271,6 +271,9 @@ class ExchangeTable {
 		case 4:
 			if (e.costs == null || e.currency == null)
 				return "";
+			if (label.showFormulas
+					&& Strings.notEmpty(e.costFormula))
+				return e.costFormula + " " + e.currency.code;
 			else
 				return e.costs.toString() + " " + e.currency.code;
 		case 6:

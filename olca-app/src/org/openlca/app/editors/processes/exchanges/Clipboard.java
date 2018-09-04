@@ -229,27 +229,29 @@ class Clipboard {
 			String s = row[4];
 			if (Strings.nullOrEmpty(s))
 				return;
-			String[] parts = row[4].trim().split("[\\s]+", 2);
-			if (parts.length < 2)
+			s = s.trim();
+			int splitIdx = s.lastIndexOf(' ');
+			if (splitIdx < 0)
 				return;
+			String amount = s.substring(0, splitIdx).trim();
+			String currencySymbol = s.substring(splitIdx + 1).trim();
+			Currency currency = null;
+			for (Currency cu : currencyDao.getAll()) {
+				if (Strings.nullOrEqual(currencySymbol, cu.code)) {
+					currency = cu;
+					break;
+				}
+			}
+			if (currency == null) {
+				log.warn("Could not find currency for symbol={}",
+						currencySymbol);
+				return;
+			}
+			e.currency = currency;
 			try {
-				double amount = Double.parseDouble(parts[0]);
-				String code = parts[1].trim();
-				Currency currency = null;
-				for (Currency cu : currencyDao.getAll()) {
-					if (Strings.nullOrEqual(code, cu.code)) {
-						currency = cu;
-						break;
-					}
-				}
-				if (currency == null) {
-					log.warn("Could not find currency for code={}", code);
-					return;
-				}
-				e.currency = currency;
-				e.costs = amount;
+				e.costs = Double.parseDouble(amount);
 			} catch (Exception ex) {
-				log.warn("Failed to parse costs/revenues {}", s);
+				e.costFormula = amount;
 			}
 		}
 
