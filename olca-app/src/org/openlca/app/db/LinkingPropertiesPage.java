@@ -1,9 +1,14 @@
 package org.openlca.app.db;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -16,8 +21,19 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Editors;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.tables.Tables;
+import org.openlca.app.util.viewers.Viewers;
+import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.ProcessDao;
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.util.Strings;
 
 public class LinkingPropertiesPage extends SimpleFormEditor {
 
@@ -65,6 +81,13 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			ScrolledForm form = UI.formHeader(mform, "#Linking properties");
 			tk = mform.getToolkit();
 			Composite body = UI.formBody(form, tk);
+			generalPropertiesSection(body);
+			processProviderSection(body);
+			flowProviderSection(body);
+			form.reflow(true);
+		}
+
+		private void generalPropertiesSection(Composite body) {
 			Composite comp = UI.formSection(body, tk,
 					"#General database properties");
 			if (props.processesWithoutProviders.isEmpty()) {
@@ -87,13 +110,75 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 						+ "that have multiple providers "
 						+ "(see table below).");
 			}
-			form.reflow(true);
 		}
 
 		private void check(Composite comp, Icon icon, String message) {
 			tk.createLabel(comp, "").setImage(icon.get());
 			tk.createLabel(comp, message, SWT.WRAP); // TODO WRAP currently does
 														// not work
+		}
+
+		private void processProviderSection(Composite body) {
+			if (props.processesWithoutProviders.isEmpty())
+				return;
+			Composite comp = UI.formSection(body, tk,
+					"#Processes without providers (max. 50)");
+			UI.gridLayout(comp, 1);
+			TableViewer table = Tables.createViewer(comp, "#Process");
+			ProcessDao dao = new ProcessDao(Database.get());
+			List<ProcessDescriptor> list = dao.getDescriptors(
+					props.processesWithoutProviders);
+			fillTable(table, list);
+		}
+
+		private void flowProviderSection(Composite body) {
+			if (props.multiProviderFlows.isEmpty())
+				return;
+			Composite comp = UI.formSection(body, tk,
+					"#Product or waste flows with multiple providers (max. 50)");
+			UI.gridLayout(comp, 1);
+			TableViewer table = Tables.createViewer(comp, "#Flow");
+			FlowDao dao = new FlowDao(Database.get());
+			List<FlowDescriptor> list = dao.getDescriptors(
+					props.multiProviderFlows);
+			fillTable(table, list);
+		}
+
+		private <T extends CategorizedDescriptor> void fillTable(
+				TableViewer table, List<T> list) {
+			table.setLabelProvider(new TableLabel());
+			Tables.bindColumnWidths(table, 1.0);
+			list.sort((d1, d2) -> Strings.compare(
+					Labels.getDisplayName(d1),
+					Labels.getDisplayName(d2)));
+			table.setInput(list);
+			Tables.onDoubleClick(table, e -> {
+				CategorizedDescriptor d = Viewers.getFirstSelected(table);
+				App.openEditor(d);
+			});
+		}
+
+		private class TableLabel extends LabelProvider implements ITableLabelProvider {
+
+			@Override
+			public Image getColumnImage(Object o, int col) {
+				if (col != 0)
+					return null;
+				if (!(o instanceof BaseDescriptor))
+					return null;
+				BaseDescriptor d = (BaseDescriptor) o;
+				return Images.get(d);
+			}
+
+			@Override
+			public String getColumnText(Object o, int col) {
+				if (col != 0)
+					return null;
+				if (!(o instanceof BaseDescriptor))
+					return null;
+				BaseDescriptor d = (BaseDescriptor) o;
+				return Labels.getDisplayName(d);
+			}
 		}
 	}
 
