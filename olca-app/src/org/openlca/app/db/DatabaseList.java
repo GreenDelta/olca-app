@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -33,13 +34,11 @@ public class DatabaseList {
 		return remoteDatabases;
 	}
 
-
-
 	public static DatabaseList read(File file) {
 		Logger log = LoggerFactory.getLogger(DatabaseList.class);
 		log.info("read database configurations from {}", file);
 		try (FileInputStream in = new FileInputStream(file);
-		     Reader reader = new InputStreamReader(in, "utf-8")) {
+				Reader reader = new InputStreamReader(in, "utf-8")) {
 			Gson gson = new Gson();
 			return gson.fromJson(reader, DatabaseList.class);
 		} catch (Exception e) {
@@ -52,7 +51,7 @@ public class DatabaseList {
 		Logger log = LoggerFactory.getLogger(DatabaseList.class);
 		log.info("write database configurations to {}", file);
 		try (FileOutputStream out = new FileOutputStream(file);
-		     Writer writer = new OutputStreamWriter(out, "utf-8")) {
+				Writer writer = new OutputStreamWriter(out, "utf-8")) {
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			String s = gson.toJson(this);
 			writer.write(s);
@@ -71,14 +70,21 @@ public class DatabaseList {
 
 	/** Returns true if a database with the given name exists. */
 	public boolean nameExists(String name) {
-		if (name == null || name.isEmpty())
+		if (Strings.nullOrEmpty(name))
 			return false;
+		String newName = name.trim().toLowerCase();
+		Predicate<IDatabaseConfiguration> sameName = config -> {
+			if (config == null || config.getName() == null)
+				return false;
+			return Strings.nullOrEqual(
+					config.getName().toLowerCase(), newName);
+		};
 		for (IDatabaseConfiguration config : localDatabases) {
-			if (Strings.nullOrEqual(config.getName().toLowerCase(), name.toLowerCase()))
+			if (sameName.test(config))
 				return true;
 		}
 		for (IDatabaseConfiguration config : remoteDatabases) {
-			if (Strings.nullOrEqual(config.getName().toLowerCase(), name.toLowerCase()))
+			if (sameName.test(config))
 				return true;
 		}
 		return false;

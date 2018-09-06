@@ -77,12 +77,12 @@ class DbImportPage extends WizardPage {
 		DatabaseList dbList = Database.getConfigurations();
 		List<IDatabaseConfiguration> configs = new ArrayList<>();
 		for (IDatabaseConfiguration config : dbList.getLocalDatabases()) {
-			if (!Database.isActive(config)) {
+			if (config != null && !Database.isActive(config)) {
 				configs.add(config);
 			}
 		}
 		for (IDatabaseConfiguration config : dbList.getRemoteDatabases()) {
-			if (!Database.isActive(config)) {
+			if (config != null && !Database.isActive(config)) {
 				configs.add(config);
 			}
 		}
