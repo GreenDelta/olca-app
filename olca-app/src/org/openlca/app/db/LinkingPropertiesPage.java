@@ -191,7 +191,9 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 		}
 
 		@Override
-		public <T> T getAdapter(Class<T> adapter) {
+		@SuppressWarnings("rawtypes")
+		// need to support several target platforms
+		public Object getAdapter(Class adapter) {
 			return null;
 		}
 
