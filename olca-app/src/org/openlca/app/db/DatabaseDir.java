@@ -19,6 +19,8 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
  */
 public class DatabaseDir {
 
+	public static final String FILE_STORAGE = "_olca_";
+	
 	private DatabaseDir() {
 	}
 
@@ -36,7 +38,7 @@ public class DatabaseDir {
 		if (database.getFileStorageLocation() != null)
 			return database.getFileStorageLocation();
 		else
-			return new File(getRootFolder(database.getName()), "_olca_");
+			return new File(getRootFolder(database.getName()), FILE_STORAGE);
 	}
 
 	public static File getDir(BaseDescriptor d) {

@@ -21,6 +21,7 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.InformationPopup;
+import org.openlca.cloud.api.RepositoryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
@@ -93,6 +94,8 @@ public class DbExportAction extends Action implements INavigationAction {
 			if (config instanceof DerbyConfiguration) {
 				File folder = DatabaseDir.getRootFolder(config.getName());
 				ZipUtil.pack(folder, zip);
+				ZipUtil.removeEntry(zip, DatabaseDir.FILE_STORAGE + "/" + RepositoryConfig.INDEX_DIR);
+				ZipUtil.removeEntry(zip, DatabaseDir.FILE_STORAGE + "/" + RepositoryConfig.PROPERTIES_FILE);
 			} else if (config instanceof MySQLConfiguration) {
 				MySQLDatabaseExport export = new MySQLDatabaseExport(
 						(MySQLConfiguration) config, zip);
