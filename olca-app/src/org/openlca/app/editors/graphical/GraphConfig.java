@@ -23,6 +23,7 @@ import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
+import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.DeleteAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
@@ -79,11 +80,11 @@ public class GraphConfig {
 			}
 
 		});
-
 		Transfer transferType = ModelTransfer.getInstance();
 		DropTarget dropTarget = new DropTarget(viewer.getControl(), DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
 		dropTarget.setTransfer(new Transfer[] { transferType });
 		dropTarget.addDropListener(new GraphDropListener(model, transferType, commandStack));
+		viewer.getEditDomain().setActiveTool(new PanningSelectionTool());
 		viewer.setContents(model);
 	}
 
