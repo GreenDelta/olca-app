@@ -24,6 +24,7 @@ import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.editparts.ZoomListener;
 import org.eclipse.gef.editparts.ZoomManager;
+import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
@@ -207,6 +208,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 				10.0, 20.0, 40.0, 80.0, 150.0, 300.0, 500.0, 1000.0 };
 		((ScalableRootEditPart) getGraphicalViewer().getRootEditPart())
 				.getZoomManager().setZoomLevels(zoomLevels);
+		getGraphicalViewer().getEditDomain().setActiveTool(new PanningSelectionTool());
 		initContent();
 	}
 
