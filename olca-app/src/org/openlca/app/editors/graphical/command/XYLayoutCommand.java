@@ -33,18 +33,6 @@ public class XYLayoutCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		if (type == RESIZE) {
-			if (node.isMinimized())
-				if (newLayout.height != node.getXyLayoutConstraints().height)
-					return false;
-			if (newLayout.getSize().width < node.getMinimumWidth())
-				return false;
-			if (newLayout.getSize().height < node.getMinimumHeight())
-				return false;
-			if (!node.isMinimized())
-				if (newLayout.getSize().height < node.getMinimumHeight())
-					return false;
-		}
 		return true;
 	}
 
@@ -61,7 +49,18 @@ public class XYLayoutCommand extends Command {
 	@Override
 	public void execute() {
 		previousLayout = node.getXyLayoutConstraints();
-		node.setXyLayoutConstraints(newContraints());
+		Rectangle newConstraints = newContraints();
+		if (node.isMinimized() && newConstraints.height > node.getMinimumHeight()) {
+			node.maximize();
+		}
+		// minimum height/width is different if node is maximized
+		if (newConstraints.height < node.getMinimumHeight())  {
+			newConstraints.height = node.getMinimumHeight();
+		}
+		if (newConstraints.width < node.getMinimumWidth())  {
+			newConstraints.width = node.getMinimumWidth();
+		}
+		node.setXyLayoutConstraints(newConstraints);
 		node.parent().editor.setDirty(true);
 	}
 
@@ -73,7 +72,9 @@ public class XYLayoutCommand extends Command {
 			size = new Dimension(previousLayout.width, previousLayout.height);
 		} else if (type == RESIZE) {
 			position = new Point(previousLayout.x, previousLayout.y);
-			size = new Dimension(newLayout.width, newLayout.height);
+			int width = Math.max(newLayout.width, node.getMinimumWidth());
+			int height = Math.max(newLayout.height, node.getMinimumHeight());
+			size = new Dimension(width, height);
 		}
 		return new Rectangle(position, size);
 	}
