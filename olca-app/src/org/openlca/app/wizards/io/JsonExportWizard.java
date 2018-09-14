@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.Daos;
@@ -91,6 +92,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 
 		private void doExport(IProgressMonitor monitor, ZipStore store) {
 			JsonExport export = new JsonExport(database, store);
+			export.setClientInfo("openLCA " + App.getVersion());
 			for (BaseDescriptor model : models) {
 				if (monitor.isCanceled())
 					break;
