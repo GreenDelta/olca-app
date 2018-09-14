@@ -9,9 +9,8 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
+import org.openlca.core.matrix.LinkingConfig;
 import org.openlca.core.matrix.ProductSystemBuilder;
-import org.openlca.core.matrix.cache.MatrixCache;
-import org.openlca.core.matrix.product.index.LinkingMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
@@ -47,7 +46,8 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		if (system == null)
 			return false;
 		system.setCategory(getCategory());
-		system.cutoff = page.getCutoff();
+		LinkingConfig config = page.getLinkingConfig();
+		system.cutoff = config.cutoff;
 		addCreationInfo(system, page);
 		try {
 			createDao().insert(system);
@@ -56,9 +56,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 				App.openEditor(system);
 				return true;
 			}
-			ProcessType preferredType = page.getPreferredType();
-			LinkingMethod linkingMethod = page.getLinkingMethod();
-			Runner runner = new Runner(system, preferredType, linkingMethod);
+			Runner runner = new Runner(system, config);
 			getContainer().run(true, true, runner);
 			system = runner.system;
 			Cache.registerNew(Descriptors.toDescriptor(system));
@@ -85,17 +83,18 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 	}
 
 	private String getLinkingInfo(ProductSystemWizardPage page) {
-		LinkingMethod method = page.getLinkingMethod();
-		if (!page.addSupplyChain() || method == null)
+		LinkingConfig config = page.getLinkingConfig();
+		if (!page.addSupplyChain() || config == null)
 			return M.None;
 		String suffix = "; " + M.PreferredProcessType + ": ";
-		if (page.getPreferredType() == ProcessType.LCI_RESULT)
-			suffix += M.SystemProcess;
-		else
+		if (config.preferredType == ProcessType.UNIT_PROCESS) {
 			suffix += M.UnitProcess;
-		if (page.getCutoff() != null)
-			suffix += "; cutoff = " + page.getCutoff().toString();
-		switch (method) {
+		} else {
+			suffix += M.SystemProcess;
+		}
+		if (config.cutoff != null)
+			suffix += "; cutoff = " + config.cutoff.toString();
+		switch (config.providerLinking) {
 		case IGNORE_PROVIDERS:
 			return M.IgnoreDefaultProviders + suffix;
 		case ONLY_LINK_PROVIDERS:
@@ -115,15 +114,11 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 	private class Runner implements IRunnableWithProgress {
 
 		private ProductSystem system;
-		private ProcessType preferredType;
-		private LinkingMethod linkingMethod;
-		private MatrixCache cache;
+		private final LinkingConfig config;
 
-		public Runner(ProductSystem system, ProcessType preferredType, LinkingMethod linkingMethod) {
+		public Runner(ProductSystem system, LinkingConfig config) {
 			this.system = system;
-			this.preferredType = preferredType;
-			this.cache = Cache.getMatrixCache();
-			this.linkingMethod = linkingMethod;
+			this.config = config;
 		}
 
 		@Override
@@ -132,12 +127,10 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			try {
 				monitor.beginTask(M.CreatingProductSystem,
 						IProgressMonitor.UNKNOWN);
-				ProductSystemBuilder builder = new ProductSystemBuilder(cache);
-				builder.setPreferredType(preferredType);
-				builder.setLinkingMethod(linkingMethod);
-				if (system.cutoff != null)
-					builder.setCutoff(system.cutoff);
-				system = builder.autoComplete(system);
+				ProductSystemBuilder builder = new ProductSystemBuilder(
+						Cache.getMatrixCache(), config);
+				builder.autoComplete(system);
+				system = builder.saveUpdates(system);
 				monitor.done();
 			} catch (Exception e) {
 				log.error("Failed to auto-complete product system", e);

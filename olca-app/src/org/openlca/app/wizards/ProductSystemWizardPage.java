@@ -22,6 +22,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.matrix.LinkingConfig;
 import org.openlca.core.matrix.product.index.LinkingMethod;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -207,25 +208,25 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		return supplyChainCheck.getSelection();
 	}
 
-	ProcessType getPreferredType() {
-		if (preferUnitRadio.getSelection())
-			return ProcessType.UNIT_PROCESS;
-		if (preferSystemRadio.getSelection())
-			return ProcessType.LCI_RESULT;
-		return ProcessType.LCI_RESULT;
+	LinkingConfig getLinkingConfig() {
+		LinkingConfig config = new LinkingConfig();
+		if (preferUnitRadio.getSelection()) {
+			config.preferredType = ProcessType.UNIT_PROCESS;
+		} else {
+			config.preferredType = ProcessType.LCI_RESULT;
+		}
+		if (ignoreProvidersRadio.getSelection()) {
+			config.providerLinking = LinkingMethod.IGNORE_PROVIDERS;
+		} else if (onlyLinkProvidersRadio.getSelection()) {
+			config.providerLinking = LinkingMethod.ONLY_LINK_PROVIDERS;
+		} else {
+			config.providerLinking = LinkingMethod.PREFER_PROVIDERS;
+		}
+		config.cutoff = getCutoff();
+		return config;
 	}
 
-	LinkingMethod getLinkingMethod() {
-		if (ignoreProvidersRadio.getSelection())
-			return LinkingMethod.IGNORE_PROVIDERS;
-		if (preferProvidersRadio.getSelection())
-			return LinkingMethod.PREFER_PROVIDERS;
-		if (onlyLinkProvidersRadio.getSelection())
-			return LinkingMethod.ONLY_LINK_PROVIDERS;
-		return LinkingMethod.ONLY_LINK_PROVIDERS;
-	}
-
-	Double getCutoff() {
+	private Double getCutoff() {
 		String s = cutoffText.getText();
 		if (Strings.isNullOrEmpty(s)) {
 			return null;

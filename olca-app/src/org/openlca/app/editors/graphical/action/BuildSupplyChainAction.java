@@ -14,6 +14,7 @@ import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.UI;
+import org.openlca.core.matrix.LinkingConfig;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.matrix.product.index.LinkingMethod;
@@ -28,12 +29,14 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private List<ProcessNode> nodes;
-	private ProcessType preferredType = ProcessType.UNIT_PROCESS;
-	private LinkingMethod linkingMethod = LinkingMethod.ONLY_LINK_PROVIDERS;
+	private final LinkingConfig config;
 
 	BuildSupplyChainAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN);
 		setText(M.Complete);
+		config = new LinkingConfig();
+		config.preferredType = ProcessType.UNIT_PROCESS;
+		config.providerLinking = LinkingMethod.ONLY_LINK_PROVIDERS;
 	}
 
 	@Override
@@ -43,12 +46,12 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 
 	@Override
 	public void setPreferredType(ProcessType preferredType) {
-		this.preferredType = preferredType;
+		config.preferredType = preferredType;
 	}
 
 	@Override
 	public void setLinkingMethod(LinkingMethod linkingMethod) {
-		this.linkingMethod = linkingMethod;
+		config.providerLinking = linkingMethod;
 	}
 
 	@Override
@@ -85,12 +88,11 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 		@Override
 		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 			monitor.beginTask(M.CreatingProductSystem, IProgressMonitor.UNKNOWN);
-			ProductSystemBuilder builder = new ProductSystemBuilder(Cache.getMatrixCache());
-			builder.setPreferredType(preferredType);
-			builder.setLinkingMethod(linkingMethod);
+			ProductSystemBuilder builder = new ProductSystemBuilder(Cache.getMatrixCache(), config);
 			for (ProcessNode node : nodes) {
 				LongPair idPair = new LongPair(node.process.getId(), node.process.getQuantitativeReference());
-				system = builder.autoComplete(system, idPair);
+				builder.autoComplete(system, idPair);
+				system = builder.saveUpdates(system);
 			}
 			ProductSystemGraphEditor editor = nodes.get(0).parent().editor;
 			editor.updateModel(monitor);
