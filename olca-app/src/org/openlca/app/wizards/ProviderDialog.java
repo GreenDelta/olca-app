@@ -20,6 +20,7 @@ import org.openlca.core.matrix.CalcExchange;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,21 +66,31 @@ class ProviderDialog extends Dialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite c = (Composite) super.createDialogArea(parent);
 		UI.gridLayout(c, 2);
+
 		UI.formLabel(c, M.Process);
-		UI.formLabel(c, getLabel(
-				ProcessDescriptor.class, exchange.processId));
+		String processLabel = getLabel(
+				ProcessDescriptor.class, exchange.processId);
+		UI.formLabel(c, Strings.cut(processLabel, 60))
+				.setToolTipText(processLabel);
+
 		UI.formLabel(c, M.Flow);
-		UI.formLabel(c, getLabel(
-				FlowDescriptor.class, exchange.flowId));
-		Combo combo = UI.formCombo(c, M.Providers);
+		String flowLabel = getLabel(
+				FlowDescriptor.class, exchange.flowId);
+		UI.formLabel(c, Strings.cut(flowLabel, 60))
+				.setToolTipText(flowLabel);
+
+		Combo combo = UI.formCombo(c, M.Provider);
 		String[] labels = new String[providers.length];
 		for (int i = 0; i < labels.length; i++) {
 			labels[i] = getLabel(ProcessDescriptor.class, providers[i]);
 		}
 		combo.setItems(labels);
 		combo.select(0);
+		combo.setToolTipText(labels[0]);
 		Controls.onSelect(combo, e -> {
-			options.selected = providers[combo.getSelectionIndex()];
+			int i = combo.getSelectionIndex();
+			options.selected = providers[i];
+			combo.setToolTipText(labels[i]);
 		});
 		createChecks(c);
 		return c;

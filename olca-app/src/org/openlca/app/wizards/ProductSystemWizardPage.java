@@ -105,7 +105,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		autoLinkCheck.setSelection(true);
 		UI.filler(comp);
 		checkLinksCheck = UI.checkBox(comp,
-				"#Check multi-provider links");
+				"#Check multi-provider links (experimental)");
 		linkingPanel = new LinkingConfigPanel(comp);
 		Controls.onSelect(autoLinkCheck, e -> {
 			boolean enabled = autoLinkCheck.getSelection();

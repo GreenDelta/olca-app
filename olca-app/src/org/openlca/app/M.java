@@ -652,6 +652,7 @@ public class M extends NLS {
 	public static String Projects;
 	public static String Properties;
 	public static String ProviderLinking;
+	public static String Provider;
 	public static String Providers;
 	public static String Publication;
 	public static String QuantitativeReference;
