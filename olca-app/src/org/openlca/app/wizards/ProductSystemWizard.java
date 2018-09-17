@@ -92,14 +92,17 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		} else {
 			suffix += M.SystemProcess;
 		}
-		if (config.cutoff != null)
+		if (config.cutoff != null) {
 			suffix += "; cutoff = " + config.cutoff.toString();
+		}
+		if (config.providerLinking == null)
+			return suffix;
 		switch (config.providerLinking) {
-		case IGNORE_PROVIDERS:
+		case IGNORE:
 			return M.IgnoreDefaultProviders + suffix;
-		case ONLY_LINK_PROVIDERS:
+		case ONLY:
 			return M.OnlyLinkDefaultProviders + suffix;
-		case PREFER_PROVIDERS:
+		case PREFER:
 			return M.PreferDefaultProviders + suffix;
 		default:
 			return "???" + suffix;

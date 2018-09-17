@@ -14,7 +14,7 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
-import org.openlca.core.matrix.product.index.LinkingMethod;
+import org.openlca.core.matrix.LinkingConfig.DefaultProviders;
 import org.openlca.core.model.ProcessType;
 
 class BuildSupplyChainMenuAction extends EditorAction {
@@ -42,38 +42,38 @@ class BuildSupplyChainMenuAction extends EditorAction {
 			MenuItem item = new MenuItem(menu, SWT.CASCADE);
 			item.setText(action.getText());
 			Menu subMenu = new Menu(item);
-			createSubItem(subMenu, action, LinkingMethod.IGNORE_PROVIDERS, ProcessType.UNIT_PROCESS);
-			createSubItem(subMenu, action, LinkingMethod.IGNORE_PROVIDERS, ProcessType.LCI_RESULT);
-			createSubItem(subMenu, action, LinkingMethod.PREFER_PROVIDERS, ProcessType.UNIT_PROCESS);
-			createSubItem(subMenu, action, LinkingMethod.PREFER_PROVIDERS, ProcessType.LCI_RESULT);
-			createSubItem(subMenu, action, LinkingMethod.ONLY_LINK_PROVIDERS, null);
+			createSubItem(subMenu, action, DefaultProviders.IGNORE, ProcessType.UNIT_PROCESS);
+			createSubItem(subMenu, action, DefaultProviders.IGNORE, ProcessType.LCI_RESULT);
+			createSubItem(subMenu, action, DefaultProviders.PREFER, ProcessType.UNIT_PROCESS);
+			createSubItem(subMenu, action, DefaultProviders.PREFER, ProcessType.LCI_RESULT);
+			createSubItem(subMenu, action, DefaultProviders.ONLY, null);
 			item.setMenu(subMenu);
 		}
 
-		private void createSubItem(Menu menu, IBuildAction action, LinkingMethod method, ProcessType type) {
+		private void createSubItem(Menu menu, IBuildAction action, DefaultProviders providers, ProcessType type) {
 			MenuItem item = new MenuItem(menu, SWT.NONE);
-			String label = getLabel(method);
+			String label = getLabel(providers);
 			if (type != null) {
 				label += "/" + NLS.bind(M.Prefer, Labels.processType(type));
 			}
 			item.setText(label);
 			Controls.onSelect(item, (e) -> {
 				action.setProcessNodes(nodes);
-				action.setLinkingMethod(method);
+				action.setProviderMethod(providers);
 				action.setPreferredType(type);
 				action.run();
 			});
 		}
 
-		private String getLabel(LinkingMethod method) {
-			if (method == null)
+		private String getLabel(DefaultProviders providers) {
+			if (providers == null)
 				return null;
-			switch (method) {
-			case IGNORE_PROVIDERS:
+			switch (providers) {
+			case IGNORE:
 				return M.IgnoreDefaultProviders;
-			case PREFER_PROVIDERS:
+			case PREFER:
 				return M.PreferDefaultProviders;
-			case ONLY_LINK_PROVIDERS:
+			case ONLY:
 				return M.OnlyLinkDefaultProviders;
 			default:
 				return null;

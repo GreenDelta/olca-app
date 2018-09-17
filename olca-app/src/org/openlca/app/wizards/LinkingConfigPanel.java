@@ -10,7 +10,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.LinkingConfig;
-import org.openlca.core.matrix.product.index.LinkingMethod;
+import org.openlca.core.matrix.LinkingConfig.DefaultProviders;
 import org.openlca.core.model.ProcessType;
 
 import com.google.common.base.Strings;
@@ -94,11 +94,11 @@ public class LinkingConfigPanel {
 			config.preferredType = ProcessType.LCI_RESULT;
 		}
 		if (ignoreProvidersRadio.getSelection()) {
-			config.providerLinking = LinkingMethod.IGNORE_PROVIDERS;
+			config.providerLinking = DefaultProviders.IGNORE;
 		} else if (onlyLinkProvidersRadio.getSelection()) {
-			config.providerLinking = LinkingMethod.ONLY_LINK_PROVIDERS;
+			config.providerLinking = DefaultProviders.ONLY;
 		} else {
-			config.providerLinking = LinkingMethod.PREFER_PROVIDERS;
+			config.providerLinking = DefaultProviders.PREFER;
 		}
 		config.cutoff = getCutoff();
 		return config;

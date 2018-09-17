@@ -15,9 +15,9 @@ import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.LinkingConfig;
+import org.openlca.core.matrix.LinkingConfig.DefaultProviders;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.matrix.ProductSystemBuilder;
-import org.openlca.core.matrix.product.index.LinkingMethod;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -36,7 +36,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 		setText(M.Complete);
 		config = new LinkingConfig();
 		config.preferredType = ProcessType.UNIT_PROCESS;
-		config.providerLinking = LinkingMethod.ONLY_LINK_PROVIDERS;
+		config.providerLinking = DefaultProviders.PREFER;
 	}
 
 	@Override
@@ -50,8 +50,8 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 	}
 
 	@Override
-	public void setLinkingMethod(LinkingMethod linkingMethod) {
-		config.providerLinking = linkingMethod;
+	public void setProviderMethod(DefaultProviders providers) {
+		config.providerLinking = providers;
 	}
 
 	@Override
