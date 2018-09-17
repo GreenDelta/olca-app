@@ -35,11 +35,11 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private TreeViewer processTree;
 	private Process refProcess;
-	private Button supplyChainCheck;
-
 	private Text filterText;
+	private TreeViewer processTree;
+	private Button autoLinkCheck;
+	private Button checkLinksCheck;
 
 	private LinkingConfigPanel linkingPanel;
 
@@ -101,11 +101,23 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	private void createOptions(Composite comp) {
 		UI.filler(comp);
-		supplyChainCheck = UI.checkBox(comp, M.AutoLinkProcesses);
-		supplyChainCheck.setSelection(true);
+		autoLinkCheck = UI.checkBox(comp, M.AutoLinkProcesses);
+		autoLinkCheck.setSelection(true);
+		UI.filler(comp);
+		checkLinksCheck = UI.checkBox(comp,
+				"#Check multi-provider links");
 		linkingPanel = new LinkingConfigPanel(comp);
-		Controls.onSelect(supplyChainCheck, e -> {
-			linkingPanel.setEnabled(supplyChainCheck.getSelection());
+		Controls.onSelect(autoLinkCheck, e -> {
+			boolean enabled = autoLinkCheck.getSelection();
+			linkingPanel.setEnabled(enabled);
+			checkLinksCheck.setEnabled(enabled);
+			if (enabled && checkLinksCheck.getSelection()) {
+				linkingPanel.setTypeChecksEnabled(false);
+			}
+		});
+		Controls.onSelect(checkLinksCheck, e -> {
+			boolean b = !checkLinksCheck.getSelection();
+			linkingPanel.setTypeChecksEnabled(b);
 		});
 	}
 
@@ -141,11 +153,15 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	boolean addSupplyChain() {
-		return supplyChainCheck.getSelection();
+		return autoLinkCheck.getSelection();
 	}
 
 	LinkingConfig getLinkingConfig() {
-		return linkingPanel.getLinkingConfig();
+		LinkingConfig config = linkingPanel.getLinkingConfig();
+		if (checkLinksCheck.getSelection()) {
+			config.callback = new ProviderCallback();
+		}
+		return config;
 	}
 
 }

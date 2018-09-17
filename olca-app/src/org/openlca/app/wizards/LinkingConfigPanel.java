@@ -86,6 +86,11 @@ public class LinkingConfigPanel {
 		cutoffText.setEnabled(enabled);
 	}
 
+	public void setTypeChecksEnabled(boolean enabled) {
+		preferUnitRadio.setEnabled(enabled);
+		preferSystemRadio.setEnabled(enabled);
+	}
+
 	public LinkingConfig getLinkingConfig() {
 		LinkingConfig config = new LinkingConfig();
 		if (preferUnitRadio.getSelection()) {
