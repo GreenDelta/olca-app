@@ -123,7 +123,16 @@ class ProviderDialog extends Dialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(450, 300);
+		Point p = super.getInitialSize();
+		int x = p.x;
+		int y = p.y;
+		if (x < 450) {
+			x = 450;
+		}
+		if (y < 300) {
+			y = 300;
+		}
+		return new Point(x, y);
 	}
 
 	private <T extends BaseDescriptor> String getLabel(Class<T> clazz, long id) {

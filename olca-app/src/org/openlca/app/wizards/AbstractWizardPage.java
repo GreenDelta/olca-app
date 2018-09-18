@@ -11,7 +11,6 @@ import org.openlca.core.model.CategorizedEntity;
 public abstract class AbstractWizardPage<T extends CategorizedEntity> extends
 		WizardPage {
 
-	private final String EMPTY_NAME_ERROR = M.PleaseEnterAName;
 	private Text descriptionText;
 	protected Text nameText;
 	private boolean withDescription = true;
@@ -27,7 +26,7 @@ public abstract class AbstractWizardPage<T extends CategorizedEntity> extends
 	@Override
 	@SuppressWarnings("unchecked")
 	public final void createControl(final Composite parent) {
-		setErrorMessage(EMPTY_NAME_ERROR);
+		setErrorMessage(M.PleaseEnterAName);
 		Composite container = UI.formComposite(parent);
 		setControl(container);
 		nameText = UI.formText(container, M.Name);
@@ -56,7 +55,7 @@ public abstract class AbstractWizardPage<T extends CategorizedEntity> extends
 	protected void checkInput() {
 		setErrorMessage(null);
 		if (nameText.getText().length() == 0) {
-			setErrorMessage(EMPTY_NAME_ERROR);
+			setErrorMessage(M.PleaseEnterAName);
 		}
 		setPageComplete(getErrorMessage() == null);
 	}

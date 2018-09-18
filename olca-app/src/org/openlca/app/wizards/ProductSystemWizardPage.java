@@ -17,6 +17,7 @@ import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.ProcessDao;
@@ -30,6 +31,8 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
@@ -93,6 +96,10 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		try {
 			ProcessDao dao = new ProcessDao(Database.get());
 			refProcess = dao.getForId(elem.getContent().getId());
+			if (Strings.isNullOrEmpty(nameText.getText())) {
+				String name = Labels.getDisplayName(refProcess);
+				nameText.setText(name != null ? name : "");
+			}
 			checkInput();
 		} catch (Exception ex) {
 			log.error("failed to load process", ex);
