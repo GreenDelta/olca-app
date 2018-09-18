@@ -70,16 +70,17 @@ class ProviderDialog extends Dialog {
 		UI.formLabel(c, M.Process);
 		String processLabel = getLabel(
 				ProcessDescriptor.class, exchange.processId);
-		UI.formLabel(c, Strings.cut(processLabel, 60))
+		UI.formLabel(c, Strings.cut(processLabel, 120))
 				.setToolTipText(processLabel);
 
 		UI.formLabel(c, M.Flow);
 		String flowLabel = getLabel(
 				FlowDescriptor.class, exchange.flowId);
-		UI.formLabel(c, Strings.cut(flowLabel, 60))
+		UI.formLabel(c, Strings.cut(flowLabel, 120))
 				.setToolTipText(flowLabel);
 
 		Combo combo = UI.formCombo(c, M.Provider);
+		UI.gridData(combo, true, false).widthHint = 80;
 		String[] labels = new String[providers.length];
 		for (int i = 0; i < labels.length; i++) {
 			labels[i] = getLabel(ProcessDescriptor.class, providers[i]);
