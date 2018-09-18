@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -19,10 +20,12 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Editors;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
@@ -110,6 +113,9 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 						+ "that have multiple providers "
 						+ "(see table below).");
 			}
+			UI.filler(comp);
+			Button b = tk.createButton(comp, M.Export, SWT.NONE);
+			b.setImage(Images.get(FileType.EXCEL));
 		}
 
 		private void check(Composite comp, Icon icon, String message) {
@@ -122,7 +128,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			if (props.processesWithoutProviders.isEmpty())
 				return;
 			Composite comp = UI.formSection(body, tk,
-					"#Processes without providers (max. 50)");
+					"#Processes without providers");
 			UI.gridLayout(comp, 1);
 			TableViewer table = Tables.createViewer(comp, "#Process");
 			ProcessDao dao = new ProcessDao(Database.get());
@@ -135,7 +141,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			if (props.multiProviderFlows.isEmpty())
 				return;
 			Composite comp = UI.formSection(body, tk,
-					"#Product or waste flows with multiple providers (max. 50)");
+					"#Product or waste flows with multiple providers");
 			UI.gridLayout(comp, 1);
 			TableViewer table = Tables.createViewer(comp, "#Flow");
 			FlowDao dao = new FlowDao(Database.get());
