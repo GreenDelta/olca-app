@@ -1,4 +1,4 @@
-package org.openlca.app.components;
+package org.openlca.app.db;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -27,7 +27,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.devtools.python.Python;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.RcpActivator;

@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
-import org.openlca.app.components.UpdateManager;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.UpdateManager;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
