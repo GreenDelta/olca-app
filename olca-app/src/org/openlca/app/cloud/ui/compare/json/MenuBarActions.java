@@ -101,7 +101,7 @@ class MenuBarActions {
 		if (node != null)
 			leftTree.select(node);
 		else
-			Info.showPopup("No more changes found");
+			Info.popup("No more changes found");
 	}
 
 	private void applySelection(List<JsonNode> selection, boolean leftToRight) {

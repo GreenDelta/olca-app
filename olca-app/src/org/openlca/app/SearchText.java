@@ -19,7 +19,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.InformationPopup;
+import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
@@ -66,7 +66,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 	private void doSearch(ModelType typeFilter) {
 		if (Database.get() == null) {
-			InformationPopup.show(M.NeedOpenDatabase);
+			Info.popup(M.NeedOpenDatabase);
 			return;
 		}
 		String term = text.getText();
@@ -90,8 +90,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 	}
 
 	/**
-	 * A drop down menu for optionally selecting a model type as a search
-	 * filter.
+	 * A drop down menu for optionally selecting a model type as a search filter.
 	 */
 	private class DropDownAction extends Action implements IMenuCreator {
 

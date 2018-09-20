@@ -1,5 +1,7 @@
 package org.openlca.app.util;
 
+import org.openlca.app.M;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MessageBox.Type;
 
 public class Info {
@@ -7,12 +9,15 @@ public class Info {
 	private Info() {
 	}
 
-	public static void showPopup(String message) {
-		new InformationPopup(message).show();
+	public static void popup(String message) {
+		popup(null, message);
 	}
 
-	public static void showPopup(String title, String message) {
-		new InformationPopup(title, message).show();
+	public static void popup(String title, String message) {
+		Popup popup = new Popup(title, message);
+		popup.defaultTitle(M.Notification);
+		popup.popupShellImage(Icon.INFO);
+		popup.show();
 	}
 
 	public static void showBox(String message) {

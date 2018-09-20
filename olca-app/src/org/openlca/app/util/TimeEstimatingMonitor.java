@@ -1,12 +1,11 @@
 package org.openlca.app.util;
 
-import org.openlca.app.M;
-
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.openlca.app.M;
 
 public class TimeEstimatingMonitor {
 
@@ -21,12 +20,8 @@ public class TimeEstimatingMonitor {
 	private boolean showedTime;
 
 	public TimeEstimatingMonitor(IProgressMonitor monitor) {
-		this(monitor, false);
-	}
-
-	public TimeEstimatingMonitor(IProgressMonitor monitor, boolean showSeconds) {
 		this.monitor = monitor;
-		this.showSeconds = showSeconds;
+		this.showSeconds = false;
 	}
 
 	public void beginTask(String task, int total) {

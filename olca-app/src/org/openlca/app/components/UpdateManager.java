@@ -16,9 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import javafx.scene.web.WebEngine;
-import netscape.javascript.JSObject;
-
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
@@ -38,7 +35,7 @@ import org.openlca.app.rcp.html.HtmlFolder;
 import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Desktop;
-import org.openlca.app.util.InformationPopup;
+import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 import org.openlca.updates.Update;
 import org.openlca.updates.UpdateHelper;
@@ -48,6 +45,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import javafx.scene.web.WebEngine;
+import netscape.javascript.JSObject;
+
 public class UpdateManager {
 
 	private final static Logger log = LoggerFactory.getLogger(UpdateManager.class);
@@ -55,8 +55,8 @@ public class UpdateManager {
 	/**
 	 * Opens the update manager with all "unseen" and/or required updates.
 	 * 
-	 * @return true if the user installed (at least the required) updates, false
-	 *         if canceled
+	 * @return true if the user installed (at least the required) updates, false if
+	 *         canceled
 	 */
 	public static boolean openNewAndRequired() {
 		UpdateHelper updater = new UpdateHelper(Database.get(), App.getCalculationContext(), Python.getDir());
@@ -246,7 +246,7 @@ public class UpdateManager {
 				}
 			}
 			if (exists) {
-				InformationPopup.show(M.UpdateWasAlreadyAddedOrExecuted);
+				Info.popup(M.UpdateWasAlreadyAddedOrExecuted);
 			}
 			return exists;
 		}

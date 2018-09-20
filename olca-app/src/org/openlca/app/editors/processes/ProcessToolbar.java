@@ -15,7 +15,7 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.FileType;
-import org.openlca.app.util.InformationPopup;
+import org.openlca.app.util.Info;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -78,7 +78,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 					Descriptors.toDescriptor(process));
 			ExcelExport export = new ExcelExport(dir, Database.get(), list);
 			App.run(M.ExportProcess, export, () -> {
-				InformationPopup.show(M.ExportDone);
+				Info.popup(M.ExportDone);
 			});
 		}
 	}
