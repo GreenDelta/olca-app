@@ -3,31 +3,30 @@ package org.openlca.app.db;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
-import org.openlca.app.M;
+import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Editors;
-import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.FlowDao;
@@ -52,16 +51,18 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 		if (props == null)
 			return;
 		String key = Cache.getAppCache().put(props);
-		Editors.open(new Input(key), "editors.LinkingPropertiesPage");
+		IEditorInput input = new SimpleEditorInput(
+				"LinkingProperties", key, "#Linking properties");
+		Editors.open(input, "editors.LinkingPropertiesPage");
 	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		Input in = (Input) input;
+		SimpleEditorInput in = (SimpleEditorInput) input;
 		props = Cache.getAppCache().remove(
-				in.key, LinkingProperties.class);
+				in.id, LinkingProperties.class);
 	}
 
 	@Override
@@ -113,9 +114,6 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 						+ "that have multiple providers "
 						+ "(see table below).");
 			}
-			UI.filler(comp);
-			Button b = tk.createButton(comp, M.Export, SWT.NONE);
-			b.setImage(Images.get(FileType.EXCEL));
 		}
 
 		private void check(Composite comp, Icon icon, String message) {
@@ -162,6 +160,8 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 				CategorizedDescriptor d = Viewers.getFirstSelected(table);
 				App.openEditor(d);
 			});
+			Action copy = TableClipboard.onCopy(table);
+			Actions.bind(table, copy);
 		}
 
 		private class TableLabel extends LabelProvider implements ITableLabelProvider {
@@ -188,44 +188,4 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 		}
 	}
 
-	private static class Input implements IEditorInput {
-
-		private final String key;
-
-		public Input(String key) {
-			this.key = key;
-		}
-
-		@Override
-		@SuppressWarnings("rawtypes")
-		// need to support several target platforms
-		public Object getAdapter(Class adapter) {
-			return null;
-		}
-
-		@Override
-		public boolean exists() {
-			return true;
-		}
-
-		@Override
-		public ImageDescriptor getImageDescriptor() {
-			return Icon.LINK.descriptor();
-		}
-
-		@Override
-		public String getName() {
-			return "#Linking properties";
-		}
-
-		@Override
-		public IPersistableElement getPersistable() {
-			return null;
-		}
-
-		@Override
-		public String getToolTipText() {
-			return getName();
-		}
-	}
 }
