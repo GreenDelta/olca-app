@@ -3,6 +3,7 @@ package org.openlca.app.editors.graphical.action;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuCreator;
@@ -21,7 +22,6 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.search.ConnectionDialog;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Tuple;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class SearchConnectorsAction extends EditorAction {
@@ -59,11 +59,11 @@ class SearchConnectorsAction extends EditorAction {
 		if (dialog.open() == IDialogConstants.OK_ID) {
 			List<ProcessDescriptor> toCreate = dialog.toCreate();
 			List<ConnectionInput> toConnect = new ArrayList<>();
-			for (Tuple<ProcessDescriptor, Long> next : dialog.toConnect())
+			for (Pair<ProcessDescriptor, Long> next : dialog.toConnect())
 				if (type == PROVIDER)
-					toConnect.add(new ConnectionInput(next.first.getId(), flowId, nodeId, exchangeId));
+					toConnect.add(new ConnectionInput(next.getLeft().getId(), flowId, nodeId, exchangeId));
 				else if (type == RECIPIENTS)
-					toConnect.add(new ConnectionInput(nodeId, flowId, next.first.getId(), next.second));
+					toConnect.add(new ConnectionInput(nodeId, flowId, next.getLeft().getId(), next.getRight()));
 			Command command = null;
 			if (type == PROVIDER)
 				command = MassCreationCommand.providers(toCreate, toConnect, model);

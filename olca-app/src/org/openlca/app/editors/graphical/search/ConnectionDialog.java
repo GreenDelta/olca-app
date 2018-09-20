@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.CellEditor;
@@ -29,7 +30,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.Tuple;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.core.database.NativeSql;
@@ -126,13 +126,13 @@ public class ConnectionDialog extends Dialog {
 		long flowId = exchange.flow.getId();
 		String query = "SELECT id, f_owner FROM tbl_exchanges "
 				+ "WHERE f_flow = " + flowId + " AND is_input = " + (selectProvider ? 0 : 1);
-		List<Tuple<Long, Long>> exchanges = new ArrayList<>();
+		List<Pair<Long, Long>> exchanges = new ArrayList<>();
 		Set<Long> processIds = new HashSet<>();
 		try {
 			NativeSql.on(Database.get()).query(query, (rs) -> {
 				long id = rs.getLong("id");
 				long pId = rs.getLong("f_owner");
-				exchanges.add(new Tuple<>(id, pId));
+				exchanges.add(Pair.of(id, pId));
 				processIds.add(pId);
 				return true;
 			});
@@ -143,14 +143,14 @@ public class ConnectionDialog extends Dialog {
 		Map<Long, ProcessDescriptor> idToProcess = new HashMap<>();
 		for (ProcessDescriptor process : processes)
 			idToProcess.put(process.getId(), process);
-		for (Tuple<Long, Long> exchange : exchanges) {
-			ProcessDescriptor process = idToProcess.get(exchange.second);
+		for (Pair<Long, Long> exchange : exchanges) {
+			ProcessDescriptor process = idToProcess.get(exchange.getRight());
 			boolean existing = existingProcesses.contains(process.getId());
 			boolean connected = false;
 			boolean defaultProvider = this.exchange.defaultProviderId == process.getId();
 			if (existing)
 				connected = isAlreadyConnected(process);
-			availableConnections.add(new AvailableConnection(process, exchange.first, existing, connected,
+			availableConnections.add(new AvailableConnection(process, exchange.getLeft(), existing, connected,
 					defaultProvider));
 		}
 		Collections.sort(availableConnections);
@@ -223,11 +223,12 @@ public class ConnectionDialog extends Dialog {
 		return toCreate;
 	}
 
-	public List<Tuple<ProcessDescriptor, Long>> toConnect() {
-		List<Tuple<ProcessDescriptor, Long>> toConnect = new ArrayList<>();
+	public List<Pair<ProcessDescriptor, Long>> toConnect() {
+		List<Pair<ProcessDescriptor, Long>> toConnect = new ArrayList<>();
 		for (AvailableConnection connectable : availableConnections)
-			if (connectable.connect)
-				toConnect.add(new Tuple<>(connectable.process, connectable.exchangeId));
+			if (connectable.connect) {
+				toConnect.add(Pair.of(connectable.process, connectable.exchangeId));
+			}
 		return toConnect;
 	}
 
