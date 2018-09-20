@@ -8,7 +8,7 @@ import org.eclipse.ui.IEditorReference;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.util.Editors;
+import org.openlca.app.editors.Editors;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.model.Currency;

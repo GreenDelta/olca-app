@@ -10,7 +10,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentsPage;
-import org.openlca.app.util.Editors;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.Comment;
 import org.openlca.cloud.util.WebRequests.WebRequestException;

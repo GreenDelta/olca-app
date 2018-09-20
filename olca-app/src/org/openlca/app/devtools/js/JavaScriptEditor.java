@@ -5,11 +5,11 @@ import java.util.UUID;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.devtools.IScriptEditor;
 import org.openlca.app.devtools.ScriptEditorPage;
+import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Editors;
 
 public class JavaScriptEditor extends SimpleFormEditor implements IScriptEditor {
 

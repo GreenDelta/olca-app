@@ -2,10 +2,10 @@ package org.openlca.app.editors.systems;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
+import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Editors;
 import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

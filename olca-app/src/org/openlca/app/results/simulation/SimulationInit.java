@@ -2,7 +2,7 @@ package org.openlca.app.results.simulation;
 
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
-import org.openlca.app.util.Editors;
+import org.openlca.app.editors.Editors;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.Simulator;
 import org.openlca.core.matrix.cache.MatrixCache;

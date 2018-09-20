@@ -15,7 +15,6 @@ import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.EclipseCommandLine;
-import org.openlca.app.util.Editors;
 import org.openlca.app.util.UI;
 import org.openlca.util.OS;
 import org.slf4j.Logger;

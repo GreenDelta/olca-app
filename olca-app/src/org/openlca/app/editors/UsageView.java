@@ -19,7 +19,6 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.html.WebPage;
-import org.openlca.app.util.Editors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;

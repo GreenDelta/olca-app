@@ -1,4 +1,4 @@
-package org.openlca.app.util;
+package org.openlca.app.editors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,11 +21,8 @@ import org.openlca.app.M;
 import org.openlca.app.devtools.js.JavaScriptEditor;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
-import org.openlca.app.editors.LogFileEditor;
-import org.openlca.app.editors.ModelEditor;
-import org.openlca.app.editors.SimpleEditorInput;
-import org.openlca.app.editors.StartPage;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Actions;
 import org.openlca.core.model.CategorizedEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

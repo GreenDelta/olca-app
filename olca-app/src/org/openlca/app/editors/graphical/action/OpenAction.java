@@ -2,10 +2,10 @@ package org.openlca.app.editors.graphical.action;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.M;
+import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.processes.ProcessEditor;
-import org.openlca.app.util.Editors;
 
 class OpenAction extends EditorAction {
 
