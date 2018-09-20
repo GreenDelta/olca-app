@@ -17,6 +17,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
@@ -125,8 +126,10 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 		private void processProviderSection(Composite body) {
 			if (props.processesWithoutProviders.isEmpty())
 				return;
-			Composite comp = UI.formSection(body, tk,
+			Section section = UI.section(body, tk,
 					"#Processes without providers");
+			UI.gridData(section, true, true);
+			Composite comp = UI.sectionClient(section, tk);
 			UI.gridLayout(comp, 1);
 			TableViewer table = Tables.createViewer(comp, "#Process");
 			ProcessDao dao = new ProcessDao(Database.get());
@@ -138,8 +141,10 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 		private void flowProviderSection(Composite body) {
 			if (props.multiProviderFlows.isEmpty())
 				return;
-			Composite comp = UI.formSection(body, tk,
+			Section section = UI.section(body, tk,
 					"#Product or waste flows with multiple providers");
+			UI.gridData(section, true, true);
+			Composite comp = UI.sectionClient(section, tk);
 			UI.gridLayout(comp, 1);
 			TableViewer table = Tables.createViewer(comp, "#Flow");
 			FlowDao dao = new FlowDao(Database.get());

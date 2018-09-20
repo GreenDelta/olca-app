@@ -70,6 +70,10 @@ public class Tables {
 		}
 		GridData data = UI.gridData(table, true, true);
 		data.minimumHeight = 120;
+		// workaround for this bug:
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997
+		Point p = parent.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		data.heightHint = p.y < 120 ? 120 : p.y;
 		return viewer;
 	}
 
