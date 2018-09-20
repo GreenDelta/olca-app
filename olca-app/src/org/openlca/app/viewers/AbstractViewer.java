@@ -3,6 +3,7 @@ package org.openlca.app.viewers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -14,7 +15,7 @@ import org.openlca.app.util.viewers.Viewers;
 public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		org.eclipse.jface.viewers.ISelectionChangedListener {
 
-	private List<ISelectionChangedListener<T>> listener = new ArrayList<>();
+	private List<Consumer<T>> listener = new ArrayList<>();
 	private V viewer;
 	private boolean nullable;
 	private String nullText;
@@ -40,7 +41,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	}
 
 	public void addSelectionChangedListener(
-			ISelectionChangedListener<T> listener) {
+			Consumer<T> listener) {
 		if (this.listener.size() == 0) {
 			startListening();
 		}
@@ -48,7 +49,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	}
 
 	public void removeSelectionChangedListener(
-			ISelectionChangedListener<T> listener) {
+			Consumer<T> listener) {
 		this.listener.remove(listener);
 		if (this.listener.size() == 0) {
 			stopListening();
@@ -56,13 +57,13 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	}
 
 	@SuppressWarnings("unchecked")
-	public ISelectionChangedListener<T>[] getSelectionChangedListeners() {
-		return listener.toArray(new ISelectionChangedListener[listener.size()]);
+	public Consumer<T>[] getSelectionChangedListeners() {
+		return listener.toArray(new Consumer[listener.size()]);
 	}
 
 	/**
-	 * Adds an empty/null value as first element in the viewer, you can specify
-	 * the text of this null element via #setNullText
+	 * Adds an empty/null value as first element in the viewer, you can specify the
+	 * text of this null element via #setNullText
 	 */
 	public void setNullable(boolean nullable) {
 		boolean changed = this.nullable != nullable;
@@ -142,8 +143,8 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		T selection = null;
 		if (!Null.class.isInstance(obj))
 			selection = (T) obj;
-		for (ISelectionChangedListener<T> listener : this.listener) {
-			listener.selectionChanged(selection);
+		for (Consumer<T> listener : this.listener) {
+			listener.accept(selection);
 		}
 	}
 

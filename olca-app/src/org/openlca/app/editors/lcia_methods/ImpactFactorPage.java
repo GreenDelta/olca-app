@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -22,7 +23,6 @@ import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.ISelectionChangedListener;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
@@ -146,10 +146,10 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 	}
 
 	private class CategoryChange implements
-			ISelectionChangedListener<ImpactCategoryDescriptor> {
+			Consumer<ImpactCategoryDescriptor> {
 
 		@Override
-		public void selectionChanged(ImpactCategoryDescriptor selection) {
+		public void accept(ImpactCategoryDescriptor selection) {
 			if (selection == null) {
 				factorTable.setImpactCategory(null, false);
 				updateCommentControl();
