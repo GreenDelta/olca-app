@@ -13,7 +13,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
 import org.openlca.app.Event;
-import org.openlca.app.EventHandler;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -49,7 +48,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 	private Comments comments;
 	private DataBinding binding = new DataBinding(this);
 
-	private List<EventHandler> savedHandlers = new ArrayList<>();
+	private List<Runnable> savedHandlers = new ArrayList<>();
 
 	public ModelEditor(Class<T> modelClass) {
 		this.modelClass = modelClass;
@@ -79,7 +78,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 	/**
 	 * Calls the given event handler AFTER the model in this editor was saved.
 	 */
-	public void onSaved(EventHandler handler) {
+	public void onSaved(Runnable handler) {
 		savedHandlers.add(handler);
 	}
 
@@ -159,8 +158,11 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 		cache.invalidate(modelClass, model.getId());
 		this.setPartName(Labels.getDisplayName(model));
 		Cache.evict(descriptor);
-		for (EventHandler handler : savedHandlers)
-			handler.handleEvent();
+		for (Runnable handler : savedHandlers) {
+			if (handler != null) {
+				handler.run();
+			}
+		}
 		Navigator.refresh(Navigator.findElement(descriptor));
 	}
 

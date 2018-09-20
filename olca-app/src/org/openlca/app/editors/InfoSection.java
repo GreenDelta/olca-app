@@ -15,7 +15,6 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
-import org.openlca.app.EventHandler;
 import org.openlca.app.M;
 import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.navigation.Navigator;
@@ -54,7 +53,7 @@ public class InfoSection {
 			new CommentControl(container, toolkit, "category", editor.getComments());
 		} else if (editor.hasComment("category")) {
 			new Label(container, SWT.NONE).setText(M.Category);
-			UI.filler(container);		
+			UI.filler(container);
 			new CommentControl(container, toolkit, "category", editor.getComments());
 		}
 		createVersionText(toolkit);
@@ -74,12 +73,9 @@ public class InfoSection {
 		layout.marginHeight = 0;
 		versionLabel = toolkit.createLabel(composite,
 				Version.asString(entity.getVersion()));
-		editor.onSaved(new EventHandler() {
-			@Override
-			public void handleEvent() {
-				entity = editor.getModel();
-				versionLabel.setText(Version.asString(entity.getVersion()));
-			}
+		editor.onSaved(() -> {
+			entity = editor.getModel();
+			versionLabel.setText(Version.asString(entity.getVersion()));
 		});
 		new VersionLink(composite, toolkit, VersionLink.MAJOR);
 		new VersionLink(composite, toolkit, VersionLink.MINOR);
