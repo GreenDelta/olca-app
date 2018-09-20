@@ -21,7 +21,6 @@ import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.UIFactory;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -84,7 +83,8 @@ public class Widgets {
 		return labelWidget;
 	}
 
-	public static Text text(Composite parent, String label, String property, ModelEditor<?> editor, FormToolkit toolkit) {
+	public static Text text(Composite parent, String label, String property, ModelEditor<?> editor,
+			FormToolkit toolkit) {
 		Text text = UI.formText(parent, toolkit, label);
 		editor.getBinding().onString(() -> editor.getModel(), property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
@@ -146,7 +146,10 @@ public class Widgets {
 	public static TextDropComponent dropComponent(Composite parent, String label, String property,
 			ModelEditor<?> editor, FormToolkit toolkit) {
 		ModelType modelType = getModelType(editor.getModel(), property);
-		TextDropComponent text = UIFactory.createDropComponent(parent, label, toolkit, modelType);
+		toolkit.createLabel(parent, label, SWT.NONE);
+		TextDropComponent text = new TextDropComponent(
+				parent, toolkit, modelType);
+		UI.gridData(text, true, false);
 		editor.getBinding().onModel(() -> editor.getModel(), property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
 		return text;

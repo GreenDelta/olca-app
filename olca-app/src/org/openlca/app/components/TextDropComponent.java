@@ -1,7 +1,6 @@
 package org.openlca.app.components;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -20,6 +19,7 @@ import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -35,7 +35,7 @@ public final class TextDropComponent extends Composite {
 	private FormToolkit toolkit;
 	private ModelType modelType;
 	private Button removeButton;
-	private List<ISingleModelDrop> handlers = new ArrayList<>();
+	private Consumer<BaseDescriptor> handler;
 
 	public TextDropComponent(Composite parent, FormToolkit toolkit, ModelType modelType) {
 		super(parent, SWT.FILL);
@@ -44,21 +44,13 @@ public final class TextDropComponent extends Composite {
 		createContent();
 	}
 
-	public void addHandler(ISingleModelDrop handler) {
-		handlers.add(handler);
-	}
-
-	public void removeHanlder(ISingleModelDrop handler) {
-		handlers.remove(handler);
-	}
-
-	public BaseDescriptor getContent() {
-		return content;
+	public void onChange(Consumer<BaseDescriptor> handler) {
+		this.handler = handler;
 	}
 
 	public void setContent(BaseDescriptor content) {
 		if (content != null && content.getModelType() != modelType)
-			throw new IllegalArgumentException("Descriptor must be of type " + modelType);
+			return;
 		this.content = content;
 		text.setData(content); // tooltip
 		if (content == null) {
@@ -132,13 +124,10 @@ public final class TextDropComponent extends Composite {
 				.setToolTipText(M.RemoveObject);
 		if (content == null)
 			removeButton.setEnabled(false);
-		removeButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(final MouseEvent e) {
-				setContent(null);
-				for (ISingleModelDrop handler : handlers) {
-					handler.handle(null);
-				}
+		Controls.onSelect(removeButton, e -> {
+			setContent(null);
+			if (handler != null) {
+				handler.accept(null);
 			}
 		});
 	}
@@ -167,8 +156,8 @@ public final class TextDropComponent extends Composite {
 		if (descriptor == null || descriptor.getModelType() != modelType)
 			return;
 		setContent(descriptor);
-		for (ISingleModelDrop handler : handlers) {
-			handler.handle(null);
+		if (handler != null) {
+			handler.accept(descriptor);
 		}
 	}
 

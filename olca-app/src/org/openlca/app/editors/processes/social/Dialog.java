@@ -12,7 +12,6 @@ import org.openlca.app.M;
 import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.UIFactory;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ModelType;
@@ -96,10 +95,14 @@ class Dialog extends FormDialog {
 	}
 
 	private void sourceRow(Composite body, FormToolkit tk) {
-		TextDropComponent drop = UIFactory.createDropComponent(body, M.Source, tk, ModelType.SOURCE);
-		if (aspect.source != null)
+		UI.formLabel(body, tk, M.Source);
+		TextDropComponent drop = new TextDropComponent(body,
+				tk, ModelType.SOURCE);
+		UI.gridData(drop, true, false);
+		if (aspect.source != null) {
 			drop.setContent(Descriptors.toDescriptor(aspect.source));
-		drop.addHandler(d -> {
+		}
+		drop.onChange(d -> {
 			if (d == null) {
 				aspect.source = null;
 			} else {

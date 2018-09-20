@@ -78,19 +78,19 @@ public class DataBinding {
 		if (supplier == null || property == null || text == null)
 			return;
 		initValue(supplier.get(), property, text);
-		text.addHandler((descriptor) -> {
-			setModel(supplier.get(), property, text);
+		text.onChange(d -> {
+			setModel(supplier.get(), property, d);
 		});
 	}
 
-	private void setModel(Object bean, String property, TextDropComponent text) {
+	private void setModel(Object bean, String property, BaseDescriptor d) {
 		log.trace("Change value {} @ {}", property, bean);
 		try {
-			BaseDescriptor descriptor = text.getContent();
 			Object newValue = null;
-			if (descriptor != null) {
-				BaseDao<?> dao = Daos.base(Database.get(), descriptor.getModelType().getModelClass());
-				newValue = dao.getForId(descriptor.getId());
+			if (d != null && d.getModelType() != null) {
+				BaseDao<?> dao = Daos.base(Database.get(),
+						d.getModelType().getModelClass());
+				newValue = dao.getForId(d.getId());
 			}
 			Object oldValue = Bean.getValue(bean, property);
 			if (Objects.equals(newValue, oldValue))
@@ -266,7 +266,7 @@ public class DataBinding {
 		else if (val instanceof GregorianCalendar)
 			return DateFormat.getDateTimeInstance(DateFormat.SHORT,
 					DateFormat.SHORT).format(
-					((GregorianCalendar) val).getTime());
+							((GregorianCalendar) val).getTime());
 		else
 			return val.toString();
 	}
