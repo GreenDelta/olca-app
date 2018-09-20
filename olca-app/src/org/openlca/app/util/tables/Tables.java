@@ -31,7 +31,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.openlca.app.components.IModelDropHandler;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Sorter;
@@ -47,8 +46,8 @@ public class Tables {
 	}
 
 	/**
-	 * Creates a default table viewer with the given properties. The properties
-	 * are also used to create columns where each column label is the respective
+	 * Creates a default table viewer with the given properties. The properties are
+	 * also used to create columns where each column label is the respective
 	 * property of this column. The viewer is configured in the following way:
 	 * <ul>
 	 * <li>content provider = {@link ArrayContentProvider}
@@ -90,9 +89,11 @@ public class Tables {
 			c.pack();
 	}
 
-	public static void addDropSupport(TableViewer table, IModelDropHandler handler) {
-		final Transfer transfer = ModelTransfer.getInstance();
-		DropTarget dropTarget = new DropTarget(table.getTable(), DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
+	public static void addDropSupport(TableViewer table,
+			Consumer<List<BaseDescriptor>> handler) {
+		Transfer transfer = ModelTransfer.getInstance();
+		DropTarget dropTarget = new DropTarget(table.getTable(),
+				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
 		dropTarget.setTransfer(new Transfer[] { transfer });
 		dropTarget.addDropListener(new DropTargetAdapter() {
 			@Override
@@ -101,7 +102,7 @@ public class Tables {
 					return;
 				List<BaseDescriptor> list = ModelTransfer
 						.getBaseDescriptors(event.data);
-				handler.handleDrop(list);
+				handler.accept(list);
 			}
 		});
 	}
@@ -146,8 +147,8 @@ public class Tables {
 	}
 
 	/**
-	 * Get the table item where the given event occurred. Returns null if the
-	 * event occurred in the empty table area.
+	 * Get the table item where the given event occurred. Returns null if the event
+	 * occurred in the empty table area.
 	 */
 	public static TableItem getItem(TableViewer viewer, MouseEvent event) {
 		if (viewer == null || event == null)

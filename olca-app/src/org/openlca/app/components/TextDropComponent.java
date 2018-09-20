@@ -113,7 +113,6 @@ public final class TextDropComponent extends Composite {
 		text.setLayoutData(layoutData);
 		if (content != null)
 			text.setText(content.getName());
-		new FancyToolTip(text, toolkit);
 	}
 
 	private void createRemoveButton() {
