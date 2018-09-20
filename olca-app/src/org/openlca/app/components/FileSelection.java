@@ -31,10 +31,6 @@ public class FileSelection implements SelectionListener {
 		externalListener.add(listener);
 	}
 
-	public void removeSelectionListener(SelectionListener listener) {
-		externalListener.remove(listener);
-	}
-
 	public void setSelectDirectory(boolean selectDirectory) {
 		this.selectDirectory = selectDirectory;
 	}

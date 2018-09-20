@@ -35,13 +35,10 @@ import org.openlca.updates.script.CalculationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.eventbus.EventBus;
-
 public class App {
 
 	static Logger log = LoggerFactory.getLogger(App.class);
 
-	private static EventBus eventBus = new EventBus();
 	private static IMatrixSolver solver;
 
 	private App() {
@@ -84,9 +81,9 @@ public class App {
 	}
 
 	/**
-	 * Returns the version of the openLCA application. If there is a version
-	 * defined in the ini-file (-olcaVersion argument) this is returned.
-	 * Otherwise the version of the application bundle is returned.
+	 * Returns the version of the openLCA application. If there is a version defined
+	 * in the ini-file (-olcaVersion argument) this is returned. Otherwise the
+	 * version of the application bundle is returned.
 	 */
 	public static String getVersion() {
 		String version = CommandArgument.VERSION.getValue();
@@ -108,10 +105,6 @@ public class App {
 		if (val == null)
 			return false;
 		return val.equals("true");
-	}
-
-	public static EventBus getEventBus() {
-		return eventBus;
 	}
 
 	public static void openEditor(CategorizedEntity model) {
@@ -169,17 +162,17 @@ public class App {
 	}
 
 	/**
-	 * Wraps a runnable in a job and executes it using the Eclipse jobs
-	 * framework. No UI access is allowed for the runnable.
+	 * Wraps a runnable in a job and executes it using the Eclipse jobs framework.
+	 * No UI access is allowed for the runnable.
 	 */
 	public static Job run(String name, Runnable runnable) {
 		return run(name, runnable, null);
 	}
 
 	/**
-	 * See {@link App#run(String, Runnable)}. Additionally, this method allows
-	 * to give a callback which is executed in the UI thread when the runnable
-	 * is finished.
+	 * See {@link App#run(String, Runnable)}. Additionally, this method allows to
+	 * give a callback which is executed in the UI thread when the runnable is
+	 * finished.
 	 */
 	public static Job run(String name, Runnable runnable, Runnable callback) {
 		WrappedJob job = new WrappedJob(name, runnable);

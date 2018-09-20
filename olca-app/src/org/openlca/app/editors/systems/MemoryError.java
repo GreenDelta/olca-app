@@ -9,8 +9,9 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.M;
-import org.openlca.app.components.HyperlinkListener;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
 class MemoryError {
@@ -49,9 +50,8 @@ class MemoryError {
 			UI.gridLayout(comp, 1);
 			Label label = toolkit.createLabel(comp, message, SWT.WRAP);
 			UI.gridData(label, true, false);
-			UI.formLink(comp, toolkit, "Open preference dialog")
-					.addHyperlinkListener(
-							new HyperlinkListener(this::openPreferences));
+			Hyperlink link = UI.formLink(comp, toolkit, "Open preference dialog");
+			Controls.onClick(link, e -> openPreferences());
 		}
 
 		private void openPreferences() {
