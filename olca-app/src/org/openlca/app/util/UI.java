@@ -3,17 +3,9 @@ package org.openlca.app.util;
 import java.net.CookieHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javafx.concurrent.Worker.State;
-import javafx.embed.swt.FXCanvas;
-import javafx.scene.Scene;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
-import netscape.javascript.JSObject;
-
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -30,7 +22,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
@@ -42,6 +33,13 @@ import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.rcp.images.Images;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javafx.concurrent.Worker.State;
+import javafx.embed.swt.FXCanvas;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import netscape.javascript.JSObject;
 
 public class UI {
 
@@ -109,23 +107,6 @@ public class UI {
 				JFaceResources.DEFAULT_FONT);
 	}
 
-	/**
-	 * Creates an italic font using the font data of the given control. The
-	 * returned font must be disposed by the respective caller.
-	 */
-	public static Font italicFont(Control control) {
-		if (control == null)
-			return null;
-		FontData fd = control.getFont().getFontData()[0];
-		fd.setStyle(SWT.ITALIC);
-		Font font = new Font(control.getDisplay(), fd);
-		return font;
-	}
-
-	public static void applyItalicFont(Control control) {
-		control.setFont(italicFont(control));
-	}
-
 	public static void center(Shell parent, Shell child) {
 		Rectangle shellBounds = parent.getBounds();
 		Point size = child.getSize();
@@ -134,22 +115,11 @@ public class UI {
 		child.setLocation(shellBounds.x + diffX, shellBounds.y + diffY);
 	}
 
-	public static void adapt(FormToolkit toolkit, Composite composite) {
-		toolkit.adapt(composite);
-		toolkit.paintBordersFor(composite);
-	}
-
 	public static GridData gridData(Control control, boolean hFill, boolean vFill) {
 		int hStyle = hFill ? SWT.FILL : SWT.LEFT;
 		int vStyle = vFill ? SWT.FILL : SWT.CENTER;
 		GridData data = new GridData(hStyle, vStyle, hFill, vFill);
 		control.setLayoutData(data);
-		return data;
-	}
-
-	public static GridData gridWidth(Control control, int width) {
-		GridData data = gridData(control, false, false);
-		data.widthHint = width;
 		return data;
 	}
 
@@ -166,35 +136,31 @@ public class UI {
 	}
 
 	/** Creates a nice form header with the given title and returns the form. */
-	public static ScrolledForm formHeader(IManagedForm managedForm, String title) {
-		return formHeader(managedForm, title, null);
+	public static ScrolledForm formHeader(IManagedForm mform, String title) {
+		return formHeader(mform, title, null);
 	}
 
-	/** Creates a nice form header with the given title and returns the form. */
-	public static ScrolledForm formHeader(FormPage page, String subtitle, Image image) {
-		return formHeader(page.getManagedForm(), page.getTitle() + ": " + subtitle, image);
-	}
-
-	public static ScrolledForm formHeader(IManagedForm managedForm, String title, Image image) {
-		ScrolledForm form = managedForm.getForm();
-		FormToolkit toolkit = managedForm.getToolkit();
-		toolkit.getHyperlinkGroup().setHyperlinkUnderlineMode(
+	public static ScrolledForm formHeader(IManagedForm mform, String title, Image image) {
+		ScrolledForm form = mform.getForm();
+		FormToolkit tk = mform.getToolkit();
+		tk.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
 		if (title != null)
 			form.setText(title);
 		if (image != null)
 			form.setImage(image);
-		toolkit.decorateFormHeading(form.getForm());
+		tk.decorateFormHeading(form.getForm());
 		return form;
 	}
 
-	public static Composite formSection(Composite parent, FormToolkit toolkit, String label) {
-		return formSection(parent, toolkit, label, 2);
+	public static Composite formSection(Composite parent, FormToolkit tk, String label) {
+		return formSection(parent, tk, label, 2);
 	}
 
-	public static Composite formSection(Composite parent, FormToolkit toolkit, String label, int columns) {
-		Section section = section(parent, toolkit, label);
-		Composite client = sectionClient(section, toolkit, columns);
+	public static Composite formSection(Composite parent, FormToolkit tk,
+			String label, int columns) {
+		Section section = section(parent, tk, label);
+		Composite client = sectionClient(section, tk, columns);
 		return client;
 	}
 
@@ -209,16 +175,16 @@ public class UI {
 	}
 
 	/**
-	 * Creates a composite and sets it as section client of the given section.
-	 * The created composite gets a 2-column grid-layout.
+	 * Creates a composite and sets it as section client of the given section. The
+	 * created composite gets a 2-column grid-layout.
 	 */
 	public static Composite sectionClient(Section section, FormToolkit toolkit) {
 		return sectionClient(section, toolkit, 2);
 	}
 
 	/**
-	 * Creates a composite and sets it as section client of the given section.
-	 * The created composite gets a n-column grid-layout.
+	 * Creates a composite and sets it as section client of the given section. The
+	 * created composite gets a n-column grid-layout.
 	 */
 	public static Composite sectionClient(Section section, FormToolkit toolkit, int columns) {
 		Composite composite = toolkit.createComposite(section);
@@ -227,34 +193,18 @@ public class UI {
 		return composite;
 	}
 
-	public static void horizontalSeparator(Composite parent) {
-		separator(parent, SWT.HORIZONTAL);
-	}
-
-	public static void verticalSeparator(Composite parent) {
-		separator(parent, SWT.VERTICAL);
-	}
-
-	private static void separator(Composite parent, int flag) {
-		if (flag != SWT.HORIZONTAL && flag != SWT.VERTICAL)
-			flag = SWT.HORIZONTAL;
-		boolean hFill = flag == SWT.HORIZONTAL;
-		boolean vFill = flag == SWT.VERTICAL;
-		gridData(new Label(parent, SWT.SEPARATOR | flag), hFill, vFill);
-	}
-
-	public static Composite formBody(ScrolledForm form, FormToolkit toolkit) {
+	public static Composite formBody(ScrolledForm form, FormToolkit tk) {
 		Composite body = form.getBody();
-		GridLayout bodyLayout = new GridLayout();
-		bodyLayout.marginRight = 10;
-		bodyLayout.marginLeft = 10;
-		bodyLayout.horizontalSpacing = 10;
-		bodyLayout.marginBottom = 10;
-		bodyLayout.marginTop = 10;
-		bodyLayout.verticalSpacing = 10;
-		bodyLayout.numColumns = 1;
-		body.setLayout(bodyLayout);
-		toolkit.paintBordersFor(body);
+		GridLayout layout = new GridLayout();
+		layout.marginRight = 10;
+		layout.marginLeft = 10;
+		layout.horizontalSpacing = 10;
+		layout.marginBottom = 10;
+		layout.marginTop = 10;
+		layout.verticalSpacing = 10;
+		layout.numColumns = 1;
+		body.setLayout(layout);
+		tk.paintBordersFor(body);
 		gridData(body, true, true);
 		return body;
 	}
@@ -318,16 +268,7 @@ public class UI {
 	}
 
 	public static Button formRadio(Composite parent, String label) {
-		return formRadio(parent, null, label);
-	}
-
-	public static Button formRadio(Composite parent, FormToolkit toolkit,
-			String label) {
-		Button button = null;
-		if (toolkit != null)
-			button = toolkit.createButton(parent, null, SWT.RADIO);
-		else
-			button = new Button(parent, SWT.RADIO);
+		Button button = new Button(parent, SWT.RADIO);
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		button.setLayoutData(gd);
 		formLabel(parent, label);
@@ -375,10 +316,6 @@ public class UI {
 	public static Text formMultiText(Composite comp, FormToolkit tk, String label, int heightHint) {
 		formLabel(comp, tk, label);
 		return formMultiText(comp, tk, heightHint);
-	}
-
-	public static Text formMultiText(Composite comp) {
-		return formMultiText(comp, (FormToolkit) null);
 	}
 
 	public static Text formMultiText(Composite comp, FormToolkit tk) {

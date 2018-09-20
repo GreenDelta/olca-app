@@ -16,6 +16,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -42,7 +43,9 @@ public class IoPreferencePage extends PreferencePage implements
 		UI.gridLayout(comp, 1);
 		UI.gridData(comp, true, true);
 		createIlcdNetworkContents(comp);
-		UI.horizontalSeparator(comp);
+		UI.gridData(new Label(parent,
+				SWT.SEPARATOR | SWT.HORIZONTAL),
+				true, false);
 		createIlcdOtherContents(comp);
 		return comp;
 	}

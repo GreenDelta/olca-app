@@ -94,9 +94,11 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		toolkit = managedForm.getToolkit();
-		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
+	protected void createFormContent(IManagedForm mform) {
+		toolkit = mform.getToolkit();
+		ScrolledForm form = UI.formHeader(mform,
+				Labels.getDisplayName(setup.productSystem),
+				Images.get(result));
 		Composite body = UI.formBody(form, toolkit);
 		createFlowSection(body);
 		if (result.hasImpactResults())
@@ -315,7 +317,7 @@ public class ProcessResultPage extends FormPage {
 		@Override
 		public boolean select(Viewer viewer, Object parent, Object o) {
 			if (!(o instanceof FlowDescriptor
-			|| o instanceof ImpactCategoryDescriptor))
+					|| o instanceof ImpactCategoryDescriptor))
 				return false;
 			boolean forFlow = o instanceof FlowDescriptor;
 			double cutoff = forFlow ? flowCutOff : impactCutOff;

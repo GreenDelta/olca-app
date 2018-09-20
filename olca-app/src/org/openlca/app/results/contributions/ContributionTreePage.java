@@ -58,7 +58,7 @@ public class ContributionTreePage extends FormPage {
 	private TreeViewer tree;
 	private Object selection;
 	private CalculationSetup setup;
-	
+
 	private static final String[] HEADERS = { M.Contribution,
 			M.Process, M.Amount, M.Unit };
 
@@ -74,9 +74,11 @@ public class ContributionTreePage extends FormPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		FormToolkit toolkit = managedForm.getToolkit();
-		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
+	protected void createFormContent(IManagedForm mform) {
+		FormToolkit toolkit = mform.getToolkit();
+		ScrolledForm form = UI.formHeader(mform,
+				Labels.getDisplayName(setup.productSystem),
+				Images.get(result));
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);

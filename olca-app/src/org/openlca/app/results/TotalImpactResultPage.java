@@ -65,9 +65,11 @@ public class TotalImpactResultPage extends FormPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
-		toolkit = managedForm.getToolkit();
+	protected void createFormContent(IManagedForm mform) {
+		ScrolledForm form = UI.formHeader(mform,
+				Labels.getDisplayName(setup.productSystem),
+				Images.get(result));
+		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.ImpactAnalysis);
 		UI.gridData(section, true, true);
@@ -125,14 +127,14 @@ public class TotalImpactResultPage extends FormPage {
 		Trees.bindColumnWidths(viewer.getTree(), widths);
 		setInput();
 	}
-	
+
 	private void openElement(MouseEvent e) {
 		Item item = Viewers.getFirstSelected(viewer);
-		if (item == null) 
+		if (item == null)
 			return;
 		if (item.flow != null)
 			App.openEditor(item.flow);
-		else if (item.process != null) 
+		else if (item.process != null)
 			App.openEditor(item.process);
 		else if (item.impact != null)
 			App.openEditor(setup.impactMethod);

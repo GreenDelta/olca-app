@@ -24,7 +24,9 @@ class QuickResultInfoPage extends FormPage {
 	private FormToolkit tk;
 	private CalculationSetup setup;
 
-	public QuickResultInfoPage(QuickResultEditor editor, SimpleResultProvider<?> result, DQResult dqResult,
+	public QuickResultInfoPage(QuickResultEditor editor,
+			SimpleResultProvider<?> result,
+			DQResult dqResult,
 			CalculationSetup setup) {
 		super(editor, "QuickResultInfoPage", M.GeneralInformation);
 		this.editor = editor;
@@ -35,7 +37,9 @@ class QuickResultInfoPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
+		ScrolledForm form = UI.formHeader(mform,
+				Labels.getDisplayName(setup.productSystem),
+				Images.get(result));
 		this.tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		InfoSection.create(body, tk, editor.getSetup());

@@ -45,7 +45,8 @@ public class LocationPage extends FormPage {
 		this(editor, result, setup, true);
 	}
 
-	public LocationPage(FormEditor editor, ContributionResultProvider<?> result, CalculationSetup setup, boolean showMap) {
+	public LocationPage(FormEditor editor, ContributionResultProvider<?> result, CalculationSetup setup,
+			boolean showMap) {
 		super(editor, "analysis.MapPage", M.Locations);
 		this.setup = setup;
 		this.showMap = showMap;
@@ -54,7 +55,9 @@ public class LocationPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
+		ScrolledForm form = UI.formHeader(mform,
+				Labels.getDisplayName(setup.productSystem),
+				Images.get(result));
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		createCombos(body, tk);

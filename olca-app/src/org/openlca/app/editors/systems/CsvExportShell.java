@@ -90,7 +90,8 @@ public class CsvExportShell extends Shell {
 		UI.gridLayout(group, cols);
 		UI.gridData(group, true, false);
 		group.setText(label);
-		UI.adapt(toolkit, group);
+		toolkit.adapt(group);
+		toolkit.paintBordersFor(group);
 		return group;
 	}
 
@@ -98,7 +99,8 @@ public class CsvExportShell extends Shell {
 		toolkit.createLabel(parent, label, SWT.NONE);
 		Combo combo = new Combo(parent, SWT.NONE);
 		UI.gridData(combo, false, false).widthHint = 150;
-		UI.adapt(toolkit, combo);
+		toolkit.adapt(combo);
+		toolkit.paintBordersFor(combo);
 		combo.setItems(options);
 		combo.select(0);
 		return combo;
@@ -154,8 +156,9 @@ public class CsvExportShell extends Shell {
 		String point = idx >= 0 ? decimalSeparators[idx] : pointCombo.getText();
 		data.setDecimalSeparator(point);
 		idx = columnCombo.getSelectionIndex();
-		String column = idx >= 0 ? columnSeparators[idx] : columnCombo
-				.getText();
+		String column = idx >= 0 ? columnSeparators[idx]
+				: columnCombo
+						.getText();
 		data.setColumnSeperator(column);
 		App.run(M.ExportMatrix,
 				new CsvMatrixExport(data),

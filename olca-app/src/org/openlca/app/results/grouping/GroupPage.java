@@ -122,9 +122,11 @@ public class GroupPage extends FormPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
-		FormToolkit toolkit = managedForm.getToolkit();
+	protected void createFormContent(IManagedForm mform) {
+		ScrolledForm form = UI.formHeader(mform,
+				Labels.getDisplayName(setup.productSystem),
+				Images.get(result));
+		FormToolkit toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createGroupingSection(toolkit, body);
 		resultSection = new GroupResultSection(groups, result);
@@ -370,8 +372,7 @@ public class GroupPage extends FormPage {
 	}
 
 	/**
-	 * Action for saving a group set in the grouping page of the analysis
-	 * editor.
+	 * Action for saving a group set in the grouping page of the analysis editor.
 	 */
 	private class SaveGroupSetAction extends Action {
 

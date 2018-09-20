@@ -1,7 +1,5 @@
 package org.openlca.app.results;
 
-import javafx.scene.web.WebEngine;
-
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -29,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import javafx.scene.web.WebEngine;
 
 public class SunBurstView extends FormPage implements WebPage {
 
@@ -75,9 +75,11 @@ public class SunBurstView extends FormPage implements WebPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
-		FormToolkit toolkit = managedForm.getToolkit();
+	protected void createFormContent(IManagedForm mform) {
+		ScrolledForm form = UI.formHeader(mform,
+				Labels.getDisplayName(setup.productSystem),
+				Images.get(result));
+		FormToolkit toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Composite comp = toolkit.createComposite(body);
 		UI.gridLayout(comp, 2);

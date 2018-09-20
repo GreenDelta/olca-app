@@ -65,7 +65,8 @@ public class InventoryPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
+		ScrolledForm form = UI.formHeader(mform,
+				Labels.getDisplayName(setup.productSystem), Images.get(result));
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		TreeViewer inputTree = createSectionAndViewer(body, true);

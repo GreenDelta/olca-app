@@ -112,10 +112,10 @@ public class SimulationPage extends FormPage {
 		Composite composite = UI.sectionClient(progressSection, toolkit);
 		progressBar = new ProgressBar(composite, SWT.SMOOTH);
 		progressBar.setMaximum(editor.getSetup().numberOfRuns);
-		UI.gridWidth(progressBar, 470);
-		final Button progressButton = toolkit.createButton(composite,
+		UI.gridData(progressBar, false, false).widthHint = 470;
+		Button progressButton = toolkit.createButton(composite,
 				M.Start, SWT.NONE);
-		UI.gridWidth(progressButton, 70);
+		UI.gridData(progressButton, false, false).widthHint = 70;
 		new SimulationControl(progressButton, editor, this);
 	}
 

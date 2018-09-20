@@ -53,9 +53,11 @@ public class NwResultPage extends FormPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result));
-		toolkit = managedForm.getToolkit();
+	protected void createFormContent(IManagedForm mform) {
+		ScrolledForm form = UI.formHeader(mform,
+				Labels.getDisplayName(setup.productSystem),
+				Images.get(result));
+		toolkit = mform.getToolkit();
 		body = UI.formBody(form, toolkit);
 		nwSetTable = loadNwSetTable();
 		if (nwSetTable == null)

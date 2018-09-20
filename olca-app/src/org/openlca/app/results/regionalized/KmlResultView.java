@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javafx.scene.web.WebEngine;
-
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -31,6 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import javafx.scene.web.WebEngine;
 
 class KmlResultView extends FormPage implements WebPage {
 
@@ -66,9 +66,11 @@ class KmlResultView extends FormPage implements WebPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(this, Labels.getDisplayName(setup.productSystem), Images.get(result.result));
-		FormToolkit toolkit = managedForm.getToolkit();
+	protected void createFormContent(IManagedForm mform) {
+		ScrolledForm form = UI.formHeader(mform,
+				Labels.getDisplayName(setup.productSystem),
+				Images.get(result.result));
+		FormToolkit toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
