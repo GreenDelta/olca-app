@@ -36,6 +36,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.database.LocationDao;
@@ -66,7 +67,7 @@ class InfoPage extends ModelPage<Process> {
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
 		checkBox(infoSection.getContainer(), M.InfrastructureProcess, "infrastructureProcess");
-		createSystemButton(infoSection.getContainer());
+		createButtons(infoSection.getContainer());
 		createTimeSection(body);
 		createGeographySection(body);
 		createTechnologySection(body);
@@ -75,13 +76,16 @@ class InfoPage extends ModelPage<Process> {
 		form.reflow(true);
 	}
 
-	private void createSystemButton(Composite container) {
-		toolkit.createLabel(container, "");
-		Button button = toolkit.createButton(container, M.CreateProductSystem, SWT.NONE);
-		button.setImage(Images.get(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
-		Controls.onSelect(button, (e) -> {
-			SystemCreation.run(getModel());
-		});
+	private void createButtons(Composite comp) {
+		UI.filler(comp, toolkit);
+		Composite inner = toolkit.createComposite(comp);
+		UI.gridLayout(inner, 2, 5, 0);
+		Button b = toolkit.createButton(inner, M.CreateProductSystem, SWT.NONE);
+		b.setImage(Images.get(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
+		Controls.onSelect(b, e -> ProcessToolbar.createSystem(getModel()));
+		b = toolkit.createButton(inner, M.ExportToExcel, SWT.NONE);
+		b.setImage(Images.get(FileType.EXCEL));
+		Controls.onSelect(b, e -> ProcessToolbar.exportToExcel(getModel()));
 	}
 
 	private void createTechnologySection(Composite body) {
