@@ -6,10 +6,10 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
 import org.openlca.app.devtools.IScriptEditor;
 import org.openlca.app.devtools.ScriptEditorPage;
+import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Editors;
 
 public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
@@ -18,7 +18,7 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 	private Page page;
 
 	public static void open() {
-		Editors.open(new DefaultInput(TYPE, UUID.randomUUID().toString(), "Python"), TYPE);
+		Editors.open(new SimpleEditorInput(TYPE, UUID.randomUUID().toString(), "Python"), TYPE);
 	}
 
 	@Override

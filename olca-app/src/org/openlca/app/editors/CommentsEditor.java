@@ -10,7 +10,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentsPage;
-import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Editors;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.Comment;
@@ -24,15 +23,15 @@ public class CommentsEditor extends SimpleFormEditor {
 	private static final Logger log = LoggerFactory.getLogger(CommentsEditor.class);
 	
 	public static void open() {
-		Editors.open(new DefaultInput(TYPE, TYPE, M.Comments), TYPE);
+		Editors.open(new SimpleEditorInput(TYPE, TYPE, M.Comments), TYPE);
 	}
 
 	public static void close() {
 		for (IEditorReference ref : Editors.getReferences()) {
 			try {
-				if (!(ref.getEditorInput() instanceof DefaultInput))
+				if (!(ref.getEditorInput() instanceof SimpleEditorInput))
 					continue;
-				DefaultInput input = (DefaultInput) ref.getEditorInput();
+				SimpleEditorInput input = (SimpleEditorInput) ref.getEditorInput();
 				if (!TYPE.equals(input.type))
 					continue;
 				Editors.close(ref);

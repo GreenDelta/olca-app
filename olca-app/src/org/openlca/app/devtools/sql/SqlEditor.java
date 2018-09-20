@@ -23,11 +23,11 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.devtools.IScriptEditor;
+import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
-import org.openlca.app.util.DefaultInput;
 import org.openlca.app.util.Editors;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
@@ -39,7 +39,7 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 	private Page page;
 
 	public static void open() {
-		Editors.open(new DefaultInput(TYPE, UUID.randomUUID().toString(), "SQL"), TYPE);
+		Editors.open(new SimpleEditorInput(TYPE, UUID.randomUUID().toString(), "SQL"), TYPE);
 	}
 
 	@Override

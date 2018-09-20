@@ -1,17 +1,17 @@
-package org.openlca.app.util;
+package org.openlca.app.editors;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.openlca.util.Strings;
 
-public class DefaultInput implements IEditorInput {
+public class SimpleEditorInput implements IEditorInput {
 
 	public final String type;
 	public final String id;
 	private final String name;
 	
-	public DefaultInput(String type, String id, String name) {
+	public SimpleEditorInput(String type, String id, String name) {
 		this.type = type;
 		this.id = id;
 		this.name = name;
@@ -49,9 +49,9 @@ public class DefaultInput implements IEditorInput {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof DefaultInput))
+		if (!(obj instanceof SimpleEditorInput))
 			return false;
-		DefaultInput input = (DefaultInput) obj;
+		SimpleEditorInput input = (SimpleEditorInput) obj;
 		return Strings.nullOrEqual(id, input.id);
 	}
 }
