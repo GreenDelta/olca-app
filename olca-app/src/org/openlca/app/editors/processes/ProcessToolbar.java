@@ -54,15 +54,19 @@ public class ProcessToolbar extends EditorActionBarContributor {
 		return editor.getModel();
 	}
 
-	static void exportToExcel(Process process) {
-		if (process == null)
+	static void exportToExcel(Process p) {
+		if (p == null)
 			return;
-		File dir = FileChooser.forExport(FileChooser.DIRECTORY_DIALOG);
-		if (dir == null)
+		String name = p.getName() == null
+				? "process"
+				: p.getName();
+		name = name.replaceAll("[^a-zA-Z0-9]", "_") + ".xlsx";
+		File f = FileChooser.forExport("*.xlsx", name);
+		if (f == null)
 			return;
 		List<ProcessDescriptor> list = Arrays.asList(
-				Descriptors.toDescriptor(process));
-		ExcelExport export = new ExcelExport(dir, Database.get(), list);
+				Descriptors.toDescriptor(p));
+		ExcelExport export = new ExcelExport(f, Database.get(), list);
 		App.run(M.ExportProcess, export, () -> {
 			Info.popup(M.ExportDone);
 		});
