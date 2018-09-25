@@ -21,6 +21,7 @@ import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Info;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.ProductSystemWizard;
 import org.openlca.core.model.ModelType;
@@ -57,9 +58,8 @@ public class ProcessToolbar extends EditorActionBarContributor {
 	static void exportToExcel(Process p) {
 		if (p == null)
 			return;
-		String name = p.getName() == null
-				? "process"
-				: p.getName();
+		String name = Labels.getDisplayName(p);
+		name = name == null ? "process" : name;
 		name = name.replaceAll("[^a-zA-Z0-9]", "_") + ".xlsx";
 		File f = FileChooser.forExport("*.xlsx", name);
 		if (f == null)

@@ -9,22 +9,24 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Category;
@@ -67,26 +69,15 @@ public class SearchResultView extends SimpleFormEditor {
 		return new Page();
 	}
 
-	private static class Input implements IEditorInput {
+	private static class Input extends SimpleEditorInput {
 
 		private String term;
 		private String resultKey;
 
 		public Input(String term, String resultKey) {
+			super("search", resultKey, term);
 			this.term = term;
 			this.resultKey = resultKey;
-		}
-
-		@Override
-		@SuppressWarnings("rawtypes")
-		// need to support several target platforms
-		public Object getAdapter(Class adapter) {
-			return null;
-		}
-
-		@Override
-		public boolean exists() {
-			return true;
 		}
 
 		@Override
@@ -98,42 +89,50 @@ public class SearchResultView extends SimpleFormEditor {
 		public String getName() {
 			return M.SearchResults + ": " + term;
 		}
-
-		@Override
-		public IPersistableElement getPersistable() {
-			return null;
-		}
-
-		@Override
-		public String getToolTipText() {
-			return getName();
-		}
 	}
 
 	private class Page extends FormPage {
+
+		private final int PAGE_SIZE = 50;
+		private int currentPage = 0;
+		private final int pageCount;
+
+		private FormToolkit tk;
+		private ScrolledForm form;
+		private Composite formBody;
+		private Composite pageComposite;
+
 		public Page() {
 			super(SearchResultView.this, "SearchResultView.Page", M.SearchResults);
+			pageCount = (int) Math.ceil((double) results.size() / (double) PAGE_SIZE);
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			ScrolledForm form = UI.formHeader(mform, M.SearchResults + ": "
+			form = UI.formHeader(mform, M.SearchResults + ": "
 					+ term + " (" + results.size() + " " + M.Results + ")");
-			FormToolkit tk = mform.getToolkit();
-			Composite body = UI.formBody(form, tk);
-			UI.gridLayout(body, 1).verticalSpacing = 5;
-			createItems(tk, body);
-			form.reflow(true);
+			tk = mform.getToolkit();
+			formBody = UI.formBody(form, tk);
+			renderPage();
 		}
 
-		private void createItems(FormToolkit tk, Composite body) {
-			int i = 0;
+		private void renderPage() {
+			if (pageComposite != null) {
+				pageComposite.dispose();
+			}
+			pageComposite = tk.createComposite(formBody);
+			UI.gridData(pageComposite, true, true);
+			UI.gridLayout(pageComposite, 1, 5, 5);
+			createItems();
+			renderPager();
+			form.reflow(true);
+			form.getForm().setFocus();
+		}
+
+		private void createItems() {
 			LinkClick click = new LinkClick();
-			for (BaseDescriptor d : results) {
-				if (i > 1000)
-					break;
-				i++;
-				Composite comp = tk.createComposite(body);
+			for (BaseDescriptor d : getPageResults()) {
+				Composite comp = tk.createComposite(pageComposite);
 				UI.gridData(comp, true, false);
 				UI.gridLayout(comp, 1).verticalSpacing = 3;
 				ImageHyperlink link = tk.createImageHyperlink(comp, SWT.TOP);
@@ -145,6 +144,19 @@ public class SearchResultView extends SimpleFormEditor {
 				renderCategory(tk, d, comp);
 				renderDescription(tk, d, comp);
 			}
+		}
+
+		private List<BaseDescriptor> getPageResults() {
+			if (results == null || results.isEmpty())
+				return Collections.emptyList();
+			int start = currentPage * 50;
+			if (start >= results.size())
+				return Collections.emptyList();
+			int end = start + 50;
+			if (end >= results.size()) {
+				end = results.size() - 1;
+			}
+			return results.subList(start, end);
 		}
 
 		private void renderDescription(FormToolkit tk, BaseDescriptor d, Composite comp) {
@@ -169,6 +181,40 @@ public class SearchResultView extends SimpleFormEditor {
 			Label label = tk.createLabel(comp, path);
 			label.setForeground(Colors.get(0, 128, 42));
 		}
+
+		private void renderPager() {
+			if (pageCount < 2)
+				return;
+			int start = currentPage > 5 ? currentPage - 5 : 0;
+			int end = start + 10;
+			if (end >= pageCount) {
+				end = pageCount - 1;
+			}
+			Composite pager = tk.createComposite(pageComposite);
+			UI.gridLayout(pager, end - start + 1);
+			for (int i = start; i <= end; i++) {
+				String label;
+				if ((i == start && start > 0)
+						|| (i == end && end < (pageCount - 1))) {
+					label = "...";
+				} else {
+					label = Integer.toString(i + 1);
+				}
+				if (i == currentPage) {
+					tk.createLabel(pager, label)
+							.setFont(UI.boldFont());
+					continue;
+				}
+				int pageNumber = i;
+				Hyperlink link = tk.createHyperlink(pager,
+						label, SWT.NONE);
+				Controls.onClick(link, e -> {
+					currentPage = pageNumber;
+					renderPage();
+				});
+			}
+		}
+
 	}
 
 	private class LinkClick extends HyperlinkAdapter {
@@ -185,4 +231,5 @@ public class SearchResultView extends SimpleFormEditor {
 			}
 		}
 	}
+
 }

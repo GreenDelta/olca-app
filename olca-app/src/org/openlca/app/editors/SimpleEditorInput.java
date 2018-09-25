@@ -10,7 +10,7 @@ public class SimpleEditorInput implements IEditorInput {
 	public final String type;
 	public final String id;
 	private final String name;
-	
+
 	public SimpleEditorInput(String type, String id, String name) {
 		this.type = type;
 		this.id = id;
@@ -44,7 +44,7 @@ public class SimpleEditorInput implements IEditorInput {
 
 	@Override
 	public String getToolTipText() {
-		return name;
+		return getName();
 	}
 
 	@Override
