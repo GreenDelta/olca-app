@@ -550,7 +550,7 @@ public class M extends NLS {
 	public static String NoReferenceFlowPropertySelected;
 	public static String NoReferenceProcessSelected;
 	public static String NoReferenceSet;
-	public static String NoRegionalizedInformation;
+	public static String NoRegionalizedInformation_Message;
 	public static String NoRisk;
 	public static String NoShapefileParameterSelected;
 	public static String NoUnitGroupSelected;

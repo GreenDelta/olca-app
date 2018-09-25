@@ -262,7 +262,7 @@ public class CalculationWizard extends Wizard {
 			RegionalizedCalculator calc = new RegionalizedCalculator(setup, App.getSolver());
 			RegionalizedResult result = calc.calculate(Database.get(), Cache.getMatrixCache());
 			if (result == null) {
-				Info.showBox(M.NoRegionalizedInformation + "available for this system");
+				Info.showBox(M.NoRegionalizedInformation_Message);
 				return;
 			}
 			RegionalizedResultProvider provider = new RegionalizedResultProvider();
