@@ -153,8 +153,8 @@ public class SearchResultView extends SimpleFormEditor {
 			if (start >= results.size())
 				return Collections.emptyList();
 			int end = start + 50;
-			if (end >= results.size()) {
-				end = results.size() - 1;
+			if (end > results.size()) {
+				end = results.size();
 			}
 			return results.subList(start, end);
 		}
