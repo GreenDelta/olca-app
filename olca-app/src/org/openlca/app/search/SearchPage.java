@@ -39,7 +39,7 @@ public class SearchPage extends SimpleFormEditor {
 			return;
 		String title = "Find usages of " + Labels.getDisplayName(d);
 		AtomicReference<List<BaseDescriptor>> ref = new AtomicReference<>();
-		App.runWithProgress(title, () -> {
+		App.run(title, () -> {
 			List<CategorizedDescriptor> list = IUseSearch.FACTORY.createFor(
 					d.getModelType(), Database.get()).findUses(d);
 			if (d != null) {

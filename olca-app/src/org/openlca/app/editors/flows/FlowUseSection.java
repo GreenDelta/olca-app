@@ -13,8 +13,8 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.editors.UsageView;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.search.SearchPage;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
@@ -127,7 +127,7 @@ class FlowUseSection {
 		link.setImage(image);
 		link.setForeground(Colors.linkBlue());
 		Controls.onClick(link,
-				e -> UsageView.open(Descriptors.toDescriptor(flow)));
+				e -> SearchPage.forUsage(Descriptors.toDescriptor(flow)));
 	}
 
 }

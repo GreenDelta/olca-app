@@ -239,13 +239,6 @@
             name="Log file">
       </editor>       
       <editor
-            class="org.openlca.app.editors.UsageView"
-            default="false"
-            icon="icons/link.png"
-            id="editors.usage"
-            name="%Usage">
-      </editor>
-      <editor
             class="org.openlca.app.editors.graphical.ProductSystemGraphEditor"
             default="false"
             icon="icons/model/product_system.png"
