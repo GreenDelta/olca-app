@@ -1,12 +1,15 @@
 package org.openlca.app;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -39,8 +42,8 @@ import org.openlca.util.Strings;
 public class SearchResultView extends SimpleFormEditor {
 
 	public static final String ID = "SearchResultView";
-	private String term;
-	private List<BaseDescriptor> results;
+	String term;
+	List<BaseDescriptor> results;
 
 	public static void show(String term, List<BaseDescriptor> results) {
 		String resultKey = Cache.getAppCache().put(results);
@@ -59,14 +62,17 @@ public class SearchResultView extends SimpleFormEditor {
 			Input eInput = (Input) input;
 			term = eInput.term;
 			results = Cache.getAppCache().remove(eInput.resultKey, List.class);
-			if (results == null)
+			if (results == null) {
 				results = Collections.emptyList();
+			}
 		}
 	}
 
 	@Override
 	protected FormPage getPage() {
-		return new Page();
+		String title = M.SearchResults + ": "
+				+ term + " (" + results.size() + " " + M.Results + ")";
+		return new Page(this, title, results);
 	}
 
 	private static class Input extends SimpleEditorInput {
@@ -91,29 +97,80 @@ public class SearchResultView extends SimpleFormEditor {
 		}
 	}
 
-	private class Page extends FormPage {
+	private static class Page extends FormPage {
+
+		boolean withFilter;
 
 		private final int PAGE_SIZE = 50;
+		private final List<BaseDescriptor> rawResults;
+		private final String title;
+
+		private List<BaseDescriptor> results;
 		private int currentPage = 0;
-		private final int pageCount;
+		private int pageCount;
 
 		private FormToolkit tk;
 		private ScrolledForm form;
 		private Composite formBody;
 		private Composite pageComposite;
 
-		public Page() {
-			super(SearchResultView.this, "SearchResultView.Page", M.SearchResults);
+		public Page(SearchResultView view, String title, List<BaseDescriptor> results) {
+			super(view, "SearchResultView.Page", M.SearchResults);
+			this.rawResults = results;
+			this.results = rawResults;
+			this.title = title;
 			pageCount = (int) Math.ceil((double) results.size() / (double) PAGE_SIZE);
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			form = UI.formHeader(mform, M.SearchResults + ": "
-					+ term + " (" + results.size() + " " + M.Results + ")");
+			form = UI.formHeader(mform, title);
 			tk = mform.getToolkit();
 			formBody = UI.formBody(form, tk);
+			if (withFilter && rawResults.size() > 10) {
+				createFilter();
+			}
 			renderPage();
+		}
+
+		private void createFilter() {
+			Composite filterComposite = tk.createComposite(formBody);
+			UI.gridLayout(filterComposite, 2, 10, 10);
+			Label label = tk.createLabel(filterComposite, M.Filter);
+			label.setFont(UI.boldFont());
+			Text text = tk.createText(filterComposite, "");
+			UI.gridData(text, false, false).widthHint = 350;
+			text.addModifyListener(e -> filterResults(text.getText()));
+		}
+
+		private void filterResults(String filter) {
+			if (Strings.nullOrEmpty(filter)) {
+				results = rawResults;
+			} else {
+				String term = filter.trim().toLowerCase();
+				results = new ArrayList<>();
+				HashMap<Long, Integer> distances = new HashMap<>();
+				for (BaseDescriptor d : rawResults) {
+					if (d.getName() == null)
+						continue;
+					int dist = d.getName().toLowerCase().indexOf(term);
+					if (dist < 0)
+						continue;
+					results.add(d);
+					distances.put(d.getId(), dist);
+				}
+				results.sort((d1, d2) -> {
+					Integer dist1 = distances.get(d1.getId());
+					Integer dist2 = distances.get(d2.getId());
+					if (dist1 == null || dist2 == null)
+						return 0;
+					return dist1 - dist2;
+				});
+			}
+			currentPage = 0;
+			pageCount = (int) Math.ceil((double) results.size() / (double) PAGE_SIZE);
+			renderPage();
+			return;
 		}
 
 		private void renderPage() {
@@ -215,19 +272,18 @@ public class SearchResultView extends SimpleFormEditor {
 			}
 		}
 
-	}
-
-	private class LinkClick extends HyperlinkAdapter {
-		@Override
-		public void linkActivated(HyperlinkEvent e) {
-			ImageHyperlink link = (ImageHyperlink) e.widget;
-			Object data = link.getData();
-			if (data instanceof CategoryDescriptor) {
-				CategoryDescriptor d = (CategoryDescriptor) data;
-				Category c = Cache.getEntityCache().get(Category.class, d.getId());
-				Navigator.select(c);
-			} else if (data instanceof CategorizedDescriptor) {
-				App.openEditor((CategorizedDescriptor) data);
+		private class LinkClick extends HyperlinkAdapter {
+			@Override
+			public void linkActivated(HyperlinkEvent e) {
+				ImageHyperlink link = (ImageHyperlink) e.widget;
+				Object data = link.getData();
+				if (data instanceof CategoryDescriptor) {
+					CategoryDescriptor d = (CategoryDescriptor) data;
+					Category c = Cache.getEntityCache().get(Category.class, d.getId());
+					Navigator.select(c);
+				} else if (data instanceof CategorizedDescriptor) {
+					App.openEditor((CategorizedDescriptor) data);
+				}
 			}
 		}
 	}
