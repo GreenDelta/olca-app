@@ -251,8 +251,14 @@
             icon="icons/search.png"
             default="false"
             name="%SearchResults">
-      </editor> 
-
+      </editor>
+      <editor
+            id="ParameterUsagePage"
+            class="org.openlca.app.search.ParameterUsagePage"
+            icon="icons/link.png"
+            default="false"
+            name="Parameter usage">
+      </editor>
 	  <editor
             class="org.openlca.app.editors.locations.LocationEditor"
             default="false"

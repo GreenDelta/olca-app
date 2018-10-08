@@ -7,6 +7,7 @@ import org.openlca.app.M;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.search.SearchPage;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -28,27 +29,33 @@ class OpenUsageAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public void run() {
-		if (descriptor == null)
-			return;
-		SearchPage.forUsage(descriptor);
-	}
-
-	@Override
-	public boolean accept(INavigationElement<?> navigationElement) {
-		if (!(navigationElement instanceof ModelElement))
+	public boolean accept(INavigationElement<?> elem) {
+		if (!(elem instanceof ModelElement))
 			return false;
-		ModelElement element = (ModelElement) navigationElement;
-		descriptor = element.getContent();
-		if (descriptor.getModelType() == ModelType.PARAMETER)
-			// exclude parameters, because they are not linked via id
+		ModelElement e = (ModelElement) elem;
+		CategorizedDescriptor d = e.getContent();
+		if (d == null || d.getModelType() == null)
 			return false;
-		return descriptor.getModelType().isCategorized();
+		if (!d.getModelType().isCategorized())
+			return false;
+		descriptor = d;
+		return true;
 	}
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
 		return false;
+	}
+
+	@Override
+	public void run() {
+		if (descriptor == null)
+			return;
+		if (descriptor.getModelType() == ModelType.PARAMETER) {
+			ParameterUsagePage.show(descriptor.getName());
+		} else {
+			SearchPage.forUsage(descriptor);
+		}
 	}
 
 }

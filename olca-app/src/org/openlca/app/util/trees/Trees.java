@@ -61,7 +61,9 @@ public class Trees {
 			viewer.setLabelProvider(label);
 		}
 		GridData data = UI.gridData(tree, true, true);
-		data.minimumHeight = 150;
+		data.minimumHeight = 120;
+		Point p = parent.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		data.heightHint = p.y < 120 ? 120 : p.y;
 		return viewer;
 	}
 
@@ -132,8 +134,8 @@ public class Trees {
 	}
 
 	/**
-	 * Get the tree item where the given event occurred. Returns null if the event
-	 * occurred in the empty tree area.
+	 * Get the tree item where the given event occurred. Returns null if the
+	 * event occurred in the empty tree area.
 	 */
 	public static TreeItem getItem(TreeViewer viewer, MouseEvent event) {
 		if (viewer == null || event == null)

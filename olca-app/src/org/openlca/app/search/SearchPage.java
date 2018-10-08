@@ -55,7 +55,8 @@ public class SearchPage extends SimpleFormEditor {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
 		super.init(site, input);
 		if (!(input instanceof Input)) {
 			this.input = new Input("", "");
