@@ -1,4 +1,4 @@
-package org.openlca.app;
+package org.openlca.app.search;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package org.openlca.app;
+package org.openlca.app.search;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +21,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
@@ -99,8 +101,6 @@ public class SearchResultView extends SimpleFormEditor {
 
 	private static class Page extends FormPage {
 
-		boolean withFilter;
-
 		private final int PAGE_SIZE = 50;
 		private final List<BaseDescriptor> rawResults;
 		private final String title;
@@ -127,7 +127,7 @@ public class SearchResultView extends SimpleFormEditor {
 			form = UI.formHeader(mform, title);
 			tk = mform.getToolkit();
 			formBody = UI.formBody(form, tk);
-			if (withFilter && rawResults.size() > 10) {
+			if (rawResults.size() > 10) {
 				createFilter();
 			}
 			renderPage();

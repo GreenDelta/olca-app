@@ -254,7 +254,7 @@
       </editor>  
       <editor
             id="SearchResultView"
-            class="org.openlca.app.SearchResultView"
+            class="org.openlca.app.search.SearchResultView"
             icon="icons/search.png"
             default="false"
             name="Search result view">
@@ -462,7 +462,7 @@
                <toolbar
                      id="olca-app.search.toolbar">
                      <control
-                     	class="org.openlca.app.SearchText"
+                     	class="org.openlca.app.search.SearchText"
                      	id="org.openlca.app.SearchText">
                		 </control>
                </toolbar>
