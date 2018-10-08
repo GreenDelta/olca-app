@@ -86,9 +86,10 @@ class ResultPage extends FormPage {
 			results = new ArrayList<>();
 			HashMap<Long, Integer> distances = new HashMap<>();
 			for (BaseDescriptor d : rawResults) {
-				if (d.getName() == null)
+				String n = Labels.getDisplayName(d);
+				if (n == null)
 					continue;
-				int dist = d.getName().toLowerCase().indexOf(term);
+				int dist = n.toLowerCase().indexOf(term);
 				if (dist < 0)
 					continue;
 				results.add(d);

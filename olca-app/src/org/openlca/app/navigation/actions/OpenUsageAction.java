@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
-import org.openlca.app.editors.UsageView;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.search.SearchPage;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
@@ -29,7 +29,9 @@ class OpenUsageAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		UsageView.open(descriptor);
+		if (descriptor == null)
+			return;
+		SearchPage.forUsage(descriptor);
 	}
 
 	@Override
@@ -40,7 +42,7 @@ class OpenUsageAction extends Action implements INavigationAction {
 		descriptor = element.getContent();
 		if (descriptor.getModelType() == ModelType.PARAMETER)
 			// exclude parameters, because they are not linked via id
-			return false; 
+			return false;
 		return descriptor.getModelType().isCategorized();
 	}
 

@@ -257,7 +257,7 @@
             class="org.openlca.app.search.SearchPage"
             icon="icons/search.png"
             default="false"
-            name="Search result view">
+            name="%SearchResults">
       </editor> 
 
 	  <editor

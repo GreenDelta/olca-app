@@ -81,9 +81,9 @@ public class App {
 	}
 
 	/**
-	 * Returns the version of the openLCA application. If there is a version defined
-	 * in the ini-file (-olcaVersion argument) this is returned. Otherwise the
-	 * version of the application bundle is returned.
+	 * Returns the version of the openLCA application. If there is a version
+	 * defined in the ini-file (-olcaVersion argument) this is returned.
+	 * Otherwise the version of the application bundle is returned.
 	 */
 	public static String getVersion() {
 		String version = CommandArgument.VERSION.getValue();
@@ -162,17 +162,17 @@ public class App {
 	}
 
 	/**
-	 * Wraps a runnable in a job and executes it using the Eclipse jobs framework.
-	 * No UI access is allowed for the runnable.
+	 * Wraps a runnable in a job and executes it using the Eclipse jobs
+	 * framework. No UI access is allowed for the runnable.
 	 */
 	public static Job run(String name, Runnable runnable) {
 		return run(name, runnable, null);
 	}
 
 	/**
-	 * See {@link App#run(String, Runnable)}. Additionally, this method allows to
-	 * give a callback which is executed in the UI thread when the runnable is
-	 * finished.
+	 * See {@link App#run(String, Runnable)}. Additionally, this method allows
+	 * to give a callback which is executed in the UI thread when the runnable
+	 * is finished.
 	 */
 	public static Job run(String name, Runnable runnable, Runnable callback) {
 		WrappedJob job = new WrappedJob(name, runnable);
@@ -191,6 +191,22 @@ public class App {
 				monitor.beginTask(name, IProgressMonitor.UNKNOWN);
 				runnable.run();
 				monitor.done();
+			});
+		} catch (InvocationTargetException | InterruptedException e) {
+			log.error("Error while running progress " + name, e);
+		}
+	}
+
+	public static void runWithProgress(String name, Runnable fn,
+			Runnable callback) {
+		IProgressService progress = PlatformUI.getWorkbench()
+				.getProgressService();
+		try {
+			progress.run(true, false, (monitor) -> {
+				monitor.beginTask(name, IProgressMonitor.UNKNOWN);
+				fn.run();
+				monitor.done();
+				callback.run();
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			log.error("Error while running progress " + name, e);
