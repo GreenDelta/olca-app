@@ -75,7 +75,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 		Search search = new Search(Database.get(), text.getText());
 		search.typeFilter = typeFilter;
 		App.run(M.Searching, search,
-				() -> SearchResultView.show(term, search.getResult()));
+				() -> SearchPage.show(term, search.getResult()));
 	}
 
 	@SuppressWarnings("unused")

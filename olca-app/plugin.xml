@@ -253,8 +253,8 @@
             name="Product system graphical editor">
       </editor>  
       <editor
-            id="SearchResultView"
-            class="org.openlca.app.search.SearchResultView"
+            id="SearchPage"
+            class="org.openlca.app.search.SearchPage"
             icon="icons/search.png"
             default="false"
             name="Search result view">
