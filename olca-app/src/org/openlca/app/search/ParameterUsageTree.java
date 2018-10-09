@@ -13,10 +13,12 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
+import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.ParameterDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Formula;
 import org.openlca.util.Strings;
@@ -79,6 +81,7 @@ class ParameterUsageTree {
 		List<Node> doIt() {
 			exchanges();
 			impacts();
+			parameters();
 			List<Node> roots = new ArrayList<>();
 			contexts.forEach((clazz, map) -> {
 				roots.addAll(map.values());
@@ -126,6 +129,50 @@ class ParameterUsageTree {
 			});
 		}
 
+		private void parameters() {
+			String sql = "SELECT id, name, is_input_param, scope, "
+					+ "f_owner, formula FROM tbl_parameters";
+			query(sql, r -> {
+				String scopeStr = string(r, 4);
+				if (scopeStr == null)
+					return;
+				ParameterScope scope = ParameterScope.valueOf(scopeStr);
+				String name = string(r, 2);
+				boolean nameMatch = matchesFormula(name);
+				String formula = string(r, 6);
+				boolean formulaMatch = matchesFormula(formula);
+				if (!nameMatch && !formulaMatch)
+					return;
+
+				Node paramNode = null;
+
+				if (scope == ParameterScope.GLOBAL) {
+					paramNode = context(int64(r, 1),
+							ParameterDescriptor.class);
+				} else if (scope == ParameterScope.PROCESS) {
+					Node root = context(int64(r, 5),
+							ProcessDescriptor.class);
+					paramNode = child(root, int64(r, 1),
+							ParameterDescriptor.class);
+				} else if (scope == ParameterScope.IMPACT_METHOD) {
+					Node root = context(int64(r, 5),
+							ImpactMethodDescriptor.class);
+					paramNode = child(root, int64(r, 1),
+							ParameterDescriptor.class);
+				}
+
+				if (paramNode == null)
+					return;
+
+				if (nameMatch) {
+					paramNode.type = "parameter definition";
+				} else {
+					paramNode.type = "parameter formula";
+					paramNode.formula = formula;
+				}
+			});
+		}
+
 		private void query(String sql, Consumer<ResultSet> fn) {
 			try {
 				NativeSql.on(db).query(sql, r -> {
@@ -157,10 +204,17 @@ class ParameterUsageTree {
 		private boolean matchesFormula(String formula) {
 			if (formula == null)
 				return false;
-			Set<String> vars = Formula.getVariables(formula);
-			for (String var : vars) {
-				if (var.equalsIgnoreCase(param))
-					return true;
+			String f = formula.trim();
+			if (f.equalsIgnoreCase(param))
+				return true;
+			try {
+				Set<String> vars = Formula.getVariables(f);
+				for (String var : vars) {
+					if (var.equalsIgnoreCase(param))
+						return true;
+				}
+			} catch (Error e) {
+				return false;
 			}
 			return false;
 		}
