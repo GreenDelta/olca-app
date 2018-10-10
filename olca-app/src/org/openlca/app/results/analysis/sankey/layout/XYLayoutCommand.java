@@ -23,20 +23,17 @@ public class XYLayoutCommand extends Command {
 		return true;
 	}
 
-	private Point applyGrid(final int x, final int y) {
+	private Point applyGrid(int x, int y) {
 		int newX = x;
 		int newY = y;
-
-		final int hs = GraphLayoutManager.horizontalSpacing;
-		final int vs = GraphLayoutManager.verticalSpacing;
-		final int gridWidth = ProcessFigure.WIDTH + hs;
-		final int gridHeight = ProcessFigure.HEIGHT + vs;
-
+		int hs = GraphLayoutManager.horizontalSpacing;
+		int vs = GraphLayoutManager.verticalSpacing;
+		int gridWidth = ProcessFigure.WIDTH + hs;
+		int gridHeight = ProcessFigure.HEIGHT + vs;
 		if (newX <= hs) {
 			newX = hs;
 		} else {
-			final int xMod = (newX - hs) % gridWidth;
-
+			int xMod = (newX - hs) % gridWidth;
 			if (xMod != 0) {
 				if (xMod <= gridWidth / 2) {
 					newX = x - xMod;
@@ -45,12 +42,10 @@ public class XYLayoutCommand extends Command {
 				}
 			}
 		}
-
 		if (newY <= vs) {
 			newY = vs;
 		} else {
-			final int yMod = (newY - vs) % gridHeight;
-
+			int yMod = (newY - vs) % gridHeight;
 			if (yMod != 0) {
 				if (yMod <= gridHeight / 2) {
 					newY = y - yMod;
@@ -59,18 +54,14 @@ public class XYLayoutCommand extends Command {
 				}
 			}
 		}
-
 		return new Point(newX, newY);
 	}
 
 	@Override
 	public void execute() {
 		oldLayout = processNode.getXyLayoutConstraints();
-
-		final Point newLocation = applyGrid(layout.x, layout.y);
-
-		processNode.setXyLayoutConstraints(new Rectangle(newLocation.x,
-				newLocation.y, oldLayout.width, oldLayout.height));
+		Point newLocation = applyGrid(Math.max(layout.x, 0), Math.max(layout.y, 0));
+		processNode.setXyLayoutConstraints(new Rectangle(newLocation.x, newLocation.y, oldLayout.width, oldLayout.height));
 	}
 
 	@Override
@@ -83,11 +74,11 @@ public class XYLayoutCommand extends Command {
 		execute();
 	}
 
-	public void setConstraint(final Rectangle rect) {
+	public void setConstraint(Rectangle rect) {
 		layout = rect;
 	}
 
-	public void setProcessNode(final ProcessNode processNode) {
+	public void setProcessNode(ProcessNode processNode) {
 		this.processNode = processNode;
 	}
 

@@ -68,7 +68,7 @@ public class XYLayoutCommand extends Command {
 		Point position = null;
 		Dimension size = null;
 		if (type == MOVE) {
-			position = new Point(newLayout.x, newLayout.y);
+			position = new Point(Math.max(newLayout.x, 0), Math.max(newLayout.y, 0));
 			size = new Dimension(previousLayout.width, previousLayout.height);
 		} else if (type == RESIZE) {
 			position = new Point(previousLayout.x, previousLayout.y);

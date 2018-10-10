@@ -17,6 +17,7 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
+import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 import com.google.common.base.Objects;
@@ -253,7 +254,10 @@ public class ProcessNode extends Node {
 
 	public int getMinimumHeight() {
 		if (isMinimized())
-			return ProcessFigure.MINIMUM_HEIGHT;
+			if (process.getProcessType() == ProcessType.LCI_RESULT)
+				return ProcessFigure.MINIMUM_HEIGHT + 3;
+			else
+				return ProcessFigure.MINIMUM_HEIGHT;
 		return figure().getMinimumHeight();
 	}
 
