@@ -13,6 +13,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -20,6 +21,7 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ParameterDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.util.Formula;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -82,6 +84,7 @@ class ParameterUsageTree {
 			exchanges();
 			impacts();
 			parameters();
+			systemRedefs();
 			List<Node> roots = new ArrayList<>();
 			contexts.forEach((clazz, map) -> {
 				roots.addAll(map.values());
@@ -173,6 +176,41 @@ class ParameterUsageTree {
 			});
 		}
 
+		private void systemRedefs() {
+			String sql = "SELECT redef.name, redef.f_owner, redef.f_context, "
+					+ "redef.context_type FROM tbl_parameter_redefs redef "
+					+ "INNER JOIN tbl_product_systems owner ON "
+					+ "redef.f_owner = owner.id";
+			query(sql, r -> {
+				String name = string(r, 1);
+				if (!matchesFormula(name))
+					return;
+				Node root = context(int64(r, 2), ProductSystemDescriptor.class);
+
+				Class<? extends BaseDescriptor> redefContext = null;
+				String ctxt = string(r, 4);
+				if (ctxt != null) {
+					redefContext = toDescriptorType(
+							ModelType.valueOf(ctxt));
+				}
+
+				if (redefContext == null) {
+					Node child = new Node();
+					child.context = new ParameterDescriptor();
+					child.context.setName(name);
+					child.type = "parameter redefinition";
+					child.formula = name;
+					root.add(child);
+					return;
+				}
+
+				Node child = child(root, int64(r, 3), redefContext);
+				child.type = "parameter redefinition";
+				child.formula = name;
+			});
+
+		}
+
 		private void query(String sql, Consumer<ResultSet> fn) {
 			try {
 				NativeSql.on(db).query(sql, r -> {
@@ -252,5 +290,20 @@ class ParameterUsageTree {
 			node.formula = formula;
 			return node;
 		}
+
+		/** We only return types that can have local parameters here. */
+		private Class<? extends BaseDescriptor> toDescriptorType(ModelType t) {
+			if (t == null)
+				return null;
+			switch (t) {
+			case IMPACT_METHOD:
+				return ImpactMethodDescriptor.class;
+			case PROCESS:
+				return ProcessDescriptor.class;
+			default:
+				return null;
+			}
+		}
 	}
+
 }
