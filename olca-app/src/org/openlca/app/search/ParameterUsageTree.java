@@ -96,7 +96,7 @@ public class ParameterUsageTree {
 		ParameterUsageTree tree = new ParameterUsageTree(param);
 		if (Strings.nullOrEmpty(param))
 			return tree;
-		Search search = new Search(param, db);
+		Search search = new Search(param.trim(), db);
 		tree.nodes.addAll(search.doIt());
 		return tree;
 	}
