@@ -20,6 +20,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
@@ -37,7 +38,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 	public static void show(String param) {
 		AtomicReference<ParameterUsageTree> ref = new AtomicReference<>();
 		App.runWithProgress("Search for usage of '" + param + "' ...", () -> {
-			ref.set(ParameterUsageTree.build(param));
+			ref.set(ParameterUsageTree.build(param, Database.get()));
 		}, () -> {
 			String resultKey = Cache.getAppCache().put(ref.get());
 			Input input = new Input(param, resultKey);
