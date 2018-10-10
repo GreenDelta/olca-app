@@ -2,6 +2,7 @@ package org.openlca.app.search;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -20,15 +21,19 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.search.ParameterUsageTree.Node;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
+import org.openlca.app.util.viewers.Viewers;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class ParameterUsagePage extends SimpleFormEditor {
 
@@ -37,7 +42,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 	public static void show(String param) {
 		AtomicReference<ParameterUsageTree> ref = new AtomicReference<>();
 		App.runWithProgress("Search for usage of '" + param + "' ...", () -> {
-			ref.set(ParameterUsageTree.build(param));
+			ref.set(ParameterUsageTree.build(param, Database.get()));
 		}, () -> {
 			String resultKey = Cache.getAppCache().put(ref.get());
 			Input input = new Input(param, resultKey);
@@ -106,6 +111,21 @@ public class ParameterUsagePage extends SimpleFormEditor {
 				tree.setExpandedElements(
 						new Object[] { this.tree.nodes.get(0) });
 			}
+			Trees.onDoubleClick(tree, e -> onOpen(tree));
+			Action open = Actions.create(M.Open,
+					Icon.FOLDER_OPEN.descriptor(),
+					() -> onOpen(tree));
+			Actions.bind(tree, open);
+		}
+
+		private void onOpen(TreeViewer tree) {
+			Node node = Viewers.getFirstSelected(tree);
+			if (node == null)
+				return;
+			node = node.root();
+			if (!(node.context instanceof CategorizedDescriptor))
+				return;
+			App.openEditor((CategorizedDescriptor) node.context);
 		}
 
 	}

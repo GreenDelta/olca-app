@@ -72,6 +72,10 @@ public class SearchText extends WorkbenchWindowControlContribution {
 			return;
 		}
 		String term = text.getText();
+		if (typeFilter == ModelType.PARAMETER) {
+			ParameterUsagePage.show(term);
+			return;
+		}
 		Search search = new Search(Database.get(), text.getText());
 		search.typeFilter = typeFilter;
 		App.run(M.Searching, search,
@@ -92,7 +96,8 @@ public class SearchText extends WorkbenchWindowControlContribution {
 	}
 
 	/**
-	 * A drop down menu for optionally selecting a model type as a search filter.
+	 * A drop down menu for optionally selecting a model type as a search
+	 * filter.
 	 */
 	private class DropDownAction extends Action implements IMenuCreator {
 

@@ -2,17 +2,17 @@ package org.openlca.app.search;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.openlca.app.db.Database;
-import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -20,46 +20,83 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ParameterDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.ProductSystemDescriptor;
+import org.openlca.core.model.descriptors.ProjectDescriptor;
 import org.openlca.util.Formula;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ParameterUsageTree {
+public class ParameterUsageTree {
 
-	static class Node {
-		BaseDescriptor context;
-		String type;
-		String formula;
-		Node parent;
-		final List<Node> childs = new ArrayList<>();
+	public static class Node implements Comparable<Node> {
 
-		void add(Node child) {
+		public BaseDescriptor context;
+		public String type;
+		public String formula;
+		public Node parent;
+		public final List<Node> childs = new ArrayList<>();
+
+		private void add(Node child) {
 			if (child == null)
 				return;
 			child.parent = this;
 			childs.add(child);
 		}
 
-		Node root() {
+		public Node root() {
 			if (parent == null)
 				return this;
 			return parent.root();
 		}
+
+		@Override
+		public int compareTo(Node o) {
+			if (o == null)
+				return 1;
+			if (context == null || o.context == null)
+				return 0;
+			int o1 = typeOrder(context.getModelType());
+			int o2 = typeOrder(o.context.getModelType());
+			if (o1 == o2)
+				return Strings.compare(
+						context.getName(),
+						o.context.getName());
+			return o1 - o2;
+		}
+
+		private static int typeOrder(ModelType type) {
+			if (type == null)
+				return -1;
+			switch (type) {
+			case PARAMETER:
+				return 0;
+			case PROJECT:
+				return 1;
+			case PRODUCT_SYSTEM:
+				return 2;
+			case PROCESS:
+				return 3;
+			case IMPACT_METHOD:
+				return 4;
+			default:
+				return 99;
+			}
+		}
 	}
 
-	final String param;
-	final List<Node> nodes = new ArrayList<>();
+	public final String param;
+	public final List<Node> nodes = new ArrayList<>();
 
-	ParameterUsageTree(String param) {
+	public ParameterUsageTree(String param) {
 		this.param = param;
 	}
 
-	static ParameterUsageTree build(String param) {
+	public static ParameterUsageTree build(String param, IDatabase db) {
 		ParameterUsageTree tree = new ParameterUsageTree(param);
 		if (Strings.nullOrEmpty(param))
 			return tree;
-		Search search = new Search(param, Database.get());
+		Search search = new Search(param.trim(), db);
 		tree.nodes.addAll(search.doIt());
 		return tree;
 	}
@@ -82,16 +119,23 @@ class ParameterUsageTree {
 			exchanges();
 			impacts();
 			parameters();
+			systemRedefs();
+			projectRedefs();
 			List<Node> roots = new ArrayList<>();
 			contexts.forEach((clazz, map) -> {
 				roots.addAll(map.values());
 			});
-			roots.sort((n1, n2) -> {
-				return Strings.compare(
-						Labels.getDisplayName(n1.context),
-						Labels.getDisplayName(n2.context));
-			});
+			sortRec(roots);
 			return roots;
+		}
+
+		private void sortRec(List<Node> nodes) {
+			if (nodes == null)
+				return;
+			for (Node n : nodes) {
+				sortRec(n.childs);
+			}
+			Collections.sort(nodes);
 		}
 
 		private void exchanges() {
@@ -173,6 +217,61 @@ class ParameterUsageTree {
 			});
 		}
 
+		private void systemRedefs() {
+			String sql = "SELECT redef.name, redef.f_owner, redef.f_context, "
+					+ "redef.context_type FROM tbl_parameter_redefs redef "
+					+ "INNER JOIN tbl_product_systems owner ON "
+					+ "redef.f_owner = owner.id";
+			query(sql, r -> {
+				String name = string(r, 1);
+				if (!matchesFormula(name))
+					return;
+				Node root = context(int64(r, 2), ProductSystemDescriptor.class);
+
+				Class<? extends BaseDescriptor> redefContext = null;
+				String ctxt = string(r, 4);
+				if (ctxt != null) {
+					redefContext = toDescriptorType(
+							ModelType.valueOf(ctxt));
+				}
+
+				if (redefContext == null) {
+					Node child = new Node();
+					child.context = new ParameterDescriptor();
+					child.context.setName(name);
+					child.type = "parameter redefinition";
+					child.formula = name;
+					root.add(child);
+					return;
+				}
+
+				Node child = child(root, int64(r, 3), redefContext);
+				child.type = "parameter redefinition";
+				child.formula = name;
+			});
+		}
+
+		private void projectRedefs() {
+			String sql = "SELECT DISTINCT redef.name, proj.id" +
+					" FROM tbl_parameter_redefs redef" +
+					" INNER JOIN tbl_project_variants var ON" +
+					" redef.f_owner = var.id" +
+					" INNER JOIN tbl_projects proj" +
+					" ON var.f_project = proj.id";
+			query(sql, r -> {
+				String name = string(r, 1);
+				if (!matchesFormula(name))
+					return;
+				Node root = context(int64(r, 2), ProjectDescriptor.class);
+				Node child = new Node();
+				child.context = new ParameterDescriptor();
+				child.context.setName(name);
+				child.type = "parameter redefinition";
+				child.formula = name;
+				root.add(child);
+			});
+		}
+
 		private void query(String sql, Consumer<ResultSet> fn) {
 			try {
 				NativeSql.on(db).query(sql, r -> {
@@ -251,6 +350,20 @@ class ParameterUsageTree {
 			node.type = type;
 			node.formula = formula;
 			return node;
+		}
+
+		/** We only return types that can have local parameters here. */
+		private Class<? extends BaseDescriptor> toDescriptorType(ModelType t) {
+			if (t == null)
+				return null;
+			switch (t) {
+			case IMPACT_METHOD:
+				return ImpactMethodDescriptor.class;
+			case PROCESS:
+				return ProcessDescriptor.class;
+			default:
+				return null;
+			}
 		}
 	}
 }
