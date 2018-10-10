@@ -49,8 +49,9 @@ public final class TableClipboard {
 	}
 
 	private static Action onCopy(Table table, Converter converter) {
-		table.addListener(SWT.KeyUp, (event) -> {
-			if (event.stateMask == SWT.CTRL && event.keyCode == 'c') {
+		table.addListener(SWT.KeyUp, e -> {
+			if (((e.stateMask & SWT.CTRL) == SWT.CTRL)
+					&& (e.keyCode == 'c' || e.keyCode == 'C')) {
 				copy(table, converter);
 			}
 		});
@@ -59,8 +60,9 @@ public final class TableClipboard {
 	}
 
 	private static Action onPaste(Table table, Consumer<String> fn) {
-		table.addListener(SWT.KeyUp, (event) -> {
-			if (event.stateMask == SWT.CTRL && event.keyCode == 'v') {
+		table.addListener(SWT.KeyUp, e -> {
+			if (((e.stateMask & SWT.CTRL) == SWT.CTRL)
+					&& (e.keyCode == 'v' || e.keyCode == 'V')) {
 				paste(table, fn);
 			}
 		});
