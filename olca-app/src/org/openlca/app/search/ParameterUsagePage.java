@@ -103,7 +103,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 			FormToolkit tk = mform.getToolkit();
 			Composite body = UI.formBody(form, tk);
 			TreeViewer tree = Trees.createViewer(body,
-					"Context", "Usage type", "Expression");
+					M.Context, "#Usage type", M.Formula);
 			Trees.bindColumnWidths(tree.getTree(), 0.4, 0.3, 0.3);
 			tree.setContentProvider(new ContentProvider());
 			tree.setLabelProvider(new Label());

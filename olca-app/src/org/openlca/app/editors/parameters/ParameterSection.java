@@ -25,7 +25,9 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Question;
@@ -136,13 +138,20 @@ public class ParameterSection {
 	}
 
 	private void bindActions(Section section) {
-		Action addAction = Actions.onAdd(() -> onAdd());
-		Action removeAction = Actions.onRemove(() -> onRemove());
+		Action add = Actions.onAdd(() -> onAdd());
+		Action remove = Actions.onRemove(() -> onRemove());
 		Action copy = TableClipboard.onCopy(viewer);
 		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
+		Action usage = Actions.create(M.Usage,
+				Icon.LINK.descriptor(), () -> {
+					Parameter p = Viewers.getFirstSelected(viewer);
+					if (p != null) {
+						ParameterUsagePage.show(p.getName());
+					}
+				});
 		CommentAction.bindTo(section, "parameters",
-				editor.getComments(), addAction, removeAction);
-		Actions.bind(viewer, addAction, removeAction, copy, paste);
+				editor.getComments(), add, remove);
+		Actions.bind(viewer, add, remove, copy, paste, usage);
 		Tables.onDeletePressed(viewer, (e) -> onRemove());
 	}
 

@@ -23,6 +23,7 @@ import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
 import org.openlca.app.editors.lcia_methods.ImpactMethodSourceHandler;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
@@ -110,8 +111,8 @@ public class ParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
 		Tables.bindColumnWidths(table.getTable(), 0.4, 0.3);
 		table.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 		section.setExpanded(false);
-		setGlobalTableInput(table);
 		bindGlobalParamActions(section, table);
+		setGlobalTableInput(table);
 	}
 
 	private void bindGlobalParamActions(Section section, TableViewer table) {
@@ -122,7 +123,14 @@ public class ParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
 					support.evaluate();
 					editor.setDirty(true);
 				});
-		Actions.bind(table, copy, refresh);
+		Action usage = Actions.create(M.Usage,
+				Icon.LINK.descriptor(), () -> {
+					Parameter p = Viewers.getFirstSelected(table);
+					if (p != null) {
+						ParameterUsagePage.show(p.getName());
+					}
+				});
+		Actions.bind(table, copy, refresh, usage);
 		Actions.bind(section, refresh);
 	}
 
