@@ -23,7 +23,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.tables.TableClipboard;
@@ -84,7 +86,8 @@ class ParameterRedefTable {
 	private CategorizedDescriptor getContext(ParameterRedef p) {
 		if (p.getContextId() == null)
 			return null;
-		return Daos.categorized(Database.get(), p.getContextType()).getDescriptor(p.getContextId());
+		return Daos.categorized(Database.get(), p.getContextType())
+				.getDescriptor(p.getContextId());
 	}
 
 	private String[] getColumnHeaders() {
@@ -101,9 +104,15 @@ class ParameterRedefTable {
 		Action remove = Actions.onRemove(this::remove);
 		Action copy = TableClipboard.onCopy(viewer);
 		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
+		Action usage = Actions.create(M.Usage, Icon.LINK.descriptor(), () -> {
+			ParameterRedef redef = Viewers.getFirstSelected(viewer);
+			if (redef != null) {
+				ParameterUsagePage.show(redef.getName());
+			}
+		});
 		CommentAction.bindTo(section, "parameterRedefs",
 				editor.getComments(), add, remove);
-		Actions.bind(viewer, add, remove, copy, paste);
+		Actions.bind(viewer, add, remove, copy, paste, usage);
 		Tables.onDeletePressed(viewer, (e) -> remove());
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
