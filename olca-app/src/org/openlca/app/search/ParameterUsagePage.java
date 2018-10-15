@@ -27,12 +27,13 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.search.ParameterUsageTree.Node;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
+import org.openlca.core.database.usage.ParameterUsageTree;
+import org.openlca.core.database.usage.ParameterUsageTree.Node;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class ParameterUsagePage extends SimpleFormEditor {
