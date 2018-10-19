@@ -20,6 +20,7 @@ import org.openlca.ilcd.io.SodaClient;
 import org.openlca.ilcd.processes.Process;
 import org.openlca.io.ilcd.input.ImportConfig;
 import org.openlca.io.ilcd.input.ProcessImport;
+import org.openlca.io.ilcd.input.ProviderLinker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,13 +73,15 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
 	private void importProcesses(List<ProcessDescriptor> descriptors,
 			ImportConfig config) throws Exception {
+		ProviderLinker linker = new ProviderLinker();
 		for (ProcessDescriptor d : descriptors) {
 			Process p = config.store.get(Process.class, d.uuid);
 			if (p != null) {
-				ProcessImport imp = new ProcessImport(config);
+				ProcessImport imp = new ProcessImport(config, linker);
 				imp.run(p);
 			}
 		}
+		linker.createLinks(config.db);
 	}
 
 	@Override
