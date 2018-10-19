@@ -22,6 +22,7 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.search.ConnectionDialog;
 import org.openlca.app.util.Controls;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class SearchConnectorsAction extends EditorAction {
@@ -55,19 +56,20 @@ class SearchConnectorsAction extends EditorAction {
 		long exchangeId = exchangeNode.exchange.getId();
 		long flowId = exchangeNode.exchange.flow.getId();
 		long nodeId = node.process.getId();
+		boolean isWaste = exchangeNode.exchange.flow.getFlowType() == FlowType.WASTE_FLOW;
 		ConnectionDialog dialog = new ConnectionDialog(exchangeNode);
 		if (dialog.open() == IDialogConstants.OK_ID) {
 			List<ProcessDescriptor> toCreate = dialog.toCreate();
 			List<ConnectionInput> toConnect = new ArrayList<>();
 			for (Pair<ProcessDescriptor, Long> next : dialog.toConnect())
-				if (type == PROVIDER)
-					toConnect.add(new ConnectionInput(next.getLeft().getId(), flowId, nodeId, exchangeId));
-				else if (type == RECIPIENTS)
-					toConnect.add(new ConnectionInput(nodeId, flowId, next.getLeft().getId(), next.getRight()));
+				if ((type == PROVIDER && !isWaste) || (type == RECIPIENTS && isWaste))
+					toConnect.add(new ConnectionInput(next.getLeft().getId(), flowId, nodeId, exchangeId, isWaste));
+				else
+					toConnect.add(new ConnectionInput(nodeId, flowId, next.getLeft().getId(), next.getRight(), isWaste));
 			Command command = null;
 			if (type == PROVIDER)
 				command = MassCreationCommand.providers(toCreate, toConnect, model);
-			else if (type == RECIPIENTS)
+			else
 				command = MassCreationCommand.recipients(toCreate, toConnect, model);
 			CommandUtil.executeCommand(command, model.editor);
 		}

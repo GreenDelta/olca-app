@@ -15,6 +15,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.devtools.python.Python;
 import org.openlca.app.navigation.Navigator;
@@ -58,6 +59,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			return true;
 		}
 		try {
+			Database.getIndexUpdater().beginTransaction();
 			DbImportPage.ImportConfig config = page.getConfig();
 			ConnectionDispatch connectionDispatch = createConnection(config);
 			boolean canRun = canRun(config, connectionDispatch);
@@ -68,11 +70,14 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			ImportDispatch importDispatch = new ImportDispatch(
 					connectionDispatch);
 			getContainer().run(true, true, importDispatch);
-			Navigator.refresh();
 			return true;
 		} catch (Exception e) {
 			log.error("database import failed", e);
 			return false;
+		} finally {
+			Database.getIndexUpdater().endTransaction();
+			Navigator.refresh();
+			Cache.evictAll();
 		}
 	}
 
