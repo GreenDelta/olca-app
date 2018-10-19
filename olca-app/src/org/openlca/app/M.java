@@ -93,6 +93,7 @@ public class M extends NLS {
 	public static String Change;
 	public static String ChangesToBeFetched;
 	public static String CheckAgainstLibraries;
+	public static String CheckLinkingProperties;
 	public static String CheckingAgainstLibraries;
 	public static String CheckingOutCommit;
 	public static String Checkout;
@@ -346,6 +347,7 @@ public class M extends NLS {
 	public static String GeometricStandardDeviation;
 	public static String GeometricStandardDeviationFormula;
 	public static String Geometry;
+	public static String GeneralDatabaseProperties;
 	public static String Global;
 	public static String GlobalParameter;
 	public static String GlobalParameters;
@@ -456,6 +458,7 @@ public class M extends NLS {
 	public static String Library;
 	public static String LibraryDataSets;
 	public static String Line;
+	public static String LinkingProperties;
 	public static String Local;
 	public static String LocalDatabase;
 	public static String LocalModel;
@@ -466,6 +469,8 @@ public class M extends NLS {
 	public static String Longitude;
 	public static String LowOpportunity;
 	public static String LowRisk;
+
+	// M
 	public static String ManagePlugins;
 	public static String Map;
 	public static String MapCanNotBeDisplayed;
@@ -505,6 +510,8 @@ public class M extends NLS {
 	public static String MultiLine;
 	public static String MultiPoint;
 	public static String MultiPolygon;
+
+	// N
 	public static String NaValueHandling;
 	public static String Name;
 	public static String NameCannotBeEmpty;
@@ -573,6 +580,8 @@ public class M extends NLS {
 	public static String NumberOfDecimalPlaces;
 	public static String NumberOfIterations;
 	public static String NumberOfSimulations;
+
+	// O
 	public static String OK;
 	public static String OfProduct;
 	public static String OnlineHelp;
@@ -592,6 +601,8 @@ public class M extends NLS {
 	public static String Outputs;
 	public static String OverwriteFile;
 	public static String OverwriteFileQuestion;
+
+	// P
 	public static String Parameter;
 	public static String ParameterAggregationFunction;
 	public static String ParameterAlreadyAdded;
@@ -639,6 +650,7 @@ public class M extends NLS {
 	public static String ProcessSchema;
 	public static String ProcessType;
 	public static String Processes;
+	public static String ProcessesWithoutProviders;
 	public static String ProducedBy;
 	public static String Product;
 	public static String ProductSystem;
@@ -872,10 +884,12 @@ public class M extends NLS {
 	public static String UpstreamTotal;
 	public static String Usage;
 	public static String UsageOf;
+	public static String UsageType;
 	public static String UseBrowserFeatures;
 	public static String UseMaximumScoreForZeroValues;
 	public static String UsedInProcesses;
 	public static String User;
+
 	public static String Validate;
 	public static String ValidatingDatabase;
 	public static String Value;
