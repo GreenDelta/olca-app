@@ -35,7 +35,6 @@ import org.openlca.app.editors.LogFileEditor;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.rcp.plugins.PluginManager;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
 import org.openlca.core.model.ModelType;
@@ -202,20 +201,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		@Override
 		public void run() {
 			StartPage.open();
-		}
-	}
-
-	@Deprecated
-	private class OpenPluginManagerAction extends Action {
-		public OpenPluginManagerAction() {
-			setText(M.ManagePlugins);
-			setToolTipText(M.OpenPluginManager);
-			setImageDescriptor(Icon.MANAGE_PLUGINS.descriptor());
-		}
-
-		@Override
-		public void run() {
-			new PluginManager().open();
 		}
 	}
 

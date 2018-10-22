@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
@@ -53,7 +54,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			return;
 		String key = Cache.getAppCache().put(props);
 		IEditorInput input = new SimpleEditorInput(
-				"LinkingProperties", key, "#Linking properties");
+				"LinkingProperties", key, M.LinkingProperties);
 		Editors.open(input, "editors.LinkingPropertiesPage");
 	}
 
@@ -78,12 +79,12 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 		public Page() {
 			super(LinkingPropertiesPage.this,
 					"LinkingPropertiesPage.Page",
-					"#Linking properties");
+					M.LinkingProperties);
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			ScrolledForm form = UI.formHeader(mform, "#Linking properties");
+			ScrolledForm form = UI.formHeader(mform, M.LinkingProperties);
 			tk = mform.getToolkit();
 			Composite body = UI.formBody(form, tk);
 			generalPropertiesSection(body);
@@ -94,7 +95,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 
 		private void generalPropertiesSection(Composite body) {
 			Composite comp = UI.formSection(body, tk,
-					"#General database properties");
+					M.GeneralDatabaseProperties);
 			if (props.processesWithoutProviders.isEmpty()) {
 				check(comp, Icon.ACCEPT, "#All product inputs "
 						+ "and waste outputs are linked to a "
@@ -127,11 +128,11 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			if (props.processesWithoutProviders.isEmpty())
 				return;
 			Section section = UI.section(body, tk,
-					"#Processes without providers");
+					M.ProcessesWithoutProviders);
 			UI.gridData(section, true, true);
 			Composite comp = UI.sectionClient(section, tk);
 			UI.gridLayout(comp, 1);
-			TableViewer table = Tables.createViewer(comp, "#Process");
+			TableViewer table = Tables.createViewer(comp, M.Process);
 			ProcessDao dao = new ProcessDao(Database.get());
 			List<ProcessDescriptor> list = dao.getDescriptors(
 					props.processesWithoutProviders);
@@ -146,7 +147,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			UI.gridData(section, true, true);
 			Composite comp = UI.sectionClient(section, tk);
 			UI.gridLayout(comp, 1);
-			TableViewer table = Tables.createViewer(comp, "#Flow");
+			TableViewer table = Tables.createViewer(comp, M.Flow);
 			FlowDao dao = new FlowDao(Database.get());
 			List<FlowDescriptor> list = dao.getDescriptors(
 					props.multiProviderFlows);

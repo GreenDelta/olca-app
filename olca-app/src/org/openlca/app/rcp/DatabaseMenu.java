@@ -41,7 +41,7 @@ class DatabaseMenu implements IMenuListener {
 		if (Database.getActiveConfiguration() == null)
 			return;
 		Action checkLinksAction = Actions.create(
-				"#Check linking properties", null, () -> {
+				M.CheckLinkingProperties, null, () -> {
 					LinkingPropertiesPage.show();
 				});
 		IAction[] actions = new IAction[] {
