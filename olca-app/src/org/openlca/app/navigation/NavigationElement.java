@@ -1,6 +1,7 @@
 package org.openlca.app.navigation;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Basic implementation of a navigation element which manages an internal cache
@@ -47,5 +48,12 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 	 * Queries the child elements
 	 */
 	protected abstract List<INavigationElement<?>> queryChilds();
+
+	@Override
+	public int hashCode() {
+		if (content == null)
+			return super.hashCode();
+		return Objects.hashCode(content);
+	}
 
 }

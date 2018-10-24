@@ -255,7 +255,8 @@ public class Navigator extends CommonNavigator {
 		return selection.toArray(new INavigationElement[selection.size()]);
 	}
 
-	public static Set<CategorizedDescriptor> collectDescriptors(Collection<INavigationElement<?>> elements) {
+	public static Set<CategorizedDescriptor> collectDescriptors(
+			Collection<INavigationElement<?>> elements) {
 		return collect(elements, e -> {
 			if (!(e instanceof ModelElement))
 				return null;

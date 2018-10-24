@@ -49,7 +49,7 @@ public class FormulaCellEditor extends TextCellEditor {
 			if (editFn != null) {
 				Object value = getValue();
 				String formula = value == null ? "" : value.toString();
-				if (!Strings.nullOrEqual(oldValue, formula)) {
+				if (!formula.equals(oldValue)) {
 					editFn.accept(selectedElement, formula);
 				}
 			}
