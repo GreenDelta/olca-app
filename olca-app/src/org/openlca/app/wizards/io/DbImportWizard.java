@@ -59,7 +59,6 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			return true;
 		}
 		try {
-			Database.getIndexUpdater().beginTransaction();
 			DbImportPage.ImportConfig config = page.getConfig();
 			ConnectionDispatch connectionDispatch = createConnection(config);
 			boolean canRun = canRun(config, connectionDispatch);
@@ -67,15 +66,13 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 				connectionDispatch.close();
 				return false;
 			}
-			ImportDispatch importDispatch = new ImportDispatch(
-					connectionDispatch);
+			ImportDispatch importDispatch = new ImportDispatch(connectionDispatch);
 			getContainer().run(true, true, importDispatch);
 			return true;
 		} catch (Exception e) {
 			log.error("database import failed", e);
 			return false;
 		} finally {
-			Database.getIndexUpdater().endTransaction();
 			Navigator.refresh();
 			Cache.evictAll();
 		}
