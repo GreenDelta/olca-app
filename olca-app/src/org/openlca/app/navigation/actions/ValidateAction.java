@@ -10,15 +10,26 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.NavigationRoot;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.validation.ValidationView;
 
 public class ValidateAction extends Action implements INavigationAction {
 
 	private final Set<INavigationElement<?>> selection = new HashSet<>();
-	private final boolean isDbAction; 
-	// used to have a different order for non database elements
-	
+
+	/**
+	 * This field is used to allow a different order for non database elements
+	 * in the navigation menu (we have two instances there: one for models and
+	 * one for the complete database). Also, if the validation action is for a
+	 * database and the selection is null, the validation selects the navigation
+	 * element of the active databases (if there is any) to be the content of
+	 * the validation (so that this action can be called from the application
+	 * menu).
+	 */
+	private final boolean forDB;
+
 	public static ValidateAction forDatabase() {
 		return new ValidateAction(true);
 	}
@@ -30,23 +41,23 @@ public class ValidateAction extends Action implements INavigationAction {
 	private ValidateAction(boolean onlyIfDbElement) {
 		setText(M.Validate);
 		setImageDescriptor(Icon.VALIDATE.descriptor());
-		this.isDbAction = onlyIfDbElement;
+		this.forDB = onlyIfDbElement;
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
+	public boolean accept(INavigationElement<?> elem) {
 		selection.clear();
-		if (element instanceof DatabaseElement) {
-			if (!isDbAction) 
+		if (forDB) {
+			if (!(elem instanceof DatabaseElement))
 				return false;
-			DatabaseElement e = (DatabaseElement) element;
-			IDatabaseConfiguration config = e.getContent();
+			DatabaseElement dbElem = (DatabaseElement) elem;
+			IDatabaseConfiguration config = dbElem.getContent();
 			if (!Database.isActive(config))
 				return false;
-		} else if (isDbAction) {
-			return false;
+			selection.add(elem);
+			return true;
 		}
-		selection.add(element);
+		selection.add(elem);
 		return !selection.isEmpty();
 	}
 
@@ -67,7 +78,26 @@ public class ValidateAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		ValidationView.validate(selection);
+		if (!selection.isEmpty()) {
+			ValidationView.validate(selection);
+			return;
+		}
+		if (!forDB)
+			return;
+		NavigationRoot root = Navigator.getNavigationRoot();
+		for (INavigationElement<?> e : root.getChildren()) {
+			if (!(e instanceof DatabaseElement))
+				continue;
+			DatabaseElement elem = (DatabaseElement) e;
+			IDatabaseConfiguration config = elem.getContent();
+			if (Database.isActive(config)) {
+				selection.add(elem);
+				break;
+			}
+		}
+		if (!selection.isEmpty()) {
+			ValidationView.validate(selection);
+		}
 	}
 
 }
