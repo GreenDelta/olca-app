@@ -479,7 +479,7 @@
          </property>
          <property
                name="aboutText"
-               value="openLCA 1.7.3&#x0A;&#x0A;Copyright (c) 2007 - 2018 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
+               value="openLCA 1.7.4&#x0A;&#x0A;Copyright (c) 2007 - 2018 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
          </property>
          <property
                name="aboutImage"

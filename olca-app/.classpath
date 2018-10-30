@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-jsonld-1.7.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-1.7.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-updates-1.7.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-jsonld-1.7.4.jar" sourcepath="/olca-jsonld"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-1.7.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-updates-1.7.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.antlr-2.7.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.asm-2.7.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.core-2.7.3.jar"/>
@@ -42,15 +42,15 @@
 	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mysql-connector-java-8.0.11.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/nanohttpd-2.3.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-cloud-1.7.3.jar" sourcepath="/olca-cloud"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.7.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-1.7.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-1.7.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-formula-1.7.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-geo-1.7.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.7.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.7.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-1.7.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-cloud-1.7.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.7.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-1.7.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-1.7.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-formula-1.7.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-geo-1.7.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.7.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.7.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-1.7.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/common-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-beanutils-1.8.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-codec-1.9.jar"/>

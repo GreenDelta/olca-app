@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openlca</groupId>
 	<artifactId>olca-deps</artifactId>
-	<version>1.7.3</version>
+	<version>1.7.4</version>
 	<packaging>pom</packaging>
 
 	<properties>

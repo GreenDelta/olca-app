@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: olca-app
 Bundle-SymbolicName: olca-app;singleton:=true
-Bundle-Version: 1.7.3
+Bundle-Version: 1.7.4
 Bundle-Activator: org.openlca.app.rcp.RcpActivator
 Bundle-Vendor: openLCA.org
 Eclipse-BundleShape: dir
@@ -74,18 +74,18 @@ Bundle-ClassPath: .,
  libs/mimepull-1.9.3.jar,
  libs/mysql-connector-java-8.0.11.jar,
  libs/nanohttpd-2.3.1.jar,
- libs/olca-cloud-1.7.3.jar,
- libs/olca-core-1.7.3.jar,
- libs/olca-ecospold-1-1.7.3.jar,
- libs/olca-ecospold-2-1.7.3.jar,
- libs/olca-formula-1.7.3.jar,
- libs/olca-geo-1.7.3.jar,
- libs/olca-ilcd-1.7.3.jar,
- libs/olca-io-1.7.3.jar,
- libs/olca-ipc-1.7.3.jar,
- libs/olca-jsonld-1.7.3.jar,
- libs/olca-simapro-csv-1.7.3.jar,
- libs/olca-updates-1.7.3.jar,
+ libs/olca-cloud-1.7.4.jar,
+ libs/olca-core-1.7.4.jar,
+ libs/olca-ecospold-1-1.7.4.jar,
+ libs/olca-ecospold-2-1.7.4.jar,
+ libs/olca-formula-1.7.4.jar,
+ libs/olca-geo-1.7.4.jar,
+ libs/olca-ilcd-1.7.4.jar,
+ libs/olca-io-1.7.4.jar,
+ libs/olca-ipc-1.7.4.jar,
+ libs/olca-jsonld-1.7.4.jar,
+ libs/olca-simapro-csv-1.7.4.jar,
+ libs/olca-updates-1.7.4.jar,
  libs/org.eclipse.persistence.antlr-2.7.3.jar,
  libs/org.eclipse.persistence.asm-2.7.3.jar,
  libs/org.eclipse.persistence.core-2.7.3.jar,
