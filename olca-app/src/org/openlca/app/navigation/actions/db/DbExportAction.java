@@ -117,7 +117,7 @@ public class DbExportAction extends Action implements INavigationAction {
 				String relativePath = folder.toPath().relativize(file).toString();
 				if (exclude(relativePath))
 					return FileVisitResult.CONTINUE;
-				fileSources.add(new FileSource(relativePath, file.toFile()));
+				fileSources.add(new FileSource(relativePath.replace("\\", "/"), file.toFile()));
 				return FileVisitResult.CONTINUE;
 			}
 		});
@@ -125,9 +125,9 @@ public class DbExportAction extends Action implements INavigationAction {
 	}
 
 	private boolean exclude(String relativePath) {
-		if (relativePath.equals(DatabaseDir.FILE_STORAGE + "/" + RepositoryConfig.PROPERTIES_FILE))
+		if (relativePath.equals(DatabaseDir.FILE_STORAGE + File.separator + RepositoryConfig.PROPERTIES_FILE))
 			return true;
-		if (relativePath.startsWith(DatabaseDir.FILE_STORAGE + "/" + RepositoryConfig.INDEX_DIR))
+		if (relativePath.startsWith(DatabaseDir.FILE_STORAGE + File.separator + RepositoryConfig.INDEX_DIR))
 			return true;
 		return false;
 	}
