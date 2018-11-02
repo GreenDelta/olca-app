@@ -56,6 +56,8 @@ public class ValidateAction extends Action implements INavigationAction {
 				return false;
 			selection.add(elem);
 			return true;
+		} else if (elem instanceof DatabaseElement) {
+			return false;
 		}
 		selection.add(elem);
 		return !selection.isEmpty();
