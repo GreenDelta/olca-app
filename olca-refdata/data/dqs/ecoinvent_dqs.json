@@ -1,0 +1,225 @@
+{
+  "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+  "@type": "DQSystem",
+  "@id": "e7ac7cf6-5457-453e-99f9-d889826fffe8",
+  "name": "ecoinvent data quality system",
+  "version": "01.00.000",
+  "hasUncertainties": true,
+  "indicators": [
+    {
+      "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+      "@type": "DQIndicator",
+      "name": "Geographical correlation",
+      "position": 4,
+      "scores": [
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 3,
+          "description": "Data from area with similar production conditions",
+          "uncertainty": 1.02
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 5,
+          "description": "Data from unknown or distinctly different area (North America instead of Middle East, OECD-Europe instead of Russia)",
+          "uncertainty": 1.1
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 1,
+          "description": "Data from area under study",
+          "uncertainty": 1.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 4,
+          "description": "Data from area with slightly similar production conditions",
+          "uncertainty": 1.05
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 2,
+          "description": "Average data from larger area in which the area under study is included",
+          "uncertainty": 1.01
+        }
+      ]
+    },
+    {
+      "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+      "@type": "DQIndicator",
+      "name": "Reliability",
+      "position": 1,
+      "scores": [
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 1,
+          "description": "Verified data based on measurements",
+          "uncertainty": 1.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 2,
+          "description": "Verified data partly based on assumptions or non-verified data based on measurements",
+          "uncertainty": 1.05
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 5,
+          "description": "Non-qualified estimates",
+          "uncertainty": 1.5
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 4,
+          "description": "Qualified estimate (e.g. by industrial expert)",
+          "uncertainty": 1.2
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 3,
+          "description": "Non-verified data partly based on qualified estimates",
+          "uncertainty": 1.1
+        }
+      ]
+    },
+    {
+      "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+      "@type": "DQIndicator",
+      "name": "Completeness",
+      "position": 2,
+      "scores": [
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 2,
+          "description": "Representative data from \u003e 50% of the sites relevant for the market considered, over an adequate period to even out normal fluctuations",
+          "uncertainty": 1.02
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 4,
+          "description": "Representative data from only one site relevant for the market considered or some sites but from shorter periods",
+          "uncertainty": 1.1
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 1,
+          "description": "Representative data from all sites relevant for the market considered, over and adequate period to even out normal fluctuations",
+          "uncertainty": 1.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 3,
+          "description": "Representative data from only some sites (\u003c\u003c 50%) relevant for the market considered or \u003e 50% of sites but from shorter periods",
+          "uncertainty": 1.05
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 5,
+          "description": "Representativeness unknown or data from a small number of sites and from shorter periods",
+          "uncertainty": 1.2
+        }
+      ]
+    },
+    {
+      "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+      "@type": "DQIndicator",
+      "name": "Further technological correlation",
+      "position": 5,
+      "scores": [
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 5,
+          "description": "Data on related processes on laboratory scale or from different technology",
+          "uncertainty": 2.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 2,
+          "description": "Data from processes and materials under study (i.e. identical technology) but from different enterprises",
+          "uncertainty": 1.05
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 4,
+          "description": "Data on related processes or materials",
+          "uncertainty": 1.5
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 1,
+          "description": "Data from enterprises, processes and materials under study",
+          "uncertainty": 1.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 3,
+          "description": "Data from processes and materials under study but from different technology",
+          "uncertainty": 1.2
+        }
+      ]
+    },
+    {
+      "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+      "@type": "DQIndicator",
+      "name": "Temporal correlation",
+      "position": 3,
+      "scores": [
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 2,
+          "description": "Less than 6 years of difference to the time period of the data set",
+          "uncertainty": 1.03
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 5,
+          "description": "Age of data unknown or more than 15 years of difference to the time period of the data set",
+          "uncertainty": 1.5
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 4,
+          "description": "Less than 15 years of difference to the time period of the data set",
+          "uncertainty": 1.2
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 3,
+          "description": "Less than 10 years of difference to the time period of the data set",
+          "uncertainty": 1.1
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 1,
+          "description": "Less than 3 years of difference to the time period of the data set",
+          "uncertainty": 1.0
+        }
+      ]
+    }
+  ]
+}

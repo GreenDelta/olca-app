@@ -1,0 +1,348 @@
+{
+  "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+  "@type": "DQSystem",
+  "@id": "506e2c14-4d09-49fd-9460-97e8085b2b55",
+  "name": "ILCD data quality system",
+  "description": "Technological representativeness: Degree to which the data set reflects the true population of interest regarding technology, including for included background data sets, if any.\r\n\r\nTime representativeness: Degree to which the data set reflects the true population of interest regarding time / age of the data, including for included background data sets, if any.\r\n\r\nGeographical representativeness: Degree to which the data set reflects the true population of interest regarding geography such as e.g. country or site, including for included background data sets, if any.\r\n\r\nCompleteness: Share of (elementary) flows that are quantitatively included in the inventory. Note that also the completeness of interim product and waste flows in the product model contributes to the overall completeness of the inventory.\r\n\r\nPrecision: Measure of the variability of the data values for each data expressed (e.g. low variance = high precision).\r\n\r\nMethodological appropriateness and consistency: The applied LCI methods and methodological choices (e.g. allocation, substitution, etc.) are in line with the goal and scope of the data set, especially its intended applications and decision support context (e.g. monitoring, product-specific decision support, strategic long-term decision support). The methods also have been consistently applied across all data including for included processes, if any.\r\n\r\nOverall quality: The degree to which the data set’s overall representativeness, completeness, precision as well as methodological appropriateness and consistency reflects the reality the data set is representing.",
+  "version": "01.00.000",
+  "lastChange": "2018-11-07T14:43:08.385+01:00",
+  "hasUncertainties": false,
+  "indicators": [
+    {
+      "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+      "@type": "DQIndicator",
+      "name": "Completeness",
+      "position": 4,
+      "scores": [
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 3,
+          "label": "Fair",
+          "description": "Representative data from only some sites (<< 50%) relevant for the market considered or > 50% of sites but from shorter periods",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 2,
+          "label": "Good",
+          "description": "Representative data from > 50% of the sites relevant for the market considered, over an adequate period to even out normal fluctuations",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 1,
+          "label": "Very good",
+          "description": "Representative data from all sites relevant for the market considered, over and adequate period to even out normal fluctuations",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 4,
+          "label": "Poor",
+          "description": "Representative data from only one site relevant for the market considered or some sites but from shorter periods",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 5,
+          "label": "Very poor",
+          "description": "Representativeness unknown or data from a small number of sites and from shorter periods",
+          "uncertainty": 0.0
+        }
+      ]
+    },
+    {
+      "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+      "@type": "DQIndicator",
+      "name": "Time representativeness",
+      "position": 2,
+      "scores": [
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 1,
+          "label": "Very good",
+          "description": "The data (collection date) can be maximum 2 years old with respect to the \"reference year\" of the dataset.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 4,
+          "label": "Poor",
+          "description": "The data (collection date) can be maximum 8 years old with respect to the \"reference year\" of the dataset.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 2,
+          "label": "Good",
+          "description": "The data (collection date) can be maximum 4 years old with respect to the \"reference year\" of the dataset.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 3,
+          "label": "Fair",
+          "description": "The data (collection date) can be maximum 6 years old with respect to the \"reference year\" of the dataset.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 5,
+          "label": "Very poor",
+          "description": "The data (collection date) is older than 8 years with respect to the \"reference year\" of the dataset.",
+          "uncertainty": 0.0
+        }
+      ]
+    },
+    {
+      "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+      "@type": "DQIndicator",
+      "name": "Overall quality",
+      "position": 7,
+      "scores": [
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 3,
+          "label": "Fair",
+          "description": "Meets the criterium to a still sufficient degree, while having the need for improvement. This is to be judged in view of the criterium's contribution to the data set's potential overall environmental impact and in comparison to an ideal situation.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 2,
+          "label": "Good",
+          "description": "Meets the criterium to a high degree, having little yet significant need for improvement. This is to be judged in view of the criterium's contribution to the data set's potential overall environmental impact and in comparison to an ideal situation.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 1,
+          "label": "Very good",
+          "description": "Meets the criterium to a very high degree, having or no relevant need for improvement. This is to be judged in view of the criterium's contribution to the data set's potential overall environmental impact and in comparison to an ideal situation.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 4,
+          "label": "Poor",
+          "description": "Does not meet the criterium to a sufficient degree, having the need for relevant improvement. This is to be judged in view of the criterium's contribution to the data set's potential overall environmental impact and in comparison to an ideal situation.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 5,
+          "label": "Very poor",
+          "description": "Does not at all meet the criterium, having the need for very substantial improvement. This is to be judged in view of the criterium's contribution to the data set's potential overall environmental impact and in comparison to an ideal situation.",
+          "uncertainty": 0.0
+        }
+      ]
+    },
+    {
+      "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+      "@type": "DQIndicator",
+      "name": "Methodological appropriateness and consistency",
+      "position": 6,
+      "scores": [
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 1,
+          "label": "Very good",
+          "description": "Meets the criterium to a very high degree, having or no relevant need for improvement. This is to be judged in view of the criterium's contribution to the data set's potential overall environmental impact and in comparison to an ideal situation.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 2,
+          "label": "Good",
+          "description": "Meets the criterium to a high degree, having little yet significant need for improvement. This is to be judged in view of the criterium's contribution to the data set's potential overall environmental impact and in comparison to an ideal situation.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 5,
+          "label": "Very poor",
+          "description": "Does not at all meet the criterium, having the need for very substantial improvement. This is to be judged in view of the criterium's contribution to the data set's potential overall environmental impact and in comparison to an ideal situation.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 3,
+          "label": "Fair",
+          "description": "Meets the criterium to a still sufficient degree, while having the need for improvement. This is to be judged in view of the criterium's contribution to the data set's potential overall environmental impact and in comparison to an ideal situation.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 4,
+          "label": "Poor",
+          "description": "Does not meet the criterium to a sufficient degree, having the need for relevant improvement. This is to be judged in view of the criterium's contribution to the data set's potential overall environmental impact and in comparison to an ideal situation.",
+          "uncertainty": 0.0
+        }
+      ]
+    },
+    {
+      "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+      "@type": "DQIndicator",
+      "name": "Technological representativeness",
+      "position": 1,
+      "scores": [
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 1,
+          "label": "Very good",
+          "description": "Technology aspects have been modelled exactly as described in the title and metadata, without any significant need for improvement",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 3,
+          "label": "Fair",
+          "description": "Technology aspects are similar to what described in the title and metadata but merits improvements. Some of the relevant processes are not modelled with specific data but using proxies.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 5,
+          "label": "Very poor",
+          "description": "Technology aspects are completely different from what described in the title and metadata. Substantial improvement is necessary",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 2,
+          "label": "Good",
+          "description": "Technology aspects are very similar to what described in the title and metadata with need for limited improvements. For example: use of generic technologies’ data instead of modelling all the single plants.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 4,
+          "label": "Poor",
+          "description": "Technology aspects are different from what described in the title and metadata. Requires major improvements.",
+          "uncertainty": 0.0
+        }
+      ]
+    },
+    {
+      "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+      "@type": "DQIndicator",
+      "name": "Precision",
+      "position": 5,
+      "scores": [
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 3,
+          "label": "Fair",
+          "description": "Measured/calculated/literature and plausibility not checked by reviewer OR Qualified estimate based on calculations plausibility checked by reviewer",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 1,
+          "label": "Very good",
+          "description": "Measured/calculated and verified. Very low uncertainty (< 7%)",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 4,
+          "label": "Poor",
+          "description": "Qualified estimate based on calculations, plausibility not checked by reviewer",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 5,
+          "label": "Very poor",
+          "description": "Rough estimate with known deficits",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 2,
+          "label": "Good",
+          "description": "Measured/calculated/literature and plausibility checked by reviewer",
+          "uncertainty": 0.0
+        }
+      ]
+    },
+    {
+      "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+      "@type": "DQIndicator",
+      "name": "Geographical representativeness",
+      "position": 3,
+      "scores": [
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 2,
+          "label": "Good",
+          "description": "The processes included in the dataset are well representative for the geography stated in the “location” indicated in the metadata",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 4,
+          "label": "Poor",
+          "description": "The processes included in the dataset are only partly representative for the geography stated in the “location” indicated in the metadata. E.g. the represented country differs and has a substantially different electricity grid mix profile",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 5,
+          "label": "Very poor",
+          "description": "The processes included in the dataset are not representative for the geography stated in the ““location” indicated in the metadata.",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 1,
+          "label": "Very good",
+          "description": "The processes included in the dataset are fully representative for the geography stated in the “location” indicated in the metadata",
+          "uncertainty": 0.0
+        },
+        {
+          "@context": "http://greendelta.github.io/olca-schema/context.jsonld",
+          "@type": "DQScore",
+          "position": 3,
+          "label": "Fair",
+          "description": "The processes included in the dataset are sufficiently representative for the geography stated in the ““location” indicated in the metadata. E.g. the represented country differs but has a very similar electricity grid mix profile.",
+          "uncertainty": 0.0
+        }
+      ]
+    }
+  ]
+}

@@ -18,6 +18,12 @@
 			<artifactId>olca-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.openlca</groupId>
+			<artifactId>olca-jsonld</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
