@@ -6,8 +6,6 @@ public enum HtmlView {
 
 	GMAP_HEATMAP("gmap_heatmap.html"),
 
-	GRAPH_VIEW("graph_view.html"),
-
 	JAVASCRIPT_EDITOR("javascript_editor.html"),
 
 	KML_EDITOR("kml_editor.html"),
@@ -21,8 +19,6 @@ public enum HtmlView {
 	REPORT_VIEW("report_view.html"),
 
 	START_PAGE("start_page.html"),
-
-	SUNBURST_CHART("sunburst_chart.html"),
 
 	COMMENTS("comments.html");
 

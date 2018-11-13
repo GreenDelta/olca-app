@@ -7,13 +7,11 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.SaveProcessDialog;
-import org.openlca.app.results.SunBurstView;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.contributions.ContributionTreePage;
@@ -93,9 +91,6 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 			addPage(new ContributionTreePage(this, result, setup));
 			addPage(new GroupPage(this, result, setup));
 			addPage(new LocationPage(this, result, setup));
-			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
-				addPage(new SunBurstView(this, result, setup));
-			}
 			diagram = new SankeyDiagram(result, dqResult, setup);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, M.SankeyDiagram);

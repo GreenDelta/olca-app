@@ -11,12 +11,10 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
-import org.openlca.app.results.SunBurstView;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.AnalyzeInfoPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
@@ -108,9 +106,6 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 			addPage(new ProcessResultPage(this, regioResult, setup));
 			addPage(new ContributionTreePage(this, regioResult, setup));
 			addPage(new GroupPage(this, regioResult, setup));
-			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
-				addPage(new SunBurstView(this, regioResult, setup));
-			}
 			diagram = new SankeyDiagram(regioResult, dqResult, setup);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, M.SankeyDiagram);
