@@ -11,7 +11,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -32,7 +31,6 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
-import org.openlca.app.util.CostResults;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -47,8 +45,8 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResultProvider;
+import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
-import org.openlca.core.results.UpstreamTreeNode;
 
 public class ContributionTreePage extends FormPage {
 
@@ -99,7 +97,6 @@ public class ContributionTreePage extends FormPage {
 		tree.setAutoExpandLevel(2);
 		tree.getTree().setLinesVisible(false);
 		tree.setContentProvider(new ContributionContentProvider());
-		tree.setSorter(new ContributionSorter());
 		toolkit.adapt(tree.getTree(), false, false);
 		toolkit.paintBordersFor(tree.getTree());
 		createMenu();
@@ -130,37 +127,41 @@ public class ContributionTreePage extends FormPage {
 
 		@Override
 		public void impactCategorySelected(
-				ImpactCategoryDescriptor impactCategory) {
-			selection = impactCategory;
-			UpstreamTree model = result.getTree(impactCategory);
+				ImpactCategoryDescriptor impact) {
+			selection = impact;
+			UpstreamTree model = result.getTree(impact);
 			tree.setInput(model);
 		}
 
 		@Override
 		public void costResultSelected(CostResultDescriptor cost) {
 			selection = cost;
-			UpstreamTree model = result.getCostTree();
-			if (cost.forAddedValue)
-				CostResults.forAddedValues(model);
+			UpstreamTree model = cost.forAddedValue
+					? result.getAddedValueTree()
+					: result.getCostTree();
 			tree.setInput(model);
 		}
 	}
 
 	private class ContributionContentProvider implements ITreeContentProvider {
 
+		private UpstreamTree tree;
+
 		@Override
 		public Object[] getChildren(Object parent) {
-			if (!(parent instanceof UpstreamTreeNode))
+			if (!(parent instanceof UpstreamNode))
 				return null;
-			UpstreamTreeNode node = (UpstreamTreeNode) parent;
-			return node.getChildren().toArray();
+			if (tree == null)
+				return null;
+			UpstreamNode node = (UpstreamNode) parent;
+			return tree.childs(node).toArray();
 		}
 
 		@Override
-		public Object[] getElements(Object inputElement) {
-			if (!(inputElement instanceof UpstreamTree))
+		public Object[] getElements(Object input) {
+			if (!(input instanceof UpstreamTree))
 				return null;
-			return new Object[] { ((UpstreamTree) inputElement).getRoot() };
+			return new Object[] { ((UpstreamTree) input).root };
 		}
 
 		@Override
@@ -169,15 +170,20 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		@Override
-		public boolean hasChildren(Object element) {
-			if (!(element instanceof UpstreamTreeNode))
+		public boolean hasChildren(Object elem) {
+			if (!(elem instanceof UpstreamNode))
 				return false;
-			UpstreamTreeNode node = (UpstreamTreeNode) element;
-			return !node.getChildren().isEmpty();
+			UpstreamNode node = (UpstreamNode) elem;
+			return !tree.childs(node).isEmpty();
 		}
 
 		@Override
-		public void inputChanged(Viewer viewer, Object old, Object newInput) {
+		public void inputChanged(Viewer viewer, Object old, Object input) {
+			if (!(input instanceof UpstreamTree)) {
+				tree = null;
+				return;
+			}
+			tree = (UpstreamTree) input;
 		}
 
 		@Override
@@ -200,28 +206,28 @@ public class ContributionTreePage extends FormPage {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
-			if (!(element instanceof UpstreamTreeNode) || element == null)
+			if (!(element instanceof UpstreamNode) || element == null)
 				return null;
 			if (columnIndex != 1)
 				return null;
-			UpstreamTreeNode node = (UpstreamTreeNode) element;
+			UpstreamNode node = (UpstreamNode) element;
 			return image.getForTable(getContribution(node));
 		}
 
 		@Override
 		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof UpstreamTreeNode))
+			if (!(element instanceof UpstreamNode))
 				return null;
-			UpstreamTreeNode node = (UpstreamTreeNode) element;
+			UpstreamNode node = (UpstreamNode) element;
 			switch (columnIndex) {
 			case 0:
 				return Numbers.percent(getContribution(node));
 			case 1:
-				long processId = node.getProcessProduct().getFirst();
+				long processId = node.provider.getFirst();
 				BaseDescriptor d = processDescriptors.get(processId);
 				return Labels.getDisplayName(d);
 			case 2:
-				return Numbers.format(getSingleAmount(node));
+				return Numbers.format(node.result);
 			case 3:
 				return getUnit();
 			default:
@@ -242,39 +248,15 @@ public class ContributionTreePage extends FormPage {
 			return null;
 		}
 
-		private double getTotalAmount() {
-			return ((UpstreamTree) tree.getInput()).getRoot().getAmount();
-		}
-
-		private double getContribution(UpstreamTreeNode node) {
-			double singleResult = getSingleAmount(node);
-			if (singleResult == 0)
+		private double getContribution(UpstreamNode node) {
+			if (node.result == 0)
 				return 0;
-			double referenceResult = Math.abs(getTotalAmount());
-			if (referenceResult == 0)
+			double total = ((UpstreamTree) tree.getInput()).root.result;
+			if (total == 0)
 				return 0;
-			double contribution = singleResult / referenceResult;
-			return contribution;
+			return node.result / total;
 		}
 
-		private double getSingleAmount(UpstreamTreeNode node) {
-			return node.getAmount();
-		}
-
-	}
-
-	private class ContributionSorter extends ViewerSorter {
-
-		@Override
-		public int compare(Viewer viewer, Object e1, Object e2) {
-			if (!(e1 instanceof UpstreamTreeNode
-					&& e2 instanceof UpstreamTreeNode)
-					|| e1 == null || e2 == null)
-				return 0;
-			UpstreamTreeNode node1 = (UpstreamTreeNode) e1;
-			UpstreamTreeNode node2 = (UpstreamTreeNode) e2;
-			return -1 * Double.compare(node1.getAmount(), node2.getAmount());
-		}
 	}
 
 	private class OpenEditorAction extends Action {
@@ -287,10 +269,10 @@ public class ContributionTreePage extends FormPage {
 		@Override
 		public void run() {
 			Object selection = Viewers.getFirstSelected(tree);
-			if (!(selection instanceof UpstreamTreeNode))
+			if (!(selection instanceof UpstreamNode))
 				return;
-			UpstreamTreeNode node = (UpstreamTreeNode) selection;
-			LongPair processProduct = node.getProcessProduct();
+			UpstreamNode node = (UpstreamNode) selection;
+			LongPair processProduct = node.provider;
 			ProcessDescriptor process = processDescriptors.get(processProduct.getFirst());
 			if (process != null)
 				App.openEditor(process);

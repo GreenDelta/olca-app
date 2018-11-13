@@ -110,7 +110,7 @@ public class ProcessResultPage extends FormPage {
 	private void setInputs() {
 		fillFlows(inputTable);
 		fillFlows(outputTable);
-		long refProcessId = result.result.productIndex.getRefFlow().getFirst();
+		long refProcessId = result.result.techIndex.getRefFlow().getFirst();
 		ProcessDescriptor p = processDescriptors.get(refProcessId);
 		flowProcessViewer.select(p);
 		if (result.hasImpactResults()) {
@@ -340,7 +340,7 @@ public class ProcessResultPage extends FormPage {
 		private FullResultProvider result;
 
 		public ResultProvider(FullResultProvider result) {
-			long refProcessId = result.result.productIndex.getRefFlow().getFirst();
+			long refProcessId = result.result.techIndex.getRefFlow().getFirst();
 			this.process = cache.get(ProcessDescriptor.class, refProcessId);
 			this.result = result;
 		}

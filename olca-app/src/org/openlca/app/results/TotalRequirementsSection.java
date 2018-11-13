@@ -215,7 +215,7 @@ class TotalRequirementsSection {
 		}
 
 		private void init(int idx) {
-			TechIndex index = result.result.productIndex;
+			TechIndex index = result.result.techIndex;
 			if (index == null)
 				return;
 			setProcessProduct(index, idx);

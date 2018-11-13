@@ -1,17 +1,13 @@
 package org.openlca.app.util;
 
-import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Queue;
 
 import org.openlca.app.M;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.SimpleResultProvider;
-import org.openlca.core.results.UpstreamTree;
-import org.openlca.core.results.UpstreamTreeNode;
 
 public class CostResults {
 
@@ -35,20 +31,6 @@ public class CostResults {
 			return Arrays.asList(d1, d2);
 		else
 			return Arrays.asList(d2, d1);
-	}
-
-	public static void forAddedValues(UpstreamTree tree) {
-		if (tree == null || tree.getRoot() == null)
-			return;
-		Queue<UpstreamTreeNode> queue = new ArrayDeque<>();
-		queue.add(tree.getRoot());
-		while (!queue.isEmpty()) {
-			UpstreamTreeNode node = queue.poll();
-			queue.addAll(node.getChildren());
-			double val = node.getAmount();
-			if (val != 0)
-				node.setAmount(-val);
-		}
 	}
 
 	public static void forAddedValues(ContributionSet<ProcessDescriptor> set) {
