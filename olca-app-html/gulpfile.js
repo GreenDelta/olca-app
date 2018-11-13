@@ -85,9 +85,13 @@ gulp.task('base_libs', () => {
 		'node_modules/codemirror/mode/python/python.js',
 		'node_modules/d3/d3.min.js',
 		'node_modules/jquery/dist/jquery.min.js',
+		'node_modules/leaflet/dist/**/*.png',
+		'node_modules/leaflet/dist/leaflet.css',
+		'node_modules/leaflet/dist/leaflet.js',
+		'node_modules/heatmap.js/build/heatmap.min.js',
+		'node_modules/heatmap.js/plugins/leaflet-heatmap/leaflet-heatmap.js',
 		'other_libs/**/*.*'
-	])
-		.pipe(gulp.dest('build/libs'));
+	]).pipe(gulp.dest('build/libs'));
 });
 
 gulp.task('bootstrap', () => {
