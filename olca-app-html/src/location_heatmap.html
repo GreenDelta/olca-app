@@ -36,20 +36,27 @@
     var cfg = {
       // radius should be small ONLY if scaleRadius is true (or small radius is intended)
       // if scaleRadius is false it will be the constant radius used in pixels
-      "radius": 2,
-      "maxOpacity": .8,
+      "radius": 5,
+      "maxOpacity": 0.8,
+      "minOpacity": 0.2,
       // scales the radius based on map zoom
       "scaleRadius": true,
       // if set to false the heatmap uses the global maximum for colorization
       // if activated: uses the data maximum within the current map boundaries
       //   (there will always be a red spot with useLocalExtremas true)
-      "useLocalExtrema": true,
+      // "useLocalExtrema": true,
       // which field name in your data represents the latitude - default "lat"
       latField: 'latitude',
       // which field name in your data represents the longitude - default "lng"
       lngField: 'longitude',
       // which field name in your data represents the data value - default "value"
-      valueField: 'weight'
+      valueField: 'weight',
+      gradient: {
+        // enter n keys between 0 and 1 here
+        // for gradient color customization
+        '.01': 'blue',
+        '.95': 'red'
+      }
     };
     var heatmapLayer = new HeatmapOverlay(cfg);
     var map = new L.Map('map', {
