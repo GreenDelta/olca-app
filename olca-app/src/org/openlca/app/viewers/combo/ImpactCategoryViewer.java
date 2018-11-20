@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
@@ -34,8 +34,8 @@ public class ImpactCategoryViewer extends
 	}
 
 	@Override
-	protected ViewerSorter getSorter() {
-		return new ImpactCategorySorter();
+	protected ViewerComparator getComparator() {
+		return new ImpactCategoryComparator();
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class ImpactCategoryViewer extends
 
 	}
 
-	private class ImpactCategorySorter extends ViewerSorter {
+	private class ImpactCategoryComparator extends ViewerComparator {
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {

@@ -18,6 +18,7 @@ public class SimpleEditorInput implements IEditorInput {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
 		return null;
 	}

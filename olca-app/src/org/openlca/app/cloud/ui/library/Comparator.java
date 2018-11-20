@@ -3,14 +3,14 @@ package org.openlca.app.cloud.ui.library;
 import java.util.Map.Entry;
 
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.navigation.ModelTypeComparison;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
 
-public class Sorter extends ViewerSorter {
+public class Comparator extends ViewerComparator {
 
 	@Override
 	@SuppressWarnings("unchecked")

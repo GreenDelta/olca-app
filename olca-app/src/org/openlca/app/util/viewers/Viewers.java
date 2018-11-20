@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.viewers.BaseLabelProvider;
-import org.openlca.app.viewers.BaseNameSorter;
+import org.openlca.app.viewers.BaseNameComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,36 +82,36 @@ public class Viewers {
 	public static ComboViewer createBaseViewer(Combo combo) {
 		ComboViewer viewer = new ComboViewer(combo);
 		viewer.setContentProvider(new ArrayContentProvider());
-		viewer.setSorter(new BaseNameSorter());
+		viewer.setComparator(new BaseNameComparator());
 		viewer.setLabelProvider(new BaseLabelProvider());
 		viewer.setUseHashlookup(true);
 		return viewer;
 	}
 
 	public static <T> void sortByDouble(ColumnViewer viewer, Function<T, Double> fn, int col) {
-		DoubleSorter<T> s = new DoubleSorter<>(col, fn);
-		addSorter(viewer, s);
+		DoubleComparator<T> s = new DoubleComparator<>(col, fn);
+		addComparator(viewer, s);
 	}
 
 	public static <T> void sortByDouble(ColumnViewer viewer, ITableLabelProvider labelProvider, int... cols) {
 		for (int i = 0; i < cols.length; i++) {
-			LabelSorter<T> s = new LabelSorter<>(cols[i], labelProvider);
+			LabelComparator<T> s = new LabelComparator<>(cols[i], labelProvider);
 			s.asNumbers = true;
-			addSorter(viewer, s);
+			addComparator(viewer, s);
 		}
 	}
 
 	public static <T> void sortByLabels(ColumnViewer viewer, ITableLabelProvider labelProvider, int... cols) {
 		for (int i = 0; i < cols.length; i++) {
-			LabelSorter<T> s = new LabelSorter<>(cols[i], labelProvider);
-			addSorter(viewer, s);
+			LabelComparator<T> s = new LabelComparator<>(cols[i], labelProvider);
+			addComparator(viewer, s);
 		}
 	}
 
-	private static void addSorter(ColumnViewer viewer, Sorter<?> sorter) {
+	private static void addComparator(ColumnViewer viewer, Comparator<?> comparator) {
 		if (viewer instanceof TableViewer)
-			Tables.addSorter((TableViewer) viewer, sorter);
+			Tables.addComparator((TableViewer) viewer, comparator);
 		else if (viewer instanceof TreeViewer)
-			Trees.addSorter((TreeViewer) viewer, sorter);
+			Trees.addComparator((TreeViewer) viewer, comparator);
 	}
 }

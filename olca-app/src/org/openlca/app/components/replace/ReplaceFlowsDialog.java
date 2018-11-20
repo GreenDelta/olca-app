@@ -25,7 +25,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.BaseLabelProvider;
-import org.openlca.app.viewers.BaseNameSorter;
+import org.openlca.app.viewers.BaseNameComparator;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -140,7 +140,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	private void decorateViewer(ComboViewer viewer) {
 		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setLabelProvider(new LabelProvider());
-		viewer.setSorter(new BaseNameSorter());
+		viewer.setComparator(new BaseNameComparator());
 	}
 
 	private List<FlowDescriptor> getUsedInExchanges() {

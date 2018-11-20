@@ -11,7 +11,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -99,7 +99,7 @@ public class ContributionTreePage extends FormPage {
 		tree.setAutoExpandLevel(2);
 		tree.getTree().setLinesVisible(false);
 		tree.setContentProvider(new ContributionContentProvider());
-		tree.setSorter(new ContributionSorter());
+		tree.setComparator(new ContributionComparator());
 		toolkit.adapt(tree.getTree(), false, false);
 		toolkit.paintBordersFor(tree.getTree());
 		createMenu();
@@ -263,7 +263,7 @@ public class ContributionTreePage extends FormPage {
 
 	}
 
-	private class ContributionSorter extends ViewerSorter {
+	private class ContributionComparator extends ViewerComparator {
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {

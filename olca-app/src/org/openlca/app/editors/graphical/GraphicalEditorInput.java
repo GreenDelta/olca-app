@@ -32,7 +32,7 @@ public final class GraphicalEditorInput implements IEditorInput {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object getAdapter(final Class adapter) {
 		return null;
 	}

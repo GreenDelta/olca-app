@@ -3,12 +3,12 @@ package org.openlca.app.util.viewers;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.openlca.util.Strings;
 
-class LabelSorter<T> extends Sorter<T> {
+class LabelComparator<T> extends Comparator<T> {
 
 	private final ITableLabelProvider provider;
 	boolean asNumbers;
 
-	LabelSorter(int column, ITableLabelProvider labelProvider) {
+	LabelComparator(int column, ITableLabelProvider labelProvider) {
 		super(column);
 		this.provider = labelProvider;
 	}

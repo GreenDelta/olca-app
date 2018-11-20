@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Sorter;
+import org.openlca.app.util.viewers.Comparator;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
@@ -173,23 +173,23 @@ public class Tables {
 		});
 	}
 
-	public static void addSorter(TableViewer viewer, Sorter<?> sorter) {
+	public static void addComparator(TableViewer viewer, Comparator<?> comparator) {
 		Table table = viewer.getTable();
-		if (sorter.column >= table.getColumnCount())
+		if (comparator.column >= table.getColumnCount())
 			return;
-		TableColumn column = table.getColumn(sorter.column);
+		TableColumn column = table.getColumn(comparator.column);
 		column.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				TableColumn current = table.getSortColumn();
 				if (column == current)
-					sorter.ascending = !sorter.ascending;
+					comparator.ascending = !comparator.ascending;
 				else
-					sorter.ascending = true;
-				int direction = sorter.ascending ? SWT.UP : SWT.DOWN;
+					comparator.ascending = true;
+				int direction = comparator.ascending ? SWT.UP : SWT.DOWN;
 				table.setSortDirection(direction);
 				table.setSortColumn(column);
-				viewer.setSorter(sorter);
+				viewer.setComparator(comparator);
 				viewer.refresh();
 			}
 		});

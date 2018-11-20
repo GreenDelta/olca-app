@@ -74,7 +74,7 @@ public class ReportViewer extends SimpleFormEditor {
 		}
 
 		@Override
-		@SuppressWarnings("rawtypes")
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public Object getAdapter(Class adapter) {
 			return null;
 		}
