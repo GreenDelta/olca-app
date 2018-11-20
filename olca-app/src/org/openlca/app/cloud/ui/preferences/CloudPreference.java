@@ -35,7 +35,18 @@ public class CloudPreference extends AbstractPreferenceInitializer {
 	public static boolean doCheckReferences() {
 		return is(CHECK_REFERENCES);
 	}
+	
+	public static boolean didReadAnnouncement(String serverUrl, String announcementId) {
+		String last = getStore().getString("last-announcement-" + serverUrl);
+		if (last == null)
+			return false;
+		return last.equals(announcementId);
+	}
 
+	public static void markAnnouncementAsRead(String serverUrl, String announcementId) {
+		getStore().setValue("last-announcement-" + serverUrl, announcementId);
+	}
+	
 	private static boolean is(String key) {
 		IPreferenceStore store = getStore();
 		return store.getBoolean(key);		
