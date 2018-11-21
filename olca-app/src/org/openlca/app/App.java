@@ -15,10 +15,8 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.core.matrix.solvers.BalancedSolver;
 import org.openlca.core.matrix.solvers.DenseSolver;
 import org.openlca.core.matrix.solvers.IMatrixSolver;
 import org.openlca.core.matrix.solvers.JavaSolver;
@@ -29,8 +27,8 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.eigen.NativeLibrary;
 import org.openlca.julia.Julia;
-import org.openlca.julia.JuliaDenseSolver;
 import org.openlca.julia.JuliaModule;
+import org.openlca.julia.JuliaSolver;
 import org.openlca.updates.script.CalculationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +49,7 @@ public class App {
 			File dir = new File(Platform.getInstallLocation().getURL().toURI());
 			if (Julia.loadFromDir(dir) // execution order is important
 					&& Julia.isLoaded(JuliaModule.OPEN_BLAS)) {
-				solver = new JuliaDenseSolver();
+				solver = new JuliaSolver();
 				log.info("Loaded Julia-BLAS solver as default matrix solver");
 				return solver;
 			}
@@ -66,12 +64,7 @@ public class App {
 			solver = new JavaSolver();
 			return solver;
 		}
-		if (FeatureFlag.USE_SPARSE_MATRICES.isEnabled())
-			solver = new BalancedSolver();
-		// else if (FeatureFlag.USE_SINGLE_PRECISION.isEnabled())
-		// solver = new DenseFloatMatrixFactory();
-		else
-			solver = new DenseSolver();
+		solver = new DenseSolver();
 		return solver;
 	}
 

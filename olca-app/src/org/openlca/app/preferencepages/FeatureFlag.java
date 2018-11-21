@@ -14,8 +14,6 @@ public enum FeatureFlag {
 
 	EXPERIMENTAL_VISUALISATIONS("Experimental visualisations"),
 
-	USE_SPARSE_MATRICES("Calculate with sparse matrices (requires restart)"),
-
 	MATRIX_IMAGE_EXPORT("Enable matrix image export"),
 
 	ECOSPOLD1_EXPORT_CONFIG("EcoSpold 1 export configuration");
