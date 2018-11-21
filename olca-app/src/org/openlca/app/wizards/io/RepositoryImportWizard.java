@@ -238,12 +238,18 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 		private Exception scanRepository(IProgressMonitor m) {
 			try {
 				m.beginTask(M.ScanningRepository, IProgressMonitor.UNKNOWN);
-				List<FetchRequestData> data = new ArrayList<>(client.list());
+				Set<FetchRequestData> data = client.list();
+				List<FetchRequestData> actualData = new ArrayList<>();
+				data.forEach(d -> {
+					if (d.type.isCategorized()) {
+						actualData.add(d);
+					}
+				});
 				total = data.size();
-				Collections.sort(data, new DataComparator());
+				Collections.sort(actualData, new DataComparator());
 				Map<String, Node> categoryNodes = new HashMap<>();
 				root = new Node();
-				for (FetchRequestData frd : data) {
+				for (FetchRequestData frd : actualData) {
 					Node parent = null;
 					if (frd.categories != null && frd.categories.size() > 0) {
 						parent = categoryNodes.get(toCategoryKey(frd));
@@ -264,7 +270,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 				}
 				m.done();
 				return null;
-			} catch (WebRequestException ex) {
+			} catch (Exception ex) {
 				return ex;
 			}
 		}
@@ -297,12 +303,11 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 
 		@Override
 		public int compare(FetchRequestData o1, FetchRequestData o2) {
-			if (o1.type == o2.type)
-				if (o1.type != ModelType.CATEGORY || o1.categoryType == o2.categoryType)
-					return CloudUtil.toFullPath(o1).toLowerCase().compareTo(CloudUtil.toFullPath(o2).toLowerCase());
-				else
-					return ModelTypeComparison.compare(o1.categoryType, o2.categoryType);
-			return ModelTypeComparison.compare(o1.type, o2.type);
+			if (o1.type != o2.type)
+				return ModelTypeComparison.compare(o1.type, o2.type);
+			if (o1.type == ModelType.CATEGORY && o1.categoryType != o2.categoryType)
+				return ModelTypeComparison.compare(o1.categoryType, o2.categoryType);
+			return CloudUtil.toFullPath(o1).toLowerCase().compareTo(CloudUtil.toFullPath(o2).toLowerCase());
 		}
 
 	}
