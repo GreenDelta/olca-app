@@ -1,8 +1,6 @@
 package org.openlca.app.cloud;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -11,12 +9,9 @@ import org.openlca.app.util.Labels;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
-import org.openlca.core.model.CategorizedEntity;
+import org.openlca.cloud.util.Datasets;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.util.Strings;
 
@@ -34,49 +29,9 @@ public class CloudUtil {
 		Category category = null;
 		if (element.getParent() instanceof CategoryElement)
 			category = ((CategoryElement) element.getParent()).getContent();
-		return toDataset(descriptor, category);
+		return Datasets.toDataset(descriptor, category);
 	}
 
-	public static Dataset toDataset(CategorizedEntity entity) {
-		CategorizedDescriptor descriptor = Descriptors.toDescriptor(entity);
-		Category category = entity.getCategory();
-		return toDataset(descriptor, category);
-	}
-
-	public static Dataset toDataset(CategorizedDescriptor descriptor, Category category) {
-		Dataset dataset = new Dataset();
-		dataset.name = descriptor.getName();
-		dataset.refId = descriptor.getRefId();
-		dataset.type = descriptor.getModelType();
-		dataset.version = Version.asString(descriptor.getVersion());
-		dataset.lastChange = descriptor.getLastChange();
-		ModelType categoryType = null;
-		if (category != null) {
-			dataset.categoryRefId = category.getRefId();
-			categoryType = category.getModelType();
-		} else {
-			if (descriptor.getModelType() == ModelType.CATEGORY)
-				categoryType = ((CategoryDescriptor) descriptor).getCategoryType();
-			else
-				categoryType = descriptor.getModelType();
-		}
-		dataset.categoryType = categoryType;
-		dataset.categories = getCategories(descriptor, category);
-		return dataset;
-	}
-
-	public static List<String> getCategories(Category category) {
-		return getCategories(Descriptors.toDescriptor(category), category.getCategory());
-	}
-
-	public static List<String> getCategories(CategorizedDescriptor entity, Category category) {
-		List<String> categories = new ArrayList<>();
-		while (category != null) {
-			categories.add(0, category.getName());
-			category = category.getCategory();
-		}
-		return categories;
-	}
 
 	public static String getFileReferenceText(FetchRequestData reference) {
 		String modelType = Labels.modelType(reference.categoryType);

@@ -6,7 +6,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.M;
-import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -15,6 +14,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
+import org.openlca.cloud.util.Datasets;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
@@ -83,7 +83,7 @@ class RenameAction extends Action implements INavigationAction {
 			// 3) delete the old category
 			// the new category is added in the dao already
 			if (Database.getIndexUpdater() != null) {
-				Database.getIndexUpdater().delete(CloudUtil.toDataset(category));
+				Database.getIndexUpdater().delete(Datasets.toDataset(category));
 			}
 			category.setName(newName.trim());
 			new CategoryDao(Database.get()).update(category);
