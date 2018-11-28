@@ -35,7 +35,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.app.viewers.combo.ProcessViewer;
+import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.FlowIndex;
@@ -142,7 +142,7 @@ public class ProcessResultPage extends FormPage {
 		UI.gridData(container, true, false);
 		UI.gridLayout(container, 5);
 		UI.formLabel(container, toolkit, M.Process);
-		flowProcessViewer = new ProcessViewer(container, cache);
+		flowProcessViewer = new ProcessViewer(container);
 		flowProcessViewer.setInput(result.getProcessDescriptors());
 		flowProcessViewer.addSelectionChangedListener((selection) -> {
 			flowResult.setProcess(selection);
@@ -196,7 +196,7 @@ public class ProcessResultPage extends FormPage {
 		UI.gridLayout(container, 5);
 		UI.gridData(container, true, false);
 		UI.formLabel(container, toolkit, M.Process);
-		impactProcessCombo = new ProcessViewer(container, cache);
+		impactProcessCombo = new ProcessViewer(container);
 		impactProcessCombo.setInput(result.getProcessDescriptors());
 		impactProcessCombo.addSelectionChangedListener((selection) -> {
 			impactResult.setProcess(selection);
@@ -234,6 +234,20 @@ public class ProcessResultPage extends FormPage {
 		Tables.bindColumnWidths(table.getTable(), 0.20, 0.30, 0.20, 0.20, 0.10);
 	}
 
+	private class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
+
+		public ProcessViewer(Composite parent) {
+			super(parent);
+			setInput(new ProcessDescriptor[0]);
+		}
+
+		@Override
+		public Class<ProcessDescriptor> getType() {
+			return ProcessDescriptor.class;
+		}
+
+	}
+	
 	private class FlowLabel extends BaseLabelProvider implements
 			ITableLabelProvider {
 

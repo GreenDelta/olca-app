@@ -19,10 +19,8 @@ import org.openlca.util.Strings;
 
 public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 
-	private static final String[] COLUMN_HEADERS = new String[] {
-			M.Name, M.Category, M.Location, " " };
-	private static final int[] COLUMN_BOUNDS_PERCENTAGES = new int[] { 30, 30,
-			10, 30 };
+	private static final String[] COLUMN_HEADERS = new String[] { M.Name, M.Category, M.Location, " " };
+	private static final int[] COLUMN_BOUNDS_PERCENTAGES = new int[] { 30, 60, 10, 0 };
 
 	private EntityCache cache;
 
@@ -88,8 +86,7 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 			FlowDescriptor flow1 = (FlowDescriptor) e1;
 			FlowDescriptor flow2 = (FlowDescriptor) e2;
 
-			int flowNameCompare = Strings.compare(flow1.getName(),
-					flow2.getName());
+			int flowNameCompare = Strings.compare(flow1.getName(), flow2.getName());
 			if (flowNameCompare != 0)
 				return flowNameCompare;
 			int categoryCompare = compareByCategory(flow1, flow2);
@@ -128,15 +125,14 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 
 	}
 
-	private class FlowLabelProvider extends BaseLabelProvider implements
-			ITableLabelProvider {
+	private class FlowLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object element, int col) {
 			if (col == 1)
 				return null;
 			if (col == 2)
-				return Images.get(ModelType.LOCATION); 
+				return Images.get(ModelType.LOCATION);
 			FlowDescriptor flow = (FlowDescriptor) element;
 			return Images.get(flow);
 		}
@@ -150,8 +146,7 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 			case 1:
 				if (flow.getCategory() == null)
 					return null;
-				Category category = cache.get(Category.class,
-						flow.getCategory());
+				Category category = cache.get(Category.class, flow.getCategory());
 				return CategoryPath.getFull(category);
 			case 2:
 				if (flow.getLocation() == null)

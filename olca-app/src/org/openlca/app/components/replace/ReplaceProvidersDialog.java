@@ -4,13 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
@@ -20,25 +16,20 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Info;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Viewers;
-import org.openlca.app.viewers.BaseLabelProvider;
-import org.openlca.app.viewers.BaseNameComparator;
+import org.openlca.app.viewers.combo.FlowViewer;
+import org.openlca.app.viewers.combo.ProcessViewer;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
-import org.openlca.core.model.Category;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ReplaceProvidersDialog extends FormDialog {
 
-	private List<ProcessDescriptor> usedInExchanges;
-	private List<ProcessDescriptor> replacementCandidates;
-	private ComboViewer processViewer;
-	private ComboViewer productViewer;
-	private ComboViewer replacementViewer;
+	private ProcessViewer processViewer;
+	private FlowViewer productViewer;
+	private ProcessViewer replacementViewer;
 
 	public static void openDialog() {
 		if (Database.get() == null) {
@@ -57,6 +48,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		newShell.setText(M.BulkreplaceProviders);
+		newShell.setSize(800, 400);
 	}
 
 	@Override
@@ -64,80 +56,55 @@ public class ReplaceProvidersDialog extends FormDialog {
 		FormToolkit toolkit = mForm.getToolkit();
 		Composite body = UI.formBody(mForm.getForm(), toolkit);
 		UI.gridLayout(body, 2, 20, 20);
-		usedInExchanges = getUsedInExchanges();
-		processViewer = createProcessViewer(body, toolkit);
-		productViewer = createProductViewer(body, toolkit);
-		replacementViewer = createReplacementViewer(body, toolkit);
+		UI.gridData(body, true, false);
+		processViewer = createProcessViewer(body, toolkit, M.ReplaceProvider, this::updateProducts);
+		productViewer = createFlowViewer(body, toolkit, M.OfProduct, this::updateReplacementCandidates);
+		productViewer.setEnabled(false);
+		replacementViewer = createProcessViewer(body, toolkit, M.With, selected -> updateButtons());
+		replacementViewer.setEnabled(false);
+		processViewer.setInput(getUsedInExchanges());
 	}
 
-	private ComboViewer createProcessViewer(Composite parent, FormToolkit toolkit) {
-		UI.formLabel(parent, toolkit, M.ReplaceProvider);
-		ComboViewer viewer = new ComboViewer(new CCombo(parent, SWT.DROP_DOWN));
-		decorateViewer(viewer);
-		viewer.setInput(usedInExchanges);
-		NameFilter filter = new NameFilter();
-		viewer.addFilter(filter);
-		UI.gridData(viewer.getCCombo(), true, false).widthHint = 300;
-		viewer.getCCombo().addKeyListener(new FilterOnKey(viewer, filter, () -> usedInExchanges));
-		viewer.addSelectionChangedListener((e) -> {
-			ProcessDescriptor selected = Viewers.getFirstSelected(viewer);
-			if (selected == null || selected.getId() == 0l) {
-				productViewer.setInput(new ArrayList<>());
-			} else {
-				productViewer.setInput(getProductOutputs(selected));
-			}
-			replacementCandidates = new ArrayList<>();
-			replacementViewer.setInput(replacementCandidates);
-			updateButtons();
-		});
+	private ProcessViewer createProcessViewer(Composite parent, FormToolkit toolkit, String label, Consumer<ProcessDescriptor> onChange) {
+		UI.formLabel(parent, toolkit, label);
+		ProcessViewer viewer = new ProcessViewer(parent, Cache.getEntityCache());
+		viewer.addSelectionChangedListener(onChange);
 		return viewer;
 	}
 
-	private ComboViewer createProductViewer(Composite parent, FormToolkit toolkit) {
-		UI.formLabel(parent, toolkit, M.OfProduct);
-		ComboViewer viewer = new ComboViewer(new Combo(parent, SWT.NONE));
-		decorateViewer(viewer);
-		viewer.setLabelProvider(new BaseLabelProvider());
-		UI.gridData(viewer.getCombo(), true, false).widthHint = 300;
-		viewer.addSelectionChangedListener((e) -> {
-			ProcessDescriptor process = Viewers.getFirstSelected(processViewer);
-			FlowDescriptor product = Viewers.getFirstSelected(productViewer);
-			if (process == null || process.getId() == 0l || product == null) {
-				replacementCandidates = new ArrayList<>();
-			} else {
-				replacementCandidates = getProviders(product);
-			}
-			replacementViewer.setInput(replacementCandidates);
-			updateButtons();
-		});
+	private FlowViewer createFlowViewer(Composite parent, FormToolkit toolkit, String label, Consumer<FlowDescriptor> onChange) {
+		UI.formLabel(parent, toolkit, label);
+		FlowViewer viewer = new FlowViewer(parent, Cache.getEntityCache());
+		viewer.addSelectionChangedListener(onChange);
 		return viewer;
 	}
 
-	private ComboViewer createReplacementViewer(Composite parent, FormToolkit toolkit) {
-		UI.formLabel(parent, toolkit, M.With);
-		ComboViewer viewer = new ComboViewer(new CCombo(parent, SWT.NONE));
-		decorateViewer(viewer);
-		NameFilter filter = new NameFilter();
-		viewer.addFilter(filter);
-		UI.gridData(viewer.getCCombo(), true, false).widthHint = 300;
-		viewer.getCCombo().addKeyListener(new FilterOnKey(viewer, filter, () -> replacementCandidates));
-		viewer.addSelectionChangedListener((e) -> {
-			updateButtons();
-		});
-		return viewer;
+	private void updateProducts(ProcessDescriptor selected) {
+		List<FlowDescriptor> outputs = getProductOutputs(selected);
+		productViewer.setInput(outputs);
+		replacementViewer.setInput(Collections.emptyList());
+		productViewer.setEnabled(outputs.size() > 1);
+		if (outputs.size() == 1) {
+			productViewer.select(outputs.get(0));
+		}
+		updateButtons();
+	}
+
+	private void updateReplacementCandidates(FlowDescriptor product) {
+		List<ProcessDescriptor> providers = getProviders(product);
+		replacementViewer.setInput(providers);
+		replacementViewer.setEnabled(providers.size() > 1);
+		if (providers.size() == 1) {
+			replacementViewer.select(providers.get(0));
+		}
+		updateButtons();
 	}
 
 	private void updateButtons() {
-		ProcessDescriptor first = Viewers.getFirstSelected(processViewer);
-		FlowDescriptor second = Viewers.getFirstSelected(productViewer);
+		ProcessDescriptor first = processViewer.getSelected();
+		FlowDescriptor second = productViewer.getSelected();
 		boolean enabled = first != null && first.getId() != 0l && second != null && second.getId() != 0l;
 		getButton(IDialogConstants.OK_ID).setEnabled(enabled);
-	}
-
-	private void decorateViewer(ComboViewer viewer) {
-		viewer.setContentProvider(new ArrayContentProvider());
-		viewer.setLabelProvider(new LabelProvider());
-		viewer.setComparator(new BaseNameComparator());
 	}
 
 	private List<ProcessDescriptor> getUsedInExchanges() {
@@ -165,9 +132,9 @@ public class ReplaceProvidersDialog extends FormDialog {
 		// TODO: search for processes and waste flows
 		FlowDao flowDao = new FlowDao(Database.get());
 		Set<Long> ids = flowDao.getWhereOutput(product.getId());
-		result.add(new ProcessDescriptor());
 		ProcessDao processDao = new ProcessDao(Database.get());
 		result.addAll(processDao.getDescriptors(ids));
+		result.remove(processViewer.getSelected());
 		return result;
 	}
 
@@ -179,48 +146,13 @@ public class ReplaceProvidersDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
-		ProcessDescriptor oldProcess = Viewers.getFirstSelected(processViewer);
-		FlowDescriptor product = Viewers.getFirstSelected(productViewer);
-		ProcessDescriptor newProcess = Viewers.getFirstSelected(replacementViewer);
+		ProcessDescriptor oldProcess = processViewer.getSelected();
+		FlowDescriptor product = productViewer.getSelected();
+		ProcessDescriptor newProcess = replacementViewer.getSelected();
 		ProcessDao dao = new ProcessDao(Database.get());
 		dao.replace(oldProcess.getId(), product.getId(), newProcess != null ? newProcess.getId() : null);
 		Database.get().getEntityFactory().getCache().evictAll();
 		super.okPressed();
-	}
-
-	private class LabelProvider extends BaseLabelProvider {
-
-		private Category getCategory(ProcessDescriptor process) {
-			if (process == null || process.getCategory() == null)
-				return null;
-			return Cache.getEntityCache().get(Category.class, process.getCategory());
-		}
-
-		private String getCategoryText(ProcessDescriptor process) {
-			Category category = getCategory(process);
-			if (category == null)
-				return "";
-			String text = "";
-			while (category.getCategory() != null) {
-				text = category.getCategory().getName() + "/" + text;
-				category = category.getCategory();
-			}
-			return text;
-		}
-
-		@Override
-		public String getText(Object element) {
-			if (!(element instanceof ProcessDescriptor))
-				return null;
-			ProcessDescriptor process = (ProcessDescriptor) element;
-			String processText = Labels.getDisplayName(process);
-			if (processText == null)
-				processText = "";
-			String categoryText = getCategoryText(process);
-			return categoryText + processText;
-
-		}
-
 	}
 
 }
