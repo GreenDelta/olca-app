@@ -5,19 +5,19 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.window.Window;
 import org.openlca.app.App;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Process;
@@ -35,8 +35,7 @@ import com.google.gson.GsonBuilder;
  * Exports an file with the process meta-data of the currently activated
  * database for the search index in openLCA Nexus (http://nexus.openlca.org).
  */
-class XNexusIndexExportAction extends Action implements
-		INavigationAction {
+class XNexusIndexExportAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -69,63 +68,42 @@ class XNexusIndexExportAction extends Action implements
 		File file = FileChooser.forExport("*.json", defaultName);
 		if (file == null)
 			return;
-		InputDialog dialog = new InputDialog(UI.shell(), "System model name",
-				"Please specify a system model if relevant (optional)", "", null);
-		if (dialog.open() != Window.OK)
-			return;
-		String systemModel = dialog.getValue();
-		App.run("Export Nexus index", new Runner(file, db, systemModel));
+		App.run("Export Nexus index", new Runner(file, db));
 	}
 
 	private class Runner implements Runnable {
 
 		private File file;
 		private IDatabase db;
-		private String systemModel;
 
-		public Runner(File file, IDatabase db, String systemModel) {
+		public Runner(File file, IDatabase db) {
 			this.file = file;
 			this.db = db;
-			this.systemModel = systemModel;
 		}
 
 		@Override
 		public void run() {
-			log.trace("run Nexus index export");
+			log.trace("run nexus index export");
 			try {
 				List<IndexEntry> entries = new ArrayList<>();
 				ProcessDao dao = new ProcessDao(db);
 				for (ProcessDescriptor descriptor : dao.getDescriptors()) {
 					log.trace("index process {}", descriptor);
 					Process process = dao.getForId(descriptor.getId());
-					IndexEntry entry = new IndexEntry(process);
-					entry.systemModel = systemModel;
-					entries.add(entry);
+					entries.add(new IndexEntry(process));
 				}
-				writeEntries(entries);
+				IndexEntry.writeEntries(entries, file);
 			} catch (Exception e) {
 				log.error("failed to write index entries", e);
 			}
 		}
 
-		private void writeEntries(List<IndexEntry> entries) throws Exception {
-			log.trace("write {} entries to file {}", entries.size(), file);
-			try (FileOutputStream out = new FileOutputStream(file);
-					OutputStreamWriter writer = new OutputStreamWriter(out,
-							"utf-8");
-					BufferedWriter buffer = new BufferedWriter(writer)) {
-				Gson gson = new GsonBuilder().setDateFormat(
-						"yyyy-MM-dd'T'HH:mm:ssZ").create();
-				gson.toJson(entries, buffer);
-			}
-		}
 	}
 
 	@SuppressWarnings("unused")
-	private class IndexEntry {
+	static class IndexEntry {
 
 		private String id;
-		private String name;
 		private String categoryPath;
 		private String version;
 		private String description;
@@ -135,12 +113,13 @@ class XNexusIndexExportAction extends Action implements
 		private String documentor;
 		private String generator;
 		private String reviewer;
-		private String systemModel;
 		private Date created;
 		private Date validityTimeStart;
 		private Date validityTimeEnd;
+		String name;
+		Set<String> systemModel = new HashSet<>();
 
-		private IndexEntry(org.openlca.core.model.Process process) {
+		IndexEntry(org.openlca.core.model.Process process) {
 			id = process.getRefId();
 			name = process.getName();
 			categoryPath = CategoryPath.getFull(process.getCategory());
@@ -153,6 +132,7 @@ class XNexusIndexExportAction extends Action implements
 				writeDocValues(doc);
 			}
 		}
+
 
 		private void writeDocValues(ProcessDocumentation doc) {
 			technology = doc.getTechnology();
@@ -168,5 +148,15 @@ class XNexusIndexExportAction extends Action implements
 			validityTimeStart = doc.getValidFrom();
 			validityTimeEnd = doc.getValidUntil();
 		}
+
+		static void writeEntries(Collection<IndexEntry> entries, File file) throws Exception {
+			try (FileOutputStream out = new FileOutputStream(file);
+					OutputStreamWriter writer = new OutputStreamWriter(out, "utf-8");
+					BufferedWriter buffer = new BufferedWriter(writer)) {
+				Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
+				gson.toJson(entries, buffer);
+			}
+		}
+
 	}
 }
