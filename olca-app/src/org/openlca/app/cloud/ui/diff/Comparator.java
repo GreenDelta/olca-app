@@ -1,11 +1,11 @@
 package org.openlca.app.cloud.ui.diff;
 
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.openlca.app.navigation.ModelTypeComparison;
 import org.openlca.core.model.ModelType;
 
-class Sorter extends ViewerSorter {
+class Comparator extends ViewerComparator {
 
 	@Override
 	public int compare(Viewer viewer, Object e1, Object e2) {

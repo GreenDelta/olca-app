@@ -8,7 +8,6 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.DecorationOverlayIcon;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.openlca.app.rcp.RcpActivator;
@@ -161,11 +160,10 @@ class ImageManager {
 
 		@Override
 		protected void drawCompositeImage(int width, int height) {
-			drawImage(image.getImageData(), 0, 0);
-			ImageData overlayData = overlay.getImageData();
+			drawImage(zoom -> image.getImageData(zoom), 0, 0);
 			int x = size.x - overlaySize.x;
 			int y = size.y - overlaySize.y;
-			drawImage(overlayData, x, y);
+			drawImage(zoom -> overlay.getImageData(zoom), x, y);
 		}
 
 		@Override
@@ -174,5 +172,5 @@ class ImageManager {
 		}
 
 	}
-
+	
 }

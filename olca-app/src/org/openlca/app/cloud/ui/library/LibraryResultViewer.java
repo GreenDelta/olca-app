@@ -21,7 +21,7 @@ class LibraryResultViewer extends AbstractTableViewer<Entry<Dataset, String>> {
 	protected TableViewer createViewer(Composite parent) {
 		TableViewer viewer = super.createViewer(parent);
 		Tables.bindColumnWidths(viewer, 0.7, 0.3);
-		viewer.setSorter(new Sorter());
+		viewer.setComparator(new Comparator());
 		return viewer;
 	}
 

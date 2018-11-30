@@ -580,7 +580,7 @@
             </instanceof>
          </triggerPoints>
          <commonSorter
-               class="org.openlca.app.navigation.NavigationSorter">
+               class="org.openlca.app.navigation.NavigationComparator">
          </commonSorter>
          <dropAssistant
                class="org.openlca.app.navigation.NavigationDropAssistant"

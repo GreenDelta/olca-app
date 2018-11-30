@@ -10,6 +10,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.cloud.Announcements;
 import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
@@ -158,6 +159,9 @@ public class DbActivateAction extends Action implements INavigationAction {
 			INavigationElement<?> firstModelType = dbElem.getChildren().get(0);
 			Navigator.getInstance().getCommonViewer().reveal(firstModelType);
 			log.trace("Refresh history view (if open)");
+			if (Database.isConnected()) {
+				Announcements.check(Database.getRepositoryClient());
+			}
 			HistoryView.refresh();
 		}
 

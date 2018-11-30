@@ -89,10 +89,10 @@ public class InventoryPage extends FormPage {
 				outFlows.add(flow);
 			}
 		}
-		Comparator<FlowDescriptor> sorter = (f1, f2) -> Strings.compare(
+		Comparator<FlowDescriptor> comparator = (f1, f2) -> Strings.compare(
 				f1.getName(), f2.getName());
-		Collections.sort(inFlows, sorter);
-		Collections.sort(outFlows, sorter);
+		Collections.sort(inFlows, comparator);
+		Collections.sort(outFlows, comparator);
 		inputTree.setInput(inFlows);
 		outputTree.setInput(outFlows);
 	}

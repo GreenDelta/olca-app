@@ -1,11 +1,11 @@
 package org.openlca.app.editors.graphical.model;
 
-import java.util.EventObject;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.commands.CommandStackListener;
+import org.eclipse.gef.commands.CommandStackEvent;
+import org.eclipse.gef.commands.CommandStackEventListener;
 import org.eclipse.gef.editpolicies.ComponentEditPolicy;
 import org.openlca.app.editors.graphical.layout.Animation;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
@@ -13,17 +13,17 @@ import org.openlca.app.editors.graphical.policy.LayoutPolicy;
 
 class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 
-	CommandStackListener stackListener = new CommandStackChangedListener();
+	CommandStackChangedListener stackListener = new CommandStackChangedListener();
 
 	@Override
 	public void activate() {
 		super.activate();
-		getViewer().getEditDomain().getCommandStack().addCommandStackListener(stackListener);
+		getViewer().getEditDomain().getCommandStack().addCommandStackEventListener(stackListener);
 	}
 
 	@Override
 	public void deactivate() {
-		getViewer().getEditDomain().getCommandStack().removeCommandStackListener(stackListener);
+		getViewer().getEditDomain().getCommandStack().removeCommandStackEventListener(stackListener);
 		super.deactivate();
 	}
 
@@ -54,10 +54,10 @@ class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 		return false;
 	}
 
-	private class CommandStackChangedListener implements CommandStackListener {
+	private class CommandStackChangedListener implements CommandStackEventListener {
 
 		@Override
-		public void commandStackChanged(EventObject event) {
+		public void stackChanged(CommandStackEvent event) {
 			if (!Animation.captureLayout(getFigure()))
 				return;
 			while (Animation.step())

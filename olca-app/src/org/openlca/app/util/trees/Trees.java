@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Sorter;
+import org.openlca.app.util.viewers.Comparator;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
@@ -157,23 +157,23 @@ public class Trees {
 		});
 	}
 
-	public static void addSorter(TreeViewer viewer, Sorter<?> sorter) {
+	public static void addComparator(TreeViewer viewer, Comparator<?> comparator) {
 		Tree tree = viewer.getTree();
-		if (sorter.column >= tree.getColumnCount())
+		if (comparator.column >= tree.getColumnCount())
 			return;
-		TreeColumn column = tree.getColumn(sorter.column);
+		TreeColumn column = tree.getColumn(comparator.column);
 		column.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				TreeColumn current = tree.getSortColumn();
 				if (column == current)
-					sorter.ascending = !sorter.ascending;
+					comparator.ascending = !comparator.ascending;
 				else
-					sorter.ascending = true;
-				int direction = sorter.ascending ? SWT.UP : SWT.DOWN;
+					comparator.ascending = true;
+				int direction = comparator.ascending ? SWT.UP : SWT.DOWN;
 				tree.setSortDirection(direction);
 				tree.setSortColumn(column);
-				viewer.setSorter(sorter);
+				viewer.setComparator(comparator);
 				viewer.refresh();
 			}
 		});

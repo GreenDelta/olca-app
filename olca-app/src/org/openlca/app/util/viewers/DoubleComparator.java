@@ -5,11 +5,11 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DoubleSorter<T> extends Sorter<T> {
+class DoubleComparator<T> extends Comparator<T> {
 
 	private final Function<T, Double> fn;
 
-	DoubleSorter(int column, Function<T, Double> fn) {
+	DoubleComparator(int column, Function<T, Double> fn) {
 		super(column);
 		this.fn = fn;
 	}

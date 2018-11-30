@@ -1,14 +1,14 @@
 package org.openlca.app.util.viewers;
 
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.ViewerComparator;
 
-public abstract class Sorter<T> extends ViewerSorter {
+public abstract class Comparator<T> extends ViewerComparator {
 
 	public final int column;
 	public boolean ascending = true;
 
-	protected Sorter(int column) {
+	protected Comparator(int column) {
 		this.column = column;
 	}
 

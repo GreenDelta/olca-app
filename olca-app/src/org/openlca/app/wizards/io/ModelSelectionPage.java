@@ -23,7 +23,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
-import org.openlca.app.navigation.NavigationSorter;
+import org.openlca.app.navigation.NavigationComparator;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.util.Colors;
@@ -209,7 +209,7 @@ public class ModelSelectionPage extends WizardPage {
 				new GridData(SWT.FILL, SWT.FILL, true, true));
 		viewer.setContentProvider(new NavigationContentProvider());
 		viewer.setLabelProvider(new NavigationLabelProvider(false));
-		viewer.setSorter(new NavigationSorter());
+		viewer.setComparator(new NavigationComparator());
 		viewer.addFilter(new ModelTypeFilter(types));
 		viewer.addCheckStateListener(new ModelSelectionState(this, viewer));
 		registerInputHandler(composite);

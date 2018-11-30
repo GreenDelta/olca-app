@@ -11,7 +11,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -165,7 +165,7 @@ public class GroupPage extends FormPage {
 	private void configureViewer(TableViewer viewer) {
 		viewer.setLabelProvider(new GroupPageLabel());
 		viewer.setContentProvider(new ArrayContentProvider());
-		viewer.setSorter(new GroupPageSorter());
+		viewer.setComparator(new GroupPageComparator());
 	}
 
 	private void createMoveMenu() {
@@ -334,9 +334,9 @@ public class GroupPage extends FormPage {
 	}
 
 	/**
-	 * A viewer sorter for groups and processes on the grouping page.
+	 * A viewer comparator for groups and processes on the grouping page.
 	 */
-	private class GroupPageSorter extends ViewerSorter {
+	private class GroupPageComparator extends ViewerComparator {
 
 		@Override
 		public int compare(Viewer viewer, Object first, Object second) {

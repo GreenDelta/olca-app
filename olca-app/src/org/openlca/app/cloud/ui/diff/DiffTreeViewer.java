@@ -28,7 +28,7 @@ abstract class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	protected void configureViewer(TreeViewer viewer, boolean checkable) {
 		viewer.setContentProvider(new ContentProvider());
 		viewer.setLabelProvider(new LabelProvider());
-		viewer.setSorter(new Sorter());
+		viewer.setComparator(new Comparator());
 		viewer.addDoubleClickListener(this::onDoubleClick);
 	}
 

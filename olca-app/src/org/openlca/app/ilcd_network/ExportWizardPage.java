@@ -15,7 +15,7 @@ import org.openlca.app.M;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
-import org.openlca.app.navigation.NavigationSorter;
+import org.openlca.app.navigation.NavigationComparator;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.BaseDescriptor;
@@ -60,7 +60,7 @@ public class ExportWizardPage extends WizardPage implements ICheckStateListener 
 		viewer.addCheckStateListener(new NavigationTreeCheck(viewer));
 		viewer.addCheckStateListener(this);
 		viewer.addFilter(new NavigationTreeFilter());
-		viewer.setSorter(new NavigationSorter());
+		viewer.setComparator(new NavigationComparator());
 	}
 
 	@Override

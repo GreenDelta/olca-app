@@ -17,6 +17,7 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.cloud.Announcements;
 import org.openlca.app.cloud.TokenDialog;
 import org.openlca.app.cloud.index.Reindexing;
 import org.openlca.app.cloud.ui.commits.HistoryView;
@@ -67,8 +68,7 @@ public class ConnectAction extends Action implements INavigationAction {
 			if (dialog.open() != Dialog.OK)
 				return false;
 			RepositoryConfig config = dialog.createConfig();
-			String text = M.ConnectingToRepository + config.getServerUrl()
-					+ " " + config.repositoryId;
+			String text = M.ConnectingToRepository + config.getServerUrl() + " " + config.repositoryId;
 			App.runWithProgress(text, () -> connect(config));
 			HistoryView.refresh();
 			return true;
@@ -83,10 +83,12 @@ public class ConnectAction extends Action implements INavigationAction {
 			} catch (Exception e) {
 				error = e;
 			}
-			if (error == null)
+			if (error == null) {
 				Database.connect(client);
-			else
+				Announcements.check(client);
+			} else {
 				config.disconnect();
+			}
 		}
 
 	}
@@ -127,9 +129,8 @@ public class ConnectAction extends Action implements INavigationAction {
 			editConfig.addHyperlinkListener(new HyperlinkAdapter() {
 				@Override
 				public void linkActivated(HyperlinkEvent e) {
-					PreferenceDialog dialog = PreferencesUtil
-							.createPreferenceDialogOn(null,
-									CloudPreferencePage.ID, null, null);
+					PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(null, CloudPreferencePage.ID,
+							null, null);
 					dialog.setBlockOnOpen(true);
 					dialog.open();
 					configViewer.setInput(CloudConfigurations.get());
@@ -171,11 +172,10 @@ public class ConnectAction extends Action implements INavigationAction {
 		}
 
 		private RepositoryConfig createConfig() {
-			CredentialSupplier credentials = new CredentialSupplier(username,
-					password);
+			CredentialSupplier credentials = new CredentialSupplier(username, password);
 			credentials.setTokenSupplier(TokenDialog::prompt);
-			RepositoryConfig config = RepositoryConfig.connect(Database.get(),
-					serverUrl + "/ws", repositoryId, credentials);
+			RepositoryConfig config = RepositoryConfig.connect(Database.get(), serverUrl + "/ws", repositoryId,
+					credentials);
 			return config;
 		}
 	}

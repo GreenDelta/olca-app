@@ -53,7 +53,7 @@ public class ResultEditorInput implements IEditorInput {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object getAdapter(Class adapter) {
 		return null;
 	}

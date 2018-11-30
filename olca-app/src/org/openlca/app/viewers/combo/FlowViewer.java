@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
@@ -53,8 +53,8 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 	}
 
 	@Override
-	protected ViewerSorter getSorter() {
-		return new FlowSorter();
+	protected ViewerComparator getComparator() {
+		return new FlowComparator();
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 		return cache.get(Location.class, flow.getLocation());
 	}
 
-	private class FlowSorter extends ViewerSorter {
+	private class FlowComparator extends ViewerComparator {
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {

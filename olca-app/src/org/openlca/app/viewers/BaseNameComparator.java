@@ -1,7 +1,7 @@
 package org.openlca.app.viewers;
 
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ImpactCategory;
@@ -12,7 +12,7 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 /**
  * Sorts objects by their respective names.
  */
-public class BaseNameSorter extends ViewerSorter {
+public class BaseNameComparator extends ViewerComparator {
 
 	@Override
 	public int compare(final Viewer viewer, final Object e1, final Object e2) {
