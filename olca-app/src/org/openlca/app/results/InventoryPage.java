@@ -23,7 +23,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ContributionCutoff.CutoffContentProvider;
 import org.openlca.app.util.Actions;
@@ -34,14 +33,12 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.TreeClipboard;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
-import org.openlca.core.results.ContributionResultProvider;
-import org.openlca.core.results.FlowResult;
+import org.openlca.core.results.ContributionResult;
 import org.openlca.util.Strings;
 
 /**
@@ -49,13 +46,12 @@ import org.openlca.util.Strings;
  */
 public class InventoryPage extends FormPage {
 
-	private EntityCache cache = Cache.getEntityCache();
 	private FormToolkit toolkit;
 	private CalculationSetup setup;
-	private ContributionResultProvider<?> result;
+	private ContributionResult result;
 	private DQResult dqResult;
 
-	public InventoryPage(FormEditor editor, ContributionResultProvider<?> result, DQResult dqResult,
+	public InventoryPage(FormEditor editor, ContributionResult result, DQResult dqResult,
 			CalculationSetup setup) {
 		super(editor, "InventoryPage", M.InventoryResults);
 		this.result = result;
@@ -79,7 +75,7 @@ public class InventoryPage extends FormPage {
 	}
 
 	private void fillTrees(TreeViewer inputTree, TreeViewer outputTree) {
-		Collection<FlowDescriptor> flows = result.getFlowDescriptors();
+		Collection<FlowDescriptor> flows = result.getFlows();
 		List<FlowDescriptor> inFlows = new ArrayList<>();
 		List<FlowDescriptor> outFlows = new ArrayList<>();
 		for (FlowDescriptor flow : flows) {
@@ -209,7 +205,7 @@ public class InventoryPage extends FormPage {
 		}
 
 		private String getFlowColumnText(FlowDescriptor flow, int col) {
-			Pair<String, String> category = Labels.getCategory(flow, cache);
+			Pair<String, String> category = Labels.getCategory(flow);
 			switch (col) {
 			case 0:
 				return Labels.getDisplayName(flow);
@@ -221,15 +217,15 @@ public class InventoryPage extends FormPage {
 				double v = getAmount(flow);
 				return Numbers.format(v);
 			case 4:
-				return Labels.getRefUnit(flow, cache);
+				return Labels.getRefUnit(flow);
 			default:
 				return null;
 			}
 		}
 
 		private String getProcessColumnText(Contribution item, int col) {
-			ProcessDescriptor process = item.item.item;
-			Pair<String, String> category = Labels.getCategory(process, cache);
+			CategorizedDescriptor process = item.item.item;
+			Pair<String, String> category = Labels.getCategory(process);
 			switch (col) {
 			case 0:
 				return Labels.getDisplayName(process);
@@ -241,7 +237,7 @@ public class InventoryPage extends FormPage {
 				double v = getAmount(item);
 				return Numbers.format(v);
 			case 4:
-				return Labels.getRefUnit(item.flow, cache);
+				return Labels.getRefUnit(item.flow);
 			default:
 				return null;
 			}
@@ -264,8 +260,7 @@ public class InventoryPage extends FormPage {
 
 	private double getAmount(Object element) {
 		if (element instanceof FlowDescriptor) {
-			FlowResult r = result.getTotalFlowResult((FlowDescriptor) element);
-			return r == null ? 0 : r.value;
+			return result.getTotalFlowResult((FlowDescriptor) element);
 		} else if (element instanceof Contribution) {
 			Contribution item = (Contribution) element;
 			return item.item.amount;
@@ -275,10 +270,10 @@ public class InventoryPage extends FormPage {
 
 	private class Contribution {
 
-		final ContributionItem<ProcessDescriptor> item;
+		final ContributionItem<CategorizedDescriptor> item;
 		final FlowDescriptor flow;
 
-		private Contribution(ContributionItem<ProcessDescriptor> item, FlowDescriptor flow) {
+		private Contribution(ContributionItem<CategorizedDescriptor> item, FlowDescriptor flow) {
 			this.item = item;
 			this.flow = flow;
 		}

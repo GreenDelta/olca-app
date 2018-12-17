@@ -17,7 +17,7 @@ import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Process;
-import org.openlca.core.results.ContributionResultProvider;
+import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.SystemProcess;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public final class SaveProcessDialog extends Wizard {
 
-	private final IResultEditor<? extends ContributionResultProvider<?>> editor;
+	private final IResultEditor<? extends ContributionResult> editor;
 	private Page page;
 
 	private SaveProcessDialog(IResultEditor<?> editor) {

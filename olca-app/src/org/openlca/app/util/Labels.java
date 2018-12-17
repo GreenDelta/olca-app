@@ -88,10 +88,11 @@ public class Labels {
 		return descriptor.getDescription();
 	}
 
-	public static String getRefUnit(FlowDescriptor flow, EntityCache cache) {
+	public static String getRefUnit(FlowDescriptor flow) {
 		if (flow == null)
 			return "";
-		FlowProperty refProp = cache.get(FlowProperty.class,
+		FlowProperty refProp = Cache.getEntityCache().get(
+				FlowProperty.class,
 				flow.getRefFlowPropertyId());
 		if (refProp == null)
 			return "";
@@ -110,8 +111,8 @@ public class Labels {
 	 * category and the right value is the sub-category. Default values are
 	 * empty strings.
 	 */
-	public static Pair<String, String> getCategory(CategorizedDescriptor entity,
-			EntityCache cache) {
+	public static Pair<String, String> getCategory(CategorizedDescriptor entity) {
+		EntityCache cache = Cache.getEntityCache();
 		if (entity == null || entity.getCategory() == null)
 			return Pair.of("", "");
 		Category cat = cache.get(Category.class, entity.getCategory());
@@ -127,9 +128,8 @@ public class Labels {
 	 * Same as {@link #getCategory(CategorizedDescriptor, EntityCache)} but top-
 	 * and sub-category concatenated as a short string.
 	 */
-	public static String getShortCategory(CategorizedDescriptor entity,
-			EntityCache cache) {
-		Pair<String, String> p = getCategory(entity, cache);
+	public static String getShortCategory(CategorizedDescriptor entity) {
+		Pair<String, String> p = getCategory(entity);
 		if (Strings.isNullOrEmpty(p.getLeft()) && Strings.isNullOrEmpty(p.getRight()))
 			return "";
 		if (Strings.isNullOrEmpty(p.getLeft()))

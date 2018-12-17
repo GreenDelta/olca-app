@@ -19,8 +19,8 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.FullResultProvider;
-import org.openlca.core.results.IResultProvider;
+import org.openlca.core.results.FullResult;
+import org.openlca.core.results.IResult;
 
 public class Images {
 
@@ -130,10 +130,10 @@ public class Images {
 		return null;
 	}
 
-	public static Image get(IResultProvider result) {
+	public static Image get(IResult result) {
 		if (result == null)
 			return null;
-		if (result instanceof FullResultProvider)
+		if (result instanceof FullResult)
 			return Icon.ANALYSIS_RESULT.get();
 		return Icon.QUICK_RESULT.get();
 	}

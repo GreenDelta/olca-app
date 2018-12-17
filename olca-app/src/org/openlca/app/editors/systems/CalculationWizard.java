@@ -47,14 +47,10 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.ContributionResultProvider;
-import org.openlca.core.results.FlowResult;
 import org.openlca.core.results.FullResult;
-import org.openlca.core.results.FullResultProvider;
-import org.openlca.core.results.SimpleResultProvider;
+import org.openlca.core.results.SimpleResult;
 import org.openlca.geo.RegionalizedCalculator;
 import org.openlca.geo.RegionalizedResult;
-import org.openlca.geo.RegionalizedResultProvider;
 import org.openlca.geo.parameter.ParameterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -231,10 +227,9 @@ public class CalculationWizard extends Wizard {
 			SystemCalculator calculator = new SystemCalculator(Cache.getMatrixCache(), App.getSolver());
 			FullResult result = calculator.calculateFull(setup);
 			log.trace("calculation done, open editor");
-			FullResultProvider resultProvider = new FullResultProvider(result, Cache.getEntityCache());
-			setInventory(resultProvider);
+			setInventory(result);
 			DQResult dqResult = DQResult.calculate(Database.get(), result, dqSetup);
-			ResultEditorInput input = getEditorInput(resultProvider, setup, null, dqResult);
+			ResultEditorInput input = getEditorInput(result, setup, null, dqResult);
 			Editors.open(input, AnalyzeEditor.ID);
 		}
 
@@ -243,11 +238,9 @@ public class CalculationWizard extends Wizard {
 			SystemCalculator calculator = new SystemCalculator(Cache.getMatrixCache(), App.getSolver());
 			ContributionResult result = calculator.calculateContributions(setup);
 			log.trace("calculation done, open editor");
-			ContributionResultProvider<ContributionResult> resultProvider = new ContributionResultProvider<>(result,
-					Cache.getEntityCache());
-			setInventory(resultProvider);
+			setInventory(result);
 			DQResult dqResult = DQResult.calculate(Database.get(), result, dqSetup);
-			ResultEditorInput input = getEditorInput(resultProvider, setup, null, dqResult);
+			ResultEditorInput input = getEditorInput(result, setup, null, dqResult);
 			Editors.open(input, QuickResultEditor.ID);
 		}
 
@@ -265,33 +258,29 @@ public class CalculationWizard extends Wizard {
 				Info.showBox(M.NoRegionalizedInformation_Message);
 				return;
 			}
-			RegionalizedResultProvider provider = new RegionalizedResultProvider();
-			provider.result = new FullResultProvider(result.result, Cache.getEntityCache());
-			provider.kmlData = result.kmlData;
-			setInventory(provider.result);
+			setInventory(result.result);
 			DQResult dqResult = DQResult.calculate(Database.get(), result.result, dqSetup);
-			ResultEditorInput input = getEditorInput(provider, setup, result.parameterSet, dqResult);
+			ResultEditorInput input = getEditorInput(result, setup, result.parameterSet, dqResult);
 			Editors.open(input, RegionalizedResultEditor.ID);
 		}
 
-		private void setInventory(SimpleResultProvider<?> result) {
+		private void setInventory(SimpleResult result) {
 			if (!storeInventoryResult)
 				return;
 			productSystem.inventory.clear();
 			Map<Long, Flow> flows = new HashMap<>();
 			Set<Long> ids = new HashSet<>();
-			for (FlowDescriptor flow : result.getFlowDescriptors()) {
+			for (FlowDescriptor flow : result.getFlows()) {
 				ids.add(flow.getId());
 			}
 			for (Flow flow : new FlowDao(Database.get()).getForIds(ids)) {
 				flows.put(flow.getId(), flow);
 			}
-			for (FlowDescriptor d : result.getFlowDescriptors()) {
+			for (FlowDescriptor d : result.getFlows()) {
 				Flow flow = flows.get(d.getId());
-				FlowResult flowResult = result.getTotalFlowResult(d);
 				Exchange exchange = Exchange.from(flow);
-				exchange.amount = flowResult.value;
-				exchange.isInput = flowResult.input;
+				exchange.amount = result.getTotalFlowResult(d);
+				exchange.isInput = result.isInput(d);
 				productSystem.inventory.add(exchange);
 			}
 			productSystem = new ProductSystemDao(Database.get()).update(productSystem);
