@@ -22,6 +22,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.results.analysis.sankey.layout.LayoutPolicy;
 import org.openlca.app.results.analysis.sankey.layout.XYLayoutCommand;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,7 +185,8 @@ public class ProcessPart extends AbstractGraphicalEditPart implements
 		if (!(linkObj instanceof Link))
 			return;
 		Link link = (Link) linkObj;
-		ProcessDescriptor thisProcess = getModel().process;
+		CategorizedDescriptor thisProcess = getModel().process;
+		// TODO: we could have product systems here
 		ProcessDescriptor provider = cache.get(ProcessDescriptor.class, link.processLink.providerId);
 		ProcessDescriptor recipient = cache.get(ProcessDescriptor.class, link.processLink.processId);
 		boolean isLoop = Objects.equal(provider, recipient);

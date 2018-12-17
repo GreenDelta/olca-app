@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.util.Labels;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class ProcessNode extends Node {
 
 	public static String CONNECTION = "Connection";
 
-	public final ProcessDescriptor process;
+	public final CategorizedDescriptor process;
 	public ProcessFigure figure;
 	public final List<Link> links = new ArrayList<>();
 	public double upstreamResult;
@@ -21,7 +21,7 @@ public class ProcessNode extends Node {
 	ProcessPart editPart;
 	private Rectangle xyLayoutConstraints = new Rectangle(0, 0, 0, 0);
 
-	public ProcessNode(ProcessDescriptor process) {
+	public ProcessNode(CategorizedDescriptor process) {
 		this.process = process;
 	}
 

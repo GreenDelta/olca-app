@@ -41,17 +41,17 @@ import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.FullResultProvider;
+import org.openlca.core.results.FullResult;
 
 public class SankeyDiagram extends GraphicalEditor implements PropertyChangeListener {
 
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 	public final DQResult dqResult;
 	public final ProcessLinkSearchMap linkSearchMap;
-	public final FullResultProvider result;
+	public final FullResult result;
 	public ProductSystemNode node;
 	public double zoom = 1;
 	private boolean routed = false;
@@ -60,7 +60,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
 	private ProductSystem productSystem;
 
-	public SankeyDiagram(FullResultProvider result, DQResult dqResult, CalculationSetup setup) {
+	public SankeyDiagram(FullResult result, DQResult dqResult, CalculationSetup setup) {
 		this.dqResult = dqResult;
 		setEditDomain(new DefaultEditDomain(this));
 		this.result = result;
@@ -95,7 +95,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		}
 	}
 
-	private ProcessNode createNode(ProcessDescriptor process) {
+	private ProcessNode createNode(CategorizedDescriptor process) {
 		ProcessNode node = new ProcessNode(process);
 		long processId = process.getId();
 		node.directContribution = sankeyResult.getDirectContribution(processId);
@@ -114,14 +114,14 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	}
 
 	private void updateModel(double cutoff) {
-		Map<Long, ProcessDescriptor> descriptors = new HashMap<>();
-		for (ProcessDescriptor descriptor : result.getProcessDescriptors())
-			descriptors.put(descriptor.getId(), descriptor);
+		Map<Long, CategorizedDescriptor> processes = new HashMap<>();
+		for (CategorizedDescriptor d : result.getProcesses())
+			processes.put(d.getId(), d);
 		if (cutoff == 0) {
 			for (Long processId : productSystem.processes) {
-				ProcessDescriptor descriptor = descriptors.get(processId);
-				if (descriptor != null) {
-					node.addChild(createNode(descriptor));
+				CategorizedDescriptor d = processes.get(processId);
+				if (d != null) {
+					node.addChild(createNode(d));
 				}
 			}
 		} else {
@@ -129,7 +129,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 			Set<Long> processesToDraw = SankeyProcessList.calculate(
 					sankeyResult, refProcess, cutoff, linkSearchMap);
 			for (final Long processId : processesToDraw) {
-				ProcessDescriptor process = descriptors.get(processId);
+				CategorizedDescriptor process = processes.get(processId);
 				if (process != null) {
 					node.addChild(createNode(process));
 				}
@@ -216,7 +216,8 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	private void initContent() {
 		Object defaultSelection = getDefaultSelection();
 		if (defaultSelection == null) {
-			getGraphicalViewer().setContents(new ProductSystemNode(productSystem, this, null, 0.1));
+			getGraphicalViewer().setContents(
+					new ProductSystemNode(productSystem, this, null, 0.1));
 			return;
 		}
 		sankeyResult.calculate(defaultSelection);
@@ -229,11 +230,11 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 			return null;
 		if (result.hasImpactResults()) {
 			Set<ImpactCategoryDescriptor> categories = result
-					.getImpactDescriptors();
+					.getImpacts();
 			if (!categories.isEmpty())
 				return categories.iterator().next();
 		}
-		Set<FlowDescriptor> flows = result.getFlowDescriptors();
+		Set<FlowDescriptor> flows = result.getFlows();
 		if (!flows.isEmpty())
 			return flows.iterator().next();
 		return null;

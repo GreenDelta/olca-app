@@ -27,6 +27,7 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -136,19 +137,23 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 		return page;
 	}
 
-	private double getImpactFactor(ImpactCategoryDescriptor category, ProcessDescriptor process, FlowDescriptor flow) {
-		if (process.getLocation() == null)
-			return _getImpactFactor(category, process, flow);
-		Map<FlowDescriptor, Double> impactFactors = getImpactFactors(category.getId(), process.getLocation());
+	private double getImpactFactor(ImpactCategoryDescriptor impact,
+			CategorizedDescriptor process, FlowDescriptor flow) {
+		if (!(process instanceof ProcessDescriptor))
+			return defaultFactor(impact, flow);
+		ProcessDescriptor p = (ProcessDescriptor) process;
+		if (p.getLocation() == null)
+			return defaultFactor(impact, flow);
+		Map<FlowDescriptor, Double> impactFactors = getImpactFactors(impact.getId(), p.getLocation());
 		if (!impactFactors.containsKey(flow))
 			return 0d;
 		return impactFactors.get(flow);
 	}
 
-	private double _getImpactFactor(ImpactCategoryDescriptor category, ProcessDescriptor process, FlowDescriptor flow) {
-		FullResult result = this.result.result.result;
-		int row = result.impactIndex.getIndex(category.getId());
-		int col = result.flowIndex.getIndex(flow.getId());
+	private double defaultFactor(ImpactCategoryDescriptor impact, FlowDescriptor flow) {
+		FullResult result = this.result.result;
+		int row = result.impactIndex.of(impact);
+		int col = result.flowIndex.of(flow);
 		return Math.abs(result.impactFactors.get(row, col));
 	}
 

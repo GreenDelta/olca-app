@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.results.contributions.ContributionChart;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -21,11 +20,10 @@ import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionItem;
-import org.openlca.core.results.ContributionResultProvider;
+import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.Contributions;
 import org.openlca.core.results.GroupingContribution;
 import org.openlca.core.results.ProcessGrouping;
@@ -36,15 +34,14 @@ class GroupResultSection {
 	private final int IMPACT = 1;
 	private int resultType = 0;
 
-	private EntityCache cache = Cache.getEntityCache();
 	private List<ProcessGrouping> groups;
-	private ContributionResultProvider<?> result;
+	private ContributionResult result;
 	private FlowViewer flowViewer;
 	private ImpactCategoryViewer impactViewer;
 	private ContributionChart chart;
 	private GroupResultTable table;
 
-	public GroupResultSection(List<ProcessGrouping> groups, ContributionResultProvider<?> result) {
+	public GroupResultSection(List<ProcessGrouping> groups, ContributionResult result) {
 		this.groups = groups;
 		this.result = result;
 	}
@@ -54,7 +51,7 @@ class GroupResultSection {
 		String unit;
 		if (resultType == FLOW) {
 			FlowDescriptor flow = flowViewer.getSelected();
-			unit = Labels.getRefUnit(flow, result.cache);
+			unit = Labels.getRefUnit(flow);
 			selection = flow;
 		} else {
 			ImpactCategoryDescriptor impact = impactViewer.getSelected();
@@ -113,8 +110,8 @@ class GroupResultSection {
 	private void createFlowViewer(FormToolkit toolkit, Composite parent) {
 		Button flowsCheck = toolkit.createButton(parent, M.Flows, SWT.RADIO);
 		flowsCheck.setSelection(true);
-		flowViewer = new FlowViewer(parent, cache);
-		Set<FlowDescriptor> flows = result.getFlowDescriptors();
+		flowViewer = new FlowViewer(parent);
+		Set<FlowDescriptor> flows = result.getFlows();
 		flowViewer.setInput(flows.toArray(new FlowDescriptor[flows.size()]));
 		flowViewer.addSelectionChangedListener((e) -> update());
 		if (flows.size() > 0)
@@ -126,7 +123,7 @@ class GroupResultSection {
 		Button impactCheck = toolkit.createButton(parent, M.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(parent);
 		impactViewer.setEnabled(false);
-		Set<ImpactCategoryDescriptor> impacts = result.getImpactDescriptors();
+		Set<ImpactCategoryDescriptor> impacts = result.getImpacts();
 		impactViewer.setInput(impacts);
 		impactViewer.addSelectionChangedListener((e) -> update());
 		if (impacts.size() > 0)

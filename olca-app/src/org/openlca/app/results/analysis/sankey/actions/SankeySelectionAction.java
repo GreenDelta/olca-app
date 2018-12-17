@@ -7,7 +7,7 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.analysis.sankey.SankeySelectionDialog;
-import org.openlca.core.results.FullResultProvider;
+import org.openlca.core.results.FullResult;
 
 /**
  * Opens the {@link SankeySelectionDialog} and updates the Sankey diagram with
@@ -40,13 +40,13 @@ public class SankeySelectionAction extends Action {
 	public void run() {
 		if (sankeyDiagram == null)
 			return;
-		FullResultProvider result = sankeyDiagram.result;
+		FullResult result = sankeyDiagram.result;
 		if (result == null)
 			return;
 		openAndUpdate(result);
 	}
 
-	private void openAndUpdate(FullResultProvider result) {
+	private void openAndUpdate(FullResult result) {
 		SankeySelectionDialog dialog = new SankeySelectionDialog(result);
 		dialog.cutoff = sankeyDiagram.node.cutoff;
 		dialog.selection = lastSelection;

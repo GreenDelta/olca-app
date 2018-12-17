@@ -10,10 +10,10 @@ import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.core.matrix.LongIndex;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.FullResultProvider;
+import org.openlca.core.results.FullResult;
 import org.openlca.util.Doubles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,16 +23,16 @@ class SankeyResult {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private ProductSystem system;
-	private FullResultProvider results;
+	private FullResult results;
 
 	private LongIndex processIndex;
-	private ProcessDescriptor[] processes;
+	private CategorizedDescriptor[] processes;
 	private double[] upstreamResults;
 	private double[] upstreamContributions;
 	private double[] directResults;
 	private double[] directContributions;
 
-	public SankeyResult(ProductSystem system, FullResultProvider results) {
+	public SankeyResult(ProductSystem system, FullResult results) {
 		this.system = system;
 		this.results = results;
 	}
@@ -96,12 +96,12 @@ class SankeyResult {
 		buildProcessIndex();
 		if (selection instanceof FlowDescriptor) {
 			FlowDescriptor f = (FlowDescriptor) selection;
-			upstreamResults = vec(p -> results.getUpstreamFlowResult(p, f).value);
-			directResults = vec(p -> results.getSingleFlowResult(p, f).value);
+			upstreamResults = vec(p -> results.getUpstreamFlowResult(p, f));
+			directResults = vec(p -> results.getDirectFlowResult(p, f));
 		} else if (selection instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor i = (ImpactCategoryDescriptor) selection;
-			upstreamResults = vec(p -> results.getUpstreamImpactResult(p, i).value);
-			directResults = vec(p -> results.getSingleImpactResult(p, i).value);
+			upstreamResults = vec(p -> results.getUpstreamImpactResult(p, i));
+			directResults = vec(p -> results.getDirectImpactResult(p, i));
 		} else if (selection instanceof CostResultDescriptor) {
 			CostResultDescriptor c = (CostResultDescriptor) selection;
 			upstreamResults = vec(p -> {
@@ -109,7 +109,7 @@ class SankeyResult {
 				return c.forAddedValue && v != 0 ? -v : v;
 			});
 			directResults = vec(p -> {
-				double v = results.getSingleCostResult(p);
+				double v = results.getDirectCostResult(p);
 				return c.forAddedValue && v != 0 ? -v : v;
 			});
 		} else {
@@ -136,10 +136,10 @@ class SankeyResult {
 		return contributions;
 	}
 
-	private double[] vec(ToDoubleFunction<ProcessDescriptor> fn) {
+	private double[] vec(ToDoubleFunction<CategorizedDescriptor> fn) {
 		double[] vector = new double[processIndex.size()];
 		for (int i = 0; i < processIndex.size(); i++) {
-			ProcessDescriptor process = processes[i];
+			CategorizedDescriptor process = processes[i];
 			double result = fn.applyAsDouble(process);
 			vector[i] = result;
 		}
@@ -148,9 +148,9 @@ class SankeyResult {
 
 	private void buildProcessIndex() {
 		processIndex = new LongIndex();
-		Set<ProcessDescriptor> processSet = results.getProcessDescriptors();
-		processes = new ProcessDescriptor[processSet.size()];
-		for (ProcessDescriptor process : processSet) {
+		Set<CategorizedDescriptor> processSet = results.getProcesses();
+		processes = new CategorizedDescriptor[processSet.size()];
+		for (CategorizedDescriptor process : processSet) {
 			int i = processIndex.put(process.getId());
 			processes[i] = process;
 		}

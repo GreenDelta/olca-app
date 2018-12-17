@@ -15,15 +15,15 @@ import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.FullResultProvider;
+import org.openlca.core.results.FullResult;
 
 public class SankeySelectionDialog extends FormDialog implements EventHandler {
 
 	public double cutoff = 0.1;
 	public Object selection;
-	private final FullResultProvider result;
+	private final FullResult result;
 
-	public SankeySelectionDialog(FullResultProvider result) {
+	public SankeySelectionDialog(FullResult result) {
 		super(UI.shell());
 		this.result = result;
 	}

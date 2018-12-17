@@ -20,20 +20,18 @@ import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResult;
-import org.openlca.core.results.FullResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * View for the analysis results of a product system.
  */
-public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResultProvider> {
+public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResult> {
 
 	public static final String ID = "editors.analyze";
 
@@ -42,7 +40,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 	private SankeyDiagram diagram;
 	private int diagramIndex;
 	private CalculationSetup setup;
-	private FullResultProvider result;
+	private FullResult result;
 	private DQResult dqResult;
 
 	@Override
@@ -51,7 +49,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 	}
 
 	@Override
-	public FullResultProvider getResult() {
+	public FullResult getResult() {
 		return result;
 	}
 
@@ -66,8 +64,8 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 		ResultEditorInput input = (ResultEditorInput) iInput;
 		String resultKey = input.resultKey;
 		String setupKey = input.setupKey;
-		FullResultProvider result = Cache.getAppCache().remove(resultKey,
-				FullResultProvider.class);
+		FullResult result = Cache.getAppCache().remove(resultKey,
+				FullResult.class);
 		String dqResultKey = input.dqResultKey;
 		if (dqResultKey != null)
 			dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);
@@ -131,14 +129,12 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 		return page;
 	}
 
-	private double getImpactFactor(ImpactCategoryDescriptor impactCategory, ProcessDescriptor process,
-			FlowDescriptor flow) {
-		FullResult fr = result.result;
-		FlowIndex flowIdx = fr.flowIndex;
-		int row = fr.impactIndex.getIndex(impactCategory.getId());
-		int col = flowIdx.getIndex(flow.getId());
-		double value = fr.impactFactors.get(row, col);
-		if (flowIdx.isInput(flow.getId())) {
+	private double getImpactFactor(ImpactCategoryDescriptor impact,
+			CategorizedDescriptor process, FlowDescriptor flow) {
+		int row = result.impactIndex.of(impact);
+		int col = result.flowIndex.of(flow);
+		double value = result.impactFactors.get(row, col);
+		if (result.isInput(flow)) {
 			// characterization factors for input flows are negative in the
 			// matrix. A simple abs() is not correct because the original
 			// characterization factor maybe was already negative (-(-(f))).

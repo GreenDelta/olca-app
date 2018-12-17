@@ -90,11 +90,8 @@ public class GroupPage extends FormPage {
 		if (groupSet == null || result == null)
 			return;
 		this.groupSet = groupSet;
-		List<ProcessDescriptor> processes = new ArrayList<>();
-		for (ProcessDescriptor p : result.getProcessDescriptors())
-			processes.add(p);
-		List<ProcessGrouping> newGroups = ProcessGrouping.applyOn(processes,
-				groupSet, M.Other);
+		List<ProcessGrouping> newGroups = ProcessGrouping.applyOn(
+				result.getProcesses(), groupSet, M.Other);
 		groups.clear();
 		groups.addAll(newGroups);
 		updateViewers();
@@ -445,7 +442,7 @@ public class GroupPage extends FormPage {
 				ProcessGroup group = new ProcessGroup();
 				group.setName(pageGroup.name);
 				groups.add(group);
-				for (ProcessDescriptor process : pageGroup.processes)
+				for (CategorizedDescriptor process : pageGroup.processes)
 					group.getProcessIds().add(process.getRefId());
 			}
 			return groups;
