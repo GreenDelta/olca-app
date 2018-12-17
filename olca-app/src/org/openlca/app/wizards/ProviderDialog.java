@@ -1,5 +1,7 @@
 package org.openlca.app.wizards;
 
+import java.util.List;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -17,6 +19,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.CalcExchange;
+import org.openlca.core.matrix.Provider;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -26,11 +29,11 @@ import org.slf4j.LoggerFactory;
 
 class ProviderDialog extends Dialog {
 
-	public static Options select(CalcExchange e, long[] providers) {
+	public static Options select(CalcExchange e, List<Provider> providers) {
 		Options opts = new Options();
-		if (providers == null || providers.length == 0)
+		if (providers == null || providers.isEmpty())
 			return opts;
-		opts.selected = providers[0];
+		opts.selected = providers.get(0);
 		if (e == null)
 			return opts;
 		try {
@@ -48,14 +51,14 @@ class ProviderDialog extends Dialog {
 
 	private final Options options;
 	private final CalcExchange exchange;
-	private final long[] providers;
+	private final List<Provider> providers;
 
 	private Button saveCheck;
 	private Button autoContinueCheck;
 	private Button cancelCheck;
 
 	public ProviderDialog(Options options,
-			CalcExchange e, long[] providers) {
+			CalcExchange e, List<Provider> providers) {
 		super(UI.shell());
 		this.options = options;
 		this.exchange = e;
@@ -81,16 +84,17 @@ class ProviderDialog extends Dialog {
 
 		Combo combo = UI.formCombo(c, M.Provider);
 		UI.gridData(combo, true, false).widthHint = 80;
-		String[] labels = new String[providers.length];
+		String[] labels = new String[providers.size()];
 		for (int i = 0; i < labels.length; i++) {
-			labels[i] = getLabel(ProcessDescriptor.class, providers[i]);
+			labels[i] = Labels.getDisplayName(
+					providers.get(i).entity);
 		}
 		combo.setItems(labels);
 		combo.select(0);
 		combo.setToolTipText(labels[0]);
 		Controls.onSelect(combo, e -> {
 			int i = combo.getSelectionIndex();
-			options.selected = providers[i];
+			options.selected = providers.get(i);
 			combo.setToolTipText(labels[i]);
 		});
 		createChecks(c);
@@ -161,7 +165,7 @@ class ProviderDialog extends Dialog {
 	}
 
 	static class Options {
-		long selected;
+		Provider selected;
 		boolean saveSelected;
 		boolean autoContinue;
 		boolean cancel;

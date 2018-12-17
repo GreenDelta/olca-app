@@ -19,8 +19,8 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.IResultProvider;
-import org.openlca.core.results.SimpleResultProvider;
+import org.openlca.core.results.IResult;
+import org.openlca.core.results.SimpleResult;
 
 /**
  * Two combo boxes showing flows and impact categories. The impact categories
@@ -43,14 +43,13 @@ public class ResultTypeSelection {
 	private ImpactCategoryViewer impactCombo;
 	private CostResultViewer costCombo;
 
-	public static Dispatch on(IResultProvider result, EntityCache cache) {
+	public static Dispatch on(IResult result, EntityCache cache) {
 		ResultTypeSelection selection = new ResultTypeSelection(cache);
-		selection.flows = result.getFlowDescriptors();
+		selection.flows = result.getFlows();
 		if (result.hasImpactResults())
-			selection.impacts = result.getImpactDescriptors();
-		if (result.hasCostResults() && (result instanceof SimpleResultProvider))
-			selection.costs = CostResults.getDescriptors(
-					(SimpleResultProvider<?>) result);
+			selection.impacts = result.getImpacts();
+		if (result.hasCostResults() && (result instanceof SimpleResult))
+			selection.costs = CostResults.getDescriptors((SimpleResult) result);
 		return new Dispatch(selection);
 	}
 

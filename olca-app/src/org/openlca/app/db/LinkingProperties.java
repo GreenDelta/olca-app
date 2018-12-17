@@ -1,12 +1,13 @@
 package org.openlca.app.db;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
-import org.openlca.core.matrix.LongPair;
-import org.openlca.core.matrix.cache.FlowTypeTable;
+import org.openlca.core.matrix.Provider;
+import org.openlca.core.matrix.cache.FlowTable;
 import org.openlca.core.matrix.cache.ProcessTable;
 import org.openlca.core.model.FlowType;
 import org.slf4j.Logger;
@@ -15,15 +16,15 @@ import org.slf4j.LoggerFactory;
 class LinkingProperties {
 
 	/**
-	 * Contains the IDs of product or waste flows that have more than one provider.
-	 * If this set is empty, there are no such flows in the database.
+	 * Contains the IDs of product or waste flows that have more than one
+	 * provider. If this set is empty, there are no such flows in the database.
 	 */
 	final Set<Long> multiProviderFlows = new HashSet<>();
 
 	/**
 	 * Contains the IDs of processes where product inputs or waste outputs are
-	 * __not__ linked to a default provider. If this set is empty, there are no such
-	 * unlinked processes in the database.
+	 * __not__ linked to a default provider. If this set is empty, there are no
+	 * such unlinked processes in the database.
 	 */
 	final Set<Long> processesWithoutProviders = new HashSet<>();
 
@@ -38,13 +39,13 @@ class LinkingProperties {
 	private static class Check {
 
 		final IDatabase db;
-		final FlowTypeTable flowTypes;
+		final FlowTable flowTypes;
 		final ProcessTable processes;
 
 		Check(IDatabase db) {
 			this.db = db;
-			flowTypes = FlowTypeTable.create(db);
-			processes = ProcessTable.create(db, flowTypes);
+			flowTypes = FlowTable.create(db);
+			processes = ProcessTable.create(db);
 		}
 
 		void doIt(LinkingProperties props) {
@@ -58,7 +59,7 @@ class LinkingProperties {
 						+ " from tbl_exchanges";
 				NativeSql.on(db).query(sql, r -> {
 					long flowID = r.getLong(2);
-					FlowType type = flowTypes.get(flowID);
+					FlowType type = flowTypes.type(flowID);
 					boolean isInput = r.getBoolean(3);
 					if (!canHaveProvider(type, isInput))
 						return true;
@@ -75,10 +76,10 @@ class LinkingProperties {
 		}
 
 		void checkMultiProviders(LinkingProperties props) {
-			for (LongPair provider : processes.getProviderFlows()) {
-				long flowID = provider.getSecond();
-				long[] ids = processes.getProviders(flowID);
-				if (ids != null && ids.length > 1) {
+			for (Provider provider : processes.getProviders()) {
+				long flowID = provider.flowId();
+				List<Provider> providers = processes.getProviders(flowID);
+				if (providers != null && providers.size() > 1) {
 					props.multiProviderFlows.add(flowID);
 				}
 			}

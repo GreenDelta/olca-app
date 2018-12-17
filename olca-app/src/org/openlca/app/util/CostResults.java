@@ -7,7 +7,7 @@ import org.openlca.app.M;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionSet;
-import org.openlca.core.results.SimpleResultProvider;
+import org.openlca.core.results.SimpleResult;
 
 public class CostResults {
 
@@ -20,14 +20,14 @@ public class CostResults {
 	 * is positive otherwise the first item is 'added value'.
 	 */
 	public static List<CostResultDescriptor> getDescriptors(
-			SimpleResultProvider<?> result) {
+			SimpleResult result) {
 		CostResultDescriptor d1 = new CostResultDescriptor();
 		d1.forAddedValue = false;
 		d1.setName(M.Netcosts);
 		CostResultDescriptor d2 = new CostResultDescriptor();
 		d2.forAddedValue = true;
 		d2.setName(M.AddedValue);
-		if (result == null || result.getTotalCostResult() >= 0)
+		if (result == null || result.totalCosts >= 0)
 			return Arrays.asList(d1, d2);
 		else
 			return Arrays.asList(d2, d1);
