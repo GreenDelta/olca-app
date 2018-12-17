@@ -14,18 +14,18 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.results.SimpleResultProvider;
+import org.openlca.core.results.SimpleResult;
 
 class QuickResultInfoPage extends FormPage {
 
 	private QuickResultEditor editor;
-	private SimpleResultProvider<?> result;
+	private SimpleResult result;
 	private DQResult dqResult;
 	private FormToolkit tk;
 	private CalculationSetup setup;
 
 	public QuickResultInfoPage(QuickResultEditor editor,
-			SimpleResultProvider<?> result,
+			SimpleResult result,
 			DQResult dqResult,
 			CalculationSetup setup) {
 		super(editor, "QuickResultInfoPage", M.GeneralInformation);

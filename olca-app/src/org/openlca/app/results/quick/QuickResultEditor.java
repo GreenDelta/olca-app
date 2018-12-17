@@ -16,22 +16,20 @@ import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.FlowIndex;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.ContributionResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QuickResultEditor extends FormEditor implements IResultEditor<ContributionResultProvider<?>> {
+public class QuickResultEditor extends FormEditor implements IResultEditor<ContributionResult> {
 
 	public static String ID = "QuickResultEditor";
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private CalculationSetup setup;
-	private ContributionResultProvider<?> result;
+	private ContributionResult result;
 	private DQResult dqResult;
 
 	@Override
@@ -43,7 +41,7 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 			setup = Cache.getAppCache().remove(input.setupKey,
 					CalculationSetup.class);
 			result = Cache.getAppCache().remove(
-					input.resultKey, ContributionResultProvider.class);
+					input.resultKey, ContributionResult.class);
 			String dqResultKey = input.dqResultKey;
 			if (dqResultKey != null)
 				dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);
@@ -59,7 +57,7 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 	}
 
 	@Override
-	public ContributionResultProvider<?> getResult() {
+	public ContributionResult getResult() {
 		return result;
 	}
 
@@ -84,14 +82,14 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 		}
 	}
 
-	private double getImpactFactor(ImpactCategoryDescriptor impactCategory, ProcessDescriptor process,
+	private double getImpactFactor(
+			ImpactCategoryDescriptor impact,
+			CategorizedDescriptor process,
 			FlowDescriptor flow) {
-		ContributionResult cr = result.result;
-		FlowIndex flowIdx = cr.flowIndex;
-		int row = cr.impactIndex.getIndex(impactCategory.getId());
-		int col = flowIdx.getIndex(flow.getId());
-		double value = cr.impactFactors.get(row, col);
-		if (flowIdx.isInput(flow.getId())) {
+		int row = result.impactIndex.of(impact);
+		int col = result.flowIndex.of(flow);
+		double value = result.impactFactors.get(row, col);
+		if (result.isInput(flow)) {
 			// characterization factors for input flows are negative in the
 			// matrix. A simple abs() is not correct because the original
 			// characterization factor maybe was already negative (-(-(f))).

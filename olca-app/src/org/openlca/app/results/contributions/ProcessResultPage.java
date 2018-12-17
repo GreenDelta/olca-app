@@ -25,7 +25,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -36,22 +35,20 @@ import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ProcessViewer;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.matrix.FlowIndex;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.FullResultProvider;
+import org.openlca.core.results.FullResult;
 
 /**
  * Shows the single and upstream results of the processes in an analysis result.
  */
 public class ProcessResultPage extends FormPage {
 
-	private EntityCache cache = Cache.getEntityCache();
-	private Map<Long, ProcessDescriptor> processDescriptors = new HashMap<>();
-	private FullResultProvider result;
+	private Map<Long, ProcessDescriptor> processes = new HashMap<>();
+	private FullResult result;
 	private ResultProvider flowResult;
 	private ResultProvider impactResult;
 
@@ -77,12 +74,17 @@ public class ProcessResultPage extends FormPage {
 			M.ImpactCategory, M.UpstreamInclDirect,
 			M.Direct, M.Unit };
 
-	public ProcessResultPage(FormEditor editor, FullResultProvider result, CalculationSetup setup) {
+	public ProcessResultPage(FormEditor editor,
+			FullResult result, CalculationSetup setup) {
 		super(editor, ProcessResultPage.class.getName(), M.ProcessResults);
 		this.result = result;
 		this.setup = setup;
-		for (ProcessDescriptor desc : result.getProcessDescriptors())
-			processDescriptors.put(desc.getId(), desc);
+		for (CategorizedDescriptor desc : result.getProcesses()) {
+			if (desc instanceof ProcessDescriptor) {
+				processes.put(desc.getId(),
+						(ProcessDescriptor) desc);
+			}
+		}
 		this.flowResult = new ResultProvider(result);
 		this.impactResult = new ResultProvider(result);
 	}
@@ -110,21 +112,20 @@ public class ProcessResultPage extends FormPage {
 	private void setInputs() {
 		fillFlows(inputTable);
 		fillFlows(outputTable);
-		long refProcessId = result.result.techIndex.getRefFlow().getFirst();
-		ProcessDescriptor p = processDescriptors.get(refProcessId);
+		long refProcessId = result.techIndex.getRefFlow().id();
+		ProcessDescriptor p = processes.get(refProcessId);
 		flowProcessViewer.select(p);
 		if (result.hasImpactResults()) {
 			impactProcessCombo.select(p);
-			impactTable.setInput(result.getImpactDescriptors());
+			impactTable.setInput(result.getImpacts());
 		}
 	}
 
 	private void fillFlows(TableViewer table) {
 		boolean input = table == inputTable;
-		FlowIndex idx = result.result.flowIndex;
 		List<FlowDescriptor> list = new ArrayList<>();
-		for (FlowDescriptor f : result.getFlowDescriptors()) {
-			if (idx.isInput(f.getId()) == input)
+		for (FlowDescriptor f : result.getFlows()) {
+			if (result.isInput(f) == input)
 				list.add(f);
 		}
 		Collections.sort(list);
@@ -142,8 +143,8 @@ public class ProcessResultPage extends FormPage {
 		UI.gridData(container, true, false);
 		UI.gridLayout(container, 5);
 		UI.formLabel(container, toolkit, M.Process);
-		flowProcessViewer = new ProcessViewer(container, cache);
-		flowProcessViewer.setInput(result.getProcessDescriptors());
+		flowProcessViewer = new ProcessViewer(container);
+		flowProcessViewer.setInput(processes.values());
 		flowProcessViewer.addSelectionChangedListener((selection) -> {
 			flowResult.setProcess(selection);
 			inputTable.refresh();
@@ -196,8 +197,8 @@ public class ProcessResultPage extends FormPage {
 		UI.gridLayout(container, 5);
 		UI.gridData(container, true, false);
 		UI.formLabel(container, toolkit, M.Process);
-		impactProcessCombo = new ProcessViewer(container, cache);
-		impactProcessCombo.setInput(result.getProcessDescriptors());
+		impactProcessCombo = new ProcessViewer(container);
+		impactProcessCombo.setInput(processes.values());
 		impactProcessCombo.addSelectionChangedListener((selection) -> {
 			impactResult.setProcess(selection);
 			impactTable.refresh();
@@ -263,7 +264,7 @@ public class ProcessResultPage extends FormPage {
 			case 3:
 				return Numbers.format(flowResult.getDirectResult(flow));
 			case 4:
-				return Labels.getRefUnit(flow, cache);
+				return Labels.getRefUnit(flow);
 			default:
 				return null;
 			}
@@ -273,7 +274,7 @@ public class ProcessResultPage extends FormPage {
 			String val = flow.getName();
 			if (flow.getCategory() == null)
 				return val;
-			return val + " (" + Labels.getShortCategory(flow, cache) + ")";
+			return val + " (" + Labels.getShortCategory(flow) + ")";
 		}
 	}
 
@@ -336,12 +337,11 @@ public class ProcessResultPage extends FormPage {
 
 	private class ResultProvider {
 
-		private ProcessDescriptor process;
-		private FullResultProvider result;
+		private CategorizedDescriptor process;
+		private FullResult result;
 
-		public ResultProvider(FullResultProvider result) {
-			long refProcessId = result.result.techIndex.getRefFlow().getFirst();
-			this.process = cache.get(ProcessDescriptor.class, refProcessId);
+		public ResultProvider(FullResult result) {
+			this.process = result.techIndex.getRefFlow().entity;
 			this.result = result;
 		}
 
@@ -352,10 +352,10 @@ public class ProcessResultPage extends FormPage {
 		private double getUpstreamContribution(FlowDescriptor flow) {
 			if (process == null || flow == null)
 				return 0;
-			double total = result.getTotalFlowResult(flow).value;
+			double total = result.getTotalFlowResult(flow);
 			if (total == 0)
 				return 0;
-			double val = result.getUpstreamFlowResult(process, flow).value;
+			double val = result.getUpstreamFlowResult(process, flow);
 			double c = val / Math.abs(total);
 			return c > 1 ? 1 : c;
 		}
@@ -363,22 +363,22 @@ public class ProcessResultPage extends FormPage {
 		private double getDirectResult(FlowDescriptor flow) {
 			if (process == null || flow == null)
 				return 0;
-			return result.getSingleFlowResult(process, flow).value;
+			return result.getDirectFlowResult(process, flow);
 		}
 
 		private double getUpstreamTotal(FlowDescriptor flow) {
 			if (process == null || flow == null)
 				return 0;
-			return result.getUpstreamFlowResult(process, flow).value;
+			return result.getUpstreamFlowResult(process, flow);
 		}
 
 		private double getUpstreamContribution(ImpactCategoryDescriptor d) {
 			if (process == null || d == null)
 				return 0;
-			double total = result.getTotalImpactResult(d).value;
+			double total = result.getTotalImpactResult(d);
 			if (total == 0)
 				return 0;
-			double val = result.getUpstreamImpactResult(process, d).value;
+			double val = result.getUpstreamImpactResult(process, d);
 			double c = val / Math.abs(total);
 			return c > 1 ? 1 : c;
 		}
@@ -386,13 +386,13 @@ public class ProcessResultPage extends FormPage {
 		private double getDirectResult(ImpactCategoryDescriptor category) {
 			if (process == null || category == null)
 				return 0;
-			return result.getSingleImpactResult(process, category).value;
+			return result.getDirectImpactResult(process, category);
 		}
 
 		private double getUpstreamTotal(ImpactCategoryDescriptor category) {
 			if (process == null || category == null)
 				return 0;
-			return result.getUpstreamImpactResult(process, category).value;
+			return result.getUpstreamImpactResult(process, category);
 		}
 	}
 

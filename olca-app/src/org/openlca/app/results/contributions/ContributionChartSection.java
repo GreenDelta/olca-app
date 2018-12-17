@@ -8,7 +8,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.results.ImageExportAction;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
@@ -16,11 +15,11 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
-import org.openlca.core.results.ContributionResultProvider;
+import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.ContributionSet;
 
 /**
@@ -33,25 +32,25 @@ public class ContributionChartSection {
 	private String sectionTitle = "";
 	private String selectionName = "";
 
-	private ContributionResultProvider<?> provider;
+	private ContributionResult provider;
 	private AbstractViewer<?, TableComboViewer> itemViewer;
 	private ContributionChart chart;
 
-	public static ContributionChartSection forFlows(ContributionResultProvider<?> provider) {
+	public static ContributionChartSection forFlows(ContributionResult provider) {
 		ContributionChartSection section = new ContributionChartSection(provider, true);
 		section.sectionTitle = M.DirectContributionsFlowResultsOverview;
 		section.selectionName = M.Flow;
 		return section;
 	}
 
-	public static ContributionChartSection forImpacts(ContributionResultProvider<?> provider) {
+	public static ContributionChartSection forImpacts(ContributionResult provider) {
 		ContributionChartSection section = new ContributionChartSection(provider, false);
 		section.sectionTitle = M.DirectContributionsImpactCategoryResultsOverview;
 		section.selectionName = M.ImpactCategory;
 		return section;
 	}
 
-	private ContributionChartSection(ContributionResultProvider<?> provider, boolean forFlows) {
+	private ContributionChartSection(ContributionResult provider, boolean forFlows) {
 		this.provider = provider;
 		this.forFlows = forFlows;
 	}
@@ -78,8 +77,8 @@ public class ContributionChartSection {
 	}
 
 	private void createFlowViewer(Composite header) {
-		FlowViewer viewer = new FlowViewer(header, Cache.getEntityCache());
-		Set<FlowDescriptor> set = provider.getFlowDescriptors();
+		FlowViewer viewer = new FlowViewer(header);
+		Set<FlowDescriptor> set = provider.getFlows();
 		FlowDescriptor[] flows = set.toArray(new FlowDescriptor[set.size()]);
 		viewer.setInput(flows);
 		viewer.addSelectionChangedListener((selection) -> refresh());
@@ -88,7 +87,7 @@ public class ContributionChartSection {
 
 	private void createImpactViewer(Composite header) {
 		ImpactCategoryViewer viewer = new ImpactCategoryViewer(header);
-		Set<ImpactCategoryDescriptor> set = provider.getImpactDescriptors();
+		Set<ImpactCategoryDescriptor> set = provider.getImpacts();
 		ImpactCategoryDescriptor[] impacts = set.toArray(new ImpactCategoryDescriptor[set.size()]);
 		viewer.setInput(impacts);
 		viewer.addSelectionChangedListener((selection) -> refresh());
@@ -100,10 +99,10 @@ public class ContributionChartSection {
 			return;
 		Object selection = itemViewer.getSelected();
 		String unit = null;
-		ContributionSet<ProcessDescriptor> contributionSet = null;
+		ContributionSet<CategorizedDescriptor> contributionSet = null;
 		if (selection instanceof FlowDescriptor) {
 			FlowDescriptor flow = (FlowDescriptor) selection;
-			unit = Labels.getRefUnit(flow, provider.cache);
+			unit = Labels.getRefUnit(flow);
 			contributionSet = provider.getProcessContributions(flow);
 		} else if (selection instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;

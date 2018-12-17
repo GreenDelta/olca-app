@@ -1,8 +1,6 @@
 package org.openlca.app.results.contributions;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
@@ -36,23 +34,17 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.matrix.LongPair;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.FullResultProvider;
+import org.openlca.core.results.FullResult;
 import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
 
 public class ContributionTreePage extends FormPage {
 
-	private EntityCache cache = Cache.getEntityCache();
-	private Map<Long, ProcessDescriptor> processDescriptors = new HashMap<>();
-	private FullResultProvider result;
+	private FullResult result;
 	private TreeViewer tree;
 	private Object selection;
 	private CalculationSetup setup;
@@ -60,13 +52,11 @@ public class ContributionTreePage extends FormPage {
 	private static final String[] HEADERS = { M.Contribution,
 			M.Process, M.Amount, M.Unit };
 
-	public ContributionTreePage(FormEditor editor, FullResultProvider result, CalculationSetup setup) {
+	public ContributionTreePage(FormEditor editor, FullResult result, CalculationSetup setup) {
 		super(editor, "analysis.ContributionTreePage", M.ContributionTree);
 		this.result = result;
 		this.setup = setup;
-		for (ProcessDescriptor desc : result.getProcessDescriptors())
-			processDescriptors.put(desc.getId(), desc);
-		Iterator<FlowDescriptor> it = result.getFlowDescriptors().iterator();
+		Iterator<FlowDescriptor> it = result.getFlows().iterator();
 		if (it.hasNext())
 			selection = it.next();
 	}
@@ -223,9 +213,7 @@ public class ContributionTreePage extends FormPage {
 			case 0:
 				return Numbers.percent(getContribution(node));
 			case 1:
-				long processId = node.provider.getFirst();
-				BaseDescriptor d = processDescriptors.get(processId);
-				return Labels.getDisplayName(d);
+				return Labels.getDisplayName(node.provider.entity);
 			case 2:
 				return Numbers.format(node.result);
 			case 3:
@@ -238,7 +226,7 @@ public class ContributionTreePage extends FormPage {
 		private String getUnit() {
 			if (selection instanceof FlowDescriptor) {
 				FlowDescriptor flow = (FlowDescriptor) selection;
-				return Labels.getRefUnit(flow, cache);
+				return Labels.getRefUnit(flow);
 			} else if (selection instanceof ImpactCategoryDescriptor) {
 				ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
 				return impact.getReferenceUnit();
@@ -272,10 +260,7 @@ public class ContributionTreePage extends FormPage {
 			if (!(selection instanceof UpstreamNode))
 				return;
 			UpstreamNode node = (UpstreamNode) selection;
-			LongPair processProduct = node.provider;
-			ProcessDescriptor process = processDescriptors.get(processProduct.getFirst());
-			if (process != null)
-				App.openEditor(process);
+			App.openEditor(node.provider.entity);
 		}
 	}
 }

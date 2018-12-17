@@ -22,7 +22,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.results.ContributionResultProvider;
+import org.openlca.core.results.ContributionResult;
 
 /**
  * Shows the contributions of the locations in the product system to an analysis
@@ -31,7 +31,7 @@ import org.openlca.core.results.ContributionResultProvider;
 public class LocationPage extends FormPage {
 
 	private EntityCache cache = Cache.getEntityCache();
-	ContributionResultProvider<?> result;
+	ContributionResult result;
 
 	private ResultTypeSelection combos;
 	private LocationTree tree;
@@ -41,11 +41,11 @@ public class LocationPage extends FormPage {
 	double cutoff = 0.01;
 	private CalculationSetup setup;
 
-	public LocationPage(FormEditor editor, ContributionResultProvider<?> result, CalculationSetup setup) {
+	public LocationPage(FormEditor editor, ContributionResult result, CalculationSetup setup) {
 		this(editor, result, setup, true);
 	}
 
-	public LocationPage(FormEditor editor, ContributionResultProvider<?> result, CalculationSetup setup,
+	public LocationPage(FormEditor editor, ContributionResult result, CalculationSetup setup,
 			boolean showMap) {
 		super(editor, "analysis.MapPage", M.Locations);
 		this.setup = setup;
@@ -77,7 +77,7 @@ public class LocationPage extends FormPage {
 		UI.gridLayout(comboComp, 2);
 		combos = ResultTypeSelection.on(result, cache)
 				.withEventHandler(new SelectionHandler(this))
-				.withSelection(result.getFlowDescriptors().iterator().next())
+				.withSelection(result.getFlows().iterator().next())
 				.create(comboComp, tk);
 
 		Composite cutoffComp = tk.createComposite(outer);

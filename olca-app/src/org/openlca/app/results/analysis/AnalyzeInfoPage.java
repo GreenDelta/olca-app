@@ -15,7 +15,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.results.FullResultProvider;
+import org.openlca.core.results.FullResult;
 
 /**
  * Overall information page of the analysis editor.
@@ -23,11 +23,12 @@ import org.openlca.core.results.FullResultProvider;
 public class AnalyzeInfoPage extends FormPage {
 
 	private CalculationSetup setup;
-	private FullResultProvider result;
+	private FullResult result;
 	private DQResult dqResult;
 	private FormToolkit tk;
 
-	public AnalyzeInfoPage(FormEditor editor, FullResultProvider result, DQResult dqResult, CalculationSetup setup) {
+	public AnalyzeInfoPage(FormEditor editor, FullResult result,
+			DQResult dqResult, CalculationSetup setup) {
 		super(editor, "AnalyzeInfoPage", M.GeneralInformation);
 		this.setup = setup;
 		this.result = result;

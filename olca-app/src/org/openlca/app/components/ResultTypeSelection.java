@@ -133,7 +133,7 @@ public class ResultTypeSelection {
 		boolean enabled = getType(initialSelection) == ModelType.FLOW;
 		Button check = toolkit.createButton(section, M.Flow, SWT.RADIO);
 		check.setSelection(enabled);
-		flowCombo = new FlowViewer(section, cache);
+		flowCombo = new FlowViewer(section);
 		flowCombo.setEnabled(enabled);
 		FlowDescriptor[] input = flows
 				.toArray(new FlowDescriptor[flows.size()]);

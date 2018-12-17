@@ -45,8 +45,9 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessGroup;
 import org.openlca.core.model.ProcessGroupSet;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.ContributionResultProvider;
+import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.ProcessGrouping;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -59,7 +60,7 @@ public class GroupPage extends FormPage {
 
 	List<ProcessGrouping> groups;
 	ProcessGroupSet groupSet;
-	ContributionResultProvider<?> result;
+	ContributionResult result;
 
 	private TableViewer groupViewer;
 	private TableViewer processViewer;
@@ -68,19 +69,19 @@ public class GroupPage extends FormPage {
 	private Section groupingSection;
 	private CalculationSetup setup;
 
-	public GroupPage(FormEditor editor, ContributionResultProvider<?> result, CalculationSetup setup) {
+	public GroupPage(FormEditor editor, ContributionResult result, CalculationSetup setup) {
 		super(editor, "analysis.GroupPage", M.Grouping);
 		this.result = result;
 		this.setup = setup;
 		initGroups(result);
 	}
 
-	private void initGroups(ContributionResultProvider<?> result) {
+	private void initGroups(ContributionResult result) {
 		groups = new ArrayList<>();
 		ProcessGrouping restGroup = new ProcessGrouping();
 		restGroup.name = M.Other;
 		restGroup.rest = true;
-		for (ProcessDescriptor p : result.getProcessDescriptors())
+		for (CategorizedDescriptor p : result.getProcesses())
 			restGroup.processes.add(p);
 		groups.add(restGroup);
 	}
@@ -372,7 +373,8 @@ public class GroupPage extends FormPage {
 	}
 
 	/**
-	 * Action for saving a group set in the grouping page of the analysis editor.
+	 * Action for saving a group set in the grouping page of the analysis
+	 * editor.
 	 */
 	private class SaveGroupSetAction extends Action {
 

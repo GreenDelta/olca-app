@@ -23,16 +23,17 @@ import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.SimpleResultProvider;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.results.SimpleResult;
 
 public class DQInfoSection {
 
-	private final SimpleResultProvider<?> result;
+	private final SimpleResult result;
 	private final DQResult dqResult;
 	private final FormToolkit toolkit;
 
-	public DQInfoSection(Composite parent, FormToolkit toolkit, SimpleResultProvider<?> result, DQResult dqResult) {
+	public DQInfoSection(Composite parent, FormToolkit toolkit,
+			SimpleResult result, DQResult dqResult) {
 		this.result = result;
 		this.dqResult = dqResult;
 		this.toolkit = toolkit;
@@ -80,9 +81,9 @@ public class DQInfoSection {
 		public Object[] getChildren(Object parentElement) {
 			if (!(parentElement instanceof DQIndicator) && !forProcesses)
 				return null;
-			Set<ProcessDescriptor> processes = result.getProcessDescriptors();
+			Set<CategorizedDescriptor> processes = result.getProcesses();
 			List<Object> children = new ArrayList<>();
-			for (ProcessDescriptor process : processes) {
+			for (CategorizedDescriptor process : processes) {
 				children.add(new Tupel(process, (DQIndicator) parentElement));
 			}
 			return children.toArray();
@@ -167,10 +168,11 @@ public class DQInfoSection {
 
 	private class Tupel {
 
-		private final ProcessDescriptor process;
-		private final DQIndicator indicator;
+		final CategorizedDescriptor process;
+		final DQIndicator indicator;
 
-		private Tupel(ProcessDescriptor process, DQIndicator indicator) {
+		private Tupel(CategorizedDescriptor process,
+				DQIndicator indicator) {
 			this.process = process;
 			this.indicator = indicator;
 		}

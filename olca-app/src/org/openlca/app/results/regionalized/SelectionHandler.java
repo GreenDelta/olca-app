@@ -8,19 +8,19 @@ import java.util.Set;
 
 import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.util.CostResultDescriptor;
-import org.openlca.core.matrix.LongPair;
+import org.openlca.core.matrix.Provider;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.ContributionResultProvider;
-import org.openlca.geo.RegionalizedResultProvider;
+import org.openlca.core.results.ContributionResult;
+import org.openlca.geo.RegionalizedResult;
 import org.openlca.geo.kml.LocationKml;
 
 abstract class SelectionHandler implements EventHandler {
 
-	private RegionalizedResultProvider result;
+	private RegionalizedResult result;
 
-	SelectionHandler(RegionalizedResultProvider result) {
+	SelectionHandler(RegionalizedResult result) {
 		this.result = result;
 	}
 
@@ -28,11 +28,11 @@ abstract class SelectionHandler implements EventHandler {
 
 	@Override
 	public void flowSelected(FlowDescriptor flow) {
-		ContributionResultProvider<?> provider = result.result;
-		Set<ProcessDescriptor> processes = provider.getProcessDescriptors();
+		ContributionResult provider = result.result;
+		Set<CategorizedDescriptor> processes = provider.getProcesses();
 		Map<Long, Double> results = new HashMap<>();
-		for (ProcessDescriptor process : processes) {
-			double v = provider.getSingleFlowResult(process, flow).value;
+		for (CategorizedDescriptor process : processes) {
+			double v = provider.getDirectFlowResult(process, flow);
 			results.put(process.getId(), v);
 		}
 		processResultData(getResultData(results));
@@ -40,11 +40,11 @@ abstract class SelectionHandler implements EventHandler {
 
 	@Override
 	public void impactCategorySelected(ImpactCategoryDescriptor impact) {
-		ContributionResultProvider<?> provider = result.result;
-		Set<ProcessDescriptor> processes = provider.getProcessDescriptors();
+		ContributionResult provider = result.result;
+		Set<CategorizedDescriptor> processes = provider.getProcesses();
 		Map<Long, Double> results = new HashMap<>();
-		for (ProcessDescriptor process : processes) {
-			double v = provider.getSingleImpactResult(process, impact).value;
+		for (CategorizedDescriptor process : processes) {
+			double v = provider.getDirectImpactResult(process, impact);
 			results.put(process.getId(), v);
 		}
 		processResultData(getResultData(results));
@@ -52,11 +52,11 @@ abstract class SelectionHandler implements EventHandler {
 
 	@Override
 	public void costResultSelected(CostResultDescriptor cost) {
-		ContributionResultProvider<?> provider = result.result;
-		Set<ProcessDescriptor> processes = provider.getProcessDescriptors();
+		ContributionResult provider = result.result;
+		Set<CategorizedDescriptor> processes = provider.getProcesses();
 		Map<Long, Double> results = new HashMap<>();
-		for (ProcessDescriptor process : processes) {
-			double v = provider.getSingleCostResult(process);
+		for (CategorizedDescriptor process : processes) {
+			double v = provider.getDirectCostResult(process);
 			v = cost.forAddedValue ? -v : v;
 			results.put(process.getId(), v);
 		}
@@ -68,8 +68,8 @@ abstract class SelectionHandler implements EventHandler {
 		for (LocationKml data : result.kmlData) {
 			LocationResult result = new LocationResult(data.kmlFeature,
 					data.locationId);
-			for (LongPair product : data.processProducts)
-				result.amount += results.get(product.getFirst());
+			for (Provider product : data.processProducts)
+				result.amount += results.get(product.id());
 			list.add(result);
 		}
 		return list;

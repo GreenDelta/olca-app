@@ -15,7 +15,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -31,7 +30,6 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.SimulationResult;
-import org.openlca.core.results.SimulationResultProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,15 +45,13 @@ public class SimulationPage extends FormPage {
 	private FlowViewer flowViewer;
 	private Section progressSection;
 	private ScrolledForm form;
-	private SimulationResultProvider<?> result;
+	private SimulationResult result;
 	private ImpactCategoryViewer impactViewer;
 
 	public SimulationPage(SimulationEditor editor) {
 		super(editor, "SimulationPage", M.MonteCarloSimulation);
 		this.editor = editor;
-		SimulationResult result = editor.getSimulator().getResult();
-		this.result = new SimulationResultProvider<>(result,
-				Cache.getEntityCache());
+		this.result = editor.getSimulator().getResult();
 	}
 
 	@Override
@@ -139,7 +135,7 @@ public class SimulationPage extends FormPage {
 				M.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(section);
 		impactViewer.setEnabled(false);
-		Set<ImpactCategoryDescriptor> impacts = result.getImpactDescriptors();
+		Set<ImpactCategoryDescriptor> impacts = result.getImpacts();
 		impactViewer.setInput(impacts);
 		impactViewer.addSelectionChangedListener((e) -> updateSelection());
 		impactViewer.selectFirst();
@@ -150,8 +146,8 @@ public class SimulationPage extends FormPage {
 		Button flowsCheck = toolkit.createButton(section, M.Flows,
 				SWT.RADIO);
 		flowsCheck.setSelection(true);
-		flowViewer = new FlowViewer(section, result.cache);
-		Set<FlowDescriptor> flows = result.getFlowDescriptors();
+		flowViewer = new FlowViewer(section);
+		Set<FlowDescriptor> flows = result.getFlows();
 		flowViewer.setInput(flows.toArray(new FlowDescriptor[flows.size()]));
 		flowViewer.selectFirst();
 		flowViewer.addSelectionChangedListener((e) -> updateSelection());

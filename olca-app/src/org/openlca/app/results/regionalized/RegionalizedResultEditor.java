@@ -31,18 +31,17 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResult;
-import org.openlca.core.results.FullResultProvider;
-import org.openlca.geo.RegionalizedResultProvider;
+import org.openlca.geo.RegionalizedResult;
 import org.openlca.geo.parameter.ParameterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RegionalizedResultEditor extends FormEditor implements IResultEditor<FullResultProvider> {
+public class RegionalizedResultEditor extends FormEditor implements IResultEditor<FullResult> {
 
 	public static String ID = "RegionalizedResultEditor";
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private RegionalizedResultProvider result;
+	private RegionalizedResult result;
 	private CalculationSetup setup;
 	private SankeyDiagram diagram;
 	private int diagramIndex;
@@ -58,7 +57,7 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 	}
 
 	@Override
-	public FullResultProvider getResult() {
+	public FullResult getResult() {
 		return result.result;
 	}
 
@@ -76,7 +75,7 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 			setup = Cache.getAppCache().remove(input.setupKey,
 					CalculationSetup.class);
 			result = Cache.getAppCache().remove(input.resultKey,
-					RegionalizedResultProvider.class);
+					RegionalizedResult.class);
 			impactCategoryDao = new ImpactCategoryDao(Database.get());
 			ParameterSet parameterSet = Cache.getAppCache().remove(
 					input.parameterSetKey, ParameterSet.class);
@@ -94,7 +93,7 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 	@Override
 	protected void addPages() {
 		try {
-			FullResultProvider regioResult = this.result.result;
+			FullResult regioResult = this.result.result;
 			addPage(new AnalyzeInfoPage(this, regioResult, dqResult, setup));
 			addPage(new InventoryPage(this, regioResult, dqResult, setup));
 			if (regioResult.hasImpactResults())

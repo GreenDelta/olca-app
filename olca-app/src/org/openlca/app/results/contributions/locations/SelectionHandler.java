@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.app.components.ResultTypeSelection.EventHandler;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
@@ -14,7 +15,7 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionItem;
-import org.openlca.core.results.ContributionResultProvider;
+import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.LocationContribution;
 import org.openlca.util.Strings;
@@ -24,7 +25,7 @@ import org.slf4j.LoggerFactory;
 class SelectionHandler implements EventHandler {
 
 	private LocationPage page;
-	private ContributionResultProvider<?> result;
+	private ContributionResult result;
 
 	private LocationContribution calculator;
 	private TreeContentBuilder inputBuilder;
@@ -33,16 +34,17 @@ class SelectionHandler implements EventHandler {
 		this.page = page;
 		this.result = page.result;
 		this.inputBuilder = new TreeContentBuilder(page);
-		calculator = new LocationContribution(result);
+		calculator = new LocationContribution(
+				result, Cache.getEntityCache());
 	}
 
 	@Override
 	public void flowSelected(FlowDescriptor flow) {
 		if (calculator == null || flow == null)
 			return;
-		String unit = Labels.getRefUnit(flow, result.cache);
+		String unit = Labels.getRefUnit(flow);
 		ContributionSet<Location> set = calculator.calculate(flow);
-		double total = result.getTotalFlowResult(flow).value;
+		double total = result.getTotalFlowResult(flow);
 		setData(set, flow, total, unit);
 	}
 
@@ -52,7 +54,7 @@ class SelectionHandler implements EventHandler {
 			return;
 		String unit = impact.getReferenceUnit();
 		ContributionSet<Location> set = calculator.calculate(impact);
-		double total = result.getTotalImpactResult(impact).value;
+		double total = result.getTotalImpactResult(impact);
 		setData(set, impact, total, unit);
 	}
 
@@ -63,12 +65,12 @@ class SelectionHandler implements EventHandler {
 		String unit = getCurrency();
 		if (cost.forAddedValue) {
 			ContributionSet<Location> set = calculator.addedValues();
-			double total = result.getTotalCostResult();
+			double total = result.totalCosts;
 			total = total == 0 ? 0 : -total;
 			setData(set, cost, total, unit);
 		} else {
 			ContributionSet<Location> set = calculator.netCosts();
-			double total = result.getTotalCostResult();
+			double total = result.totalCosts;
 			setData(set, cost, total, unit);
 		}
 	}

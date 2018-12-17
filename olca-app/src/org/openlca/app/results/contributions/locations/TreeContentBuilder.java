@@ -6,15 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.openlca.app.db.Cache;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
-import org.openlca.core.results.ContributionResultProvider;
+import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.Contributions;
 
@@ -25,7 +27,7 @@ import org.openlca.core.results.Contributions;
 class TreeContentBuilder {
 
 	private LocationPage page;
-	private ContributionResultProvider<?> result;
+	private ContributionResult result;
 	private Map<Location, List<ProcessDescriptor>> index = new HashMap<>();
 
 	TreeContentBuilder(LocationPage page) {
@@ -37,18 +39,21 @@ class TreeContentBuilder {
 	private void initProcessIndex() {
 		if (result == null)
 			return;
-		EntityCache cache = result.cache;
-		for (ProcessDescriptor process : result.getProcessDescriptors()) {
+		EntityCache cache = Cache.getEntityCache();
+		for (CategorizedDescriptor process : result.getProcesses()) {
+			if (!(process instanceof ProcessDescriptor))
+				continue;
+			ProcessDescriptor p = (ProcessDescriptor) process;
 			Location location = null;
-			if (process.getLocation() != null) {
-				location = cache.get(Location.class, process.getLocation());
+			if (p.getLocation() != null) {
+				location = cache.get(Location.class, p.getLocation());
 			}
 			List<ProcessDescriptor> list = index.get(location);
 			if (list == null) {
 				list = new ArrayList<>();
 				index.put(location, list);
 			}
-			list.add(process);
+			list.add(p);
 		}
 	}
 
@@ -94,14 +99,14 @@ class TreeContentBuilder {
 			return 0;
 		if (selection instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor d = (ImpactCategoryDescriptor) selection;
-			return result.getSingleImpactResult(process, d).value;
+			return result.getDirectImpactResult(process, d);
 		}
 		if (selection instanceof FlowDescriptor) {
 			FlowDescriptor d = (FlowDescriptor) selection;
-			return result.getSingleFlowResult(process, d).value;
+			return result.getDirectFlowResult(process, d);
 		}
 		if (selection instanceof CostResultDescriptor) {
-			double costs = result.getSingleCostResult(process);
+			double costs = result.getDirectCostResult(process);
 			CostResultDescriptor d = (CostResultDescriptor) selection;
 			return d.forAddedValue ? costs == 0 ? 0 : -costs : costs;
 		}

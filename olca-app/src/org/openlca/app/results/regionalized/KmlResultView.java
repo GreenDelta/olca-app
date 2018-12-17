@@ -24,7 +24,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.geo.RegionalizedResultProvider;
+import org.openlca.geo.RegionalizedResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,14 +36,14 @@ class KmlResultView extends FormPage implements WebPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	private RegionalizedResultProvider result;
+	private RegionalizedResult result;
 	private WebEngine webkit;
 	private ResultTypeSelection flowImpactSelection;
 	private boolean incompleteData = false;
 	private boolean loaded;
 	private CalculationSetup setup;
 
-	public KmlResultView(FormEditor editor, RegionalizedResultProvider result, CalculationSetup setup) {
+	public KmlResultView(FormEditor editor, RegionalizedResult result, CalculationSetup setup) {
 		super(editor, "KmlResultView", "Result map");
 		this.result = result;
 		this.setup = setup;
@@ -58,7 +58,7 @@ class KmlResultView extends FormPage implements WebPage {
 	public void onLoaded(WebEngine webkit) {
 		this.webkit = webkit;
 		loaded = true;
-		Set<FlowDescriptor> flowDescriptors = result.result.getFlowDescriptors();
+		Set<FlowDescriptor> flowDescriptors = result.result.getFlows();
 		if (flowDescriptors.isEmpty())
 			return;
 		FlowDescriptor flow = flowDescriptors.iterator().next();
@@ -100,7 +100,7 @@ class KmlResultView extends FormPage implements WebPage {
 
 		private List<Job> delayedJobs = new ArrayList<>();
 
-		private KmlSelectionHandler(RegionalizedResultProvider result) {
+		private KmlSelectionHandler(RegionalizedResult result) {
 			super(result);
 		}
 
