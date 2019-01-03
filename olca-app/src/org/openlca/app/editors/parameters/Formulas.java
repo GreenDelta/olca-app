@@ -88,10 +88,10 @@ public class Formulas {
 
 	private void evalParams(List<Parameter> params, Scope s) {
 		for (Parameter param : params) {
-			if (param.isInputParameter())
+			if (param.isInputParameter)
 				continue;
-			double val = eval(param.getFormula(), s);
-			param.setValue(val);
+			double val = eval(param.formula, s);
+			param.value = val;
 		}
 	}
 
@@ -153,10 +153,10 @@ public class Formulas {
 	private void bind(Parameter param, Scope scope) {
 		if (param == null || scope == null)
 			return;
-		if (param.isInputParameter())
-			scope.bind(param.getName(), Double.toString(param.getValue()));
+		if (param.isInputParameter)
+			scope.bind(param.getName(), Double.toString(param.value));
 		else
-			scope.bind(param.getName(), param.getFormula());
+			scope.bind(param.getName(), param.formula);
 	}
 
 }

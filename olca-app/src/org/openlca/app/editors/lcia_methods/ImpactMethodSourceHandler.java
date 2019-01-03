@@ -57,14 +57,14 @@ public class ImpactMethodSourceHandler implements SourceHandler {
 		if (sfParam == null)
 			return;
 		parameter.setRefId(UUID.randomUUID().toString());
-		parameter.setExternalSource(source);
-		parameter.setInputParameter(true);
+		parameter.externalSource = source;
+		parameter.isInputParameter = true;
 		parameter.setDescription("from shapefile: " + source);
-		parameter.setValue((sfParam.min + sfParam.max) / 2);
-		parameter.setUncertainty(Uncertainty.uniform(sfParam.min,
-				sfParam.max));
-		parameter.setScope(ParameterScope.IMPACT_METHOD);
-		parameter.setSourceType("SHAPE_FILE");
+		parameter.value = (sfParam.min + sfParam.max) / 2;
+		parameter.uncertainty = Uncertainty.uniform(
+				sfParam.min, sfParam.max);
+		parameter.scope = ParameterScope.IMPACT_METHOD;
+		parameter.sourceType = "SHAPE_FILE";
 		editor.getParameterSupport().evaluate();
 	}
 

@@ -341,7 +341,7 @@ public class ProcessResultPage extends FormPage {
 		private FullResult result;
 
 		public ResultProvider(FullResult result) {
-			this.process = result.techIndex.getRefFlow().entity;
+			this.process = result.techIndex.getRefFlow().process;
 			this.result = result;
 		}
 

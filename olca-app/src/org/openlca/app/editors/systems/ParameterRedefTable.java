@@ -84,10 +84,10 @@ class ParameterRedefTable {
 	}
 
 	private CategorizedDescriptor getContext(ParameterRedef p) {
-		if (p.getContextId() == null)
+		if (p.contextId == null)
 			return null;
-		return Daos.categorized(Database.get(), p.getContextType())
-				.getDescriptor(p.getContextId());
+		return Daos.categorized(Database.get(), p.contextType)
+				.getDescriptor(p.contextId);
 	}
 
 	private String[] getColumnHeaders() {
@@ -107,7 +107,7 @@ class ParameterRedefTable {
 		Action usage = Actions.create(M.Usage, Icon.LINK.descriptor(), () -> {
 			ParameterRedef redef = Viewers.getFirstSelected(viewer);
 			if (redef != null) {
-				ParameterUsagePage.show(redef.getName());
+				ParameterUsagePage.show(redef.name);
 			}
 		});
 		CommentAction.bindTo(section, "parameterRedefs",
@@ -160,9 +160,9 @@ class ParameterRedefTable {
 
 	private boolean contains(ParameterRedef redef, List<ParameterRedef> redefs) {
 		for (ParameterRedef contained : redefs) {
-			if (Strings.nullOrEqual(contained.getName(), redef.getName())
-					&& Objects.equals(contained.getContextId(),
-							redef.getContextId()))
+			if (Strings.nullOrEqual(contained.name, redef.name)
+					&& Objects.equals(contained.contextId,
+							redef.contextId))
 				return true;
 		}
 		return false;
@@ -215,20 +215,20 @@ class ParameterRedefTable {
 					return Labels.getDisplayName(model);
 				return "global";
 			case 1:
-				return redef.getName();
+				return redef.name;
 			case 2:
-				return Double.toString(redef.getValue());
+				return Double.toString(redef.value);
 			case 3:
-				return Uncertainty.string(redef.getUncertainty());
+				return Uncertainty.string(redef.uncertainty);
 			default:
 				return null;
 			}
 		}
 
 		private BaseDescriptor getModel(ParameterRedef redef) {
-			if (redef == null || redef.getContextId() == null)
+			if (redef == null || redef.contextId == null)
 				return null;
-			long modelId = redef.getContextId();
+			long modelId = redef.contextId;
 			BaseDescriptor model = cache.get(ImpactMethodDescriptor.class,
 					modelId);
 			if (model != null)
@@ -244,18 +244,18 @@ class ParameterRedefTable {
 
 		@Override
 		public int compare(ParameterRedef o1, ParameterRedef o2) {
-			if (Objects.equals(o1.getContextId(), o2.getContextId()))
+			if (Objects.equals(o1.contextId, o2.contextId))
 				return byName(o1, o2);
-			if (o1.getContextId() == null) {
+			if (o1.contextId == null) {
 				return -1; // global before process
 			}
-			if (o2.getContextId() == null)
+			if (o2.contextId == null)
 				return 1; // process after global
-			return compareProcesses(o1.getContextId(), o2.getContextId());
+			return compareProcesses(o1.contextId, o2.contextId);
 		}
 
 		private int byName(ParameterRedef o1, ParameterRedef o2) {
-			return Strings.compare(o1.getName(), o2.getName());
+			return Strings.compare(o1.name, o2.name);
 		}
 
 		private int compareProcesses(Long processId1, Long processId2) {

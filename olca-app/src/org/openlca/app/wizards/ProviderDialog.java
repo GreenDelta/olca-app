@@ -19,7 +19,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.CalcExchange;
-import org.openlca.core.matrix.Provider;
+import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 class ProviderDialog extends Dialog {
 
-	public static Options select(CalcExchange e, List<Provider> providers) {
+	public static Options select(CalcExchange e, List<ProcessProduct> providers) {
 		Options opts = new Options();
 		if (providers == null || providers.isEmpty())
 			return opts;
@@ -51,14 +51,14 @@ class ProviderDialog extends Dialog {
 
 	private final Options options;
 	private final CalcExchange exchange;
-	private final List<Provider> providers;
+	private final List<ProcessProduct> providers;
 
 	private Button saveCheck;
 	private Button autoContinueCheck;
 	private Button cancelCheck;
 
 	public ProviderDialog(Options options,
-			CalcExchange e, List<Provider> providers) {
+			CalcExchange e, List<ProcessProduct> providers) {
 		super(UI.shell());
 		this.options = options;
 		this.exchange = e;
@@ -87,7 +87,7 @@ class ProviderDialog extends Dialog {
 		String[] labels = new String[providers.size()];
 		for (int i = 0; i < labels.length; i++) {
 			labels[i] = Labels.getDisplayName(
-					providers.get(i).entity);
+					providers.get(i).process);
 		}
 		combo.setItems(labels);
 		combo.select(0);
@@ -165,7 +165,7 @@ class ProviderDialog extends Dialog {
 	}
 
 	static class Options {
-		Provider selected;
+		ProcessProduct selected;
 		boolean saveSelected;
 		boolean autoContinue;
 		boolean cancel;

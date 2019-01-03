@@ -42,7 +42,7 @@ class ReportVariantSync {
 			if (parameter.redef == null)
 				parameter.putValue(newId, 0);
 			else
-				parameter.putValue(newId, parameter.redef.getValue());
+				parameter.putValue(newId, parameter.redef.value);
 		}
 	}
 

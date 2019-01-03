@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.openlca.app.components.ResultTypeSelection.EventHandler;
 import org.openlca.app.util.CostResultDescriptor;
-import org.openlca.core.matrix.Provider;
+import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -68,7 +68,7 @@ abstract class SelectionHandler implements EventHandler {
 		for (LocationKml data : result.kmlData) {
 			LocationResult result = new LocationResult(data.kmlFeature,
 					data.locationId);
-			for (Provider product : data.processProducts)
+			for (ProcessProduct product : data.processProducts)
 				result.amount += results.get(product.id());
 			list.add(result);
 		}

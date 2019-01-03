@@ -107,7 +107,7 @@ public class ParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
 		ParameterLabel label = new ParameterLabel();
 		table.setLabelProvider(label);
 		Viewers.sortByLabels(table, label, 0, 2, 3);
-		Viewers.sortByDouble(table, (Parameter p) -> p.getValue(), 1);
+		Viewers.sortByDouble(table, (Parameter p) -> p.value, 1);
 		Tables.bindColumnWidths(table.getTable(), 0.4, 0.3);
 		table.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 		section.setExpanded(false);
@@ -161,9 +161,9 @@ public class ParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
 			case 0:
 				return p.getName();
 			case 1:
-				return Double.toString(p.getValue());
+				return Double.toString(p.value);
 			case 2:
-				return Uncertainty.string(p.getUncertainty());
+				return Uncertainty.string(p.uncertainty);
 			case 3:
 				return p.getDescription();
 			default:

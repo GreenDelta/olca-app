@@ -41,8 +41,8 @@ class FactorCalculator {
 		ParameterDao dao = new ParameterDao(db);
 		addToContext(dao.getGlobalParameters());
 		for (ParameterRedef redef : setup.parameterRedefs) {
-			if (redef.getContextId() == null) {
-				inputParams.put(redef.getName(), redef.getValue());
+			if (redef.contextId == null) {
+				inputParams.put(redef.name, redef.value);
 			}
 		}
 		if (setup.impactMethod != null) {
@@ -54,10 +54,10 @@ class FactorCalculator {
 
 	private void addToContext(List<Parameter> params) {
 		for (Parameter p : params) {
-			if (p.isInputParameter()) {
-				inputParams.put(p.getName(), p.getValue());
+			if (p.isInputParameter) {
+				inputParams.put(p.getName(), p.value);
 			} else {
-				calcParams.put(p.getName(), p.getFormula());
+				calcParams.put(p.getName(), p.formula);
 			}
 		}
 	}

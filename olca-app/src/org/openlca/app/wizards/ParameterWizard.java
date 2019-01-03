@@ -100,14 +100,14 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 			parameter.setRefId(UUID.randomUUID().toString());
 			parameter.setName(getModelName());
 			parameter.setDescription(getModelDescription());
-			parameter.setInputParameter(!dependentButton.getSelection());
+			parameter.isInputParameter = !dependentButton.getSelection();
 			if (Strings.isNullOrEmpty(formulaText.getText()))
 				return parameter;
-			if (parameter.isInputParameter())
-				parameter.setValue(getAmount());
+			if (parameter.isInputParameter)
+				parameter.value = getAmount();
 			else {
-				parameter.setFormula(formulaText.getText());
-				parameter.setValue(lastCalculated);
+				parameter.formula = formulaText.getText();
+				parameter.value = lastCalculated;
 			}
 			return parameter;
 		}
@@ -166,7 +166,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 						setPageComplete(false);
 						return false;
 					} else
-						lastCalculated = dummy.getValue();
+						lastCalculated = dummy.value;
 				} catch (Exception e) {
 				}
 			}
@@ -176,8 +176,8 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 		private Parameter createDummyParameter() {
 			Parameter parameter = new Parameter();
 			parameter.setName(getName());
-			parameter.setFormula(formulaText.getText());
-			parameter.setScope(ParameterScope.GLOBAL);
+			parameter.formula = formulaText.getText();
+			parameter.scope = ParameterScope.GLOBAL;
 			return parameter;
 		}
 

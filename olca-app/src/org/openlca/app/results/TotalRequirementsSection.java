@@ -30,7 +30,7 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.Provider;
+import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.matrix.TechIndex;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.FlowType;
@@ -226,11 +226,11 @@ class TotalRequirementsSection {
 		}
 
 		private void setProcessProduct(TechIndex techIdx, int idx) {
-			Provider provider = techIdx.getProviderAt(idx);
-			if (provider == null)
+			ProcessProduct product = techIdx.getProviderAt(idx);
+			if (product == null)
 				return;
-			this.process = provider.entity;
-			FlowDescriptor flow = provider.flow;
+			this.process = product.process;
+			FlowDescriptor flow = product.flow;
 			if (flow != null) {
 				this.product = Labels.getDisplayName(flow);
 				this.unit = Labels.getRefUnit(flow);
@@ -244,7 +244,7 @@ class TotalRequirementsSection {
 			if (!(result instanceof ContributionResult))
 				return;
 			ContributionResult crp = (ContributionResult) result;
-			double[] vals = crp.singleCostResults;
+			double[] vals = crp.directCostResults;
 			if (vals.length > idx && idx >= 0) {
 				double v = vals[idx];
 				costValue = costs == Costs.NET_COSTS ? v : v != 0 ? -v : 0;

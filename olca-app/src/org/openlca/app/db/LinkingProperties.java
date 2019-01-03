@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
-import org.openlca.core.matrix.Provider;
+import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.matrix.cache.FlowTable;
 import org.openlca.core.matrix.cache.ProcessTable;
 import org.openlca.core.model.FlowType;
@@ -76,9 +76,9 @@ class LinkingProperties {
 		}
 
 		void checkMultiProviders(LinkingProperties props) {
-			for (Provider provider : processes.getProviders()) {
-				long flowID = provider.flowId();
-				List<Provider> providers = processes.getProviders(flowID);
+			for (ProcessProduct products : processes.getProviders()) {
+				long flowID = products.flowId();
+				List<ProcessProduct> providers = processes.getProviders(flowID);
 				if (providers != null && providers.size() > 1) {
 					props.multiProviderFlows.add(flowID);
 				}

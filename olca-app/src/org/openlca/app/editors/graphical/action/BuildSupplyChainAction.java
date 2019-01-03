@@ -14,10 +14,13 @@ import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.LinkingConfig;
 import org.openlca.core.matrix.LinkingConfig.DefaultProviders;
-import org.openlca.core.matrix.LongPair;
+import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.matrix.ProductSystemBuilder;
+import org.openlca.core.model.Exchange;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -90,8 +93,15 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 			monitor.beginTask(M.CreatingProductSystem, IProgressMonitor.UNKNOWN);
 			ProductSystemBuilder builder = new ProductSystemBuilder(Cache.getMatrixCache(), config);
 			for (ProcessNode node : nodes) {
-				LongPair idPair = new LongPair(node.process.getId(), node.process.getQuantitativeReference());
-				builder.autoComplete(system, idPair);
+				ProcessProduct provider = new ProcessProduct();
+				provider.process = node.process;
+				ProcessDao dao = new ProcessDao(Database.get());
+				Process p = dao.getForId(node.process.getId());
+				Exchange qRef = p.getQuantitativeReference();
+				if (qRef != null && qRef.flow != null) {
+					provider.flow = Descriptors.toDescriptor(qRef.flow);
+				}
+				builder.autoComplete(system, provider);
 				system = builder.saveUpdates(system);
 			}
 			ProductSystemGraphEditor editor = nodes.get(0).parent().editor;

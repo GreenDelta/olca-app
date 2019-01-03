@@ -16,9 +16,9 @@ class Clipboard {
 		ClipboardText ct = ClipboardText.split(text);
 		List<Parameter> params = readParams(ct);
 		for (Parameter param : params) {
-			param.setScope(scope);
-			param.setInputParameter(true);
-			param.setFormula(null);
+			param.scope = scope;
+			param.isInputParameter = true;
+			param.formula = null;
 		}
 		return params;
 	}
@@ -27,12 +27,12 @@ class Clipboard {
 		ClipboardText ct = ClipboardText.split(text);
 		List<Parameter> params = readParams(ct);
 		for (Parameter param : params) {
-			param.setScope(scope);
-			param.setInputParameter(false);
-			if (param.getFormula() == null) {
-				param.setFormula(Double.toString(param.getValue()));
+			param.scope = scope;
+			param.isInputParameter = false;
+			if (param.formula == null) {
+				param.formula = Double.toString(param.value);
 			}
-			param.setUncertainty(null);
+			param.uncertainty = null;
 		}
 		return params;
 	}
@@ -59,11 +59,11 @@ class Clipboard {
 			return null;
 		Parameter p = new Parameter();
 		p.setRefId(UUID.randomUUID().toString());
-		p.setInputParameter(false);
+		p.isInputParameter = false;
 		p.setName(name);
-		p.setFormula(formula);
+		p.formula = formula;
 		if (row.length > 2)
-			p.setValue(readDouble(row[2]));
+			p.value = readDouble(row[2]);
 		if (row.length > 3)
 			p.setDescription(row[3]);
 		return p;
@@ -78,11 +78,11 @@ class Clipboard {
 		double val = readDouble(fields[1]);
 		Parameter p = new Parameter();
 		p.setRefId(UUID.randomUUID().toString());
-		p.setInputParameter(true);
+		p.isInputParameter = true;
 		p.setName(name);
-		p.setValue(val);
+		p.value = val;
 		if (fields.length > 2)
-			p.setUncertainty(Uncertainty.fromString(fields[2]));
+			p.uncertainty = Uncertainty.fromString(fields[2]);
 		if (fields.length > 3)
 			p.setDescription(fields[3]);
 		return p;

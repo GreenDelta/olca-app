@@ -130,10 +130,10 @@ public class ParameterSection {
 	private void addSorters(TableViewer table, ParameterLabelProvider label) {
 		if (forInputParameters) {
 			Viewers.sortByLabels(table, label, 0, 2, 3);
-			Viewers.sortByDouble(table, (Parameter p) -> p.getValue(), 1);
+			Viewers.sortByDouble(table, (Parameter p) -> p.value, 1);
 		} else {
 			Viewers.sortByLabels(table, label, 0, 1, 3);
-			Viewers.sortByDouble(table, (Parameter p) -> p.getValue(), 2);
+			Viewers.sortByDouble(table, (Parameter p) -> p.value, 2);
 		}
 	}
 
@@ -170,7 +170,7 @@ public class ParameterSection {
 			if (!(obj instanceof Parameter))
 				return;
 			Parameter param = (Parameter) obj;
-			param.setFormula(formula);
+			param.formula = formula;
 			support.evaluate();
 			viewer.refresh();
 			editor.setDirty(true);
@@ -190,7 +190,7 @@ public class ParameterSection {
 			return;
 		List<Parameter> input = new ArrayList<>();
 		for (Parameter param : supplier.get()) {
-			if (param.isInputParameter() == forInputParameters)
+			if (param.isInputParameter == forInputParameters)
 				input.add(param);
 		}
 		viewer.setInput(input);
@@ -207,11 +207,11 @@ public class ParameterSection {
 		Parameter p = new Parameter();
 		p.setRefId(UUID.randomUUID().toString());
 		p.setName(name);
-		p.setScope(page.scope);
-		p.setInputParameter(forInputParameters);
-		p.setValue(1.0);
+		p.scope = page.scope;
+		p.isInputParameter = forInputParameters;
+		p.value = 1.0;
 		if (!forInputParameters)
-			p.setFormula("1.0");
+			p.formula = "1.0";
 		params.add(p);
 		setInput();
 		editor.setDirty(true);
@@ -271,7 +271,7 @@ public class ParameterSection {
 		public Image getColumnImage(Object element, int col) {
 			Parameter parameter = (Parameter) element;
 			if (col == 0) {
-				if (parameter.getExternalSource() == null)
+				if (parameter.externalSource == null)
 					return null;
 				// currently the only external sources are shape files
 				return Images.get(ModelType.IMPACT_METHOD);
@@ -290,18 +290,18 @@ public class ParameterSection {
 				return p.getName();
 			case 1:
 				if (forInputParameters)
-					return Double.toString(p.getValue());
+					return Double.toString(p.value);
 				else
-					return p.getFormula();
+					return p.formula;
 			case 2:
 				if (forInputParameters)
-					return Uncertainty.string(p.getUncertainty());
+					return Uncertainty.string(p.uncertainty);
 				else
-					return Double.toString(p.getValue());
+					return Double.toString(p.value);
 			case 3:
 				return p.getDescription();
 			case 4:
-				return p.getExternalSource();
+				return p.externalSource;
 			default:
 				return null;
 			}
@@ -347,7 +347,7 @@ public class ParameterSection {
 
 		@Override
 		protected String getItem(Parameter element) {
-			return element.getExternalSource();
+			return element.externalSource;
 		}
 
 		@Override
@@ -359,7 +359,7 @@ public class ParameterSection {
 		protected void setItem(Parameter element, String item) {
 			if (!Question.ask(M.ExternalSourceChange, M.RecalculateQuestion))
 				return;
-			element.setExternalSource(item);
+			element.externalSource = item;
 			page.sourceHandler.sourceChanged(element, item);
 		}
 	}

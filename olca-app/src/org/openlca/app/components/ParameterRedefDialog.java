@@ -81,8 +81,8 @@ public class ParameterRedefDialog extends FormDialog {
 			ResultSet results = con.createStatement().executeQuery(query);
 			while (results.next()) {
 				ParameterRedef redef = fetchRedef(results);
-				if (redef.getContextId() == null
-						|| validContexts.contains(redef.getContextId()))
+				if (redef.contextId == null
+						|| validContexts.contains(redef.contextId))
 					parameters.add(redef);
 			}
 			results.close();
@@ -97,11 +97,12 @@ public class ParameterRedefDialog extends FormDialog {
 	private static ParameterRedef fetchRedef(ResultSet results)
 			throws Exception {
 		ParameterRedef redef = new ParameterRedef();
-		redef.setName(results.getString("name"));
-		redef.setValue(results.getDouble("value"));
+		redef.name = results.getString("name");
+		redef.value = results.getDouble("value");
 		long modelId = results.getLong("f_owner");
-		if (!results.wasNull())
-			redef.setContextId(modelId);
+		if (!results.wasNull()) {
+			redef.contextId = modelId;
+		}
 		return redef;
 	}
 
@@ -112,7 +113,7 @@ public class ParameterRedefDialog extends FormDialog {
 		for (ParameterRedef redef : parameters) {
 			ParameterNode paramNode = new ParameterNode();
 			paramNode.parameter = redef;
-			Long modelId = redef.getContextId();
+			Long modelId = redef.contextId;
 			if (modelId == null)
 				model.globalParameters.add(paramNode);
 			else {
@@ -122,8 +123,9 @@ public class ParameterRedefDialog extends FormDialog {
 					node.model = getModel(modelId, cache);
 					createdNodes.put(modelId, node);
 				}
-				if (node.model != null)
-					redef.setContextType(node.model.getModelType());
+				if (node.model != null) {
+					redef.contextType = node.model.getModelType();
+				}
 				paramNode.modelNode = node;
 				node.parameters.add(paramNode);
 			}
@@ -226,8 +228,9 @@ public class ParameterRedefDialog extends FormDialog {
 			ParameterNode node1 = (ParameterNode) e1;
 			if (e2 instanceof ParameterNode) {
 				ParameterNode node2 = (ParameterNode) e2;
-				return Strings.compare(node1.parameter.getName(),
-						node2.parameter.getName());
+				return Strings.compare(
+						node1.parameter.name,
+						node2.parameter.name);
 			}
 			return -1; // global parameters before processes
 		}
@@ -277,7 +280,7 @@ public class ParameterRedefDialog extends FormDialog {
 
 	private boolean contains(ParameterNode node, String term) {
 		ParameterRedef redef = node.parameter;
-		return StringUtils.containsIgnoreCase(redef.getName(), term);
+		return StringUtils.containsIgnoreCase(redef.name, term);
 	}
 
 	private static class TreeModel {
@@ -360,7 +363,7 @@ public class ParameterRedefDialog extends FormDialog {
 			}
 			if (element instanceof ParameterNode) {
 				ParameterNode node = (ParameterNode) element;
-				return node.parameter.getName();
+				return node.parameter.name;
 			}
 			return null;
 		}

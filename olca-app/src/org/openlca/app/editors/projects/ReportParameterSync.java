@@ -35,7 +35,7 @@ class ReportParameterSync {
 						report);
 				if (varRedef == null || reportVariant == null)
 					continue;
-				param.putValue(reportVariant.id, varRedef.getValue());
+				param.putValue(reportVariant.id, varRedef.value);
 			}
 		}
 	}
@@ -57,7 +57,7 @@ class ReportParameterSync {
 	private ReportParameter initParam(ParameterRedef redef, Report report) {
 		ReportParameter param = new ReportParameter();
 		report.parameters.add(param);
-		param.name = redef.getName();
+		param.name = redef.name;
 		param.redef = redef;
 		return param;
 	}
@@ -106,10 +106,10 @@ class ReportParameterSync {
 			return;
 		param = new ReportParameter();
 		report.parameters.add(param);
-		param.name = redef.getName();
+		param.name = redef.name;
 		param.redef = redef;
 		for (ReportVariant variant : report.variants)
-			param.putValue(variant.id, redef.getValue());
+			param.putValue(variant.id, redef.value);
 	}
 
 	public void parameterRemoved(ParameterRedef redef) {
@@ -159,8 +159,8 @@ class ReportParameterSync {
 			return true;
 		if (r1 == null || r2 == null)
 			return false;
-		return Objects.equals(r1.getName(), r2.getName())
-				&& Objects.equals(r1.getContextType(), r2.getContextType())
-				&& Objects.equals(r1.getContextId(), r2.getContextId());
+		return Objects.equals(r1.name, r2.name)
+				&& Objects.equals(r1.contextType, r2.contextType)
+				&& Objects.equals(r1.contextId, r2.contextId);
 	}
 }

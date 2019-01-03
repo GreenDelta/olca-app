@@ -96,7 +96,7 @@ public class CommentPaths {
 
 	public static String get(ParameterRedef redef, CategorizedDescriptor contextElement) {
 		String context = contextElement != null ? contextElement.getRefId() : "global";
-		return "parameterRedefs[" + context + "-" + redef.getName() + "]";
+		return "parameterRedefs[" + context + "-" + redef.name + "]";
 	}
 
 	public static String get(ProjectVariant variant) {

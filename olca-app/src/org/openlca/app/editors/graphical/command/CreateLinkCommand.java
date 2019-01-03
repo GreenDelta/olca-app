@@ -52,7 +52,7 @@ public class CreateLinkCommand extends Command {
 		ProductSystemNode sysNode = sysNode();
 		if (sysNode == null)
 			return processLink;
-		FlowType type = sysNode.flowTypes.get(flowId);
+		FlowType type = sysNode.flows.type(flowId);
 		if (input != null) {
 			long processID = input.parent().process.getId();
 			if (type == FlowType.PRODUCT_FLOW) {

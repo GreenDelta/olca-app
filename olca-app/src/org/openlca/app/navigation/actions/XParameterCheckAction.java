@@ -2,6 +2,7 @@ package org.openlca.app.navigation.actions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -69,15 +70,14 @@ class XParameterCheckAction extends Action implements INavigationAction {
 			evalAll(database);
 		}
 
-		private void init(IDatabase database) {
+		private void init(IDatabase db) {
 			log.trace("init formula interpreter");
 			processes = new HashMap<>();
-			ProcessDao dao = new ProcessDao(database);
+			ProcessDao dao = new ProcessDao(db);
 			for (ProcessDescriptor descriptor : dao.getDescriptors())
 				processes.put(descriptor.getId(), descriptor);
-			ParameterTable parameterTable = ParameterTable.build(database,
-					processes.keySet());
-			interpreter = parameterTable.createInterpreter();
+			interpreter = ParameterTable.interpreter(
+					db, processes.keySet(), Collections.emptySet());
 		}
 
 		private void evalAll(IDatabase database) {

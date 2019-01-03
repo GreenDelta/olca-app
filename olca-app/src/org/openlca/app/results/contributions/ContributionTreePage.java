@@ -213,7 +213,7 @@ public class ContributionTreePage extends FormPage {
 			case 0:
 				return Numbers.percent(getContribution(node));
 			case 1:
-				return Labels.getDisplayName(node.provider.entity);
+				return Labels.getDisplayName(node.provider.process);
 			case 2:
 				return Numbers.format(node.result);
 			case 3:
@@ -260,7 +260,7 @@ public class ContributionTreePage extends FormPage {
 			if (!(selection instanceof UpstreamNode))
 				return;
 			UpstreamNode node = (UpstreamNode) selection;
-			App.openEditor(node.provider.entity);
+			App.openEditor(node.provider.process);
 		}
 	}
 }

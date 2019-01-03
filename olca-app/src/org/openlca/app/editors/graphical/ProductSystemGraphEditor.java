@@ -139,7 +139,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 				continue;
 			ProcessNode outNode = null;
 			ProcessNode inNode = null;
-			FlowType type = sysNode.flowTypes.get(pLink.flowId);
+			FlowType type = sysNode.flows.type(pLink.flowId);
 			if (type == FlowType.PRODUCT_FLOW) {
 				outNode = isProvider ? node : otherNode;
 				inNode = isProvider ? otherNode : node;

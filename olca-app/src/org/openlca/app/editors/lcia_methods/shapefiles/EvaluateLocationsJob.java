@@ -90,9 +90,9 @@ class EvaluateLocationsJob implements IRunnableWithProgress {
 		for (Parameter param : allParams) {
 			if (param == null)
 				continue;
-			if (param.getExternalSource() == null)
+			if (param.externalSource == null)
 				continue;
-			if (!"SHAPE_FILE".equals(param.getSourceType()))
+			if (!"SHAPE_FILE".equals(param.sourceType))
 				continue;
 			shapeFileParams.add(param);
 		}

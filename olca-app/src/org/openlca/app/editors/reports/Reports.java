@@ -62,7 +62,7 @@ public final class Reports {
 			report.variants.add(reportVar);
 			for (ParameterRedef redef : projectVar.getParameterRedefs()) {
 				ReportParameter param = findOrCreateParameter(redef, report);
-				param.putValue(reportVar.id, redef.getValue());
+				param.putValue(reportVar.id, redef.value);
 			}
 		}
 	}
@@ -73,14 +73,14 @@ public final class Reports {
 			ParameterRedef reportRedef = parameter.redef;
 			if (reportRedef == null)
 				continue;
-			if (Objects.equals(redef.getName(), reportRedef.getName())
-					&& Objects.equals(redef.getContextId(),
-							reportRedef.getContextId()))
+			if (Objects.equals(redef.name, reportRedef.name)
+					&& Objects.equals(redef.contextId,
+							reportRedef.contextId))
 				return parameter;
 		}
 		ReportParameter parameter = new ReportParameter();
 		report.parameters.add(parameter);
-		parameter.name = redef.getName();
+		parameter.name = redef.name;
 		parameter.redef = redef;
 		return parameter;
 	}

@@ -175,7 +175,7 @@ public class ProcessNode extends Node {
 	public ExchangeNode getOutput(ProcessLink link) {
 		if (link == null)
 			return null;
-		FlowType type = parent().flowTypes.get(link.flowId);
+		FlowType type = parent().flows.type(link.flowId);
 		if (type == null || type == FlowType.ELEMENTARY_FLOW)
 			return null;
 		for (ExchangeNode n : getExchangeNodes()) {
@@ -195,7 +195,7 @@ public class ProcessNode extends Node {
 	public ExchangeNode getInput(ProcessLink link) {
 		if (link == null)
 			return null;
-		FlowType type = parent().flowTypes.get(link.flowId);
+		FlowType type = parent().flows.type(link.flowId);
 		if (type == null || type == FlowType.ELEMENTARY_FLOW)
 			return null;
 		for (ExchangeNode n : getExchangeNodes()) {

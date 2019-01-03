@@ -73,7 +73,7 @@ public class FormulaCellEditor extends TextCellEditor {
 		selectedElement = value;
 		String formula = null;
 		if (value instanceof Parameter) {
-			formula = ((Parameter) value).getFormula();
+			formula = ((Parameter) value).formula;
 		} else if (value instanceof Exchange) {
 			Exchange e = (Exchange) value;
 			if (Strings.notEmpty(e.amountFormula)) {

@@ -69,7 +69,7 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 	private void createAdditionalInfo(Composite body) {
 		Composite comp = UI.formSection(body, toolkit, M.AdditionalInformation, 3);
 		UI.formLabel(comp, toolkit, M.Type);
-		if (getModel().isInputParameter()) {
+		if (getModel().isInputParameter) {
 			UI.formLabel(comp, toolkit, M.InputParameter);
 			UI.filler(comp, toolkit);
 			forInputParameter(comp);
@@ -83,13 +83,13 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 	private void forInputParameter(Composite comp) {
 		doubleText(comp, M.Value, "value");
 		UI.formLabel(comp, toolkit, M.Uncertainty);
-		Hyperlink link = UI.formLink(comp, toolkit, Uncertainty.string(getModel().getUncertainty()));
+		Hyperlink link = UI.formLink(comp, toolkit, Uncertainty.string(getModel().uncertainty));
 		Controls.onClick(link, e -> {
-			UncertaintyDialog dialog = new UncertaintyDialog(UI.shell(), getModel().getUncertainty());
+			UncertaintyDialog dialog = new UncertaintyDialog(UI.shell(), getModel().uncertainty);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return;
-			getModel().setUncertainty(dialog.getUncertainty());
-			link.setText(Uncertainty.string(getModel().getUncertainty()));
+			getModel().uncertainty = dialog.getUncertainty();
+			link.setText(Uncertainty.string(getModel().uncertainty));
 			getEditor().setDirty(true);
 		});
 		UI.filler(comp, toolkit);
@@ -98,15 +98,15 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 	private void forDependentParameter(Composite comp) {
 		Text text = text(comp, M.Formula, "formula");
 		UI.formLabel(comp, toolkit, M.Value);
-		Label label = UI.formLabel(comp, toolkit, Double.toString(getModel().getValue()));
+		Label label = UI.formLabel(comp, toolkit, Double.toString(getModel().value));
 		text.addModifyListener(e -> {
 			support.evaluate();
-			label.setText(Double.toString(getModel().getValue()));
+			label.setText(Double.toString(getModel().value));
 			getEditor().setDirty(true);
 			comp.layout();
 		});
 		ParameterProposals.on(text);
 		support.evaluate();
-		label.setText(Double.toString(getModel().getValue()));
+		label.setText(Double.toString(getModel().value));
 	}
 }

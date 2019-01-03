@@ -51,13 +51,13 @@ class ParameterClipboard {
 				return null;
 			if (row.length > 2) {
 				try {
-					redef.setValue(Double.parseDouble(row[2]));
+					redef.value = Double.parseDouble(row[2]);
 				} catch (Exception e) {
 					log.warn("Parameter redef. value is not numeric");
 				}
 			}
 			if (row.length > 3) {
-				redef.setUncertainty(Uncertainty.fromString(row[3]));
+				redef.uncertainty = Uncertainty.fromString(row[3]);
 			}
 			return redef;
 		}
@@ -71,14 +71,14 @@ class ParameterClipboard {
 				return null;
 			}
 			ParameterRedef p = new ParameterRedef();
-			p.setName(row[1]);
+			p.name = row[1];
 			if (Strings.nullOrEqual(cname, "global"))
 				return p;
 			ProcessDescriptor process = findProcess(cname);
 			if (process == null)
 				return null;
-			p.setContextId(process.getId());
-			p.setContextType(ModelType.PROCESS);
+			p.contextId = process.getId();
+			p.contextType = ModelType.PROCESS;
 			return p;
 		}
 

@@ -54,10 +54,10 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 			u = exchange.uncertainty;
 		} else if (value instanceof Parameter) {
 			parameter = (Parameter) value;
-			u = parameter.getUncertainty();
+			u = parameter.uncertainty;
 		} else if (value instanceof ParameterRedef) {
 			parameterRedef = (ParameterRedef) value;
-			u = parameterRedef.getUncertainty();
+			u = parameterRedef.uncertainty;
 		}
 		super.doSetValue(u == null ? "none" : u.toString());
 	}
@@ -84,9 +84,9 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		else if (factor != null)
 			factor.uncertainty = u;
 		else if (parameter != null)
-			parameter.setUncertainty(u);
+			parameter.uncertainty = u;
 		else if (parameterRedef != null)
-			parameterRedef.setUncertainty(u);
+			parameterRedef.uncertainty = u;
 		updateContents(Uncertainty.string(u));
 		if (editor != null)
 			editor.setDirty(true);
@@ -102,11 +102,11 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 			uncertainty = factor.uncertainty;
 			val = factor.value;
 		} else if (parameter != null) {
-			uncertainty = parameter.getUncertainty();
-			val = parameter.getValue();
+			uncertainty = parameter.uncertainty;
+			val = parameter.value;
 		} else if (parameterRedef != null) {
-			uncertainty = parameterRedef.getUncertainty();
-			val = parameterRedef.getValue();
+			uncertainty = parameterRedef.uncertainty;
+			val = parameterRedef.value;
 		}
 		if (uncertainty != null)
 			return uncertainty;
