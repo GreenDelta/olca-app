@@ -788,7 +788,6 @@ class DiffMatchPatch {
             <= Math.max(length_insertions1, length_deletions1))
             && (lastequality.length()
                 <= Math.max(length_insertions2, length_deletions2))) {
-          //System.out.println("Splitting: '" + lastequality + "'");
           // Walk back to offending equality.
           while (thisDiff != equalities.lastElement()) {
             thisDiff = pointer.previous();
@@ -1094,7 +1093,6 @@ class DiffMatchPatch {
                 || ((lastequality.length() < Diff_EditCost / 2)
                     && ((pre_ins ? 1 : 0) + (pre_del ? 1 : 0)
                         + (post_ins ? 1 : 0) + (post_del ? 1 : 0)) == 3))) {
-          //System.out.println("Splitting: '" + lastequality + "'");
           // Walk back to offending equality.
           while (thisDiff != equalities.lastElement()) {
             thisDiff = pointer.previous();
