@@ -28,7 +28,7 @@ public class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
 
 	@Override
 	protected int getDisplayColumn() {
-		return 3;
+		return 2;
 	}
 
 	@Override
@@ -73,10 +73,10 @@ public class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
 			switch (columnIndex) {
 			case 0:
 				return process.getName();
-			case 2:
+			case 1:
 				Location location = getLocation(process);
 				return location != null ? location.getName() : null;
-			case 3:
+			case 2:
 				return Labels.getDisplayName(process);
 			default:
 				return null;
