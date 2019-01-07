@@ -65,16 +65,18 @@ public class ReplaceProvidersDialog extends FormDialog {
 		processViewer.setInput(getUsedInExchanges());
 	}
 
-	private ProcessViewer createProcessViewer(Composite parent, FormToolkit toolkit, String label, Consumer<ProcessDescriptor> onChange) {
+	private ProcessViewer createProcessViewer(Composite parent, FormToolkit toolkit, String label,
+			Consumer<ProcessDescriptor> onChange) {
 		UI.formLabel(parent, toolkit, label);
 		ProcessViewer viewer = new ProcessViewer(parent, Cache.getEntityCache());
 		viewer.addSelectionChangedListener(onChange);
 		return viewer;
 	}
 
-	private FlowViewer createFlowViewer(Composite parent, FormToolkit toolkit, String label, Consumer<FlowDescriptor> onChange) {
+	private FlowViewer createFlowViewer(Composite parent, FormToolkit toolkit, String label,
+			Consumer<FlowDescriptor> onChange) {
 		UI.formLabel(parent, toolkit, label);
-		FlowViewer viewer = new FlowViewer(parent, Cache.getEntityCache());
+		FlowViewer viewer = new FlowViewer(parent);
 		viewer.addSelectionChangedListener(onChange);
 		return viewer;
 	}

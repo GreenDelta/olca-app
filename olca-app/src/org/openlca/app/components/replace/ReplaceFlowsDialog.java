@@ -17,7 +17,6 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
@@ -72,9 +71,10 @@ public class ReplaceFlowsDialog extends FormDialog {
 		toolkit.adapt(top);
 	}
 
-	private FlowViewer createFlowViewer(Composite parent, FormToolkit toolkit, String label, Consumer<FlowDescriptor> onChange) {
+	private FlowViewer createFlowViewer(Composite parent, FormToolkit toolkit, String label,
+			Consumer<FlowDescriptor> onChange) {
 		UI.formLabel(parent, toolkit, label);
-		FlowViewer viewer = new FlowViewer(parent, Cache.getEntityCache());
+		FlowViewer viewer = new FlowViewer(parent);
 		viewer.addSelectionChangedListener(onChange);
 		return viewer;
 	}

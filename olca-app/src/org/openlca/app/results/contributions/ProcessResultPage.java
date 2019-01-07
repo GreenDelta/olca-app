@@ -34,7 +34,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.app.viewers.combo.ProcessViewer;
+import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
