@@ -11,6 +11,7 @@ import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.ui.preferences.CloudPreference;
+import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.cloud.CommitAction;
@@ -102,6 +103,9 @@ public class NavigationActionProvider extends CommonActionProvider {
 		if (showDbCreate(elements)) {
 			menu.add(new DbCreateAction());
 			menu.add(new DbImportAction());
+			if (App.runsInDevMode() && Database.get() == null) {
+				menu.add(new XNexusEcoinventIndexExportAction());
+			}
 		}
 		if (elements.size() == 1) {
 			registerSingleActions(elements.get(0), menu, actions);
@@ -146,7 +150,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 	}
 
 	private INavigationAction[] getDatabaseActions() {
-		int count = App.runsInDevMode() ? 13 : 7;
+		int count = App.runsInDevMode() ? 14 : 7;
 		INavigationAction[] actions = new INavigationAction[count];
 		actions[0] = new DbExportAction();
 		actions[1] = new DbActivateAction();
@@ -160,8 +164,9 @@ public class NavigationActionProvider extends CommonActionProvider {
 			actions[8] = new XEI3MarketProcessCleanUp();
 			actions[9] = new XParameterCheckAction();
 			actions[10] = new XNexusIndexExportAction();
-			actions[11] = new XRefDataExport();
-			actions[12] = new XRefDataImport();
+			actions[11] = new XNexusEcoinventIndexExportAction();
+			actions[12] = new XRefDataExport();
+			actions[13] = new XRefDataImport();
 		}
 		return actions;
 	}

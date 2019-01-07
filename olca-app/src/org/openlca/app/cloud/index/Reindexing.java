@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.db.Database;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.cloud.util.Datasets;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
@@ -140,7 +140,7 @@ public class Reindexing {
 		if (descriptor.getCategory() != null) {
 			category = categoryDao.getForId(descriptor.getCategory());
 		}
-		Dataset dataset = CloudUtil.toDataset(descriptor, category);
+		Dataset dataset = Datasets.toDataset(descriptor, category);
 		index.add(dataset, descriptor.getId());
 		index.update(dataset, DiffType.NEW);
 	}

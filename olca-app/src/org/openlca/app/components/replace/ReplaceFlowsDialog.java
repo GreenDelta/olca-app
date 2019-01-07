@@ -1,14 +1,13 @@
 package org.openlca.app.components.replace;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -21,21 +20,15 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Info;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Viewers;
-import org.openlca.app.viewers.BaseLabelProvider;
-import org.openlca.app.viewers.BaseNameComparator;
+import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.core.database.FlowDao;
-import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 
 public class ReplaceFlowsDialog extends FormDialog {
 
-	private List<FlowDescriptor> usedInExchanges;
-	private List<FlowDescriptor> replacementCandidates;
-	private ComboViewer selectionViewer;
-	private ComboViewer replacementViewer;
+	private FlowViewer selectionViewer;
+	private FlowViewer replacementViewer;
 	private Button excludeWithProviders;
 
 	public static void openDialog() {
@@ -55,6 +48,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		newShell.setText(M.BulkreplaceFlows);
+		newShell.setSize(800, 400);
 	}
 
 	@Override
@@ -69,11 +63,30 @@ public class ReplaceFlowsDialog extends FormDialog {
 	private void createTop(Composite parent, FormToolkit toolkit) {
 		Composite top = UI.formComposite(parent, toolkit);
 		UI.gridLayout(top, 2, 20, 5);
-		usedInExchanges = getUsedInExchanges();
-		selectionViewer = createSelectionViewer(top, toolkit);
-		replacementViewer = createReplacementViewer(top, toolkit);
+		UI.gridData(top, true, false);
+		selectionViewer = createFlowViewer(top, toolkit, M.ReplaceFlow, this::updateReplacementCandidates);
+		replacementViewer = createFlowViewer(top, toolkit, M.With, selected -> updateButtons());
+		replacementViewer.setEnabled(false);
+		selectionViewer.setInput(getUsedInExchanges());
 		toolkit.paintBordersFor(top);
 		toolkit.adapt(top);
+	}
+
+	private FlowViewer createFlowViewer(Composite parent, FormToolkit toolkit, String label, Consumer<FlowDescriptor> onChange) {
+		UI.formLabel(parent, toolkit, label);
+		FlowViewer viewer = new FlowViewer(parent, Cache.getEntityCache());
+		viewer.addSelectionChangedListener(onChange);
+		return viewer;
+	}
+
+	private void updateReplacementCandidates(FlowDescriptor selected) {
+		List<FlowDescriptor> candidates = getReplacementCandidates(selected);
+		replacementViewer.setInput(candidates);
+		replacementViewer.setEnabled(candidates.size() > 1);
+		if (candidates.size() == 1) {
+			replacementViewer.select(candidates.get(0));
+		}
+		updateButtons();
 	}
 
 	private void createBottom(Composite parent, FormToolkit toolkit) {
@@ -94,53 +107,11 @@ public class ReplaceFlowsDialog extends FormDialog {
 		noteLabel.setLayoutData(gd);
 	}
 
-	private ComboViewer createSelectionViewer(Composite parent, FormToolkit toolkit) {
-		UI.formLabel(parent, toolkit, M.ReplaceFlow);
-		ComboViewer viewer = new ComboViewer(new CCombo(parent, SWT.DROP_DOWN));
-		decorateViewer(viewer);
-		NameFilter filter = new NameFilter();
-		viewer.addFilter(filter);
-		viewer.setInput(usedInExchanges);
-		UI.gridData(viewer.getCCombo(), true, false).widthHint = 300;
-		viewer.getCCombo().addKeyListener(new FilterOnKey(viewer, filter, () -> usedInExchanges));
-		viewer.addSelectionChangedListener((e) -> {
-			FlowDescriptor selected = Viewers.getFirstSelected(viewer);
-			if (selected == null || selected.getId() == 0l) {
-				replacementCandidates = new ArrayList<>();
-			} else {
-				replacementCandidates = getReplacementCandidates(selected);
-			}
-			replacementViewer.setInput(replacementCandidates);
-			updateButtons();
-		});
-		return viewer;
-	}
-
-	private ComboViewer createReplacementViewer(Composite parent, FormToolkit toolkit) {
-		UI.formLabel(parent, toolkit, M.With);
-		ComboViewer viewer = new ComboViewer(new CCombo(parent, SWT.NONE));
-		decorateViewer(viewer);
-		NameFilter filter = new NameFilter();
-		viewer.addFilter(filter);
-		viewer.getCCombo().addKeyListener(new FilterOnKey(viewer, filter, () -> replacementCandidates));
-		UI.gridData(viewer.getCCombo(), true, false).widthHint = 300;
-		viewer.addSelectionChangedListener((e) -> {
-			updateButtons();
-		});
-		return viewer;
-	}
-
 	private void updateButtons() {
-		FlowDescriptor first = Viewers.getFirstSelected(selectionViewer);
-		FlowDescriptor second = Viewers.getFirstSelected(replacementViewer);
+		FlowDescriptor first = selectionViewer.getSelected();
+		FlowDescriptor second = replacementViewer.getSelected();
 		boolean enabled = first != null && first.getId() != 0l && second != null && second.getId() != 0l;
 		getButton(IDialogConstants.OK_ID).setEnabled(enabled);
-	}
-
-	private void decorateViewer(ComboViewer viewer) {
-		viewer.setContentProvider(new ArrayContentProvider());
-		viewer.setLabelProvider(new LabelProvider());
-		viewer.setComparator(new BaseNameComparator());
 	}
 
 	private List<FlowDescriptor> getUsedInExchanges() {
@@ -153,11 +124,13 @@ public class ReplaceFlowsDialog extends FormDialog {
 	}
 
 	private List<FlowDescriptor> getReplacementCandidates(FlowDescriptor flow) {
+		if (flow == null || flow.getId() == 0l)
+			return Collections.emptyList();
 		FlowDao dao = new FlowDao(Database.get());
 		Set<Long> ids = dao.getReplacementCandidates(flow.getId(), flow.getFlowType());
 		List<FlowDescriptor> result = new ArrayList<>();
-		result.add(new FlowDescriptor());
 		result.addAll(dao.getDescriptors(ids));
+		result.remove(flow);
 		return result;
 	}
 
@@ -169,47 +142,12 @@ public class ReplaceFlowsDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
-		FlowDescriptor oldFlow = Viewers.getFirstSelected(selectionViewer);
-		FlowDescriptor newFlow = Viewers.getFirstSelected(replacementViewer);
+		FlowDescriptor oldFlow = selectionViewer.getSelected();
+		FlowDescriptor newFlow = replacementViewer.getSelected();
 		FlowDao dao = new FlowDao(Database.get());
 		dao.replace(oldFlow.getId(), newFlow.getId(), excludeWithProviders.getSelection());
 		Database.get().getEntityFactory().getCache().evictAll();
 		super.okPressed();
-	}
-
-	private class LabelProvider extends BaseLabelProvider {
-
-		private Category getCategory(FlowDescriptor flow) {
-			if (flow == null || flow.getCategory() == null)
-				return null;
-			return Cache.getEntityCache().get(Category.class, flow.getCategory());
-		}
-
-		private String getCategoryText(FlowDescriptor flow) {
-			Category category = getCategory(flow);
-			if (category == null)
-				return "";
-			String text = "";
-			while (category.getCategory() != null) {
-				text = category.getCategory().getName() + "/" + text;
-				category = category.getCategory();
-			}
-			return text;
-		}
-
-		@Override
-		public String getText(Object element) {
-			if (!(element instanceof FlowDescriptor))
-				return null;
-			FlowDescriptor flow = (FlowDescriptor) element;
-			String flowText = Labels.getDisplayName(flow);
-			if (flowText == null)
-				flowText = "";
-			String categoryText = getCategoryText(flow);
-			return categoryText + flowText;
-
-		}
-
 	}
 
 }

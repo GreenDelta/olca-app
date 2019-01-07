@@ -235,6 +235,20 @@ public class ProcessResultPage extends FormPage {
 		Tables.bindColumnWidths(table.getTable(), 0.20, 0.30, 0.20, 0.20, 0.10);
 	}
 
+	private class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
+
+		public ProcessViewer(Composite parent) {
+			super(parent);
+			setInput(new ProcessDescriptor[0]);
+		}
+
+		@Override
+		public Class<ProcessDescriptor> getType() {
+			return ProcessDescriptor.class;
+		}
+
+	}
+
 	private class FlowLabel extends BaseLabelProvider implements
 			ITableLabelProvider {
 

@@ -137,7 +137,6 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 			if (monitor != null)
 				monitor.done();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			log.error("failed to update " + modelClass.getSimpleName());
 		}
 	}

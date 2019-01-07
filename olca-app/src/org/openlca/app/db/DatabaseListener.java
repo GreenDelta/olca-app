@@ -1,7 +1,7 @@
 package org.openlca.app.db;
 
-import org.openlca.app.cloud.CloudUtil;
 import org.openlca.cloud.model.data.Dataset;
+import org.openlca.cloud.util.Datasets;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IDatabaseListener;
@@ -60,7 +60,7 @@ class DatabaseListener implements IDatabaseListener {
 		if (element.getCategory() != null) {
 			category = categoryDao.getForId(element.getCategory());
 		}
-		return CloudUtil.toDataset(element, category);
+		return Datasets.toDataset(element, category);
 	}
 
 }
