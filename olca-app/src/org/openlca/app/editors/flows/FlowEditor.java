@@ -21,12 +21,13 @@ public class FlowEditor extends ModelEditor<Flow> {
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 	}
-	
+
 	@Override
 	protected void addPages() {
 		try {
 			addPage(new FlowInfoPage(this));
 			addPage(new FlowPropertiesPage(this));
+			addPage(new ImpactPage(this));
 			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);
