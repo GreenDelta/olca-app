@@ -197,11 +197,11 @@ class CausalFactorTable {
 
 	private AllocationFactor getFactor(Exchange product, Exchange exchange) {
 		for (AllocationFactor factor : process().getAllocationFactors()) {
-			if (factor.getAllocationType() != AllocationMethod.CAUSAL)
+			if (factor.method != AllocationMethod.CAUSAL)
 				continue;
-			if (product.flow.getId() != factor.getProductId())
+			if (product.flow.getId() != factor.productId)
 				continue;
-			if (!Objects.equals(factor.getExchange(), exchange))
+			if (!Objects.equals(factor.exchange, exchange))
 				continue;
 			return factor;
 		}
@@ -258,7 +258,7 @@ class CausalFactorTable {
 			AllocationFactor factor = getFactor(getProduct(col), exchange);
 			if (factor == null)
 				return Double.toString(1.0);
-			return Double.toString(factor.getValue());
+			return Double.toString(factor.value);
 		}
 	}
 
@@ -297,7 +297,7 @@ class CausalFactorTable {
 			AllocationFactor factor = getFactor(product, exchange);
 			if (factor == null)
 				return Double.toString(1);
-			return Double.toString(factor.getValue());
+			return Double.toString(factor.value);
 		}
 
 		@Override
@@ -308,12 +308,12 @@ class CausalFactorTable {
 			AllocationFactor factor = getFactor(product, exchange);
 			if (factor == null) {
 				factor = new AllocationFactor();
-				factor.setAllocationType(AllocationMethod.CAUSAL);
-				factor.setExchange(exchange);
-				factor.setProductId(product.flow.getId());
+				factor.method = AllocationMethod.CAUSAL;
+				factor.exchange = exchange;
+				factor.productId = product.flow.getId();
 				process().getAllocationFactors().add(factor);
 			}
-			factor.setValue(val);
+			factor.value = val;
 			editor.setDirty(true);
 		}
 	}

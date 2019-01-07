@@ -64,7 +64,7 @@ class AllocationSync {
 			AllocationFactor factor = getFactor(f.product, method);
 			if (factor == null)
 				continue;
-			factor.setValue(f.value);
+			factor.value = f.value;
 		}
 	}
 
@@ -74,7 +74,7 @@ class AllocationSync {
 				AllocationFactor factor = getCausalFactor(f.product, e);
 				if (factor == null)
 					continue;
-				factor.setValue(f.value);
+				factor.value = f.value;
 			}
 		}
 	}
@@ -82,9 +82,9 @@ class AllocationSync {
 	/** For physical and economic allocation. */
 	private AllocationFactor getFactor(Exchange product, AllocationMethod method) {
 		for (AllocationFactor factor : process.getAllocationFactors()) {
-			if (factor.getAllocationType() != method)
+			if (factor.method != method)
 				continue;
-			if (factor.getProductId() == product.flow.getId())
+			if (factor.productId == product.flow.getId())
 				return factor;
 		}
 		return null;
@@ -92,10 +92,10 @@ class AllocationSync {
 
 	private AllocationFactor getCausalFactor(Exchange product, Exchange exchange) {
 		for (AllocationFactor factor : process.getAllocationFactors()) {
-			if (factor.getAllocationType() != AllocationMethod.CAUSAL)
+			if (factor.method != AllocationMethod.CAUSAL)
 				continue;
-			if (factor.getProductId() == product.flow.getId()
-					&& Objects.equals(exchange, factor.getExchange()))
+			if (factor.productId == product.flow.getId()
+					&& Objects.equals(exchange, factor.exchange))
 				return factor;
 		}
 		return null;

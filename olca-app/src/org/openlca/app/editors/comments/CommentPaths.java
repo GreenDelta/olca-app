@@ -46,7 +46,7 @@ public class CommentPaths {
 	}
 
 	public static String get(AllocationFactor factor, Exchange product, Exchange exchange) {
-		String type = factor.getAllocationType().name();
+		String type = factor.method.name();
 		String id = product.flow.getRefId();
 		if (exchange != null) {
 			id += "-" + exchange.internalId;

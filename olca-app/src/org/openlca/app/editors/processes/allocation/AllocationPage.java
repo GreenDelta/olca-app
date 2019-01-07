@@ -197,9 +197,9 @@ public class AllocationPage extends ModelPage<Process> {
 		if (exchange == null || method == null)
 			return null;
 		for (AllocationFactor factor : process().getAllocationFactors()) {
-			if (factor.getAllocationType() != method)
+			if (factor.method != method)
 				continue;
-			if (factor.getProductId() != exchange.flow.getId())
+			if (factor.productId != exchange.flow.getId())
 				continue;
 			return factor;
 		}
@@ -210,7 +210,7 @@ public class AllocationPage extends ModelPage<Process> {
 		AllocationFactor factor = getFactor(exchange, method);
 		if (factor == null)
 			return Double.toString(1);
-		return Double.toString(factor.getValue());
+		return Double.toString(factor.value);
 	}
 
 	private class FactorLabel extends LabelProvider implements
@@ -284,11 +284,11 @@ public class AllocationPage extends ModelPage<Process> {
 			AllocationFactor factor = getFactor(exchange, method);
 			if (factor == null) {
 				factor = new AllocationFactor();
-				factor.setAllocationType(method);
-				factor.setProductId(exchange.flow.getId());
+				factor.method = method;
+				factor.productId = exchange.flow.getId();
 				process().getAllocationFactors().add(factor);
 			}
-			factor.setValue(val);
+			factor.value = val;
 			editor.setDirty(true);
 		}
 
