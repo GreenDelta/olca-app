@@ -10,8 +10,8 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.parameters.Formulas;
-import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
+import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.app.editors.processes.allocation.AllocationPage;
 import org.openlca.app.editors.processes.exchanges.ProcessExchangePage;
 import org.openlca.app.editors.processes.social.SocialAspectsPage;
@@ -64,7 +64,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 	public ParameterChangeSupport getParameterSupport() {
 		return parameterSupport;
 	}
-	
+
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		AllocationCleanup.on(getModel());
@@ -81,6 +81,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 			addPage(ParameterPage.create(this));
 			addPage(new AllocationPage(this));
 			addPage(new SocialAspectsPage(this));
+			addPage(new ImpactPage(this));
 			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);
