@@ -33,6 +33,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.ReferenceAmount;
@@ -93,6 +94,16 @@ class ImpactPage extends ModelPage<Process> {
 				0.25, 0.25, 0.25, 0.25);
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		tree.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
+		Trees.onDoubleClick(tree, e -> {
+			Node node = Viewers.getFirstSelected(tree);
+			if (node == null)
+				return;
+			if (node.exchange != null) {
+				App.openEditor(node.exchange.flow);
+			} else if (node.impact != null) {
+				App.openEditor(combo.getSelected());
+			}
+		});
 
 		if (!list.isEmpty()) {
 			ImpactMethodDescriptor m = list.get(0);
