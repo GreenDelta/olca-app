@@ -8,6 +8,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.results.IResultEditor;
+import org.openlca.app.results.ImpactChecksPage;
 import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
@@ -92,6 +93,9 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 			diagram = new SankeyDiagram(result, dqResult, setup);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, M.SankeyDiagram);
+			if (result.hasImpactResults()) {
+				addPage(new ImpactChecksPage(this, setup, result));
+			}
 		} catch (final PartInitException e) {
 			log.error("Add pages failed", e);
 		}
