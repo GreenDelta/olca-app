@@ -127,7 +127,7 @@ public class SyncView extends ViewPart {
 		}
 		if (element instanceof ModelElement) {
 			CategorizedDescriptor descriptor = ((ModelElement) element).getContent();
-			if (descriptor.getRefId().equals(dataset.refId))
+			if (descriptor.refId.equals(dataset.refId))
 				return true;
 		}
 		for (INavigationElement<?> child : element.getChildren())

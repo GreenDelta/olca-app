@@ -130,7 +130,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	public void createNecessaryLinks(ProcessNode node) {
 		MutableProcessLinkSearchMap linkSearch = node.parent().linkSearch;
 		ProductSystemNode sysNode = node.parent();
-		long id = node.process.getId();
+		long id = node.process.id;
 		for (ProcessLink pLink : linkSearch.getLinks(id)) {
 			boolean isProvider = pLink.providerId == id;
 			long otherID = isProvider ? pLink.processId : pLink.providerId;

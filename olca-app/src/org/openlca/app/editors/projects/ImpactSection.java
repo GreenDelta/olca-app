@@ -62,7 +62,7 @@ class ImpactSection {
 			if (selection == null) {
 				project.setNwSetId(null);
 			} else {
-				project.setNwSetId(selection.getId());
+				project.setNwSetId(selection.id);
 			}
 			editor.setDirty(true);
 		});
@@ -72,13 +72,13 @@ class ImpactSection {
 		Project project = editor.getModel();
 		if (selection == null && project.getImpactMethodId() == null)
 			return;
-		if (selection != null && Objects.equals(selection.getId(), project.getImpactMethodId()))
+		if (selection != null && Objects.equals(selection.id, project.getImpactMethodId()))
 			return;
 		project.setNwSetId(null);
 		if (selection == null)
 			project.setImpactMethodId(null);
 		else
-			project.setImpactMethodId(selection.getId());
+			project.setImpactMethodId(selection.id);
 		project.setNwSetId(null);
 		nwViewer.select(null);
 		nwViewer.setInput(selection);
@@ -98,7 +98,7 @@ class ImpactSection {
 			return;
 		methodViewer.select(method);
 		NwSetDao dao = new NwSetDao(database);
-		List<NwSetDescriptor> nwSets = dao.getDescriptorsForMethod(method.getId());
+		List<NwSetDescriptor> nwSets = dao.getDescriptorsForMethod(method.id);
 		nwViewer.setInput(nwSets);
 		nwViewer.select(getInitialNwSet(project, nwSets));
 	}
@@ -107,7 +107,7 @@ class ImpactSection {
 		if (project.getNwSetId() == null)
 			return null;
 		for (NwSetDescriptor d : nwSets)
-			if (project.getNwSetId() == d.getId())
+			if (project.getNwSetId() == d.id)
 				return d;
 		return null;
 	}

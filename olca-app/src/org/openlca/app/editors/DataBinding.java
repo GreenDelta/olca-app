@@ -60,8 +60,8 @@ public class DataBinding {
 			Object newValue = viewer.getSelected();
 			if (newValue instanceof BaseDescriptor) {
 				BaseDescriptor descriptor = (BaseDescriptor) newValue;
-				Class<? extends AbstractEntity> modelClass = descriptor.getModelType().getModelClass();
-				newValue = Daos.base(Database.get(), modelClass).getForId(descriptor.getId());
+				Class<? extends AbstractEntity> modelClass = descriptor.type.getModelClass();
+				newValue = Daos.base(Database.get(), modelClass).getForId(descriptor.id);
 			}
 			Object oldValue = Bean.getValue(bean, property);
 			if (Objects.equals(newValue, oldValue))
@@ -87,10 +87,10 @@ public class DataBinding {
 		log.trace("Change value {} @ {}", property, bean);
 		try {
 			Object newValue = null;
-			if (d != null && d.getModelType() != null) {
+			if (d != null && d.type != null) {
 				BaseDao<?> dao = Daos.base(Database.get(),
-						d.getModelType().getModelClass());
-				newValue = dao.getForId(d.getId());
+						d.type.getModelClass());
+				newValue = dao.getForId(d.id);
 			}
 			Object oldValue = Bean.getValue(bean, property);
 			if (Objects.equals(newValue, oldValue))
@@ -259,7 +259,7 @@ public class DataBinding {
 		else if (val instanceof RootEntity)
 			return ((RootEntity) val).getName();
 		else if (val instanceof BaseDescriptor)
-			return ((BaseDescriptor) val).getName();
+			return ((BaseDescriptor) val).name;
 		else if (val instanceof Date)
 			return DateFormat.getDateTimeInstance(DateFormat.SHORT,
 					DateFormat.SHORT).format((Date) val);

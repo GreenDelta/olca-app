@@ -94,10 +94,10 @@ public class CalculationWizard extends Wizard {
 			if (!(part.getEditorInput() instanceof ModelEditorInput))
 				continue;
 			ModelEditorInput input = (ModelEditorInput) part.getEditorInput();
-			ModelType type = input.getDescriptor().getModelType();
+			ModelType type = input.getDescriptor().type;
 			if (type == ModelType.PROJECT || type == ModelType.ACTOR || type == ModelType.SOURCE)
 				continue;
-			if (type == ModelType.PRODUCT_SYSTEM && input.getDescriptor().getId() != system.getId())
+			if (type == ModelType.PRODUCT_SYSTEM && input.getDescriptor().id != system.getId())
 				continue;
 			relevant.add(part);
 		}
@@ -157,10 +157,10 @@ public class CalculationWizard extends Wizard {
 		String amVal = am == null ? "NONE" : am.name();
 		Preferences.set("calc.allocation.method", amVal);
 		BaseDescriptor m = setup.impactMethod;
-		String mVal = m == null ? "" : m.getRefId();
+		String mVal = m == null ? "" : m.refId;
 		Preferences.set("calc.impact.method", mVal);
 		BaseDescriptor nws = setup.nwSet;
-		String nwsVal = nws == null ? "" : nws.getRefId();
+		String nwsVal = nws == null ? "" : nws.refId;
 		Preferences.set("calc.nwset", nwsVal);
 		saveDefault(CalculationType.class, setup.type);
 		Preferences.set("calc.numberOfRuns", Integer.toString(setup.numberOfRuns));
@@ -271,13 +271,13 @@ public class CalculationWizard extends Wizard {
 			Map<Long, Flow> flows = new HashMap<>();
 			Set<Long> ids = new HashSet<>();
 			for (FlowDescriptor flow : result.getFlows()) {
-				ids.add(flow.getId());
+				ids.add(flow.id);
 			}
 			for (Flow flow : new FlowDao(Database.get()).getForIds(ids)) {
 				flows.put(flow.getId(), flow);
 			}
 			for (FlowDescriptor d : result.getFlows()) {
-				Flow flow = flows.get(d.getId());
+				Flow flow = flows.get(d.id);
 				Exchange exchange = Exchange.from(flow);
 				exchange.amount = result.getTotalFlowResult(d);
 				exchange.isInput = result.isInput(d);

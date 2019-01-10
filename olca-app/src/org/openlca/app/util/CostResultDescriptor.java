@@ -9,12 +9,10 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
  */
 public class CostResultDescriptor extends BaseDescriptor {
 
-	private static final long serialVersionUID = -3283456838468979294L;
-
 	public boolean forAddedValue;
 
 	public CostResultDescriptor() {
-		setType(ModelType.CURRENCY);
+		type = ModelType.CURRENCY;
 	}
 
 }

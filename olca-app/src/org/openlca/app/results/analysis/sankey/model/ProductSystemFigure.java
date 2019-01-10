@@ -105,16 +105,16 @@ public class ProductSystemFigure extends Figure {
 	private String selectionLabel(Object selection) {
 		if (selection instanceof FlowDescriptor) {
 			FlowDescriptor flow = (FlowDescriptor) selection;
-			return M.Flow + ": " + flow.getName();
+			return M.Flow + ": " + flow.name;
 		}
 		if (selection instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
-			return M.ImpactCategory + ": " + impact.getName();
+			return M.ImpactCategory + ": " + impact.name;
 		}
 		if (selection instanceof CostResultDescriptor) {
 			CostResultDescriptor cost = (CostResultDescriptor) selection;
 			String m = M.CostResult;
-			return m + ": " + cost.getName();
+			return m + ": " + cost.name;
 		}
 		return M.NoAnalysisOptionsSet;
 	}

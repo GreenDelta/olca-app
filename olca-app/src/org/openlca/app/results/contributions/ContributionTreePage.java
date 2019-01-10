@@ -24,7 +24,6 @@ import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.components.ResultTypeSelection.EventHandler;
-import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
@@ -71,7 +70,7 @@ public class ContributionTreePage extends FormPage {
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
 		ResultTypeSelection selector = ResultTypeSelection
-				.on(result, Cache.getEntityCache())
+				.on(result)
 				.withEventHandler(new SelectionHandler())
 				.create(composite, toolkit);
 		Composite treeContainer = toolkit.createComposite(body);
@@ -229,7 +228,7 @@ public class ContributionTreePage extends FormPage {
 				return Labels.getRefUnit(flow);
 			} else if (selection instanceof ImpactCategoryDescriptor) {
 				ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
-				return impact.getReferenceUnit();
+				return impact.referenceUnit;
 			} else if (selection instanceof CostResultDescriptor) {
 				return Labels.getReferenceCurrencyCode();
 			}

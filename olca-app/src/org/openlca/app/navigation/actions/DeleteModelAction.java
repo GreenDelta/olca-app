@@ -148,15 +148,15 @@ class DeleteModelAction extends Action implements INavigationAction {
 		categories.clear();
 	}
 
-	private boolean isUsed(CategorizedDescriptor descriptor) {
+	private boolean isUsed(CategorizedDescriptor d) {
 		IUseSearch<CategorizedDescriptor> search = IUseSearch.FACTORY
-				.createFor(descriptor.getModelType(), Database.get());
-		List<CategorizedDescriptor> descriptors = search.findUses(descriptor);
+				.createFor(d.type, Database.get());
+		List<CategorizedDescriptor> descriptors = search.findUses(d);
 		if (descriptors.isEmpty())
 			return false;
 		if (showInUseMessage) {
 			MessageDialogWithToggle dialog = MessageDialogWithToggle.openError(UI.shell(), M.CannotDelete,
-					descriptor.getName() + ": " + M.CannotDeleteMessage,
+					d.name + ": " + M.CannotDeleteMessage,
 					M.DoNotShowThisMessageAgain, false, null, null);
 			showInUseMessage = !dialog.getToggleState();
 		}
@@ -168,9 +168,9 @@ class DeleteModelAction extends Action implements INavigationAction {
 		try {
 			log.trace("delete model {}", descriptor);
 			IDatabase database = Database.get();
-			Class<T> clazz = (Class<T>) descriptor.getModelType().getModelClass();
+			Class<T> clazz = (Class<T>) descriptor.type.getModelClass();
 			BaseDao<T> dao = Daos.base(database, clazz);
-			T instance = dao.getForId(descriptor.getId());
+			T instance = dao.getForId(descriptor.id);
 			dao.delete(instance);
 			Cache.evict(descriptor);
 			DatabaseDir.deleteDir(descriptor);

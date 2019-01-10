@@ -75,7 +75,7 @@ public class CommentPaths {
 	}
 
 	public static String get(ImpactCategoryDescriptor category) {
-		return "impactCategories[" + category.getRefId() + "]";
+		return "impactCategories[" + category.refId + "]";
 	}
 
 	public static String get(ImpactCategory category, ImpactFactor factor) {
@@ -95,7 +95,7 @@ public class CommentPaths {
 	}
 
 	public static String get(ParameterRedef redef, CategorizedDescriptor contextElement) {
-		String context = contextElement != null ? contextElement.getRefId() : "global";
+		String context = contextElement != null ? contextElement.refId : "global";
 		return "parameterRedefs[" + context + "-" + redef.name + "]";
 	}
 

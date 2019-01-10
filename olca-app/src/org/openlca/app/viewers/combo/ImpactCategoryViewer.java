@@ -65,7 +65,7 @@ public class ImpactCategoryViewer extends
 		public Image getColumnImage(Object element, int columnIndex) {
 			switch (columnIndex) {
 			case 0:
-				return Images.get(ModelType.IMPACT_CATEGORY); 
+				return Images.get(ModelType.IMPACT_CATEGORY);
 			}
 			return null;
 		}
@@ -78,7 +78,7 @@ public class ImpactCategoryViewer extends
 			case 0:
 				return Labels.getDisplayName(category);
 			case 1:
-				return category.getReferenceUnit();
+				return category.referenceUnit;
 			}
 			return "";
 		}
@@ -96,14 +96,12 @@ public class ImpactCategoryViewer extends
 			}
 			if (!(e2 instanceof ImpactCategoryDescriptor) || e2 == null)
 				return 1;
-			ImpactCategoryDescriptor category1 = (ImpactCategoryDescriptor) e1;
-			ImpactCategoryDescriptor category2 = (ImpactCategoryDescriptor) e2;
-			int compare = Strings.compare(category1.getName(),
-					category2.getName());
-			if (compare != 0)
-				return compare;
-			return Strings.compare(category1.getReferenceUnit(),
-					category2.getReferenceUnit());
+			ImpactCategoryDescriptor i1 = (ImpactCategoryDescriptor) e1;
+			ImpactCategoryDescriptor i2 = (ImpactCategoryDescriptor) e2;
+			int c = Strings.compare(i1.name, i2.name);
+			if (c != 0)
+				return c;
+			return Strings.compare(i1.referenceUnit, i2.referenceUnit);
 		}
 
 	}

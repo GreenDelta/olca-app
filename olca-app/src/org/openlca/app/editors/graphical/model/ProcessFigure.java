@@ -52,7 +52,7 @@ class ProcessFigure extends Figure {
 	}
 
 	private void initializeFigure() {
-		setToolTip(new Label(Labels.processType(node.process.getProcessType()) + ": " + node.getName()));
+		setToolTip(new Label(Labels.processType(node.process.processType) + ": " + node.getName()));
 		setForegroundColor(TEXT_COLOR);
 		setBounds(new Rectangle(0, 0, 0, 0));
 		setSize(calculateSize());
@@ -124,7 +124,7 @@ class ProcessFigure extends Figure {
 	}
 
 	private void paintBorder() {
-		if (node.process.getProcessType() == ProcessType.LCI_RESULT) {
+		if (node.process.processType == ProcessType.LCI_RESULT) {
 			LineBorder outer = new LineBorder(LINE_COLOR, 1);
 			LineBorder innerInner = new LineBorder(LINE_COLOR, 1);
 			LineBorder innerOuter = new LineBorder(ColorConstants.white, 1);
@@ -141,7 +141,7 @@ class ProcessFigure extends Figure {
 		Image file = null;
 		if (node.isMarked())
 			file = Icon.PROCESS_BG_MARKED.get();
-		else if (node.process.getProcessType() == ProcessType.LCI_RESULT)
+		else if (node.process.processType == ProcessType.LCI_RESULT)
 			file = Icon.PROCESS_BG_LCI.get();
 		else
 			file = Icon.PROCESS_BG.get();
@@ -163,8 +163,9 @@ class ProcessFigure extends Figure {
 		int x = getLocation().x;
 		int y = getLocation().y;
 		graphics.drawLine(new Point(x + margin, y + MINIMUM_HEIGHT
-				+ TEXT_HEIGHT + MARGIN_HEIGHT), new Point(x + width - margin, y
-						+ MINIMUM_HEIGHT + TEXT_HEIGHT + MARGIN_HEIGHT));
+				+ TEXT_HEIGHT + MARGIN_HEIGHT), new Point(x + width - margin,
+						y
+								+ MINIMUM_HEIGHT + TEXT_HEIGHT + MARGIN_HEIGHT));
 		if (height - margin > MINIMUM_HEIGHT + margin)
 			graphics.drawLine(new Point(x + width / 2, y + MINIMUM_HEIGHT + margin), new Point(x + width / 2, y
 					+ height - margin));
@@ -214,7 +215,7 @@ class ProcessFigure extends Figure {
 
 	Dimension calculateSize() {
 		int offSet = 0;
-		if (node.process.getProcessType() == ProcessType.LCI_RESULT)
+		if (node.process.processType == ProcessType.LCI_RESULT)
 			offSet = 3;
 		int x = MINIMUM_WIDTH + offSet;
 		if (getSize() != null && getSize().width > x)
@@ -242,7 +243,7 @@ class ProcessFigure extends Figure {
 					outputs++;
 		int length = Math.max(inputs, outputs);
 		int offSet = 0;
-		if (node.process.getProcessType() == ProcessType.LCI_RESULT)
+		if (node.process.processType == ProcessType.LCI_RESULT)
 			offSet = 3;
 		int startExchanges = MINIMUM_HEIGHT + 4 * MARGIN_HEIGHT + TEXT_HEIGHT + offSet;
 		minimumHeight = startExchanges + length * (TEXT_HEIGHT + 1);

@@ -3,15 +3,6 @@ package org.openlca.app.results.contributions;
 import java.util.Collections;
 import java.util.List;
 
-import javafx.embed.swt.FXCanvas;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.control.Tooltip;
-import javafx.util.StringConverter;
-
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -20,6 +11,15 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.results.ContributionItem;
+
+import javafx.embed.swt.FXCanvas;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.control.Tooltip;
+import javafx.util.StringConverter;
 
 public class ContributionChart extends BarChart<String, Number> {
 
@@ -117,7 +117,7 @@ public class ContributionChart extends BarChart<String, Number> {
 
 	private static String getLabel(ContributionItem<?> item) {
 		if (item.item instanceof BaseDescriptor)
-			return ((BaseDescriptor) item.item).getName();
+			return ((BaseDescriptor) item.item).name;
 		return null;
 	}
 
@@ -138,14 +138,14 @@ public class ContributionChart extends BarChart<String, Number> {
 		double tick = bound / (min < 0 ? 2 : 4);
 		yAxis.setTickUnit(tick);
 		yAxis.setTickLabelFormatter(new StringConverter<Number>() {
-			
+
 			@Override
 			public String toString(Number arg0) {
 				if (arg0 == null)
 					return "0";
 				return Numbers.format(arg0.doubleValue(), 1);
 			}
-			
+
 			@Override
 			public Number fromString(String arg0) {
 				return Double.parseDouble(arg0);

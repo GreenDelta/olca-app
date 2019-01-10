@@ -71,18 +71,18 @@ class IndicatorTable {
 			ImpactMethodDescriptor method) {
 		ImpactMethodDao dao = new ImpactMethodDao(Database.get());
 		List<ImpactCategoryDescriptor> descriptors = dao
-				.getCategoryDescriptors(method.getId());
+				.getCategoryDescriptors(method.id);
 		List<ReportIndicator> indicators = new ArrayList<>();
 		int id = 0;
 		for (ImpactCategoryDescriptor descriptor : descriptors) {
 			ReportIndicator reportIndicator = new ReportIndicator(id++);
 			indicators.add(reportIndicator);
 			reportIndicator.descriptor = descriptor;
-			reportIndicator.reportName = descriptor.getName();
+			reportIndicator.reportName = descriptor.name;
 			reportIndicator.displayed = true;
 		}
-		indicators.sort((r1, r2) -> Strings.compare(r1.descriptor.getName(),
-				r2.descriptor.getName()));
+		indicators.sort((r1, r2) -> Strings.compare(r1.descriptor.name,
+				r2.descriptor.name));
 		return indicators;
 	}
 
@@ -91,7 +91,7 @@ class IndicatorTable {
 		@Override
 		public Image getColumnImage(Object element, int col) {
 			if (col == 0)
-				return Images.get(ModelType.IMPACT_CATEGORY); 
+				return Images.get(ModelType.IMPACT_CATEGORY);
 			if (col != 1)
 				return null;
 			if (!(element instanceof ReportIndicator))

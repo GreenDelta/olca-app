@@ -112,7 +112,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 
 	private void addIndicator(BaseDescriptor d) {
 		SocialIndicatorDao dao = new SocialIndicatorDao(Database.get());
-		SocialIndicator i = dao.getForId(d.getId());
+		SocialIndicator i = dao.getForId(d.id);
 		SocialAspect a = new SocialAspect();
 		a.indicator = i;
 		getModel().socialAspects.add(a);

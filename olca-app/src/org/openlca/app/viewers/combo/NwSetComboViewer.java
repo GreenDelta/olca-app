@@ -21,13 +21,13 @@ public class NwSetComboViewer extends AbstractComboViewer<NwSetDescriptor> {
 		this.database = database;
 	}
 
-	public void setInput(ImpactMethodDescriptor impactMethod) {
+	public void setInput(ImpactMethodDescriptor method) {
 		if (database == null)
 			throw new IllegalStateException("No database set");
-		if (impactMethod != null) {
+		if (method != null) {
 			NwSetDao dao = new NwSetDao(database);
 			List<NwSetDescriptor> nwSets = dao
-					.getDescriptorsForMethod(impactMethod.getId());
+					.getDescriptorsForMethod(method.id);
 			setInput(nwSets.toArray(new NwSetDescriptor[nwSets.size()]));
 		} else {
 			setInput(new NwSetDescriptor[0]);

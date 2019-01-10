@@ -124,7 +124,7 @@ public class ParameterRedefDialog extends FormDialog {
 					createdNodes.put(modelId, node);
 				}
 				if (node.model != null) {
-					redef.contextType = node.model.getModelType();
+					redef.contextType = node.model.type;
 				}
 				paramNode.modelNode = node;
 				node.parameters.add(paramNode);
@@ -238,8 +238,9 @@ public class ParameterRedefDialog extends FormDialog {
 			ModelNode node1 = (ModelNode) e1;
 			if (e2 instanceof ModelNode) {
 				ModelNode node2 = (ModelNode) e2;
-				return Strings.compare(node1.model.getName(),
-						node2.model.getName());
+				return Strings.compare(
+						node1.model.name,
+						node2.model.name);
 			}
 			return 1; // process nodes after global parameters
 		}
@@ -270,7 +271,7 @@ public class ParameterRedefDialog extends FormDialog {
 	private boolean filterProcess(Object element, String term) {
 		ModelNode node = (ModelNode) element;
 		BaseDescriptor model = node.model;
-		if (StringUtils.containsIgnoreCase(model.getName(), term))
+		if (StringUtils.containsIgnoreCase(model.name, term))
 			return true;
 		for (ParameterNode param : node.parameters)
 			if (contains(param, term))

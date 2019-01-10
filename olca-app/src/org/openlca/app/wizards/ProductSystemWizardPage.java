@@ -95,7 +95,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		ModelElement elem = (ModelElement) obj;
 		try {
 			ProcessDao dao = new ProcessDao(Database.get());
-			refProcess = dao.getForId(elem.getContent().getId());
+			refProcess = dao.getForId(elem.getContent().id);
 			if (Strings.isNullOrEmpty(nameText.getText())) {
 				String name = Labels.getDisplayName(refProcess);
 				nameText.setText(name != null ? name : "");

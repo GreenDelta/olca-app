@@ -16,7 +16,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.components.ResultTypeSelection;
-import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.rcp.images.Images;
@@ -75,7 +74,7 @@ class KmlResultView extends FormPage implements WebPage {
 		Composite composite = toolkit.createComposite(body);
 		UI.gridLayout(composite, 2);
 		flowImpactSelection = ResultTypeSelection
-				.on(result.result, Cache.getEntityCache())
+				.on(result.result)
 				.withEventHandler(new KmlSelectionHandler(result))
 				.create(composite, toolkit);
 		Control browser = UI.createWebView(body, this);

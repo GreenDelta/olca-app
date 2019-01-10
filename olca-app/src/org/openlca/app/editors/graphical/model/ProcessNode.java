@@ -154,7 +154,7 @@ public class ProcessNode extends Node {
 
 	private void initializeExchangeNodes() {
 		ProcessDao dao = new ProcessDao(Database.get());
-		Process process = dao.getForId(this.process.getId());
+		Process process = dao.getForId(this.process.id);
 		List<Exchange> list = new ArrayList<>();
 		for (Exchange e : process.getExchanges()) {
 			if (e.flow.getFlowType() == FlowType.ELEMENTARY_FLOW)
@@ -244,7 +244,7 @@ public class ProcessNode extends Node {
 	public boolean isConnected(long exchangeId) {
 		MutableProcessLinkSearchMap linkSearch = parent().linkSearch;
 		List<ProcessLink> links = linkSearch.getConnectionLinks(
-				process.getId());
+				process.id);
 		for (ProcessLink link : links) {
 			if (link.exchangeId == exchangeId)
 				return true;
@@ -254,7 +254,7 @@ public class ProcessNode extends Node {
 
 	public int getMinimumHeight() {
 		if (isMinimized())
-			if (process.getProcessType() == ProcessType.LCI_RESULT)
+			if (process.processType == ProcessType.LCI_RESULT)
 				return ProcessFigure.MINIMUM_HEIGHT + 3;
 			else
 				return ProcessFigure.MINIMUM_HEIGHT;
@@ -346,7 +346,7 @@ public class ProcessNode extends Node {
 	@Override
 	public String toString() {
 		String id = process != null
-				? Long.toString(process.getId())
+				? Long.toString(process.id)
 				: "null";
 		return "ProcessNode [ id =" + id + " name = "
 				+ Labels.getDisplayName(process) + " ]";

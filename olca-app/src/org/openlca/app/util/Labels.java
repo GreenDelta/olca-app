@@ -58,21 +58,21 @@ public class Labels {
 		return entity.getName() + " - " + loc.getCode();
 	}
 
-	public static String getDisplayName(BaseDescriptor descriptor) {
-		if (descriptor == null)
+	public static String getDisplayName(BaseDescriptor d) {
+		if (d == null)
 			return "";
 		EntityCache cache = Cache.getEntityCache();
-		String text = descriptor.getName();
+		String text = d.name;
 		if (cache == null)
 			return text;
 		Long locationId = null;
-		if (descriptor instanceof ProcessDescriptor) {
-			ProcessDescriptor process = (ProcessDescriptor) descriptor;
-			locationId = process.getLocation();
+		if (d instanceof ProcessDescriptor) {
+			ProcessDescriptor process = (ProcessDescriptor) d;
+			locationId = process.location;
 		}
-		if (descriptor instanceof FlowDescriptor) {
-			FlowDescriptor flow = (FlowDescriptor) descriptor;
-			locationId = flow.getLocation();
+		if (d instanceof FlowDescriptor) {
+			FlowDescriptor flow = (FlowDescriptor) d;
+			locationId = flow.location;
 		}
 		if (locationId != null) {
 			Location loc = cache.get(Location.class, locationId);
@@ -82,10 +82,10 @@ public class Labels {
 		return text;
 	}
 
-	public static String getDisplayInfoText(BaseDescriptor descriptor) {
-		if (descriptor == null)
+	public static String getDisplayInfoText(BaseDescriptor d) {
+		if (d == null)
 			return "";
-		return descriptor.getDescription();
+		return d.description;
 	}
 
 	public static String getRefUnit(FlowDescriptor flow) {
@@ -93,7 +93,7 @@ public class Labels {
 			return "";
 		FlowProperty refProp = Cache.getEntityCache().get(
 				FlowProperty.class,
-				flow.getRefFlowPropertyId());
+				flow.refFlowPropertyId);
 		if (refProp == null)
 			return "";
 		UnitGroup unitGroup = refProp.getUnitGroup();
@@ -106,16 +106,15 @@ public class Labels {
 	}
 
 	/**
-	 * We often have to show the category and sub-category of a flow in the
-	 * result pages. This method returns a pair where the left value is the
-	 * category and the right value is the sub-category. Default values are
-	 * empty strings.
+	 * We often have to show the category and sub-category of a flow in the result
+	 * pages. This method returns a pair where the left value is the category and
+	 * the right value is the sub-category. Default values are empty strings.
 	 */
 	public static Pair<String, String> getCategory(CategorizedDescriptor entity) {
 		EntityCache cache = Cache.getEntityCache();
-		if (entity == null || entity.getCategory() == null)
+		if (entity == null || entity.category == null)
 			return Pair.of("", "");
-		Category cat = cache.get(Category.class, entity.getCategory());
+		Category cat = cache.get(Category.class, entity.category);
 		if (cat == null)
 			return Pair.of("", "");
 		if (cat.getCategory() == null)
@@ -125,8 +124,8 @@ public class Labels {
 	}
 
 	/**
-	 * Same as {@link #getCategory(CategorizedDescriptor, EntityCache)} but top-
-	 * and sub-category concatenated as a short string.
+	 * Same as {@link #getCategory(CategorizedDescriptor, EntityCache)} but top- and
+	 * sub-category concatenated as a short string.
 	 */
 	public static String getShortCategory(CategorizedDescriptor entity) {
 		Pair<String, String> p = getCategory(entity);
@@ -162,8 +161,8 @@ public class Labels {
 	}
 
 	/**
-	 * Returns the label for the given uncertainty distribution type. If the
-	 * given type is NULL the value for 'no distribution' is returned.
+	 * Returns the label for the given uncertainty distribution type. If the given
+	 * type is NULL the value for 'no distribution' is returned.
 	 */
 	public static String uncertaintyType(UncertaintyType type) {
 		if (type == null)

@@ -99,7 +99,7 @@ public class TreeLayout {
 		for (ProcessNode processNode : productSystemNode.getChildren()) {
 			if (processNode.isVisible())
 				continue;
-			long id = processNode.process.getId();
+			long id = processNode.process.id;
 			Dimension size = processNode.getSize();
 			containing.put(id, 1);
 			processNode.setXyLayoutConstraints(new Rectangle(0, 0, size.width, size.height));
@@ -125,10 +125,10 @@ public class TreeLayout {
 		mainNode.sort();
 		nodes.add(mainNode);
 		for (ProcessNode processNode : productSystemNode.getChildren()) {
-			if (containing.get(processNode.process.getId()) != null)
+			if (containing.get(processNode.process.id) != null)
 				continue;
 			Node node = new Node();
-			node.processId = processNode.process.getId();
+			node.processId = processNode.process.id;
 			build(productSystemNode.getProductSystem(), new Node[] { node });
 			node.sort();
 			nodes.add(node);
@@ -154,7 +154,7 @@ public class TreeLayout {
 			}
 			Map<Long, ProcessNode> processNodes = new HashMap<>();
 			for (ProcessNode processNode : productSystemNode.getChildren())
-				processNodes.put(processNode.process.getId(), processNode);
+				processNodes.put(processNode.process.id, processNode);
 			for (int x = minimumX; x <= maximumX; x++) {
 				widths.put(x, 0);
 				for (int y = minimumY; y <= maximumY; y++) {

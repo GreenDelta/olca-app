@@ -53,8 +53,7 @@ import com.vividsolutions.jts.geom.LineString;
 public class ShapeFileUtils {
 
 	/**
-	 * Get the folder where the shape-files are stored for the given LCIA,
-	 * method.
+	 * Get the folder where the shape-files are stored for the given LCIA, method.
 	 */
 	public static File getFolder(ImpactMethod method) {
 		if (method == null || method.getRefId() == null)
@@ -63,18 +62,17 @@ public class ShapeFileUtils {
 	}
 
 	/**
-	 * Get the folder where the shape-files are stored for the given LCIA,
-	 * method.
+	 * Get the folder where the shape-files are stored for the given LCIA, method.
 	 */
 	public static File getFolder(ImpactMethodDescriptor method) {
-		if (method == null || method.getRefId() == null)
+		if (method == null || method.refId == null)
 			return null;
 		return new FileStore(Database.get()).getFolder(method);
 	}
 
 	/**
-	 * Check if the mandatory files that define the shape-file are available
-	 * (see http://en.wikipedia.org/wiki/Shapefile).
+	 * Check if the mandatory files that define the shape-file are available (see
+	 * http://en.wikipedia.org/wiki/Shapefile).
 	 */
 	static boolean isValid(File shapeFile) {
 		if (shapeFile == null)
@@ -96,8 +94,8 @@ public class ShapeFileUtils {
 	}
 
 	/**
-	 * Returns true if a shape-file with the given name already exists for the
-	 * given method.
+	 * Returns true if a shape-file with the given name already exists for the given
+	 * method.
 	 */
 	static boolean alreadyExists(ImpactMethod method, File shapeFile) {
 		File folder = getFolder(method);
@@ -108,8 +106,8 @@ public class ShapeFileUtils {
 	}
 
 	/**
-	 * Imports the given shape-file and the associated files into the folder for
-	 * the given impact method.
+	 * Imports the given shape-file and the associated files into the folder for the
+	 * given impact method.
 	 */
 	static String importFile(ImpactMethod method, File shapeFile)
 			throws Exception {
@@ -134,8 +132,8 @@ public class ShapeFileUtils {
 	}
 
 	/**
-	 * Get all related files of the given shape-file including the given file
-	 * itself and directories.
+	 * Get all related files of the given shape-file including the given file itself
+	 * and directories.
 	 */
 	private static List<File> getAllFiles(File shapeFile) {
 		if (shapeFile == null || !shapeFile.exists())
@@ -184,8 +182,8 @@ public class ShapeFileUtils {
 	}
 
 	/**
-	 * Delete the shape-file with the given name (without file extension) from
-	 * the folder of the given LCIA method.
+	 * Delete the shape-file with the given name (without file extension) from the
+	 * folder of the given LCIA method.
 	 */
 	static void deleteFile(ImpactMethod method, String shapeFileName) {
 		File folder = getFolder(method);

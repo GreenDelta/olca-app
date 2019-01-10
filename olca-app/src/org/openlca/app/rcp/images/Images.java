@@ -38,19 +38,19 @@ public class Images {
 	}
 
 	public static Image get(BaseDescriptor d) {
-		if (d == null || d.getModelType() == null)
+		if (d == null || d.type == null)
 			return null;
-		switch (d.getModelType()) {
+		switch (d.type) {
 		case PROCESS:
-			return get(((ProcessDescriptor) d).getProcessType());
+			return get(((ProcessDescriptor) d).processType);
 		case FLOW:
-			return get(((FlowDescriptor) d).getFlowType());
+			return get(((FlowDescriptor) d).flowType);
 		case CATEGORY:
 			CategoryDescriptor cd = (CategoryDescriptor) d;
-			ModelIcon icon = categoryIcon(cd.getCategoryType());
+			ModelIcon icon = categoryIcon(cd.categoryType);
 			return ImageManager.get(icon);
 		default:
-			return get(d.getModelType());
+			return get(d.type);
 		}
 	}
 
@@ -162,16 +162,16 @@ public class Images {
 		return descriptor(ModelType.forModelClass(entity.getClass()));
 	}
 
-	public static ImageDescriptor descriptor(BaseDescriptor descriptor) {
-		if (descriptor == null || descriptor.getModelType() == null)
+	public static ImageDescriptor descriptor(BaseDescriptor d) {
+		if (d == null || d.type == null)
 			return null;
-		switch (descriptor.getModelType()) {
+		switch (d.type) {
 		case PROCESS:
-			return descriptor(((ProcessDescriptor) descriptor).getProcessType());
+			return descriptor(((ProcessDescriptor) d).processType);
 		case FLOW:
-			return descriptor(((FlowDescriptor) descriptor).getFlowType());
+			return descriptor(((FlowDescriptor) d).flowType);
 		default:
-			return descriptor(descriptor.getModelType());
+			return descriptor(d.type);
 		}
 	}
 
@@ -469,8 +469,8 @@ public class Images {
 	}
 
 	/**
-	 * Returns the shared image with the given name from the Eclipse platform.
-	 * See ISharedImages for the image names.
+	 * Returns the shared image with the given name from the Eclipse platform. See
+	 * ISharedImages for the image names.
 	 */
 	public static Image platformImage(String name) {
 		return PlatformUI.getWorkbench().getSharedImages().getImage(name);

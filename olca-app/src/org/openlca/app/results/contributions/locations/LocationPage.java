@@ -15,12 +15,10 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ResultTypeSelection;
-import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.results.ContributionResult;
 
@@ -30,7 +28,6 @@ import org.openlca.core.results.ContributionResult;
  */
 public class LocationPage extends FormPage {
 
-	private EntityCache cache = Cache.getEntityCache();
 	ContributionResult result;
 
 	private ResultTypeSelection combos;
@@ -75,7 +72,7 @@ public class LocationPage extends FormPage {
 		UI.gridLayout(outer, 2, 5, 0);
 		Composite comboComp = tk.createComposite(outer);
 		UI.gridLayout(comboComp, 2);
-		combos = ResultTypeSelection.on(result, cache)
+		combos = ResultTypeSelection.on(result)
 				.withEventHandler(new SelectionHandler(this))
 				.withSelection(result.getFlows().iterator().next())
 				.create(comboComp, tk);

@@ -96,9 +96,9 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 			for (BaseDescriptor model : models) {
 				if (monitor.isCanceled())
 					break;
-				monitor.subTask(model.getName());
-				ModelType type = model.getModelType();
-				AbstractEntity o = Daos.base(database, type.getModelClass()).getForId(model.getId());
+				monitor.subTask(model.name);
+				ModelType type = model.type;
+				AbstractEntity o = Daos.base(database, type.getModelClass()).getForId(model.id);
 				if (o instanceof RootEntity)
 					doExport(export, (RootEntity) o);
 				monitor.worked(1);

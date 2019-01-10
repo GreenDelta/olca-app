@@ -110,7 +110,10 @@ public class ReplaceFlowsDialog extends FormDialog {
 	private void updateButtons() {
 		FlowDescriptor first = selectionViewer.getSelected();
 		FlowDescriptor second = replacementViewer.getSelected();
-		boolean enabled = first != null && first.getId() != 0l && second != null && second.getId() != 0l;
+		boolean enabled = first != null
+				&& first.id != 0L
+				&& second != null
+				&& second.id != 0L;
 		getButton(IDialogConstants.OK_ID).setEnabled(enabled);
 	}
 
@@ -124,10 +127,10 @@ public class ReplaceFlowsDialog extends FormDialog {
 	}
 
 	private List<FlowDescriptor> getReplacementCandidates(FlowDescriptor flow) {
-		if (flow == null || flow.getId() == 0l)
+		if (flow == null || flow.id == 0L)
 			return Collections.emptyList();
 		FlowDao dao = new FlowDao(Database.get());
-		Set<Long> ids = dao.getReplacementCandidates(flow.getId(), flow.getFlowType());
+		Set<Long> ids = dao.getReplacementCandidates(flow.id, flow.flowType);
 		List<FlowDescriptor> result = new ArrayList<>();
 		result.addAll(dao.getDescriptors(ids));
 		result.remove(flow);
@@ -145,7 +148,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 		FlowDescriptor oldFlow = selectionViewer.getSelected();
 		FlowDescriptor newFlow = replacementViewer.getSelected();
 		FlowDao dao = new FlowDao(Database.get());
-		dao.replace(oldFlow.getId(), newFlow.getId(), excludeWithProviders.getSelection());
+		dao.replace(oldFlow.id, newFlow.id, excludeWithProviders.getSelection());
 		Database.get().getEntityFactory().getCache().evictAll();
 		super.okPressed();
 	}

@@ -81,7 +81,7 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 			flowProperty.setDescription(getModelDescription());
 			try {
 				UnitGroup unitGroup = Cache.getEntityCache().get(UnitGroup.class,
-						unitGroupComboViewer.getSelected().getId());
+						unitGroupComboViewer.getSelected().id);
 				flowProperty.setUnitGroup(unitGroup);
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(getClass());

@@ -34,8 +34,8 @@ public class BaseNameComparator extends ViewerComparator {
 			s1 = ((ImpactCategory) e1).getName();
 			s2 = ((ImpactCategory) e2).getName();
 		} else if (e1 instanceof BaseDescriptor && e2 instanceof BaseDescriptor) {
-			s1 = ((BaseDescriptor) e1).getName();
-			s2 = ((BaseDescriptor) e2).getName();
+			s1 = ((BaseDescriptor) e1).name;
+			s2 = ((BaseDescriptor) e2).name;
 		}
 		return s1 != null && s2 != null ? s1.compareToIgnoreCase(s2) : 0;
 	}

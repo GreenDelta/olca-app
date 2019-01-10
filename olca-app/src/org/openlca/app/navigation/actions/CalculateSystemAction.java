@@ -28,9 +28,9 @@ class CalculateSystemAction extends Action implements INavigationAction {
 		if (!(elem instanceof ModelElement))
 			return false;
 		ModelElement element = (ModelElement) elem;
-		if (element.getContent().getModelType() != ModelType.PRODUCT_SYSTEM)
+		if (element.getContent().type != ModelType.PRODUCT_SYSTEM)
 			return false;
-		systemId = element.getContent().getId();
+		systemId = element.getContent().id;
 		return true;
 	}
 

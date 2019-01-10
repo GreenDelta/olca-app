@@ -86,7 +86,7 @@ public class InventoryPage extends FormPage {
 			}
 		}
 		Comparator<FlowDescriptor> comparator = (f1, f2) -> Strings.compare(
-				f1.getName(), f2.getName());
+				f1.name, f2.name);
 		Collections.sort(inFlows, comparator);
 		Collections.sort(outFlows, comparator);
 		inputTree.setInput(inFlows);

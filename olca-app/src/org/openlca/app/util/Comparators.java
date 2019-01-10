@@ -17,7 +17,7 @@ public class Comparators {
 	 */
 	public static Comparator<FlowDescriptor> forFlowDescriptors() {
 		return (flow1, flow2) -> {
-			int c = Strings.compare(flow1.getName(), flow2.getName());
+			int c = Strings.compare(flow1.name, flow2.name);
 			if (c != 0)
 				return c;
 			Pair<String, String> cat1 = Labels.getCategory(flow1);

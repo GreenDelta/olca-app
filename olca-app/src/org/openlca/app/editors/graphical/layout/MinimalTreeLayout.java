@@ -18,7 +18,7 @@ public class MinimalTreeLayout {
 	private void applyLayout(ProcessNode[] processFigures, Graph graph) {
 		Map<Long, ProcessNode> nodes = new HashMap<>();
 		for (ProcessNode node : processFigures)
-			nodes.put(node.process.getId(), node);
+			nodes.put(node.process.id, node);
 
 		// build "width-map"
 		for (int x = graph.minimumX; x <= graph.maximumX; x++) {
@@ -64,13 +64,13 @@ public class MinimalTreeLayout {
 		Graph graph = new Graph();
 		Map<Long, Node> nodes = graph.nodes;
 		for (ProcessNode processNode : processNodes) {
-			long id = processNode.process.getId();
+			long id = processNode.process.id;
 			nodes.put(id, new Node(id));
 		}
 		for (ProcessNode processNode : processNodes) {
 			for (Link link : processNode.links) {
-				long sourceId = link.outputNode.process.getId();
-				long targetId = link.inputNode.process.getId();
+				long sourceId = link.outputNode.process.id;
+				long targetId = link.inputNode.process.id;
 				if (nodes.get(sourceId) == null || nodes.get(targetId) == null)
 					continue;
 				// add edge to source node

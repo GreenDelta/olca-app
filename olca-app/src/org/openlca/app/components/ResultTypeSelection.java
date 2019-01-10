@@ -15,7 +15,6 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.CostResultViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -32,7 +31,6 @@ public class ResultTypeSelection {
 
 	private ModelType resultType = ModelType.FLOW;
 
-	private EntityCache cache;
 	private Collection<FlowDescriptor> flows;
 	private Collection<ImpactCategoryDescriptor> impacts;
 	private Collection<CostResultDescriptor> costs;
@@ -43,8 +41,8 @@ public class ResultTypeSelection {
 	private ImpactCategoryViewer impactCombo;
 	private CostResultViewer costCombo;
 
-	public static Dispatch on(IResult result, EntityCache cache) {
-		ResultTypeSelection selection = new ResultTypeSelection(cache);
+	public static Dispatch on(IResult result) {
+		ResultTypeSelection selection = new ResultTypeSelection();
 		selection.flows = result.getFlows();
 		if (result.hasImpactResults())
 			selection.impacts = result.getImpacts();
@@ -53,8 +51,7 @@ public class ResultTypeSelection {
 		return new Dispatch(selection);
 	}
 
-	private ResultTypeSelection(EntityCache cache) {
-		this.cache = cache;
+	private ResultTypeSelection() {
 	}
 
 	public void selectWithEvent(Object o) {

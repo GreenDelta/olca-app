@@ -91,12 +91,12 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 			for (BaseDescriptor d : models) {
 				if (monitor.isCanceled())
 					break;
-				monitor.subTask(d.getName());
+				monitor.subTask(d.name);
 				if (type == ModelType.PROCESS) {
-					Process process = pDao.getForId(d.getId());
+					Process process = pDao.getForId(d.id);
 					export.export(process);
 				} else if (type == ModelType.IMPACT_METHOD) {
-					ImpactMethod method = mDao.getForId(d.getId());
+					ImpactMethod method = mDao.getForId(d.id);
 					export.export(method);
 				}
 				monitor.worked(1);

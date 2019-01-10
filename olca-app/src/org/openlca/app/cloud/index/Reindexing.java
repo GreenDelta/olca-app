@@ -104,7 +104,7 @@ public class Reindexing {
 	private void localSync(Map<String, FetchRequestData> dataMap,
 			Collection<? extends CategorizedDescriptor> descriptors) {
 		for (CategorizedDescriptor descriptor : descriptors) {
-			if (dataMap != null && dataMap.containsKey(descriptor.getRefId()))
+			if (dataMap != null && dataMap.containsKey(descriptor.refId))
 				continue;
 			put(descriptor);
 		}
@@ -114,7 +114,7 @@ public class Reindexing {
 		CategorizedEntityDao<?, ?> dao = Daos.categorized(database, type);
 		Map<String, CategorizedDescriptor> descriptors = new HashMap<>();
 		for (CategorizedDescriptor descriptor : dao.getDescriptors()) {
-			descriptors.put(descriptor.getRefId(), descriptor);
+			descriptors.put(descriptor.refId, descriptor);
 		}
 		return descriptors;
 	}
@@ -125,7 +125,7 @@ public class Reindexing {
 	}
 
 	private void put(Dataset dataset, CategorizedDescriptor descriptor, boolean deletedOnRemote) {
-		index.add(dataset, descriptor.getId());
+		index.add(dataset, descriptor.id);
 		if (deletedOnRemote) {
 			index.update(dataset, DiffType.NEW);
 			return;
@@ -137,22 +137,22 @@ public class Reindexing {
 
 	private void put(CategorizedDescriptor descriptor) {
 		Category category = null;
-		if (descriptor.getCategory() != null) {
-			category = categoryDao.getForId(descriptor.getCategory());
+		if (descriptor.category != null) {
+			category = categoryDao.getForId(descriptor.category);
 		}
 		Dataset dataset = Datasets.toDataset(descriptor, category);
-		index.add(dataset, descriptor.getId());
+		index.add(dataset, descriptor.id);
 		index.update(dataset, DiffType.NEW);
 	}
 
 	private boolean areEqual(Dataset dataset, CategorizedDescriptor descriptor) {
-		if (!dataset.refId.equals(descriptor.getRefId()))
+		if (!dataset.refId.equals(descriptor.refId))
 			return false;
-		if (dataset.type != descriptor.getModelType())
+		if (dataset.type != descriptor.type)
 			return false;
-		if (!Strings.nullOrEqual(dataset.version, Version.asString(descriptor.getVersion())))
+		if (!Strings.nullOrEqual(dataset.version, Version.asString(descriptor.version)))
 			return false;
-		if (dataset.lastChange != descriptor.getLastChange())
+		if (dataset.lastChange != descriptor.lastChange)
 			return false;
 		return true;
 	}

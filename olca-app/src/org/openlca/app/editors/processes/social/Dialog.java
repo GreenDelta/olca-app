@@ -107,7 +107,7 @@ class Dialog extends FormDialog {
 				aspect.source = null;
 			} else {
 				SourceDao dao = new SourceDao(Database.get());
-				aspect.source = dao.getForId(d.getId());
+				aspect.source = dao.getForId(d.id);
 			}
 		});
 		UI.filler(body, tk);

@@ -29,7 +29,7 @@ class DatabaseListener implements IDatabaseListener {
 		Dataset dataset = toDataset(descriptor);
 		if (dataset == null)
 			return;
-		indexUpdater.insert(dataset, descriptor.getId());
+		indexUpdater.insert(dataset, descriptor.id);
 	}
 
 	@Override
@@ -39,7 +39,7 @@ class DatabaseListener implements IDatabaseListener {
 		Dataset dataset = toDataset(descriptor);
 		if (dataset == null)
 			return;
-		indexUpdater.update(dataset, descriptor.getId());
+		indexUpdater.update(dataset, descriptor.id);
 	}
 
 	@Override
@@ -57,8 +57,8 @@ class DatabaseListener implements IDatabaseListener {
 			return null;
 		CategorizedDescriptor element = (CategorizedDescriptor) descriptor;
 		Category category = null;
-		if (element.getCategory() != null) {
-			category = categoryDao.getForId(element.getCategory());
+		if (element.category != null) {
+			category = categoryDao.getForId(element.category);
 		}
 		return Datasets.toDataset(element, category);
 	}

@@ -21,8 +21,8 @@ import org.openlca.core.model.ProductSystem;
 public class TreeLayout {
 
 	/**
-	 * set of process keys that have been added to a node already (important in
-	 * case of loops, so no process is added twice)
+	 * set of process keys that have been added to a node already (important in case
+	 * of loops, so no process is added twice)
 	 */
 	private final Set<Long> containing = new HashSet<>();
 
@@ -48,9 +48,9 @@ public class TreeLayout {
 		for (Object o : productSystemNode.children) {
 			if (o instanceof ProcessNode) {
 				ProcessNode processNode = (ProcessNode) o;
-				if (!containing.contains(processNode.process.getId())) {
+				if (!containing.contains(processNode.process.id)) {
 					Node node = new Node();
-					node.processId = processNode.process.getId();
+					node.processId = processNode.process.id;
 					build(productSystemNode.productSystem, new Node[] { node });
 					node.sort();
 					nodes.add(node);
@@ -86,7 +86,7 @@ public class TreeLayout {
 			for (Object n : productSystemNode.children) {
 				if (n instanceof ProcessNode) {
 					ProcessFigure figure = ((ProcessNode) n).figure;
-					figures.put(figure.node.process.getId(), figure);
+					figures.put(figure.node.process.id, figure);
 				}
 			}
 
@@ -212,7 +212,7 @@ public class TreeLayout {
 		for (Object node : productSystemNode.children) {
 			if (node instanceof ProcessNode) {
 				final ProcessNode processNode = (ProcessNode) node;
-				paintedProcesses.add(processNode.process.getId());
+				paintedProcesses.add(processNode.process.id);
 				processNode.setXyLayoutConstraints(new Rectangle(0, 0,
 						processNode.figure.getSize().width, processNode.figure.getSize().height));
 			}

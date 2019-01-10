@@ -142,9 +142,9 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 		if (!(process instanceof ProcessDescriptor))
 			return defaultFactor(impact, flow);
 		ProcessDescriptor p = (ProcessDescriptor) process;
-		if (p.getLocation() == null)
+		if (p.location == null)
 			return defaultFactor(impact, flow);
-		Map<FlowDescriptor, Double> impactFactors = getImpactFactors(impact.getId(), p.getLocation());
+		Map<FlowDescriptor, Double> impactFactors = getImpactFactors(impact.id, p.location);
 		if (!impactFactors.containsKey(flow))
 			return 0d;
 		return impactFactors.get(flow);

@@ -74,8 +74,8 @@ class XParameterCheckAction extends Action implements INavigationAction {
 			log.trace("init formula interpreter");
 			processes = new HashMap<>();
 			ProcessDao dao = new ProcessDao(db);
-			for (ProcessDescriptor descriptor : dao.getDescriptors())
-				processes.put(descriptor.getId(), descriptor);
+			for (ProcessDescriptor d : dao.getDescriptors())
+				processes.put(d.id, d);
 			interpreter = ParameterTable.interpreter(
 					db, processes.keySet(), Collections.emptySet());
 		}

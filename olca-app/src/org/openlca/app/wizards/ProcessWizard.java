@@ -37,8 +37,8 @@ public class ProcessWizard extends AbstractWizard<Process> {
 	private Flow refFlow;
 
 	/**
-	 * Optionally set the reference flow of process. This function is used when
-	 * a process is directly created from a product flow.
+	 * Optionally set the reference flow of process. This function is used when a
+	 * process is directly created from a product flow.
 	 */
 	public void setRefFlow(Flow refFlow) {
 		this.refFlow = refFlow;
@@ -230,7 +230,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 				return null;
 			FlowDescriptor flow = (FlowDescriptor) e.getContent();
 			IDatabase db = Database.get();
-			return new FlowDao(db).getForId(flow.getId());
+			return new FlowDao(db).getForId(flow.id);
 		}
 	}
 

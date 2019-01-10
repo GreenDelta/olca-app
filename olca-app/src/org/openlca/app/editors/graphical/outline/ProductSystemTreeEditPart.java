@@ -24,7 +24,7 @@ public class ProductSystemTreeEditPart extends AbstractTreeEditPart {
 		Map<Long, ProcessDescriptor> resultMap = Cache.getEntityCache().getAll(ProcessDescriptor.class, ids);
 		List<ProcessDescriptor> descriptors = new ArrayList<>(resultMap.values());
 		Collections.sort(descriptors, (d1, d2) -> {
-			return d1.getName().toLowerCase().compareTo(d2.getName().toLowerCase());
+			return d1.name.toLowerCase().compareTo(d2.name.toLowerCase());
 		});
 		return descriptors;
 	}

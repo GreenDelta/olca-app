@@ -87,8 +87,8 @@ public class CommentsPage extends FormPage implements WebPage {
 		Category category = getCategory(descriptor);
 		List<String> categories = Datasets.getCategories(category);
 		if (categories == null || categories.size() == 0)
-			return descriptor.getName();
-		return Strings.join(categories, '/') + "/" + descriptor.getName();
+			return descriptor.name;
+		return Strings.join(categories, '/') + "/" + descriptor.name;
 	}
 
 	private CategorizedDescriptor getDescriptor(ModelType type, String refId) {
@@ -96,9 +96,9 @@ public class CommentsPage extends FormPage implements WebPage {
 	}
 
 	private Category getCategory(CategorizedDescriptor descriptor) {
-		if (descriptor.getCategory() == null)
+		if (descriptor.category == null)
 			return null;
-		return new CategoryDao(Database.get()).getForId(descriptor.getCategory());
+		return new CategoryDao(Database.get()).getForId(descriptor.category);
 	}
 
 	public class Js {

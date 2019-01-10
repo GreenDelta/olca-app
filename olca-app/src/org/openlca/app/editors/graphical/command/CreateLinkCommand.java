@@ -54,7 +54,7 @@ public class CreateLinkCommand extends Command {
 			return processLink;
 		FlowType type = sysNode.flows.type(flowId);
 		if (input != null) {
-			long processID = input.parent().process.getId();
+			long processID = input.parent().process.id;
 			if (type == FlowType.PRODUCT_FLOW) {
 				processLink.processId = processID;
 				processLink.exchangeId = input.exchange.getId();
@@ -63,7 +63,7 @@ public class CreateLinkCommand extends Command {
 			}
 		}
 		if (output != null) {
-			long processID = output.parent().process.getId();
+			long processID = output.parent().process.id;
 			if (type == FlowType.PRODUCT_FLOW) {
 				processLink.providerId = processID;
 			} else if (type == FlowType.WASTE_FLOW) {
@@ -98,10 +98,10 @@ public class CreateLinkCommand extends Command {
 	private void refreshNodes() {
 		ProductSystemNode sys = sysNode();
 		ProcessNode outProc = sys.getProcessNode(
-				link.outputNode.process.getId());
+				link.outputNode.process.id);
 		output = outProc.getOutput(link.processLink);
 		ProcessNode inProc = sys.getProcessNode(
-				link.inputNode.process.getId());
+				link.inputNode.process.id);
 		input = inProc.getInput(link.processLink);
 	}
 

@@ -51,9 +51,9 @@ public class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
 	}
 
 	private Location getLocation(ProcessDescriptor process) {
-		if (process == null || process.getLocation() == null)
+		if (process == null || process.location == null)
 			return null;
-		return cache.get(Location.class, process.getLocation());
+		return cache.get(Location.class, process.location);
 	}
 
 	private class ProcessLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
@@ -71,7 +71,7 @@ public class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
 			ProcessDescriptor process = (ProcessDescriptor) element;
 			switch (columnIndex) {
 			case 0:
-				return process.getName();
+				return process.name;
 			case 1:
 				Location location = getLocation(process);
 				return location != null ? location.getName() : null;

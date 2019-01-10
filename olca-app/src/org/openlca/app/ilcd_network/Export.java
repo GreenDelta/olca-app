@@ -43,9 +43,9 @@ public class Export implements IRunnableWithProgress {
 		config.lang = IoPreference.getIlcdLanguage();
 		Iterator<BaseDescriptor> it = descriptors.iterator();
 		while (!monitor.isCanceled() && it.hasNext()) {
-			BaseDescriptor descriptor = it.next();
-			monitor.subTask(descriptor.getName());
-			createRunExport(config, descriptor);
+			BaseDescriptor d = it.next();
+			monitor.subTask(d.name);
+			createRunExport(config, d);
 		}
 		monitor.done();
 	}
@@ -67,28 +67,27 @@ public class Export implements IRunnableWithProgress {
 		log.info(taskName);
 	}
 
-	private void createRunExport(ExportConfig config, BaseDescriptor descriptor) {
-		if (descriptor.getModelType() == ModelType.PROCESS)
-			tryExportProcess(config, descriptor);
-		else if (descriptor.getModelType() == ModelType.PRODUCT_SYSTEM)
-			tryExportSystem(config, descriptor);
+	private void createRunExport(ExportConfig config, BaseDescriptor d) {
+		if (d.type == ModelType.PROCESS)
+			tryExportProcess(config, d);
+		else if (d.type == ModelType.PRODUCT_SYSTEM)
+			tryExportSystem(config, d);
 	}
 
-	private void tryExportProcess(ExportConfig config, BaseDescriptor descriptor) {
+	private void tryExportProcess(ExportConfig config, BaseDescriptor d) {
 		try {
-			Process process = new ProcessDao(database).getForId(
-					descriptor.getId());
+			Process p = new ProcessDao(database).getForId(d.id);
 			ProcessExport export = new ProcessExport(config);
-			export.run(process);
+			export.run(p);
 			monitor.worked(1);
 		} catch (Exception e) {
 			log.error("Process export failed", e);
 		}
 	}
 
-	private void tryExportSystem(ExportConfig config, BaseDescriptor descriptor) {
+	private void tryExportSystem(ExportConfig config, BaseDescriptor d) {
 		try {
-			ProductSystem system = new ProductSystemDao(database).getForId(descriptor.getId());
+			ProductSystem system = new ProductSystemDao(database).getForId(d.id);
 			SystemExport export = new SystemExport(config);
 			export.run(system);
 			monitor.worked(1);

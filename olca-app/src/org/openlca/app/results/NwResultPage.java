@@ -117,7 +117,7 @@ public class NwResultPage extends FormPage {
 		if (setup.nwSet == null)
 			return null;
 		try {
-			return NwSetTable.build(Database.get(), setup.nwSet.getId());
+			return NwSetTable.build(Database.get(), setup.nwSet.id);
 		} catch (Exception e) {
 			log.error("failed to load NW set factors from database", e);
 			return null;
@@ -153,7 +153,7 @@ public class NwResultPage extends FormPage {
 				return Numbers.format(item.amount);
 			case 2:
 				if (setup.nwSet != null)
-					return setup.nwSet.getWeightedScoreUnit();
+					return setup.nwSet.weightedScoreUnit;
 			default:
 				return null;
 			}

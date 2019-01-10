@@ -73,7 +73,7 @@ class ProviderCombo extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 		if (d == null)
 			e.defaultProviderId = 0;
 		else
-			e.defaultProviderId = d.getId();
+			e.defaultProviderId = d.id;
 		editor.setDirty(true);
 	}
 

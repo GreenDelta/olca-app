@@ -18,7 +18,7 @@ class Aspects {
 		for (SocialAspect a : p.socialAspects) {
 			if (a.indicator == null)
 				continue;
-			if (a.indicator.getId() == indicator.getId())
+			if (a.indicator.getId() == indicator.id)
 				return a;
 		}
 		return null;

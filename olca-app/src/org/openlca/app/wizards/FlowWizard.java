@@ -88,7 +88,7 @@ public class FlowWizard extends AbstractWizard<Flow> {
 
 		private void addFlowProperty(Flow flow) {
 			try {
-				long id = referenceFlowPropertyViewer.getSelected().getId();
+				long id = referenceFlowPropertyViewer.getSelected().id;
 				FlowProperty flowProp = Cache.getEntityCache().get(
 						FlowProperty.class,
 						id);

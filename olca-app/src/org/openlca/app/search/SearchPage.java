@@ -35,13 +35,13 @@ public class SearchPage extends SimpleFormEditor {
 	}
 
 	public static void forUsage(CategorizedDescriptor d) {
-		if (d == null || d.getModelType() == null)
+		if (d == null || d.type == null)
 			return;
 		String title = "Find usages of " + Labels.getDisplayName(d);
 		AtomicReference<List<BaseDescriptor>> ref = new AtomicReference<>();
 		App.run(title, () -> {
 			List<CategorizedDescriptor> list = IUseSearch.FACTORY.createFor(
-					d.getModelType(), Database.get()).findUses(d);
+					d.type, Database.get()).findUses(d);
 			if (d != null) {
 				ref.set(new ArrayList<>(list));
 			}

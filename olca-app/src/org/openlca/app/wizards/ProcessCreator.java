@@ -90,7 +90,7 @@ class ProcessCreator {
 		FlowType type = wasteProcess ? FlowType.WASTE_FLOW
 				: FlowType.PRODUCT_FLOW;
 		flow.setFlowType(type);
-		FlowProperty property = new FlowPropertyDao(db).getForId(flowProperty.getId());
+		FlowProperty property = new FlowPropertyDao(db).getForId(flowProperty.id);
 		flow.setReferenceFlowProperty(property);
 		FlowPropertyFactor factor = new FlowPropertyFactor();
 		factor.setConversionFactor(1);

@@ -33,7 +33,7 @@ class RemoveAllConnectionsAction extends EditorAction {
 		List<ProcessLink> pLinks = systemNode.getProductSystem().processLinks;
 		MutableProcessLinkSearchMap linkSearch = new MutableProcessLinkSearchMap(pLinks);
 		for (ProcessNode processNode : processNodes) {
-			List<ProcessLink> processLinks = linkSearch.getLinks(processNode.process.getId());
+			List<ProcessLink> processLinks = linkSearch.getLinks(processNode.process.id);
 			for (ProcessLink link : processLinks)
 				linkSearch.remove(link);
 			for (Link link : processNode.links)

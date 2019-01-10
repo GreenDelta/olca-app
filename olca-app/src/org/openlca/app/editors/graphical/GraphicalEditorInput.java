@@ -64,7 +64,7 @@ public final class GraphicalEditorInput implements IEditorInput {
 	public String getToolTipText() {
 		if (descriptor == null)
 			return "no content";
-		return descriptor.getName();
+		return descriptor.name;
 	}
 
 }

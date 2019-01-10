@@ -62,15 +62,15 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 	}
 
 	private Category getCategory(FlowDescriptor flow) {
-		if (flow == null || flow.getCategory() == null)
+		if (flow == null || flow.category == null)
 			return null;
-		return cache.get(Category.class, flow.getCategory());
+		return cache.get(Category.class, flow.category);
 	}
 
 	private Location getLocation(FlowDescriptor flow) {
-		if (flow == null || flow.getLocation() == null)
+		if (flow == null || flow.location == null)
 			return null;
-		return cache.get(Location.class, flow.getLocation());
+		return cache.get(Location.class, flow.location);
 	}
 
 	private class FlowComparator extends ViewerComparator {
@@ -87,7 +87,7 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 			FlowDescriptor flow1 = (FlowDescriptor) e1;
 			FlowDescriptor flow2 = (FlowDescriptor) e2;
 
-			int flowNameCompare = Strings.compare(flow1.getName(), flow2.getName());
+			int flowNameCompare = Strings.compare(flow1.name, flow2.name);
 			if (flowNameCompare != 0)
 				return flowNameCompare;
 			int categoryCompare = compareByCategory(flow1, flow2);
@@ -143,16 +143,16 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 			FlowDescriptor flow = (FlowDescriptor) element;
 			switch (columnIndex) {
 			case 0:
-				return flow.getName();
+				return flow.name;
 			case 1:
-				if (flow.getCategory() == null)
+				if (flow.category == null)
 					return null;
-				Category category = cache.get(Category.class, flow.getCategory());
+				Category category = cache.get(Category.class, flow.category);
 				return CategoryPath.getFull(category);
 			case 2:
-				if (flow.getLocation() == null)
+				if (flow.location == null)
 					return null;
-				return cache.get(Location.class, flow.getLocation()).getCode();
+				return cache.get(Location.class, flow.location).getCode();
 			case 3:
 				return fullName(flow);
 			default:
@@ -163,7 +163,7 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 		private String fullName(FlowDescriptor flow) {
 			if (flow == null)
 				return null;
-			String t = flow.getName();
+			String t = flow.name;
 			Category category = getCategory(flow);
 			if (category != null)
 				t += " - " + CategoryPath.getShort(category);

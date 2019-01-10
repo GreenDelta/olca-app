@@ -37,11 +37,11 @@ public class DatabaseValidation {
 	public List<ModelStatus> evaluate(Collection<CategorizedDescriptor> descriptors) {
 		Map<ModelType, Set<Long>> byType = new HashMap<>();
 		for (CategorizedDescriptor descriptor : descriptors) {
-			Set<Long> forType = byType.get(descriptor.getModelType());
+			Set<Long> forType = byType.get(descriptor.type);
 			if (forType == null) {
-				byType.put(descriptor.getModelType(), forType = new HashSet<>());
+				byType.put(descriptor.type, forType = new HashSet<>());
 			}
-			forType.add(descriptor.getId());
+			forType.add(descriptor.id);
 		}
 		List<ModelStatus> result = new ArrayList<>();
 		if (monitor != null && !monitor.isCanceled())

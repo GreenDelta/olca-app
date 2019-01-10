@@ -49,7 +49,7 @@ public final class TextDropComponent extends Composite {
 	}
 
 	public void setContent(BaseDescriptor content) {
-		if (content != null && content.getModelType() != modelType)
+		if (content != null && content.type != modelType)
 			return;
 		this.content = content;
 		text.setData(content); // tooltip
@@ -112,7 +112,7 @@ public final class TextDropComponent extends Composite {
 		layoutData.grabHorizontal = true;
 		text.setLayoutData(layoutData);
 		if (content != null)
-			text.setText(content.getName());
+			text.setText(content.name);
 	}
 
 	private void createRemoveButton() {
@@ -152,7 +152,7 @@ public final class TextDropComponent extends Composite {
 
 	private void handleAdd(Object data) {
 		BaseDescriptor descriptor = ModelTransfer.getDescriptor(data);
-		if (descriptor == null || descriptor.getModelType() != modelType)
+		if (descriptor == null || descriptor.type != modelType)
 			return;
 		setContent(descriptor);
 		if (handler != null) {

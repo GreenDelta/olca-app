@@ -93,11 +93,11 @@ class ResultPage extends FormPage {
 				if (dist < 0)
 					continue;
 				results.add(d);
-				distances.put(d.getId(), dist);
+				distances.put(d.id, dist);
 			}
 			results.sort((d1, d2) -> {
-				Integer dist1 = distances.get(d1.getId());
-				Integer dist2 = distances.get(d2.getId());
+				Integer dist1 = distances.get(d1.id);
+				Integer dist2 = distances.get(d2.id);
 				if (dist1 == null || dist2 == null)
 					return 0;
 				return dist1 - dist2;
@@ -164,7 +164,7 @@ class ResultPage extends FormPage {
 		if (!(d instanceof CategorizedDescriptor))
 			return;
 		CategorizedDescriptor cd = (CategorizedDescriptor) d;
-		Long id = cd.getCategory();
+		Long id = cd.category;
 		if (id == null)
 			return;
 		Category cat = Cache.getEntityCache().get(Category.class, id);
@@ -215,7 +215,7 @@ class ResultPage extends FormPage {
 			Object data = link.getData();
 			if (data instanceof CategoryDescriptor) {
 				CategoryDescriptor d = (CategoryDescriptor) data;
-				Category c = Cache.getEntityCache().get(Category.class, d.getId());
+				Category c = Cache.getEntityCache().get(Category.class, d.id);
 				Navigator.select(c);
 			} else if (data instanceof CategorizedDescriptor) {
 				App.openEditor((CategorizedDescriptor) data);

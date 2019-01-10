@@ -89,7 +89,7 @@ class XNexusIndexExportAction extends Action implements INavigationAction {
 				ProcessDao dao = new ProcessDao(db);
 				for (ProcessDescriptor descriptor : dao.getDescriptors()) {
 					log.trace("index process {}", descriptor);
-					Process process = dao.getForId(descriptor.getId());
+					Process process = dao.getForId(descriptor.id);
 					entries.add(new IndexEntry(process));
 				}
 				IndexEntry.writeEntries(entries, file);
@@ -132,7 +132,6 @@ class XNexusIndexExportAction extends Action implements INavigationAction {
 				writeDocValues(doc);
 			}
 		}
-
 
 		private void writeDocValues(ProcessDocumentation doc) {
 			technology = doc.getTechnology();

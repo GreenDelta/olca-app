@@ -77,7 +77,7 @@ public class ReportCalculator implements Runnable {
 			for (ReportIndicator indicator : report.indicators) {
 				if (indicator.descriptor == null)
 					continue;
-				long categoryId = indicator.descriptor.getId();
+				long categoryId = indicator.descriptor.id;
 				if (table.hasNormalisationFactors()) {
 					double nf = table.getNormalisationFactor(categoryId);
 					indicator.normalisationFactor = nf;
@@ -134,10 +134,10 @@ public class ReportCalculator implements Runnable {
 		for (ContributionItem<CategorizedDescriptor> item : set.contributions) {
 			if (item.item == null)
 				continue;
-			if (!ids.contains(item.item.getId()))
+			if (!ids.contains(item.item.id))
 				rest.amount = rest.amount + item.amount;
 			else {
-				foundIds.add(item.item.getId());
+				foundIds.add(item.item.id);
 				addContribution(varResult, item);
 			}
 		}
@@ -150,7 +150,7 @@ public class ReportCalculator implements Runnable {
 		varResult.contributions.add(con);
 		con.amount = item.amount;
 		con.rest = false;
-		con.processId = item.item.getId();
+		con.processId = item.item.id;
 	}
 
 	private Set<Long> getContributionProcessIds() {
@@ -158,14 +158,13 @@ public class ReportCalculator implements Runnable {
 		for (ReportProcess process : report.processes) {
 			if (process.descriptor == null)
 				continue;
-			ids.add(process.descriptor.getId());
+			ids.add(process.descriptor.id);
 		}
 		return ids;
 	}
 
 	/**
-	 * Add zero-contributions for processes that were not found in a variant
-	 * result.
+	 * Add zero-contributions for processes that were not found in a variant result.
 	 */
 	private void addDefaultContributions(Set<Long> ids, Set<Long> foundIds,
 			VariantResult varResult) {

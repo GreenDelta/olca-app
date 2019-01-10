@@ -110,7 +110,7 @@ public class App {
 			return;
 		}
 		log.trace("open editor for {} ", d);
-		String editorId = getEditorId(d.getModelType());
+		String editorId = getEditorId(d.type);
 		if (editorId == null)
 			log.error("could not find editor for model {}", d);
 		else {

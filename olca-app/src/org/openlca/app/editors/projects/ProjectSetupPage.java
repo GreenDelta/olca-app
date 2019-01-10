@@ -180,7 +180,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		if (d == null)
 			return;
 		ProductSystemDao dao = new ProductSystemDao(database);
-		ProductSystem system = dao.getForId(d.getId());
+		ProductSystem system = dao.getForId(d.id);
 		if (system == null) {
 			log.error("failed to load product system");
 			return;

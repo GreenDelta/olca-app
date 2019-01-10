@@ -15,18 +15,18 @@ public class CostResults {
 	}
 
 	/**
-	 * Returns the result descriptors for 'net costs' and 'added values'. The
-	 * first item (=default selection) is 'net-costs' if the total cost result
-	 * is positive otherwise the first item is 'added value'.
+	 * Returns the result descriptors for 'net costs' and 'added values'. The first
+	 * item (=default selection) is 'net-costs' if the total cost result is positive
+	 * otherwise the first item is 'added value'.
 	 */
 	public static List<CostResultDescriptor> getDescriptors(
 			SimpleResult result) {
 		CostResultDescriptor d1 = new CostResultDescriptor();
 		d1.forAddedValue = false;
-		d1.setName(M.Netcosts);
+		d1.name = M.Netcosts;
 		CostResultDescriptor d2 = new CostResultDescriptor();
 		d2.forAddedValue = true;
-		d2.setName(M.AddedValue);
+		d2.name = M.AddedValue;
 		if (result == null || result.totalCosts >= 0)
 			return Arrays.asList(d1, d2);
 		else

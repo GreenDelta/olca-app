@@ -77,8 +77,8 @@ class Search implements Runnable {
 		if (terms == null)
 			return false;
 		if (terms.length == 1
-				&& d.getRefId() != null
-				&& d.getRefId().equalsIgnoreCase(terms[0])) {
+				&& d.refId != null
+				&& d.refId.equalsIgnoreCase(terms[0])) {
 			return true;
 		}
 		String label = Labels.getDisplayName(d);

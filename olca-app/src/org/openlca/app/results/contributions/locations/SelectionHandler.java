@@ -52,7 +52,7 @@ class SelectionHandler implements EventHandler {
 	public void impactCategorySelected(ImpactCategoryDescriptor impact) {
 		if (calculator == null || impact == null)
 			return;
-		String unit = impact.getReferenceUnit();
+		String unit = impact.referenceUnit;
 		ContributionSet<Location> set = calculator.calculate(impact);
 		double total = result.getTotalImpactResult(impact);
 		setData(set, impact, total, unit);

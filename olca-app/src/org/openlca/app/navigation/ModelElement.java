@@ -21,7 +21,7 @@ public class ModelElement extends NavigationElement<CategorizedDescriptor> {
 	public void update() {
 		CategorizedDescriptor content = getContent();
 		CategorizedDescriptor newContent = Cache.getEntityCache().get(content.getClass(),
-				content.getId());
+				content.id);
 		setContent(newContent);
 		super.update();
 

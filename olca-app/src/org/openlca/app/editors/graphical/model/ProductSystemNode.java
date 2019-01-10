@@ -34,7 +34,7 @@ public class ProductSystemNode extends Node {
 
 	public ProcessNode getProcessNode(long id) {
 		for (ProcessNode node : getChildren())
-			if (node.process.getId() == id)
+			if (node.process.id == id)
 				return node;
 		return null;
 	}

@@ -80,7 +80,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 					}
 					ProcessDao dao = new ProcessDao(db);
 					for (ProcessDescriptor descriptor : dao.getDescriptors()) {
-						Process process = dao.getForId(descriptor.getId());
+						Process process = dao.getForId(descriptor.id);
 						String id = getId(process);
 						IndexEntry entry = index.get(id);
 						if (entry == null) {
