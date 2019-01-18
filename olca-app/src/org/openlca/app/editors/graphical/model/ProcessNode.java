@@ -54,6 +54,7 @@ public class ProcessNode extends Node {
 
 	public void apply(NodeLayoutInfo layout) {
 		minimized = layout.isMinimized();
+		marked = layout.isMarked();
 		if (!minimized)
 			if (getChildren().isEmpty())
 				initializeExchangeNodes();
