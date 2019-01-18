@@ -106,7 +106,7 @@ public class ContributionChartSection {
 			contributionSet = provider.getProcessContributions(flow);
 		} else if (selection instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
-			unit = impact.getReferenceUnit();
+			unit = impact.referenceUnit;
 			contributionSet = provider.getProcessContributions(impact);
 		}
 		if (contributionSet == null)

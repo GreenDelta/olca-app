@@ -351,7 +351,7 @@ public class GroupPage extends FormPage {
 
 		private int compareProcesses(ProcessDescriptor first,
 				ProcessDescriptor second) {
-			return compareNames(first.getName(), second.getName());
+			return compareNames(first.name, second.name);
 		}
 
 		private int compareGroups(ProcessGrouping first,
@@ -370,8 +370,7 @@ public class GroupPage extends FormPage {
 	}
 
 	/**
-	 * Action for saving a group set in the grouping page of the analysis
-	 * editor.
+	 * Action for saving a group set in the grouping page of the analysis editor.
 	 */
 	private class SaveGroupSetAction extends Action {
 
@@ -443,7 +442,7 @@ public class GroupPage extends FormPage {
 				group.setName(pageGroup.name);
 				groups.add(group);
 				for (CategorizedDescriptor process : pageGroup.processes)
-					group.getProcessIds().add(process.getRefId());
+					group.getProcessIds().add(process.refId);
 			}
 			return groups;
 		}

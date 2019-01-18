@@ -18,12 +18,12 @@ public class DQSystemViewer extends AbstractComboViewer<DQSystemDescriptor> {
 		setInput(new DQSystemDescriptor[0]);
 	}
 
-	public void setInput(IDatabase database) {
-		List<DQSystemDescriptor> systems = new DQSystemDao(database).getDescriptors();
+	public void setInput(IDatabase db) {
+		List<DQSystemDescriptor> systems = new DQSystemDao(db).getDescriptors();
 		Collections.sort(systems, (sys1, sys2) -> {
 			if (sys1 == null || sys2 == null)
 				return 0;
-			return Strings.compare(sys1.getName(), sys2.getName());
+			return Strings.compare(sys1.name, sys2.name);
 		});
 		super.setInput(systems);
 	}

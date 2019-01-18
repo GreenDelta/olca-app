@@ -43,7 +43,7 @@ public class NavigationTreeFilter extends ViewerFilter {
 
 	private boolean validModel(ModelElement element) {
 		BaseDescriptor model = element.getContent();
-		return model.getModelType().isOneOf(ModelType.PROCESS, ModelType.PRODUCT_SYSTEM);
+		return model.type.isOneOf(ModelType.PROCESS, ModelType.PRODUCT_SYSTEM);
 	}
 
 	private boolean hasModelChilds(INavigationElement<?> element) {

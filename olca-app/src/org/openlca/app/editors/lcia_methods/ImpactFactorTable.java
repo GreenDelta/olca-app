@@ -174,11 +174,11 @@ class ImpactFactorTable {
 		if (descriptors == null || descriptors.isEmpty())
 			return;
 		for (BaseDescriptor descriptor : descriptors) {
-			if (descriptors == null || descriptor.getModelType() != ModelType.FLOW)
+			if (descriptors == null || descriptor.type != ModelType.FLOW)
 				continue;
 			if (contains(descriptor))
 				continue;
-			Flow flow = new FlowDao(database).getForId(descriptor.getId());
+			Flow flow = new FlowDao(database).getForId(descriptor.id);
 			ImpactFactor f = new ImpactFactor();
 			f.flow = flow;
 			f.flowPropertyFactor = flow.getReferenceFactor();
@@ -193,7 +193,7 @@ class ImpactFactorTable {
 
 	private boolean contains(BaseDescriptor flow) {
 		for (ImpactFactor f : category.impactFactors)
-			if (f.flow.getId() == flow.getId())
+			if (f.flow.getId() == flow.id)
 				return true;
 		return false;
 	}

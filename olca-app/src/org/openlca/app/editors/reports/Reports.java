@@ -93,12 +93,12 @@ public final class Reports {
 		List<ImpactCategoryDescriptor> descriptors = dao
 				.getCategoryDescriptors(project.getImpactMethodId());
 		int id = 0;
-		for (ImpactCategoryDescriptor descriptor : descriptors) {
-			ReportIndicator indicator = new ReportIndicator(id++);
-			report.indicators.add(indicator);
-			indicator.descriptor = descriptor;
-			indicator.reportName = descriptor.getName();
-			indicator.displayed = true;
+		for (ImpactCategoryDescriptor d : descriptors) {
+			ReportIndicator i = new ReportIndicator(id++);
+			i.descriptor = d;
+			i.reportName = d.name;
+			i.displayed = true;
+			report.indicators.add(i);
 		}
 	}
 

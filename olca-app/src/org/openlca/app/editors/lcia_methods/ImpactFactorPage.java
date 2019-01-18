@@ -124,7 +124,7 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 		for (ImpactCategory category : getModel().impactCategories)
 			list.add(Descriptors.toDescriptor(category));
 		Collections.sort(list,
-				(o1, o2) -> Strings.compare(o1.getName(), o2.getName()));
+				(o1, o2) -> Strings.compare(o1.name, o2.name));
 		return list;
 	}
 
@@ -134,15 +134,15 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 			return true;
 		if (descriptor == null || category == null)
 			return false;
-		if (category.getId() != 0L && descriptor.getId() != 0L)
-			return descriptor.getId() == category.getId();
+		if (category.getId() != 0L && descriptor.id != 0L)
+			return descriptor.id == category.getId();
 		// new impact categories have an ID of 0. Thus, we take also other
 		// attributes to check equality
-		if (category.getRefId() != null && descriptor.getRefId() != null)
-			return Objects.equals(category.getRefId(), descriptor.getRefId());
-		return Objects.equals(category.getName(), descriptor.getName())
+		if (category.getRefId() != null && descriptor.refId != null)
+			return Objects.equals(category.getRefId(), descriptor.refId);
+		return Objects.equals(category.getName(), descriptor.name)
 				&& Objects.equals(category.referenceUnit,
-						descriptor.getReferenceUnit());
+						descriptor.referenceUnit);
 	}
 
 	private class CategoryChange implements

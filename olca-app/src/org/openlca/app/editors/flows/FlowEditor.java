@@ -5,6 +5,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,9 @@ public class FlowEditor extends ModelEditor<Flow> {
 		try {
 			addPage(new FlowInfoPage(this));
 			addPage(new FlowPropertiesPage(this));
-			addPage(new ImpactPage(this));
+			if (getModel().getFlowType() == FlowType.ELEMENTARY_FLOW) {
+				addPage(new ImpactPage(this));
+			}
 			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);

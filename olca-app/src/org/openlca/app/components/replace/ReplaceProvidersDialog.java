@@ -105,7 +105,10 @@ public class ReplaceProvidersDialog extends FormDialog {
 	private void updateButtons() {
 		ProcessDescriptor first = processViewer.getSelected();
 		FlowDescriptor second = productViewer.getSelected();
-		boolean enabled = first != null && first.getId() != 0l && second != null && second.getId() != 0l;
+		boolean enabled = first != null
+				&& first.id != 0L
+				&& second != null
+				&& second.id != 0L;
 		getButton(IDialogConstants.OK_ID).setEnabled(enabled);
 	}
 
@@ -119,12 +122,12 @@ public class ReplaceProvidersDialog extends FormDialog {
 	}
 
 	private List<FlowDescriptor> getProductOutputs(ProcessDescriptor process) {
-		if (process == null || process.getId() == 0l)
+		if (process == null || process.id == 0L)
 			return Collections.emptyList();
 		ProcessDao dao = new ProcessDao(Database.get());
 		List<FlowDescriptor> products = dao.getTechnologyOutputs(process);
 		for (FlowDescriptor flow : new ArrayList<>(products))
-			if (flow.getFlowType() != FlowType.PRODUCT_FLOW)
+			if (flow.flowType != FlowType.PRODUCT_FLOW)
 				products.remove(flow);
 		return products;
 	}
@@ -133,7 +136,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 		List<ProcessDescriptor> result = new ArrayList<>();
 		// TODO: search for processes and waste flows
 		FlowDao flowDao = new FlowDao(Database.get());
-		Set<Long> ids = flowDao.getWhereOutput(product.getId());
+		Set<Long> ids = flowDao.getWhereOutput(product.id);
 		ProcessDao processDao = new ProcessDao(Database.get());
 		result.addAll(processDao.getDescriptors(ids));
 		result.remove(processViewer.getSelected());
@@ -152,7 +155,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 		FlowDescriptor product = productViewer.getSelected();
 		ProcessDescriptor newProcess = replacementViewer.getSelected();
 		ProcessDao dao = new ProcessDao(Database.get());
-		dao.replace(oldProcess.getId(), product.getId(), newProcess != null ? newProcess.getId() : null);
+		dao.replace(oldProcess.id, product.id, newProcess != null ? newProcess.id : null);
 		Database.get().getEntityFactory().getCache().evictAll();
 		super.okPressed();
 	}

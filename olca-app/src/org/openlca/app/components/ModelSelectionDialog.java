@@ -201,8 +201,8 @@ public class ModelSelectionDialog extends FormDialog {
 			return modelElement.getContent();
 		}
 
-		private boolean matches(ModelElement element) {
-			return element.getContent().getName().toLowerCase()
+		private boolean matches(ModelElement elem) {
+			return elem.getContent().name.toLowerCase()
 					.contains(filterText.getText().toLowerCase());
 		}
 	}

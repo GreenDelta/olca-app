@@ -220,7 +220,7 @@ class ExchangeTable {
 			if (!(descriptor instanceof FlowDescriptor))
 				continue;
 			FlowDao flowDao = new FlowDao(Database.get());
-			Flow flow = flowDao.getForId(descriptor.getId());
+			Flow flow = flowDao.getForId(descriptor.id);
 			if (!canAdd(flow)) {
 				continue;
 			}

@@ -33,7 +33,7 @@ abstract class SelectionHandler implements EventHandler {
 		Map<Long, Double> results = new HashMap<>();
 		for (CategorizedDescriptor process : processes) {
 			double v = provider.getDirectFlowResult(process, flow);
-			results.put(process.getId(), v);
+			results.put(process.id, v);
 		}
 		processResultData(getResultData(results));
 	}
@@ -45,7 +45,7 @@ abstract class SelectionHandler implements EventHandler {
 		Map<Long, Double> results = new HashMap<>();
 		for (CategorizedDescriptor process : processes) {
 			double v = provider.getDirectImpactResult(process, impact);
-			results.put(process.getId(), v);
+			results.put(process.id, v);
 		}
 		processResultData(getResultData(results));
 	}
@@ -58,7 +58,7 @@ abstract class SelectionHandler implements EventHandler {
 		for (CategorizedDescriptor process : processes) {
 			double v = provider.getDirectCostResult(process);
 			v = cost.forAddedValue ? -v : v;
-			results.put(process.getId(), v);
+			results.put(process.id, v);
 		}
 		processResultData(getResultData(results));
 	}

@@ -57,10 +57,10 @@ public final class Cache {
 		if (descriptor == null)
 			return;
 		log.trace("evict {} with ID {}", descriptor.getClass(),
-				descriptor.getId());
-		if (descriptor.getModelType() == null)
+				descriptor.id);
+		if (descriptor.type == null)
 			evictAll(); // to be on the save side
-		else if (shouldEvictAll(descriptor.getModelType())) {
+		else if (shouldEvictAll(descriptor.type)) {
 			if (entityCache != null)
 				entityCache.invalidateAll();
 			evictFromMatrices(descriptor);
@@ -86,13 +86,13 @@ public final class Cache {
 	private static void evictEntity(BaseDescriptor descriptor) {
 		if (entityCache == null)
 			return;
-		long id = descriptor.getId();
+		long id = descriptor.id;
 		Class<?> clazz = descriptor.getClass();
 		log.trace("evict from entity cache {} with id={}", clazz, id);
 		entityCache.invalidate(clazz, id);
-		if (descriptor.getModelType() == null)
+		if (descriptor.type == null)
 			return;
-		clazz = descriptor.getModelType().getModelClass();
+		clazz = descriptor.type.getModelClass();
 		log.trace("evict from entity cache {} with id={}", clazz, id);
 		entityCache.invalidate(clazz, id);
 	}
@@ -100,14 +100,14 @@ public final class Cache {
 	private static void evictFromMatrices(BaseDescriptor descriptor) {
 		if (matrixCache == null)
 			return;
-		matrixCache.evict(descriptor.getModelType(), descriptor.getId());
+		matrixCache.evict(descriptor.type, descriptor.id);
 	}
 
 	public static void registerNew(BaseDescriptor descriptor) {
 		if (matrixCache == null)
 			return;
 		log.trace("register new model {}", descriptor);
-		matrixCache.registerNew(descriptor.getModelType(), descriptor.getId());
+		matrixCache.registerNew(descriptor.type, descriptor.id);
 	}
 
 }

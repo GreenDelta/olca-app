@@ -39,9 +39,9 @@ class RemoveSupplyChainAction extends EditorAction {
 		clear();
 		ProductSystem system = editor.getModel().getProductSystem();
 		long refId = system.referenceProcess.getId();
-		if (refId == node.process.getId()) {
+		if (refId == node.process.id) {
 			for (ProcessNode node : editor.getModel().getChildren())
-				if (refId != node.process.getId()) {
+				if (refId != node.process.id) {
 					nodes.add(node);
 					connections.addAll(node.links);
 				}
@@ -51,7 +51,7 @@ class RemoveSupplyChainAction extends EditorAction {
 		} else {
 			linkSearch = new MutableProcessLinkSearchMap(
 					system.processLinks);
-			collectSupplyChain(node.process.getId());
+			collectSupplyChain(node.process.id);
 		}
 		if (connections.size() > 0 || nodes.size() > 0 || links.size() > 0
 				|| processIds.size() > 0)
@@ -125,9 +125,9 @@ class RemoveSupplyChainAction extends EditorAction {
 			system.processLinks.removeAll(links);
 			systemNode.linkSearch.removeAll(links);
 			for (ProcessNode processNode : nodes) {
-				layouts.put(processNode.process.getId(), processNode.getXyLayoutConstraints());
+				layouts.put(processNode.process.id, processNode.getXyLayoutConstraints());
 				systemNode.remove(processNode);
-				processIds.add(processNode.process.getId());
+				processIds.add(processNode.process.id);
 			}
 			system.processes.removeAll(processIds);
 			refresh();
@@ -145,8 +145,8 @@ class RemoveSupplyChainAction extends EditorAction {
 				systemNode.getProductSystem().processes.add(processId);
 			for (ProcessNode node : nodes) {
 				systemNode.add(node);
-				node.setXyLayoutConstraints(layouts.remove(node.process.getId()));
-				systemNode.getProductSystem().processes.add(node.process.getId());
+				node.setXyLayoutConstraints(layouts.remove(node.process.id));
+				systemNode.getProductSystem().processes.add(node.process.id);
 				if (node.parent().editor.getOutline() == null)
 					continue;
 				node.parent().editor.getOutline().refresh();

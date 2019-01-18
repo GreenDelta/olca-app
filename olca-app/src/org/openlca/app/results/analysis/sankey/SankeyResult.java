@@ -151,7 +151,7 @@ class SankeyResult {
 		Set<CategorizedDescriptor> processSet = results.getProcesses();
 		processes = new CategorizedDescriptor[processSet.size()];
 		for (CategorizedDescriptor process : processSet) {
-			int i = processIndex.put(process.getId());
+			int i = processIndex.put(process.id);
 			processes[i] = process;
 		}
 	}

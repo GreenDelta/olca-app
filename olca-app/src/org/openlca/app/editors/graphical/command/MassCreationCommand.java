@@ -66,10 +66,10 @@ public class MassCreationCommand extends Command {
 	}
 
 	private void addNode(ProcessDescriptor process) {
-		if (model.getProcessNode(process.getId()) != null)
+		if (model.getProcessNode(process.id) != null)
 			return;
 		ProcessNode node = new ProcessNode(process);
-		model.getProductSystem().processes.add(process.getId());
+		model.getProductSystem().processes.add(process.id);
 		model.add(node);
 		createdNodes.add(node);
 	}
@@ -128,7 +128,7 @@ public class MassCreationCommand extends Command {
 	}
 
 	private void removeNode(ProcessNode node) {
-		model.getProductSystem().processes.remove(node.process.getId());
+		model.getProductSystem().processes.remove(node.process.id);
 		model.remove(node);
 	}
 

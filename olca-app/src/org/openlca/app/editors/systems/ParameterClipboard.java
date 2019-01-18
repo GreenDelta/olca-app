@@ -77,7 +77,7 @@ class ParameterClipboard {
 			ProcessDescriptor process = findProcess(cname);
 			if (process == null)
 				return null;
-			p.contextId = process.getId();
+			p.contextId = process.id;
 			p.contextType = ModelType.PROCESS;
 			return p;
 		}

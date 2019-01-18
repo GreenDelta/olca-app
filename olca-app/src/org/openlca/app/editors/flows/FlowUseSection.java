@@ -37,8 +37,8 @@ class FlowUseSection {
 
 	/**
 	 * Shows the maximum number of links that should be shown in a section. A
-	 * section is currently not usable or even crashes if there is a huge number
-	 * of links.
+	 * section is currently not usable or even crashes if there is a huge number of
+	 * links.
 	 */
 	private int MAX_LINKS = 25;
 
@@ -114,7 +114,7 @@ class FlowUseSection {
 		link.setForeground(Colors.linkBlue());
 		Controls.onClick(link, e -> {
 			ProcessDao dao = new ProcessDao(database);
-			Process p = dao.getForId(d.getId());
+			Process p = dao.getForId(d.id);
 			App.openEditor(p);
 		});
 	}

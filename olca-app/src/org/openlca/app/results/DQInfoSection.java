@@ -148,7 +148,7 @@ public class DQInfoSection {
 		private String getText(Tupel value, int col) {
 			switch (col) {
 			case 0:
-				return value.process.getName();
+				return value.process.name;
 			case 1:
 				int withQuality = dqResult.statistics.getNoOfExchanges(value.process, value.indicator);
 				int total = dqResult.statistics.getNoOfExchanges(value.process);

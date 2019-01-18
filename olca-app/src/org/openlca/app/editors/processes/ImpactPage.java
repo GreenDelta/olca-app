@@ -33,6 +33,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.ReferenceAmount;
@@ -74,7 +75,7 @@ class ImpactPage extends ModelPage<Process> {
 		List<ImpactMethodDescriptor> list = new ImpactMethodDao(Database.get())
 				.getDescriptors()
 				.stream().sorted((m1, m2) -> Strings.compare(
-						m1.getName(), m2.getName()))
+						m1.name, m2.name))
 				.collect(Collectors.toList());
 		combo.setInput(list);
 		combo.addSelectionChangedListener(m -> setTreeInput(m));
@@ -93,6 +94,16 @@ class ImpactPage extends ModelPage<Process> {
 				0.25, 0.25, 0.25, 0.25);
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		tree.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
+		Trees.onDoubleClick(tree, e -> {
+			Node node = Viewers.getFirstSelected(tree);
+			if (node == null)
+				return;
+			if (node.exchange != null) {
+				App.openEditor(node.exchange.flow);
+			} else if (node.impact != null) {
+				App.openEditor(combo.getSelected());
+			}
+		});
 
 		if (!list.isEmpty()) {
 			ImpactMethodDescriptor m = list.get(0);
@@ -142,10 +153,10 @@ class ImpactPage extends ModelPage<Process> {
 				Database.get(),
 				new HashSet<Long>(Arrays.asList(
 						getModel().getId(),
-						method.getId())),
+						method.id)),
 				Collections.emptySet());
 		ImpactTable iTable = ImpactTable.build(
-				Cache.getMatrixCache(), method.getId(), flowIdx);
+				Cache.getMatrixCache(), method.id, flowIdx);
 		IMatrix matrix = iTable.createMatrix(
 				App.getSolver(), interpreter);
 
@@ -294,11 +305,11 @@ class ImpactPage extends ModelPage<Process> {
 			case 3:
 				if (n.impact == null)
 					return null;
-				if (n.impact.getReferenceUnit() == null)
+				if (n.impact.referenceUnit == null)
 					return Numbers.format(n.result);
 				else
 					return Numbers.format(n.result)
-							+ " " + n.impact.getReferenceUnit();
+							+ " " + n.impact.referenceUnit;
 			default:
 				return null;
 			}

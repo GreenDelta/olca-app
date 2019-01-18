@@ -96,7 +96,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 				ProcessProduct provider = new ProcessProduct();
 				provider.process = node.process;
 				ProcessDao dao = new ProcessDao(Database.get());
-				Process p = dao.getForId(node.process.getId());
+				Process p = dao.getForId(node.process.id);
 				Exchange qRef = p.getQuantitativeReference();
 				if (qRef != null && qRef.flow != null) {
 					provider.flow = Descriptors.toDescriptor(qRef.flow);

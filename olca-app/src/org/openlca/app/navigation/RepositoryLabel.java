@@ -34,7 +34,7 @@ class RepositoryLabel {
 			return Images.getForCategory(category.getModelType(), Overlay.ADDED);
 		} else if (element instanceof ModelElement) {
 			CategorizedDescriptor model = ((ModelElement) element).getContent();
-			return Images.get(model.getModelType(), Overlay.ADDED);
+			return Images.get(model.type, Overlay.ADDED);
 		}
 		return null;
 	}

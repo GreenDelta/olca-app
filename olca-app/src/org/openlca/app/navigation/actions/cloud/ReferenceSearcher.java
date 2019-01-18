@@ -113,7 +113,7 @@ class ReferenceSearcher {
 		IUseSearch<?> useSearch = IUseSearch.FACTORY.createFor(type, database);
 		List<CategorizedDescriptor> usedIn = useSearch.findUses(toCheck);
 		for (CategorizedDescriptor descriptor : usedIn) {
-			Diff diff = index.get(descriptor.getRefId());
+			Diff diff = index.get(descriptor.refId);
 			if (diff == null || diff.type == DiffType.NO_DIFF || diff.type == DiffType.NEW)
 				continue;
 			results.add(descriptor);
@@ -137,16 +137,16 @@ class ReferenceSearcher {
 			}
 		}
 		for (CategorizedDescriptor descriptor : descriptors)
-			idToRefId.put(descriptor.getId(), descriptor.getRefId());
+			idToRefId.put(descriptor.id, descriptor.refId);
 		return descriptors;
 	}
 
 	private List<Diff> getChanged(Set<CategorizedDescriptor> refs) {
 		List<Diff> relevant = new ArrayList<>();
 		for (CategorizedDescriptor d : refs) {
-			if (allChanged.contains(d.getId()))
+			if (allChanged.contains(d.id))
 				continue;
-			Diff diff = index.get(d.getRefId());
+			Diff diff = index.get(d.refId);
 			if (diff == null || !diff.hasChanged())
 				continue;
 			relevant.add(diff);
@@ -169,8 +169,8 @@ class ReferenceSearcher {
 	private Map<ModelType, Set<Long>> prepareFromDescriptors(Set<CategorizedDescriptor> toCheck) {
 		Map<ModelType, Set<Long>> typeToIds = new HashMap<>();
 		for (CategorizedDescriptor descriptor : toCheck) {
-			addId(typeToIds, descriptor.getModelType(), descriptor.getId());
-			idToRefId.put(descriptor.getId(), descriptor.getRefId());
+			addId(typeToIds, descriptor.type, descriptor.id);
+			idToRefId.put(descriptor.id, descriptor.refId);
 		}
 		return typeToIds;
 	}

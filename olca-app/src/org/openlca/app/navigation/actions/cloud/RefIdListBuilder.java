@@ -68,7 +68,7 @@ class RefIdListBuilder {
 
 	private String toId(INavigationElement<?> element) {
 		if (element instanceof ModelElement)
-			return ((ModelElement) element).getContent().getRefId();
+			return ((ModelElement) element).getContent().refId;
 		if (element instanceof CategoryElement)
 			return ((CategoryElement) element).getContent().getRefId();
 		if (element instanceof ModelTypeElement)

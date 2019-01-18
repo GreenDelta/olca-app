@@ -57,7 +57,7 @@ class RenameAction extends Action implements INavigationAction {
 		if (element instanceof CategoryElement) {
 			name = ((CategoryElement) element).getContent().getName();
 		} else {
-			name = ((ModelElement) element).getContent().getName();
+			name = ((ModelElement) element).getContent().name;
 		}
 		InputDialog dialog = new InputDialog(UI.shell(), M.Rename,
 				M.PleaseEnterANewName, name, null);
@@ -93,11 +93,11 @@ class RenameAction extends Action implements INavigationAction {
 		}
 	}
 
-	private <T extends CategorizedEntity> void doUpdate(CategorizedDescriptor descriptor, String newName) {
+	private <T extends CategorizedEntity> void doUpdate(CategorizedDescriptor d, String newName) {
 		@SuppressWarnings("unchecked")
 		CategorizedEntityDao<T, ?> dao = (CategorizedEntityDao<T, ?>) Daos.categorized(Database.get(),
-				descriptor.getModelType());
-		T entity = dao.getForId(descriptor.getId());
+				d.type);
+		T entity = dao.getForId(d.id);
 		entity.setName(newName.trim());
 		entity = dao.update(entity);
 		Navigator.refresh(element.getParent());

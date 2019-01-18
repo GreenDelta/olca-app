@@ -7,6 +7,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.db.Cache;
 import org.openlca.app.results.IResultEditor;
+import org.openlca.app.results.ImpactChecksPage;
 import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
@@ -72,11 +73,15 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 			addPage(new QuickResultInfoPage(this, result, dqResult, setup));
 			addPage(new InventoryPage(this, result, dqResult, setup));
 			if (result.hasImpactResults())
-				addPage(new TotalImpactResultPage(this, result, dqResult, setup, this::getImpactFactor));
+				addPage(new TotalImpactResultPage(
+						this, result, dqResult, setup, this::getImpactFactor));
 			if (result.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, result, setup));
 			addPage(new LocationPage(this, result, setup));
 			addPage(new GroupPage(this, result, setup));
+			if (result.hasImpactResults()) {
+				addPage(new ImpactChecksPage(this, setup, result));
+			}
 		} catch (Exception e) {
 			log.error("failed to add pages", e);
 		}

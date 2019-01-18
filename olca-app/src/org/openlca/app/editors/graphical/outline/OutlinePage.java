@@ -132,7 +132,7 @@ public class OutlinePage extends ContentOutlinePage {
 			for (Object part : getViewer().getContents().getChildren()) {
 				if (!(part instanceof ProcessTreeEditPart))
 					continue;
-				String name = ((ProcessTreeEditPart) part).getModel().getName().toLowerCase();
+				String name = ((ProcessTreeEditPart) part).getModel().name.toLowerCase();
 				String value = searchText.getText().toLowerCase();
 				if (!name.contains(value))
 					continue;

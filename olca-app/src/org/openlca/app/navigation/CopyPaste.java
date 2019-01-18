@@ -81,7 +81,7 @@ public class CopyPaste {
 
 	private static ModelType getModelType(INavigationElement<?> element) {
 		if (element instanceof ModelElement)
-			return ((ModelElement) element).getContent().getModelType();
+			return ((ModelElement) element).getContent().type;
 		if (element instanceof CategoryElement)
 			return ((CategoryElement) element).getContent().getModelType();
 		if (element instanceof ModelTypeElement)
@@ -232,10 +232,10 @@ public class CopyPaste {
 		CategorizedDescriptor entity = element.getContent();
 		Category category = getCategory(categoryElement);
 		Optional<Category> parent = Optional.ofNullable(category);
-		entity = Daos.categorized(Database.get(), entity.getModelType()).updateCategory(entity, parent);
+		entity = Daos.categorized(Database.get(), entity.type).updateCategory(entity, parent);
 		// need to notifiy index updater manually here
 		Dataset dataset = Datasets.toDataset(entity, category);
-		Database.getIndexUpdater().update(dataset, entity.getId());
+		Database.getIndexUpdater().update(dataset, entity.id);
 	}
 
 	private static void copy(CategoryElement element, INavigationElement<?> category) {
@@ -267,8 +267,8 @@ public class CopyPaste {
 
 	private static CategorizedEntity copy(ModelElement element) {
 		CategorizedDescriptor descriptor = element.getContent();
-		CategorizedEntityDao<?, ?> dao = Daos.categorized(Database.get(), descriptor.getModelType());
-		CategorizedEntity entity = dao.getForId(descriptor.getId());
+		CategorizedEntityDao<?, ?> dao = Daos.categorized(Database.get(), descriptor.type);
+		CategorizedEntity entity = dao.getForId(descriptor.id);
 		CategorizedEntity copy = cloneIt(entity);
 		if (copy != null)
 			copy.setName(copy.getName() + " (copy)");

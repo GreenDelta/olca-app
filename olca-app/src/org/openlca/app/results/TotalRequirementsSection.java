@@ -16,7 +16,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
@@ -28,7 +27,6 @@ import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.CurrencyDao;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.matrix.TechIndex;
@@ -45,7 +43,6 @@ import org.openlca.core.results.SimpleResult;
  */
 class TotalRequirementsSection {
 
-	private EntityCache cache = Cache.getEntityCache();
 	private SimpleResult result;
 	private DQResult dqResult;
 	private Costs costs;
@@ -57,7 +54,7 @@ class TotalRequirementsSection {
 	TotalRequirementsSection(SimpleResult result, DQResult dqResult) {
 		this.result = result;
 		for (CategorizedDescriptor desc : result.getProcesses())
-			processes.put(desc.getId(), desc);
+			processes.put(desc.id, desc);
 		if (!result.hasCostResults()) {
 			costs = Costs.NONE;
 		} else {
@@ -234,7 +231,7 @@ class TotalRequirementsSection {
 			if (flow != null) {
 				this.product = Labels.getDisplayName(flow);
 				this.unit = Labels.getRefUnit(flow);
-				this.flowtype = flow.getFlowType();
+				this.flowtype = flow.flowType;
 			}
 		}
 

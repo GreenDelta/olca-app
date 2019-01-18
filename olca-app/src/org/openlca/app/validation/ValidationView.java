@@ -214,14 +214,14 @@ public class ValidationView extends ViewPart {
 			CategorizedDescriptor descriptor = Daos.categorized(Database.get(), status.modelType).getDescriptor(
 					status.id);
 			Category category = null;
-			if (descriptor.getCategory() != null)
-				category = new CategoryDao(Database.get()).getForId(descriptor.getCategory());
+			if (descriptor.category != null)
+				category = new CategoryDao(Database.get()).getForId(descriptor.category);
 			switch (column) {
 			case 0:
 				int count = status.missing.size();
 				if (!status.validReferenceSet)
 					count++;
-				return descriptor.getName() + " (id=" + status.id + ") (" + count + ")";
+				return descriptor.name + " (id=" + status.id + ") (" + count + ")";
 			case 1:
 				String text = "";
 				while (category != null) {

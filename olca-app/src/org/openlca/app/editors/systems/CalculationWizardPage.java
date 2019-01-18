@@ -250,7 +250,7 @@ class CalculationWizardPage extends WizardPage {
 		try {
 			ImpactMethodDao dao = new ImpactMethodDao(Database.get());
 			for (ImpactMethodDescriptor d : dao.getDescriptors()) {
-				if (val.equals(d.getRefId()))
+				if (val.equals(d.refId))
 					return d;
 			}
 		} catch (Exception e) {
@@ -268,8 +268,8 @@ class CalculationWizardPage extends WizardPage {
 			return null;
 		try {
 			NwSetDao dao = new NwSetDao(Database.get());
-			for (NwSetDescriptor d : dao.getDescriptorsForMethod(method.getId())) {
-				if (val.equals(d.getRefId()))
+			for (NwSetDescriptor d : dao.getDescriptorsForMethod(method.id)) {
+				if (val.equals(d.refId))
 					return d;
 			}
 		} catch (Exception e) {

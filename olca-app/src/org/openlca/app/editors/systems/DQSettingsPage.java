@@ -72,11 +72,11 @@ class DQSettingsPage extends WizardPage {
 		DQSystemDao dqDao = new DQSystemDao(Database.get());
 		DQSystemDescriptor pSystemDesc = processSystemViewer.getSelected();
 		if (pSystemDesc != null) {
-			setup.processDqSystem = dqDao.getForId(pSystemDesc.getId());
+			setup.processDqSystem = dqDao.getForId(pSystemDesc.id);
 		}
 		DQSystemDescriptor eSystemDesc = exchangeSystemViewer.getSelected();
 		if (eSystemDesc != null) {
-			setup.exchangeDqSystem = dqDao.getForId(eSystemDesc.getId());
+			setup.exchangeDqSystem = dqDao.getForId(eSystemDesc.id);
 		}
 		setup.aggregationType = aggregationType;
 		setup.roundingMode = roundingMode;

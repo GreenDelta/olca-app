@@ -47,7 +47,7 @@ class FactorCalculator {
 		}
 		if (setup.impactMethod != null) {
 			ImpactMethodDao methodDao = new ImpactMethodDao(db);
-			ImpactMethod method = methodDao.getForId(setup.impactMethod.getId());
+			ImpactMethod method = methodDao.getForId(setup.impactMethod.id);
 			addToContext(method.parameters);
 		}
 	}

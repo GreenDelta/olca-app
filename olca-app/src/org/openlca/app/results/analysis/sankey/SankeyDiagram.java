@@ -88,21 +88,21 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 				double ratio = sankeyResult.getLinkContribution(processLink);
 				Link link = new Link(sourceNode, targetNode, processLink, ratio);
 				createdLinks.put(processLink, link);
-				if (processed.contains(sourceNode.process.getId()))
+				if (processed.contains(sourceNode.process.id))
 					continue;
-				processes.add(sourceNode.process.getId());
+				processes.add(sourceNode.process.id);
 			}
 		}
 	}
 
 	private ProcessNode createNode(CategorizedDescriptor process) {
 		ProcessNode node = new ProcessNode(process);
-		long processId = process.getId();
+		long processId = process.id;
 		node.directContribution = sankeyResult.getDirectContribution(processId);
 		node.directResult = sankeyResult.getDirectResult(processId);
 		node.upstreamContribution = sankeyResult.getUpstreamContribution(processId);
 		node.upstreamResult = sankeyResult.getUpstreamResult(processId);
-		createdProcesses.put(process.getId(), node);
+		createdProcesses.put(process.id, node);
 		return node;
 	}
 
@@ -116,7 +116,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	private void updateModel(double cutoff) {
 		Map<Long, CategorizedDescriptor> processes = new HashMap<>();
 		for (CategorizedDescriptor d : result.getProcesses())
-			processes.put(d.getId(), d);
+			processes.put(d.id, d);
 		if (cutoff == 0) {
 			for (Long processId : productSystem.processes) {
 				CategorizedDescriptor d = processes.get(processId);

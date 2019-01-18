@@ -32,7 +32,7 @@ public class HideShowCommand extends Command {
 
 	@Override
 	public void execute() {
-		ProcessNode node = model.getProcessNode(process.getId());
+		ProcessNode node = model.getProcessNode(process.id);
 		if (type == SHOW && node == null) {
 			node = new ProcessNode(process);
 			model.add(node);

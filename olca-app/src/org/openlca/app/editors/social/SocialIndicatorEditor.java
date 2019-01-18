@@ -113,7 +113,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 			if (d == null)
 				return;
 			FlowPropertyDao dao = new FlowPropertyDao(Database.get());
-			FlowProperty fp = dao.getForId(d.getId());
+			FlowProperty fp = dao.getForId(d.id);
 			if (fp == null)
 				return;
 			getModel().activityQuantity = fp;

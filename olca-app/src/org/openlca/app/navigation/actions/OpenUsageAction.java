@@ -34,9 +34,9 @@ class OpenUsageAction extends Action implements INavigationAction {
 			return false;
 		ModelElement e = (ModelElement) elem;
 		CategorizedDescriptor d = e.getContent();
-		if (d == null || d.getModelType() == null)
+		if (d == null || d.type == null)
 			return false;
-		if (!d.getModelType().isCategorized())
+		if (!d.type.isCategorized())
 			return false;
 		descriptor = d;
 		return true;
@@ -51,8 +51,8 @@ class OpenUsageAction extends Action implements INavigationAction {
 	public void run() {
 		if (descriptor == null)
 			return;
-		if (descriptor.getModelType() == ModelType.PARAMETER) {
-			ParameterUsagePage.show(descriptor.getName());
+		if (descriptor.type == ModelType.PARAMETER) {
+			ParameterUsagePage.show(descriptor.name);
 		} else {
 			SearchPage.forUsage(descriptor);
 		}

@@ -58,8 +58,8 @@ class FetchIndexHelper {
 			Set<String> ids = refIds.get(type);
 			List<? extends CategorizedDescriptor> descriptors = dao.getDescriptorsForRefIds(ids);
 			for (CategorizedDescriptor descriptor : descriptors) {
-				ids.remove(descriptor.getRefId());
-				refIdToLocalId.put(descriptor.getRefId(), descriptor.getId());
+				ids.remove(descriptor.refId);
+				refIdToLocalId.put(descriptor.refId, descriptor.id);
 			}
 			if (!ids.isEmpty() && type == ModelType.CATEGORY) {
 				// some old category ids are in older repositories, to avoid an
@@ -77,7 +77,7 @@ class FetchIndexHelper {
 				}
 				descriptors = dao.getDescriptorsForRefIds(correctedIds);
 				for (CategorizedDescriptor descriptor : descriptors) {
-					refIdToLocalId.put(descriptor.getRefId(), descriptor.getId());
+					refIdToLocalId.put(descriptor.refId, descriptor.id);
 				}
 			}
 		}

@@ -391,7 +391,7 @@ public class TotalImpactResultPage extends FormPage {
 		}
 
 		String impactFactorUnit() {
-			String unit = impact.getReferenceUnit();
+			String unit = impact.referenceUnit;
 			if (unit == null)
 				unit = "1";
 			return unit + "/" + Labels.getRefUnit(flow);
@@ -439,17 +439,17 @@ public class TotalImpactResultPage extends FormPage {
 		}
 
 		String unit() {
-			if (impact.getReferenceUnit() == null)
+			if (impact.referenceUnit == null)
 				return null;
-			return impact.getReferenceUnit();
+			return impact.referenceUnit;
 		}
 
 		String name() {
 			switch (type()) {
 			case IMPACT_CATEGORY:
-				return impact.getName();
+				return impact.name;
 			case FLOW:
-				return flow.getName();
+				return flow.name;
 			case PROCESS:
 				return Labels.getDisplayName(process);
 			default:

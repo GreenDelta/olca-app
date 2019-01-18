@@ -26,27 +26,28 @@ public class DescriptorViewer extends AbstractTableViewer<BaseDescriptor> {
 		return new String[] { M.Name, M.Description };
 	}
 
-	private class DescriptorLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
+	private class DescriptorLabelProvider
+			extends BaseLabelProvider implements ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			if (!(element instanceof BaseDescriptor))
+		public Image getColumnImage(Object obj, int col) {
+			if (!(obj instanceof BaseDescriptor))
 				return null;
-			if (columnIndex != 0)
+			if (col != 0)
 				return null;
-			return Images.get((BaseDescriptor) element);
+			return Images.get((BaseDescriptor) obj);
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof BaseDescriptor))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof BaseDescriptor))
 				return null;
-			BaseDescriptor descriptor = (BaseDescriptor) element;
-			switch (columnIndex) {
+			BaseDescriptor d = (BaseDescriptor) obj;
+			switch (col) {
 			case 0:
-				return Labels.getDisplayName(descriptor);
+				return Labels.getDisplayName(d);
 			case 1:
-				return descriptor.getDescription();
+				return d.description;
 			}
 			return null;
 		}

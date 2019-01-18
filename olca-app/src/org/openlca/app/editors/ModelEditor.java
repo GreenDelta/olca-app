@@ -104,9 +104,9 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 		setTitleImage(Images.get(i.getDescriptor()));
 		try {
 			dao = Daos.base(Database.get(), modelClass);
-			model = dao.getForId(i.getDescriptor().getId());
-			loadComments(i.getDescriptor().getModelType(),
-					i.getDescriptor().getRefId());
+			model = dao.getForId(i.getDescriptor().id);
+			loadComments(i.getDescriptor().type,
+					i.getDescriptor().refId);
 			eventBus.register(this);
 		} catch (Exception e) {
 			log.error("failed to load " + modelClass.getSimpleName()
@@ -153,7 +153,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 		setDirty(false);
 		BaseDescriptor descriptor = getEditorInput().getDescriptor();
 		EntityCache cache = Cache.getEntityCache();
-		cache.refresh(descriptor.getClass(), descriptor.getId());
+		cache.refresh(descriptor.getClass(), descriptor.id);
 		cache.invalidate(modelClass, model.getId());
 		this.setPartName(Labels.getDisplayName(model));
 		Cache.evict(descriptor);

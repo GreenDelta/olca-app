@@ -201,9 +201,9 @@ class Clipboard {
 		}
 
 		/**
-		 * It is important that the flow direction is already specified before
-		 * calling this method because if the exchange is an avoided product or
-		 * waste flow the flow direction will change in this method.
+		 * It is important that the flow direction is already specified before calling
+		 * this method because if the exchange is an avoided product or waste flow the
+		 * flow direction will change in this method.
 		 */
 		private void mapIsAvoided(Exchange e, String[] row) {
 			if (e == null || e.flow == null || row.length < 7)
@@ -268,7 +268,7 @@ class Clipboard {
 			if (d == null) {
 				log.warn("Could not find provider '{}' in database", fullName);
 			} else {
-				e.defaultProviderId = d.getId();
+				e.defaultProviderId = d.id;
 			}
 		}
 	}

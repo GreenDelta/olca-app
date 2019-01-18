@@ -34,7 +34,7 @@ public class InfoSection {
 			link(comp, toolkit, M.ImpactAssessmentMethod, setup.impactMethod);
 		}
 		if (setup.nwSet != null) {
-			text(comp, toolkit, M.NormalizationAndWeightingSet, setup.nwSet.getName());
+			text(comp, toolkit, M.NormalizationAndWeightingSet, setup.nwSet.name);
 		}
 		buttons(comp, toolkit);
 	}

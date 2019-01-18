@@ -9,10 +9,10 @@ public class ReportProcess {
 	public String reportName;
 	public String reportDescription;
 
-	public ReportProcess(ProcessDescriptor descriptor) {
-		this.id = descriptor.getId();
-		this.descriptor = descriptor;
-		this.reportName = descriptor.getName();
-		this.reportDescription = descriptor.getDescription();
+	public ReportProcess(ProcessDescriptor d) {
+		this.id = d.id;
+		this.descriptor = d;
+		this.reportName = d.name;
+		this.reportDescription = d.description;
 	}
 }

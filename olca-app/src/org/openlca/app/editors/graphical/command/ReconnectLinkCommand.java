@@ -45,9 +45,9 @@ public class ReconnectLinkCommand extends Command {
 		systemNode.getProductSystem().processLinks.remove(oldLink.processLink);
 		systemNode.linkSearch.remove(oldLink.processLink);
 		ProcessLink processLink = new ProcessLink();
-		processLink.providerId = sourceNode.process.getId();
+		processLink.providerId = sourceNode.process.id;
 		processLink.flowId = oldLink.processLink.flowId;
-		processLink.processId = targetNode.parent().process.getId();
+		processLink.processId = targetNode.parent().process.id;
 		processLink.exchangeId = targetNode.exchange.getId();
 		systemNode.getProductSystem().processLinks.add(processLink);
 		systemNode.linkSearch.put(processLink);

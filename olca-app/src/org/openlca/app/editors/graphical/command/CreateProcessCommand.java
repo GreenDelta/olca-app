@@ -20,19 +20,19 @@ public class CreateProcessCommand extends Command {
 	public boolean canExecute() {
 		if (model == null)
 			return false;
-		return !model.getProductSystem().processes.contains(process.getId());
+		return !model.getProductSystem().processes.contains(process.id);
 	}
 
 	@Override
 	public boolean canUndo() {
 		if (model == null)
 			return false;
-		return model.getProductSystem().processes.contains(process.getId());
+		return model.getProductSystem().processes.contains(process.id);
 	}
 
 	@Override
 	public void execute() {
-		model.getProductSystem().processes.add(process.getId());
+		model.getProductSystem().processes.add(process.id);
 		model.add(new ProcessNode(process));
 		if (model.editor.getOutline() != null)
 			model.editor.getOutline().refresh();
@@ -51,8 +51,8 @@ public class CreateProcessCommand extends Command {
 
 	@Override
 	public void undo() {
-		model.getProductSystem().processes.remove(process.getId());
-		model.remove(model.getProcessNode(process.getId()));
+		model.getProductSystem().processes.remove(process.id);
+		model.remove(model.getProcessNode(process.id));
 		if (model.editor.getOutline() != null)
 			model.editor.getOutline().refresh();
 		model.editor.setDirty(true);

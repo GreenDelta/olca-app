@@ -72,10 +72,10 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 		for (BaseDescriptor d : descriptors) {
 			if (monitor.isCanceled())
 				break;
-			monitor.setTaskName(d.getName());
+			monitor.setTaskName(d.name);
 			try {
-				Object obj = Daos.root(config.db,
-						d.getModelType()).getForId(d.getId());
+				Object obj = Daos.root(
+						config.db, d.type).getForId(d.id);
 				if (obj instanceof CategorizedEntity)
 					export.export((CategorizedEntity) obj);
 			} catch (Exception e) {

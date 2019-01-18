@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +21,14 @@ public class FlowPropertyViewer extends
 		setInput(new FlowPropertyDescriptor[0]);
 	}
 
-	public void setInput(IDatabase database) {
+	public void setInput(IDatabase db) {
 		try {
-			List<FlowPropertyDescriptor> properties = new FlowPropertyDao(
-					database).getDescriptors();
-			Collections.sort(properties);
-			setInput(properties.toArray(new FlowPropertyDescriptor[properties
-					.size()]));
+			List<FlowPropertyDescriptor> props = new FlowPropertyDao(
+					db).getDescriptors();
+			Collections.sort(props,
+					(p1, p2) -> Strings.compare(p1.name, p2.name));
+			setInput(props.toArray(
+					new FlowPropertyDescriptor[props.size()]));
 		} catch (Exception e) {
 			log.error("Loading flow properties failed", e);
 		}
@@ -36,5 +38,5 @@ public class FlowPropertyViewer extends
 	public Class<FlowPropertyDescriptor> getType() {
 		return FlowPropertyDescriptor.class;
 	}
-	
+
 }

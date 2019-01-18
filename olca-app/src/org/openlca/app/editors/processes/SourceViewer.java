@@ -87,7 +87,7 @@ class SourceViewer extends AbstractTableViewer<Source> {
 	}
 
 	private void add(SourceDescriptor descriptor) {
-		Source source = sourceDao.getForId(descriptor.getId());
+		Source source = sourceDao.getForId(descriptor.id);
 		Process process = editor.getModel();
 		ProcessDocumentation doc = process.getDocumentation();
 		if (doc == null) {

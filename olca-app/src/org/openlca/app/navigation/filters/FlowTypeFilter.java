@@ -40,11 +40,11 @@ public class FlowTypeFilter extends ViewerFilter {
 	}
 
 	private boolean matchType(ModelElement element) {
-		if (element.getContent().getModelType() != ModelType.FLOW)
+		if (element.getContent().type != ModelType.FLOW)
 			return false;
 		FlowDescriptor flow = (FlowDescriptor) element.getContent();
 		for (FlowType flowType : flowTypes)
-			if (flow != null && flow.getFlowType() == flowType)
+			if (flow != null && flow.flowType == flowType)
 				return true;
 		return false;
 	}

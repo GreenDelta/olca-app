@@ -67,7 +67,7 @@ class ImpactPage extends ModelPage<Flow> {
 		Map<ImpactCategoryDescriptor, ImpactMethodDescriptor> rmap = new HashMap<>();
 		ImpactMethodDao mdao = new ImpactMethodDao(db);
 		mdao.getDescriptors().forEach(m -> {
-			mdao.getCategoryDescriptors(m.getId()).forEach(c -> {
+			mdao.getCategoryDescriptors(m.id).forEach(c -> {
 				rmap.put(c, m);
 			});
 		});
@@ -157,7 +157,7 @@ class ImpactPage extends ModelPage<Flow> {
 			case 2:
 				return Double.toString(f.value);
 			case 3:
-				String catUnit = f.impact.getReferenceUnit();
+				String catUnit = f.impact.referenceUnit;
 				if (catUnit == null)
 					return null;
 				if (f.unit == null)

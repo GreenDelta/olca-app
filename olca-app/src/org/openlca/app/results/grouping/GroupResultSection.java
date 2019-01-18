@@ -55,7 +55,7 @@ class GroupResultSection {
 			selection = flow;
 		} else {
 			ImpactCategoryDescriptor impact = impactViewer.getSelected();
-			unit = impact.getReferenceUnit();
+			unit = impact.referenceUnit;
 			selection = impact;
 		}
 		updateResults(selection, unit);

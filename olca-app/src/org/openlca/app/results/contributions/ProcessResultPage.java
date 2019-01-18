@@ -41,6 +41,7 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResult;
+import org.openlca.util.Strings;
 
 /**
  * Shows the single and upstream results of the processes in an analysis result.
@@ -81,7 +82,7 @@ public class ProcessResultPage extends FormPage {
 		this.setup = setup;
 		for (CategorizedDescriptor desc : result.getProcesses()) {
 			if (desc instanceof ProcessDescriptor) {
-				processes.put(desc.getId(),
+				processes.put(desc.id,
 						(ProcessDescriptor) desc);
 			}
 		}
@@ -128,7 +129,8 @@ public class ProcessResultPage extends FormPage {
 			if (result.isInput(f) == input)
 				list.add(f);
 		}
-		Collections.sort(list);
+		Collections.sort(list,
+				(f1, f2) -> Strings.compare(f1.name, f2.name));
 		table.setInput(list);
 	}
 
@@ -285,8 +287,8 @@ public class ProcessResultPage extends FormPage {
 		}
 
 		private String getFlowLabel(FlowDescriptor flow) {
-			String val = flow.getName();
-			if (flow.getCategory() == null)
+			String val = flow.name;
+			if (flow.category == null)
 				return val;
 			return val + " (" + Labels.getShortCategory(flow) + ")";
 		}
@@ -314,13 +316,13 @@ public class ProcessResultPage extends FormPage {
 			case 0:
 				return Numbers.percent(impactResult.getUpstreamContribution(d));
 			case 1:
-				return d.getName();
+				return d.name;
 			case 2:
 				return Numbers.format(impactResult.getUpstreamTotal(d));
 			case 3:
 				return Numbers.format(impactResult.getDirectResult(d));
 			case 4:
-				return d.getReferenceUnit();
+				return d.referenceUnit;
 			}
 			return null;
 		}
