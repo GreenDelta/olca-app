@@ -36,7 +36,6 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
@@ -95,7 +94,7 @@ class ExchangeTable {
 		label = new ExchangeLabel(editor);
 		viewer.setLabelProvider(label);
 		bindModifiers();
-		Tables.addDropSupport(viewer, this::add);
+		Tables.onDrop(viewer, this::add);
 		viewer.addFilter(new Filter());
 		bindActions(section);
 		bindDoubleClick(viewer);
@@ -216,11 +215,11 @@ class ExchangeTable {
 		if (descriptors.isEmpty())
 			return;
 		Process process = editor.getModel();
-		for (BaseDescriptor descriptor : descriptors) {
-			if (!(descriptor instanceof FlowDescriptor))
+		for (BaseDescriptor d : descriptors) {
+			if (d.type != ModelType.FLOW)
 				continue;
-			FlowDao flowDao = new FlowDao(Database.get());
-			Flow flow = flowDao.getForId(descriptor.id);
+			FlowDao dao = new FlowDao(Database.get());
+			Flow flow = dao.getForId(d.id);
 			if (!canAdd(flow)) {
 				continue;
 			}

@@ -147,7 +147,7 @@ class ImpactFactorTable {
 		Action remove = Actions.onRemove(this::onRemove);
 		Actions.bind(viewer, add, remove, copy);
 		Tables.onDeletePressed(viewer, (e) -> onRemove());
-		Tables.addDropSupport(viewer, (descriptors) -> createFactors(descriptors));
+		Tables.onDrop(viewer, this::createFactors);
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
 			if (item == null) {
@@ -173,12 +173,14 @@ class ImpactFactorTable {
 	private void createFactors(List<BaseDescriptor> descriptors) {
 		if (descriptors == null || descriptors.isEmpty())
 			return;
-		for (BaseDescriptor descriptor : descriptors) {
-			if (descriptors == null || descriptor.type != ModelType.FLOW)
+		for (BaseDescriptor d : descriptors) {
+			if (d == null || d.type != ModelType.FLOW)
 				continue;
-			if (contains(descriptor))
+			if (contains(d))
 				continue;
-			Flow flow = new FlowDao(database).getForId(descriptor.id);
+			Flow flow = new FlowDao(database).getForId(d.id);
+			if (flow == null)
+				continue;
 			ImpactFactor f = new ImpactFactor();
 			f.flow = flow;
 			f.flowPropertyFactor = flow.getReferenceFactor();

@@ -1,10 +1,6 @@
 package org.openlca.app.components;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,6 +11,8 @@ import org.eclipse.swt.dnd.TransferData;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * The transfer type for model descriptors (subclasses of BaseDescriptor). The
@@ -40,9 +38,9 @@ public final class ModelTransfer extends ByteArrayTransfer {
 	}
 
 	/**
-	 * Get the (first) model descriptor from the given transfer data. The given
-	 * data should be the data of a respective drop-event (event.data) using
-	 * this ModelTransfer class.
+	 * Get the (first) model descriptor from the given transfer data. The given data
+	 * should be the data of a respective drop-event (event.data) using this
+	 * ModelTransfer class.
 	 */
 	public static BaseDescriptor getDescriptor(Object data) {
 		if (data instanceof BaseDescriptor)
@@ -56,9 +54,9 @@ public final class ModelTransfer extends ByteArrayTransfer {
 	}
 
 	/**
-	 * Get the model descriptors from the given transfer data. The given data
-	 * should be the data of a respective drop-event (event.data) using this
-	 * ModelTransfer class.
+	 * Get the model descriptors from the given transfer data. The given data should
+	 * be the data of a respective drop-event (event.data) using this ModelTransfer
+	 * class.
 	 */
 	public static List<BaseDescriptor> getBaseDescriptors(Object data) {
 		if (data instanceof BaseDescriptor)
@@ -86,30 +84,30 @@ public final class ModelTransfer extends ByteArrayTransfer {
 	}
 
 	@Override
-	protected void javaToNative(Object object, TransferData transferData) {
-		if (!validate(object) || !isSupportedType(transferData))
+	protected void javaToNative(Object object, TransferData data) {
+		if (!validate(object) || !isSupportedType(data))
 			return;
-		try (ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-				ObjectOutputStream out = new ObjectOutputStream(bytesOut)) {
-			out.writeObject(object);
-			byte[] buffer = bytesOut.toByteArray();
-			super.javaToNative(buffer, transferData);
+		try {
+			String json = new Gson().toJson(object);
+			super.javaToNative(json.getBytes("utf-8"), data);
 		} catch (IOException e) {
 			log.error("Java to native transfer failed", e);
 		}
 	}
 
 	@Override
-	protected Object nativeToJava(TransferData transferData) {
-		if (!isSupportedType(transferData))
+	protected Object nativeToJava(TransferData data) {
+		if (!isSupportedType(data))
 			return new Object[0];
-		Object o = super.nativeToJava(transferData);
+		Object o = super.nativeToJava(data);
 		if (!(o instanceof byte[]))
 			return new Object[0];
 		byte[] bytes = (byte[]) o;
-		try (ByteArrayInputStream bytesIn = new ByteArrayInputStream(bytes);
-				ObjectInputStream in = new ObjectInputStream(bytesIn)) {
-			return in.readObject();
+		try {
+			String json = new String(bytes, "utf-8");
+			BaseDescriptor[] descriptors = new Gson()
+					.fromJson(json, BaseDescriptor[].class);
+			return descriptors;
 		} catch (Exception e) {
 			log.error("Native to java transfer failed", e);
 			return new Object[0];
