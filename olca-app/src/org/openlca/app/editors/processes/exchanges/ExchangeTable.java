@@ -25,6 +25,7 @@ import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
@@ -33,12 +34,14 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.NativeSql;
+import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -168,9 +171,29 @@ class ExchangeTable {
 		Action formulaSwitch = new FormulaSwitchAction();
 		Action copy = TableClipboard.onCopy(viewer, this::toClipboard);
 		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
-		CommentAction.bindTo(section, "exchanges", editor.getComments(), add, remove, formulaSwitch);
-		Actions.bind(viewer, add, remove, qRef, copy, paste);
+		CommentAction.bindTo(section, "exchanges",
+				editor.getComments(), add, remove, formulaSwitch);
 		Tables.onDeletePressed(viewer, e -> onRemove());
+		Action openFlow = Actions.create(
+				"#Open flow", Images.descriptor(ModelType.FLOW), () -> {
+					Exchange e = Viewers.getFirstSelected(viewer);
+					if (e == null || e.flow == null)
+						return;
+					App.openEditor(e.flow);
+				});
+		Action openProvider = Actions.create(
+				"#Open provider", Images.descriptor(ModelType.PROCESS), () -> {
+					Exchange e = Viewers.getFirstSelected(viewer);
+					if (e == null || e.defaultProviderId == 0L)
+						return;
+					ProcessDao dao = new ProcessDao(Database.get());
+					ProcessDescriptor d = dao.getDescriptor(e.defaultProviderId);
+					if (d != null) {
+						App.openEditor(d);
+					}
+				});
+		Actions.bind(viewer, add, remove, qRef,
+				copy, paste, openFlow, openProvider);
 	}
 
 	private void bindDoubleClick(TableViewer table) {
