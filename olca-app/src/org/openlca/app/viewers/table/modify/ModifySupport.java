@@ -17,8 +17,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
 import org.openlca.app.viewers.table.modify.ICellModifier.CellEditingType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provides an easy and type safe way to add cell editors to a table viewer. It
@@ -28,8 +26,6 @@ import org.slf4j.LoggerFactory;
  * create the modify support.
  */
 public class ModifySupport<T> {
-
-	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private Map<String, ICellModifier<T>> cellModifiers;
 	private CellEditor[] editors;
@@ -107,8 +103,6 @@ public class ModifySupport<T> {
 				break;
 			}
 		}
-		if (index == -1)
-			log.warn("Property {} is not a column property", property);
 		return index;
 	}
 
