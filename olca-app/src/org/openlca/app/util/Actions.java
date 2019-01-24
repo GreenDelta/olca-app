@@ -25,8 +25,8 @@ public class Actions {
 	private Actions() {
 	}
 
-	public static Action create(final String title,
-			final ImageDescriptor image, final Runnable runnable) {
+	public static Action create(String title,
+			ImageDescriptor image, Runnable runnable) {
 		return new Action() {
 			{
 				setText(title);
@@ -41,7 +41,7 @@ public class Actions {
 		};
 	}
 
-	public static Action onAdd(final Runnable runnable) {
+	public static Action onAdd(Runnable runnable) {
 		return new Action() {
 			{
 				setText(M.CreateNew);
@@ -56,21 +56,15 @@ public class Actions {
 		};
 	}
 
-	public static Action onCalculate(final Runnable runnable) {
-		return new Action() {
-			{
-				setText(M.CalculateResults);
-				setImageDescriptor(Icon.RUN.descriptor());
-			}
-
-			@Override
-			public void run() {
-				runnable.run();
-			}
-		};
+	public static Action onCalculate(Runnable fn) {
+		return create(M.CalculateResults, Icon.RUN.descriptor(), fn);
 	}
 
-	public static Action onRemove(final Runnable runnable) {
+	public static Action onOpen(Runnable fn) {
+		return create(M.Open, Icon.FOLDER_OPEN.descriptor(), fn);
+	}
+
+	public static Action onRemove(Runnable runnable) {
 		return new Action() {
 			{
 				setText(M.RemoveSelected);
@@ -85,7 +79,7 @@ public class Actions {
 		};
 	}
 
-	public static Action onSave(final Runnable runnable) {
+	public static Action onSave(Runnable runnable) {
 		return new Action() {
 			{
 				setText(M.Save);
