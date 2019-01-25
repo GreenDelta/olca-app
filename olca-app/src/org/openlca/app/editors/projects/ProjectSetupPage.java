@@ -55,7 +55,7 @@ import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,36 +149,50 @@ class ProjectSetupPage extends ModelPage<Project> {
 		addVariantActions(variantViewer, section);
 	}
 
-	private void addVariantActions(TableViewer viewer, Section section) {
-		Action add = Actions.onAdd(this::addVariant);
-		Action remove = Actions.onRemove(this::removeVariant);
-		Action copy = TableClipboard.onCopy(viewer);
-		CommentAction.bindTo(section, "variants", editor.getComments(), add, remove);
-		Actions.bind(viewer, add, remove, copy);
-		Tables.onDoubleClick(viewer, (event) -> {
-			TableItem item = Tables.getItem(viewer, event);
-			if (item == null) {
-				addVariant();
-				return;
+	private void addVariantActions(TableViewer table, Section section) {
+		Action onOpen = Actions.onOpen(() -> {
+			ProjectVariant v = Viewers.getFirstSelected(table);
+			if (v != null) {
+				App.openEditor(v.getProductSystem());
 			}
-			ProjectVariant variant = Viewers.getFirstSelected(viewer);
-			if (variant != null)
-				App.openEditor(variant.getProductSystem());
+		});
+		Action add = Actions.onAdd(() -> {
+			BaseDescriptor[] ds = ModelSelectionDialog.multiSelect(
+					ModelType.PRODUCT_SYSTEM);
+			addVariants(ds);
+		});
+		Action remove = Actions.onRemove(this::removeVariant);
+		Action copy = TableClipboard.onCopy(table);
+		CommentAction.bindTo(section, "variants",
+				editor.getComments(), add, remove);
+		Actions.bind(table, onOpen, add, remove, copy);
+		Tables.onDoubleClick(table, (event) -> {
+			TableItem item = Tables.getItem(table, event);
+			if (item == null) {
+				add.run();
+			} else {
+				onOpen.run();
+			}
+		});
+		Tables.onDrop(table, descriptors -> {
+			if (descriptors != null) {
+				addVariants(descriptors.toArray(
+						new BaseDescriptor[descriptors.size()]));
+			}
 		});
 	}
 
-	private void addVariant() {
-		log.trace("add variant");
-		CategorizedDescriptor[] descriptors = ModelSelectionDialog.multiSelect(
-				ModelType.PRODUCT_SYSTEM);
+	private void addVariants(BaseDescriptor[] descriptors) {
 		if (descriptors == null || descriptors.length == 0)
 			return;
-		for (CategorizedDescriptor d : descriptors) {
+		for (BaseDescriptor d : descriptors) {
+			if (d == null)
+				continue;
 			ProductSystemDao dao = new ProductSystemDao(database);
 			ProductSystem system = dao.getForId(d.id);
 			if (system == null) {
-				log.error("failed to load product system");
-				return;
+				log.error("failed to load product system " + d);
+				continue;
 			}
 			List<ProjectVariant> variants = project.variants;
 			ProjectVariant variant = createVariant(
@@ -192,16 +206,17 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private ProjectVariant createVariant(ProductSystem system, int i) {
-		ProjectVariant variant = new ProjectVariant();
-		variant.setProductSystem(system);
-		variant.setName(M.Variant + i);
-		variant.setAllocationMethod(AllocationMethod.NONE);
-		variant.setAmount(system.targetAmount);
-		variant.setFlowPropertyFactor(system.targetFlowPropertyFactor);
-		variant.setUnit(system.targetUnit);
-		for (ParameterRedef redef : system.parameterRedefs)
-			variant.getParameterRedefs().add(redef.clone());
-		return variant;
+		ProjectVariant v = new ProjectVariant();
+		v.setProductSystem(system);
+		v.setName(M.Variant + i);
+		v.setAllocationMethod(AllocationMethod.NONE);
+		v.setAmount(system.targetAmount);
+		v.setFlowPropertyFactor(system.targetFlowPropertyFactor);
+		v.setUnit(system.targetUnit);
+		for (ParameterRedef redef : system.parameterRedefs) {
+			v.getParameterRedefs().add(redef.clone());
+		}
+		return v;
 	}
 
 	private void removeVariant() {
