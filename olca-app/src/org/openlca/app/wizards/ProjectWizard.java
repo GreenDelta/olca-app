@@ -44,11 +44,9 @@ public class ProjectWizard extends AbstractWizard<Project> {
 			project.setRefId(UUID.randomUUID().toString());
 			project.setName(getModelName());
 			project.setDescription(getModelDescription());
-			project.setCreationDate(Calendar.getInstance().getTime());
-			project.setLastModificationDate(Calendar.getInstance().getTime());
+			project.creationDate = Calendar.getInstance().getTime();
+			project.lastModificationDate = Calendar.getInstance().getTime();
 			return project;
 		}
-
 	}
-
 }

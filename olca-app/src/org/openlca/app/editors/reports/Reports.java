@@ -56,7 +56,7 @@ public final class Reports {
 		if (project == null || report == null)
 			return;
 		int id = 0;
-		for (ProjectVariant projectVar : project.getVariants()) {
+		for (ProjectVariant projectVar : project.variants) {
 			ReportVariant reportVar = new ReportVariant(id++);
 			reportVar.name = projectVar.getName();
 			report.variants.add(reportVar);
@@ -87,11 +87,11 @@ public final class Reports {
 
 	private static void createReportIndicators(Project project, Report report,
 			IDatabase database) {
-		if (project.getImpactMethodId() == null)
+		if (project.impactMethodId == null)
 			return;
 		ImpactMethodDao dao = new ImpactMethodDao(database);
 		List<ImpactCategoryDescriptor> descriptors = dao
-				.getCategoryDescriptors(project.getImpactMethodId());
+				.getCategoryDescriptors(project.impactMethodId);
 		int id = 0;
 		for (ImpactCategoryDescriptor d : descriptors) {
 			ReportIndicator i = new ReportIndicator(id++);

@@ -75,7 +75,7 @@ class ProjectParameterTable {
 
 	private void updateOnSave(ProjectEditor editor) {
 		Project newProject = editor.getModel();
-		for (ProjectVariant newVar : newProject.getVariants()) {
+		for (ProjectVariant newVar : newProject.variants) {
 			for (Column col : columns) {
 				if (equal(col.variant, newVar)) {
 					col.variant = newVar;
@@ -90,14 +90,14 @@ class ProjectParameterTable {
 			columns = new Column[0];
 			return;
 		}
-		columns = new Column[project.getVariants().size()];
+		columns = new Column[project.variants.size()];
 		for (int i = 0; i < columns.length; i++)
-			columns[i] = new Column(project.getVariants().get(i));
+			columns[i] = new Column(project.variants.get(i));
 		Arrays.sort(columns);
 	}
 
 	private void initParameterRedefs(Project project) {
-		for (ProjectVariant variant : project.getVariants()) {
+		for (ProjectVariant variant : project.variants) {
 			for (ParameterRedef redef : variant.getParameterRedefs()) {
 				if (!contains(redef))
 					redefs.add(redef);
@@ -221,9 +221,9 @@ class ProjectParameterTable {
 	private Set<Long> getParameterContexts() {
 		Project project = editor.getModel();
 		HashSet<Long> contexts = new HashSet<>();
-		if (project.getImpactMethodId() != null)
-			contexts.add(project.getImpactMethodId());
-		for (ProjectVariant variant : project.getVariants()) {
+		if (project.impactMethodId != null)
+			contexts.add(project.impactMethodId);
+		for (ProjectVariant variant : project.variants) {
 			if (variant.getProductSystem() == null)
 				continue;
 			contexts.addAll(variant.getProductSystem().processes);

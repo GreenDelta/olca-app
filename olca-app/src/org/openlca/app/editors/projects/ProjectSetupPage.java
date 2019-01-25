@@ -81,7 +81,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		editor.onSaved(() -> {
 			project = editor.getModel();
 			if (variantViewer != null)
-				variantViewer.setInput(project.getVariants());
+				variantViewer.setInput(project.variants);
 		});
 	}
 
@@ -103,7 +103,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void initialInput() {
-		List<ProjectVariant> variants = project.getVariants();
+		List<ProjectVariant> variants = project.variants;
 		Collections.sort(variants, (v1, v2) -> Strings.compare(v1.getName(), v2.getName()));
 		variantViewer.setInput(variants);
 	}
@@ -185,7 +185,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			log.error("failed to load product system");
 			return;
 		}
-		List<ProjectVariant> variants = project.getVariants();
+		List<ProjectVariant> variants = project.variants;
 		ProjectVariant variant = createVariant(system, variants.size() + 1);
 		variants.add(variant);
 		variantViewer.setInput(variants);
@@ -212,7 +212,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		List<ProjectVariant> selection = Viewers.getAllSelected(variantViewer);
 		if (selection == null || selection.isEmpty())
 			return;
-		List<ProjectVariant> variants = project.getVariants();
+		List<ProjectVariant> variants = project.variants;
 		for (ProjectVariant var : selection) {
 			variants.remove(var);
 			parameterTable.removeVariant(var);

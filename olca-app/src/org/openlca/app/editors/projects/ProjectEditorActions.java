@@ -22,8 +22,8 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		toolBarManager.add(Actions.onCalculate(() -> {
+	public void contributeToToolBar(IToolBarManager toolBar) {
+		toolBar.add(Actions.onCalculate(() -> {
 			doCalcualtion();
 
 		}));
@@ -55,7 +55,7 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 			return null;
 		}
 		Project project = editor.getModel();
-		if (project.getVariants().isEmpty()) {
+		if (project.variants.isEmpty()) {
 			Dialog.showError(UI.shell(), M.NoProjectVaraintsAreDefined);
 			return null;
 		}

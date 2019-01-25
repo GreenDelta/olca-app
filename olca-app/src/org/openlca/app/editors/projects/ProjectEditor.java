@@ -4,7 +4,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.openlca.app.Config;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.reports.ReportEditorPage;
@@ -42,11 +41,7 @@ public class ProjectEditor extends ModelEditor<Project> {
 	protected void addPages() {
 		try {
 			addPage(new ProjectSetupPage(this));
-			if (Config.isBrowserEnabled()) {
-				addPage(new ReportEditorPage(this, report));
-			} else {
-				addPage(new ProjectInfoPage(this));
-			}
+			addPage(new ReportEditorPage(this, report));
 			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);
@@ -55,7 +50,7 @@ public class ProjectEditor extends ModelEditor<Project> {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		getModel().setLastModificationDate(Calendar.getInstance().getTime());
+		getModel().lastModificationDate = Calendar.getInstance().getTime();
 		Reports.save(getModel(), report, Database.get());
 		super.doSave(monitor);
 	}
