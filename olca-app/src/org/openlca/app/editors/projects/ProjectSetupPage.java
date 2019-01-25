@@ -55,7 +55,7 @@ import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +95,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 		createButtons(infoSection.getContainer());
 		new ImpactSection(editor).render(body, toolkit);
 		createVariantsSection(body);
-		createParameterSection(body);
+		Section section = UI.section(body, toolkit, M.Parameters);
+		parameterTable = new ProjectParameterTable(editor);
+		parameterTable.render(section, toolkit);
 		initialInput();
 		new ProcessContributionSection(editor).create(body, toolkit);
 		body.setFocus();
@@ -130,8 +132,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private void createVariantsSection(Composite body) {
 		Section section = UI.section(body, toolkit, M.Variants);
 		Composite composite = UI.sectionClient(section, toolkit, 1);
-		String[] properties = getProperties();
-		variantViewer = Tables.createViewer(composite, properties);
+		variantViewer = Tables.createViewer(composite,
+				M.Name, M.ProductSystem, M.AllocationMethod,
+				M.Flow, M.Amount, M.Unit, M.Description, "");
 		variantViewer.setLabelProvider(new VariantLabelProvider());
 		ModifySupport<ProjectVariant> support = new ModifySupport<>(variantViewer);
 		support.bind(M.Name, new VariantNameEditor());
@@ -139,21 +142,11 @@ class ProjectSetupPage extends ModelPage<Project> {
 		support.bind(M.Amount, new DoubleModifier<>(editor, "amount"));
 		support.bind(M.Unit, new VariantUnitEditor());
 		support.bind(M.Description, new VariantDescriptionEditor());
-		support.bind("", new CommentDialogModifier<ProjectVariant>(editor.getComments(), v -> CommentPaths.get(v)));
-		Tables.bindColumnWidths(variantViewer, 0.15, 0.15, 0.15, 0.15, 0.125, 0.125, 0.12);
+		support.bind("", new CommentDialogModifier<ProjectVariant>(
+				editor.getComments(), v -> CommentPaths.get(v)));
+		Tables.bindColumnWidths(variantViewer,
+				0.15, 0.15, 0.15, 0.15, 0.125, 0.125, 0.12);
 		addVariantActions(variantViewer, section);
-	}
-
-	private String[] getProperties() {
-		return new String[] { M.Name, M.ProductSystem,
-				M.AllocationMethod, M.Flow, M.Amount,
-				M.Unit, M.Description, "" };
-	}
-
-	private void createParameterSection(Composite body) {
-		Section section = UI.section(body, toolkit, M.Parameters);
-		parameterTable = new ProjectParameterTable(editor);
-		parameterTable.render(section, toolkit);
 	}
 
 	private void addVariantActions(TableViewer viewer, Section section) {
@@ -176,21 +169,25 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private void addVariant() {
 		log.trace("add variant");
-		BaseDescriptor d = ModelSelectionDialog.select(ModelType.PRODUCT_SYSTEM);
-		if (d == null)
+		CategorizedDescriptor[] descriptors = ModelSelectionDialog.multiSelect(
+				ModelType.PRODUCT_SYSTEM);
+		if (descriptors == null || descriptors.length == 0)
 			return;
-		ProductSystemDao dao = new ProductSystemDao(database);
-		ProductSystem system = dao.getForId(d.id);
-		if (system == null) {
-			log.error("failed to load product system");
-			return;
+		for (CategorizedDescriptor d : descriptors) {
+			ProductSystemDao dao = new ProductSystemDao(database);
+			ProductSystem system = dao.getForId(d.id);
+			if (system == null) {
+				log.error("failed to load product system");
+				return;
+			}
+			List<ProjectVariant> variants = project.variants;
+			ProjectVariant variant = createVariant(
+					system, variants.size() + 1);
+			variants.add(variant);
+			variantViewer.setInput(variants);
+			parameterTable.addVariant(variant);
+			variantSync.variantAdded(variant);
 		}
-		List<ProjectVariant> variants = project.variants;
-		ProjectVariant variant = createVariant(system, variants.size() + 1);
-		variants.add(variant);
-		variantViewer.setInput(variants);
-		parameterTable.addVariant(variant);
-		variantSync.variantAdded(variant);
 		editor.setDirty(true);
 	}
 
