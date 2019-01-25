@@ -28,7 +28,7 @@ def main():
 
     # create packages
     pack_win(version, version_date)
-    # pack_linux(version_date)
+    pack_linux(version_date)
     # pack_macos(version_date)
 
     print('All done\n')
@@ -53,6 +53,7 @@ def pack_win(version, version_date):
     product_dir = 'build/win32.win32.x86_64/openLCA'
     if not exists(product_dir):
         print('folder %s does not exist; skip Windows version' % product_dir)
+        return
 
     print('Create Windows package')
     copy_licenses(product_dir)
@@ -129,6 +130,9 @@ def pack_linux(version_date):
             jre_dir = glob.glob(product_dir + '/*jre*')
             os.rename(jre_dir[0], p(product_dir + '/jre'))
             print('done')
+
+    # copy the ini file
+    shutil.copy2('templates/openLCA_linux.ini', p(product_dir + "/openLCA.ini"))
 
     printw('  Create distribtuion package')
     dist_pack = p('build/dist/openLCA_linux64_%s' % version_date)

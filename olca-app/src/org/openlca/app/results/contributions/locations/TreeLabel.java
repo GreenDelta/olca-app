@@ -75,7 +75,7 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 
 	private String getLabel(ContributionItem<?> ci) {
 		if (ci == null || ci.item == null)
-			return null;
+			return M.None;
 		if (ci.item instanceof BaseDescriptor)
 			return Labels.getDisplayName((BaseDescriptor) ci.item);
 		if (ci.item instanceof Location) {
