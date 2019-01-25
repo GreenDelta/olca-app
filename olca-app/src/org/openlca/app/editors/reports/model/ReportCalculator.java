@@ -101,7 +101,7 @@ public class ReportCalculator implements Runnable {
 			for (ProjectVariant variant : result.getVariants()) {
 				VariantResult varResult = new VariantResult();
 				repResult.variantResults.add(varResult);
-				varResult.variant = variant.getName();
+				varResult.variant = variant.name;
 				varResult.totalAmount = result.getTotalImpactResult(
 						variant, impact);
 				ContributionSet<CategorizedDescriptor> set = result
@@ -199,7 +199,7 @@ public class ReportCalculator implements Runnable {
 
 	private ReportCostResult cost(ProjectVariant var, double val, String cu) {
 		ReportCostResult r = new ReportCostResult();
-		r.variant = var.getName();
+		r.variant = var.name;
 		r.value = Numbers.decimalFormat(val, 2) + " " + cu;
 		return r;
 	}

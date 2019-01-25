@@ -98,7 +98,7 @@ class ProjectParameterTable {
 
 	private void initParameterRedefs(Project project) {
 		for (ProjectVariant variant : project.variants) {
-			for (ParameterRedef redef : variant.getParameterRedefs()) {
+			for (ParameterRedef redef : variant.parameterRedefs) {
 				if (!contains(redef))
 					redefs.add(redef);
 			}
@@ -211,7 +211,7 @@ class ProjectParameterTable {
 			reportSync.parameterAdded(redef);
 			for (Column column : columns) {
 				if (findVariantRedef(column.variant, redef) == null)
-					column.variant.getParameterRedefs().add(redef.clone());
+					column.variant.parameterRedefs.add(redef.clone());
 			}
 		}
 		viewer.setInput(this.redefs);
@@ -224,9 +224,9 @@ class ProjectParameterTable {
 		if (project.impactMethodId != null)
 			contexts.add(project.impactMethodId);
 		for (ProjectVariant variant : project.variants) {
-			if (variant.getProductSystem() == null)
+			if (variant.productSystem == null)
 				continue;
-			contexts.addAll(variant.getProductSystem().processes);
+			contexts.addAll(variant.productSystem.processes);
 		}
 		return contexts;
 	}
@@ -240,7 +240,7 @@ class ProjectParameterTable {
 				ProjectVariant variant = column.variant;
 				ParameterRedef redef = findVariantRedef(variant, selected);
 				if (redef != null)
-					variant.getParameterRedefs().remove(redef);
+					variant.parameterRedefs.remove(redef);
 			}
 		}
 		viewer.setInput(this.redefs);
@@ -292,7 +292,7 @@ class ProjectParameterTable {
 			ParameterRedef redef) {
 		if (variant == null)
 			return null;
-		for (ParameterRedef variantRedef : variant.getParameterRedefs()) {
+		for (ParameterRedef variantRedef : variant.parameterRedefs) {
 			if (Objects.equals(variantRedef.name, redef.name)
 					&& Objects.equals(variantRedef.contextId,
 							redef.contextId))
@@ -328,7 +328,7 @@ class ProjectParameterTable {
 		if (var1.getId() != 0 && var2.getId() != 0)
 			return var1.getId() == var2.getId();
 		else
-			return Objects.equals(var1.getName(), var2.getName());
+			return Objects.equals(var1.name, var2.name);
 	}
 
 	private class LabelProvider extends org.eclipse.jface.viewers.LabelProvider
@@ -435,7 +435,7 @@ class ProjectParameterTable {
 			ParameterRedef variantRedef = findVariantRedef(variant, redef);
 			if (variantRedef == null) {
 				variantRedef = redef.clone();
-				variant.getParameterRedefs().add(variantRedef);
+				variant.parameterRedefs.add(variantRedef);
 			}
 			try {
 				double d = Double.parseDouble(text);
@@ -503,15 +503,15 @@ class ProjectParameterTable {
 		public String getTitle() {
 			if (variant == null)
 				return "";
-			return variant.getName();
+			return variant.name;
 		}
 
 		@Override
 		public int compareTo(Column other) {
 			if (this.variant == null || other.variant == null)
 				return 0;
-			return Strings.compare(this.variant.getName(),
-					other.variant.getName());
+			return Strings.compare(
+					this.variant.name, other.variant.name);
 		}
 	}
 }

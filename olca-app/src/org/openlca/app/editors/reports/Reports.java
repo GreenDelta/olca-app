@@ -58,9 +58,9 @@ public final class Reports {
 		int id = 0;
 		for (ProjectVariant projectVar : project.variants) {
 			ReportVariant reportVar = new ReportVariant(id++);
-			reportVar.name = projectVar.getName();
+			reportVar.name = projectVar.name;
 			report.variants.add(reportVar);
-			for (ParameterRedef redef : projectVar.getParameterRedefs()) {
+			for (ParameterRedef redef : projectVar.parameterRedefs) {
 				ReportParameter param = findOrCreateParameter(redef, report);
 				param.putValue(reportVar.id, redef.value);
 			}
