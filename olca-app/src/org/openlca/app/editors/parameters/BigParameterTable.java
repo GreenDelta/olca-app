@@ -8,9 +8,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -31,6 +34,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -48,6 +52,8 @@ import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.expressions.FormulaInterpreter;
+import org.openlca.expressions.Scope;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +89,7 @@ public class BigParameterTable extends SimpleFormEditor {
 
 		private final List<Param> params = new ArrayList<>();
 		private TableViewer table;
+		private Text filter;
 
 		public Page() {
 			super(BigParameterTable.this,
@@ -97,7 +104,7 @@ public class BigParameterTable extends SimpleFormEditor {
 
 			Composite filterComp = UI.formComposite(body, tk);
 			UI.gridData(filterComp, true, false);
-			Text filter = UI.formText(filterComp, tk, M.Filter);
+			filter = UI.formText(filterComp, tk, M.Filter);
 			filter.addModifyListener(e -> {
 				String t = filter.getText();
 				if (Strings.nullOrEmpty(t)) {
@@ -144,8 +151,16 @@ public class BigParameterTable extends SimpleFormEditor {
 							return;
 						ParameterUsagePage.show(p.parameter.getName());
 					});
+			Action onEvaluate = Actions.create(
+					"#Evaluate formulas", Icon.RUN.descriptor(), () -> {
+						App.runWithProgress("#Evaluate formulas ...",
+								this::evaluateFormulas, () -> {
+									table.setInput(params);
+									filter.setText("");
+								});
+					});
 
-			Actions.bind(table, onOpen, onUsage);
+			Actions.bind(table, onOpen, onUsage, onEvaluate);
 			Tables.onDoubleClick(table, e -> onOpen.run());
 		}
 
@@ -169,33 +184,80 @@ public class BigParameterTable extends SimpleFormEditor {
 				log.error("Failed to query parameter onwers", e);
 			}
 
-			new ParameterDao(db).getAll().forEach(p -> {
-				Param param = new Param();
-				param.parameter = p;
-				params.add(param);
-				if (p.scope == ParameterScope.GLOBAL)
+			new ParameterDao(db).getAll().forEach(pr -> {
+				Param p = new Param();
+				p.parameter = pr;
+				params.add(p);
+				if (pr.scope == ParameterScope.GLOBAL)
 					return;
-				Long ownerId = owners.get(p.getId());
-				if (ownerId == null)
+				p.ownerID = owners.get(pr.getId());
+				if (p.ownerID == null)
 					return;
-				if (p.scope == ParameterScope.PROCESS) {
-					param.owner = processes.get(ownerId);
-				} else if (p.scope == ParameterScope.IMPACT_METHOD) {
-					param.owner = methods.get(ownerId);
+				if (pr.scope == ParameterScope.PROCESS) {
+					p.owner = processes.get(p.ownerID);
+				} else if (pr.scope == ParameterScope.IMPACT_METHOD) {
+					p.owner = methods.get(p.ownerID);
 				}
 			});
 
 			Collections.sort(params);
 		}
 
+		private void evaluateFormulas() {
+			FormulaInterpreter fi = new FormulaInterpreter();
+			for (Param param : params) {
+				Scope scope = null;
+				if (param.ownerID == null) {
+					scope = fi.getGlobalScope();
+				} else {
+					scope = fi.getScope(param.ownerID);
+					if (scope == null) {
+						scope = fi.createScope(param.ownerID);
+					}
+				}
+				Parameter p = param.parameter;
+				if (p.isInputParameter) {
+					scope.bind(p.getName(), Double.toString(p.value));
+				} else {
+					scope.bind(p.getName(), p.formula);
+				}
+			}
+
+			for (Param param : params) {
+				Parameter p = param.parameter;
+				if (p.isInputParameter) {
+					param.evalError = false;
+					continue;
+				}
+				Scope scope = param.ownerID == null
+						? fi.getGlobalScope()
+						: fi.getScope(param.ownerID);
+				try {
+					p.value = scope.eval(p.formula);
+					param.evalError = false;
+				} catch (Exception e) {
+					param.evalError = true;
+				}
+			}
+		}
 	}
 
 	/** Stores a parameter object and its owner. */
 	private class Param implements Comparable<Param> {
+
+		/**
+		 * We have the owner ID as a separate field because a parameter could have a
+		 * link to an owner that does not exist anymore in the database (it is an error
+		 * but such things seem to happen).
+		 */
+		Long ownerID;
+
 		/** If null, it is a global parameter. */
 		CategorizedDescriptor owner;
 
 		Parameter parameter;
+
+		boolean evalError;
 
 		@Override
 		public int compareTo(Param other) {
@@ -223,6 +285,8 @@ public class BigParameterTable extends SimpleFormEditor {
 			if (parameter.getName() == null)
 				return false;
 			String f = filter.trim().toLowerCase();
+			if (evalError && f.equals("error"))
+				return true;
 			String n = parameter.getName().toLowerCase();
 			return n.contains(f);
 		}
@@ -235,7 +299,8 @@ public class BigParameterTable extends SimpleFormEditor {
 
 	}
 
-	private class Label extends LabelProvider implements ITableLabelProvider {
+	private class Label extends LabelProvider
+			implements ITableLabelProvider, ITableColorProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
@@ -252,6 +317,25 @@ public class BigParameterTable extends SimpleFormEditor {
 			default:
 				return null;
 			}
+		}
+
+		@Override
+		public Color getBackground(Object obj, int col) {
+			return null;
+		}
+
+		@Override
+		public Color getForeground(Object obj, int col) {
+			if (!(obj instanceof Param))
+				return null;
+			Param param = (Param) obj;
+			if (col == 1 &&
+					param.scope() != ParameterScope.GLOBAL
+					&& param.owner == null)
+				return Colors.systemColor(SWT.COLOR_RED);
+			if (col == 2 && param.evalError)
+				return Colors.systemColor(SWT.COLOR_RED);
+			return null;
 		}
 
 		@Override
@@ -274,14 +358,15 @@ public class BigParameterTable extends SimpleFormEditor {
 			case 2:
 				return p.isInputParameter
 						? Double.toString(p.value)
-						: p.formula + " = " + Numbers.format(p.value);
+						: param.evalError
+								? "!! error !! " + p.formula
+								: p.formula + " = " + Numbers.format(p.value);
 			case 3:
 				return p.getDescription();
 			default:
 				return null;
 			}
 		}
-
 	}
 
 }
