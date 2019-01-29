@@ -33,6 +33,7 @@ import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.LogFileEditor;
 import org.openlca.app.editors.StartPage;
+import org.openlca.app.editors.parameters.BigParameterTable;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
@@ -124,11 +125,16 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillWindowMenu(IMenuManager menuBar) {
-		MenuManager windowMenu = new MenuManager(M.Window, IWorkbenchActionConstants.M_WINDOW);
+		MenuManager windowMenu = new MenuManager(M.Window,
+				IWorkbenchActionConstants.M_WINDOW);
 		MenuManager viewMenu = new MenuManager(M.Showviews);
 		viewMenu.add(showViews);
 		windowMenu.add(viewMenu);
 		windowMenu.add(new Separator());
+		windowMenu.add(Actions.create(
+				M.Parameters,
+				Images.descriptor(ModelType.PARAMETER),
+				BigParameterTable::show));
 		createDeveloperMenu(windowMenu);
 		createMassReplaceMenu(windowMenu);
 		windowMenu.add(new Separator());

@@ -276,6 +276,14 @@
       </editor>	  
 
       <editor
+            class="org.openlca.app.editors.parameters.BigParameterTable"
+            default="false"
+            icon="icons/model/parameter.png"
+            id="BigParameterTable"
+            name="Parameters">
+      </editor>
+
+      <editor
             class="org.openlca.app.db.LinkingPropertiesPage"
             default="false"
             icon="icons/model/database.png"
