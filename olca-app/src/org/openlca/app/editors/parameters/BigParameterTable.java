@@ -8,10 +8,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -105,6 +107,8 @@ public class BigParameterTable extends SimpleFormEditor {
 			Composite filterComp = UI.formComposite(body, tk);
 			UI.gridData(filterComp, true, false);
 			filter = UI.formText(filterComp, tk, M.Filter);
+			filter.setToolTipText("#Type 'error' to filter "
+					+ "evaluation errors.");
 			filter.addModifyListener(e -> {
 				String t = filter.getText();
 				if (Strings.nullOrEmpty(t)) {
@@ -159,8 +163,10 @@ public class BigParameterTable extends SimpleFormEditor {
 									filter.setText("");
 								});
 					});
+			Action onEdit = Actions.create(M.Edit,
+					Icon.EDIT.descriptor(), this::onEdit);
 
-			Actions.bind(table, onOpen, onUsage, onEvaluate);
+			Actions.bind(table, onOpen, onUsage, onEvaluate, onEdit);
 			Tables.onDoubleClick(table, e -> onOpen.run());
 		}
 
@@ -204,6 +210,30 @@ public class BigParameterTable extends SimpleFormEditor {
 		}
 
 		private void evaluateFormulas() {
+			FormulaInterpreter fi = buildInterpreter();
+			for (Param param : params) {
+				Parameter p = param.parameter;
+				if (p.isInputParameter) {
+					param.evalError = false;
+					continue;
+				}
+				Scope scope = param.ownerID == null
+						? fi.getGlobalScope()
+						: fi.getScope(param.ownerID);
+				try {
+					p.value = scope.eval(p.formula);
+					param.evalError = false;
+				} catch (Exception e) {
+					param.evalError = true;
+				}
+			}
+		}
+
+		/**
+		 * Bind the parameter values and formulas to the respective scopes of a formula
+		 * interpreter.
+		 */
+		private FormulaInterpreter buildInterpreter() {
 			FormulaInterpreter fi = new FormulaInterpreter();
 			for (Param param : params) {
 				Scope scope = null;
@@ -222,23 +252,75 @@ public class BigParameterTable extends SimpleFormEditor {
 					scope.bind(p.getName(), p.formula);
 				}
 			}
+			return fi;
+		}
 
-			for (Param param : params) {
-				Parameter p = param.parameter;
-				if (p.isInputParameter) {
-					param.evalError = false;
-					continue;
-				}
+		private void onEdit() {
+			Param param = Viewers.getFirstSelected(table);
+			if (param == null || param.parameter == null)
+				return;
+			Parameter p = param.parameter;
+
+			// build dialog with validation
+			InputDialog dialog = null;
+			FormulaInterpreter fi = null;
+			if (p.isInputParameter) {
+				dialog = new InputDialog(UI.shell(),
+						"#Edit value", "Set a new parameter value",
+						Double.toString(p.value), s -> {
+							try {
+								Double.parseDouble(s);
+								return null;
+							} catch (Exception e) {
+								return s + " " + M.IsNotValidNumber;
+							}
+						});
+			} else {
+				fi = buildInterpreter();
 				Scope scope = param.ownerID == null
 						? fi.getGlobalScope()
 						: fi.getScope(param.ownerID);
+				dialog = new InputDialog(UI.shell(),
+						"#Edit formula", "Set a new parameter formula",
+						p.formula, s -> {
+							try {
+								scope.eval(s);
+								return null;
+							} catch (Exception e) {
+								return s + " " + M.IsInvalidFormula;
+							}
+						});
+			}
+
+			// parse the value from the dialog
+			if (dialog.open() != Window.OK)
+				return;
+			String val = dialog.getValue();
+			if (p.isInputParameter) {
 				try {
-					p.value = scope.eval(p.formula);
+					p.value = Double.parseDouble(val);
+					param.evalError = false;
+				} catch (Exception e) {
+					param.evalError = true;
+				}
+			} else {
+				try {
+					p.formula = val;
+					Scope scope = param.ownerID == null
+							? fi.getGlobalScope()
+							: fi.getScope(param.ownerID);
+					p.value = scope.eval(val);
 					param.evalError = false;
 				} catch (Exception e) {
 					param.evalError = true;
 				}
 			}
+
+			// update the parameter in the database
+			ParameterDao dao = new ParameterDao(
+					Database.get());
+			param.parameter = dao.update(p);
+			table.refresh();
 		}
 	}
 
