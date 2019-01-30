@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -22,6 +23,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -77,7 +79,7 @@ public class ImpactChecksPage extends FormPage {
 		Trees.bindColumnWidths(
 				tree.getTree(), 0.4, 0.4, 0.2);
 
-		Trees.onDoubleClick(tree, e -> {
+		Action onOpen = Actions.onOpen(() -> {
 			Node node = Viewers.getFirstSelected(tree);
 			if (node == null)
 				return;
@@ -87,6 +89,8 @@ public class ImpactChecksPage extends FormPage {
 				App.openEditor(setup.impactMethod);
 			}
 		});
+		Actions.bind(tree, onOpen);
+		Trees.onDoubleClick(tree, e -> onOpen.run());
 
 		setTreeInput();
 	}

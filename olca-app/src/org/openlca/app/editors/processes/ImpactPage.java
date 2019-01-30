@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -28,6 +29,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -94,7 +96,8 @@ class ImpactPage extends ModelPage<Process> {
 				0.25, 0.25, 0.25, 0.25);
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		tree.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
-		Trees.onDoubleClick(tree, e -> {
+
+		Action onOpen = Actions.onOpen(() -> {
 			Node node = Viewers.getFirstSelected(tree);
 			if (node == null)
 				return;
@@ -104,6 +107,8 @@ class ImpactPage extends ModelPage<Process> {
 				App.openEditor(combo.getSelected());
 			}
 		});
+		Actions.bind(tree, onOpen);
+		Trees.onDoubleClick(tree, e -> onOpen.run());
 
 		if (!list.isEmpty()) {
 			ImpactMethodDescriptor m = list.get(0);

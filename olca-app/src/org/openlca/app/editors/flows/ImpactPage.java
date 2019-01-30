@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -20,6 +21,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
@@ -53,13 +55,16 @@ class ImpactPage extends ModelPage<Flow> {
 		table.setLabelProvider(new Label());
 		table.setInput(loadFactors());
 		Tables.bindColumnWidths(table, 0.3, 0.3, 0.2, 0.2);
-		form.reflow(true);
-		Tables.onDoubleClick(table, e -> {
+
+		Action onOpen = Actions.onOpen(() -> {
 			Factor f = Viewers.getFirstSelected(table);
 			if (f != null) {
 				App.openEditor(f.method);
 			}
 		});
+		Actions.bind(table, onOpen);
+		Tables.onDoubleClick(table, e -> onOpen.run());
+		form.reflow(true);
 	}
 
 	private List<Factor> loadFactors() {
