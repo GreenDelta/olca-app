@@ -5,6 +5,9 @@ variantLegend = function() {
 		var element = $(elem.get(0));
 		for(var i = 0; i < scope.report.variants.length; i++) {
 			var variant = scope.report.variants[i];
+			if (variant.isDisabled) {
+				continue;
+			}
 			var color = Colors.getPredefinedString(i);
 			var text = getElementText(variant.name, color);
 			element.append(text);

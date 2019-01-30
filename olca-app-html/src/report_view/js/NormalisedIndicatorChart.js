@@ -21,7 +21,7 @@ NormalisedIndicatorChart = function() {
 				multiTooltipTemplate: "<%= value.toExponential(2) %>"
 			});
 		} else if (type === 'relative_bar' || type === 'normalisation_bar') {
-			var dist = 400 / (2 * report.variants.length * scope.getDisplayedIndicators().length);
+			var dist = 400 / (2 * scope.getVariantCount() * scope.getDisplayedIndicators().length);
 			if (dist < 5)
 				dist = 5;
 			new Chart(canvas.getContext("2d")).Bar(data, {
@@ -37,6 +37,9 @@ NormalisedIndicatorChart = function() {
 		var index = getResultIndex(report);
 		for (var i = 0; i < report.variants.length; i++) {
 			var variant = report.variants[i];
+			if (variant.isDisabled) {
+				continue;
+			}
 			var data = [];
 			for (var j = 0; j < report.indicators.length; j++) {
 				var indicator = report.indicators[j];

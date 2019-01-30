@@ -17,6 +17,21 @@ var Controller = function($scope) {
 		return "";
 	};
 
+	$scope.getVariantCount = function() {
+		var variants = $scope.report.variants;
+		if (!variants) {
+			return 0;
+		}
+		var count = 0;
+		for (var i = 0; i < variants.length; i++) {
+			if (variants[i].isDisabled) {
+				continue;
+			}
+			count++;
+		}
+		return count;
+	}
+
 	$scope.getVariantResult = function(variant, indicator) {
 		var results = $scope.report.results;
 		for (var i = 0; i < results.length; i++) {

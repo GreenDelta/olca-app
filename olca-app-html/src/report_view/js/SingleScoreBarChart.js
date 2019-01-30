@@ -1,12 +1,12 @@
 
 SingleScoreBarChart = function() {
 
-	return function(scope, elem, atts) {
+	return function(scope, elem, _) {
 		var canvas = elem.get(0);
-		var report = scope.report;
-		var dist = 400 / (2 * report.variants.length);
-		if (dist < 5)
+		var dist = 400 / (2 * scope.getVariantCount());
+		if (dist < 5) {
 			dist = 5;
+		}
 		var data = createChartData(scope);
 		new Chart(canvas.getContext("2d")).StackedBar(data, {
 			barDatasetSpacing: dist, 
@@ -21,6 +21,9 @@ SingleScoreBarChart = function() {
 		var dataSets = createDataSets(scope);
 		var variantNames = [];
 		$.each(report.variants, function(i, variant) {
+			if (variant.isDisabled) {
+				return;
+			}
 			variantNames.push(variant.name);
 			$.each(scope.getDisplayedIndicators(), function(j, indicator) {
 				var result = scope.getVariantResult(variant, indicator);

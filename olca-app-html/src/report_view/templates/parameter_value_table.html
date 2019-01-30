@@ -3,13 +3,17 @@
 		<thead>
 			<tr>
 				<th>{{Messages.Parameter}}</th>
-				<th data-ng-repeat="variant in report.variants">{{variant.name}}</th>
+				<th data-ng-repeat="variant in report.variants | filter: {isDisabled: false}">
+					{{variant.name}}
+				</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr data-ng-repeat="parameter in report.parameters">
 				<td>{{parameter.name}}</td>
-				<td data-ng-repeat="variant in report.variants">{{parameter.variantValues[variant.id]}}</td>
+				<td data-ng-repeat="variant in report.variants | filter: {isDisabled: false}">
+					{{parameter.variantValues[variant.id]}}
+				</td>
 			</tr>
 		</tbody>
 	</table>

@@ -24,6 +24,7 @@ import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,12 +35,12 @@ public final class Reports {
 	private Reports() {
 	}
 
-	public static Report createOrOpen(Project project, IDatabase database) {
-		Report report = openReport(project, database);
-		return report != null ? report : createNew(project, database);
+	public static Report createOrOpen(Project project, IDatabase db) {
+		Report report = openReport(project, db);
+		return report != null ? report : createNew(project, db);
 	}
 
-	private static Report createNew(Project project, IDatabase database) {
+	private static Report createNew(Project project, IDatabase db) {
 		Report report = new Report();
 		createDefaultSections(report);
 		if (project == null) {
@@ -47,7 +48,7 @@ public final class Reports {
 			return report;
 		}
 		createReportVariants(project, report);
-		createReportIndicators(project, report, database);
+		createReportIndicators(project, report, db);
 		report.title = M.ResultsOfProject + " " + project.getName();
 		return report;
 	}
@@ -102,16 +103,29 @@ public final class Reports {
 		}
 	}
 
-	private static Report openReport(Project project, IDatabase database) {
+	private static Report openReport(Project project, IDatabase db) {
 		if (project == null)
 			return null;
-		File file = getReportFile(project, database);
+		File file = getReportFile(project, db);
 		if (file == null || !file.exists())
 			return null;
 		try (FileInputStream fis = new FileInputStream(file);
 				Reader reader = new InputStreamReader(fis, "utf-8")) {
-			Gson gson = new Gson();
-			return gson.fromJson(reader, Report.class);
+			// TODO: the `isDisabled` field of project variants
+			// is currently not persisted in the database, thus we
+			// need to sync its state here; later, when it is persisted,
+			// we can remove this
+			Report r = new Gson().fromJson(reader, Report.class);
+			for (ProjectVariant pvar : project.variants) {
+				ReportVariant rvar = r.variants.stream()
+						.filter(rv -> Strings.nullOrEqual(
+								pvar.name, rv.name))
+						.findFirst().orElse(null);
+				if (rvar != null) {
+					pvar.isDisabled = rvar.isDisabled;
+				}
+			}
+			return r;
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(Reports.class);
 			log.error("failed to open report file " + file, e);

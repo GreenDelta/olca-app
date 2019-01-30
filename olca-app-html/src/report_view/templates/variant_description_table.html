@@ -7,7 +7,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr data-ng-repeat="variant in report.variants">
+			<tr data-ng-repeat="variant in report.variants | filter: {isDisabled: false}">
 				<td>{{variant.name}}</td>
 				<td>{{variant.description}}</td>
 			</tr>

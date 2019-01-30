@@ -3,16 +3,18 @@
 		<thead>
 			<tr>
 				<th>{{Messages.ImpactCategory}}</th>
-				<th data-ng-repeat="variant in report.variants">{{variant.name}}</th>
+				<th data-ng-repeat="variant in report.variants | filter: {isDisabled: false}">
+					{{variant.name}}
+				</th>
 				<th>{{Messages.Unit}}</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr data-ng-repeat="indicator in report.indicators| filter: {displayed:true}">
+			<tr data-ng-repeat="indicator in report.indicators | filter: {displayed: true}">
 				<td>
 					{{indicator.reportName}}
 				</td>
-				<td data-ng-repeat="variant in report.variants">
+				<td data-ng-repeat="variant in report.variants | filter: {isDisabled: false}">
 					{{getVariantResult(variant, indicator) | scientific}}
 				</td>
 				<td>

@@ -9,6 +9,7 @@ public class ReportVariant {
 	public final int id;
 	public String name;
 	public String description;
+	public boolean isDisabled;
 
 	public ReportVariant(int id) {
 		this.id = id;

@@ -61,9 +61,9 @@ class ReportVariantSync {
 	}
 
 	/**
-	 * Sets the given name in the project and report variant. Note that the
-	 * given project variant should contain the old variant because this is used
-	 * to find the respective report variant.
+	 * Sets the given name in the project and report variant. Note that the given
+	 * project variant should contain the old variant name because this is used to
+	 * find the respective report variant.
 	 */
 	public void updateName(ProjectVariant variant, String newName) {
 		ReportVariant var = findReportVariant(variant);
@@ -76,6 +76,13 @@ class ReportVariantSync {
 		ReportVariant var = findReportVariant(variant);
 		if (var != null)
 			var.description = description;
+	}
+
+	public void updateDisabled(ProjectVariant pvar) {
+		ReportVariant rvar = findReportVariant(pvar);
+		if (rvar != null) {
+			rvar.isDisabled = pvar.isDisabled;
+		}
 	}
 
 	public String getDescription(ProjectVariant variant) {

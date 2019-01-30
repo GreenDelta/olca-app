@@ -14,7 +14,7 @@ IndicatorBarChart = function() {
 			} else {
 				var data = getChartData(scope);
 				var canvas = elem.get(0);
-				var dist = 400 / (2 * scope.report.variants.length);
+				var dist = 400 / (2 * scope.getVariantCount());
 				if (dist < 10)
 					dist = 5;
 				chart = new Chart(canvas.getContext("2d")).Bar(data, {
@@ -31,6 +31,9 @@ IndicatorBarChart = function() {
 			var indicator = scope.selectedBarChartIndicator;
 			var variants = scope.report.variants;
 			for (var i = 0; i < variants.length; i++) {
+				if (variants[i].isDisabled) {
+					continue;
+				}
 				labels.push(variants[i].name);
 				data.push(scope.getVariantResult(variants[i], indicator));
 			}
@@ -53,6 +56,9 @@ IndicatorBarChart = function() {
 			var indicator = scope.selectedBarChartIndicator;
 			var variants = scope.report.variants;
 			for (var i = 0; i < variants.length; i++) {
+				if (variants[i].isDisabled) {
+					continue;
+				}
 				var val = scope.getVariantResult(variants[i], indicator);
 				chart.datasets[0].bars[i].value = val;
 			}

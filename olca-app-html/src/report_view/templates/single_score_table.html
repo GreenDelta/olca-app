@@ -3,7 +3,9 @@
 		<thead>
 			<tr>
 				<th>{{Messages.ImpactCategory}}</th>
-				<th data-ng-repeat="variant in report.variants">{{variant.name}}</th>
+				<th data-ng-repeat="variant in report.variants | filter: {isDisabled: false}">
+					{{variant.name}}
+				</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -11,13 +13,13 @@
 				<td>
 					{{indicator.reportName}}
 				</td>
-				<td data-ng-repeat="variant in report.variants">
+				<td data-ng-repeat="variant in report.variants | filter: {isDisabled: false}">
 					{{(indicator.weightingFactor * getVariantResult(variant, indicator)) / indicator.normalisationFactor | scientific}}
 				</td>
 			</tr>
 			<tr>
 				<td><b>{{Messages.Sum}}</b></td>
-				<td data-ng-repeat="variant in report.variants">
+				<td data-ng-repeat="variant in report.variants | filter: {isDisabled: false}">
 					<b>{{getSingleScore(variant) | scientific}}</b>
 				</td>
 			</tr>

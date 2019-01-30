@@ -40,7 +40,7 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 	}
 
 	private void calculateReport(Project project, Report report) {
-		App.run(M.Calculate,
+		App.runWithProgress(M.Calculate,
 				new ReportCalculator(project, report),
 				() -> {
 					Reports.save(project, report, Database.get());

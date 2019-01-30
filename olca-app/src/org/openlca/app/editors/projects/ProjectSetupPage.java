@@ -30,6 +30,7 @@ import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.reports.ReportViewer;
 import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.editors.reports.model.ReportCalculator;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -38,6 +39,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
+import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
@@ -131,21 +133,23 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private void createVariantsSection(Composite body) {
 		Section section = UI.section(body, toolkit, M.Variants);
-		Composite composite = UI.sectionClient(section, toolkit, 1);
-		variantViewer = Tables.createViewer(composite,
-				M.Name, M.ProductSystem, M.AllocationMethod,
-				M.Flow, M.Amount, M.Unit, M.Description, "");
+		Composite comp = UI.sectionClient(section, toolkit, 1);
+		variantViewer = Tables.createViewer(comp,
+				M.Name, M.ProductSystem, M.Display,
+				M.AllocationMethod, M.Flow, M.Amount,
+				M.Unit, M.Description, "");
 		variantViewer.setLabelProvider(new VariantLabelProvider());
-		ModifySupport<ProjectVariant> support = new ModifySupport<>(variantViewer);
-		support.bind(M.Name, new VariantNameEditor());
-		support.bind(M.AllocationMethod, new VariantAllocationEditor());
-		support.bind(M.Amount, new DoubleModifier<>(editor, "amount"));
-		support.bind(M.Unit, new VariantUnitEditor());
-		support.bind(M.Description, new VariantDescriptionEditor());
-		support.bind("", new CommentDialogModifier<ProjectVariant>(
+		ModifySupport<ProjectVariant> ms = new ModifySupport<>(variantViewer);
+		ms.bind(M.Name, new VariantNameEditor());
+		ms.bind(M.Display, new DisplayModifier());
+		ms.bind(M.AllocationMethod, new VariantAllocationEditor());
+		ms.bind(M.Amount, new DoubleModifier<>(editor, "amount"));
+		ms.bind(M.Unit, new VariantUnitEditor());
+		ms.bind(M.Description, new VariantDescriptionEditor());
+		ms.bind("", new CommentDialogModifier<ProjectVariant>(
 				editor.getComments(), v -> CommentPaths.get(v)));
-		Tables.bindColumnWidths(variantViewer,
-				0.15, 0.15, 0.15, 0.15, 0.125, 0.125, 0.12);
+		double w = 1.0 / 8.0;
+		Tables.bindColumnWidths(variantViewer, w, w, w, w, w, w, w, w);
 		addVariantActions(variantViewer, section);
 	}
 
@@ -332,21 +336,46 @@ class ProjectSetupPage extends ModelPage<Project> {
 		}
 	}
 
-	private class VariantLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
+	private class DisplayModifier extends CheckBoxCellModifier<ProjectVariant> {
+		@Override
+		protected boolean isChecked(ProjectVariant v) {
+			return !v.isDisabled;
+		}
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			if (columnIndex == 1)
+		protected void setChecked(ProjectVariant v, boolean b) {
+			if (v.isDisabled != b)
+				return;
+			v.isDisabled = !b;
+			variantSync.updateDisabled(v);
+			editor.setDirty(true);
+		}
+	}
+
+	private class VariantLabelProvider extends LabelProvider
+			implements ITableLabelProvider {
+
+		@Override
+		public Image getColumnImage(Object obj, int col) {
+			if (!(obj instanceof ProjectVariant))
+				return null;
+			ProjectVariant v = (ProjectVariant) obj;
+			switch (col) {
+			case 1:
 				return Images.get(ModelType.PRODUCT_SYSTEM);
-			if (columnIndex == 3)
+			case 2:
+				return v.isDisabled
+						? Icon.CHECK_FALSE.get()
+						: Icon.CHECK_TRUE.get();
+			case 4:
 				return Images.get(FlowType.PRODUCT_FLOW);
-			if (columnIndex == 5)
+			case 6:
 				return Images.get(ModelType.UNIT);
-			ProjectVariant v = (ProjectVariant) element;
-			if (columnIndex == 7)
+			case 8:
 				return Images.get(editor.getComments(), CommentPaths.get(v));
-			return null;
+			default:
+				return null;
+			}
 		}
 
 		@Override
@@ -362,16 +391,16 @@ class ProjectSetupPage extends ModelPage<Project> {
 				return variant.name;
 			case 1:
 				return system.getName();
-			case 2:
-				return Labels.getEnumText(variant.allocationMethod);
 			case 3:
-				return getFlowText(system);
+				return Labels.getEnumText(variant.allocationMethod);
 			case 4:
-				return Double.toString(variant.amount);
+				return getFlowText(system);
 			case 5:
+				return Double.toString(variant.amount);
+			case 6:
 				Unit unit = variant.unit;
 				return unit == null ? null : unit.getName();
-			case 6:
+			case 7:
 				return variantSync.getDescription(variant);
 			default:
 				return null;
