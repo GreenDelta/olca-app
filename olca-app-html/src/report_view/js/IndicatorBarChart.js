@@ -55,12 +55,14 @@ IndicatorBarChart = function() {
 		function updateChart(chart, scope) {
 			var indicator = scope.selectedBarChartIndicator;
 			var variants = scope.report.variants;
+			var k = 0;
 			for (var i = 0; i < variants.length; i++) {
 				if (variants[i].isDisabled) {
 					continue;
 				}
 				var val = scope.getVariantResult(variants[i], indicator);
-				chart.datasets[0].bars[i].value = val;
+				chart.datasets[0].bars[k].value = val;
+				k++;
 			}
 			chart.update();
 		}

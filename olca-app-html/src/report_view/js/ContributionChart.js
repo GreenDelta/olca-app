@@ -53,18 +53,21 @@ ContributionChart = function() {
 	
 	function updateChart(chart, scope) {
 		var indicator = scope.selectedContributionIndicator;
-		$.each(scope.report.variants, function(i, variant) {
-			if (variant.isDisabled) {
-				return;
+		var variants = scope.report.variants;
+		var k = 0;
+		for (var i = 0; i < variants.length; i++) {
+			if (variants[i].isDisabled) {
+				continue;
 			}			
-			var contributions = getContributions(scope, indicator, variant);
-			$.each(contributions, function(j, contribution) {
+			var contributions = getContributions(scope, indicator, variants[i]);
+			$.each(contributions, function(_, contribution) {
 				var idx = getIndex(contribution, scope.report.processes);
 				if (idx < 0)
 					return;				
-				chart.datasets[idx].bars[i].value = contribution.amount;
+				chart.datasets[idx].bars[k].value = contribution.amount;
 			});
-		});
+			k++;
+		}
 		chart.update();
 	}
 
