@@ -81,7 +81,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		editor.onSaved(() -> {
 			project = editor.getModel();
 			if (variantViewer != null)
-				variantViewer.setInput(project.getVariants());
+				variantViewer.setInput(project.variants);
 		});
 	}
 
@@ -95,7 +95,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 		createButtons(infoSection.getContainer());
 		new ImpactSection(editor).render(body, toolkit);
 		createVariantsSection(body);
-		createParameterSection(body);
+		Section section = UI.section(body, toolkit, M.Parameters);
+		parameterTable = new ProjectParameterTable(editor);
+		parameterTable.render(section, toolkit);
 		initialInput();
 		new ProcessContributionSection(editor).create(body, toolkit);
 		body.setFocus();
@@ -103,8 +105,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void initialInput() {
-		List<ProjectVariant> variants = project.getVariants();
-		Collections.sort(variants, (v1, v2) -> Strings.compare(v1.getName(), v2.getName()));
+		List<ProjectVariant> variants = project.variants;
+		Collections.sort(variants, (v1, v2) -> Strings.compare(v1.name, v2.name));
 		variantViewer.setInput(variants);
 	}
 
@@ -130,8 +132,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private void createVariantsSection(Composite body) {
 		Section section = UI.section(body, toolkit, M.Variants);
 		Composite composite = UI.sectionClient(section, toolkit, 1);
-		String[] properties = getProperties();
-		variantViewer = Tables.createViewer(composite, properties);
+		variantViewer = Tables.createViewer(composite,
+				M.Name, M.ProductSystem, M.AllocationMethod,
+				M.Flow, M.Amount, M.Unit, M.Description, "");
 		variantViewer.setLabelProvider(new VariantLabelProvider());
 		ModifySupport<ProjectVariant> support = new ModifySupport<>(variantViewer);
 		support.bind(M.Name, new VariantNameEditor());
@@ -139,72 +142,81 @@ class ProjectSetupPage extends ModelPage<Project> {
 		support.bind(M.Amount, new DoubleModifier<>(editor, "amount"));
 		support.bind(M.Unit, new VariantUnitEditor());
 		support.bind(M.Description, new VariantDescriptionEditor());
-		support.bind("", new CommentDialogModifier<ProjectVariant>(editor.getComments(), v -> CommentPaths.get(v)));
-		Tables.bindColumnWidths(variantViewer, 0.15, 0.15, 0.15, 0.15, 0.125, 0.125, 0.12);
+		support.bind("", new CommentDialogModifier<ProjectVariant>(
+				editor.getComments(), v -> CommentPaths.get(v)));
+		Tables.bindColumnWidths(variantViewer,
+				0.15, 0.15, 0.15, 0.15, 0.125, 0.125, 0.12);
 		addVariantActions(variantViewer, section);
 	}
 
-	private String[] getProperties() {
-		return new String[] { M.Name, M.ProductSystem,
-				M.AllocationMethod, M.Flow, M.Amount,
-				M.Unit, M.Description, "" };
-	}
-
-	private void createParameterSection(Composite body) {
-		Section section = UI.section(body, toolkit, M.Parameters);
-		parameterTable = new ProjectParameterTable(editor);
-		parameterTable.render(section, toolkit);
-	}
-
-	private void addVariantActions(TableViewer viewer, Section section) {
-		Action add = Actions.onAdd(this::addVariant);
-		Action remove = Actions.onRemove(this::removeVariant);
-		Action copy = TableClipboard.onCopy(viewer);
-		CommentAction.bindTo(section, "variants", editor.getComments(), add, remove);
-		Actions.bind(viewer, add, remove, copy);
-		Tables.onDoubleClick(viewer, (event) -> {
-			TableItem item = Tables.getItem(viewer, event);
-			if (item == null) {
-				addVariant();
-				return;
+	private void addVariantActions(TableViewer table, Section section) {
+		Action onOpen = Actions.onOpen(() -> {
+			ProjectVariant v = Viewers.getFirstSelected(table);
+			if (v != null) {
+				App.openEditor(v.productSystem);
 			}
-			ProjectVariant variant = Viewers.getFirstSelected(viewer);
-			if (variant != null)
-				App.openEditor(variant.getProductSystem());
+		});
+		Action add = Actions.onAdd(() -> {
+			BaseDescriptor[] ds = ModelSelectionDialog.multiSelect(
+					ModelType.PRODUCT_SYSTEM);
+			addVariants(ds);
+		});
+		Action remove = Actions.onRemove(this::removeVariant);
+		Action copy = TableClipboard.onCopy(table);
+		CommentAction.bindTo(section, "variants",
+				editor.getComments(), add, remove);
+		Actions.bind(table, onOpen, add, remove, copy);
+		Tables.onDoubleClick(table, (event) -> {
+			TableItem item = Tables.getItem(table, event);
+			if (item == null) {
+				add.run();
+			} else {
+				onOpen.run();
+			}
+		});
+		Tables.onDrop(table, descriptors -> {
+			if (descriptors != null) {
+				addVariants(descriptors.toArray(
+						new BaseDescriptor[descriptors.size()]));
+			}
 		});
 	}
 
-	private void addVariant() {
-		log.trace("add variant");
-		BaseDescriptor d = ModelSelectionDialog.select(ModelType.PRODUCT_SYSTEM);
-		if (d == null)
+	private void addVariants(BaseDescriptor[] descriptors) {
+		if (descriptors == null || descriptors.length == 0)
 			return;
-		ProductSystemDao dao = new ProductSystemDao(database);
-		ProductSystem system = dao.getForId(d.id);
-		if (system == null) {
-			log.error("failed to load product system");
-			return;
+		for (BaseDescriptor d : descriptors) {
+			if (d == null)
+				continue;
+			ProductSystemDao dao = new ProductSystemDao(database);
+			ProductSystem system = dao.getForId(d.id);
+			if (system == null) {
+				log.error("failed to load product system " + d);
+				continue;
+			}
+			List<ProjectVariant> variants = project.variants;
+			ProjectVariant variant = createVariant(
+					system, variants.size() + 1);
+			variants.add(variant);
+			variantViewer.setInput(variants);
+			parameterTable.addVariant(variant);
+			variantSync.variantAdded(variant);
 		}
-		List<ProjectVariant> variants = project.getVariants();
-		ProjectVariant variant = createVariant(system, variants.size() + 1);
-		variants.add(variant);
-		variantViewer.setInput(variants);
-		parameterTable.addVariant(variant);
-		variantSync.variantAdded(variant);
 		editor.setDirty(true);
 	}
 
 	private ProjectVariant createVariant(ProductSystem system, int i) {
-		ProjectVariant variant = new ProjectVariant();
-		variant.setProductSystem(system);
-		variant.setName(M.Variant + i);
-		variant.setAllocationMethod(AllocationMethod.NONE);
-		variant.setAmount(system.targetAmount);
-		variant.setFlowPropertyFactor(system.targetFlowPropertyFactor);
-		variant.setUnit(system.targetUnit);
-		for (ParameterRedef redef : system.parameterRedefs)
-			variant.getParameterRedefs().add(redef.clone());
-		return variant;
+		ProjectVariant v = new ProjectVariant();
+		v.productSystem = system;
+		v.name = M.Variant + i;
+		v.allocationMethod = AllocationMethod.NONE;
+		v.amount = system.targetAmount;
+		v.flowPropertyFactor = system.targetFlowPropertyFactor;
+		v.unit = system.targetUnit;
+		for (ParameterRedef redef : system.parameterRedefs) {
+			v.parameterRedefs.add(redef.clone());
+		}
+		return v;
 	}
 
 	private void removeVariant() {
@@ -212,7 +224,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		List<ProjectVariant> selection = Viewers.getAllSelected(variantViewer);
 		if (selection == null || selection.isEmpty())
 			return;
-		List<ProjectVariant> variants = project.getVariants();
+		List<ProjectVariant> variants = project.variants;
 		for (ProjectVariant var : selection) {
 			variants.remove(var);
 			parameterTable.removeVariant(var);
@@ -225,15 +237,15 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private class VariantNameEditor extends TextCellModifier<ProjectVariant> {
 		@Override
 		protected String getText(ProjectVariant variant) {
-			return variant.getName();
+			return variant.name;
 		}
 
 		@Override
 		protected void setText(ProjectVariant variant, String text) {
-			if (Objects.equals(text, variant.getName()))
+			if (Objects.equals(text, variant.name))
 				return;
 			variantSync.updateName(variant, text);
-			variant.setName(text);
+			variant.name = text;
 			parameterTable.updateVariant(variant);
 			editor.setDirty(true);
 		}
@@ -260,8 +272,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 			ComboBoxCellModifier<ProjectVariant, AllocationMethod> {
 		@Override
 		protected AllocationMethod getItem(ProjectVariant var) {
-			return var.getAllocationMethod() != null ? var
-					.getAllocationMethod() : AllocationMethod.NONE;
+			return var.allocationMethod != null
+					? var.allocationMethod
+					: AllocationMethod.NONE;
 		}
 
 		@Override
@@ -276,7 +289,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 		@Override
 		protected void setItem(ProjectVariant var, AllocationMethod item) {
-			var.setAllocationMethod(item);
+			var.allocationMethod = item;
 			editor.setDirty(true);
 		}
 	}
@@ -285,12 +298,12 @@ class ProjectSetupPage extends ModelPage<Project> {
 			ComboBoxCellModifier<ProjectVariant, Unit> {
 		@Override
 		protected Unit getItem(ProjectVariant var) {
-			return var.getUnit();
+			return var.unit;
 		}
 
 		@Override
 		protected Unit[] getItems(ProjectVariant var) {
-			FlowPropertyFactor fac = var.getFlowPropertyFactor();
+			FlowPropertyFactor fac = var.flowPropertyFactor;
 			if (fac == null || fac.getFlowProperty() == null
 					|| fac.getFlowProperty().getUnitGroup() == null)
 				return new Unit[0];
@@ -314,7 +327,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 		@Override
 		protected void setItem(ProjectVariant var, Unit unit) {
-			var.setUnit(unit);
+			var.unit = unit;
 			editor.setDirty(true);
 		}
 	}
@@ -337,26 +350,26 @@ class ProjectSetupPage extends ModelPage<Project> {
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof ProjectVariant))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof ProjectVariant))
 				return null;
-			ProjectVariant variant = (ProjectVariant) element;
-			ProductSystem system = variant.getProductSystem();
+			ProjectVariant variant = (ProjectVariant) obj;
+			ProductSystem system = variant.productSystem;
 			if (system == null)
 				return null;
-			switch (columnIndex) {
+			switch (col) {
 			case 0:
-				return variant.getName();
+				return variant.name;
 			case 1:
 				return system.getName();
 			case 2:
-				return Labels.getEnumText(variant.getAllocationMethod());
+				return Labels.getEnumText(variant.allocationMethod);
 			case 3:
 				return getFlowText(system);
 			case 4:
-				return Double.toString(variant.getAmount());
+				return Double.toString(variant.amount);
 			case 5:
-				Unit unit = variant.getUnit();
+				Unit unit = variant.unit;
 				return unit == null ? null : unit.getName();
 			case 6:
 				return variantSync.getDescription(variant);

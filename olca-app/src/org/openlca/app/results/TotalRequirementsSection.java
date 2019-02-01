@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -86,13 +87,15 @@ class TotalRequirementsSection {
 		for (int col : numberColumns()) {
 			table.getTable().getColumns()[col].setAlignment(SWT.RIGHT);
 		}
-		Actions.bind(table, TableClipboard.onCopy(table));
-		Tables.onDoubleClick(table, e -> {
+
+		Action onOpen = Actions.onOpen(() -> {
 			Item item = Viewers.getFirstSelected(table);
 			if (item != null) {
 				App.openEditor(item.process);
 			}
 		});
+		Actions.bind(table, onOpen, TableClipboard.onCopy(table));
+		Tables.onDoubleClick(table, e -> onOpen.run());
 		createCostSum(comp, tk);
 	}
 

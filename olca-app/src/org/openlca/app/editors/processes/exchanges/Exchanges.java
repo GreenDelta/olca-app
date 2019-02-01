@@ -14,6 +14,15 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class Exchanges {
 
+	public static boolean canHaveProvider(Exchange e) {
+		if (e == null || e.flow == null)
+			return false;
+		if (e.isInput)
+			return e.flow.getFlowType() == FlowType.PRODUCT_FLOW;
+		else
+			return e.flow.getFlowType() == FlowType.WASTE_FLOW;
+	}
+
 	public static boolean canRemove(Process process, List<Exchange> exchanges) {
 		if (process == null || exchanges == null)
 			return false;

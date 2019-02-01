@@ -19,6 +19,7 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 
+// TODO: add null checks?
 public class CommentPaths {
 
 	public static String get(String path) {
@@ -100,7 +101,7 @@ public class CommentPaths {
 	}
 
 	public static String get(ProjectVariant variant) {
-		return "variants[" + variant.getProductSystem().getRefId() + "-" + variant.getName() + "]";
+		return "variants[" + variant.productSystem.getRefId() + "-" + variant.name + "]";
 	}
 
 	public static String get(ProjectVariant variant, ParameterRedef redef, CategorizedDescriptor contextElement) {

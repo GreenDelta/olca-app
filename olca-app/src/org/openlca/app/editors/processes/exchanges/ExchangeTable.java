@@ -3,6 +3,8 @@ package org.openlca.app.editors.processes.exchanges;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TableViewer;
@@ -23,6 +25,7 @@ import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
@@ -30,15 +33,19 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.NativeSql;
+import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The table for the display and editing of inputs or outputs of process
@@ -95,7 +102,7 @@ class ExchangeTable {
 		label = new ExchangeLabel(editor);
 		viewer.setLabelProvider(label);
 		bindModifiers();
-		Tables.addDropSupport(viewer, this::add);
+		Tables.onDrop(viewer, this::add);
 		viewer.addFilter(new Filter());
 		bindActions(section);
 		bindDoubleClick(viewer);
@@ -164,9 +171,29 @@ class ExchangeTable {
 		Action formulaSwitch = new FormulaSwitchAction();
 		Action copy = TableClipboard.onCopy(viewer, this::toClipboard);
 		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
-		CommentAction.bindTo(section, "exchanges", editor.getComments(), add, remove, formulaSwitch);
-		Actions.bind(viewer, add, remove, qRef, copy, paste);
+		CommentAction.bindTo(section, "exchanges",
+				editor.getComments(), add, remove, formulaSwitch);
 		Tables.onDeletePressed(viewer, e -> onRemove());
+		Action openFlow = Actions.create(
+				"#Open flow", Images.descriptor(ModelType.FLOW), () -> {
+					Exchange e = Viewers.getFirstSelected(viewer);
+					if (e == null || e.flow == null)
+						return;
+					App.openEditor(e.flow);
+				});
+		Action openProvider = Actions.create(
+				"#Open provider", Images.descriptor(ModelType.PROCESS), () -> {
+					Exchange e = Viewers.getFirstSelected(viewer);
+					if (e == null || e.defaultProviderId == 0L)
+						return;
+					ProcessDao dao = new ProcessDao(Database.get());
+					ProcessDescriptor d = dao.getDescriptor(e.defaultProviderId);
+					if (d != null) {
+						App.openEditor(d);
+					}
+				});
+		Actions.bind(viewer, add, remove, qRef,
+				copy, paste, openFlow, openProvider);
 	}
 
 	private void bindDoubleClick(TableViewer table) {
@@ -215,18 +242,50 @@ class ExchangeTable {
 	private void add(List<BaseDescriptor> descriptors) {
 		if (descriptors.isEmpty())
 			return;
+
 		Process process = editor.getModel();
-		for (BaseDescriptor descriptor : descriptors) {
-			if (!(descriptor instanceof FlowDescriptor))
-				continue;
-			FlowDao flowDao = new FlowDao(Database.get());
-			Flow flow = flowDao.getForId(descriptor.id);
-			if (!canAdd(flow)) {
-				continue;
+		boolean added = false;
+		for (BaseDescriptor d : descriptors) {
+			long flowId = -1;
+			if (d.type == ModelType.FLOW) {
+				flowId = d.id;
+			} else if (d.type == ModelType.PROCESS) {
+
+				// query the reference flow of the process
+				String sql = "select e.f_flow from tbl_processes p "
+						+ "inner join tbl_exchanges e on "
+						+ "p.f_quantitative_reference = e.id "
+						+ "where p.id = " + d.id;
+				try {
+					AtomicLong id = new AtomicLong(flowId);
+					NativeSql.on(Database.get()).query(sql, r -> {
+						id.set(r.getLong(1));
+						return false;
+					});
+					flowId = id.get();
+				} catch (Exception e) {
+					Logger log = LoggerFactory.getLogger(getClass());
+					log.error("Failed to query ref. flow: " + sql, e);
+				}
 			}
+
+			if (flowId < 1)
+				continue;
+			FlowDao dao = new FlowDao(Database.get());
+			Flow flow = dao.getForId(flowId);
+			if (!canAdd(flow))
+				continue;
 			Exchange e = process.exchange(flow);
 			e.isInput = forInputs;
+			if (d.type == ModelType.PROCESS
+					&& Exchanges.canHaveProvider(e)) {
+				e.defaultProviderId = d.id;
+			}
+			added = true;
 		}
+
+		if (!added)
+			return;
 		viewer.setInput(process.getExchanges());
 		editor.setDirty(true);
 		editor.postEvent(editor.EXCHANGES_CHANGED, this);
@@ -288,11 +347,11 @@ class ExchangeTable {
 			return false;
 		if (forInputs && flow.getFlowType() == FlowType.WASTE_FLOW)
 			for (Exchange ex : editor.getModel().getExchanges())
-				if (ex.isInput && ex.flow.equals(flow))
+				if (ex.isInput && Objects.equals(ex.flow, flow))
 					return false;
 		if (!forInputs && flow.getFlowType() == FlowType.PRODUCT_FLOW)
 			for (Exchange ex : editor.getModel().getExchanges())
-				if (!ex.isInput && ex.flow.equals(flow))
+				if (!ex.isInput && Objects.equals(ex.flow, flow))
 					return false;
 		return true;
 	}

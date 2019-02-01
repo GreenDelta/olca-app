@@ -32,7 +32,7 @@ class ReportVariantSync {
 		while (existingIds.contains(newId))
 			newId++;
 		ReportVariant var = new ReportVariant(newId);
-		var.name = variant.getName();
+		var.name = variant.name;
 		report.variants.add(var);
 		addParameterValues(newId, report);
 	}
@@ -69,7 +69,7 @@ class ReportVariantSync {
 		ReportVariant var = findReportVariant(variant);
 		if (var != null)
 			var.name = newName;
-		variant.setName(newName);
+		variant.name = newName;
 	}
 
 	public void updateDescription(ProjectVariant variant, String description) {
@@ -87,7 +87,7 @@ class ReportVariantSync {
 		if (editor.getReport() == null || variant == null)
 			return null;
 		for (ReportVariant reportVariant : editor.getReport().variants) {
-			if (Objects.equals(variant.getName(), reportVariant.name))
+			if (Objects.equals(variant.name, reportVariant.name))
 				return reportVariant;
 		}
 		return null;

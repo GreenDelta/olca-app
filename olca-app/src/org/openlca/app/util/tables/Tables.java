@@ -93,20 +93,20 @@ public class Tables {
 			c.pack();
 	}
 
-	public static void addDropSupport(TableViewer table,
-			Consumer<List<BaseDescriptor>> handler) {
+	public static void onDrop(TableViewer table,
+			Consumer<List<BaseDescriptor>> fn) {
 		Transfer transfer = ModelTransfer.getInstance();
-		DropTarget dropTarget = new DropTarget(table.getTable(),
+		DropTarget target = new DropTarget(table.getTable(),
 				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
-		dropTarget.setTransfer(new Transfer[] { transfer });
-		dropTarget.addDropListener(new DropTargetAdapter() {
+		target.setTransfer(new Transfer[] { transfer });
+		target.addDropListener(new DropTargetAdapter() {
 			@Override
 			public void drop(DropTargetEvent event) {
 				if (!transfer.isSupportedType(event.currentDataType))
 					return;
 				List<BaseDescriptor> list = ModelTransfer
 						.getBaseDescriptors(event.data);
-				handler.accept(list);
+				fn.accept(list);
 			}
 		});
 	}

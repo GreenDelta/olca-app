@@ -3,7 +3,6 @@ package org.openlca.app.results.contributions;
 import java.util.Iterator;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -13,7 +12,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -24,7 +22,6 @@ import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultTypeSelection;
 import org.openlca.app.components.ResultTypeSelection.EventHandler;
-import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
@@ -34,7 +31,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.FullResult;
@@ -62,47 +58,44 @@ public class ContributionTreePage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		FormToolkit toolkit = mform.getToolkit();
+		FormToolkit tk = mform.getToolkit();
 		ScrolledForm form = UI.formHeader(mform,
 				Labels.getDisplayName(setup.productSystem),
 				Images.get(result));
-		Composite body = UI.formBody(form, toolkit);
-		Composite composite = toolkit.createComposite(body);
-		UI.gridLayout(composite, 2);
+		Composite body = UI.formBody(form, tk);
+		Composite comp = tk.createComposite(body);
+		UI.gridLayout(comp, 2);
 		ResultTypeSelection selector = ResultTypeSelection
 				.on(result)
 				.withEventHandler(new SelectionHandler())
-				.create(composite, toolkit);
-		Composite treeContainer = toolkit.createComposite(body);
-		UI.gridLayout(treeContainer, 1);
-		UI.gridData(treeContainer, true, true);
-		createTree(toolkit, treeContainer);
+				.create(comp, tk);
+		Composite treeComp = tk.createComposite(body);
+		UI.gridLayout(treeComp, 1);
+		UI.gridData(treeComp, true, true);
+		createTree(tk, treeComp);
 		form.reflow(true);
 		selector.selectWithEvent(selection);
 	}
 
-	private void createTree(FormToolkit toolkit, Composite treeContainer) {
-		tree = Trees.createViewer(treeContainer, HEADERS, new ContributionLabelProvider());
+	private void createTree(FormToolkit tk, Composite comp) {
+		tree = Trees.createViewer(comp, HEADERS,
+				new ContributionLabelProvider());
 		tree.setAutoExpandLevel(2);
 		tree.getTree().setLinesVisible(false);
 		tree.setContentProvider(new ContributionContentProvider());
-		toolkit.adapt(tree.getTree(), false, false);
-		toolkit.paintBordersFor(tree.getTree());
-		createMenu();
-		Trees.bindColumnWidths(tree.getTree(), 0.20, 0.50, 0.20, 0.10);
+		tk.adapt(tree.getTree(), false, false);
+		tk.paintBordersFor(tree.getTree());
+		Action onOpen = Actions.onOpen(() -> {
+			UpstreamNode n = Viewers.getFirstSelected(tree);
+			if (n == null || n.provider == null)
+				return;
+			App.openEditor(n.provider.process);
+		});
+		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree));
+		Trees.onDoubleClick(tree, e -> onOpen.run());
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
-	}
-
-	private void createMenu() {
-		MenuManager mm = new MenuManager();
-		mm.add(new OpenEditorAction());
-		mm.add(TreeClipboard.onCopy(tree));
-		mm.add(Actions.create(M.ExpandAll,
-				Icon.EXPAND.descriptor(), () -> {
-					tree.expandAll();
-				}));
-		Menu menu = mm.createContextMenu(tree.getControl());
-		tree.getControl().setMenu(menu);
+		Trees.bindColumnWidths(tree.getTree(),
+				0.20, 0.50, 0.20, 0.10);
 	}
 
 	private class SelectionHandler implements EventHandler {
@@ -194,21 +187,25 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			if (!(element instanceof UpstreamNode) || element == null)
+		public Image getColumnImage(Object obj, int col) {
+			if (!(obj instanceof UpstreamNode))
 				return null;
-			if (columnIndex != 1)
-				return null;
-			UpstreamNode node = (UpstreamNode) element;
-			return image.getForTable(getContribution(node));
+			UpstreamNode n = (UpstreamNode) obj;
+			if (col == 1 && n.provider != null) {
+				return Images.get(n.provider.process);
+			}
+			if (col == 2) {
+				return image.getForTable(getContribution(n));
+			}
+			return null;
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof UpstreamNode))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof UpstreamNode))
 				return null;
-			UpstreamNode node = (UpstreamNode) element;
-			switch (columnIndex) {
+			UpstreamNode node = (UpstreamNode) obj;
+			switch (col) {
 			case 0:
 				return Numbers.percent(getContribution(node));
 			case 1:
@@ -246,20 +243,4 @@ public class ContributionTreePage extends FormPage {
 
 	}
 
-	private class OpenEditorAction extends Action {
-
-		public OpenEditorAction() {
-			setText(M.Open);
-			setImageDescriptor(Images.descriptor(ModelType.PROCESS));
-		}
-
-		@Override
-		public void run() {
-			Object selection = Viewers.getFirstSelected(tree);
-			if (!(selection instanceof UpstreamNode))
-				return;
-			UpstreamNode node = (UpstreamNode) selection;
-			App.openEditor(node.provider.process);
-		}
-	}
 }

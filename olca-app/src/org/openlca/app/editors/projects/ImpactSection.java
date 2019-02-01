@@ -56,58 +56,60 @@ class ImpactSection {
 	}
 
 	private void addListeners() {
-		methodViewer.addSelectionChangedListener((selection) -> handleMethodChange(selection));
-		nwViewer.addSelectionChangedListener((selection) -> {
+		methodViewer.addSelectionChangedListener(
+				m -> onMethodChange(m));
+		nwViewer.addSelectionChangedListener(nwset -> {
 			Project project = editor.getModel();
-			if (selection == null) {
-				project.setNwSetId(null);
+			if (nwset == null) {
+				project.nwSetId = null;
 			} else {
-				project.setNwSetId(selection.id);
+				project.nwSetId = nwset.id;
 			}
 			editor.setDirty(true);
 		});
 	}
 
-	private void handleMethodChange(ImpactMethodDescriptor selection) {
+	private void onMethodChange(ImpactMethodDescriptor method) {
 		Project project = editor.getModel();
-		if (selection == null && project.getImpactMethodId() == null)
+		if (method == null && project.impactMethodId == null)
 			return;
-		if (selection != null && Objects.equals(selection.id, project.getImpactMethodId()))
+		if (method != null && Objects.equals(
+				method.id, project.impactMethodId))
 			return;
-		project.setNwSetId(null);
-		if (selection == null)
-			project.setImpactMethodId(null);
-		else
-			project.setImpactMethodId(selection.id);
-		project.setNwSetId(null);
+		project.nwSetId = null;
+		project.impactMethodId = method == null
+				? null
+				: method.id;
 		nwViewer.select(null);
-		nwViewer.setInput(selection);
+		nwViewer.setInput(method);
 		if (indicatorTable != null)
-			indicatorTable.methodChanged(selection);
+			indicatorTable.methodChanged(method);
 		editor.setDirty(true);
 	}
 
 	private void setInitialSelection() {
 		Project project = editor.getModel();
-		if (project.getImpactMethodId() == null)
+		if (project.impactMethodId == null)
 			return;
-		IDatabase database = Database.get();
-		ImpactMethodDao methodDao = new ImpactMethodDao(database);
-		ImpactMethodDescriptor method = methodDao.getDescriptor(project.getImpactMethodId());
+		IDatabase db = Database.get();
+		ImpactMethodDao methodDao = new ImpactMethodDao(db);
+		ImpactMethodDescriptor method = methodDao.getDescriptor(
+				project.impactMethodId);
 		if (method == null)
 			return;
 		methodViewer.select(method);
-		NwSetDao dao = new NwSetDao(database);
+		NwSetDao dao = new NwSetDao(db);
 		List<NwSetDescriptor> nwSets = dao.getDescriptorsForMethod(method.id);
 		nwViewer.setInput(nwSets);
 		nwViewer.select(getInitialNwSet(project, nwSets));
 	}
 
-	private NwSetDescriptor getInitialNwSet(Project project, List<NwSetDescriptor> nwSets) {
-		if (project.getNwSetId() == null)
+	private NwSetDescriptor getInitialNwSet(Project project,
+			List<NwSetDescriptor> nwSets) {
+		if (project.nwSetId == null)
 			return null;
 		for (NwSetDescriptor d : nwSets)
-			if (project.getNwSetId() == d.id)
+			if (project.nwSetId == d.id)
 				return d;
 		return null;
 	}

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -21,6 +22,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Images;
@@ -51,8 +53,8 @@ public class InventoryPage extends FormPage {
 	private ContributionResult result;
 	private DQResult dqResult;
 
-	public InventoryPage(FormEditor editor, ContributionResult result, DQResult dqResult,
-			CalculationSetup setup) {
+	public InventoryPage(FormEditor editor, ContributionResult result,
+			DQResult dqResult, CalculationSetup setup) {
 		super(editor, "InventoryPage", M.InventoryResults);
 		this.result = result;
 		this.setup = setup;
@@ -62,12 +64,14 @@ public class InventoryPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.getDisplayName(setup.productSystem), Images.get(result));
+				Labels.getDisplayName(setup.productSystem),
+				Images.get(result));
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		TreeViewer inputTree = createSectionAndViewer(body, true);
-		TreeViewer outputTree = createSectionAndViewer(body, false);
-		TotalRequirementsSection reqSection = new TotalRequirementsSection(result, dqResult);
+		TreeViewer inputTree = createTree(body, true);
+		TreeViewer outputTree = createTree(body, false);
+		TotalRequirementsSection reqSection = new TotalRequirementsSection(
+				result, dqResult);
 		reqSection.create(body, toolkit);
 		form.reflow(true);
 		fillTrees(inputTree, outputTree);
@@ -93,7 +97,7 @@ public class InventoryPage extends FormPage {
 		outputTree.setInput(outFlows);
 	}
 
-	private TreeViewer createSectionAndViewer(Composite parent, boolean forInputs) {
+	private TreeViewer createTree(Composite parent, boolean forInputs) {
 		Section section = UI.section(parent, toolkit, forInputs ? M.Inputs : M.Outputs);
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, toolkit);
@@ -113,7 +117,19 @@ public class InventoryPage extends FormPage {
 		}
 		viewer.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(viewer.getTree(), DQUI.MIN_COL_WIDTH, widths);
-		Actions.bind(viewer, TreeClipboard.onCopy(viewer));
+
+		// bind actions
+		Action onOpen = Actions.onOpen(() -> {
+			Object obj = Viewers.getFirstSelected(viewer);
+			if (obj instanceof CategorizedDescriptor) {
+				App.openEditor((CategorizedDescriptor) obj);
+			}
+			if (obj instanceof Contribution) {
+				App.openEditor(((Contribution) obj).item.item);
+			}
+		});
+		Trees.onDoubleClick(viewer, e -> onOpen.run());
+		Actions.bind(viewer, onOpen, TreeClipboard.onCopy(viewer));
 		spinner.register(viewer);
 		return viewer;
 	}
@@ -128,7 +144,8 @@ public class InventoryPage extends FormPage {
 		}
 	}
 
-	private class ContentProvider extends ArrayContentProvider implements ITreeContentProvider, CutoffContentProvider {
+	private class ContentProvider extends ArrayContentProvider
+			implements ITreeContentProvider, CutoffContentProvider {
 
 		private double cutoff;
 

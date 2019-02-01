@@ -29,7 +29,7 @@ class ReportParameterSync {
 		List<ParameterRedef> unSynced = getUnSyncedRedefs(project, report);
 		for (ParameterRedef redef : unSynced) {
 			ReportParameter param = initParam(redef, report);
-			for (ProjectVariant projectVariant : project.getVariants()) {
+			for (ProjectVariant projectVariant : project.variants) {
 				ParameterRedef varRedef = getVariantRedef(redef, projectVariant);
 				ReportVariant reportVariant = getReportVariant(projectVariant,
 						report);
@@ -42,11 +42,11 @@ class ReportParameterSync {
 
 	private List<ParameterRedef> getUnSyncedRedefs(Project project,
 			Report report) {
-		if (project.getVariants().isEmpty())
+		if (project.variants.isEmpty())
 			return Collections.emptyList();
-		ProjectVariant firstVar = project.getVariants().get(0);
+		ProjectVariant firstVar = project.variants.get(0);
 		List<ParameterRedef> unSynced = new ArrayList<>();
-		for (ParameterRedef redef : firstVar.getParameterRedefs()) {
+		for (ParameterRedef redef : firstVar.parameterRedefs) {
 			ReportParameter parameter = getReportParameter(redef);
 			if (parameter == null)
 				unSynced.add(redef);
@@ -66,7 +66,7 @@ class ReportParameterSync {
 			ProjectVariant var) {
 		if (redef == null || var == null)
 			return null;
-		for (ParameterRedef varRedef : var.getParameterRedefs()) {
+		for (ParameterRedef varRedef : var.parameterRedefs) {
 			if (equal(redef, varRedef))
 				return varRedef;
 		}
@@ -136,8 +136,8 @@ class ReportParameterSync {
 		if (projectVariant == null || report == null)
 			return null;
 		for (ReportVariant reportVariant : report.variants) {
-			if (Objects.equals(reportVariant.name,
-					projectVariant.getName()))
+			if (Objects.equals(
+					reportVariant.name, projectVariant.name))
 				return reportVariant;
 		}
 		return null;

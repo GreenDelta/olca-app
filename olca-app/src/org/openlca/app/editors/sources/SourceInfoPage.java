@@ -68,7 +68,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		Button urlButton = tk.createButton(comp, M.Open, SWT.NONE);
 		urlButton.setImage(Icon.MAP.get());
 		Controls.onSelect(urlButton, e -> {
-			String url = getModel().getUrl();
+			String url = getModel().url;
 			if (Strings.isNullOrEmpty(url))
 				return;
 			Desktop.browse(url);
@@ -111,7 +111,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		fileLink.setForeground(Colors.linkBlue());
 		Controls.onClick(fileLink, this::openFile);
 		fileLink.addMouseTrackListener(new DeleteFileVisibility());
-		String file = getModel().getExternalFile();
+		String file = getModel().externalFile;
 		if (file != null) {
 			fileLink.setText(file);
 			fileLink.setToolTipText(M.Open);
@@ -144,7 +144,7 @@ class SourceInfoPage extends ModelPage<Source> {
 				dir.mkdirs();
 			Files.copy(file, dbFile);
 			Source source = getModel();
-			source.setExternalFile(dbFile.getName());
+			source.externalFile = dbFile.getName();
 			getEditor().setDirty(true);
 			updateFileLink();
 		} catch (Exception e) {
@@ -153,7 +153,7 @@ class SourceInfoPage extends ModelPage<Source> {
 	}
 
 	private void updateFileLink() {
-		String file = getModel().getExternalFile();
+		String file = getModel().externalFile;
 		if (file == null) {
 			fileLink.setText("");
 			fileLink.setToolTipText("");
@@ -167,7 +167,7 @@ class SourceInfoPage extends ModelPage<Source> {
 	}
 
 	private File getDatabaseFile() {
-		String fileName = getModel().getExternalFile();
+		String fileName = getModel().externalFile;
 		if (fileName == null)
 			return null;
 		File dir = new FileStore(Database.get()).getFolder(getModel());
@@ -188,7 +188,7 @@ class SourceInfoPage extends ModelPage<Source> {
 	}
 
 	private void deleteFile(HyperlinkEvent e) {
-		if (getModel().getExternalFile() == null)
+		if (getModel().externalFile == null)
 			return;
 		File file = getDatabaseFile();
 		boolean doIt = Question.ask(M.DeleteFile,
@@ -198,7 +198,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		try {
 			if (file.exists())
 				file.delete();
-			getModel().setExternalFile(null);
+			getModel().externalFile = null;
 			updateFileLink();
 			getEditor().setDirty(true);
 		} catch (Exception ex) {
@@ -211,7 +211,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		public void mouseEnter(MouseEvent e) {
 			if (e.widget == deleteLink)
 				deleteLink.setImage(Icon.DELETE.get());
-			deleteLink.setVisible(getModel().getExternalFile() != null);
+			deleteLink.setVisible(getModel().externalFile != null);
 		}
 
 		@Override

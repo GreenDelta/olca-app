@@ -3,11 +3,11 @@ package org.openlca.app.results;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -114,8 +114,11 @@ public class TotalImpactResultPage extends FormPage {
 		viewer.setContentProvider(new ContentProvider());
 		toolkit.adapt(viewer.getTree(), false, false);
 		toolkit.paintBordersFor(viewer.getTree());
-		Actions.bind(viewer, TreeClipboard.onCopy(viewer, new ClipboardLabel()));
-		Trees.onDoubleClick(viewer, this::openElement);
+
+		Action onOpen = Actions.onOpen(this::onOpen);
+		Actions.bind(viewer, onOpen,
+				TreeClipboard.onCopy(viewer, new ClipboardLabel()));
+		Trees.onDoubleClick(viewer, e -> onOpen.run());
 		createColumnSorters(labelProvider);
 		double[] widths = { .35, .2, .10, .10, .15, .05 };
 		if (DQUI.displayExchangeQuality(dqResult)) {
@@ -128,7 +131,7 @@ public class TotalImpactResultPage extends FormPage {
 		setInput();
 	}
 
-	private void openElement(MouseEvent e) {
+	private void onOpen() {
 		Item item = Viewers.getFirstSelected(viewer);
 		if (item == null)
 			return;

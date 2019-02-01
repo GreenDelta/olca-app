@@ -27,8 +27,8 @@ public class Images {
 	public static Image get(RootEntity entity) {
 		if (entity instanceof Source) {
 			Source source = (Source) entity;
-			if (source.getExternalFile() != null)
-				return get(FileType.forName(source.getExternalFile()));
+			if (source.externalFile != null)
+				return get(FileType.forName(source.externalFile));
 		}
 		if (entity instanceof Process)
 			return get(((Process) entity).getProcessType());
@@ -469,8 +469,8 @@ public class Images {
 	}
 
 	/**
-	 * Returns the shared image with the given name from the Eclipse platform. See
-	 * ISharedImages for the image names.
+	 * Returns the shared image with the given name from the Eclipse platform.
+	 * See ISharedImages for the image names.
 	 */
 	public static Image platformImage(String name) {
 		return PlatformUI.getWorkbench().getSharedImages().getImage(name);

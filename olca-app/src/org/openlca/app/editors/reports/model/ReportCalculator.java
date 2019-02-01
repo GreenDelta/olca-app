@@ -46,14 +46,14 @@ public class ReportCalculator implements Runnable {
 		report.results.clear();
 		report.addedValues.clear();
 		report.netCosts.clear();
-		if (project.getImpactMethodId() == null)
+		if (project.impactMethodId == null)
 			return;
 		ProjectResult projectResult = calcProject(project);
 		if (projectResult == null)
 			return;
 		appendResults(projectResult);
 		appendCostResults(projectResult);
-		if (project.getNwSetId() != null)
+		if (project.nwSetId != null)
 			appendNwFactors();
 	}
 
@@ -70,8 +70,8 @@ public class ReportCalculator implements Runnable {
 
 	private void appendNwFactors() {
 		try {
-			NwSetTable table = NwSetTable.build(Database.get(),
-					project.getNwSetId());
+			NwSetTable table = NwSetTable.build(
+					Database.get(), project.nwSetId);
 			report.withNormalisation = table.hasNormalisationFactors();
 			report.withWeighting = table.hasWeightingFactors();
 			for (ReportIndicator indicator : report.indicators) {
@@ -101,7 +101,7 @@ public class ReportCalculator implements Runnable {
 			for (ProjectVariant variant : result.getVariants()) {
 				VariantResult varResult = new VariantResult();
 				repResult.variantResults.add(varResult);
-				varResult.variant = variant.getName();
+				varResult.variant = variant.name;
 				varResult.totalAmount = result.getTotalImpactResult(
 						variant, impact);
 				ContributionSet<CategorizedDescriptor> set = result
@@ -164,7 +164,8 @@ public class ReportCalculator implements Runnable {
 	}
 
 	/**
-	 * Add zero-contributions for processes that were not found in a variant result.
+	 * Add zero-contributions for processes that were not found in a variant
+	 * result.
 	 */
 	private void addDefaultContributions(Set<Long> ids, Set<Long> foundIds,
 			VariantResult varResult) {
@@ -198,7 +199,7 @@ public class ReportCalculator implements Runnable {
 
 	private ReportCostResult cost(ProjectVariant var, double val, String cu) {
 		ReportCostResult r = new ReportCostResult();
-		r.variant = var.getName();
+		r.variant = var.name;
 		r.value = Numbers.decimalFormat(val, 2) + " " + cu;
 		return r;
 	}
