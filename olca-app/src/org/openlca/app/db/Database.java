@@ -10,6 +10,7 @@ import org.openlca.app.navigation.CopyPaste;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.core.database.IDatabase;
+import org.openlca.ipc.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,7 @@ public class Database {
 	private static DatabaseList configurations = loadConfigs();
 	private static DiffIndex diffIndex;
 	private static RepositoryClient repositoryClient;
+	private static Server ipcServer;
 
 	private Database() {
 	}
@@ -59,6 +61,12 @@ public class Database {
 		}
 	}
 
+	public static void startIpcOn(int port) {
+		ipcServer = new Server(port);
+		ipcServer.withDefaultHandlers(get(), App.getSolver());
+		ipcServer.start();
+	}
+	
 	public static void connect(RepositoryClient client) {
 		if (diffIndex != null)
 			diffIndex.close();
@@ -97,6 +105,10 @@ public class Database {
 	public static void close() throws Exception {
 		if (database == null)
 			return;
+		if (ipcServer != null) {
+			ipcServer.stop();
+			ipcServer = null;
+		}
 		Cache.close();
 		CopyPaste.clearCache();
 		database.close();
