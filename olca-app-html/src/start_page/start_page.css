@@ -40,7 +40,7 @@ h2 {
 }
 
 header {
-  background-color: rgba(128,0,128,0.7);
+  background-color: rgba(18,89,133,0.7);
   min-width: 100%;
   margin-bottom: 50px;
   padding: 10px 0;
@@ -96,7 +96,7 @@ a {
 }
 
 .block.whats-new {
-  background-color: rgba(164,97,65,0.7);
+  background-color: rgba(0,177,241,0.7);
 }
 
 .block.getting-started {
@@ -104,11 +104,15 @@ a {
 }
 
 .block.manuals {
-  background-color: rgba(0,143,212,0.7);
+  background-color: rgba(164,95,65,0.7);
 }
 
 .block.community {
   background-color: rgba(37,152,126,0.7);
+}
+
+.block.experts {
+  background-color: rgba(128,0,128,0.7);
 }
 
 .block .block-content {

@@ -22,11 +22,13 @@ html(lang='en')
 					div!=msg.title2
 					div!=msg.title3
 					div!=msg.title4
+					div!=msg.title5
 				h2#version Version 1.6.0 (Windows 64bit)
 		+block('whats-new', msg.whatsNew)
 		+block('getting-started', msg.gettingStarted)
 		+block('manuals', msg.manuals)
 		+block('community', msg.community)
+		+block('experts', msg.experts)
 		div.placeholder
 		a(href='http://www.greendelta.com' title='http://www.greendelta.com'): .gd-logo
 		script.
@@ -69,14 +71,22 @@ html(lang='en')
 			}
 
 			function initLinks() {
-				initLink('news', 'http://www.openlca.org/openlca/new');
+				initLink('news', 'http://www.openlca.org/new');
 				initLink('video', 'https://www.youtube.com/watch?v=FqVMbwhAEW4');
-				initLink('channel', 'https://www.youtube.com/channel/UCGiahq1YZWK4pRXDVXuIi6w');
-				initLink('forum', 'http://forum.openlca.org');
-				initLink('linkedin', 'https://www.linkedin.com/groups/5060236/profile');
+				initLink('channel', 'https://www.youtube.com/c/openLCA');
+				initLink('forum', 'http://ask.openlca.org/');
+				initLink('linkedin', 'https://www.linkedin.com/showcase/openlca/');
 				initLink('manuals', 'http://www.openlca.org/learning');
 				initLink('nexus', 'https://nexus.openlca.org');
 				initLink('greendelta', 'http://www.greendelta.com');
+				initLink('github', 'http://www.greendelta.com');
+				initLink('twitter', 'https://twitter.com/openLCA');
+				initLink('blog', 'http://www.openlca.org/blog/');
+				initLink('dataopenlca', 'https://data.openlca.org/');
+				initLink('trainings', 'https://www.openlca.org/trainings/');
+				initLink('services', 'https://www.openlca.org/service-contracts/');
+				initLink('lcacs', 'https://www.openlca.org/collaboration-server/');
+				initLink('hosting', 'https://www.openlca.org/lca-collaboration-server-hosting-and-services/');
 			}
 
 			function initLink(id, href) {
