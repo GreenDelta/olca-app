@@ -7,13 +7,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
-import org.openlca.ipc.Server;
 
 public class IpcDialog extends FormDialog {
 
@@ -53,10 +51,7 @@ public class IpcDialog extends FormDialog {
 		String portStr = portText.getText();
 		try {
 			int port = Integer.parseInt(portStr);
-			Server server = new Server(port);
-			server.withDefaultHandlers(
-					Database.get(), App.getSolver());
-			server.start();
+			Database.startIpcOn(port);
 			// TODO: need a UI for managing the server
 			super.okPressed();
 		} catch (Exception e) {
