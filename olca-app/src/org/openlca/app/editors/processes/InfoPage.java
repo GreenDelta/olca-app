@@ -207,9 +207,9 @@ class InfoPage extends ModelPage<Process> {
 
 	private String getKmlDisplayText() {
 		Process process = getModel();
-		if (process.getLocation() != null)
-			if (process.getLocation().getKmz() != null)
-				return KmlUtil.getDisplayText(process.getLocation().getKmz());
+		if (process.location != null)
+			if (process.location.kmz != null)
+				return KmlUtil.getDisplayText(process.location.kmz);
 		return "none";
 	}
 
@@ -224,16 +224,16 @@ class InfoPage extends ModelPage<Process> {
 
 	private String getKml() {
 		Process process = getModel();
-		if (process.getLocation() != null)
-			if (process.getLocation().getKmz() != null)
-				return KmlUtil.toKml(process.getLocation().getKmz());
+		if (process.location != null)
+			if (process.location.kmz != null)
+				return KmlUtil.toKml(process.location.kmz);
 		return null;
 	}
 
 	private String getName() {
-		if (getModel().getLocation() == null)
+		if (getModel().location == null)
 			return "";
-		return getModel().getLocation().getName();
+		return getModel().location.name;
 	}
 
 	private class MapEditorDispatch extends HyperlinkAdapter implements
@@ -272,26 +272,26 @@ class InfoPage extends ModelPage<Process> {
 			String[] nameAndCode = promptForNameAndCode();
 			if (nameAndCode == null) // user aborted dialog
 				return null;
-			location.setName(nameAndCode[0]);
-			location.setCode(nameAndCode[1]);
-			location.setRefId(KeyGen.get(nameAndCode[1]));
+			location.name = nameAndCode[0];
+			location.code = nameAndCode[1];
+			location.refId = KeyGen.get(nameAndCode[1]);
 			if (kml != null)
-				location.setKmz(Geometries.kmlToKmz(kml));
+				location.kmz = Geometries.kmlToKmz(kml);
 			else
-				location.setKmz(null);
+				location.kmz = null;
 			return locationDao.insert(location);
 		}
 
 		@Override
 		public boolean hasModel() {
-			return getModel().getLocation() != null;
+			return getModel().location != null;
 		}
 
 		@Override
 		public void openModel() {
 			if (!hasModel())
 				return;
-			App.openEditor(getModel().getLocation());
+			App.openEditor(getModel().location);
 		}
 
 		private String[] promptForNameAndCode() {

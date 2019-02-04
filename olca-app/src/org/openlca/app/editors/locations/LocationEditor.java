@@ -47,16 +47,16 @@ public class LocationEditor extends ModelEditor<Location> {
 		}
 		String kml = infoPage.kml;
 		if (!Strings.isNullOrEmpty(kml)) {
-			getModel().setKmz(Geometries.kmlToKmz(kml));
+			getModel().kmz = Geometries.kmlToKmz(kml);
 		} else {
-			double latitude = getModel().getLatitude();
-			double longitude = getModel().getLongitude();
+			double latitude = getModel().latitude;
+			double longitude = getModel().longitude;
 			if (latitude != 0 || longitude != 0) {
 				kml = Geometries.pointToKml(latitude, longitude);
-				getModel().setKmz(Geometries.kmlToKmz(kml));
+				getModel().kmz = Geometries.kmlToKmz(kml);
 				infoPage.updateKml();
 			} else {
-				getModel().setKmz(null);
+				getModel().kmz = null;
 			}
 		}
 		invalidateIntersections();
@@ -71,7 +71,7 @@ public class LocationEditor extends ModelEditor<Location> {
 					ShapeFileUtils.getFolder(method));
 			ParameterCache cache = new ParameterCache(folder);
 			for (String shapeFile : ShapeFileUtils.getShapeFiles(method))
-				cache.remove(getModel().getId(), shapeFile);
+				cache.remove(getModel().id, shapeFile);
 		}
 	}
 

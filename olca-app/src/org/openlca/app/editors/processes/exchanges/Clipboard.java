@@ -121,15 +121,15 @@ class Clipboard {
 			if (flow == null)
 				return false;
 			if (row.length < 2 || Strings.nullOrEmpty(row[1]))
-				return flow.getCategory() == null;
+				return flow.category == null;
 			String[] names = row[1].split("/");
-			Category category = flow.getCategory();
+			Category category = flow.category;
 			for (int i = names.length - 1; i >= 0; i--) {
 				if (category == null)
 					return false;
-				if (!Strings.nullOrEqual(names[i], category.getName()))
+				if (!Strings.nullOrEqual(names[i], category.name))
 					return false;
-				category = category.getCategory();
+				category = category.category;
 			}
 			return true;
 		}
@@ -137,11 +137,11 @@ class Clipboard {
 		private boolean matchLocation(Flow flow, String code) {
 			if (flow == null)
 				return false;
-			if (flow.getLocation() == null)
+			if (flow.location == null)
 				return code == null;
 			if (code == null)
-				return flow.getLocation() == null;
-			return Strings.nullOrEqual(flow.getLocation().getCode(), code);
+				return flow.location == null;
+			return Strings.nullOrEqual(flow.location.code, code);
 		}
 
 		private void mapAmount(Exchange e, String[] row) {
@@ -166,7 +166,7 @@ class Clipboard {
 			String unit = row[3];
 			if (mapUnit(e, e.flow.getReferenceFactor(), unit))
 				return;
-			for (FlowPropertyFactor f : e.flow.getFlowPropertyFactors()) {
+			for (FlowPropertyFactor f : e.flow.flowPropertyFactors) {
 				if (mapUnit(e, f, unit))
 					return;
 			}
@@ -178,21 +178,21 @@ class Clipboard {
 				return;
 			FlowPropertyFactor refFactor = e.flow.getReferenceFactor();
 			e.flowPropertyFactor = refFactor;
-			if (refFactor == null || refFactor.getFlowProperty() == null)
+			if (refFactor == null || refFactor.flowProperty == null)
 				return;
-			UnitGroup ug = refFactor.getFlowProperty().getUnitGroup();
+			UnitGroup ug = refFactor.flowProperty.unitGroup;
 			if (ug == null)
 				return;
-			e.unit = ug.getReferenceUnit();
+			e.unit = ug.referenceUnit;
 		}
 
 		private boolean mapUnit(Exchange e, FlowPropertyFactor factor, String unit) {
 			if (e == null || factor == null)
 				return false;
-			FlowProperty fp = factor.getFlowProperty();
-			if (fp == null || fp.getUnitGroup() == null)
+			FlowProperty fp = factor.flowProperty;
+			if (fp == null || fp.unitGroup == null)
 				return false;
-			Unit u = fp.getUnitGroup().getUnit(unit);
+			Unit u = fp.unitGroup.getUnit(unit);
 			if (u == null)
 				return false;
 			e.flowPropertyFactor = factor;
@@ -201,9 +201,9 @@ class Clipboard {
 		}
 
 		/**
-		 * It is important that the flow direction is already specified before calling
-		 * this method because if the exchange is an avoided product or waste flow the
-		 * flow direction will change in this method.
+		 * It is important that the flow direction is already specified before
+		 * calling this method because if the exchange is an avoided product or
+		 * waste flow the flow direction will change in this method.
 		 */
 		private void mapIsAvoided(Exchange e, String[] row) {
 			if (e == null || e.flow == null || row.length < 7)
@@ -211,8 +211,8 @@ class Clipboard {
 			String s = row[6];
 			if (Strings.nullOrEmpty(s))
 				return;
-			if ((e.isInput && e.flow.getFlowType() != FlowType.WASTE_FLOW)
-					|| (!e.isInput && e.flow.getFlowType() != FlowType.PRODUCT_FLOW))
+			if ((e.isInput && e.flow.flowType != FlowType.WASTE_FLOW)
+					|| (!e.isInput && e.flow.flowType != FlowType.PRODUCT_FLOW))
 				return;
 			try {
 				if (Boolean.parseBoolean(s)) {
@@ -258,8 +258,8 @@ class Clipboard {
 		private void mapProvider(Exchange e, String[] row) {
 			if (e == null || e.flow == null || row.length < 8)
 				return;
-			if ((e.isInput && e.flow.getFlowType() != FlowType.PRODUCT_FLOW)
-					|| (!e.isInput && e.flow.getFlowType() != FlowType.WASTE_FLOW))
+			if ((e.isInput && e.flow.flowType != FlowType.PRODUCT_FLOW)
+					|| (!e.isInput && e.flow.flowType != FlowType.WASTE_FLOW))
 				return;
 			String fullName = row[7];
 			if (Strings.nullOrEmpty(fullName))

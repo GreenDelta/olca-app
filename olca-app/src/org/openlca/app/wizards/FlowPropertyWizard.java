@@ -76,18 +76,18 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 		@Override
 		public FlowProperty createModel() {
 			FlowProperty flowProperty = new FlowProperty();
-			flowProperty.setRefId(UUID.randomUUID().toString());
-			flowProperty.setName(getModelName());
-			flowProperty.setDescription(getModelDescription());
+			flowProperty.refId = UUID.randomUUID().toString();
+			flowProperty.name = getModelName();
+			flowProperty.description = getModelDescription();
 			try {
 				UnitGroup unitGroup = Cache.getEntityCache().get(UnitGroup.class,
 						unitGroupComboViewer.getSelected().id);
-				flowProperty.setUnitGroup(unitGroup);
+				flowProperty.unitGroup = unitGroup;
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(getClass());
 				log.error("failed to load unit group", e);
 			}
-			flowProperty.setFlowPropertyType(flowPropertyTypeViewer.getSelected());
+			flowProperty.flowPropertyType = flowPropertyTypeViewer.getSelected();
 			return flowProperty;
 		}
 

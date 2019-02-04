@@ -34,7 +34,7 @@ public class ResultEditorInput implements IEditorInput {
 		String setupKey = Cache.getAppCache().put(setup);
 		long systemId = 0;
 		if (setup.productSystem != null)
-			systemId = setup.productSystem.getId();
+			systemId = setup.productSystem.id;
 		return new ResultEditorInput(systemId, resultKey, setupKey);
 	}
 

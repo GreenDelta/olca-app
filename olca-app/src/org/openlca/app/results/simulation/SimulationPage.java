@@ -75,8 +75,8 @@ public class SimulationPage extends FormPage {
 		Text simCountText = UI.formText(settings, toolkit, M.NumberOfSimulations);
 		if (editor.getSetup() != null) {
 			CalculationSetup setup = editor.getSetup();
-			systemText.setText(setup.productSystem.getName());
-			processText.setText(setup.productSystem.referenceProcess.getName());
+			systemText.setText(setup.productSystem.name);
+			processText.setText(setup.productSystem.referenceProcess.name);
 			qRefText.setText(getQRefText());
 			simCountText.setText(Integer.toString(setup.numberOfRuns));
 		}
@@ -95,7 +95,7 @@ public class SimulationPage extends FormPage {
 			Flow flow = exchange.flow;
 			Unit unit = system.targetUnit;
 			return String.format("%s %s %s", Numbers.format(amount, 2),
-					unit.getName(), Labels.getDisplayName(flow));
+					unit.name, Labels.getDisplayName(flow));
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("failed to create text for quan. ref.", e);

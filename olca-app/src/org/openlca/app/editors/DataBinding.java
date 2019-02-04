@@ -257,7 +257,7 @@ public class DataBinding {
 		if (val.getClass().isEnum())
 			return Labels.getEnumText(val);
 		else if (val instanceof RootEntity)
-			return ((RootEntity) val).getName();
+			return ((RootEntity) val).name;
 		else if (val instanceof BaseDescriptor)
 			return ((BaseDescriptor) val).name;
 		else if (val instanceof Date)

@@ -96,7 +96,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 		if (old == null)
 			return list.get(0);
 		for (NwSet set : list) {
-			if (Objects.equals(old.getRefId(), set.getRefId()))
+			if (Objects.equals(old.refId, set.refId))
 				return set;
 		}
 		return list.get(0);

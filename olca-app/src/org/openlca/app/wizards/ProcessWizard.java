@@ -37,8 +37,8 @@ public class ProcessWizard extends AbstractWizard<Process> {
 	private Flow refFlow;
 
 	/**
-	 * Optionally set the reference flow of process. This function is used when a
-	 * process is directly created from a product flow.
+	 * Optionally set the reference flow of process. This function is used when
+	 * a process is directly created from a product flow.
 	 */
 	public void setRefFlow(Flow refFlow) {
 		this.refFlow = refFlow;
@@ -123,7 +123,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 				INavigationElement<?> e = Navigator.findElement(d);
 				ISelection s = new StructuredSelection(e);
 				flowTree.setSelection(s, true);
-				String name = refFlow.getName() != null ? refFlow.getName() : "";
+				String name = refFlow.name != null ? refFlow.name : "";
 				nameText.setText(name);
 				checkInput();
 			}

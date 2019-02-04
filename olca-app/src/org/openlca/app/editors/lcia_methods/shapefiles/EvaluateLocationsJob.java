@@ -82,7 +82,7 @@ class EvaluateLocationsJob implements IRunnableWithProgress {
 	private List<Parameter> getShapeFileParameters() {
 		if (method == null)
 			return Collections.emptyList();
-		long methodId = method.getId();
+		long methodId = method.id;
 		String query = "select m.parameters from ImpactMethod m where " + "m.id = :methodId";
 		ParameterDao dao = new ParameterDao(Database.get());
 		List<Parameter> allParams = dao.getAll(query, Collections.singletonMap("methodId", methodId));
@@ -100,7 +100,7 @@ class EvaluateLocationsJob implements IRunnableWithProgress {
 	}
 
 	private KmlFeature getKmlFeature(LocationDescriptor location) {
-		byte[] kmz = locationDao.getForId(location.id).getKmz();
+		byte[] kmz = locationDao.getForId(location.id).kmz;
 		if (kmz == null)
 			return null;
 		String kml = KmlUtil.toKml(kmz);

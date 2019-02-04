@@ -62,7 +62,7 @@ public class BaseNameFilter extends ViewerFilter {
 			final Object element) {
 		String content = null;
 		if (element instanceof RootEntity) {
-			content = ((RootEntity) element).getName();
+			content = ((RootEntity) element).name;
 		}
 		return select(filter, content);
 	}

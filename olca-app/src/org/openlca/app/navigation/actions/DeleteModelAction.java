@@ -123,9 +123,9 @@ class DeleteModelAction extends Action implements INavigationAction {
 			boolean empty = element.getChildren().isEmpty();
 			int answer = IDialogConstants.CANCEL_ID;
 			if (!empty) {
-				answer = dontAskEmpty ? IDialogConstants.YES_ID : askNotEmptyDelete(category.getName());
+				answer = dontAskEmpty ? IDialogConstants.YES_ID : askNotEmptyDelete(category.name);
 			} else {
-				answer = dontAsk ? IDialogConstants.YES_ID : askDelete(category.getName());
+				answer = dontAsk ? IDialogConstants.YES_ID : askDelete(category.name);
 			}
 			if (answer == IDialogConstants.NO_TO_ALL_ID)
 				break;
@@ -205,10 +205,10 @@ class DeleteModelAction extends Action implements INavigationAction {
 		Category category = element.getContent();
 		try {
 			CategoryDao dao = new CategoryDao(Database.get());
-			Category parent = category.getCategory();
+			Category parent = category.category;
 			if (parent != null) {
 				parent.getChildCategories().remove(category);
-				category.setCategory(null);
+				category.category = null;
 				dao.update(parent);
 			}
 			dao.delete(category);

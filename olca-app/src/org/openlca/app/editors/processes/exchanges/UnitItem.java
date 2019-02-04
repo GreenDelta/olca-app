@@ -27,23 +27,23 @@ class UnitItem implements Comparable<UnitItem> {
 
 	@Override
 	public String toString() {
-		String name = unit.getName();
+		String name = unit.name;
 		if (name == null)
 			return "?";
 		Flow f = exchange.flow;
-		if (f.getFlowPropertyFactors().size() == 1)
+		if (f.flowPropertyFactors.size() == 1)
 			return name;
-		FlowProperty fp = factor.getFlowProperty();
-		return name + " - " + fp.getName() + "";
+		FlowProperty fp = factor.flowProperty;
+		return name + " - " + fp.name + "";
 	}
 
 	@Override
 	public int compareTo(UnitItem other) {
 		if (other == null)
 			return 1;
-		FlowProperty thisFp = factor.getFlowProperty();
-		FlowProperty otherFp = other.factor.getFlowProperty();
-		FlowProperty exchFp = exchange.flowPropertyFactor.getFlowProperty();
+		FlowProperty thisFp = factor.flowProperty;
+		FlowProperty otherFp = other.factor.flowProperty;
+		FlowProperty exchFp = exchange.flowPropertyFactor.flowProperty;
 		if (Objects.equals(thisFp, otherFp))
 			return Strings.compare(this.toString(), other.toString());
 		if (Objects.equals(thisFp, exchFp))
@@ -51,7 +51,7 @@ class UnitItem implements Comparable<UnitItem> {
 		if (Objects.equals(otherFp, exchFp))
 			return 1;
 		else
-			return Strings.compare(thisFp.getName(), otherFp.getName());
+			return Strings.compare(thisFp.name, otherFp.name);
 	}
 
 	@Override

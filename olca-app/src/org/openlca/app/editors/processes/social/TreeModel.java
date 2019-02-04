@@ -14,14 +14,14 @@ class TreeModel {
 		if (a == null || a.indicator == null)
 			return;
 		SocialIndicator i = a.indicator;
-		CategoryNode n = getNode(i.getCategory());
+		CategoryNode n = getNode(i.category);
 		n.aspects.add(a);
 	}
 
 	CategoryNode getNode(Category c) {
 		if (c == null)
 			return root;
-		CategoryNode parent = getNode(c.getCategory());
+		CategoryNode parent = getNode(c.category);
 		CategoryNode node = parent.findChild(c);
 		if (node == null) {
 			node = new CategoryNode(c);
@@ -33,7 +33,7 @@ class TreeModel {
 	void update(SocialAspect a) {
 		if (a == null || a.indicator == null)
 			return;
-		CategoryNode n = getNode(a.indicator.getCategory());
+		CategoryNode n = getNode(a.indicator.category);
 		if (n == null)
 			return;
 		for (SocialAspect ta : n.aspects) {
@@ -47,7 +47,7 @@ class TreeModel {
 	void remove(SocialAspect a) {
 		if (a == null || a.indicator == null)
 			return;
-		CategoryNode n = getNode(a.indicator.getCategory());
+		CategoryNode n = getNode(a.indicator.category);
 		if (n == null)
 			return;
 		n.aspects.remove(a);

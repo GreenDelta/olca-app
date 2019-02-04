@@ -11,8 +11,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFilePage;
 import org.openlca.app.editors.parameters.Formulas;
-import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
+import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
@@ -80,8 +80,8 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> {
 		super.doAfterUpdate();
 		EntityCache cache = Cache.getEntityCache();
 		for (ImpactCategory category : getModel().impactCategories) {
-			cache.refresh(ImpactCategory.class, category.getId());
-			cache.invalidate(ImpactCategory.class, category.getId());
+			cache.refresh(ImpactCategory.class, category.id);
+			cache.invalidate(ImpactCategory.class, category.id);
 			Cache.evict(Descriptors.toDescriptor(category));
 		}
 	}

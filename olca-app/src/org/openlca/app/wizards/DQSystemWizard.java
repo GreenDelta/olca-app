@@ -48,9 +48,9 @@ public class DQSystemWizard extends AbstractWizard<DQSystem> {
 		@Override
 		public DQSystem createModel() {
 			DQSystem system = new DQSystem();
-			system.setRefId(UUID.randomUUID().toString());
-			system.setName(getModelName());
-			system.setDescription(getModelDescription());
+			system.refId = UUID.randomUUID().toString();
+			system.name = getModelName();
+			system.description = getModelDescription();
 			system.hasUncertainties = hasUncertaintiesCheck.getSelection();
 			return system;
 		}

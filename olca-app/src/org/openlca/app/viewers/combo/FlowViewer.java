@@ -119,8 +119,8 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 				return -1;
 			if (location2 == null)
 				return 1;
-			String code1 = location1 != null ? location1.getCode() : "";
-			String code2 = location2 != null ? location2.getCode() : "";
+			String code1 = location1 != null ? location1.code : "";
+			String code2 = location2 != null ? location2.code : "";
 			return Strings.compare(code1, code2);
 		}
 
@@ -152,7 +152,7 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 			case 2:
 				if (flow.location == null)
 					return null;
-				return cache.get(Location.class, flow.location).getCode();
+				return cache.get(Location.class, flow.location).code;
 			case 3:
 				return fullName(flow);
 			default:
@@ -168,8 +168,8 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 			if (category != null)
 				t += " - " + CategoryPath.getShort(category);
 			Location location = getLocation(flow);
-			if (location != null && location.getCode() != null)
-				t += " - " + location.getCode();
+			if (location != null && location.code != null)
+				t += " - " + location.code;
 			return t;
 		}
 	}

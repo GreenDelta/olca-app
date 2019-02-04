@@ -118,7 +118,7 @@ public class SyncView extends ViewPart {
 		if (element instanceof CategoryElement) {
 			Category category = ((CategoryElement) element).getContent();
 			if (dataset.type == ModelType.CATEGORY)
-				if (category.getRefId().equals(dataset.refId))
+				if (category.refId.equals(dataset.refId))
 					return true;
 			if (dataset.type == category.getModelType()) {
 				if (isContainedIn(category, dataset.categories))
@@ -139,8 +139,8 @@ public class SyncView extends ViewPart {
 	private boolean isContainedIn(Category category, List<String> categories) {
 		List<String> categoryPath = new ArrayList<>();
 		while (category != null) {
-			categoryPath.add(0, category.getName());
-			category = category.getCategory();
+			categoryPath.add(0, category.name);
+			category = category.category;
 		}
 		if (categoryPath.size() > categories.size())
 			return false;

@@ -39,9 +39,9 @@ public class SocialIndicatorWizard extends AbstractWizard<SocialIndicator> {
 		@Override
 		public SocialIndicator createModel() {
 			SocialIndicator i = new SocialIndicator();
-			i.setRefId(UUID.randomUUID().toString());
-			i.setName(getModelName());
-			i.setDescription(getModelDescription());
+			i.refId = UUID.randomUUID().toString();
+			i.name = getModelName();
+			i.description = getModelDescription();
 			return i;
 		}
 	}

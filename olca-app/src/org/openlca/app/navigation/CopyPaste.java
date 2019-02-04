@@ -187,7 +187,7 @@ public class CopyPaste {
 		if (copy == null)
 			return;
 		Category category = getCategory(categoryElement);
-		copy.setCategory(category);
+		copy.category = category;
 		copy = insert(copy);
 	}
 
@@ -207,7 +207,7 @@ public class CopyPaste {
 			oldParent.getChildCategories().remove(category);
 		if (newParent != null)
 			newParent.getChildCategories().add(category);
-		category.setCategory(newParent);
+		category.category = newParent;
 		CategoryDao dao = new CategoryDao(Database.get());
 		if (oldParent != null)
 			oldParent = dao.update(oldParent);
@@ -219,11 +219,11 @@ public class CopyPaste {
 	private static boolean isChild(Category category, Category parent) {
 		if (category == null || parent == null)
 			return false;
-		Category p = category.getCategory();
+		Category p = category.category;
 		while (p != null) {
 			if (Objects.equals(p, parent))
 				return true;
-			p = p.getCategory();
+			p = p.category;
 		}
 		return false;
 	}
@@ -246,7 +246,7 @@ public class CopyPaste {
 			CategoryElement current = elements.poll();
 			Category copy = current.getContent().clone();
 			copy.getChildCategories().clear();
-			copy.setCategory(parent);
+			copy.category = parent;
 			if (parent == null)
 				copy = new CategoryDao(Database.get()).insert(copy);
 			else {
@@ -258,7 +258,7 @@ public class CopyPaste {
 					elements.add((CategoryElement) child);
 				else {
 					CategorizedEntity modelCopy = copy((ModelElement) child);
-					modelCopy.setCategory(copy);
+					modelCopy.category = copy;
 					modelCopy = insert(modelCopy);
 				}
 			parent = copy;
@@ -271,7 +271,7 @@ public class CopyPaste {
 		CategorizedEntity entity = dao.getForId(descriptor.id);
 		CategorizedEntity copy = cloneIt(entity);
 		if (copy != null)
-			copy.setName(copy.getName() + " (copy)");
+			copy.name = copy.name + " (copy)";
 		return copy;
 	}
 

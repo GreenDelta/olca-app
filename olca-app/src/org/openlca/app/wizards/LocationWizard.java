@@ -53,13 +53,13 @@ public class LocationWizard extends AbstractWizard<Location> {
 			Location location = new Location();
 			String code = codeText.getText();
 			if (Strings.nullOrEmpty(code)) {
-				location.setRefId(UUID.randomUUID().toString());
+				location.refId = UUID.randomUUID().toString();
 			} else {
-				location.setCode(code);
-				location.setRefId(KeyGen.get(code));
+				location.code = code;
+				location.refId = KeyGen.get(code);
 			}
-			location.setName(getModelName());
-			location.setDescription(descriptionText.getText());
+			location.name = getModelName();
+			location.description = descriptionText.getText();
 			return location;
 		}
 

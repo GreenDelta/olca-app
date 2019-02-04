@@ -45,13 +45,13 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 	}
 
 	private void setInitialInput(FlowPropertyFactorViewer viewer) {
-		List<FlowPropertyFactor> factors = getModel().getFlowPropertyFactors();
+		List<FlowPropertyFactor> factors = getModel().flowPropertyFactors;
 		factors.sort((f1, f2) -> {
-			FlowProperty prop1 = f1.getFlowProperty();
-			FlowProperty prop2 = f2.getFlowProperty();
+			FlowProperty prop1 = f1.flowProperty;
+			FlowProperty prop2 = f2.flowProperty;
 			if (prop1 == null || prop2 == null)
 				return 0;
-			return Strings.compare(prop1.getName(), prop2.getName());
+			return Strings.compare(prop1.name, prop2.name);
 		});
 		viewer.setInput(factors);
 	}

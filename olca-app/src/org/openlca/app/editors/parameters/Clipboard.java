@@ -58,14 +58,14 @@ class Clipboard {
 		if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(formula))
 			return null;
 		Parameter p = new Parameter();
-		p.setRefId(UUID.randomUUID().toString());
+		p.refId = UUID.randomUUID().toString();
 		p.isInputParameter = false;
-		p.setName(name);
+		p.name = name;
 		p.formula = formula;
 		if (row.length > 2)
 			p.value = readDouble(row[2]);
 		if (row.length > 3)
-			p.setDescription(row[3]);
+			p.description = row[3];
 		return p;
 	}
 
@@ -77,14 +77,14 @@ class Clipboard {
 			return null;
 		double val = readDouble(fields[1]);
 		Parameter p = new Parameter();
-		p.setRefId(UUID.randomUUID().toString());
+		p.refId = UUID.randomUUID().toString();
 		p.isInputParameter = true;
-		p.setName(name);
+		p.name = name;
 		p.value = val;
 		if (fields.length > 2)
 			p.uncertainty = Uncertainty.fromString(fields[2]);
 		if (fields.length > 3)
-			p.setDescription(fields[3]);
+			p.description = fields[3];
 		return p;
 	}
 

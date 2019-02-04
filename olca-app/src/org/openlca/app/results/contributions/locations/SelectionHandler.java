@@ -82,7 +82,7 @@ class SelectionHandler implements EventHandler {
 			if (ref == null)
 				return "?";
 			else
-				return ref.code != null ? ref.code : ref.getName();
+				return ref.code != null ? ref.code : ref.name;
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("failed to get reference currency", e);

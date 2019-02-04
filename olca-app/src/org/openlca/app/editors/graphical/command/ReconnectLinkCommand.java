@@ -48,7 +48,7 @@ public class ReconnectLinkCommand extends Command {
 		processLink.providerId = sourceNode.process.id;
 		processLink.flowId = oldLink.processLink.flowId;
 		processLink.processId = targetNode.parent().process.id;
-		processLink.exchangeId = targetNode.exchange.getId();
+		processLink.exchangeId = targetNode.exchange.id;
 		systemNode.getProductSystem().processLinks.add(processLink);
 		systemNode.linkSearch.put(processLink);
 		link = new Link();

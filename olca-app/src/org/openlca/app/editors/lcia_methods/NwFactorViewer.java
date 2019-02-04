@@ -101,19 +101,19 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 			Wrapper wrapper = (Wrapper) element;
 			switch (columnIndex) {
 			case 0:
-				return wrapper.category.getName();
+				return wrapper.category.name;
 			case 1:
 				if (wrapper.factor == null)
 					return "-";
-				if (wrapper.factor.getNormalisationFactor() == null)
+				if (wrapper.factor.normalisationFactor == null)
 					return "-";
-				return Double.toString(wrapper.factor.getNormalisationFactor());
+				return Double.toString(wrapper.factor.normalisationFactor);
 			case 2:
 				if (wrapper.factor == null)
 					return "-";
-				if (wrapper.factor.getWeightingFactor() == null)
+				if (wrapper.factor.weightingFactor == null)
 					return "-";
-				return Double.toString(wrapper.factor.getWeightingFactor());
+				return Double.toString(wrapper.factor.weightingFactor);
 			default:
 				return null;
 			}
@@ -126,9 +126,9 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 		protected String getText(Wrapper element) {
 			if (element.factor == null)
 				return "-";
-			if (element.factor.getNormalisationFactor() == null)
+			if (element.factor.normalisationFactor == null)
 				return "-";
-			return Double.toString(element.factor.getNormalisationFactor());
+			return Double.toString(element.factor.normalisationFactor);
 		}
 
 		@Override
@@ -137,12 +137,12 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 				double factor = Double.parseDouble(text);
 				if (element.factor == null) {
 					element.factor = new NwFactor();
-					element.factor.setImpactCategory(element.category);
+					element.factor.impactCategory = element.category;
 					set.factors.add(element.factor);
 				}
-				if (element.factor.getNormalisationFactor() == null
-						|| element.factor.getNormalisationFactor() != factor) {
-					element.factor.setNormalisationFactor(factor);
+				if (element.factor.normalisationFactor == null
+						|| element.factor.normalisationFactor != factor) {
+					element.factor.normalisationFactor = factor;
 					editor.setDirty(true);
 				}
 			} catch (NumberFormatException e) {
@@ -157,23 +157,23 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 		protected String getText(Wrapper element) {
 			if (element.factor == null)
 				return "-";
-			if (element.factor.getWeightingFactor() == null)
+			if (element.factor.weightingFactor == null)
 				return "-";
-			return Double.toString(element.factor.getWeightingFactor());
+			return Double.toString(element.factor.weightingFactor);
 		}
 
 		@Override
-		protected void setText(Wrapper element, String text) {
+		protected void setText(Wrapper w, String text) {
 			try {
 				double factor = Double.parseDouble(text);
-				if (element.factor == null) {
-					element.factor = new NwFactor();
-					element.factor.setImpactCategory(element.category);
-					set.factors.add(element.factor);
+				if (w.factor == null) {
+					w.factor = new NwFactor();
+					w.factor.impactCategory = w.category;
+					set.factors.add(w.factor);
 				}
-				if (element.factor.getWeightingFactor() == null
-						|| element.factor.getWeightingFactor() != factor) {
-					element.factor.setWeightingFactor(factor);
+				if (w.factor.weightingFactor == null
+						|| w.factor.weightingFactor != factor) {
+					w.factor.weightingFactor = factor;
 					editor.setDirty(true);
 				}
 			} catch (NumberFormatException e) {

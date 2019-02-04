@@ -118,7 +118,7 @@ class ExchangeTable {
 	}
 
 	void setInput(Process process) {
-		viewer.setInput(process.getExchanges());
+		viewer.setInput(process.exchanges);
 	}
 
 	private void bindModifiers() {
@@ -138,7 +138,7 @@ class ExchangeTable {
 	private void bindAmountModifier(ModifySupport<Exchange> ms) {
 		// amount editor with auto-completion support for parameter names
 		FormulaCellEditor amountEditor = new FormulaCellEditor(viewer,
-				() -> editor.getModel().getParameters());
+				() -> editor.getModel().parameters);
 		ms.bind(AMOUNT, amountEditor);
 		amountEditor.onEdited((obj, amount) -> {
 			if (!(obj instanceof Exchange))
@@ -164,7 +164,7 @@ class ExchangeTable {
 			Exchange e = Viewers.getFirstSelected(viewer);
 			if (e == null)
 				return;
-			editor.getModel().setQuantitativeReference(e);
+			editor.getModel().quantitativeReference = e;
 			page.refreshTables();
 			editor.setDirty(true);
 		});
@@ -233,8 +233,8 @@ class ExchangeTable {
 		List<Exchange> selection = Viewers.getAllSelected(viewer);
 		if (!Exchanges.canRemove(process, selection))
 			return;
-		selection.forEach(e -> process.getExchanges().remove(e));
-		viewer.setInput(process.getExchanges());
+		selection.forEach(e -> process.exchanges.remove(e));
+		viewer.setInput(process.exchanges);
 		editor.setDirty(true);
 		editor.postEvent(editor.EXCHANGES_CHANGED, this);
 	}
@@ -286,7 +286,7 @@ class ExchangeTable {
 
 		if (!added)
 			return;
-		viewer.setInput(process.getExchanges());
+		viewer.setInput(process.exchanges);
 		editor.setDirty(true);
 		editor.postEvent(editor.EXCHANGES_CHANGED, this);
 	}
@@ -300,9 +300,9 @@ class ExchangeTable {
 		Process process = editor.getModel();
 		for (Exchange e : exchanges) {
 			e.internalId = ++process.lastInternalId;
-			process.getExchanges().add(e);
+			process.exchanges.add(e);
 		}
-		viewer.setInput(process.getExchanges());
+		viewer.setInput(process.exchanges);
 		editor.setDirty(true);
 		editor.postEvent(editor.EXCHANGES_CHANGED, this);
 		editor.getParameterSupport().evaluate();
@@ -317,8 +317,8 @@ class ExchangeTable {
 		Exchange e = (Exchange) data;
 		switch (col) {
 		case 1:
-			if (e.flow != null && e.flow.getCategory() != null)
-				return CategoryPath.getFull(e.flow.getCategory());
+			if (e.flow != null && e.flow.category != null)
+				return CategoryPath.getFull(e.flow.category);
 			else
 				return "";
 		case 2:
@@ -345,12 +345,12 @@ class ExchangeTable {
 	private boolean canAdd(Flow flow) {
 		if (flow == null)
 			return false;
-		if (forInputs && flow.getFlowType() == FlowType.WASTE_FLOW)
-			for (Exchange ex : editor.getModel().getExchanges())
+		if (forInputs && flow.flowType == FlowType.WASTE_FLOW)
+			for (Exchange ex : editor.getModel().exchanges)
 				if (ex.isInput && Objects.equals(ex.flow, flow))
 					return false;
-		if (!forInputs && flow.getFlowType() == FlowType.PRODUCT_FLOW)
-			for (Exchange ex : editor.getModel().getExchanges())
+		if (!forInputs && flow.flowType == FlowType.PRODUCT_FLOW)
+			for (Exchange ex : editor.getModel().exchanges)
 				if (!ex.isInput && Objects.equals(ex.flow, flow))
 					return false;
 		return true;

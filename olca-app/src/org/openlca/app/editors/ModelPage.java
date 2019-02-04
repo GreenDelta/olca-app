@@ -28,7 +28,7 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 	}
 
 	public String getFormTitle() {
-		return getTitle() + ": " + getModel().getName();
+		return getTitle() + ": " + getModel().name;
 	}
 
 	@SuppressWarnings("unchecked")

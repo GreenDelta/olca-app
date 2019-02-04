@@ -82,7 +82,7 @@ public class UnitGroupWizard extends AbstractWizard<UnitGroup> {
 				UnitGroup unitGroup = findGroupWithUnit(refUnitName);
 				if (unitGroup != null)
 					failCheck(NLS.bind(M.UnitAlreadyExistsInUnitGroup,
-							unitGroup.getName()));
+							unitGroup.name));
 				else
 					setPageComplete(true);
 			}
@@ -110,14 +110,14 @@ public class UnitGroupWizard extends AbstractWizard<UnitGroup> {
 
 		public UnitGroup createModel() {
 			UnitGroup unitGroup = new UnitGroup();
-			unitGroup.setRefId(UUID.randomUUID().toString());
-			unitGroup.setName(getModelName());
-			unitGroup.setDescription(getModelDescription());
+			unitGroup.refId = UUID.randomUUID().toString();
+			unitGroup.name = getModelName();
+			unitGroup.description = getModelDescription();
 			Unit referenceUnit = new Unit();
-			referenceUnit.setRefId(UUID.randomUUID().toString());
-			referenceUnit.setName(referenceUnitText.getText().trim());
-			unitGroup.setReferenceUnit(referenceUnit);
-			unitGroup.getUnits().add(referenceUnit);
+			referenceUnit.refId = UUID.randomUUID().toString();
+			referenceUnit.name = referenceUnitText.getText().trim();
+			unitGroup.referenceUnit = referenceUnit;
+			unitGroup.units.add(referenceUnit);
 			return unitGroup;
 		}
 

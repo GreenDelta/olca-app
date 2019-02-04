@@ -39,7 +39,6 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 		form.reflow(true);
 	}
 
-
 	protected void createAdditionalInfo(InfoSection infoSection, Composite body) {
 		dropComponent(infoSection.getContainer(), M.DefaultFlowProperty, "defaultFlowProperty");
 		Section section = UI.section(body, toolkit, M.Units);
@@ -47,9 +46,9 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 		Composite client = UI.sectionClient(section, toolkit);
 		UnitViewer unitViewer = new UnitViewer(client, editor);
 		CommentAction.bindTo(section, unitViewer, "units", getComments());
-		List<Unit> units = getModel().getUnits();
-		units.sort((u1, u2) -> Strings.compare(u1.getName(), u2.getName()));
+		List<Unit> units = getModel().units;
+		units.sort((u1, u2) -> Strings.compare(u1.name, u2.name));
 		unitViewer.setInput(units);
-		editor.onSaved(() -> unitViewer.setInput(getModel().getUnits()));
+		editor.onSaved(() -> unitViewer.setInput(getModel().units));
 	}
 }

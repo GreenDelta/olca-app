@@ -45,7 +45,7 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 			return null;
 		ExchangeNode toConnect = (ExchangeNode) req.getTargetEditPart().getModel();
 		ExchangeNode other = cmd.startedFromOutput ? cmd.output : cmd.input;
-		if (!toConnect.matches(other) || toConnect.parent().isConnected(toConnect.exchange.getId())) {
+		if (!toConnect.matches(other) || toConnect.parent().isConnected(toConnect.exchange.id)) {
 			cmd.completeWith(null);
 			req.setStartCommand(cmd);
 			return null;
@@ -60,14 +60,14 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 	@Override
 	protected Command getConnectionCreateCommand(CreateConnectionRequest req) {
 		ExchangeNode toConnect = (ExchangeNode) req.getTargetEditPart().getModel();
-		long flowId = toConnect.exchange.flow.getId();
+		long flowId = toConnect.exchange.flow.id;
 		if (!toConnect.exchange.isInput) {
 			CreateLinkCommand cmd = new CreateLinkCommand(flowId);
 			cmd.output = toConnect;
 			cmd.startedFromOutput = true;
 			req.setStartCommand(cmd);
 			return cmd;
-		} else if (!toConnect.parent().isConnected(toConnect.exchange.getId())) {
+		} else if (!toConnect.parent().isConnected(toConnect.exchange.id)) {
 			CreateLinkCommand cmd = new CreateLinkCommand(flowId);
 			cmd.input = toConnect;
 			cmd.startedFromOutput = false;
@@ -94,8 +94,8 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 		ExchangeNode other = link.outputNode.getOutput(link.processLink);
 		if (!toConnect.matches(other))
 			return null;
-		boolean sameNode = toConnect.exchange.getId() == link.processLink.exchangeId;
-		if (!sameNode && toConnect.parent().isConnected(toConnect.exchange.getId()))
+		boolean sameNode = toConnect.exchange.id == link.processLink.exchangeId;
+		if (!sameNode && toConnect.parent().isConnected(toConnect.exchange.id))
 			return null;
 		return new ReconnectLinkCommand(link.outputNode, toConnect, link);
 	}

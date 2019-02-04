@@ -49,7 +49,7 @@ public final class Reports {
 		}
 		createReportVariants(project, report);
 		createReportIndicators(project, report, db);
-		report.title = M.ResultsOfProject + " " + project.getName();
+		report.title = M.ResultsOfProject + " " + project.name;
 		return report;
 	}
 

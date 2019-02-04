@@ -55,7 +55,7 @@ class RenameAction extends Action implements INavigationAction {
 	public void run() {
 		String name = null;
 		if (element instanceof CategoryElement) {
-			name = ((CategoryElement) element).getContent().getName();
+			name = ((CategoryElement) element).getContent().name;
 		} else {
 			name = ((ModelElement) element).getContent().name;
 		}
@@ -85,7 +85,7 @@ class RenameAction extends Action implements INavigationAction {
 			if (Database.getIndexUpdater() != null) {
 				Database.getIndexUpdater().delete(Datasets.toDataset(category));
 			}
-			category.setName(newName.trim());
+			category.name = newName.trim();
 			new CategoryDao(Database.get()).update(category);
 			Navigator.refresh(element);
 		} catch (final Exception e) {
@@ -98,7 +98,7 @@ class RenameAction extends Action implements INavigationAction {
 		CategorizedEntityDao<T, ?> dao = (CategorizedEntityDao<T, ?>) Daos.categorized(Database.get(),
 				d.type);
 		T entity = dao.getForId(d.id);
-		entity.setName(newName.trim());
+		entity.name = newName.trim();
 		entity = dao.update(entity);
 		Navigator.refresh(element.getParent());
 	}

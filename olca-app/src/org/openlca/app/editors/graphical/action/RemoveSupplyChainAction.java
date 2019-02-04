@@ -38,7 +38,7 @@ class RemoveSupplyChainAction extends EditorAction {
 	public void run() {
 		clear();
 		ProductSystem system = editor.getModel().getProductSystem();
-		long refId = system.referenceProcess.getId();
+		long refId = system.referenceProcess.id;
 		if (refId == node.process.id) {
 			for (ProcessNode node : editor.getModel().getChildren())
 				if (refId != node.process.id) {

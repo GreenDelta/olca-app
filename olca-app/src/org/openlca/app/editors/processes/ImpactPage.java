@@ -137,13 +137,13 @@ class ImpactPage extends ModelPage<Process> {
 			return Collections.emptyList();
 
 		// index the elementary flows
-		List<Exchange> eList = getModel().getExchanges();
+		List<Exchange> eList = getModel().exchanges;
 		double[] values = new double[eList.size()];
 		Exchange[] exchanges = new Exchange[eList.size()];
 		FlowIndex flowIdx = new FlowIndex();
 		for (Exchange e : eList) {
 			if (e.flow == null ||
-					e.flow.getFlowType() != FlowType.ELEMENTARY_FLOW)
+					e.flow.flowType != FlowType.ELEMENTARY_FLOW)
 				continue;
 			FlowDescriptor d = Descriptors.toDescriptor(e.flow);
 			int i = e.isInput
@@ -157,7 +157,7 @@ class ImpactPage extends ModelPage<Process> {
 		FormulaInterpreter interpreter = ParameterTable.interpreter(
 				Database.get(),
 				new HashSet<Long>(Arrays.asList(
-						getModel().getId(),
+						getModel().id,
 						method.id)),
 				Collections.emptySet());
 		ImpactTable iTable = ImpactTable.build(
@@ -298,7 +298,7 @@ class ImpactPage extends ModelPage<Process> {
 					return null;
 				else
 					return CategoryPath.getShort(
-							n.exchange.flow.getCategory());
+							n.exchange.flow.category);
 			case 2:
 				if (n.exchange == null)
 					return null;
@@ -306,7 +306,7 @@ class ImpactPage extends ModelPage<Process> {
 					return Numbers.format(n.exchange.amount);
 				else
 					return Numbers.format(n.exchange.amount)
-							+ " " + n.exchange.unit.getName();
+							+ " " + n.exchange.unit.name;
 			case 3:
 				if (n.impact == null)
 					return null;

@@ -29,11 +29,11 @@ public class DiffNodeBuilder {
 
 	private void putCategories(List<Category> categories) {
 		for (Category category : categories) {
-			this.categories.put(category.getRefId(), category);
+			this.categories.put(category.refId, category);
 			putCategories(category.getChildCategories());
 		}
 	}
-	
+
 	public DiffNode build(List<DiffResult> diffs) {
 		if (!init(diffs))
 			return null;
@@ -83,10 +83,10 @@ public class DiffNodeBuilder {
 
 	private DiffNode createNodeFromCategory(Category category) {
 		DiffNode parent = getOrCreateParentNode(Datasets.toDataset(category));
-		DiffResult result = new DiffResult(index.get(category.getRefId()));
+		DiffResult result = new DiffResult(index.get(category.refId));
 		DiffNode node = new DiffNode(parent, result);
 		parent.children.add(node);
-		nodes.put(category.getRefId(), node);
+		nodes.put(category.refId, node);
 		return node;
 	}
 

@@ -146,7 +146,7 @@ public class ParameterSection {
 				Icon.LINK.descriptor(), () -> {
 					Parameter p = Viewers.getFirstSelected(viewer);
 					if (p != null) {
-						ParameterUsagePage.show(p.getName());
+						ParameterUsagePage.show(p.name);
 					}
 				});
 		CommentAction.bindTo(section, "parameters",
@@ -181,7 +181,7 @@ public class ParameterSection {
 		if (supplier == null)
 			return;
 		Collections.sort(supplier.get(),
-				(o1, o2) -> Strings.compare(o1.getName(), o2.getName()));
+				(o1, o2) -> Strings.compare(o1.name, o2.name));
 		setInput();
 	}
 
@@ -205,8 +205,8 @@ public class ParameterSection {
 		while (exists(name))
 			name = "p_" + count++;
 		Parameter p = new Parameter();
-		p.setRefId(UUID.randomUUID().toString());
-		p.setName(name);
+		p.refId = UUID.randomUUID().toString();
+		p.name = name;
 		p.scope = page.scope;
 		p.isInputParameter = forInputParameters;
 		p.value = 1.0;
@@ -219,11 +219,11 @@ public class ParameterSection {
 
 	private boolean exists(String name) {
 		for (Parameter parameter : supplier.get()) {
-			if (name == null && parameter.getName() == null)
+			if (name == null && parameter.name == null)
 				return true;
-			if (name == null || parameter.getName() == null)
+			if (name == null || parameter.name == null)
 				continue;
-			if (name.toLowerCase().equals(parameter.getName().toLowerCase()))
+			if (name.toLowerCase().equals(parameter.name.toLowerCase()))
 				return true;
 		}
 		return false;
@@ -250,7 +250,7 @@ public class ParameterSection {
 				: Clipboard.readAsCalculatedParams(text, page.scope);
 		boolean skipped = false;
 		for (Parameter param : params) {
-			String name = param.getName();
+			String name = param.name;
 			if (!Parameter.isValidName(name) || exists(name)) {
 				skipped = true;
 				continue;
@@ -287,7 +287,7 @@ public class ParameterSection {
 			Parameter p = (Parameter) obj;
 			switch (col) {
 			case 0:
-				return p.getName();
+				return p.name;
 			case 1:
 				if (forInputParameters)
 					return Double.toString(p.value);
@@ -299,7 +299,7 @@ public class ParameterSection {
 				else
 					return Double.toString(p.value);
 			case 3:
-				return p.getDescription();
+				return p.description;
 			case 4:
 				return p.externalSource;
 			default:
@@ -311,14 +311,14 @@ public class ParameterSection {
 	private class NameModifier extends TextCellModifier<Parameter> {
 		@Override
 		protected String getText(Parameter param) {
-			return param.getName();
+			return param.name;
 		}
 
 		@Override
 		protected void setText(Parameter param, String text) {
 			if (text == null)
 				return;
-			if (Objects.equals(text, param.getName()))
+			if (Objects.equals(text, param.name))
 				return;
 			String name = text.trim();
 			if (!Parameter.isValidName(name)) {
@@ -331,7 +331,7 @@ public class ParameterSection {
 						M.ParameterWithSameNameExists);
 				return;
 			}
-			param.setName(name);
+			param.name = name;
 			editor.setDirty(true);
 			support.evaluate();
 		}

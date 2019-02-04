@@ -91,10 +91,10 @@ class SFSection {
 				continue;
 			if (!shapeFile.equals(parameter.externalSource))
 				continue;
-			if (!stillLinked.contains(parameter.getName())) {
+			if (!stillLinked.contains(parameter.name)) {
 				parameter.externalSource = null;
 			} else {
-				ShapeFileParameter param = nameToParam.get(parameter.getName());
+				ShapeFileParameter param = nameToParam.get(parameter.name);
 				if (param == null)
 					continue;
 				parameter.value = (param.min + param.max) / 2;
@@ -110,7 +110,7 @@ class SFSection {
 		for (Parameter parameter : method().parameters)
 			if (parameter.isInputParameter)
 				if (shapeFile.equals(parameter.externalSource))
-					names.add(parameter.getName());
+					names.add(parameter.name);
 		return names;
 	}
 

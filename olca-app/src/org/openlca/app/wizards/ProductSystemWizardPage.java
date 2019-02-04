@@ -65,7 +65,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		createProcessTree(comp);
 		createOptions(comp);
 		if (refProcess != null) {
-			nameText.setText(refProcess.getName());
+			nameText.setText(refProcess.name);
 			ProcessDescriptor descriptor = Descriptors.toDescriptor(refProcess);
 			INavigationElement<?> elem = Navigator.findElement(descriptor);
 			if (elem != null)
@@ -131,8 +131,8 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	@Override
 	public ProductSystem createModel() {
 		ProductSystem system = ProductSystem.from(refProcess);
-		system.setName(getModelName());
-		system.setDescription(getModelDescription());
+		system.name = getModelName();
+		system.description = getModelDescription();
 		return system;
 	}
 
@@ -148,10 +148,10 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	private boolean hasRefFlow() {
 		if (refProcess == null)
 			return false;
-		Exchange qRef = refProcess.getQuantitativeReference();
+		Exchange qRef = refProcess.quantitativeReference;
 		if (qRef == null || qRef.flow == null)
 			return false;
-		FlowType type = qRef.flow.getFlowType();
+		FlowType type = qRef.flow.flowType;
 		if (type == FlowType.PRODUCT_FLOW)
 			return !qRef.isInput;
 		if (type == FlowType.WASTE_FLOW)

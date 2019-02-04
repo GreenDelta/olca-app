@@ -68,7 +68,7 @@ class DQSettingsPage extends WizardPage {
 
 	public DQCalculationSetup getSetup(ProductSystem system) {
 		DQCalculationSetup setup = new DQCalculationSetup();
-		setup.productSystemId = system.getId();
+		setup.productSystemId = system.id;
 		DQSystemDao dqDao = new DQSystemDao(Database.get());
 		DQSystemDescriptor pSystemDesc = processSystemViewer.getSelected();
 		if (pSystemDesc != null) {
@@ -108,8 +108,8 @@ class DQSettingsPage extends WizardPage {
 			return;
 		DQSystemDao dao = new DQSystemDao(Database.get());
 		CalculationWizard wizard = (CalculationWizard) getWizard();
-		processSystemViewer.setInput(dao.getProcessDqSystems(wizard.productSystem.getId()));
-		exchangeSystemViewer.setInput(dao.getExchangeDqSystems(wizard.productSystem.getId()));
+		processSystemViewer.setInput(dao.getProcessDqSystems(wizard.productSystem.id));
+		exchangeSystemViewer.setInput(dao.getExchangeDqSystems(wizard.productSystem.id));
 		DQSystem processSystem = wizard.productSystem.referenceProcess.dqSystem;
 		DQSystem exchangeSystem = wizard.productSystem.referenceProcess.exchangeDqSystem;
 		if (processSystem != null) {

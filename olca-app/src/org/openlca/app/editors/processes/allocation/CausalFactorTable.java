@@ -196,10 +196,10 @@ class CausalFactorTable {
 	}
 
 	private AllocationFactor getFactor(Exchange product, Exchange exchange) {
-		for (AllocationFactor factor : process().getAllocationFactors()) {
+		for (AllocationFactor factor : process().allocationFactors) {
 			if (factor.method != AllocationMethod.CAUSAL)
 				continue;
-			if (product.flow.getId() != factor.productId)
+			if (product.flow.id != factor.productId)
 				continue;
 			if (!Objects.equals(factor.exchange, exchange))
 				continue;
@@ -243,10 +243,10 @@ class CausalFactorTable {
 			case 1:
 				return exchange.isInput ? M.Input : M.Output;
 			case 2:
-				return CategoryPath.getShort(exchange.flow.getCategory());
+				return CategoryPath.getShort(exchange.flow.category);
 			case 3:
 				return Numbers.format(exchange.amount) + " "
-						+ exchange.unit.getName();
+						+ exchange.unit.name;
 			default:
 				if (col % 2 == 0 || !editor.hasAnyComment("allocationFactors"))
 					return getFactorLabel(exchange, col);
@@ -310,8 +310,8 @@ class CausalFactorTable {
 				factor = new AllocationFactor();
 				factor.method = AllocationMethod.CAUSAL;
 				factor.exchange = exchange;
-				factor.productId = product.flow.getId();
-				process().getAllocationFactors().add(factor);
+				factor.productId = product.flow.id;
+				process().allocationFactors.add(factor);
 			}
 			factor.value = val;
 			editor.setDirty(true);

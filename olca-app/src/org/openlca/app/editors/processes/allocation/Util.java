@@ -19,7 +19,7 @@ class Util {
 		if (p == null)
 			return Collections.emptyList();
 		List<Exchange> list = new ArrayList<>();
-		for (Exchange e : p.getExchanges()) {
+		for (Exchange e : p.exchanges) {
 			if (isProvider(e))
 				list.add(e);
 		}
@@ -35,7 +35,7 @@ class Util {
 		if (p == null)
 			return Collections.emptyList();
 		List<Exchange> list = new ArrayList<>();
-		for (Exchange e : p.getExchanges()) {
+		for (Exchange e : p.exchanges) {
 			if (isProvider(e))
 				continue;
 			list.add(e);
@@ -46,7 +46,7 @@ class Util {
 	private static boolean isProvider(Exchange e) {
 		if (e == null || e.flow == null || e.isAvoided)
 			return false;
-		FlowType type = e.flow.getFlowType();
+		FlowType type = e.flow.flowType;
 		if (type == FlowType.PRODUCT_FLOW && !e.isInput)
 			return true;
 		if (type == FlowType.WASTE_FLOW && e.isInput)

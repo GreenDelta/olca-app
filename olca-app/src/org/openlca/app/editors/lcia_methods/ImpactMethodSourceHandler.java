@@ -32,7 +32,7 @@ public class ImpactMethodSourceHandler implements SourceHandler {
 				List<ShapeFileParameter> params = ShapeFileUtils.getParameters(
 						editor.getModel(), name);
 				for (ShapeFileParameter param : params)
-					if (param.name.equals(parameter.getName()))
+					if (param.name.equals(parameter.name))
 						sources.add(name);
 			}
 		} catch (IOException e) {
@@ -48,7 +48,7 @@ public class ImpactMethodSourceHandler implements SourceHandler {
 			List<ShapeFileParameter> sfParams = ShapeFileUtils.getParameters(
 					editor.getModel(), source);
 			for (ShapeFileParameter sfp : sfParams) {
-				if (parameter.getName().equals(sfp.name))
+				if (parameter.name.equals(sfp.name))
 					sfParam = sfp;
 			}
 		} catch (IOException e) {
@@ -56,10 +56,10 @@ public class ImpactMethodSourceHandler implements SourceHandler {
 		}
 		if (sfParam == null)
 			return;
-		parameter.setRefId(UUID.randomUUID().toString());
+		parameter.refId = UUID.randomUUID().toString();
 		parameter.externalSource = source;
 		parameter.isInputParameter = true;
-		parameter.setDescription("from shapefile: " + source);
+		parameter.description = "from shapefile: " + source;
 		parameter.value = (sfParam.min + sfParam.max) / 2;
 		parameter.uncertainty = Uncertainty.uniform(
 				sfParam.min, sfParam.max);

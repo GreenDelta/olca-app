@@ -53,10 +53,10 @@ class SearchConnectorsAction extends EditorAction {
 
 	private void executeRequest(ExchangeNode exchangeNode) {
 		ProductSystemNode model = node.parent();
-		long exchangeId = exchangeNode.exchange.getId();
-		long flowId = exchangeNode.exchange.flow.getId();
+		long exchangeId = exchangeNode.exchange.id;
+		long flowId = exchangeNode.exchange.flow.id;
 		long nodeId = node.process.id;
-		boolean isWaste = exchangeNode.exchange.flow.getFlowType() == FlowType.WASTE_FLOW;
+		boolean isWaste = exchangeNode.exchange.flow.flowType == FlowType.WASTE_FLOW;
 		ConnectionDialog dialog = new ConnectionDialog(exchangeNode);
 		if (dialog.open() == IDialogConstants.OK_ID) {
 			List<ProcessDescriptor> toCreate = dialog.toCreate();

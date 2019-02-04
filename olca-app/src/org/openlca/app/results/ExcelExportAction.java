@@ -36,7 +36,7 @@ public class ExcelExportAction extends Action {
 	}
 
 	private void runExport(IResultEditor<?> editor) {
-		String fileName = editor.getSetup().productSystem.getName();
+		String fileName = editor.getSetup().productSystem.name;
 		fileName = fileName.replaceAll("[^A-Za-z0-9]", "_") + ".xlsx";
 		File file = FileChooser.forExport("*.xlsx", fileName);
 		if (file == null)

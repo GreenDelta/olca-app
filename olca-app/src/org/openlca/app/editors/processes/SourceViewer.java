@@ -62,10 +62,10 @@ class SourceViewer extends AbstractTableViewer<Source> {
 	}
 
 	public void setInput(Process process) {
-		if (process == null || process.getDocumentation() == null)
+		if (process == null || process.documentation == null)
 			setInput(new Source[0]);
 		else {
-			List<Source> sources = process.getDocumentation().getSources();
+			List<Source> sources = process.documentation.sources;
 			setInput(sources);
 		}
 	}
@@ -80,8 +80,8 @@ class SourceViewer extends AbstractTableViewer<Source> {
 				continue;
 			add((SourceDescriptor) descriptor);
 		}
-		ProcessDocumentation doc = editor.getModel().getDocumentation();
-		setInput(doc.getSources());
+		ProcessDocumentation doc = editor.getModel().documentation;
+		setInput(doc.sources);
 		form.reflow(true);
 		editor.setDirty(true);
 	}
@@ -89,26 +89,26 @@ class SourceViewer extends AbstractTableViewer<Source> {
 	private void add(SourceDescriptor descriptor) {
 		Source source = sourceDao.getForId(descriptor.id);
 		Process process = editor.getModel();
-		ProcessDocumentation doc = process.getDocumentation();
+		ProcessDocumentation doc = process.documentation;
 		if (doc == null) {
 			doc = new ProcessDocumentation();
-			process.setDocumentation(doc);
+			process.documentation = doc;
 		}
-		if (doc.getSources().contains(source))
+		if (doc.sources.contains(source))
 			return;
-		doc.getSources().add(source);
+		doc.sources.add(source);
 	}
 
 	@OnRemove
 	protected void onRemove() {
 		Process process = editor.getModel();
-		if (process == null || process.getDocumentation() == null)
+		if (process == null || process.documentation == null)
 			return;
-		ProcessDocumentation doc = process.getDocumentation();
+		ProcessDocumentation doc = process.documentation;
 		for (Source source : getAllSelected()) {
-			doc.getSources().remove(source);
+			doc.sources.remove(source);
 		}
-		setInput(doc.getSources());
+		setInput(doc.sources);
 		editor.setDirty(true);
 		form.reflow(true);
 	}

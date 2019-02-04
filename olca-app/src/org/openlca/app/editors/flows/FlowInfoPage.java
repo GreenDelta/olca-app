@@ -75,7 +75,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 
 	private void processButton(InfoSection infoSection) {
 		Flow flow = getModel();
-		if (flow.getFlowType() != FlowType.PRODUCT_FLOW)
+		if (flow.flowType != FlowType.PRODUCT_FLOW)
 			return;
 		Composite comp = infoSection.getContainer();
 		toolkit.createLabel(comp, "");

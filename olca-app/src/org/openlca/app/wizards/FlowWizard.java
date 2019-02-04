@@ -78,10 +78,10 @@ public class FlowWizard extends AbstractWizard<Flow> {
 		@Override
 		public Flow createModel() {
 			Flow flow = new Flow();
-			flow.setRefId(UUID.randomUUID().toString());
-			flow.setName(getModelName());
-			flow.setDescription(getModelDescription());
-			flow.setFlowType(flowTypeViewer.getSelected());
+			flow.refId = UUID.randomUUID().toString();
+			flow.name = getModelName();
+			flow.description = getModelDescription();
+			flow.flowType = flowTypeViewer.getSelected();
 			addFlowProperty(flow);
 			return flow;
 		}
@@ -92,11 +92,11 @@ public class FlowWizard extends AbstractWizard<Flow> {
 				FlowProperty flowProp = Cache.getEntityCache().get(
 						FlowProperty.class,
 						id);
-				flow.setReferenceFlowProperty(flowProp);
+				flow.referenceFlowProperty = flowProp;
 				FlowPropertyFactor factor = new FlowPropertyFactor();
-				factor.setConversionFactor(1);
-				factor.setFlowProperty(flowProp);
-				flow.getFlowPropertyFactors().add(factor);
+				factor.conversionFactor = 1;
+				factor.flowProperty = flowProp;
+				flow.flowPropertyFactors.add(factor);
 			} catch (Exception e) {
 				setErrorMessage(M.FailedToLoadFlowProperty);
 				Logger log = LoggerFactory.getLogger(getClass());

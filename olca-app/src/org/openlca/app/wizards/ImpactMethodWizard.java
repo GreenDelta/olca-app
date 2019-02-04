@@ -40,9 +40,9 @@ public class ImpactMethodWizard extends AbstractWizard<ImpactMethod> {
 		@Override
 		public ImpactMethod createModel() {
 			ImpactMethod method = new ImpactMethod();
-			method.setRefId(UUID.randomUUID().toString());
-			method.setName(getModelName());
-			method.setDescription(getModelDescription());
+			method.refId = UUID.randomUUID().toString();
+			method.name = getModelName();
+			method.description = getModelDescription();
 			return method;
 		}
 

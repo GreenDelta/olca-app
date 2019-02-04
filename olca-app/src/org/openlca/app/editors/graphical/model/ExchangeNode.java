@@ -26,7 +26,7 @@ public class ExchangeNode extends Node {
 	public boolean isWaste() {
 		if (exchange == null || exchange.flow == null)
 			return false;
-		return exchange.flow.getFlowType() == FlowType.WASTE_FLOW;
+		return exchange.flow.flowType == FlowType.WASTE_FLOW;
 	}
 
 	@Override

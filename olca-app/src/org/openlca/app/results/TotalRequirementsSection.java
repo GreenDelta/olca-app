@@ -190,7 +190,7 @@ class TotalRequirementsSection {
 			try {
 				CurrencyDao dao = new CurrencyDao(Database.get());
 				Currency ref = dao.getReferenceCurrency();
-				currencySymbol = ref.code != null ? ref.code : ref.getName();
+				currencySymbol = ref.code != null ? ref.code : ref.name;
 			} catch (Exception e) {
 				currencySymbol = "?";
 			}

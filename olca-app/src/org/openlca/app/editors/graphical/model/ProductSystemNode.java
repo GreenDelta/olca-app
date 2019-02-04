@@ -41,7 +41,7 @@ public class ProductSystemNode extends Node {
 
 	@Override
 	public String getName() {
-		return getProductSystem().getName();
+		return getProductSystem().name;
 	}
 
 	public void highlightMatchingExchanges(ExchangeNode toMatch) {

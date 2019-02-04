@@ -176,7 +176,7 @@ public abstract class UnitMappingPage extends WizardPage {
 	private void createCellEditors() {
 		String[] flowPropertyNames = new String[flowProperties.size()];
 		for (int i = 0; i < flowProperties.size(); i++)
-			flowPropertyNames[i] = flowProperties.get(i).getName();
+			flowPropertyNames[i] = flowProperties.get(i).name;
 		flowPropertyCellEditor = new ComboBoxCellEditor(tableViewer.getTable(),
 				flowPropertyNames, SWT.READ_ONLY);
 		final CellEditor[] editors = new CellEditor[] {
@@ -205,8 +205,8 @@ public abstract class UnitMappingPage extends WizardPage {
 						new Comparator<FlowProperty>() {
 							@Override
 							public int compare(FlowProperty o1, FlowProperty o2) {
-								return Strings.compare(o1.getName(),
-										o2.getName());
+								return Strings.compare(o1.name,
+										o2.name);
 							}
 						});
 				update();
@@ -254,7 +254,7 @@ public abstract class UnitMappingPage extends WizardPage {
 				if (entry.flowProperty == null)
 					return new Integer(-1);
 				else
-					return getIndex(entry.flowProperty.getName(),
+					return getIndex(entry.flowProperty.name,
 							candidates);
 			}
 			return null;
@@ -287,13 +287,13 @@ public abstract class UnitMappingPage extends WizardPage {
 		private String[] getFlowPropertyCandidates(String unitName) {
 			List<String> flowPropertyNames = new ArrayList<>();
 			for (FlowProperty flowProperty : flowProperties) {
-				if (flowProperty.getUnitGroup().getUnit(unitName) != null)
-					flowPropertyNames.add(flowProperty.getName());
+				if (flowProperty.unitGroup.getUnit(unitName) != null)
+					flowPropertyNames.add(flowProperty.name);
 			}
 			if (flowPropertyNames.size() == 0) {
 				// unit does not exist in database
 				for (FlowProperty flowProperty : flowProperties)
-					flowPropertyNames.add(flowProperty.getName());
+					flowPropertyNames.add(flowProperty.name);
 			}
 			return flowPropertyNames.toArray(new String[flowPropertyNames
 					.size()]);
@@ -313,7 +313,7 @@ public abstract class UnitMappingPage extends WizardPage {
 			String candidate = candidates[index];
 			FlowProperty prop = null;
 			for (FlowProperty flowProperty : flowProperties) {
-				if (Objects.equals(flowProperty.getName(), candidate)) {
+				if (Objects.equals(flowProperty.name, candidate)) {
 					prop = flowProperty;
 					break;
 				}
@@ -325,12 +325,12 @@ public abstract class UnitMappingPage extends WizardPage {
 
 		private void updateEntry(UnitMappingEntry entry, FlowProperty prop) {
 			entry.flowProperty = prop;
-			UnitGroup unitGroup = prop.getUnitGroup();
+			UnitGroup unitGroup = prop.unitGroup;
 			entry.unitGroup = unitGroup;
 			Unit unit = unitGroup.getUnit(entry.unitName);
 			entry.unit = unit;
 			if (unit != null)
-				entry.factor = unit.getConversionFactor();
+				entry.factor = unit.conversionFactor;
 			else
 				entry.factor = 1d;
 		}
@@ -360,14 +360,14 @@ public abstract class UnitMappingPage extends WizardPage {
 			if (row.flowProperty == null)
 				return null;
 			FlowProperty prop = row.flowProperty;
-			UnitGroup unitGroup = prop.getUnitGroup();
+			UnitGroup unitGroup = prop.unitGroup;
 			switch (column) {
 			case 1:
-				return prop.getName();
+				return prop.name;
 			case 2:
-				if (unitGroup.getReferenceUnit() == null)
+				if (unitGroup.referenceUnit == null)
 					return null;
-				return unitGroup.getReferenceUnit().getName();
+				return unitGroup.referenceUnit.name;
 			case 3:
 				if (row.factor == null)
 					return null;
@@ -385,7 +385,7 @@ public abstract class UnitMappingPage extends WizardPage {
 				return "";
 			return "1.0 " + row.unitName + " = "
 					+ row.factor.toString() + " "
-					+ row.unitGroup.getReferenceUnit().getName();
+					+ row.unitGroup.referenceUnit.name;
 		}
 	}
 

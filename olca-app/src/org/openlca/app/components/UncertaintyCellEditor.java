@@ -35,7 +35,7 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 		if (editor instanceof ProcessEditor) {
 			ProcessEditor e = (ProcessEditor) editor;
 			// interpreter = e.getInterpreter(); TODO: Formulas.getInterpreter
-			interpreterScope = e.getModel().getId();
+			interpreterScope = e.getModel().id;
 		}
 	}
 

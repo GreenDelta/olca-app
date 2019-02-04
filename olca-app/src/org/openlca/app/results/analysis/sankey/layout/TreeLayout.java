@@ -21,8 +21,8 @@ import org.openlca.core.model.ProductSystem;
 public class TreeLayout {
 
 	/**
-	 * set of process keys that have been added to a node already (important in case
-	 * of loops, so no process is added twice)
+	 * set of process keys that have been added to a node already (important in
+	 * case of loops, so no process is added twice)
 	 */
 	private final Set<Long> containing = new HashSet<>();
 
@@ -162,7 +162,7 @@ public class TreeLayout {
 
 	private Node build(final ProductSystem productSystem) {
 		final Node node = new Node();
-		node.processId = productSystem.referenceProcess.getId();
+		node.processId = productSystem.referenceProcess.id;
 		build(productSystem, new Node[] { node });
 		return node;
 	}

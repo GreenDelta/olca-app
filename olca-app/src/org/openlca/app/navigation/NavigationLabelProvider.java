@@ -109,7 +109,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (content instanceof IDatabaseConfiguration)
 			return ((IDatabaseConfiguration) content).getName();
 		if (content instanceof Category)
-			return ((Category) content).getName();
+			return ((Category) content).name;
 		if (content instanceof ModelType)
 			return Labels.modelType((ModelType) content);
 		if (content instanceof BaseDescriptor)

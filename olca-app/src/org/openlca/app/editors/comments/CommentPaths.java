@@ -27,15 +27,15 @@ public class CommentPaths {
 	}
 
 	public static String get(Unit unit) {
-		return "units[" + unit.getName() + "]";
+		return "units[" + unit.name + "]";
 	}
 
 	public static String get(Source source) {
-		return "documentation.sources[" + source.getRefId() + "]";
+		return "documentation.sources[" + source.refId + "]";
 	}
 
 	public static String get(SocialAspect aspect) {
-		return "socialAspects[" + aspect.indicator.getRefId() + "]";
+		return "socialAspects[" + aspect.indicator.refId + "]";
 	}
 
 	public static String get(Exchange exchange) {
@@ -48,7 +48,7 @@ public class CommentPaths {
 
 	public static String get(AllocationFactor factor, Exchange product, Exchange exchange) {
 		String type = factor.method.name();
-		String id = product.flow.getRefId();
+		String id = product.flow.refId;
 		if (exchange != null) {
 			id += "-" + exchange.internalId;
 		}
@@ -56,19 +56,19 @@ public class CommentPaths {
 	}
 
 	public static String get(Parameter parameter) {
-		return "parameters[" + parameter.getName() + "]";
+		return "parameters[" + parameter.name + "]";
 	}
 
 	public static String get(FlowPropertyFactor factor) {
-		return "flowProperties[" + factor.getFlowProperty().getRefId() + "]";
+		return "flowProperties[" + factor.flowProperty.refId + "]";
 	}
 
 	public static String get(NwSet nwSet) {
-		return "nwSets[" + nwSet.getRefId() + "]";
+		return "nwSets[" + nwSet.refId + "]";
 	}
 
 	public static String get(NwSet nwSet, NwFactor factor) {
-		return get(nwSet) + ".factors[" + factor.getImpactCategory().getRefId() + "]";
+		return get(nwSet) + ".factors[" + factor.impactCategory.refId + "]";
 	}
 
 	public static String get(ImpactCategory category) {
@@ -80,7 +80,7 @@ public class CommentPaths {
 	}
 
 	public static String get(ImpactCategory category, ImpactFactor factor) {
-		return get(category) + ".impactFactors[" + factor.flow.getRefId() + "]";
+		return get(category) + ".impactFactors[" + factor.flow.refId + "]";
 	}
 
 	public static String get(DQIndicator indicator) {
@@ -101,7 +101,7 @@ public class CommentPaths {
 	}
 
 	public static String get(ProjectVariant variant) {
-		return "variants[" + variant.productSystem.getRefId() + "-" + variant.name + "]";
+		return "variants[" + variant.productSystem.refId + "-" + variant.name + "]";
 	}
 
 	public static String get(ProjectVariant variant, ParameterRedef redef, CategorizedDescriptor contextElement) {

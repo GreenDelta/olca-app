@@ -98,15 +98,17 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 		});
 	}
 
-	private String getId(Process process) {
-		String name = getName(process);
-		String product = process.getQuantitativeReference().flow.getName();
-		String location = process.getLocation() != null ? process.getLocation().getCode() : null;
+	private String getId(Process p) {
+		String name = getName(p);
+		String product = p.quantitativeReference.flow.name;
+		String location = p.location != null
+				? p.location.code
+				: null;
 		return KeyGen.get(name, product, location);
 	}
 
 	private String getName(Process process) {
-		return process.getName().substring(0, process.getName().lastIndexOf('|')).trim();
+		return process.name.substring(0, process.name.lastIndexOf('|')).trim();
 	}
 
 	private class DbSelectDialog extends FormDialog {

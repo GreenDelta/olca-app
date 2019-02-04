@@ -5,6 +5,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Bean {
 
@@ -45,16 +47,26 @@ public class Bean {
 		return _findField(clazz.getSuperclass(), name);
 	}
 
-	public static Class<?> getType(Object bean, String property)
-			throws Exception {
-		PropertyDescriptor descriptor = PropertyUtils.getPropertyDescriptor(
-				bean, property);
-		if (descriptor != null)
-			return descriptor.getPropertyType();
-		Field field = findField(bean, property);
-		if (field != null)
-			return field.getType();
-		return null;
+	public static Class<?> getType(Object bean, String prop) {
+		if (bean == null || prop == null)
+			return null;
+		try {
+			Class<?> c = bean.getClass();
+			String[] props = prop.split("\\.");
+			Field field = null;
+			for (String p : props) {
+				field = c.getDeclaredField(p);
+				if (field == null)
+					return null;
+				c = field.getType();
+			}
+			return c;
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(Bean.class);
+			log.error("Failed to get type of field "
+					+ prop + " in " + bean, e);
+			return null;
+		}
 	}
 
 	public static void setValue(Object bean, String property, Object value)

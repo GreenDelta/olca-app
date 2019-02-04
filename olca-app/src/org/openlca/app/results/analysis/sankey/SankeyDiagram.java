@@ -68,7 +68,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		linkSearchMap = new ProcessLinkSearchMap(productSystem.processLinks);
 		sankeyResult = new SankeyResult(productSystem, result);
 		if (productSystem != null)
-			setPartName(productSystem.getName());
+			setPartName(productSystem.name);
 	}
 
 	private void createConnections(long startProcessId) {
@@ -107,7 +107,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	}
 
 	private void updateConnections() {
-		createConnections(productSystem.referenceProcess.getId());
+		createConnections(productSystem.referenceProcess.id);
 		for (final Link link : createdLinks.values()) {
 			link.link();
 		}
@@ -125,7 +125,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 				}
 			}
 		} else {
-			long refProcess = productSystem.referenceProcess.getId();
+			long refProcess = productSystem.referenceProcess.id;
 			Set<Long> processesToDraw = SankeyProcessList.calculate(
 					sankeyResult, refProcess, cutoff, linkSearchMap);
 			for (final Long processId : processesToDraw) {
@@ -245,7 +245,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	}
 
 	public double getProductSystemResult() {
-		return sankeyResult.getUpstreamResult(productSystem.referenceProcess.getId());
+		return sankeyResult.getUpstreamResult(productSystem.referenceProcess.id);
 	}
 
 	@Override

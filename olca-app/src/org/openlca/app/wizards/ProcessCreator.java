@@ -54,19 +54,19 @@ class ProcessCreator {
 			throw new RuntimeException("Invalid arguments for process creation");
 		try {
 			Process p = new Process();
-			p.setRefId(UUID.randomUUID().toString());
-			p.setName(name);
-			p.setDescription(description);
-			p.setLastChange(System.currentTimeMillis());
-			p.setProcessType(ProcessType.UNIT_PROCESS);
+			p.refId = UUID.randomUUID().toString();
+			p.name = name;
+			p.description = description;
+			p.lastChange = System.currentTimeMillis();
+			p.processType = ProcessType.UNIT_PROCESS;
 			Flow flow = getFlow();
 			Exchange qRef = p.exchange(flow);
-			qRef.isInput = flow.getFlowType() == FlowType.WASTE_FLOW;
-			p.setQuantitativeReference(qRef);
+			qRef.isInput = flow.flowType == FlowType.WASTE_FLOW;
+			p.quantitativeReference = qRef;
 			ProcessDocumentation doc = new ProcessDocumentation();
-			doc.setCreationDate(Calendar.getInstance().getTime());
-			doc.setId(p.getId());
-			p.setDocumentation(doc);
+			doc.creationDate = Calendar.getInstance().getTime();
+			doc.id = p.id;
+			p.documentation = doc;
 			return p;
 		} catch (Exception e) {
 			throw new RuntimeException("Could not create process", e);
@@ -81,21 +81,21 @@ class ProcessCreator {
 
 	private Flow createFlow() {
 		Flow flow = new Flow();
-		flow.setRefId(UUID.randomUUID().toString());
+		flow.refId = UUID.randomUUID().toString();
 		if (!Strings.isNullOrEmpty(flowName))
-			flow.setName(flowName);
+			flow.name = flowName;
 		else
-			flow.setName(name);
-		flow.setDescription(description);
+			flow.name = name;
+		flow.description = description;
 		FlowType type = wasteProcess ? FlowType.WASTE_FLOW
 				: FlowType.PRODUCT_FLOW;
-		flow.setFlowType(type);
+		flow.flowType = type;
 		FlowProperty property = new FlowPropertyDao(db).getForId(flowProperty.id);
-		flow.setReferenceFlowProperty(property);
+		flow.referenceFlowProperty = property;
 		FlowPropertyFactor factor = new FlowPropertyFactor();
-		factor.setConversionFactor(1);
-		factor.setFlowProperty(property);
-		flow.getFlowPropertyFactors().add(factor);
+		factor.conversionFactor = 1;
+		factor.flowProperty = property;
+		flow.flowPropertyFactors.add(factor);
 		new FlowDao(db).insert(flow);
 		return flow;
 	}

@@ -46,7 +46,7 @@ public class CommentsPage extends FormPage implements WebPage {
 	public CommentsPage(FormEditor editor, Comments comments, CategorizedEntity model) {
 		super(editor, "CommentsPage", M.Comments);
 		this.model = model;
-		this.comments = comments.getForRefId(model.getRefId());
+		this.comments = comments.getForRefId(model.refId);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class CommentsPage extends FormPage implements WebPage {
 		String title = getTitle();
 		Image image = null;
 		if (model != null) {
-			title += ": " + model.getName();
+			title += ": " + model.name;
 			image = Images.get(model);
 		}
 		ScrolledForm form = UI.formHeader(mForm, title, image);

@@ -97,8 +97,8 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 			UI.formLabel(comp, tk, M.Unit);
 			unitCombo = new UnitViewer(comp);
 			FlowProperty fp = getModel().activityQuantity;
-			if (fp != null && fp.getUnitGroup() != null)
-				unitCombo.setInput(fp.getUnitGroup().getUnits());
+			if (fp != null && fp.unitGroup != null)
+				unitCombo.setInput(fp.unitGroup.units);
 			Unit u = getModel().activityUnit;
 			if (u != null)
 				unitCombo.select(u);
@@ -117,12 +117,12 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 			if (fp == null)
 				return;
 			getModel().activityQuantity = fp;
-			UnitGroup ug = fp.getUnitGroup();
+			UnitGroup ug = fp.unitGroup;
 			if (ug == null)
 				return;
-			getModel().activityUnit = ug.getReferenceUnit();
-			unitCombo.setInput(ug.getUnits());
-			unitCombo.select(ug.getReferenceUnit());
+			getModel().activityUnit = ug.referenceUnit;
+			unitCombo.setInput(ug.units);
+			unitCombo.select(ug.referenceUnit);
 			editor.setDirty(true);
 		}
 	}

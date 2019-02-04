@@ -84,11 +84,11 @@ class CreateCategoryAction extends Action implements INavigationAction {
 		if (parent == null)
 			dao.insert(category);
 		else {
-			category.setCategory(parent);
+			category.category = parent;
 			parent.getChildCategories().add(category);
 			dao.update(parent);
 			// have to add to diff index manually here
-			Database.getIndexUpdater().insert(Datasets.toDataset(category), category.getId());
+			Database.getIndexUpdater().insert(Datasets.toDataset(category), category.id);
 		}
 	}
 
@@ -98,8 +98,8 @@ class CreateCategoryAction extends Action implements INavigationAction {
 			return null;
 		name = name.trim();
 		Category category = new Category();
-		category.setName(name);
-		category.setRefId(UUID.randomUUID().toString());
+		category.name = name;
+		category.refId = UUID.randomUUID().toString();
 		category.setModelType(modelType);
 		return category;
 	}

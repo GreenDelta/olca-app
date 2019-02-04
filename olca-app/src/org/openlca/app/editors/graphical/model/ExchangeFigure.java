@@ -38,7 +38,7 @@ class ExchangeFigure extends Label {
 		String text = getPrefix() + ": " + node.getName() + "\n";
 		if (node.exchange.flow == null)
 			return text;
-		if (node.exchange.flow.getCategory() != null) {
+		if (node.exchange.flow.category != null) {
 			text += M.Category + ": " + Labels.getShortCategory(
 					Descriptors.toDescriptor(node.exchange.flow)) + "\n";
 		}
@@ -48,7 +48,7 @@ class ExchangeFigure extends Label {
 
 	private String getPrefix() {
 		if (node.exchange.isAvoided) {
-			if (node.exchange.flow.getFlowType() == FlowType.PRODUCT_FLOW)
+			if (node.exchange.flow.flowType == FlowType.PRODUCT_FLOW)
 				return M.AvoidedProductFlow;
 			return M.AvoidedWasteFlow;
 		}

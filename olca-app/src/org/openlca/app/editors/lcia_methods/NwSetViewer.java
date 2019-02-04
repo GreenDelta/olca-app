@@ -54,8 +54,8 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 	@OnAdd
 	protected void onCreate() {
 		NwSet set = new NwSet();
-		set.setName("Enter a name");
-		set.setRefId(UUID.randomUUID().toString());
+		set.name = "Enter a name";
+		set.refId = UUID.randomUUID().toString();
 		ImpactMethod method = editor.getModel();
 		method.nwSets.add(set);
 		setInput(method.nwSets);
@@ -87,7 +87,7 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 			NwSet set = (NwSet) obj;
 			switch (col) {
 			case 0:
-				return set.getName();
+				return set.name;
 			case 1:
 				return set.weightedScoreUnit;
 			default:

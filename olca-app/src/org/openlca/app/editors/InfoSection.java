@@ -47,7 +47,7 @@ public class InfoSection {
 		container = UI.formSection(body, toolkit, M.GeneralInformation, 3);
 		Widgets.text(container, M.Name, "name", editor, toolkit);
 		Widgets.multiText(container, M.Description, "description", editor, toolkit);
-		if (entity.getCategory() != null) {
+		if (entity.category != null) {
 			new Label(container, SWT.NONE).setText(M.Category);
 			createBreadcrumb(container);
 			new CommentControl(container, toolkit, "category", editor.getComments());
@@ -59,8 +59,8 @@ public class InfoSection {
 		createVersionText(toolkit);
 		Text uuidText = UI.formText(container, toolkit, "UUID");
 		uuidText.setEditable(false);
-		if (entity.getRefId() != null)
-			uuidText.setText(entity.getRefId());
+		if (entity.refId != null)
+			uuidText.setText(entity.refId);
 		UI.filler(container, toolkit);
 		createDateText(toolkit);
 	}
@@ -72,10 +72,10 @@ public class InfoSection {
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		versionLabel = toolkit.createLabel(composite,
-				Version.asString(entity.getVersion()));
+				Version.asString(entity.version));
 		editor.onSaved(() -> {
 			entity = editor.getModel();
-			versionLabel.setText(Version.asString(entity.getVersion()));
+			versionLabel.setText(Version.asString(entity.version));
 		});
 		new VersionLink(composite, toolkit, VersionLink.MAJOR);
 		new VersionLink(composite, toolkit, VersionLink.MINOR);
@@ -86,36 +86,36 @@ public class InfoSection {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		UI.formLabel(container, tk, M.LastChange);
 		Label text = UI.formLabel(container, tk, "");
-		if (entity.getLastChange() != 0) {
-			text.setText(format.format(new Date(entity.getLastChange())));
+		if (entity.lastChange != 0) {
+			text.setText(format.format(new Date(entity.lastChange)));
 		}
 		editor.onSaved(() -> {
 			entity = editor.getModel();
-			text.setText(format.format(new Date(entity.getLastChange())));
+			text.setText(format.format(new Date(entity.lastChange)));
 		});
 		UI.filler(container, tk);
 	}
 
 	private void createBreadcrumb(Composite parent) {
 		Stack<Category> stack = new Stack<>();
-		Category current = entity.getCategory();
+		Category current = entity.category;
 		while (current != null) {
 			stack.push(current);
-			current = current.getCategory();
+			current = current.category;
 		}
 		Composite breadcrumb = new Composite(parent, SWT.NONE);
 		UI.gridLayout(breadcrumb, stack.size() * 2 - 1, 0, 0);
 		while (!stack.isEmpty()) {
 			current = stack.pop();
 			Hyperlink link = null;
-			if (current.getCategory() == null) {
+			if (current.category == null) {
 				link = new ImageHyperlink(breadcrumb, SWT.NONE);
 				((ImageHyperlink) link).setImage(Images.get(current));
 			} else {
 				new Label(breadcrumb, SWT.NONE).setText(" > ");
 				link = new Hyperlink(breadcrumb, SWT.NONE);
 			}
-			link.setText(current.getName());
+			link.setText(current.name);
 			link.addHyperlinkListener(new CategoryLinkClick(current));
 			link.setForeground(Colors.linkBlue());
 		}
@@ -176,12 +176,12 @@ public class InfoSection {
 		public void linkActivated(HyperlinkEvent e) {
 			if (entity == null || versionLabel == null)
 				return;
-			Version version = new Version(entity.getVersion());
+			Version version = new Version(entity.version);
 			if (type == MAJOR)
 				version.incMajor();
 			else
 				version.incMinor();
-			entity.setVersion(version.getValue());
+			entity.version = version.getValue();
 			versionLabel.setText(version.toString());
 			editor.setDirty(true);
 		}

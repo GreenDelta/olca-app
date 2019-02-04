@@ -94,10 +94,10 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		if (p == null)
 			return Collections.emptyList();
 		List<Exchange> candidates = new ArrayList<>();
-		for (Exchange e : p.getExchanges()) {
+		for (Exchange e : p.exchanges) {
 			if (e.flow == null)
 				continue;
-			FlowType type = e.flow.getFlowType();
+			FlowType type = e.flow.flowType;
 			if (e.isInput && type == FlowType.WASTE_FLOW)
 				candidates.add(e);
 			else if (!e.isInput && type == FlowType.PRODUCT_FLOW)
@@ -138,13 +138,13 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	private void propertyChanged(FlowPropertyFactor f) {
 		if (f == null)
 			return;
-		UnitGroup unitGroup = f.getFlowProperty().getUnitGroup();
+		UnitGroup unitGroup = f.flowProperty.unitGroup;
 		unitViewer.setInput(unitGroup);
 		Unit previousSelection = getModel().targetUnit;
-		if (unitGroup.getUnits().contains(previousSelection))
+		if (unitGroup.units.contains(previousSelection))
 			unitViewer.select(previousSelection);
 		else
-			unitViewer.select(unitGroup.getReferenceUnit());
+			unitViewer.select(unitGroup.referenceUnit);
 	}
 
 	private class ExchangeViewer extends AbstractComboViewer<Exchange> {

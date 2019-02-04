@@ -41,9 +41,9 @@ public class ProjectWizard extends AbstractWizard<Project> {
 		@Override
 		public Project createModel() {
 			Project p = new Project();
-			p.setRefId(UUID.randomUUID().toString());
-			p.setName(getModelName());
-			p.setDescription(getModelDescription());
+			p.refId = UUID.randomUUID().toString();
+			p.name = getModelName();
+			p.description = getModelDescription();
 			p.creationDate = Calendar.getInstance().getTime();
 			p.lastModificationDate = Calendar.getInstance().getTime();
 			return p;

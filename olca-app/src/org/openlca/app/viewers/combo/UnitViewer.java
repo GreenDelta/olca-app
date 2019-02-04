@@ -19,7 +19,7 @@ public class UnitViewer extends AbstractComboViewer<Unit> {
 
 	public void setInput(UnitGroup unitGroup) {
 		try {
-			List<Unit> units = unitGroup.getUnits();
+			List<Unit> units = unitGroup.units;
 			setInput(units.toArray(new Unit[units.size()]));
 		} catch (Exception e) {
 			log.error("Loading flow properties failed", e);

@@ -97,7 +97,7 @@ public class CalculationWizard extends Wizard {
 			ModelType type = input.getDescriptor().type;
 			if (type == ModelType.PROJECT || type == ModelType.ACTOR || type == ModelType.SOURCE)
 				continue;
-			if (type == ModelType.PRODUCT_SYSTEM && input.getDescriptor().id != system.getId())
+			if (type == ModelType.PRODUCT_SYSTEM && input.getDescriptor().id != system.id)
 				continue;
 			relevant.add(part);
 		}
@@ -274,7 +274,7 @@ public class CalculationWizard extends Wizard {
 				ids.add(flow.id);
 			}
 			for (Flow flow : new FlowDao(Database.get()).getForIds(ids)) {
-				flows.put(flow.getId(), flow);
+				flows.put(flow.id, flow);
 			}
 			for (FlowDescriptor d : result.getFlows()) {
 				Flow flow = flows.get(d.id);

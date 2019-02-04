@@ -52,8 +52,8 @@ public abstract class AbstractWizard<T extends CategorizedEntity> extends
 		T model = page.createModel();
 		log.trace("create {}", model);
 		try {
-			model.setCategory(category);
-			model.setLastChange(System.currentTimeMillis());
+			model.category = category;
+			model.lastChange = System.currentTimeMillis();
 			createDao().insert(model);
 			CategorizedDescriptor descriptor = Descriptors.toDescriptor(model);
 			Cache.registerNew(descriptor);
@@ -73,7 +73,7 @@ public abstract class AbstractWizard<T extends CategorizedEntity> extends
 	protected abstract String getTitle();
 
 	protected abstract ModelType getModelType();
-	
+
 	protected abstract AbstractWizardPage<T> createPage();
 
 }

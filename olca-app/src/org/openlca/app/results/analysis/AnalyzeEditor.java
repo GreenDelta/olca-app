@@ -72,7 +72,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 			dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);
 		setup = Cache.getAppCache().remove(setupKey, CalculationSetup.class);
 		ProductSystem system = setup.productSystem;
-		String name = M.AnalysisResultOf + " " + system.getName();
+		String name = M.AnalysisResultOf + " " + system.name;
 		setPartName(name);
 		this.result = result;
 	}

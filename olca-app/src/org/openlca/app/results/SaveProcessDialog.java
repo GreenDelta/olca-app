@@ -98,7 +98,7 @@ public final class SaveProcessDialog extends Wizard {
 			setControl(parent);
 			UI.gridLayout(parent, 2);
 			nameText = UI.formText(parent, M.Name);
-			nameText.setText(editor.getSetup().productSystem.getName() + " - LCI");
+			nameText.setText(editor.getSetup().productSystem.name + " - LCI");
 			UI.filler(parent);
 			metaCheck = UI.checkBox(parent, M.CopyMetaDataFromReferenceProcess);
 			metaCheck.setSelection(true);

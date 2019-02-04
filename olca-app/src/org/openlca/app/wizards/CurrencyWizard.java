@@ -43,9 +43,9 @@ public class CurrencyWizard extends AbstractWizard<Currency> {
 		@Override
 		public Currency createModel() {
 			Currency c = new Currency();
-			c.setRefId(UUID.randomUUID().toString());
-			c.setName(getModelName());
-			c.setDescription(getModelDescription());
+			c.refId = UUID.randomUUID().toString();
+			c.name = getModelName();
+			c.description = getModelDescription();
 			c.conversionFactor = 1.0;
 			c.code = getModelName();
 			Currency ref = getRefCurrency();

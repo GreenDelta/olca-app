@@ -84,20 +84,20 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 	private void bindModifySupport() {
 		ModifySupport<ImpactCategory> support = new ModifySupport<>(viewer);
-		support.bind(NAME, ImpactCategory::getName, (category, text) -> {
-			category.setName(text);
+		support.bind(NAME, c -> c.name, (c, text) -> {
+			c.name = text;
 			fireCategoryChange();
 		});
-		support.bind(DESCRIPTION, ImpactCategory::getDescription, (category,
-				text) -> {
-			category.setDescription(text);
+		support.bind(DESCRIPTION, c -> c.description, (c, text) -> {
+			c.description = text;
 			fireCategoryChange();
 		});
 		support.bind(REFERENCE_UNIT, c -> c.referenceUnit, (c, text) -> {
 			c.referenceUnit = text;
 			fireCategoryChange();
 		});
-		support.bind("", new CommentDialogModifier<ImpactCategory>(editor.getComments(), c -> CommentPaths.get(c)));
+		support.bind("", new CommentDialogModifier<ImpactCategory>(
+				editor.getComments(), c -> CommentPaths.get(c)));
 	}
 
 	private List<ImpactCategory> getCategories(boolean sorted) {
@@ -106,7 +106,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		if (!sorted)
 			return categories;
 		Collections.sort(categories,
-				(c1, c2) -> Strings.compare(c1.getName(), c2.getName()));
+				(c1, c2) -> Strings.compare(c1.name, c2.name));
 		return categories;
 	}
 
@@ -128,8 +128,8 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	private void onAdd() {
 		ImpactMethod method = editor.getModel();
 		ImpactCategory category = new ImpactCategory();
-		category.setRefId(UUID.randomUUID().toString());
-		category.setName(M.NewImpactCategory);
+		category.refId = UUID.randomUUID().toString();
+		category.name = M.NewImpactCategory;
 		method.impactCategories.add(category);
 		viewer.setInput(method.impactCategories);
 		fireCategoryChange();
@@ -177,9 +177,9 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 			ImpactCategory category = (ImpactCategory) element;
 			switch (columnIndex) {
 			case 0:
-				return category.getName();
+				return category.name;
 			case 1:
-				return category.getDescription();
+				return category.description;
 			case 2:
 				return category.referenceUnit;
 			default:

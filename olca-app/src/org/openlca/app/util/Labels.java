@@ -42,20 +42,20 @@ public class Labels {
 	}
 
 	public static String getDisplayName(RootEntity entity) {
-		if (entity == null || entity.getName() == null)
+		if (entity == null || entity.name == null)
 			return "";
 		Location loc = null;
 		if (entity instanceof Flow) {
 			Flow flow = (Flow) entity;
-			loc = flow.getLocation();
+			loc = flow.location;
 		}
 		if (entity instanceof Process) {
 			Process process = (Process) entity;
-			loc = process.getLocation();
+			loc = process.location;
 		}
-		if (loc == null || Strings.isNullOrEmpty(loc.getCode()))
-			return entity.getName();
-		return entity.getName() + " - " + loc.getCode();
+		if (loc == null || Strings.isNullOrEmpty(loc.code))
+			return entity.name;
+		return entity.name + " - " + loc.code;
 	}
 
 	public static String getDisplayName(BaseDescriptor d) {
@@ -76,8 +76,8 @@ public class Labels {
 		}
 		if (locationId != null) {
 			Location loc = cache.get(Location.class, locationId);
-			if (loc != null && !Strings.isNullOrEmpty(loc.getCode()))
-				text = text + " - " + loc.getCode();
+			if (loc != null && !Strings.isNullOrEmpty(loc.code))
+				text = text + " - " + loc.code;
 		}
 		return text;
 	}
@@ -96,19 +96,20 @@ public class Labels {
 				flow.refFlowPropertyId);
 		if (refProp == null)
 			return "";
-		UnitGroup unitGroup = refProp.getUnitGroup();
+		UnitGroup unitGroup = refProp.unitGroup;
 		if (unitGroup == null)
 			return "";
-		Unit unit = unitGroup.getReferenceUnit();
+		Unit unit = unitGroup.referenceUnit;
 		if (unit == null)
 			return "";
-		return unit.getName();
+		return unit.name;
 	}
 
 	/**
-	 * We often have to show the category and sub-category of a flow in the result
-	 * pages. This method returns a pair where the left value is the category and
-	 * the right value is the sub-category. Default values are empty strings.
+	 * We often have to show the category and sub-category of a flow in the
+	 * result pages. This method returns a pair where the left value is the
+	 * category and the right value is the sub-category. Default values are
+	 * empty strings.
 	 */
 	public static Pair<String, String> getCategory(CategorizedDescriptor entity) {
 		EntityCache cache = Cache.getEntityCache();
@@ -117,15 +118,15 @@ public class Labels {
 		Category cat = cache.get(Category.class, entity.category);
 		if (cat == null)
 			return Pair.of("", "");
-		if (cat.getCategory() == null)
-			return Pair.of(cat.getName(), "");
+		if (cat.category == null)
+			return Pair.of(cat.name, "");
 		else
-			return Pair.of(cat.getCategory().getName(), cat.getName());
+			return Pair.of(cat.category.name, cat.name);
 	}
 
 	/**
-	 * Same as {@link #getCategory(CategorizedDescriptor, EntityCache)} but top- and
-	 * sub-category concatenated as a short string.
+	 * Same as {@link #getCategory(CategorizedDescriptor, EntityCache)} but top-
+	 * and sub-category concatenated as a short string.
 	 */
 	public static String getShortCategory(CategorizedDescriptor entity) {
 		Pair<String, String> p = getCategory(entity);
@@ -161,8 +162,8 @@ public class Labels {
 	}
 
 	/**
-	 * Returns the label for the given uncertainty distribution type. If the given
-	 * type is NULL the value for 'no distribution' is returned.
+	 * Returns the label for the given uncertainty distribution type. If the
+	 * given type is NULL the value for 'no distribution' is returned.
 	 */
 	public static String uncertaintyType(UncertaintyType type) {
 		if (type == null)
@@ -186,7 +187,7 @@ public class Labels {
 	public static String flowType(Flow flow) {
 		if (flow == null)
 			return null;
-		return flowType(flow.getFlowType());
+		return flowType(flow.flowType);
 	}
 
 	public static String flowType(FlowType type) {
@@ -207,7 +208,7 @@ public class Labels {
 	public static String processType(Process process) {
 		if (process == null)
 			return null;
-		return processType(process.getProcessType());
+		return processType(process.processType);
 	}
 
 	public static String processType(ProcessType processType) {
@@ -245,7 +246,7 @@ public class Labels {
 	public static String flowPropertyType(FlowProperty property) {
 		if (property == null)
 			return null;
-		return flowPropertyType(property.getFlowPropertyType());
+		return flowPropertyType(property.flowPropertyType);
 	}
 
 	public static String flowPropertyType(FlowPropertyType type) {

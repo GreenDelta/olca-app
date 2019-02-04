@@ -116,7 +116,7 @@ public class GroupPage extends FormPage {
 		if (groupSet == null)
 			groupingSection.setText(M.Groups);
 		else
-			groupingSection.setText(M.Groups + " (" + groupSet.getName() + ")");
+			groupingSection.setText(M.Groups + " (" + groupSet.name + ")");
 	}
 
 	@Override
@@ -370,7 +370,8 @@ public class GroupPage extends FormPage {
 	}
 
 	/**
-	 * Action for saving a group set in the grouping page of the analysis editor.
+	 * Action for saving a group set in the grouping page of the analysis
+	 * editor.
 	 */
 	private class SaveGroupSetAction extends Action {
 
@@ -414,7 +415,7 @@ public class GroupPage extends FormPage {
 			if (code == Window.CANCEL)
 				return null;
 			ProcessGroupSet set = new ProcessGroupSet();
-			set.setName(dialog.getValue());
+			set.name = dialog.getValue();
 			new ProcessGroupSetDao(Database.get()).insert(set);
 			return set;
 		}
@@ -439,10 +440,10 @@ public class GroupPage extends FormPage {
 				if (pageGroup.rest)
 					continue;
 				ProcessGroup group = new ProcessGroup();
-				group.setName(pageGroup.name);
+				group.name = pageGroup.name;
 				groups.add(group);
-				for (CategorizedDescriptor process : pageGroup.processes)
-					group.getProcessIds().add(process.refId);
+				for (CategorizedDescriptor p : pageGroup.processes)
+					group.processIds.add(p.refId);
 			}
 			return groups;
 		}

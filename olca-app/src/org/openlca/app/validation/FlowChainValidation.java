@@ -29,14 +29,14 @@ class FlowChainValidation {
 
 	FlowChainValidation(IDatabase database) {
 		for (Flow flow : new FlowDao(database).getAll()) {
-			Set<Long> factors = get(this.factors, flow.getId());
-			for (FlowPropertyFactor factor : flow.getFlowPropertyFactors()) {
-				factors.add(factor.getId());
-				if (this.units.containsKey(factor.getFlowProperty().getId()))
+			Set<Long> factors = get(this.factors, flow.id);
+			for (FlowPropertyFactor factor : flow.flowPropertyFactors) {
+				factors.add(factor.id);
+				if (this.units.containsKey(factor.flowProperty.id))
 					continue;
-				Set<Long> units = get(this.units, factor.getFlowProperty().getId());
-				for (Unit unit : factor.getFlowProperty().getUnitGroup().getUnits()) {
-					units.add(unit.getId());
+				Set<Long> units = get(this.units, factor.flowProperty.id);
+				for (Unit unit : factor.flowProperty.unitGroup.units) {
+					units.add(unit.id);
 				}
 			}
 		}

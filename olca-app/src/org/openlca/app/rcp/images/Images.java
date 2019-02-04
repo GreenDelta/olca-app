@@ -31,9 +31,9 @@ public class Images {
 				return get(FileType.forName(source.externalFile));
 		}
 		if (entity instanceof Process)
-			return get(((Process) entity).getProcessType());
+			return get(((Process) entity).processType);
 		if (entity instanceof Flow)
-			return get(((Flow) entity).getFlowType());
+			return get(((Flow) entity).flowType);
 		return get(ModelType.forModelClass(entity.getClass()));
 	}
 
@@ -156,9 +156,9 @@ public class Images {
 
 	public static ImageDescriptor descriptor(RootEntity entity) {
 		if (entity instanceof Process)
-			return descriptor(((Process) entity).getProcessType());
+			return descriptor(((Process) entity).processType);
 		if (entity instanceof Flow)
-			return descriptor(((Flow) entity).getFlowType());
+			return descriptor(((Flow) entity).flowType);
 		return descriptor(ModelType.forModelClass(entity.getClass()));
 	}
 

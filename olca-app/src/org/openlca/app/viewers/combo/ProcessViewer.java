@@ -74,7 +74,7 @@ public class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
 				return process.name;
 			case 1:
 				Location location = getLocation(process);
-				return location != null ? location.getName() : null;
+				return location != null ? location.name : null;
 			case 2:
 				return Labels.getDisplayName(process);
 			default:

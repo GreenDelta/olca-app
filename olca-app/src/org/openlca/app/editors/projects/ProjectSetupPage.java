@@ -308,16 +308,16 @@ class ProjectSetupPage extends ModelPage<Project> {
 		@Override
 		protected Unit[] getItems(ProjectVariant var) {
 			FlowPropertyFactor fac = var.flowPropertyFactor;
-			if (fac == null || fac.getFlowProperty() == null
-					|| fac.getFlowProperty().getUnitGroup() == null)
+			if (fac == null || fac.flowProperty == null
+					|| fac.flowProperty.unitGroup == null)
 				return new Unit[0];
-			UnitGroup unitGroup = fac.getFlowProperty().getUnitGroup();
-			Unit[] units = unitGroup.getUnits().toArray(
-					new Unit[unitGroup.getUnits().size()]);
+			UnitGroup unitGroup = fac.flowProperty.unitGroup;
+			Unit[] units = unitGroup.units.toArray(
+					new Unit[unitGroup.units.size()]);
 			Arrays.sort(units, (u1, u2) -> {
 				if (u1 == null || u2 == null)
 					return 0;
-				return Strings.compare(u1.getName(), u2.getName());
+				return Strings.compare(u1.name, u2.name);
 			});
 			return units;
 		}
@@ -326,7 +326,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		protected String getText(Unit unit) {
 			if (unit == null)
 				return "";
-			return unit.getName();
+			return unit.name;
 		}
 
 		@Override
@@ -390,7 +390,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			case 0:
 				return variant.name;
 			case 1:
-				return system.getName();
+				return system.name;
 			case 3:
 				return Labels.getEnumText(variant.allocationMethod);
 			case 4:
@@ -399,7 +399,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 				return Double.toString(variant.amount);
 			case 6:
 				Unit unit = variant.unit;
-				return unit == null ? null : unit.getName();
+				return unit == null ? null : unit.name;
 			case 7:
 				return variantSync.getDescription(variant);
 			default:

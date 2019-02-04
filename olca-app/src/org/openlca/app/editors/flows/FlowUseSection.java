@@ -37,8 +37,8 @@ class FlowUseSection {
 
 	/**
 	 * Shows the maximum number of links that should be shown in a section. A
-	 * section is currently not usable or even crashes if there is a huge number of
-	 * links.
+	 * section is currently not usable or even crashes if there is a huge number
+	 * of links.
 	 */
 	private int MAX_LINKS = 25;
 
@@ -56,8 +56,8 @@ class FlowUseSection {
 	void render(Composite body, FormToolkit toolkit) {
 		log.trace("render flow-use-section for flow {}", flow);
 		FlowDao dao = new FlowDao(database);
-		Set<Long> recipients = dao.getWhereInput(flow.getId());
-		Set<Long> providers = dao.getWhereOutput(flow.getId());
+		Set<Long> recipients = dao.getWhereInput(flow.id);
+		Set<Long> providers = dao.getWhereOutput(flow.id);
 		if (recipients.isEmpty() && providers.isEmpty())
 			return;
 		Section section = UI.section(body, toolkit, M.UsedInProcesses);

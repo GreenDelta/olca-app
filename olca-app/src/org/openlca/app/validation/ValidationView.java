@@ -227,8 +227,8 @@ public class ValidationView extends ViewPart {
 				while (category != null) {
 					if (!text.isEmpty())
 						text = "/" + text;
-					text = category.getName() + text;
-					category = category.getCategory();
+					text = category.name + text;
+					category = category.category;
 				}
 				return text;
 			default:

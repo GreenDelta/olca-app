@@ -70,7 +70,7 @@ class RefIdListBuilder {
 		if (element instanceof ModelElement)
 			return ((ModelElement) element).getContent().refId;
 		if (element instanceof CategoryElement)
-			return ((CategoryElement) element).getContent().getRefId();
+			return ((CategoryElement) element).getContent().refId;
 		if (element instanceof ModelTypeElement)
 			return ((ModelTypeElement) element).getContent().name();
 		return null;

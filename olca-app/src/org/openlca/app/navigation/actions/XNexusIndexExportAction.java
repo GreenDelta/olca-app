@@ -120,32 +120,32 @@ class XNexusIndexExportAction extends Action implements INavigationAction {
 		Set<String> systemModel = new HashSet<>();
 
 		IndexEntry(org.openlca.core.model.Process process) {
-			id = process.getRefId();
-			name = process.getName();
-			categoryPath = CategoryPath.getFull(process.getCategory());
-			description = process.getDescription();
-			version = Version.asString(process.getVersion());
-			if (process.getLocation() != null)
-				location = process.getLocation().getCode();
-			ProcessDocumentation doc = process.getDocumentation();
+			id = process.refId;
+			name = process.name;
+			categoryPath = CategoryPath.getFull(process.category);
+			description = process.description;
+			version = Version.asString(process.version);
+			if (process.location != null)
+				location = process.location.code;
+			ProcessDocumentation doc = process.documentation;
 			if (doc != null) {
 				writeDocValues(doc);
 			}
 		}
 
 		private void writeDocValues(ProcessDocumentation doc) {
-			technology = doc.getTechnology();
-			if (doc.getDataSetOwner() != null)
-				owner = doc.getDataSetOwner().getName();
-			if (doc.getDataGenerator() != null)
-				generator = doc.getDataGenerator().getName();
-			if (doc.getReviewer() != null)
-				reviewer = doc.getReviewer().getName();
-			if (doc.getDataDocumentor() != null)
-				documentor = doc.getDataDocumentor().getName();
-			created = doc.getCreationDate();
-			validityTimeStart = doc.getValidFrom();
-			validityTimeEnd = doc.getValidUntil();
+			technology = doc.technology;
+			if (doc.dataSetOwner != null)
+				owner = doc.dataSetOwner.name;
+			if (doc.dataGenerator != null)
+				generator = doc.dataGenerator.name;
+			if (doc.reviewer != null)
+				reviewer = doc.reviewer.name;
+			if (doc.dataDocumentor != null)
+				documentor = doc.dataDocumentor.name;
+			created = doc.creationDate;
+			validityTimeStart = doc.validFrom;
+			validityTimeEnd = doc.validUntil;
 		}
 
 		static void writeEntries(Collection<IndexEntry> entries, File file) throws Exception {

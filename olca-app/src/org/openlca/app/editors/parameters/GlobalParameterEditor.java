@@ -38,7 +38,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 			Error.showBox(M.CanNotSaveParameter);
 			return;
 		}
-		String name = getModel().getName();
+		String name = getModel().name;
 		if (!Parameter.isValidName(name)) {
 			Error.showBox(M.InvalidParameterName,
 					name + " " + M.IsNotValidParameterName);
@@ -57,9 +57,9 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 		for (Parameter global : dao.getGlobalParameters()) {
 			if (Objects.equals(getModel(), global))
 				continue;
-			if (global.getName() == null)
+			if (global.name == null)
 				continue;
-			if (n.equalsIgnoreCase(global.getName().trim()))
+			if (n.equalsIgnoreCase(global.name.trim()))
 				return true;
 		}
 		return false;

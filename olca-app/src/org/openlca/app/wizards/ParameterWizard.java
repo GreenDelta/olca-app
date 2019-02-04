@@ -96,20 +96,20 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 
 		@Override
 		public Parameter createModel() {
-			Parameter parameter = new Parameter();
-			parameter.setRefId(UUID.randomUUID().toString());
-			parameter.setName(getModelName());
-			parameter.setDescription(getModelDescription());
-			parameter.isInputParameter = !dependentButton.getSelection();
+			Parameter p = new Parameter();
+			p.refId = UUID.randomUUID().toString();
+			p.name = getModelName();
+			p.description = getModelDescription();
+			p.isInputParameter = !dependentButton.getSelection();
 			if (Strings.isNullOrEmpty(formulaText.getText()))
-				return parameter;
-			if (parameter.isInputParameter)
-				parameter.value = getAmount();
+				return p;
+			if (p.isInputParameter)
+				p.value = getAmount();
 			else {
-				parameter.formula = formulaText.getText();
-				parameter.value = lastCalculated;
+				p.formula = formulaText.getText();
+				p.value = lastCalculated;
 			}
-			return parameter;
+			return p;
 		}
 
 		private double getAmount() {
@@ -175,7 +175,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 
 		private Parameter createDummyParameter() {
 			Parameter parameter = new Parameter();
-			parameter.setName(getName());
+			parameter.name = getName();
 			parameter.formula = formulaText.getText();
 			parameter.scope = ParameterScope.GLOBAL;
 			return parameter;

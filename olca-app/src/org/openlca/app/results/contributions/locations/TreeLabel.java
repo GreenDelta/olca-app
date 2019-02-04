@@ -80,9 +80,9 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 			return Labels.getDisplayName((BaseDescriptor) ci.item);
 		if (ci.item instanceof Location) {
 			Location loc = (Location) ci.item;
-			String label = loc.getName();
-			if (loc.getCode() != null && !Strings.nullOrEqual(loc.getCode(), label)) {
-				label += " - " + loc.getCode();
+			String label = loc.name;
+			if (loc.code != null && !Strings.nullOrEqual(loc.code, label)) {
+				label += " - " + loc.code;
 			}
 			return label;
 		}

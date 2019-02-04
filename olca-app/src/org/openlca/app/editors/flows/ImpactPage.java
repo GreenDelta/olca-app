@@ -78,7 +78,7 @@ class ImpactPage extends ModelPage<Flow> {
 		});
 		String sql = "select f_impact_category, f_unit,"
 				+ " value from tbl_impact_factors"
-				+ " where f_flow = " + getModel().getId();
+				+ " where f_flow = " + getModel().id;
 		EntityCache ecache = Cache.getEntityCache();
 		List<Factor> factors = new ArrayList<>();
 		try {
@@ -90,7 +90,7 @@ class ImpactPage extends ModelPage<Flow> {
 					return true;
 				Unit unit = ecache.get(Unit.class, r.getLong(2));
 				if (unit != null) {
-					f.unit = unit.getName();
+					f.unit = unit.name;
 				}
 				f.value = r.getDouble(3);
 				ImpactMethodDescriptor m = rmap.get(f.impact);

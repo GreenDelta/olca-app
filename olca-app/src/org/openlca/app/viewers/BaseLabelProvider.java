@@ -50,15 +50,15 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 		if (element instanceof RootEntity)
 			return getModelLabel((RootEntity) element);
 		if (element instanceof ImpactCategory)
-			return ((ImpactCategory) element).getName();
+			return ((ImpactCategory) element).name;
 		if (element instanceof Exchange)
 			return getModelLabel(((Exchange) element).flow);
 		if (element instanceof FlowPropertyFactor)
-			return getModelLabel(((FlowPropertyFactor) element).getFlowProperty());
+			return getModelLabel(((FlowPropertyFactor) element).flowProperty);
 		if (element instanceof Unit)
-			return ((Unit) element).getName();
+			return ((Unit) element).name;
 		if (element instanceof Location)
-			return ((Location) element).getName();
+			return ((Location) element).name;
 		if (element instanceof BaseDescriptor)
 			return Labels.getDisplayName((BaseDescriptor) element);
 		if (element instanceof Enum<?>)
@@ -87,14 +87,14 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 	protected String getModelLabel(RootEntity o) {
 		if (o == null)
 			return "";
-		String label = Strings.cut(o.getName(), 75);
+		String label = Strings.cut(o.name, 75);
 		Location location = null;
 		if (o instanceof Flow)
-			location = ((Flow) o).getLocation();
+			location = ((Flow) o).location;
 		else if (o instanceof Process)
-			location = ((Process) o).getLocation();
-		if (location != null && location.getCode() != null)
-			label += " (" + location.getCode() + ")";
+			location = ((Process) o).location;
+		if (location != null && location.code != null)
+			label += " (" + location.code + ")";
 		return label;
 	}
 

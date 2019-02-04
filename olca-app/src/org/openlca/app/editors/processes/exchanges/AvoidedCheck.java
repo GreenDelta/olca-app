@@ -21,11 +21,11 @@ class AvoidedCheck extends CheckBoxCellModifier<Exchange> {
 		if (e == null)
 			return false;
 		Process p = editor.getModel();
-		if (Objects.equals(p.getQuantitativeReference(), e))
+		if (Objects.equals(p.quantitativeReference, e))
 			return false;
 		if (e.flow == null)
 			return false;
-		FlowType type = e.flow.getFlowType();
+		FlowType type = e.flow.flowType;
 		if (type == null)
 			return false;
 		switch (type) {
@@ -52,7 +52,7 @@ class AvoidedCheck extends CheckBoxCellModifier<Exchange> {
 		e.isAvoided = value;
 		if (!value)
 			e.defaultProviderId = 0;
-		FlowType type = e.flow.getFlowType();
+		FlowType type = e.flow.flowType;
 		if (type == FlowType.PRODUCT_FLOW)
 			e.isInput = value;
 		if (type == FlowType.WASTE_FLOW)

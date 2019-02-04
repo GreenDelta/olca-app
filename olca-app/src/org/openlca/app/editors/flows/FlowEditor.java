@@ -28,7 +28,7 @@ public class FlowEditor extends ModelEditor<Flow> {
 		try {
 			addPage(new FlowInfoPage(this));
 			addPage(new FlowPropertiesPage(this));
-			if (getModel().getFlowType() == FlowType.ELEMENTARY_FLOW) {
+			if (getModel().flowType == FlowType.ELEMENTARY_FLOW) {
 				addPage(new ImpactPage(this));
 			}
 			addCommentPage();

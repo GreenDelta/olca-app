@@ -18,9 +18,9 @@ class Exchanges {
 		if (e == null || e.flow == null)
 			return false;
 		if (e.isInput)
-			return e.flow.getFlowType() == FlowType.PRODUCT_FLOW;
+			return e.flow.flowType == FlowType.PRODUCT_FLOW;
 		else
-			return e.flow.getFlowType() == FlowType.WASTE_FLOW;
+			return e.flow.flowType == FlowType.WASTE_FLOW;
 	}
 
 	public static boolean canRemove(Process process, List<Exchange> exchanges) {
@@ -36,9 +36,9 @@ class Exchanges {
 
 	private static boolean containsRefFlow(Process process,
 			List<Exchange> exchanges) {
-		if (process.getQuantitativeReference() == null)
+		if (process.quantitativeReference == null)
 			return false;
-		if (exchanges.contains(process.getQuantitativeReference())) {
+		if (exchanges.contains(process.quantitativeReference)) {
 			org.openlca.app.util.Error.showBox(M.CannotDeleteRefFlow,
 					M.CannotDeleteRefFlowMessage);
 			return true;
@@ -51,7 +51,7 @@ class Exchanges {
 		List<Exchange> products = new ArrayList<>();
 		for (Exchange exchange : exchanges) {
 			Flow flow = exchange.flow;
-			if (flow != null && flow.getFlowType() != FlowType.ELEMENTARY_FLOW)
+			if (flow != null && flow.flowType != FlowType.ELEMENTARY_FLOW)
 				products.add(exchange);
 		}
 		if (products.isEmpty())

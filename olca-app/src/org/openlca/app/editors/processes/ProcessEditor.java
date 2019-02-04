@@ -42,8 +42,8 @@ public class ProcessEditor extends ModelEditor<Process> {
 			throws PartInitException {
 		super.init(site, input);
 		Process p = getModel();
-		if (p.getDocumentation() == null)
-			p.setDocumentation(new ProcessDocumentation());
+		if (p.documentation == null)
+			p.documentation = new ProcessDocumentation();
 		evalFormulas();
 		parameterSupport = new ParameterChangeSupport();
 		parameterSupport.onEvaluation(this::evalFormulas);

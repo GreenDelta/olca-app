@@ -40,9 +40,9 @@ public class ActorWizard extends AbstractWizard<Actor> {
 		@Override
 		public Actor createModel() {
 			Actor actor = new Actor();
-			actor.setRefId(UUID.randomUUID().toString());
-			actor.setName(getModelName());
-			actor.setDescription(getModelDescription());
+			actor.refId = UUID.randomUUID().toString();
+			actor.name = getModelName();
+			actor.description = getModelDescription();
 			return actor;
 		}
 

@@ -101,7 +101,7 @@ class LocationInfoPage extends ModelPage<Location> implements WebPage {
 	}
 
 	void updateKml() {
-		kml = KmlUtil.toKml(getModel().getKmz());
+		kml = KmlUtil.toKml(getModel().kmz);
 		if (kml == null)
 			kml = "";
 		kml = kml.replace("\r\n", "").replace("\n", "").replace("\r", "");

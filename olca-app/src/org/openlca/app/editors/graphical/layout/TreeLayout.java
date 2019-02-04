@@ -51,7 +51,7 @@ public class TreeLayout {
 
 	private Node build(ProductSystem productSystem) {
 		Node node = new Node();
-		node.processId = productSystem.referenceProcess.getId();
+		node.processId = productSystem.referenceProcess.id;
 		build(productSystem, new Node[] { node });
 		return node;
 	}

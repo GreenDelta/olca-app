@@ -55,9 +55,9 @@ class FactorCalculator {
 	private void addToContext(List<Parameter> params) {
 		for (Parameter p : params) {
 			if (p.isInputParameter) {
-				inputParams.put(p.getName(), p.value);
+				inputParams.put(p.name, p.value);
 			} else {
-				calcParams.put(p.getName(), p.formula);
+				calcParams.put(p.name, p.formula);
 			}
 		}
 	}

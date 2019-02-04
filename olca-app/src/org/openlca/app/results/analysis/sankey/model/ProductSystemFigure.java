@@ -80,7 +80,7 @@ public class ProductSystemFigure extends Figure {
 		double cutoffValue = node.cutoff * 100;
 		String cutoffText = M.Cutoff + ": " + Numbers.format(cutoffValue, 3) + "%";
 		if (selection != null) {
-			graphics.drawText(M.ProductSystem + ": " + node.productSystem.getName(), new Point(5, 5));
+			graphics.drawText(M.ProductSystem + ": " + node.productSystem.name, new Point(5, 5));
 			String label = selectionLabel(selection);
 			graphics.drawText(label, new Point(5, 30));
 			graphics.drawText(cutoffText, new Point(5, 60));

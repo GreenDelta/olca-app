@@ -73,7 +73,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 			}
 			FlowPropertyFactor factor = getSelected();
 			if (factor != null)
-				App.openEditor(factor.getFlowProperty());
+				App.openEditor(factor.flowProperty);
 		});
 	}
 
@@ -81,7 +81,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		if (flow == null)
 			setInput(new FlowPropertyFactor[0]);
 		else
-			setInput(flow.getFlowPropertyFactors());
+			setInput(flow.flowPropertyFactors);
 	}
 
 	@Override
@@ -106,16 +106,16 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		}
 	}
 
-	private void add(FlowPropertyDescriptor descriptor) {
-		FlowProperty property = cache.get(FlowProperty.class, descriptor.id);
+	private void add(FlowPropertyDescriptor d) {
+		FlowProperty property = cache.get(FlowProperty.class, d.id);
 		Flow flow = editor.getModel();
 		if (flow.getFactor(property) != null)
 			return;
 		FlowPropertyFactor factor = new FlowPropertyFactor();
-		factor.setFlowProperty(property);
-		factor.setConversionFactor(1);
-		flow.getFlowPropertyFactors().add(factor);
-		setInput(flow.getFlowPropertyFactors());
+		factor.flowProperty = property;
+		factor.conversionFactor = 1;
+		flow.flowPropertyFactors.add(factor);
+		setInput(flow.flowPropertyFactors);
 		editor.setDirty(true);
 	}
 
@@ -138,85 +138,86 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 					M.FlowPropertyIsUsed);
 			return;
 		}
-		flow.getFlowPropertyFactors().remove(fac);
-		setInput(flow.getFlowPropertyFactors());
+		flow.flowPropertyFactors.remove(fac);
+		setInput(flow.flowPropertyFactors);
 		editor.setDirty(true);
 	}
 
 	@OnDrop
-	protected void onDrop(FlowPropertyDescriptor descriptor) {
-		if (descriptor != null)
-			add(descriptor);
+	protected void onDrop(FlowPropertyDescriptor d) {
+		if (d != null)
+			add(d);
 	}
 
 	private class FactorLabelProvider extends LabelProvider implements
 			ITableLabelProvider, ITableFontProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int column) {
-			if (column == 0)
+		public Image getColumnImage(Object obj, int col) {
+			if (col == 0)
 				return Images.get(ModelType.FLOW_PROPERTY);
-			if (column == 2)
+			if (col == 2)
 				return Images.get(ModelType.UNIT_GROUP);
-			if (column == 4) {
+			if (col == 4) {
 				Flow flow = editor.getModel();
 				if (flow == null || flow.getReferenceFactor() == null)
 					return Images.get(false);
 				FlowPropertyFactor refFactor = flow.getReferenceFactor();
-				boolean isRef = refFactor != null && refFactor.equals(element);
+				boolean isRef = refFactor != null && refFactor.equals(obj);
 				return Images.get(isRef);
-			} else if (column == 5) {
-				String path = CommentPaths.get((FlowPropertyFactor) element);
+			} else if (col == 5) {
+				String path = CommentPaths.get((FlowPropertyFactor) obj);
 				return Images.get(editor.getComments(), path);
 			}
 			return null;
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof FlowPropertyFactor))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof FlowPropertyFactor))
 				return null;
-			FlowPropertyFactor factor = (FlowPropertyFactor) element;
-			switch (columnIndex) {
+			FlowPropertyFactor f = (FlowPropertyFactor) obj;
+			switch (col) {
 			case 0:
-				if (factor.getFlowProperty() == null)
+				if (f.flowProperty == null)
 					return null;
-				return factor.getFlowProperty().getName();
+				return f.flowProperty.name;
 			case 1:
-				return Double.toString(factor.getConversionFactor());
+				return Double.toString(f.conversionFactor);
 			case 2:
-				if (factor.getFlowProperty() == null)
+				if (f.flowProperty == null)
 					return null;
-				if (factor.getFlowProperty().getUnitGroup() == null)
+				if (f.flowProperty.unitGroup == null)
 					return null;
-				if (factor.getFlowProperty().getUnitGroup().getReferenceUnit() == null)
+				if (f.flowProperty.unitGroup.referenceUnit == null)
 					return null;
-				return factor.getFlowProperty().getUnitGroup().getReferenceUnit().getName();
+				return f.flowProperty.unitGroup.referenceUnit.name;
 			case 3:
-				return getFormula(factor);
+				return getFormula(f);
 			default:
 				return null;
 			}
 		}
 
-		private String getFormula(FlowPropertyFactor factor) {
+		private String getFormula(FlowPropertyFactor f) {
 			Flow flow = editor.getModel();
 			FlowPropertyFactor refFactor = flow.getReferenceFactor();
 			Unit refUnit = getUnit(refFactor);
-			Unit unit = getUnit(factor);
+			Unit unit = getUnit(f);
 			if (unit == null || refUnit == null)
 				return null;
-			return "1.0 " + refUnit.getName()
-					+ " = " + Double.toString(factor.getConversionFactor()) + " " + unit.getName();
+			return "1.0 " + refUnit.name
+					+ " = " + Double.toString(f.conversionFactor)
+					+ " " + unit.name;
 		}
 
 		private Unit getUnit(FlowPropertyFactor factor) {
-			if (factor == null || factor.getFlowProperty() == null)
+			if (factor == null || factor.flowProperty == null)
 				return null;
-			UnitGroup unitGroup = factor.getFlowProperty().getUnitGroup();
+			UnitGroup unitGroup = factor.flowProperty.unitGroup;
 			if (unitGroup == null)
 				return null;
-			return unitGroup.getReferenceUnit();
+			return unitGroup.referenceUnit;
 		}
 
 		@Override
@@ -258,14 +259,15 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 			Flow flow = editor.getModel();
 			if (!value)
 				return;
-			if (Objects.equals(flow.getReferenceFlowProperty(),
-					element.getFlowProperty()))
+			if (Objects.equals(
+					flow.referenceFlowProperty,
+					element.flowProperty))
 				return;
-			flow.setReferenceFlowProperty(element.getFlowProperty());
-			double f = element.getConversionFactor();
-			for (FlowPropertyFactor fpFactor : flow.getFlowPropertyFactors()) {
-				double factor = fpFactor.getConversionFactor() / f;
-				fpFactor.setConversionFactor(factor);
+			flow.referenceFlowProperty = element.flowProperty;
+			double f = element.conversionFactor;
+			for (FlowPropertyFactor fpFactor : flow.flowPropertyFactors) {
+				double factor = fpFactor.conversionFactor / f;
+				fpFactor.conversionFactor = factor;
 			}
 			editor.setDirty(true);
 		}

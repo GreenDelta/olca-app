@@ -45,7 +45,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		ProductSystem system = page.createModel();
 		if (system == null)
 			return false;
-		system.setCategory(getCategory());
+		system.category = getCategory();
 		LinkingConfig config = page.getLinkingConfig();
 		system.cutoff = config.cutoff;
 		addCreationInfo(system, page);
@@ -71,7 +71,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 	private void addCreationInfo(ProductSystem system, ProductSystemWizardPage page) {
 		if (system == null)
 			return;
-		String text = system.getDescription();
+		String text = system.description;
 		if (Strings.isNullOrEmpty(text))
 			text = "";
 		else
@@ -79,7 +79,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		text += "First created: " + format.format(new Date()) + "\n";
 		text += "Linking approach during creation: " + getLinkingInfo(page);
-		system.setDescription(text);
+		system.description = text;
 	}
 
 	private String getLinkingInfo(ProductSystemWizardPage page) {

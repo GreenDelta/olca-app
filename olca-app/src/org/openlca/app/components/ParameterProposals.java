@@ -93,12 +93,12 @@ public class ParameterProposals implements IContentProposalProvider {
 	}
 
 	private Proposal newProposal(HashSet<String> existing, Parameter p, String prefix) {
-		if (p == null || p.getName() == null || existing.contains(p.getName()))
+		if (p == null || p.name == null || existing.contains(p.name))
 			return null;
-		String lname = p.getName().toLowerCase();
+		String lname = p.name.toLowerCase();
 		if (!lname.startsWith(prefix))
 			return null;
-		String replacement = p.getName().substring(prefix.length()) + " ";
+		String replacement = p.name.substring(prefix.length()) + " ";
 		return new Proposal(replacement, p);
 	}
 
@@ -124,12 +124,12 @@ public class ParameterProposals implements IContentProposalProvider {
 
 		@Override
 		public String getLabel() {
-			return parameter.getName();
+			return parameter.name;
 		}
 
 		@Override
 		public String getDescription() {
-			return parameter.getDescription();
+			return parameter.description;
 		}
 	}
 }

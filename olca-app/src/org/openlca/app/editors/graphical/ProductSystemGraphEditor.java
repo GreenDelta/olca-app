@@ -108,7 +108,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		Process refProcess = getSystemEditor().getModel().referenceProcess;
 		if (refProcess == null)
 			return new ProductSystemNode(this);
-		long referenceId = refProcess.getId();
+		long referenceId = refProcess.id;
 		ProductSystemNode node = new ProductSystemNode(this);
 		node.add(createProcessNode(referenceId));
 		return node;

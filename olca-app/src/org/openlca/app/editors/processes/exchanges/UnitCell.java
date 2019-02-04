@@ -27,11 +27,11 @@ class UnitCell extends ComboBoxCellModifier<Exchange, UnitItem> {
 			return new UnitItem[0];
 		Flow flow = exchange.flow;
 		List<UnitItem> items = new ArrayList<>();
-		for (FlowPropertyFactor factor : flow.getFlowPropertyFactors()) {
-			FlowProperty prop = factor.getFlowProperty();
-			if (prop == null || prop.getUnitGroup() == null)
+		for (FlowPropertyFactor factor : flow.flowPropertyFactors) {
+			FlowProperty prop = factor.flowProperty;
+			if (prop == null || prop.unitGroup == null)
 				continue;
-			for (Unit unit : prop.getUnitGroup().getUnits()) {
+			for (Unit unit : prop.unitGroup.units) {
 				UnitItem i = new UnitItem(unit, factor, exchange);
 				items.add(i);
 			}

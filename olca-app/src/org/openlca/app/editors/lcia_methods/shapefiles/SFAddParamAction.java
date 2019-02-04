@@ -63,7 +63,7 @@ class SFAddParamAction extends Action {
 
 	private boolean exists(ShapeFileParameter param) {
 		for (Parameter realParam : section.method().parameters) {
-			if (Strings.nullOrEqual(param.name, realParam.getName())
+			if (Strings.nullOrEqual(param.name, realParam.name)
 					&& Strings.nullOrEqual("SHAPE_FILE",
 							realParam.sourceType)
 					&& Strings.nullOrEqual(section.shapeFile,
@@ -75,7 +75,7 @@ class SFAddParamAction extends Action {
 
 	private boolean otherExists(ShapeFileParameter param) {
 		for (Parameter p : section.method().parameters) {
-			if (Strings.nullOrEqual(param.name, p.getName())
+			if (Strings.nullOrEqual(param.name, p.name)
 					&& !Strings.nullOrEqual(section.shapeFile,
 							p.externalSource))
 				return true;
@@ -85,11 +85,11 @@ class SFAddParamAction extends Action {
 
 	private void addParam(ShapeFileParameter shapeParam) {
 		Parameter p = new Parameter();
-		p.setRefId(UUID.randomUUID().toString());
+		p.refId = UUID.randomUUID().toString();
 		p.externalSource = section.shapeFile;
 		p.isInputParameter = true;
-		p.setName(shapeParam.name);
-		p.setDescription("from shapefile: " + section.shapeFile);
+		p.name = shapeParam.name;
+		p.description = "from shapefile: " + section.shapeFile;
 		p.value = (shapeParam.min + shapeParam.max) / 2;
 		p.uncertainty = Uncertainty.uniform(
 				shapeParam.min, shapeParam.max);

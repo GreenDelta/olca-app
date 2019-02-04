@@ -210,7 +210,7 @@ public class ReportCalculator implements Runnable {
 			Currency c = dao.getReferenceCurrency();
 			if (c == null)
 				return "?";
-			return c.code != null ? c.code : c.getName();
+			return c.code != null ? c.code : c.name;
 		} catch (Exception e) {
 			log.error("failed to load default currency", e);
 			return "?";

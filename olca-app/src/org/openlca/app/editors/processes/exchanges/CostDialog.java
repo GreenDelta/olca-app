@@ -75,7 +75,7 @@ class CostDialog extends FormDialog {
 			public String getText(Object obj) {
 				if (!(obj instanceof Currency))
 					return super.getText(obj);
-				return ((Currency) obj).getName();
+				return ((Currency) obj).name;
 			}
 		});
 		setCurrencyContent(currencyCombo);
@@ -92,7 +92,7 @@ class CostDialog extends FormDialog {
 		CurrencyDao dao = new CurrencyDao(Database.get());
 		List<Currency> all = dao.getAll();
 		Collections.sort(all,
-				(c1, c2) -> Strings.compare(c1.getName(), c2.getName()));
+				(c1, c2) -> Strings.compare(c1.name, c2.name));
 		combo.setInput(all);
 		currency = exchange.currency;
 		if (currency == null)
@@ -126,7 +126,7 @@ class CostDialog extends FormDialog {
 			double perUnit = price / exchange.amount;
 			pricePerUnitText.setText(Double.toString(perUnit));
 		});
-		ParameterProposals.on(priceText, () -> process.getParameters());
+		ParameterProposals.on(priceText, () -> process.parameters);
 	}
 
 	private void setFormula() {
@@ -162,7 +162,7 @@ class CostDialog extends FormDialog {
 		String code = currency == null ? "?" : currency.code;
 		String unit = exchange.unit == null
 				? "?"
-				: exchange.unit.getName();
+				: exchange.unit.name;
 		currencyLabel.setText(code);
 		currencyLabel.pack();
 		currencyPerUnitLabel.setText(code + " / " + unit);

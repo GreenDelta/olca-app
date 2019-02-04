@@ -56,7 +56,7 @@ class CurrencyTable {
 			others.add(c);
 		}
 		Collections.sort(others, (c1, c2) -> {
-			return Strings.compare(c1.getName(), c2.getName());
+			return Strings.compare(c1.name, c2.name);
 		});
 		return others;
 	}
@@ -81,7 +81,7 @@ class CurrencyTable {
 			Currency c = (Currency) obj;
 			switch (col) {
 			case 0:
-				return c.getName();
+				return c.name;
 			case 1:
 				return c.code;
 			case 2:

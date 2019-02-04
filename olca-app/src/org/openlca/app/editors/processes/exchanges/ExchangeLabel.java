@@ -66,11 +66,11 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			return Icon.CHECK_TRUE.get();
 		if (e.flow == null)
 			return null;
-		FlowType type = e.flow.getFlowType();
+		FlowType type = e.flow.flowType;
 		if (type == FlowType.ELEMENTARY_FLOW)
 			return null;
 		Process process = editor.getModel();
-		if (Objects.equals(process.getQuantitativeReference(), e))
+		if (Objects.equals(process.quantitativeReference, e))
 			return null;
 		if (e.isInput && type == FlowType.WASTE_FLOW)
 			return Icon.CHECK_FALSE.get();
@@ -90,7 +90,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		case 1:
 			if (e.flow == null)
 				return null;
-			return CategoryPath.getShort(e.flow.getCategory());
+			return CategoryPath.getShort(e.flow.category);
 		case 2:
 			return getAmountText(e);
 		case 3:
@@ -149,7 +149,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		Exchange e = (Exchange) obj;
 		if (e.flow == null || e.costs == null)
 			return null;
-		FlowType type = e.flow.getFlowType();
+		FlowType type = e.flow.flowType;
 		boolean isRevenue = (e.isInput && type == FlowType.WASTE_FLOW)
 				|| (!e.isInput && type == FlowType.PRODUCT_FLOW);
 		if ((isRevenue && e.costs >= 0) || (!isRevenue && e.costs < 0))
@@ -163,7 +163,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		if (!(obj instanceof Exchange))
 			return null;
 		Exchange e = (Exchange) obj;
-		Exchange qRef = editor.getModel().getQuantitativeReference();
+		Exchange qRef = editor.getModel().quantitativeReference;
 		if (Objects.equals(e, qRef))
 			return UI.boldFont();
 		return null;

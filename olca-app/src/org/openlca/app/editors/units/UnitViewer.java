@@ -83,11 +83,11 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		int i = 2;
 		while (!dao.getForName(name).isEmpty() || group.getUnit(name) != null)
 			name = "new unit " + i++;
-		unit.setName(name);
-		unit.setRefId(UUID.randomUUID().toString());
-		unit.setConversionFactor(1d);
-		group.getUnits().add(unit);
-		setInput(group.getUnits());
+		unit.name = name;
+		unit.refId = UUID.randomUUID().toString();
+		unit.conversionFactor = 1d;
+		group.units.add(unit);
+		setInput(group.units);
 		editor.setDirty(true);
 	}
 
@@ -95,7 +95,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 	protected void onRemove() {
 		UnitGroup group = editor.getModel();
 		for (Unit unit : getAllSelected()) {
-			if (Objects.equals(group.getReferenceUnit(), unit)) {
+			if (Objects.equals(group.referenceUnit, unit)) {
 				Error.showBox(M.CannotDeleteReferenceUnit,
 						M.ReferenceUnitCannotBeDeleted);
 				continue;
@@ -106,9 +106,9 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 						M.UnitIsUsed);
 				continue;
 			}
-			group.getUnits().remove(unit);
+			group.units.remove(unit);
 		}
-		setInput(group.getUnits());
+		setInput(group.units);
 		editor.setDirty(true);
 	}
 
@@ -121,7 +121,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 				return null;
 			if (column == 5) {
 				UnitGroup group = editor.getModel();
-				Unit refUnit = group != null ? group.getReferenceUnit() : null;
+				Unit refUnit = group != null ? group.referenceUnit : null;
 				boolean isRef = refUnit != null && refUnit.equals(element);
 				return Images.get(isRef);
 			} else if (column == 6) {
@@ -138,13 +138,13 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 			Unit unit = (Unit) element;
 			switch (columnIndex) {
 			case 0:
-				return unit.getName();
+				return unit.name;
 			case 1:
-				return unit.getDescription();
+				return unit.description;
 			case 2:
-				return unit.getSynonyms();
+				return unit.synonyms;
 			case 3:
-				return Numbers.format(unit.getConversionFactor());
+				return Numbers.format(unit.conversionFactor);
 			case 4:
 				return getFormulaText(unit);
 			default:
@@ -154,19 +154,19 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 		private String getFormulaText(Unit unit) {
 			UnitGroup group = editor.getModel();
-			Unit refUnit = group != null ? group.getReferenceUnit() : null;
+			Unit refUnit = group != null ? group.referenceUnit : null;
 			if (refUnit == null)
 				return null;
-			String amount = "1.0 " + unit.getName();
-			String factor = Numbers.format(unit.getConversionFactor());
-			String refAmount = factor + " " + refUnit.getName();
+			String amount = "1.0 " + unit.name;
+			String factor = Numbers.format(unit.conversionFactor);
+			String refAmount = factor + " " + refUnit.name;
 			return amount + " = " + refAmount;
 		}
 
 		@Override
 		public Font getFont(Object element, int columnIndex) {
 			UnitGroup group = editor.getModel();
-			Unit refUnit = group != null ? group.getReferenceUnit() : null;
+			Unit refUnit = group != null ? group.referenceUnit : null;
 			if (refUnit != null && refUnit.equals(element)) {
 				return UI.boldFont();
 			}
@@ -179,19 +179,19 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 		@Override
 		protected String getText(Unit unit) {
-			return unit.getName();
+			return unit.name;
 		}
 
 		@Override
 		protected void setText(Unit unit, String text) {
-			if (Objects.equals(unit.getName(), text))
+			if (Objects.equals(unit.name, text))
 				return;
 			if (!new UnitDao(Database.get()).getForName(text).isEmpty()
 					|| editor.getModel().getUnit(text) != null) {
 				Error.showBox("A unit with the name '" + text + "' already exists");
 				return;
 			}
-			unit.setName(text);
+			unit.name = text;
 			editor.setDirty(true);
 		}
 
@@ -207,7 +207,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		public boolean canModify(Unit unit) {
 			if (unit == null)
 				return false;
-			return !unit.equals(editor.getModel().getReferenceUnit());
+			return !unit.equals(editor.getModel().referenceUnit);
 		}
 	}
 
@@ -216,21 +216,21 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		@Override
 		protected boolean isChecked(Unit element) {
 			UnitGroup group = editor.getModel();
-			return Objects.equals(group.getReferenceUnit(), element);
+			return Objects.equals(group.referenceUnit, element);
 		}
 
 		@Override
-		protected void setChecked(Unit element, boolean value) {
+		protected void setChecked(Unit u, boolean value) {
 			UnitGroup group = editor.getModel();
 			if (!value)
 				return;
-			if (Objects.equals(element, group.getReferenceUnit()))
+			if (Objects.equals(u, group.referenceUnit))
 				return;
-			group.setReferenceUnit(element);
-			double f = element.getConversionFactor();
-			for (Unit unit : group.getUnits()) {
-				double factor = unit.getConversionFactor() / f;
-				unit.setConversionFactor(factor);
+			group.referenceUnit = u;
+			double f = u.conversionFactor;
+			for (Unit unit : group.units) {
+				double factor = unit.conversionFactor / f;
+				unit.conversionFactor = factor;
 			}
 			editor.setDirty(true);
 		}

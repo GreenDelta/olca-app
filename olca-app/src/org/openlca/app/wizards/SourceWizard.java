@@ -39,9 +39,9 @@ public class SourceWizard extends AbstractWizard<Source> {
 		@Override
 		public Source createModel() {
 			Source source = new Source();
-			source.setRefId(UUID.randomUUID().toString());
-			source.setName(getModelName());
-			source.setDescription(getModelDescription());
+			source.refId = UUID.randomUUID().toString();
+			source.name = getModelName();
+			source.description = getModelDescription();
 			return source;
 		}
 	}

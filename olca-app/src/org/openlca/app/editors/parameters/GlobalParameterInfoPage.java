@@ -36,7 +36,7 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 		support.onEvaluation(this::evalFormulas);
 		parameters = new ParameterDao(Database.get()).getGlobalParameters();
 		for (int i = 0; i < parameters.size(); i++)
-			if (parameters.get(i).getName().equals(getModel().getName()))
+			if (parameters.get(i).name.equals(getModel().name))
 				parameters.remove(i);
 		parameters.add(getModel());
 	}

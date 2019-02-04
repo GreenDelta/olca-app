@@ -157,8 +157,8 @@ public class ProcessNode extends Node {
 		ProcessDao dao = new ProcessDao(Database.get());
 		Process process = dao.getForId(this.process.id);
 		List<Exchange> list = new ArrayList<>();
-		for (Exchange e : process.getExchanges()) {
-			if (e.flow.getFlowType() == FlowType.ELEMENTARY_FLOW)
+		for (Exchange e : process.exchanges) {
+			if (e.flow.flowType == FlowType.ELEMENTARY_FLOW)
 				continue;
 			list.add(e);
 		}
@@ -182,12 +182,12 @@ public class ProcessNode extends Node {
 		for (ExchangeNode n : getExchangeNodes()) {
 			Exchange e = n.exchange;
 			if (e == null || e.isInput ||
-					e.flow == null || e.flow.getId() != link.flowId)
+					e.flow == null || e.flow.id != link.flowId)
 				continue;
 			if (type == FlowType.PRODUCT_FLOW)
 				return n;
 			if (type == FlowType.WASTE_FLOW
-					&& e.getId() == link.exchangeId)
+					&& e.id == link.exchangeId)
 				return n;
 		}
 		return null;
@@ -202,10 +202,10 @@ public class ProcessNode extends Node {
 		for (ExchangeNode n : getExchangeNodes()) {
 			Exchange e = n.exchange;
 			if (e == null || !e.isInput ||
-					e.flow == null || e.flow.getId() != link.flowId)
+					e.flow == null || e.flow.id != link.flowId)
 				continue;
 			if (type == FlowType.PRODUCT_FLOW
-					&& e.getId() == link.exchangeId)
+					&& e.id == link.exchangeId)
 				return n;
 			if (type == FlowType.WASTE_FLOW)
 				return n;

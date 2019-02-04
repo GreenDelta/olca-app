@@ -18,7 +18,7 @@ public class DeleteProcessCommand extends Command {
 	public boolean canExecute() {
 		if (node == null)
 			return false;
-		if (node.parent().getProductSystem().referenceProcess.getId() == node.process.id)
+		if (node.parent().getProductSystem().referenceProcess.id == node.process.id)
 			return false;
 		return node.links.size() == 0;
 	}

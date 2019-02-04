@@ -24,7 +24,7 @@ public class SimulationEditor extends SimpleFormEditor {
 		SimulationInput input = (SimulationInput) editorInput;
 		setup = Cache.getAppCache().remove(input.getSetupKey(),
 				CalculationSetup.class);
-		setPartName(Strings.cut(setup.productSystem.getName(), 75));
+		setPartName(Strings.cut(setup.productSystem.name, 75));
 		simulator = Cache.getAppCache()
 				.remove(input.getSolverKey(), Simulator.class);
 	}
@@ -41,5 +41,5 @@ public class SimulationEditor extends SimpleFormEditor {
 	protected FormPage getPage() {
 		return new SimulationPage(this);
 	}
-	
+
 }

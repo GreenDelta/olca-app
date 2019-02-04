@@ -82,7 +82,7 @@ class Statistics {
 			return false;
 		HashMap<Long, Boolean> visited = new HashMap<>();
 		Queue<Long> queue = new ArrayDeque<>();
-		queue.add(system.referenceProcess.getId());
+		queue.add(system.referenceProcess.id);
 		while (!queue.isEmpty()) {
 			Long recipient = queue.poll();
 			visited.put(recipient, Boolean.TRUE);

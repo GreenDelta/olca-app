@@ -134,13 +134,13 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 			return true;
 		if (descriptor == null || category == null)
 			return false;
-		if (category.getId() != 0L && descriptor.id != 0L)
-			return descriptor.id == category.getId();
+		if (category.id != 0L && descriptor.id != 0L)
+			return descriptor.id == category.id;
 		// new impact categories have an ID of 0. Thus, we take also other
 		// attributes to check equality
-		if (category.getRefId() != null && descriptor.refId != null)
-			return Objects.equals(category.getRefId(), descriptor.refId);
-		return Objects.equals(category.getName(), descriptor.name)
+		if (category.refId != null && descriptor.refId != null)
+			return Objects.equals(category.refId, descriptor.refId);
+		return Objects.equals(category.name, descriptor.name)
 				&& Objects.equals(category.referenceUnit,
 						descriptor.referenceUnit);
 	}

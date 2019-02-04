@@ -325,8 +325,8 @@ class ProjectParameterTable {
 			return true;
 		if (var1 == null || var2 == null)
 			return false;
-		if (var1.getId() != 0 && var2.getId() != 0)
-			return var1.getId() == var2.getId();
+		if (var1.id != 0 && var2.id != 0)
+			return var1.id == var2.id;
 		else
 			return Objects.equals(var1.name, var2.name);
 	}

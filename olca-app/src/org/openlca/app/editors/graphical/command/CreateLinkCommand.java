@@ -57,7 +57,7 @@ public class CreateLinkCommand extends Command {
 			long processID = input.parent().process.id;
 			if (type == FlowType.PRODUCT_FLOW) {
 				processLink.processId = processID;
-				processLink.exchangeId = input.exchange.getId();
+				processLink.exchangeId = input.exchange.id;
 			} else if (type == FlowType.WASTE_FLOW) {
 				processLink.providerId = processID;
 			}
@@ -68,7 +68,7 @@ public class CreateLinkCommand extends Command {
 				processLink.providerId = processID;
 			} else if (type == FlowType.WASTE_FLOW) {
 				processLink.processId = processID;
-				processLink.exchangeId = output.exchange.getId();
+				processLink.exchangeId = output.exchange.id;
 			}
 		}
 		return processLink;
@@ -133,7 +133,7 @@ public class CreateLinkCommand extends Command {
 		}
 		if (node == null)
 			output = null;
-		else if (!node.parent().isConnected(node.exchange.getId()))
+		else if (!node.parent().isConnected(node.exchange.id))
 			output = node;
 	}
 }

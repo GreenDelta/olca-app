@@ -24,7 +24,7 @@ public class LocationViewer extends AbstractComboViewer<Location> {
 			public int compare(Location loc1, Location loc2) {
 				if (loc1 == null || loc2 == null)
 					return 0;
-				return Strings.compare(loc1.getName(), loc2.getName());
+				return Strings.compare(loc1.name, loc2.name);
 			}
 		});
 		super.setInput(locations.toArray(new Location[locations.size()]));

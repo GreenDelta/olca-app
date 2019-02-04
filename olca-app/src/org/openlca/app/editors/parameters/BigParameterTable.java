@@ -153,7 +153,7 @@ public class BigParameterTable extends SimpleFormEditor {
 						Param p = Viewers.getFirstSelected(table);
 						if (p == null)
 							return;
-						ParameterUsagePage.show(p.parameter.getName());
+						ParameterUsagePage.show(p.parameter.name);
 					});
 			Action onEvaluate = Actions.create(
 					"#Evaluate formulas", Icon.RUN.descriptor(), () -> {
@@ -196,7 +196,7 @@ public class BigParameterTable extends SimpleFormEditor {
 				params.add(p);
 				if (pr.scope == ParameterScope.GLOBAL)
 					return;
-				p.ownerID = owners.get(pr.getId());
+				p.ownerID = owners.get(pr.id);
 				if (p.ownerID == null)
 					return;
 				if (pr.scope == ParameterScope.PROCESS) {
@@ -230,8 +230,8 @@ public class BigParameterTable extends SimpleFormEditor {
 		}
 
 		/**
-		 * Bind the parameter values and formulas to the respective scopes of a formula
-		 * interpreter.
+		 * Bind the parameter values and formulas to the respective scopes of a
+		 * formula interpreter.
 		 */
 		private FormulaInterpreter buildInterpreter() {
 			FormulaInterpreter fi = new FormulaInterpreter();
@@ -247,9 +247,9 @@ public class BigParameterTable extends SimpleFormEditor {
 				}
 				Parameter p = param.parameter;
 				if (p.isInputParameter) {
-					scope.bind(p.getName(), Double.toString(p.value));
+					scope.bind(p.name, Double.toString(p.value));
 				} else {
-					scope.bind(p.getName(), p.formula);
+					scope.bind(p.name, p.formula);
 				}
 			}
 			return fi;
@@ -328,9 +328,9 @@ public class BigParameterTable extends SimpleFormEditor {
 	private class Param implements Comparable<Param> {
 
 		/**
-		 * We have the owner ID as a separate field because a parameter could have a
-		 * link to an owner that does not exist anymore in the database (it is an error
-		 * but such things seem to happen).
+		 * We have the owner ID as a separate field because a parameter could
+		 * have a link to an owner that does not exist anymore in the database
+		 * (it is an error but such things seem to happen).
 		 */
 		Long ownerID;
 
@@ -344,8 +344,8 @@ public class BigParameterTable extends SimpleFormEditor {
 		@Override
 		public int compareTo(Param other) {
 			int c = Strings.compare(
-					this.parameter.getName(),
-					other.parameter.getName());
+					this.parameter.name,
+					other.parameter.name);
 			if (c != 0)
 				return c;
 
@@ -364,12 +364,12 @@ public class BigParameterTable extends SimpleFormEditor {
 		boolean matches(String filter) {
 			if (filter == null)
 				return true;
-			if (parameter.getName() == null)
+			if (parameter.name == null)
 				return false;
 			String f = filter.trim().toLowerCase();
 			if (evalError && f.equals("error"))
 				return true;
-			String n = parameter.getName().toLowerCase();
+			String n = parameter.name.toLowerCase();
 			return n.contains(f);
 		}
 
@@ -430,7 +430,7 @@ public class BigParameterTable extends SimpleFormEditor {
 			Parameter p = param.parameter;
 			switch (col) {
 			case 0:
-				return p.getName();
+				return p.name;
 			case 1:
 				if (param.scope() == ParameterScope.GLOBAL)
 					return M.GlobalParameter;
@@ -444,7 +444,7 @@ public class BigParameterTable extends SimpleFormEditor {
 								? "!! error !! " + p.formula
 								: p.formula + " = " + Numbers.format(p.value);
 			case 3:
-				return p.getDescription();
+				return p.description;
 			default:
 				return null;
 			}

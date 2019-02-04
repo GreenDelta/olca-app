@@ -69,8 +69,7 @@ class GroupSetAction extends Action {
 				List<ProcessGroupSet> list = new ProcessGroupSetDao(Database.get()).getAll();
 				ProcessGroupSet[] groups = list
 						.toArray(new ProcessGroupSet[list.size()]);
-				Arrays.sort(groups, (s1, s2) ->
-						Strings.compare(s1.getName(), s1.getName()));
+				Arrays.sort(groups, (s1, s2) -> Strings.compare(s1.name, s1.name));
 				return groups;
 			} catch (Exception e) {
 				log.error("Failed to load the grouping sets", e);
@@ -114,7 +113,7 @@ class GroupSetAction extends Action {
 
 		private void bindData() {
 			for (ProcessGroupSet set : groupSets) {
-				combo.add(set.getName());
+				combo.add(set.name);
 			}
 			if (groupSets.length > 0) {
 				combo.select(0);

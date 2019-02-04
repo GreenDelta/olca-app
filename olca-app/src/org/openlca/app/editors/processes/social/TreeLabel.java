@@ -46,14 +46,14 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 
 	private String text(CategoryNode n, int col) {
 		if (col == 0 && n.category != null)
-			return n.category.getName();
+			return n.category.name;
 		return null;
 	}
 
 	private String text(SocialAspect a, int col) {
 		switch (col) {
 		case 0:
-			return a.indicator != null ? a.indicator.getName() : null;
+			return a.indicator != null ? a.indicator.name : null;
 		case 1:
 			return getRawAmount(a);
 		case 2:
@@ -88,7 +88,7 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 		String t = Double.toString(a.activityValue);
 		SocialIndicator i = a.indicator;
 		if (i.activityVariable != null && i.activityUnit != null) {
-			t += " [" + i.activityUnit.getName() + ", "
+			t += " [" + i.activityUnit.name + ", "
 					+ i.activityVariable + "]";
 		}
 		return t;

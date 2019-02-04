@@ -21,7 +21,7 @@ public class FlowPropertyFactorViewer extends
 	}
 
 	public void setInput(Flow flow) {
-		List<FlowPropertyFactor> factors = flow.getFlowPropertyFactors();
+		List<FlowPropertyFactor> factors = flow.flowPropertyFactors;
 		setInput(factors.toArray(new FlowPropertyFactor[factors.size()]));
 	}
 
@@ -48,7 +48,7 @@ public class FlowPropertyFactorViewer extends
 			if (!(element instanceof FlowPropertyFactor))
 				return null;
 			FlowPropertyFactor factor = (FlowPropertyFactor) element;
-			return factor.getFlowProperty().getName();
+			return factor.flowProperty.name;
 		}
 
 	}

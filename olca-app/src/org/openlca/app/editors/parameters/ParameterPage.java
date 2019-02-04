@@ -67,7 +67,7 @@ public class ParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
 	public static ParameterPage<Process> create(ProcessEditor editor) {
 		ParameterPage<Process> page = new ParameterPage<>(
 				editor, ParameterScope.PROCESS,
-				() -> editor.getModel().getParameters());
+				() -> editor.getModel().parameters);
 		page.support = editor.getParameterSupport();
 		return page;
 	}
@@ -127,7 +127,7 @@ public class ParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
 				Icon.LINK.descriptor(), () -> {
 					Parameter p = Viewers.getFirstSelected(table);
 					if (p != null) {
-						ParameterUsagePage.show(p.getName());
+						ParameterUsagePage.show(p.name);
 					}
 				});
 		Actions.bind(table, copy, refresh, usage);
@@ -139,7 +139,7 @@ public class ParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
 		ParameterDao dao = new ParameterDao(database);
 		List<Parameter> params = dao.getGlobalParameters();
 		Collections.sort(params, (p1, p2) -> {
-			return Strings.compare(p1.getName(), p2.getName());
+			return Strings.compare(p1.name, p2.name);
 		});
 		table.setInput(params);
 	}
@@ -159,13 +159,13 @@ public class ParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
 			Parameter p = (Parameter) obj;
 			switch (col) {
 			case 0:
-				return p.getName();
+				return p.name;
 			case 1:
 				return Double.toString(p.value);
 			case 2:
 				return Uncertainty.string(p.uncertainty);
 			case 3:
-				return p.getDescription();
+				return p.description;
 			default:
 				return null;
 			}

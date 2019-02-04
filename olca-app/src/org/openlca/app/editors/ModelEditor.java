@@ -70,7 +70,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 
 	protected void addCommentPage() throws PartInitException {
 		if (!App.isCommentingEnabled() || comments == null
-				|| !comments.hasRefId(model.getRefId()))
+				|| !comments.hasRefId(model.refId))
 			return;
 		addPage(new CommentsPage(this, comments, model));
 	}
@@ -130,7 +130,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 			if (monitor != null)
 				monitor.beginTask(M.Save + " " + modelClass.getSimpleName()
 						+ "...", IProgressMonitor.UNKNOWN);
-			model.setLastChange(Calendar.getInstance().getTimeInMillis());
+			model.lastChange = Calendar.getInstance().getTimeInMillis();
 			Version.incUpdate(model);
 			model = dao.update(model);
 			doAfterUpdate();
@@ -144,9 +144,9 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 	public void updateModel() {
 		if (model == null)
 			return;
-		if (model.getId() == 0)
+		if (model.id == 0)
 			return;
-		model = dao.getForId(model.getId());
+		model = dao.getForId(model.id);
 	}
 
 	protected void doAfterUpdate() {
@@ -154,7 +154,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 		BaseDescriptor descriptor = getEditorInput().getDescriptor();
 		EntityCache cache = Cache.getEntityCache();
 		cache.refresh(descriptor.getClass(), descriptor.id);
-		cache.invalidate(modelClass, model.getId());
+		cache.invalidate(modelClass, model.id);
 		this.setPartName(Labels.getDisplayName(model));
 		Cache.evict(descriptor);
 		for (Runnable handler : savedHandlers) {
@@ -186,10 +186,10 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 	@SuppressWarnings("unchecked")
 	public void doSaveAs() {
 		InputDialog diag = new InputDialog(UI.shell(), M.SaveAs, M.SaveAs,
-				model.getName() + " - Copy", (name) -> {
+				model.name + " - Copy", (name) -> {
 					if (Strings.nullOrEmpty(name))
 						return M.NameCannotBeEmpty;
-					if (Strings.nullOrEqual(name, model.getName()))
+					if (Strings.nullOrEqual(name, model.name))
 						return M.NameShouldBeDifferent;
 					return null;
 				});
@@ -198,7 +198,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 		String newName = diag.getValue();
 		try {
 			T clone = (T) model.clone();
-			clone.setName(newName);
+			clone.name = newName;
 			clone = dao.insert(clone);
 			App.openEditor(clone);
 		} catch (Exception e) {

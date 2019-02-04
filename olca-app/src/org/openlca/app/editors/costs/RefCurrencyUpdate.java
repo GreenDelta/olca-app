@@ -61,13 +61,13 @@ class RefCurrencyUpdate implements Runnable {
 	public void run() {
 		try {
 			CurrencyDao dao = new CurrencyDao(Database.get());
-			c.setLastChange(Calendar.getInstance().getTimeInMillis());
+			c.lastChange = Calendar.getInstance().getTimeInMillis();
 			Version.incUpdate(c);
 			c = dao.update(c);
 			double f = c.conversionFactor;
 			for (Currency o : dao.getAll()) {
 				o.referenceCurrency = c;
-				o.setLastChange(Calendar.getInstance().getTimeInMillis());
+				o.lastChange = Calendar.getInstance().getTimeInMillis();
 				Version.incUpdate(o);
 				if (Objects.equals(c, o)) {
 					o.conversionFactor = 1.0;

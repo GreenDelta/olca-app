@@ -71,8 +71,8 @@ class LocationMap {
 				continue;
 			Location location = ci.item;
 			HeatmapPoint point = new HeatmapPoint();
-			point.latitude = location.getLatitude();
-			point.longitude = location.getLongitude();
+			point.latitude = location.latitude;
+			point.longitude = location.longitude;
 			point.weight = (int) (100d * ci.share);
 			points.add(point);
 		}
@@ -94,7 +94,7 @@ class LocationMap {
 		Location location = ci.item;
 		if (location == null)
 			return false;
-		if (location.getLatitude() == 0 && location.getLongitude() == 0)
+		if (location.latitude == 0 && location.longitude == 0)
 			return false;
 		if (ci.share <= 0)
 			return false;
