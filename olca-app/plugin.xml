@@ -505,7 +505,11 @@
                value="openLCA" />
          <property
                name="startupProgressRect"
-               value="0,382,540,5">
+               value="0,399,540,5">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
          </property>
          <property
                name="startupForegroundColor"
@@ -514,10 +518,6 @@
          <property
                name="startupMessageRect"
                value="7,525,445,20">
-         </property>
-         <property
-               name="preferenceCustomization"
-               value="plugin_customization.ini">
          </property>
       </product>
    </extension>
