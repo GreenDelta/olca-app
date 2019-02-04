@@ -79,13 +79,13 @@ public class CopyPaste {
 		return true;
 	}
 
-	private static ModelType getModelType(INavigationElement<?> element) {
-		if (element instanceof ModelElement)
-			return ((ModelElement) element).getContent().type;
-		if (element instanceof CategoryElement)
-			return ((CategoryElement) element).getContent().getModelType();
-		if (element instanceof ModelTypeElement)
-			return ((ModelTypeElement) element).getContent();
+	private static ModelType getModelType(INavigationElement<?> e) {
+		if (e instanceof ModelElement)
+			return ((ModelElement) e).getContent().type;
+		if (e instanceof CategoryElement)
+			return ((CategoryElement) e).getContent().modelType;
+		if (e instanceof ModelTypeElement)
+			return ((ModelTypeElement) e).getContent();
 		return ModelType.UNKNOWN;
 	}
 
@@ -204,9 +204,9 @@ public class CopyPaste {
 		if (isChild(newParent, category))
 			return; // do not create category cycles
 		if (oldParent != null)
-			oldParent.getChildCategories().remove(category);
+			oldParent.childCategories.remove(category);
 		if (newParent != null)
-			newParent.getChildCategories().add(category);
+			newParent.childCategories.add(category);
 		category.category = newParent;
 		CategoryDao dao = new CategoryDao(Database.get());
 		if (oldParent != null)
@@ -245,12 +245,12 @@ public class CopyPaste {
 		while (!elements.isEmpty()) {
 			CategoryElement current = elements.poll();
 			Category copy = current.getContent().clone();
-			copy.getChildCategories().clear();
+			copy.childCategories.clear();
 			copy.category = parent;
 			if (parent == null)
 				copy = new CategoryDao(Database.get()).insert(copy);
 			else {
-				parent.getChildCategories().add(copy);
+				parent.childCategories.add(copy);
 				copy = new CategoryDao(Database.get()).update(parent);
 			}
 			for (INavigationElement<?> child : current.getChildren())

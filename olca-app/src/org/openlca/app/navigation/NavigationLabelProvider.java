@@ -58,19 +58,16 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return getDatabaseImage((IDatabaseConfiguration) content);
 		if (content instanceof Group)
 			return Images.get((Group) content);
-		if (content instanceof ModelType)
-			return Images.get(dummyCategory((ModelType) content));
+		if (content instanceof ModelType) {
+			Category dummy = new Category();
+			dummy.modelType = (ModelType) content;
+			return Images.get(dummy);
+		}
 		if (content instanceof Category)
 			return Images.get((Category) content);
 		if (content instanceof BaseDescriptor)
 			return Images.get((BaseDescriptor) content);
 		return null;
-	}
-
-	private Category dummyCategory(ModelType type) {
-		Category dummy = new Category();
-		dummy.setModelType(type);
-		return dummy;
 	}
 
 	private Image getDatabaseImage(IDatabaseConfiguration config) {

@@ -28,9 +28,9 @@ public class DiffNodeBuilder {
 	}
 
 	private void putCategories(List<Category> categories) {
-		for (Category category : categories) {
-			this.categories.put(category.refId, category);
-			putCategories(category.getChildCategories());
+		for (Category c : categories) {
+			this.categories.put(c.refId, c);
+			putCategories(c.childCategories);
 		}
 	}
 

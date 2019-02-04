@@ -141,7 +141,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 				}
 			}
 			if (delete(element)) {
-				INavigationElement<?> typeElement = Navigator.findElement(category.getModelType());
+				INavigationElement<?> typeElement = Navigator.findElement(category.modelType);
 				Navigator.refresh(typeElement);
 			}
 		}
@@ -207,7 +207,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 			CategoryDao dao = new CategoryDao(Database.get());
 			Category parent = category.category;
 			if (parent != null) {
-				parent.getChildCategories().remove(category);
+				parent.childCategories.remove(category);
 				category.category = null;
 				dao.update(parent);
 			}

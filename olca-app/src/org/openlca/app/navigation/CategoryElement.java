@@ -32,7 +32,7 @@ public class CategoryElement extends NavigationElement<Category> {
 			return Collections.emptyList();
 		}
 		List<INavigationElement<?>> list = new ArrayList<>();
-		for (Category child : category.getChildCategories()) {
+		for (Category child : category.childCategories) {
 			list.add(new CategoryElement(this, child));
 		}
 		addModelElements(category, list);
@@ -42,12 +42,13 @@ public class CategoryElement extends NavigationElement<Category> {
 	private void addModelElements(Category category,
 			List<INavigationElement<?>> list) {
 		try {
-			CategorizedEntityDao<?, ?> dao = Daos.categorized(Database.get(), category.getModelType());
+			CategorizedEntityDao<?, ?> dao = Daos.categorized(
+					Database.get(), category.modelType);
 			if (dao == null)
 				return;
 			Optional<Category> optional = Optional.ofNullable(category);
-			for (CategorizedDescriptor descriptor : dao.getDescriptors(optional))
-				list.add(new ModelElement(this, descriptor));
+			for (CategorizedDescriptor d : dao.getDescriptors(optional))
+				list.add(new ModelElement(this, d));
 		} catch (Exception e) {
 			log.error("failed to get model elements: " + category, e);
 		}

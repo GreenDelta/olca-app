@@ -17,23 +17,23 @@ class RepositoryLabel {
 
 	static final String CHANGED_STATE = "> ";
 
-	static Image getWithOverlay(INavigationElement<?> element) {
+	static Image getWithOverlay(INavigationElement<?> e) {
 		if (!Database.isConnected())
 			return null;
-		if (element instanceof DatabaseElement)
+		if (e instanceof DatabaseElement)
 			return null;
-		if (element instanceof GroupElement)
+		if (e instanceof GroupElement)
 			return null;
-		if (element instanceof ModelTypeElement)
+		if (e instanceof ModelTypeElement)
 			return null;
-		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(element));
+		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(e));
 		if (diff.type != DiffType.NEW)
 			return null;
-		if (element instanceof CategoryElement) {
-			Category category = ((CategoryElement) element).getContent();
-			return Images.getForCategory(category.getModelType(), Overlay.ADDED);
-		} else if (element instanceof ModelElement) {
-			CategorizedDescriptor model = ((ModelElement) element).getContent();
+		if (e instanceof CategoryElement) {
+			Category category = ((CategoryElement) e).getContent();
+			return Images.getForCategory(category.modelType, Overlay.ADDED);
+		} else if (e instanceof ModelElement) {
+			CategorizedDescriptor model = ((ModelElement) e).getContent();
 			return Images.get(model.type, Overlay.ADDED);
 		}
 		return null;

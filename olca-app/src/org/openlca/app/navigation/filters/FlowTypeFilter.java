@@ -32,7 +32,7 @@ public class FlowTypeFilter extends ViewerFilter {
 			if (filterEmptyCategories(treeViewer)) {
 				CategoryElement catElem = (CategoryElement) element;
 				Category category = catElem.getContent();
-				if (category.getModelType() == ModelType.FLOW)
+				if (category.modelType == ModelType.FLOW)
 					select = containsOtherTypes(catElem);
 			}
 		}

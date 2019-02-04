@@ -32,13 +32,14 @@ public class NavigationTreeFilter extends ViewerFilter {
 		return hasModelChilds(element);
 	}
 
-	private boolean validCategory(CategoryElement element) {
-		Category category = element.getContent();
-		if (category == null)
+	private boolean validCategory(CategoryElement e) {
+		Category c = e.getContent();
+		if (c == null || c.modelType == null)
 			return false;
-		ModelType type = category.getModelType();
-		return (type.isOneOf(ModelType.PROCESS, ModelType.PRODUCT_SYSTEM))
-				&& hasModelChilds(element);
+		ModelType type = c.modelType;
+		return (type.isOneOf(
+				ModelType.PROCESS, ModelType.PRODUCT_SYSTEM))
+				&& hasModelChilds(e);
 	}
 
 	private boolean validModel(ModelElement element) {

@@ -34,20 +34,20 @@ class CreateModelAction extends Action implements INavigationAction {
 	private INavigationElement<?> parent;
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (element instanceof ModelTypeElement) {
-			ModelTypeElement e = (ModelTypeElement) element;
+	public boolean accept(INavigationElement<?> elem) {
+		if (elem instanceof ModelTypeElement) {
+			ModelTypeElement e = (ModelTypeElement) elem;
 			parent = e;
 			category = null;
 			type = e.getContent();
 			initDisplay();
 			return true;
 		}
-		if (element instanceof CategoryElement) {
-			CategoryElement e = (CategoryElement) element;
+		if (elem instanceof CategoryElement) {
+			CategoryElement e = (CategoryElement) elem;
 			parent = e;
 			category = e.getContent();
-			type = category.getModelType();
+			type = category.modelType;
 			initDisplay();
 			return true;
 		}

@@ -54,10 +54,10 @@ public class Images {
 		}
 	}
 
-	public static Image get(Category category) {
-		if (category == null)
+	public static Image get(Category c) {
+		if (c == null)
 			return null;
-		ModelIcon icon = categoryIcon(category.getModelType());
+		ModelIcon icon = categoryIcon(c.modelType);
 		if (icon == null)
 			return Icon.FOLDER.get();
 		return ImageManager.get(icon);
@@ -178,7 +178,7 @@ public class Images {
 	public static ImageDescriptor descriptor(Category category) {
 		if (category == null)
 			return null;
-		ModelIcon icon = categoryIcon(category.getModelType());
+		ModelIcon icon = categoryIcon(category.modelType);
 		if (icon == null)
 			return Icon.FOLDER.descriptor();
 		return ImageManager.descriptor(icon);

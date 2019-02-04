@@ -120,7 +120,7 @@ public class SyncView extends ViewPart {
 			if (dataset.type == ModelType.CATEGORY)
 				if (category.refId.equals(dataset.refId))
 					return true;
-			if (dataset.type == category.getModelType()) {
+			if (dataset.type == category.modelType) {
 				if (isContainedIn(category, dataset.categories))
 					return true;
 			}
