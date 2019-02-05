@@ -94,7 +94,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
-		createButtons(infoSection.getContainer());
+		createButton(infoSection.getContainer());
 		new ImpactSection(editor).render(body, toolkit);
 		createVariantsSection(body);
 		Section section = UI.section(body, toolkit, M.Parameters);
@@ -112,19 +112,17 @@ class ProjectSetupPage extends ModelPage<Project> {
 		variantViewer.setInput(variants);
 	}
 
-	private void createButtons(Composite composite) {
-		toolkit.createLabel(composite, "");
-		Composite buttonContainer = toolkit.createComposite(composite);
-		UI.gridLayout(buttonContainer, 2).marginHeight = 5;
-		createReportButton(buttonContainer);
-	}
-
-	private void createReportButton(Composite composite) {
-		Button button = toolkit.createButton(composite, M.Report, SWT.NONE);
-		UI.gridData(button, false, false).widthHint = 100;
-		button.setImage(Images.get(ModelType.PROJECT));
-		Controls.onSelect(button, (e) -> {
-			App.run(M.Calculate, new ReportCalculator(getModel(), editor.getReport()), () -> {
+	private void createButton(Composite comp) {
+		toolkit.createLabel(comp, "");
+		Composite c = toolkit.createComposite(comp);
+		UI.gridLayout(c, 2).marginHeight = 5;
+		Button b = toolkit.createButton(c, M.Report, SWT.NONE);
+		UI.gridData(b, false, false).widthHint = 100;
+		b.setImage(Images.get(ModelType.PROJECT));
+		Controls.onSelect(b, e -> {
+			ReportCalculator calc = new ReportCalculator(
+					getModel(), editor.getReport());
+			App.runWithProgress(M.Calculate, calc, () -> {
 				Reports.save(getModel(), editor.getReport(), database);
 				ReportViewer.open(editor.getReport());
 			});

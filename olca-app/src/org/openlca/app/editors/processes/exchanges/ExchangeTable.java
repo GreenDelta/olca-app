@@ -175,14 +175,14 @@ class ExchangeTable {
 				editor.getComments(), add, remove, formulaSwitch);
 		Tables.onDeletePressed(viewer, e -> onRemove());
 		Action openFlow = Actions.create(
-				"#Open flow", Images.descriptor(ModelType.FLOW), () -> {
+				M.OpenFlow, Images.descriptor(ModelType.FLOW), () -> {
 					Exchange e = Viewers.getFirstSelected(viewer);
 					if (e == null || e.flow == null)
 						return;
 					App.openEditor(e.flow);
 				});
 		Action openProvider = Actions.create(
-				"#Open provider", Images.descriptor(ModelType.PROCESS), () -> {
+				M.OpenProvider, Images.descriptor(ModelType.PROCESS), () -> {
 					Exchange e = Viewers.getFirstSelected(viewer);
 					if (e == null || e.defaultProviderId == 0L)
 						return;

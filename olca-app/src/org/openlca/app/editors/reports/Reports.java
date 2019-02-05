@@ -24,7 +24,6 @@ import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,20 +110,7 @@ public final class Reports {
 			return null;
 		try (FileInputStream fis = new FileInputStream(file);
 				Reader reader = new InputStreamReader(fis, "utf-8")) {
-			// TODO: the `isDisabled` field of project variants
-			// is currently not persisted in the database, thus we
-			// need to sync its state here; later, when it is persisted,
-			// we can remove this
 			Report r = new Gson().fromJson(reader, Report.class);
-			for (ProjectVariant pvar : project.variants) {
-				ReportVariant rvar = r.variants.stream()
-						.filter(rv -> Strings.nullOrEqual(
-								pvar.name, rv.name))
-						.findFirst().orElse(null);
-				if (rvar != null) {
-					pvar.isDisabled = rvar.isDisabled;
-				}
-			}
 			return r;
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(Reports.class);

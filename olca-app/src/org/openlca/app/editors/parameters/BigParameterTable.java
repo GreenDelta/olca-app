@@ -107,7 +107,7 @@ public class BigParameterTable extends SimpleFormEditor {
 			Composite filterComp = UI.formComposite(body, tk);
 			UI.gridData(filterComp, true, false);
 			filter = UI.formText(filterComp, tk, M.Filter);
-			filter.setToolTipText("#Type 'error' to filter "
+			filter.setToolTipText("Type 'error' to filter "
 					+ "evaluation errors.");
 			filter.addModifyListener(e -> {
 				String t = filter.getText();
@@ -122,7 +122,7 @@ public class BigParameterTable extends SimpleFormEditor {
 			});
 
 			table = Tables.createViewer(
-					body, M.Name, "#Parameter scope",
+					body, M.Name, M.ParameterScope,
 					M.Value, M.Description);
 			double w = 1.0 / 4.0;
 			Tables.bindColumnWidths(table, w, w, w, w);
@@ -156,8 +156,8 @@ public class BigParameterTable extends SimpleFormEditor {
 						ParameterUsagePage.show(p.parameter.name);
 					});
 			Action onEvaluate = Actions.create(
-					"#Evaluate formulas", Icon.RUN.descriptor(), () -> {
-						App.runWithProgress("#Evaluate formulas ...",
+					M.EvaluateFormulas, Icon.RUN.descriptor(), () -> {
+						App.runWithProgress(M.EvaluateFormulas,
 								this::evaluateFormulas, () -> {
 									table.setInput(params);
 									filter.setText("");

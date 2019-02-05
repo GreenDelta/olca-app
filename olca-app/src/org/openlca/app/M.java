@@ -255,6 +255,8 @@ public class M extends NLS {
 	public static String DoYouReallyWantToDelete;
 	public static String Dot;
 	public static String DownloadingData;
+
+	// E
 	public static String EcoSpold2Export;
 	public static String EcoSpoldConfiguration;
 	public static String Economic;
@@ -273,6 +275,7 @@ public class M extends NLS {
 	public static String ErrorPopupTitle;
 	public static String Errors;
 	public static String EstimatedTimeRemaining;
+	public static String EvaluateFormulas;
 	public static String EvaluateLocations;
 	public static String EvaluatingLocations;
 	public static String EvaluationSchema;
@@ -453,6 +456,7 @@ public class M extends NLS {
 	public static String Layout;
 	public static String LayoutAs;
 	public static String LciaCategoryDescriptionTable;
+	public static String LCIAChecks;
 	public static String LciaResultTable;
 	public static String LibgfortanInfo;
 	public static String Library;
@@ -589,11 +593,13 @@ public class M extends NLS {
 	public static String Open;
 	public static String OpenDatabase;
 	public static String OpenEditor;
+	public static String OpenFlow;
 	public static String OpenInEditor;
 	public static String OpenLCALog;
 	public static String OpenLogFile;
 	public static String OpenMiniatureView;
 	public static String OpenPluginManager;
+	public static String OpenProvider;
 	public static String OpenUpdateManager;
 	public static String Other;
 	public static String OutOfMemory;
@@ -607,6 +613,7 @@ public class M extends NLS {
 	public static String ParameterAggregationFunction;
 	public static String ParameterAlreadyAdded;
 	public static String ParameterDescriptionTable;
+	public static String ParameterScope;
 	public static String ParameterValueTable;
 	public static String ParameterWithSameNameExists;
 	public static String ParameterWithSameNameExistsInMethod;

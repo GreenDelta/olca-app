@@ -51,7 +51,7 @@ public class ImpactChecksPage extends FormPage {
 			FormEditor editor,
 			CalculationSetup setup,
 			ContributionResult result) {
-		super(editor, "ImpactChecksPage", "#LCIA Checks");
+		super(editor, "ImpactChecksPage", M.LCIAChecks);
 		this.result = result;
 		this.setup = setup;
 	}
