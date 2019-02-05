@@ -6,7 +6,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.editors.comments.CommentDialogModifier;
@@ -22,23 +21,21 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.SourceDescriptor;
 
 class SourceViewer extends AbstractTableViewer<Source> {
 
 	private final ProcessEditor editor;
 	private final SourceDao sourceDao;
-	private final ScrolledForm form;
 
-	public SourceViewer(Composite parent, IDatabase database, ProcessEditor editor, ScrolledForm form) {
+	public SourceViewer(ProcessEditor editor, Composite parent, IDatabase db) {
 		super(parent);
 		getViewer().getTable().setLinesVisible(false);
 		getViewer().getTable().setHeaderVisible(false);
 		getViewer().setLabelProvider(new LabelProvider());
-		this.sourceDao = new SourceDao(database);
+		this.sourceDao = new SourceDao(db);
 		this.editor = editor;
-		this.form = form;
-		getModifySupport().bind("", new CommentDialogModifier<Source>(editor.getComments(), CommentPaths::get));
+		getModifySupport().bind("", new CommentDialogModifier<Source>(
+				editor.getComments(), CommentPaths::get));
 		Tables.bindColumnWidths(getViewer(), 0.97);
 		addDoubleClickHandler();
 	}
@@ -72,31 +69,39 @@ class SourceViewer extends AbstractTableViewer<Source> {
 
 	@OnAdd
 	protected void onCreate() {
-		BaseDescriptor[] descriptors = ModelSelectionDialog.multiSelect(ModelType.SOURCE);
+		BaseDescriptor[] descriptors = ModelSelectionDialog
+				.multiSelect(ModelType.SOURCE);
 		if (descriptors == null)
 			return;
-		for (BaseDescriptor descriptor : descriptors) {
-			if (!(descriptor instanceof SourceDescriptor))
-				continue;
-			add((SourceDescriptor) descriptor);
+		boolean added = false;
+		for (BaseDescriptor d : descriptors) {
+			if (add(d)) {
+				added = true;
+			}
 		}
+		if (!added)
+			return;
 		ProcessDocumentation doc = editor.getModel().documentation;
 		setInput(doc.sources);
-		form.reflow(true);
 		editor.setDirty(true);
 	}
 
-	private void add(SourceDescriptor descriptor) {
-		Source source = sourceDao.getForId(descriptor.id);
-		Process process = editor.getModel();
-		ProcessDocumentation doc = process.documentation;
+	private boolean add(BaseDescriptor d) {
+		if (d == null)
+			return false;
+		Source source = sourceDao.getForId(d.id);
+		if (source == null)
+			return false;
+		Process p = editor.getModel();
+		ProcessDocumentation doc = p.documentation;
 		if (doc == null) {
 			doc = new ProcessDocumentation();
-			process.documentation = doc;
+			p.documentation = doc;
 		}
-		if (doc.sources.contains(source))
-			return;
-		doc.sources.add(source);
+		if (doc.sources.contains(source)) {
+			return false;
+		}
+		return doc.sources.add(source);
 	}
 
 	@OnRemove
@@ -110,13 +115,15 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		}
 		setInput(doc.sources);
 		editor.setDirty(true);
-		form.reflow(true);
 	}
 
 	@OnDrop
-	protected void onDrop(SourceDescriptor descriptor) {
-		if (descriptor != null)
-			add(descriptor);
+	protected void onDrop(BaseDescriptor d) {
+		if (!add(d))
+			return;
+		ProcessDocumentation doc = editor.getModel().documentation;
+		setInput(doc.sources);
+		editor.setDirty(true);
 	}
 
 	private class LabelProvider extends BaseLabelProvider implements ITableLabelProvider {

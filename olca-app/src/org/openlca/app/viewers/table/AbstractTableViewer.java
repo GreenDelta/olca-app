@@ -85,11 +85,11 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	}
 
 	private void addDropSupport(TableViewer viewer) {
-		final Transfer transferType = ModelTransfer.getInstance();
+		Transfer transferType = ModelTransfer.getInstance();
 		DropTarget dropTarget = new DropTarget(viewer.getTable(), DND.DROP_COPY
 				| DND.DROP_MOVE | DND.DROP_DEFAULT);
 		dropTarget.setTransfer(new Transfer[] { transferType });
-		final AbstractTableViewer<T> thisObject = this;
+		AbstractTableViewer<T> thisObject = this;
 		dropTarget.addDropListener(new DropTargetAdapter() {
 			@Override
 			public void drop(DropTargetEvent event) {

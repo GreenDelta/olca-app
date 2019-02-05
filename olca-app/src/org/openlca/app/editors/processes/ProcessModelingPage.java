@@ -65,11 +65,11 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 	private void createSourcesSection(Composite parent) {
 		Section section = UI.section(parent, toolkit, M.Sources);
-		Composite composite = toolkit.createComposite(section);
-		UI.gridLayout(composite, 1);
-		UI.gridData(composite, true, true);
-		section.setClient(composite);
-		SourceViewer viewer = new SourceViewer(composite, Database.get(), editor, form);
+		Composite comp = toolkit.createComposite(section);
+		UI.gridLayout(comp, 1);
+		UI.gridData(comp, true, true);
+		section.setClient(comp);
+		SourceViewer viewer = new SourceViewer(editor, comp, Database.get());
 		viewer.setInput(getModel());
 		CommentAction.bindTo(section, viewer, "documentation.sources", editor.getComments());
 		editor.onSaved(() -> viewer.setInput(getModel()));
