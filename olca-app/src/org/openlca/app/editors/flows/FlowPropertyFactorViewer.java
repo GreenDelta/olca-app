@@ -36,16 +36,8 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 
 class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
-
-	private static final String NAME = M.Name;
-	private static final String CONVERSION_FACTOR = M.ConversionFactor;
-	private static final String REFERENCE_UNIT = M.ReferenceUnit;
-	private static final String FORMULA = M.Formula;
-	private static final String IS_REFERENCE = M.IsReference;
-	private static final String COMMENT = "";
 
 	private final EntityCache cache;
 	private final FlowEditor editor;
@@ -56,9 +48,10 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		ModifySupport<FlowPropertyFactor> ms = getModifySupport();
 		this.editor = editor;
 		this.cache = cache;
-		ms.bind(CONVERSION_FACTOR, new ConversionModifier());
-		ms.bind(IS_REFERENCE, new ReferenceModifier());
-		ms.bind("", new CommentDialogModifier<FlowPropertyFactor>(editor.getComments(), CommentPaths::get));
+		ms.bind(M.ConversionFactor, new ConversionModifier());
+		ms.bind(M.IsReference, new ReferenceModifier());
+		ms.bind("", new CommentDialogModifier<FlowPropertyFactor>(
+				editor.getComments(), CommentPaths::get));
 		Tables.bindColumnWidths(getViewer(), 0.2, 0.2, 0.2, 0.2, 0.17);
 		addDoubleClickHandler();
 		getViewer().getTable().getColumns()[1].setAlignment(SWT.RIGHT);
@@ -91,28 +84,33 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { NAME, CONVERSION_FACTOR, REFERENCE_UNIT, FORMULA, IS_REFERENCE, COMMENT };
+		return new String[] {
+				M.Name, M.ConversionFactor, M.ReferenceUnit,
+				M.Formula, M.IsReference, "" };
 	}
 
 	@OnAdd
 	protected void onCreate() {
-		BaseDescriptor[] descriptors = ModelSelectionDialog.multiSelect(ModelType.FLOW_PROPERTY);
+		BaseDescriptor[] descriptors = ModelSelectionDialog
+				.multiSelect(ModelType.FLOW_PROPERTY);
 		if (descriptors == null)
 			return;
-		for (BaseDescriptor descriptor : descriptors) {
-			if (!(descriptor instanceof FlowPropertyDescriptor))
-				continue;
-			add((FlowPropertyDescriptor) descriptor);
+		for (BaseDescriptor d : descriptors) {
+			add(d);
 		}
 	}
 
-	private void add(FlowPropertyDescriptor d) {
-		FlowProperty property = cache.get(FlowProperty.class, d.id);
+	private void add(BaseDescriptor d) {
+		if (d == null)
+			return;
+		FlowProperty prop = cache.get(FlowProperty.class, d.id);
+		if (prop == null)
+			return;
 		Flow flow = editor.getModel();
-		if (flow.getFactor(property) != null)
+		if (flow.getFactor(prop) != null)
 			return;
 		FlowPropertyFactor factor = new FlowPropertyFactor();
-		factor.flowProperty = property;
+		factor.flowProperty = prop;
 		factor.conversionFactor = 1;
 		flow.flowPropertyFactors.add(factor);
 		setInput(flow.flowPropertyFactors);
@@ -144,7 +142,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	}
 
 	@OnDrop
-	protected void onDrop(FlowPropertyDescriptor d) {
+	protected void onDrop(BaseDescriptor d) {
 		if (d != null)
 			add(d);
 	}
