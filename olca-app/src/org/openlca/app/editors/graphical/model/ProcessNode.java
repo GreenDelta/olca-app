@@ -8,11 +8,13 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.util.Labels;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.Exchange;
@@ -36,8 +38,23 @@ public class ProcessNode extends Node {
 	private boolean minimized = true;
 	private boolean marked = false;
 
-	public ProcessNode(CategorizedDescriptor process) {
-		this.process = process;
+	public ProcessNode(CategorizedDescriptor d) {
+		this.process = d;
+	}
+
+	/**
+	 * Creates the process node for the given ID. Note that the ID may refer to
+	 * a process or product system (a sub-system). If it is an invalid ID we
+	 * return null, so you need to check that.
+	 */
+	public static ProcessNode create(long id) {
+		CategorizedDescriptor d = null;
+		EntityCache cache = Cache.getEntityCache();
+		d = cache.get(ProcessDescriptor.class, id);
+		if (d == null) {
+			d = cache.get(ProductSystemDescriptor.class, id);
+		}
+		return d != null ? new ProcessNode(d) : null;
 	}
 
 	@Override

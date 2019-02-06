@@ -7,12 +7,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,18 +90,18 @@ public final class NodeLayoutStore {
 		}
 	}
 
-	private static void apply(NodeLayoutInfo layout, ProductSystemNode model) throws NodeLayoutException {
-		ProcessNode node = model.getProcessNode(layout.getId());
+	private static void apply(NodeLayoutInfo info, ProductSystemNode model)
+			throws NodeLayoutException {
+		ProcessNode node = model.getProcessNode(info.getId());
 		if (node != null) {
-			node.apply(layout);
+			node.apply(info);
 			return;
 		}
-		ProcessDescriptor descriptor = Cache.getEntityCache().get(ProcessDescriptor.class, layout.getId());
-		if (descriptor == null)
+		node = ProcessNode.create(info.getId());
+		if (node == null)
 			return;
-		node = new ProcessNode(descriptor);
 		model.add(node);
-		node.apply(layout);
+		node.apply(info);
 		model.editor.createNecessaryLinks(node);
 	}
 

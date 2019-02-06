@@ -47,10 +47,10 @@ public class ProductSystemNode extends Node {
 	public void highlightMatchingExchanges(ExchangeNode toMatch) {
 		if (toMatch == null)
 			return;
-		for (ProcessNode process : getChildren()) {
-			if (!process.isVisible() || process.isMinimized())
+		for (ProcessNode node : getChildren()) {
+			if (!node.isVisible() || node.isMinimized())
 				continue;
-			for (ExchangeNode e : process.getExchangeNodes()) {
+			for (ExchangeNode e : node.getExchangeNodes()) {
 				if (toMatch.matches(e)) {
 					e.setHighlighted(true);
 				}
