@@ -18,19 +18,21 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 
 import com.google.common.base.Objects;
 
 public class ProcessNode extends Node {
 
-	public final ProcessDescriptor process;
+	public final CategorizedDescriptor process;
 	public final List<Link> links = new ArrayList<>();
 	private Rectangle xyLayoutConstraints;
 	private boolean minimized = true;
 	private boolean marked = false;
 
-	public ProcessNode(ProcessDescriptor process) {
+	public ProcessNode(CategorizedDescriptor process) {
 		this.process = process;
 	}
 
@@ -254,11 +256,18 @@ public class ProcessNode extends Node {
 	}
 
 	public int getMinimumHeight() {
-		if (isMinimized())
-			if (process.processType == ProcessType.LCI_RESULT)
+		if (isMinimized()) {
+			// LCI results and product systems have an outer
+			// border and this are a bit larger
+			if (process instanceof ProductSystemDescriptor)
 				return ProcessFigure.MINIMUM_HEIGHT + 3;
-			else
-				return ProcessFigure.MINIMUM_HEIGHT;
+			if (process instanceof ProcessDescriptor) {
+				ProcessDescriptor p = (ProcessDescriptor) process;
+				return p.processType == ProcessType.LCI_RESULT
+						? ProcessFigure.MINIMUM_HEIGHT + 3
+						: ProcessFigure.MINIMUM_HEIGHT;
+			}
+		}
 		return figure().getMinimumHeight();
 	}
 

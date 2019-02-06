@@ -205,16 +205,10 @@ public class Labels {
 		}
 	}
 
-	public static String processType(Process process) {
-		if (process == null)
+	public static String processType(ProcessType t) {
+		if (t == null)
 			return null;
-		return processType(process.processType);
-	}
-
-	public static String processType(ProcessType processType) {
-		if (processType == null)
-			return null;
-		switch (processType) {
+		switch (t) {
 		case LCI_RESULT:
 			return M.SystemProcess;
 		case UNIT_PROCESS:
@@ -224,10 +218,10 @@ public class Labels {
 		}
 	}
 
-	public static String allocationMethod(AllocationMethod allocationMethod) {
-		if (allocationMethod == null)
+	public static String allocationMethod(AllocationMethod m) {
+		if (m == null)
 			return null;
-		switch (allocationMethod) {
+		switch (m) {
 		case CAUSAL:
 			return M.Causal;
 		case ECONOMIC:
@@ -243,16 +237,10 @@ public class Labels {
 		}
 	}
 
-	public static String flowPropertyType(FlowProperty property) {
-		if (property == null)
+	public static String flowPropertyType(FlowPropertyType t) {
+		if (t == null)
 			return null;
-		return flowPropertyType(property.flowPropertyType);
-	}
-
-	public static String flowPropertyType(FlowPropertyType type) {
-		if (type == null)
-			return null;
-		switch (type) {
+		switch (t) {
 		case ECONOMIC:
 			return M.Economic;
 		case PHYSICAL:

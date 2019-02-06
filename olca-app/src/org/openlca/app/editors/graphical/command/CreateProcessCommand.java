@@ -4,14 +4,16 @@ import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class CreateProcessCommand extends Command {
 
 	private final ProductSystemNode model;
-	private final ProcessDescriptor process;
+	private final CategorizedDescriptor process;
 
-	public CreateProcessCommand(ProductSystemNode model, ProcessDescriptor process) {
+	public CreateProcessCommand(
+			ProductSystemNode model,
+			CategorizedDescriptor process) {
 		this.model = model;
 		this.process = process;
 	}

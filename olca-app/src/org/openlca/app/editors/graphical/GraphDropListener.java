@@ -8,7 +8,8 @@ import org.eclipse.swt.dnd.Transfer;
 import org.openlca.app.editors.graphical.command.CommandUtil;
 import org.openlca.app.editors.graphical.command.CreateProcessCommand;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class GraphDropListener extends DropTargetAdapter {
 
@@ -16,43 +17,34 @@ class GraphDropListener extends DropTargetAdapter {
 	private CommandStack commandStack;
 	private Transfer transferType;
 
-	GraphDropListener(ProductSystemNode model, Transfer transferType, CommandStack commandStack) {
+	GraphDropListener(ProductSystemNode model,
+			Transfer transfer, CommandStack commands) {
 		this.model = model;
-		this.transferType = transferType;
-		this.commandStack = commandStack;
+		this.transferType = transfer;
+		this.commandStack = commands;
 	}
 
 	@Override
-	public void drop(DropTargetEvent event) {
-		boolean valid = validateInput(event);
-		if (!valid)
+	public void drop(DropTargetEvent e) {
+		if (!transferType.isSupportedType(e.currentDataType))
 			return;
-		Object[] data = (Object[]) event.data;
-		ProcessDescriptor[] descriptors = new ProcessDescriptor[data.length];
-		for (int i = 0; i < data.length; i++)
-			descriptors[i] = (ProcessDescriptor) data[i];
+		if (!(e.data instanceof Object[]))
+			return;
+		Object[] data = (Object[]) e.data;
+
 		Command command = null;
-		for (ProcessDescriptor process : descriptors) {
-			Command cmd = new CreateProcessCommand(model, process);
-			command = CommandUtil.chain(cmd, command);
+		for (Object obj : data) {
+			if (!(obj instanceof CategorizedDescriptor))
+				continue;
+			CategorizedDescriptor d = (CategorizedDescriptor) obj;
+			if (d.type != ModelType.PRODUCT_SYSTEM
+					&& d.type != ModelType.PROCESS)
+				continue;
+			Command c = new CreateProcessCommand(model, d);
+			command = CommandUtil.chain(c, command);
 		}
 		if (command == null || !command.canExecute())
 			return;
 		commandStack.execute(command);
 	}
-
-	private boolean validateInput(DropTargetEvent event) {
-		if (!transferType.isSupportedType(event.currentDataType))
-			return false;
-		if (!(event.data instanceof Object[]))
-			return false;
-		Object[] data = (Object[]) event.data;
-		if (data.length == 0)
-			return false;
-		for (Object obj : data)
-			if (!(obj instanceof ProcessDescriptor))
-				return false;
-		return true;
-	}
-
 }

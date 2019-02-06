@@ -28,6 +28,9 @@ import org.openlca.app.editors.graphical.model.ProcessExpander.Side;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 
 class ProcessFigure extends Figure {
 
@@ -44,15 +47,23 @@ class ProcessFigure extends Figure {
 	private ProcessExpander rightExpander;
 	private int minimumHeight = 0;
 
-	ProcessFigure(ProcessNode processNode) {
-		this.node = processNode;
+	ProcessFigure(ProcessNode node) {
+		this.node = node;
 		initializeFigure();
 		createHeader();
 		addMouseListener(new DoubleClickListener());
 	}
 
 	private void initializeFigure() {
-		setToolTip(new Label(Labels.processType(node.process.processType) + ": " + node.getName()));
+		String tooltip = null;
+		if (node.process instanceof ProcessDescriptor) {
+			ProcessDescriptor d = (ProcessDescriptor) node.process;
+			tooltip = Labels.processType(d.processType)
+					+ ": " + node.getName();
+		} else {
+			tooltip = M.ProductSystem + ": " + node.getName();
+		}
+		setToolTip(new Label(tooltip));
 		setForegroundColor(TEXT_COLOR);
 		setBounds(new Rectangle(0, 0, 0, 0));
 		setSize(calculateSize());
@@ -112,19 +123,19 @@ class ProcessFigure extends Figure {
 	}
 
 	@Override
-	protected void paintFigure(Graphics graphics) {
-		graphics.pushState();
-		graphics.setBackgroundColor(ColorConstants.white);
-		graphics.fillRectangle(new Rectangle(getLocation(), getSize()));
-		paintTop(graphics);
+	protected void paintFigure(Graphics g) {
+		g.pushState();
+		g.setBackgroundColor(ColorConstants.white);
+		g.fillRectangle(new Rectangle(getLocation(), getSize()));
+		paintTop(g);
 		if (!node.isMinimized() || Animation.isRunning())
-			paintTable(graphics);
-		graphics.popState();
-		super.paintFigure(graphics);
+			paintTable(g);
+		g.popState();
+		super.paintFigure(g);
 	}
 
 	private void paintBorder() {
-		if (node.process.processType == ProcessType.LCI_RESULT) {
+		if (isLCI()) {
 			LineBorder outer = new LineBorder(LINE_COLOR, 1);
 			LineBorder innerInner = new LineBorder(LINE_COLOR, 1);
 			LineBorder innerOuter = new LineBorder(ColorConstants.white, 1);
@@ -141,7 +152,7 @@ class ProcessFigure extends Figure {
 		Image file = null;
 		if (node.isMarked())
 			file = Icon.PROCESS_BG_MARKED.get();
-		else if (node.process.processType == ProcessType.LCI_RESULT)
+		else if (isLCI())
 			file = Icon.PROCESS_BG_LCI.get();
 		else
 			file = Icon.PROCESS_BG.get();
@@ -215,7 +226,7 @@ class ProcessFigure extends Figure {
 
 	Dimension calculateSize() {
 		int offSet = 0;
-		if (node.process.processType == ProcessType.LCI_RESULT)
+		if (isLCI())
 			offSet = 3;
 		int x = MINIMUM_WIDTH + offSet;
 		if (getSize() != null && getSize().width > x)
@@ -243,10 +254,20 @@ class ProcessFigure extends Figure {
 					outputs++;
 		int length = Math.max(inputs, outputs);
 		int offSet = 0;
-		if (node.process.processType == ProcessType.LCI_RESULT)
+		if (isLCI())
 			offSet = 3;
 		int startExchanges = MINIMUM_HEIGHT + 4 * MARGIN_HEIGHT + TEXT_HEIGHT + offSet;
 		minimumHeight = startExchanges + length * (TEXT_HEIGHT + 1);
+	}
+
+	private boolean isLCI() {
+		CategorizedDescriptor d = node.process;
+		if (d instanceof ProductSystemDescriptor)
+			return true;
+		if (!(d instanceof ProcessDescriptor))
+			return false;
+		ProcessDescriptor p = (ProcessDescriptor) d;
+		return p.processType == ProcessType.LCI_RESULT;
 	}
 
 	private class DoubleClickListener implements MouseListener {
@@ -258,8 +279,8 @@ class ProcessFigure extends Figure {
 		}
 
 		@Override
-		public void mousePressed(MouseEvent arg0) {
-			if (arg0.button == 1) {
+		public void mousePressed(MouseEvent e) {
+			if (e.button == 1) {
 				if (firstClick) {
 					firstClick = false;
 					TimerTask timerTask = new TimerTask() {
@@ -281,7 +302,6 @@ class ProcessFigure extends Figure {
 
 		@Override
 		public void mouseReleased(MouseEvent me) {
-
 		}
 
 	}

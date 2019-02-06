@@ -80,11 +80,14 @@ public class GraphConfig {
 			}
 
 		});
-		Transfer transferType = ModelTransfer.getInstance();
-		DropTarget dropTarget = new DropTarget(viewer.getControl(), DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
-		dropTarget.setTransfer(new Transfer[] { transferType });
-		dropTarget.addDropListener(new GraphDropListener(model, transferType, commandStack));
-		viewer.getEditDomain().setActiveTool(new PanningSelectionTool());
+		Transfer transfer = ModelTransfer.getInstance();
+		DropTarget dropTarget = new DropTarget(viewer.getControl(),
+				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
+		dropTarget.setTransfer(new Transfer[] { transfer });
+		dropTarget.addDropListener(new GraphDropListener(
+				model, transfer, commandStack));
+		viewer.getEditDomain().setActiveTool(
+				new PanningSelectionTool());
 		viewer.setContents(model);
 	}
 
