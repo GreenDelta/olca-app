@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
@@ -13,11 +14,14 @@ import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
@@ -156,15 +160,25 @@ public class ProcessNode extends Node {
 	}
 
 	private void initializeExchangeNodes() {
-		ProcessDao dao = new ProcessDao(Database.get());
-		Process process = dao.getForId(this.process.id);
-		List<Exchange> list = new ArrayList<>();
-		for (Exchange e : process.exchanges) {
-			if (e.flow.flowType == FlowType.ELEMENTARY_FLOW)
-				continue;
-			list.add(e);
+		if (this.process.type == ModelType.PROCESS) {
+			ProcessDao dao = new ProcessDao(Database.get());
+			Process p = dao.getForId(this.process.id);
+			if (p == null)
+				return;
+			List<Exchange> list = new ArrayList<>();
+			for (Exchange e : p.exchanges) {
+				if (e.flow.flowType == FlowType.ELEMENTARY_FLOW)
+					continue;
+				list.add(e);
+			}
+			add(new IONode(list));
+		} else if (this.process.type == ModelType.PRODUCT_SYSTEM) {
+			ProductSystemDao dao = new ProductSystemDao(Database.get());
+			ProductSystem s = dao.getForId(this.process.id);
+			if (s != null && s.referenceExchange != null) {
+				add(new IONode(Arrays.asList(s.referenceExchange)));
+			}
 		}
-		add(new IONode(list));
 	}
 
 	public void refresh() {
