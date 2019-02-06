@@ -76,16 +76,16 @@ public class ProcessNode extends Node {
 	}
 
 	public void apply(NodeLayoutInfo layout) {
-		minimized = layout.isMinimized();
-		marked = layout.isMarked();
+		minimized = layout.minimized;
+		marked = layout.marked;
 		if (!minimized)
 			if (getChildren().isEmpty())
 				initializeExchangeNodes();
 		Dimension prefSize = figure.getPreferredSize(-1, -1);
 		xyLayoutConstraints = new Rectangle(layout.getLocation(), prefSize);
 		figure.setBounds(getXyLayoutConstraints());
-		figure().getLeftExpander().setExpanded(layout.isExpandedLeft());
-		figure().getRightExpander().setExpanded(layout.isExpandedRight());
+		figure().getLeftExpander().setExpanded(layout.expandedLeft);
+		figure().getRightExpander().setExpanded(layout.expandedRight);
 		figure().refresh();
 	}
 

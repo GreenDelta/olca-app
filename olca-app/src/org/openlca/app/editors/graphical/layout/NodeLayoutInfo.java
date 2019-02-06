@@ -5,23 +5,19 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public class NodeLayoutInfo {
 
-	private long id;
-	private int x;
-	private int y;
-	private boolean minimized;
-	private boolean expandedLeft;
-	private boolean expandedRight;
-	private boolean marked;
+	/**
+	 * The ID of the process or product system.
+	 */
+	public long id;
 
-	public NodeLayoutInfo(long id, int x, int y, boolean minimized,
-			boolean expandedLeft, boolean expandedRight, boolean marked) {
-		this.id = id;
-		this.x = x;
-		this.y = y;
-		this.minimized = minimized;
-		this.expandedLeft = expandedLeft;
-		this.expandedRight = expandedRight;
-		this.marked = marked;
+	public int x;
+	public int y;
+	public boolean minimized;
+	public boolean expandedLeft;
+	public boolean expandedRight;
+	public boolean marked;
+
+	public NodeLayoutInfo() {
 	}
 
 	public NodeLayoutInfo(ProcessNode node) {
@@ -34,28 +30,7 @@ public class NodeLayoutInfo {
 		this.marked = node.isMarked();
 	}
 
-	public long getId() {
-		return id;
-	}
-
 	public Point getLocation() {
 		return new Point(x, y);
 	}
-
-	public boolean isMinimized() {
-		return minimized;
-	}
-
-	public boolean isExpandedLeft() {
-		return expandedLeft;
-	}
-
-	public boolean isExpandedRight() {
-		return expandedRight;
-	}
-
-	public boolean isMarked() {
-		return marked;
-	}
-
 }
