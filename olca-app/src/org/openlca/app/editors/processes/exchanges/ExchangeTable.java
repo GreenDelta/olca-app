@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TableViewer;
@@ -33,7 +32,6 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.core.database.FlowDao;
-import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -44,8 +42,6 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The table for the display and editing of inputs or outputs of process
@@ -242,33 +238,10 @@ class ExchangeTable {
 	private void add(List<BaseDescriptor> descriptors) {
 		if (descriptors.isEmpty())
 			return;
-
 		Process process = editor.getModel();
 		boolean added = false;
 		for (BaseDescriptor d : descriptors) {
-			long flowId = -1;
-			if (d.type == ModelType.FLOW) {
-				flowId = d.id;
-			} else if (d.type == ModelType.PROCESS) {
-
-				// query the reference flow of the process
-				String sql = "select e.f_flow from tbl_processes p "
-						+ "inner join tbl_exchanges e on "
-						+ "p.f_quantitative_reference = e.id "
-						+ "where p.id = " + d.id;
-				try {
-					AtomicLong id = new AtomicLong(flowId);
-					NativeSql.on(Database.get()).query(sql, r -> {
-						id.set(r.getLong(1));
-						return false;
-					});
-					flowId = id.get();
-				} catch (Exception e) {
-					Logger log = LoggerFactory.getLogger(getClass());
-					log.error("Failed to query ref. flow: " + sql, e);
-				}
-			}
-
+			long flowId = Exchanges.refFlowID(d);
 			if (flowId < 1)
 				continue;
 			FlowDao dao = new FlowDao(Database.get());
@@ -283,7 +256,6 @@ class ExchangeTable {
 			}
 			added = true;
 		}
-
 		if (!added)
 			return;
 		viewer.setInput(process.exchanges);
