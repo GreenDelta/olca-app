@@ -67,8 +67,9 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		productSystem = setup.productSystem;
 		linkSearchMap = new ProcessLinkSearchMap(productSystem.processLinks);
 		sankeyResult = new SankeyResult(productSystem, result);
-		if (productSystem != null)
+		if (productSystem != null) {
 			setPartName(productSystem.name);
+		}
 	}
 
 	private void createConnections(long startProcessId) {

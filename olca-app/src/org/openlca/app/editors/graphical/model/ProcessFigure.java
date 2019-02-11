@@ -152,6 +152,8 @@ class ProcessFigure extends Figure {
 		Image file = null;
 		if (node.isMarked())
 			file = Icon.PROCESS_BG_MARKED.get();
+		if (node.process instanceof ProductSystemDescriptor)
+			file = Icon.PROCESS_BG_SYS.get();
 		else if (isLCI())
 			file = Icon.PROCESS_BG_LCI.get();
 		else
