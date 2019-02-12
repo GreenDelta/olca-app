@@ -39,7 +39,6 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -123,11 +122,13 @@ public class BigParameterTable extends SimpleFormEditor {
 
 			table = Tables.createViewer(
 					body, M.Name, M.ParameterScope,
-					M.Value, M.Description);
-			double w = 1.0 / 4.0;
-			Tables.bindColumnWidths(table, w, w, w, w);
-			table.setLabelProvider(new Label());
-			// Actions: open, usage, edit value
+					M.Value, M.Formula, M.Description);
+			double w = 1.0 / 5.0;
+			Tables.bindColumnWidths(table, w, w, w, w, w);
+			Label label = new Label();
+			table.setLabelProvider(label);
+			Viewers.sortByLabels(table, label, 0, 1, 3, 4);
+			Viewers.sortByDouble(table, (Param p) -> p.parameter.value, 2);
 
 			bindActions();
 			mform.reflow(true);
@@ -230,8 +231,8 @@ public class BigParameterTable extends SimpleFormEditor {
 		}
 
 		/**
-		 * Bind the parameter values and formulas to the respective scopes of a
-		 * formula interpreter.
+		 * Bind the parameter values and formulas to the respective scopes of a formula
+		 * interpreter.
 		 */
 		private FormulaInterpreter buildInterpreter() {
 			FormulaInterpreter fi = new FormulaInterpreter();
@@ -328,9 +329,9 @@ public class BigParameterTable extends SimpleFormEditor {
 	private class Param implements Comparable<Param> {
 
 		/**
-		 * We have the owner ID as a separate field because a parameter could
-		 * have a link to an owner that does not exist anymore in the database
-		 * (it is an error but such things seem to happen).
+		 * We have the owner ID as a separate field because a parameter could have a
+		 * link to an owner that does not exist anymore in the database (it is an error
+		 * but such things seem to happen).
 		 */
 		Long ownerID;
 
@@ -438,12 +439,14 @@ public class BigParameterTable extends SimpleFormEditor {
 					return "!! missing !!";
 				return Labels.getDisplayName(param.owner);
 			case 2:
-				return p.isInputParameter
-						? Double.toString(p.value)
-						: param.evalError
-								? "!! error !! " + p.formula
-								: p.formula + " = " + Numbers.format(p.value);
+				return Double.toString(p.value);
 			case 3:
+				if (p.isInputParameter)
+					return null;
+				return param.evalError
+						? "!! error !! " + p.formula
+						: p.formula;
+			case 4:
 				return p.description;
 			default:
 				return null;
