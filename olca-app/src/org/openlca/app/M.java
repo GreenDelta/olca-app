@@ -275,7 +275,7 @@ public class M extends NLS {
 	public static String ErrorPopupTitle;
 	public static String Errors;
 	public static String EstimatedTimeRemaining;
-	public static String EvaluateFormulas;
+	public static String EvaluateAllFormulas;
 	public static String EvaluateLocations;
 	public static String EvaluatingLocations;
 	public static String EvaluationSchema;

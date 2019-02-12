@@ -17,7 +17,10 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -37,9 +40,9 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -92,6 +95,7 @@ public class BigParameterTable extends SimpleFormEditor {
 		private final List<Param> params = new ArrayList<>();
 		private TableViewer table;
 		private Text filter;
+		private FilterCombo filterCombo;
 
 		public Page() {
 			super(BigParameterTable.this,
@@ -104,30 +108,36 @@ public class BigParameterTable extends SimpleFormEditor {
 			FormToolkit tk = mform.getToolkit();
 			Composite body = UI.formBody(form, tk);
 
-			Composite filterComp = UI.formComposite(body, tk);
+			Composite filterComp = tk.createComposite(body);
+			UI.gridLayout(filterComp, 3);
 			UI.gridData(filterComp, true, false);
 			filter = UI.formText(filterComp, tk, M.Filter);
-			filter.setToolTipText("Type 'error' to filter "
-					+ "evaluation errors.");
-			filter.addModifyListener(e -> {
+			filterCombo = FilterCombo.create(filterComp, tk);
+
+			Runnable doFilter = () -> {
 				String t = filter.getText();
-				if (Strings.nullOrEmpty(t)) {
+				if (Strings.nullOrEmpty(t)
+						&& filterCombo.type != FilterCombo.ERRORS) {
 					table.setInput(params);
 				} else {
 					List<Param> filtered = params.stream()
-							.filter(p -> p.matches(t))
+							.filter(p -> p.matches(t, filterCombo.type))
 							.collect(Collectors.toList());
 					table.setInput(filtered);
 				}
-			});
+			};
+			filter.addModifyListener(e -> doFilter.run());
+			filterCombo.onChange = doFilter;
 
 			table = Tables.createViewer(
 					body, M.Name, M.ParameterScope,
-					M.Value, M.Description);
-			double w = 1.0 / 4.0;
-			Tables.bindColumnWidths(table, w, w, w, w);
-			table.setLabelProvider(new Label());
-			// Actions: open, usage, edit value
+					M.Value, M.Formula, M.Description);
+			double w = 1.0 / 5.0;
+			Tables.bindColumnWidths(table, w, w, w, w, w);
+			Label label = new Label();
+			table.setLabelProvider(label);
+			Viewers.sortByLabels(table, label, 0, 1, 3, 4);
+			Viewers.sortByDouble(table, (Param p) -> p.parameter.value, 2);
 
 			bindActions();
 			mform.reflow(true);
@@ -156,8 +166,8 @@ public class BigParameterTable extends SimpleFormEditor {
 						ParameterUsagePage.show(p.parameter.name);
 					});
 			Action onEvaluate = Actions.create(
-					M.EvaluateFormulas, Icon.RUN.descriptor(), () -> {
-						App.runWithProgress(M.EvaluateFormulas,
+					M.EvaluateAllFormulas, Icon.RUN.descriptor(), () -> {
+						App.runWithProgress(M.EvaluateAllFormulas,
 								this::evaluateFormulas, () -> {
 									table.setInput(params);
 									filter.setText("");
@@ -230,8 +240,8 @@ public class BigParameterTable extends SimpleFormEditor {
 		}
 
 		/**
-		 * Bind the parameter values and formulas to the respective scopes of a
-		 * formula interpreter.
+		 * Bind the parameter values and formulas to the respective scopes of a formula
+		 * interpreter.
 		 */
 		private FormulaInterpreter buildInterpreter() {
 			FormulaInterpreter fi = new FormulaInterpreter();
@@ -328,9 +338,9 @@ public class BigParameterTable extends SimpleFormEditor {
 	private class Param implements Comparable<Param> {
 
 		/**
-		 * We have the owner ID as a separate field because a parameter could
-		 * have a link to an owner that does not exist anymore in the database
-		 * (it is an error but such things seem to happen).
+		 * We have the owner ID as a separate field because a parameter could have a
+		 * link to an owner that does not exist anymore in the database (it is an error
+		 * but such things seem to happen).
 		 */
 		Long ownerID;
 
@@ -361,16 +371,53 @@ public class BigParameterTable extends SimpleFormEditor {
 					Labels.getDisplayName(other.owner));
 		}
 
-		boolean matches(String filter) {
+		boolean matches(String filter, int type) {
+			if (type == FilterCombo.ERRORS)
+				return evalError;
+			if (parameter == null)
+				return false;
 			if (filter == null)
 				return true;
-			if (parameter.name == null)
-				return false;
 			String f = filter.trim().toLowerCase();
-			if (evalError && f.equals("error"))
+			if (Strings.nullOrEmpty(f))
 				return true;
-			String n = parameter.name.toLowerCase();
-			return n.contains(f);
+
+			if (type == FilterCombo.ALL || type == FilterCombo.NAMES) {
+				if (parameter.name != null) {
+					String n = parameter.name.toLowerCase();
+					if (n.contains(f))
+						return true;
+				}
+			}
+
+			if (type == FilterCombo.ALL || type == FilterCombo.SCOPES) {
+				String scope = owner != null
+						? Labels.getDisplayName(owner)
+						: M.GlobalParameter;
+				scope = scope == null ? "" : scope.toLowerCase();
+				if (scope.contains(f))
+					return true;
+			}
+
+			if (type == FilterCombo.ALL || type == FilterCombo.FORMULAS) {
+				if (parameter.formula != null) {
+					String formula = parameter.formula.toLowerCase();
+					if (formula.contains(f)) {
+						return true;
+					}
+				}
+			}
+
+			if (type == FilterCombo.ALL || type == FilterCombo.DESCRIPTIONS) {
+				if (parameter.description != null) {
+					String d = parameter.description.toLowerCase();
+					if (d.contains(f)) {
+						return true;
+					}
+				}
+			}
+
+			return false;
 		}
 
 		ParameterScope scope() {
@@ -415,7 +462,7 @@ public class BigParameterTable extends SimpleFormEditor {
 					param.scope() != ParameterScope.GLOBAL
 					&& param.owner == null)
 				return Colors.systemColor(SWT.COLOR_RED);
-			if (col == 2 && param.evalError)
+			if (param.evalError && (col == 2 || col == 3))
 				return Colors.systemColor(SWT.COLOR_RED);
 			return null;
 		}
@@ -438,12 +485,14 @@ public class BigParameterTable extends SimpleFormEditor {
 					return "!! missing !!";
 				return Labels.getDisplayName(param.owner);
 			case 2:
-				return p.isInputParameter
-						? Double.toString(p.value)
-						: param.evalError
-								? "!! error !! " + p.formula
-								: p.formula + " = " + Numbers.format(p.value);
+				return Double.toString(p.value);
 			case 3:
+				if (p.isInputParameter)
+					return null;
+				return param.evalError
+						? "!! error !! " + p.formula
+						: p.formula;
+			case 4:
 				return p.description;
 			default:
 				return null;
@@ -451,4 +500,67 @@ public class BigParameterTable extends SimpleFormEditor {
 		}
 	}
 
+	private static class FilterCombo {
+
+		static final int ALL = 0;
+		static final int NAMES = 1;
+		static final int SCOPES = 2;
+		static final int FORMULAS = 3;
+		static final int DESCRIPTIONS = 4;
+		static final int ERRORS = 5;
+
+		int type = ALL;
+		Runnable onChange;
+
+		static FilterCombo create(Composite comp, FormToolkit tk) {
+			FilterCombo combo = new FilterCombo();
+			Button button = tk.createButton(comp, "All columns", SWT.NONE);
+			button.setImage(Icon.DOWN.get());
+			Menu menu = new Menu(button);
+			int[] types = {
+					ALL,
+					NAMES,
+					SCOPES,
+					FORMULAS,
+					DESCRIPTIONS,
+					ERRORS
+			};
+			for (int type : types) {
+				MenuItem item = new MenuItem(menu, SWT.NONE);
+				item.setText(label(type));
+				Controls.onSelect(item, e -> {
+					combo.type = type;
+					button.setText(label(type));
+					button.setToolTipText(label(type));
+					button.pack();
+					button.getParent().layout();
+					if (combo.onChange != null) {
+						combo.onChange.run();
+					}
+				});
+			}
+			button.setMenu(menu);
+			Controls.onSelect(button, e -> menu.setVisible(true));
+			return combo;
+		}
+
+		private static String label(int type) {
+			switch (type) {
+			case ALL:
+				return "All columns";
+			case NAMES:
+				return "Names";
+			case SCOPES:
+				return "Parameter scopes";
+			case FORMULAS:
+				return "Formulas";
+			case DESCRIPTIONS:
+				return "Descriptions";
+			case ERRORS:
+				return "Evaluation errors";
+			default:
+				return "?";
+			}
+		}
+	}
 }
