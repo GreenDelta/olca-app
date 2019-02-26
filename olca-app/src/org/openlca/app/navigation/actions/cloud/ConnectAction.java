@@ -174,7 +174,12 @@ public class ConnectAction extends Action implements INavigationAction {
 		private RepositoryConfig createConfig() {
 			CredentialSupplier credentials = new CredentialSupplier(username, password);
 			credentials.setTokenSupplier(TokenDialog::prompt);
-			RepositoryConfig config = RepositoryConfig.connect(Database.get(), serverUrl + "/ws", repositoryId,
+			String baseUrl = serverUrl;
+			if (!baseUrl.endsWith("/")) {
+				baseUrl += "/";
+			}
+			baseUrl += "ws";
+			RepositoryConfig config = RepositoryConfig.connect(Database.get(), baseUrl, repositoryId,
 					credentials);
 			return config;
 		}
