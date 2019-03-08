@@ -23,8 +23,8 @@ public class SimulationEditor extends SimpleFormEditor {
 
 	public static String ID = "SimulationEditor";
 
-	private CalculationSetup setup;
-	private Simulator simulator;
+	CalculationSetup setup;
+	Simulator simulator;
 
 	/**
 	 * Initializes the Monte Carlo simulation of a product system and opens the
@@ -54,14 +54,6 @@ public class SimulationEditor extends SimpleFormEditor {
 		setPartName(Strings.cut(setup.productSystem.name, 75));
 		simulator = Cache.getAppCache()
 				.remove(input.solverKey, Simulator.class);
-	}
-
-	public CalculationSetup getSetup() {
-		return setup;
-	}
-
-	public Simulator getSimulator() {
-		return simulator;
 	}
 
 	@Override

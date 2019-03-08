@@ -23,6 +23,7 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.Simulator;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ProductSystem;
@@ -39,19 +40,22 @@ class SimulationPage extends FormPage {
 	private final int IMPACT = 1;
 	private int resultType = FLOW;
 
-	private SimulationEditor editor;
+	private final SimulationEditor editor;
+	private final Simulator simulator;
+	private final SimulationResult result;
+
 	private StatisticsCanvas statisticsCanvas;
 	private ProgressBar progressBar;
 	private FlowViewer flowViewer;
 	private Section progressSection;
 	private ScrolledForm form;
-	private SimulationResult result;
 	private ImpactCategoryViewer impactViewer;
 
 	public SimulationPage(SimulationEditor editor) {
 		super(editor, "SimulationPage", M.MonteCarloSimulation);
 		this.editor = editor;
-		this.result = editor.getSimulator().getResult();
+		this.simulator = editor.simulator;
+		this.result = editor.simulator.getResult();
 	}
 
 	@Override
@@ -62,6 +66,7 @@ class SimulationPage extends FormPage {
 		toolkit.decorateFormHeading(form.getForm());
 		Composite body = UI.formBody(form, toolkit);
 		createSettingsSection(toolkit, body);
+		new PinBoard(simulator).create(toolkit, body);
 		createProgressSection(toolkit, body);
 		createResultSection(toolkit, body);
 		form.pack();
@@ -73,8 +78,8 @@ class SimulationPage extends FormPage {
 		Text processText = UI.formText(settings, toolkit, M.Process);
 		Text qRefText = UI.formText(settings, toolkit, M.QuantitativeReference);
 		Text simCountText = UI.formText(settings, toolkit, M.NumberOfSimulations);
-		if (editor.getSetup() != null) {
-			CalculationSetup setup = editor.getSetup();
+		if (editor.setup != null) {
+			CalculationSetup setup = editor.setup;
 			systemText.setText(setup.productSystem.name);
 			processText.setText(setup.productSystem.referenceProcess.name);
 			qRefText.setText(getQRefText());
@@ -88,7 +93,7 @@ class SimulationPage extends FormPage {
 
 	private String getQRefText() {
 		try {
-			CalculationSetup setup = editor.getSetup();
+			CalculationSetup setup = editor.setup;
 			ProductSystem system = setup.productSystem;
 			Exchange exchange = system.referenceExchange;
 			double amount = system.targetAmount;
@@ -107,7 +112,7 @@ class SimulationPage extends FormPage {
 		progressSection = UI.section(body, toolkit, M.Progress);
 		Composite composite = UI.sectionClient(progressSection, toolkit);
 		progressBar = new ProgressBar(composite, SWT.SMOOTH);
-		progressBar.setMaximum(editor.getSetup().numberOfRuns);
+		progressBar.setMaximum(editor.setup.numberOfRuns);
 		UI.gridData(progressBar, false, false).widthHint = 470;
 		Button progressButton = toolkit.createButton(composite,
 				M.Start, SWT.NONE);
@@ -120,7 +125,7 @@ class SimulationPage extends FormPage {
 			return;
 		Section section = UI.section(body, toolkit, M.Results);
 		SimulationExportAction exportAction = new SimulationExportAction(
-				result, editor.getSetup());
+				result, editor.setup);
 		Actions.bind(section, exportAction);
 		Composite composite = UI.sectionClient(section, toolkit);
 		initFlowCheckViewer(toolkit, composite);
