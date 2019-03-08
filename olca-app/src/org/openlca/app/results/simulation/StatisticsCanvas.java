@@ -1,7 +1,5 @@
 package org.openlca.app.results.simulation;
 
-import java.util.List;
-
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.swt.widgets.Composite;
 
@@ -18,7 +16,7 @@ public class StatisticsCanvas extends FigureCanvas {
 		setContents(plot);
 	}
 
-	public void setValues(List<Double> values) {
+	public void setValues(double[] values) {
 		plot.setData(values);
 	}
 }

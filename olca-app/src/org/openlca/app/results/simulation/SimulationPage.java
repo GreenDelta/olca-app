@@ -165,11 +165,11 @@ class SimulationPage extends FormPage {
 		if (resultType == FLOW) {
 			FlowDescriptor flow = flowViewer.getSelected();
 			if (flow != null)
-				statisticsCanvas.setValues(result.getFlowResults(flow));
+				statisticsCanvas.setValues(result.getAll(flow));
 		} else {
 			ImpactCategoryDescriptor cat = impactViewer.getSelected();
 			if (cat != null)
-				statisticsCanvas.setValues(result.getImpactResults(cat));
+				statisticsCanvas.setValues(result.getAll(cat));
 		}
 	}
 

@@ -1,7 +1,5 @@
 package org.openlca.app.results.simulation;
 
-import java.util.List;
-
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
@@ -57,7 +55,7 @@ public class StatisticFigure extends Figure {
 		return valueLabel;
 	}
 
-	public void setData(List<Double> values) {
+	void setData(double[] values) {
 		statistics = new SimulationStatistics(values, 100);
 		repaint();
 	}

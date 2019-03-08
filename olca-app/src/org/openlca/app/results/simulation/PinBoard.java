@@ -4,18 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.IFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
@@ -59,16 +67,46 @@ class PinBoard {
 		table.setLabelProvider(label);
 		Viewers.sortByLabels(table, label, 0, 1);
 		table.setInput(selectInput());
+		bindActions();
+	}
 
-		// TODO: menu open/pin
+	private void bindActions() {
+		Action open = Actions.onOpen(() -> {
+			ProcessProduct pp = Viewers.getFirstSelected(table);
+			if (pp == null)
+				return;
+			App.openEditor(pp.process);
+		});
+		Tables.onDoubleClick(table, e -> open.run());
+
+		Action pin = Actions.create(
+				"#Pin / Unpin",
+				Icon.CHECK_TRUE.descriptor(), () -> {
+					ProcessProduct pp = Viewers.getFirstSelected(table);
+					if (pp == null)
+						return;
+					boolean pinned = simulator.pinnedProducts.contains(pp);
+					if (pinned) {
+						simulator.pinnedProducts.remove(pp);
+					} else {
+						simulator.pinnedProducts.add(pp);
+					}
+					table.setInput(selectInput());
+				});
 
 		table.getTable().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				// TODO: pin the result
-				table.setInput(selectInput());
+				if (e.button != 1)
+					return;
+				TableItem item = table.getTable()
+						.getItem(new Point(e.x, e.y));
+				if (item == null)
+					return;
 			}
 		});
+
+		Actions.bind(table, pin, open);
 	}
 
 	private List<ProcessProduct> selectInput() {
@@ -85,18 +123,29 @@ class PinBoard {
 		List<ProcessProduct> input = new ArrayList<>();
 		TechIndex idx = simulator.getResult().techIndex;
 		for (int i = 0; i < idx.size(); i++) {
-			// TODO: pinned providers should be never filtered
 			ProcessProduct pp = idx.getProviderAt(i);
+
+			// pinned products are never filtered
+			if (simulator.pinnedProducts.contains(pp)) {
+				input.add(pp);
+				continue;
+			}
+
+			// no filter
 			if (f == null) {
 				input.add(pp);
 				continue;
 			}
+
+			// process name matches
 			String s = Labels.getDisplayName(
 					pp.process).toLowerCase(Locale.US);
 			if (s.contains(f)) {
 				input.add(pp);
 				continue;
 			}
+
+			// product name matches
 			s = Labels.getDisplayName(
 					pp.flow).toLowerCase(Locale.US);
 			if (s.contains(f)) {
@@ -107,7 +156,13 @@ class PinBoard {
 
 		// sort by provider name
 		input.sort((pp1, pp2) -> {
-			// TODO: pinned providers should be always on top
+			// pinned products are always sorted to the top
+			boolean pinned1 = simulator.pinnedProducts.contains(pp1);
+			boolean pinned2 = simulator.pinnedProducts.contains(pp2);
+			if (pinned1 && !pinned2)
+				return -1;
+			if (!pinned1 && pinned2)
+				return 1;
 			String s1 = Labels.getDisplayName(pp1.process);
 			String s2 = Labels.getDisplayName(pp2.process);
 			return Strings.compare(s1, s2);
@@ -116,9 +171,18 @@ class PinBoard {
 		return input;
 	}
 
-	private class Label extends LabelProvider implements ITableLabelProvider {
+	private class Label extends LabelProvider
+			implements ITableLabelProvider, IFontProvider {
 
-		// TODO: bold font for pinned providers
+		@Override
+		public Font getFont(Object obj) {
+			if (!(obj instanceof ProcessProduct))
+				return null;
+			ProcessProduct pp = (ProcessProduct) obj;
+			if (simulator.pinnedProducts.contains(pp))
+				return UI.boldFont();
+			return null;
+		}
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
