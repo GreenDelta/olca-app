@@ -26,7 +26,7 @@ import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.results.quick.QuickResultEditor;
 import org.openlca.app.results.regionalized.RegionalizedResultEditor;
-import org.openlca.app.results.simulation.SimulationInit;
+import org.openlca.app.results.simulation.SimulationEditor;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -205,7 +205,7 @@ public class CalculationWizard extends Wizard {
 					analyse();
 					break;
 				case MONTE_CARLO_SIMULATION:
-					simulate();
+					SimulationEditor.open(setup, Cache.getMatrixCache());
 					break;
 				case CONTRIBUTION_ANALYSIS:
 					solve();
@@ -242,12 +242,6 @@ public class CalculationWizard extends Wizard {
 			DQResult dqResult = DQResult.calculate(Database.get(), result, dqSetup);
 			ResultEditorInput input = getEditorInput(result, setup, null, dqResult);
 			Editors.open(input, QuickResultEditor.ID);
-		}
-
-		private void simulate() {
-			log.trace("init Monte Carlo Simulation");
-			SimulationInit init = new SimulationInit(setup, Cache.getMatrixCache());
-			init.run();
 		}
 
 		private void calcRegionalized() {

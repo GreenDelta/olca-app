@@ -33,7 +33,7 @@ import org.openlca.core.results.SimulationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimulationPage extends FormPage {
+class SimulationPage extends FormPage {
 
 	private final int FLOW = 0;
 	private final int IMPACT = 1;
@@ -176,11 +176,7 @@ public class SimulationPage extends FormPage {
 	}
 
 	void progressDone(int numberOfIteration) {
-		// TODO: update count text etc.
-		// TODO: dispose the solver!
-		progressSection.setExpanded(false);
-		progressSection.pack();
-		progressSection.setVisible(false);
+		progressSection.dispose();
 		form.reflow(true);
 	}
 
