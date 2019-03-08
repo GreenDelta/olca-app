@@ -124,6 +124,7 @@ public class StatisticFigure extends Figure {
 		int height = getSize().height - marginTop - marginBottom;
 		int intervalCount = 100;
 		int maxFreq = statistics.getMaximalAbsoluteFrequency();
+		maxFreq = maxFreq == 0 ? 1 : maxFreq;
 		if (maxFreq > height) {
 			double factor = (double) maxFreq / (double) height;
 			maxFreq /= factor;

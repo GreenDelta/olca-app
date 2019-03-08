@@ -24,6 +24,7 @@ import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.Simulator;
+import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ProductSystem;
@@ -51,6 +52,9 @@ class SimulationPage extends FormPage {
 	private ScrolledForm form;
 	private ImpactCategoryViewer impactViewer;
 
+	/** A pinned product which results should be displayed. */
+	private ProcessProduct resultPin;
+
 	public SimulationPage(SimulationEditor editor) {
 		super(editor, "SimulationPage", M.MonteCarloSimulation);
 		this.editor = editor;
@@ -66,7 +70,14 @@ class SimulationPage extends FormPage {
 		toolkit.decorateFormHeading(form.getForm());
 		Composite body = UI.formBody(form, toolkit);
 		createSettingsSection(toolkit, body);
-		new PinBoard(simulator).create(toolkit, body);
+
+		PinBoard pinBoard = new PinBoard(simulator);
+		pinBoard.create(toolkit, body);
+		pinBoard.onResultPinChange = (pp) -> {
+			this.resultPin = pp;
+			updateSelection();
+		};
+
 		createProgressSection(toolkit, body);
 		createResultSection(toolkit, body);
 		form.pack();
@@ -164,12 +175,20 @@ class SimulationPage extends FormPage {
 			return;
 		if (resultType == FLOW) {
 			FlowDescriptor flow = flowViewer.getSelected();
-			if (flow != null)
-				statisticsCanvas.setValues(result.getAll(flow));
+			if (flow == null)
+				return;
+			double[] vals = resultPin != null
+					? result.getAllUpstream(resultPin, flow)
+					: result.getAll(flow);
+			statisticsCanvas.setValues(vals);
 		} else {
 			ImpactCategoryDescriptor cat = impactViewer.getSelected();
-			if (cat != null)
-				statisticsCanvas.setValues(result.getAll(cat));
+			if (cat == null)
+				return;
+			double[] vals = resultPin != null
+					? result.getAllUpstream(resultPin, cat)
+					: result.getAll(cat);
+			statisticsCanvas.setValues(vals);
 		}
 	}
 

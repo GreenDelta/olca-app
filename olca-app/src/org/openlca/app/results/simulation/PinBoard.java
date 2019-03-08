@@ -3,19 +3,21 @@ package org.openlca.app.results.simulation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
@@ -44,6 +46,8 @@ class PinBoard {
 
 	private Text filter;
 	private TableViewer table;
+	private ProcessProduct resultPin;
+	Consumer<ProcessProduct> onResultPinChange;
 
 	PinBoard(Simulator simulator) {
 		this.simulator = simulator;
@@ -61,8 +65,12 @@ class PinBoard {
 		filter = UI.formText(filterComp, tk, M.Filter);
 		filter.addModifyListener(e -> table.setInput(selectInput()));
 
-		table = Tables.createViewer(comp, M.Process, M.Product);
-		Tables.bindColumnWidths(table, 0.5, 0.5);
+		table = Tables.createViewer(comp,
+				"# Pin / Unpin",
+				"# Process / Sub-System",
+				M.Product,
+				"#Display in chart");
+		Tables.bindColumnWidths(table, 0.15, 0.35, 0.35, 0.15);
 		Label label = new Label();
 		table.setLabelProvider(label);
 		Viewers.sortByLabels(table, label, 0, 1);
@@ -80,18 +88,9 @@ class PinBoard {
 		Tables.onDoubleClick(table, e -> open.run());
 
 		Action pin = Actions.create(
-				"#Pin / Unpin",
-				Icon.CHECK_TRUE.descriptor(), () -> {
+				"#Pin / Unpin", Icon.CHECK_TRUE.descriptor(), () -> {
 					ProcessProduct pp = Viewers.getFirstSelected(table);
-					if (pp == null)
-						return;
-					boolean pinned = simulator.pinnedProducts.contains(pp);
-					if (pinned) {
-						simulator.pinnedProducts.remove(pp);
-					} else {
-						simulator.pinnedProducts.add(pp);
-					}
-					table.setInput(selectInput());
+					onPin(pp);
 				});
 
 		table.getTable().addMouseListener(new MouseAdapter() {
@@ -99,14 +98,58 @@ class PinBoard {
 			public void mouseDown(MouseEvent e) {
 				if (e.button != 1)
 					return;
-				TableItem item = table.getTable()
-						.getItem(new Point(e.x, e.y));
-				if (item == null)
+				Point p = new Point(e.x, e.y);
+				ViewerCell cell = table.getCell(p);
+				if (cell == null)
 					return;
+				Object data = cell.getItem().getData();
+				if (!(data instanceof ProcessProduct))
+					return;
+				ProcessProduct pp = (ProcessProduct) data;
+				if (cell.getColumnIndex() == 0) {
+					onPin(pp);
+				} else if (cell.getColumnIndex() == 3) {
+					onResultPin(pp);
+				}
 			}
 		});
 
 		Actions.bind(table, pin, open);
+	}
+
+	private void onPin(ProcessProduct pp) {
+		if (pp == null)
+			return;
+		boolean pinned = simulator.pinnedProducts.contains(pp);
+		if (pinned) {
+			simulator.pinnedProducts.remove(pp);
+			if (Objects.equals(pp, resultPin)) {
+				resultPin = null;
+				if (onResultPinChange != null) {
+					onResultPinChange.accept(null);
+				}
+			}
+		} else {
+			simulator.pinnedProducts.add(pp);
+		}
+		table.setInput(selectInput());
+	}
+
+	private void onResultPin(ProcessProduct pp) {
+		if (pp == null)
+			return;
+		if (Objects.equals(pp, resultPin)) {
+			resultPin = null;
+			if (onResultPinChange != null) {
+				onResultPinChange.accept(null);
+			}
+		} else {
+			resultPin = pp;
+			if (onResultPinChange != null) {
+				onResultPinChange.accept(pp);
+			}
+		}
+		table.refresh();
 	}
 
 	private List<ProcessProduct> selectInput() {
@@ -189,10 +232,24 @@ class PinBoard {
 			if (!(obj instanceof ProcessProduct))
 				return null;
 			ProcessProduct pp = (ProcessProduct) obj;
-			if (col == 0)
+			switch (col) {
+			case 0:
+				boolean pinned = simulator.pinnedProducts.contains(pp);
+				return pinned
+						? Icon.CHECK_TRUE.get()
+						: Icon.CHECK_FALSE.get();
+			case 1:
 				return Images.get(pp.process);
-			else
+			case 2:
 				return Images.get(pp.flow);
+			case 3:
+				boolean isResult = Objects.equals(pp, resultPin);
+				return isResult
+						? Icon.CHECK_TRUE.get()
+						: Icon.CHECK_FALSE.get();
+			default:
+				return null;
+			}
 		}
 
 		@Override
@@ -200,10 +257,11 @@ class PinBoard {
 			if (!(obj instanceof ProcessProduct))
 				return null;
 			ProcessProduct pp = (ProcessProduct) obj;
-			if (col == 0)
+			if (col == 1)
 				return Labels.getDisplayName(pp.process);
-			else
+			else if (col == 2)
 				return Labels.getDisplayName(pp.flow);
+			return null;
 		}
 	}
 }
