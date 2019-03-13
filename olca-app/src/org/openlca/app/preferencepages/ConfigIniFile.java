@@ -70,7 +70,7 @@ class ConfigIniFile {
 		Location location = Platform.getInstallLocation();
 		URL url = location.getURL();
 		File installDir = new File(url.getFile());
-		if (OS.getCurrent() != OS.Mac)
+		if (OS.get() != OS.MAC)
 			return new File(installDir, "openLCA.ini");
 		else
 			return new File(installDir, "Contents/MacOS/openLCA.ini");

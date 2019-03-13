@@ -65,7 +65,7 @@ public class StartPage extends SimpleFormEditor {
 			JSObject win = (JSObject) webkit.executeScript("window");
 			win.setMember("java", new JsHandler());
 			String version = M.Version + " " + App.getVersion() + " ("
-					+ OS.getCurrent() + " " + getArch() + ")";
+					+ OS.get() + " " + getArch() + ")";
 			webkit.executeScript("document.getElementById('version').innerHTML = '"
 					+ version + "'");
 		}

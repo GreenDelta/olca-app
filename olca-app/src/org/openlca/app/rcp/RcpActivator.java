@@ -79,7 +79,7 @@ public class RcpActivator extends AbstractUIPlugin {
 		try {
 			NativeLibrary.loadFromDir(workspace);
 		} catch (UnsatisfiedLinkError e) {
-			if (OS.getCurrent() == OS.Linux)
+			if (OS.get() == OS.LINUX)
 				MissingLibraryMessage.checkAndShow();
 		}
 		log.trace("olca-eigen loaded: {}", NativeLibrary.isLoaded());

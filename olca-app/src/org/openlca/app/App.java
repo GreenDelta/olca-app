@@ -27,7 +27,6 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.eigen.NativeLibrary;
 import org.openlca.julia.Julia;
-import org.openlca.julia.JuliaModule;
 import org.openlca.julia.JuliaSolver;
 import org.openlca.updates.script.CalculationContext;
 import org.slf4j.Logger;
@@ -47,8 +46,7 @@ public class App {
 			return solver;
 		try {
 			File dir = new File(Platform.getInstallLocation().getURL().toURI());
-			if (Julia.loadFromDir(dir) // execution order is important
-					&& Julia.isLoaded(JuliaModule.OPEN_BLAS)) {
+			if (Julia.loadFromDir(dir)) {
 				solver = new JuliaSolver();
 				log.info("Loaded Julia-BLAS solver as default matrix solver");
 				return solver;
@@ -74,9 +72,9 @@ public class App {
 	}
 
 	/**
-	 * Returns the version of the openLCA application. If there is a version defined
-	 * in the ini-file (-olcaVersion argument) this is returned. Otherwise the
-	 * version of the application bundle is returned.
+	 * Returns the version of the openLCA application. If there is a version
+	 * defined in the ini-file (-olcaVersion argument) this is returned.
+	 * Otherwise the version of the application bundle is returned.
 	 */
 	public static String getVersion() {
 		String version = CommandArgument.VERSION.getValue();
@@ -155,17 +153,17 @@ public class App {
 	}
 
 	/**
-	 * Wraps a runnable in a job and executes it using the Eclipse jobs framework.
-	 * No UI access is allowed for the runnable.
+	 * Wraps a runnable in a job and executes it using the Eclipse jobs
+	 * framework. No UI access is allowed for the runnable.
 	 */
 	public static Job run(String name, Runnable runnable) {
 		return run(name, runnable, null);
 	}
 
 	/**
-	 * See {@link App#run(String, Runnable)}. Additionally, this method allows to
-	 * give a callback which is executed in the UI thread when the runnable is
-	 * finished.
+	 * See {@link App#run(String, Runnable)}. Additionally, this method allows
+	 * to give a callback which is executed in the UI thread when the runnable
+	 * is finished.
 	 */
 	public static Job run(String name, Runnable runnable, Runnable callback) {
 		WrappedJob job = new WrappedJob(name, runnable);
