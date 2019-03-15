@@ -6,6 +6,7 @@ import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
@@ -46,6 +47,7 @@ public class ReconnectLinkCommand extends Command {
 		systemNode.linkSearch.remove(oldLink.processLink);
 		ProcessLink processLink = new ProcessLink();
 		processLink.providerId = sourceNode.process.id;
+		processLink.isSystemLink = sourceNode.process.type == ModelType.PRODUCT_SYSTEM;
 		processLink.flowId = oldLink.processLink.flowId;
 		processLink.processId = targetNode.parent().process.id;
 		processLink.exchangeId = targetNode.exchange.id;

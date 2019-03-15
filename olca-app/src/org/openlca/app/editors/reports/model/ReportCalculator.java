@@ -13,7 +13,7 @@ import org.openlca.app.editors.reports.model.ReportIndicatorResult.Contribution;
 import org.openlca.app.editors.reports.model.ReportIndicatorResult.VariantResult;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.database.CurrencyDao;
-import org.openlca.core.math.ProjectCalculator;
+import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Project;
@@ -59,9 +59,9 @@ public class ReportCalculator implements Runnable {
 
 	private ProjectResult calcProject(Project project) {
 		try {
-			ProjectCalculator calculator = new ProjectCalculator(
+			SystemCalculator calculator = new SystemCalculator(
 					Cache.getMatrixCache(), App.getSolver());
-			return calculator.solve(project, Cache.getEntityCache());
+			return calculator.calculate(project);
 		} catch (Exception e) {
 			log.error("Calculation of project failed", e);
 			return null;
@@ -164,8 +164,7 @@ public class ReportCalculator implements Runnable {
 	}
 
 	/**
-	 * Add zero-contributions for processes that were not found in a variant
-	 * result.
+	 * Add zero-contributions for processes that were not found in a variant result.
 	 */
 	private void addDefaultContributions(Set<Long> ids, Set<Long> foundIds,
 			VariantResult varResult) {

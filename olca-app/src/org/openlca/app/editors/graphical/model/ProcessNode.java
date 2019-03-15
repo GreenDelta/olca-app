@@ -1,37 +1,60 @@
 package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.util.Labels;
+import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 
 import com.google.common.base.Objects;
 
 public class ProcessNode extends Node {
 
-	public final ProcessDescriptor process;
+	public final CategorizedDescriptor process;
 	public final List<Link> links = new ArrayList<>();
 	private Rectangle xyLayoutConstraints;
 	private boolean minimized = true;
 	private boolean marked = false;
 
-	public ProcessNode(ProcessDescriptor process) {
-		this.process = process;
+	public ProcessNode(CategorizedDescriptor d) {
+		this.process = d;
+	}
+
+	/**
+	 * Creates the process node for the given ID. Note that the ID may refer to
+	 * a process or product system (a sub-system). If it is an invalid ID we
+	 * return null, so you need to check that.
+	 */
+	public static ProcessNode create(long id) {
+		CategorizedDescriptor d = null;
+		EntityCache cache = Cache.getEntityCache();
+		d = cache.get(ProcessDescriptor.class, id);
+		if (d == null) {
+			d = cache.get(ProductSystemDescriptor.class, id);
+		}
+		return d != null ? new ProcessNode(d) : null;
 	}
 
 	@Override
@@ -53,16 +76,16 @@ public class ProcessNode extends Node {
 	}
 
 	public void apply(NodeLayoutInfo layout) {
-		minimized = layout.isMinimized();
-		marked = layout.isMarked();
+		minimized = layout.minimized;
+		marked = layout.marked;
 		if (!minimized)
 			if (getChildren().isEmpty())
 				initializeExchangeNodes();
 		Dimension prefSize = figure.getPreferredSize(-1, -1);
 		xyLayoutConstraints = new Rectangle(layout.getLocation(), prefSize);
 		figure.setBounds(getXyLayoutConstraints());
-		figure().getLeftExpander().setExpanded(layout.isExpandedLeft());
-		figure().getRightExpander().setExpanded(layout.isExpandedRight());
+		figure().getLeftExpander().setExpanded(layout.expandedLeft);
+		figure().getRightExpander().setExpanded(layout.expandedRight);
 		figure().refresh();
 	}
 
@@ -154,15 +177,25 @@ public class ProcessNode extends Node {
 	}
 
 	private void initializeExchangeNodes() {
-		ProcessDao dao = new ProcessDao(Database.get());
-		Process process = dao.getForId(this.process.id);
-		List<Exchange> list = new ArrayList<>();
-		for (Exchange e : process.exchanges) {
-			if (e.flow.flowType == FlowType.ELEMENTARY_FLOW)
-				continue;
-			list.add(e);
+		if (this.process.type == ModelType.PROCESS) {
+			ProcessDao dao = new ProcessDao(Database.get());
+			Process p = dao.getForId(this.process.id);
+			if (p == null)
+				return;
+			List<Exchange> list = new ArrayList<>();
+			for (Exchange e : p.exchanges) {
+				if (e.flow.flowType == FlowType.ELEMENTARY_FLOW)
+					continue;
+				list.add(e);
+			}
+			add(new IONode(list));
+		} else if (this.process.type == ModelType.PRODUCT_SYSTEM) {
+			ProductSystemDao dao = new ProductSystemDao(Database.get());
+			ProductSystem s = dao.getForId(this.process.id);
+			if (s != null && s.referenceExchange != null) {
+				add(new IONode(Arrays.asList(s.referenceExchange)));
+			}
 		}
-		add(new IONode(list));
 	}
 
 	public void refresh() {
@@ -254,11 +287,18 @@ public class ProcessNode extends Node {
 	}
 
 	public int getMinimumHeight() {
-		if (isMinimized())
-			if (process.processType == ProcessType.LCI_RESULT)
+		if (isMinimized()) {
+			// LCI results and product systems have an outer
+			// border and this are a bit larger
+			if (process instanceof ProductSystemDescriptor)
 				return ProcessFigure.MINIMUM_HEIGHT + 3;
-			else
-				return ProcessFigure.MINIMUM_HEIGHT;
+			if (process instanceof ProcessDescriptor) {
+				ProcessDescriptor p = (ProcessDescriptor) process;
+				return p.processType == ProcessType.LCI_RESULT
+						? ProcessFigure.MINIMUM_HEIGHT + 3
+						: ProcessFigure.MINIMUM_HEIGHT;
+			}
+		}
 		return figure().getMinimumHeight();
 	}
 

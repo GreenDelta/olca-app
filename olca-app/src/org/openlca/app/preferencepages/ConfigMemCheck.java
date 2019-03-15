@@ -27,7 +27,7 @@ class ConfigMemCheck {
 			int val = Integer.parseInt(value);
 			if (val < 256)
 				return showError(M.MemoryToLowMessage);
-			if (val > 1280 && isX86() && OS.getCurrent() == OS.Windows)
+			if (val > 1280 && isX86() && OS.get() == OS.WINDOWS)
 				return showError(M.MemoryToHighMessage);
 			else
 				return val;

@@ -1,7 +1,5 @@
 package org.openlca.app.results.simulation;
 
-import java.util.List;
-
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
@@ -57,7 +55,7 @@ public class StatisticFigure extends Figure {
 		return valueLabel;
 	}
 
-	public void setData(List<Double> values) {
+	void setData(double[] values) {
 		statistics = new SimulationStatistics(values, 100);
 		repaint();
 	}
@@ -126,6 +124,7 @@ public class StatisticFigure extends Figure {
 		int height = getSize().height - marginTop - marginBottom;
 		int intervalCount = 100;
 		int maxFreq = statistics.getMaximalAbsoluteFrequency();
+		maxFreq = maxFreq == 0 ? 1 : maxFreq;
 		if (maxFreq > height) {
 			double factor = (double) maxFreq / (double) height;
 			maxFreq /= factor;

@@ -24,6 +24,7 @@ import org.openlca.app.results.analysis.sankey.layout.XYLayoutCommand;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,9 +187,8 @@ public class ProcessPart extends AbstractGraphicalEditPart implements
 			return;
 		Link link = (Link) linkObj;
 		CategorizedDescriptor thisProcess = getModel().process;
-		// TODO: we could have product systems here
-		ProcessDescriptor provider = cache.get(ProcessDescriptor.class, link.processLink.providerId);
-		ProcessDescriptor recipient = cache.get(ProcessDescriptor.class, link.processLink.processId);
+		CategorizedDescriptor provider = process(link.processLink.providerId);
+		CategorizedDescriptor recipient = process(link.processLink.processId);
 		boolean isLoop = Objects.equal(provider, recipient);
 		try {
 			if (thisProcess.equals(provider)) {
@@ -202,5 +202,12 @@ public class ProcessPart extends AbstractGraphicalEditPart implements
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("Failed to refresh connections for process " + thisProcess, e);
 		}
+	}
+
+	private CategorizedDescriptor process(long id) {
+		CategorizedDescriptor p = cache.get(ProcessDescriptor.class, id);
+		return p != null
+				? p
+				: cache.get(ProductSystemDescriptor.class, id);
 	}
 }

@@ -7,12 +7,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,39 +40,42 @@ public final class NodeLayoutStore {
 		}
 	}
 
-	private static void writeAsJson(List<NodeLayoutInfo> layoutInfo, File toFile) throws IOException {
-		JsonWriter writer = new JsonWriter(new FileWriter(toFile));
-		writer.beginObject();
-		writer.name("nodes");
-		writer.beginArray();
+	private static void writeAsJson(List<NodeLayoutInfo> layoutInfo,
+			File file) throws IOException {
+		JsonWriter w = new JsonWriter(new FileWriter(file));
+		w.beginObject();
+		w.name("nodes");
+		w.beginArray();
 		for (NodeLayoutInfo layout : layoutInfo)
-			writeAsJson(layout, writer);
-		writer.endArray();
-		writer.endObject();
-		writer.flush();
-		writer.close();
+			writeAsJson(layout, w);
+		w.endArray();
+		w.endObject();
+		w.flush();
+		w.close();
 	}
 
-	private static void writeAsJson(NodeLayoutInfo layout, JsonWriter writer) throws IOException {
-		writer.beginObject();
-		writer.name("id");
-		writer.value(layout.getId());
-		writer.name("x");
-		writer.value(layout.getLocation().x);
-		writer.name("y");
-		writer.value(layout.getLocation().y);
-		writer.name("minimized");
-		writer.value(layout.isMinimized());
-		writer.name("expandedLeft");
-		writer.value(layout.isExpandedLeft());
-		writer.name("expandedRight");
-		writer.value(layout.isExpandedRight());
-		writer.name("marked");
-		writer.value(layout.isMarked());
-		writer.endObject();
+	private static void writeAsJson(NodeLayoutInfo info,
+			JsonWriter w) throws IOException {
+		w.beginObject();
+		w.name("id");
+		w.value(info.id);
+		w.name("x");
+		w.value(info.getLocation().x);
+		w.name("y");
+		w.value(info.getLocation().y);
+		w.name("minimized");
+		w.value(info.minimized);
+		w.name("expandedLeft");
+		w.value(info.expandedLeft);
+		w.name("expandedRight");
+		w.value(info.expandedRight);
+		w.name("marked");
+		w.value(info.marked);
+		w.endObject();
 	}
 
-	public static boolean loadLayout(ProductSystemNode node) throws NodeLayoutException {
+	public static boolean loadLayout(ProductSystemNode node)
+			throws NodeLayoutException {
 		if (node == null || node.getProductSystem() == null)
 			return false;
 		File file = getLayoutFile(node.getProductSystem());
@@ -92,61 +93,66 @@ public final class NodeLayoutStore {
 		}
 	}
 
-	private static void apply(NodeLayoutInfo layout, ProductSystemNode model) throws NodeLayoutException {
-		ProcessNode node = model.getProcessNode(layout.getId());
+	private static void apply(NodeLayoutInfo info, ProductSystemNode model)
+			throws NodeLayoutException {
+		ProcessNode node = model.getProcessNode(info.id);
 		if (node != null) {
-			node.apply(layout);
+			node.apply(info);
 			return;
 		}
-		ProcessDescriptor descriptor = Cache.getEntityCache().get(ProcessDescriptor.class, layout.getId());
-		if (descriptor == null)
+		node = ProcessNode.create(info.id);
+		if (node == null)
 			return;
-		node = new ProcessNode(descriptor);
 		model.add(node);
-		node.apply(layout);
+		node.apply(info);
 		model.editor.createNecessaryLinks(node);
 	}
 
-	private static List<NodeLayoutInfo> parseJson(File fromFile) throws IOException {
+	private static List<NodeLayoutInfo> parseJson(
+			File fromFile) throws IOException {
 		List<NodeLayoutInfo> layoutInfo = new ArrayList<>();
-		JsonReader reader = new JsonReader(new FileReader(fromFile));
-		reader.beginObject();
-		reader.nextName();
-		reader.beginArray();
-		while (reader.hasNext())
-			layoutInfo.add(parseLayoutInfo(reader));
-		reader.endArray();
-		reader.endObject();
-		reader.close();
+		JsonReader r = new JsonReader(new FileReader(fromFile));
+		r.beginObject();
+		r.nextName();
+		r.beginArray();
+		while (r.hasNext()) {
+			layoutInfo.add(parseLayoutInfo(r));
+		}
+		r.endArray();
+		r.endObject();
+		r.close();
 		return layoutInfo;
 	}
 
-	private static NodeLayoutInfo parseLayoutInfo(JsonReader reader) throws IOException {
-		reader.beginObject();
-		reader.nextName();
-		long id = reader.nextLong();
-		reader.nextName();
-		int x = reader.nextInt();
-		reader.nextName();
-		int y = reader.nextInt();
-		reader.nextName();
-		boolean minimized = reader.nextBoolean();
-		reader.nextName();
-		boolean expandedLeft = reader.nextBoolean();
-		reader.nextName();
-		boolean expandedRight = reader.nextBoolean();
-		reader.nextName();
-		boolean marked = reader.nextBoolean();
-		reader.endObject();
-		return new NodeLayoutInfo(id, x, y, minimized, expandedLeft, expandedRight, marked);
+	private static NodeLayoutInfo parseLayoutInfo(
+			JsonReader r) throws IOException {
+		NodeLayoutInfo info = new NodeLayoutInfo();
+		r.beginObject();
+		r.nextName();
+		info.id = r.nextLong();
+		r.nextName();
+		info.x = r.nextInt();
+		r.nextName();
+		info.y = r.nextInt();
+		r.nextName();
+		info.minimized = r.nextBoolean();
+		r.nextName();
+		info.expandedLeft = r.nextBoolean();
+		r.nextName();
+		info.expandedRight = r.nextBoolean();
+		r.nextName();
+		info.marked = r.nextBoolean();
+		r.endObject();
+		return info;
 	}
 
-	private static File createLayoutFile(ProductSystemNode node) throws IOException {
-		File file = getLayoutFile(node.getProductSystem());
-		if (file.exists())
-			file.delete();
-		file.createNewFile();
-		return file;
+	private static File createLayoutFile(
+			ProductSystemNode node) throws IOException {
+		File f = getLayoutFile(node.getProductSystem());
+		if (f.exists())
+			f.delete();
+		f.createNewFile();
+		return f;
 	}
 
 	private static File getLayoutFile(ProductSystem system) {

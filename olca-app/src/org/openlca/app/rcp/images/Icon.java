@@ -9,7 +9,7 @@ public enum Icon {
 	ADD("add.png"),
 	ADD_DISABLED("add_disabled.png"),
 	ANALYSIS_RESULT("analysis.png"),
-	
+
 	BUILD_SUPPLY_CHAIN("graphical/build_supply_chain.gif"),
 
 	CALCULATE_COSTS("calculation/calculate_costs.png"),
@@ -88,6 +88,7 @@ public enum Icon {
 	PREVIOUS_CHANGE("cloud/previous_change.png"),
 	PROCESS_BG("graphical/process_bg.jpg"),
 	PROCESS_BG_LCI("graphical/process_bg_lci.jpg"),
+	PROCESS_BG_SYS("graphical/process_bg_sys.jpg"),
 	PROCESS_BG_MARKED("graphical/process_bg_marked.jpg"),
 	PYTHON("python.png"),
 
@@ -123,7 +124,7 @@ public enum Icon {
 	UP_DOUBLE_DISABLED("up_double_disabled.png"),
 
 	VALIDATE("validate.png"),
-	
+
 	WARNING("warning.png");
 
 	final String fileName;

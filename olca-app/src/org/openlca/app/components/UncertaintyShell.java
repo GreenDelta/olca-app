@@ -13,33 +13,35 @@ import org.openlca.core.math.NumberGenerator;
 
 public class UncertaintyShell {
 
-	public static void show(final NumberGenerator fun) {
+	public static void show(NumberGenerator fun) {
 
-		final Display display = Display.getCurrent();
-		final Shell shell = new Shell(display, SWT.APPLICATION_MODAL | SWT.SHELL_TRIM);
+		Display display = Display.getCurrent();
+		Shell shell = new Shell(display, SWT.APPLICATION_MODAL | SWT.SHELL_TRIM);
 		shell.setText(M.TestDistribution);
 		shell.setLayout(new FillLayout());
-		final StatisticsCanvas canvas = new StatisticsCanvas(shell);
+		StatisticsCanvas canvas = new StatisticsCanvas(shell);
 		shell.pack();
 		shell.setSize(620, 400);
 		shell.open();
 
 		new Thread() {
 			public void run() {
-				final List<Double> values = new ArrayList<>();
+				List<Double> values = new ArrayList<>();
 				for (int i = 0; i < 1000; i++) {
 					values.add(fun.next());
 					if (!shell.isDisposed())
-						display.syncExec(new Runnable() {
-							public void run() {
-								if (shell.isDisposed())
-									return;
-								canvas.setValues((values));
-							}
+						display.syncExec(() -> {
+							if (shell.isDisposed())
+								return;
+							double[] vals = values.stream()
+									.mapToDouble(Double::doubleValue)
+									.toArray();
+							canvas.setValues(vals);
 						});
 				}
-				if (!display.isDisposed())
+				if (!display.isDisposed()) {
 					display.wake();
+				}
 			}
 		}.start();
 	}

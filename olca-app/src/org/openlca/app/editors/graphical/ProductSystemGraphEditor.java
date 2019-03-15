@@ -18,7 +18,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.layout.LayoutType;
 import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
 import org.openlca.app.editors.graphical.model.Link;
@@ -34,7 +33,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ProductSystemGraphEditor extends GraphicalEditor {
 
@@ -98,33 +96,37 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 			return true;
 		String question = M.SystemSaveProceedQuestion;
 		if (Question.ask(M.Save + "?", question)) {
-			new ProgressMonitorDialog(UI.shell()).run(false, false, (monitor) -> systemEditor.doSave(monitor));
+			new ProgressMonitorDialog(UI.shell()).run(
+					false, false, monitor -> systemEditor.doSave(monitor));
 			return true;
 		}
 		return false;
 	}
 
 	private ProductSystemNode createModel() {
-		Process refProcess = getSystemEditor().getModel().referenceProcess;
-		if (refProcess == null)
-			return new ProductSystemNode(this);
-		long referenceId = refProcess.id;
 		ProductSystemNode node = new ProductSystemNode(this);
-		node.add(createProcessNode(referenceId));
+		Process refProcess = getSystemEditor()
+				.getModel().referenceProcess;
+		if (refProcess == null)
+			return node;
+		ProcessNode p = ProcessNode.create(refProcess.id);
+		if (p != null) {
+			node.add(p);
+		}
 		return node;
 	}
 
 	private ProductSystemNode expandModel() {
 		ProductSystemNode node = new ProductSystemNode(this);
-		for (Long id : getSystemEditor().getModel().processes)
-			node.add(createProcessNode(id));
+		for (Long id : getSystemEditor().getModel().processes) {
+			if (id == null)
+				continue;
+			ProcessNode n = ProcessNode.create(id);
+			if (n != null) {
+				node.add(n);
+			}
+		}
 		return node;
-	}
-
-	private ProcessNode createProcessNode(long id) {
-		ProcessDescriptor descriptor = Cache.getEntityCache().get(ProcessDescriptor.class, id);
-		ProcessNode processNode = new ProcessNode(descriptor);
-		return processNode;
 	}
 
 	public void createNecessaryLinks(ProcessNode node) {
