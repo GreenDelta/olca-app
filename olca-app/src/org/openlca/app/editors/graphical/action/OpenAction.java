@@ -1,11 +1,9 @@
 package org.openlca.app.editors.graphical.action;
 
 import org.eclipse.jface.viewers.ISelection;
+import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.editors.Editors;
-import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.editors.processes.ProcessEditor;
 
 class OpenAction extends EditorAction {
 
@@ -17,14 +15,15 @@ class OpenAction extends EditorAction {
 	}
 
 	@Override
-	protected boolean accept(ISelection selection) {
-		node = getSingleSelectionOfType(selection, ProcessNode.class);
+	protected boolean accept(ISelection s) {
+		node = getSingleSelectionOfType(
+				s, ProcessNode.class);
 		return node != null;
 	}
 
 	@Override
 	public void run() {
-		Editors.open(new ModelEditorInput(node.process), ProcessEditor.ID);
+		App.openEditor(node.process);
 	}
 
 }

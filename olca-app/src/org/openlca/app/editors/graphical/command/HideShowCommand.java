@@ -5,7 +5,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class HideShowCommand extends Command {
 
@@ -13,18 +13,22 @@ public class HideShowCommand extends Command {
 	private static final int HIDE = 2;
 
 	private final ProductSystemNode model;
-	private final ProcessDescriptor process;
+	private final CategorizedDescriptor process;
 	private int type;
 
-	public static HideShowCommand show(ProductSystemNode model, ProcessDescriptor process) {
+	public static HideShowCommand show(
+			ProductSystemNode model, CategorizedDescriptor process) {
 		return new HideShowCommand(model, process, SHOW);
 	}
 
-	public static HideShowCommand hide(ProductSystemNode model, ProcessDescriptor process) {
+	public static HideShowCommand hide(
+			ProductSystemNode model, CategorizedDescriptor process) {
 		return new HideShowCommand(model, process, HIDE);
 	}
 
-	private HideShowCommand(ProductSystemNode model, ProcessDescriptor process, int type) {
+	private HideShowCommand(
+			ProductSystemNode model,
+			CategorizedDescriptor process, int type) {
 		this.model = model;
 		this.process = process;
 		this.type = type;

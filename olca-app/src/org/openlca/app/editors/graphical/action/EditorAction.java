@@ -18,9 +18,8 @@ public abstract class EditorAction extends Action implements UpdateAction {
 	public void setEditor(ProductSystemGraphEditor editor) {
 		this.editor = editor;
 	}
-	
-	protected EditorAction() {
 
+	protected EditorAction() {
 	}
 
 	protected EditorAction(String text, int style) {

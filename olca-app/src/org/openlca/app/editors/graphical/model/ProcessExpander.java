@@ -1,21 +1,17 @@
 package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.command.ExpansionCommand;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class ProcessExpander extends ImageFigure {
 
@@ -77,7 +73,6 @@ class ProcessExpander extends ImageFigure {
 		ProductSystemNode sysNode = node.parent();
 		long processID = node.process.id;
 		List<ProcessLink> links = sysNode.linkSearch.getLinks(processID);
-		Map<Long, ProcessDescriptor> map = processMap(links);
 		for (ProcessLink pLink : links) {
 			FlowType type = sysNode.flows.type(pLink.flowId);
 			if (type == null || type == FlowType.ELEMENTARY_FLOW)
@@ -88,10 +83,10 @@ class ProcessExpander extends ImageFigure {
 			ProcessNode inNode;
 			if (isInputNode(type, pLink, isProvider)) {
 				inNode = this.node;
-				outNode = node(otherID, sysNode, map);
+				outNode = node(otherID, sysNode);
 			} else if (isOutputNode(type, pLink, isProvider)) {
 				outNode = this.node;
-				inNode = node(otherID, sysNode, map);
+				inNode = node(otherID, sysNode);
 			} else {
 				continue;
 			}
@@ -125,24 +120,13 @@ class ProcessExpander extends ImageFigure {
 		return false;
 	}
 
-	private ProcessNode node(long processID, ProductSystemNode sysNode,
-			Map<Long, ProcessDescriptor> map) {
+	private ProcessNode node(long processID, ProductSystemNode sysNode) {
 		ProcessNode node = sysNode.getProcessNode(processID);
 		if (node != null)
 			return node;
-		ProcessDescriptor d = map.get(processID);
-		node = new ProcessNode(d);
+		node = ProcessNode.create(processID);
 		sysNode.add(node);
 		return node;
-	}
-
-	private Map<Long, ProcessDescriptor> processMap(List<ProcessLink> links) {
-		HashSet<Long> processIds = new HashSet<>();
-		for (ProcessLink link : links) {
-			processIds.add(link.providerId);
-			processIds.add(link.processId);
-		}
-		return Cache.getEntityCache().getAll(ProcessDescriptor.class, processIds);
 	}
 
 	void collapse(ProcessNode initialNode) {
