@@ -8,14 +8,16 @@ import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.util.Numbers;
-import org.openlca.core.results.SimulationStatistics;
+import org.openlca.core.results.Statistics;
+import org.openlca.core.results.Statistics.Histogram;
 
 /**
  * Draws a chart with a frequency distribution and statistic parameters.
  */
 public class StatisticFigure extends Figure {
 
-	private SimulationStatistics statistics = SimulationStatistics.empty();
+	private Histogram hist = Statistics.hist(
+			new double[0], 100);
 
 	private int marginLeft = 35;
 	private int marginBottom = 35;
@@ -56,7 +58,7 @@ public class StatisticFigure extends Figure {
 	}
 
 	void setData(double[] values) {
-		statistics = new SimulationStatistics(values, 100);
+		hist = Statistics.hist(values, 100);
 		repaint();
 	}
 
@@ -76,7 +78,7 @@ public class StatisticFigure extends Figure {
 		graphics.setBackgroundColor(ColorConstants.lightGray);
 		int height = getSize().height - marginBottom;
 		for (int interval = 0; interval < 100; interval++) {
-			int frequency = statistics.getAbsoluteFrequency(interval);
+			int frequency = hist.getAbsoluteFrequency(interval);
 			for (int block = 1; block <= frequency; block++) {
 				int x = marginLeft + interval * boxSize.x;
 				int y = height - block * boxSize.y;
@@ -94,12 +96,12 @@ public class StatisticFigure extends Figure {
 	}
 
 	private void paintParameterLabels() {
-		numberLabel.setText(statistics.getCount() + "");
-		setLabelValue(perc5Label, statistics.getPercentileValue(5));
-		setLabelValue(perc95Label, statistics.getPercentileValue(95));
-		setLabelValue(medianLabel, statistics.getMedian());
-		setLabelValue(meanLabel, statistics.getMean());
-		setLabelValue(standardDevLabel, statistics.getStandardDeviation());
+		numberLabel.setText(Integer.toString(hist.statistics.count));
+		setLabelValue(perc5Label, hist.statistics.getPercentileValue(5));
+		setLabelValue(perc95Label, hist.statistics.getPercentileValue(95));
+		setLabelValue(medianLabel, hist.statistics.median);
+		setLabelValue(meanLabel, hist.statistics.mean);
+		setLabelValue(standardDevLabel, hist.statistics.standardDeviation);
 	}
 
 	private void paintChartFrame(Graphics graphics) {
@@ -107,13 +109,13 @@ public class StatisticFigure extends Figure {
 				getSize().width - marginRight, getSize().height - marginBottom);
 		graphics.drawLine(marginLeft, marginTop, marginLeft, getSize().height
 				- marginBottom);
-		graphics.drawText(Numbers.format(statistics.getMinimum(), 3),
+		graphics.drawText(Numbers.format(hist.statistics.min, 3),
 				marginLeft, getSize().height - marginBottom + 10);
-		graphics.drawText(Numbers.format(statistics.getMaximum(), 3),
+		graphics.drawText(Numbers.format(hist.statistics.max, 3),
 				getSize().width - marginRight - 40, getSize().height
 						- marginBottom + 10);
 		graphics.drawText(
-				Integer.toString(statistics.getMaximalAbsoluteFrequency()), 15,
+				Integer.toString(hist.getMaxAbsoluteFrequency()), 15,
 				marginTop + 5);
 		graphics.drawText("0", 15, getSize().height - marginBottom - 15);
 	}
@@ -123,7 +125,7 @@ public class StatisticFigure extends Figure {
 		int width = getSize().width - marginLeft - marginRight;
 		int height = getSize().height - marginTop - marginBottom;
 		int intervalCount = 100;
-		int maxFreq = statistics.getMaximalAbsoluteFrequency();
+		int maxFreq = hist.getMaxAbsoluteFrequency();
 		maxFreq = maxFreq == 0 ? 1 : maxFreq;
 		if (maxFreq > height) {
 			double factor = (double) maxFreq / (double) height;
@@ -138,19 +140,19 @@ public class StatisticFigure extends Figure {
 		return size;
 	}
 
-	private void paintLines(Graphics graphics, Point boxSize) {
-		graphics.setForegroundColor(ColorConstants.red);
-		drawLine(graphics, statistics.getPercentileValue(5), boxSize);
-		drawLine(graphics, statistics.getMedian(), boxSize);
-		drawLine(graphics, statistics.getPercentileValue(95), boxSize);
-		drawLine(graphics, statistics.getMean(), boxSize);
-		graphics.setForegroundColor(ColorConstants.black);
+	private void paintLines(Graphics g, Point box) {
+		g.setForegroundColor(ColorConstants.red);
+		drawLine(g, hist.statistics.getPercentileValue(5), box);
+		drawLine(g, hist.statistics.median, box);
+		drawLine(g, hist.statistics.getPercentileValue(95), box);
+		drawLine(g, hist.statistics.mean, box);
+		g.setForegroundColor(ColorConstants.black);
 	}
 
-	private void drawLine(Graphics graphics, double val, Point boxSize) {
-		int interval = statistics.getInterval(val);
-		int x = boxSize.x * interval + marginLeft + boxSize.x / 2;
-		graphics.drawLine(x, getSize().height - marginBottom, x, marginTop);
+	private void drawLine(Graphics g, double val, Point box) {
+		int interval = hist.getInterval(val);
+		int x = box.x * interval + marginLeft + box.x / 2;
+		g.drawLine(x, getSize().height - marginBottom, x, marginTop);
 	}
 
 	private void setLabelValue(Label label, double val) {
