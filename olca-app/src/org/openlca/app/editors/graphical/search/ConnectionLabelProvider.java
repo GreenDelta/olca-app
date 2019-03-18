@@ -3,8 +3,9 @@ package org.openlca.app.editors.graphical.search;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.editors.graphical.search.ConnectionDialog.AvailableConnection;
+import org.openlca.app.editors.graphical.search.ConnectionDialog.Candidate;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 
 class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
@@ -16,11 +17,13 @@ class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelPr
 	}
 
 	@Override
-	public Image getColumnImage(Object element, int columnIndex) {
-		if (!(element instanceof AvailableConnection))
+	public Image getColumnImage(Object obj, int col) {
+		if (!(obj instanceof Candidate))
 			return null;
-		AvailableConnection con = (AvailableConnection) element;
-		switch (columnIndex) {
+		Candidate con = (Candidate) obj;
+		switch (col) {
+		case 0:
+			return Images.get(con.process);
 		case 1:
 			if (con.create)
 				return Icon.CHECK_TRUE.get();
@@ -51,11 +54,11 @@ class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelPr
 	}
 
 	@Override
-	public String getColumnText(Object element, int columnIndex) {
-		if (!(element instanceof AvailableConnection))
+	public String getColumnText(Object obj, int col) {
+		if (!(obj instanceof Candidate))
 			return null;
-		AvailableConnection con = (AvailableConnection) element;
-		switch (columnIndex) {
+		Candidate con = (Candidate) obj;
+		switch (col) {
 		case 0:
 			return Labels.getDisplayName(con.process);
 		case 3:

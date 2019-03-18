@@ -23,7 +23,7 @@ import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.search.ConnectionDialog;
 import org.openlca.app.util.Controls;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class SearchConnectorsAction extends EditorAction {
 
@@ -34,7 +34,10 @@ class SearchConnectorsAction extends EditorAction {
 	private Menu menu;
 
 	public SearchConnectorsAction(int type) {
-		super(type == PROVIDER ? M.SearchProvidersFor : M.SearchRecipientsFor, IAction.AS_DROP_DOWN_MENU);
+		super(type == PROVIDER
+				? M.SearchProvidersFor
+				: M.SearchRecipientsFor,
+				IAction.AS_DROP_DOWN_MENU);
 		if (type == PROVIDER)
 			setId(ActionIds.SEARCH_PROVIDERS);
 		else if (type == RECIPIENTS)
@@ -44,8 +47,8 @@ class SearchConnectorsAction extends EditorAction {
 	}
 
 	@Override
-	protected boolean accept(ISelection selection) {
-		node = getSingleSelectionOfType(selection, ProcessNode.class);
+	protected boolean accept(ISelection s) {
+		node = getSingleSelectionOfType(s, ProcessNode.class);
 		if (node != null)
 			((MenuCreator) getMenuCreator()).fillMenu();
 		return node != null;
@@ -59,9 +62,9 @@ class SearchConnectorsAction extends EditorAction {
 		boolean isWaste = exchangeNode.exchange.flow.flowType == FlowType.WASTE_FLOW;
 		ConnectionDialog dialog = new ConnectionDialog(exchangeNode);
 		if (dialog.open() == IDialogConstants.OK_ID) {
-			List<ProcessDescriptor> toCreate = dialog.toCreate();
+			List<CategorizedDescriptor> toCreate = dialog.toCreate();
 			List<ConnectionInput> toConnect = new ArrayList<>();
-			for (Pair<ProcessDescriptor, Long> next : dialog.toConnect())
+			for (Pair<CategorizedDescriptor, Long> next : dialog.toConnect())
 				if ((type == PROVIDER && !isWaste) || (type == RECIPIENTS && isWaste))
 					toConnect.add(new ConnectionInput(next.getLeft().id, flowId, nodeId, exchangeId, isWaste));
 				else

@@ -15,34 +15,34 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class MassCreationCommand extends Command {
 
 	private final ProductSystemNode model;
-	private final List<ProcessDescriptor> toCreate;
+	private final List<CategorizedDescriptor> toCreate;
 	private final List<ConnectionInput> newConnections;
 	// for undoing
 	private final Map<IFigure, Rectangle> oldConstraints = new HashMap<>();
 	private final List<ProcessNode> createdNodes = new ArrayList<>();
 	private final List<Link> createdLinks = new ArrayList<>();
 
-	public static MassCreationCommand nextTier(List<ProcessDescriptor> toCreate,
+	public static MassCreationCommand nextTier(List<CategorizedDescriptor> toCreate,
 			List<ConnectionInput> newConnections, ProductSystemNode model) {
 		return new MassCreationCommand(model, toCreate, newConnections, M.BuildNextTier);
 	}
 
-	public static MassCreationCommand providers(List<ProcessDescriptor> toCreate,
+	public static MassCreationCommand providers(List<CategorizedDescriptor> toCreate,
 			List<ConnectionInput> newConnections, ProductSystemNode model) {
 		return new MassCreationCommand(model, toCreate, newConnections, M.ConnectProviders);
 	}
 
-	public static MassCreationCommand recipients(List<ProcessDescriptor> toCreate,
+	public static MassCreationCommand recipients(List<CategorizedDescriptor> toCreate,
 			List<ConnectionInput> newConnections, ProductSystemNode model) {
 		return new MassCreationCommand(model, toCreate, newConnections, M.ConnectRecipients);
 	}
 
-	private MassCreationCommand(ProductSystemNode model, List<ProcessDescriptor> toCreate,
+	private MassCreationCommand(ProductSystemNode model, List<CategorizedDescriptor> toCreate,
 			List<ConnectionInput> newConnections, String label) {
 		this.model = model;
 		this.toCreate = toCreate;
@@ -52,7 +52,7 @@ public class MassCreationCommand extends Command {
 
 	@Override
 	public void execute() {
-		for (ProcessDescriptor process : toCreate)
+		for (CategorizedDescriptor process : toCreate)
 			addNode(process);
 		for (ConnectionInput input : newConnections)
 			link(input);
@@ -65,7 +65,7 @@ public class MassCreationCommand extends Command {
 			model.editor.getOutline().refresh();
 	}
 
-	private void addNode(ProcessDescriptor process) {
+	private void addNode(CategorizedDescriptor process) {
 		if (model.getProcessNode(process.id) != null)
 			return;
 		ProcessNode node = new ProcessNode(process);

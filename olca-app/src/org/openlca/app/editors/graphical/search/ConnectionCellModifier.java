@@ -2,7 +2,7 @@ package org.openlca.app.editors.graphical.search;
 
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.swt.widgets.TableItem;
-import org.openlca.app.editors.graphical.search.ConnectionDialog.AvailableConnection;
+import org.openlca.app.editors.graphical.search.ConnectionDialog.Candidate;
 import org.openlca.app.editors.graphical.search.ConnectionDialog.LABELS;
 
 class ConnectionCellModifier implements ICellModifier {
@@ -15,9 +15,9 @@ class ConnectionCellModifier implements ICellModifier {
 
 	@Override
 	public boolean canModify(Object element, String property) {
-		if (!(element instanceof AvailableConnection))
+		if (!(element instanceof Candidate))
 			return false;
-		AvailableConnection process = (AvailableConnection) element;
+		Candidate process = (Candidate) element;
 		if (property.equals(LABELS.CREATE))
 			return !process.alreadyExisting && !process.connect;
 		if (property.equals(LABELS.CONNECT))
@@ -27,9 +27,9 @@ class ConnectionCellModifier implements ICellModifier {
 
 	@Override
 	public Object getValue(Object element, String property) {
-		if (!(element instanceof AvailableConnection))
+		if (!(element instanceof Candidate))
 			return null;
-		AvailableConnection process = (AvailableConnection) element;
+		Candidate process = (Candidate) element;
 		if (property.equals(LABELS.CREATE))
 			return process.create;
 		if (property.equals(LABELS.CONNECT))
@@ -42,9 +42,9 @@ class ConnectionCellModifier implements ICellModifier {
 		if (!(element instanceof TableItem))
 			return;
 		TableItem item = (TableItem) element;
-		if (!(item.getData() instanceof AvailableConnection))
+		if (!(item.getData() instanceof Candidate))
 			return;
-		AvailableConnection process = (AvailableConnection) item.getData();
+		Candidate process = (Candidate) item.getData();
 		if (property.equals(LABELS.CREATE))
 			process.create = Boolean.parseBoolean(value.toString());
 		else if (property.equals(LABELS.CONNECT)) {

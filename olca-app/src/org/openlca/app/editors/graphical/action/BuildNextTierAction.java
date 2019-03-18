@@ -20,6 +20,7 @@ import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.LinkingConfig.DefaultProviders;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class BuildNextTierAction extends Action implements IBuildAction {
@@ -57,7 +58,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		if (nodes == null || nodes.isEmpty())
 			return;
 		ProductSystemNode systemNode = nodes.get(0).parent();
-		List<ProcessDescriptor> providers = new ArrayList<>();
+		List<CategorizedDescriptor> providers = new ArrayList<>();
 		List<ConnectionInput> newConnections = new ArrayList<>();
 		for (ProcessNode node : nodes)
 			collectFor(node, providers, newConnections);
@@ -71,12 +72,12 @@ class BuildNextTierAction extends Action implements IBuildAction {
 	}
 
 	private void collectFor(ProcessNode node,
-			List<ProcessDescriptor> providers,
+			List<CategorizedDescriptor> providers,
 			List<ConnectionInput> newConnections) {
 		long targetId = node.process.id;
 		List<ExchangeNode> toConnect = getLinkCandidates(node);
 		for (ExchangeNode exchange : toConnect) {
-			ProcessDescriptor provider = findProvider(exchange.exchange);
+			CategorizedDescriptor provider = findProvider(exchange.exchange);
 			if (provider == null)
 				continue;
 			if (!providers.contains(provider))
@@ -106,7 +107,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		return nodes;
 	}
 
-	private ProcessDescriptor findProvider(Exchange exchange) {
+	private CategorizedDescriptor findProvider(Exchange exchange) {
 		if (exchange.flow == null)
 			return null;
 		if (providers == DefaultProviders.ONLY) {

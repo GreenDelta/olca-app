@@ -32,10 +32,14 @@ import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.database.ProductSystemDao;
+import org.openlca.core.matrix.LongPair;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ProcessLink;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +53,8 @@ public class ConnectionDialog extends Dialog {
 		String EXISTS = M.AlreadyPresent;
 		String CONNECTED = M.AlreadyConnected;
 		String DEFAULT_PROVIDER = M.IsDefaultProvider;
-		String[] ALL = new String[] { NAME, CREATE, CONNECT, EXISTS, CONNECTED, DEFAULT_PROVIDER };
+		String[] ALL = new String[] { NAME, CREATE, CONNECT,
+				EXISTS, CONNECTED, DEFAULT_PROVIDER };
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(ConnectionDialog.class);
@@ -57,21 +62,26 @@ public class ConnectionDialog extends Dialog {
 	private final long processId;
 	private final Set<Long> existingProcesses;
 	private final MutableProcessLinkSearchMap linkSearch;
-	private final boolean selectProvider;
-	private final List<AvailableConnection> availableConnections = new ArrayList<>();
+
+	/**
+	 * Indicates whether we search a connection for an input or output.
+	 */
+	private final boolean forInput;
+
+	private final List<Candidate> candidates = new ArrayList<>();
 	private final boolean isConnected;
 	TableViewer viewer;
 
-	public ConnectionDialog(ExchangeNode exchangeNode) {
+	public ConnectionDialog(ExchangeNode enode) {
 		super(UI.shell());
 		setShellStyle(SWT.BORDER | SWT.TITLE);
 		setBlockOnOpen(true);
-		exchange = exchangeNode.exchange;
-		processId = exchangeNode.parent().process.id;
-		ProductSystemNode systemNode = exchangeNode.parent().parent();
+		exchange = enode.exchange;
+		processId = enode.parent().process.id;
+		ProductSystemNode systemNode = enode.parent().parent();
 		existingProcesses = systemNode.getProductSystem().processes;
 		linkSearch = systemNode.linkSearch;
-		selectProvider = exchangeNode.exchange.isInput;
+		forInput = enode.exchange.isInput;
 		boolean foundLink = false;
 		for (ProcessLink link : linkSearch.getConnectionLinks(processId))
 			if (link.flowId == exchange.flow.id)
@@ -97,73 +107,122 @@ public class ConnectionDialog extends Dialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite container = (Composite) super.createDialogArea(parent);
 		container.setLayout(new FillLayout());
-		FormToolkit toolkit = new FormToolkit(Display.getCurrent());
-		Section selectObjectSection = toolkit.createSection(container, ExpandableComposite.TITLE_BAR
-				| ExpandableComposite.FOCUS_TITLE);
-		selectObjectSection.setText(selectProvider ? M.SelectProviders : M.SelectRecipients);
-		Composite composite = toolkit.createComposite(selectObjectSection, SWT.NONE);
-		UI.gridLayout(composite, 1);
-		selectObjectSection.setClient(composite);
-		toolkit.adapt(composite);
-		viewer = Tables.createViewer(composite, LABELS.ALL);
+		FormToolkit tk = new FormToolkit(Display.getCurrent());
+		container.addDisposeListener(e -> {
+			tk.dispose();
+		});
+		Section section = tk.createSection(container,
+				ExpandableComposite.TITLE_BAR
+						| ExpandableComposite.FOCUS_TITLE);
+		section.setText(forInput ? M.SelectProviders : M.SelectRecipients);
+		Composite comp = tk.createComposite(section, SWT.NONE);
+		UI.gridLayout(comp, 1);
+		section.setClient(comp);
+		tk.adapt(comp);
+
+		viewer = Tables.createViewer(comp, LABELS.ALL);
+		double w = 1 / 6d;
+		Tables.bindColumnWidths(viewer, w, w, w, w, w, w);
 		viewer.setLabelProvider(new ConnectionLabelProvider(this));
 		Table table = viewer.getTable();
-		createInternalModel();
-		if (availableConnections.size() > 0)
-			viewer.setInput(availableConnections.toArray(new AvailableConnection[availableConnections.size()]));
+		searchCandidates();
+		if (candidates.size() > 0) {
+			viewer.setInput(candidates.toArray(
+					new Candidate[candidates.size()]));
+		}
 		CellEditor[] editors = new CellEditor[5];
 		editors[1] = new CheckboxCellEditor(table);
 		editors[2] = new CheckboxCellEditor(table);
 		viewer.setColumnProperties(LABELS.ALL);
 		viewer.setCellModifier(new ConnectionCellModifier(this));
 		viewer.setCellEditors(editors);
-		toolkit.paintBordersFor(composite);
+		tk.paintBordersFor(comp);
 		return container;
 	}
 
-	private void createInternalModel() {
-		availableConnections.clear();
-		long flowId = exchange.flow.id;
-		String query = "SELECT id, f_owner FROM tbl_exchanges "
-				+ "WHERE f_flow = " + flowId + " AND is_input = " + (selectProvider ? 0 : 1);
-		List<Pair<Long, Long>> exchanges = new ArrayList<>();
+	private void searchCandidates() {
+		candidates.clear();
+		IDatabase db = Database.get();
+
+		// search for processes that have an exchange
+		// with the flow on the opposite side
+		List<LongPair> exchanges = new ArrayList<>();
+		Set<Long> exchangeIds = new HashSet<>();
 		Set<Long> processIds = new HashSet<>();
 		try {
-			NativeSql.on(Database.get()).query(query, (rs) -> {
-				long id = rs.getLong("id");
-				long pId = rs.getLong("f_owner");
-				exchanges.add(Pair.of(id, pId));
-				processIds.add(pId);
+			String sql = "SELECT id, f_owner FROM tbl_exchanges "
+					+ "WHERE f_flow = " + exchange.flow.id
+					+ " AND is_input = " + (forInput ? 0 : 1);
+			NativeSql.on(db).query(sql, r -> {
+				long exchangeID = r.getLong("id");
+				long processID = r.getLong("f_owner");
+				exchanges.add(LongPair.of(
+						exchangeID, processID));
+				exchangeIds.add(exchangeID);
+				processIds.add(processID);
 				return true;
 			});
 		} catch (Exception e) {
-			log.error("Error loading available connections", e);
+			log.error("Error loading connection candidates", e);
 		}
-		List<ProcessDescriptor> processes = new ProcessDao(Database.get()).getDescriptors(processIds);
-		Map<Long, ProcessDescriptor> idToProcess = new HashMap<>();
-		for (ProcessDescriptor process : processes)
-			idToProcess.put(process.id, process);
-		for (Pair<Long, Long> exchange : exchanges) {
-			ProcessDescriptor process = idToProcess.get(exchange.getRight());
-			boolean existing = existingProcesses.contains(process.id);
+
+		List<ProcessDescriptor> procs = new ProcessDao(db)
+				.getDescriptors(processIds);
+		Map<Long, CategorizedDescriptor> processes = new HashMap<>();
+		for (ProcessDescriptor p : procs) {
+			processes.put(p.id, p);
+		}
+
+		// add product systems that have the same exchanges as
+		// the process candidates as reference flows (these can
+		// be connected as sub-systems
+		Set<Long> systemIds = new HashSet<Long>();
+		try {
+			String sql = "SELECT id, f_reference_exchange FROM"
+					+ " tbl_product_systems";
+			NativeSql.on(db).query(sql, r -> {
+				long exchangeID = r.getLong(2);
+				if (exchangeIds.contains(exchangeID)) {
+					long systemID = r.getLong(1);
+					exchanges.add(LongPair.of(exchangeID, systemID));
+					systemIds.add(systemID);
+				}
+				return true;
+			});
+		} catch (Exception e) {
+			log.error("Error loading connection candidates", e);
+		}
+
+		if (!systemIds.isEmpty()) {
+			new ProductSystemDao(db).getDescriptors(systemIds)
+					.forEach(d -> {
+						processes.put(d.id, d);
+					});
+		}
+
+		for (LongPair e : exchanges) {
+			CategorizedDescriptor p = processes.get(e.second);
+			if (p == null)
+				continue;
+			boolean existing = existingProcesses.contains(p.id);
 			boolean connected = false;
-			boolean defaultProvider = this.exchange.defaultProviderId == process.id;
-			if (existing)
-				connected = isAlreadyConnected(process);
-			availableConnections.add(new AvailableConnection(process, exchange.getLeft(), existing, connected,
+			boolean defaultProvider = this.exchange.defaultProviderId == p.id;
+			if (existing) {
+				connected = forInput
+						? isAlreadyProvider(p)
+						: isAlreadyReceiver(p);
+			}
+			candidates.add(new Candidate(
+					p, e.first,
+					existing, connected,
 					defaultProvider));
 		}
-		Collections.sort(availableConnections);
+
+		Collections.sort(candidates);
 	}
 
-	private boolean isAlreadyConnected(ProcessDescriptor process) {
-		if (selectProvider)
-			return isAlreadyProvider(process);
-		return isAlreadyReceiver(process);
-	}
-
-	private boolean isAlreadyProvider(ProcessDescriptor process) {
-		for (ProcessLink link : linkSearch.getProviderLinks(process.id)) {
+	private boolean isAlreadyProvider(CategorizedDescriptor p) {
+		for (ProcessLink link : linkSearch.getProviderLinks(p.id)) {
 			if (link.processId != processId)
 				continue;
 			if (link.flowId != exchange.flow.id)
@@ -173,8 +232,8 @@ public class ConnectionDialog extends Dialog {
 		return false;
 	}
 
-	private boolean isAlreadyReceiver(ProcessDescriptor process) {
-		for (ProcessLink link : linkSearch.getConnectionLinks(process.id)) {
+	private boolean isAlreadyReceiver(CategorizedDescriptor p) {
+		for (ProcessLink link : linkSearch.getConnectionLinks(p.id)) {
 			if (link.providerId != processId)
 				continue;
 			if (link.exchangeId != exchange.id)
@@ -189,19 +248,19 @@ public class ConnectionDialog extends Dialog {
 		return new Point(800, 500);
 	}
 
-	boolean canBeConnected(AvailableConnection connectable) {
+	boolean canBeConnected(Candidate con) {
 		if (isConnected)
 			return false;
-		if (connectable.alreadyConnected)
+		if (con.alreadyConnected)
 			return false;
-		if (selectProvider && userHasSelectedProvider())
+		if (forInput && userHasSelectedProvider())
 			return false;
-		if (!selectProvider && hasProvider(connectable))
+		if (!forInput && hasProvider(con))
 			return false;
 		return true;
 	}
 
-	private boolean hasProvider(AvailableConnection process) {
+	private boolean hasProvider(Candidate process) {
 		for (ProcessLink link : linkSearch.getConnectionLinks(process.process.id))
 			if (link.exchangeId == exchange.id)
 				return true;
@@ -209,32 +268,33 @@ public class ConnectionDialog extends Dialog {
 	}
 
 	private boolean userHasSelectedProvider() {
-		for (AvailableConnection connectable : availableConnections)
+		for (Candidate connectable : candidates)
 			if (connectable.alreadyConnected || connectable.connect)
 				return true;
 		return false;
 	}
 
-	public List<ProcessDescriptor> toCreate() {
-		List<ProcessDescriptor> toCreate = new ArrayList<>();
-		for (AvailableConnection connectable : availableConnections)
+	public List<CategorizedDescriptor> toCreate() {
+		List<CategorizedDescriptor> toCreate = new ArrayList<>();
+		for (Candidate connectable : candidates)
 			if (connectable.create)
 				toCreate.add(connectable.process);
 		return toCreate;
 	}
 
-	public List<Pair<ProcessDescriptor, Long>> toConnect() {
-		List<Pair<ProcessDescriptor, Long>> toConnect = new ArrayList<>();
-		for (AvailableConnection connectable : availableConnections)
+	public List<Pair<CategorizedDescriptor, Long>> toConnect() {
+		List<Pair<CategorizedDescriptor, Long>> toConnect = new ArrayList<>();
+		for (Candidate connectable : candidates)
 			if (connectable.connect) {
 				toConnect.add(Pair.of(connectable.process, connectable.exchangeId));
 			}
 		return toConnect;
 	}
 
-	class AvailableConnection implements Comparable<AvailableConnection> {
+	/** Contains the data of a possible connection candidate. */
+	class Candidate implements Comparable<Candidate> {
 
-		final ProcessDescriptor process;
+		final CategorizedDescriptor process;
 		final long exchangeId;
 		final boolean alreadyExisting;
 		final boolean alreadyConnected;
@@ -242,7 +302,7 @@ public class ConnectionDialog extends Dialog {
 		boolean connect;
 		boolean create;
 
-		AvailableConnection(ProcessDescriptor process, long exchangeId,
+		Candidate(CategorizedDescriptor process, long exchangeId,
 				boolean existing, boolean connected, boolean defaultProvider) {
 			this.process = process;
 			this.exchangeId = exchangeId;
@@ -252,17 +312,18 @@ public class ConnectionDialog extends Dialog {
 		}
 
 		@Override
-		public boolean equals(final Object arg0) {
-			if (!(arg0 instanceof AvailableConnection))
+		public boolean equals(Object obj) {
+			if (!(obj instanceof Candidate))
 				return false;
-			AvailableConnection other = (AvailableConnection) arg0;
+			Candidate other = (Candidate) obj;
 			if (other.process == null)
 				return process == null;
-			return Objects.equals(other.process, process) && exchangeId == other.exchangeId;
+			return Objects.equals(other.process, process)
+					&& exchangeId == other.exchangeId;
 		}
 
 		@Override
-		public int compareTo(AvailableConnection o) {
+		public int compareTo(Candidate o) {
 			String n1 = Labels.getDisplayName(process);
 			String n2 = Labels.getDisplayName(o.process);
 			return n1.toLowerCase().compareTo(n2.toLowerCase());
