@@ -58,6 +58,7 @@ public class M extends NLS {
 	public static String BackgroundData;
 	public static String BackupDatabase;
 	public static String BaseUncertainty;
+	public static String Both;
 	public static String Browse;
 	public static String BrowseLocalFiles;
 	public static String BuildNextTier;
@@ -709,6 +710,7 @@ public class M extends NLS {
 	public static String RemoveSupplyChain;
 	public static String Rename;
 	public static String ReplaceFlow;
+	public static String ReplaceIn;
 	public static String ReplaceProvider;
 	public static String Report;
 	public static String ReportName;
