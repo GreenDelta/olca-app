@@ -124,13 +124,18 @@ public class StatisticFigure extends Figure {
 		Point size = new Point();
 		int width = getSize().width - marginLeft - marginRight;
 		int height = getSize().height - marginTop - marginBottom;
+		if (width <= 0 || height <= 0) {
+			size.x = 0;
+			size.y = 0;
+			return size;
+		}
 		int intervalCount = 100;
 		int maxFreq = hist.getMaxAbsoluteFrequency();
-		maxFreq = maxFreq == 0 ? 1 : maxFreq;
 		if (maxFreq > height) {
 			double factor = (double) maxFreq / (double) height;
 			maxFreq /= factor;
 		}
+		maxFreq = maxFreq == 0 ? 1 : maxFreq;
 		size.x = width / intervalCount;
 		size.y = height / maxFreq;
 		if (size.x < 1)

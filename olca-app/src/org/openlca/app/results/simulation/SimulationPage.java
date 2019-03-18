@@ -5,6 +5,7 @@ import java.util.Set;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ProgressBar;
@@ -63,24 +64,24 @@ class SimulationPage extends FormPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		form = managedForm.getForm();
-		FormToolkit toolkit = managedForm.getToolkit();
+	protected void createFormContent(IManagedForm mform) {
+		form = mform.getForm();
+		FormToolkit tk = mform.getToolkit();
 		form.setText(M.MonteCarloSimulation);
-		toolkit.decorateFormHeading(form.getForm());
-		Composite body = UI.formBody(form, toolkit);
-		createSettingsSection(toolkit, body);
+		tk.decorateFormHeading(form.getForm());
+		Composite body = UI.formBody(form, tk);
+		createSettingsSection(tk, body);
 
 		PinBoard pinBoard = new PinBoard(simulator);
-		pinBoard.create(toolkit, body);
+		pinBoard.create(tk, body);
 		pinBoard.onResultPinChange = (pp) -> {
 			this.resultPin = pp;
 			updateSelection();
 		};
 
-		createProgressSection(toolkit, body);
-		createResultSection(toolkit, body);
-		form.pack();
+		createProgressSection(tk, body);
+		createResultSection(tk, body);
+		form.reflow(true);
 	}
 
 	private void createSettingsSection(FormToolkit toolkit, Composite body) {
@@ -131,19 +132,22 @@ class SimulationPage extends FormPage {
 		new SimulationControl(progressButton, editor, this);
 	}
 
-	private void createResultSection(FormToolkit toolkit, Composite body) {
+	private void createResultSection(FormToolkit tk, Composite body) {
 		if (result == null)
 			return;
-		Section section = UI.section(body, toolkit, M.Results);
+		Section section = UI.section(body, tk, M.Results);
 		SimulationExportAction exportAction = new SimulationExportAction(
 				result, editor.setup);
 		Actions.bind(section, exportAction);
-		Composite composite = UI.sectionClient(section, toolkit);
-		initFlowCheckViewer(toolkit, composite);
-		if (result.hasImpactResults())
-			initImpactCheckViewer(toolkit, composite);
+		Composite comp = UI.sectionClient(section, tk);
+		initFlowCheckViewer(tk, comp);
+		if (result.hasImpactResults()) {
+			initImpactCheckViewer(tk, comp);
+		}
 		statisticsCanvas = new StatisticsCanvas(body);
-		UI.gridData(statisticsCanvas, true, true).verticalIndent = 5;
+		GridData gd = UI.gridData(statisticsCanvas, true, true);
+		gd.verticalIndent = 10;
+		gd.minimumHeight = 250;
 	}
 
 	private void initImpactCheckViewer(FormToolkit toolkit, Composite section) {
