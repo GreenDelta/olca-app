@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Colors {
 
-	private static Logger log = LoggerFactory.getLogger(Colors.class);
 	private static HashMap<RGB, Color> createdColors = new HashMap<>();
 
 	private static Display display;
@@ -40,6 +39,32 @@ public class Colors {
 			createdColors.put(rgb, color);
 		}
 		return color;
+	}
+
+	public static Color fromHex(String hex) {
+		if (hex == null)
+			return white();
+		String s = hex.trim();
+		if (s.startsWith("#")) {
+			s = s.substring(1);
+		}
+		if (s.length() < 6)
+			return white();
+
+		String rh = s.substring(0, 2);
+		String gh = s.substring(2, 4);
+		String bh = s.substring(4, 6);
+
+		try {
+			int r = Integer.parseInt(rh, 16);
+			int g = Integer.parseInt(gh, 16);
+			int b = Integer.parseInt(bh, 16);
+			return get(r, g, b);
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(Colors.class);
+			log.error("failed to parse hex color " + hex, e);
+			return black();
+		}
 	}
 
 	public static Color get(int r, int g, int b) {
@@ -72,6 +97,7 @@ public class Colors {
 	}
 
 	private static class ShutDown implements IWorkbenchListener {
+
 		@Override
 		public boolean preShutdown(IWorkbench workbench, boolean forced) {
 			return true;
@@ -79,7 +105,6 @@ public class Colors {
 
 		@Override
 		public void postShutdown(IWorkbench workbench) {
-			log.trace("dispose {} created colors", createdColors.size());
 			for (Color color : createdColors.values()) {
 				if (!color.isDisposed())
 					color.dispose();

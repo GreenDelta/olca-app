@@ -116,6 +116,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 						+ "that have multiple providers "
 						+ "(see table below).");
 			}
+			new LinkingMatrix(props).render(body, tk);
 		}
 
 		private void check(Composite comp, Icon icon, String message) {
