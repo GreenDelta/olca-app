@@ -115,25 +115,30 @@ class SankeyResult {
 		} else {
 			directResults = upstreamResults = new double[processIndex.size()];
 		}
-		upstreamContributions = calcContributions(upstreamResults);
-		directContributions = calcContributions(directResults);
+
+		// calculate the contributions
+		double refVal = Math.max(
+				Math.abs(Doubles.min(upstreamResults)),
+				Math.abs(Doubles.max(upstreamResults)));
+		upstreamContributions = calcContributions(
+				upstreamResults, refVal);
+		directContributions = calcContributions(
+				directResults, refVal);
+
 		log.trace("Calculation done");
 	}
 
-	private double[] calcContributions(double[] values) {
+	private double[] calcContributions(double[] values, double ref) {
 		if (values == null || values.length == 0)
 			return new double[0];
-		double min = Doubles.min(values);
-		double max = Doubles.max(values);
-		double ref = Math.max(Math.abs(min), Math.abs(max));
-		double[] contributions = new double[values.length];
+		double[] conts = new double[values.length];
 		if (ref == 0)
-			return contributions;
-		for (int i = 0; i < contributions.length; i++) {
+			return conts;
+		for (int i = 0; i < conts.length; i++) {
 			double val = values[i];
-			contributions[i] = val / ref;
+			conts[i] = val / ref;
 		}
-		return contributions;
+		return conts;
 	}
 
 	private double[] vec(ToDoubleFunction<CategorizedDescriptor> fn) {

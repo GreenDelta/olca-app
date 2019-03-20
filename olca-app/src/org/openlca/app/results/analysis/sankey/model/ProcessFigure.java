@@ -31,13 +31,13 @@ public class ProcessFigure extends Figure {
 	/** Must be disposed when the edit part is deactivated */
 	Font boldFont;
 
-	public ProcessFigure(ProcessNode processNode) {
-		setToolTip(new Label(Labels.getDisplayName(processNode.process)));
-		processNode.figure = this;
-		this.node = processNode;
+	public ProcessFigure(ProcessNode node) {
+		setToolTip(new Label(Labels.getDisplayName(node.process)));
+		node.figure = this;
+		this.node = node;
 		setSize(WIDTH, HEIGHT);
-		processNode.setXyLayoutConstraints(getBounds());
-		addMouseListener(new ProcessMouseClick(processNode));
+		node.setXyLayoutConstraints(getBounds());
+		addMouseListener(new ProcessMouseClick(node));
 		setVisible(false);
 	}
 
