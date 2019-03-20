@@ -1,6 +1,7 @@
 package org.openlca.app.editors.parameters;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,9 +52,12 @@ import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
+import org.openlca.core.model.Process;
+import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -240,8 +244,8 @@ public class BigParameterTable extends SimpleFormEditor {
 		}
 
 		/**
-		 * Bind the parameter values and formulas to the respective scopes of a formula
-		 * interpreter.
+		 * Bind the parameter values and formulas to the respective scopes of a
+		 * formula interpreter.
 		 */
 		private FormulaInterpreter buildInterpreter() {
 			FormulaInterpreter fi = new FormulaInterpreter();
@@ -271,12 +275,29 @@ public class BigParameterTable extends SimpleFormEditor {
 				return;
 			Parameter p = param.parameter;
 
+			// first check that the parameter or the owner
+			// is currently not edited in another editor
+			if (param.owner == null && App.hasDirtyEditor(p)) {
+				Info.showBox("Cannot edit " + p.name,
+						"The parameter is currently "
+								+ "modified in another editor.");
+				return;
+			}
+			if (param.owner != null
+					&& App.hasDirtyEditor(param.owner)) {
+				String label = Strings.cut(
+						Labels.getDisplayName(param.owner), 50);
+				Info.showBox("Cannot edit " + p.name, label +
+						" is currently modified in another editor.");
+				return;
+			}
+
 			// build dialog with validation
 			InputDialog dialog = null;
 			FormulaInterpreter fi = null;
 			if (p.isInputParameter) {
 				dialog = new InputDialog(UI.shell(),
-						"#Edit value", "Set a new parameter value",
+						"Edit value", "Set a new parameter value",
 						Double.toString(p.value), s -> {
 							try {
 								Double.parseDouble(s);
@@ -291,7 +312,7 @@ public class BigParameterTable extends SimpleFormEditor {
 						? fi.getGlobalScope()
 						: fi.getScope(param.ownerID);
 				dialog = new InputDialog(UI.shell(),
-						"#Edit formula", "Set a new parameter formula",
+						"Edit formula", "Set a new parameter formula",
 						p.formula, s -> {
 							try {
 								scope.eval(s);
@@ -302,9 +323,13 @@ public class BigParameterTable extends SimpleFormEditor {
 						});
 			}
 
-			// parse the value from the dialog
+			// sync the parameter
 			if (dialog.open() != Window.OK)
 				return;
+			IDatabase db = Database.get();
+			ParameterDao dao = new ParameterDao(db);
+			p = dao.getForId(p.id);
+
 			String val = dialog.getValue();
 			if (p.isInputParameter) {
 				try {
@@ -327,9 +352,40 @@ public class BigParameterTable extends SimpleFormEditor {
 			}
 
 			// update the parameter in the database
-			ParameterDao dao = new ParameterDao(
-					Database.get());
+			long time = Calendar.getInstance()
+					.getTimeInMillis();
+			p.lastChange = time;
+			Version.incUpdate(p);
 			param.parameter = dao.update(p);
+
+			// update the owner; we also close a possible
+			// opened editor just to make sure that the
+			// user does not get confused with a state that
+			// is not in sync with the database
+			if (param.owner == null) {
+				App.closeEditor(p);
+			} else {
+				if (param.owner.type == ModelType.PROCESS) {
+					ProcessDao pdao = new ProcessDao(db);
+					Process proc = pdao.getForId(param.owner.id);
+					if (proc != null) {
+						Version.incUpdate(proc);
+						proc.lastChange = time;
+					}
+					proc = pdao.update(proc);
+					App.closeEditor(proc);
+				} else if (param.owner.type == ModelType.IMPACT_METHOD) {
+					ImpactMethodDao mdao = new ImpactMethodDao(db);
+					ImpactMethod method = mdao.getForId(param.owner.id);
+					if (method != null) {
+						Version.incUpdate(method);
+						method.lastChange = time;
+					}
+					method = mdao.update(method);
+					App.closeEditor(method);
+				}
+			}
+
 			table.refresh();
 		}
 	}
@@ -338,9 +394,9 @@ public class BigParameterTable extends SimpleFormEditor {
 	private class Param implements Comparable<Param> {
 
 		/**
-		 * We have the owner ID as a separate field because a parameter could have a
-		 * link to an owner that does not exist anymore in the database (it is an error
-		 * but such things seem to happen).
+		 * We have the owner ID as a separate field because a parameter could
+		 * have a link to an owner that does not exist anymore in the database
+		 * (it is an error but such things seem to happen).
 		 */
 		Long ownerID;
 

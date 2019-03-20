@@ -2,12 +2,13 @@ package org.openlca.app;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.openlca.app.cloud.ui.preferences.CloudPreference;
@@ -21,7 +22,7 @@ import org.openlca.core.matrix.solvers.DenseSolver;
 import org.openlca.core.matrix.solvers.IMatrixSolver;
 import org.openlca.core.matrix.solvers.JavaSolver;
 import org.openlca.core.model.CategorizedEntity;
-import org.openlca.core.model.ModelType;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -103,18 +104,15 @@ public class App {
 	}
 
 	public static void openEditor(CategorizedDescriptor d) {
-		if (d == null) {
+		if (d == null || d.type == null) {
 			log.error("model is null, could not open editor");
 			return;
 		}
 		log.trace("open editor for {} ", d);
-		String editorId = getEditorId(d.type);
-		if (editorId == null)
-			log.error("could not find editor for model {}", d);
-		else {
-			ModelEditorInput input = new ModelEditorInput(d);
-			Editors.open(input, editorId);
-		}
+		String editorId = "editors." + d.type.getModelClass()
+				.getSimpleName().toLowerCase();
+		ModelEditorInput input = new ModelEditorInput(d);
+		Editors.open(input, editorId);
 	}
 
 	public static void closeEditor(CategorizedEntity entity) {
@@ -122,27 +120,50 @@ public class App {
 		closeEditor(descriptor);
 	}
 
-	public static void closeEditor(BaseDescriptor descriptor) {
-		if (descriptor == null) {
-			log.error("model is null, could not close editor");
+	public static void closeEditor(BaseDescriptor d) {
+		IEditorReference ref = findEditor(d);
+		if (ref == null)
 			return;
-		}
-		for (IEditorReference ref : Editors.getReferences())
-			try {
-				if (new ModelEditorInput(descriptor)
-						.equals(ref.getEditorInput())) {
-					Editors.close(ref);
-					break;
-				}
-			} catch (PartInitException e) {
-				log.error("Error closing editor", e);
-			}
+		Editors.close(ref);
 	}
 
-	private static String getEditorId(ModelType type) {
-		if (type == null)
+	/**
+	 * Returns true if the given data set is currently opened in an editor that
+	 * has a dirty (= unsaved) state.
+	 */
+	public static boolean hasDirtyEditor(RootEntity e) {
+		if (e == null)
+			return false;
+		return hasDirtyEditor(Descriptors.toDescriptor(e));
+	}
+
+	/**
+	 * Returns true if the given data set is currently opened in an editor that
+	 * has a dirty (= unsaved) state.
+	 */
+	public static boolean hasDirtyEditor(BaseDescriptor d) {
+		IEditorReference ref = findEditor(d);
+		if (ref == null)
+			return false;
+		return ref.isDirty();
+	}
+
+	private static IEditorReference findEditor(BaseDescriptor d) {
+		if (d == null)
 			return null;
-		return "editors." + type.getModelClass().getSimpleName().toLowerCase();
+		for (IEditorReference ref : Editors.getReferences()) {
+			try {
+				IEditorInput inp = ref.getEditorInput();
+				if (!(inp instanceof ModelEditorInput))
+					continue;
+				ModelEditorInput minp = (ModelEditorInput) inp;
+				if (Objects.equals(minp.getDescriptor(), d))
+					return ref;
+			} catch (Exception e) {
+				log.error("editor search failed", e);
+			}
+		}
+		return null;
 	}
 
 	public static Job runInUI(String name, Runnable runnable) {
