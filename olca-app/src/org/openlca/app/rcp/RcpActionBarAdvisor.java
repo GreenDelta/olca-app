@@ -159,30 +159,50 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	@Override
-	protected void makeActions(final IWorkbenchWindow window) {
+	protected void makeActions(IWorkbenchWindow window) {
 		// save
 		saveAction = ActionFactory.SAVE.create(window);
+		saveAction.setText(M.Save);
 		saveAction.setImageDescriptor(Icon.SAVE.descriptor());
 		saveAction.setDisabledImageDescriptor(Icon.SAVE_DISABLED.descriptor());
+		
 		// save as
 		saveAsAction = ActionFactory.SAVE_AS.create(window);
+		saveAsAction.setText(M.SaveAs);
 		saveAsAction.setImageDescriptor(Icon.SAVE_AS.descriptor());
 		saveAsAction.setDisabledImageDescriptor(Icon.SAVE_AS_DISABLED.descriptor());
+		
 		// save all
 		saveAllAction = ActionFactory.SAVE_ALL.create(window);
+		saveAllAction.setText("#Save All");
 		saveAllAction.setImageDescriptor(Icon.SAVE_ALL.descriptor());
 		saveAllAction.setDisabledImageDescriptor(Icon.SAVE_ALL_DISABLED.descriptor());
+		
+		// close & close all
 		closeAction = ActionFactory.CLOSE.create(window);
+		closeAction.setText(M.Close);
 		closeAllAction = ActionFactory.CLOSE_ALL.create(window);
+		closeAllAction.setText("#Close All");
+		
+		// preferences
 		preferencesAction = ActionFactory.PREFERENCES.create(window);
 		preferencesAction.setImageDescriptor(Icon.PREFERENCES.descriptor());
+		preferencesAction.setText(M.Settings);
+		
+		// import & export
 		importAction = ActionFactory.IMPORT.create(window);
 		importAction.setImageDescriptor(Icon.IMPORT.descriptor());
+		importAction.setText(M.Import);
 		exportAction = ActionFactory.EXPORT.create(window);
 		exportAction.setImageDescriptor(Icon.EXPORT.descriptor());
+		exportAction.setText(M.Export);
+		
+		// other
 		exitAction = ActionFactory.QUIT.create(window);
+		exitAction.setText("#Exit");
 		showViews = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
 		aboutAction = ActionFactory.ABOUT.create(window);
+		aboutAction.setText("#About");
 	}
 
 	private class HelpAction extends Action {
