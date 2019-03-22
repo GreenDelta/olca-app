@@ -115,6 +115,7 @@ def pack_linux(version_date):
     product_dir = 'build/linux.gtk.x86_64/openLCA'
     if not exists(product_dir):
         print('folder %s does not exist; skip Linux version' % product_dir)
+        return
 
     print('Create Linux package')
     copy_licenses(product_dir)
@@ -144,6 +145,7 @@ def pack_macos(version_date):
     product_dir = 'build/macosx.cocoa.x86_64/openLCA'
     if not exists(product_dir):
         print('folder %s does not exist; skip macOS version' % product_dir)
+        return
 
     print('Create macOS package')
 
