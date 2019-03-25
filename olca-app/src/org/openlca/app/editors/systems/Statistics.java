@@ -8,8 +8,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 
+import org.openlca.app.db.Database;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.NativeSql;
 import org.openlca.core.matrix.LongPair;
+import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.cache.ProcessTable;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -19,7 +24,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.gson.Gson;
+
+import gnu.trove.map.hash.TLongLongHashMap;
 
 class Statistics {
 
@@ -28,8 +34,12 @@ class Statistics {
 	int techMatrixSize;
 	boolean connectedGraph;
 	ProcessDescriptor refProcess;
-	List<LinkValue> topInDegrees;
-	List<LinkValue> topOutDegrees;
+	List<LinkDegree> topInDegrees;
+	List<LinkDegree> topOutDegrees;
+
+	int singleProviderLinkCount;
+	int defaultProviderLinkCount;
+	int multiProviderLinkCount;
 
 	private Statistics() {
 	}
@@ -62,6 +72,7 @@ class Statistics {
 		connectedGraph = isConnectedGraph(system, inEdges);
 		topInDegrees = calculateMostLinked(inEdges, 5, cache);
 		topOutDegrees = calculateMostLinked(outEdges, 5, cache);
+		collectProviderInfos(system, Database.get());
 	}
 
 	/**
@@ -94,7 +105,7 @@ class Statistics {
 		return true;
 	}
 
-	private static List<LinkValue> calculateMostLinked(
+	private static List<LinkDegree> calculateMostLinked(
 			Multimap<Long, Long> edges,
 			int maxSize, EntityCache cache) {
 		Long[] keys = new Long[maxSize];
@@ -124,15 +135,15 @@ class Statistics {
 		return createLinkValues(keys, degrees, cache);
 	}
 
-	private static List<LinkValue> createLinkValues(Long[] keys, int[] degrees,
+	private static List<LinkDegree> createLinkValues(Long[] keys, int[] degrees,
 			EntityCache cache) {
-		List<LinkValue> linkValues = new ArrayList<>();
+		List<LinkDegree> linkValues = new ArrayList<>();
 		for (int i = 0; i < keys.length; i++) {
 			Long key = keys[i];
 			if (key == null)
 				break;
 			ProcessDescriptor process = cache.get(ProcessDescriptor.class, key);
-			LinkValue value = new LinkValue();
+			LinkDegree value = new LinkDegree();
 			value.process = process;
 			value.degree = degrees[i];
 			linkValues.add(value);
@@ -140,11 +151,42 @@ class Statistics {
 		return linkValues;
 	}
 
-	public String toJson() {
-		return new Gson().toJson(this);
+	private void collectProviderInfos(ProductSystem system, IDatabase db) {
+
+		TLongLongHashMap defaults = new TLongLongHashMap();
+		String query = "select id, f_default_provider from tbl_exchanges";
+		try {
+			NativeSql.on(db).query(query, r -> {
+				long defprov = r.getLong(2);
+				if (defprov == 0L)
+					return true;
+				long eid = r.getLong(1);
+				defaults.put(eid, defprov);
+				return true;
+			});
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("Failed to collect default providers", e);
+		}
+
+		ProcessTable ptable = ProcessTable.create(db);
+		for (ProcessLink link : system.processLinks) {
+			long defaultP = defaults.get(link.exchangeId);
+			if (defaultP == link.providerId) {
+				defaultProviderLinkCount++;
+			}
+			List<ProcessProduct> products = ptable.getProviders(link.flowId);
+			if (products == null || products.isEmpty())
+				continue;
+			if (products.size() == 1) {
+				singleProviderLinkCount++;
+			} else {
+				multiProviderLinkCount++;
+			}
+		}
 	}
 
-	static class LinkValue {
+	static class LinkDegree {
 		int degree;
 		ProcessDescriptor process;
 	}
