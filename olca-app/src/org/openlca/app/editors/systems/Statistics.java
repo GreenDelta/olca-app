@@ -23,20 +23,13 @@ import com.google.gson.Gson;
 
 class Statistics {
 
-	@SuppressWarnings("unused")
-	private int processCount;
-	@SuppressWarnings("unused")
-	private int linkCount;
-	@SuppressWarnings("unused")
-	private int techMatrixSize;
-	@SuppressWarnings("unused")
-	private boolean connectedGraph;
-	@SuppressWarnings("unused")
-	private ProcessDescriptor refProcess;
-	@SuppressWarnings("unused")
-	private List<LinkValue> topInDegrees;
-	@SuppressWarnings("unused")
-	private List<LinkValue> topOutDegrees;
+	int processCount;
+	int linkCount;
+	int techMatrixSize;
+	boolean connectedGraph;
+	ProcessDescriptor refProcess;
+	List<LinkValue> topInDegrees;
+	List<LinkValue> topOutDegrees;
 
 	private Statistics() {
 	}
@@ -72,9 +65,9 @@ class Statistics {
 	}
 
 	/**
-	 * The product system graph is connected if we can visit every process in
-	 * the product system traversing the graph starting from the reference
-	 * process and following the incoming process links.
+	 * The product system graph is connected if we can visit every process in the
+	 * product system traversing the graph starting from the reference process and
+	 * following the incoming process links.
 	 */
 	private static boolean isConnectedGraph(ProductSystem system,
 			Multimap<Long, Long> inEdges) {
@@ -151,10 +144,8 @@ class Statistics {
 		return new Gson().toJson(this);
 	}
 
-	private static class LinkValue {
-		@SuppressWarnings("unused")
+	static class LinkValue {
 		int degree;
-		@SuppressWarnings("unused")
 		ProcessDescriptor process;
 	}
 

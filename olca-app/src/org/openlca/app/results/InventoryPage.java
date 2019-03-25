@@ -15,7 +15,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -186,7 +185,7 @@ public class InventoryPage extends FormPage {
 
 	private class Label extends DQLabelProvider {
 
-		private ContributionImage img = new ContributionImage(Display.getCurrent());
+		private ContributionImage img = new ContributionImage();
 
 		Label() {
 			super(dqResult, dqResult != null ? dqResult.setup.exchangeDqSystem : null, 5);

@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -126,8 +125,7 @@ public class NwResultPage extends FormPage {
 
 	private class Label extends LabelProvider implements ITableLabelProvider {
 
-		private ContributionImage image = new ContributionImage(
-				Display.getCurrent());
+		private ContributionImage image = new ContributionImage();
 
 		@Override
 		@SuppressWarnings("unchecked")

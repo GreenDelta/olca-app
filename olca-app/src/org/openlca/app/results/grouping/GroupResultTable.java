@@ -8,7 +8,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.util.Actions;
@@ -49,8 +48,7 @@ class GroupResultTable {
 	private class GroupResultLabel extends ColumnLabelProvider implements
 			ITableLabelProvider {
 
-		private ContributionImage image = new ContributionImage(
-				Display.getCurrent());
+		private ContributionImage image = new ContributionImage();
 
 		@Override
 		public void dispose() {

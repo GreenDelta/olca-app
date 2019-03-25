@@ -255,8 +255,7 @@ class TotalRequirementsSection {
 
 	private class Label extends DQLabelProvider {
 
-		private ContributionImage costImage = new ContributionImage(
-				UI.shell().getDisplay());
+		private ContributionImage costImage = new ContributionImage();
 
 		public Label() {
 			super(dqResult, dqResult != null

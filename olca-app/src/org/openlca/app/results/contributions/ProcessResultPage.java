@@ -15,7 +15,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -62,7 +61,7 @@ public class ProcessResultPage extends FormPage {
 	private Spinner flowSpinner;
 	private Spinner impactSpinner;
 	private CalculationSetup setup;
-	private ContributionImage image = new ContributionImage(Display.getCurrent());
+	private ContributionImage image = new ContributionImage();
 	private double flowCutOff = 0.01;
 	private double impactCutOff = 0.01;
 
