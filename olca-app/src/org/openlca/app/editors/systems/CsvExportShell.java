@@ -16,7 +16,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileSelection;
-import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Dialog;
@@ -25,7 +25,7 @@ import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.io.xls.CsvMatrixExport;
-import org.openlca.io.xls.CsvMatrixExportData;
+import org.openlca.io.xls.CsvMatrixExportConfig;
 
 /**
  * The dialog for exporting product systems as matrices.
@@ -48,7 +48,7 @@ public class CsvExportShell extends Shell {
 	private Combo columnCombo;
 	private FileSelection techSelection;
 	private FileSelection enviSelection;
-	private CsvMatrixExportData data;
+	private CsvMatrixExportConfig conf;
 
 	public CsvExportShell(Shell parent, ProductSystem system) {
 		super(parent, SWT.SHELL_TRIM);
@@ -57,10 +57,8 @@ public class CsvExportShell extends Shell {
 		setText(M.MatrixExport);
 		setSize(450, 450);
 		createContents();
-		data = new CsvMatrixExportData();
-		data.setMatrixCache(Cache.getMatrixCache());
-		data.setEntityCache(Cache.getEntityCache());
-		data.setProductSystem(system);
+		conf = new CsvMatrixExportConfig(
+				system, Database.get());
 		UI.center(parent, this);
 	}
 
@@ -150,18 +148,18 @@ public class CsvExportShell extends Shell {
 			Dialog.showError(this, M.NoExportFilesSelected);
 			return;
 		}
-		data.setInterventionFile(enviFile);
-		data.setTechnologyFile(techFile);
+		conf.interventionFile = enviFile;
+		conf.technologyFile = techFile;
 		int idx = pointCombo.getSelectionIndex();
-		String point = idx >= 0 ? decimalSeparators[idx] : pointCombo.getText();
-		data.setDecimalSeparator(point);
+		conf.decimalSeparator = idx >= 0
+				? decimalSeparators[idx]
+				: pointCombo.getText();
 		idx = columnCombo.getSelectionIndex();
-		String column = idx >= 0 ? columnSeparators[idx]
-				: columnCombo
-						.getText();
-		data.setColumnSeperator(column);
+		conf.columnSeperator = idx >= 0
+				? columnSeparators[idx]
+				: columnCombo.getText();
 		App.run(M.ExportMatrix,
-				new CsvMatrixExport(data),
+				new CsvMatrixExport(conf),
 				() -> Info.popup(M.ExportDone));
 		this.dispose();
 	}
