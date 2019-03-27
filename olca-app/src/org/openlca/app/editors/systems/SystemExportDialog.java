@@ -1,11 +1,9 @@
 package org.openlca.app.editors.systems;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
@@ -17,7 +15,6 @@ import org.eclipse.swt.widgets.Group;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileSelection;
-import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
@@ -26,7 +23,6 @@ import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.io.xls.systems.SystemExport;
 import org.openlca.io.xls.systems.SystemExportConfig;
 import org.slf4j.Logger;
@@ -40,9 +36,9 @@ public class SystemExportDialog extends WizardDialog {
 
 		private class SystemExportWizardPage extends WizardPage {
 
-			private AllocationMethodViewer allocationMethodViewer;
-			private FileSelection directorySelection;
-			private ImpactMethodViewer impactMethodViewer;
+			private AllocationMethodViewer allocationCombo;
+			private FileSelection fileChooser;
+			private ImpactMethodViewer impactCombo;
 
 			protected SystemExportWizardPage() {
 				super("SystemExportWizardPage");
@@ -62,59 +58,45 @@ public class SystemExportDialog extends WizardDialog {
 
 			@Override
 			public void createControl(Composite parent) {
-				Composite composite = new Composite(parent, SWT.NONE);
-				UI.gridLayout(composite, 1);
+				Composite comp = new Composite(parent, SWT.NONE);
+				UI.gridLayout(comp, 1);
 
-				Group methodGroup = createGroup(M.Methods, composite, 1);
-				UI.formLabel(methodGroup, M.AllocationMethod);
-				allocationMethodViewer = new AllocationMethodViewer(
-						methodGroup, AllocationMethod.values());
-				UI.formLabel(methodGroup, M.ImpactAssessmentMethod);
-				impactMethodViewer = new ImpactMethodViewer(methodGroup);
-				impactMethodViewer.setInput(database);
+				Group mgroup = createGroup(M.Methods, comp, 1);
+				UI.formLabel(mgroup, M.AllocationMethod);
+				allocationCombo = new AllocationMethodViewer(
+						mgroup, AllocationMethod.values());
+				UI.formLabel(mgroup, M.ImpactAssessmentMethod);
+				impactCombo = new ImpactMethodViewer(mgroup);
+				impactCombo.setInput(db);
 
-				Group fileGroup = createGroup(M.ExportDirectory,
-						composite, 1);
-				directorySelection = new FileSelection(fileGroup);
-				directorySelection.setSelectDirectory(true);
-				directorySelection
-						.addSelectionListener(new SelectionListener() {
+				Group fgroup = createGroup(
+						M.ExportDirectory, comp, 1);
+				fileChooser = new FileSelection(fgroup);
+				fileChooser.setSelectDirectory(true);
+				fileChooser.addSelectionListener(new SelectionListener() {
 
-							@Override
-							public void widgetSelected(SelectionEvent e) {
-								setPageComplete(directorySelection.getFile() != null);
-							}
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						setPageComplete(fileChooser.getFile() != null);
+					}
 
-							@Override
-							public void widgetDefaultSelected(SelectionEvent e) {
-								setPageComplete(directorySelection.getFile() != null);
-							}
-						});
-				setControl(composite);
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {
+						setPageComplete(fileChooser.getFile() != null);
+					}
+				});
+				setControl(comp);
 			}
-
-			private AllocationMethod getAllocationMethod() {
-				return allocationMethodViewer.getSelected();
-			}
-
-			private BaseDescriptor getImpactMethod() {
-				return impactMethodViewer.getSelected();
-			}
-
-			private File getDirectory() {
-				return directorySelection.getFile();
-			}
-
 		}
 
-		private IDatabase database;
-		private ProductSystem productSystem;
+		private IDatabase db;
+		private ProductSystem system;
 		private SystemExportWizardPage page = new SystemExportWizardPage();
 
 		private SystemExportWizard(ProductSystem productSystem,
 				IDatabase database) {
-			this.productSystem = productSystem;
-			this.database = database;
+			this.system = productSystem;
+			this.db = database;
 			setNeedsProgressMonitor(true);
 		}
 
@@ -125,45 +107,31 @@ public class SystemExportDialog extends WizardDialog {
 
 		@Override
 		public boolean performFinish() {
-			boolean errorOccured = false;
-			final AllocationMethod allocation = page.getAllocationMethod();
-			final BaseDescriptor impactMethod = page.getImpactMethod();
-			final File directory = page.getDirectory();
 			try {
-				getContainer().run(true, true, new IRunnableWithProgress() {
-
-					@Override
-					public void run(IProgressMonitor monitor)
-							throws InvocationTargetException,
-							InterruptedException {
-						monitor.beginTask(M.Export,
-								IProgressMonitor.UNKNOWN);
-						SystemExportConfig conf = new SystemExportConfig(
-								productSystem, database, App.getSolver());
-						conf.setAllocationMethod(allocation);
-						conf.setEntityCache(Cache.getEntityCache());
-						conf.setImpactMethod(impactMethod);
-						conf.setMatrixCache(Cache.getMatrixCache());
-						conf.setOlcaVersion(App.getVersion());
-						SystemExport export = new SystemExport(conf);
-						try {
-							export.exportTo(directory);
-						} catch (IOException e) {
-							throw new InvocationTargetException(e);
-						} finally {
-							monitor.done();
-						}
+				getContainer().run(true, true, monitor -> {
+					monitor.beginTask(M.Export,
+							IProgressMonitor.UNKNOWN);
+					SystemExportConfig conf = new SystemExportConfig(
+							system, db);
+					conf.allocationMethod = page.allocationCombo.getSelected();
+					conf.impactMethod = page.impactCombo.getSelected();
+					conf.olcaVersion = App.getVersion();
+					SystemExport export = new SystemExport(conf);
+					try {
+						export.exportTo(page.fileChooser.getFile());
+					} catch (IOException e) {
+						throw new InvocationTargetException(e);
 					}
 				});
+				return true;
 			} catch (Exception e) {
-				errorOccured = true;
 				log.error("Error while exporting system", e);
+				return false;
 			}
-			return !errorOccured;
 		}
 	}
 
-	public SystemExportDialog(ProductSystem productSystem, IDatabase database) {
-		super(UI.shell(), new SystemExportWizard(productSystem, database));
+	public SystemExportDialog(ProductSystem system, IDatabase db) {
+		super(UI.shell(), new SystemExportWizard(system, db));
 	}
 }

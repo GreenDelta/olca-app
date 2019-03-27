@@ -3,7 +3,6 @@ package org.openlca.app.results.contributions.locations;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Images;
@@ -19,7 +18,7 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 
 	String unit = "";
 
-	private ContributionImage image = new ContributionImage(Display.getCurrent());
+	private ContributionImage image = new ContributionImage();
 
 	@Override
 	public void dispose() {

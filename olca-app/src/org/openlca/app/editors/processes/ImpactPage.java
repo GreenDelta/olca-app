@@ -18,7 +18,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -258,7 +257,7 @@ class ImpactPage extends ModelPage<Process> {
 	private class Label extends ColumnLabelProvider
 			implements ITableLabelProvider {
 
-		private ContributionImage img = new ContributionImage(Display.getCurrent());
+		private ContributionImage img = new ContributionImage();
 
 		@Override
 		public void dispose() {

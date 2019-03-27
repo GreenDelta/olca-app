@@ -1,6 +1,7 @@
 package org.openlca.app.components;
 
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
@@ -16,9 +17,15 @@ public class ContributionImage {
 
 	private ImageRegistry imageRegistry = new ImageRegistry();
 	private Display display;
+	private Color color;
 
-	public ContributionImage(Display display) {
-		this.display = display;
+	public ContributionImage() {
+		this.display = Display.getCurrent();
+	}
+
+	public ContributionImage(Color color) {
+		this.display = Display.getCurrent();
+		this.color = color;
 	}
 
 	public void dispose() {
@@ -27,8 +34,7 @@ public class ContributionImage {
 
 	/**
 	 * Get an contribution image for table label providers. Returns the maximum
-	 * image (for +1 or -1) if the contribution is lower than -1 or greater than
-	 * 1.
+	 * image (for +1 or -1) if the contribution is lower than -1 or greater than 1.
 	 * 
 	 * @param contribution
 	 *            the contribution value between -1 and 1
@@ -45,8 +51,12 @@ public class ContributionImage {
 		if (image == null) {
 			image = new Image(display, 60, 15);
 			GC gc = new GC(image);
-			RGB color = FaviColor.getForContribution(c);
-			gc.setBackground(Colors.get(color));
+			if (this.color != null) {
+				gc.setBackground(this.color);
+			} else {
+				RGB color = FaviColor.getForContribution(c);
+				gc.setBackground(Colors.get(color));
+			}
 			int width = Math.abs(contributionInt);
 			gc.fillRectangle(5, 5, width, 5);
 			gc.dispose();

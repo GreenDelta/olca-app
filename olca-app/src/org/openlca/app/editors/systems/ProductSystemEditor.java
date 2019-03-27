@@ -4,7 +4,6 @@ import org.openlca.app.M;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
@@ -32,9 +31,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
 			int gIdx = addPage(new ProductSystemGraphEditor(this), gInput);
 			setPageText(gIdx, M.ModelGraph);
-			if (FeatureFlag.EXPERIMENTAL_VISUALISATIONS.isEnabled()) {
-				addPage(new StatisticsPage(this));
-			}
+			addPage(new StatisticsPage(this));
 			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);

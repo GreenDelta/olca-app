@@ -11,7 +11,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -177,8 +176,7 @@ public class ContributionTreePage extends FormPage {
 	private class ContributionLabelProvider extends BaseLabelProvider implements
 			ITableLabelProvider {
 
-		private ContributionImage image = new ContributionImage(
-				Display.getCurrent());
+		private ContributionImage image = new ContributionImage();
 
 		@Override
 		public void dispose() {
