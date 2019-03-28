@@ -16,7 +16,7 @@ This repository has the following sub-projects:
   openLCA and creating the installers for Windows, Linux, and MacOS.
 * [olca-app-html](./olca-app-html): contains the source code for the HTML views
   in openLCA (like the start page or the report views).
-* [olca-app-runtime](./olca-app-runtime): contains the build scripts for
+* [olca-app-runtime](./olca-app-runtime): contains the **old** build scripts for
   creating the Eclipse RCP runtime for openLCA.
 
 See also the README files that are contained in these sub-projects.
@@ -29,7 +29,7 @@ following tools installed:
 * [Git](https://git-scm.com/) (optional)
 * a [Java Development Kit 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 * [Maven](http://maven.apache.org/)
-* the [Eclipse package for RCP developers](https://www.eclipse.org/downloads/eclipse-packages/)
+* the [Eclipse package for RCP developers](https://www.eclipse.org/downloads/packages/)
 * [Node.js](https://nodejs.org/) and [Gulp](http://gulpjs.com/) (for building
   the HTML5 user interface components)
 
@@ -116,7 +116,7 @@ projects into Eclipse via `Import > General > Existing Projects into Workspace`
 (select the `olca/olca-app` directory). You should now see the `olca-app`, 
 `olca-app-build`, and `olca-app-runtime` projects in your Eclipse workspace.
 
-#### Loading the target platform and 
+#### Loading the target platform 
 The file `platform.target` in the `olca-app` project contains the definition of
 the [target platform](https://help.eclipse.org/oxygen/index.jsp?topic=%2Forg.eclipse.pde.doc.user%2Fconcepts%2Ftarget.htm)
 of the openLCA RCP application. Just open the file with the `Target Editor`
@@ -135,7 +135,6 @@ Go back to the command line and navigate to the
 
 ```bash
 cd olca-app/olca-app
-```
 
 and run 
 
@@ -180,33 +179,10 @@ cd olca-app/olca-refdata
 mvn package
 ```
 
-## Building with Eclipse Oxygen and Julia libraries
-For Windows, it is now possible to build openLCA so that it runs on the
-Eclipse Oxygen platform and uses some math libraries for high performance
-computing from the [Julia](https://julialang.org/) project. This is currently
-tested with [Eclipse Oxygen 3A](https://www.eclipse.org/downloads/packages/release/Oxygen/3A)
-package for RCP/RAP development.
-
-The initial steps for this build are the same as before:
-
-* install/update the openLCA core and update modules
-* build the HTML pages
-* build the database templates
-
-The current master branch of the `olca-app` project contains now a new target
-platform definition `olca-app/olca-app/platform.target`. When you open this
-file the first time with the Eclipse `Target Editor`, Eclipse will
-download the resources of this target platform into your workspace. You may
-get errors like `Unable locate installable unit in target definition` when
-Eclipse fails to download some resources or the like (for possible fixes, see
-[here](https://stackoverflow.com/questions/10547007/unable-locate-installable-unit-in-target-definition)).
-But when it is downloaded it should work quite stable. Click on the
-`Set as Target Platform` link in the upper right corner of the `Target Editor`
-to use this as the target platform.
-
-To build the Windows version, we currently use the standard PDE Export wizard.
-Click on the `olca-app` project and then on `Export...` from the context menu.
-Select `Plug-in Development > Eclipse Product` from the export wizard and
+## Building the distribution packages
+To build the distribution packages, we currently use the standard PDE Export
+wizard. Click on the `olca-app` project and then on `Export...` from the context
+menu. Select `Plug-in Development > Eclipse Product` from the export wizard and
 select the following options in the export dialog:
 
 * Configuration: `/olca-app/openLCA.product` (should be the default)
@@ -218,17 +194,9 @@ select the following options in the export dialog:
 * (take the defaults for the others)
 
 In the next page, select the platforms for which you want to build the product.
-However, only the Windows `x86_64` version is currently fully supported. After
-the export, you need to run the package script `pack10.py` to copy resources
-like the Java runtime, Julia libraries, etc. to the application folder and to
-create the installers. The layout of the build folder (with tools and runtime
-libraries) is the same as for the old build (see the `olca-app-build` project)
-but additionally contains a `julia` folder which contains the julia libraries.
-
-The distribution packages for Linux and macOS are still build as before. There
-is a `olca_platform` branch which contains the build configuration for the old
-target platform. Switch to this branch and merge the current master into this
-branch and the old build should work.
+After the export, you need to run the package script `pack10.py` to copy
+resources like the Java runtime, the native math libraries, etc. to the
+application folder and to create the installers. (**todo** needs an update)
 
 ## License
 Unless stated otherwise, all source code of the openLCA project is licensed
