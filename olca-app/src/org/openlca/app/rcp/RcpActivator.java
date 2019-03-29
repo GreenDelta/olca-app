@@ -18,8 +18,6 @@ import org.openlca.app.devtools.python.Python;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerConfig;
 import org.openlca.app.rcp.html.HtmlFolder;
-import org.openlca.eigen.NativeLibrary;
-import org.openlca.util.OS;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -45,8 +43,8 @@ public class RcpActivator extends AbstractUIPlugin {
 	 * Returns the file found at the specified path as an input stream
 	 * 
 	 * @param path
-	 *            The path to the file to load an input stream for (relative to
-	 *            the plugin)
+	 *            The path to the file to load an input stream for (relative to the
+	 *            plugin)
 	 * @return The file found at the specified path as an input stream
 	 */
 	public static InputStream getStream(final String path) {
@@ -75,14 +73,6 @@ public class RcpActivator extends AbstractUIPlugin {
 			Python.getDir();
 			return Status.OK_STATUS;
 		}).schedule();
-		log.trace("Try init olca-eigen");
-		try {
-			NativeLibrary.loadFromDir(workspace);
-		} catch (UnsatisfiedLinkError e) {
-			if (OS.get() == OS.LINUX)
-				MissingLibraryMessage.checkAndShow();
-		}
-		log.trace("olca-eigen loaded: {}", NativeLibrary.isLoaded());
 		App.getSolver();
 	}
 

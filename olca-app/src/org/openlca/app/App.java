@@ -57,9 +57,18 @@ public class App {
 			log.error("Failed to load libraries from folder <openLCA>/julia");
 		}
 
+		// TODO: this is currently a fall back, we will remove the
+		// olca-eigen package when olca-rust is stable on all platforms
+		log.trace("Try init olca-eigen");
+		try {
+			NativeLibrary.loadFromDir(Workspace.getDir());
+		} catch (UnsatisfiedLinkError e) {
+		}
+		log.trace("olca-eigen loaded: {}", NativeLibrary.isLoaded());
 		if (!NativeLibrary.isLoaded()) {
-			log.warn(
-					"could not load a high-performance library for calculations");
+			// TODO: show some message ...
+			log.warn("could not load a high-performance"
+					+ " library for calculations");
 			solver = new JavaSolver();
 			return solver;
 		}
@@ -73,9 +82,9 @@ public class App {
 	}
 
 	/**
-	 * Returns the version of the openLCA application. If there is a version
-	 * defined in the ini-file (-olcaVersion argument) this is returned.
-	 * Otherwise the version of the application bundle is returned.
+	 * Returns the version of the openLCA application. If there is a version defined
+	 * in the ini-file (-olcaVersion argument) this is returned. Otherwise the
+	 * version of the application bundle is returned.
 	 */
 	public static String getVersion() {
 		String version = CommandArgument.VERSION.getValue();
@@ -128,8 +137,8 @@ public class App {
 	}
 
 	/**
-	 * Returns true if the given data set is currently opened in an editor that
-	 * has a dirty (= unsaved) state.
+	 * Returns true if the given data set is currently opened in an editor that has
+	 * a dirty (= unsaved) state.
 	 */
 	public static boolean hasDirtyEditor(RootEntity e) {
 		if (e == null)
@@ -138,8 +147,8 @@ public class App {
 	}
 
 	/**
-	 * Returns true if the given data set is currently opened in an editor that
-	 * has a dirty (= unsaved) state.
+	 * Returns true if the given data set is currently opened in an editor that has
+	 * a dirty (= unsaved) state.
 	 */
 	public static boolean hasDirtyEditor(BaseDescriptor d) {
 		IEditorReference ref = findEditor(d);
@@ -174,17 +183,17 @@ public class App {
 	}
 
 	/**
-	 * Wraps a runnable in a job and executes it using the Eclipse jobs
-	 * framework. No UI access is allowed for the runnable.
+	 * Wraps a runnable in a job and executes it using the Eclipse jobs framework.
+	 * No UI access is allowed for the runnable.
 	 */
 	public static Job run(String name, Runnable runnable) {
 		return run(name, runnable, null);
 	}
 
 	/**
-	 * See {@link App#run(String, Runnable)}. Additionally, this method allows
-	 * to give a callback which is executed in the UI thread when the runnable
-	 * is finished.
+	 * See {@link App#run(String, Runnable)}. Additionally, this method allows to
+	 * give a callback which is executed in the UI thread when the runnable is
+	 * finished.
 	 */
 	public static Job run(String name, Runnable runnable, Runnable callback) {
 		WrappedJob job = new WrappedJob(name, runnable);
