@@ -21,6 +21,7 @@ import org.openlca.app.M;
 import org.openlca.app.devtools.js.JavaScriptEditor;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
+import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.core.model.CategorizedEntity;

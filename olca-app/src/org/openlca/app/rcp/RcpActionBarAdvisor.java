@@ -3,7 +3,6 @@ package org.openlca.app.rcp;
 import java.util.Objects;
 
 import org.eclipse.core.runtime.IExtension;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IMenuManager;
@@ -31,9 +30,9 @@ import org.openlca.app.devtools.ipc.IpcDialog;
 import org.openlca.app.devtools.js.JavaScriptEditor;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
-import org.openlca.app.editors.LogFileEditor;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.editors.parameters.BigParameterTable;
+import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
@@ -63,7 +62,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	protected void fillCoolBar(ICoolBarManager coolBar) {
 		IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.LEFT);
 		coolBar.add(new ToolBarContributionItem(toolbar, "main"));
-		toolbar.add(new HomeAction());
+		toolbar.add(Actions.create(
+				M.Home, Icon.HOME.descriptor(), StartPage::open));
 		toolbar.add(saveAction);
 		toolbar.add(saveAsAction);
 		toolbar.add(saveAllAction);
@@ -96,17 +96,21 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillHelpMenu(IMenuManager menuBar) {
-		MenuManager helpMenu = new MenuManager(M.Help, IWorkbenchActionConstants.M_HELP);
-		HelpAction helpAction = new HelpAction();
-		helpMenu.add(helpAction);
+		MenuManager helpMenu = new MenuManager(
+				M.Help, IWorkbenchActionConstants.M_HELP);
+		helpMenu.add(Actions.create(
+				M.OnlineHelp, Icon.HELP.descriptor(),
+				() -> Desktop.browse(Config.HELP_URL)));
 		helpMenu.add(new Separator());
-		helpMenu.add(new OpenLogAction());
+		helpMenu.add(Actions.create(
+				M.OpenLogFile, Icon.FILE.descriptor(), LogFileEditor::open));
 		helpMenu.add(aboutAction);
 		menuBar.add(helpMenu);
 	}
 
 	private void fillFileMenu(IMenuManager menuBar) {
-		MenuManager menu = new MenuManager(M.File, IWorkbenchActionConstants.M_FILE);
+		MenuManager menu = new MenuManager(
+				M.File, IWorkbenchActionConstants.M_FILE);
 		menu.add(saveAction);
 		menu.add(saveAsAction);
 		menu.add(saveAllAction);
@@ -115,7 +119,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(closeAllAction);
 		menu.add(new Separator());
 		menu.add(preferencesAction);
-		// menu.add(new OpenPluginManagerAction());
 		menu.add(new Separator());
 		menu.add(importAction);
 		menu.add(exportAction);
@@ -165,30 +168,30 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		saveAction.setText(M.Save);
 		saveAction.setImageDescriptor(Icon.SAVE.descriptor());
 		saveAction.setDisabledImageDescriptor(Icon.SAVE_DISABLED.descriptor());
-		
+
 		// save as
 		saveAsAction = ActionFactory.SAVE_AS.create(window);
 		saveAsAction.setText(M.SaveAs);
 		saveAsAction.setImageDescriptor(Icon.SAVE_AS.descriptor());
 		saveAsAction.setDisabledImageDescriptor(Icon.SAVE_AS_DISABLED.descriptor());
-		
+
 		// save all
 		saveAllAction = ActionFactory.SAVE_ALL.create(window);
 		saveAllAction.setText("#Save All");
 		saveAllAction.setImageDescriptor(Icon.SAVE_ALL.descriptor());
 		saveAllAction.setDisabledImageDescriptor(Icon.SAVE_ALL_DISABLED.descriptor());
-		
+
 		// close & close all
 		closeAction = ActionFactory.CLOSE.create(window);
 		closeAction.setText(M.Close);
 		closeAllAction = ActionFactory.CLOSE_ALL.create(window);
 		closeAllAction.setText("#Close All");
-		
+
 		// preferences
 		preferencesAction = ActionFactory.PREFERENCES.create(window);
 		preferencesAction.setImageDescriptor(Icon.PREFERENCES.descriptor());
 		preferencesAction.setText(M.Settings);
-		
+
 		// import & export
 		importAction = ActionFactory.IMPORT.create(window);
 		importAction.setImageDescriptor(Icon.IMPORT.descriptor());
@@ -196,7 +199,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		exportAction = ActionFactory.EXPORT.create(window);
 		exportAction.setImageDescriptor(Icon.EXPORT.descriptor());
 		exportAction.setText(M.Export);
-		
+
 		// other
 		exitAction = ActionFactory.QUIT.create(window);
 		exitAction.setText("#Exit");
@@ -205,41 +208,4 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		aboutAction.setText("#About");
 	}
 
-	private class HelpAction extends Action {
-		public HelpAction() {
-			setText(M.OnlineHelp);
-			setToolTipText(M.OnlineHelp);
-			setImageDescriptor(Icon.HELP.descriptor());
-		}
-
-		@Override
-		public void run() {
-			Desktop.browse(Config.HELP_URL);
-		}
-	}
-
-	private class HomeAction extends Action {
-		public HomeAction() {
-			setImageDescriptor(Icon.HOME.descriptor());
-			setText(M.Home);
-		}
-
-		@Override
-		public void run() {
-			StartPage.open();
-		}
-	}
-
-	private class OpenLogAction extends Action {
-		public OpenLogAction() {
-			setText(M.OpenLogFile);
-			setImageDescriptor(Icon.FILE.descriptor());
-			setToolTipText("Opens the openLCA log file");
-		}
-
-		@Override
-		public void run() {
-			LogFileEditor.open();
-		}
-	}
 }
