@@ -1,14 +1,21 @@
 package org.openlca.app.editors.graphical.command;
 
+import java.util.ArrayList;
+
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.core.model.ProductSystem;
 
 public class DeleteProcessCommand extends Command {
 
 	private final ProcessNode node;
 	private Rectangle oldLayout;
+
+	/** We also delete links when necessary */
+	private DeleteLinkCommand linkCommand;
 
 	public DeleteProcessCommand(ProcessNode node) {
 		this.node = node;
@@ -19,21 +26,28 @@ public class DeleteProcessCommand extends Command {
 		if (node == null)
 			return false;
 		long refID = node.parent().getProductSystem().referenceProcess.id;
-		if (refID == node.process.id)
-			return false;
-		if (!node.isExpandedLeft() || !node.isExpandedRight())
-			return false;
-		return node.links.size() == 0;
+		return node.process.id != refID;
 	}
 
 	@Override
 	public void execute() {
+		node.expandLeft();
+		node.expandRight();
+		if (node.links.size() > 0) {
+			linkCommand = new DeleteLinkCommand(
+					new ArrayList<>(node.links));
+			linkCommand.execute();
+		}
+
+		ProductSystemNode sysNode = node.parent();
+		ProductSystem system = sysNode.getProductSystem();
 		oldLayout = node.getXyLayoutConstraints();
-		node.parent().getProductSystem().processes.remove(node.process.id);
-		node.parent().remove(node);
-		if (node.parent().editor.getOutline() != null)
-			node.parent().editor.getOutline().refresh();
-		node.parent().editor.setDirty(true);
+		system.processes.remove(node.process.id);
+		sysNode.remove(node);
+		if (sysNode.editor.getOutline() != null) {
+			sysNode.editor.getOutline().refresh();
+		}
+		sysNode.editor.setDirty(true);
 	}
 
 	@Override
@@ -48,11 +62,17 @@ public class DeleteProcessCommand extends Command {
 
 	@Override
 	public void undo() {
-		node.parent().add(node);
+		ProductSystemNode sysNode = node.parent();
+		sysNode.add(node);
 		node.setXyLayoutConstraints(oldLayout);
-		node.parent().getProductSystem().processes.add(node.process.id);
-		if (node.parent().editor.getOutline() != null)
-			node.parent().editor.getOutline().refresh();
+		sysNode.getProductSystem().processes.add(node.process.id);
+		if (sysNode.editor.getOutline() != null) {
+			sysNode.editor.getOutline().refresh();
+		}
+		if (linkCommand != null) {
+			linkCommand.undo();
+			linkCommand = null;
+		}
 		node.parent().editor.setDirty(true);
 	}
 }

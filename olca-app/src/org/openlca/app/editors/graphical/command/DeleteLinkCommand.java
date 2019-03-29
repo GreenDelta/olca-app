@@ -32,13 +32,15 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public void execute() {
-		ProductSystemNode systemNode = links.get(0).outputNode.parent();
+		if (links.isEmpty())
+			return;
+		ProductSystemNode sysNode = links.get(0).outputNode.parent();
 		for (Link link : links) {
-			systemNode.getProductSystem().processLinks.remove(link.processLink);
-			systemNode.linkSearch.remove(link.processLink);
+			sysNode.getProductSystem().processLinks.remove(link.processLink);
+			sysNode.linkSearch.remove(link.processLink);
 			link.unlink();
 		}
-		systemNode.editor.setDirty(true);
+		sysNode.editor.setDirty(true);
 	}
 
 	@Override
@@ -48,25 +50,21 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public void redo() {
-		ProductSystemNode systemNode = links.get(0).outputNode.parent();
-		for (Link link : links) {
-			link.unlink();
-			systemNode.getProductSystem().processLinks.remove(link.processLink);
-			systemNode.linkSearch.remove(link.processLink);
-		}
-		systemNode.editor.setDirty(true);
+		execute();
 	}
 
 	@Override
 	public void undo() {
-		ProductSystemNode systemNode = links.get(0).outputNode.parent();
+		if (links.isEmpty())
+			return;
+		ProductSystemNode sysNode = links.get(0).outputNode.parent();
 		for (Link link : links) {
-			systemNode.getProductSystem().processLinks.add(link.processLink);
-			systemNode.linkSearch.put(link.processLink);
+			sysNode.getProductSystem().processLinks.add(link.processLink);
+			sysNode.linkSearch.put(link.processLink);
 			link.link();
 			link.updateVisibilty();
 		}
-		systemNode.editor.setDirty(true);
+		sysNode.editor.setDirty(true);
 	}
 
 }
