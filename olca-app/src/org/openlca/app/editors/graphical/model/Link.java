@@ -65,13 +65,30 @@ public class Link {
 	}
 
 	public boolean isVisible() {
-		return figure != null ? figure.isVisible() : false;
+		return figure != null && figure.isVisible();
 	}
 
-	public void setVisible(boolean value) {
+	/**
+	 * A link is visible when the respective processes are visible and at least one
+	 * of the processes is expanded on the respective site.
+	 */
+	public void updateVisibilty() {
 		if (figure == null)
 			return;
-		figure.setVisible(value);
+		if (!inputNode.isVisible() || !outputNode.isVisible()) {
+			figure.setVisible(false);
+			return;
+		}
+		System.out.println("input node: " + inputNode.process
+				+ "; expanded left => " + inputNode.isExpandedLeft());
+		System.out.println("output node: " + outputNode.process
+				+ "; expanded right => " + outputNode.isExpandedRight());
+
+		if (inputNode.isExpandedLeft() || outputNode.isExpandedRight()) {
+			figure.setVisible(true);
+			return;
+		}
+		figure.setVisible(false);
 	}
 
 }

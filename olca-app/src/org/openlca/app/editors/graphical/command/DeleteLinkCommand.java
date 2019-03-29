@@ -1,20 +1,16 @@
 package org.openlca.app.editors.graphical.command;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.core.model.ProcessLink;
 
 public class DeleteLinkCommand extends Command {
 
 	private final List<Link> links;
-	private final Map<String, Boolean> visibilityMap = new HashMap<String, Boolean>();
 
 	public DeleteLinkCommand(Link link) {
 		this(Collections.singletonList(link));
@@ -38,17 +34,11 @@ public class DeleteLinkCommand extends Command {
 	public void execute() {
 		ProductSystemNode systemNode = links.get(0).outputNode.parent();
 		for (Link link : links) {
-			visibilityMap.put(getUniqueId(link), link.isVisible());
 			systemNode.getProductSystem().processLinks.remove(link.processLink);
 			systemNode.linkSearch.remove(link.processLink);
 			link.unlink();
 		}
 		systemNode.editor.setDirty(true);
-	}
-
-	private String getUniqueId(Link connection) {
-		ProcessLink link = connection.processLink;
-		return link.providerId + "->" + link.flowId + "->" + link.processId + "->" + link.exchangeId;
 	}
 
 	@Override
@@ -74,7 +64,7 @@ public class DeleteLinkCommand extends Command {
 			systemNode.getProductSystem().processLinks.add(link.processLink);
 			systemNode.linkSearch.put(link.processLink);
 			link.link();
-			link.setVisible(visibilityMap.get(getUniqueId(link)));
+			link.updateVisibilty();
 		}
 		systemNode.editor.setDirty(true);
 	}

@@ -53,9 +53,9 @@ class ProcessExpander extends ImageFigure {
 
 	void expand() {
 		createNecessaryNodes();
-		showLinksAndNodes();
 		setImage(Icon.MINUS.get());
 		expanded = true;
+		showLinksAndNodes();
 	}
 
 	private List<ProcessNode> getNodesToShow() {
@@ -170,22 +170,18 @@ class ProcessExpander extends ImageFigure {
 
 	private void showLinksAndNodes() {
 		List<ProcessNode> nodes = getNodesToShow();
-		for (ProcessNode node : nodes) {
-			node.setVisible(true);
-			for (Link link : node.links) {
-				if (!processFiguresVisible(link))
-					continue;
-				link.setVisible(true);
+		// first we set the nodes visible
+		for (ProcessNode n : nodes) {
+			n.setVisible(true);
+		}
+		// then the links of the nodes because
+		// there visibility depends on the
+		// visibility of the nodes
+		for (ProcessNode n : nodes) {
+			for (Link link : n.links) {
+				link.updateVisibilty();
 			}
 		}
-	}
-
-	private boolean processFiguresVisible(Link link) {
-		if (!link.outputNode.isVisible())
-			return false;
-		if (!link.inputNode.isVisible())
-			return false;
-		return true;
 	}
 
 	void refresh() {

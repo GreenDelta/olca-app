@@ -42,12 +42,10 @@ public class HideShowCommand extends Command {
 			model.add(node);
 			model.editor.createNecessaryLinks(node);
 		}
-		if (type == HIDE)
-			for (Link link : node.links)
-				link.setVisible(false);
 		node.setVisible(type == SHOW);
-		if (type == SHOW)
-			node.showLinks();
+		for (Link link : node.links) {
+			link.updateVisibilty();
+		}
 		node.layout();
 		node.parent().editor.setDirty(true);
 	}

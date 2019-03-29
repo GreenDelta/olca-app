@@ -43,9 +43,9 @@ public class ProcessNode extends Node {
 	}
 
 	/**
-	 * Creates the process node for the given ID. Note that the ID may refer to
-	 * a process or product system (a sub-system). If it is an invalid ID we
-	 * return null, so you need to check that.
+	 * Creates the process node for the given ID. Note that the ID may refer to a
+	 * process or product system (a sub-system). If it is an invalid ID we return
+	 * null, so you need to check that.
 	 */
 	public static ProcessNode create(long id) {
 		CategorizedDescriptor d = null;
@@ -120,25 +120,6 @@ public class ProcessNode extends Node {
 			if (l.processLink.equals(link))
 				return l;
 		return null;
-	}
-
-	public void showLinks() {
-		for (Link link : links) {
-			ProcessNode otherNode = null;
-			boolean isSource = false;
-			if (link.outputNode.equals(this)) {
-				otherNode = link.inputNode;
-				isSource = true;
-			} else if (link.inputNode.equals(this)) {
-				otherNode = link.outputNode;
-			}
-			if (!otherNode.isVisible())
-				continue;
-			if (isSource && otherNode.isExpandedLeft())
-				link.setVisible(true);
-			else if (!isSource && otherNode.isExpandedRight())
-				link.setVisible(true);
-		}
 	}
 
 	@Override
@@ -266,8 +247,8 @@ public class ProcessNode extends Node {
 		return xyLayoutConstraints;
 	}
 
-	public void setXyLayoutConstraints(Rectangle xyLayoutConstraints) {
-		this.xyLayoutConstraints = xyLayoutConstraints;
+	public void setXyLayoutConstraints(Rectangle constraints) {
+		this.xyLayoutConstraints = constraints;
 		editPart().revalidate();
 	}
 
@@ -355,8 +336,8 @@ public class ProcessNode extends Node {
 	}
 
 	public void layout() {
-		LayoutManager layoutManager = (LayoutManager) parent().figure.getLayoutManager();
-		layoutManager.layout(figure, parent().editor.getLayoutType());
+		LayoutManager m = (LayoutManager) parent().figure.getLayoutManager();
+		m.layout(figure, parent().editor.getLayoutType());
 	}
 
 	public void select() {

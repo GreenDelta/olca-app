@@ -101,7 +101,6 @@ class RemoveSupplyChainAction extends EditorAction {
 	private class RemoveCommand extends Command {
 
 		private Map<Long, Rectangle> layouts = new HashMap<>();
-		private Map<String, Boolean> visibility = new HashMap<>();
 
 		@Override
 		public boolean canExecute() {
@@ -118,7 +117,6 @@ class RemoveSupplyChainAction extends EditorAction {
 			ProductSystemNode systemNode = node.parent();
 			ProductSystem system = systemNode.getProductSystem();
 			for (Link link : connections) {
-				visibility.put(getKey(link.processLink), link.isVisible());
 				link.unlink();
 				links.add(link.processLink);
 			}
@@ -159,7 +157,7 @@ class RemoveSupplyChainAction extends EditorAction {
 				systemNode.getProductSystem().processLinks.add(link.processLink);
 				systemNode.linkSearch.put(link.processLink);
 				link.link();
-				link.setVisible(visibility.remove(getKey(link.processLink)));
+				link.updateVisibilty();
 			}
 			refresh();
 		}
@@ -176,10 +174,6 @@ class RemoveSupplyChainAction extends EditorAction {
 			execute();
 		}
 
-	}
-
-	private String getKey(ProcessLink link) {
-		return link.providerId + "->" + link.flowId + "->" + link.processId + "->" + link.exchangeId;
 	}
 
 }
