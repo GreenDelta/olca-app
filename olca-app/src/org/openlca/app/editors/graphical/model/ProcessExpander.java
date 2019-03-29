@@ -55,18 +55,24 @@ class ProcessExpander extends ImageFigure {
 		createNecessaryNodes();
 		setImage(Icon.MINUS.get());
 		expanded = true;
-		showLinksAndNodes();
-	}
 
-	private List<ProcessNode> getNodesToShow() {
+		// set expanded nodes visible
 		List<ProcessNode> nodes = new ArrayList<>();
 		for (Link link : node.links) {
 			ProcessNode match = getMatchingNode(link);
 			if (match == null || nodes.contains(match))
 				continue;
+			match.setVisible(true);
 			nodes.add(match);
 		}
-		return nodes;
+		// then the links of the nodes because
+		// there visibility depends on the
+		// visibility of the nodes
+		for (ProcessNode n : nodes) {
+			for (Link link : n.links) {
+				link.updateVisibilty();
+			}
+		}
 	}
 
 	private void createNecessaryNodes() {
@@ -168,22 +174,6 @@ class ProcessExpander extends ImageFigure {
 		return null;
 	}
 
-	private void showLinksAndNodes() {
-		List<ProcessNode> nodes = getNodesToShow();
-		// first we set the nodes visible
-		for (ProcessNode n : nodes) {
-			n.setVisible(true);
-		}
-		// then the links of the nodes because
-		// there visibility depends on the
-		// visibility of the nodes
-		for (ProcessNode n : nodes) {
-			for (Link link : n.links) {
-				link.updateVisibilty();
-			}
-		}
-	}
-
 	void refresh() {
 		setVisible(shouldBeVisible());
 		if (expanded)
@@ -208,7 +198,6 @@ class ProcessExpander extends ImageFigure {
 
 		@Override
 		public void mouseDoubleClicked(MouseEvent me) {
-
 		}
 
 		@Override
@@ -219,18 +208,18 @@ class ProcessExpander extends ImageFigure {
 
 		private Command getCommand() {
 			if (side == Side.INPUT) {
-				if (expanded)
-					return ExpansionCommand.collapseLeft(node);
-				return ExpansionCommand.expandLeft(node);
+				return expanded
+						? ExpansionCommand.collapseLeft(node)
+						: ExpansionCommand.expandLeft(node);
+			} else {
+				return expanded
+						? ExpansionCommand.collapseRight(node)
+						: ExpansionCommand.expandRight(node);
 			}
-			if (expanded)
-				return ExpansionCommand.collapseRight(node);
-			return ExpansionCommand.expandRight(node);
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent me) {
-
 		}
 	}
 
