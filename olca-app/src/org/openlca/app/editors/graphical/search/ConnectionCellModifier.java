@@ -14,43 +14,44 @@ class ConnectionCellModifier implements ICellModifier {
 	}
 
 	@Override
-	public boolean canModify(Object element, String property) {
-		if (!(element instanceof Candidate))
+	public boolean canModify(Object obj, String prop) {
+		if (!(obj instanceof Candidate))
 			return false;
-		Candidate process = (Candidate) element;
-		if (property.equals(LABELS.CREATE))
-			return !process.alreadyExisting && !process.connect;
-		if (property.equals(LABELS.CONNECT))
-			return process.connect || dialog.canBeConnected(process);
+		Candidate process = (Candidate) obj;
+		if (prop.equals(LABELS.CREATE))
+			return !process.processExists && !process.doConnect;
+		if (prop.equals(LABELS.CONNECT))
+			return process.doConnect || dialog.canBeConnected(process);
 		return false;
 	}
 
 	@Override
-	public Object getValue(Object element, String property) {
-		if (!(element instanceof Candidate))
+	public Object getValue(Object obj, String prop) {
+		if (!(obj instanceof Candidate))
 			return null;
-		Candidate process = (Candidate) element;
-		if (property.equals(LABELS.CREATE))
-			return process.create;
-		if (property.equals(LABELS.CONNECT))
-			return process.connect;
+		Candidate c = (Candidate) obj;
+		if (prop.equals(LABELS.CREATE))
+			return c.doCreate;
+		if (prop.equals(LABELS.CONNECT))
+			return c.doConnect;
 		return null;
 	}
 
 	@Override
-	public void modify(Object element, String property, Object value) {
-		if (!(element instanceof TableItem))
+	public void modify(Object obj, String prop, Object value) {
+		if (!(obj instanceof TableItem))
 			return;
-		TableItem item = (TableItem) element;
+		TableItem item = (TableItem) obj;
 		if (!(item.getData() instanceof Candidate))
 			return;
-		Candidate process = (Candidate) item.getData();
-		if (property.equals(LABELS.CREATE))
-			process.create = Boolean.parseBoolean(value.toString());
-		else if (property.equals(LABELS.CONNECT)) {
-			process.connect = Boolean.parseBoolean(value.toString());
-			if (process.connect && !process.alreadyExisting)
-				process.create = true;
+		Candidate c = (Candidate) item.getData();
+		if (prop.equals(LABELS.CREATE))
+			c.doCreate = Boolean.parseBoolean(value.toString());
+		else if (prop.equals(LABELS.CONNECT)) {
+			c.doConnect = Boolean.parseBoolean(value.toString());
+			if (c.doConnect && !c.processExists) {
+				c.doCreate = true;
+			}
 		}
 		dialog.viewer.refresh();
 	}

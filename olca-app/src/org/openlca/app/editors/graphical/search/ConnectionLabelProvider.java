@@ -25,27 +25,27 @@ class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelPr
 		case 0:
 			return Images.get(con.process);
 		case 1:
-			if (con.create)
+			if (con.doCreate)
 				return Icon.CHECK_TRUE.get();
-			if (!con.alreadyExisting)
+			if (!con.processExists)
 				return Icon.CHECK_FALSE.get();
 			return null;
 		case 2:
-			if (con.connect)
+			if (con.doConnect)
 				return Icon.CHECK_TRUE.get();
 			if (dialog.canBeConnected(con))
 				return Icon.CHECK_FALSE.get();
 			return null;
 		case 3:
-			if (con.alreadyExisting)
+			if (con.processExists)
 				return Icon.ACCEPT.get();
 			return null; // just show a - (getColumnText)
 		case 4:
-			if (con.alreadyConnected)
+			if (con.isConnected)
 				return Icon.ACCEPT.get();
 			return null; // just show a - (getColumnText)
 		case 5:
-			if (con.defaultProvider)
+			if (con.isDefaultProvider)
 				return Icon.ACCEPT.get();
 			return null; // just show a - (getColumnText)
 		default:
@@ -62,15 +62,15 @@ class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelPr
 		case 0:
 			return Labels.getDisplayName(con.process);
 		case 3:
-			if (!con.alreadyExisting)
+			if (!con.processExists)
 				return "-";
 			return null; // show checkmark icon (getColumnImage)
 		case 4:
-			if (!con.alreadyConnected)
+			if (!con.isConnected)
 				return "-";
 			return null; // show checkmark icon (getColumnImage)
 		case 5:
-			if (!con.defaultProvider)
+			if (!con.isDefaultProvider)
 				return "-";
 			return null; // show checkmark icon (getColumnImage)
 		}
