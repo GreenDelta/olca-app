@@ -2,7 +2,6 @@ package org.openlca.app.editors.graphical.search;
 
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.swt.widgets.TableItem;
-import org.openlca.app.editors.graphical.search.ConnectionDialog.Candidate;
 import org.openlca.app.editors.graphical.search.ConnectionDialog.LABELS;
 
 class ConnectionCellModifier implements ICellModifier {

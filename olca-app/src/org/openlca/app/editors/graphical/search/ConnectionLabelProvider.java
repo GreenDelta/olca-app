@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical.search;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.editors.graphical.search.ConnectionDialog.Candidate;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
