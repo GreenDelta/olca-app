@@ -108,14 +108,14 @@ public class SystemExportDialog extends WizardDialog {
 		@Override
 		public boolean performFinish() {
 			try {
+				SystemExportConfig conf = new SystemExportConfig(
+						system, db);
+				conf.allocationMethod = page.allocationCombo.getSelected();
+				conf.impactMethod = page.impactCombo.getSelected();
+				conf.olcaVersion = App.getVersion();
 				getContainer().run(true, true, monitor -> {
 					monitor.beginTask(M.Export,
 							IProgressMonitor.UNKNOWN);
-					SystemExportConfig conf = new SystemExportConfig(
-							system, db);
-					conf.allocationMethod = page.allocationCombo.getSelected();
-					conf.impactMethod = page.impactCombo.getSelected();
-					conf.olcaVersion = App.getVersion();
 					SystemExport export = new SystemExport(conf);
 					try {
 						export.exportTo(page.fileChooser.getFile());
