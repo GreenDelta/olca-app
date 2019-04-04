@@ -177,7 +177,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		// save all
 		saveAllAction = ActionFactory.SAVE_ALL.create(window);
-		saveAllAction.setText("#Save All");
+		saveAllAction.setText(M.SaveAll);
 		saveAllAction.setImageDescriptor(Icon.SAVE_ALL.descriptor());
 		saveAllAction.setDisabledImageDescriptor(Icon.SAVE_ALL_DISABLED.descriptor());
 
@@ -185,7 +185,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		closeAction = ActionFactory.CLOSE.create(window);
 		closeAction.setText(M.Close);
 		closeAllAction = ActionFactory.CLOSE_ALL.create(window);
-		closeAllAction.setText("#Close All");
+		closeAllAction.setText(M.CloseAll);
 
 		// preferences
 		preferencesAction = ActionFactory.PREFERENCES.create(window);
@@ -202,10 +202,10 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		// other
 		exitAction = ActionFactory.QUIT.create(window);
-		exitAction.setText("#Exit");
+		exitAction.setText(M.Exit);
 		showViews = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
 		aboutAction = ActionFactory.ABOUT.create(window);
-		aboutAction.setText("#About");
+		aboutAction.setText(M.AboutOpenLCA);
 	}
 
 }

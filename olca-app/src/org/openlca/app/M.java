@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 
 public class M extends NLS {
 
+	public static String AboutOpenLCA;
 	public static String ALocationCodeIsRequired;
 	public static String AccessAndUseRestrictions;
 	public static String ActivityQuantity;
@@ -66,6 +67,8 @@ public class M extends NLS {
 	public static String Bulkreplace;
 	public static String BulkreplaceFlows;
 	public static String BulkreplaceProviders;
+
+	// C
 	public static String CASNumber;
 	public static String CSVFormat;
 	public static String Calculate;
@@ -104,6 +107,7 @@ public class M extends NLS {
 	public static String ClearData;
 	public static String ClickHereToChangeDisplay;
 	public static String Close;
+	public static String CloseAll;
 	public static String CloseDatabase;
 	public static String Code;
 	public static String Collapse;
@@ -287,6 +291,7 @@ public class M extends NLS {
 	public static String ExcludeExchangesWithDefaultProviders;
 	public static String ExcludeZeroEntries;
 	public static String ExcludeZeroValues;
+	public static String Exit;
 	public static String Expand;
 	public static String ExpandAll;
 	public static String Export;
@@ -734,10 +739,13 @@ public class M extends NLS {
 	public static String Route;
 	public static String RoutingEnabled;
 	public static String RunCalculation;
+
+	// S
 	public static String SamplingProcedure;
 	public static String SankeyDiagram;
 	public static String Sankey_ScaleDescription;
 	public static String Save;
+	public static String SaveAll;
 	public static String SaveAs;
 	public static String SaveAsImage;
 	public static String SaveAsLCIResult;
@@ -828,6 +836,7 @@ public class M extends NLS {
 	public static String StandardDeviationFormula;
 	public static String Start;
 	public static String StartDate;
+	public static String StartIPCServer;
 	public static String Statistics;
 	public static String StoreInventoryResult;
 	public static String SubCategory;

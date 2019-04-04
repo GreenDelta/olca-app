@@ -33,7 +33,7 @@ public class IpcDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("#Start an IPC Server");
+		newShell.setText(M.StartIPCServer);
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class IpcDialog extends FormDialog {
 			// TODO: need a UI for managing the server
 			super.okPressed();
 		} catch (Exception e) {
-			Error.showBox("#Failed to start IPC server",
+			Error.showBox("Failed to start IPC server",
 					e.getMessage());
 		}
 	}

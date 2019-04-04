@@ -37,7 +37,7 @@ class ProviderDialog extends Dialog {
 		if (e == null)
 			return opts;
 		try {
-			App.runInUI("#Select a provider", () -> {
+			App.runInUI("Select a provider", () -> {
 				ProviderDialog d = new ProviderDialog(
 						opts, e, providers);
 				d.open();
@@ -104,26 +104,26 @@ class ProviderDialog extends Dialog {
 	private void createChecks(Composite comp) {
 		UI.filler(comp);
 		Button b = new Button(comp, SWT.RADIO);
-		b.setText("#Continue with multi-provider checks");
+		b.setText("Continue with multi-provider checks");
 		b.setSelection(true);
 
 		UI.filler(comp);
 		saveCheck = new Button(comp, SWT.RADIO);
-		saveCheck.setText("#Always use this provider for this flow");
+		saveCheck.setText("Always use this provider for this flow");
 
 		UI.filler(comp);
 		autoContinueCheck = new Button(comp, SWT.RADIO);
-		autoContinueCheck.setText("#Continue with auto-select");
+		autoContinueCheck.setText("Continue with auto-select");
 
 		UI.filler(comp);
 		cancelCheck = new Button(comp, SWT.RADIO);
-		cancelCheck.setText("#Cancel the product system creation");
+		cancelCheck.setText("Cancel the product system creation");
 	}
 
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("#Select a provider");
+		newShell.setText("Select a provider");
 	}
 
 	@Override

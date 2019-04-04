@@ -59,13 +59,13 @@ public class ImpactChecksPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				"#Flows that are not covered by the "
+				"Flows that are not covered by the "
 						+ "selected LCIA method",
 				Images.get(result));
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		groupCheck = tk.createButton(body,
-				"#Group by LCIA category",
+				"Group by LCIA category",
 				SWT.CHECK);
 		groupCheck.setSelection(true);
 		Controls.onSelect(groupCheck, e -> setTreeInput());

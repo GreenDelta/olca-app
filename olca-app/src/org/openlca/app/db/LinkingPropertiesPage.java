@@ -45,7 +45,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 
 	public static void show() {
 		AtomicReference<LinkingProperties> ref = new AtomicReference<>();
-		App.runWithProgress("#Check database links", () -> {
+		App.runWithProgress("Check database links", () -> {
 			LinkingProperties props = LinkingProperties.check(Database.get());
 			ref.set(props);
 		});
@@ -97,21 +97,21 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			Composite comp = UI.formSection(body, tk,
 					M.GeneralDatabaseProperties);
 			if (props.processesWithoutProviders.isEmpty()) {
-				check(comp, Icon.ACCEPT, "#All product inputs "
+				check(comp, Icon.ACCEPT, "All product inputs "
 						+ "and waste outputs are linked to a "
 						+ "default provider.");
 			} else {
-				check(comp, Icon.WARNING, "#There are processes "
+				check(comp, Icon.WARNING, "There are processes "
 						+ "in the database without default providers"
 						+ " for product inputs and/or waste outputs "
 						+ "(see table below).");
 			}
 			if (props.multiProviderFlows.isEmpty()) {
-				check(comp, Icon.ACCEPT, "#All product and waste"
+				check(comp, Icon.ACCEPT, "All product and waste"
 						+ " flows in the database have a single "
 						+ "provider.");
 			} else {
-				check(comp, Icon.WARNING, "#There are product "
+				check(comp, Icon.WARNING, "There are product "
 						+ "and/or waste flows in the database "
 						+ "that have multiple providers "
 						+ "(see table below).");
@@ -144,7 +144,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			if (props.multiProviderFlows.isEmpty())
 				return;
 			Section section = UI.section(body, tk,
-					"#Product or waste flows with multiple providers");
+					"Product or waste flows with multiple providers");
 			UI.gridData(section, true, true);
 			Composite comp = UI.sectionClient(section, tk);
 			UI.gridLayout(comp, 1);

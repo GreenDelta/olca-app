@@ -54,7 +54,7 @@ class PinBoard {
 	}
 
 	void create(FormToolkit tk, Composite body) {
-		Section section = UI.section(body, tk, "#Pinned contributions");
+		Section section = UI.section(body, tk, "Pinned contributions");
 		section.setExpanded(false);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
@@ -66,10 +66,10 @@ class PinBoard {
 		filter.addModifyListener(e -> table.setInput(selectInput()));
 
 		table = Tables.createViewer(comp,
-				"# Pin / Unpin",
-				"# Process / Sub-System",
+				"Pin / Unpin",
+				"Process / Sub-System",
 				M.Product,
-				"#Display in chart");
+				"Display in chart");
 		Tables.bindColumnWidths(table, 0.15, 0.35, 0.35, 0.15);
 		Label label = new Label();
 		table.setLabelProvider(label);
@@ -88,7 +88,7 @@ class PinBoard {
 		Tables.onDoubleClick(table, e -> open.run());
 
 		Action pin = Actions.create(
-				"#Pin / Unpin", Icon.CHECK_TRUE.descriptor(), () -> {
+				"Pin / Unpin", Icon.CHECK_TRUE.descriptor(), () -> {
 					ProcessProduct pp = Viewers.getFirstSelected(table);
 					onPin(pp);
 				});

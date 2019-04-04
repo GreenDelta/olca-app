@@ -34,7 +34,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 	private Button referenceCheckBox;
 	private Button commentCheckBox;
 	private ConfigurationViewer configViewer;
-	
+
 	@Override
 	public void init(IWorkbench workbench) {
 		setPreferenceStore(CloudPreference.getStore());
@@ -57,7 +57,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 		checkEnabled();
 		return body;
 	}
-	
+
 	private void createEnableCheckBox(Composite parent) {
 		enableCheckBox = UI.formCheckBox(parent, M.EnableCollaboration);
 		UI.gridData(enableCheckBox, true, false).horizontalIndent = 5;
@@ -71,9 +71,8 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 		libraryCheckBox.setSelection(CloudPreference.doCheckAgainstLibraries());
 	}
 
-
 	private void createReferenceCheckBox(Composite parent) {
-		referenceCheckBox = UI.formCheckBox(parent, "#Check referenced changes");
+		referenceCheckBox = UI.formCheckBox(parent, "Check referenced changes");
 		UI.gridData(referenceCheckBox, true, false).horizontalIndent = 5;
 		referenceCheckBox.setSelection(CloudPreference.doCheckReferences());
 	}
@@ -83,7 +82,7 @@ public class CloudPreferencePage extends PreferencePage implements IWorkbenchPre
 		UI.gridData(commentCheckBox, true, false).horizontalIndent = 5;
 		commentCheckBox.setSelection(CloudPreference.doDisplayComments());
 	}
-	
+
 	private void checkEnabled() {
 		libraryCheckBox.setEnabled(enableCheckBox.getSelection());
 		referenceCheckBox.setEnabled(enableCheckBox.getSelection());
