@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -18,6 +17,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class ConnectionDialog extends Dialog {
@@ -35,7 +36,7 @@ public class ConnectionDialog extends Dialog {
 
 	/** The exchange for which we search possible connection candidates. */
 	private final ModelExchange exchange;
-	final List<Candidate> candidates;
+	private final List<Candidate> candidates;
 	TableViewer viewer;
 
 	public ConnectionDialog(ExchangeNode enode) {
@@ -81,7 +82,7 @@ public class ConnectionDialog extends Dialog {
 		return exchange.canConnect(c, candidates);
 	}
 
-	public List<CategorizedDescriptor> toCreate() {
+	public List<CategorizedDescriptor> getNewProcesses() {
 		List<CategorizedDescriptor> processes = new ArrayList<>();
 		for (Candidate c : candidates) {
 			if (c.doCreate) {
@@ -91,14 +92,27 @@ public class ConnectionDialog extends Dialog {
 		return processes;
 	}
 
-	public List<Pair<CategorizedDescriptor, Long>> toConnect() {
-		List<Pair<CategorizedDescriptor, Long>> toConnect = new ArrayList<>();
+	public List<ProcessLink> getNewLinks() {
+		List<ProcessLink> newLinks = new ArrayList<>();
 		for (Candidate c : candidates) {
-			if (c.doConnect) {
-				toConnect.add(Pair.of(c.process, c.exchangeId));
-			}
-		}
-		return toConnect;
-	}
+			if (!c.doConnect)
+				continue;
+			ProcessLink link = new ProcessLink();
+			link.flowId = exchange.exchange.flow.id;
+			if (exchange.isProvider()) {
+				link.providerId = exchange.process.id;
+				link.isSystemLink = exchange.process.type == ModelType.PRODUCT_SYSTEM;
+				link.processId = c.process.id;
+				link.exchangeId = c.exchangeId;
+			} else {
+				link.providerId = c.process.id;
+				link.isSystemLink = c.process.type == ModelType.PRODUCT_SYSTEM;
+				link.exchangeId = exchange.exchange.id;
+				link.processId = exchange.process.id;
 
+			}
+			newLinks.add(link);
+		}
+		return newLinks;
+	}
 }

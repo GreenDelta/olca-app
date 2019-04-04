@@ -34,7 +34,7 @@ class ModelExchange {
 	final Exchange exchange;
 
 	/** The ID of the process to which this exchange belongs. */
-	final long processID;
+	final CategorizedDescriptor process;
 
 	/**
 	 * Indicates whether this exchange is already connected. This is only relevant
@@ -46,13 +46,13 @@ class ModelExchange {
 
 	ModelExchange(ExchangeNode enode) {
 		exchange = enode.exchange;
-		processID = enode.parent().process.id;
+		process = enode.parent().process;
 		sysNode = enode.parent().parent();
 		if (isProvider()) {
 			isConnected = false;
 		} else {
 			isConnected = sysNode.linkSearch
-					.getConnectionLinks(processID)
+					.getConnectionLinks(process.id)
 					.stream()
 					.anyMatch(link -> link.exchangeId == exchange.id);
 		}

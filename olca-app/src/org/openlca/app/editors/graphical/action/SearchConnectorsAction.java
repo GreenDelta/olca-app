@@ -1,9 +1,7 @@
 package org.openlca.app.editors.graphical.action;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuCreator;
@@ -15,14 +13,13 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.CommandUtil;
-import org.openlca.app.editors.graphical.command.ConnectionInput;
 import org.openlca.app.editors.graphical.command.MassCreationCommand;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.search.ConnectionDialog;
 import org.openlca.app.util.Controls;
-import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class SearchConnectorsAction extends EditorAction {
@@ -53,28 +50,17 @@ class SearchConnectorsAction extends EditorAction {
 		return node != null;
 	}
 
-	private void executeRequest(ExchangeNode exchangeNode) {
-		ProductSystemNode model = node.parent();
-		long exchangeId = exchangeNode.exchange.id;
-		long flowId = exchangeNode.exchange.flow.id;
-		long nodeId = node.process.id;
-		boolean isWaste = exchangeNode.exchange.flow.flowType == FlowType.WASTE_FLOW;
-		ConnectionDialog dialog = new ConnectionDialog(exchangeNode);
-		if (dialog.open() == IDialogConstants.OK_ID) {
-			List<CategorizedDescriptor> toCreate = dialog.toCreate();
-			List<ConnectionInput> toConnect = new ArrayList<>();
-			for (Pair<CategorizedDescriptor, Long> next : dialog.toConnect())
-				if ((type == PROVIDER && !isWaste) || (type == RECIPIENTS && isWaste))
-					toConnect.add(new ConnectionInput(next.getLeft().id, flowId, nodeId, exchangeId, isWaste));
-				else
-					toConnect.add(new ConnectionInput(nodeId, flowId, next.getLeft().id, next.getRight(), isWaste));
-			Command command = null;
-			if (type == PROVIDER)
-				command = MassCreationCommand.providers(toCreate, toConnect, model);
-			else
-				command = MassCreationCommand.recipients(toCreate, toConnect, model);
-			CommandUtil.executeCommand(command, model.editor);
-		}
+	private void executeRequest(ExchangeNode enode) {
+		ProductSystemNode sysNode = node.parent();
+		ConnectionDialog dialog = new ConnectionDialog(enode);
+		if (dialog.open() != IDialogConstants.OK_ID)
+			return;
+		List<CategorizedDescriptor> newProcesses = dialog.getNewProcesses();
+		List<ProcessLink> newLinks = dialog.getNewLinks();
+		Command command = type == PROVIDER
+				? MassCreationCommand.providers(newProcesses, newLinks, sysNode)
+				: MassCreationCommand.recipients(newProcesses, newLinks, sysNode);
+		CommandUtil.executeCommand(command, sysNode.editor);
 	}
 
 	@Override

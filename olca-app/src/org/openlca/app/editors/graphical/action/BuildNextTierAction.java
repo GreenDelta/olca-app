@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical.action;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -9,7 +10,6 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.command.CommandUtil;
-import org.openlca.app.editors.graphical.command.ConnectionInput;
 import org.openlca.app.editors.graphical.command.ExpansionCommand;
 import org.openlca.app.editors.graphical.command.MassCreationCommand;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
@@ -19,6 +19,8 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.LinkingConfig.DefaultProviders;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -59,7 +61,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 			return;
 		ProductSystemNode systemNode = nodes.get(0).parent();
 		List<CategorizedDescriptor> providers = new ArrayList<>();
-		List<ConnectionInput> newConnections = new ArrayList<>();
+		List<ProcessLink> newConnections = new ArrayList<>();
 		for (ProcessNode node : nodes)
 			collectFor(node, providers, newConnections);
 		Command command = MassCreationCommand.nextTier(providers, newConnections, systemNode);
@@ -73,22 +75,23 @@ class BuildNextTierAction extends Action implements IBuildAction {
 
 	private void collectFor(ProcessNode node,
 			List<CategorizedDescriptor> providers,
-			List<ConnectionInput> newConnections) {
-		long targetId = node.process.id;
-		List<ExchangeNode> toConnect = getLinkCandidates(node);
-		for (ExchangeNode exchange : toConnect) {
-			CategorizedDescriptor provider = findProvider(exchange.exchange);
+			List<ProcessLink> newConnections) {
+		for (ExchangeNode enode : getLinkCandidates(node)) {
+			CategorizedDescriptor provider = findProvider(enode.exchange);
 			if (provider == null)
 				continue;
-			if (!providers.contains(provider))
+			if (!providers.contains(provider)) {
 				providers.add(provider);
-			long flowId = exchange.exchange.flow.id;
-			long exchangeId = exchange.exchange.id;
-			ConnectionInput connectionInput = new ConnectionInput(provider.id, flowId, targetId, exchangeId,
-					!exchange.exchange.isInput && !exchange.exchange.isAvoided);
-			if (newConnections.contains(connectionInput))
-				continue;
-			newConnections.add(connectionInput);
+			}
+			ProcessLink link = new ProcessLink();
+			link.flowId = enode.exchange.flow.id;
+			link.exchangeId = enode.exchange.id;
+			link.processId = node.process.id;
+			link.providerId = provider.id;
+			link.isSystemLink = provider.type == ModelType.PRODUCT_SYSTEM;
+			if (!newConnections.contains(link)) {
+				newConnections.add(link);
+			}
 		}
 	}
 
@@ -107,17 +110,20 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		return nodes;
 	}
 
-	private CategorizedDescriptor findProvider(Exchange exchange) {
-		if (exchange.flow == null)
+	private CategorizedDescriptor findProvider(Exchange e) {
+		if (e.flow == null)
 			return null;
 		if (providers == DefaultProviders.ONLY) {
-			if (exchange.defaultProviderId == 0l)
+			if (e.defaultProviderId == 0l)
 				return null;
-			return processDao.getDescriptor(exchange.defaultProviderId);
+			return processDao.getDescriptor(e.defaultProviderId);
 		}
-		if (providers == DefaultProviders.PREFER && exchange.defaultProviderId != 0l)
-			return processDao.getDescriptor(exchange.defaultProviderId);
-		List<ProcessDescriptor> providers = getProviders(exchange);
+		if (providers == DefaultProviders.PREFER
+				&& e.defaultProviderId != 0L)
+			return processDao.getDescriptor(e.defaultProviderId);
+
+		List<ProcessDescriptor> providers = getProviders(e);
+
 		ProcessDescriptor bestMatch = null;
 		for (ProcessDescriptor descriptor : providers) {
 			if (descriptor.processType == preferredType)
@@ -129,12 +135,15 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		return bestMatch;
 	}
 
-	private List<ProcessDescriptor> getProviders(Exchange exchange) {
+	private List<ProcessDescriptor> getProviders(Exchange e) {
+		if (e == null || e.flow == null)
+			return Collections.emptyList();
+
 		Set<Long> providerIds = null;
-		if (!exchange.isInput) {
-			providerIds = flowDao.getWhereInput(exchange.flow.id);
+		if (!e.isInput) {
+			providerIds = flowDao.getWhereInput(e.flow.id);
 		} else {
-			providerIds = flowDao.getWhereOutput(exchange.flow.id);
+			providerIds = flowDao.getWhereOutput(e.flow.id);
 		}
 		return processDao.getDescriptors(providerIds);
 	}
