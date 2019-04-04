@@ -5,20 +5,14 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.ui.forms.widgets.ExpandableComposite;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
@@ -41,51 +35,29 @@ public class ConnectionDialog extends Dialog {
 
 	/** The exchange for which we search possible connection candidates. */
 	private final ModelExchange exchange;
-	private final List<Candidate> candidates;
+	final List<Candidate> candidates;
 	TableViewer viewer;
 
 	public ConnectionDialog(ExchangeNode enode) {
 		super(UI.shell());
-		setShellStyle(SWT.BORDER | SWT.TITLE);
 		setBlockOnOpen(true);
 		exchange = new ModelExchange(enode);
 		candidates = exchange.searchCandidates(Database.get());
 	}
 
 	@Override
-	protected Control createButtonBar(Composite parent) {
-		Control c = super.createButtonBar(parent);
-		c.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-		parent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-		return c;
-	}
-
-	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+	protected void configureShell(Shell shell) {
+		super.configureShell(shell);
+		shell.setText(exchange.isInput()
+				? M.SelectProviders
+				: M.SelectRecipients);
 	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite container = (Composite) super.createDialogArea(parent);
-		container.setLayout(new FillLayout());
-		FormToolkit tk = new FormToolkit(Display.getCurrent());
-		container.addDisposeListener(e -> {
-			tk.dispose();
-		});
-		Section section = tk.createSection(container,
-				ExpandableComposite.TITLE_BAR
-						| ExpandableComposite.FOCUS_TITLE);
-		section.setText(exchange.isInput()
-				? M.SelectProviders
-				: M.SelectRecipients);
-		Composite comp = tk.createComposite(section, SWT.NONE);
-		UI.gridLayout(comp, 1);
-		section.setClient(comp);
-		tk.adapt(comp);
-
-		viewer = Tables.createViewer(comp, LABELS.ALL);
+		UI.gridLayout(container, 1);
+		viewer = Tables.createViewer(container, LABELS.ALL);
 		double w = 1 / 6d;
 		Tables.bindColumnWidths(viewer, w, w, w, w, w, w);
 		viewer.setLabelProvider(new ConnectionLabelProvider(this));
@@ -97,7 +69,6 @@ public class ConnectionDialog extends Dialog {
 		viewer.setColumnProperties(LABELS.ALL);
 		viewer.setCellModifier(new ConnectionCellModifier(this));
 		viewer.setCellEditors(editors);
-		tk.paintBordersFor(comp);
 		return container;
 	}
 

@@ -31,7 +31,6 @@ class SearchConnectorsAction extends EditorAction {
 	static final int RECIPIENTS = 2;
 	private ProcessNode node;
 	private int type;
-	private Menu menu;
 
 	public SearchConnectorsAction(int type) {
 		super(type == PROVIDER
@@ -80,10 +79,11 @@ class SearchConnectorsAction extends EditorAction {
 
 	@Override
 	public void run() {
-		// nothing to do (pop up menu)
 	}
 
 	private class MenuCreator implements IMenuCreator {
+
+		private Menu menu;
 
 		private void fillMenu() {
 			if (menu == null)
@@ -91,24 +91,24 @@ class SearchConnectorsAction extends EditorAction {
 			for (MenuItem item : menu.getItems())
 				item.dispose();
 			boolean providers = type == PROVIDER;
-			List<ExchangeNode> exchangeNodes = new ArrayList<>();
-			for (ExchangeNode exchangeNode : node.loadExchangeNodes()) {
-				if (exchangeNode.isDummy())
+			for (ExchangeNode n : node.loadExchangeNodes()) {
+				if (n.isDummy())
 					continue;
-				if (exchangeNode.exchange.isInput != providers)
+				if (n.exchange.isInput != providers)
 					continue;
-				exchangeNodes.add(exchangeNode);
-			}
-			for (ExchangeNode exchangeNode : exchangeNodes) {
+
 				MenuItem item = new MenuItem(menu, SWT.NONE);
-				item.setText(exchangeNode.getName());
-				Controls.onSelect(item, (e) -> executeRequest(exchangeNode));
+				item.setText(n.getName());
+				Controls.onSelect(item, (e) -> executeRequest(n));
 			}
 		}
 
 		@Override
 		public void dispose() {
-			// nothing to dispose
+			if (menu != null && !menu.isDisposed()) {
+				menu.dispose();
+				menu = null;
+			}
 		}
 
 		@Override
