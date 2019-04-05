@@ -1,4 +1,6 @@
-# this script will probably replace the old packager script
+# This script creates the openLCA distribution packages. It currently only
+# works on Windows as it calls native binaries to create the Windows installers
+# (e.g. NSIS).
 
 import datetime
 import glob
