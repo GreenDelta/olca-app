@@ -234,7 +234,7 @@
       </editor> 
       <editor
             id="editors.LogFileEditor"
-            class="org.openlca.app.editors.LogFileEditor"
+            class="org.openlca.app.logging.LogFileEditor"
             icon="icons/file.png"
             name="Log file">
       </editor>       
