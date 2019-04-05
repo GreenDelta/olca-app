@@ -179,25 +179,6 @@ cd olca-app/olca-refdata
 mvn package
 ```
 
-## Building the distribution packages
-To build the distribution packages, we currently use the standard PDE Export
-wizard. Click on the `olca-app` project and then on `Export...` from the context
-menu. Select `Plug-in Development > Eclipse Product` from the export wizard and
-select the following options in the export dialog:
-
-* Configuration: `/olca-app/openLCA.product` (should be the default)
-* Root directory: `openLCA`
-* Synchronize before exporting: yes [x]
-* Destination directory: choose the `olca-app-build/build` folder of this project
-* Generate p2 repository: no [ ] (would be just overhead)
-* Export for multiple platforms: yes [x]
-* (take the defaults for the others)
-
-In the next page, select the platforms for which you want to build the product.
-After the export, you need to run the package script `pack10.py` to copy
-resources like the Java runtime, the native math libraries, etc. to the
-application folder and to create the installers. (**todo** needs an update)
-
 ## License
 Unless stated otherwise, all source code of the openLCA project is licensed
 under the [Mozilla Public License, v. 2.0](http://mozilla.org/MPL/2.0/). Please

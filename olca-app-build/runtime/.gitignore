@@ -1,0 +1,3 @@
+# the packaged runtime libraries
+jre/
+julia/

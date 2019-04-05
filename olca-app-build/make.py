@@ -61,7 +61,7 @@ def pack_win(version, version_date):
     copy_licenses(product_dir)
 
     # jre
-    jre_dir = p('jre/win64')
+    jre_dir = p('runtime/jre/win64')
     if not exists(jre_dir):
         print('  WARNING: No JRE found %s' % jre_dir)
     else:
@@ -71,11 +71,11 @@ def pack_win(version, version_date):
             print('done')
 
     # julia libs
-    if not exists('julia/win64'):
+    if not exists('runtime/julia/win64'):
         print('  WARNING: Julia libraries not found in julia/win64')
     else:
         printw("  Copy Julia libraries")
-        for f in glob.glob('julia/win64/*.*'):
+        for f in glob.glob('runtime/julia/win64/*.*'):
             shutil.copy2(p(f), product_dir)
         print('done')
 
@@ -107,7 +107,7 @@ def pack_win(version, version_date):
     with open(p(pack_dir + '/setup.nsi'), 'w',
               encoding='iso-8859-1') as f:
         f.write(setup)
-    cmd = [p('nsis-2.46/makensis.exe'), p(pack_dir + '/setup.nsi')]
+    cmd = [p('tools/nsis-2.46/makensis.exe'), p(pack_dir + '/setup.nsi')]
     subprocess.call(cmd)
     shutil.move(p(pack_dir + '/setup.exe'),
                 p('build/dist/openLCA_win64_' + version_date + ".exe"))
@@ -124,7 +124,7 @@ def pack_linux(version_date):
 
     # package the JRE
     if not exists(product_dir + '/jre'):
-        jre_tar = glob.glob('jre/jre-*linux*x64*.tar')
+        jre_tar = glob.glob('runtime/jre/jre-*linux*x64*.tar')
         if len(jre_tar) == 0:
             print('  WARNING: No Linux JRE found')
         else:
@@ -182,7 +182,7 @@ def pack_macos(version_date):
     os.remove(base + "Info.plist")
 
     # package the JRE
-    jre_tar = glob.glob('jre/jre-*-macosx-x64.tar')
+    jre_tar = glob.glob('runtime/jre/jre-*-macosx-x64.tar')
     print(jre_tar)
     if len(jre_tar) == 0:
         print('ERROR: no JRE for Mac OSX found')
@@ -192,10 +192,10 @@ def pack_macos(version_date):
     os.rename(jre_dir[0], base + 'openLCA.app' + '/jre')
 
     # package the native libraries
-    if not os.path.exists('julia/macos'):
+    if not os.path.exists('runtime/julia/macos'):
         print('  WARNING: No native libraries')
     else:
-        for f in glob.glob('julia/macos/*.*'):
+        for f in glob.glob('runtime/julia/macos/*.*'):
             shutil.copy2(f, base + 'openLCA.app/Contents/Eclipse')
 
     printw('  Create distribtuion package')
@@ -224,7 +224,7 @@ def mkdir(path):
 
 def targz(folder, tar_file):
     print('targz %s to %s' % (folder, tar_file))
-    tar_app = p('7zip/7za.exe')
+    tar_app = p('tools/7zip/7za.exe')
     cmd = [tar_app, 'a', '-ttar', tar_file + '.tar', folder]
     subprocess.call(cmd)
     cmd = [tar_app, 'a', '-tgzip', tar_file + '.tar.gz', tar_file + '.tar']
@@ -237,7 +237,7 @@ def unzip(zip_file, to_dir):
     print('unzip %s to %s' % (zip_file, to_dir))
     if not os.path.exists(to_dir):
         os.makedirs(to_dir)
-    zip_app = p('7zip/7za.exe')
+    zip_app = p('tools/7zip/7za.exe')
     cmd = [zip_app, 'x', zip_file, '-o%s' % to_dir]
     code = subprocess.call(cmd)
     print(code)
