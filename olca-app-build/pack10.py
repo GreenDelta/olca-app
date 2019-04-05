@@ -29,7 +29,7 @@ def main():
     # create packages
     pack_win(version, version_date)
     pack_linux(version_date)
-    # pack_macos(version_date)
+    pack_macos(version_date)
 
     print('All done\n')
 
@@ -142,54 +142,63 @@ def pack_linux(version_date):
 
 
 def pack_macos(version_date):
-    product_dir = 'build/macosx.cocoa.x86_64/openLCA'
-    if not exists(product_dir):
-        print('folder %s does not exist; skip macOS version' % product_dir)
+    base = 'build/macosx.cocoa.x86_64/openLCA'
+    if not exists(base):
+        print('folder %s does not exist; skip macOS version' % base)
         return
-
+    base += "/"
     print('Create macOS package')
 
     printw('Move folders around')
-    app_dir = p(product_dir + '/' + 'openLCA.app')
-    moves = ['configuration', 'plugins', '.eclipseproduct']
-    for m in moves:
-        move(p(product_dir + '/' + m), app_dir)
-    move(p(product_dir + '/MacOS/openLCA'),
-         p(app_dir + '/Contents/MacOS'))
-    if exists(p(product_dir + '/MacOS/')):
-        shutil.rmtree(p(product_dir + '/MacOS/'))
-    move(p(product_dir + '/Resources'),
-         p(app_dir + '/Contents'))
-    move(p(product_dir + '/Info.plist'),
-         p(app_dir + '/Contents'))
-    print('done')
+
+    os.makedirs(base + 'openLCA.app/Contents/Eclipse', exist_ok=True)
+    os.makedirs(base + 'openLCA.app/Contents/MacOS', exist_ok=True)
+
+    shutil.copyfile('macos/Info.plist', base+'openLCA.app/Contents/Info.plist')
+    shutil.move(base+"configuration", base + 'openLCA.app/Contents/Eclipse')
+    shutil.move(base+"plugins", base + 'openLCA.app/Contents/Eclipse')
+    shutil.move(base+".eclipseproduct", base + 'openLCA.app/Contents/Eclipse')
+    shutil.move(base+"Resources", base+"openLCA.app/Contents")
+    shutil.copyfile(base+"MacOS/openLCA", base +
+                    'openLCA.app/Contents/MacOS/eclipse')
+
+    # create the ini file
+    plugins_dir = base + "openLCA.app/Contents/Eclipse/plugins/"
+    launcher_jar = os.path.basename(
+        glob.glob(plugins_dir + "*launcher*.jar")[0])
+    launcher_lib = os.path.basename(
+        glob.glob(plugins_dir + "*launcher.cocoa.macosx*")[0])
+    with open("macos/openLCA.ini", mode='r', encoding="utf-8") as f:
+        text = f.read()
+        text = text.format(launcher_jar=launcher_jar,
+                           launcher_lib=launcher_lib)
+        out_ini_path = base + "openLCA.app/Contents/Eclipse/eclipse.ini"
+        with open(out_ini_path, mode='w', encoding='utf-8', newline='\n') as o:
+            o.write(text)
+    
+    shutil.rmtree(base + "MacOS")
+    os.remove(base + "Info.plist")
 
     # package the JRE
-    if not exists(app_dir + '/jre'):
-        jre_tar = glob.glob('jre/jre-*osx*x64*.tar')
-        if len(jre_tar) == 0:
-            print('  WARNING: No macOS JRE found')
-        else:
-            printw('  Copy JRE')
-            unzip(jre_tar[0], app_dir)
-            jre_dir = glob.glob(app_dir + '/*jre*')
-            os.rename(jre_dir[0], p(app_dir + '/jre'))
-            print('done')
+    jre_tar = glob.glob('jre/jre-*-macosx-x64.tar')
+    print(jre_tar)
+    if len(jre_tar) == 0:
+        print('ERROR: no JRE for Mac OSX found')
+        return
+    unzip(jre_tar[0], base + 'openLCA.app')
+    jre_dir = glob.glob(base + 'openLCA.app' + '/*jre*')
+    os.rename(jre_dir[0], base + 'openLCA.app' + '/jre')
 
-    # write the ini file
-    launcher_jar = os.path.basename(
-        glob.glob(app_dir + '/plugins/*launcher*.jar')[0])
-    launcher_lib = os.path.basename(
-        glob.glob(app_dir + '/plugins/*launcher.cocoa.macosx*')[0])
-    ini = fill_template(p('templates/openLCA_mac.ini'),
-                        launcher_jar=launcher_jar, launcher_lib=launcher_lib)
-    ini_file = p(app_dir + '/Contents/MacOS/openLCA.ini')
-    with(open(ini_file, 'w', encoding='utf-8', newline='\n')) as f:
-        f.write(ini.replace('\r\n', '\n'))
+    # package the native libraries
+    if not os.path.exists('julia/macos'):
+        print('  WARNING: No native libraries')
+    else:
+        for f in glob.glob('julia/macos/*.*'):
+            shutil.copy2(f, base + 'openLCA.app/Contents/Eclipse')
 
     printw('  Create distribtuion package')
     dist_pack = p('build/dist/openLCA_macOS_%s' % version_date)
-    targz('.\\build\\macosx.cocoa.x86_64\\*', dist_pack)
+    targz('.\\build\\macosx.cocoa.x86_64\\openLCA\\*', dist_pack)
     print('done')
 
 
