@@ -254,6 +254,7 @@ public class M extends NLS {
 	public static String DirectContributionsFlowResultsOverview;
 	public static String DirectContributionsImpactCategoryResultsOverview;
 	public static String Direction;
+	public static String Disabled;
 	public static String DisconnectFromRepository;
 	public static String Display;
 	public static String DoNotShowThisMessageAgain;
@@ -357,6 +358,7 @@ public class M extends NLS {
 	public static String GeometricStandardDeviationFormula;
 	public static String Geometry;
 	public static String GeneralDatabaseProperties;
+	public static String Generator;
 	public static String Global;
 	public static String GlobalParameter;
 	public static String GlobalParameters;

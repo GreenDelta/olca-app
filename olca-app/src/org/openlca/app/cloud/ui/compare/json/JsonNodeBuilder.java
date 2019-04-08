@@ -67,6 +67,8 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 	}
 
 	private void build(JsonNode node, JsonArray left, JsonArray right) {
+		if (isReadOnly(node, node.property))
+			return;
 		Set<Integer> added = new HashSet<>();
 		if (left != null)
 			buildChildren(node, left, right, Side.LEFT, added);

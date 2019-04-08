@@ -148,6 +148,8 @@ public class ModelUtil {
 			return false;
 		if (property.equals("internalId"))
 			return false;
+		if (property.equals("precedingDataSet"))
+			return false;
 		if (property.equals("lastChange"))
 			return false;
 		if (property.equals("version"))
@@ -282,8 +284,7 @@ public class ModelUtil {
 		}
 
 		@Override
-		protected boolean skipOnEqualsCheck(String parentProperty,
-				JsonElement parent, String property) {
+		protected boolean skipOnEqualsCheck(String parentProperty, JsonElement parent, String property) {
 			if (parentProperty == null)
 				if ("version".equals(property))
 					return true;
