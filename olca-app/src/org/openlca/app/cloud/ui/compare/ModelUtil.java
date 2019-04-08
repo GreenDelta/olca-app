@@ -3,7 +3,9 @@ package org.openlca.app.cloud.ui.compare;
 import static org.openlca.app.cloud.ui.compare.json.JsonUtil.getString;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.openlca.app.cloud.ui.compare.json.IDependencyResolver;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
@@ -98,8 +100,6 @@ public class ModelUtil {
 			return getString(o, "impactCategory.name");
 		if (isType(o, AllocationFactor.class))
 			return getAllocationFactorLabel(o);
-		if (isType(o, ProcessLink.class))
-			return getProcessLinkLabel(o);
 		if (isType(o, Uncertainty.class))
 			return getUncertaintyLabel(o);
 		return null;
@@ -118,15 +118,7 @@ public class ModelUtil {
 		String flow = getString(o, "exchange.flow.name");
 		return product + " - " + flow;
 	}
-
-	private static String getProcessLinkLabel(JsonObject o) {
-		String provider = getString(o, "provider.name");
-		String output = getString(o, "providerOutput.flow.name");
-		String recipient = getString(o, "recipient.name");
-		String input = getString(o, "recipientInput.flow.name");
-		return provider + "/" + output + " -> " + recipient + "/" + input;
-	}
-
+	
 	private static String getUncertaintyLabel(JsonObject o) {
 		Uncertainty u = Uncertainties.read(o);
 		return Uncertainty.string(u);
@@ -296,7 +288,7 @@ public class ModelUtil {
 
 	private static class ModelDependencyResolver implements IDependencyResolver {
 
-		private static final Map<String, Map<String, String>> dependencies = new HashMap<>();
+		private static final Map<String, Map<String, Set<String>>> dependencies = new HashMap<>();
 
 		static {
 			put(Exchange.class, "flowProperty", "unit");
@@ -311,19 +303,27 @@ public class ModelUtil {
 		}
 
 		private static void put(Class<?> clazz, String from, String to) {
-			Map<String, String> map = dependencies.get(clazz.getSimpleName());
+			Map<String, Set<String>> map = dependencies.get(clazz.getSimpleName());
 			if (map == null)
 				dependencies.put(clazz.getSimpleName(), map = new HashMap<>());
-			map.put(from, to);
-			map.put(to, from);
+			put(map, from, to);
+			put(map, to, from);
 		}
 
+		private static void put(Map<String, Set<String>> map, String from, String to) {
+			Set<String> values = map.get(from);
+			if (values == null) {
+				map.put(from, values = new HashSet<>());
+			}
+			values.add(to);
+		}
+		
 		@Override
-		public String resolve(JsonElement parent, String property) {
+		public Set<String> resolve(JsonElement parent, String property) {
 			String type = getType(parent);
 			if (type == null)
 				return null;
-			Map<String, String> map = dependencies.get(type);
+			Map<String, Set<String>> map = dependencies.get(type);
 			if (map == null)
 				return null;
 			return map.get(property);

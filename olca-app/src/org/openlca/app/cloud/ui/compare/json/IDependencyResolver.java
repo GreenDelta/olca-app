@@ -1,9 +1,11 @@
 package org.openlca.app.cloud.ui.compare.json;
 
+import java.util.Set;
+
 import com.google.gson.JsonElement;
 
 public interface IDependencyResolver {
 
-	public String resolve(JsonElement parent, String property);
+	public Set<String> resolve(JsonElement parent, String property);
 
 }

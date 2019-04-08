@@ -1,7 +1,9 @@
 package org.openlca.app.cloud.ui.compare.json;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer;
@@ -126,22 +128,27 @@ class MenuBarActions {
 		JsonElement element = leftToRight ? node.originalElement
 				: node.rightElement;
 		node.setValue(element, leftToRight);
-		JsonNode dependent = getDependent(node);
-		if (dependent != null)
-			applyTo(dependent, leftToRight);
+		Set<JsonNode> dependent = getDependent(node);
+		if (dependent.isEmpty())
+			return;
+		for (JsonNode d : dependent) {
+			applyTo(d, leftToRight);
+		}
 	}
 
-	private JsonNode getDependent(JsonNode node) {
+	private Set<JsonNode> getDependent(JsonNode node) {
 		JsonElement parent = node.parent.getElement();
 		if (!parent.isJsonObject())
-			return null;
-		String dependent = dependencyResolver.resolve(parent, node.property);
+			return new HashSet<>();
+		Set<String> dependent = dependencyResolver.resolve(parent, node.property);
 		if (dependent == null)
-			return null;
+			return new HashSet<>();
+		Set<JsonNode> dependencies = new HashSet<>();
 		for (JsonNode child : node.parent.children)
-			if (child.property.equals(dependent))
-				return child;
-		return null;
+			for (String property : dependent)
+				if (child.property.equals(property))
+					dependencies.add(child);
+		return dependencies;
 	}
 
 }
