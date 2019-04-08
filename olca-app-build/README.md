@@ -77,3 +77,15 @@ olca-app-build
 ```
 
 Note that openLCA currently only correctly works with a JRE 8u101.
+
+## Julia math libraries
+
+olca-app-build
+  - ...
+  - runtime
+    - jre
+      - win64     # the extracted JRE for windows 64 bit
+      - jre-<version>-linux-x64.tar
+      - jre-<version>-maxosx-x64.tar
+```
+

@@ -95,7 +95,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 
 		private void generalPropertiesSection(Composite body) {
 			Composite comp = UI.formSection(body, tk,
-					M.GeneralDatabaseProperties);
+					"Recommended settings when creating product systems");
 			if (props.processesWithoutProviders.isEmpty()) {
 				check(comp, Icon.ACCEPT, "All product inputs "
 						+ "and waste outputs are linked to a "
