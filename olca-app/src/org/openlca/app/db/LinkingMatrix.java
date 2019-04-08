@@ -55,7 +55,7 @@ class LinkingMatrix {
 		filler(body);
 		filler(body);
 		cell(body, "Product flows with multiple providers");
-		cell(body, "Ingnore default providers", black, darkGrey);
+		cell(body, "Ignore default providers", black, darkGrey);
 		cell(body, "Prefer default providers", black, darkGrey);
 		cell(body, "Only default providers", black, darkGrey);
 
