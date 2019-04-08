@@ -2,6 +2,7 @@ package org.openlca.app.db;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -47,6 +48,9 @@ class LinkingMatrix {
 		GridLayout grid = new GridLayout(6, true);
 		grid.marginWidth = 10;
 		body.setLayout(grid);
+
+		headerCell(body, tk, "Linking properties");
+		headerCell(body, tk, "Product system creation: Linking option");
 
 		filler(body);
 		filler(body);
@@ -105,6 +109,16 @@ class LinkingMatrix {
 			cell(body, "", black, lightGreen);
 			cell(body, "", black, lightGreen);
 		}
+	}
+
+	private void headerCell(Composite body, FormToolkit tk, String text) {
+		Composite c = tk.createComposite(body, SWT.BORDER);
+		FillLayout layout = new FillLayout();
+		layout.marginHeight = 5;
+		c.setLayout(layout);
+		UI.gridData(c, true, false).horizontalSpan = 3;
+		Label label = tk.createLabel(c, text, SWT.CENTER);
+		label.setFont(UI.boldFont());
 	}
 
 	private Label filler(Composite parent) {
