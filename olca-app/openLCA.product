@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.8.0" useFeatures="false" includeLaunchers="true">
+<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="1.9.0" useFeatures="false" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/olca-app/icons/about.png"/>
       <text>
-         openLCA 1.8.0
+         openLCA 1.9.0
 
 Copyright (c) 2007 - 2019 GreenDelta. All rights reserved.
 Visit http://openlca.org and http://greendelta.com
