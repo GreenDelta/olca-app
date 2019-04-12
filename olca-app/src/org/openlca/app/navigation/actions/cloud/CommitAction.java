@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -35,6 +34,7 @@ import org.openlca.app.util.Info;
 import org.openlca.app.util.TimeEstimatingMonitor;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.model.LibraryRestriction;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.database.IDatabase;
 import org.slf4j.Logger;
@@ -96,7 +96,7 @@ public class CommitAction extends Action implements INavigationAction {
 		private List<DiffResult> changes;
 		private List<DiffResult> selected;
 		private List<DiffResult> references;
-		private Map<Dataset, String> checkResult;
+		private List<LibraryRestriction> checkResult;
 		private Exception error;
 
 		public void run() {

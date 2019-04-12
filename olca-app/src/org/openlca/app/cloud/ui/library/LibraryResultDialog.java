@@ -1,7 +1,8 @@
 package org.openlca.app.cloud.ui.library;
 
-import java.util.Map;
+import java.util.List;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
@@ -13,15 +14,16 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.util.UI;
-import org.openlca.cloud.model.data.Dataset;
+import org.openlca.cloud.model.LibraryRestriction;
+import org.openlca.cloud.model.RestrictionType;
 
 public class LibraryResultDialog extends FormDialog {
 
-	private final Map<Dataset, String> libraryMappings;
+	private final List<LibraryRestriction> restrictions;
 
-	public LibraryResultDialog(Map<Dataset, String> libraryMappings) {
+	public LibraryResultDialog(List<LibraryRestriction> restrictions) {
 		super(UI.shell());
-		this.libraryMappings = libraryMappings;
+		this.restrictions = restrictions;
 		setBlockOnOpen(true);
 	}
 
@@ -46,8 +48,24 @@ public class LibraryResultDialog extends FormDialog {
 		String description = M.RecognizedLibraryDatasetsDescription;
 		Label label = toolkit.createLabel(body, description, SWT.WRAP);
 		UI.gridData(label, true, false).widthHint = 750;
-		LibraryResultViewer viewer = new LibraryResultViewer(body);
+		Viewer viewer = new Viewer(body);
 		form.reflow(true);
-		viewer.setInput(libraryMappings.entrySet());
+		viewer.setInput(restrictions);
 	}
+
+	@Override
+	protected void createButtonsForButtonBar(Composite parent) {
+		super.createButtonsForButtonBar(parent);
+		if (containsForbidden()) {
+			getButton(IDialogConstants.OK_ID).setEnabled(false);
+		}
+	}
+
+	private boolean containsForbidden() {
+		for (LibraryRestriction restriction : restrictions) 
+			if (restriction.type == RestrictionType.FORBIDDEN)
+				return true;
+		return false;
+	}
+
 }
