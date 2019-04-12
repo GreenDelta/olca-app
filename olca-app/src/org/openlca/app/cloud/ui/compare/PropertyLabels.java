@@ -318,6 +318,9 @@ public class PropertyLabels {
 		put(clazz, "nwSets", M.NormalizationWeightingSets);
 		put(clazz, "parameters", M.Parameters);
 		put(clazz, "parameterMean", M.ParameterAggregationFunction);
+		put(clazz, "sources", M.Sources);
+		put(clazz, "author", M.Author);
+		put(clazz, "generator", M.Generator);
 	}
 
 	private static void putImpactCategoryLabels() {
@@ -383,6 +386,7 @@ public class PropertyLabels {
 		put(clazz, "impactMethod", M.ImpactAssessmentMethod);
 		put(clazz, "nwSet", M.NormalizationAndWeightingSet);
 		put(clazz, "variants", M.Variants);
+		put(clazz, "isDisabled", M.Disabled);
 	}
 
 	private static void putProjectVariantLabels() {
