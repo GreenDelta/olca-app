@@ -296,7 +296,8 @@
             default="false"
             icon="icons/model/flow.png"
             id="MappingTool"
-            name="Flow mapping">
+            name="Flow mapping"
+            contributorClass="org.openlca.app.tools.mapping.MappingMenu">
       </editor>
 
    </extension>
