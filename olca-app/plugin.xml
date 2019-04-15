@@ -291,6 +291,14 @@
             name="Linking properties">
       </editor>
 
+      <editor
+            class="org.openlca.app.tools.mapping.MappingTool"
+            default="false"
+            icon="icons/model/flow.png"
+            id="MappingTool"
+            name="Flow mapping">
+      </editor>
+
    </extension>
    
    <extension

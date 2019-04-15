@@ -35,6 +35,7 @@ import org.openlca.app.editors.parameters.BigParameterTable;
 import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.tools.mapping.MappingTool;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
 import org.openlca.core.model.ModelType;
@@ -128,21 +129,25 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillWindowMenu(IMenuManager menuBar) {
-		MenuManager windowMenu = new MenuManager(M.Window,
+		MenuManager menu = new MenuManager(M.Window,
 				IWorkbenchActionConstants.M_WINDOW);
 		MenuManager viewMenu = new MenuManager(M.Showviews);
 		viewMenu.add(showViews);
-		windowMenu.add(viewMenu);
-		windowMenu.add(new Separator());
-		windowMenu.add(Actions.create(
+		menu.add(viewMenu);
+		menu.add(new Separator());
+		menu.add(Actions.create(
 				M.Parameters,
 				Images.descriptor(ModelType.PARAMETER),
 				BigParameterTable::show));
-		createDeveloperMenu(windowMenu);
-		createMassReplaceMenu(windowMenu);
-		windowMenu.add(new Separator());
-		windowMenu.add(new FormulaConsoleAction());
-		menuBar.add(windowMenu);
+		createDeveloperMenu(menu);
+		createMassReplaceMenu(menu);
+		menu.add(Actions.create(
+				"Flow mapping",
+				Images.descriptor(ModelType.FLOW),
+				MappingTool::open));
+		menu.add(new Separator());
+		menu.add(new FormulaConsoleAction());
+		menuBar.add(menu);
 	}
 
 	private void createDeveloperMenu(MenuManager windowMenu) {
