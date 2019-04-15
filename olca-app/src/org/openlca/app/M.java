@@ -872,6 +872,7 @@ public class M extends NLS {
 	public static String Tree;
 	public static String TriangleDistribution;
 	public static String Type;
+	public static String TypeOfRestriction;
 	public static String URL;
 	public static String Uncertainties;
 	public static String Uncertainty;

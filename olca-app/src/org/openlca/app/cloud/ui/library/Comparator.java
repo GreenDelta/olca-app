@@ -1,11 +1,11 @@
 package org.openlca.app.cloud.ui.library;
 
-import java.util.Map.Entry;
-
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.navigation.ModelTypeComparison;
+import org.openlca.cloud.model.LibraryRestriction;
+import org.openlca.cloud.model.RestrictionType;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
@@ -13,11 +13,14 @@ import org.openlca.util.Strings;
 public class Comparator extends ViewerComparator {
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public int compare(Viewer viewer, Object o1, Object o2) {
-		Entry<Dataset, String> e1 = (Entry<Dataset, String>) o1;
-		Entry<Dataset, String> e2 = (Entry<Dataset, String>) o2;
-		return compare(viewer, e1.getKey(), e2.getKey());
+		LibraryRestriction l1 = (LibraryRestriction) o1;
+		LibraryRestriction l2 = (LibraryRestriction) o2;
+		if (l1.type == RestrictionType.FORBIDDEN && l2.type == RestrictionType.WARNING)
+			return -1;
+		if (l1.type == RestrictionType.WARNING && l2.type == RestrictionType.FORBIDDEN)
+			return 1;
+		return compare(viewer, l1.dataset, l2.dataset);
 	}
 
 	private int compare(Viewer viewer, Dataset d1, Dataset d2) {
