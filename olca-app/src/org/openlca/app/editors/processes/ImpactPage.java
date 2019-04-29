@@ -151,6 +151,8 @@ class ImpactPage extends ModelPage<Process> {
 			exchanges[i] = e;
 			values[i] = ReferenceAmount.get(e);
 		}
+		if (flowIdx.isEmpty())
+			return Collections.emptyList();
 
 		// create the impact matrix
 		FormulaInterpreter interpreter = ParameterTable.interpreter(
@@ -161,6 +163,12 @@ class ImpactPage extends ModelPage<Process> {
 				Collections.emptySet());
 		ImpactTable iTable = ImpactTable.build(
 				Cache.getMatrixCache(), method.id, flowIdx);
+		if (iTable == null) {
+			// when the LCIA method has no categories,
+			// iTable will be null
+			return Collections.emptyList();
+		}
+
 		IMatrix matrix = iTable.createMatrix(
 				App.getSolver(), interpreter);
 
