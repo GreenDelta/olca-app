@@ -14,7 +14,7 @@ import com.google.gson.JsonObject;
 
 public class JsonProvider implements IMapProvider {
 
-	private final ZipStore store;
+	public final ZipStore store;
 
 	public JsonProvider(File file) {
 		try {

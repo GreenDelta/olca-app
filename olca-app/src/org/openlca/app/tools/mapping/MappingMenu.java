@@ -6,6 +6,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.editors.Editors;
 import org.openlca.app.tools.mapping.model.IMapProvider;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
@@ -24,10 +25,13 @@ public class MappingMenu extends EditorActionBarContributor {
 		File file = FileChooser.forImport("*.zip");
 		if (file == null)
 			return;
+		MappingTool tool = Editors.getActive();
+		if (tool == null)
+			return;
 		try {
 			IMapProvider.Type type = IMapProvider.Type.of(file);
 			if (type == IMapProvider.Type.JSON_LD_PACKAGE) {
-				JsonImportDialog.open(file);
+				JsonImportDialog.open(file, tool);
 			} else {
 				Info.showBox("#Unsupported format.");
 			}

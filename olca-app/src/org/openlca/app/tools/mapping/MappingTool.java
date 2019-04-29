@@ -14,11 +14,19 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
+import org.openlca.app.tools.mapping.model.FlowMap;
+import org.openlca.app.tools.mapping.model.IMapProvider;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MappingTool extends SimpleFormEditor {
+
+	private MappingPage page;
+	private FlowMap flowMap;
+	private IMapProvider provider;
 
 	public static void open() {
 		if (Database.get() == null) {
@@ -32,7 +40,32 @@ public class MappingTool extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
-		return new MappingPage();
+		page = new MappingPage();
+		return page;
+	}
+
+	void setContent(FlowMap flowMap, IMapProvider provider) {
+		this.flowMap = flowMap;
+		closeProvider();
+		this.provider = provider;
+		this.flowMap = flowMap;
+	}
+
+	@Override
+	public void close(boolean save) {
+		closeProvider();
+		super.close(save);
+	}
+
+	private void closeProvider() {
+		if (this.provider == null)
+			return;
+		try {
+			this.provider.close();
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("Failed to close provider", e);
+		}
 	}
 
 	private class MappingPage extends FormPage {
