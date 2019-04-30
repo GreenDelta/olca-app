@@ -5,11 +5,13 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.mapping.model.FlowMapEntry;
 import org.openlca.app.tools.mapping.model.FlowRef;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.ModelType;
 import org.openlca.io.CategoryPath;
 
 class TableLabel extends LabelProvider
@@ -22,6 +24,20 @@ class TableLabel extends LabelProvider
 		FlowMapEntry e = (FlowMapEntry) obj;
 		if (col == 0)
 			return stateIcon(e.syncState);
+		if (col == 1) {
+			if (e.sourceFlow != null)
+				return Images.get(e.sourceFlow.flow);
+		}
+		if (col == 4) {
+			if (e.targetFlow != null)
+				return Images.get(e.targetFlow.flow);
+		}
+		if (col == 2 || col == 5)
+			return Images.getForCategory(ModelType.FLOW);
+		if (col == 3 || col == 6)
+			return Images.get(ModelType.UNIT);
+		if (col == 7)
+			return Icon.FORMULA.get();
 		return null;
 	}
 
@@ -133,5 +149,4 @@ class TableLabel extends LabelProvider
 		}
 		return unit;
 	}
-
 }

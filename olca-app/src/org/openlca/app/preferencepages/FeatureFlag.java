@@ -8,15 +8,9 @@ import org.openlca.app.Preferences;
  */
 public enum FeatureFlag {
 
-	// the refresh buttons work but currently get always the keyboard focus
-	// which looks a bit ugly
-	SHOW_REFRESH_BUTTONS("Show refresh buttons in editors"),
+	FLOW_MAPPING_TOOL("Enable the flow mapping tool"),
 
-	EXPERIMENTAL_VISUALISATIONS("Experimental visualisations"),
-
-	MATRIX_IMAGE_EXPORT("Enable matrix image export"),
-
-	ECOSPOLD1_EXPORT_CONFIG("EcoSpold 1 export configuration");
+	MATRIX_IMAGE_EXPORT("Enable matrix image export");
 
 	private final String description;
 

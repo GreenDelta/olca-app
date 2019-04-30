@@ -9,7 +9,6 @@ import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.ImpactMethod;
@@ -41,10 +40,8 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 	public void addPages() {
 		modelPage = ModelSelectionPage.forDirectory(type);
 		addPage(modelPage);
-		if (FeatureFlag.ECOSPOLD1_EXPORT_CONFIG.isEnabled()) {
-			configPage = new Es1ExportConfigPage();
-			addPage(configPage);
-		}
+		configPage = new Es1ExportConfigPage();
+		addPage(configPage);
 	}
 
 	@Override
