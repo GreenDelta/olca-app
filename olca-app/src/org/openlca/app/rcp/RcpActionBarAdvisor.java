@@ -152,10 +152,10 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 				ReplaceProvidersDialog::openDialog));
 
 		// flow mapping
-		MenuManager fmMenu = new MenuManager("Flow mapping");
+		MenuManager fmMenu = new MenuManager("Flow mapping (experimental)");
 		menu.add(fmMenu);
-		fmMenu.add(Actions.create("New", MappingTool::open));
-		fmMenu.add(Actions.create("Open file", MappingTool::open));
+		fmMenu.add(Actions.create("New", MappingTool::createNew));
+		fmMenu.add(Actions.create("Open file", MappingTool::openFile));
 
 		menu.add(new Separator());
 		menu.add(new FormulaConsoleAction());

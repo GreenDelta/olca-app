@@ -34,13 +34,12 @@ class JsonImportDialog extends Dialog {
 	private final List<FlowMap> flowMaps;
 
 	/**
-	 * The selected flow map in the dialog that should be applied. If this is
-	 * null it means that a flow map should be generated from the flow
-	 * attributes.
+	 * The selected flow map in the dialog that should be applied. If this is null
+	 * it means that a flow map should be generated from the flow attributes.
 	 */
 	private FlowMap selectedMap;
 
-	static void open(File file, MappingTool tool) {
+	static void open(File file) {
 		if (file == null)
 			return;
 		try {
@@ -56,13 +55,12 @@ class JsonImportDialog extends Dialog {
 			FlowMap flowMap = d.selectedMap;
 			App.runWithProgress("Sync flow map ...",
 					() -> FlowMaps.sync(flowMap, d.provider.store, Database.get()),
-					() -> tool.setContent(flowMap, d.provider));
+					() -> MappingTool.open(flowMap, d.provider));
 		} catch (Exception e) {
 			Error.showBox("Failed to open file as JSON-LD package");
 			Logger log = LoggerFactory.getLogger(JsonImportDialog.class);
 			log.error("failed to open JSON-LD package " + file, e);
 		}
-
 	}
 
 	JsonImportDialog(File file) {

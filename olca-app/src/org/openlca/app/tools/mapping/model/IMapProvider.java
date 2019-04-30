@@ -16,16 +16,7 @@ import org.slf4j.LoggerFactory;
 public interface IMapProvider extends Closeable {
 
 	/**
-	 * Returns a list of mapping definitions of this provider. There are
-	 * different kinds of providers that can contain multiple (e.g. a JSON-LD
-	 * package), exactly one (e.g. a CSV mapping file), or no mapping definition
-	 * (e.g. a standard ILCD package).
-	 */
-	List<FlowMap> getFlowMaps();
-
-	/**
-	 * Get a list of references of all flows that are contained in this
-	 * provider.
+	 * Get a list of references of all flows that are contained in this provider.
 	 */
 	List<FlowRef> getFlowRefs();
 
