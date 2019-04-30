@@ -25,6 +25,10 @@ public class Actions {
 	private Actions() {
 	}
 
+	public static Action create(String title, Runnable fn) {
+		return create(title, null, fn);
+	}
+
 	public static Action create(String title,
 			ImageDescriptor image, Runnable runnable) {
 		return new Action() {
@@ -84,9 +88,11 @@ public class Actions {
 			{
 				setText(M.Save);
 				setToolTipText(M.Save);
-				ImageDescriptor image = Images.platformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT);
+				ImageDescriptor image = Images.platformDescriptor(
+						ISharedImages.IMG_ETOOL_SAVE_EDIT);
 				setImageDescriptor(image);
-				ImageDescriptor imageDis = Images.platformDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED);
+				ImageDescriptor imageDis = Images.platformDescriptor(
+						ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED);
 				setDisabledImageDescriptor(imageDis);
 			}
 

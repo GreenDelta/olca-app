@@ -140,11 +140,23 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 				Images.descriptor(ModelType.PARAMETER),
 				BigParameterTable::show));
 		createDeveloperMenu(menu);
-		createMassReplaceMenu(menu);
-		menu.add(Actions.create(
-				"Flow mapping",
-				Images.descriptor(ModelType.FLOW),
-				MappingTool::open));
+
+		// bulk replace
+		MenuManager brMenu = new MenuManager(M.Bulkreplace);
+		menu.add(brMenu);
+		brMenu.add(Actions.create(
+				M.Flows, Images.descriptor(ModelType.FLOW),
+				ReplaceFlowsDialog::openDialog));
+		brMenu.add(Actions.create(
+				M.Providers, Images.descriptor(ModelType.PROCESS),
+				ReplaceProvidersDialog::openDialog));
+
+		// flow mapping
+		MenuManager fmMenu = new MenuManager("Flow mapping");
+		menu.add(fmMenu);
+		fmMenu.add(Actions.create("New", MappingTool::open));
+		fmMenu.add(Actions.create("Open file", MappingTool::open));
+
 		menu.add(new Separator());
 		menu.add(new FormulaConsoleAction());
 		menuBar.add(menu);
@@ -157,13 +169,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		devMenu.add(Actions.create("JavaScript", Icon.JAVASCRIPT.descriptor(), JavaScriptEditor::open));
 		devMenu.add(Actions.create("Python", Icon.PYTHON.descriptor(), PythonEditor::open));
 		devMenu.add(Actions.create("IPC Server", Icon.DATABASE.descriptor(), IpcDialog::show));
-	}
-
-	private void createMassReplaceMenu(MenuManager windowMenu) {
-		MenuManager m = new MenuManager(M.Bulkreplace);
-		windowMenu.add(m);
-		m.add(Actions.create(M.Flows, Images.descriptor(ModelType.FLOW), ReplaceFlowsDialog::openDialog));
-		m.add(Actions.create(M.Providers, Images.descriptor(ModelType.PROCESS), ReplaceProvidersDialog::openDialog));
 	}
 
 	@Override
