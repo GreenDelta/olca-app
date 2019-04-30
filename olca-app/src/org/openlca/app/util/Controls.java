@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
@@ -17,6 +18,16 @@ import org.eclipse.ui.forms.widgets.Hyperlink;
 public class Controls {
 
 	private Controls() {
+	}
+
+	public static void set(Text text, String s) {
+		if (text == null)
+			return;
+		if (s == null) {
+			text.setText("");
+		} else {
+			text.setText(s);
+		}
 	}
 
 	public static void onSelect(Combo combo, Consumer<SelectionEvent> consumer) {
