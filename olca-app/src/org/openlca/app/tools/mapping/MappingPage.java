@@ -1,6 +1,10 @@
 package org.openlca.app.tools.mapping;
 
+import java.util.Optional;
+
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
@@ -8,7 +12,11 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.tools.mapping.model.Replacer;
+import org.openlca.app.tools.mapping.model.ReplacerConfig;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
@@ -48,6 +56,20 @@ class MappingPage extends FormPage {
 		if (this.tool.mapping.target != null) {
 			Controls.set(targetSys, this.tool.mapping.target.name);
 		}
+
+		UI.filler(comp);
+		Button btn = tk.createButton(comp, "Apply", SWT.NONE);
+		btn.setImage(Icon.ACCEPT.get());
+		Controls.onSelect(btn, e -> {
+			Optional<ReplacerConfig> opt = ReplacerDialog.open(
+					tool.mapping, tool.provider);
+			if (!opt.isPresent())
+				return;
+			Replacer replacer = new Replacer(opt.get());
+			App.runWithProgress("Replace flows ...", replacer, () -> {
+				table.setInput(tool.mapping.entries);
+			});
+		});
 	}
 
 	private void createTable(Composite body, FormToolkit tk) {

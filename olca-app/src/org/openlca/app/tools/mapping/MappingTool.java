@@ -28,7 +28,7 @@ public class MappingTool extends SimpleFormEditor {
 	private MappingPage page;
 
 	FlowMap mapping;
-	private IMapProvider provider;
+	IMapProvider provider;
 
 	public static void createNew() {
 		if (Database.get() == null) {
