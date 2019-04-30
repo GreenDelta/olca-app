@@ -109,19 +109,19 @@ class TableLabel extends LabelProvider
 	}
 
 	private String category(FlowRef ref) {
-		if (ref == null || ref.flow == null)
+		if (ref == null)
 			return "?";
-		if (ref.flow.id != 0L) {
-			if (ref.flow.category == null)
-				return "";
-			Category category = Cache.getEntityCache().get(
-					Category.class, ref.flow.category);
-			if (category == null)
-				return "?";
-			return CategoryPath.getFull(category);
-		}
-		// TODO: get it from the provider.
-		return "?";
+		if (ref.categoryPath != null)
+			return ref.categoryPath;
+		if (ref.flow == null || ref.flow.id == 0L)
+			return "?";
+		if (ref.flow.category == null)
+			return "";
+		Category category = Cache.getEntityCache().get(
+				Category.class, ref.flow.category);
+		if (category == null)
+			return "?";
+		return CategoryPath.getFull(category);
 	}
 
 	private String unit(FlowRef ref) {

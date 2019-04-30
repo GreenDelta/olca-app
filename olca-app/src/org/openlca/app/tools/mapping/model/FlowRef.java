@@ -14,6 +14,8 @@ public class FlowRef {
 	 */
 	public FlowDescriptor flow;
 
+	public String categoryPath;
+
 	/**
 	 * An optional reference to a property (= quantity) of the flow. When this is
 	 * missing, the reference flow property of the flow is taken by default.
