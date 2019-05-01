@@ -14,6 +14,10 @@ public class Replacer implements Runnable {
 
 	@Override
 	public void run() {
+		if (conf == null || (!conf.processes && !conf.methods)) {
+			log.info("no configuration; nothing to replace");
+			return;
+		}
 	}
 
 }
