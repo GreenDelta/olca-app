@@ -4,12 +4,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.jsonld.Json;
 import org.openlca.jsonld.ZipStore;
+import org.openlca.jsonld.input.JsonImport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +58,20 @@ public class JsonProvider implements IMapProvider {
 	@Override
 	public List<FlowRef> getFlowRefs() {
 		return null;
+	}
+
+	@Override
+	public Optional<Flow> persist(FlowRef ref, IDatabase db) {
+		if (ref == null || ref.flow == null || db == null)
+			return Optional.empty();
+		FlowDao dao = new FlowDao(db);
+		Flow flow = dao.getForRefId(ref.flow.refId);
+		if (flow != null)
+			return Optional.of(flow);
+		JsonImport imp = new JsonImport(store, db);
+		imp.run(ModelType.FLOW, ref.flow.refId);
+		flow = dao.getForRefId(ref.flow.refId);
+		return Optional.ofNullable(flow);
 	}
 
 	@Override

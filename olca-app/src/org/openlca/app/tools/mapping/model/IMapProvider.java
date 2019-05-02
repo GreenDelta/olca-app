@@ -4,9 +4,12 @@ import java.io.Closeable;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.Flow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +22,13 @@ public interface IMapProvider extends Closeable {
 	 * Get a list of references of all flows that are contained in this provider.
 	 */
 	List<FlowRef> getFlowRefs();
+
+	/**
+	 * If not yet contained, persist the given flow of this provider into the given
+	 * database. Returns the corresponding flow from the database or `None` when the
+	 * import failed.
+	 */
+	public Optional<Flow> persist(FlowRef ref, IDatabase db);
 
 	/**
 	 * An enumeration of possible provider types for mapping definitions.
