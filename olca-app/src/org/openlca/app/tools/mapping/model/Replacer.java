@@ -12,6 +12,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.tools.mapping.model.FlowMapEntry.SyncState;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.matrix.cache.ConversionTable;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -40,6 +41,8 @@ public class Replacer implements Runnable {
 	// collected statistics
 	private final Stats stats = new Stats();
 	private final HashMap<Long, Stats> flowStats = new HashMap<>();
+
+	private ConversionTable conversions;
 
 	public Replacer(ReplacerConfig conf) {
 		this.conf = conf;
@@ -112,6 +115,7 @@ public class Replacer implements Runnable {
 			flows.put(source.id, source);
 			flows.put(target.id, target);
 		}
+		conversions = ConversionTable.create(db);
 	}
 
 	private void inExchanges() throws Exception {
@@ -173,11 +177,6 @@ public class Replacer implements Runnable {
 			if (source == null || target == null)
 				continue;
 
-			// initially we will only replace flows where the
-			// unit and flow properties match exactly
-			// TODO: make this workable for all possible
-			// combinations
-
 			// check flow property and unit of the source flow
 			FlowPropertyFactor propFactor = propFactor(
 					source, cursor.getLong("f_flow_property_factor"));
@@ -192,6 +191,17 @@ public class Replacer implements Runnable {
 				continue;
 			}
 
+			double factor = entry.factor;
+			if (propFactor.flowProperty.id != entry.sourceFlow.flowProperty.id
+					|| unit.id != entry.sourceFlow.unit.id) {
+				double pi = conversions.getPropertyFactor(propFactor.id);
+				double ui = conversions.getUnitFactor(unit.id);
+				double ps = conversions.getPropertyFactor(
+						propFactor(source, entry.sourceFlow).id);
+				double us = conversions.getUnitFactor(entry.sourceFlow.unit.id);
+				factor *= (ui * ps) / (pi * us);
+			}
+
 			// check the target flow property
 			FlowPropertyFactor targetPropertyFactor = propFactor(
 					target, entry.targetFlow);
@@ -200,12 +210,11 @@ public class Replacer implements Runnable {
 				continue;
 			}
 
-			double factor = entry.factor;
 			double amount = cursor.getDouble("resulting_amount_value");
 			String formula = cursor.getString("resulting_amount_formula");
-			int uncertaintyType = cursor.getInt("distribution_type");
 
 			Uncertainty uncertainty = null;
+			int uncertaintyType = cursor.getInt("distribution_type");
 			if (!cursor.wasNull()) {
 				UncertaintyType ut = UncertaintyType.values()[uncertaintyType];
 				switch (ut) {
@@ -255,7 +264,7 @@ public class Replacer implements Runnable {
 				updateStmt.setNull(8, Types.DOUBLE);
 				updateStmt.setNull(9, Types.DOUBLE);
 			} else {
-				updateStmt.setInt(6, uncertaintyType);
+				updateStmt.setInt(6, uncertainty.distributionType.ordinal());
 				updateStmt.setDouble(7, uncertainty.parameter1);
 				updateStmt.setDouble(8, uncertainty.parameter2);
 				if (uncertainty.parameter3 != null) {
