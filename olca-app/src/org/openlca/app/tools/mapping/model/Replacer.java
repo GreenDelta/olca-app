@@ -158,45 +158,10 @@ public class Replacer implements Runnable {
 				Connection con = db.createConnection();
 				con.setAutoCommit(false);
 
-				String query = "SELECT "
-						+ "f_flow, "
-						+ "f_unit, "
-						+ "f_flow_property_factor, "
-						+ "resulting_amount_value, "
-						+ "resulting_amount_formula, "
-						+ "distribution_type, "
-						+ "parameter1_value, "
-						+ "parameter2_value, "
-						+ "parameter3_value "
-
-						+ "FROM tbl_exchanges "
-						+ "FOR UPDATE OF "
-						+ "f_flow, "
-						+ "f_unit, "
-						+ "f_flow_property_factor, "
-						+ "resulting_amount_value, "
-						+ "resulting_amount_formula, "
-						+ "distribution_type, "
-						+ "parameter1_value, "
-						+ "parameter2_value, "
-						+ "parameter3_value";
-
-				Statement queryStmt = con.createStatement();
-				queryStmt.setCursorName("EXCHANGE_CURSOR");
-				ResultSet cursor = queryStmt.executeQuery(query);
-
-				String update = "UPDATE tbl_exchanges "
-						+ " SET f_flow = ? ,"
-						+ " f_unit = ? ,"
-						+ " f_flow_property_factor = ? ,"
-						+ " resulting_amount_value = ? ,"
-						+ " resulting_amount_formula = ? ,"
-						+ " distribution_type = ? ,"
-						+ " parameter1_value = ? ,"
-						+ " parameter2_value = ? ,"
-						+ " parameter3_value = ? "
-						+ "WHERE CURRENT OF EXCHANGE_CURSOR";
-				PreparedStatement updateStmt = con.prepareStatement(update);
+				Statement query = con.createStatement();
+				query.setCursorName(cursorName());
+				ResultSet cursor = query.executeQuery(querySQL());
+				PreparedStatement update = con.prepareStatement(updateSQL());
 
 				int total = 0;
 				int changed = 0;
@@ -215,8 +180,7 @@ public class Replacer implements Runnable {
 					// check flow property and unit of the source flow
 					FlowPropertyFactor propFactor = propFactor(
 							source, cursor.getLong("f_flow_property_factor"));
-					if (propFactor == null
-							|| propFactor.flowProperty.id != entry.sourceFlow.flowProperty.id) {
+					if (propFactor == null) {
 						incStats(source.id, FAILURE);
 						continue;
 					}
@@ -245,76 +209,48 @@ public class Replacer implements Runnable {
 						continue;
 					}
 
-					double amount = cursor.getDouble("resulting_amount_value");
-					String formula = cursor.getString("resulting_amount_formula");
+					// amount and formula have type specific names
+					double amount = cursor.getDouble(4);
+					String formula = cursor.getString(5);
+					Uncertainty uncertainty = readUncertainty(cursor);
 
-					Uncertainty uncertainty = null;
-					int uncertaintyType = cursor.getInt("distribution_type");
-					if (!cursor.wasNull()) {
-						UncertaintyType ut = UncertaintyType.values()[uncertaintyType];
-						switch (ut) {
-						case LOG_NORMAL:
-							uncertainty = Uncertainty.logNormal(
-									cursor.getDouble("parameter1_value"),
-									cursor.getDouble("parameter2_value"));
-							break;
-						case NORMAL:
-							uncertainty = Uncertainty.normal(
-									cursor.getDouble("parameter1_value"),
-									cursor.getDouble("parameter2_value"));
-							break;
-						case TRIANGLE:
-							uncertainty = Uncertainty.triangle(
-									cursor.getDouble("parameter1_value"),
-									cursor.getDouble("parameter2_value"),
-									cursor.getDouble("parameter3_value"));
-							break;
-						case UNIFORM:
-							uncertainty = Uncertainty.uniform(
-									cursor.getDouble("parameter1_value"),
-									cursor.getDouble("parameter2_value"));
-							break;
-						default:
-							break;
-						}
-					}
-
-					updateStmt.setLong(1, target.id); // f_flow
-					updateStmt.setLong(2, entry.targetFlow.unit.id); // f_unit
-					updateStmt.setLong(3, targetPropertyFactor.id); // f_flow_property_factor
-					updateStmt.setDouble(4, factor * amount); // resulting_amount_value
+					update.setLong(1, target.id); // f_flow
+					update.setLong(2, entry.targetFlow.unit.id); // f_unit
+					update.setLong(3, targetPropertyFactor.id); // f_flow_property_factor
+					update.setDouble(4, factor * amount); // resulting_amount_value
 
 					// resulting_amount_formula
 					if (Strings.nullOrEmpty(formula)) {
-						updateStmt.setString(5, null);
+						update.setString(5, null);
 					} else {
-						updateStmt.setString(5,
+						update.setString(5,
 								Double.toString(factor) + "* (" + formula + ")");
 					}
 
 					// uncertainty
 					if (uncertainty == null) {
-						updateStmt.setNull(6, Types.INTEGER);
-						updateStmt.setNull(7, Types.DOUBLE);
-						updateStmt.setNull(8, Types.DOUBLE);
-						updateStmt.setNull(9, Types.DOUBLE);
+						update.setNull(6, Types.INTEGER);
+						update.setNull(7, Types.DOUBLE);
+						update.setNull(8, Types.DOUBLE);
+						update.setNull(9, Types.DOUBLE);
 					} else {
-						updateStmt.setInt(6, uncertainty.distributionType.ordinal());
-						updateStmt.setDouble(7, uncertainty.parameter1);
-						updateStmt.setDouble(8, uncertainty.parameter2);
+						uncertainty.scale(factor);
+						update.setInt(6, uncertainty.distributionType.ordinal());
+						update.setDouble(7, uncertainty.parameter1);
+						update.setDouble(8, uncertainty.parameter2);
 						if (uncertainty.parameter3 != null) {
-							updateStmt.setDouble(9, uncertainty.parameter3);
+							update.setDouble(9, uncertainty.parameter3);
 						}
 					}
 
-					updateStmt.executeUpdate();
+					update.executeUpdate();
 					changed++;
 					incStats(source.id, REPLACEMENT);
 				}
 
 				cursor.close();
-				queryStmt.close();
-				updateStmt.close();
+				query.close();
+				update.close();
 				con.commit();
 				con.close();
 
@@ -322,6 +258,101 @@ public class Replacer implements Runnable {
 			} catch (Exception e) {
 				String t = type == EXCHANGES ? "exchanges" : "LCIA factors";
 				log.error("Flow replacement in " + t + " failed", e);
+			}
+		}
+
+		private String cursorName() {
+			return type == EXCHANGES
+					? "EXCHANGE_CURSOR"
+					: "IMPACT_CURSOR";
+		}
+
+		private String querySQL() {
+			String table;
+			String value;
+			String formula;
+			if (type == EXCHANGES) {
+				table = "tbl_exchanges";
+				value = "resulting_amount_value";
+				formula = "resulting_amount_formula";
+			} else {
+				table = "tbl_impact_factors";
+				value = "value";
+				formula = "formula";
+			}
+			return "SELECT "
+					+ "f_flow, "
+					+ "f_unit, "
+					+ "f_flow_property_factor, "
+					+ value + " , "
+					+ formula + ", "
+					+ "distribution_type, "
+					+ "parameter1_value, "
+					+ "parameter2_value, "
+					+ "parameter3_value "
+					+ "FROM " + table + " "
+					+ "FOR UPDATE OF "
+					+ "f_flow, "
+					+ "f_unit, "
+					+ "f_flow_property_factor, "
+					+ "resulting_amount_value, "
+					+ "resulting_amount_formula, "
+					+ "distribution_type, "
+					+ "parameter1_value, "
+					+ "parameter2_value, "
+					+ "parameter3_value";
+		}
+
+		private String updateSQL() {
+			String table;
+			String value;
+			String formula;
+			if (type == EXCHANGES) {
+				table = "tbl_exchanges";
+				value = "resulting_amount_value";
+				formula = "resulting_amount_formula";
+			} else {
+				table = "tbl_impact_factors";
+				value = "value";
+				formula = "formula";
+			}
+			return "UPDATE " + table + " "
+					+ "SET f_flow = ? , "
+					+ "f_unit = ? , "
+					+ "f_flow_property_factor = ? , "
+					+ value + " = ? , "
+					+ formula + " = ? , "
+					+ "distribution_type = ? , "
+					+ "parameter1_value = ? , "
+					+ "parameter2_value = ? , "
+					+ "parameter3_value = ? "
+					+ "WHERE CURRENT OF " + cursorName();
+		}
+
+		private Uncertainty readUncertainty(ResultSet cursor) throws Exception {
+			int idx = cursor.getInt("distribution_type");
+			if (cursor.wasNull())
+				return null;
+			switch (UncertaintyType.values()[idx]) {
+			case LOG_NORMAL:
+				return Uncertainty.logNormal(
+						cursor.getDouble("parameter1_value"),
+						cursor.getDouble("parameter2_value"));
+			case NORMAL:
+				return Uncertainty.normal(
+						cursor.getDouble("parameter1_value"),
+						cursor.getDouble("parameter2_value"));
+			case TRIANGLE:
+				return Uncertainty.triangle(
+						cursor.getDouble("parameter1_value"),
+						cursor.getDouble("parameter2_value"),
+						cursor.getDouble("parameter3_value"));
+			case UNIFORM:
+				return Uncertainty.uniform(
+						cursor.getDouble("parameter1_value"),
+						cursor.getDouble("parameter2_value"));
+			default:
+				return null;
 			}
 		}
 
@@ -372,5 +403,4 @@ public class Replacer implements Runnable {
 			}
 		}
 	}
-
 }
