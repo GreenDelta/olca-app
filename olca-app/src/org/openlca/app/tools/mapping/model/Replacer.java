@@ -29,10 +29,6 @@ import org.slf4j.LoggerFactory;
 
 public class Replacer implements Runnable {
 
-	// constants for the statistics
-	private final int REPLACEMENT = 0;
-	private final int FAILURE = 1;
-
 	private final ReplacerConfig conf;
 	private final IDatabase db;
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -134,22 +130,41 @@ public class Replacer implements Runnable {
 	}
 
 	class Stats {
+		private static final byte REPLACEMENT = 0;
+		private static final byte FAILURE = 1;
+
 		int failures;
 		int replacements;
+		final HashMap<Long, Integer> flowFailures = new HashMap<>();
+		final HashMap<Long, Integer> flowReplacements = new HashMap<>();
+
+		private void inc(long flowID, byte type) {
+			HashMap<Long, Integer> flowStats;
+			if (type == REPLACEMENT) {
+				replacements++;
+				flowStats = flowReplacements;
+			} else {
+				failures++;
+				flowStats = flowFailures;
+			}
+			Integer count = flowStats.get(flowID);
+			if (count == null) {
+				flowStats.put(flowID, 1);
+			} else {
+				flowStats.put(flowID, count + 1);
+			}
+		}
 	}
 
 	private class Cursor implements Runnable {
 
-		static final int EXCHANGES = 0;
-		static final int IMPACTS = 1;
+		static final byte EXCHANGES = 0;
+		static final byte IMPACTS = 1;
 
-		final int type;
-
-		// collected statistics
+		final byte type;
 		final Stats stats = new Stats();
-		final HashMap<Long, Stats> flowStats = new HashMap<>();
 
-		Cursor(int type) {
+		Cursor(byte type) {
 			this.type = type;
 		}
 
@@ -182,12 +197,12 @@ public class Replacer implements Runnable {
 					FlowPropertyFactor propFactor = propFactor(
 							source, cursor.getLong("f_flow_property_factor"));
 					if (propFactor == null) {
-						incStats(source.id, FAILURE);
+						stats.inc(source.id, Stats.FAILURE);
 						continue;
 					}
 					Unit unit = unit(propFactor.flowProperty, cursor.getLong("f_unit"));
 					if (unit == null) {
-						incStats(source.id, FAILURE);
+						stats.inc(source.id, Stats.FAILURE);
 						continue;
 					}
 
@@ -211,7 +226,7 @@ public class Replacer implements Runnable {
 					FlowPropertyFactor targetPropertyFactor = propFactor(
 							target, entry.targetFlow);
 					if (targetPropertyFactor == null) {
-						incStats(source.id, FAILURE);
+						stats.inc(source.id, Stats.FAILURE);
 						continue;
 					}
 
@@ -238,7 +253,7 @@ public class Replacer implements Runnable {
 
 					update.executeUpdate();
 					changed++;
-					incStats(source.id, REPLACEMENT);
+					stats.inc(source.id, Stats.REPLACEMENT);
 				}
 
 				cursor.close();
@@ -399,19 +414,5 @@ public class Replacer implements Runnable {
 			return null;
 		}
 
-		private void incStats(long flowID, int type) {
-			Stats fstats = flowStats.get(flowID);
-			if (fstats == null) {
-				fstats = new Stats();
-				flowStats.put(flowID, fstats);
-			}
-			if (type == REPLACEMENT) {
-				stats.replacements++;
-				fstats.replacements++;
-			} else {
-				stats.failures++;
-				fstats.failures++;
-			}
-		}
 	}
 }
