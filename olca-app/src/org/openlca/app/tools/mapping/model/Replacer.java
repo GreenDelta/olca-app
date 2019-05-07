@@ -3,6 +3,7 @@ package org.openlca.app.tools.mapping.model;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.HashMap;
@@ -190,7 +191,11 @@ public class Replacer implements Runnable {
 						continue;
 					}
 
-					double factor = entry.factor;
+					// calculate the conversion factor; not that the factor
+					// has the inverse meaning for exchanges than for LCIA factors
+					double factor = type == EXCHANGES
+							? entry.factor
+							: 1 / entry.factor;
 					if (propFactor.flowProperty.id != entry.sourceFlow.flowProperty.id
 							|| unit.id != entry.sourceFlow.unit.id) {
 						double pi = conversions.getPropertyFactor(propFactor.id);
@@ -198,7 +203,8 @@ public class Replacer implements Runnable {
 						double ps = conversions.getPropertyFactor(
 								propFactor(source, entry.sourceFlow).id);
 						double us = conversions.getUnitFactor(entry.sourceFlow.unit.id);
-						factor *= (ui * ps) / (pi * us);
+						double y = (ui * ps) / (pi * us);
+						factor *= type == EXCHANGES ? y : 1 / y;
 					}
 
 					// check the target flow property
@@ -228,20 +234,7 @@ public class Replacer implements Runnable {
 					}
 
 					// uncertainty
-					if (uncertainty == null) {
-						update.setNull(6, Types.INTEGER);
-						update.setNull(7, Types.DOUBLE);
-						update.setNull(8, Types.DOUBLE);
-						update.setNull(9, Types.DOUBLE);
-					} else {
-						uncertainty.scale(factor);
-						update.setInt(6, uncertainty.distributionType.ordinal());
-						update.setDouble(7, uncertainty.parameter1);
-						update.setDouble(8, uncertainty.parameter2);
-						if (uncertainty.parameter3 != null) {
-							update.setDouble(9, uncertainty.parameter3);
-						}
-					}
+					updateUncertainty(update, factor, uncertainty);
 
 					update.executeUpdate();
 					changed++;
@@ -254,10 +247,10 @@ public class Replacer implements Runnable {
 				con.commit();
 				con.close();
 
-				log.info("Replaced flows in {} of {} exchanges", changed, total);
+				log.info("{} replaced flows in {} of {} rows",
+						cursorName(), changed, total);
 			} catch (Exception e) {
-				String t = type == EXCHANGES ? "exchanges" : "LCIA factors";
-				log.error("Flow replacement in " + t + " failed", e);
+				log.error("Flow replacement in " + cursorName() + " failed", e);
 			}
 		}
 
@@ -353,6 +346,24 @@ public class Replacer implements Runnable {
 						cursor.getDouble("parameter2_value"));
 			default:
 				return null;
+			}
+		}
+
+		private void updateUncertainty(PreparedStatement update,
+				double factor, Uncertainty uncertainty) throws SQLException {
+			if (uncertainty == null) {
+				update.setNull(6, Types.INTEGER);
+				update.setNull(7, Types.DOUBLE);
+				update.setNull(8, Types.DOUBLE);
+				update.setNull(9, Types.DOUBLE);
+			} else {
+				uncertainty.scale(factor);
+				update.setInt(6, uncertainty.distributionType.ordinal());
+				update.setDouble(7, uncertainty.parameter1);
+				update.setDouble(8, uncertainty.parameter2);
+				if (uncertainty.parameter3 != null) {
+					update.setDouble(9, uncertainty.parameter3);
+				}
 			}
 		}
 
