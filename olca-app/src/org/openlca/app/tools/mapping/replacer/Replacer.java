@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.mapping.model.FlowMapEntry;
 import org.openlca.app.tools.mapping.model.FlowMapEntry.SyncState;
+import org.openlca.app.util.Labels;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.cache.ConversionTable;
@@ -116,7 +117,10 @@ public class Replacer implements Runnable {
 				}
 				if (deleteMapped && !usedFlows.contains(flowID)) {
 					FlowDao dao = new FlowDao(db);
-					dao.delete(dao.getForId(flowID));
+					Flow flow = dao.getForId(flowID);
+					dao.delete(flow);
+					log.info("removed mapped flow {} uuid={}",
+							Labels.getDisplayName(flow), flow.refId);
 					e.syncMessage = "Applied and removed";
 				} else {
 					e.syncMessage = "Applied (not removed)";

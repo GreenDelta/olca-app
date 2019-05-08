@@ -49,7 +49,7 @@ class TableLabel extends LabelProvider
 
 		switch (col) {
 		case 0:
-			return stateText(e.syncState);
+			return stateText(e);
 		case 1:
 			return flow(e.sourceFlow);
 		case 2:
@@ -70,10 +70,14 @@ class TableLabel extends LabelProvider
 
 	}
 
-	private String stateText(FlowMapEntry.SyncState state) {
-		if (state == null)
+	private String stateText(FlowMapEntry e) {
+		if (e == null)
 			return "?";
-		switch (state) {
+		if (e.syncMessage != null)
+			return e.syncMessage;
+		if (e.syncState == null)
+			return "?";
+		switch (e.syncState) {
 		case APPLIED:
 			return "Applied";
 		case DUPLICATE:
