@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.mapping.model.FlowMapEntry.SyncState;
+import org.openlca.app.util.Labels;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.cache.ConversionTable;
@@ -73,6 +75,8 @@ public class Replacer implements Runnable {
 				impactCursor = new Cursor(Cursor.IMPACTS);
 				pool.execute(impactCursor);
 			}
+
+			// waiting for the cursors to finish
 			pool.shutdown();
 			int i = 0;
 			while (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
@@ -81,11 +85,37 @@ public class Replacer implements Runnable {
 			}
 			log.info("cursors finished");
 
-			// TODO: replace possible
-			if (conf.processes && conf.methods && conf.deleteMapped) {
-				// TODO: delete the flows with no failures
+			// TODO when products were replaced we also need to check
+			// whether these products are used in the quant. ref. of
+			// product systems and project variants and convert the
+			// amounts there.
+			// TODO also: we need to replace wuch flows in allocation
+			// factors; the application of the conversion factor is
+			// not required there.
+
+			// count failures and log statistics
+			int failures = 0;
+			if (exchangeCursor != null) {
+				failures += exchangeCursor.stats.failures;
+				exchangeCursor.stats.log("exchanges");
 			}
-			// TODO: log the mapping statistics
+			if (impactCursor != null) {
+				failures += impactCursor.stats.failures;
+				impactCursor.stats.log("impacts");
+			}
+
+			// delete mapped flows
+			if (!conf.deleteMapped || !conf.processes || !conf.methods)
+				return;
+			if (failures > 0) {
+				log.warn("Will not delete mapped flows because"
+						+ " there were {} failures in replacement process", failures);
+				return;
+			}
+
+			// TODO: collect the IDs of the used flows
+			// delete mapped and unused flows
+
 		} catch (Exception e) {
 			log.error("Flow replacement failed", e);
 		}
@@ -129,7 +159,7 @@ public class Replacer implements Runnable {
 		conversions = ConversionTable.create(db);
 	}
 
-	class Stats {
+	private class Stats {
 		private static final byte REPLACEMENT = 0;
 		private static final byte FAILURE = 1;
 
@@ -138,7 +168,7 @@ public class Replacer implements Runnable {
 		final HashMap<Long, Integer> flowFailures = new HashMap<>();
 		final HashMap<Long, Integer> flowReplacements = new HashMap<>();
 
-		private void inc(long flowID, byte type) {
+		void inc(long flowID, byte type) {
 			HashMap<Long, Integer> flowStats;
 			if (type == REPLACEMENT) {
 				replacements++;
@@ -152,6 +182,33 @@ public class Replacer implements Runnable {
 				flowStats.put(flowID, 1);
 			} else {
 				flowStats.put(flowID, count + 1);
+			}
+		}
+
+		void log(String context) {
+			if (replacements == 0 && failures == 0) {
+				log.info("No flows replaced in {}", context);
+				return;
+			}
+			if (failures > 0) {
+				log.warn("There were failures while replacing flows in {}", context);
+			}
+			log.info("{} replacements and {} failures in {}", context);
+			if (!log.isTraceEnabled())
+				return;
+			HashSet<Long> ids = new HashSet<>();
+			ids.addAll(flowFailures.keySet());
+			ids.addAll(flowReplacements.keySet());
+			for (Long id : ids) {
+				Flow flow = flows.get(id);
+				if (flow == null)
+					continue;
+				int rcount = flowReplacements.getOrDefault(id, 0);
+				int fcount = flowFailures.getOrDefault(id, 0);
+				if (rcount == 0 && fcount == 0)
+					continue;
+				log.trace("Flow {} uuid={} :: {} replacements, {} failures in {}",
+						Labels.getDisplayName(flow), flow.refId, rcount, fcount, context);
 			}
 		}
 	}
