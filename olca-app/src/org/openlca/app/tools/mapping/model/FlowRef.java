@@ -24,27 +24,26 @@ public class FlowRef {
 	public String categoryPath;
 
 	/**
-	 * An optional reference to a property (= quantity) of the flow. When this
-	 * is missing, the reference flow property of the flow is taken by default.
+	 * An optional reference to a property (= quantity) of the flow. When this is
+	 * missing, the reference flow property of the flow is taken by default.
 	 */
 	public BaseDescriptor flowProperty;
 
 	/**
-	 * Also, the unit reference is optional; the reference unit of the unit
-	 * group of the flow property is taken by default.
+	 * Also, the unit reference is optional; the reference unit of the unit group of
+	 * the flow property is taken by default.
 	 */
 	public BaseDescriptor unit;
 
 	/**
 	 * Sync this flow references with the given flow. First it tests that the
-	 * definition of the flow reference can be fulfilled with the given flow
-	 * (i.e. the ref-IDs match and the flow property and unit is defined for
-	 * that flow). If this is not the case it returns {@code false}. Otherwise,
-	 * it will mutate this reference to have the respective database IDs of the
-	 * given flow and sets the property and unit to the respective defaults if
-	 * they are missing.
+	 * definition of the flow reference can be fulfilled with the given flow (i.e.
+	 * the ref-IDs match and the flow property and unit is defined for that flow).
+	 * If this is not the case it returns {@code false}. Otherwise, it will mutate
+	 * this reference to have the respective database IDs of the given flow and sets
+	 * the property and unit to the respective defaults if they are missing.
 	 */
-	boolean syncWith(Flow flow) {
+	public boolean syncWith(Flow flow) {
 		// check the flow
 		if (flow == null || this.flow == null)
 			return false;

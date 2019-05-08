@@ -1,4 +1,7 @@
-package org.openlca.app.tools.mapping.model;
+package org.openlca.app.tools.mapping.replacer;
+
+import org.openlca.app.tools.mapping.model.FlowMap;
+import org.openlca.app.tools.mapping.model.IMapProvider;
 
 /**
  * Configuration of the flow replacement when a flow mapping is applied.

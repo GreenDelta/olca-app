@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.openlca.app.tools.mapping.model.FlowMap;
 import org.openlca.app.tools.mapping.model.IMapProvider;
-import org.openlca.app.tools.mapping.model.ReplacerConfig;
+import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
