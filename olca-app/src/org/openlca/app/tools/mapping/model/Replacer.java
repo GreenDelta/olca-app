@@ -93,23 +93,38 @@ public class Replacer implements Runnable {
 			// factors; the application of the conversion factor is
 			// not required there.
 
-			// count failures and log statistics
-			int failures = 0;
+			// collect and log statistics
+			Stats stats = new Stats();
 			if (exchangeCursor != null) {
-				failures += exchangeCursor.stats.failures;
-				exchangeCursor.stats.log("exchanges");
+				stats.add(exchangeCursor.stats);
+				exchangeCursor.stats.log("exchanges", flows);
 			}
 			if (impactCursor != null) {
-				failures += impactCursor.stats.failures;
-				impactCursor.stats.log("impacts");
+				stats.add(impactCursor.stats);
+				impactCursor.stats.log("impacts", flows);
+			}
+
+			// update the mapping entries
+			for (Long flowID : entries.keySet()) {
+				FlowMapEntry e = entries.get(flowID);
+				if (flowID == null || e == null)
+					continue;
+				if (stats.hadFailures(flowID)) {
+					e.syncState = SyncState.INVALID_SOURCE;
+					e.syncMessage = "Replacement error";
+				} else {
+					e.syncState = SyncState.APPLIED;
+					e.syncMessage = "Applied";
+				}
 			}
 
 			// delete mapped flows
 			if (!conf.deleteMapped || !conf.processes || !conf.methods)
 				return;
-			if (failures > 0) {
+			if (stats.failures > 0) {
 				log.warn("Will not delete mapped flows because"
-						+ " there were {} failures in replacement process", failures);
+						+ " there were {} failures in replacement process",
+						stats.failures);
 				return;
 			}
 
@@ -159,7 +174,7 @@ public class Replacer implements Runnable {
 		conversions = ConversionTable.create(db);
 	}
 
-	private class Stats {
+	private static class Stats {
 		private static final byte REPLACEMENT = 0;
 		private static final byte FAILURE = 1;
 
@@ -167,6 +182,30 @@ public class Replacer implements Runnable {
 		int replacements;
 		final HashMap<Long, Integer> flowFailures = new HashMap<>();
 		final HashMap<Long, Integer> flowReplacements = new HashMap<>();
+
+		void add(Stats s) {
+			if (s == null)
+				return;
+			failures += s.failures;
+			replacements += s.replacements;
+			for (Long flowID : s.flowFailures.keySet()) {
+				int c = s.flowFailures.getOrDefault(flowID, 0);
+				flowFailures.put(flowID,
+						c + flowFailures.getOrDefault(flowID, 0));
+			}
+			for (Long flowID : s.flowReplacements.keySet()) {
+				int c = s.flowReplacements.getOrDefault(flowID, 0);
+				flowReplacements.put(flowID,
+						c + flowReplacements.getOrDefault(flowID, 0));
+			}
+		}
+
+		boolean hadFailures(long flowID) {
+			Integer failures = flowFailures.get(flowID);
+			if (failures == null)
+				return false;
+			return failures > 0;
+		}
 
 		void inc(long flowID, byte type) {
 			HashMap<Long, Integer> flowStats;
@@ -185,7 +224,8 @@ public class Replacer implements Runnable {
 			}
 		}
 
-		void log(String context) {
+		void log(String context, HashMap<Long, Flow> flows) {
+			Logger log = LoggerFactory.getLogger(getClass());
 			if (replacements == 0 && failures == 0) {
 				log.info("No flows replaced in {}", context);
 				return;
@@ -193,7 +233,8 @@ public class Replacer implements Runnable {
 			if (failures > 0) {
 				log.warn("There were failures while replacing flows in {}", context);
 			}
-			log.info("{} replacements and {} failures in {}", context);
+			log.info("{} replacements and {} failures in {}",
+					replacements, failures, context);
 			if (!log.isTraceEnabled())
 				return;
 			HashSet<Long> ids = new HashSet<>();
@@ -295,7 +336,7 @@ public class Replacer implements Runnable {
 					update.setLong(1, target.id); // f_flow
 					update.setLong(2, entry.targetFlow.unit.id); // f_unit
 					update.setLong(3, targetPropertyFactor.id); // f_flow_property_factor
-					update.setDouble(4, factor * amount); // resulting_amount_value
+					update.setDouble(4, factor * amount); // value
 
 					// resulting_amount_formula
 					if (Strings.nullOrEmpty(formula)) {
@@ -323,6 +364,7 @@ public class Replacer implements Runnable {
 						cursorName(), changed, total);
 			} catch (Exception e) {
 				log.error("Flow replacement in " + cursorName() + " failed", e);
+				stats.inc(0, Stats.FAILURE);
 			}
 		}
 
@@ -360,8 +402,8 @@ public class Replacer implements Runnable {
 					+ "f_flow, "
 					+ "f_unit, "
 					+ "f_flow_property_factor, "
-					+ "resulting_amount_value, "
-					+ "resulting_amount_formula, "
+					+ value + " , "
+					+ formula + ", "
 					+ "distribution_type, "
 					+ "parameter1_value, "
 					+ "parameter2_value, "
