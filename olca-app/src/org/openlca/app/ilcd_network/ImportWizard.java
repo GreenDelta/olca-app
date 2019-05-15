@@ -15,7 +15,6 @@ import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.core.database.IDatabase;
 import org.openlca.ilcd.descriptors.ProcessDescriptor;
-import org.openlca.ilcd.io.DataStoreException;
 import org.openlca.ilcd.io.SodaClient;
 import org.openlca.ilcd.processes.Process;
 import org.openlca.io.ilcd.input.ImportConfig;
@@ -52,8 +51,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 		return noError;
 	}
 
-	private void tryImport() throws DataStoreException,
-			InvocationTargetException, InterruptedException {
+	private void tryImport() throws Exception {
 		List<ProcessDescriptor> processes = processSearchPage
 				.getSelectedProcesses();
 		SodaClient client = IoPreference.createClient();
