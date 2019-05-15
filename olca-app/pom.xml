@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openlca</groupId>
@@ -55,7 +56,7 @@
 			<artifactId>olca-io</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-ipc</artifactId>
@@ -85,7 +86,7 @@
 			<artifactId>olca-updates</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.python</groupId>
 			<artifactId>jython-standalone</artifactId>
@@ -163,6 +164,18 @@
 			<groupId>org.mapdb</groupId>
 			<artifactId>mapdb</artifactId>
 			<version>2.0-beta7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.clojure</groupId>
+			<artifactId>clojure</artifactId>
+			<version>1.10.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.clojure</groupId>
+			<artifactId>tools.nrepl</artifactId>
+			<version>0.2.13</version>
 		</dependency>
 
 		<dependency>

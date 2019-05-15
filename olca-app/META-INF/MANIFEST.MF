@@ -104,4 +104,8 @@ Bundle-ClassPath: .,
  libs/olca-simapro-csv-1.9.0.jar,
  libs/olca-updates-1.9.0.jar,
  libs/slf4j-api-1.7.25.jar,
- libs/slf4j-log4j12-1.7.25.jar
+ libs/slf4j-log4j12-1.7.25.jar,
+ libs/clojure-1.10.0.jar,
+ libs/core.specs.alpha-0.2.44.jar,
+ libs/spec.alpha-0.2.176.jar,
+ libs/tools.nrepl-0.2.13.jar
