@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.openlca.app.tools.mapping.model.FlowMapEntry.SyncState;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;

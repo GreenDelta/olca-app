@@ -8,6 +8,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.mapping.model.FlowMapEntry;
 import org.openlca.app.tools.mapping.model.FlowRef;
+import org.openlca.app.tools.mapping.model.SyncState;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.model.Category;
@@ -97,7 +98,7 @@ class TableLabel extends LabelProvider
 		}
 	}
 
-	private Image stateIcon(FlowMapEntry.SyncState state) {
+	private Image stateIcon(SyncState state) {
 		if (state == null)
 			return null;
 		switch (state) {

@@ -1,6 +1,5 @@
 package org.openlca.app.tools.mapping.model;
 
-import org.openlca.app.tools.mapping.model.FlowMapEntry.SyncState;
 import org.openlca.core.database.IDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

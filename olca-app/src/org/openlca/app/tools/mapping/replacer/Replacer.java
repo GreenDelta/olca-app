@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.mapping.model.FlowMapEntry;
-import org.openlca.app.tools.mapping.model.FlowMapEntry.SyncState;
+import org.openlca.app.tools.mapping.model.SyncState;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
