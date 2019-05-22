@@ -19,8 +19,8 @@ import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.FlowMap;
 import org.openlca.app.tools.mapping.model.ILCDProvider;
 import org.openlca.app.tools.mapping.model.IMapProvider;
-import org.openlca.app.tools.mapping.model.IMapProvider.Type;
 import org.openlca.app.tools.mapping.model.Matcher;
+import org.openlca.app.tools.mapping.model.ProviderType;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
 import org.slf4j.Logger;
@@ -54,10 +54,10 @@ public class MappingTool extends SimpleFormEditor {
 		if (file == null)
 			return;
 		try {
-			IMapProvider.Type type = IMapProvider.Type.of(file);
-			if (type == IMapProvider.Type.JSON_LD_PACKAGE) {
+			ProviderType type = ProviderType.of(file);
+			if (type == ProviderType.JSON_LD_PACKAGE) {
 				JsonImportDialog.open(file);
-			} else if (type == Type.ILCD_PACKAGE) {
+			} else if (type == ProviderType.ILCD_PACKAGE) {
 				Matcher.generate(new ILCDProvider(file), Database.get());
 			} else {
 				Info.showBox("#Unsupported format.");
