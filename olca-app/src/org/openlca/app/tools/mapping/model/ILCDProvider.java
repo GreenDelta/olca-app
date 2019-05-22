@@ -23,6 +23,7 @@ import org.openlca.ilcd.flows.FlowPropertyRef;
 import org.openlca.ilcd.io.ZipStore;
 import org.openlca.ilcd.units.Unit;
 import org.openlca.ilcd.units.UnitGroup;
+import org.openlca.ilcd.util.Categories;
 import org.openlca.ilcd.util.FlowProperties;
 import org.openlca.ilcd.util.Flows;
 import org.openlca.ilcd.util.UnitGroups;
@@ -78,14 +79,19 @@ public class ILCDProvider implements IMapProvider {
 			store.each(org.openlca.ilcd.flows.Flow.class, f -> {
 				FlowRef flowRef = new FlowRef();
 				refs.add(flowRef);
+
+				// flow
 				FlowDescriptor d = new FlowDescriptor();
 				flowRef.flow = d;
 				d.name = Flows.getFullName(f);
 				d.flowType = map(Flows.getType(f));
 				d.refId = f.getUUID();
 
-				// TODO: category path
+				// category path
+				String[] cpath = Categories.getPath(f);
+				flowRef.categoryPath = String.join("/", cpath);
 
+				// flow property & unit
 				FlowPropertyRef refProp = Flows.getReferenceFlowProperty(f);
 				if (refProp == null || refProp.flowProperty == null)
 					return;

@@ -30,9 +30,6 @@ public class FlowMaps {
 		maps.sync(map);
 	}
 
-	public static void apply(FlowMap map, EntityStore store, IDatabase db) {
-	}
-
 	private void sync(FlowMap map) {
 		if (map == null)
 			return;

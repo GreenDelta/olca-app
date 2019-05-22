@@ -26,7 +26,6 @@ public class DBProvider implements IMapProvider {
 
 	@Override
 	public List<FlowRef> getFlowRefs() {
-		// TODO: not yet implemented
 		return Collections.emptyList();
 	}
 

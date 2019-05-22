@@ -17,7 +17,10 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.FlowMap;
+import org.openlca.app.tools.mapping.model.ILCDProvider;
 import org.openlca.app.tools.mapping.model.IMapProvider;
+import org.openlca.app.tools.mapping.model.IMapProvider.Type;
+import org.openlca.app.tools.mapping.model.Matcher;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
 import org.slf4j.Logger;
@@ -54,12 +57,18 @@ public class MappingTool extends SimpleFormEditor {
 			IMapProvider.Type type = IMapProvider.Type.of(file);
 			if (type == IMapProvider.Type.JSON_LD_PACKAGE) {
 				JsonImportDialog.open(file);
+			} else if (type == Type.ILCD_PACKAGE) {
+				Matcher.generate(new ILCDProvider(file), Database.get());
 			} else {
 				Info.showBox("#Unsupported format.");
 			}
 		} catch (Exception e) {
 			Error.showBox("Could not open file", e.getMessage());
 		}
+	}
+
+	public static void generate(IMapProvider provider) {
+
 	}
 
 	public static void open(FlowMap mapping, IMapProvider provider) {
