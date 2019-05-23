@@ -45,7 +45,6 @@ class JsonImportDialog extends Dialog {
 		try {
 			JsonImportDialog d = new JsonImportDialog(file);
 			if (d.open() != Dialog.OK) {
-				d.provider.close();
 				return;
 			}
 			if (d.selectedMap == null) {
@@ -54,7 +53,7 @@ class JsonImportDialog extends Dialog {
 			}
 			FlowMap flowMap = d.selectedMap;
 			App.runWithProgress("Sync flow map ...",
-					() -> FlowMaps.sync(flowMap, d.provider.store, Database.get()),
+					() -> FlowMaps.sync(flowMap, d.provider, Database.get()),
 					() -> MappingTool.open(flowMap, d.provider));
 		} catch (Exception e) {
 			Error.showBox("Failed to open file as JSON-LD package");
@@ -66,7 +65,7 @@ class JsonImportDialog extends Dialog {
 	JsonImportDialog(File file) {
 		super(UI.shell());
 		setBlockOnOpen(true);
-		this.provider = new JsonProvider(file);
+		this.provider = JsonProvider.of(file);
 		this.file = file;
 		this.flowMaps = provider.getFlowMaps();
 		Collections.sort(this.flowMaps,

@@ -8,15 +8,15 @@ public final class Matcher {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	private final IMapProvider provider;
+	private final IProvider provider;
 	private final IDatabase db;
 
-	private Matcher(IMapProvider provider, IDatabase db) {
+	private Matcher(IProvider provider, IDatabase db) {
 		this.provider = provider;
 		this.db = db;
 	}
 
-	public static FlowMap generate(IMapProvider provider, IDatabase db) {
+	public static FlowMap generate(IProvider provider, IDatabase db) {
 		if (provider == null || db == null)
 			return new FlowMap();
 		return new Matcher(provider, db).gen();
@@ -29,7 +29,7 @@ public final class Matcher {
 			// finding the matches (in parallel?)
 			FlowMapEntry e = new FlowMapEntry();
 			e.sourceFlow = ref;
-			e.syncState = SyncState.UNFOUND_TARGET;
+			e.status = Status.error("no target flow found");
 			e.factor = 1.0;
 			map.entries.add(e);
 		}

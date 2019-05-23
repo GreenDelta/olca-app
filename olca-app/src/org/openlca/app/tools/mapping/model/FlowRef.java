@@ -9,6 +9,7 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 /**
  * A FlowRef describes a reference to a (source or target) flow in a mapping
@@ -27,13 +28,36 @@ public class FlowRef {
 	 * An optional reference to a property (= quantity) of the flow. When this is
 	 * missing, the reference flow property of the flow is taken by default.
 	 */
-	public BaseDescriptor flowProperty;
+	public BaseDescriptor property;
 
 	/**
 	 * Also, the unit reference is optional; the reference unit of the unit group of
 	 * the flow property is taken by default.
 	 */
 	public BaseDescriptor unit;
+
+	/**
+	 * An optional reference to a provider process in case this reference describes
+	 * a (target) product or waste flow.
+	 */
+	public ProcessDescriptor provider;
+
+	public String key() {
+		String[] ids = new String[4];
+		if (flow != null) {
+			ids[0] = flow.refId;
+		}
+		if (property != null) {
+			ids[1] = property.refId;
+		}
+		if (unit != null) {
+			ids[2] = unit.refId;
+		}
+		if (provider != null) {
+			ids[3] = provider.refId;
+		}
+		return String.join("/", ids);
+	}
 
 	/**
 	 * Sync this flow references with the given flow. First it tests that the
@@ -52,13 +76,13 @@ public class FlowRef {
 
 		// check the flow property
 		FlowProperty prop = null;
-		if (flowProperty == null) {
+		if (property == null) {
 			prop = flow.referenceFlowProperty;
 		} else {
 			for (FlowPropertyFactor f : flow.flowPropertyFactors) {
 				if (f.flowProperty == null)
 					continue;
-				if (Objects.equals(flowProperty.refId, f.flowProperty.refId)) {
+				if (Objects.equals(property.refId, f.flowProperty.refId)) {
 					prop = f.flowProperty;
 					break;
 				}
@@ -83,14 +107,14 @@ public class FlowRef {
 			return false;
 
 		// sync the reference data
-		if (flowProperty == null) {
-			flowProperty = Descriptors.toDescriptor(prop);
+		if (property == null) {
+			property = Descriptors.toDescriptor(prop);
 		}
 		if (unit == null) {
 			unit = Descriptors.toDescriptor(u);
 		}
 		this.flow.id = flow.id;
-		flowProperty.id = prop.id;
+		property.id = prop.id;
 		unit.id = u.id;
 		return true;
 	}

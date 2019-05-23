@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.openlca.app.tools.mapping.model.FlowMap;
-import org.openlca.app.tools.mapping.model.IMapProvider;
+import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -23,7 +23,7 @@ class ReplacerDialog extends Dialog {
 	 * result in no possible replacements.
 	 */
 	static Optional<ReplacerConfig> open(
-			FlowMap mapping, IMapProvider provider) {
+			FlowMap mapping, IProvider provider) {
 		if (mapping == null || provider == null)
 			return Optional.empty();
 		ReplacerConfig conf = new ReplacerConfig(mapping, provider);

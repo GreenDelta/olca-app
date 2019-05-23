@@ -16,16 +16,23 @@ public class FlowMapEntry {
 	 * flow to convert them into the corresponding amounts of the target flow (in
 	 * the respective flow properties and units); defaults to 1.0
 	 */
-	public double factor;
+	public double factor = 1.0;
 
 	/**
 	 * Describes a synchronization result of this flow mapping with a database.
 	 */
-	public SyncState syncState;
+	public Status status;
 
 	/**
-	 * An additional message that gives more information about the synchronization
-	 * result.
+	 * Swap the source and target flow reference in this entry and inverts the
+	 * conversion factor.
 	 */
-	public String syncMessage;
+	public void swap() {
+		FlowRef s = sourceFlow;
+		sourceFlow = targetFlow;
+		targetFlow = s;
+		if (factor != 0 && factor != 1.0) {
+			factor = 1 / factor;
+		}
+	}
 }

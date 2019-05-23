@@ -1,12 +1,10 @@
 package org.openlca.app.tools.mapping.model;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
@@ -32,22 +30,26 @@ import org.openlca.io.ilcd.input.ImportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ILCDProvider implements IMapProvider {
+public class ILCDProvider implements IProvider {
 
-	public final ZipStore store;
+	private final File file;
 
-	public ILCDProvider(File file) {
-		try {
-			store = new ZipStore(file);
-		} catch (Exception e) {
-			throw new RuntimeException("Could not open zip", e);
-		}
+	private ILCDProvider(File file) {
+		this.file = file;
+	}
+
+	public static ILCDProvider of(String path) {
+		return new ILCDProvider(new File(path));
+	}
+
+	public static ILCDProvider of(File file) {
+		return new ILCDProvider(file);
 	}
 
 	@Override
 	public List<FlowRef> getFlowRefs() {
 		List<FlowRef> refs = new ArrayList<>();
-		try {
+		try (ZipStore store = new ZipStore(file)) {
 
 			// collect units
 			Map<String, BaseDescriptor> units = new HashMap<>();
@@ -96,7 +98,7 @@ public class ILCDProvider implements IMapProvider {
 				if (refProp == null || refProp.flowProperty == null)
 					return;
 				String propID = refProp.flowProperty.uuid;
-				flowRef.flowProperty = props.get(propID);
+				flowRef.property = props.get(propID);
 				flowRef.unit = units.get(propID);
 			});
 
@@ -124,32 +126,23 @@ public class ILCDProvider implements IMapProvider {
 	}
 
 	@Override
-	public Optional<Flow> persist(FlowRef ref, IDatabase db) {
-		if (ref == null || ref.flow == null || db == null)
-			return Optional.empty();
-		FlowDao dao = new FlowDao(db);
-		Flow flow = dao.getForRefId(ref.flow.refId);
-		if (flow != null)
-			return Optional.of(flow);
-		try {
+	public void persist(List<FlowRef> refs, IDatabase db) {
+		if (refs == null || db == null)
+			return;
+		try (ZipStore store = new ZipStore(file)) {
+			FlowDao dao = new FlowDao(db);
 			ImportConfig conf = new ImportConfig(store, db);
-			FlowImport imp = new FlowImport(conf);
-			flow = imp.run(ref.flow.refId);
-			return Optional.ofNullable(flow);
+			for (FlowRef ref : refs) {
+				Flow flow = dao.getForRefId(ref.flow.refId);
+				if (flow != null)
+					continue;
+				FlowImport imp = new FlowImport(conf);
+				flow = imp.run(ref.flow.refId);
+			}
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to import flow " + ref.flow, e);
-			return Optional.empty();
+			log.error("failed persist flows", e);
 		}
 	}
 
-	@Override
-	public void close() throws IOException {
-		try {
-			store.close();
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to close ILCD zip store", e);
-		}
-	}
 }

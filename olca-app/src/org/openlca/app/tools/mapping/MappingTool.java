@@ -18,20 +18,18 @@ import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.FlowMap;
 import org.openlca.app.tools.mapping.model.ILCDProvider;
-import org.openlca.app.tools.mapping.model.IMapProvider;
+import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.tools.mapping.model.Matcher;
 import org.openlca.app.tools.mapping.model.ProviderType;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MappingTool extends SimpleFormEditor {
 
 	private MappingPage page;
 
 	FlowMap mapping;
-	IMapProvider provider;
+	IProvider provider;
 
 	public static void createNew() {
 		if (Database.get() == null) {
@@ -58,7 +56,7 @@ public class MappingTool extends SimpleFormEditor {
 			if (type == ProviderType.JSON_LD_PACKAGE) {
 				JsonImportDialog.open(file);
 			} else if (type == ProviderType.ILCD_PACKAGE) {
-				Matcher.generate(new ILCDProvider(file), Database.get());
+				Matcher.generate(ILCDProvider.of(file), Database.get());
 			} else {
 				Info.showBox("#Unsupported format.");
 			}
@@ -67,11 +65,11 @@ public class MappingTool extends SimpleFormEditor {
 		}
 	}
 
-	public static void generate(IMapProvider provider) {
+	public static void generate(IProvider provider) {
 
 	}
 
-	public static void open(FlowMap mapping, IMapProvider provider) {
+	public static void open(FlowMap mapping, IProvider provider) {
 		if (mapping == null || provider == null)
 			return;
 		String uid = mapping.refId;
@@ -96,24 +94,11 @@ public class MappingTool extends SimpleFormEditor {
 			String uid = sinp.id;
 			AppCache cache = Cache.getAppCache();
 			mapping = cache.remove(uid + " /mapping", FlowMap.class);
-			provider = cache.remove(uid + " /provider", IMapProvider.class);
+			provider = cache.remove(uid + " /provider", IProvider.class);
 		} catch (Exception e) {
 			throw new PartInitException(
 					"Failed to load editor input", e);
 		}
-	}
-
-	@Override
-	public void dispose() {
-		if (this.provider == null)
-			return;
-		try {
-			this.provider.close();
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("Failed to close provider", e);
-		}
-		super.dispose();
 	}
 
 	@Override

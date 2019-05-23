@@ -7,25 +7,21 @@ import java.util.stream.Collectors;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.ModelType;
-import org.openlca.jsonld.EntityStore;
-
-import com.google.gson.JsonObject;
 
 public class FlowMaps {
 
-	private final EntityStore jstore;
+	private final IProvider provider;
 	private final IDatabase db;
 
-	private FlowMaps(EntityStore jstore, IDatabase db) {
-		this.jstore = jstore;
+	private FlowMaps(IProvider provider, IDatabase db) {
+		this.provider = provider;
 		this.db = db;
 	}
 
-	public static void sync(FlowMap map, EntityStore store, IDatabase db) {
-		if (map == null || store == null || db == null)
+	public static void sync(FlowMap map, IProvider provider, IDatabase db) {
+		if (map == null || provider == null || db == null)
 			return;
-		FlowMaps maps = new FlowMaps(store, db);
+		FlowMaps maps = new FlowMaps(provider, db);
 		maps.sync(map);
 	}
 
@@ -42,48 +38,43 @@ public class FlowMaps {
 
 			// get the source flow
 			if (e.sourceFlow == null || e.sourceFlow.flow == null) {
-				e.syncState = SyncState.INVALID_SOURCE;
+				e.status = Status.error("no source flow defined");
 				continue;
 			}
 			String sourceID = e.sourceFlow.flow.refId;
 			if (sourceID == null) {
-				e.syncState = SyncState.INVALID_SOURCE;
+				e.status = Status.error("source flow has no UUID");
 				continue;
 			}
 			if (handled.contains(sourceID)) {
-				e.syncState = SyncState.DUPLICATE;
+				e.status = Status.error("duplicate mapping");
 				continue;
 			}
 			Flow sourceFlow = dbFlows.get(sourceID);
 			if (sourceFlow == null) {
-				e.syncState = SyncState.UNFOUND_SOURCE;
+				e.status = Status.error("source flow not found in database");
 				continue;
 			}
 			// TODO: validate a possible flow property and unit
 
 			if (e.targetFlow == null || e.targetFlow.flow == null) {
-				e.syncState = SyncState.INVALID_TARGET;
+				e.status = Status.error("not target flow defined");
 				continue;
 			}
 			String targetID = e.targetFlow.flow.refId;
 			if (targetID == null) {
-				e.syncState = SyncState.INVALID_TARGET;
+				e.status = Status.error("target flow has no UUID");
 				continue;
 			}
 			Flow targetFlow = dbFlows.get(targetID);
 			if (targetFlow != null) {
 				// TODO: validate flow property + unit
 			} else {
-				JsonObject obj = jstore.get(ModelType.FLOW, targetID);
-				if (obj == null) {
-					e.syncState = SyncState.UNFOUND_TARGET;
-					continue;
-				}
-				// TODO: validate flow property + unit
-				// on JSON object
+				// TODO: check this against the flow references that can
+				// be retrieved from the provider.
 			}
 
-			e.syncState = SyncState.MATCHED;
+			e.status = Status.ok();
 		}
 	}
 }

@@ -79,7 +79,7 @@ class Cursor implements Runnable {
 				double factor = type == EXCHANGES
 						? entry.factor
 						: 1 / entry.factor;
-				if (propFactor.flowProperty.id != entry.sourceFlow.flowProperty.id
+				if (propFactor.flowProperty.id != entry.sourceFlow.property.id
 						|| unit.id != entry.sourceFlow.unit.id) {
 					ConversionTable ct = replacer.conversions;
 					double pi = ct.getPropertyFactor(propFactor.id);
@@ -268,7 +268,7 @@ class Cursor implements Runnable {
 		for (FlowPropertyFactor f : flow.flowPropertyFactors) {
 			if (f.flowProperty == null)
 				continue;
-			if (f.flowProperty.id == ref.flowProperty.id)
+			if (f.flowProperty.id == ref.property.id)
 				return f;
 		}
 		return null;

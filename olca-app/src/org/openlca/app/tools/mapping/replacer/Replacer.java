@@ -1,15 +1,17 @@
 package org.openlca.app.tools.mapping.replacer;
 
 import java.util.HashMap;
-import java.util.Optional;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.mapping.model.FlowMapEntry;
-import org.openlca.app.tools.mapping.model.SyncState;
+import org.openlca.app.tools.mapping.model.FlowRef;
+import org.openlca.app.tools.mapping.model.Status;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
@@ -111,8 +113,7 @@ public class Replacer implements Runnable {
 				if (flowID == null || e == null)
 					continue;
 				if (stats.hadFailures(flowID)) {
-					e.syncState = SyncState.INVALID_SOURCE;
-					e.syncMessage = "Replacement error";
+					e.status = Status.error("Replacement error");
 					continue;
 				}
 				if (deleteMapped && !usedFlows.contains(flowID)) {
@@ -121,11 +122,10 @@ public class Replacer implements Runnable {
 					dao.delete(flow);
 					log.info("removed mapped flow {} uuid={}",
 							Labels.getDisplayName(flow), flow.refId);
-					e.syncMessage = "Applied and removed";
+					e.status = Status.ok("Applied and removed");
 				} else {
-					e.syncMessage = "Applied (not removed)";
+					e.status = Status.ok("Applied (not removed)");
 				}
-				e.syncState = SyncState.APPLIED;
 			}
 
 		} catch (Exception e) {
@@ -134,33 +134,40 @@ public class Replacer implements Runnable {
 	}
 
 	private void buildIndices() {
+
+		// first persist all target flows in the database
+		List<FlowRef> targetFlows = conf.mapping.entries.stream()
+				.filter(e -> e.status != null && e.status.isOk())
+				.map(e -> e.targetFlow)
+				.collect(Collectors.toList());
+		conf.provider.persist(targetFlows, db);
+
 		FlowDao dao = new FlowDao(db);
 		for (FlowMapEntry entry : conf.mapping.entries) {
 
 			// only do the replacement for matched mapping entries
-			if (entry.syncState != SyncState.MATCHED)
+			if (entry.status == null || !entry.status.isOk())
 				continue;
 
 			// sync the source flow
 			Flow source = dao.getForRefId(entry.sourceFlow.flow.refId);
 			if (source == null) {
-				entry.syncState = SyncState.UNFOUND_SOURCE;
+				entry.status = Status.error("source flow is not in database");
 				continue;
 			}
 			if (!entry.sourceFlow.syncWith(source)) {
-				entry.syncState = SyncState.INVALID_SOURCE;
+				entry.status = Status.error("invalid source flow");
 				continue;
 			}
 
 			// sync the target flow
-			Optional<Flow> tOpt = conf.provider.persist(entry.targetFlow, db);
-			if (!tOpt.isPresent()) {
-				entry.syncState = SyncState.UNFOUND_TARGET;
+			Flow target = dao.getForRefId(entry.targetFlow.flow.refId);
+			if (target == null) {
+				entry.status = Status.error("failed to import target flow");
 				continue;
 			}
-			Flow target = tOpt.get();
 			if (!entry.targetFlow.syncWith(target)) {
-				entry.syncState = SyncState.INVALID_TARGET;
+				entry.status = Status.error("invalid target flow");
 				continue;
 			}
 

@@ -8,7 +8,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.mapping.model.FlowMapEntry;
 import org.openlca.app.tools.mapping.model.FlowRef;
-import org.openlca.app.tools.mapping.model.SyncState;
+import org.openlca.app.tools.mapping.model.Status;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.model.Category;
@@ -24,7 +24,7 @@ class TableLabel extends LabelProvider
 			return null;
 		FlowMapEntry e = (FlowMapEntry) obj;
 		if (col == 0)
-			return stateIcon(e.syncState);
+			return stateIcon(e.status);
 		if (col == 1) {
 			if (e.sourceFlow != null)
 				return Images.get(e.sourceFlow.flow);
@@ -72,50 +72,32 @@ class TableLabel extends LabelProvider
 	}
 
 	private String stateText(FlowMapEntry e) {
-		if (e == null)
+		if (e == null || e.status == null)
 			return "?";
-		if (e.syncMessage != null)
-			return e.syncMessage;
-		if (e.syncState == null)
-			return "?";
-		switch (e.syncState) {
-		case APPLIED:
-			return "Applied";
-		case DUPLICATE:
-			return "Duplicate mapping";
-		case INVALID_SOURCE:
-			return "Invalid source flow";
-		case INVALID_TARGET:
-			return "Invalid target flow";
-		case MATCHED:
-			return "Matched";
-		case UNFOUND_SOURCE:
-			return "Unfound source flow";
-		case UNFOUND_TARGET:
-			return "Unfound target flow";
+		if (e.status.message != null)
+			return e.status.message;
+		switch (e.status.type) {
+		case Status.OK:
+			return "ok";
+		case Status.WARNING:
+			return "warning";
+		case Status.ERROR:
+			return "error";
 		default:
 			return "?";
 		}
 	}
 
-	private Image stateIcon(SyncState state) {
+	private Image stateIcon(Status state) {
 		if (state == null)
 			return null;
-		switch (state) {
-		case APPLIED:
+		switch (state.type) {
+		case Status.OK:
 			return Icon.ACCEPT.get();
-		case DUPLICATE:
+		case Status.WARNING:
 			return Icon.WARNING.get();
-		case INVALID_SOURCE:
+		case Status.ERROR:
 			return Icon.ERROR.get();
-		case INVALID_TARGET:
-			return Icon.ERROR.get();
-		case MATCHED:
-			return Icon.ACCEPT.get();
-		case UNFOUND_SOURCE:
-			return Icon.WARNING.get();
-		case UNFOUND_TARGET:
-			return Icon.WARNING.get();
 		default:
 			return null;
 		}
@@ -149,8 +131,8 @@ class TableLabel extends LabelProvider
 		if (ref == null || ref.unit == null)
 			return "?";
 		String unit = ref.unit.name;
-		if (ref.flowProperty != null) {
-			unit += " (" + ref.flowProperty.name + ")";
+		if (ref.property != null) {
+			unit += " (" + ref.property.name + ")";
 		}
 		return unit;
 	}

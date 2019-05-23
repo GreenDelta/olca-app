@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
@@ -24,20 +23,24 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class JsonProvider implements IMapProvider {
+public class JsonProvider implements IProvider {
 
-	public final ZipStore store;
+	private final File file;
 
-	public JsonProvider(File file) {
-		try {
-			store = ZipStore.open(file);
-		} catch (Exception e) {
-			throw new RuntimeException("Could not open zip", e);
-		}
+	private JsonProvider(File file) {
+		this.file = file;
+	}
+
+	public static JsonProvider of(String path) {
+		return new JsonProvider(new File(path));
+	}
+
+	public static JsonProvider of(File file) {
+		return new JsonProvider(file);
 	}
 
 	public List<FlowMap> getFlowMaps() {
-		try {
+		try (ZipStore store = ZipStore.open(file)) {
 			List<String> files = store.getFiles("flow_mappings");
 			List<FlowMap> maps = new ArrayList<>();
 			for (String f : files) {
@@ -61,26 +64,21 @@ public class JsonProvider implements IMapProvider {
 	}
 
 	@Override
-	public Optional<Flow> persist(FlowRef ref, IDatabase db) {
-		if (ref == null || ref.flow == null || db == null)
-			return Optional.empty();
-		FlowDao dao = new FlowDao(db);
-		Flow flow = dao.getForRefId(ref.flow.refId);
-		if (flow != null)
-			return Optional.of(flow);
-		JsonImport imp = new JsonImport(store, db);
-		imp.run(ModelType.FLOW, ref.flow.refId);
-		flow = dao.getForRefId(ref.flow.refId);
-		return Optional.ofNullable(flow);
-	}
-
-	@Override
-	public void close() {
-		try {
-			store.close();
+	public void persist(List<FlowRef> refs, IDatabase db) {
+		if (refs == null || db == null)
+			return;
+		try (ZipStore store = ZipStore.open(file)) {
+			FlowDao dao = new FlowDao(db);
+			JsonImport imp = new JsonImport(store, db);
+			for (FlowRef ref : refs) {
+				Flow flow = dao.getForRefId(ref.flow.refId);
+				if (flow != null)
+					continue;
+				imp.run(ModelType.FLOW, ref.flow.refId);
+			}
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to close JSON-LD zip store", e);
+			log.error("failed persist flows", e);
 		}
 	}
 
@@ -127,8 +125,8 @@ public class JsonProvider implements IMapProvider {
 
 		JsonObject fp = Json.getObject(obj, "flowProperty");
 		if (fp != null) {
-			ref.flowProperty = new BaseDescriptor();
-			mapDescriptor(fp, ref.flowProperty);
+			ref.property = new BaseDescriptor();
+			mapDescriptor(fp, ref.property);
 		}
 		JsonObject u = Json.getObject(obj, "unit");
 		if (u != null) {

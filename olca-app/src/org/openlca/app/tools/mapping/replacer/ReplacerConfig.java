@@ -1,7 +1,7 @@
 package org.openlca.app.tools.mapping.replacer;
 
 import org.openlca.app.tools.mapping.model.FlowMap;
-import org.openlca.app.tools.mapping.model.IMapProvider;
+import org.openlca.app.tools.mapping.model.IProvider;
 
 /**
  * Configuration of the flow replacement when a flow mapping is applied.
@@ -9,13 +9,13 @@ import org.openlca.app.tools.mapping.model.IMapProvider;
 public class ReplacerConfig {
 
 	public final FlowMap mapping;
-	public final IMapProvider provider;
+	public final IProvider provider;
 
 	public boolean processes;
 	public boolean methods;
 	public boolean deleteMapped;
 
-	public ReplacerConfig(FlowMap mapping, IMapProvider provider) {
+	public ReplacerConfig(FlowMap mapping, IProvider provider) {
 		this.mapping = mapping;
 		this.provider = provider;
 		this.processes = true;
