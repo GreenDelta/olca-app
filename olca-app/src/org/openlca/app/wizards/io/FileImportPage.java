@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -105,12 +104,9 @@ public class FileImportPage extends WizardPage {
 		UI.gridData(directoryViewer.getTree(), true, true);
 		directoryViewer.setContentProvider(new DirectoryContentProvider());
 		directoryViewer.setLabelProvider(new FileLabel());
-		directoryViewer.addSelectionChangedListener((e) -> {
-			if (!e.getSelection().isEmpty()) {
-				IStructuredSelection selection = (IStructuredSelection) e
-						.getSelection();
-				fileViewer.setInput(selection.getFirstElement());
-			}
+		directoryViewer.addSelectionChangedListener(e -> {
+			File folder = Viewers.getFirst(e.getStructuredSelection());
+			fileViewer.setInput(getFiles(folder, extensions));
 		});
 
 		// create table viewer to select a file from a selected sub directory
@@ -166,7 +162,7 @@ public class FileImportPage extends WizardPage {
 		}
 	}
 
-	public static List<File> getFiles(File folder, String... extensions) {
+	private static List<File> getFiles(File folder, String... extensions) {
 		if (folder == null || !folder.isDirectory())
 			return Collections.emptyList();
 		Set<String> exts = new HashSet<>();
