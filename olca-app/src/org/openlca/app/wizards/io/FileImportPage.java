@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.openlca.app.M;
 import org.openlca.app.Preferences;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
@@ -40,6 +41,7 @@ public class FileImportPage extends WizardPage {
 
 	boolean withMultiSelection;
 	boolean withMappingFile;
+	File mappingFile;
 
 	private TreeViewer directoryViewer;
 	private String[] extensions;
@@ -71,11 +73,9 @@ public class FileImportPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		// create body
 		Composite body = new Composite(parent, SWT.NONE);
 		UI.gridLayout(body, 1, 10, 10);
 
-		// create composite
 		Composite folderComp = new Composite(body, SWT.NONE);
 		UI.gridLayout(folderComp, 3, 5, 0);
 		UI.gridData(folderComp, true, false);
@@ -93,7 +93,6 @@ public class FileImportPage extends WizardPage {
 		browseButton.setText(M.Browse);
 		Controls.onSelect(browseButton, e -> selectFolder());
 
-		// create composite
 		Composite fileComp = new Composite(body, SWT.NONE);
 		UI.gridLayout(fileComp, 2, 10, 0);
 		UI.gridData(fileComp, true, true);
@@ -121,8 +120,32 @@ public class FileImportPage extends WizardPage {
 			setPageComplete(!selectedFiles.isEmpty());
 		});
 
+		mappingFileRow(body);
 		setInitialInput();
 		setControl(body);
+	}
+
+	private void mappingFileRow(Composite body) {
+		if (!withMappingFile)
+			return;
+		Composite comp = new Composite(body, SWT.NONE);
+		UI.gridLayout(comp, 3, 5, 0);
+		UI.gridData(comp, true, false);
+		new Label(comp, SWT.NONE).setText("Mapping file");
+		Text text = new Text(comp, SWT.BORDER);
+		UI.gridData(text, true, false);
+		text.setEditable(false);
+		text.setBackground(Colors.white());
+		Button button = new Button(comp, SWT.NONE);
+		button.setText(M.Browse);
+		Controls.onSelect(button, e -> {
+			mappingFile = FileChooser.forImport("*.csv");
+			if (mappingFile == null) {
+				text.setText("");
+			} else {
+				text.setText(mappingFile.getAbsolutePath());
+			}
+		});
 	}
 
 	private void setInitialInput() {
