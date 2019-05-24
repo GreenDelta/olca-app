@@ -9,18 +9,18 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.openlca.app.tools.mapping.model.FlowMap;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.io.maps.FlowMap;
 
 class ReplacerDialog extends Dialog {
 
 	/**
-	 * Open the replacer dialog and return a configuration. If this function returns
-	 * `None` it means that the user cancelled the dialog or that the settings
-	 * result in no possible replacements.
+	 * Open the replacer dialog and return a configuration. If this function
+	 * returns `None` it means that the user cancelled the dialog or that the
+	 * settings result in no possible replacements.
 	 */
 	static Optional<ReplacerConfig> open(
 			FlowMap mapping, IProvider provider) {

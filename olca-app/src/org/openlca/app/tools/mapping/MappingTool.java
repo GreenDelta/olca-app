@@ -16,13 +16,13 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.tools.mapping.model.DBProvider;
-import org.openlca.app.tools.mapping.model.FlowMap;
 import org.openlca.app.tools.mapping.model.ILCDProvider;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.tools.mapping.model.Matcher;
 import org.openlca.app.tools.mapping.model.ProviderType;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
+import org.openlca.io.maps.FlowMap;
 
 public class MappingTool extends SimpleFormEditor {
 

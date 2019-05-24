@@ -6,14 +6,14 @@ import org.eclipse.swt.graphics.Image;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.tools.mapping.model.FlowMapEntry;
-import org.openlca.app.tools.mapping.model.FlowRef;
-import org.openlca.app.tools.mapping.model.Status;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.CategoryPath;
+import org.openlca.io.maps.FlowMapEntry;
+import org.openlca.io.maps.FlowRef;
+import org.openlca.io.maps.Status;
 
 class TableLabel extends LabelProvider
 		implements ITableLabelProvider {

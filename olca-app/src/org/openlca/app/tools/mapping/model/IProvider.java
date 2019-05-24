@@ -3,6 +3,7 @@ package org.openlca.app.tools.mapping.model;
 import java.util.List;
 
 import org.openlca.core.database.IDatabase;
+import org.openlca.io.maps.FlowRef;
 
 /**
  * Provides flow data from an underlying data source and implements

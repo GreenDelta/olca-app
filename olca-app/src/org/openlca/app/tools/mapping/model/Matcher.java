@@ -1,6 +1,10 @@
 package org.openlca.app.tools.mapping.model;
 
 import org.openlca.core.database.IDatabase;
+import org.openlca.io.maps.FlowMap;
+import org.openlca.io.maps.FlowMapEntry;
+import org.openlca.io.maps.FlowRef;
+import org.openlca.io.maps.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

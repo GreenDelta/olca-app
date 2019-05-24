@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
+import org.openlca.io.maps.FlowMap;
+import org.openlca.io.maps.FlowMapEntry;
+import org.openlca.io.maps.Status;
 
 public class FlowMaps {
 

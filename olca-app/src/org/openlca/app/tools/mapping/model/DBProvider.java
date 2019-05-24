@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.core.database.IDatabase;
+import org.openlca.io.maps.FlowRef;
 
 public class DBProvider implements IProvider {
 

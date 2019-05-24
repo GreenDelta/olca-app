@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 
-import org.openlca.app.tools.mapping.model.FlowMapEntry;
-import org.openlca.app.tools.mapping.model.FlowRef;
 import org.openlca.core.matrix.cache.ConversionTable;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
@@ -16,6 +14,8 @@ import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Unit;
+import org.openlca.io.maps.FlowMapEntry;
+import org.openlca.io.maps.FlowRef;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

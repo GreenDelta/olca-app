@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.tools.mapping.model.FlowMap;
 import org.openlca.app.tools.mapping.model.FlowMaps;
 import org.openlca.app.tools.mapping.model.JsonProvider;
 import org.openlca.app.util.Colors;
@@ -23,6 +22,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
+import org.openlca.io.maps.FlowMap;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +34,9 @@ class JsonImportDialog extends Dialog {
 	private final List<FlowMap> flowMaps;
 
 	/**
-	 * The selected flow map in the dialog that should be applied. If this is null
-	 * it means that a flow map should be generated from the flow attributes.
+	 * The selected flow map in the dialog that should be applied. If this is
+	 * null it means that a flow map should be generated from the flow
+	 * attributes.
 	 */
 	private FlowMap selectedMap;
 

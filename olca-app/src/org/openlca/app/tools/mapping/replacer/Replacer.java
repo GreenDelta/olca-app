@@ -9,14 +9,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.openlca.app.db.Database;
-import org.openlca.app.tools.mapping.model.FlowMapEntry;
-import org.openlca.app.tools.mapping.model.FlowRef;
-import org.openlca.app.tools.mapping.model.Status;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.cache.ConversionTable;
 import org.openlca.core.model.Flow;
+import org.openlca.io.maps.FlowMapEntry;
+import org.openlca.io.maps.FlowRef;
+import org.openlca.io.maps.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

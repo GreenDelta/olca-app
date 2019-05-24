@@ -27,6 +27,7 @@ import org.openlca.ilcd.util.Flows;
 import org.openlca.ilcd.util.UnitGroups;
 import org.openlca.io.ilcd.input.FlowImport;
 import org.openlca.io.ilcd.input.ImportConfig;
+import org.openlca.io.maps.FlowRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
