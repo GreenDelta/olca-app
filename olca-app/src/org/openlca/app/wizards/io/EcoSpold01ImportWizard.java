@@ -28,7 +28,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private Category category;
-	private FileImportPage importPage;
+	private FileImportPage filePage;
 	private UnitMappingPage mappingPage;
 
 	public EcoSpold01ImportWizard() {
@@ -37,8 +37,10 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		importPage = new FileImportPage(new String[] { "zip", "xml" }, true);
-		addPage(importPage);
+		filePage = new FileImportPage("zip", "xml");
+		filePage.withMultiSelection = true;
+		filePage.withMappingFile = true;
+		addPage(filePage);
 
 		mappingPage = new UnitMappingPage() {
 			@Override
@@ -64,7 +66,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	}
 
 	public File[] getFiles() {
-		return importPage.getFiles();
+		return filePage.getFiles();
 	}
 
 	@Override
@@ -79,7 +81,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		try {
 			Database.getIndexUpdater().beginTransaction();
 			getContainer().run(true, true, (monitor) -> {
-				File[] files = importPage.getFiles();
+				File[] files = filePage.getFiles();
 				List<UnitMappingEntry> mappings = mappingPage
 						.getUnitMappings();
 				UnitMapping mapping = new UnitMappingSync(Database.get())

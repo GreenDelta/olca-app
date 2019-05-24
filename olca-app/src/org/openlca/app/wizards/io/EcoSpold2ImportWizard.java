@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private FileImportPage importPage;
+	private FileImportPage filePage;
 
 	public EcoSpold2ImportWizard() {
 		setNeedsProgressMonitor(true);
@@ -62,7 +62,7 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private EcoSpold2Import createImport() {
-		File[] files = importPage.getFiles();
+		File[] files = filePage.getFiles();
 		IDatabase database = Database.get();
 		if (files == null || files.length == 0 || database == null)
 			return null;
@@ -80,9 +80,10 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		String[] exts = { "zip", "spold" };
-		importPage = new FileImportPage(exts, false);
-		addPage(importPage);
+		filePage = new FileImportPage(".zip", ".spold");
+		filePage.withMultiSelection = true;
+		filePage.withMappingFile = true;
+		addPage(filePage);
 	}
 
 }

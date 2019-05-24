@@ -1,10 +1,7 @@
 package org.openlca.app.wizards.io;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
@@ -29,7 +26,8 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		importPage = new FileImportPage(new String[] { "xlsx", "xls" }, true);
+		importPage = new FileImportPage("xlsx", "xls");
+		importPage.withMultiSelection = true;
 		addPage(importPage);
 	}
 
@@ -42,7 +40,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 			Database.getIndexUpdater().beginTransaction();
 			doRun(files);
 			return true;
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			return false;
 		} finally {
 			Database.getIndexUpdater().endTransaction();
@@ -51,21 +49,16 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 		}
 	}
 
-	private void doRun(final File[] files) throws Exception {
-		getContainer().run(true, true, new IRunnableWithProgress() {
-			@Override
-			public void run(IProgressMonitor monitor)
-					throws InvocationTargetException, InterruptedException {
-				monitor.beginTask(M.Import, files.length);
-				for (File file : files) {
-					monitor.subTask(file.getName());
-					ExcelImport importer = new ExcelImport(file, Database.get());
-					importer.run();
-					monitor.worked(1);
-				}
-				monitor.done();
+	private void doRun(File[] files) throws Exception {
+		getContainer().run(true, true, monitor -> {
+			monitor.beginTask(M.Import, files.length);
+			for (File file : files) {
+				monitor.subTask(file.getName());
+				ExcelImport importer = new ExcelImport(file, Database.get());
+				importer.run();
+				monitor.worked(1);
 			}
+			monitor.done();
 		});
-
 	}
 }

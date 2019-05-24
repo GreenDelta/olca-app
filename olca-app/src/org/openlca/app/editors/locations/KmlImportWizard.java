@@ -31,8 +31,7 @@ public class KmlImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		addPage(fileImportPage = new FileImportPage(new String[] { "kml" },
-				false));
+		addPage(fileImportPage = new FileImportPage("kml"));
 	}
 
 	@Override

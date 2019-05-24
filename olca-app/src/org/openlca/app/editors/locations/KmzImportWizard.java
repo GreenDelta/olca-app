@@ -29,8 +29,7 @@ public class KmzImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		addPage(fileImportPage = new FileImportPage(new String[] { "xml" },
-				false));
+		addPage(fileImportPage = new FileImportPage("xml"));
 	}
 
 	@Override

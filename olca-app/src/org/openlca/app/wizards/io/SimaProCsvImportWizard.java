@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private FileImportPage importPage;
+	private FileImportPage filePage;
 
 	public SimaProCsvImportWizard() {
 		setNeedsProgressMonitor(true);
@@ -33,8 +33,15 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 	}
 
 	@Override
+	public void addPages() {
+		filePage = new FileImportPage("csv");
+		filePage.withMultiSelection = true;
+		addPage(filePage);
+	}
+
+	@Override
 	public boolean performFinish() {
-		File[] files = importPage.getFiles();
+		File[] files = filePage.getFiles();
 		IDatabase db = Database.get();
 		if (files == null || files.length == 0 || db == null)
 			return false;
@@ -53,12 +60,6 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			Database.getIndexUpdater().endTransaction();
 		}
 		return true;
-	}
-
-	@Override
-	public void addPages() {
-		importPage = new FileImportPage(new String[] { "csv" }, true);
-		addPage(importPage);
 	}
 
 }

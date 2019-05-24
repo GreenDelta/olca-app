@@ -28,7 +28,8 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		importPage = new FileImportPage(new String[] { "zip" }, false);
+		importPage = new FileImportPage("zip");
+		importPage.withMappingFile = true;
 		addPage(importPage);
 	}
 

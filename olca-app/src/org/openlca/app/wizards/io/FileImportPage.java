@@ -2,12 +2,15 @@ package org.openlca.app.wizards.io;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -15,115 +18,93 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
 import org.openlca.app.M;
 import org.openlca.app.Preferences;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.viewers.Viewers;
 
 /**
  * Wizard page for file import: the user can select files from directories.
  */
 public class FileImportPage extends WizardPage {
 
+	boolean withMultiSelection;
+	boolean withMappingFile;
+
 	private TreeViewer directoryViewer;
-	private HashSet<String> fileExtensions = new HashSet<>();
-	private File[] selectedFiles;
+	private String[] extensions;
+	private List<File> selectedFiles;
 	private TableViewer fileViewer;
-	private boolean multiSelection;
 
-	private File lastDir;
-	private Text directoryText;
+	private File folder;
+	private Text folderText;
 
-	public FileImportPage(String[] fileExtensions, boolean multi) {
+	public FileImportPage(String... extensions) {
 		super("FileImportPage");
 		setTitle(M.SelectImportFiles);
 		setDescription(M.FileImportPage_Description);
-		if (fileExtensions != null) {
-			for (String extension : fileExtensions)
-				this.fileExtensions.add(extension.toLowerCase());
-		}
+		this.extensions = extensions;
 		setPageComplete(false);
-		this.multiSelection = multi;
-		lastDir = getLastDir();
+		folder = getLastDir();
 	}
 
 	private File getLastDir() {
-		String lastDirPath = Preferences.get(Preferences.LAST_IMPORT_FOLDER);
-		if (lastDirPath == null)
+		String path = Preferences.get(
+				Preferences.LAST_IMPORT_FOLDER);
+		if (path == null)
 			return null;
-		File f = new File(lastDirPath);
+		File f = new File(path);
 		if (f.exists() && f.isDirectory())
 			return f;
 		return null;
 	}
 
 	@Override
-	public void createControl(final Composite parent) {
+	public void createControl(Composite parent) {
 		// create body
-		final Composite body = new Composite(parent, SWT.NONE);
-		final GridLayout bodyLayout = new GridLayout(1, true);
-		bodyLayout.marginHeight = 10;
-		bodyLayout.marginWidth = 10;
-		bodyLayout.verticalSpacing = 10;
-		body.setLayout(bodyLayout);
+		Composite body = new Composite(parent, SWT.NONE);
+		UI.gridLayout(body, 1, 10, 10);
 
 		// create composite
-		final Composite chooseDirectoryComposite = new Composite(body, SWT.NONE);
-		final GridLayout dirLayout = new GridLayout(3, false);
-		dirLayout.marginLeft = 0;
-		dirLayout.marginRight = 0;
-		dirLayout.marginBottom = 0;
-		dirLayout.marginTop = 0;
-		dirLayout.marginHeight = 0;
-		dirLayout.marginWidth = 0;
-		chooseDirectoryComposite.setLayout(dirLayout);
-		chooseDirectoryComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
-				true, false));
-
-		new Label(chooseDirectoryComposite, SWT.NONE)
-				.setText(M.FromDirectory);
-
-		createDirectoryText(chooseDirectoryComposite);
+		Composite folderComp = new Composite(body, SWT.NONE);
+		UI.gridLayout(folderComp, 3, 5, 0);
+		UI.gridData(folderComp, true, false);
+		new Label(folderComp, SWT.NONE).setText(M.FromDirectory);
+		folderText = new Text(folderComp, SWT.BORDER);
+		if (folder != null)
+			folderText.setText(folder.getAbsolutePath());
+		UI.gridData(folderText, true, false);
+		folderText.setEditable(false);
+		folderText.setBackground(Colors.white());
 
 		// create button to open directory dialog
-		final Button chooseDirectoryButton = new Button(
-				chooseDirectoryComposite, SWT.NONE);
-		chooseDirectoryButton.setText(M.ChooseDirectory);
-		chooseDirectoryButton.addSelectionListener(new DirectorySelection());
-
-		new Label(body, SWT.SEPARATOR | SWT.HORIZONTAL)
-				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		Button browseButton = new Button(
+				folderComp, SWT.NONE);
+		browseButton.setText(M.Browse);
+		Controls.onSelect(browseButton, e -> selectFolder());
 
 		// create composite
-		final Composite chooseFileComposite = new Composite(body, SWT.NONE);
-		final GridLayout fileLayout = new GridLayout(2, true);
-		fileLayout.marginLeft = 0;
-		fileLayout.marginRight = 0;
-		fileLayout.marginBottom = 0;
-		fileLayout.marginTop = 0;
-		fileLayout.marginHeight = 0;
-		fileLayout.marginWidth = 0;
-		fileLayout.horizontalSpacing = 10;
-		chooseFileComposite.setLayout(fileLayout);
-		chooseFileComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
-				true, true));
+		Composite fileComp = new Composite(body, SWT.NONE);
+		UI.gridLayout(fileComp, 2, 10, 0);
+		UI.gridData(fileComp, true, true);
 
 		// create tree viewer for selecting a sub directory
-		directoryViewer = new TreeViewer(chooseFileComposite, SWT.BORDER
-				| SWT.SINGLE);
-		final GridData gddv = new GridData(SWT.FILL, SWT.FILL, true, true);
-		directoryViewer.getTree().setLayoutData(gddv);
+		directoryViewer = new TreeViewer(fileComp,
+				SWT.BORDER | SWT.SINGLE);
+		UI.gridData(directoryViewer.getTree(), true, true);
 		directoryViewer.setContentProvider(new DirectoryContentProvider());
-		directoryViewer.setLabelProvider(new FileLabelProvider());
+		directoryViewer.setLabelProvider(new FileLabel());
 		directoryViewer.addSelectionChangedListener((e) -> {
 			if (!e.getSelection().isEmpty()) {
 				IStructuredSelection selection = (IStructuredSelection) e
@@ -133,60 +114,85 @@ public class FileImportPage extends WizardPage {
 		});
 
 		// create table viewer to select a file from a selected sub directory
-		fileViewer = new TableViewer(chooseFileComposite, SWT.BORDER
+		fileViewer = new TableViewer(fileComp, SWT.BORDER
 				| SWT.FULL_SELECTION
-				| (multiSelection ? SWT.MULTI : SWT.SINGLE));
-		final GridData gdfv = new GridData(SWT.FILL, SWT.FILL, true, true);
-		fileViewer.getTable().setLayoutData(gdfv);
-		fileViewer.setContentProvider(new FileContentProvider());
-		fileViewer.setLabelProvider(new FileLabelProvider());
-		fileViewer.addSelectionChangedListener((event) -> {
-			ISelection selection = event.getSelection();
-			if (!(selection instanceof IStructuredSelection)
-					|| selection.isEmpty()) {
-				setPageComplete(false);
-				return;
-			}
-			Object[] files = ((IStructuredSelection) selection).toArray();
-			selectedFiles = new File[files.length];
-			for (int i = 0; i < files.length; i++) {
-				selectedFiles[i] = (File) files[i];
-			}
-			setPageComplete(true);
+				| (withMultiSelection ? SWT.MULTI : SWT.SINGLE));
+		UI.gridData(fileViewer.getTable(), true, true);
+		fileViewer.setContentProvider(ArrayContentProvider.getInstance());
+		fileViewer.setLabelProvider(new FileLabel());
+		fileViewer.addSelectionChangedListener(e -> {
+			selectedFiles = Viewers.getAll(e.getStructuredSelection());
+			setPageComplete(!selectedFiles.isEmpty());
 		});
 
-		setViewerInput();
+		setInitialInput();
 		setControl(body);
 	}
 
-	private void setViewerInput() {
+	private void setInitialInput() {
 		// we need to set the input when the components are already painted to
 		// avoid SWT sizing problems
 		fileViewer.getTable().addPaintListener(new PaintListener() {
 			@Override
 			public void paintControl(PaintEvent e) {
-				if (lastDir != null) {
-					fileViewer.setInput(lastDir);
-					directoryViewer.setInput(lastDir);
+				if (folder != null) {
+					directoryViewer.setInput(folder);
+					fileViewer.setInput(getFiles(folder, extensions));
 				}
 				fileViewer.getTable().removePaintListener(this);
 			}
 		});
 	}
 
-	private void createDirectoryText(Composite composite) {
-		directoryText = new Text(composite, SWT.BORDER);
-		if (lastDir != null)
-			directoryText.setText(lastDir.getAbsolutePath());
-		directoryText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				false));
-		directoryText.setEditable(false);
-		directoryText.setBackground(Colors.get(255, 255, 255));
-	}
-
 	/** Get the selected files from the page. */
 	public File[] getFiles() {
-		return selectedFiles;
+		return selectedFiles == null
+				? new File[0]
+				: selectedFiles.toArray(
+						new File[selectedFiles.size()]);
+	}
+
+	private void selectFolder() {
+		DirectoryDialog dialog = new DirectoryDialog(UI.shell());
+		if (folder != null)
+			dialog.setFilterPath(folder.getAbsolutePath());
+		String path = dialog.open();
+		if (path != null) {
+			folder = new File(path);
+			folderText.setText(path);
+			Preferences.set(Preferences.LAST_IMPORT_FOLDER, path);
+			directoryViewer.setInput(folder);
+			fileViewer.setInput(getFiles(folder, extensions));
+		}
+	}
+
+	public static List<File> getFiles(File folder, String... extensions) {
+		if (folder == null || !folder.isDirectory())
+			return Collections.emptyList();
+		Set<String> exts = new HashSet<>();
+		if (extensions != null) {
+			for (String ext : extensions) {
+				if (ext == null)
+					continue;
+				exts.add(ext.toLowerCase());
+			}
+		}
+		List<File> childs = new ArrayList<>();
+		for (File file : folder.listFiles()) {
+			if (!file.isFile())
+				continue;
+			if (exts.isEmpty()) {
+				childs.add(file);
+				continue;
+			}
+			String name = file.getName().toLowerCase();
+			for (String ext : exts) {
+				if (name.endsWith(ext)) {
+					childs.add(file);
+				}
+			}
+		}
+		return childs;
 	}
 
 	private class DirectoryContentProvider implements ITreeContentProvider {
@@ -196,134 +202,79 @@ public class FileImportPage extends WizardPage {
 		}
 
 		@Override
-		public Object[] getChildren(final Object parentElement) {
-			final ArrayList<File> elements = new ArrayList<>();
-			if (parentElement instanceof File) {
-				final File file = (File) parentElement;
-				for (final File child : file.listFiles()) {
+		public Object[] getChildren(Object parent) {
+			ArrayList<File> childs = new ArrayList<>();
+			if (parent instanceof File) {
+				File file = (File) parent;
+				for (File child : file.listFiles()) {
 					if (child.isDirectory()) {
-						elements.add(child);
+						childs.add(child);
 					}
 				}
 			}
-			return elements.toArray(new File[elements.size()]);
+			return childs.toArray();
 		}
 
 		@Override
-		public Object[] getElements(final Object inputElement) {
-			final ArrayList<File> elements = new ArrayList<>();
-			if (inputElement instanceof File) {
-				final File file = (File) inputElement;
-				for (final File child : file.listFiles()) {
-					if (child.isDirectory()) {
-						elements.add(child);
-					}
+		public Object[] getElements(Object obj) {
+			if (!(obj instanceof File))
+				return null;
+			File file = (File) obj;
+			ArrayList<File> dirs = new ArrayList<>();
+			for (File child : file.listFiles()) {
+				if (child.isDirectory()) {
+					dirs.add(child);
 				}
 			}
-			return elements.toArray(new File[elements.size()]);
+			return dirs.toArray();
 		}
 
 		@Override
-		public Object getParent(final Object element) {
-			File parent = null;
-			if (element instanceof File) {
-				final File file = (File) element;
-				if (file.getParentFile() != null
-						&& file.getParentFile().isDirectory()) {
-					parent = file;
-				}
+		public Object getParent(Object obj) {
+			if (!(obj instanceof File))
+				return null;
+			File file = (File) obj;
+			return file.getParentFile();
+		}
+
+		@Override
+		public boolean hasChildren(Object obj) {
+			if (!(obj instanceof File))
+				return false;
+			File file = (File) obj;
+			for (File child : file.listFiles()) {
+				if (child.isDirectory())
+					return true;
 			}
-			return parent;
+			return false;
 		}
 
 		@Override
-		public boolean hasChildren(final Object element) {
-			boolean hasChildren = false;
-			if (element instanceof File) {
-				final File file = (File) element;
-				int i = 0;
-				final File[] files = file.listFiles();
-				if (files != null) {
-					while (!hasChildren && i < files.length) {
-						if (files[i].isDirectory()) {
-							hasChildren = true;
-						} else {
-							i++;
-						}
-					}
-				}
-			}
-			return hasChildren;
-		}
-
-		@Override
-		public void inputChanged(final Viewer viewer, final Object oldInput,
-				final Object newInput) {
+		public void inputChanged(
+				Viewer viewer, Object oldInput, Object newInput) {
 		}
 
 	}
 
-	private class FileContentProvider implements IStructuredContentProvider {
+	private class FileLabel extends LabelProvider {
 
 		@Override
-		public void dispose() {
+		public Image getImage(Object obj) {
+			if (!(obj instanceof File))
+				return null;
+			File file = (File) obj;
+			if (file.isDirectory())
+				return Images.platformImage(
+						ISharedImages.IMG_OBJ_FOLDER);
+			return Images.get(FileType.of(file));
 		}
 
 		@Override
-		public Object[] getElements(final Object inputElement) {
-			final ArrayList<File> elements = new ArrayList<>();
-			if (inputElement instanceof File) {
-				final File file = (File) inputElement;
-				if (file.isDirectory()) {
-					final File[] files = file.listFiles();
-					if (files != null) {
-						for (final File child : files) {
-							if (child.isFile()) {
-								String extension = child.getName();
-								while (extension.contains(".")) {
-									extension = extension.substring(extension
-											.indexOf('.') + 1);
-								}
-								extension = extension.toLowerCase();
-								if (fileExtensions.size() == 0
-										|| fileExtensions.contains(extension)) {
-									elements.add(child);
-								}
-							}
-						}
-					}
-				}
-			}
-			return elements.toArray(new File[elements.size()]);
-		}
-
-		@Override
-		public void inputChanged(final Viewer viewer, final Object oldInput,
-				final Object newInput) {
-		}
-
-	}
-
-	private class DirectorySelection implements SelectionListener {
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			widgetSelected(e);
-		}
-
-		@Override
-		public void widgetSelected(final SelectionEvent e) {
-			DirectoryDialog dialog = new DirectoryDialog(UI.shell());
-			if (lastDir != null)
-				dialog.setFilterPath(lastDir.getAbsolutePath());
-			String directoryPath = dialog.open();
-			if (directoryPath != null) {
-				lastDir = new File(directoryPath);
-				directoryText.setText(directoryPath);
-				Preferences.set(Preferences.LAST_IMPORT_FOLDER, directoryPath);
-				directoryViewer.setInput(lastDir);
-				fileViewer.setInput(lastDir);
-			}
+		public String getText(Object obj) {
+			if (!(obj instanceof File))
+				return null;
+			File file = (File) obj;
+			return file.getAbsoluteFile().getName();
 		}
 	}
-
 }

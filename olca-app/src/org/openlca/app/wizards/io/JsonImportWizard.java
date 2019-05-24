@@ -36,7 +36,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		filePage = new FileImportPage(new String[] { "zip" }, false);
+		filePage = new FileImportPage("zip");
 		addPage(filePage);
 		settingsPage = new JsonImportPage();
 		addPage(settingsPage);
