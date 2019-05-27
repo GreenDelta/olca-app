@@ -152,7 +152,7 @@ public class ProcessResultPage extends FormPage {
 			outputTable.refresh();
 		});
 
-		UI.formLabel(container, toolkit, M.Cutoff);
+		UI.formLabel(container, toolkit, M.DontShowSmallerThen);
 		flowSpinner = new Spinner(container, SWT.BORDER);
 		flowSpinner.setValues(1, 0, 10000, 2, 1, 100);
 		toolkit.adapt(flowSpinner);
@@ -204,7 +204,7 @@ public class ProcessResultPage extends FormPage {
 			impactResult.setProcess(selection);
 			impactTable.refresh();
 		});
-		UI.formLabel(container, toolkit, M.Cutoff);
+		UI.formLabel(container, toolkit, M.DontShowSmallerThen);
 		impactSpinner = new Spinner(container, SWT.BORDER);
 		impactSpinner.setValues(1, 0, 10000, 2, 1, 100);
 		toolkit.adapt(impactSpinner);

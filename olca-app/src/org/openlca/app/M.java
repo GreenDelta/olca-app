@@ -198,6 +198,8 @@ public class M extends NLS {
 	public static String CurrencyCode;
 	public static String Cut;
 	public static String Cutoff;
+
+	// D
 	public static String DBImportNoTarget;
 	public static String DBImportNoTargetConnectionFailedMessage;
 	public static String DBImportUpdateDatabaseQuestion;
@@ -257,6 +259,7 @@ public class M extends NLS {
 	public static String Disabled;
 	public static String DisconnectFromRepository;
 	public static String Display;
+	public static String DontShowSmallerThen;
 	public static String DoNotShowThisMessageAgain;
 	public static String DoYouReallyWantToDelete;
 	public static String Dot;

@@ -71,27 +71,29 @@ public class ProductSystemFigure extends Figure {
 		return Question.ask(M.SankeyDiagram, M.MoreThanXProcesses);
 	}
 
-	private void paintInfoBox(Graphics graphics) {
-		graphics.pushState();
-		Font normalFont = graphics.getFont();
+	private void paintInfoBox(Graphics g) {
+		g.pushState();
+		Font normalFont = g.getFont();
 		Font infoFont = getInfoFont(normalFont);
-		graphics.setFont(infoFont);
+		g.setFont(infoFont);
 		Object selection = node.selection;
 		double cutoffValue = node.cutoff * 100;
-		String cutoffText = M.Cutoff + ": " + Numbers.format(cutoffValue, 3) + "%";
+		String cutoffText = M.DontShowSmallerThen + " "
+				+ Numbers.format(cutoffValue, 3) + "%";
 		if (selection != null) {
-			graphics.drawText(M.ProductSystem + ": " + node.productSystem.name, new Point(5, 5));
+			g.drawText(M.ProductSystem + ": "
+					+ node.productSystem.name, new Point(5, 5));
 			String label = selectionLabel(selection);
-			graphics.drawText(label, new Point(5, 30));
-			graphics.drawText(cutoffText, new Point(5, 60));
+			g.drawText(label, new Point(5, 30));
+			g.drawText(cutoffText, new Point(5, 60));
 
 		} else {
-			graphics.drawText(M.NoAnalysisOptionsSet, new Point(5, 5));
-			graphics.drawText(M.ClickHereToChangeDisplay, new Point(5, 30));
+			g.drawText(M.NoAnalysisOptionsSet, new Point(5, 5));
+			g.drawText(M.ClickHereToChangeDisplay, new Point(5, 30));
 		}
-		graphics.setFont(normalFont);
-		drawColorScale(graphics);
-		graphics.popState();
+		g.setFont(normalFont);
+		drawColorScale(g);
+		g.popState();
 	}
 
 	private Font getInfoFont(Font normalFont) {

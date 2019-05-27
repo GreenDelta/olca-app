@@ -83,7 +83,7 @@ public class LocationPage extends FormPage {
 		cutoffComp.setLayoutData(gd);
 
 		Composite checkComp = tk.createComposite(cutoffComp);
-		tk.createLabel(checkComp, M.Cutoff);
+		tk.createLabel(checkComp, M.DontShowSmallerThen);
 		Spinner spinner = new Spinner(checkComp, SWT.BORDER);
 		spinner.setValues(1, 0, 100, 0, 1, 10);
 		tk.adapt(spinner);

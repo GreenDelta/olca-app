@@ -25,7 +25,7 @@ public class ContributionCutoff {
 		Composite composite = UI.formComposite(parent, toolkit);
 		UI.gridLayout(composite, 3, 10, 0);
 		UI.gridData(composite, false, false).horizontalAlignment = SWT.RIGHT;
-		UI.formLabel(composite, toolkit, M.Cutoff);
+		UI.formLabel(composite, toolkit, M.DontShowSmallerThen);
 		spinner = new Spinner(composite, SWT.BORDER);
 		UI.formLabel(composite, toolkit, "%");
 		spinner.setValues(1, 0, 100, 0, 1, 10);

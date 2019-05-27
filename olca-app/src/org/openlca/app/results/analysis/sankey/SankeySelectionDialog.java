@@ -40,9 +40,11 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 		createCutoffSpinner(toolkit, body);
 	}
 
-	private void createCutoffSpinner(FormToolkit toolkit, Composite composite) {
-		toolkit.createLabel(composite, M.Cutoff);
-		Spinner spinner = new Spinner(composite, SWT.BORDER);
+	private void createCutoffSpinner(FormToolkit tk, Composite comp) {
+		tk.createLabel(comp, M.DontShowSmallerThen);
+		Composite inner = tk.createComposite(comp);
+		UI.gridLayout(inner, 2, 10, 0);
+		Spinner spinner = new Spinner(inner, SWT.BORDER);
 		spinner.setIncrement(100);
 		spinner.setMinimum(0);
 		spinner.setMaximum(100000);
@@ -51,7 +53,8 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 		spinner.addModifyListener(e -> {
 			cutoff = spinner.getSelection() / 100000d;
 		});
-		toolkit.adapt(spinner);
+		tk.adapt(spinner);
+		tk.createLabel(inner, "%");
 	}
 
 	@Override
