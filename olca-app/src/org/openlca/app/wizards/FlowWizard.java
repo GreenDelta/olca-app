@@ -36,8 +36,8 @@ public class FlowWizard extends AbstractWizard<Flow> {
 
 	private class Page extends AbstractWizardPage<Flow> {
 
-		private FlowTypeViewer flowTypeViewer;
-		private FlowPropertyViewer referenceFlowPropertyViewer;
+		private FlowTypeViewer typeCombo;
+		private FlowPropertyViewer propertyCombo;
 
 		public Page() {
 			super("FlowWizardPage");
@@ -50,7 +50,7 @@ public class FlowWizard extends AbstractWizard<Flow> {
 		protected void checkInput() {
 			super.checkInput();
 			if (getErrorMessage() == null) {
-				if (referenceFlowPropertyViewer.getSelected() == null) {
+				if (propertyCombo.getSelected() == null) {
 					setErrorMessage(M.NoReferenceFlowPropertySelected);
 				}
 			}
@@ -60,19 +60,18 @@ public class FlowWizard extends AbstractWizard<Flow> {
 		@Override
 		protected void createContents(final Composite container) {
 			UI.formLabel(container, M.FlowType);
-			flowTypeViewer = new FlowTypeViewer(container);
-			flowTypeViewer.select(FlowType.ELEMENTARY_FLOW);
-
+			typeCombo = new FlowTypeViewer(container);
+			typeCombo.select(FlowType.ELEMENTARY_FLOW);
 			UI.formLabel(container, M.ReferenceFlowProperty);
-			referenceFlowPropertyViewer = new FlowPropertyViewer(container);
-			referenceFlowPropertyViewer.setInput(Database.get());
+			propertyCombo = new FlowPropertyViewer(container);
+			propertyCombo.setInput(Database.get());
+			propertyCombo.selectFirst();
 		}
 
 		@Override
 		protected void initModifyListeners() {
 			super.initModifyListeners();
-			referenceFlowPropertyViewer
-					.addSelectionChangedListener((s) -> checkInput());
+			propertyCombo.addSelectionChangedListener(s -> checkInput());
 		}
 
 		@Override
@@ -81,14 +80,14 @@ public class FlowWizard extends AbstractWizard<Flow> {
 			flow.refId = UUID.randomUUID().toString();
 			flow.name = getModelName();
 			flow.description = getModelDescription();
-			flow.flowType = flowTypeViewer.getSelected();
+			flow.flowType = typeCombo.getSelected();
 			addFlowProperty(flow);
 			return flow;
 		}
 
 		private void addFlowProperty(Flow flow) {
 			try {
-				long id = referenceFlowPropertyViewer.getSelected().id;
+				long id = propertyCombo.getSelected().id;
 				FlowProperty flowProp = Cache.getEntityCache().get(
 						FlowProperty.class,
 						id);
