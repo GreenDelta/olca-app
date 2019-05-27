@@ -9,6 +9,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.ImpactChecksPage;
+import org.openlca.app.results.InfoPage;
 import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
@@ -80,7 +81,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new AnalyzeInfoPage(this, result, dqResult, setup));
+			addPage(new InfoPage(this, result, dqResult, setup));
 			addPage(new InventoryPage(this, result, dqResult, setup));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result, dqResult, setup, this::getImpactFactor));

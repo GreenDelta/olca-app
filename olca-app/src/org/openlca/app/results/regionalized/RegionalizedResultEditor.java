@@ -12,11 +12,11 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.results.IResultEditor;
+import org.openlca.app.results.InfoPage;
 import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.TotalImpactResultPage;
-import org.openlca.app.results.analysis.AnalyzeInfoPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.contributions.ContributionTreePage;
 import org.openlca.app.results.contributions.ProcessResultPage;
@@ -95,7 +95,7 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 	protected void addPages() {
 		try {
 			FullResult regioResult = this.result.result;
-			addPage(new AnalyzeInfoPage(this, regioResult, dqResult, setup));
+			addPage(new InfoPage(this, regioResult, dqResult, setup));
 			addPage(new InventoryPage(this, regioResult, dqResult, setup));
 			if (regioResult.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, regioResult, dqResult, setup, this::getImpactFactor));

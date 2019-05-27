@@ -8,6 +8,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.db.Cache;
 import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.ImpactChecksPage;
+import org.openlca.app.results.InfoPage;
 import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditorInput;
@@ -70,7 +71,7 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new QuickResultInfoPage(this, result, dqResult, setup));
+			addPage(new InfoPage(this, result, dqResult, setup));
 			addPage(new InventoryPage(this, result, dqResult, setup));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(
