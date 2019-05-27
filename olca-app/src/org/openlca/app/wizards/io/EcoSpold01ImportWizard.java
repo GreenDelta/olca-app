@@ -13,6 +13,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
 import org.openlca.io.EcoSpoldUnitFetch;
 import org.openlca.io.UnitMapping;
@@ -20,6 +21,7 @@ import org.openlca.io.UnitMappingEntry;
 import org.openlca.io.UnitMappingSync;
 import org.openlca.io.ecospold1.input.EcoSpold01Import;
 import org.openlca.io.ecospold1.input.ImportConfig;
+import org.openlca.io.maps.FlowMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +48,9 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 			@Override
 			protected String[] checkFiles(File[] files) {
 				String[] unitNames;
-				EcoSpoldUnitFetch unitChecker = new EcoSpoldUnitFetch();
+				EcoSpoldUnitFetch ufetch = new EcoSpoldUnitFetch();
 				try {
-					unitNames = unitChecker.getUnits(files);
+					unitNames = ufetch.getUnits(files);
 				} catch (Exception e) {
 					log.error("Failed to get the units from files.", e);
 					unitNames = new String[0];
@@ -60,7 +62,6 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 			protected File[] getFiles() {
 				return EcoSpold01ImportWizard.this.getFiles();
 			}
-
 		};
 		addPage(mappingPage);
 	}
@@ -80,13 +81,19 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	public boolean performFinish() {
 		try {
 			Database.getIndexUpdater().beginTransaction();
-			getContainer().run(true, true, (monitor) -> {
-				File[] files = filePage.getFiles();
-				List<UnitMappingEntry> mappings = mappingPage
-						.getUnitMappings();
-				UnitMapping mapping = new UnitMappingSync(Database.get())
-						.run(mappings);
-				parse(monitor, files, mapping);
+			getContainer().run(true, true, m -> {
+				m.beginTask(M.ImportEcoSpold01DataSets,
+						IProgressMonitor.UNKNOWN);
+				EcoSpold01Import imp = new EcoSpold01Import(config());
+				imp.setProcessCategory(category);
+				imp.setFiles(filePage.getFiles());
+				ImportHandler handler = new ImportHandler(m);
+				try {
+					handler.run(imp);
+				} catch (Exception e) {
+					log.error("Data set import failed", e);
+				}
+				m.done();
 			});
 			return true;
 		} catch (Exception e) {
@@ -99,22 +106,16 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		}
 	}
 
-	private void parse(IProgressMonitor monitor, File[] files,
-			UnitMapping unitMapping) {
-		monitor.beginTask(M.ImportEcoSpold01DataSets,
-				IProgressMonitor.UNKNOWN);
-		ImportConfig config = new ImportConfig(Database.get());
-		config.setUnitMapping(unitMapping);
-		EcoSpold01Import importer = new EcoSpold01Import(config);
-		importer.setProcessCategory(category);
-		importer.setFiles(files);
-		ImportHandler handler = new ImportHandler(monitor);
-		try {
-			handler.run(importer);
-		} catch (Exception e) {
-			log.error("Data set import failed", e);
+	private ImportConfig config() {
+		IDatabase db = Database.get();
+		ImportConfig config = new ImportConfig(db);
+		List<UnitMappingEntry> units = mappingPage.getUnitMappings();
+		UnitMapping umap = new UnitMappingSync(db).run(units);
+		config.setUnitMapping(umap);
+		if (filePage.mappingFile != null) {
+			config.setFlowMap(FlowMap.fromCsv(filePage.mappingFile));
 		}
-		monitor.done();
-	}
+		return config;
 
+	}
 }

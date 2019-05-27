@@ -15,6 +15,7 @@ import org.openlca.app.preferencepages.IoPreference;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.io.ilcd.ILCDImport;
 import org.openlca.io.ilcd.input.ImportConfig;
+import org.openlca.io.maps.FlowMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,20 +69,24 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private void doRun(File zip) throws Exception {
-		getContainer().run(true, true, monitor -> {
-			monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
-			ImportHandler handler = new ImportHandler(monitor);
-			ILCDImport iImport = new ILCDImport(createConfig(zip));
+		getContainer().run(true, true, m -> {
+			m.beginTask(M.Import, IProgressMonitor.UNKNOWN);
+			ImportHandler handler = new ImportHandler(m);
+			ILCDImport iImport = new ILCDImport(config(zip));
 			handler.run(iImport);
 		});
 	}
 
-	private ImportConfig createConfig(File zip) {
+	private ImportConfig config(File zip) {
 		ImportConfig config = new ImportConfig(zip, Database.get());
 		config.importFlows = true;
 		String lang = IoPreference.getIlcdLanguage();
-		if (!"en".equals(lang))
+		if (!"en".equals(lang)) {
 			config.langs = new String[] { lang, "en" };
+		}
+		if (importPage.mappingFile != null) {
+			config.setFlowMap(FlowMap.fromCsv(importPage.mappingFile));
+		}
 		return config;
 	}
 }

@@ -16,6 +16,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.database.IDatabase;
 import org.openlca.io.ecospold2.input.EcoSpold2Import;
 import org.openlca.io.ecospold2.input.ImportConfig;
+import org.openlca.io.maps.FlowMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +73,9 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 			conf.skipNullExchanges = true;
 			conf.withParameterFormulas = false;
 			conf.withParameters = false;
+		}
+		if (filePage.mappingFile != null) {
+			conf.setFlowMap(FlowMap.fromCsv(filePage.mappingFile));
 		}
 		EcoSpold2Import pi = new EcoSpold2Import(conf);
 		pi.setFiles(files);
