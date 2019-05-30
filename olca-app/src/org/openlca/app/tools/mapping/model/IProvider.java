@@ -3,6 +3,7 @@ package org.openlca.app.tools.mapping.model;
 import java.util.List;
 
 import org.openlca.core.database.IDatabase;
+import org.openlca.io.maps.FlowMap;
 import org.openlca.io.maps.FlowRef;
 
 /**
@@ -20,4 +21,14 @@ public interface IProvider {
 	 * Synchronizes the given flow references with the database.
 	 */
 	public void persist(List<FlowRef> refs, IDatabase db);
+
+	/**
+	 * Synchronize the source flows of the given mapping with this provider.
+	 */
+	public void syncSourceFlows(FlowMap fm);
+
+	/**
+	 * Synchronize the target flows of the given mapping with this provider.
+	 */
+	public void syncTargetFlows(FlowMap fm);
 }

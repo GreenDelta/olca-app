@@ -27,6 +27,7 @@ import org.openlca.ilcd.util.Flows;
 import org.openlca.ilcd.util.UnitGroups;
 import org.openlca.io.ilcd.input.FlowImport;
 import org.openlca.io.ilcd.input.ImportConfig;
+import org.openlca.io.maps.FlowMap;
 import org.openlca.io.maps.FlowRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,6 +145,16 @@ public class ILCDProvider implements IProvider {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("failed persist flows", e);
 		}
+	}
+
+	@Override
+	public void syncSourceFlows(FlowMap fm) {
+		// TODO: not yet implemented
+	}
+
+	@Override
+	public void syncTargetFlows(FlowMap fm) {
+		// TODO: not yet implemented
 	}
 
 }

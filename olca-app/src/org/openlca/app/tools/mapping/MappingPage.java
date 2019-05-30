@@ -61,19 +61,14 @@ class MappingPage extends FormPage {
 
 		UI.formLabel(comp, tk, "Source system");
 		ProviderRow sourceRow = new ProviderRow(comp, tk);
-		sourceRow.onSelect = p -> tool.sourceSystem = p;
 
 		UI.formLabel(comp, tk, "Target system");
 		ProviderRow targetRow = new ProviderRow(comp, tk);
-		targetRow.onSelect = p -> tool.targetSystem = p;
 
 		UI.filler(comp);
-
-		// TODO: the apply button should be only enabled when the target is
-		// the currently active database.
-		Button btn = tk.createButton(comp, "Apply", SWT.NONE);
-		btn.setImage(Icon.ACCEPT.get());
-		Controls.onSelect(btn, e -> {
+		Button applyButton = tk.createButton(comp, "Apply", SWT.NONE);
+		applyButton.setImage(Icon.ACCEPT.get());
+		Controls.onSelect(applyButton, e -> {
 			Optional<ReplacerConfig> opt = ReplacerDialog.open(
 					tool.mapping, tool.sourceSystem);
 			if (!opt.isPresent())
@@ -83,6 +78,43 @@ class MappingPage extends FormPage {
 				table.setInput(tool.mapping.entries);
 			});
 		});
+		applyButton.setEnabled(false);
+		Runnable checkApply = () -> {
+			if ((tool.sourceSystem instanceof DBProvider)
+					&& tool.targetSystem != null) {
+				applyButton.setEnabled(true);
+			} else {
+				applyButton.setEnabled(false);
+			}
+		};
+
+		// event handlers for the source system
+		sourceRow.onSelect = p -> {
+			tool.sourceSystem = p;
+			checkApply.run();
+		};
+		sourceRow.onSync = () -> {
+			if (tool.sourceSystem == null)
+				return;
+			App.runWithProgress(
+					"Synchronize source flows",
+					() -> tool.sourceSystem.syncSourceFlows(tool.mapping),
+					() -> table.setInput(tool.mapping.entries));
+		};
+
+		// event handlers for the target system
+		targetRow.onSelect = p -> {
+			tool.targetSystem = p;
+			checkApply.run();
+		};
+		targetRow.onSync = () -> {
+			if (tool.targetSystem != null)
+				return;
+			App.runWithProgress(
+					"Synchronize target flows",
+					() -> tool.targetSystem.syncTargetFlows(tool.mapping),
+					() -> table.setInput(tool.mapping.entries));
+		};
 	}
 
 	private void createTable(Composite body, FormToolkit tk) {
@@ -110,7 +142,7 @@ class MappingPage extends FormPage {
 	private class ProviderRow {
 
 		Consumer<IProvider> onSelect;
-		Consumer<IProvider> onSync;
+		Runnable onSync;
 
 		ProviderRow(Composite parent, FormToolkit tk) {
 
@@ -127,6 +159,10 @@ class MappingPage extends FormPage {
 			syncLink.setImage(Icon.REFRESH.get());
 			syncLink.setToolTipText("Synchronize flows ...");
 			syncLink.setVisible(false);
+			Controls.onClick(syncLink, e -> {
+				if (onSync != null)
+					onSync.run();
+			});
 
 			// select database as provider
 			Controls.onClick(dbLink, e -> {

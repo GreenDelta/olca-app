@@ -1,9 +1,9 @@
 package org.openlca.app.tools.mapping.model;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.openlca.core.database.IDatabase;
+import org.openlca.io.maps.FlowMap;
 import org.openlca.io.maps.FlowRef;
 
 public class DBProvider implements IProvider {
@@ -16,7 +16,18 @@ public class DBProvider implements IProvider {
 
 	@Override
 	public List<FlowRef> getFlowRefs() {
-		return Collections.emptyList();
+		// TODO: not yet implemented
+		return null;
+	}
+
+	@Override
+	public void syncSourceFlows(FlowMap fm) {
+		// TODO: not yet implemented
+	}
+
+	@Override
+	public void syncTargetFlows(FlowMap fm) {
+		// TODO: not yet implemented
 	}
 
 	@Override
