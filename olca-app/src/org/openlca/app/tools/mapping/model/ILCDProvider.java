@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 public class ILCDProvider implements IProvider {
 
-	private final File file;
+	public final File file;
 
 	private ILCDProvider(File file) {
 		this.file = file;
@@ -92,7 +92,7 @@ public class ILCDProvider implements IProvider {
 
 				// category path
 				String[] cpath = Categories.getPath(f);
-				flowRef.categoryPath = String.join("/", cpath);
+				flowRef.flowCategory = String.join("/", cpath);
 
 				// flow property & unit
 				FlowPropertyRef refProp = Flows.getReferenceFlowProperty(f);

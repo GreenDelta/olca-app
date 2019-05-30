@@ -73,7 +73,7 @@ class TableLabel extends LabelProvider
 
 	private String stateText(FlowMapEntry e) {
 		if (e == null || e.status == null)
-			return "?";
+			return "";
 		if (e.status.message != null)
 			return e.status.message;
 		switch (e.status.type) {
@@ -84,7 +84,7 @@ class TableLabel extends LabelProvider
 		case Status.ERROR:
 			return "error";
 		default:
-			return "?";
+			return "";
 		}
 	}
 
@@ -108,28 +108,35 @@ class TableLabel extends LabelProvider
 			return "?";
 		if (ref.flow.id != 0L)
 			return Labels.getDisplayName(ref.flow);
-		return ref.flow.name;
+		String s = ref.flow.name;
+		if (s == null) {
+			s = ref.flow.refId;
+		}
+		if (ref.flowLocation != null) {
+			s += " - " + ref.flowLocation;
+		}
+		return s;
 	}
 
 	private String category(FlowRef ref) {
 		if (ref == null)
-			return "?";
-		if (ref.categoryPath != null)
-			return ref.categoryPath;
+			return null;
+		if (ref.flowCategory != null)
+			return ref.flowCategory;
 		if (ref.flow == null || ref.flow.id == 0L)
-			return "?";
+			return null;
 		if (ref.flow.category == null)
-			return "";
+			return null;
 		Category category = Cache.getEntityCache().get(
 				Category.class, ref.flow.category);
 		if (category == null)
-			return "?";
+			return null;
 		return CategoryPath.getFull(category);
 	}
 
 	private String unit(FlowRef ref) {
 		if (ref == null || ref.unit == null)
-			return "?";
+			return "ref. unit";
 		String unit = ref.unit.name;
 		if (ref.property != null) {
 			unit += " (" + ref.property.name + ")";
