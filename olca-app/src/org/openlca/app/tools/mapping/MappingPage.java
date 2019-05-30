@@ -58,11 +58,14 @@ class MappingPage extends FormPage {
 		}
 
 		UI.filler(comp);
+
+		// TODO: the apply button should be only enabled when the target is
+		// the currently active database.
 		Button btn = tk.createButton(comp, "Apply", SWT.NONE);
 		btn.setImage(Icon.ACCEPT.get());
 		Controls.onSelect(btn, e -> {
 			Optional<ReplacerConfig> opt = ReplacerDialog.open(
-					tool.mapping, tool.provider);
+					tool.mapping, tool.sourceSystem);
 			if (!opt.isPresent())
 				return;
 			Replacer replacer = new Replacer(opt.get());

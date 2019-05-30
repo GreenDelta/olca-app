@@ -23,10 +23,10 @@ class ReplacerDialog extends Dialog {
 	 * settings result in no possible replacements.
 	 */
 	static Optional<ReplacerConfig> open(
-			FlowMap mapping, IProvider provider) {
-		if (mapping == null || provider == null)
+			FlowMap mapping, IProvider source) {
+		if (mapping == null || source == null)
 			return Optional.empty();
-		ReplacerConfig conf = new ReplacerConfig(mapping, provider);
+		ReplacerConfig conf = new ReplacerConfig(mapping, source);
 		ReplacerDialog dialog = new ReplacerDialog(conf);
 		if (dialog.open() != Dialog.OK)
 			return Optional.empty();

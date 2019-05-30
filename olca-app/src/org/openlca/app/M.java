@@ -951,7 +951,7 @@ public class M extends NLS {
 	private M() {
 	}
 
-	public static Map<String, String> getMap() {
+	private static Map<String, String> getMap() {
 		if (map == null)
 			map = new HashMap<>();
 		try {

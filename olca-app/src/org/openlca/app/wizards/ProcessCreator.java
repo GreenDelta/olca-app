@@ -41,7 +41,7 @@ class ProcessCreator {
 		this.db = db;
 	}
 
-	public boolean canCreate() {
+	private boolean canCreate() {
 		if (name == null || name.trim().isEmpty())
 			return false;
 		if (createWithProduct)

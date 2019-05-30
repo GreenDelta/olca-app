@@ -12,10 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
-import org.openlca.app.tools.mapping.model.FlowMaps;
 import org.openlca.app.tools.mapping.model.JsonProvider;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
@@ -27,39 +24,37 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A dialog for opening a flow mapping file from an JSON-LD package.
+ */
 class JsonImportDialog extends Dialog {
 
 	private final File file;
 	private final JsonProvider provider;
 	private final List<FlowMap> flowMaps;
-
-	/**
-	 * The selected flow map in the dialog that should be applied. If this is
-	 * null it means that a flow map should be generated from the flow
-	 * attributes.
-	 */
 	private FlowMap selectedMap;
 
-	static void open(File file) {
+	/**
+	 * Returns the selected flow map or null when no mapping was selected.
+	 */
+	static FlowMap open(File file) {
 		if (file == null)
-			return;
+			return null;
 		try {
 			JsonImportDialog d = new JsonImportDialog(file);
 			if (d.open() != Dialog.OK) {
-				return;
+				return null;
 			}
 			if (d.selectedMap == null) {
 				Info.showBox("Not yet implemented.");
-				return;
+				return null;
 			}
-			FlowMap flowMap = d.selectedMap;
-			App.runWithProgress("Sync flow map ...",
-					() -> FlowMaps.sync(flowMap, d.provider, Database.get()),
-					() -> MappingTool.open(flowMap, d.provider));
+			return d.selectedMap;
 		} catch (Exception e) {
 			Error.showBox("Failed to open file as JSON-LD package");
 			Logger log = LoggerFactory.getLogger(JsonImportDialog.class);
 			log.error("failed to open JSON-LD package " + file, e);
+			return null;
 		}
 	}
 
