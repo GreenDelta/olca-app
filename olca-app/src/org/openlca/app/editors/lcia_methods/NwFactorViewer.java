@@ -68,7 +68,7 @@ class NwFactorViewer extends AbstractTableViewer<Wrapper> {
 		return new String[] { IMPACT_CATEGORY, NORMALIZATION, WEIGHTING, COMMENT };
 	}
 
-	public class Wrapper {
+	class Wrapper {
 
 		private ImpactCategory category;
 		private NwFactor factor;

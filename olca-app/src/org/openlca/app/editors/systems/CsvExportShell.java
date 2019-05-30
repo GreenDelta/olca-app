@@ -30,7 +30,7 @@ import org.openlca.io.xls.CsvMatrixExportConfig;
 /**
  * The dialog for exporting product systems as matrices.
  */
-public class CsvExportShell extends Shell {
+class CsvExportShell extends Shell {
 
 	private final FormToolkit toolkit = new FormToolkit(Display.getDefault());
 

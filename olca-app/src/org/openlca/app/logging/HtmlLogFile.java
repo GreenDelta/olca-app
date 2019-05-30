@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.Platform;
 /**
  * The configuration of the HTML log file.
  */
-public class HtmlLogFile {
+class HtmlLogFile {
 
 	private static final String FILENAME = "log.html";
 
@@ -52,7 +52,7 @@ public class HtmlLogFile {
 		return app;
 	}
 
-	public static List<File> getAllFiles() {
+	static List<File> getAllFiles() {
 		File workspaceDir = Platform.getLocation().toFile();
 		if (!workspaceDir.exists())
 			workspaceDir.mkdirs();

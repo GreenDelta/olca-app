@@ -70,7 +70,8 @@ public class TotalImpactResultPage extends FormPage {
 				Images.get(result));
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
-		Section section = UI.section(body, toolkit, M.ImpactAnalysis);
+		Section section = UI.section(body, toolkit, M.ImpactAnalysis + ": "
+				+ Labels.getDisplayName(setup.impactMethod));
 		UI.gridData(section, true, true);
 		Composite client = toolkit.createComposite(section);
 		section.setClient(client);

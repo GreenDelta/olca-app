@@ -20,7 +20,7 @@ import org.openlca.util.Strings;
  * A pop-up for messages. For spezialized versions look at inheriting classes
  * like {@link InformationPopup}.
  */
-public class Popup {
+class Popup {
 
 	private String message;
 	private String title;
@@ -31,40 +31,30 @@ public class Popup {
 
 	}
 
-	public Popup(String message) {
+	private Popup(String message) {
 		this.message = message;
 	}
 
-	public Popup(String title, String message) {
+	Popup(String title, String message) {
 		this(message);
 		this.title = title;
-	}
-
-	public Popup message(String m) {
-		this.message = m;
-		return this;
 	}
 
 	public String getMessage() {
 		return message;
 	}
 
-	public Popup title(String t) {
-		this.title = t;
-		return this;
-	}
-
-	public Popup defaultTitle(String t) {
+	Popup defaultTitle(String t) {
 		this.defaultTitle = t;
 		return this;
 	}
 
-	public Popup popupShellImage(Icon icon) {
+	Popup popupShellImage(Icon icon) {
 		this.icon = icon;
 		return this;
 	}
 
-	protected String getDefaultTitle() {
+	private String getDefaultTitle() {
 		return defaultTitle;
 	}
 
@@ -72,7 +62,7 @@ public class Popup {
 		return icon.get();
 	}
 
-	protected void createLabel(Composite composite) {
+	private void createLabel(Composite composite) {
 		Label label = new Label(composite, SWT.WRAP);
 		label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		label.setText(Strings.cut(message, 500));
@@ -89,15 +79,12 @@ public class Popup {
 
 	/**
 	 * Default implementation just calls makeLink.
-	 * 
-	 * @param popupImpl
-	 * @param composite
 	 */
-	protected void makeLink(PopupImpl popupImpl, Composite composite) {
+	private void makeLink(PopupImpl popupImpl, Composite composite) {
 		makeLink(composite);
 	}
 
-	public void show() {
+	void show() {
 		UIJob job = new UIJob("Open popup") {
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor) {
@@ -111,9 +98,9 @@ public class Popup {
 		job.schedule();
 	}
 
-	public class PopupImpl extends AbstractNotificationPopup {
+	private class PopupImpl extends AbstractNotificationPopup {
 
-		public PopupImpl(Display display) {
+		private PopupImpl(Display display) {
 			super(display);
 		}
 

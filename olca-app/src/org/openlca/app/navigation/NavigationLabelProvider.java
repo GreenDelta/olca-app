@@ -39,8 +39,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (!(obj instanceof ModelElement))
 			return null;
 		ModelElement element = (ModelElement) obj;
-		BaseDescriptor descriptor = element.getContent();
-		return Labels.getDisplayInfoText(descriptor);
+		BaseDescriptor d = element.getContent();
+		return d.description;
 	}
 
 	@Override

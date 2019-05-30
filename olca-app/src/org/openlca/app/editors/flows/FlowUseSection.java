@@ -109,7 +109,9 @@ class FlowUseSection {
 			ProcessDescriptor d) {
 		ImageHyperlink link = new ImageHyperlink(composite, SWT.TOP);
 		link.setText(Labels.getDisplayName(d));
-		link.setToolTipText(Labels.getDisplayInfoText(d));
+		if (d.description != null) {
+			link.setToolTipText(d.description);
+		}
 		link.setImage(image);
 		link.setForeground(Colors.linkBlue());
 		Controls.onClick(link, e -> {

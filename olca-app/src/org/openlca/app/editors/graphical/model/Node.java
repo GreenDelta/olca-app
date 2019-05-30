@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 
-public abstract class Node implements Comparable<Node> {
+abstract class Node implements Comparable<Node> {
 
 	private Node parent;
 	private List<Node> children = new ArrayList<>();

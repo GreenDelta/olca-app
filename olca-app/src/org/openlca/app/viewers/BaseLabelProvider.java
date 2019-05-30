@@ -105,9 +105,9 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 	}
 
 	@Override
-	public String getToolTipText(Object element) {
-		if (element instanceof BaseDescriptor)
-			return Labels.getDisplayInfoText((BaseDescriptor) element);
+	public String getToolTipText(Object obj) {
+		if (obj instanceof BaseDescriptor)
+			return ((BaseDescriptor) obj).description;
 		return null;
 	}
 

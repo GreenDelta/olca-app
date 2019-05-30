@@ -153,7 +153,9 @@ class ResultPage extends FormPage {
 	}
 
 	private void renderDescription(FormToolkit tk, BaseDescriptor d, Composite comp) {
-		String text = Strings.cut(Labels.getDisplayInfoText(d), 400);
+		if (d.description == null)
+			return;
+		String text = Strings.cut(d.description, 400);
 		if (text != null && !text.isEmpty()) {
 			Label label = tk.createLabel(comp, text, SWT.WRAP);
 			UI.gridData(label, false, false).widthHint = 600;

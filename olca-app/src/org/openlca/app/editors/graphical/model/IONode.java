@@ -8,9 +8,9 @@ import java.util.List;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 
-public class IONode extends Node {
+class IONode extends Node {
 
-	public IONode(List<Exchange> exchanges) {
+	IONode(List<Exchange> exchanges) {
 		List<Exchange> inputs = filter(exchanges, true);
 		List<Exchange> outputs = filter(exchanges, false);
 		int len = Math.max(inputs.size(), outputs.size());

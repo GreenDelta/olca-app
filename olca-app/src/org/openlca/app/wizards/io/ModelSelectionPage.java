@@ -21,9 +21,9 @@ import org.openlca.app.Preferences;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.navigation.NavigationComparator;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
-import org.openlca.app.navigation.NavigationComparator;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.util.Colors;
@@ -32,7 +32,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
-public class ModelSelectionPage extends WizardPage {
+class ModelSelectionPage extends WizardPage {
 
 	private ModelType[] types;
 	private File exportDestination;
@@ -41,7 +41,7 @@ public class ModelSelectionPage extends WizardPage {
 	private boolean targetIsDir;
 	private String fileExtension;
 
-	public static ModelSelectionPage forDirectory(ModelType... types) {
+	static ModelSelectionPage forDirectory(ModelType... types) {
 		ModelSelectionPage page = new ModelSelectionPage(types);
 		page.targetIsDir = true;
 		return page;
@@ -50,12 +50,8 @@ public class ModelSelectionPage extends WizardPage {
 	/**
 	 * For the file extension please use only the extension, e.g. zip instead of
 	 * *.zip
-	 * 
-	 * @param extension
-	 * @param types
-	 * @return
 	 */
-	public static ModelSelectionPage forFile(String extension,
+	static ModelSelectionPage forFile(String extension,
 			ModelType... types) {
 		ModelSelectionPage page = new ModelSelectionPage(types);
 		page.targetIsDir = false;
@@ -115,7 +111,7 @@ public class ModelSelectionPage extends WizardPage {
 		}
 	}
 
-	public void checkCompletion() {
+	void checkCompletion() {
 		setPageComplete(exportDestination != null
 				&& selectedComponents.size() > 0);
 	}

@@ -15,7 +15,7 @@ import org.openlca.core.model.ProcessType;
 
 import com.google.common.base.Strings;
 
-public class LinkingConfigPanel {
+class LinkingConfigPanel {
 
 	private Button ignoreProvidersRadio;
 	private Button preferProvidersRadio;
@@ -27,7 +27,7 @@ public class LinkingConfigPanel {
 	private Button cutoffCheck;
 	private Text cutoffText;
 
-	public LinkingConfigPanel(Composite comp) {
+	LinkingConfigPanel(Composite comp) {
 		create(comp);
 	}
 

@@ -16,11 +16,11 @@ import org.openlca.util.Strings;
  * A text with label and change button which shows the ILCD connection
  * parameters. When the change button is clicked the preference page opens.
  */
-public class ConnectionText {
+class ConnectionText {
 
 	private Text text;
 
-	public ConnectionText(Composite parent) {
+	ConnectionText(Composite parent) {
 		init(parent);
 	}
 

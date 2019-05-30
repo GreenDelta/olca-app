@@ -6,11 +6,11 @@ import org.eclipse.jface.viewers.ICheckStateListener;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 
-public class NavigationTreeCheck implements ICheckStateListener {
+class NavigationTreeCheck implements ICheckStateListener {
 
 	private CheckboxTreeViewer viewer;
 
-	public NavigationTreeCheck(CheckboxTreeViewer viewer) {
+	NavigationTreeCheck(CheckboxTreeViewer viewer) {
 		this.viewer = viewer;
 	}
 

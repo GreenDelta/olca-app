@@ -21,9 +21,9 @@ import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
-public class InfoSection {
+class InfoSection {
 
-	public static void create(Composite body, FormToolkit toolkit, CalculationSetup setup) {
+	static void create(Composite body, FormToolkit toolkit, CalculationSetup setup) {
 		if (setup == null || setup.productSystem == null)
 			return;
 		Composite comp = UI.formSection(body, toolkit, M.GeneralInformation);

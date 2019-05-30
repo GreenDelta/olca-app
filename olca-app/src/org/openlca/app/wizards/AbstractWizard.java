@@ -16,7 +16,7 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractWizard<T extends CategorizedEntity> extends
+abstract class AbstractWizard<T extends CategorizedEntity> extends
 		Wizard implements INewModelWizard {
 
 	private Logger log = LoggerFactory.getLogger(getClass());

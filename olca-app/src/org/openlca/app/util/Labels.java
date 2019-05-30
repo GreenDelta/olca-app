@@ -82,12 +82,6 @@ public class Labels {
 		return text;
 	}
 
-	public static String getDisplayInfoText(BaseDescriptor d) {
-		if (d == null)
-			return "";
-		return d.description;
-	}
-
 	public static String getRefUnit(FlowDescriptor flow) {
 		if (flow == null)
 			return "";

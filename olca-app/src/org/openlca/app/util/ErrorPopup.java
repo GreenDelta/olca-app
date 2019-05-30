@@ -14,15 +14,11 @@ import org.slf4j.LoggerFactory;
 /**
  * A pop-up for error messages.
  */
-public class ErrorPopup extends Popup {
+class ErrorPopup extends Popup {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public ErrorPopup(String message) {
-		this(null, message);
-	}
-
-	public ErrorPopup(String title, String message) {
+	private ErrorPopup(String title, String message) {
 		super(title, message);
 		defaultTitle(M.ErrorPopupTitle);
 		popupShellImage(Icon.ERROR);
@@ -44,11 +40,11 @@ public class ErrorPopup extends Popup {
 		});
 	}
 
-	public static void show(final String message) {
+	static void show(String message) {
 		show(null, message);
 	}
 
-	public static void show(final String title, final String message) {
+	static void show(String title, String message) {
 		new ErrorPopup(title, message).show();
 	}
 
