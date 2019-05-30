@@ -46,6 +46,10 @@ public class FlowPropertyViewer extends
 					return Strings.compare(p1.name, p2.name);
 				return c2 - c1;
 			});
+			if (props.size() > 10) {
+				props.subList(10, props.size()).sort(
+						(p1, p2) -> Strings.compare(p1.name, p2.name));
+			}
 			setInput(props.toArray(
 					new FlowPropertyDescriptor[props.size()]));
 		} catch (Exception e) {
