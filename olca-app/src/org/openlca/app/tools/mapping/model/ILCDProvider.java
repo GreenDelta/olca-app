@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 public class ILCDProvider implements IProvider {
 
 	public final File file;
+	private List<FlowRef> refs;
 
 	private ILCDProvider(File file) {
 		this.file = file;
@@ -50,7 +51,9 @@ public class ILCDProvider implements IProvider {
 
 	@Override
 	public List<FlowRef> getFlowRefs() {
-		List<FlowRef> refs = new ArrayList<>();
+		if (refs != null)
+			return refs;
+		refs = new ArrayList<>();
 		try (ZipStore store = new ZipStore(file)) {
 
 			// collect units
@@ -108,7 +111,6 @@ public class ILCDProvider implements IProvider {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("failed to get flow refs", e);
 		}
-
 		return refs;
 	}
 

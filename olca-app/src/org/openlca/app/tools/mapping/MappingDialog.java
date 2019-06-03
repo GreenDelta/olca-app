@@ -40,7 +40,7 @@ class MappingDialog extends FormDialog {
 	private final MappingTool tool;
 	private final FlowMapEntry entry;
 
-	MappingDialog(MappingTool tool, FlowMapEntry entry) {
+	private MappingDialog(MappingTool tool, FlowMapEntry entry) {
 		super(UI.shell());
 		this.tool = tool;
 		this.entry = entry;
