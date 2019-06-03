@@ -164,11 +164,12 @@ public class ModelSelectionDialog extends FormDialog {
 	}
 
 	@Override
-	protected Point getInitialLocation(Point initialSize) {
-		Point loc = super.getInitialLocation(initialSize);
-		int marginTop = (getParentShell().getSize().y - initialSize.y) / 3;
-		if (marginTop < 0)
+	protected Point getInitialLocation(Point size) {
+		Point loc = super.getInitialLocation(size);
+		int marginTop = (getParentShell().getSize().y - size.y) / 3;
+		if (marginTop < 0) {
 			marginTop = 0;
+		}
 		return new Point(loc.x, loc.y + marginTop);
 	}
 

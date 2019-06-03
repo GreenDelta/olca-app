@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -32,7 +33,9 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.IDatabase;
+import org.openlca.io.maps.FlowMapEntry;
 
 class MappingPage extends FormPage {
 
@@ -137,6 +140,16 @@ class MappingPage extends FormPage {
 		double w = 1.0 / 9.0;
 		Tables.bindColumnWidths(table, w, w, w, w, w, w, w, w, w);
 		table.setInput(this.tool.mapping.entries);
+
+		// TODO: bind actions: edit/delete/sync(all)
+		Tables.onDoubleClick(table, _e -> {
+			FlowMapEntry e = Viewers.getFirstSelected(table);
+			if (e != null) {
+				if (Dialog.OK == MappingDialog.open(tool, e)) {
+					table.refresh();
+				}
+			}
+		});
 	}
 
 	private class ProviderRow {
