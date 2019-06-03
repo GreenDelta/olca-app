@@ -2,12 +2,19 @@ package org.openlca.app.tools.mapping;
 
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Hyperlink;
+import org.openlca.app.M;
+import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.util.Fn;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.FlowType;
 import org.openlca.io.maps.FlowMapEntry;
+import org.openlca.io.maps.FlowRef;
+import org.openlca.util.Strings;
 
 class MappingDialog extends FormDialog {
 
@@ -56,6 +63,121 @@ class MappingDialog extends FormDialog {
 			UI.gridData(label, true, false);
 		});
 
+		new RefPanel(entry.sourceFlow, true).render(comp, tk);
+		new RefPanel(entry.targetFlow, false).render(comp, tk);
 	}
 
+	private class RefPanel {
+
+		final FlowRef ref;
+		final boolean forSource;
+
+		Hyperlink flowLink;
+		Label categoryLabel;
+		Label propertyLabel;
+		Label unitLabel;
+		Hyperlink providerLink;
+
+		RefPanel(FlowRef ref, boolean forSource) {
+			this.ref = ref;
+			this.forSource = forSource;
+		}
+
+		void render(Composite parent, FormToolkit tk) {
+			Composite comp = tk.createComposite(parent);
+			UI.gridLayout(comp, 2, 15, 10);
+			UI.formLabel(comp, tk, M.Flow);
+			flowLink = UI.formLink(comp, tk, "");
+			UI.formLabel(comp, tk, M.Category);
+			categoryLabel = UI.formLabel(comp, tk, "");
+			UI.formLabel(comp, tk, M.FlowProperty);
+			propertyLabel = UI.formLabel(comp, tk, "");
+			UI.formLabel(comp, tk, M.Unit);
+			unitLabel = UI.formLabel(comp, tk, "");
+			if (canHaveProvider()) {
+				UI.formLabel(comp, tk, M.Provider);
+				providerLink = UI.formLink(comp, tk, "");
+			}
+			updateLabels();
+		}
+
+		private void updateLabels() {
+			int maxLen = 80;
+
+			// flow name
+			if (ref.flow == null) {
+				flowLink.setText("- none -");
+			} else {
+				String t = ref.flow.name;
+				if (t == null) {
+					t = ref.flow.refId;
+				}
+				if (t == null) {
+					t = "?";
+				}
+				if (Strings.notEmpty(ref.flowLocation)) {
+					t += " - " + ref.flowLocation;
+				}
+				flowLink.setText(Strings.cut(t, maxLen));
+				flowLink.setToolTipText(t);
+			}
+
+			// category path
+			if (Strings.nullOrEmpty(ref.flowCategory)) {
+				categoryLabel.setText("");
+			} else {
+				categoryLabel.setText(
+						Strings.cutLeft(ref.flowCategory, maxLen));
+				categoryLabel.setToolTipText(ref.flowCategory);
+			}
+
+			// flow property
+			if (ref.property == null || ref.property.name == null) {
+				propertyLabel.setText("");
+			} else {
+				propertyLabel.setText(ref.property.name);
+				propertyLabel.setToolTipText(ref.property.name);
+			}
+
+			// unit
+			if (ref.unit == null || ref.unit.name == null) {
+				unitLabel.setText("");
+			} else {
+				unitLabel.setText(ref.unit.name);
+				unitLabel.setToolTipText(ref.unit.name);
+			}
+
+			// provider
+			if (providerLink != null) {
+				if (ref.provider == null) {
+					providerLink.setText("- none -");
+				} else {
+					String t = ref.provider.name;
+					if (t == null) {
+						t = ref.provider.refId;
+					}
+					if (t == null) {
+						t = "?";
+					}
+					if (ref.providerLocation != null) {
+						t += ref.providerLocation;
+					}
+					providerLink.setText(Strings.cut(t, maxLen));
+					providerLink.setToolTipText(t);
+				}
+			}
+			flowLink.getParent().pack();
+		}
+
+		boolean canHaveProvider() {
+			// TODO: as it is also possible to create mappings in via this
+			// dialog, there may is not target flow assigned yet but we still
+			// should be able to select a target provider...
+			return !forSource
+					&& tool.targetSystem instanceof DBProvider
+					&& ref.flow != null
+					&& (ref.flow.flowType == FlowType.PRODUCT_FLOW
+							|| ref.flow.flowType == FlowType.WASTE_FLOW);
+		}
+	}
 }
