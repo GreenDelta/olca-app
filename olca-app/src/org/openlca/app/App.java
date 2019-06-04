@@ -82,9 +82,9 @@ public class App {
 	}
 
 	/**
-	 * Returns the version of the openLCA application. If there is a version defined
-	 * in the ini-file (-olcaVersion argument) this is returned. Otherwise the
-	 * version of the application bundle is returned.
+	 * Returns the version of the openLCA application. If there is a version
+	 * defined in the ini-file (-olcaVersion argument) this is returned.
+	 * Otherwise the version of the application bundle is returned.
 	 */
 	public static String getVersion() {
 		String version = CommandArgument.VERSION.getValue();
@@ -137,8 +137,8 @@ public class App {
 	}
 
 	/**
-	 * Returns true if the given data set is currently opened in an editor that has
-	 * a dirty (= unsaved) state.
+	 * Returns true if the given data set is currently opened in an editor that
+	 * has a dirty (= unsaved) state.
 	 */
 	public static boolean hasDirtyEditor(RootEntity e) {
 		if (e == null)
@@ -147,8 +147,8 @@ public class App {
 	}
 
 	/**
-	 * Returns true if the given data set is currently opened in an editor that has
-	 * a dirty (= unsaved) state.
+	 * Returns true if the given data set is currently opened in an editor that
+	 * has a dirty (= unsaved) state.
 	 */
 	public static boolean hasDirtyEditor(BaseDescriptor d) {
 		IEditorReference ref = findEditor(d);
@@ -183,17 +183,17 @@ public class App {
 	}
 
 	/**
-	 * Wraps a runnable in a job and executes it using the Eclipse jobs framework.
-	 * No UI access is allowed for the runnable.
+	 * Wraps a runnable in a job and executes it using the Eclipse jobs
+	 * framework. No UI access is allowed for the runnable.
 	 */
 	public static Job run(String name, Runnable runnable) {
 		return run(name, runnable, null);
 	}
 
 	/**
-	 * See {@link App#run(String, Runnable)}. Additionally, this method allows to
-	 * give a callback which is executed in the UI thread when the runnable is
-	 * finished.
+	 * See {@link App#run(String, Runnable)}. Additionally, this method allows
+	 * to give a callback which is executed in the UI thread when the runnable
+	 * is finished.
 	 */
 	public static Job run(String name, Runnable runnable, Runnable callback) {
 		WrappedJob job = new WrappedJob(name, runnable);
@@ -223,10 +223,10 @@ public class App {
 		IProgressService progress = PlatformUI.getWorkbench()
 				.getProgressService();
 		try {
-			progress.run(true, false, (monitor) -> {
-				monitor.beginTask(name, IProgressMonitor.UNKNOWN);
+			progress.run(true, false, m -> {
+				m.beginTask(name, IProgressMonitor.UNKNOWN);
 				fn.run();
-				monitor.done();
+				m.done();
 				if (callback != null) {
 					WrappedUIJob uiJob = new WrappedUIJob(name, callback);
 					uiJob.schedule();

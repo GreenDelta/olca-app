@@ -2,9 +2,12 @@ package org.openlca.app.tools.mapping;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -14,6 +17,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -26,28 +30,33 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.util.Strings;
 
 public class FlowRefDialog extends FormDialog {
 
-	public static void open(IProvider provider) {
-		if (provider == null)
+	public static void open(
+			IProvider provider, Consumer<Optional<FlowRef>> fn) {
+		if (provider == null || fn == null)
 			return;
-		AtomicReference<Tree> ar = new AtomicReference<>();
+		AtomicReference<Tree> treeRef = new AtomicReference<>();
 		App.runWithProgress("Collect flows and build tree ...", () -> {
 			Tree tree = Tree.build(provider.getFlowRefs());
-			ar.set(tree);
+			treeRef.set(tree);
 		}, () -> {
-			Tree tree = ar.get();
-			if (tree != null) {
-				FlowRefDialog dialog = new FlowRefDialog(tree);
-				dialog.open();
+			Tree tree = treeRef.get();
+			FlowRefDialog dialog = new FlowRefDialog(tree);
+			if (dialog.open() == OK) {
+				fn.accept(Optional.ofNullable(dialog.selected));
+			} else {
+				fn.accept(Optional.empty());
 			}
 		});
 	}
 
+	private FlowRef selected;
 	private final Tree tree;
 
 	private FlowRefDialog(Tree tree) {
@@ -76,6 +85,21 @@ public class FlowRefDialog extends FormDialog {
 		viewer.setLabelProvider(tree);
 		viewer.setFilters(new Filter(filterText, viewer));
 		viewer.setInput(tree);
+
+		viewer.addSelectionChangedListener(e -> {
+			Object obj = Viewers.getFirst(e.getSelection());
+			if (obj instanceof FlowRef) {
+				selected = (FlowRef) obj;
+			}
+			Button ok = getButton(IDialogConstants.OK_ID);
+			ok.setEnabled(selected != null);
+		});
+	}
+
+	@Override
+	protected void createButtonsForButtonBar(Composite parent) {
+		super.createButtonsForButtonBar(parent);
+		getButton(IDialogConstants.OK_ID).setEnabled(false);
 	}
 
 	@Override
