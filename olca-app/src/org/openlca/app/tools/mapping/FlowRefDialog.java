@@ -3,8 +3,15 @@ package org.openlca.app.tools.mapping;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -13,60 +20,190 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.ModelType;
 import org.openlca.io.maps.FlowRef;
+import org.openlca.util.Strings;
 
 public class FlowRefDialog extends FormDialog {
 
 	public static void open(IProvider provider) {
 		if (provider == null)
 			return;
-		AtomicReference<List<FlowRef>> ar = new AtomicReference<>();
-		App.runWithProgress("Collect flows ...", () -> {
-			ar.set(provider.getFlowRefs());
+		AtomicReference<Tree> ar = new AtomicReference<>();
+		App.runWithProgress("Collect flows and build tree ...", () -> {
+			Tree tree = Tree.build(provider.getFlowRefs());
+			ar.set(tree);
 		}, () -> {
-			List<FlowRef> refs = ar.get();
-			if (refs != null) {
-				FlowRefDialog dialog = new FlowRefDialog(refs);
+			Tree tree = ar.get();
+			if (tree != null) {
+				FlowRefDialog dialog = new FlowRefDialog(tree);
 				dialog.open();
 			}
 		});
 	}
 
-	private final List<FlowRef> flowRefs;
+	private final Tree tree;
 	private Text filterText;
 
-	private FlowRefDialog(List<FlowRef> flowRefs) {
+	private FlowRefDialog(Tree tree) {
 		super(UI.shell());
-		this.flowRefs = flowRefs;
+		this.tree = tree;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(mform.getForm(), tk);
-		UI.gridLayout(body, 1);
+		UI.gridLayout(body, 1, 10, 10);
 
 		Composite filterComp = tk.createComposite(body);
-		UI.gridLayout(filterComp, 2);
-		UI.gridData(filterComp, true, true);
+		UI.gridLayout(filterComp, 2, 10, 0);
+		UI.gridData(filterComp, true, false);
 		Label filterLabel = UI.formLabel(filterComp, tk, M.Filter);
 		filterLabel.setFont(UI.boldFont());
 		filterText = UI.formText(filterComp, SWT.SEARCH);
 		UI.gridData(filterText, true, false);
 
+		TreeViewer viewer = new TreeViewer(body,
+				SWT.BORDER | SWT.SINGLE | SWT.VIRTUAL);
+		UI.gridData(viewer.getControl(), true, true);
+		viewer.setContentProvider(tree);
+		viewer.setLabelProvider(tree);
+		// App.runInUI("fill tree", () -> viewer.setInput(tree));
+		viewer.setInput(tree);
 	}
 
-	private class Tree {
+	@Override
+	protected Point getInitialSize() {
+		int width = 800;
+		int height = 800;
+		Rectangle shellBounds = getShell().getDisplay().getBounds();
+		int shellWidth = shellBounds.x;
+		int shellHeight = shellBounds.y;
+		if (shellWidth > 0 && shellWidth < width)
+			width = shellWidth;
+		if (shellHeight > 0 && shellHeight < height)
+			height = shellHeight;
+		return new Point(width, height);
+	}
+
+	private static class Tree extends ColumnLabelProvider
+			implements ITreeContentProvider {
 
 		private final Node root = new Node();
 
+		static Tree build(List<FlowRef> refs) {
+			Tree tree = new Tree();
+			for (FlowRef ref : refs) {
+				Node node = tree.getNode(ref.flowCategory);
+				node.refs.add(ref);
+			}
+			tree.root.sort();
+			return tree;
+		}
+
+		private Node getNode(String path) {
+			if (Strings.nullOrEmpty(path))
+				return root;
+			String[] segs = path.split("/");
+			Node parent = root;
+			for (String seg : segs) {
+				String s = seg.trim();
+				if (Strings.nullOrEmpty(s))
+					continue;
+				Node node = parent.childs.stream()
+						.filter(n -> s.equalsIgnoreCase(n.category))
+						.findFirst().orElse(null);
+				if (node == null) {
+					node = new Node();
+					node.category = s;
+					parent.childs.add(node);
+				}
+				parent = node;
+			}
+			return parent;
+		}
+
+		@Override
+		public Object[] getElements(Object obj) {
+			if (!(obj instanceof Tree))
+				return null;
+			Tree tree = (Tree) obj;
+			return getChildren(tree.root);
+		}
+
+		@Override
+		public Object[] getChildren(Object obj) {
+			if (!(obj instanceof Node))
+				return null;
+			Node n = (Node) obj;
+			return Stream.concat(
+					n.childs.stream(), n.refs.stream()).toArray();
+		}
+
+		@Override
+		public Object getParent(Object obj) {
+			return null;
+		}
+
+		@Override
+		public boolean hasChildren(Object obj) {
+			if (!(obj instanceof Node))
+				return false;
+			Node node = (Node) obj;
+			return !node.childs.isEmpty()
+					|| !node.refs.isEmpty();
+		}
+
+		@Override
+		public String getText(Object obj) {
+			if (obj instanceof Node)
+				return ((Node) obj).category;
+			if (obj instanceof FlowRef)
+				return label((FlowRef) obj);
+			return "?";
+		}
+
+		@Override
+		public Image getImage(Object obj) {
+			if (obj instanceof Node)
+				return Images.getForCategory(ModelType.FLOW);
+			if (!(obj instanceof FlowRef))
+				return null;
+			FlowRef ref = (FlowRef) obj;
+			if (ref.flow == null || ref.flow.flowType == null)
+				return Images.get(ModelType.FLOW);
+			return Images.get(ref.flow.flowType);
+		}
 	}
 
-	private class Node {
+	private static class Node {
 		String category;
 		final List<Node> childs = new ArrayList<>();
 		final List<FlowRef> refs = new ArrayList<>();
+
+		void sort() {
+			childs.forEach(n -> n.sort());
+			childs.sort((n1, n2) -> Strings.compare(n1.category, n2.category));
+			refs.sort((r1, r2) -> Strings.compare(label(r1), label(r2)));
+		}
+	}
+
+	private static String label(FlowRef ref) {
+		if (ref == null || ref.flow == null)
+			return "- none -";
+		String s = ref.flow.name != null
+				? ref.flow.name
+				: ref.flow.refId;
+		if (s == null) {
+			s = "?";
+		}
+		if (ref.flowLocation != null) {
+			s += " - " + ref.flowLocation;
+		}
+		return s;
 	}
 }
