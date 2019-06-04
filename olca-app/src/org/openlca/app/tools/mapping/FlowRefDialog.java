@@ -8,6 +8,8 @@ import java.util.stream.Stream;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -15,6 +17,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -46,7 +49,6 @@ public class FlowRefDialog extends FormDialog {
 	}
 
 	private final Tree tree;
-	private Text filterText;
 
 	private FlowRefDialog(Tree tree) {
 		super(UI.shell());
@@ -64,7 +66,7 @@ public class FlowRefDialog extends FormDialog {
 		UI.gridData(filterComp, true, false);
 		Label filterLabel = UI.formLabel(filterComp, tk, M.Filter);
 		filterLabel.setFont(UI.boldFont());
-		filterText = UI.formText(filterComp, SWT.SEARCH);
+		Text filterText = UI.formText(filterComp, SWT.SEARCH);
 		UI.gridData(filterText, true, false);
 
 		TreeViewer viewer = new TreeViewer(body,
@@ -72,7 +74,7 @@ public class FlowRefDialog extends FormDialog {
 		UI.gridData(viewer.getControl(), true, true);
 		viewer.setContentProvider(tree);
 		viewer.setLabelProvider(tree);
-		// App.runInUI("fill tree", () -> viewer.setInput(tree));
+		viewer.setFilters(new Filter(filterText, viewer));
 		viewer.setInput(tree);
 	}
 
@@ -205,5 +207,55 @@ public class FlowRefDialog extends FormDialog {
 			s += " - " + ref.flowLocation;
 		}
 		return s;
+	}
+
+	private static class Filter extends ViewerFilter {
+
+		private String term = null;
+
+		public Filter(Text text, TreeViewer viewer) {
+			text.addModifyListener(e -> {
+				term = text.getText().trim().toLowerCase();
+				viewer.refresh();
+				expand(viewer);
+			});
+		}
+
+		private void expand(TreeViewer viewer) {
+			TreeItem[] items = viewer.getTree().getItems();
+			while (items != null && items.length > 0) {
+				TreeItem next = items[0];
+				next.setExpanded(true);
+				for (int i = 1; i < items.length; i++)
+					items[i].setExpanded(false);
+				items = next.getItems();
+				viewer.refresh();
+			}
+		}
+
+		@Override
+		public boolean select(Viewer viewer, Object parent, Object obj) {
+			if (Strings.nullOrEmpty(term))
+				return true;
+			return matches(obj);
+		}
+
+		private boolean matches(Object obj) {
+			if (obj instanceof FlowRef)
+				return label((FlowRef) obj)
+						.toLowerCase().contains(term);
+			if (!(obj instanceof Node))
+				return false;
+			Node node = (Node) obj;
+			for (FlowRef ref : node.refs) {
+				if (matches(ref))
+					return true;
+			}
+			for (Node child : node.childs) {
+				if (matches(child))
+					return true;
+			}
+			return false;
+		}
 	}
 }

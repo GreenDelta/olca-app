@@ -13,11 +13,11 @@ import org.openlca.app.util.Labels;
  */
 public class ModelTextFilter extends ViewerFilter {
 
-	private Text filterText;
+	private final Text filterText;
 
-	public ModelTextFilter(Text filterText, final TreeViewer viewer) {
-		this.filterText = filterText;
-		filterText.addModifyListener((e) -> {
+	public ModelTextFilter(Text text, TreeViewer viewer) {
+		this.filterText = text;
+		text.addModifyListener(e -> {
 			viewer.refresh();
 			expand(viewer);
 		});
