@@ -35,9 +35,9 @@ import org.openlca.core.model.ModelType;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.util.Strings;
 
-public class FlowRefDialog extends FormDialog {
+class FlowRefDialog extends FormDialog {
 
-	public static void open(
+	static void open(
 			IProvider provider, Consumer<Optional<FlowRef>> fn) {
 		if (provider == null || fn == null)
 			return;

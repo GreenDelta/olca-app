@@ -9,6 +9,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.M;
 import org.openlca.app.tools.mapping.model.DBProvider;
+import org.openlca.app.tools.mapping.model.IProvider;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.Error;
 import org.openlca.app.util.Fn;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.FlowType;
@@ -40,6 +43,8 @@ class MappingDialog extends FormDialog {
 	private final MappingTool tool;
 	private final FlowMapEntry entry;
 
+	private IManagedForm mform;
+
 	private MappingDialog(MappingTool tool, FlowMapEntry entry) {
 		super(UI.shell());
 		this.tool = tool;
@@ -48,6 +53,7 @@ class MappingDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
+		this.mform = mform;
 		FormToolkit tk = mform.getToolkit();
 		Composite body = mform.getForm().getBody();
 		body.setLayout(new FillLayout());
@@ -65,6 +71,7 @@ class MappingDialog extends FormDialog {
 
 		new RefPanel(entry.sourceFlow, true).render(comp, tk);
 		new RefPanel(entry.targetFlow, false).render(comp, tk);
+		mform.reflow(true);
 	}
 
 	private class RefPanel {
@@ -86,8 +93,27 @@ class MappingDialog extends FormDialog {
 		void render(Composite parent, FormToolkit tk) {
 			Composite comp = tk.createComposite(parent);
 			UI.gridLayout(comp, 2, 15, 10);
+
 			UI.formLabel(comp, tk, M.Flow);
 			flowLink = UI.formLink(comp, tk, "");
+			Controls.onClick(flowLink, _e -> {
+				IProvider p = forSource
+						? tool.sourceSystem
+						: tool.targetSystem;
+
+				if (p == null) {
+					Error.showBox("Cannot select flow",
+							"No data source for flows connected");
+					return;
+				}
+
+				FlowRefDialog.open(p, opt -> {
+					if (!opt.isPresent())
+						return;
+					updateWith(opt.get());
+				});
+			});
+
 			UI.formLabel(comp, tk, M.Category);
 			categoryLabel = UI.formLabel(comp, tk, "");
 			UI.formLabel(comp, tk, M.FlowProperty);
@@ -101,8 +127,25 @@ class MappingDialog extends FormDialog {
 			updateLabels();
 		}
 
+		private void updateWith(FlowRef newRef) {
+			if (newRef == null) {
+				ref.flow = null;
+				ref.flowCategory = null;
+				ref.flowLocation = null;
+				ref.property = null;
+				ref.unit = null;
+				return;
+			}
+			ref.flow = newRef.flow;
+			ref.flowCategory = newRef.flowCategory;
+			ref.flowLocation = newRef.flowLocation;
+			ref.property = newRef.property;
+			ref.unit = newRef.unit;
+			updateLabels();
+		}
+
 		private void updateLabels() {
-			int maxLen = 80;
+			int maxLen = 40;
 
 			// flow name
 			if (ref.flow == null) {
@@ -166,7 +209,8 @@ class MappingDialog extends FormDialog {
 					providerLink.setToolTipText(t);
 				}
 			}
-			flowLink.getParent().pack();
+			flowLink.getParent().getParent().pack();
+			mform.reflow(true);
 		}
 
 		boolean canHaveProvider() {
