@@ -93,14 +93,15 @@ public class DBProvider implements IProvider {
 	 * returns it sets an error state to the given reference. Otherwise, it will
 	 * mutate the flow reference to have the respective database IDs of the
 	 * corresponding flow and sets the property and unit to the respective
-	 * defaults if they are missing.
+	 * defaults if they are missing. Also, it will return the matching flow in
+	 * case there was no error (otherwise null).
 	 */
-	public void sync(FlowRef ref) {
+	public Flow sync(FlowRef ref) {
 		if (ref == null)
-			return;
+			return null;
 		if (ref.flow == null || ref.flow.refId == null) {
 			ref.status = Status.error("missing flow reference with UUID");
-			return;
+			return null;
 		}
 
 		// we update the status in the following sync. steps
@@ -111,7 +112,7 @@ public class DBProvider implements IProvider {
 		if (flow == null) {
 			ref.status = Status.error("there is no flow with id="
 					+ ref.flow.refId + " in the database");
-			return;
+			return null;
 		}
 
 		// check the flow property
@@ -132,7 +133,7 @@ public class DBProvider implements IProvider {
 		if (prop == null || prop.unitGroup == null) {
 			ref.status = Status.error("the flow in the database has"
 					+ " no corresponding flow property");
-			return;
+			return null;
 		}
 
 		// check the unit
@@ -150,7 +151,7 @@ public class DBProvider implements IProvider {
 		if (u == null) {
 			ref.status = Status.error("the flow in the database has"
 					+ " no corresponding unit");
-			return;
+			return null;
 		}
 
 		// TODO: sync the provider
@@ -180,5 +181,6 @@ public class DBProvider implements IProvider {
 		if (ref.status == null) {
 			ref.status = Status.ok("flow in sync. with database");
 		}
+		return flow;
 	}
 }

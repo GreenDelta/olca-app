@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.openlca.app.db.Database;
+import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
@@ -135,43 +136,39 @@ public class Replacer implements Runnable {
 
 	private void buildIndices() {
 
-		// first persist all target flows in the database
+		// first persist all target flows in the database that
+		// do not have an error flag
 		List<FlowRef> targetFlows = conf.mapping.entries.stream()
-				.filter(e -> e.status != null && e.status.isOk())
+				.filter(e -> e.targetFlow != null
+						&& e.targetFlow.status != null
+						&& !e.targetFlow.status.isError())
 				.map(e -> e.targetFlow)
 				.collect(Collectors.toList());
+
 		conf.provider.persist(targetFlows, db);
 
-		FlowDao dao = new FlowDao(db);
-		for (FlowMapEntry entry : conf.mapping.entries) {
+		DBProvider dbProvider = new DBProvider(db);
+		for (FlowMapEntry e : conf.mapping.entries) {
 
 			// only do the replacement for matched mapping entries
-			if (entry.status == null || !entry.status.isOk())
+			// (both flows should have no error flag)
+			if (e.sourceFlow == null
+					|| e.sourceFlow.status == null
+					|| e.sourceFlow.status.isError()
+					|| e.targetFlow == null
+					|| e.targetFlow.status == null
+					|| e.targetFlow.status.isError())
 				continue;
 
-			// sync the source flow
-			Flow source = dao.getForRefId(entry.sourceFlow.flow.refId);
-			if (source == null) {
-				entry.status = Status.error("source flow is not in database");
+			// sync the flows
+			Flow source = dbProvider.sync(e.sourceFlow);
+			if (source == null)
 				continue;
-			}
-			if (!entry.sourceFlow.syncWith(source)) {
-				entry.status = Status.error("invalid source flow");
+			Flow target = dbProvider.sync(e.targetFlow);
+			if (target == null)
 				continue;
-			}
 
-			// sync the target flow
-			Flow target = dao.getForRefId(entry.targetFlow.flow.refId);
-			if (target == null) {
-				entry.status = Status.error("failed to import target flow");
-				continue;
-			}
-			if (!entry.targetFlow.syncWith(target)) {
-				entry.status = Status.error("invalid target flow");
-				continue;
-			}
-
-			entries.put(source.id, entry);
+			entries.put(source.id, e);
 			flows.put(source.id, source);
 			flows.put(target.id, target);
 		}
