@@ -113,7 +113,7 @@ public class Replacer implements Runnable {
 				if (flowID == null || e == null)
 					continue;
 				if (stats.hadFailures(flowID)) {
-					e.status = Status.error("Replacement error");
+					e.sourceFlow.status = Status.error("Replacement error");
 					continue;
 				}
 				if (deleteMapped && !usedFlows.contains(flowID)) {
@@ -122,9 +122,9 @@ public class Replacer implements Runnable {
 					dao.delete(flow);
 					log.info("removed mapped flow {} uuid={}",
 							Labels.getDisplayName(flow), flow.refId);
-					e.status = Status.ok("Applied and removed");
+					e.sourceFlow.status = Status.ok("Applied and removed");
 				} else {
-					e.status = Status.ok("Applied (not removed)");
+					e.sourceFlow.status = Status.ok("Applied (not removed)");
 				}
 			}
 

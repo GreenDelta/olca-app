@@ -36,7 +36,6 @@ class MappingDialog extends FormDialog {
 		entry.factor = d.entry.factor;
 		entry.sourceFlow = d.entry.sourceFlow;
 		entry.targetFlow = d.entry.targetFlow;
-		entry.status = d.entry.status;
 		return state;
 	}
 

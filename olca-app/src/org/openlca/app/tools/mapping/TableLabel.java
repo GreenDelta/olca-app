@@ -24,7 +24,7 @@ class TableLabel extends LabelProvider
 			return null;
 		FlowMapEntry e = (FlowMapEntry) obj;
 		if (col == 0)
-			return stateIcon(e.status);
+			return stateIcon(status(e));
 		if (col == 1) {
 			if (e.sourceFlow != null)
 				return Images.get(e.sourceFlow.flow);
@@ -72,11 +72,12 @@ class TableLabel extends LabelProvider
 	}
 
 	private String stateText(FlowMapEntry e) {
-		if (e == null || e.status == null)
+		Status s = status(e);
+		if (s == null)
 			return "";
-		if (e.status.message != null)
-			return e.status.message;
-		switch (e.status.type) {
+		if (s.message != null)
+			return s.message;
+		switch (s.type) {
 		case Status.OK:
 			return "ok";
 		case Status.WARNING:
@@ -100,6 +101,30 @@ class TableLabel extends LabelProvider
 			return Icon.ERROR.get();
 		default:
 			return null;
+		}
+	}
+
+	private Status status(FlowMapEntry e) {
+		if (e == null)
+			return null;
+		if (e.sourceFlow == null || e.sourceFlow.status == null)
+			return e.targetFlow == null ? null : e.targetFlow.status;
+		if (e.targetFlow == null || e.targetFlow.status == null)
+			return e.sourceFlow.status;
+		if (e.sourceFlow.status.type == e.targetFlow.status.type) {
+			return new Status(e.sourceFlow.status.type,
+					"source flow: " + e.sourceFlow.status.message
+							+ "; target flow: " + e.targetFlow.status.message);
+		}
+		switch (e.sourceFlow.status.type) {
+		case Status.OK:
+			return e.targetFlow.status;
+		case Status.WARNING:
+			return e.targetFlow.status.type == Status.OK
+					? e.sourceFlow.status
+					: e.targetFlow.status;
+		default:
+			return e.targetFlow.status;
 		}
 	}
 

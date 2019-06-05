@@ -4,7 +4,6 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.io.maps.FlowMap;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
-import org.openlca.io.maps.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +32,7 @@ public final class Matcher {
 			// finding the matches (in parallel?)
 			FlowMapEntry e = new FlowMapEntry();
 			e.sourceFlow = ref;
-			e.status = Status.error("no target flow found");
+			// TODO: e.status = Status.error("no target flow found");
 			e.factor = 1.0;
 			map.entries.add(e);
 		}
