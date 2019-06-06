@@ -167,6 +167,14 @@ public class DBProvider implements IProvider {
 		ref.property.id = prop.id;
 		ref.unit.id = u.id;
 
+		// check the name
+		if (Strings.nullOrEmpty(ref.flow.name)) {
+			ref.flow.name = flow.name;
+		} else if (!Strings.nullOrEqual(ref.flow.name, flow.name)) {
+			ref.status = Status.warn(
+					"the flow in the database has a different name");
+		}
+
 		// check the category
 		String catpath = String.join("/", Categories.path(flow.category));
 		if (Strings.nullOrEmpty(ref.flowCategory)) {
@@ -176,7 +184,25 @@ public class DBProvider implements IProvider {
 					"the flow in the database has a different category path");
 		}
 
-		// TODO: check the flow location
+		// check the flow type
+		if (ref.flow.flowType == null) {
+			ref.flow.flowType = flow.flowType;
+		} else if (ref.flow.flowType != flow.flowType) {
+			ref.status = Status.warn(
+					"the flow in the database has a different type");
+		}
+
+		// check the flow location
+		if (ref.flowLocation == null) {
+			if (flow.location != null) {
+				ref.flowLocation = flow.location.code;
+				ref.flow.location = flow.location.id;
+			}
+		} else if (flow.location == null ||
+				!Strings.nullOrEqual(ref.flowLocation, flow.location.code)) {
+			ref.status = Status.warn(
+					"the flow in the database has a different location code");
+		}
 
 		if (ref.status == null) {
 			ref.status = Status.ok("flow in sync. with database");

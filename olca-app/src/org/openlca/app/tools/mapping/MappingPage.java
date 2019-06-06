@@ -111,7 +111,7 @@ class MappingPage extends FormPage {
 			checkApply.run();
 		};
 		targetRow.onSync = () -> {
-			if (tool.targetSystem != null)
+			if (tool.targetSystem == null)
 				return;
 			App.runWithProgress(
 					"Synchronize target flows",
