@@ -61,16 +61,6 @@ public class JsonProvider implements IProvider {
 	}
 
 	@Override
-	public void syncSourceFlows(FlowMap fm) {
-		// TODO: not yet implemented
-	}
-
-	@Override
-	public void syncTargetFlows(FlowMap fm) {
-		// TODO: not yet implemented
-	}
-
-	@Override
 	public void persist(List<FlowRef> refs, IDatabase db) {
 		if (refs == null || db == null)
 			return;

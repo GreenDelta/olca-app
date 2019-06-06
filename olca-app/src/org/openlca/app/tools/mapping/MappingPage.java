@@ -101,7 +101,8 @@ class MappingPage extends FormPage {
 				return;
 			App.runWithProgress(
 					"Synchronize source flows",
-					() -> tool.sourceSystem.syncSourceFlows(tool.mapping),
+					() -> tool.targetSystem.sync(
+							tool.mapping.entries.stream().map(e -> e.sourceFlow)),
 					() -> table.setInput(tool.mapping.entries));
 		};
 
@@ -115,7 +116,8 @@ class MappingPage extends FormPage {
 				return;
 			App.runWithProgress(
 					"Synchronize target flows",
-					() -> tool.targetSystem.syncTargetFlows(tool.mapping),
+					() -> tool.targetSystem.sync(
+							tool.mapping.entries.stream().map(e -> e.targetFlow)),
 					() -> table.setInput(tool.mapping.entries));
 		};
 	}

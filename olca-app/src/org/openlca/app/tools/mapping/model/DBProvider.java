@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.openlca.app.util.Fn;
 import org.openlca.core.database.FlowDao;
@@ -16,8 +17,6 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.Descriptors;
-import org.openlca.io.maps.FlowMap;
-import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.io.maps.Status;
 import org.openlca.util.Categories;
@@ -64,21 +63,10 @@ public class DBProvider implements IProvider {
 	}
 
 	@Override
-	public void syncSourceFlows(FlowMap fm) {
-		if (fm == null)
+	public void sync(Stream<FlowRef> externalRefs) {
+		if (externalRefs == null)
 			return;
-		for (FlowMapEntry e : fm.entries) {
-			sync(e.sourceFlow);
-		}
-	}
-
-	@Override
-	public void syncTargetFlows(FlowMap fm) {
-		if (fm == null)
-			return;
-		for (FlowMapEntry e : fm.entries) {
-			sync(e.targetFlow);
-		}
+		externalRefs.forEach(this::sync);
 	}
 
 	@Override
