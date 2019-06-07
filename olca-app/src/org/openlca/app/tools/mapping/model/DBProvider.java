@@ -21,7 +21,6 @@ import org.openlca.io.maps.FlowRef;
 import org.openlca.io.maps.Status;
 import org.openlca.util.Categories;
 import org.openlca.util.CategoryPathBuilder;
-import org.openlca.util.Strings;
 
 public class DBProvider implements IProvider {
 
@@ -85,12 +84,8 @@ public class DBProvider implements IProvider {
 	 * case there was no error (otherwise null).
 	 */
 	public Flow sync(FlowRef ref) {
-		if (ref == null)
+		if (Sync.isInvalidFlowRef(ref))
 			return null;
-		if (ref.flow == null || ref.flow.refId == null) {
-			ref.status = Status.error("missing flow reference with UUID");
-			return null;
-		}
 
 		// we update the status in the following sync. steps
 		ref.status = null;
@@ -155,42 +150,13 @@ public class DBProvider implements IProvider {
 		ref.property.id = prop.id;
 		ref.unit.id = u.id;
 
-		// check the name
-		if (Strings.nullOrEmpty(ref.flow.name)) {
-			ref.flow.name = flow.name;
-		} else if (!Strings.nullOrEqual(ref.flow.name, flow.name)) {
-			ref.status = Status.warn(
-					"the flow in the database has a different name");
-		}
-
-		// check the category
-		String catpath = String.join("/", Categories.path(flow.category));
-		if (Strings.nullOrEmpty(ref.flowCategory)) {
-			ref.flowCategory = catpath;
-		} else if (!Strings.nullOrEqual(catpath, ref.flowCategory)) {
-			ref.status = Status.warn(
-					"the flow in the database has a different category path");
-		}
-
-		// check the flow type
-		if (ref.flow.flowType == null) {
-			ref.flow.flowType = flow.flowType;
-		} else if (ref.flow.flowType != flow.flowType) {
-			ref.status = Status.warn(
-					"the flow in the database has a different type");
-		}
-
-		// check the flow location
-		if (ref.flowLocation == null) {
-			if (flow.location != null) {
-				ref.flowLocation = flow.location.code;
-				ref.flow.location = flow.location.id;
-			}
-		} else if (flow.location == null ||
-				!Strings.nullOrEqual(ref.flowLocation, flow.location.code)) {
-			ref.status = Status.warn(
-					"the flow in the database has a different location code");
-		}
+		Sync.checkFlowName(ref, flow.name);
+		Sync.checkFlowCategory(ref,
+				String.join("/", Categories.path(flow.category)));
+		Sync.checkFlowType(ref, flow.flowType);
+		Sync.checkFlowLocation(ref, flow.location == null
+				? null
+				: flow.location.code);
 
 		if (ref.status == null) {
 			ref.status = Status.ok("flow in sync. with database");

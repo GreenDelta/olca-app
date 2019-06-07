@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
@@ -77,6 +78,16 @@ public class JsonProvider implements IProvider {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("failed persist flows", e);
 		}
+	}
+
+	@Override
+	public void sync(Stream<FlowRef> externalRefs) {
+		if (externalRefs == null)
+			return;
+		externalRefs.forEach(ref -> {
+			if (Sync.isInvalidFlowRef(ref))
+				return;
+		});
 	}
 
 }
