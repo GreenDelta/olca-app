@@ -102,7 +102,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 		});
 
 		UI.formLabel(comp, "");
-		Button btn = tk.createButton(comp, "Recalculate", SWT.NONE);
+		Button btn = tk.createButton(comp, M.Update, SWT.NONE);
 		Controls.onSelect(btn, e -> calculate());
 	}
 
@@ -160,7 +160,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 	}
 
 	private void calculate() {
-		App.runWithProgress("Calculate statistics ...", () -> {
+		App.runWithProgress("Updating statistics ...", () -> {
 			stats = Statistics.calculate(
 					getModel(), Cache.getEntityCache());
 		}, () -> {
