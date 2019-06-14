@@ -48,6 +48,12 @@ class MappingDialog extends FormDialog {
 		super(UI.shell());
 		this.tool = tool;
 		this.entry = entry;
+		if (entry.sourceFlow == null) {
+			entry.sourceFlow = new FlowRef();
+		}
+		if (entry.targetFlow == null) {
+			entry.targetFlow = new FlowRef();
+		}
 	}
 
 	@Override
@@ -122,6 +128,9 @@ class MappingDialog extends FormDialog {
 			if (canHaveProvider()) {
 				UI.formLabel(comp, tk, M.Provider);
 				providerLink = UI.formLink(comp, tk, "");
+			} else {
+				UI.filler(comp, tk);
+				UI.filler(comp, tk);
 			}
 			updateLabels();
 		}

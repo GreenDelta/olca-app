@@ -60,6 +60,10 @@ public class Actions {
 		};
 	}
 
+	public static Action onEdit(Runnable fn) {
+		return create(M.Edit, Icon.EDIT.descriptor(), fn);
+	}
+
 	public static Action onCalculate(Runnable fn) {
 		return create(M.CalculateResults, Icon.RUN.descriptor(), fn);
 	}
