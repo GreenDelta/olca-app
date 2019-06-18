@@ -38,13 +38,22 @@ public class Generator implements Runnable {
 					.stream().filter(f -> {
 						if (f.flow == null || f.flow.refId == null)
 							return false;
-						FlowMapEntry 
-						return true;
+						FlowMapEntry e = mapping.getEntry(f.flow.refId);
+						return e == null || e.targetFlow == null;
 					}).collect(Collectors.toList());
-			
+			if (sourceFlows.isEmpty()) {
+				log.info("found no unmapped source flows");
+				return;
+			}
+
+			for (FlowRef sourceFlow : sourceFlows) {
+				FlowMapEntry e = new FlowMapEntry();
+				e.sourceFlow = sourceFlow;
+				e.factor = 1.0;
+				mapping.entries.add(e);
+			}
 
 		} catch (Exception e) {
-
 			log.error("Generation of flow mappings failed", e);
 		}
 	}

@@ -29,9 +29,8 @@ class TableLabel extends LabelProvider
 			if (e.sourceFlow != null)
 				return Images.get(e.sourceFlow.flow);
 		}
-		if (col == 4) {
-			if (e.targetFlow != null)
-				return Images.get(e.targetFlow.flow);
+		if (col == 4 && e.targetFlow != null) {
+			return Images.get(e.targetFlow.flow);
 		}
 		if (col == 2 || col == 5)
 			return Images.getForCategory(ModelType.FLOW);
@@ -39,7 +38,8 @@ class TableLabel extends LabelProvider
 			return Images.get(ModelType.UNIT);
 		if (col == 7)
 			return Icon.FORMULA.get();
-		if (col == 8 && e.targetFlow.provider != null) {
+		if (col == 8 && e.targetFlow != null
+				&& e.targetFlow.provider != null) {
 			return Images.get(e.targetFlow.provider);
 		}
 		return null;
