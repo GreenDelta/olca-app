@@ -88,4 +88,15 @@ public class MappingTool extends SimpleFormEditor {
 		page = new MappingPage(this);
 		return page;
 	}
+
+	/**
+	 * Refreshes the flow mapping in the page. This method can be called when
+	 * the mapping was modified outside of the page (e.g. in a process that
+	 * generates new mappings).
+	 */
+	void refresh() {
+		if (page != null && page.table != null) {
+			page.table.setInput(mapping.entries);
+		}
+	}
 }

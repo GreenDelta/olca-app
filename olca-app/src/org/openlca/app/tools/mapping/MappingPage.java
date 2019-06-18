@@ -30,7 +30,7 @@ import org.openlca.io.maps.FlowMapEntry;
 class MappingPage extends FormPage {
 
 	private final MappingTool tool;
-	private TableViewer table;
+	TableViewer table;
 
 	public MappingPage(MappingTool tool) {
 		super(tool, "MappingPage", "Flow mapping");
