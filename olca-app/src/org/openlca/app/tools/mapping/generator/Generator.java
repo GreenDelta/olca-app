@@ -46,10 +46,16 @@ public class Generator implements Runnable {
 				return;
 			}
 
-			for (FlowRef sourceFlow : sourceFlows) {
+			log.info("load target flows");
+			List<FlowRef> targetFlows = targetSystem.getFlowRefs();
+			Matcher matcher = new Matcher(targetFlows);
+
+			for (FlowRef sflow : sourceFlows) {
 				FlowMapEntry e = new FlowMapEntry();
-				e.sourceFlow = sourceFlow;
-				e.factor = 1.0;
+				e.sourceFlow = sflow;
+				e.targetFlow = matcher.find(sflow);
+				e.factor = 1.0; // TODO: try to find a factor
+				// TODO: find providers for product flows
 				mapping.entries.add(e);
 			}
 
