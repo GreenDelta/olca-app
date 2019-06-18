@@ -39,6 +39,9 @@ class TableLabel extends LabelProvider
 			return Images.get(ModelType.UNIT);
 		if (col == 7)
 			return Icon.FORMULA.get();
+		if (col == 8 && e.targetFlow.provider != null) {
+			return Images.get(e.targetFlow.provider);
+		}
 		return null;
 	}
 
@@ -65,6 +68,8 @@ class TableLabel extends LabelProvider
 			return unit(e.targetFlow);
 		case 7:
 			return Numbers.format(e.factor);
+		case 8:
+			return provider(e.targetFlow);
 		default:
 			return null;
 		}
@@ -167,5 +172,21 @@ class TableLabel extends LabelProvider
 			unit += " (" + ref.property.name + ")";
 		}
 		return unit;
+	}
+
+	private String provider(FlowRef ref) {
+		if (ref == null || ref.provider == null)
+			return "";
+		String t = ref.provider.name;
+		if (t == null) {
+			t = ref.provider.refId;
+		}
+		if (t == null) {
+			t = "?";
+		}
+		if (ref.providerLocation != null) {
+			t += " - " + ref.providerLocation;
+		}
+		return t;
 	}
 }

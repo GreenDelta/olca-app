@@ -1,7 +1,13 @@
 package org.openlca.app.tools.mapping;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
+
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.FormDialog;
@@ -9,18 +15,21 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.M;
-import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Fn;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.LocationDao;
+import org.openlca.core.database.ProcessDao;
+import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
@@ -101,7 +110,7 @@ class MappingDialog extends FormDialog {
 		Label categoryLabel;
 		Label propertyLabel;
 		Label unitLabel;
-		Hyperlink providerLink;
+		ProviderCombo providerCombo;
 
 		RefPanel(FlowRef ref, boolean forSource) {
 			this.ref = ref;
@@ -141,37 +150,11 @@ class MappingDialog extends FormDialog {
 
 			// the provider link
 			if (!forSource && tool.targetSystem instanceof DBProvider) {
-				UI.formLabel(comp, tk, M.Provider);
-				providerLink = UI.formLink(comp, tk, "");
-				Controls.onClick(providerLink, e -> onSelectProvider());
+				Combo combo = UI.formCombo(comp, tk, M.Provider);
+				this.providerCombo = new ProviderCombo(ref, combo);
 			} else {
 				UI.filler(comp, tk);
 				UI.filler(comp, tk);
-			}
-			updateLabels();
-		}
-
-		private void onSelectProvider() {
-			CategorizedDescriptor d = ModelSelectionDialog.select(
-					ModelType.PROCESS);
-			if (!(d instanceof ProcessDescriptor))
-				return;
-			ProcessDescriptor p = (ProcessDescriptor) d;
-			ref.provider = p;
-			if (p.category == null) {
-				ref.providerCategory = "";
-			} else {
-				ref.providerCategory = new CategoryPathBuilder(
-						Database.get()).build(p.category);
-			}
-			if (p.location == null) {
-				ref.providerLocation = "";
-			} else {
-				Location loc = new LocationDao(
-						Database.get()).getForId(p.location);
-				ref.providerLocation = loc != null
-						? loc.code
-						: "";
 			}
 			updateLabels();
 		}
@@ -183,6 +166,9 @@ class MappingDialog extends FormDialog {
 				ref.flowLocation = null;
 				ref.property = null;
 				ref.unit = null;
+				if (providerCombo != null) {
+					providerCombo.update();
+				}
 				return;
 			}
 			ref.flow = newRef.flow;
@@ -191,6 +177,9 @@ class MappingDialog extends FormDialog {
 			ref.property = newRef.property;
 			ref.unit = newRef.unit;
 			updateLabels();
+			if (providerCombo != null) {
+				providerCombo.update();
+			}
 		}
 
 		private void updateLabels() {
@@ -239,27 +228,109 @@ class MappingDialog extends FormDialog {
 				unitLabel.setToolTipText(ref.unit.name);
 			}
 
-			// provider
-			if (providerLink != null) {
-				if (ref.provider == null) {
-					providerLink.setText("- none -");
-				} else {
-					String t = ref.provider.name;
-					if (t == null) {
-						t = ref.provider.refId;
-					}
-					if (t == null) {
-						t = "?";
-					}
-					if (ref.providerLocation != null) {
-						t += ref.providerLocation;
-					}
-					providerLink.setText(Strings.cut(t, maxLen));
-					providerLink.setToolTipText(t);
-				}
-			}
 			flowLink.getParent().getParent().pack();
 			mform.reflow(true);
+		}
+	}
+
+	private static class ProviderCombo {
+
+		private final FlowRef ref;
+		private final Combo combo;
+		private final ArrayList<ProcessDescriptor> providers = new ArrayList<>();
+
+		ProviderCombo(FlowRef ref, Combo combo) {
+			this.ref = ref;
+			this.combo = combo;
+			Controls.onSelect(combo, e -> {
+				int i = combo.getSelectionIndex() - 1;
+				if (i < 0 || i >= providers.size()) {
+					setProvider(null);
+				} else {
+					setProvider(providers.get(i));
+				}
+			});
+			update();
+		}
+
+		void update() {
+
+			if (ref.flow == null
+					|| ref.flow.refId == null
+					|| ref.flow.flowType == FlowType.ELEMENTARY_FLOW) {
+				providers.clear();
+				combo.setItems();
+				combo.setEnabled(false);
+				setProvider(null);
+				return;
+			}
+
+			IDatabase db = Database.get();
+			combo.setEnabled(true);
+
+			// collect providers
+			providers.clear();
+			long flowID = ref.flow.id;
+			FlowDao fdao = new FlowDao(db);
+			if (flowID == 0L) {
+				Flow flow = fdao.getForRefId(ref.flow.refId);
+				flowID = flow != null ? flow.id : 0L;
+			}
+			if (flowID > 0L) {
+				Set<Long> ids = ref.flow.flowType == FlowType.WASTE_FLOW
+						? fdao.getWhereInput(flowID)
+						: fdao.getWhereOutput(flowID);
+				providers.addAll(new ProcessDao(db).getDescriptors(ids));
+				Collections.sort(providers,
+						(p1, p2) -> Strings.compare(
+								Labels.getDisplayName(p1),
+								Labels.getDisplayName(p2)));
+			}
+
+			// fill the provider combo
+			String[] items = new String[providers.size() + 1];
+			items[0] = "- none -";
+			int selected = 0;
+			for (int i = 0; i < providers.size(); i++) {
+				ProcessDescriptor p = providers.get(i);
+				items[i + 1] = Labels.getDisplayName(p);
+				if (ref.provider != null
+						&& Objects.equals(p.refId, ref.provider.refId)) {
+					selected = i + 1;
+				}
+			}
+			combo.setItems(items);
+			combo.select(selected);
+			if (ref.provider != null && selected == 0) {
+				// the provider is not in the database
+				// => we set it to null
+				setProvider(null);
+			}
+		}
+
+		private void setProvider(ProcessDescriptor p) {
+			if (p == null) {
+				ref.provider = null;
+				ref.providerCategory = null;
+				ref.providerLocation = null;
+				return;
+			}
+			ref.provider = p;
+			if (p.category == null) {
+				ref.providerCategory = "";
+			} else {
+				ref.providerCategory = new CategoryPathBuilder(
+						Database.get()).build(p.category);
+			}
+			if (p.location == null) {
+				ref.providerLocation = "";
+			} else {
+				Location loc = new LocationDao(
+						Database.get()).getForId(p.location);
+				ref.providerLocation = loc != null
+						? loc.code
+						: "";
+			}
 		}
 
 	}

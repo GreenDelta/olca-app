@@ -2,7 +2,7 @@ package org.openlca.app.editors.processes.exchanges;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 import org.openlca.app.M;
@@ -78,9 +78,8 @@ class ProviderCombo extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 	}
 
 	private Set<Long> getProcessIds(Exchange e) {
-		Set<Long> ids = new HashSet<>();
 		if (e == null || e.flow == null)
-			return ids;
+			return Collections.emptySet();
 		FlowDao dao = new FlowDao(db);
 		if (e.isInput)
 			return dao.getWhereOutput(e.flow.id);
