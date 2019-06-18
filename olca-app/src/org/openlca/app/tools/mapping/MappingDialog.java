@@ -1,5 +1,6 @@
 package org.openlca.app.tools.mapping;
 
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -8,15 +9,22 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.M;
+import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.db.Database;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Fn;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.FlowType;
+import org.openlca.core.database.LocationDao;
+import org.openlca.core.model.Location;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
+import org.openlca.util.CategoryPathBuilder;
 import org.openlca.util.Strings;
 
 class MappingDialog extends FormDialog {
@@ -79,6 +87,11 @@ class MappingDialog extends FormDialog {
 		mform.reflow(true);
 	}
 
+	@Override
+	protected Point getInitialSize() {
+		return new Point(800, 450);
+	}
+
 	private class RefPanel {
 
 		final FlowRef ref;
@@ -125,12 +138,40 @@ class MappingDialog extends FormDialog {
 			propertyLabel = UI.formLabel(comp, tk, "");
 			UI.formLabel(comp, tk, M.Unit);
 			unitLabel = UI.formLabel(comp, tk, "");
-			if (canHaveProvider()) {
+
+			// the provider link
+			if (!forSource && tool.targetSystem instanceof DBProvider) {
 				UI.formLabel(comp, tk, M.Provider);
 				providerLink = UI.formLink(comp, tk, "");
+				Controls.onClick(providerLink, e -> onSelectProvider());
 			} else {
 				UI.filler(comp, tk);
 				UI.filler(comp, tk);
+			}
+			updateLabels();
+		}
+
+		private void onSelectProvider() {
+			CategorizedDescriptor d = ModelSelectionDialog.select(
+					ModelType.PROCESS);
+			if (!(d instanceof ProcessDescriptor))
+				return;
+			ProcessDescriptor p = (ProcessDescriptor) d;
+			ref.provider = p;
+			if (p.category == null) {
+				ref.providerCategory = "";
+			} else {
+				ref.providerCategory = new CategoryPathBuilder(
+						Database.get()).build(p.category);
+			}
+			if (p.location == null) {
+				ref.providerLocation = "";
+			} else {
+				Location loc = new LocationDao(
+						Database.get()).getForId(p.location);
+				ref.providerLocation = loc != null
+						? loc.code
+						: "";
 			}
 			updateLabels();
 		}
@@ -221,15 +262,5 @@ class MappingDialog extends FormDialog {
 			mform.reflow(true);
 		}
 
-		boolean canHaveProvider() {
-			// TODO: as it is also possible to create mappings in via this
-			// dialog, there may is not target flow assigned yet but we still
-			// should be able to select a target provider...
-			return !forSource
-					&& tool.targetSystem instanceof DBProvider
-					&& ref.flow != null
-					&& (ref.flow.flowType == FlowType.PRODUCT_FLOW
-							|| ref.flow.flowType == FlowType.WASTE_FLOW);
-		}
 	}
 }
