@@ -46,6 +46,9 @@ class Matcher {
 		if (sflow.flow == null || tflow.flow == null)
 			return 0;
 		double nameScore = score(sflow.flow.name, tflow.flow.name);
+		if (nameScore == 0)
+			return 0;
+
 		double catScore = score(sflow.flowCategory, tflow.flowCategory);
 		double locScore = score(sflow.flowLocation, tflow.flowLocation);
 
@@ -93,7 +96,7 @@ class Matcher {
 		List<String> words = new ArrayList<>();
 		for (char c : s.trim().toLowerCase().toCharArray()) {
 			if (Character.isWhitespace(c)
-					|| c == ',' || c == ';' || c == '/' || c == '-') {
+					|| !Character.isAlphabetic(c)) {
 				if (buf.length() > 0) {
 					words.add(buf.toString());
 					buf = new StringBuilder();

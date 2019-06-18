@@ -1,5 +1,6 @@
 package org.openlca.app.tools.mapping;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jface.action.Action;
@@ -155,10 +156,10 @@ class MappingPage extends FormPage {
 		Tables.onDoubleClick(table, _e -> edit.run());
 
 		Action delete = Actions.onRemove(() -> {
-			FlowMapEntry e = Viewers.getFirstSelected(table);
-			if (e == null)
+			List<FlowMapEntry> entries = Viewers.getAllSelected(table);
+			if (entries.isEmpty())
 				return;
-			tool.mapping.entries.remove(e);
+			tool.mapping.entries.removeAll(entries);
 			table.refresh();
 		});
 
