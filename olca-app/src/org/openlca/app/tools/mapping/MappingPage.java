@@ -123,15 +123,13 @@ class MappingPage extends FormPage {
 				"Status",
 				"Source flow",
 				"Source category",
-				"Source unit",
 				"Target flow",
 				"Target category",
-				"Target unit",
 				"Conversion factor",
 				"Default provider");
 		table.setLabelProvider(new TableLabel());
-		double w = 1.0 / 9.0;
-		Tables.bindColumnWidths(table, w, w, w, w, w, w, w, w, w);
+		double w = 1.0 / 7.0;
+		Tables.bindColumnWidths(table, w, w, w, w, w, w, w);
 		table.setInput(this.tool.mapping.entries);
 		bindActions(section, table);
 	}

@@ -1,5 +1,7 @@
 package org.openlca.app.tools.mapping;
 
+import java.util.function.Function;
+
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -10,10 +12,12 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.io.maps.Status;
+import org.openlca.util.Strings;
 
 class TableLabel extends LabelProvider
 		implements ITableLabelProvider {
@@ -29,16 +33,14 @@ class TableLabel extends LabelProvider
 			if (e.sourceFlow != null)
 				return Images.get(e.sourceFlow.flow);
 		}
-		if (col == 4 && e.targetFlow != null) {
+		if (col == 3 && e.targetFlow != null) {
 			return Images.get(e.targetFlow.flow);
 		}
-		if (col == 2 || col == 5)
+		if (col == 2 || col == 4)
 			return Images.getForCategory(ModelType.FLOW);
-		if (col == 3 || col == 6)
-			return Images.get(ModelType.UNIT);
-		if (col == 7)
+		if (col == 5)
 			return Icon.FORMULA.get();
-		if (col == 8 && e.targetFlow != null
+		if (col == 6 && e.targetFlow != null
 				&& e.targetFlow.provider != null) {
 			return Images.get(e.targetFlow.provider);
 		}
@@ -59,16 +61,12 @@ class TableLabel extends LabelProvider
 		case 2:
 			return category(e.sourceFlow);
 		case 3:
-			return unit(e.sourceFlow);
-		case 4:
 			return flow(e.targetFlow);
-		case 5:
+		case 4:
 			return category(e.targetFlow);
+		case 5:
+			return factor(e);
 		case 6:
-			return unit(e.targetFlow);
-		case 7:
-			return Numbers.format(e.factor);
-		case 8:
 			return provider(e.targetFlow);
 		default:
 			return null;
@@ -164,14 +162,36 @@ class TableLabel extends LabelProvider
 		return CategoryPath.getFull(category);
 	}
 
-	private String unit(FlowRef ref) {
-		if (ref == null || ref.unit == null)
-			return "ref. unit";
-		String unit = ref.unit.name;
-		if (ref.property != null) {
-			unit += " (" + ref.property.name + ")";
+	private String factor(FlowMapEntry e) {
+		if (e == null)
+			return "?";
+		String f = Numbers.format(e.factor);
+
+		// get the unit and property names
+		Function<BaseDescriptor, String> name = d -> {
+			if (d == null || d.name == null)
+				return "?";
+			return d.name;
+		};
+		String sunit = name.apply(e.sourceFlow != null
+				? e.sourceFlow.unit
+				: null);
+		String sprop = name.apply(e.sourceFlow != null
+				? e.sourceFlow.property
+				: null);
+		String tunit = name.apply(e.targetFlow != null
+				? e.targetFlow.unit
+				: null);
+		String tprop = name.apply(e.targetFlow != null
+				? e.targetFlow.property
+				: null);
+
+		if (!Strings.nullOrEqual(sprop, tprop)
+				&& !("?".equals(sprop) || "?".equals(tprop))) {
+			sunit += " (" + sprop + ")";
+			tunit += " (" + tprop + ")";
 		}
-		return unit;
+		return f + " " + sunit + "/" + tunit;
 	}
 
 	private String provider(FlowRef ref) {
