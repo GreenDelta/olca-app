@@ -58,15 +58,12 @@ final class Words {
 		StringBuilder buf = new StringBuilder();
 		List<String> words = new ArrayList<>();
 		for (char c : s.trim().toLowerCase().toCharArray()) {
-			if (Character.isWhitespace(c)
-					|| !Character.isAlphabetic(c)) {
-				if (buf.length() > 0) {
-					words.add(buf.toString());
-					buf = new StringBuilder();
-				}
-				continue;
+			if (Character.isLetterOrDigit(c)) {
+				buf.append(c);
+			} else if (buf.length() > 0) {
+				words.add(buf.toString());
+				buf = new StringBuilder();
 			}
-			buf.append(c);
 		}
 		if (buf.length() > 0) {
 			words.add(buf.toString());
@@ -87,18 +84,23 @@ final class Words {
 		List<FlowRef> sourceFlows = source.getFlowRefs();
 
 		for (FlowRef s : sourceFlows) {
+			System.out.println(s.flow.name);
 			String best = "-";
 			double score = 0;
 			for (FlowRef t : targetFlows) {
 				double sv = match(s.flow.name, t.flow.name);
+				if (sv > 0) {
+					System.out.println("    ? " + t.flow.name + "  ;; score = " + sv);
+				}
 				if (sv > score) {
 					best = t.flow.name;
 					score = sv;
 				}
 			}
-			System.out.println(s.flow.name);
 			System.out.println("  -> " + best + " ;; score = " + score);
 		}
+
+		System.out.println(keywords("transport, freight, lorry >32 metric ton, EURO3"));
 
 	}
 
