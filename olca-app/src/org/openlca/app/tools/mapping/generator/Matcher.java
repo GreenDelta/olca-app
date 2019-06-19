@@ -1,13 +1,10 @@
 package org.openlca.app.tools.mapping.generator;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.openlca.io.maps.FlowRef;
-import org.openlca.util.Strings;
 
 class Matcher {
 
@@ -45,12 +42,12 @@ class Matcher {
 	private double score(FlowRef sflow, FlowRef tflow) {
 		if (sflow.flow == null || tflow.flow == null)
 			return 0;
-		double nameScore = score(sflow.flow.name, tflow.flow.name);
+		double nameScore = Words.match(sflow.flow.name, tflow.flow.name);
 		if (nameScore == 0)
 			return 0;
 
-		double catScore = score(sflow.flowCategory, tflow.flowCategory);
-		double locScore = score(sflow.flowLocation, tflow.flowLocation);
+		double catScore = Words.match(sflow.flowCategory, tflow.flowCategory);
+		double locScore = Words.match(sflow.flowLocation, tflow.flowLocation);
 
 		double score = nameScore + (0.25 * catScore) + (0.25 * locScore);
 		if (sflow.flow.flowType == tflow.flow.flowType) {
@@ -60,54 +57,4 @@ class Matcher {
 		return score;
 	}
 
-	private double score(String a, String b) {
-		List<String> wordsA = keywords(a);
-		List<String> wordsB = keywords(b);
-		if (wordsA.isEmpty() || wordsB.isEmpty())
-			return 0;
-
-		// make sure that the size of A is larger
-		if (wordsB.size() > wordsA.size()) {
-			List<String> tmp = wordsA;
-			wordsA = wordsB;
-			wordsB = tmp;
-		}
-
-		double totalLen = 0;
-		double matchedLen = 0;
-		for (String wordA : wordsA) {
-			totalLen += wordA.length();
-			if (wordsB.contains(wordA)) {
-				matchedLen += wordA.length();
-				wordsB.remove(wordA);
-			}
-		}
-
-		if (totalLen == 0)
-			return 0;
-		return matchedLen / totalLen;
-	}
-
-	private List<String> keywords(String s) {
-		if (Strings.nullOrEmpty(s))
-			return Collections.emptyList();
-
-		StringBuilder buf = new StringBuilder();
-		List<String> words = new ArrayList<>();
-		for (char c : s.trim().toLowerCase().toCharArray()) {
-			if (Character.isWhitespace(c)
-					|| !Character.isAlphabetic(c)) {
-				if (buf.length() > 0) {
-					words.add(buf.toString());
-					buf = new StringBuilder();
-				}
-				continue;
-			}
-			buf.append(c);
-		}
-		if (buf.length() > 0) {
-			words.add(buf.toString());
-		}
-		return words;
-	}
 }
