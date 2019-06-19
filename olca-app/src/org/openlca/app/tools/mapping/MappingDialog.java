@@ -6,10 +6,10 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -78,7 +78,7 @@ class MappingDialog extends FormDialog {
 		this.mform = mform;
 		FormToolkit tk = mform.getToolkit();
 		Composite body = mform.getForm().getBody();
-		body.setLayout(new FillLayout());
+		UI.gridLayout(body, 1);
 		Composite comp = tk.createComposite(body);
 		UI.gridLayout(comp, 2).makeColumnsEqualWidth = true;
 
@@ -91,9 +91,45 @@ class MappingDialog extends FormDialog {
 			UI.gridData(label, true, false);
 		});
 
-		new RefPanel(entry.sourceFlow, true).render(comp, tk);
-		new RefPanel(entry.targetFlow, false).render(comp, tk);
-		mform.reflow(true);
+		RefPanel sourcePanel = new RefPanel(entry.sourceFlow, true);
+		sourcePanel.render(comp, tk);
+		RefPanel targetPanel = new RefPanel(entry.targetFlow, false);
+		targetPanel.render(comp, tk);
+
+		// text with conversion factor
+		Composite convComp = tk.createComposite(body);
+		UI.gridLayout(convComp, 3);
+		Text convText = UI.formText(convComp, tk, M.ConversionFactor);
+		convText.setText(Double.toString(entry.factor));
+		convText.addModifyListener(e -> {
+			try {
+				entry.factor = Double.parseDouble(
+						convText.getText());
+			} catch (Exception _e) {
+			}
+		});
+
+		UI.gridData(convText, false, false).widthHint = 200;
+		Label unitLabel = UI.formLabel(convComp, tk, "");
+		Runnable updateUnit = () -> {
+			String sunit = "?";
+			String tunit = "?";
+			if (entry.sourceFlow != null
+					&& entry.sourceFlow.unit != null
+					&& entry.sourceFlow.unit.name != null) {
+				sunit = entry.sourceFlow.unit.name;
+			}
+			if (entry.targetFlow != null
+					&& entry.targetFlow.unit != null
+					&& entry.targetFlow.unit.name != null) {
+				tunit = entry.targetFlow.unit.name;
+			}
+			unitLabel.setText(sunit + "/" + tunit);
+			unitLabel.getParent().pack();
+		};
+		updateUnit.run();
+		sourcePanel.onChange = updateUnit;
+		targetPanel.onChange = updateUnit;
 	}
 
 	@Override
@@ -111,6 +147,8 @@ class MappingDialog extends FormDialog {
 		Label propertyLabel;
 		Label unitLabel;
 		ProviderCombo providerCombo;
+
+		Runnable onChange;
 
 		RefPanel(FlowRef ref, boolean forSource) {
 			this.ref = ref;
@@ -151,6 +189,7 @@ class MappingDialog extends FormDialog {
 			// the provider link
 			if (!forSource && tool.targetSystem instanceof DBProvider) {
 				Combo combo = UI.formCombo(comp, tk, M.Provider);
+				UI.gridData(combo, false, false).widthHint = 220;
 				this.providerCombo = new ProviderCombo(ref, combo);
 			} else {
 				UI.filler(comp, tk);
@@ -179,6 +218,9 @@ class MappingDialog extends FormDialog {
 			updateLabels();
 			if (providerCombo != null) {
 				providerCombo.update();
+			}
+			if (onChange != null) {
+				onChange.run();
 			}
 		}
 
@@ -229,6 +271,7 @@ class MappingDialog extends FormDialog {
 			}
 
 			flowLink.getParent().getParent().pack();
+			flowLink.getParent().pack();
 			mform.reflow(true);
 		}
 	}
@@ -249,6 +292,7 @@ class MappingDialog extends FormDialog {
 				} else {
 					setProvider(providers.get(i));
 				}
+				combo.setToolTipText(combo.getItems()[i + 1]);
 			});
 			update();
 		}
@@ -300,6 +344,7 @@ class MappingDialog extends FormDialog {
 				}
 			}
 			combo.setItems(items);
+			combo.setToolTipText(items[selected]);
 			combo.select(selected);
 			if (ref.provider != null && selected == 0) {
 				// the provider is not in the database
