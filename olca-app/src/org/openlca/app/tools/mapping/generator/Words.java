@@ -1,15 +1,9 @@
 package org.openlca.app.tools.mapping.generator;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-import org.openlca.app.tools.mapping.model.DBProvider;
-import org.openlca.app.tools.mapping.model.ILCDProvider;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.derby.DerbyDatabase;
-import org.openlca.io.maps.FlowRef;
 import org.openlca.util.Strings;
 
 final class Words {
@@ -24,40 +18,65 @@ final class Words {
 	 * used as word separators.
 	 */
 	static double match(String a, String b) {
-		List<String> wordsA = keywords(a);
-		List<String> wordsB = keywords(b);
-		if (wordsA.isEmpty() || wordsB.isEmpty())
+		if (a == null || b == null)
+			return 0.0;
+
+		String[] wordsA = keywords(a);
+		String[] wordsB = keywords(b);
+		if (wordsA.length == 0 || wordsB.length == 0)
 			return 0;
 
-		// make sure that the size of A is larger
-		if (wordsB.size() > wordsA.size()) {
-			List<String> tmp = wordsA;
-			wordsA = wordsB;
-			wordsB = tmp;
-		}
+		double total = 0;
+		double matched = 0;
+		for (int i = 0; i < wordsA.length; i++) {
+			String wordA = wordsA[i];
 
-		double totalLen = 0;
-		double matchedLen = 0;
-		for (String wordA : wordsA) {
-			totalLen += wordA.length();
-			if (wordsB.contains(wordA)) {
-				matchedLen += wordA.length();
-				wordsB.remove(wordA);
+			double max = 5 * 1.2 * wordA.length();
+			total += max;
+			double matchedPart = 0;
+
+			for (int j = 0; j < wordsB.length; j++) {
+				double distFactor = 1.2 - Math.abs(i - j) / 20;
+				String wordB = wordsB[j];
+
+				if (Objects.equals(wordA, wordB)) {
+					double m = 5 * distFactor * wordB.length();
+					if (m > matchedPart) {
+						matchedPart = m;
+					}
+					continue;
+				}
+
+				String wa = wordA;
+				String wb = wordB;
+				if (wa.length() > wb.length()) {
+					wa = wordB;
+					wb = wordA;
+				}
+
+				if (wb.contains(wa)) {
+					double m = distFactor * ((double) wa.length())
+							/ ((double) wb.length());
+					if (m > matchedPart) {
+						matchedPart = m;
+					}
+				}
 			}
+			matched += matchedPart;
 		}
 
-		if (totalLen == 0)
+		if (total == 0)
 			return 0;
-		return matchedLen / totalLen;
+		return matched / total;
 	}
 
-	private static List<String> keywords(String s) {
+	private static String[] keywords(String s) {
 		if (Strings.nullOrEmpty(s))
-			return Collections.emptyList();
+			return new String[0];
 
 		StringBuilder buf = new StringBuilder();
 		List<String> words = new ArrayList<>();
-		for (char c : s.trim().toLowerCase().toCharArray()) {
+		for (char c : s.toLowerCase().toCharArray()) {
 			if (Character.isLetterOrDigit(c)) {
 				buf.append(c);
 			} else if (buf.length() > 0) {
@@ -68,40 +87,6 @@ final class Words {
 		if (buf.length() > 0) {
 			words.add(buf.toString());
 		}
-		return words;
+		return words.toArray(new String[words.size()]);
 	}
-
-	// TODO just for testing
-	public static void main(String[] args) {
-
-		String dbDir = "C:/Users/Besitzer/openLCA-data-1.4/databases/e_3_3_er_database_es2050_v1_7_1";
-		IDatabase db = new DerbyDatabase(new File(dbDir));
-		DBProvider target = new DBProvider(db);
-		List<FlowRef> targetFlows = target.getFlowRefs();
-
-		String ilcdPack = "C:/Users/Besitzer/Projects/_current/dlr_mapping_tool/Mahlen Baotou 2018_07_04.zip";
-		ILCDProvider source = ILCDProvider.of(ilcdPack);
-		List<FlowRef> sourceFlows = source.getFlowRefs();
-
-		for (FlowRef s : sourceFlows) {
-			System.out.println(s.flow.name);
-			String best = "-";
-			double score = 0;
-			for (FlowRef t : targetFlows) {
-				double sv = match(s.flow.name, t.flow.name);
-				if (sv > 0) {
-					System.out.println("    ? " + t.flow.name + "  ;; score = " + sv);
-				}
-				if (sv > score) {
-					best = t.flow.name;
-					score = sv;
-				}
-			}
-			System.out.println("  -> " + best + " ;; score = " + score);
-		}
-
-		System.out.println(keywords("transport, freight, lorry >32 metric ton, EURO3"));
-
-	}
-
 }
