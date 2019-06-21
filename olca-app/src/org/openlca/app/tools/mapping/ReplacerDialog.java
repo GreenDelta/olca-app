@@ -7,15 +7,17 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.forms.FormDialog;
+import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.io.maps.FlowMap;
 
-class ReplacerDialog extends Dialog {
+class ReplacerDialog extends FormDialog {
 
 	/**
 	 * Open the replacer dialog and return a configuration. If this function
@@ -51,19 +53,25 @@ class ReplacerDialog extends Dialog {
 	}
 
 	@Override
-	protected Control createDialogArea(Composite parent) {
-		Composite root = (Composite) super.createDialogArea(parent);
+	protected void createFormContent(IManagedForm mform) {
+		FormToolkit tk = mform.getToolkit();
+		Composite root = UI.formBody(mform.getForm(), tk);
 		UI.gridLayout(root, 1, 10, 10);
 
-		UI.formLabel(root, "This will replace the flows in the database " +
+		UI.formLabel(root, tk, "This will replace the flows in the database " +
 				"(the source system) with the flows in the target system.");
 
-		Button processes = check(
-				root, "Replace flows in processes", conf.processes);
-		Button methods = check(
-				root, "Replace flows in LCIA methods", conf.methods);
-		Button delete = check(
-				root, "Delete replaced and unused flows", conf.deleteMapped);
+		Button processes = tk.createButton(root,
+				"Replace flows in processes", SWT.CHECK);
+		processes.setSelection(conf.processes);
+
+		Button methods = tk.createButton(root,
+				"Replace flows in LCIA methods", SWT.CHECK);
+		methods.setSelection(conf.methods);
+
+		Button delete = tk.createButton(root,
+				"Delete replaced and unused flows", SWT.CHECK);
+		delete.setSelection(conf.deleteMapped);
 
 		Runnable setState = () -> {
 			conf.processes = processes.getSelection();
@@ -83,14 +91,5 @@ class ReplacerDialog extends Dialog {
 		Arrays.asList(processes, methods, delete).forEach(b -> {
 			Controls.onSelect(b, e -> setState.run());
 		});
-		return root;
 	}
-
-	private Button check(Composite root, String label, boolean selected) {
-		Button b = new Button(root, SWT.CHECK);
-		b.setText(label);
-		b.setSelection(selected);
-		return b;
-	}
-
 }
