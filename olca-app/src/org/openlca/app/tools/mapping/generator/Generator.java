@@ -55,7 +55,7 @@ public class Generator implements Runnable {
 			for (FlowRef sflow : sourceFlows) {
 				FlowMapEntry e = new FlowMapEntry();
 				e.sourceFlow = sflow.clone();
-				e.sourceFlow.status = Status.ok("");
+				e.sourceFlow.status = Status.ok();
 				FlowRef tflow = matcher.find(sflow);
 				if (tflow != null) {
 					tflow = tflow.clone();

@@ -34,6 +34,7 @@ import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
+import org.openlca.io.maps.Status;
 import org.openlca.util.CategoryPathBuilder;
 import org.openlca.util.Strings;
 
@@ -52,8 +53,14 @@ class MappingDialog extends FormDialog {
 		if (state != OK)
 			return state;
 		entry.factor = d.entry.factor;
-		entry.sourceFlow = d.entry.sourceFlow;
-		entry.targetFlow = d.entry.targetFlow;
+		if (d.entry.sourceFlow != null) {
+			entry.sourceFlow = d.entry.sourceFlow.clone();
+			entry.sourceFlow.status = Status.ok("edited or checked manually");
+		}
+		if (d.entry.targetFlow != null) {
+			entry.targetFlow = d.entry.targetFlow.clone();
+			entry.targetFlow.status = Status.ok("edited or checked manually");
+		}
 		return state;
 	}
 

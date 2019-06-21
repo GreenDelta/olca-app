@@ -131,6 +131,12 @@ class TableLabel extends LabelProvider
 		if (e.targetFlow == null || e.targetFlow.status == null)
 			return e.sourceFlow.status;
 		if (e.sourceFlow.status.type == e.targetFlow.status.type) {
+			String sm = e.sourceFlow.status.message;
+			if (Strings.nullOrEmpty(sm))
+				return e.targetFlow.status;
+			String tm = e.targetFlow.status.message;
+			if (Strings.nullOrEmpty(tm) || Strings.nullOrEqual(sm, tm))
+				return e.sourceFlow.status;
 			return new Status(e.sourceFlow.status.type,
 					"source flow: " + e.sourceFlow.status.message
 							+ "; target flow: " + e.targetFlow.status.message);
