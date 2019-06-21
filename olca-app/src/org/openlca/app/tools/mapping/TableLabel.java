@@ -28,7 +28,7 @@ class TableLabel extends LabelProvider
 			return null;
 		FlowMapEntry e = (FlowMapEntry) obj;
 		if (col == 0)
-			return stateIcon(status(e));
+			return stateIcon(e);
 		if (col == 1) {
 			if (e.sourceFlow != null)
 				return Images.get(e.sourceFlow.flow);
@@ -75,9 +75,16 @@ class TableLabel extends LabelProvider
 	}
 
 	private String stateText(FlowMapEntry e) {
+		if (e == null)
+			return "empty mapping";
+		if (e.sourceFlow == null)
+			return "no source flow";
+		if (e.targetFlow == null)
+			return "no target flow";
+
 		Status s = status(e);
 		if (s == null)
-			return "";
+			return "?";
 		if (s.message != null)
 			return s.message;
 		switch (s.type) {
@@ -92,10 +99,19 @@ class TableLabel extends LabelProvider
 		}
 	}
 
-	private Image stateIcon(Status state) {
-		if (state == null)
+	private Image stateIcon(FlowMapEntry e) {
+		if (e == null)
+			return Icon.ERROR.get();
+		if (e.sourceFlow == null)
+			return Icon.ERROR.get();
+		if (e.targetFlow == null)
+			return Icon.ERROR.get();
+
+		Status s = status(e);
+		if (s == null)
 			return null;
-		switch (state.type) {
+
+		switch (s.type) {
 		case Status.OK:
 			return Icon.ACCEPT.get();
 		case Status.WARNING:
