@@ -33,7 +33,6 @@ import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.editors.parameters.BigParameterTable;
 import org.openlca.app.logging.LogFileEditor;
-import org.openlca.app.preferencepages.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.mapping.MappingTool;
@@ -77,7 +76,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		super.fillMenuBar(menuBar);
 		fillFileMenu(menuBar);
 		DatabaseMenu.addTo(menuBar);
-		fillWindowMenu(menuBar);
+		fillToolsMenu(menuBar);
 		fillHelpMenu(menuBar);
 		removeActionSets();
 	}
@@ -129,9 +128,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menuBar.add(menu);
 	}
 
-	private void fillWindowMenu(IMenuManager menuBar) {
-		MenuManager menu = new MenuManager(M.Window,
-				IWorkbenchActionConstants.M_WINDOW);
+	private void fillToolsMenu(IMenuManager menuBar) {
+		MenuManager menu = new MenuManager("Tools");
 		MenuManager viewMenu = new MenuManager(M.Showviews);
 		viewMenu.add(showViews);
 		menu.add(viewMenu);
@@ -153,12 +151,13 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 				ReplaceProvidersDialog::openDialog));
 
 		// flow mapping
-		if (FeatureFlag.FLOW_MAPPING_TOOL.isEnabled()) {
-			MenuManager fmMenu = new MenuManager("Flow mapping (experimental)");
-			menu.add(fmMenu);
-			fmMenu.add(Actions.create("New", MappingTool::createNew));
-			fmMenu.add(Actions.create("Open file", MappingTool::openFile));
-		}
+		MenuManager fmMenu = new MenuManager(
+				"Flow mapping (experimental)");
+		menu.add(fmMenu);
+		fmMenu.add(Actions.create(
+				"New", MappingTool::createNew));
+		fmMenu.add(Actions.create(
+				"Open file", MappingTool::openFile));
 
 		menu.add(new Separator());
 		menu.add(new FormulaConsoleAction());

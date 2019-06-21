@@ -8,8 +8,6 @@ import org.openlca.app.Preferences;
  */
 public enum FeatureFlag {
 
-	FLOW_MAPPING_TOOL("Enable the flow mapping tool"),
-
 	MATRIX_IMAGE_EXPORT("Enable matrix image export");
 
 	private final String description;
