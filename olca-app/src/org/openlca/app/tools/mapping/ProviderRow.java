@@ -29,12 +29,11 @@ import org.openlca.core.database.IDatabase;
 class ProviderRow {
 
 	Consumer<IProvider> onSelect;
-	Runnable onSync;
 
 	ProviderRow(Composite parent, FormToolkit tk) {
 
 		Composite inner = tk.createComposite(parent);
-		UI.gridLayout(inner, 4, 5, 0);
+		UI.gridLayout(inner, 3, 5, 0);
 		ImageHyperlink dbLink = tk.createImageHyperlink(inner, SWT.NONE);
 		dbLink.setImage(Icon.DATABASE.get());
 		dbLink.setToolTipText("Select database");
@@ -42,14 +41,6 @@ class ProviderRow {
 		fileLink.setImage(Icon.FILE.get());
 		fileLink.setToolTipText("Select file");
 		Label label = UI.formLabel(inner, "- none -");
-		ImageHyperlink syncLink = tk.createImageHyperlink(inner, SWT.NONE);
-		syncLink.setImage(Icon.REFRESH.get());
-		syncLink.setToolTipText("Synchronize flows ...");
-		syncLink.setVisible(false);
-		Controls.onClick(syncLink, e -> {
-			if (onSync != null)
-				onSync.run();
-		});
 
 		// select database as provider
 		Controls.onClick(dbLink, e -> {
@@ -60,7 +51,6 @@ class ProviderRow {
 			}
 			DBProvider provider = new DBProvider(db);
 			fireSelect(label, provider);
-			syncLink.setVisible(true);
 		});
 
 		// select a file as provider
@@ -86,7 +76,6 @@ class ProviderRow {
 				return;
 			}
 			fireSelect(label, provider);
-			syncLink.setVisible(true);
 		});
 
 	}

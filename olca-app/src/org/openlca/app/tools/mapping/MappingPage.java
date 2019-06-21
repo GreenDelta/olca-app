@@ -1,6 +1,7 @@
 package org.openlca.app.tools.mapping;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
@@ -23,6 +24,9 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.io.maps.FlowMapEntry;
+import org.openlca.io.maps.FlowRef;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class MappingPage extends FormPage {
 
@@ -51,40 +55,20 @@ class MappingPage extends FormPage {
 
 		UI.formLabel(comp, tk, "Source system");
 		ProviderRow sourceRow = new ProviderRow(comp, tk);
+		sourceRow.onSelect = p -> tool.sourceSystem = p;
 
 		UI.formLabel(comp, tk, "Target system");
 		ProviderRow targetRow = new ProviderRow(comp, tk);
+		targetRow.onSelect = p -> tool.targetSystem = p;
 
 		UI.filler(comp);
 		Button checkButton = tk.createButton(comp, "Check mappings", SWT.NONE);
 		checkButton.setImage(Icon.ACCEPT.get());
-		Controls.onSelect(checkButton, e -> {
-			// TODO: sync here...
+		Controls.onSelect(checkButton, _e -> {
+			App.runWithProgress("Check mappings",
+					this::syncMappings,
+					() -> table.setInput(tool.mapping.entries));
 		});
-
-		// event handlers for the source system
-		sourceRow.onSelect = p -> tool.sourceSystem = p;
-		sourceRow.onSync = () -> {
-			if (tool.sourceSystem == null)
-				return;
-			App.runWithProgress(
-					"Synchronize source flows",
-					() -> tool.targetSystem.sync(
-							tool.mapping.entries.stream().map(e -> e.sourceFlow)),
-					() -> table.setInput(tool.mapping.entries));
-		};
-
-		// event handlers for the target system
-		targetRow.onSelect = p -> tool.targetSystem = p;
-		targetRow.onSync = () -> {
-			if (tool.targetSystem == null)
-				return;
-			App.runWithProgress(
-					"Synchronize target flows",
-					() -> tool.targetSystem.sync(
-							tool.mapping.entries.stream().map(e -> e.targetFlow)),
-					() -> table.setInput(tool.mapping.entries));
-		};
 	}
 
 	private void createTable(Composite body, FormToolkit tk) {
@@ -137,5 +121,39 @@ class MappingPage extends FormPage {
 
 		Actions.bind(section, add, edit, delete);
 		Actions.bind(table, add, edit, delete);
+	}
+
+	private void syncMappings() {
+		// run the sync functions in two separate threads and wait for
+		// them to finish
+		Thread st = null;
+		Thread tt = null;
+		if (tool.sourceSystem != null) {
+			Stream<FlowRef> stream = tool.mapping.entries
+					.stream().map(e -> e.sourceFlow);
+			st = new Thread(
+					() -> tool.sourceSystem.sync(stream));
+		}
+		if (tool.targetSystem != null) {
+			Stream<FlowRef> stream = tool.mapping.entries
+					.stream().map(e -> e.targetFlow);
+			tt = new Thread(
+					() -> tool.targetSystem.sync(stream));
+		}
+		if (st == null && tt == null)
+			return;
+		try {
+			if (st != null) {
+				st.run();
+				st.join();
+			}
+			if (tt != null) {
+				tt.run();
+				tt.join();
+			}
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("Failed to sync flow mappings", e);
+		}
 	}
 }
