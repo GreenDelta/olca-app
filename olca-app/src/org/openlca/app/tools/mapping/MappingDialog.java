@@ -5,10 +5,11 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -74,31 +75,46 @@ class MappingDialog extends FormDialog {
 	}
 
 	@Override
+	protected void configureShell(Shell shell) {
+		shell.setText("Flow mapping");
+		UI.center(UI.shell(), shell);
+		super.configureShell(shell);
+	}
+
+	@Override
 	protected void createFormContent(IManagedForm mform) {
 		this.mform = mform;
 		FormToolkit tk = mform.getToolkit();
 		Composite body = mform.getForm().getBody();
 		UI.gridLayout(body, 1);
 		Composite comp = tk.createComposite(body);
-		UI.gridLayout(comp, 2).makeColumnsEqualWidth = true;
+		UI.gridLayout(comp, 1);
+		UI.gridData(comp, true, false);
 
+		// source flow
 		Fn.with(UI.formLabel(comp, tk, "Source flow"), label -> {
 			label.setFont(UI.boldFont());
 			UI.gridData(label, true, false);
 		});
+		RefPanel sourcePanel = new RefPanel(entry.sourceFlow, true);
+		sourcePanel.render(comp, tk);
+		UI.gridData(tk.createLabel(
+				comp, "", SWT.SEPARATOR | SWT.HORIZONTAL), true, false);
+
+		// target flow
 		Fn.with(UI.formLabel(comp, tk, "Target flow"), label -> {
 			label.setFont(UI.boldFont());
 			UI.gridData(label, true, false);
 		});
-
-		RefPanel sourcePanel = new RefPanel(entry.sourceFlow, true);
-		sourcePanel.render(comp, tk);
 		RefPanel targetPanel = new RefPanel(entry.targetFlow, false);
 		targetPanel.render(comp, tk);
+		UI.gridData(tk.createLabel(
+				comp, "", SWT.SEPARATOR | SWT.HORIZONTAL), true, false);
 
 		// text with conversion factor
 		Composite convComp = tk.createComposite(body);
 		UI.gridLayout(convComp, 3);
+		UI.gridData(convComp, true, false);
 		Text convText = UI.formText(convComp, tk, M.ConversionFactor);
 		convText.setText(Double.toString(entry.factor));
 		convText.addModifyListener(e -> {
@@ -109,7 +125,7 @@ class MappingDialog extends FormDialog {
 			}
 		});
 
-		UI.gridData(convText, false, false).widthHint = 200;
+		UI.gridData(convText, true, false);
 		Label unitLabel = UI.formLabel(convComp, tk, "");
 		Runnable updateUnit = () -> {
 			String sunit = "?";
@@ -132,11 +148,6 @@ class MappingDialog extends FormDialog {
 		targetPanel.onChange = updateUnit;
 	}
 
-	@Override
-	protected Point getInitialSize() {
-		return new Point(800, 450);
-	}
-
 	private class RefPanel {
 
 		final FlowRef ref;
@@ -157,7 +168,8 @@ class MappingDialog extends FormDialog {
 
 		void render(Composite parent, FormToolkit tk) {
 			Composite comp = tk.createComposite(parent);
-			UI.gridLayout(comp, 2, 15, 10);
+			UI.gridLayout(comp, 2, 10, 5);
+			UI.gridData(comp, true, false);
 
 			UI.formLabel(comp, tk, M.Flow);
 			flowLink = UI.formLink(comp, tk, "");
@@ -189,11 +201,8 @@ class MappingDialog extends FormDialog {
 			// the provider link
 			if (!forSource && tool.targetSystem instanceof DBProvider) {
 				Combo combo = UI.formCombo(comp, tk, M.Provider);
-				UI.gridData(combo, false, false).widthHint = 220;
+				UI.gridData(combo, false, false).widthHint = 400;
 				this.providerCombo = new ProviderCombo(ref, combo);
-			} else {
-				UI.filler(comp, tk);
-				UI.filler(comp, tk);
 			}
 			updateLabels();
 		}
@@ -225,7 +234,7 @@ class MappingDialog extends FormDialog {
 		}
 
 		private void updateLabels() {
-			int maxLen = 40;
+			int maxLen = 80;
 
 			// flow name
 			if (ref.flow == null) {
