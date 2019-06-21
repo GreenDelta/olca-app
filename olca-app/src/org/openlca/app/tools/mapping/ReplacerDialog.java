@@ -46,7 +46,7 @@ class ReplacerDialog extends Dialog {
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Apply flow mapping");
+		shell.setText("Replace flows in database");
 		UI.center(UI.shell(), shell);
 	}
 
@@ -55,12 +55,15 @@ class ReplacerDialog extends Dialog {
 		Composite root = (Composite) super.createDialogArea(parent);
 		UI.gridLayout(root, 1, 10, 10);
 
+		UI.formLabel(root, "This will replace the flows in the database " +
+				"(the source system) with the flows in the target system.");
+
 		Button processes = check(
 				root, "Replace flows in processes", conf.processes);
 		Button methods = check(
 				root, "Replace flows in LCIA methods", conf.methods);
 		Button delete = check(
-				root, "Delete mapped and unused flows", conf.deleteMapped);
+				root, "Delete replaced and unused flows", conf.deleteMapped);
 
 		Runnable setState = () -> {
 			conf.processes = processes.getSelection();

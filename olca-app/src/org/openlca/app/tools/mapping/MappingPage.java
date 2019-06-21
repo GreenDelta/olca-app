@@ -1,7 +1,6 @@
 package org.openlca.app.tools.mapping;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
@@ -18,9 +17,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.mapping.model.DBProvider;
-import org.openlca.app.tools.mapping.replacer.Replacer;
-import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -60,33 +56,14 @@ class MappingPage extends FormPage {
 		ProviderRow targetRow = new ProviderRow(comp, tk);
 
 		UI.filler(comp);
-		Button applyButton = tk.createButton(comp, "Apply", SWT.NONE);
-		applyButton.setImage(Icon.ACCEPT.get());
-		Controls.onSelect(applyButton, e -> {
-			Optional<ReplacerConfig> opt = ReplacerDialog.open(
-					tool.mapping, tool.sourceSystem);
-			if (!opt.isPresent())
-				return;
-			Replacer replacer = new Replacer(opt.get());
-			App.runWithProgress("Replace flows ...", replacer, () -> {
-				table.setInput(tool.mapping.entries);
-			});
+		Button checkButton = tk.createButton(comp, "Check mappings", SWT.NONE);
+		checkButton.setImage(Icon.ACCEPT.get());
+		Controls.onSelect(checkButton, e -> {
+			// TODO: sync here...
 		});
-		applyButton.setEnabled(false);
-		Runnable checkApply = () -> {
-			if ((tool.sourceSystem instanceof DBProvider)
-					&& tool.targetSystem != null) {
-				applyButton.setEnabled(true);
-			} else {
-				applyButton.setEnabled(false);
-			}
-		};
 
 		// event handlers for the source system
-		sourceRow.onSelect = p -> {
-			tool.sourceSystem = p;
-			checkApply.run();
-		};
+		sourceRow.onSelect = p -> tool.sourceSystem = p;
 		sourceRow.onSync = () -> {
 			if (tool.sourceSystem == null)
 				return;
@@ -98,10 +75,7 @@ class MappingPage extends FormPage {
 		};
 
 		// event handlers for the target system
-		targetRow.onSelect = p -> {
-			tool.targetSystem = p;
-			checkApply.run();
-		};
+		targetRow.onSelect = p -> tool.targetSystem = p;
 		targetRow.onSync = () -> {
 			if (tool.targetSystem == null)
 				return;

@@ -1,15 +1,20 @@
 package org.openlca.app.tools.mapping;
 
 import java.io.File;
+import java.util.Optional;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.tools.mapping.generator.Generator;
+import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.IProvider;
+import org.openlca.app.tools.mapping.replacer.Replacer;
+import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Error;
 import org.openlca.app.util.Question;
@@ -23,8 +28,9 @@ public class MappingMenu extends EditorActionBarContributor {
 	public void contributeToMenu(IMenuManager root) {
 		MenuManager menu = new MenuManager("Flow mapping");
 		root.add(menu);
-		menu.add(Actions.onSave(this::onSave));
-		menu.add(Actions.create("Generate ...", this::onGenerate));
+		menu.add(Actions.create(M.SaveAs, this::onSave));
+		menu.add(Actions.create("Generate mappings", this::onGenerate));
+		menu.add(Actions.create("Apply on database", this::onApply));
 	}
 
 	private void onSave() {
@@ -76,6 +82,37 @@ public class MappingMenu extends EditorActionBarContributor {
 			return;
 		Generator gen = new Generator(source, target, tool.mapping);
 		App.runWithProgress("Generate mappings ...", gen, () -> {
+			tool.refresh();
+		});
+	}
+
+	private void onApply() {
+		MappingTool tool = Editors.getActive();
+		if (tool == null || tool.mapping == null)
+			return;
+
+		IProvider source = tool.sourceSystem;
+		if (!(source instanceof DBProvider)) {
+			Error.showBox("Source system should be a database",
+					"This only works when the source system "
+							+ "is a database where the flows should "
+							+ "be replaced with flows from the target "
+							+ "system (which could be the same database).");
+			return;
+		}
+		IProvider target = tool.targetSystem;
+		if (target == null) {
+			Error.showBox("No target system selected",
+					"No target system was selected.");
+			return;
+		}
+
+		Optional<ReplacerConfig> opt = ReplacerDialog.open(
+				tool.mapping, tool.sourceSystem);
+		if (!opt.isPresent())
+			return;
+		Replacer replacer = new Replacer(opt.get());
+		App.runWithProgress("Replace flows ...", replacer, () -> {
 			tool.refresh();
 		});
 	}

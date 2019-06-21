@@ -12,9 +12,6 @@ import org.slf4j.LoggerFactory;
 public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 
 	public static String ID = "editors.productsystem";
-	private Logger log = LoggerFactory.getLogger(getClass());
-	private ProductSystemInfoPage infoPage;
-	private ProductSystemParameterPage parameterPage;
 
 	public ProductSystemEditor() {
 		super(ProductSystem.class);
@@ -23,10 +20,8 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 	@Override
 	protected void addPages() {
 		try {
-			infoPage = new ProductSystemInfoPage(this);
-			parameterPage = new ProductSystemParameterPage(this);
-			addPage(infoPage);
-			addPage(parameterPage);
+			addPage(new ProductSystemInfoPage(this));
+			addPage(new ProductSystemParameterPage(this));
 			BaseDescriptor descriptor = getEditorInput().getDescriptor();
 			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
 			int gIdx = addPage(new ProductSystemGraphEditor(this), gInput);
@@ -34,6 +29,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 			addPage(new StatisticsPage(this));
 			addCommentPage();
 		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("failed to add page", e);
 		}
 	}
