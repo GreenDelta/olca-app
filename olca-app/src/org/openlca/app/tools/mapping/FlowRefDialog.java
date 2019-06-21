@@ -49,7 +49,11 @@ class FlowRefDialog extends FormDialog {
 			Tree tree = treeRef.get();
 			FlowRefDialog dialog = new FlowRefDialog(tree);
 			if (dialog.open() == OK) {
-				fn.accept(Optional.ofNullable(dialog.selected));
+				FlowRef selected = dialog.selected;
+				if (selected != null) {
+					selected = selected.clone();
+				}
+				fn.accept(Optional.ofNullable(selected));
 			} else {
 				fn.accept(Optional.empty());
 			}
