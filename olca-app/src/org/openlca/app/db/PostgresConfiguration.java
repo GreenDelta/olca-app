@@ -3,12 +3,13 @@ package org.openlca.app.db;
 import java.util.Objects;
 
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.mysql.MySQLDatabase;
+import org.openlca.core.database.postgres.PostgresConnParams;
+import org.openlca.core.database.postgres.PostgresDatabase;
 
 /**
- * Configuration of a MySQL database.
+ * Configuration of a Postgres database.
  */
-public class MySQLConfiguration implements IDatabaseConfiguration {
+public class PostgresConfiguration implements IDatabaseConfiguration {
 
 	private String name;
 	private String host;
@@ -17,8 +18,9 @@ public class MySQLConfiguration implements IDatabaseConfiguration {
 	private String password;
 
 	public IDatabase createInstance() throws Exception {
-		String url = "jdbc:mysql://" + host + ":" + port + "/" + name;
-		MySQLDatabase db = new MySQLDatabase(url, user, password);
+	    Class.forName("org.postgresql.Driver");
+	    PostgresConnParams connParams = new PostgresConnParams(host, ""+port, name, user, password);
+		PostgresDatabase db = new PostgresDatabase(connParams);
 		db.setFileStorageLocation(DatabaseDir.getFileStorageLocation(db));
 		return db;
 	}
@@ -71,7 +73,7 @@ public class MySQLConfiguration implements IDatabaseConfiguration {
 			return true;
 		if (!getClass().equals(obj.getClass()))
 			return false;
-		MySQLConfiguration other = (MySQLConfiguration) obj;
+		PostgresConfiguration other = (PostgresConfiguration) obj;
 		return Objects.equals(this.host, other.host)
 				&& Objects.equals(this.port, other.port)
 				&& Objects.equals(this.name, other.name);

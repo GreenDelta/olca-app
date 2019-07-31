@@ -35,13 +35,13 @@ public class DatabasePropertiesDialog extends FormDialog {
 		if (config instanceof DerbyConfiguration) {
 			DerbyConfiguration derbyConfig = (DerbyConfiguration) config;
 			renderDerbyConfig(derbyConfig, content, toolkit);
-		} else if (config instanceof MySQLConfiguration) {
-			MySQLConfiguration mysqlConfig = (MySQLConfiguration) config;
-			renderMysqlConfiguration(mysqlConfig, content, toolkit);
+		} else if (config instanceof PostgresConfiguration) {
+			PostgresConfiguration postgresConfig = (PostgresConfiguration) config;
+			renderPostgresConfiguration(postgresConfig, content, toolkit);
 		}
 	}
 
-	private void renderMysqlConfiguration(MySQLConfiguration conf,
+	private void renderPostgresConfiguration(PostgresConfiguration conf,
 			Composite parent, FormToolkit toolkit) {
 		UI.formText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
 				M.RemoteDatabase);

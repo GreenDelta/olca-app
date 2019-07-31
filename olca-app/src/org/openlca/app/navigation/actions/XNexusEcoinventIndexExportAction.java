@@ -22,7 +22,7 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.db.MySQLConfiguration;
+import org.openlca.app.db.PostgresConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.XNexusIndexExportAction.IndexEntry;
@@ -155,7 +155,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 					return null;
 				if (entry.database instanceof DerbyConfiguration)
 					return Icon.DATABASE.get();
-				if (entry.database instanceof MySQLConfiguration)
+				if (entry.database instanceof PostgresConfiguration)
 					return Icon.SQL.get();
 				return null;
 			}

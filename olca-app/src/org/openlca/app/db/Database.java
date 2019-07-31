@@ -165,14 +165,14 @@ public class Database {
 		saveConfig();
 	}
 
-	public static void register(MySQLConfiguration config) {
+	public static void register(PostgresConfiguration config) {
 		if (configurations.contains(config))
 			return;
 		configurations.getRemoteDatabases().add(config);
 		saveConfig();
 	}
 
-	public static void remove(MySQLConfiguration config) {
+	public static void remove(PostgresConfiguration config) {
 		if (!configurations.contains(config))
 			return;
 		configurations.getRemoteDatabases().remove(config);

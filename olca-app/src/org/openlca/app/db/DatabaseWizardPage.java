@@ -198,7 +198,7 @@ class DatabaseWizardPage extends WizardPage {
 			derbyConfig.setName(getText(nameText));
 			return derbyConfig;
 		} else {
-			MySQLConfiguration config = new MySQLConfiguration();
+			PostgresConfiguration config = new PostgresConfiguration();
 			config.setName(getText(nameText));
 			config.setHost(getText(hostText));
 			config.setPort(Integer.parseInt(getText(portText)));

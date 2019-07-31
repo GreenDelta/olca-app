@@ -16,7 +16,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.db.MySQLConfiguration;
+import org.openlca.app.db.PostgresConfiguration;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -114,8 +114,8 @@ public class DbDeleteAction extends Action implements INavigationAction {
 			FileUtils.deleteDirectory(dbFolder);
 		if (config instanceof DerbyConfiguration)
 			Database.remove((DerbyConfiguration) config);
-		else if (config instanceof MySQLConfiguration)
-			Database.remove((MySQLConfiguration) config);
+		else if (config instanceof PostgresConfiguration)
+			Database.remove((PostgresConfiguration) config);
 	}
 
 	private MessageDialog createMessageDialog() {

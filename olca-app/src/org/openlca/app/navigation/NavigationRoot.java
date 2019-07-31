@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.PlatformObject;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseList;
 import org.openlca.app.db.DerbyConfiguration;
-import org.openlca.app.db.MySQLConfiguration;
+import org.openlca.app.db.PostgresConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,7 @@ public class NavigationRoot extends PlatformObject implements
 		List<INavigationElement<?>> elements = new ArrayList<>();
 		for (DerbyConfiguration config : list.getLocalDatabases())
 			elements.add(new DatabaseElement(this, config));
-		for (MySQLConfiguration config : list.getRemoteDatabases())
+		for (PostgresConfiguration config : list.getRemoteDatabases())
 			elements.add(new DatabaseElement(this, config));
 		return elements;
 	}

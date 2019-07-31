@@ -11,14 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
 
-public class MySQLDatabaseExport implements Runnable {
+public class PostgresDatabaseExport implements Runnable {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private MySQLConfiguration config;
+	private PostgresConfiguration config;
 	private File zolcaFile;
 	private boolean success = false;
 
-	public MySQLDatabaseExport(MySQLConfiguration config, File zolcaFile) {
+	public PostgresDatabaseExport(PostgresConfiguration config, File zolcaFile) {
 		this.config = config;
 		this.zolcaFile = zolcaFile;
 	}
@@ -41,7 +41,7 @@ public class MySQLDatabaseExport implements Runnable {
 			success = true;
 		} catch (Exception e) {
 			success = false;
-			log.error("failed export MySQL database as zolca-File", e);
+			log.error("failed export P database as zolca-File", e);
 		}
 	}
 

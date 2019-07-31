@@ -19,8 +19,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.db.MySQLConfiguration;
-import org.openlca.app.db.MySQLDatabaseExport;
+import org.openlca.app.db.PostgresConfiguration;
+import org.openlca.app.db.PostgresDatabaseExport;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -100,8 +100,8 @@ public class DbExportAction extends Action implements INavigationAction {
 				File folder = DatabaseDir.getRootFolder(config.getName());
 				ZipEntrySource[] toPack = collectFileSources(folder);
 				ZipUtil.pack(toPack, zip);
-			} else if (config instanceof MySQLConfiguration) {
-				MySQLDatabaseExport export = new MySQLDatabaseExport((MySQLConfiguration) config, zip);
+			} else if (config instanceof PostgresConfiguration) {
+				PostgresDatabaseExport export = new PostgresDatabaseExport((PostgresConfiguration) config, zip);
 				export.run();
 			}
 		} catch (Exception e) {

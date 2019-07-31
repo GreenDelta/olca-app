@@ -81,8 +81,8 @@ public class DatabaseWizard extends Wizard {
 					IProgressMonitor.UNKNOWN);
 			try {
 				Database.close();
-				if (config instanceof MySQLConfiguration)
-					Database.register((MySQLConfiguration) config);
+				if (config instanceof PostgresConfiguration)
+					Database.register((PostgresConfiguration) config);
 				else if (config instanceof DerbyConfiguration) {
 					Database.register((DerbyConfiguration) config);
 					extractDerbyTemplate();

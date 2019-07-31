@@ -24,13 +24,13 @@ import com.google.gson.GsonBuilder;
 public class DatabaseList {
 
 	private List<DerbyConfiguration> localDatabases = new ArrayList<>();
-	private List<MySQLConfiguration> remoteDatabases = new ArrayList<>();
+	private List<PostgresConfiguration> remoteDatabases = new ArrayList<>();
 
 	public List<DerbyConfiguration> getLocalDatabases() {
 		return localDatabases;
 	}
 
-	public List<MySQLConfiguration> getRemoteDatabases() {
+	public List<PostgresConfiguration> getRemoteDatabases() {
 		return remoteDatabases;
 	}
 
@@ -64,7 +64,7 @@ public class DatabaseList {
 		return localDatabases.contains(config);
 	}
 
-	public boolean contains(MySQLConfiguration config) {
+	public boolean contains(PostgresConfiguration config) {
 		return remoteDatabases.contains(config);
 	}
 
