@@ -41,7 +41,7 @@ public class PostgresDatabaseExport implements Runnable {
 			success = true;
 		} catch (Exception e) {
 			success = false;
-			log.error("failed export P database as zolca-File", e);
+			log.error("failed export Postgres database as zolca-File", e);
 		}
 	}
 
