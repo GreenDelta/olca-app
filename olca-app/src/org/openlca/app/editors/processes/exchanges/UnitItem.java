@@ -39,11 +39,19 @@ class UnitItem implements Comparable<UnitItem> {
 
 	@Override
 	public int compareTo(UnitItem other) {
-		if (other == null)
+		// do some null checks, because sometimes
+		// the data may are in a corrupt / editing state
+		if (other == null || other.unit == null || other.factor == null)
 			return 1;
+		if (unit == null || factor == null)
+			return -1;
+		if (exchange.flowPropertyFactor == null)
+			return 0;
+
 		FlowProperty thisFp = factor.flowProperty;
 		FlowProperty otherFp = other.factor.flowProperty;
 		FlowProperty exchFp = exchange.flowPropertyFactor.flowProperty;
+
 		if (Objects.equals(thisFp, otherFp))
 			return Strings.compare(this.toString(), other.toString());
 		if (Objects.equals(thisFp, exchFp))
