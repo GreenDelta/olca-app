@@ -14,8 +14,11 @@ import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.matrix.cache.ConversionTable;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.io.maps.Status;
@@ -55,6 +58,16 @@ public class Replacer implements Runnable {
 		// where flows should be replaced
 		processes.clear();
 		impacts.clear();
+		for (CategorizedDescriptor model : conf.models) {
+			if (model.type == ModelType.PROCESS) {
+				processes.add(model.id);
+			}
+			if (model.type == ModelType.IMPACT_METHOD) {
+				ImpactMethodDao dao = new ImpactMethodDao(db);
+				dao.getCategoryDescriptors(model.id)
+						.forEach(d -> impacts.add(d.id));
+			}
+		}
 
 		buildIndices();
 		if (entries.isEmpty()) {
@@ -69,11 +82,11 @@ public class Replacer implements Runnable {
 			Cursor exchangeCursor = null;
 			Cursor impactCursor = null;
 			ExecutorService pool = Executors.newFixedThreadPool(4);
-			if (conf.processes) {
+			if (!processes.isEmpty()) {
 				exchangeCursor = new Cursor(Cursor.EXCHANGES, this);
 				pool.execute(exchangeCursor);
 			}
-			if (conf.methods) {
+			if (!impacts.isEmpty()) {
 				impactCursor = new Cursor(Cursor.IMPACTS, this);
 				pool.execute(impactCursor);
 			}
