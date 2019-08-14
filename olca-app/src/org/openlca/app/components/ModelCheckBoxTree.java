@@ -1,5 +1,6 @@
 package org.openlca.app.components;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.NavigationComparator;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
@@ -52,12 +54,27 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 		tree.addFilter(new ModelTypeFilter(types));
 		tree.addCheckStateListener(this);
 		ColumnViewerToolTipSupport.enableFor(tree);
+		if (tk != null) {
+			tk.adapt(tree.getTree());
+		}
 
 		// compute a height hint
 		GridData data = UI.gridData(tree.getTree(), true, true);
 		data.minimumHeight = 120;
 		Point p = comp.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		data.heightHint = p.y < 120 ? 120 : p.y;
+
+		if (types == null || types.length == 0)
+			return;
+		if (types.length == 1) {
+			tree.setInput(Navigator.findElement(types[0]));
+		} else {
+			List<INavigationElement<?>> elems = Arrays.stream(types)
+					.map(type -> Navigator.findElement(type))
+					.filter(elem -> !elem.getChildren().isEmpty())
+					.collect(Collectors.toList());
+			tree.setInput(elems);
+		}
 	}
 
 	@Override
