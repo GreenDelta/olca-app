@@ -1,6 +1,7 @@
 package org.openlca.app.tools.mapping.replacer;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -33,6 +34,11 @@ public class Replacer implements Runnable {
 	final HashMap<Long, Flow> flows = new HashMap<>();
 	ConversionTable conversions;
 
+	/** Contains the IDs of processes where flows should be replaced. */
+	Set<Long> processes = new HashSet<>();
+	/** Contains the IDs of LCIA categories where flows should be replaced. */
+	Set<Long> impacts = new HashSet<>();
+
 	public Replacer(ReplacerConfig conf) {
 		this.conf = conf;
 		this.db = Database.get();
@@ -40,10 +46,15 @@ public class Replacer implements Runnable {
 
 	@Override
 	public void run() {
-		if (conf == null || (!conf.processes && !conf.methods)) {
+		if (conf == null || (!conf.models.isEmpty())) {
 			log.info("no configuration; nothing to replace");
 			return;
 		}
+
+		// collect the IDs of processes and LCIA categories
+		// where flows should be replaced
+		processes.clear();
+		impacts.clear();
 
 		buildIndices();
 		if (entries.isEmpty()) {
@@ -80,7 +91,7 @@ public class Replacer implements Runnable {
 			// whether these products are used in the quant. ref. of
 			// product systems and project variants and convert the
 			// amounts there.
-			// TODO also: we need to replace wuch flows in allocation
+			// TODO also: we need to replace such flows in allocation
 			// factors; the application of the conversion factor is
 			// not required there.
 
@@ -97,7 +108,7 @@ public class Replacer implements Runnable {
 
 			boolean deleteMapped = false;
 			Set<Long> usedFlows = null;
-			if (conf.deleteMapped && conf.processes && conf.methods) {
+			if (conf.deleteMapped) {
 				if (stats.failures > 0) {
 					log.warn("Will not delete mapped flows because"
 							+ " there were {} failures in replacement process",
