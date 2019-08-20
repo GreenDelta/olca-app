@@ -85,7 +85,9 @@ class MappingPage extends FormPage {
 				"Target category",
 				"Conversion factor",
 				"Default provider");
+		TableLabel label = new TableLabel();
 		table.setLabelProvider(new TableLabel());
+		Viewers.sortByLabels(table, label);
 		double w = 1.0 / 7.0;
 		Tables.bindColumnWidths(table, w, w, w, w, w, w, w);
 		table.setInput(this.tool.mapping.entries);
