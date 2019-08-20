@@ -44,6 +44,7 @@ class SourceInfoPage extends ModelPage<Source> {
 	private ImageHyperlink fileLink;
 	private ImageHyperlink deleteLink;
 	private ScrolledForm form;
+	private ImageView image;
 
 	SourceInfoPage(SourceEditor editor) {
 		super(editor, "SourceInfoPage", M.GeneralInformation);
@@ -78,6 +79,10 @@ class SourceInfoPage extends ModelPage<Source> {
 		shortText(comp, M.Year, "year");
 		UI.filler(comp, tk);
 		fileSection(comp);
+
+		UI.filler(comp, tk);
+		UI.filler(comp, tk);
+		image = new ImageView(comp, () -> getDatabaseFile());
 	}
 
 	private void fileSection(Composite parent) {
@@ -164,6 +169,7 @@ class SourceInfoPage extends ModelPage<Source> {
 			fileLink.setImage(Images.get(FileType.forName(file)));
 		}
 		fileLink.getParent().getParent().layout();
+		image.update();
 	}
 
 	private File getDatabaseFile() {
