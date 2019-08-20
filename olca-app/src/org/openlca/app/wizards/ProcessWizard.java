@@ -67,6 +67,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		private FlowPropertyViewer propertyCombo;
 		private Label selectProductLabel;
 		private Label selectFlowPropertyLabel;
+		private Label qRefLabel;
 		private Composite flowPropertyContainer;
 		private Composite productTreeContainer;
 		private Text flowText;
@@ -82,7 +83,6 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		protected Page() {
 			super("ProcessWizardPage");
 			setTitle(M.NewProcess);
-			setMessage(M.NewProcess);
 			setWithDescription(false);
 			setPageComplete(false);
 		}
@@ -107,7 +107,8 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		protected void createContents(Composite comp) {
 			createWasteCheck(comp);
 			createRefFlowCheck(comp);
-			flowText = UI.formText(comp, M.QuantitativeReference);
+			qRefLabel = UI.formLabel(comp, M.QuantitativeReference);
+			flowText = UI.formText(comp, SWT.NONE);
 			createLabelStack(comp);
 			contentStack = new Composite(comp, SWT.NONE);
 			UI.gridData(contentStack, true, true).heightHint = 200;
@@ -125,7 +126,6 @@ public class ProcessWizard extends AbstractWizard<Process> {
 				flowTree.setSelection(s, true);
 				String name = refFlow.name != null ? refFlow.name : "";
 				nameText.setText(name);
-				checkInput();
 			}
 		}
 
@@ -158,9 +158,13 @@ public class ProcessWizard extends AbstractWizard<Process> {
 				if (createFlow) {
 					labelLayout.topControl = selectFlowPropertyLabel;
 					contentLayout.topControl = flowPropertyContainer;
+					qRefLabel.setText("Name of the new flow");
+					qRefLabel.getParent().layout();
 				} else {
 					labelLayout.topControl = selectProductLabel;
 					contentLayout.topControl = productTreeContainer;
+					qRefLabel.setText(M.QuantitativeReference);
+					qRefLabel.getParent().layout();
 				}
 				labelStack.layout();
 				contentStack.layout();
