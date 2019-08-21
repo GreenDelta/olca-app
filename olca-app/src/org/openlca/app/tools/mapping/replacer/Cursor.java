@@ -74,7 +74,7 @@ class Cursor implements Runnable {
 					continue;
 				}
 
-				// calculate the conversion factor; not that the factor
+				// calculate the conversion factor; note that the factor
 				// has the inverse meaning for exchanges than for LCIA factors
 				double factor = type == EXCHANGES
 						? entry.factor
