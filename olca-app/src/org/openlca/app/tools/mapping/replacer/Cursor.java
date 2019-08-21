@@ -92,6 +92,15 @@ class Cursor extends UpdatableCursor {
 			Uncertainty uncertainty = readUncertainty(cursor);
 			updateUncertainty(update, factor, uncertainty);
 
+			// f_default_provider
+			if (type == EXCHANGES) {
+				if (entry.targetFlow.provider == null) {
+					update.setNull(10, Types.INTEGER);
+				} else {
+					update.setLong(10, entry.targetFlow.provider.id);
+				}
+			}
+
 			update.executeUpdate();
 			stats.inc(source.id, Stats.REPLACEMENT);
 			updated.add(ownerID);
@@ -119,7 +128,8 @@ class Cursor extends UpdatableCursor {
 			value = "value";
 			formula = "formula";
 		}
-		return "SELECT "
+
+		String query = "SELECT "
 				/* 1 */ + owner + ", "
 				/* 2 */ + "f_flow, "
 				/* 3 */ + "f_unit, "
@@ -129,8 +139,13 @@ class Cursor extends UpdatableCursor {
 				/* 7 */ + "distribution_type, "
 				/* 8 */ + "parameter1_value, "
 				/* 9 */ + "parameter2_value, "
-				/* 10 */ + "parameter3_value "
-				+ "FROM " + table + " "
+				/* 10 */ + "parameter3_value ";
+
+		if (type == EXCHANGES) {
+			query += ", f_default_provider ";
+		}
+
+		query += "FROM " + table + " "
 				+ "FOR UPDATE OF "
 				+ "f_flow, "
 				+ "f_unit, "
@@ -141,6 +156,12 @@ class Cursor extends UpdatableCursor {
 				+ "parameter1_value, "
 				+ "parameter2_value, "
 				+ "parameter3_value";
+
+		if (type == EXCHANGES) {
+			query += ", f_default_provider ";
+		}
+
+		return query;
 	}
 
 	@Override
@@ -157,16 +178,22 @@ class Cursor extends UpdatableCursor {
 			value = "value";
 			formula = "formula";
 		}
-		return "UPDATE " + table + " "
-				+ "SET f_flow = ? , "
-				+ "f_unit = ? , "
-				+ "f_flow_property_factor = ? , "
-				+ value + " = ? , "
-				+ formula + " = ? , "
-				+ "distribution_type = ? , "
-				+ "parameter1_value = ? , "
-				+ "parameter2_value = ? , "
-				+ "parameter3_value = ? ";
+
+		String sql = "UPDATE " + table + " "
+		/* 1 */ + "SET f_flow = ? , "
+		/* 2 */ + "f_unit = ? , "
+		/* 3 */ + "f_flow_property_factor = ? , "
+		/* 4 */ + value + " = ? , "
+		/* 5 */ + formula + " = ? , "
+		/* 6 */ + "distribution_type = ? , "
+		/* 7 */ + "parameter1_value = ? , "
+		/* 8 */ + "parameter2_value = ? , "
+		/* 9 */ + "parameter3_value = ? ";
+
+		if (type == EXCHANGES) {
+			/* 10 */ sql += " , f_default_provider = ?";
+		}
+		return sql;
 	}
 
 	private Uncertainty readUncertainty(ResultSet cursor) throws Exception {
