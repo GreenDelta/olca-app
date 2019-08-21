@@ -43,7 +43,7 @@ abstract class UpdatableCursor implements Runnable {
 
 			// prepare the query and cursor
 			Statement query = con.createStatement();
-			String name = cursorName();
+			String name = "UPDATE_CURSOR_" + seq.incrementAndGet();
 			query.setCursorName(name);
 			ResultSet cursor = query.executeQuery(querySQL());
 
@@ -70,8 +70,4 @@ abstract class UpdatableCursor implements Runnable {
 		}
 	}
 
-	private String cursorName() {
-		int i = seq.incrementAndGet();
-		return "UPDATE_CURSOR_" + i;
-	}
 }

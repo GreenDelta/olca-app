@@ -1,10 +1,8 @@
 package org.openlca.app.tools.mapping.replacer;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
 
 import org.openlca.core.model.Flow;
@@ -17,7 +15,7 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class Cursor implements Runnable {
+class Cursor extends UpdatableCursor {
 
 	static final byte EXCHANGES = 0;
 	static final byte IMPACTS = 1;
@@ -29,93 +27,67 @@ class Cursor implements Runnable {
 	final Stats stats = new Stats();
 
 	Cursor(byte type, Replacer replacer) {
+		super(replacer.db);
 		this.type = type;
 		this.replacer = replacer;
 	}
 
-	public void run() {
+	@Override
+	boolean next(ResultSet cursor, PreparedStatement update) {
+		long flowID = -1;
 		try {
+			flowID = cursor.getLong(1);
+			FlowMapEntry entry = replacer.entries.get(flowID);
+			if (entry == null)
+				return false;
+			Flow source = replacer.flows.get(entry.sourceFlow.flow.id);
+			Flow target = replacer.flows.get(entry.targetFlow.flow.id);
+			if (source == null || target == null)
+				return false;
 
-			Connection con = replacer.db.createConnection();
-			con.setAutoCommit(false);
+			double factor = type == EXCHANGES
+					? replacer.factors.forExchange(entry, cursor)
+					: replacer.factors.forImpact(entry, cursor);
 
-			Statement query = con.createStatement();
-			query.setCursorName(cursorName());
-			ResultSet cursor = query.executeQuery(querySQL());
-			PreparedStatement update = con.prepareStatement(updateSQL());
+			// f_flow
+			update.setLong(1, target.id);
 
-			int total = 0;
-			int changed = 0;
-			while (cursor.next()) {
-				total++;
+			// f_unit
+			update.setLong(2, entry.targetFlow.unit.id);
 
-				long flowID = cursor.getLong(1);
-				FlowMapEntry entry = replacer.entries.get(flowID);
-				if (entry == null)
-					continue;
-				Flow source = replacer.flows.get(entry.sourceFlow.flow.id);
-				Flow target = replacer.flows.get(entry.targetFlow.flow.id);
-				if (source == null || target == null)
-					continue;
+			// f_flow_property_factor
+			FlowPropertyFactor targetPropFactor = propFactor(
+					target, entry.targetFlow);
+			update.setLong(3, targetPropFactor.id);
 
-				double factor = type == EXCHANGES
-						? replacer.factors.forExchange(entry, cursor)
-						: replacer.factors.forImpact(entry, cursor);
+			// amount
+			double amount = cursor.getDouble(4);
+			update.setDouble(4, factor * amount);
 
-				// f_flow
-				update.setLong(1, target.id);
-
-				// f_unit
-				update.setLong(2, entry.targetFlow.unit.id);
-
-				// f_flow_property_factor
-				FlowPropertyFactor targetPropFactor = propFactor(
-						target, entry.targetFlow);
-				update.setLong(3, targetPropFactor.id);
-
-				// amount
-				double amount = cursor.getDouble(4);
-				update.setDouble(4, factor * amount);
-
-				// resulting_amount_formula
-				String formula = cursor.getString(5);
-				if (Strings.nullOrEmpty(formula)) {
-					update.setString(5, null);
-				} else {
-					update.setString(5,
-							Double.toString(factor) + "* (" + formula + ")");
-				}
-
-				// uncertainty
-				Uncertainty uncertainty = readUncertainty(cursor);
-				updateUncertainty(update, factor, uncertainty);
-
-				update.executeUpdate();
-				changed++;
-				stats.inc(source.id, Stats.REPLACEMENT);
+			// resulting_amount_formula
+			String formula = cursor.getString(5);
+			if (Strings.nullOrEmpty(formula)) {
+				update.setString(5, null);
+			} else {
+				update.setString(5,
+						Double.toString(factor) + "* (" + formula + ")");
 			}
 
-			cursor.close();
-			query.close();
-			update.close();
-			con.commit();
-			con.close();
+			// uncertainty
+			Uncertainty uncertainty = readUncertainty(cursor);
+			updateUncertainty(update, factor, uncertainty);
 
-			log.info("{} replaced flows in {} of {} rows",
-					cursorName(), changed, total);
+			update.executeUpdate();
+			stats.inc(source.id, Stats.REPLACEMENT);
+			return true;
 		} catch (Exception e) {
-			log.error("Flow replacement in " + cursorName() + " failed", e);
-			stats.inc(0, Stats.FAILURE);
+			stats.inc(flowID, Stats.FAILURE);
+			return false;
 		}
 	}
 
-	private String cursorName() {
-		return type == EXCHANGES
-				? "EXCHANGE_CURSOR"
-				: "IMPACT_CURSOR";
-	}
-
-	private String querySQL() {
+	@Override
+	String querySQL() {
 		String table;
 		String value;
 		String formula;
@@ -151,7 +123,8 @@ class Cursor implements Runnable {
 				+ "parameter3_value";
 	}
 
-	private String updateSQL() {
+	@Override
+	String updateSQL() {
 		String table;
 		String value;
 		String formula;
@@ -173,8 +146,7 @@ class Cursor implements Runnable {
 				+ "distribution_type = ? , "
 				+ "parameter1_value = ? , "
 				+ "parameter2_value = ? , "
-				+ "parameter3_value = ? "
-				+ "WHERE CURRENT OF " + cursorName();
+				+ "parameter3_value = ? ";
 	}
 
 	private Uncertainty readUncertainty(ResultSet cursor) throws Exception {
@@ -233,5 +205,4 @@ class Cursor implements Runnable {
 		}
 		return null;
 	}
-
 }
