@@ -78,15 +78,15 @@ public class Replacer implements Runnable {
 		try {
 
 			log.info("start updatable cursors");
-			Cursor exchangeCursor = null;
-			Cursor impactCursor = null;
+			AmountCursor exchangeCursor = null;
+			AmountCursor impactCursor = null;
 			ExecutorService pool = Executors.newFixedThreadPool(4);
 			if (!processes.isEmpty()) {
-				exchangeCursor = new Cursor(Cursor.EXCHANGES, this);
+				exchangeCursor = new AmountCursor(ModelType.PROCESS, this);
 				pool.execute(exchangeCursor);
 			}
 			if (!impacts.isEmpty()) {
-				impactCursor = new Cursor(Cursor.IMPACTS, this);
+				impactCursor = new AmountCursor(ModelType.IMPACT_CATEGORY, this);
 				pool.execute(impactCursor);
 			}
 

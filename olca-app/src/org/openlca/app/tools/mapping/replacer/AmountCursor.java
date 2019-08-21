@@ -4,33 +4,31 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.util.Strings;
 
-class Cursor extends UpdatableCursor {
+/**
+ * Replaces flows and updates the amounts in exchanges and characterization
+ * factors.
+ */
+class AmountCursor extends UpdatableCursor {
 
-	static final byte EXCHANGES = 0;
-	static final byte IMPACTS = 1;
-
-	private final byte type;
 	private final Replacer replacer;
 
-	final Stats stats = new Stats();
-
-	/** Contains the updated process or LCIA category IDs. */
-	final Set<Long> updated = new HashSet<>();
-
-	Cursor(byte type, Replacer replacer) {
-		super(replacer.db);
-		this.type = type;
+	/**
+	 * Creates a new amount cursor. For the type, PROCESS or IMPACT_CATEGORY is
+	 * allowed.
+	 */
+	AmountCursor(ModelType type, Replacer replacer) {
+		super(replacer.db, type);
 		this.replacer = replacer;
 	}
 
@@ -51,14 +49,14 @@ class Cursor extends UpdatableCursor {
 
 			// check if we should replace a flow here
 			long ownerID = cursor.getLong(1);
-			Set<Long> owners = type == EXCHANGES
+			Set<Long> owners = type == ModelType.PROCESS
 					? replacer.processes
 					: replacer.impacts;
 			if (!owners.contains(ownerID))
 				return false;
 
 			// get the conversion factor
-			double factor = type == EXCHANGES
+			double factor = type == ModelType.PROCESS
 					? replacer.factors.forExchange(entry, cursor)
 					: replacer.factors.forImpact(entry, cursor);
 
@@ -93,7 +91,7 @@ class Cursor extends UpdatableCursor {
 			updateUncertainty(update, factor, uncertainty);
 
 			// f_default_provider
-			if (type == EXCHANGES) {
+			if (type == ModelType.PROCESS) {
 				if (entry.targetFlow.provider == null) {
 					update.setNull(10, Types.INTEGER);
 				} else {
@@ -103,7 +101,7 @@ class Cursor extends UpdatableCursor {
 
 			update.executeUpdate();
 			stats.inc(source.id, Stats.REPLACEMENT);
-			updated.add(ownerID);
+			updatedModels.add(ownerID);
 			return true;
 		} catch (Exception e) {
 			stats.inc(flowID, Stats.FAILURE);
@@ -117,7 +115,7 @@ class Cursor extends UpdatableCursor {
 		String owner;
 		String value;
 		String formula;
-		if (type == EXCHANGES) {
+		if (type == ModelType.PROCESS) {
 			table = "tbl_exchanges";
 			owner = "f_owner";
 			value = "resulting_amount_value";
@@ -141,7 +139,7 @@ class Cursor extends UpdatableCursor {
 				/* 9 */ + "parameter2_value, "
 				/* 10 */ + "parameter3_value ";
 
-		if (type == EXCHANGES) {
+		if (type == ModelType.PROCESS) {
 			query += ", f_default_provider ";
 		}
 
@@ -157,7 +155,7 @@ class Cursor extends UpdatableCursor {
 				+ "parameter2_value, "
 				+ "parameter3_value";
 
-		if (type == EXCHANGES) {
+		if (type == ModelType.PROCESS) {
 			query += ", f_default_provider ";
 		}
 
@@ -169,7 +167,7 @@ class Cursor extends UpdatableCursor {
 		String table;
 		String value;
 		String formula;
-		if (type == EXCHANGES) {
+		if (type == ModelType.PROCESS) {
 			table = "tbl_exchanges";
 			value = "resulting_amount_value";
 			formula = "resulting_amount_formula";
@@ -190,7 +188,7 @@ class Cursor extends UpdatableCursor {
 		/* 8 */ + "parameter2_value = ? , "
 		/* 9 */ + "parameter3_value = ? ";
 
-		if (type == EXCHANGES) {
+		if (type == ModelType.PROCESS) {
 			/* 10 */ sql += " , f_default_provider = ?";
 		}
 		return sql;

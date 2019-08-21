@@ -4,9 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.ModelType;
 
 /**
  * A method template for implementing updatable cursors.
@@ -17,10 +20,20 @@ abstract class UpdatableCursor implements Runnable {
 
 	private static final AtomicInteger seq = new AtomicInteger(0);
 
-	private final IDatabase db;
+	final IDatabase db;
+	final Stats stats = new Stats();
+	/**
+	 * Contains the IDs of the updated models (processes, LCIA
+	 * methods/categories, product systems => see the type below).
+	 */
+	final Set<Long> updatedModels = new HashSet<>();
 
-	UpdatableCursor(IDatabase db) {
+	/** The type of the updated models. */
+	final ModelType type;
+
+	UpdatableCursor(IDatabase db, ModelType type) {
 		this.db = db;
+		this.type = type;
 	}
 
 	/** The SQL query for selecting the records. */

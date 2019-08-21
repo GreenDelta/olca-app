@@ -3,6 +3,7 @@ package org.openlca.app.tools.mapping.replacer;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.openlca.core.model.ModelType;
 import org.openlca.io.maps.FlowMapEntry;
 
 class ProductLinkCursor extends UpdatableCursor {
@@ -10,7 +11,7 @@ class ProductLinkCursor extends UpdatableCursor {
 	private final Replacer replacer;
 
 	ProductLinkCursor(Replacer replacer) {
-		super(replacer.db);
+		super(replacer.db, ModelType.PRODUCT_SYSTEM);
 		this.replacer = replacer;
 	}
 
