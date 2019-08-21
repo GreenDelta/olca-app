@@ -15,7 +15,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
-import org.openlca.core.matrix.cache.ConversionTable;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -35,7 +34,8 @@ public class Replacer implements Runnable {
 	final HashMap<Long, FlowMapEntry> entries = new HashMap<>();
 	// the source and target flows in the database: flow ID -> flow.
 	final HashMap<Long, Flow> flows = new HashMap<>();
-	ConversionTable conversions;
+
+	FactorProvider factors;
 
 	/** Contains the IDs of processes where flows should be replaced. */
 	Set<Long> processes = new HashSet<>();
@@ -196,6 +196,6 @@ public class Replacer implements Runnable {
 			flows.put(source.id, source);
 			flows.put(target.id, target);
 		}
-		conversions = ConversionTable.create(db);
+		factors = new FactorProvider(db, flows);
 	}
 }

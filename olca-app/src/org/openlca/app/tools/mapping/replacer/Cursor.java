@@ -7,13 +7,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 
-import org.openlca.core.matrix.cache.ConversionTable;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
-import org.openlca.core.model.Unit;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.util.Strings;
@@ -61,55 +58,27 @@ class Cursor implements Runnable {
 				if (source == null || target == null)
 					continue;
 
-				// check flow property and unit of the source flow
-				FlowPropertyFactor propFactor = propFactor(
-						source, cursor.getLong("f_flow_property_factor"));
-				if (propFactor == null) {
-					stats.inc(source.id, Stats.FAILURE);
-					continue;
-				}
-				Unit unit = unit(propFactor.flowProperty, cursor.getLong("f_unit"));
-				if (unit == null) {
-					stats.inc(source.id, Stats.FAILURE);
-					continue;
-				}
-
-				// calculate the conversion factor; note that the factor
-				// has the inverse meaning for exchanges than for LCIA factors
 				double factor = type == EXCHANGES
-						? entry.factor
-						: 1 / entry.factor;
-				if (propFactor.flowProperty.id != entry.sourceFlow.property.id
-						|| unit.id != entry.sourceFlow.unit.id) {
-					ConversionTable ct = replacer.conversions;
-					double pi = ct.getPropertyFactor(propFactor.id);
-					double ui = ct.getUnitFactor(unit.id);
-					double ps = ct.getPropertyFactor(
-							propFactor(source, entry.sourceFlow).id);
-					double us = ct.getUnitFactor(entry.sourceFlow.unit.id);
-					double y = (ui * ps) / (pi * us);
-					factor *= type == EXCHANGES ? y : 1 / y;
-				}
+						? replacer.factors.forExchange(entry, cursor)
+						: replacer.factors.forImpact(entry, cursor);
 
-				// check the target flow property
-				FlowPropertyFactor targetPropertyFactor = propFactor(
+				// f_flow
+				update.setLong(1, target.id);
+
+				// f_unit
+				update.setLong(2, entry.targetFlow.unit.id);
+
+				// f_flow_property_factor
+				FlowPropertyFactor targetPropFactor = propFactor(
 						target, entry.targetFlow);
-				if (targetPropertyFactor == null) {
-					stats.inc(source.id, Stats.FAILURE);
-					continue;
-				}
+				update.setLong(3, targetPropFactor.id);
 
-				// amount and formula have type specific names
+				// amount
 				double amount = cursor.getDouble(4);
-				String formula = cursor.getString(5);
-				Uncertainty uncertainty = readUncertainty(cursor);
-
-				update.setLong(1, target.id); // f_flow
-				update.setLong(2, entry.targetFlow.unit.id); // f_unit
-				update.setLong(3, targetPropertyFactor.id); // f_flow_property_factor
-				update.setDouble(4, factor * amount); // value
+				update.setDouble(4, factor * amount);
 
 				// resulting_amount_formula
+				String formula = cursor.getString(5);
 				if (Strings.nullOrEmpty(formula)) {
 					update.setString(5, null);
 				} else {
@@ -118,6 +87,7 @@ class Cursor implements Runnable {
 				}
 
 				// uncertainty
+				Uncertainty uncertainty = readUncertainty(cursor);
 				updateUncertainty(update, factor, uncertainty);
 
 				update.executeUpdate();
@@ -252,16 +222,6 @@ class Cursor implements Runnable {
 		}
 	}
 
-	private FlowPropertyFactor propFactor(Flow flow, long factorID) {
-		if (flow == null)
-			return null;
-		for (FlowPropertyFactor f : flow.flowPropertyFactors) {
-			if (f.id == factorID)
-				return f;
-		}
-		return null;
-	}
-
 	private FlowPropertyFactor propFactor(Flow flow, FlowRef ref) {
 		if (flow == null)
 			return null;
@@ -270,16 +230,6 @@ class Cursor implements Runnable {
 				continue;
 			if (f.flowProperty.id == ref.property.id)
 				return f;
-		}
-		return null;
-	}
-
-	private Unit unit(FlowProperty property, long unitID) {
-		if (property == null || property.unitGroup == null)
-			return null;
-		for (Unit u : property.unitGroup.units) {
-			if (u.id == unitID)
-				return u;
 		}
 		return null;
 	}
