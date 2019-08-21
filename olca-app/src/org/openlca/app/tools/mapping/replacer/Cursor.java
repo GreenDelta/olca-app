@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -12,19 +14,19 @@ import org.openlca.core.model.UncertaintyType;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class Cursor extends UpdatableCursor {
 
 	static final byte EXCHANGES = 0;
 	static final byte IMPACTS = 1;
 
-	private final Logger log = LoggerFactory.getLogger(getClass());
 	private final byte type;
 	private final Replacer replacer;
 
 	final Stats stats = new Stats();
+
+	/** Contains the updated process or LCIA category IDs. */
+	final Set<Long> updated = new HashSet<>();
 
 	Cursor(byte type, Replacer replacer) {
 		super(replacer.db);
@@ -36,7 +38,9 @@ class Cursor extends UpdatableCursor {
 	boolean next(ResultSet cursor, PreparedStatement update) {
 		long flowID = -1;
 		try {
-			flowID = cursor.getLong(1);
+
+			// select the mapping entry if exists
+			flowID = cursor.getLong("f_flow");
 			FlowMapEntry entry = replacer.entries.get(flowID);
 			if (entry == null)
 				return false;
@@ -45,6 +49,15 @@ class Cursor extends UpdatableCursor {
 			if (source == null || target == null)
 				return false;
 
+			// check if we should replace a flow here
+			long ownerID = cursor.getLong(1);
+			Set<Long> owners = type == EXCHANGES
+					? replacer.processes
+					: replacer.impacts;
+			if (!owners.contains(ownerID))
+				return false;
+
+			// get the conversion factor
 			double factor = type == EXCHANGES
 					? replacer.factors.forExchange(entry, cursor)
 					: replacer.factors.forImpact(entry, cursor);
@@ -68,6 +81,8 @@ class Cursor extends UpdatableCursor {
 			String formula = cursor.getString(5);
 			if (Strings.nullOrEmpty(formula)) {
 				update.setString(5, null);
+			} else if (factor == 1) {
+				update.setString(5, formula);
 			} else {
 				update.setString(5,
 						Double.toString(factor) + "* (" + formula + ")");
@@ -79,6 +94,7 @@ class Cursor extends UpdatableCursor {
 
 			update.executeUpdate();
 			stats.inc(source.id, Stats.REPLACEMENT);
+			updated.add(ownerID);
 			return true;
 		} catch (Exception e) {
 			stats.inc(flowID, Stats.FAILURE);
@@ -89,27 +105,31 @@ class Cursor extends UpdatableCursor {
 	@Override
 	String querySQL() {
 		String table;
+		String owner;
 		String value;
 		String formula;
 		if (type == EXCHANGES) {
 			table = "tbl_exchanges";
+			owner = "f_owner";
 			value = "resulting_amount_value";
 			formula = "resulting_amount_formula";
 		} else {
 			table = "tbl_impact_factors";
+			owner = "f_impact_category";
 			value = "value";
 			formula = "formula";
 		}
 		return "SELECT "
-				+ "f_flow, "
-				+ "f_unit, "
-				+ "f_flow_property_factor, "
-				+ value + " , "
-				+ formula + ", "
-				+ "distribution_type, "
-				+ "parameter1_value, "
-				+ "parameter2_value, "
-				+ "parameter3_value "
+				/* 1 */ + owner + ", "
+				/* 2 */ + "f_flow, "
+				/* 3 */ + "f_unit, "
+				/* 4 */ + "f_flow_property_factor, "
+				/* 5 */ + value + " , "
+				/* 6 */ + formula + ", "
+				/* 7 */ + "distribution_type, "
+				/* 8 */ + "parameter1_value, "
+				/* 9 */ + "parameter2_value, "
+				/* 10 */ + "parameter3_value "
 				+ "FROM " + table + " "
 				+ "FOR UPDATE OF "
 				+ "f_flow, "
