@@ -152,7 +152,6 @@ public class Replacer implements Runnable {
 					e.sourceFlow.status = Status.ok("Applied (not removed)");
 				}
 			}
-
 		} catch (Exception e) {
 			log.error("Flow replacement failed", e);
 		}

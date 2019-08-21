@@ -130,26 +130,32 @@ class TableLabel extends LabelProvider
 			return e.targetFlow == null ? null : e.targetFlow.status;
 		if (e.targetFlow == null || e.targetFlow.status == null)
 			return e.sourceFlow.status;
-		if (e.sourceFlow.status.type == e.targetFlow.status.type) {
-			String sm = e.sourceFlow.status.message;
+
+		Status s = e.sourceFlow.status;
+		Status t = e.targetFlow.status;
+
+		// when the status is the same => merge it
+		if (s.type == t.type) {
+			String sm = s.message;
 			if (Strings.nullOrEmpty(sm))
-				return e.targetFlow.status;
+				return t;
 			String tm = e.targetFlow.status.message;
 			if (Strings.nullOrEmpty(tm) || Strings.nullOrEqual(sm, tm))
-				return e.sourceFlow.status;
-			return new Status(e.sourceFlow.status.type,
-					"source flow: " + e.sourceFlow.status.message
-							+ "; target flow: " + e.targetFlow.status.message);
+				return s;
+			return new Status(s.type,
+					"source flow: " + sm + "; target flow: " + tm);
 		}
-		switch (e.sourceFlow.status.type) {
+
+		// select the status which is worse
+		switch (s.type) {
 		case Status.OK:
-			return e.targetFlow.status;
+			return new Status(t.type, "target flow: " + t.message);
 		case Status.WARNING:
-			return e.targetFlow.status.type == Status.OK
-					? e.sourceFlow.status
-					: e.targetFlow.status;
+			return t.type == Status.OK
+					? new Status(s.type, "source flow: " + s.message)
+					: new Status(t.type, "target flow: " + t.message);
 		default:
-			return e.targetFlow.status;
+			return new Status(s.type, "source flow: " + s.message);
 		}
 	}
 

@@ -10,6 +10,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.tools.mapping.generator.Generator;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.IProvider;
@@ -114,6 +115,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		Replacer replacer = new Replacer(opt.get());
 		App.runWithProgress("Replace flows ...", replacer, () -> {
 			tool.refresh();
+			Navigator.refresh();
 		});
 	}
 }
