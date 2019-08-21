@@ -1,5 +1,6 @@
 package org.openlca.app.tools.mapping;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -16,6 +17,7 @@ import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.io.maps.FlowMap;
 
 class ReplacerDialog extends FormDialog {
@@ -31,16 +33,17 @@ class ReplacerDialog extends FormDialog {
 			return Optional.empty();
 		ReplacerConfig conf = new ReplacerConfig(mapping, source);
 		ReplacerDialog dialog = new ReplacerDialog(conf);
-		if (dialog.open() != Dialog.OK)
+		if (dialog.open() != Dialog.OK || dialog.selection == null)
 			return Optional.empty();
-		conf.models.addAll(dialog.tree.getSelection());
-		if (!conf.models.isEmpty())
+		conf.models.addAll(dialog.selection);
+		if (conf.models.isEmpty())
 			return Optional.empty();
 		return Optional.of(conf);
 	}
 
 	private final ReplacerConfig conf;
 	private ModelCheckBoxTree tree;
+	private List<CategorizedDescriptor> selection;
 
 	private ReplacerDialog(ReplacerConfig conf) {
 		super(UI.shell());
@@ -72,6 +75,12 @@ class ReplacerDialog extends FormDialog {
 		Controls.onSelect(delete, _e -> {
 			conf.deleteMapped = delete.getSelection();
 		});
+	}
+
+	@Override
+	protected void okPressed() {
+		this.selection = tree.getSelection();
+		super.okPressed();
 	}
 
 }

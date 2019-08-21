@@ -22,7 +22,6 @@ import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
@@ -117,10 +116,10 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 	}
 
 	public List<CategorizedDescriptor> getSelection() {
-		List<INavigationElement<?>> elems = Viewers.getAllSelected(tree);
-		if (elems == null || elems.isEmpty())
+		Object[] elems = tree.getCheckedElements();
+		if (elems == null || elems.length == 0)
 			return Collections.emptyList();
-		return elems.stream()
+		return Arrays.stream(elems)
 				.filter(e -> e instanceof ModelElement)
 				.map(e -> ((ModelElement) e).getContent())
 				.collect(Collectors.toList());

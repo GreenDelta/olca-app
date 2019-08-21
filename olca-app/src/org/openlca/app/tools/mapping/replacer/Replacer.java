@@ -49,7 +49,7 @@ public class Replacer implements Runnable {
 
 	@Override
 	public void run() {
-		if (conf == null || (!conf.models.isEmpty())) {
+		if (conf == null || (conf.models.isEmpty())) {
 			log.info("no configuration; nothing to replace");
 			return;
 		}
@@ -61,8 +61,7 @@ public class Replacer implements Runnable {
 		for (CategorizedDescriptor model : conf.models) {
 			if (model.type == ModelType.PROCESS) {
 				processes.add(model.id);
-			}
-			if (model.type == ModelType.IMPACT_METHOD) {
+			} else if (model.type == ModelType.IMPACT_METHOD) {
 				ImpactMethodDao dao = new ImpactMethodDao(db);
 				dao.getCategoryDescriptors(model.id)
 						.forEach(d -> impacts.add(d.id));
@@ -99,6 +98,7 @@ public class Replacer implements Runnable {
 				log.info("waiting for cursors to finish; {} seconds", i * 10);
 			}
 			log.info("cursors finished");
+			db.getEntityFactory().getCache().evictAll();
 
 			// TODO when products were replaced we also need to check
 			// whether these products are used in the quant. ref. of
