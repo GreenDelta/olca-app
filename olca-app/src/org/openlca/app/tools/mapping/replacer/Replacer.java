@@ -1,5 +1,6 @@
 package org.openlca.app.tools.mapping.replacer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -77,20 +78,13 @@ public class Replacer implements Runnable {
 
 		try {
 
+			// start and wait for the cursors to finish
 			log.info("start updatable cursors");
-			AmountCursor exchangeCursor = null;
-			AmountCursor impactCursor = null;
+			List<UpdatableCursor> cursors = createCursors();
 			ExecutorService pool = Executors.newFixedThreadPool(4);
-			if (!processes.isEmpty()) {
-				exchangeCursor = new AmountCursor(ModelType.PROCESS, this);
-				pool.execute(exchangeCursor);
+			for (UpdatableCursor c : cursors) {
+				pool.execute(c);
 			}
-			if (!impacts.isEmpty()) {
-				impactCursor = new AmountCursor(ModelType.IMPACT_CATEGORY, this);
-				pool.execute(impactCursor);
-			}
-
-			// waiting for the cursors to finish
 			pool.shutdown();
 			int i = 0;
 			while (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
@@ -110,14 +104,14 @@ public class Replacer implements Runnable {
 
 			// collect and log statistics
 			Stats stats = new Stats();
-			if (exchangeCursor != null) {
-				stats.add(exchangeCursor.stats);
-				exchangeCursor.stats.log("exchanges", flows);
+			for (UpdatableCursor c : cursors) {
+				stats.add(c.stats);
+				c.stats.log(c.getClass().getName(), flows);
 			}
-			if (impactCursor != null) {
-				stats.add(impactCursor.stats);
-				impactCursor.stats.log("impacts", flows);
-			}
+
+			// TODO: update the version and last-update fields
+			// of the changed models; also call the indexer
+			// when the database is a connected repository
 
 			boolean deleteMapped = false;
 			Set<Long> usedFlows = null;
@@ -155,6 +149,18 @@ public class Replacer implements Runnable {
 		} catch (Exception e) {
 			log.error("Flow replacement failed", e);
 		}
+	}
+
+	private List<UpdatableCursor> createCursors() {
+		List<UpdatableCursor> cursors = new ArrayList<>();
+		if (!processes.isEmpty()) {
+			cursors.add(new AmountCursor(ModelType.PROCESS, this));
+			cursors.add(new ProductLinkCursor(this));
+		}
+		if (!impacts.isEmpty()) {
+			cursors.add(new AmountCursor(ModelType.IMPACT_CATEGORY, this));
+		}
+		return cursors;
 	}
 
 	private void buildIndices() {

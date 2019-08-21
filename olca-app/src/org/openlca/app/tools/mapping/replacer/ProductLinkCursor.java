@@ -42,6 +42,9 @@ class ProductLinkCursor extends UpdatableCursor {
 			update.setLong(1, provider);
 			update.setLong(2, entry.targetFlow.flow.id);
 
+			long systemID = cursor.getLong("f_product_system");
+			stats.inc(entry.sourceFlow.flow.id, Stats.REPLACEMENT);
+			updatedModels.add(systemID);
 			return true;
 		} catch (Exception e) {
 			return false;
