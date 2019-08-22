@@ -12,9 +12,12 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.LocationDao;
+import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
+import org.openlca.core.model.FlowType;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.io.maps.FlowRef;
@@ -137,7 +140,27 @@ public class DBProvider implements IProvider {
 			return null;
 		}
 
-		// TODO: sync the provider
+		// check a possible provider
+		Process provider = null;
+		if (ref.provider != null) {
+			provider = new ProcessDao(db).getForRefId(ref.provider.refId);
+			if (provider == null) {
+				ref.status = Status.error(
+						"the provider does not exist in the database");
+				return null;
+			}
+			boolean exists = provider.exchanges.stream().filter(e -> {
+				return !e.isAvoided &&
+						Objects.equals(e.flow, flow) &&
+						((e.isInput && flow.flowType == FlowType.WASTE_FLOW) ||
+								(!e.isInput && flow.flowType == FlowType.PRODUCT_FLOW));
+			}).findFirst().isPresent();
+			if (!exists) {
+				ref.status = Status.error(
+						"the given provider does not deliver that flow");
+				return null;
+			}
+		}
 
 		// sync the reference data
 		if (ref.property == null) {
@@ -150,6 +173,10 @@ public class DBProvider implements IProvider {
 		ref.property.id = prop.id;
 		ref.unit.id = u.id;
 
+		if (provider != null) {
+			ref.provider = Descriptors.toDescriptor(provider);
+		}
+
 		Sync.checkFlowName(ref, flow.name);
 		Sync.checkFlowCategory(ref,
 				String.join("/", Categories.path(flow.category)));
@@ -157,6 +184,11 @@ public class DBProvider implements IProvider {
 		Sync.checkFlowLocation(ref, flow.location == null
 				? null
 				: flow.location.code);
+		if (provider != null) {
+			Sync.checkProviderLocation(ref, provider.location == null
+					? null
+					: provider.location.code);
+		}
 
 		if (ref.status == null) {
 			ref.status = Status.ok("flow in sync. with database");

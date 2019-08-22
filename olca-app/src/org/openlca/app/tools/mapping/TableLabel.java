@@ -232,7 +232,7 @@ class TableLabel extends LabelProvider
 		if (t == null) {
 			t = "?";
 		}
-		if (ref.providerLocation != null) {
+		if (!Strings.nullOrEmpty(ref.providerLocation)) {
 			t += " - " + ref.providerLocation;
 		}
 		return t;
