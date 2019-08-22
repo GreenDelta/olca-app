@@ -83,7 +83,7 @@ class AmountCursor extends UpdatableCursor {
 				update.setString(5, formula);
 			} else {
 				update.setString(5,
-						Double.toString(factor) + "* (" + formula + ")");
+						Double.toString(factor) + " * (" + formula + ")");
 			}
 
 			// uncertainty
