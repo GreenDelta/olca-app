@@ -155,7 +155,8 @@ public class Replacer implements Runnable {
 		List<UpdatableCursor> cursors = new ArrayList<>();
 		if (!processes.isEmpty()) {
 			cursors.add(new AmountCursor(ModelType.PROCESS, this));
-			cursors.add(new ProductLinkCursor(this));
+			cursors.add(new ProcessLinkCursor(this));
+			cursors.add(new AllocationCursor(this));
 		}
 		if (!impacts.isEmpty()) {
 			cursors.add(new AmountCursor(ModelType.IMPACT_CATEGORY, this));

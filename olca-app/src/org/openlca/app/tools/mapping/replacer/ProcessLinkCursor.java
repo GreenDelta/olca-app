@@ -6,11 +6,11 @@ import java.sql.ResultSet;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.maps.FlowMapEntry;
 
-class ProductLinkCursor extends UpdatableCursor {
+class ProcessLinkCursor extends UpdatableCursor {
 
 	private final Replacer replacer;
 
-	ProductLinkCursor(Replacer replacer) {
+	ProcessLinkCursor(Replacer replacer) {
 		super(replacer.db, ModelType.PRODUCT_SYSTEM);
 		this.replacer = replacer;
 	}
@@ -43,10 +43,11 @@ class ProductLinkCursor extends UpdatableCursor {
 			update.setLong(2, entry.targetFlow.flow.id);
 
 			long systemID = cursor.getLong("f_product_system");
-			stats.inc(entry.sourceFlow.flow.id, Stats.REPLACEMENT);
+			stats.inc(flowID, Stats.REPLACEMENT);
 			updatedModels.add(systemID);
 			return true;
 		} catch (Exception e) {
+			stats.inc(flowID, Stats.FAILURE);
 			return false;
 		}
 	}
