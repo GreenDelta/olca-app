@@ -16,7 +16,7 @@ class AllocationCursor extends UpdatableCursor {
 	}
 
 	@Override
-	boolean next(ResultSet cursor, PreparedStatement update) {
+	void next(ResultSet cursor, PreparedStatement update) {
 		long flowID = -1;
 		try {
 
@@ -24,22 +24,20 @@ class AllocationCursor extends UpdatableCursor {
 			flowID = cursor.getLong("f_product");
 			FlowMapEntry entry = replacer.entries.get(flowID);
 			if (entry == null)
-				return false;
+				return;
 
 			// check whether we should update the link
 			long processID = cursor.getLong("f_process");
 			if (!replacer.processes.contains(processID))
-				return false;
+				return;
 
 			update.setLong(1, entry.targetFlow.flow.id);
+
 			update.executeUpdate();
 			stats.inc(flowID, Stats.REPLACEMENT);
 			updatedModels.add(processID);
-
-			return true;
 		} catch (Exception e) {
 			stats.inc(flowID, Stats.FAILURE);
-			return false;
 		}
 	}
 

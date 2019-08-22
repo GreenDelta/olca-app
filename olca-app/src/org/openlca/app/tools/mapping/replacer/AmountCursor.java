@@ -33,7 +33,7 @@ class AmountCursor extends UpdatableCursor {
 	}
 
 	@Override
-	boolean next(ResultSet cursor, PreparedStatement update) {
+	void next(ResultSet cursor, PreparedStatement update) {
 		long flowID = -1;
 		try {
 
@@ -41,11 +41,11 @@ class AmountCursor extends UpdatableCursor {
 			flowID = cursor.getLong("f_flow");
 			FlowMapEntry entry = replacer.entries.get(flowID);
 			if (entry == null)
-				return false;
+				return;
 			Flow source = replacer.flows.get(entry.sourceFlow.flow.id);
 			Flow target = replacer.flows.get(entry.targetFlow.flow.id);
 			if (source == null || target == null)
-				return false;
+				return;
 
 			// check if we should replace a flow here
 			long ownerID = cursor.getLong(1);
@@ -53,7 +53,7 @@ class AmountCursor extends UpdatableCursor {
 					? replacer.processes
 					: replacer.impacts;
 			if (!owners.contains(ownerID))
-				return false;
+				return;
 
 			// get the conversion factor
 			double factor = type == ModelType.PROCESS
@@ -100,12 +100,10 @@ class AmountCursor extends UpdatableCursor {
 			}
 
 			update.executeUpdate();
-			stats.inc(source.id, Stats.REPLACEMENT);
+			stats.inc(flowID, Stats.REPLACEMENT);
 			updatedModels.add(ownerID);
-			return true;
 		} catch (Exception e) {
 			stats.inc(flowID, Stats.FAILURE);
-			return false;
 		}
 	}
 

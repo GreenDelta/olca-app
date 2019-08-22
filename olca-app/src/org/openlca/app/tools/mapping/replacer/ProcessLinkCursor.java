@@ -16,7 +16,7 @@ class ProcessLinkCursor extends UpdatableCursor {
 	}
 
 	@Override
-	boolean next(ResultSet cursor, PreparedStatement update) {
+	void next(ResultSet cursor, PreparedStatement update) {
 		long flowID = -1;
 		try {
 
@@ -24,12 +24,12 @@ class ProcessLinkCursor extends UpdatableCursor {
 			flowID = cursor.getLong("f_flow");
 			FlowMapEntry entry = replacer.entries.get(flowID);
 			if (entry == null)
-				return false;
+				return;
 
 			// check whether we should update the link
 			long processID = cursor.getLong("f_process");
 			if (!replacer.processes.contains(processID))
-				return false;
+				return;
 
 			// select the provider
 			long provider = 0L;
@@ -41,14 +41,13 @@ class ProcessLinkCursor extends UpdatableCursor {
 
 			update.setLong(1, provider);
 			update.setLong(2, entry.targetFlow.flow.id);
-
 			long systemID = cursor.getLong("f_product_system");
+
+			update.executeUpdate();
 			stats.inc(flowID, Stats.REPLACEMENT);
 			updatedModels.add(systemID);
-			return true;
 		} catch (Exception e) {
 			stats.inc(flowID, Stats.FAILURE);
-			return false;
 		}
 	}
 

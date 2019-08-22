@@ -43,10 +43,11 @@ abstract class UpdatableCursor implements Runnable {
 	abstract String updateSQL();
 
 	/**
-	 * This method is called when the cursor moved to the next row. When this
-	 * method returns true the update statement is called.
+	 * This method is called when the cursor moved to the next row. The update
+	 * needs to be called within this method and possible errors should also be
+	 * handled and logged there.
 	 */
-	abstract boolean next(ResultSet cursor, PreparedStatement update);
+	abstract void next(ResultSet cursor, PreparedStatement update);
 
 	@Override
 	public final void run() {
@@ -66,10 +67,7 @@ abstract class UpdatableCursor implements Runnable {
 
 			// run through the table
 			while (cursor.next()) {
-				boolean doit = next(cursor, update);
-				if (doit) {
-					update.executeUpdate();
-				}
+				next(cursor, update);
 			}
 
 			// free and commit
