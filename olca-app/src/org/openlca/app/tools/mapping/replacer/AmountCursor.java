@@ -72,11 +72,11 @@ class AmountCursor extends UpdatableCursor {
 			update.setLong(3, targetPropFactor.id);
 
 			// amount
-			double amount = cursor.getDouble(4);
+			double amount = cursor.getDouble(5);
 			update.setDouble(4, factor * amount);
 
 			// resulting_amount_formula
-			String formula = cursor.getString(5);
+			String formula = cursor.getString(6);
 			if (Strings.nullOrEmpty(formula)) {
 				update.setString(5, null);
 			} else if (factor == 1) {
@@ -235,6 +235,8 @@ class AmountCursor extends UpdatableCursor {
 			update.setDouble(8, uncertainty.parameter2);
 			if (uncertainty.parameter3 != null) {
 				update.setDouble(9, uncertainty.parameter3);
+			} else {
+				update.setNull(9, Types.DOUBLE);
 			}
 		}
 	}

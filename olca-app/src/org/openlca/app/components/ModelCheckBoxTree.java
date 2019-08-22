@@ -74,6 +74,7 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 					.collect(Collectors.toList());
 			tree.setInput(elems);
 		}
+		tree.expandToLevel(2);
 	}
 
 	@Override
