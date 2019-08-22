@@ -13,12 +13,11 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Info;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowViewer;
-import org.openlca.app.viewers.combo.ProcessViewer;
+import org.openlca.app.viewers.combo.ProcessCombo;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.FlowType;
@@ -27,9 +26,9 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ReplaceProvidersDialog extends FormDialog {
 
-	private ProcessViewer processViewer;
+	private ProcessCombo processViewer;
 	private FlowViewer productViewer;
-	private ProcessViewer replacementViewer;
+	private ProcessCombo replacementViewer;
 
 	public static void openDialog() {
 		if (Database.get() == null) {
@@ -65,10 +64,10 @@ public class ReplaceProvidersDialog extends FormDialog {
 		processViewer.setInput(getUsedInExchanges());
 	}
 
-	private ProcessViewer createProcessViewer(Composite parent, FormToolkit toolkit, String label,
+	private ProcessCombo createProcessViewer(Composite parent, FormToolkit toolkit, String label,
 			Consumer<ProcessDescriptor> onChange) {
 		UI.formLabel(parent, toolkit, label);
-		ProcessViewer viewer = new ProcessViewer(parent, Cache.getEntityCache());
+		ProcessCombo viewer = new ProcessCombo(parent);
 		viewer.addSelectionChangedListener(onChange);
 		return viewer;
 	}
