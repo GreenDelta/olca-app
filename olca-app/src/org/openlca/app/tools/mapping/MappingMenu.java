@@ -92,6 +92,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		if (tool == null || tool.mapping == null)
 			return;
 
+		// check if we can apply the mapping
 		IProvider source = tool.sourceSystem;
 		if (!(source instanceof DBProvider)) {
 			Error.showBox("Source system should be a database",
@@ -105,6 +106,11 @@ public class MappingMenu extends EditorActionBarContributor {
 		if (target == null) {
 			Error.showBox("No target system selected",
 					"No target system was selected.");
+			return;
+		}
+		if (!tool.checked.get()) {
+			Error.showBox("Unchecked mappings",
+					"You should first run a check before applying the mapping.");
 			return;
 		}
 
