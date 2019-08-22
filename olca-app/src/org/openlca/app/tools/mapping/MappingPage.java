@@ -21,6 +21,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.Warning;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.io.maps.FlowMapEntry;
@@ -63,11 +64,29 @@ class MappingPage extends FormPage {
 
 		UI.filler(comp);
 		Button checkButton = tk.createButton(comp, "Check mappings", SWT.NONE);
-		checkButton.setImage(Icon.ACCEPT.get());
+		Runnable updateCheckState = () -> {
+			if (tool.checked.get()) {
+				checkButton.setImage(Icon.ACCEPT.get());
+				checkButton.setToolTipText("Click to check the mappings.");
+			} else {
+				checkButton.setImage(Icon.WARNING.get());
+				checkButton.setToolTipText("No check was performed yet.");
+			}
+		};
+		updateCheckState.run();
 		Controls.onSelect(checkButton, _e -> {
-			App.runWithProgress("Check mappings",
-					this::syncMappings,
-					() -> table.setInput(tool.mapping.entries));
+			if (tool.sourceSystem == null || tool.targetSystem == null) {
+				Warning.showBox("No source or target system",
+						"You need to select a source and target"
+								+ " system against which you want"
+								+ " to check the mapping.");
+				return;
+			}
+			App.runWithProgress("Check mappings", this::syncMappings, () -> {
+				tool.checked.set(true);
+				table.setInput(tool.mapping.entries);
+				updateCheckState.run();
+			});
 		});
 	}
 
