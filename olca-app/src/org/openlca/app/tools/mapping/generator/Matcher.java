@@ -113,7 +113,7 @@ class Matcher {
 			// location codes are often added to names in Gabi
 			// database
 			String pname = Labels.getDisplayName(d);
-			double s = words.match(sourceFlow.flow.name, pname);
+			double s = words.matchAll(sourceFlow.flow.name, pname);
 			if (cand == null || s > score) {
 				cand = d;
 				score = s;

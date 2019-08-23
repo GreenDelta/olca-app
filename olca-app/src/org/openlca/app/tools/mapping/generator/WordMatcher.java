@@ -36,17 +36,29 @@ final class WordMatcher {
 	}
 
 	/**
-	 * Returns a score that indicates how well the (key) words in string A match
-	 * the (key) words in string B. It returns a value between `0` and `1` where
-	 * `0` means `no match` and `1` means `complete match`. Non-alphanumeric are
-	 * used as word separators.
+	 * Returns a score that indicates how well the words in string A match the
+	 * words in string B. It returns a value between `0` and `1` where `0` means
+	 * `no match` and `1` means `complete match`. Non-alphanumeric are used as
+	 * word separators.
 	 */
-	double match(String a, String b) {
+	double matchAll(String a, String b) {
+		return match(a, b, false);
+	}
+
+	/**
+	 * Same as `matchAllWords` but stopwords are ignored when calculating the
+	 * score.
+	 */
+	double matchKeys(String a, String b) {
+		return match(a, b, true);
+	}
+
+	private double match(String a, String b, boolean withoutStopwords) {
 		if (a == null || b == null)
 			return 0.0;
 
-		List<String> wordsA = words(a);
-		List<String> wordsB = words(b);
+		List<String> wordsA = words(a, withoutStopwords);
+		List<String> wordsB = words(b, withoutStopwords);
 		if (wordsA.size() == 0 || wordsB.size() == 0)
 			return 0;
 
@@ -97,7 +109,7 @@ final class WordMatcher {
 	/**
 	 * Extracts the single words (in lower case) from the given string.
 	 */
-	private List<String> words(String s) {
+	private List<String> words(String s, boolean withoutStopwords) {
 		if (Strings.nullOrEmpty(s))
 			return Collections.emptyList();
 
@@ -107,12 +119,20 @@ final class WordMatcher {
 			if (Character.isLetterOrDigit(c)) {
 				buf.append(c);
 			} else if (buf.length() > 0) {
-				words.add(buf.toString());
+				String word = buf.toString();
 				buf = new StringBuilder();
+				boolean isKeyWord = !stopwords.contains(word);
+				if (isKeyWord || !withoutStopwords) {
+					words.add(word);
+				}
 			}
 		}
 		if (buf.length() > 0) {
-			words.add(buf.toString());
+			String word = buf.toString();
+			boolean isKeyWord = !stopwords.contains(word);
+			if (isKeyWord || !withoutStopwords) {
+				words.add(word);
+			}
 		}
 		return words;
 	}

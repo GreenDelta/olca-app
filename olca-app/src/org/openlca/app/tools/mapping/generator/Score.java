@@ -20,13 +20,13 @@ class Score {
 		if (sflow == null || sflow.flow == null
 				|| tflow == null || tflow.flow == null)
 			return score;
-		score.keyNameMatch = words.match(
+		score.keyNameMatch = words.matchKeys(
 				sflow.flow.name, tflow.flow.name);
-		score.rawNameMatch = words.match(
+		score.rawNameMatch = words.matchAll(
 				sflow.flow.name, tflow.flow.name);
-		score.categoryMatch = words.match(
+		score.categoryMatch = words.matchAll(
 				sflow.flowCategory, tflow.flowCategory);
-		score.locationMatch = words.match(
+		score.locationMatch = words.matchAll(
 				sflow.flowLocation, tflow.flowLocation);
 		score.sameType = sflow.flow.type == tflow.flow.type;
 		if (sflow.unit != null && tflow.unit != null
