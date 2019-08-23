@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 final class WordMatcher {
 
 	private final Set<String> stopwords = new HashSet<>();
+	private Stemmer stemmer = new Stemmer();
 
 	public WordMatcher() {
 		try (InputStream is = getClass().getResourceAsStream("stopwords.txt");
@@ -145,29 +146,26 @@ final class WordMatcher {
 			} else if (buf.length() > 0) {
 				String word = buf.toString();
 				buf = new StringBuilder();
-				boolean isKeyWord = !stopwords.contains(word);
-				if (isKeyWord || !withoutStopwords) {
+				if (!withoutStopwords) {
 					words.add(word);
+					continue;
 				}
+				if (stopwords.contains(word))
+					continue;
+				words.add(stemmer.stem(word));
 			}
 		}
 		if (buf.length() > 0) {
 			String word = buf.toString();
-			boolean isKeyWord = !stopwords.contains(word);
-			if (isKeyWord || !withoutStopwords) {
+			if (!withoutStopwords) {
 				words.add(word);
+			} else {
+				if (!stopwords.contains(word)) {
+					words.add(stemmer.stem(word));
+				}
 			}
 		}
 		return words;
 	}
 
-	public static void main(String[] args) {
-		WordMatcher matcher = new WordMatcher();
-		double f1 = matcher.matchAll("steam, for chemical process, at plant",
-				"steam, in chemical industry");
-		System.out.println(f1);
-		double f2 = matcher.matchAll("steam, for chemical process, at plant",
-				"chemical, organic");
-		System.out.println(f2);
-	}
 }
