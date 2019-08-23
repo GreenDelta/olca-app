@@ -20,19 +20,25 @@ public class Stemmer {
 	private int i, /* offset into b */
 			i_end, /* offset to end of stemmed word */
 			j, k;
-	private static final int INC = 50;
 
-	public Stemmer() {
-		b = new char[INC];
-		i = 0;
-		i_end = 0;
-	}
-
-	public String stem(String s) {
+	public static String stem(String s) {
 		if (s == null)
 			return "";
 		String word = s.trim().toLowerCase();
-		put(word);
+		if (word.length() == 0)
+			return "";
+		return new Stemmer(word).stem();
+	}
+
+	private Stemmer(String s) {
+		i_end = 0;
+		j = 0;
+		k = 0;
+		b = s.toCharArray();
+		i = b.length;
+	}
+
+	private String stem() {
 		k = i - 1;
 		if (k > 1) {
 			step1();
@@ -45,26 +51,6 @@ public class Stemmer {
 		i_end = k + 1;
 		i = 0;
 		return new String(b, 0, i_end);
-	}
-
-	private void put(String word) {
-		// reset
-		i = 0;
-		i_end = 0;
-		j = 0;
-		k = 0;
-
-		char[] w = word.toCharArray();
-		int wLen = w.length;
-
-		if (i + wLen >= b.length) {
-			char[] new_b = new char[i + wLen + INC];
-			for (int c = 0; c < i; c++)
-				new_b[c] = b[c];
-			b = new_b;
-		}
-		for (int c = 0; c < wLen; c++)
-			b[i++] = w[c];
 	}
 
 	/* cons(i) is true <=> b[i] is a consonant. */

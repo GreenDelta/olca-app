@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 final class WordMatcher {
 
 	private final Set<String> stopwords = new HashSet<>();
-	private Stemmer stemmer = new Stemmer();
 
 	public WordMatcher() {
 		try (InputStream is = getClass().getResourceAsStream("stopwords.txt");
@@ -152,7 +151,7 @@ final class WordMatcher {
 				}
 				if (stopwords.contains(word))
 					continue;
-				words.add(stemmer.stem(word));
+				words.add(Stemmer.stem(word));
 			}
 		}
 		if (buf.length() > 0) {
@@ -161,7 +160,7 @@ final class WordMatcher {
 				words.add(word);
 			} else {
 				if (!stopwords.contains(word)) {
-					words.add(stemmer.stem(word));
+					words.add(Stemmer.stem(word));
 				}
 			}
 		}
