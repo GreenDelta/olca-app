@@ -1,14 +1,38 @@
 package org.openlca.app.tools.mapping.generator;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.openlca.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-final class Words {
+final class WordMatcher {
 
-	private Words() {
+	private final Set<String> stopwords = new HashSet<>();
+
+	public WordMatcher() {
+		try (InputStream is = getClass().getResourceAsStream("stopwords.txt");
+				InputStreamReader reader = new InputStreamReader(is, "utf-8");
+				BufferedReader buf = new BufferedReader(reader)) {
+			String line;
+			while ((line = buf.readLine()) != null) {
+				String s = line.trim().toLowerCase();
+				if (s.isEmpty())
+					continue;
+				stopwords.add(s);
+			}
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("failed to read stopwords", e);
+		}
 	}
 
 	/**
@@ -17,27 +41,27 @@ final class Words {
 	 * `0` means `no match` and `1` means `complete match`. Non-alphanumeric are
 	 * used as word separators.
 	 */
-	static double match(String a, String b) {
+	double match(String a, String b) {
 		if (a == null || b == null)
 			return 0.0;
 
-		String[] wordsA = keywords(a);
-		String[] wordsB = keywords(b);
-		if (wordsA.length == 0 || wordsB.length == 0)
+		List<String> wordsA = words(a);
+		List<String> wordsB = words(b);
+		if (wordsA.size() == 0 || wordsB.size() == 0)
 			return 0;
 
 		double total = 0;
 		double matched = 0;
-		for (int i = 0; i < wordsA.length; i++) {
-			String wordA = wordsA[i];
+		for (int i = 0; i < wordsA.size(); i++) {
+			String wordA = wordsA.get(i);
 
 			double max = 5 * 1.2 * wordA.length();
 			total += max;
 			double matchedPart = 0;
 
-			for (int j = 0; j < wordsB.length; j++) {
+			for (int j = 0; j < wordsB.size(); j++) {
 				double distFactor = 1.2 - Math.abs(i - j) / 20;
-				String wordB = wordsB[j];
+				String wordB = wordsB.get(j);
 
 				if (Objects.equals(wordA, wordB)) {
 					double m = 5 * distFactor * wordB.length();
@@ -70,9 +94,12 @@ final class Words {
 		return matched / total;
 	}
 
-	private static String[] keywords(String s) {
+	/**
+	 * Extracts the single words (in lower case) from the given string.
+	 */
+	private List<String> words(String s) {
 		if (Strings.nullOrEmpty(s))
-			return new String[0];
+			return Collections.emptyList();
 
 		StringBuilder buf = new StringBuilder();
 		List<String> words = new ArrayList<>();
@@ -87,6 +114,6 @@ final class Words {
 		if (buf.length() > 0) {
 			words.add(buf.toString());
 		}
-		return words.toArray(new String[words.size()]);
+		return words;
 	}
 }
