@@ -25,7 +25,7 @@ final class WordMatcher {
 			String line;
 			while ((line = buf.readLine()) != null) {
 				String s = line.trim().toLowerCase();
-				if (s.isEmpty())
+				if (s.isEmpty() || s.startsWith("#"))
 					continue;
 				stopwords.add(s);
 			}
