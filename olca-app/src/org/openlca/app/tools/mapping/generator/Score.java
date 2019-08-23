@@ -34,7 +34,7 @@ class Score {
 				sflow.flowCategory, tflow.flowCategory);
 		score.locationMatch = words.matchAll(
 				sflow.flowLocation, tflow.flowLocation);
-		score.sameType = sflow.flow.type == tflow.flow.type;
+		score.sameType = sflow.flow.flowType == tflow.flow.flowType;
 		if (sflow.unit != null && tflow.unit != null
 				&& Strings.nullOrEqual(sflow.unit.name, tflow.unit.name)) {
 			score.sameUnit = true;
@@ -58,9 +58,9 @@ class Score {
 			return true;
 
 		double nameDiff = this.keyNameMatch - other.keyNameMatch;
-		if (nameDiff > 0.3)
+		if (nameDiff > 0.1)
 			return true;
-		if (nameDiff < 0.3)
+		if (nameDiff < 0.1)
 			return false;
 		return this.total() > other.total();
 
@@ -68,8 +68,8 @@ class Score {
 
 	private double total() {
 		double s = rawNameMatch
-				+ (0.25 * categoryMatch)
-				+ (0.25 * locationMatch);
+				+ (0.1 * categoryMatch)
+				+ (0.1 * locationMatch);
 		if (sameType) {
 			s *= 1.1;
 		}

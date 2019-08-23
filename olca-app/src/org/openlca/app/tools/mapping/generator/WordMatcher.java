@@ -57,39 +57,64 @@ final class WordMatcher {
 		if (a == null || b == null)
 			return 0.0;
 
+		// extract the words and store the shorter list in wordsA
 		List<String> wordsA = words(a, withoutStopwords);
 		List<String> wordsB = words(b, withoutStopwords);
 		if (wordsA.size() == 0 || wordsB.size() == 0)
 			return 0;
+		if (wordsA.size() > wordsB.size()) {
+			List<String> temp = wordsA;
+			wordsA = wordsB;
+			wordsB = temp;
+		}
 
-		double total = 0;
+		// the closer the words are in both sequences,
+		// the higher the score. we express this with
+		// a distance factor
+		final double DISTANCE_MATCH = 1.0;
+		// exact matches are ranked higher than part
+		// of word matches
+		final double EXACT_MATCH = 10;
+
+		// calculate the maximum score
+		double max = 0;
+		for (String word : wordsB) {
+			max += EXACT_MATCH * DISTANCE_MATCH * word.length();
+		}
+		if (max == 0)
+			return 0;
+
 		double matched = 0;
 		for (int i = 0; i < wordsA.size(); i++) {
 			String wordA = wordsA.get(i);
-
-			double max = 5 * 1.2 * wordA.length();
-			total += max;
 			double matchedPart = 0;
 
 			for (int j = 0; j < wordsB.size(); j++) {
-				double distFactor = 1.2 - Math.abs(i - j) / 20;
+
+				// the distance factor describes the
+				double distFactor = DISTANCE_MATCH - (Math.abs(i - j) / 5);
+				if (distFactor < 0.01) {
+					distFactor = 0.01;
+				}
+
 				String wordB = wordsB.get(j);
 
 				if (Objects.equals(wordA, wordB)) {
-					double m = 5 * distFactor * wordB.length();
+					double m = EXACT_MATCH * distFactor * wordB.length();
 					if (m > matchedPart) {
 						matchedPart = m;
 					}
 					continue;
 				}
 
+				// check if the shorter word is contained in the
+				// larger word
 				String wa = wordA;
 				String wb = wordB;
 				if (wa.length() > wb.length()) {
 					wa = wordB;
 					wb = wordA;
 				}
-
 				if (wb.contains(wa)) {
 					double m = distFactor * ((double) wa.length())
 							/ ((double) wb.length());
@@ -97,13 +122,12 @@ final class WordMatcher {
 						matchedPart = m;
 					}
 				}
-			}
-			matched += matchedPart;
-		}
+			} // each wordB
 
-		if (total == 0)
-			return 0;
-		return matched / total;
+			matched += matchedPart;
+		} // each wordA
+
+		return matched / max;
 	}
 
 	/**
@@ -135,5 +159,15 @@ final class WordMatcher {
 			}
 		}
 		return words;
+	}
+
+	public static void main(String[] args) {
+		WordMatcher matcher = new WordMatcher();
+		double f1 = matcher.matchAll("steam, for chemical process, at plant",
+				"steam, in chemical industry");
+		System.out.println(f1);
+		double f2 = matcher.matchAll("steam, for chemical process, at plant",
+				"chemical, organic");
+		System.out.println(f2);
 	}
 }
