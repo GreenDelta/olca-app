@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.math3.util.Pair;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.util.Labels;
@@ -50,19 +51,22 @@ class Matcher {
 			return tflow;
 		}
 
-		FlowRef candidate = null;
-		Score score = null;
-		for (FlowRef c : targetFlows.values()) {
-			Score next = Score.compute(sflow, c, words);
-			if (next.betterThan(score)) {
-				candidate = c;
-				score = next;
-			}
+		// find the best matching flow by computing and
+		// comparing matching scores
+		tflow = targetFlows.values()
+				.parallelStream()
+				.map(tf -> new Pair<>(tf, Score.compute(sflow, tf, words)))
+				.reduce((pair1, pair2) -> {
+					Score score1 = pair1.getValue();
+					Score score2 = pair2.getValue();
+					return score2.betterThan(score1) ? pair2 : pair1;
+				})
+				.map(pair -> pair.getFirst())
+				.orElse(null);
+		if (tflow != null) {
+			checkAddProvider(sflow, tflow);
 		}
-		if (candidate != null) {
-			checkAddProvider(sflow, candidate);
-		}
-		return candidate;
+		return tflow;
 	}
 
 	private void checkAddProvider(FlowRef sourceFlow, FlowRef targetFlow) {

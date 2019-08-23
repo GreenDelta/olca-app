@@ -20,10 +20,16 @@ class Score {
 		if (sflow == null || sflow.flow == null
 				|| tflow == null || tflow.flow == null)
 			return score;
-		score.keyNameMatch = words.matchKeys(
-				sflow.flow.name, tflow.flow.name);
+
 		score.rawNameMatch = words.matchAll(
 				sflow.flow.name, tflow.flow.name);
+		if (score.rawNameMatch == 0) {
+			score.keyNameMatch = 0;
+		} else {
+			score.keyNameMatch = words.matchKeys(
+					sflow.flow.name, tflow.flow.name);
+		}
+
 		score.categoryMatch = words.matchAll(
 				sflow.flowCategory, tflow.flowCategory);
 		score.locationMatch = words.matchAll(
@@ -41,6 +47,16 @@ class Score {
 	boolean betterThan(Score other) {
 		if (other == null)
 			return true;
+		if (this.rawNameMatch == 0)
+			return false;
+		if (other.rawNameMatch == 0)
+			return true;
+
+		if (other.sameType && !this.sameType)
+			return false;
+		if (!other.sameType && this.sameType)
+			return true;
+
 		double nameDiff = this.keyNameMatch - other.keyNameMatch;
 		if (nameDiff > 0.3)
 			return true;
