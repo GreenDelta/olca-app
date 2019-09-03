@@ -1,8 +1,11 @@
 package org.openlca.app.results.contributions;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.SWT;
@@ -11,8 +14,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swtchart.Chart;
 import org.eclipse.swtchart.IAxis;
 import org.eclipse.swtchart.IBarSeries;
+import org.eclipse.swtchart.IBarSeries.BarWidthStyle;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.LineStyle;
+import org.eclipse.swtchart.Range;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.FaviColor;
 import org.openlca.app.util.Colors;
@@ -55,6 +60,8 @@ public class ContributionChart2 {
 		y.getTitle().setVisible(false);
 		y.getTick().setForeground(Colors.darkGray());
 		y.getGrid().setStyle(LineStyle.NONE);
+		y.getTick().setFormat(new DecimalFormat("0.0E0#",
+				new DecimalFormatSymbols(Locale.US)));
 		chart.getLegend().setVisible(false);
 
 		cchart.legend = new ChartLegend(comp);
@@ -87,6 +94,13 @@ public class ContributionChart2 {
 			}
 		}
 
+		// calculate the bar width
+		int n = top.size();
+		if (rest != 0) {
+			n += 1;
+		}
+		int barWidth = ((int) (600.0 / 11.0)) * (2 * n - 1);
+
 		// create the new series
 		for (int i = 0; i < top.size(); i++) {
 			IBarSeries bars = (IBarSeries) chart.getSeriesSet()
@@ -94,6 +108,8 @@ public class ContributionChart2 {
 			bars.setYSeries(new double[] { top.get(i).amount });
 			bars.setBarColor(FaviColor.getForChart(i));
 			bars.setBarPadding(15);
+			bars.setBarWidth(barWidth);
+			bars.setBarWidthStyle(BarWidthStyle.FIXED);
 
 			if (i < (top.size() - 1) || rest != 0) {
 				bars = (IBarSeries) chart.getSeriesSet()
@@ -101,19 +117,41 @@ public class ContributionChart2 {
 				bars.setYSeries(new double[] { 0.0 });
 				bars.setBarColor(Colors.white());
 				bars.setBarPadding(15);
+				bars.setBarWidth(barWidth);
+				bars.setBarWidthStyle(BarWidthStyle.FIXED);
 			}
 		}
 
+		// add a rest bar if necessary
 		if (rest != 0.0) {
 			IBarSeries bars = (IBarSeries) chart.getSeriesSet()
 					.createSeries(SeriesType.BAR, "rest");
 			bars.setYSeries(new double[] { rest });
 			bars.setBarColor(Colors.darkGray());
 			bars.setBarPadding(15);
+			bars.setBarWidth(barWidth);
+			bars.setBarWidthStyle(BarWidthStyle.FIXED);
 		}
-		chart.getAxisSet().getYAxis(0).adjustRange();
-		// updateYAxis(top, rest);
+
+		// chart.getAxisSet().getYAxis(0).adjustRange();
+		setYRange(top, rest);
 		legend.setData(top, rest, unit);
+		chart.redraw();
+	}
+
+	private void setYRange(List<ContributionItem<?>> top, double rest) {
+		double min = rest < 0 ? rest : 0;
+		double max = rest > 0 ? rest : 0;
+		for (ContributionItem<?> item : top) {
+			min = Math.min(min, item.amount);
+			max = Math.max(max, item.amount);
+		}
+		min = Rounding.apply(min);
+		max = Rounding.apply(max);
+		double upper = Math.max(Math.abs(-min), max);
+		double lower = min < 0 ? -upper : 0.0;
+		chart.getAxisSet().getYAxis(0).setRange(new Range(lower, upper));
+		// chart.getAxisSet().getYAxis(0).getTick().setTickMarkStepHint(4);
 	}
 
 	private class Comparator implements java.util.Comparator<ContributionItem<?>> {
