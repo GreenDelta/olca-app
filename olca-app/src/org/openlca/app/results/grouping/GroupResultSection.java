@@ -14,6 +14,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.results.contributions.ContributionChart;
+import org.openlca.app.results.contributions.ContributionChart2;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
@@ -81,14 +82,15 @@ class GroupResultSection {
 		return Collections.emptyList();
 	}
 
-	public void render(Composite body, FormToolkit toolkit) {
-		Section section = UI.section(body, toolkit, M.Results);
+	public void render(Composite parent, FormToolkit tk) {
+		Section section = UI.section(parent, tk, M.Results);
 		UI.gridData(section, true, true);
-		Composite client = UI.sectionClient(section, toolkit);
-		UI.gridLayout(client, 1);
-		createCombos(toolkit, client);
-		table = new GroupResultTable(client);
-		chart = ContributionChart.create(client, toolkit);
+		Composite comp = UI.sectionClient(section, tk);
+		UI.gridLayout(comp, 1);
+		createCombos(tk, comp);
+		table = new GroupResultTable(comp);
+		chart = ContributionChart.create(comp, tk);
+		ContributionChart2.create(comp, tk);
 		chart.setLabel(new BaseLabelProvider() {
 			@Override
 			public String getText(Object element) {

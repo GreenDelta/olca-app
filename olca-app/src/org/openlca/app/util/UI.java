@@ -124,6 +124,10 @@ public class UI {
 				JFaceResources.DEFAULT_FONT);
 	}
 
+	public static Font defaultFont() {
+		return JFaceResources.getFontRegistry().defaultFont();
+	}
+
 	public static void center(Shell parent, Shell child) {
 		Rectangle shellBounds = parent.getBounds();
 		Point size = child.getSize();

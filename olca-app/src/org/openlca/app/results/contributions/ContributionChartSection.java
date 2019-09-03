@@ -55,15 +55,16 @@ public class ContributionChartSection {
 		this.forFlows = forFlows;
 	}
 
-	public void render(Composite parent, FormToolkit toolkit) {
-		Section section = UI.section(parent, toolkit, sectionTitle);
-		Composite sectionClient = UI.sectionClient(section, toolkit);
-		UI.gridLayout(sectionClient, 1);
-		Composite header = toolkit.createComposite(sectionClient);
+	public void render(Composite parent, FormToolkit tk) {
+		Section section = UI.section(parent, tk, sectionTitle);
+		Composite comp = UI.sectionClient(section, tk);
+		UI.gridLayout(comp, 1);
+		Composite header = tk.createComposite(comp);
 		UI.gridLayout(header, 2);
-		createItemCombo(toolkit, header);
-		chart = ContributionChart.create(sectionClient, toolkit);
-		Actions.bind(section, new ImageExportAction(sectionClient));
+		createItemCombo(tk, header);
+		chart = ContributionChart.create(comp, tk);
+		ContributionChart2.create(comp, tk);
+		Actions.bind(section, new ImageExportAction(comp));
 		refresh();
 	}
 
