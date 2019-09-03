@@ -6,8 +6,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swtchart.Chart;
 import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IBarSeries;
+import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.LineStyle;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.FaviColor;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 
@@ -46,6 +49,25 @@ public class ContributionChart2 {
 		y.getTitle().setVisible(false);
 		y.getTick().setForeground(Colors.darkGray());
 		y.getGrid().setStyle(LineStyle.NONE);
+		chart.getLegend().setVisible(false);
+
+		for (int i = 0; i < 6; i++) {
+			IBarSeries bars = (IBarSeries) chart.getSeriesSet()
+					.createSeries(SeriesType.BAR, "BS" + i);
+			bars.setYSeries(new double[] { Math.random() * 100 });
+			bars.setBarColor(FaviColor.getForChart(i));
+			bars.setBarPadding(15);
+
+			if (i < 5) {
+				bars = (IBarSeries) chart.getSeriesSet()
+						.createSeries(SeriesType.BAR, "BS'" + i);
+				bars.setYSeries(new double[] { 0.0 });
+				bars.setBarColor(Colors.white());
+				bars.setBarPadding(15);
+			}
+		}
+
+		y.adjustRange();
 
 		cchart.legend = new ChartLegend(comp);
 		return cchart;
