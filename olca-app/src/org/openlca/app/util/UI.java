@@ -49,7 +49,30 @@ public class UI {
 	private UI() {
 	}
 
-	public static WebEngine createWebView(FXCanvas canvas) {
+	/**
+	 * @deprecated We will remove the JavaFX webview from future versions. When
+	 *             possible build the user interfaces in plain SWT+JFace. When
+	 *             you really need a browser view, use the standard SWT browser
+	 *             but make sure that it runs on different platforms or provide
+	 *             an alternative view when it is not running.
+	 */
+	@Deprecated
+	public static Control createWebView(Composite parent, WebPage page) {
+		FXCanvas canvas = new FXCanvas(parent, SWT.NONE);
+		WebEngine webkit = UI.createWebView(canvas);
+		AtomicBoolean firstCall = new AtomicBoolean(true);
+		webkit.getLoadWorker().stateProperty().addListener((v, old, newState) -> {
+			if (firstCall.get() && newState == State.SUCCEEDED) {
+				firstCall.set(false);
+				page.onLoaded(webkit);
+			}
+		});
+		webkit.load(page.getUrl());
+		return canvas;
+	}
+
+	@Deprecated
+	private static WebEngine createWebView(FXCanvas canvas) {
 		canvas.setLayout(new FillLayout());
 		WebView view = new WebView();
 		// When the WebEngine is initialized a CookieHandler is set, which has
@@ -66,20 +89,14 @@ public class UI {
 		return webkit;
 	}
 
-	public static Control createWebView(Composite parent, WebPage page) {
-		FXCanvas canvas = new FXCanvas(parent, SWT.NONE);
-		WebEngine webkit = UI.createWebView(canvas);
-		AtomicBoolean firstCall = new AtomicBoolean(true);
-		webkit.getLoadWorker().stateProperty().addListener((v, old, newState) -> {
-			if (firstCall.get() && newState == State.SUCCEEDED) {
-				firstCall.set(false);
-				page.onLoaded(webkit);
-			}
-		});
-		webkit.load(page.getUrl());
-		return canvas;
-	}
-
+	/**
+	 * @deprecated We will remove the JavaFX webview from future versions. When
+	 *             possible build the user interfaces in plain SWT+JFace. When
+	 *             you really need a browser view, use the standard SWT browser
+	 *             but make sure that it runs on different platforms or provide
+	 *             an alternative view when it is not running.
+	 */
+	@Deprecated
 	public static void bindVar(WebEngine webkit, String name, Object var) {
 		try {
 			JSObject window = (JSObject) webkit.executeScript("window");

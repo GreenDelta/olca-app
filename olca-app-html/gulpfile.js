@@ -17,10 +17,7 @@ gulp.task('default', () => {
 });
 
 gulp.task('precompile',
-	['plugin_manager_scripts',
-		'plugin_manager_templates',
-		'plugin_manager_styles',
-		'update_manager_scripts',
+	['update_manager_scripts',
 		'update_manager_templates',
 		'update_manager_styles']);
 
@@ -38,8 +35,7 @@ gulp.task('libs', ['base_libs', 'bootstrap']);
 gulp.task('clean', () => {
 	return gulp.src([
 		'build',
-		'src/update_manager/precompiled',
-		'src/plugin_manager/precompiled'
+		'src/update_manager/precompiled'
 	], { read: false })
 		.pipe(clean());
 });
@@ -59,9 +55,7 @@ gulp.task('html_pages', () => {
 });
 
 gulp.task('pug_pages', () => {
-	return gulp.src([
-		'src/plugin_manager/pug/plugin_manager.pug',
-		'src/update_manager/pug/update_manager.pug'])
+	return gulp.src(['src/update_manager/pug/update_manager.pug'])
 		.pipe(pug({ locals: {}, compileDebug: false, verbose: true }))
 		.pipe(gulp.dest('build'));
 });
@@ -99,23 +93,10 @@ gulp.task('bootstrap', () => {
 		.pipe(gulp.dest('build/libs/bootstrap'));
 });
 
-gulp.task('plugin_manager_scripts', () => {
-	return gulp.src('src/plugin_manager/coffeescript/*.coffee')
-		.pipe(coffee({ bare: true }))
-		.pipe(gulp.dest('src/plugin_manager/precompiled'));
-});
-
 gulp.task('update_manager_scripts', () => {
 	return gulp.src('src/update_manager/coffeescript/*.coffee')
 		.pipe(coffee({ bare: true }))
 		.pipe(gulp.dest('src/update_manager/precompiled'));
-});
-
-gulp.task('plugin_manager_templates', () => {
-	return gulp.src('src/plugin_manager/pug/templates/*.pug')
-		.pipe(pug({ client: true, compileDebug: false, verbose: true }))
-		.pipe(rename('templates.js'))
-		.pipe(gulp.dest('src/plugin_manager/precompiled'));
 });
 
 gulp.task('update_manager_templates', () => {
@@ -123,13 +104,6 @@ gulp.task('update_manager_templates', () => {
 		.pipe(pug({ client: true, compileDebug: false, verbose: true }))
 		.pipe(rename('templates.js'))
 		.pipe(gulp.dest('src/update_manager/precompiled'));
-});
-
-gulp.task('plugin_manager_styles', () => {
-	return gulp.src('src/plugin_manager/stylus/*.styl')
-		.pipe(stylus({ use: [nib()] }))
-		.pipe(concat('main.css'))
-		.pipe(gulp.dest('src/plugin_manager/precompiled'));
 });
 
 gulp.task('update_manager_styles', () => {
