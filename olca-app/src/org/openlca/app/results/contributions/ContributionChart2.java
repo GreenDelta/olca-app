@@ -9,6 +9,7 @@ import java.util.Locale;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swtchart.Chart;
@@ -26,22 +27,22 @@ import org.openlca.core.results.ContributionItem;
 
 public class ContributionChart2 {
 
-	private ChartLegend legend;
-	private Chart chart;
+	private final ChartLegend legend;
+	private final Chart chart;
 
 	public static ContributionChart2 create(Composite parent, FormToolkit tk) {
 		Composite comp = UI.formComposite(parent, tk);
 		UI.gridLayout(comp, 2);
 		UI.gridData(comp, true, true);
-		ContributionChart2 cchart = new ContributionChart2();
 
 		// create and configure the chart
 		Chart chart = new Chart(comp, SWT.NONE);
-		GridData gdata = new GridData(SWT.LEFT, SWT.CENTER, true, true);
-		gdata.minimumHeight = 300;
-		gdata.minimumWidth = 700;
+		GridData gdata = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		gdata.heightHint = 300;
+		gdata.widthHint = 700;
 		chart.setLayoutData(gdata);
 		chart.setOrientation(SWT.HORIZONTAL);
+		chart.getLegend().setVisible(false);
 
 		// we set a white title just to fix the problem
 		// that the y-axis is cut sometimes
@@ -50,23 +51,28 @@ public class ContributionChart2 {
 		chart.getTitle().setForeground(Colors.white());
 		chart.getTitle().setVisible(true);
 
+		// configure the x-axis with one category
 		IAxis x = chart.getAxisSet().getXAxis(0);
 		x.getTitle().setVisible(false);
 		x.getTick().setForeground(Colors.darkGray());
 		x.enableCategory(true);
 		x.setCategorySeries(new String[] { "" });
 
+		// configure the y-axis
 		IAxis y = chart.getAxisSet().getYAxis(0);
 		y.getTitle().setVisible(false);
 		y.getTick().setForeground(Colors.darkGray());
 		y.getGrid().setStyle(LineStyle.NONE);
 		y.getTick().setFormat(new DecimalFormat("0.0E0#",
 				new DecimalFormatSymbols(Locale.US)));
-		chart.getLegend().setVisible(false);
+		y.getTick().setTickMarkStepHint(10);
 
-		cchart.legend = new ChartLegend(comp);
-		cchart.chart = chart;
-		return cchart;
+		return new ContributionChart2(chart, new ChartLegend(comp));
+	}
+
+	private ContributionChart2(Chart chart, ChartLegend legend) {
+		this.chart = chart;
+		this.legend = legend;
 	}
 
 	public void setLabel(ILabelProvider label) {
@@ -82,11 +88,16 @@ public class ContributionChart2 {
 
 		// select the top 6 items; if there are more than 6 items
 		// in the list, select 5 items and calculate a rest.
-		Collections.sort(items, new Comparator(true));
+		// note that we first rank the items by absolute values to
+		// get the top contributers but then sort them by their
+		// real values to have a nice order in the chart.
+		Collections.sort(items, (i1, i2) -> -Double.compare(
+				Math.abs(i1.amount), Math.abs(i2.amount)));
 		List<ContributionItem<?>> top = items.size() <= 6
 				? items
 				: items.subList(0, 5);
-		Collections.sort(top, new Comparator(false));
+		Collections.sort(top, (i1, i2) -> -Double.compare(
+				i1.amount, i2.amount));
 		double rest = 0;
 		if (items.size() > 6) {
 			for (int i = 5; i < items.size(); i++) {
@@ -103,40 +114,31 @@ public class ContributionChart2 {
 
 		// create the new series
 		for (int i = 0; i < top.size(); i++) {
-			IBarSeries bars = (IBarSeries) chart.getSeriesSet()
-					.createSeries(SeriesType.BAR, "BS" + i);
-			bars.setYSeries(new double[] { top.get(i).amount });
-			bars.setBarColor(FaviColor.getForChart(i));
-			bars.setBarPadding(15);
-			bars.setBarWidth(barWidth);
-			bars.setBarWidthStyle(BarWidthStyle.FIXED);
-
+			createBar("BS" + i, top.get(i).amount,
+					FaviColor.getForChart(i), barWidth);
 			if (i < (top.size() - 1) || rest != 0) {
-				bars = (IBarSeries) chart.getSeriesSet()
-						.createSeries(SeriesType.BAR, "BS'" + i);
-				bars.setYSeries(new double[] { 0.0 });
-				bars.setBarColor(Colors.white());
-				bars.setBarPadding(15);
-				bars.setBarWidth(barWidth);
-				bars.setBarWidthStyle(BarWidthStyle.FIXED);
+				// create an empty space bar
+				createBar("BS''" + i, 0.0, Colors.white(), barWidth);
 			}
 		}
-
 		// add a rest bar if necessary
 		if (rest != 0.0) {
-			IBarSeries bars = (IBarSeries) chart.getSeriesSet()
-					.createSeries(SeriesType.BAR, "rest");
-			bars.setYSeries(new double[] { rest });
-			bars.setBarColor(Colors.darkGray());
-			bars.setBarPadding(15);
-			bars.setBarWidth(barWidth);
-			bars.setBarWidthStyle(BarWidthStyle.FIXED);
+			createBar("rest", rest, Colors.darkGray(), barWidth);
 		}
 
-		// chart.getAxisSet().getYAxis(0).adjustRange();
 		setYRange(top, rest);
 		legend.setData(top, rest, unit);
 		chart.redraw();
+	}
+
+	private void createBar(String id, double val, Color color, int width) {
+		IBarSeries bars = (IBarSeries) chart.getSeriesSet()
+				.createSeries(SeriesType.BAR, id);
+		bars.setYSeries(new double[] { val });
+		bars.setBarColor(color);
+		bars.setBarPadding(15);
+		bars.setBarWidth(width);
+		bars.setBarWidthStyle(BarWidthStyle.FIXED);
 	}
 
 	private void setYRange(List<ContributionItem<?>> top, double rest) {
@@ -146,38 +148,35 @@ public class ContributionChart2 {
 			min = Math.min(min, item.amount);
 			max = Math.max(max, item.amount);
 		}
-		min = Rounding.apply(min);
-		max = Rounding.apply(max);
-		double upper = Math.max(Math.abs(-min), max);
-		double lower = min < 0 ? -upper : 0.0;
-		chart.getAxisSet().getYAxis(0).setRange(new Range(lower, upper));
-		// chart.getAxisSet().getYAxis(0).getTick().setTickMarkStepHint(4);
+		double[] range = yrange(min, max);
+		IAxis y = chart.getAxisSet().getYAxis(0);
+		y.setRange(new Range(range[0], range[1]));
+		y.getTick().setTickMarkStepHint(10);
 	}
 
-	private class Comparator implements java.util.Comparator<ContributionItem<?>> {
+	private double[] yrange(double min, double max) {
+		// find the dimension on the Log10 scale
+		double absmax = Math.max(Math.abs(min), Math.abs(max));
+		if (absmax == 0) {
+			return new double[] { 0, 1 };
+		}
+		double dim = Math.ceil(Math.log10(absmax));
 
-		private final boolean abs;
-
-		private Comparator(boolean abs) {
-			this.abs = abs;
+		// iterate from the top in a number of steps
+		// to find the optimal chart scale
+		double top = Math.pow(10, dim);
+		double step = top / 50.0;
+		while ((top - step) > absmax) {
+			top -= step;
 		}
 
-		@Override
-		public int compare(ContributionItem<?> o1, ContributionItem<?> o2) {
-			double a1 = o1.amount;
-			double a2 = o2.amount;
-			if (abs) {
-				a1 = Math.abs(a1);
-				a2 = Math.abs(a2);
-			}
-			if (a1 == a2)
-				return 0;
-			if (a1 == 0d)
-				return 1;
-			if (a2 == 0d)
-				return -1;
-			return -Double.compare(a1, a2);
-		}
+		// return the scale depending on the sign
+		// of the maximum and minimum values
+		if (min >= 0 && max >= 0)
+			return new double[] { 0, top };
+		if (min <= 0 && max <= 0)
+			return new double[] { -top, 0 };
+		else
+			return new double[] { -top, top };
 	}
-
 }
