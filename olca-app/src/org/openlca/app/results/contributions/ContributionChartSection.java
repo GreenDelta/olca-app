@@ -35,7 +35,6 @@ public class ContributionChartSection {
 	private ContributionResult provider;
 	private AbstractViewer<?, TableComboViewer> itemViewer;
 	private ContributionChart chart;
-	private ContributionChart2 chart2;
 
 	public static ContributionChartSection forFlows(ContributionResult provider) {
 		ContributionChartSection section = new ContributionChartSection(provider, true);
@@ -64,7 +63,6 @@ public class ContributionChartSection {
 		UI.gridLayout(header, 2);
 		createItemCombo(tk, header);
 		chart = ContributionChart.create(comp, tk);
-		chart2 = ContributionChart2.create(comp, tk);
 		Actions.bind(section, new ImageExportAction(comp));
 		refresh();
 	}
@@ -97,7 +95,7 @@ public class ContributionChartSection {
 	}
 
 	private void refresh() {
-		if (chart == null || chart2 == null)
+		if (chart == null)
 			return;
 		Object selection = itemViewer.getSelected();
 		String unit = null;
@@ -114,6 +112,5 @@ public class ContributionChartSection {
 		if (contributionSet == null)
 			return;
 		chart.setData(new ArrayList<ContributionItem<?>>(contributionSet.contributions), unit);
-		chart2.setData(new ArrayList<ContributionItem<?>>(contributionSet.contributions), unit);
 	}
 }

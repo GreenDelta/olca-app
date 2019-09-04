@@ -14,7 +14,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.results.contributions.ContributionChart;
-import org.openlca.app.results.contributions.ContributionChart2;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
@@ -40,7 +39,6 @@ class GroupResultSection {
 	private FlowViewer flowViewer;
 	private ImpactCategoryViewer impactViewer;
 	private ContributionChart chart;
-	private ContributionChart2 chart2;
 	private GroupResultTable table;
 
 	public GroupResultSection(List<ProcessGrouping> groups, ContributionResult result) {
@@ -71,7 +69,6 @@ class GroupResultSection {
 			List<ContributionItem<?>> chartData = new ArrayList<>();
 			chartData.addAll(items);
 			chart.setData(chartData, unit);
-			chart2.setData(chartData, unit);
 		}
 	}
 
@@ -92,14 +89,7 @@ class GroupResultSection {
 		createCombos(tk, comp);
 		table = new GroupResultTable(comp);
 		chart = ContributionChart.create(comp, tk);
-		chart2 = ContributionChart2.create(comp, tk);
 		chart.setLabel(new BaseLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				return ((ProcessGrouping) element).name;
-			}
-		});
-		chart2.setLabel(new BaseLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				return ((ProcessGrouping) element).name;
