@@ -26,7 +26,6 @@ import org.openlca.app.Config;
 import org.openlca.app.M;
 import org.openlca.app.components.replace.ReplaceFlowsDialog;
 import org.openlca.app.components.replace.ReplaceProvidersDialog;
-import org.openlca.app.devtools.ClojureServer;
 import org.openlca.app.devtools.ipc.IpcDialog;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
@@ -164,13 +163,12 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menuBar.add(menu);
 	}
 
-	private void createDeveloperMenu(MenuManager windowMenu) {
+	private void createDeveloperMenu(MenuManager menu) {
 		MenuManager devMenu = new MenuManager(M.DeveloperTools);
-		windowMenu.add(devMenu);
+		menu.add(devMenu);
 		devMenu.add(Actions.create("SQL", Icon.SQL.descriptor(), SqlEditor::open));
 		devMenu.add(Actions.create("Python", Icon.PYTHON.descriptor(), PythonEditor::open));
 		devMenu.add(Actions.create("IPC Server", Icon.DATABASE.descriptor(), IpcDialog::show));
-		devMenu.add(Actions.create("Clojure REPL", () -> ClojureServer.start(9000)));
 	}
 
 	@Override

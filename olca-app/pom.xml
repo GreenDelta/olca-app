@@ -167,18 +167,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.clojure</groupId>
-			<artifactId>clojure</artifactId>
-			<version>1.10.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.clojure</groupId>
-			<artifactId>tools.nrepl</artifactId>
-			<version>0.2.13</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-swt</artifactId>
 			<version>${geotools.version}</version>

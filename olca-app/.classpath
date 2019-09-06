@@ -2,10 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="libs/super-csv-2.4.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/tools.nrepl-0.2.13.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/clojure-1.10.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/core.specs.alpha-0.2.44.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/spec.alpha-0.2.176.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-cloud-1.9.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.9.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-1.9.0.jar"/>
