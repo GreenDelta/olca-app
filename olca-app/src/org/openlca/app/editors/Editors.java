@@ -18,7 +18,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.progress.UIJob;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.devtools.js.JavaScriptEditor;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.logging.LogFileEditor;
@@ -33,7 +32,6 @@ public class Editors {
 	private static String[] PREVENT_FROM_CLOSING = {
 			SqlEditor.TYPE,
 			PythonEditor.TYPE,
-			JavaScriptEditor.TYPE,
 			StartPage.TYPE,
 			LogFileEditor.TYPE };
 	private static Logger log = LoggerFactory.getLogger(Editors.class);
@@ -43,8 +41,8 @@ public class Editors {
 
 	/**
 	 * Adds a refresh function to the tool-bar of the given form (content of a
-	 * editor page). When this function is executed the given editor is closed and
-	 * opened again.
+	 * editor page). When this function is executed the given editor is closed
+	 * and opened again.
 	 */
 	public static void addRefresh(ScrolledForm form, ModelEditor<?> editor) {
 		if (form == null || editor == null)

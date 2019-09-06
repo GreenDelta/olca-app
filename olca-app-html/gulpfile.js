@@ -44,14 +44,11 @@ gulp.task('html_pages', () => {
 	return gulp.src([
 		'src/report_view/report_view.html',
 		'src/start_page/*.html',
-		'src/devtools/*',
 		'src/*.html'
-	])
-		.pipe(fileinclude({
-			prefix: '//@',
-			basepath: '@file'
-		}))
-		.pipe(gulp.dest('build'));
+	]).pipe(fileinclude({
+		prefix: '//@',
+		basepath: '@file'
+	})).pipe(gulp.dest('build'));
 });
 
 gulp.task('pug_pages', () => {
