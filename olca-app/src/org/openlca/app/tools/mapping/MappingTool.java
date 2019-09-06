@@ -2,6 +2,7 @@ package org.openlca.app.tools.mapping;
 
 import java.io.File;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -26,6 +27,7 @@ public class MappingTool extends SimpleFormEditor {
 	FlowMap mapping;
 	IProvider sourceSystem;
 	IProvider targetSystem;
+	AtomicBoolean checked = new AtomicBoolean(true);
 
 	public static void createNew() {
 		FlowMap mapping = new FlowMap();
@@ -77,6 +79,11 @@ public class MappingTool extends SimpleFormEditor {
 			String uid = sinp.id;
 			AppCache cache = Cache.getAppCache();
 			mapping = cache.remove(uid + " /mapping", FlowMap.class);
+			if (mapping.entries.isEmpty()) {
+				checked.set(true);
+			} else {
+				checked.set(false);
+			}
 		} catch (Exception e) {
 			throw new PartInitException(
 					"Failed to load editor input", e);

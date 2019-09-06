@@ -10,6 +10,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.tools.mapping.generator.Generator;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.IProvider;
@@ -91,6 +92,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		if (tool == null || tool.mapping == null)
 			return;
 
+		// check if we can apply the mapping
 		IProvider source = tool.sourceSystem;
 		if (!(source instanceof DBProvider)) {
 			Error.showBox("Source system should be a database",
@@ -106,6 +108,11 @@ public class MappingMenu extends EditorActionBarContributor {
 					"No target system was selected.");
 			return;
 		}
+		if (!tool.checked.get()) {
+			Error.showBox("Unchecked mappings",
+					"You should first run a check before applying the mapping.");
+			return;
+		}
 
 		Optional<ReplacerConfig> opt = ReplacerDialog.open(
 				tool.mapping, tool.sourceSystem);
@@ -114,6 +121,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		Replacer replacer = new Replacer(opt.get());
 		App.runWithProgress("Replace flows ...", replacer, () -> {
 			tool.refresh();
+			Navigator.refresh();
 		});
 	}
 }

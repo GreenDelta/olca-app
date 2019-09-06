@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -86,6 +87,11 @@ class MappingDialog extends FormDialog {
 		shell.setText("Flow mapping");
 		UI.center(UI.shell(), shell);
 		super.configureShell(shell);
+	}
+
+	@Override
+	protected Point getInitialSize() {
+		return new Point(600, 650);
 	}
 
 	@Override

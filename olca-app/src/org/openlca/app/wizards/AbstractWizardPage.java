@@ -26,7 +26,6 @@ abstract class AbstractWizardPage<T extends CategorizedEntity> extends
 	@Override
 	@SuppressWarnings("unchecked")
 	public final void createControl(final Composite parent) {
-		setErrorMessage(M.PleaseEnterAName);
 		Composite container = UI.formComposite(parent);
 		setControl(container);
 		nameText = UI.formText(container, M.Name);

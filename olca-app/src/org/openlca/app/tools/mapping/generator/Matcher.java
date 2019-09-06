@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.math3.util.Pair;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.util.Labels;
@@ -16,12 +17,12 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.util.CategoryPathBuilder;
-import org.openlca.util.Strings;
 
 class Matcher {
 
 	private final IDatabase db;
 	private final Map<String, FlowRef> targetFlows;
+	private final WordMatcher words;
 
 	// helper structures for collecting provider information
 	private CategoryPathBuilder categories;
@@ -34,6 +35,7 @@ class Matcher {
 		this.targetFlows = targetSystem.getFlowRefs().stream()
 				.filter(f -> f.flow != null && f.flow.refId != null)
 				.collect(Collectors.toMap(f -> f.flow.refId, f -> f));
+		this.words = new WordMatcher();
 	}
 
 	FlowRef find(FlowRef sflow) {
@@ -49,41 +51,22 @@ class Matcher {
 			return tflow;
 		}
 
-		FlowRef candidate = null;
-		double score = 0.0;
-		for (FlowRef c : targetFlows.values()) {
-			double s = score(sflow, c);
-			if (s > score) {
-				candidate = c;
-				score = s;
-			}
+		// find the best matching flow by computing and
+		// comparing matching scores
+		tflow = targetFlows.values()
+				.parallelStream()
+				.map(tf -> new Pair<>(tf, Score.compute(sflow, tf, words)))
+				.reduce((pair1, pair2) -> {
+					Score score1 = pair1.getValue();
+					Score score2 = pair2.getValue();
+					return score2.betterThan(score1) ? pair2 : pair1;
+				})
+				.map(pair -> pair.getFirst())
+				.orElse(null);
+		if (tflow != null) {
+			checkAddProvider(sflow, tflow);
 		}
-		if (candidate != null) {
-			checkAddProvider(sflow, candidate);
-		}
-		return candidate;
-	}
-
-	private double score(FlowRef sflow, FlowRef tflow) {
-		if (sflow.flow == null || tflow.flow == null)
-			return 0;
-		double nameScore = Words.match(sflow.flow.name, tflow.flow.name);
-		if (nameScore < 0.01)
-			return 0;
-
-		double catScore = Words.match(sflow.flowCategory, tflow.flowCategory);
-		double locScore = Words.match(sflow.flowLocation, tflow.flowLocation);
-		double score = nameScore + (0.25 * catScore) + (0.25 * locScore);
-
-		// score flows with same flow type and reference units a bit higher
-		if (sflow.flow.flowType == tflow.flow.flowType) {
-			score *= 1.1;
-		}
-		if (sflow.unit != null && tflow.unit != null
-				&& Strings.nullOrEqual(sflow.unit.name, tflow.unit.name)) {
-			score *= 1.1;
-		}
-		return score;
+		return tflow;
 	}
 
 	private void checkAddProvider(FlowRef sourceFlow, FlowRef targetFlow) {
@@ -134,7 +117,7 @@ class Matcher {
 			// location codes are often added to names in Gabi
 			// database
 			String pname = Labels.getDisplayName(d);
-			double s = Words.match(sourceFlow.flow.name, pname);
+			double s = words.matchAll(sourceFlow.flow.name, pname);
 			if (cand == null || s > score) {
 				cand = d;
 				score = s;

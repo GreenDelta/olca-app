@@ -5,13 +5,13 @@ import java.util.List;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.App;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.tables.Tables;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.core.database.IDatabase;
@@ -37,19 +37,11 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		getModifySupport().bind("", new CommentDialogModifier<Source>(
 				editor.getComments(), CommentPaths::get));
 		Tables.bindColumnWidths(getViewer(), 0.97);
-		addDoubleClickHandler();
-	}
-
-	private void addDoubleClickHandler() {
-		Tables.onDoubleClick(getViewer(), (event) -> {
-			TableItem item = Tables.getItem(getViewer(), event);
-			if (item == null) {
-				onCreate();
-				return;
+		Tables.onDoubleClick(getViewer(), e -> {
+			Source s = Viewers.getFirstSelected(getViewer());
+			if (s != null) {
+				App.openEditor(s);
 			}
-			Source source = getSelected();
-			if (source != null)
-				App.openEditor(source);
 		});
 	}
 
@@ -58,7 +50,7 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		return new String[] { "Name", "" };
 	}
 
-	public void setInput(Process process) {
+	void setInput(Process process) {
 		if (process == null || process.documentation == null)
 			setInput(new Source[0]);
 		else {
@@ -81,9 +73,7 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		}
 		if (!added)
 			return;
-		ProcessDocumentation doc = editor.getModel().documentation;
-		setInput(doc.sources);
-		editor.setDirty(true);
+		update();
 	}
 
 	private boolean add(BaseDescriptor d) {
@@ -113,16 +103,20 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		for (Source source : getAllSelected()) {
 			doc.sources.remove(source);
 		}
-		setInput(doc.sources);
-		editor.setDirty(true);
+		update();
 	}
 
 	@OnDrop
 	protected void onDrop(BaseDescriptor d) {
 		if (!add(d))
 			return;
+		update();
+	}
+
+	private void update() {
 		ProcessDocumentation doc = editor.getModel().documentation;
 		setInput(doc.sources);
+		editor.getEventBus().post(ProcessEditor.SOURCES_CHANGED);
 		editor.setDirty(true);
 	}
 

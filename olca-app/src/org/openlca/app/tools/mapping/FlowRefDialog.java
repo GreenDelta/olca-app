@@ -8,7 +8,9 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -94,9 +96,38 @@ class FlowRefDialog extends FormDialog {
 			Object obj = Viewers.getFirst(e.getSelection());
 			if (obj instanceof FlowRef) {
 				selected = (FlowRef) obj;
+			} else {
+				selected = null;
 			}
 			Button ok = getButton(IDialogConstants.OK_ID);
 			ok.setEnabled(selected != null);
+		});
+
+		// handle double clicks
+		viewer.addDoubleClickListener(e -> {
+			IStructuredSelection s = viewer.getStructuredSelection();
+			if (s == null || s.isEmpty())
+				return;
+			Object elem = s.getFirstElement();
+
+			// double click on a flow
+			if (elem instanceof FlowRef) {
+				selected = (FlowRef) elem;
+				okPressed();
+				return;
+			}
+
+			// double click on a category
+			if (!tree.hasChildren(elem))
+				return;
+			selected = null;
+			getButton(IDialogConstants.OK_ID).setEnabled(false);
+			if (viewer.getExpandedState(elem)) {
+				viewer.collapseToLevel(elem,
+						AbstractTreeViewer.ALL_LEVELS);
+			} else {
+				viewer.expandToLevel(elem, 1);
+			}
 		});
 	}
 

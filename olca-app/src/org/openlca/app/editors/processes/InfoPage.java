@@ -71,6 +71,7 @@ class InfoPage extends ModelPage<Process> {
 		createTimeSection(body);
 		createGeographySection(body);
 		createTechnologySection(body);
+		new ImageSection(getEditor(), toolkit, body);
 		createDqSection(body);
 		body.setFocus();
 		form.reflow(true);

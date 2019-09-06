@@ -1,6 +1,8 @@
 package org.openlca.app.tools.mapping.replacer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -13,8 +15,10 @@ import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.matrix.cache.ConversionTable;
+import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.io.maps.Status;
@@ -31,7 +35,13 @@ public class Replacer implements Runnable {
 	final HashMap<Long, FlowMapEntry> entries = new HashMap<>();
 	// the source and target flows in the database: flow ID -> flow.
 	final HashMap<Long, Flow> flows = new HashMap<>();
-	ConversionTable conversions;
+
+	FactorProvider factors;
+
+	/** Contains the IDs of processes where flows should be replaced. */
+	Set<Long> processes = new HashSet<>();
+	/** Contains the IDs of LCIA categories where flows should be replaced. */
+	Set<Long> impacts = new HashSet<>();
 
 	public Replacer(ReplacerConfig conf) {
 		this.conf = conf;
@@ -40,9 +50,23 @@ public class Replacer implements Runnable {
 
 	@Override
 	public void run() {
-		if (conf == null || (!conf.processes && !conf.methods)) {
+		if (conf == null || (conf.models.isEmpty())) {
 			log.info("no configuration; nothing to replace");
 			return;
+		}
+
+		// collect the IDs of processes and LCIA categories
+		// where flows should be replaced
+		processes.clear();
+		impacts.clear();
+		for (CategorizedDescriptor model : conf.models) {
+			if (model.type == ModelType.PROCESS) {
+				processes.add(model.id);
+			} else if (model.type == ModelType.IMPACT_METHOD) {
+				ImpactMethodDao dao = new ImpactMethodDao(db);
+				dao.getCategoryDescriptors(model.id)
+						.forEach(d -> impacts.add(d.id));
+			}
 		}
 
 		buildIndices();
@@ -54,20 +78,13 @@ public class Replacer implements Runnable {
 
 		try {
 
+			// start and wait for the cursors to finish
 			log.info("start updatable cursors");
-			Cursor exchangeCursor = null;
-			Cursor impactCursor = null;
+			List<UpdatableCursor> cursors = createCursors();
 			ExecutorService pool = Executors.newFixedThreadPool(4);
-			if (conf.processes) {
-				exchangeCursor = new Cursor(Cursor.EXCHANGES, this);
-				pool.execute(exchangeCursor);
+			for (UpdatableCursor c : cursors) {
+				pool.execute(c);
 			}
-			if (conf.methods) {
-				impactCursor = new Cursor(Cursor.IMPACTS, this);
-				pool.execute(impactCursor);
-			}
-
-			// waiting for the cursors to finish
 			pool.shutdown();
 			int i = 0;
 			while (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
@@ -75,29 +92,30 @@ public class Replacer implements Runnable {
 				log.info("waiting for cursors to finish; {} seconds", i * 10);
 			}
 			log.info("cursors finished");
+			db.getEntityFactory().getCache().evictAll();
 
 			// TODO when products were replaced we also need to check
 			// whether these products are used in the quant. ref. of
 			// product systems and project variants and convert the
 			// amounts there.
-			// TODO also: we need to replace wuch flows in allocation
+			// TODO also: we need to replace such flows in allocation
 			// factors; the application of the conversion factor is
 			// not required there.
 
 			// collect and log statistics
 			Stats stats = new Stats();
-			if (exchangeCursor != null) {
-				stats.add(exchangeCursor.stats);
-				exchangeCursor.stats.log("exchanges", flows);
+			for (UpdatableCursor c : cursors) {
+				stats.add(c.stats);
+				c.stats.log(c.getClass().getName(), flows);
 			}
-			if (impactCursor != null) {
-				stats.add(impactCursor.stats);
-				impactCursor.stats.log("impacts", flows);
-			}
+
+			// TODO: update the version and last-update fields
+			// of the changed models; also call the indexer
+			// when the database is a connected repository
 
 			boolean deleteMapped = false;
 			Set<Long> usedFlows = null;
-			if (conf.deleteMapped && conf.processes && conf.methods) {
+			if (conf.deleteMapped) {
 				if (stats.failures > 0) {
 					log.warn("Will not delete mapped flows because"
 							+ " there were {} failures in replacement process",
@@ -128,10 +146,22 @@ public class Replacer implements Runnable {
 					e.sourceFlow.status = Status.ok("Applied (not removed)");
 				}
 			}
-
 		} catch (Exception e) {
 			log.error("Flow replacement failed", e);
 		}
+	}
+
+	private List<UpdatableCursor> createCursors() {
+		List<UpdatableCursor> cursors = new ArrayList<>();
+		if (!processes.isEmpty()) {
+			cursors.add(new AmountCursor(ModelType.PROCESS, this));
+			cursors.add(new ProcessLinkCursor(this));
+			cursors.add(new AllocationCursor(this));
+		}
+		if (!impacts.isEmpty()) {
+			cursors.add(new AmountCursor(ModelType.IMPACT_CATEGORY, this));
+		}
+		return cursors;
 	}
 
 	private void buildIndices() {
@@ -172,6 +202,6 @@ public class Replacer implements Runnable {
 			flows.put(source.id, source);
 			flows.put(target.id, target);
 		}
-		conversions = ConversionTable.create(db);
+		factors = new FactorProvider(db, flows);
 	}
 }

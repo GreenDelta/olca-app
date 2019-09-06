@@ -1,5 +1,6 @@
 package org.openlca.app.navigation;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jface.viewers.Viewer;
@@ -15,6 +16,8 @@ public class NavigationContentProvider implements ICommonContentProvider {
 
 	@Override
 	public Object[] getChildren(Object parent) {
+		if (parent instanceof Collection)
+			return ((Collection<?>) parent).toArray();
 		if (!(parent instanceof INavigationElement))
 			return new Object[0];
 		INavigationElement<?> e = (INavigationElement<?>) parent;

@@ -23,11 +23,9 @@ import org.slf4j.LoggerFactory;
 
 public class ProcessEditor extends ModelEditor<Process> {
 
-	/**
-	 * An event message that indicates the removal or addition of one or more
-	 * exchanges exchange.
-	 */
-	public final String EXCHANGES_CHANGED = "EXCHANGE_CHANGED";
+	// EventBus messages
+	public static final String EXCHANGES_CHANGED = "EXCHANGE_CHANGED";
+	public static final String SOURCES_CHANGED = "SOURCES_CHANGED";
 
 	public static String ID = "editors.process";
 	private Logger log = LoggerFactory.getLogger(getClass());

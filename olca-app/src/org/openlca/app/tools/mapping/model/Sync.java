@@ -63,6 +63,17 @@ final class Sync {
 		}
 	}
 
+	static void checkProviderLocation(FlowRef ref, String code) {
+		if (ref == null)
+			return;
+		if (Strings.nullOrEmpty(ref.providerLocation)) {
+			ref.providerLocation = code;
+		} else if (!Strings.nullOrEqual(code, ref.providerLocation)) {
+			addWarning(ref, "the provider in the mapping "
+					+ "has a different location code");
+		}
+	}
+
 	private static void addWarning(FlowRef ref, String message) {
 		if (ref == null)
 			return;

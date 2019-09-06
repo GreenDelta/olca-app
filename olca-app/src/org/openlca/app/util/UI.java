@@ -385,15 +385,15 @@ public class UI {
 	/**
 	 * Creates an empty label which can be used to fill cells in a grid layout.
 	 */
-	public static void filler(Composite comp, FormToolkit tk) {
-		formLabel(comp, tk, "");
+	public static Label filler(Composite comp, FormToolkit tk) {
+		return formLabel(comp, tk, "");
 	}
 
 	/**
 	 * Creates an empty label which can be used to fill cells in a grid layout.
 	 */
-	public static void filler(Composite comp) {
-		formLabel(comp, null, "");
+	public static Label filler(Composite comp) {
+		return formLabel(comp, null, "");
 	}
 
 	public static Hyperlink formLink(Composite parent, String label) {

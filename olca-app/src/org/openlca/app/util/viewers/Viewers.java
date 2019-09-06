@@ -46,7 +46,8 @@ public class Viewers {
 			T obj = (T) structSelection.getFirstElement();
 			return obj;
 		} catch (ClassCastException e) {
-			log.error("Error casting obj of type " + structSelection.getFirstElement().getClass().getCanonicalName(), e);
+			log.error("Error casting obj of type " + structSelection.getFirstElement().getClass().getCanonicalName(),
+					e);
 			return null;
 		}
 	}
@@ -101,7 +102,21 @@ public class Viewers {
 		}
 	}
 
-	public static <T> void sortByLabels(ColumnViewer viewer, ITableLabelProvider labelProvider, int... cols) {
+	public static <T> void sortByLabels(ColumnViewer viewer,
+			ITableLabelProvider label) {
+		if (viewer == null || label == null)
+			return;
+		Object[] props = viewer.getColumnProperties();
+		if (props == null)
+			return;
+		for (int col = 0; col < props.length; col++) {
+			LabelComparator<T> s = new LabelComparator<>(col, label);
+			addComparator(viewer, s);
+		}
+	}
+
+	public static <T> void sortByLabels(ColumnViewer viewer,
+			ITableLabelProvider labelProvider, int... cols) {
 		for (int i = 0; i < cols.length; i++) {
 			LabelComparator<T> s = new LabelComparator<>(cols[i], labelProvider);
 			addComparator(viewer, s);
