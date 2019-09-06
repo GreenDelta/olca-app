@@ -15,12 +15,11 @@ public class AppCache {
 	}
 
 	public void put(String key, Object val) {
-		map.put(key, val);			
+		map.put(key, val);
 	}
 
 	/**
-	 * Puts the given object into the cache. Allocates a new key and resturns
-	 * this key.
+	 * Puts the given object into the cache. Allocates a new key and returns it.
 	 */
 	public String put(Object val) {
 		String key = UUID.randomUUID().toString();
@@ -30,13 +29,18 @@ public class AppCache {
 
 	public <T> T remove(String key, Class<T> type) {
 		Object o = map.remove(key);
-		return castSave(o, type);
-	}
-	
-	private <T> T castSave(Object o, Class<T> type) {
 		if (type.isInstance(o))
 			return type.cast(o);
 		return null;
+	}
+
+	/**
+	 * Removes and returns the object with the given ID from the cache. It makes
+	 * an unsafe cast to T, so you be sure what you do here.
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T remove(String key) {
+		return (T) map.remove(key);
 	}
 
 }

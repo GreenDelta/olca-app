@@ -5,6 +5,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -105,6 +108,31 @@ public class UI {
 			Logger log = LoggerFactory.getLogger(UI.class);
 			log.error("failed to bind {} as {}", var, name, e);
 		}
+	}
+
+	/**
+	 * Calls the given function when the browser has loaded the given URL. No
+	 * threads are spawned here. You have to make sure that the given function
+	 * accesses the browser in the UI thread.
+	 */
+	public static void onLoaded(Browser browser, String url, Runnable fn) {
+		if (browser == null || url == null)
+			return;
+		browser.addProgressListener(new ProgressListener() {
+
+			@Override
+			public void completed(ProgressEvent event) {
+				if (fn != null) {
+					fn.run();
+					browser.removeProgressListener(this);
+				}
+			}
+
+			@Override
+			public void changed(ProgressEvent event) {
+			}
+		});
+		browser.setUrl(url);
 	}
 
 	public static Shell shell() {
