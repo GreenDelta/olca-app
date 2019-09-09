@@ -11,14 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
 
-public class PostgresDatabaseExport implements Runnable {
+public class RemoteDatabaseExport implements Runnable {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private PostgresConfiguration config;
+	private IDatabaseConfiguration config;
 	private File zolcaFile;
 	private boolean success = false;
 
-	public PostgresDatabaseExport(PostgresConfiguration config, File zolcaFile) {
+	public RemoteDatabaseExport(IDatabaseConfiguration config, File zolcaFile) {
 		this.config = config;
 		this.zolcaFile = zolcaFile;
 	}
@@ -41,7 +41,7 @@ public class PostgresDatabaseExport implements Runnable {
 			success = true;
 		} catch (Exception e) {
 			success = false;
-			log.error("failed export Postgres database as zolca-File", e);
+			log.error("failed export Remote database as zolca-File", e);
 		}
 	}
 

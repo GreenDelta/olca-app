@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import org.apache.commons.collections.ListUtils;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,16 +24,13 @@ import com.google.gson.GsonBuilder;
  */
 public class DatabaseList {
 
-	private List<DerbyConfiguration> localDatabases = new ArrayList<>();
-	private List<PostgresConfiguration> remoteDatabases = new ArrayList<>();
+    private List<DerbyConfiguration> localDatabases = new ArrayList<>();
+    private List<PostgresConfiguration> remoteDatabases = new ArrayList<>();
 
-	public List<DerbyConfiguration> getLocalDatabases() {
-		return localDatabases;
-	}
-
-	public List<PostgresConfiguration> getRemoteDatabases() {
-		return remoteDatabases;
-	}
+    @SuppressWarnings("unchecked")
+    public List<IDatabaseConfiguration> getDatabases() {
+      return ListUtils.union(localDatabases, remoteDatabases);
+    }
 
 	public static DatabaseList read(File file) {
 		Logger log = LoggerFactory.getLogger(DatabaseList.class);
@@ -60,12 +58,8 @@ public class DatabaseList {
 		}
 	}
 
-	public boolean contains(DerbyConfiguration config) {
-		return localDatabases.contains(config);
-	}
-
-	public boolean contains(PostgresConfiguration config) {
-		return remoteDatabases.contains(config);
+	public boolean contains(IDatabaseConfiguration config) {
+		return localDatabases.contains(config) || remoteDatabases.contains(config);
 	}
 
 	/** Returns true if a database with the given name exists. */
@@ -79,15 +73,27 @@ public class DatabaseList {
 			return Strings.nullOrEqual(
 					config.getName().toLowerCase(), newName);
 		};
-		for (IDatabaseConfiguration config : localDatabases) {
-			if (sameName.test(config))
-				return true;
-		}
-		for (IDatabaseConfiguration config : remoteDatabases) {
+		for (IDatabaseConfiguration config : getDatabases()) {
 			if (sameName.test(config))
 				return true;
 		}
 		return false;
 	}
+
+  public void add(IDatabaseConfiguration config) {
+    if (config instanceof DerbyConfiguration) {
+      localDatabases.add((DerbyConfiguration)config);
+    } else if (config instanceof PostgresConfiguration) {
+      remoteDatabases.add((PostgresConfiguration)config);
+    }
+  }
+
+  public void remove(IDatabaseConfiguration config) {
+    if (config instanceof DerbyConfiguration) {
+      localDatabases.remove(config);
+    } else if (config instanceof PostgresConfiguration) {
+      remoteDatabases.remove(config);
+    }
+  }
 
 }

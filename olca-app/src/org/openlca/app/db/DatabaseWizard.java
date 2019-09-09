@@ -41,7 +41,7 @@ public class DatabaseWizard extends Wizard {
 			if (!Editors.closeAll())
 				return false;
 			IDatabaseConfiguration config = page.getPageData();
-			Runner runner = (config instanceof DerbyConfiguration) ? new Runner(
+			Runner runner = (config instanceof ILocalDatabaseConfiguration) ? new Runner(
 					config, page.getSelectedContent()) : new Runner(config);
 			getContainer().run(true, false, runner);
 			Navigator.refresh();
@@ -81,10 +81,8 @@ public class DatabaseWizard extends Wizard {
 					IProgressMonitor.UNKNOWN);
 			try {
 				Database.close();
-				if (config instanceof PostgresConfiguration)
-					Database.register((PostgresConfiguration) config);
-				else if (config instanceof DerbyConfiguration) {
-					Database.register((DerbyConfiguration) config);
+				Database.register(config);
+				if (config instanceof ILocalDatabaseConfiguration) {
 					extractDerbyTemplate();
 				}
 				Database.activate(config);

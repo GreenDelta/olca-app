@@ -9,7 +9,7 @@ import org.openlca.core.database.postgres.PostgresDatabase;
 /**
  * Configuration of a Postgres database.
  */
-public class PostgresConfiguration implements IDatabaseConfiguration {
+public class PostgresConfiguration implements IRemoteDatabaseConfiguration {
 
 	private String name;
 	private String host;

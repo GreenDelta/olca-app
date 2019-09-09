@@ -142,41 +142,24 @@ public class Database {
 	}
 
 	public static IDatabaseConfiguration getActiveConfiguration() {
-		for (IDatabaseConfiguration conf : configurations.getLocalDatabases())
-			if (isActive(conf))
-				return conf;
-		for (IDatabaseConfiguration conf : configurations.getRemoteDatabases())
+		for (IDatabaseConfiguration conf : configurations.getDatabases())
 			if (isActive(conf))
 				return conf;
 		return null;
 	}
 
-	public static void register(DerbyConfiguration config) {
+	public static void register(IDatabaseConfiguration config) {
 		if (configurations.contains(config))
 			return;
-		configurations.getLocalDatabases().add(config);
+		configurations.add(config);
 		saveConfig();
 	}
-
-	public static void remove(DerbyConfiguration config) {
-		if (!configurations.contains(config))
-			return;
-		configurations.getLocalDatabases().remove(config);
-		saveConfig();
-	}
-
-	public static void register(PostgresConfiguration config) {
-		if (configurations.contains(config))
-			return;
-		configurations.getRemoteDatabases().add(config);
-		saveConfig();
-	}
-
-	public static void remove(PostgresConfiguration config) {
-		if (!configurations.contains(config))
-			return;
-		configurations.getRemoteDatabases().remove(config);
-		saveConfig();
-	}
+	
+	public static void remove(IDatabaseConfiguration config) {
+      if (!configurations.contains(config))
+          return;
+      configurations.remove(config);
+      saveConfig();
+  }
 
 }

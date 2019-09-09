@@ -76,12 +76,7 @@ class DbImportPage extends WizardPage {
 	private void fillExistingViewer() {
 		DatabaseList dbList = Database.getConfigurations();
 		List<IDatabaseConfiguration> configs = new ArrayList<>();
-		for (IDatabaseConfiguration config : dbList.getLocalDatabases()) {
-			if (config != null && !Database.isActive(config)) {
-				configs.add(config);
-			}
-		}
-		for (IDatabaseConfiguration config : dbList.getRemoteDatabases()) {
+		for (IDatabaseConfiguration config : dbList.getDatabases()) {
 			if (config != null && !Database.isActive(config)) {
 				configs.add(config);
 			}

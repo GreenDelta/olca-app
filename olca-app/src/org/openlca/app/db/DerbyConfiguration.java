@@ -8,7 +8,7 @@ import org.openlca.core.database.derby.DerbyDatabase;
  * Configuration of a local derby database. Derby databases are stored directly
  * in the workspace folder: <workspace>/databases/<database_name>.
  */
-public class DerbyConfiguration implements IDatabaseConfiguration {
+public class DerbyConfiguration implements ILocalDatabaseConfiguration {
 
 	private String name;
 

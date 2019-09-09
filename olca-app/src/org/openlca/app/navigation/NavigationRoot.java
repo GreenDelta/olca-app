@@ -6,8 +6,7 @@ import java.util.List;
 import org.eclipse.core.runtime.PlatformObject;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseList;
-import org.openlca.app.db.DerbyConfiguration;
-import org.openlca.app.db.PostgresConfiguration;
+import org.openlca.app.db.IDatabaseConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +46,7 @@ public class NavigationRoot extends PlatformObject implements
 		log.trace("create database navigation elements");
 		DatabaseList list = Database.getConfigurations();
 		List<INavigationElement<?>> elements = new ArrayList<>();
-		for (DerbyConfiguration config : list.getLocalDatabases())
-			elements.add(new DatabaseElement(this, config));
-		for (PostgresConfiguration config : list.getRemoteDatabases())
+		for (IDatabaseConfiguration config : list.getDatabases())
 			elements.add(new DatabaseElement(this, config));
 		return elements;
 	}

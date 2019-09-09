@@ -22,6 +22,8 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.ILocalDatabaseConfiguration;
+import org.openlca.app.db.IRemoteDatabaseConfiguration;
 import org.openlca.app.db.PostgresConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -153,9 +155,9 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 				Entry entry = (Entry) element;
 				if (columnIndex == 0)
 					return null;
-				if (entry.database instanceof DerbyConfiguration)
+				if (entry.database instanceof ILocalDatabaseConfiguration)
 					return Icon.DATABASE.get();
-				if (entry.database instanceof PostgresConfiguration)
+				if (entry.database instanceof IRemoteDatabaseConfiguration)
 					return Icon.SQL.get();
 				return null;
 			}
@@ -196,8 +198,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 			@Override
 			protected IDatabaseConfiguration[] getItems(Entry element) {
 				List<IDatabaseConfiguration> databases = new ArrayList<>();
-				databases.addAll(Database.getConfigurations().getLocalDatabases());
-				databases.addAll(Database.getConfigurations().getRemoteDatabases());
+				databases.addAll(Database.getConfigurations().getDatabases());
 				return databases.toArray(new IDatabaseConfiguration[databases.size()]);
 			}
 

@@ -32,33 +32,31 @@ public class DatabasePropertiesDialog extends FormDialog {
 		ScrolledForm form = UI.formHeader(managedForm, M.Properties);
 		Composite body = UI.formBody(form, toolkit);
 		Composite content = UI.formComposite(body, toolkit);
-		if (config instanceof DerbyConfiguration) {
-			DerbyConfiguration derbyConfig = (DerbyConfiguration) config;
-			renderDerbyConfig(derbyConfig, content, toolkit);
-		} else if (config instanceof PostgresConfiguration) {
-			PostgresConfiguration postgresConfig = (PostgresConfiguration) config;
-			renderPostgresConfiguration(postgresConfig, content, toolkit);
+		if (config instanceof IRemoteDatabaseConfiguration) {
+		    renderRemoteConfiguration((IRemoteDatabaseConfiguration)config, content, toolkit);
+		} else {
+            renderLocalConfiguration((ILocalDatabaseConfiguration)config, content, toolkit);
 		}
 	}
 
-	private void renderPostgresConfiguration(PostgresConfiguration conf,
-			Composite parent, FormToolkit toolkit) {
-		UI.formText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
-				M.RemoteDatabase);
-		UI.formText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
-				conf.getName());
-		UI.formText(parent, toolkit, M.Host, SWT.READ_ONLY).setText(
-				conf.getHost());
-		UI.formText(parent, toolkit, M.Port, SWT.READ_ONLY).setText(
-				Integer.toString(conf.getPort()));
-		UI.formText(parent, toolkit, M.User, SWT.READ_ONLY).setText(
-				conf.getUser());
-		boolean withPassword = Strings.notEmpty(conf.getPassword());
-		UI.formText(parent, toolkit, M.WithPassword, SWT.READ_ONLY)
-				.setText(Boolean.toString(withPassword));
-	}
-
-	private void renderDerbyConfig(DerbyConfiguration conf, Composite parent,
+	private void renderRemoteConfiguration(IRemoteDatabaseConfiguration conf,
+            Composite parent, FormToolkit toolkit) {
+        UI.formText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
+                M.RemoteDatabase);
+        UI.formText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
+                conf.getName());
+        UI.formText(parent, toolkit, M.Host, SWT.READ_ONLY).setText(
+                conf.getHost());
+        UI.formText(parent, toolkit, M.Port, SWT.READ_ONLY).setText(
+                Integer.toString(conf.getPort()));
+        UI.formText(parent, toolkit, M.User, SWT.READ_ONLY).setText(
+                conf.getUser());
+        boolean withPassword = Strings.notEmpty(conf.getPassword());
+        UI.formText(parent, toolkit, M.WithPassword, SWT.READ_ONLY)
+                .setText(Boolean.toString(withPassword));
+    }
+	
+	private void renderLocalConfiguration(ILocalDatabaseConfiguration conf, Composite parent,
 			FormToolkit toolkit) {
 		UI.formText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
 				M.LocalDatabase);
@@ -68,7 +66,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 		renderFolderLink(conf, parent, toolkit);
 	}
 
-	private void renderFolderLink(DerbyConfiguration conf, Composite parent,
+	private void renderFolderLink(IDatabaseConfiguration conf, Composite parent,
 			FormToolkit toolkit) {
 		File folder = DatabaseDir.getRootFolder(conf.getName());
 		String path = folder.toURI().toString();
