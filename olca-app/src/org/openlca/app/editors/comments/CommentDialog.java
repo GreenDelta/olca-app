@@ -1,23 +1,21 @@
 package org.openlca.app.editors.comments;
 
-import org.openlca.app.M;
-
-import javafx.scene.web.WebEngine;
-
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.rcp.html.HtmlView;
-import org.openlca.app.rcp.html.WebPage;
+import org.openlca.app.M;
+import org.openlca.app.rcp.html.HtmlFolder;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.model.Comment;
 import org.openlca.cloud.model.Comments;
 
 import com.google.gson.Gson;
 
-public class CommentDialog extends FormDialog implements WebPage {
+public class CommentDialog extends FormDialog {
 
 	private final String path;
 	private final Comments comments;
@@ -30,33 +28,27 @@ public class CommentDialog extends FormDialog implements WebPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		ScrolledForm form = UI.formHeader(mForm, M.Comments + CommentLabels.get(path));
+		ScrolledForm form = UI.formHeader(mForm,
+				M.Comments + CommentLabels.get(path));
 		Composite body = UI.formBody(form, mForm.getToolkit());
 		body.setLayout(new FillLayout());
-		UI.createWebView(body, this);
+		Browser browser = new Browser(body, SWT.NONE);
+		browser.setJavascriptEnabled(true);
+		UI.bindFunction(browser, "getLabel", (args) -> {
+			if (args == null || args.length == 0)
+				return "";
+			Object path = args[0];
+			if (path == null)
+				return "";
+			return CommentLabels.get(path.toString());
+		});
+
+		UI.onLoaded(browser, HtmlFolder.getUrl("comments.html"), () -> {
+			Gson gson = new Gson();
+			for (Comment comment : comments.getForPath(path)) {
+				browser.execute("add(" + gson.toJson(comment) + ", true);");
+			}
+		});
 		form.reflow(true);
 	}
-
-	@Override
-	public String getUrl() {
-		return HtmlView.COMMENTS.getUrl();
-	}
-
-	@Override
-	public void onLoaded(WebEngine webkit) {
-		UI.bindVar(webkit, "java", new Js());
-		Gson gson = new Gson();
-		for (Comment comment : comments.getForPath(path)) {
-			webkit.executeScript("add(" + gson.toJson(comment) + ", true);");
-		}
-	}
-
-	public class Js {
-
-		public String getLabel(String path) {
-			return CommentLabels.get(path);
-		}
-
-	}
-
 }

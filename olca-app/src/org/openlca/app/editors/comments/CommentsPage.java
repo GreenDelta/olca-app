@@ -2,6 +2,8 @@ package org.openlca.app.editors.comments;
 
 import java.util.List;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -12,8 +14,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.html.HtmlView;
-import org.openlca.app.rcp.html.WebPage;
+import org.openlca.app.rcp.html.HtmlFolder;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.model.Comment;
@@ -29,9 +30,7 @@ import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
 
-import javafx.scene.web.WebEngine;
-
-public class CommentsPage extends FormPage implements WebPage {
+public class CommentsPage extends FormPage {
 
 	private final CategorizedEntity model;
 	private final List<Comment> comments;
@@ -60,24 +59,44 @@ public class CommentsPage extends FormPage implements WebPage {
 		ScrolledForm form = UI.formHeader(mForm, title, image);
 		Composite body = UI.formBody(form, mForm.getToolkit());
 		body.setLayout(new FillLayout());
-		UI.createWebView(body, this);
+		Browser browser = new Browser(body, SWT.NONE);
+		browser.setJavascriptEnabled(true);
+
+		UI.bindFunction(browser, "getLabel", (args) -> {
+			if (args == null || args.length == 0)
+				return "";
+			Object path = args[0];
+			if (path == null)
+				return "";
+			return CommentLabels.get(path.toString());
+		});
+
+		UI.bindFunction(browser, "openModel", (args) -> {
+			if (args == null || args.length < 2)
+				return null;
+			Object type = args[0];
+			Object refId = args[1];
+			if (type == null || refId == null)
+				return null;
+			App.openEditor(getDescriptor(
+					ModelType.valueOf(type.toString()),
+					refId.toString()));
+			return null;
+		});
+
+		UI.onLoaded(browser, HtmlFolder.getUrl("comments.html"), () -> {
+			Gson gson = new Gson();
+			for (Comment comment : comments) {
+				String fullPath = getFullPath(comment);
+				fullPath = fullPath != null
+						? "'" + fullPath + "'"
+						: fullPath;
+				browser.execute("add(" + gson.toJson(comment)
+						+ ", false, " + fullPath + ");");
+			}
+		});
+
 		form.reflow(true);
-	}
-
-	@Override
-	public String getUrl() {
-		return HtmlView.COMMENTS.getUrl();
-	}
-
-	@Override
-	public void onLoaded(WebEngine webkit) {
-		UI.bindVar(webkit, "java", new Js());
-		Gson gson = new Gson();
-		for (Comment comment : comments) {
-			String fullPath = getFullPath(comment);
-			fullPath = fullPath != null ? "'" + fullPath + "'" : fullPath;
-			webkit.executeScript("add(" + gson.toJson(comment) + ", false, " + fullPath + ");");
-		}
 	}
 
 	private String getFullPath(Comment comment) {

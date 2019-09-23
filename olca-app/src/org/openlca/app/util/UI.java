@@ -148,7 +148,13 @@ public class UI {
 		BrowserFunction func = new BrowserFunction(browser, name) {
 			@Override
 			public Object function(Object[] args) {
-				return fn.apply(args);
+				try {
+					return fn.apply(args);
+				} catch (Exception e) {
+					Logger log = LoggerFactory.getLogger(UI.class);
+					log.error("failed to execute browser function " + name, e);
+					return null;
+				}
 			}
 		};
 		browser.addDisposeListener(e -> {
