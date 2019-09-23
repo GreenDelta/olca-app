@@ -7,8 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -16,8 +17,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.components.ResultTypeSelection;
-import org.openlca.app.rcp.html.HtmlView;
-import org.openlca.app.rcp.html.WebPage;
+import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -29,39 +29,23 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-import javafx.scene.web.WebEngine;
-
-class KmlResultView extends FormPage implements WebPage {
+class KmlResultView extends FormPage {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private RegionalizedResult result;
-	private WebEngine webkit;
 	private ResultTypeSelection flowImpactSelection;
 	private boolean incompleteData = false;
 	private boolean loaded;
 	private CalculationSetup setup;
 
-	public KmlResultView(FormEditor editor, RegionalizedResult result, CalculationSetup setup) {
+	private Browser browser;
+
+	public KmlResultView(FormEditor editor,
+			RegionalizedResult result, CalculationSetup setup) {
 		super(editor, "KmlResultView", "Result map");
 		this.result = result;
 		this.setup = setup;
-	}
-
-	@Override
-	public String getUrl() {
-		return HtmlView.KML_RESULT_VIEW.getUrl();
-	}
-
-	@Override
-	public void onLoaded(WebEngine webkit) {
-		this.webkit = webkit;
-		loaded = true;
-		Set<FlowDescriptor> flowDescriptors = result.result.getFlows();
-		if (flowDescriptors.isEmpty())
-			return;
-		FlowDescriptor flow = flowDescriptors.iterator().next();
-		flowImpactSelection.selectWithEvent(flow);
 	}
 
 	@Override
@@ -77,7 +61,18 @@ class KmlResultView extends FormPage implements WebPage {
 				.on(result.result)
 				.withEventHandler(new KmlSelectionHandler(result))
 				.create(composite, toolkit);
-		Control browser = UI.createWebView(body, this);
+		browser = new Browser(composite, SWT.NONE);
+		browser.setJavascriptEnabled(true);
+
+		UI.onLoaded(browser, HtmlFolder.getUrl("kml_results.html"), () -> {
+			loaded = true;
+			Set<FlowDescriptor> flowDescriptors = result.result.getFlows();
+			if (flowDescriptors.isEmpty())
+				return;
+			FlowDescriptor flow = flowDescriptors.iterator().next();
+			flowImpactSelection.selectWithEvent(flow);
+		});
+
 		UI.gridData(browser, true, true);
 		form.reflow(true);
 	}
@@ -85,10 +80,10 @@ class KmlResultView extends FormPage implements WebPage {
 	@Override
 	public void setActive(boolean active) {
 		super.setActive(active);
-		if (incompleteData && webkit != null) {
+		if (incompleteData && browser != null) {
 			// reset browser data
 			try {
-				webkit.executeScript("initData()");
+				browser.execute("initData()");
 			} catch (Exception e) {
 				log.error("failed to evaluate initData()", e);
 			}
@@ -110,7 +105,7 @@ class KmlResultView extends FormPage implements WebPage {
 			delayedJobs.clear();
 			incompleteData = false;
 			double maximum = getMaximum(results);
-			evaluate("initData(" + maximum + ")");
+			evaluate("init(" + maximum + ")");
 			for (LocationResult result : results)
 				sendToView(result);
 		}
@@ -144,7 +139,7 @@ class KmlResultView extends FormPage implements WebPage {
 				cancelDelayedJobs();
 				return;
 			}
-			if (webkit == null)
+			if (browser == null)
 				return;
 			String command = null;
 			if (value instanceof String)
@@ -155,7 +150,7 @@ class KmlResultView extends FormPage implements WebPage {
 				command = "addFeature(" + json + ")";
 			}
 			try {
-				webkit.executeScript(command);
+				browser.execute(command);
 			} catch (Exception e) {
 				log.error("failed to evaluate " + value, e);
 			}

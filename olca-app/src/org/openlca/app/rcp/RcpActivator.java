@@ -14,7 +14,6 @@ import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerConfig;
-import org.openlca.app.rcp.html.HtmlFolder;
 import org.osgi.framework.BundleContext;
 
 /**

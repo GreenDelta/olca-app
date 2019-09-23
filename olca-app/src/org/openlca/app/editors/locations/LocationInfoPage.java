@@ -12,7 +12,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.processes.kml.KmlUtil;
-import org.openlca.app.rcp.html.HtmlFolder;
+import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
 import org.openlca.util.BinUtils;

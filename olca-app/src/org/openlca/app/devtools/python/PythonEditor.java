@@ -15,7 +15,7 @@ import org.openlca.app.devtools.IScriptEditor;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
-import org.openlca.app.rcp.html.HtmlFolder;
+import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;

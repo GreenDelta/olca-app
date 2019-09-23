@@ -1,7 +1,5 @@
 package org.openlca.app.util;
 
-import java.net.CookieHandler;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 import org.eclipse.jface.resource.JFaceResources;
@@ -14,7 +12,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -37,61 +34,16 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
-import org.openlca.app.rcp.html.WebPage;
 import org.openlca.app.rcp.images.Images;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.concurrent.Worker.State;
-import javafx.embed.swt.FXCanvas;
-import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 
 public class UI {
 
 	private UI() {
-	}
-
-	/**
-	 * @deprecated We will remove the JavaFX webview from future versions. When
-	 *             possible build the user interfaces in plain SWT+JFace. When
-	 *             you really need a browser view, use the standard SWT browser
-	 *             but make sure that it runs on different platforms or provide
-	 *             an alternative view when it is not running.
-	 */
-	@Deprecated
-	public static Control createWebView(Composite parent, WebPage page) {
-		FXCanvas canvas = new FXCanvas(parent, SWT.NONE);
-		WebEngine webkit = UI.createWebView(canvas);
-		AtomicBoolean firstCall = new AtomicBoolean(true);
-		webkit.getLoadWorker().stateProperty().addListener((v, old, newState) -> {
-			if (firstCall.get() && newState == State.SUCCEEDED) {
-				firstCall.set(false);
-				page.onLoaded(webkit);
-			}
-		});
-		webkit.load(page.getUrl());
-		return canvas;
-	}
-
-	@Deprecated
-	private static WebEngine createWebView(FXCanvas canvas) {
-		canvas.setLayout(new FillLayout());
-		WebView view = new WebView();
-		// When the WebEngine is initialized a CookieHandler is set, which has
-		// errors reading multi value cookies, therefore set to null again
-		CookieHandler.setDefault(null);
-		Scene scene = new Scene(view);
-		canvas.setScene(scene);
-		WebEngine webkit = view.getEngine();
-		webkit.setJavaScriptEnabled(true);
-		webkit.setOnAlert(e -> {
-			Logger log = LoggerFactory.getLogger(UI.class);
-			log.error("JavaScript alert: {}", e.getData());
-		});
-		return webkit;
 	}
 
 	/**

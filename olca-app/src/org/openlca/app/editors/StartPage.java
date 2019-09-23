@@ -12,7 +12,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.rcp.html.HtmlFolder;
+import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.EclipseCommandLine;
 import org.openlca.app.util.UI;

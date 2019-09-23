@@ -14,7 +14,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.html.HtmlFolder;
+import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.model.Comment;

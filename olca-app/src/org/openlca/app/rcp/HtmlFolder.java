@@ -1,4 +1,4 @@
-package org.openlca.app.rcp.html;
+package org.openlca.app.rcp;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,7 +12,6 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.openlca.app.App;
-import org.openlca.app.rcp.RcpActivator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
