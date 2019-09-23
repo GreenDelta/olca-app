@@ -4,10 +4,6 @@ import org.openlca.app.rcp.RcpActivator;
 
 public enum HtmlView {
 
-	GMAP_HEATMAP("location_heatmap.html"),
-
-	JAVASCRIPT_EDITOR("javascript_editor.html"),
-
 	KML_EDITOR("kml_editor.html"),
 
 	KML_RESULT_VIEW("kml_result_view.html"),
@@ -18,7 +14,7 @@ public enum HtmlView {
 
 	REPORT_VIEW("report_view.html"),
 
-	START_PAGE("start_page.html"),
+	// START_PAGE("start_page.html"),
 
 	COMMENTS("comments.html");
 

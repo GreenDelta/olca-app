@@ -2,10 +2,12 @@ package org.openlca.app.util;
 
 import java.net.CookieHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.graphics.Font;
@@ -133,6 +135,27 @@ public class UI {
 			}
 		});
 		browser.setUrl(url);
+	}
+
+	/**
+	 * Bind the given function with the given name to the `window` object of the
+	 * given browser.
+	 */
+	public static void bindFunction(Browser browser, String name,
+			Function<Object[], Object> fn) {
+		if (browser == null || name == null || fn == null)
+			return;
+		BrowserFunction func = new BrowserFunction(browser, name) {
+			@Override
+			public Object function(Object[] args) {
+				return fn.apply(args);
+			}
+		};
+		browser.addDisposeListener(e -> {
+			if (!func.isDisposed()) {
+				func.dispose();
+			}
+		});
 	}
 
 	public static Shell shell() {
