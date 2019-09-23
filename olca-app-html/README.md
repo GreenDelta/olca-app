@@ -1,27 +1,22 @@
 # olca-app-html
-This project contains the HTML and JavaScript resources of the openLCA 
-application.
+This folder contains the sources of the HTML and JavaScript files that are
+packaged with openLCA.
 
-## Libraries
-Most of the libraries are managed via [npm](https://www.npmjs.com/) except of
-the following:
+## Build
+You need to have Node.js with npm installed. With this, navigate to the
+`olca-app-html` folder and install the required modules:
 
-* [Chart.js](http://www.chartjs.org/): We use a 
-  [patched version](https://github.com/msrocka/Chart.js). 
+```bash
+cd olca-app-html
+npm install
+```
 
-* For stacked bar charts we use 
-  [Chart.StackedBar.js](https://github.com/Regaddi/Chart.StackedBar.js), 
-  which is a plugin for Chart.js.
+This also installs a local version of `webpack` with which you can build the
+...
 
-# Build
-The build of the HTML package is managed by [gulp.js](http://gulpjs.com/) via
-the following tasks (see [gulpfile.js](./gulpfile.js)):
-
-* `gulp`: the default tasks creates the HTML pages and copies these pages together
-  with the required libraries to the 'build' folder
-* `gulp clean`: clears the 'build' folder
-* `gulp zip`: creates an archive under .dist/base_html.zip wich contains all HTML 
-  pages and libraries that is used in the openLCA application. 
+```
+npx webpack
+```
 
 After the build you have to copy the .dist/base_html.zip package manually to the
 openLCA application directory olca-app/html/.

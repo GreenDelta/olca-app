@@ -19,15 +19,6 @@ module.exports = {
                 use: 'ts-loader',
                 exclude: /node_modules/,
             },
-            // All output '.js' files will have any sourcemaps re-processed 
-            // by 'source-map-loader'.
-            /*
-            {
-                enforce: "pre",
-                test: /\.js$/,
-                loader: "source-map-loader"
-            }
-            */
         ]
     },
     resolve: {
@@ -43,8 +34,8 @@ module.exports = {
             { from: 'src/**/*.css', to: dist, flatten: true },
             { from: 'images', to: dist + "/images" },
             { from: 'fonts', to: dist + "/fonts" },
-            { from: 'node_modules/react/umd/react.development.js', to: dist + '/lib/react.js', type: 'file' },
-            { from: 'node_modules/react-dom/umd/react-dom.development.js', to: dist + '/lib/react-dom.js', type: 'file' },
+            { from: 'node_modules/react/umd/react.production.min.js', to: dist + '/lib/react.js', type: 'file' },
+            { from: 'node_modules/react-dom/umd/react-dom.production.min.js', to: dist + '/lib/react-dom.js', type: 'file' },
             { from: 'node_modules/chart.js/dist/Chart.min.js', to: dist + '/lib/Chart.min.js', type: 'file' },
             { from: 'node_modules/chart.js/dist/Chart.min.css', to: dist + '/lib/Chart.min.css', type: 'file' },
             { from: 'node_modules/milligram/dist/milligram.min.css', to: dist + '/lib/milligram.min.css', type: 'file' },
@@ -75,7 +66,9 @@ module.exports = {
         "chart.js": "Chart",
         "codemirror": "CodeMirror",
         
-        // when OpenLayers would come with a 
+        // when OpenLayers would come with a distribution library
+        // in the npm package, we could map these prefixes... and
+        // the build would be probably faster
         // "ol": "ol",
         // "ol/format": "ol.format",
         // "ol/layer": "ol.layer",
