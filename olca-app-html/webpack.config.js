@@ -1,4 +1,5 @@
 const CopyPlugin = require('copy-webpack-plugin');
+const ZipPlugin = require('zip-webpack-plugin');
 const path = require('path');
 const dist = path.resolve(__dirname, 'dist');
 
@@ -51,6 +52,11 @@ module.exports = {
             { from: 'node_modules/heatmap.js/build/heatmap.min.js', to: dist + '/lib/heatmap.min.js', type: 'file' },
             { from: 'node_modules/heatmap.js/plugins/leaflet-heatmap/leaflet-heatmap.js', to: dist + '/lib/leaflet-heatmap.js', type: 'file' },
         ]),
+        new ZipPlugin({
+            path: path.resolve(__dirname, '../olca-app/html'),
+            filename: "base_html.zip",
+            exclude: [/\.map$/],
+        })
     ],
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.

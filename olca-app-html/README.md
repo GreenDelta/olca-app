@@ -12,11 +12,11 @@ npm install
 ```
 
 This also installs a local version of `webpack` with which you can build the
-...
+distribution package:
 
-```
+```bash
 npx webpack
 ```
 
-After the build you have to copy the .dist/base_html.zip package manually to the
-openLCA application directory olca-app/html/.
+The output is generated in the `dist` folder of this directory and packaged
+into a zip file that is copied to the `../olca-app/html` folder.

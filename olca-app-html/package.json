@@ -17,7 +17,8 @@
     "ts-loader": "^6.1.0",
     "typescript": "^3.6.3",
     "webpack": "^4.40.1",
-    "webpack-cli": "^3.3.8"
+    "webpack-cli": "^3.3.8",
+    "zip-webpack-plugin": "^3.0.0"
   },
   "dependencies": {
     "@types/ol": "^5.3.5",
