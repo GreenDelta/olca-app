@@ -1,7 +1,3 @@
-/bower_components/
 /node_modules/
-/build/
 /dist/
-/nbproject/
-/.project
-/.gitignore
+/images/background_start_page.jpg

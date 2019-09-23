@@ -2,86 +2,86 @@
 <html>
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-  <title>Location heatmap</title>
-  <link rel="stylesheet" href="./libs/leaflet.css" />
-  <style>
-    html,
-    body,
-    #map {
-      width: 100%;
-      height: 100%;
-      margin: 0px;
-      padding: 0px;
-      height: 100%;
-    }
-  </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>Location heatmap</title>
+    <link rel="stylesheet" href="./lib/leaflet.css" />
+    <style>
+        html,
+        body,
+        #map {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+        }
+    </style>
 </head>
 
 <body>
-  <div id="map"></div>
-  <script src="./libs/leaflet.js"></script>
-  <script src="./libs/heatmap.min.js"></script>
-  <script src="./libs/leaflet-heatmap.js"></script>
-  <script>
+    <div id="map"></div>
+    <script src="./lib/leaflet.js"></script>
+    <script src="./lib/heatmap.min.js"></script>
+    <script src="./lib/leaflet-heatmap.js"></script>
+    <script>
 
-    var baseLayer = L.tileLayer(
-      'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 18
-      });
+        var baseLayer = L.tileLayer(
+            'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 18
+        });
 
-    // heatmap config see https://www.patrick-wied.at/static/heatmapjs/example-heatmap-leaflet.html
-    var cfg = {
-      // radius should be small ONLY if scaleRadius is true (or small radius is intended)
-      // if scaleRadius is false it will be the constant radius used in pixels
-      "radius": 5,
-      "maxOpacity": 0.8,
-      "minOpacity": 0.2,
-      // scales the radius based on map zoom
-      "scaleRadius": true,
-      // if set to false the heatmap uses the global maximum for colorization
-      // if activated: uses the data maximum within the current map boundaries
-      //   (there will always be a red spot with useLocalExtremas true)
-      // "useLocalExtrema": true,
-      // which field name in your data represents the latitude - default "lat"
-      latField: 'latitude',
-      // which field name in your data represents the longitude - default "lng"
-      lngField: 'longitude',
-      // which field name in your data represents the data value - default "value"
-      valueField: 'weight',
-      gradient: {
-        // enter n keys between 0 and 1 here
-        // for gradient color customization
-        '.01': 'blue',
-        '.95': 'red'
-      }
-    };
-    var heatmapLayer = new HeatmapOverlay(cfg);
-    var map = new L.Map('map', {
-      center: new L.LatLng(20, 0),
-      zoom: 2.5,
-      layers: [baseLayer, heatmapLayer]
-    });
+        // heatmap config see https://www.patrick-wied.at/static/heatmapjs/example-heatmap-leaflet.html
+        var cfg = {
+            // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+            // if scaleRadius is false it will be the constant radius used in pixels
+            "radius": 5,
+            "maxOpacity": 0.8,
+            "minOpacity": 0.2,
+            // scales the radius based on map zoom
+            "scaleRadius": true,
+            // if set to false the heatmap uses the global maximum for colorization
+            // if activated: uses the data maximum within the current map boundaries
+            //   (there will always be a red spot with useLocalExtremas true)
+            // "useLocalExtrema": true,
+            // which field name in your data represents the latitude - default "lat"
+            latField: 'latitude',
+            // which field name in your data represents the longitude - default "lng"
+            lngField: 'longitude',
+            // which field name in your data represents the data value - default "value"
+            valueField: 'weight',
+            gradient: {
+                // enter n keys between 0 and 1 here
+                // for gradient color customization
+                '.01': 'blue',
+                '.95': 'red'
+            }
+        };
+        var heatmapLayer = new HeatmapOverlay(cfg);
+        var map = new L.Map('map', {
+            center: new L.LatLng(20, 0),
+            zoom: 2.5,
+            layers: [baseLayer, heatmapLayer]
+        });
 
-    function setData(data) {
-      if(!data) {
-        return;
-      }
-      var max = 0.0;
-      for (var i = 0; i < data.length; i++) {
-        if (data[i].weight > max) {
-          max = data[i].weight;
+        function setData(data) {
+            if (!data) {
+                return;
+            }
+            var max = 0.0;
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].weight > max) {
+                    max = data[i].weight;
+                }
+            }
+            heatmapLayer.setData({
+                max: max,
+                data: data
+            });
         }
-      }
-      heatmapLayer.setData({
-        max: max,
-        data: data
-      });
-    }
 
-  </script>
+    </script>
 </body>
 
 </html>

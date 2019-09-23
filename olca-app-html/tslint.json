@@ -1,0 +1,17 @@
+{
+    "extends": "tslint:recommended",
+    "rules": {
+        "member-access": false,
+        "interface-over-type-literal": false,
+        "max-classes-per-file": false,
+        "ordered-imports": false,
+        "object-literal-sort-keys": false,
+        "interface-name": false,
+        "one-variable-per-declaration": false,
+        "no-shadowed-variable": false,
+        "no-string-literal": false,
+        "align": false,
+        "variable-name": false,
+        "no-unused-expression": false
+    }
+}

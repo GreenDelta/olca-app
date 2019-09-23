@@ -1,104 +1,119 @@
-<html> 
-	<head>
-		<style>
-			body {
-				font-family: sans-serif;
-				color: #54565b;
-				line-height: 1.42857143;
-				font-size: 14px;
-				margin: 0;
-			}
-			small {
-				font-size: 85%;
-			}
-			.comment-entry {
-				padding: 20px;
-			}
-			.comment-entry:not(.released):not(.approved) {
-				background-color: rgb(245, 245, 245);
-			}
-			.comment-entry:not(.approved) {
-				background-color: rgb(255, 255, 221);
-			}
-			.comment-entry.reply {
-				margin-left: 42px;
-			}
-			.comment-text {
-				padding-left: 10px;
-			}
-			.user-info {
-				font-weight: bold;
-			}
-			.username, .dataset-link {
-				font-size: 90%;
-			}
-			.dataset-link {
-				color: #337ab7;
-				text-decoration: none;
-			}			
-			.dataset-field {
-				font-weight: bold;
-			}
-			hr {
-				margin: 0;
-				border: 0;
-				border-top: 1px solid #eeeeee;
-			}
-		</style>
-	</head>
-	<body>
-		<div id="comment-entry-template" class="comment-entry" style="display:none">
-			<span class="user-info">
-				<span class="username"></span>
-			</span>
-			<span>
-				<small>
-					wrote on <span class="date"></span><span class="dataset-info"></span>
-				</small>
-			</span>
-			<div>
-				<img class="dataset-icon">
-				<a class="dataset-link" href="#"></a>
-			</div>
-			<div class="comment-text comment-layer">#{text}</div>
-		</div>
-		<script src="libs/jquery.min.js"></script>
-		<script>
-			function add(comment, inDialog, fullPath) {
-				if ($('.comment-entry').length > 1) {
-					$('body').append('<hr>');
-				}
-				var template = $('#comment-entry-template').clone();
-				template.attr('id', comment.id);
-				$('.username', template).html(comment.user);
-				$('.date', template).html(comment.date);
-				$('.comment-text', template).html(comment.text);				
-				if (!inDialog) {
-					var label = window.java.getLabel(comment.path);
-					if (label) {
-						$('.dataset-info', template).html(" on '" + label + "'");
-					}
-					if (fullPath) {
-						$('.dataset-link', template).html(fullPath);
-						$('.dataset-icon', template).attr('src', 'images/' + comment.type.toLowerCase() + '.png');
-					}
-				}
-				if (comment.released) {
-					template.addClass('released');
-				}
-				if (comment.approved) {
-					template.addClass('approved');
-				}
-				if (comment.replyTo) {
-					template.addClass('reply');
-				}
-				template.removeAttr('style');
-				$('body').append(template);
-				$('.dataset-link', template).on('click', function(event) {
-					event.preventDefault();
-					window.java.openModel(comment.type, comment.refId);
-				});
-			}
-		</script>
-	</body>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: sans-serif;
+            color: #54565b;
+            line-height: 1.42857143;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        small {
+            font-size: 85%;
+        }
+
+        .comment-entry {
+            padding: 20px;
+        }
+
+        .comment-entry:not(.released):not(.approved) {
+            background-color: rgb(245, 245, 245);
+        }
+
+        .comment-entry:not(.approved) {
+            background-color: rgb(255, 255, 221);
+        }
+
+        .comment-entry.reply {
+            margin-left: 42px;
+        }
+
+        .comment-text {
+            padding-left: 10px;
+        }
+
+        .user-info {
+            font-weight: bold;
+        }
+
+        .username,
+        .dataset-link {
+            font-size: 90%;
+        }
+
+        .dataset-link {
+            color: #337ab7;
+            text-decoration: none;
+        }
+
+        .dataset-field {
+            font-weight: bold;
+        }
+
+        hr {
+            margin: 0;
+            border: 0;
+            border-top: 1px solid #eeeeee;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="comment-entry-template" class="comment-entry" style="display:none">
+        <span class="user-info">
+            <span class="username"></span>
+        </span>
+        <span>
+            <small>
+                wrote on <span class="date"></span><span class="dataset-info"></span>
+            </small>
+        </span>
+        <div>
+            <img class="dataset-icon">
+            <a class="dataset-link" href="#"></a>
+        </div>
+        <div class="comment-text comment-layer">#{text}</div>
+    </div>
+    <script src="lib/jquery.min.js"></script>
+    <script>
+        function add(comment, inDialog, fullPath) {
+            if ($('.comment-entry').length > 1) {
+                $('body').append('<hr>');
+            }
+            var template = $('#comment-entry-template').clone();
+            template.attr('id', comment.id);
+            $('.username', template).html(comment.user);
+            $('.date', template).html(comment.date);
+            $('.comment-text', template).html(comment.text);
+            if (!inDialog) {
+                var label = window.getLabel(comment.path);
+                if (label) {
+                    $('.dataset-info', template).html(" on '" + label + "'");
+                }
+                if (fullPath) {
+                    $('.dataset-link', template).html(fullPath);
+                    $('.dataset-icon', template).attr('src', 'images/' + comment.type.toLowerCase() + '.png');
+                }
+            }
+            if (comment.released) {
+                template.addClass('released');
+            }
+            if (comment.approved) {
+                template.addClass('approved');
+            }
+            if (comment.replyTo) {
+                template.addClass('reply');
+            }
+            template.removeAttr('style');
+            $('body').append(template);
+            $('.dataset-link', template).on('click', function (event) {
+                event.preventDefault();
+                window.openModel(comment.type, comment.refId);
+            });
+        }
+    </script>
+</body>
+
 </html>

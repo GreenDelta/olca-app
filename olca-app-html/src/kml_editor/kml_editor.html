@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="lib/normalize.css">
+    <link rel="stylesheet" href="lib/milligram.min.css">
+    <link rel="stylesheet" href="lib/codemirror.css">
+    <style>
+        button {
+            margin: 5px;
+        }
+
+        .button-blue {
+            background-color: #0d47a1;
+            border-color: #0d47a1;
+        }
+
+        .button-blue.button-clear,
+        .button-blue.button-outline {
+            background-color: transparent;
+            color: #0d47a1;
+        }
+
+        .CodeMirror {
+            border: 1px solid #eee;
+            font-size: 1.3em;
+        }
+
+        .CodeMirror-scroll {
+            overflow-y: hidden;
+            overflow-x: auto;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="react-root"></div>
+    <script src="lib/codemirror.js"></script>
+    <script src="lib/xml.js"></script>
+    <script src="lib/react.js"></script>
+    <script src="lib/react-dom.js"></script>
+    <script src="kml_editor.js"></script>
+</body>
+
+</html>
