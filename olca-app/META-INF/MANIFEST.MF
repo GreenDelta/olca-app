@@ -103,7 +103,6 @@ Bundle-ClassPath: .,
  libs/olca-ipc-1.9.0.jar,
  libs/olca-jsonld-1.9.0.jar,
  libs/olca-simapro-csv-1.9.0.jar,
- libs/olca-updates-1.9.0.jar,
  libs/slf4j-api-1.7.25.jar,
  libs/slf4j-log4j12-1.7.25.jar,
  libs/super-csv-2.4.0.jar

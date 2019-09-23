@@ -13,22 +13,17 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.devtools.python.Python;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.derby.DerbyDatabase;
+import org.openlca.core.database.upgrades.Upgrades;
+import org.openlca.core.database.upgrades.VersionState;
 import org.openlca.io.olca.DatabaseImport;
-import org.openlca.updates.Update;
-import org.openlca.updates.UpdateHelper;
-import org.openlca.updates.UpdateMetaInfo;
-import org.openlca.updates.VersionState;
-import org.openlca.updates.legacy.Upgrades;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
@@ -153,26 +148,10 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			switch (sourceState) {
 			case NEEDS_UPGRADE:
 				monitor.subTask(M.UpdateDatabase);
-				Upgrades.runUpgrades(sourceDb);
-			case NEEDS_UPDATE:
-				monitor.subTask(M.UpdateDatabase);
-				UpdateHelper updates = new UpdateHelper(sourceDb, App.getCalculationContext(), Python.getDir());
-				for (UpdateMetaInfo update : updates.getNewAndRequired()) {
-					execute(update, updates);
-				}
+				Upgrades.on(sourceDb);
 			default:
 			}
 		}
-
-		private void execute(UpdateMetaInfo metaInfo, UpdateHelper updates) {
-			for (String depRefId : metaInfo.dependencies) {
-				Update dep = updates.getForRefId(depRefId);
-				execute(dep.metaInfo, updates);
-			}
-			Update update = updates.getForRefId(metaInfo.refId);
-			updates.execute(update);
-		}
-
 	}
 
 	/**
@@ -194,12 +173,11 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		}
 
 		public VersionState getSourceState() {
-			return VersionState.checkVersion(source);
+			return VersionState.get(source);
 		}
 
 		@Override
-		public void run(IProgressMonitor monitor) throws
-				InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 			log.trace("connect to source database");
 			try {
 				if (config.mode == config.FILE_MODE)

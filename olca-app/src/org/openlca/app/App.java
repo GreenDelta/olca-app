@@ -12,7 +12,6 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.openlca.app.cloud.ui.preferences.CloudPreference;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
@@ -29,7 +28,6 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.eigen.NativeLibrary;
 import org.openlca.julia.Julia;
 import org.openlca.julia.JuliaSolver;
-import org.openlca.updates.script.CalculationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,11 +72,6 @@ public class App {
 		}
 		solver = new DenseSolver();
 		return solver;
-	}
-
-	public static CalculationContext getCalculationContext() {
-		return new CalculationContext(Cache.getMatrixCache(),
-				Cache.getEntityCache(), getSolver());
 	}
 
 	/**

@@ -18,7 +18,6 @@ import org.openlca.app.navigation.actions.db.DbExportAction;
 import org.openlca.app.navigation.actions.db.DbImportAction;
 import org.openlca.app.navigation.actions.db.DbPropertiesAction;
 import org.openlca.app.navigation.actions.db.DbRenameAction;
-import org.openlca.app.navigation.actions.db.DbUpdateManagerAction;
 import org.openlca.app.util.Actions;
 
 class DatabaseMenu implements IMenuListener {
@@ -54,7 +53,6 @@ class DatabaseMenu implements IMenuListener {
 				checkLinksAction,
 				new DbPropertiesAction(),
 				new DbCompressAction(),
-				new DbUpdateManagerAction(),
 		};
 		for (IAction a : actions) {
 			menu.add(a);

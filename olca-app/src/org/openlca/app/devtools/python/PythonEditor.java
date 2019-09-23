@@ -39,7 +39,7 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 	@Override
 	public void evalContent() {
 		String script = page.getScript();
-		App.run("Eval script", () -> Python.eval(script));
+		App.run("Eval script", () -> Python.exec(script));
 	}
 
 	private class Page extends FormPage {

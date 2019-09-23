@@ -7,14 +7,11 @@ import java.io.InputStream;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.openlca.app.App;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
-import org.openlca.app.devtools.python.Python;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerConfig;
 import org.openlca.app.rcp.html.HtmlFolder;
@@ -43,8 +40,8 @@ public class RcpActivator extends AbstractUIPlugin {
 	 * Returns the file found at the specified path as an input stream
 	 * 
 	 * @param path
-	 *            The path to the file to load an input stream for (relative to the
-	 *            plugin)
+	 *            The path to the file to load an input stream for (relative to
+	 *            the plugin)
 	 * @return The file found at the specified path as an input stream
 	 */
 	public static InputStream getStream(final String path) {
@@ -69,10 +66,6 @@ public class RcpActivator extends AbstractUIPlugin {
 		HtmlFolder.initialize(RcpActivator.getDefault().getBundle(), "html/base_html.zip");
 		SslCertificates.load();
 		Preferences.init();
-		Job.create("init. Python", m -> {
-			Python.getDir();
-			return Status.OK_STATUS;
-		}).schedule();
 		App.getSolver();
 	}
 

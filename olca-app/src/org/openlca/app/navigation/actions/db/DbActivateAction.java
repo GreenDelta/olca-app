@@ -14,7 +14,6 @@ import org.openlca.app.cloud.Announcements;
 import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.db.UpdateManager;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -23,8 +22,8 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
-import org.openlca.updates.VersionState;
-import org.openlca.updates.legacy.Upgrades;
+import org.openlca.core.database.upgrades.Upgrades;
+import org.openlca.core.database.upgrades.VersionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +97,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 				log.trace("Activate selected database");
 				IDatabase db = Database.activate(config);
 				log.trace("Get version state");
-				versionState = VersionState.checkVersion(db);
+				versionState = VersionState.get(db);
 				monitor.done();
 			} catch (Exception e) {
 				log.error("Failed to activate database", e);
@@ -134,13 +133,6 @@ public class DbActivateAction extends Action implements INavigationAction {
 				break;
 			case NEEDS_UPGRADE:
 				askRunUpgrades();
-				break;
-			case NEEDS_UPDATE:
-				if (UpdateManager.openNewAndRequired()) {
-					refresh();
-				} else {
-					closeDatabase();
-				}
 				break;
 			case UP_TO_DATE:
 				refresh();
@@ -190,7 +182,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 		private void runUpgrades(IDatabase db, AtomicBoolean failed) {
 			try {
 				Database.getIndexUpdater().disable();
-				Upgrades.runUpgrades(db);
+				Upgrades.on(db);
 				db.getEntityFactory().getCache().evictAll();
 				Database.getIndexUpdater().enable();
 			} catch (Exception e) {
