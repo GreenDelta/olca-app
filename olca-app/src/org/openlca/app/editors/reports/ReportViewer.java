@@ -16,7 +16,7 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.html.HtmlFolder;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,11 +75,10 @@ public class ReportViewer extends SimpleFormEditor {
 			try {
 				Browser b = new Browser(comp, SWT.NONE);
 				b.setJavascriptEnabled(true);
-				UI.onLoaded(b, HtmlView.REPORT_VIEW.getUrl(), () -> {
+				UI.onLoaded(b, HtmlFolder.getUrl("report.html"), () -> {
 					Gson gson = new Gson();
 					String json = gson.toJson(report);
-					String messages = M.asJson();
-					String command = "setData(" + json + ", " + messages + ")";
+					String command = "setData(" + json + ")";
 					b.execute(command);
 				});
 			} catch (Exception e) {

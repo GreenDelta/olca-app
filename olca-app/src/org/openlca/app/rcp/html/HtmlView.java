@@ -8,14 +8,6 @@ public enum HtmlView {
 
 	KML_RESULT_VIEW("kml_result_view.html"),
 
-	PRODUCT_SYSTEM_STATISTICS("product_system_statistics.html"),
-
-	PYTHON_EDITOR("python_editor.html"),
-
-	REPORT_VIEW("report_view.html"),
-
-	// START_PAGE("start_page.html"),
-
 	COMMENTS("comments.html");
 
 	private final String fileName;

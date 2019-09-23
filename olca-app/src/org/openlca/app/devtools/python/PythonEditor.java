@@ -15,7 +15,7 @@ import org.openlca.app.devtools.IScriptEditor;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
-import org.openlca.app.rcp.html.HtmlView;
+import org.openlca.app.rcp.html.HtmlFolder;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 			try {
 				browser = new Browser(body, SWT.NONE);
 				browser.setJavascriptEnabled(true);
-				browser.setUrl(HtmlView.PYTHON_EDITOR.getUrl());
+				browser.setUrl(HtmlFolder.getUrl("python.html"));
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(getClass());
 				log.error("failed to create browser in Python editor", e);

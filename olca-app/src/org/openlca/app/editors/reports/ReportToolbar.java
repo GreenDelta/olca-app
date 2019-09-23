@@ -17,7 +17,6 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.html.HtmlFolder;
-import org.openlca.app.rcp.html.HtmlView;
 import org.openlca.app.rcp.images.Icon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,8 +78,7 @@ public class ReportToolbar extends EditorActionBarContributor {
 				String call = "$(window).load( function() { setData(" + json
 						+ ", " + messages + ")});";
 				File template = HtmlFolder.getFile(RcpActivator.getDefault()
-						.getBundle(), HtmlView.REPORT_VIEW
-						.getFileName());
+						.getBundle(), "report.html");
 				List<String> templateLines = Files.readAllLines(
 						template.toPath(), Charset.forName("utf-8"));
 				List<String> reportLines = new ArrayList<>();
