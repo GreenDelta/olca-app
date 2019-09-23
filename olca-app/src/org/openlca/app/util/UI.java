@@ -38,30 +38,9 @@ import org.openlca.app.rcp.images.Images;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.scene.web.WebEngine;
-import netscape.javascript.JSObject;
-
 public class UI {
 
 	private UI() {
-	}
-
-	/**
-	 * @deprecated We will remove the JavaFX webview from future versions. When
-	 *             possible build the user interfaces in plain SWT+JFace. When
-	 *             you really need a browser view, use the standard SWT browser
-	 *             but make sure that it runs on different platforms or provide
-	 *             an alternative view when it is not running.
-	 */
-	@Deprecated
-	public static void bindVar(WebEngine webkit, String name, Object var) {
-		try {
-			JSObject window = (JSObject) webkit.executeScript("window");
-			window.setMember(name, var);
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(UI.class);
-			log.error("failed to bind {} as {}", var, name, e);
-		}
 	}
 
 	/**
