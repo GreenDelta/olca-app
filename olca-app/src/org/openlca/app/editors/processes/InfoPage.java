@@ -2,21 +2,11 @@ package org.openlca.app.editors.processes;
 
 import java.util.Objects;
 
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
@@ -28,10 +18,7 @@ import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.editors.processes.data_quality.DataQualityShell;
-import org.openlca.app.editors.processes.kml.EditorHandler;
 import org.openlca.app.editors.processes.kml.KmlUtil;
-import org.openlca.app.editors.processes.kml.MapEditor;
-import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Controls;
@@ -39,20 +26,16 @@ import org.openlca.app.util.Error;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LocationViewer;
-import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.util.Geometries;
-import org.openlca.util.KeyGen;
 
 class InfoPage extends ModelPage<Process> {
 
 	private FormToolkit toolkit;
 	private ImageHyperlink kmlLink;
 	private ScrolledForm form;
-	private LocationViewer locationViewer;
 
 	InfoPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage", M.GeneralInformation);
@@ -180,184 +163,45 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	private void createGeographySection(Composite body) {
-		Composite composite = UI.formSection(body, toolkit, M.Geography, 3);
-		toolkit.createLabel(composite, M.Location);
-		locationViewer = new LocationViewer(composite);
-		locationViewer.setNullable(true);
-		locationViewer.setInput(Database.get());
-		getBinding().onModel(() -> getModel(), "location", locationViewer);
-		locationViewer.addSelectionChangedListener((s) -> kmlLink.setText(getKmlDisplayText()));
-		new CommentControl(composite, getToolkit(), "location", getComments());
-		createKmlSection(composite);
-		multiText(composite, M.Description, "documentation.geography", 40);
+		Composite comp = UI.formSection(body, toolkit, M.Geography, 3);
+		toolkit.createLabel(comp, M.Location);
+		LocationViewer combo = new LocationViewer(comp);
+		combo.setNullable(true);
+		combo.setInput(Database.get());
+		getBinding().onModel(() -> getModel(), "location", combo);
+		combo.addSelectionChangedListener((s) -> {
+			kmlLink.setText(kmlLabel());
+			kmlLink.getParent().pack();
+		});
+		new CommentControl(comp, getToolkit(), "location", getComments());
+		createKmlSection(comp);
+		multiText(comp, M.Description, "documentation.geography", 40);
 	}
 
 	private void createKmlSection(Composite parent) {
 		UI.formLabel(parent, "KML");
-		Composite composite = toolkit.createComposite(parent);
-		UI.gridData(composite, true, true);
-		GridLayout layout = UI.gridLayout(composite, 2);
+		Composite comp = toolkit.createComposite(parent);
+		UI.gridData(comp, true, true);
+		GridLayout layout = UI.gridLayout(comp, 2);
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
-		kmlLink = toolkit.createImageHyperlink(composite, SWT.TOP);
-		kmlLink.addHyperlinkListener(new MapEditorDispatch());
+		kmlLink = toolkit.createImageHyperlink(comp, SWT.TOP);
+		Controls.onClick(kmlLink, e -> {
+			Process p = getModel();
+			if (p.location != null) {
+				App.openEditor(p.location);
+			}
+		});
 		UI.gridData(kmlLink, true, false).horizontalSpan = 2;
-		kmlLink.setText(getKmlDisplayText());
+		kmlLink.setText(kmlLabel());
 		UI.filler(parent);
 	}
 
-	private String getKmlDisplayText() {
-		Process process = getModel();
-		if (process.location != null)
-			if (process.location.kmz != null)
-				return KmlUtil.getDisplayText(process.location.kmz);
-		return "none";
-	}
-
-	private void openMap(EditorHandler handler) {
-		String name = getName();
-		String kml = getKml();
-		if (kml != null)
-			// prepare the KML for the map so that no syntax errors are thrown
-			kml = kml.trim().replace("\n", "").replace("\r", "");
-		MapEditor.open(name, kml, handler);
-	}
-
-	private String getKml() {
-		Process process = getModel();
-		if (process.location != null)
-			if (process.location.kmz != null)
-				return KmlUtil.toKml(process.location.kmz);
-		return null;
-	}
-
-	private String getName() {
-		if (getModel().location == null)
-			return "";
-		return getModel().location.name;
-	}
-
-	private class MapEditorDispatch extends HyperlinkAdapter implements
-			SelectionListener, EditorHandler {
-
-		private LocationDao locationDao = new LocationDao(Database.get());
-
-		public void widgetDefaultSelected(SelectionEvent e) {
-			openMap(this);
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			openMap(this);
-		}
-
-		@Override
-		public void linkActivated(HyperlinkEvent e) {
-			openMap(this);
-		}
-
-		@Override
-		public boolean contentSaved(String kml) {
-			Location location = createLocation(kml);
-			if (location == null) // user aborted
-				return false;
-			locationViewer.setInput(Database.get());
-			locationViewer.select(location);
-			kmlLink.setText(getKmlDisplayText());
-			Navigator.refresh();
-			return true;
-		}
-
-		private Location createLocation(String kml) {
-			Location location = new Location();
-			String[] nameAndCode = promptForNameAndCode();
-			if (nameAndCode == null) // user aborted dialog
-				return null;
-			location.name = nameAndCode[0];
-			location.code = nameAndCode[1];
-			location.refId = KeyGen.get(nameAndCode[1]);
-			if (kml != null)
-				location.kmz = Geometries.kmlToKmz(kml);
-			else
-				location.kmz = null;
-			return locationDao.insert(location);
-		}
-
-		@Override
-		public boolean hasModel() {
-			return getModel().location != null;
-		}
-
-		@Override
-		public void openModel() {
-			if (!hasModel())
-				return;
-			App.openEditor(getModel().location);
-		}
-
-		private String[] promptForNameAndCode() {
-			NameAndCodeDialog dialog = new NameAndCodeDialog();
-			if (dialog.open() == Dialog.CANCEL)
-				return null;
-			return new String[] { dialog.name, dialog.code };
-		}
-
-		private class NameAndCodeDialog extends Dialog {
-
-			private String name;
-			private String code;
-
-			private NameAndCodeDialog() {
-				super(UI.shell());
-			}
-
-			@Override
-			protected Control createDialogArea(Composite parent) {
-				Composite body = new Composite(parent, SWT.NONE);
-				UI.gridLayout(body, 1);
-				UI.gridData(body, true, true);
-				UI.formLabel(body,
-						M.EnterLocationNameAndCode);
-				Composite container = UI.formComposite(body);
-				UI.gridData(container, true, true);
-				final Text nameText = UI.formText(container, M.Name);
-				nameText.addModifyListener(new ModifyListener() {
-
-					@Override
-					public void modifyText(ModifyEvent e) {
-						name = nameText.getText();
-						updateButtons();
-					}
-				});
-				final Text codeText = UI.formText(container, M.Code);
-				codeText.addModifyListener(new ModifyListener() {
-
-					@Override
-					public void modifyText(ModifyEvent e) {
-						code = codeText.getText();
-						updateButtons();
-					}
-				});
-				return body;
-			}
-
-			private void updateButtons() {
-				getButton(IDialogConstants.OK_ID).setEnabled(isPageComplete());
-			}
-
-			private boolean isPageComplete() {
-				return name != null && !name.isEmpty();
-			}
-
-			@Override
-			protected Control createButtonBar(Composite parent) {
-				Control buttonBar = super.createButtonBar(parent);
-				updateButtons();
-				return buttonBar;
-			}
-
-		}
-
+	private String kmlLabel() {
+		Location loc = getModel().location;
+		if (loc == null || loc.kmz == null)
+			return "none";
+		return KmlUtil.getDisplayText(loc.kmz);
 	}
 
 }

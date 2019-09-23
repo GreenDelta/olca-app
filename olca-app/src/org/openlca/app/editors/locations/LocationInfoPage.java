@@ -1,10 +1,8 @@
 package org.openlca.app.editors.locations;
 
-import org.eclipse.jface.action.Action;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -13,28 +11,21 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.editors.processes.kml.KmlPrettifyFunction;
 import org.openlca.app.editors.processes.kml.KmlUtil;
-import org.openlca.app.rcp.html.HtmlView;
-import org.openlca.app.rcp.html.WebPage;
-import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Actions;
-import org.openlca.app.util.Error;
+import org.openlca.app.rcp.html.HtmlFolder;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
+import org.openlca.util.BinUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.scene.web.WebEngine;
-
-class LocationInfoPage extends ModelPage<Location> implements WebPage {
+class LocationInfoPage extends ModelPage<Location> {
 
 	String kml;
 	boolean hasValidKml = true;
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
-	private WebEngine webkit;
 	private ScrolledForm form;
 
 	LocationInfoPage(LocationEditor editor) {
@@ -55,11 +46,11 @@ class LocationInfoPage extends ModelPage<Location> implements WebPage {
 	}
 
 	private void createAdditionalInfo(Composite body) {
-		Composite composite = UI.formSection(body, toolkit,
+		Composite comp = UI.formSection(body, toolkit,
 				M.AdditionalInformation, 3);
-		text(composite, M.Code, "code");
-		doubleText(composite, M.Longitude, "longitude");
-		doubleText(composite, M.Latitude, "latitude");
+		text(comp, M.Code, "code");
+		doubleText(comp, M.Longitude, "longitude");
+		doubleText(comp, M.Latitude, "latitude");
 	}
 
 	private void createMapEditorArea(Composite body) {
@@ -70,111 +61,43 @@ class LocationInfoPage extends ModelPage<Location> implements WebPage {
 						| ExpandableComposite.TWISTIE);
 		UI.gridData(section, true, true);
 		section.setText(M.KmlEditor);
-		Composite composite = toolkit.createComposite(section);
-		section.setClient(composite);
-		Actions.bind(section, new SaveKmlAction(), new ClearAction());
-		UI.gridLayout(composite, 1);
-		UI.gridData(composite, true, true);
-		Control canvas = UI.createWebView(composite, this);
-		UI.gridData(canvas, true, true).minimumHeight = 360;
-	}
+		Composite comp = toolkit.createComposite(section);
+		section.setClient(comp);
+		UI.gridLayout(comp, 1);
+		UI.gridData(comp, true, true);
+		Browser browser = new Browser(comp, SWT.NONE);
+		browser.setJavascriptEnabled(true);
+		UI.gridData(browser, true, true).minimumHeight = 360;
 
-	@Override
-	public String getUrl() {
-		return HtmlView.KML_EDITOR.getUrl();
-	}
-
-	@Override
-	public void onLoaded(WebEngine webkit) {
-		this.webkit = webkit;
-		UI.bindVar(webkit, "java", new JavaCallback());
-		UI.bindVar(webkit, "prettifier", new KmlPrettifyFunction(b -> {
-			hasValidKml = b;
-		}));
-		try {
-			webkit.executeScript("setEmbedded()");
-			webkit.executeScript("bridgeConsole()");
-		} catch (Exception e) {
-			log.error("failed to initialize KML editor", e);
-		}
-		updateKml();
-	}
-
-	void updateKml() {
-		kml = KmlUtil.toKml(getModel().kmz);
-		if (kml == null)
-			kml = "";
-		kml = kml.replace("\r\n", "").replace("\n", "").replace("\r", "");
-		try {
-			webkit.executeScript("setKML('" + kml + "')");
-		} catch (Exception e) {
-			log.error("failed to set KML data", e);
-		}
-	}
-
-	public class JavaCallback {
-
-		public void kmlChanged(String data) {
-			kml = data;
-			try {
-				hasValidKml = (Boolean) webkit.executeScript("isValidKml();");
-				getEditor().setDirty(true);
-			} catch (Exception e) {
-				Logger log = LoggerFactory.getLogger(getClass());
-				log.error("failed to call isValidKml", e);
+		UI.bindFunction(browser, "onSave", (args) -> {
+			String kml = null;
+			if (args != null && args.length > 0 && args[0] != null) {
+				kml = args[0].toString();
 			}
-		}
-
-		public void log(String message) {
-			log.debug(message);
-		}
-	}
-
-	private class ClearAction extends Action {
-
-		private ClearAction() {
-			super(M.ClearData);
-			setImageDescriptor(Icon.DELETE.descriptor());
-		}
-
-		@Override
-		public void run() {
 			try {
-				webkit.executeScript("onClear();");
-				getEditor().setDirty(true);
+				getModel().kmz = kml == null ? null
+						: BinUtils.zip(kml.getBytes("utf-8"));
 			} catch (Exception e) {
-				Logger log = LoggerFactory.getLogger(getClass());
-				log.error("failed to call onClear", e);
+				throw new RuntimeException(
+						"failed to convert KML to KMZ", e);
 			}
-		}
-	}
+			getEditor().setDirty(true);
+			return null;
+		});
 
-	private class SaveKmlAction extends Action {
-		private SaveKmlAction() {
-			super(M.Save);
-			setImageDescriptor(Icon.SAVE.descriptor());
-		}
-
-		@Override
-		public void run() {
+		UI.onLoaded(browser, HtmlFolder.getUrl("kml_editor.html"), () -> {
+			kml = KmlUtil.toKml(getModel().kmz);
+			if (kml == null) {
+				browser.execute("openEditor()");
+				return;
+			}
+			kml = kml.replace("\r\n", "").replace("\n", "").replace("\r", "");
 			try {
-				Object kmlObj = webkit.executeScript("getKML()");
-				if (!(kmlObj instanceof String)) {
-					log.debug("KML editor did not returned a string");
-					kml = "";
-				} else {
-					kml = (String) kmlObj;
-				}
-				new KmlPrettifyFunction(b -> hasValidKml = b).prettifyKML(kml);
-				getEditor().setDirty(true);
-				IWorkbenchPage page = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage();
-				page.saveEditor(getEditor(), true);
+				browser.execute("openEditor('" + kml + "')");
 			} catch (Exception e) {
-				Logger log = LoggerFactory.getLogger(getClass());
-				log.error("failed to save KM", e);
-				Error.showBox("Failed to save KML: " + e.getMessage());
+				log.error("failed to set KML data", e);
 			}
-		}
+		});
+
 	}
 }

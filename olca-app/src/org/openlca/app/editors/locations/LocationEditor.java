@@ -54,7 +54,6 @@ public class LocationEditor extends ModelEditor<Location> {
 			if (latitude != 0 || longitude != 0) {
 				kml = Geometries.pointToKml(latitude, longitude);
 				getModel().kmz = Geometries.kmlToKmz(kml);
-				infoPage.updateKml();
 			} else {
 				getModel().kmz = null;
 			}

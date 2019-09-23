@@ -1,10 +1,11 @@
-package org.openlca.app.editors.processes.kml;
+package org.openlca.app.editors.locations;
 
 import java.util.function.Consumer;
 
+import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.util.Strings;
 
-public class KmlPrettifyFunction {
+class KmlPrettifyFunction {
 
 	private Consumer<Boolean> validHandler;
 

@@ -4,11 +4,9 @@ import org.openlca.app.rcp.RcpActivator;
 
 public enum HtmlView {
 
-	KML_EDITOR("kml_editor.html"),
+	// KML_EDITOR("kml_editor.html"),
 
 	KML_RESULT_VIEW("kml_result_view.html");
-
-	// COMMENTS("comments.html");
 
 	private final String fileName;
 
