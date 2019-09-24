@@ -1,12 +1,9 @@
 package org.openlca.app.editors.locations;
 
-import java.util.List;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFileUtils;
-import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -15,8 +12,6 @@ import org.openlca.geo.parameter.ShapeFileFolder;
 import org.openlca.util.Geometries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
 
 public class LocationEditor extends ModelEditor<Location> {
 
@@ -40,32 +35,23 @@ public class LocationEditor extends ModelEditor<Location> {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		if (!infoPage.hasValidKml) {
-			MsgBox.info("Kml editor",
-					"The provided kml is invalid, please check your input");
-			return;
-		}
-		String kml = infoPage.kml;
-		if (!Strings.isNullOrEmpty(kml)) {
-			getModel().kmz = Geometries.kmlToKmz(kml);
-		} else {
-			double latitude = getModel().latitude;
-			double longitude = getModel().longitude;
-			if (latitude != 0 || longitude != 0) {
-				kml = Geometries.pointToKml(latitude, longitude);
+		Location loc = getModel();
+		if (loc.kmz == null) {
+			double lat = getModel().latitude;
+			double lon = getModel().longitude;
+			if (lat != 0 || lon != 0) {
+				String kml = Geometries.pointToKml(lat, lon);
 				getModel().kmz = Geometries.kmlToKmz(kml);
-			} else {
-				getModel().kmz = null;
 			}
+			// TODO: refresh KML view in infoPage
 		}
 		invalidateIntersections();
 		super.doSave(monitor);
 	}
 
 	private void invalidateIntersections() {
-		ImpactMethodDao methodDao = new ImpactMethodDao(Database.get());
-		List<ImpactMethodDescriptor> descriptors = methodDao.getDescriptors();
-		for (ImpactMethodDescriptor method : descriptors) {
+		ImpactMethodDao dao = new ImpactMethodDao(Database.get());
+		for (ImpactMethodDescriptor method : dao.getDescriptors()) {
 			ShapeFileFolder folder = new ShapeFileFolder(
 					ShapeFileUtils.getFolder(method));
 			ParameterCache cache = new ParameterCache(folder);

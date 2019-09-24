@@ -1,32 +1,35 @@
 package org.openlca.app.editors.locations;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.rcp.HtmlFolder;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.FileType;
+import org.openlca.app.util.KmlUtil;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
-import org.openlca.util.BinUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class LocationInfoPage extends ModelPage<Location> {
+import com.google.common.base.Strings;
 
-	String kml;
-	boolean hasValidKml = true;
+class LocationInfoPage extends ModelPage<Location> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
 	private ScrolledForm form;
+	private Browser browser;
 
 	LocationInfoPage(LocationEditor editor) {
 		super(editor, "LocationInfoPage", M.GeneralInformation);
@@ -54,50 +57,63 @@ class LocationInfoPage extends ModelPage<Location> {
 	}
 
 	private void createMapEditorArea(Composite body) {
-		Section section = toolkit.createSection(body,
-				ExpandableComposite.TITLE_BAR
-						| ExpandableComposite.FOCUS_TITLE
-						| ExpandableComposite.EXPANDED
-						| ExpandableComposite.TWISTIE);
+		Section section = UI.section(body, toolkit, M.KmlEditor);
 		UI.gridData(section, true, true);
-		section.setText(M.KmlEditor);
-		Composite comp = toolkit.createComposite(section);
-		section.setClient(comp);
+		Composite comp = UI.sectionClient(section, toolkit);
 		UI.gridLayout(comp, 1);
 		UI.gridData(comp, true, true);
-		Browser browser = new Browser(comp, SWT.NONE);
+		browser = new Browser(comp, SWT.NONE);
 		browser.setJavascriptEnabled(true);
 		UI.gridData(browser, true, true).minimumHeight = 360;
 
-		UI.bindFunction(browser, "onSave", (args) -> {
-			String kml = null;
-			if (args != null && args.length > 0 && args[0] != null) {
-				kml = args[0].toString();
-			}
-			try {
-				getModel().kmz = kml == null ? null
-						: BinUtils.zip(kml.getBytes("utf-8"));
-			} catch (Exception e) {
-				throw new RuntimeException(
-						"failed to convert KML to KMZ", e);
-			}
-			getEditor().setDirty(true);
-			return null;
+		UI.onLoaded(browser, HtmlFolder.getUrl("kml_editor.html"), () -> {
+			openMap(KmlUtil.toKml(getModel().kmz));
 		});
 
-		UI.onLoaded(browser, HtmlFolder.getUrl("kml_editor.html"), () -> {
-			kml = KmlUtil.toKml(getModel().kmz);
-			if (kml == null) {
-				browser.execute("openEditor()");
+		Action showMap = Actions.create(M.Map, Icon.MAP.descriptor(),
+				() -> openMap(KmlUtil.toKml(getModel().kmz)));
+		Action showText = Actions.create(M.Text, Images.descriptor(FileType.XML),
+				() -> openText(KmlUtil.toKml(getModel().kmz)));
+		Action save = Actions.onSave(this::saveKml);
+		Actions.bind(section, showMap, showText, save);
+	}
+
+	private void openMap(String kml) {
+		try {
+			if (Strings.isNullOrEmpty(kml)) {
+				browser.execute("openMap()");
 				return;
 			}
-			kml = kml.replace("\r\n", "").replace("\n", "").replace("\r", "");
-			try {
-				browser.execute("openEditor('" + kml + "')");
-			} catch (Exception e) {
-				log.error("failed to set KML data", e);
-			}
-		});
+			browser.execute("openMap('"
+					+ kml.replaceAll("\\R", " ") + "')");
+		} catch (Exception e) {
+			log.error("failed to set KML data in map", e);
+		}
+	}
 
+	private void openText(String kml) {
+		try {
+			if (Strings.isNullOrEmpty(kml)) {
+				browser.execute("openText()");
+				return;
+			}
+			browser.execute("openText('"
+					+ kml.replaceAll("\\R", " ") + "')");
+		} catch (Exception e) {
+			log.error("failed to set KML data in editor", e);
+		}
+	}
+
+	private void saveKml() {
+		try {
+			Object obj = browser.evaluate("return getKml()");
+			String kml = obj == null ? null : obj.toString();
+			// TODO: validate KML
+			byte[] kmz = KmlUtil.toKmz(kml);
+			getModel().kmz = kmz;
+			getEditor().setDirty(true);
+		} catch (Exception e) {
+			log.error("failed to get KML from browser", e);
+		}
 	}
 }

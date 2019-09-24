@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.processes.kml.KmlUtil;
+import org.openlca.app.util.KmlUtil;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.ImpactMethod;

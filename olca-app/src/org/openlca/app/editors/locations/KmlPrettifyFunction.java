@@ -2,7 +2,7 @@ package org.openlca.app.editors.locations;
 
 import java.util.function.Consumer;
 
-import org.openlca.app.editors.processes.kml.KmlUtil;
+import org.openlca.app.util.KmlUtil;
 import org.openlca.util.Strings;
 
 class KmlPrettifyFunction {

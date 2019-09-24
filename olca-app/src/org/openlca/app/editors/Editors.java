@@ -34,6 +34,7 @@ public class Editors {
 			PythonEditor.TYPE,
 			StartPage.TYPE,
 			LogFileEditor.TYPE };
+
 	private static Logger log = LoggerFactory.getLogger(Editors.class);
 
 	private Editors() {
@@ -74,11 +75,27 @@ public class Editors {
 			}
 			if (rest.size() == 0)
 				return true;
-			IEditorReference[] restArray = rest.toArray(new IEditorReference[rest.size()]);
+			IEditorReference[] restArray = rest.toArray(
+					new IEditorReference[rest.size()]);
 			return getActivePage().closeEditors(restArray, true);
 		} catch (Exception e) {
 			log.error("Failed to close editors", e);
 			return false;
+		}
+	}
+
+	/**
+	 * Calls the save action on the currently opened editor. You should only call
+	 * this method when you are sure that there is an active editor opened (e.g.
+	 * from a page of this editor).
+	 */
+	public static void callSaveActive() {
+		try {
+			IWorkbenchPage page = getActivePage();
+			IEditorPart editor = page.getActiveEditor();
+			page.saveEditor(editor, true /* confirm */);
+		} catch (Exception e) {
+			log.error("failed to call `save` on the active editor", e);
 		}
 	}
 
@@ -114,7 +131,8 @@ public class Editors {
 	}
 
 	public static IWorkbenchPage getActivePage() {
-		return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		return PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage();
 	}
 
 	private static class OpenInUIJob extends UIJob {

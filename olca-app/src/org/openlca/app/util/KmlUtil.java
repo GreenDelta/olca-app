@@ -1,4 +1,4 @@
-package org.openlca.app.editors.processes.kml;
+package org.openlca.app.util;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -18,6 +18,7 @@ import org.jdom.output.XMLOutputter;
 import org.openlca.app.M;
 import org.openlca.geo.kml.FeatureType;
 import org.openlca.util.BinUtils;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,18 @@ public class KmlUtil {
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(KmlUtil.class);
 			log.error("failed to unzip KMZ", e);
+			return null;
+		}
+	}
+
+	public static byte[] toKmz(String kml) {
+		if (Strings.nullOrEmpty(kml))
+			return null;
+		try {
+			return BinUtils.zip(kml.getBytes("utf-8"));
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(KmlUtil.class);
+			log.error("failed to convert kml to kmz", e);
 			return null;
 		}
 	}
