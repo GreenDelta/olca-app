@@ -40,24 +40,18 @@ export class MapComponent extends Component<Props, State> {
     render() {
         return (
             <>
-                <div className="row">
-                    <div className="column column-10">
-                        <label style={{ marginTop: "0.5rem" }}>Geometry type</label>
-                    </div>
-                    <div>
-                        <select id="type" value={this.state.featureType}
-                            style={{ width: 150 }}
-                            onChange={(e) => this.setType(
-                                e.target.value as GeometryType)}>
-                            <option value="Point">Point</option>
-                            <option value="LineString">Line string</option>
-                            <option value="Polygon">Polygon</option>
-                            <option value="MultiPolygon">Multi-polygon</option>
-                        </select>
-                    </div>
+                <div>
+                    <select id="type" value={this.state.featureType}
+                        style={{ width: 150, margin: "10px 0px", fontSize: "1em" }}
+                        onChange={(e) => this.setType(
+                            e.target.value as GeometryType)}>
+                        <option value="Point">Point</option>
+                        <option value="LineString">Line string</option>
+                        <option value="Polygon">Polygon</option>
+                        <option value="MultiPolygon">Multi-polygon</option>
+                    </select>
                 </div>
-                <div style={{ width: "100%" }} id="map">
-                </div>
+                <div id="map" />
             </>
         );
     }
@@ -104,7 +98,6 @@ export class MapComponent extends Component<Props, State> {
 
         this.map = new Map({
             layers: [raster, vectorLayer],
-            controls: [],
             target: "map",
             view: new View({
                 center: [0, 0],

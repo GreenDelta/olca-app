@@ -3,60 +3,35 @@ import { render } from "react-dom";
 import { MapComponent } from "./map";
 import { TextComponent } from "./text";
 
-const Page = ({ initialKml }: { initialKml: string | null }) => {
+type PageProps = {
+    kml: string;
+    type: "map" | "text";
+};
 
-    const [kml, setKml] = useState<string | null>(initialKml);
-    const [showMap, setShowMap] = useState(true);
-
-    const doSave = () => {
-        if (window.onSave) {
-            window.onSave(kml);
-        }
-    };
-
-    return (
-        <div style={{ margin: 15 }}>
-            <div className="row">
-                <div className="column column-25">
-                    <button className="button button-blue button-outline"
-                        onClick={() => setShowMap(true)}>
-                        Map
-                    </button>
-                    <button className="button button-blue button-outline"
-                        onClick={() => setShowMap(false)}>
-                        Text
-                    </button>
-                </div>
-                <div className="column column-25 column-offset-50"
-                    style={{ textAlign: "right" }}>
-                    <button className="button button-blue button-outline"
-                        onClick={() => setKml(null)}>
-                        Clear
-                    </button>
-                    <button className="button button-blue"
-                        onClick={() => doSave()}>
-                        Save
-                    </button>
-                </div>
-            </div>
-            {showMap
-                ? <MapComponent kml={kml} onChange={(newKml) => setKml(newKml)} />
-                : <TextComponent kml={kml} onChange={(newKml) => setKml(newKml)} />}
-        </div>
-    );
+const Page = (props: PageProps) => {
+    const [kml, setKml] = useState<string | null>(props.kml);
+    const component = props.type === "map"
+        ? <MapComponent kml={kml} onChange={(newKml) => setKml(newKml)} />
+        : <TextComponent kml={kml} onChange={(newKml) => setKml(newKml)} />;
+    return component;
 };
 
 declare global {
     interface Window {
         onSave: (kml: string | null) => void;
-        openEditor: (kml?: string) => void;
+        openMap: (kml?: string) => void;
+        openText: (kml?: string) => void;
     }
 }
 
-function openEditor(kml?: string) {
-    const initialKml = kml ? kml : null;
+window.openMap = (kml?: string) => {
     render(
-        <Page initialKml={initialKml} />,
+        <Page type="map" kml={kml ? kml : null} />,
         document.getElementById("react-root"));
-}
-window.openEditor = openEditor;
+};
+
+window.openText = (kml?: string) => {
+    render(
+        <Page type="text" kml={kml ? kml : null} />,
+        document.getElementById("react-root"));
+};

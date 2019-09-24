@@ -18,7 +18,7 @@ export class TextComponent extends Component<Props, {}> {
 
     render() {
         return (
-            <div id="editor-text" style={{ width: "100%" }}>
+            <div id="editor-text" style={{ width: "100%", height: "100%" }}>
             </div>
         );
     }
