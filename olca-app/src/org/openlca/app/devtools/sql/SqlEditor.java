@@ -29,7 +29,7 @@ import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.python.google.common.base.Strings;
 
@@ -117,7 +117,7 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 			@Override
 			public void run() {
 				if (Database.get() == null) {
-					Info.showBox(M.NoDatabaseOpened, M.NeedOpenDatabase);
+					MsgBox.error(M.NoDatabaseOpened, M.NeedOpenDatabase);
 					return;
 				}
 				List<String> statements = getStatements();

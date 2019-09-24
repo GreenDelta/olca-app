@@ -27,7 +27,7 @@ import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.results.quick.QuickResultEditor;
 import org.openlca.app.results.regionalized.RegionalizedResultEditor;
 import org.openlca.app.results.simulation.SimulationEditor;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
@@ -249,7 +249,7 @@ public class CalculationWizard extends Wizard {
 			RegionalizedCalculator calc = new RegionalizedCalculator(setup, App.getSolver());
 			RegionalizedResult result = calc.calculate(Database.get(), Cache.getMatrixCache());
 			if (result == null) {
-				Info.showBox(M.NoRegionalizedInformation_Message);
+				MsgBox.info(M.NoRegionalizedInformation_Message);
 				return;
 			}
 			setInventory(result.result);

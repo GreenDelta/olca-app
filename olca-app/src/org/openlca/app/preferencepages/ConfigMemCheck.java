@@ -1,6 +1,7 @@
 package org.openlca.app.preferencepages;
 
 import org.openlca.app.M;
+import org.openlca.app.util.MsgBox;
 import org.openlca.util.OS;
 
 /**
@@ -37,8 +38,7 @@ class ConfigMemCheck {
 	}
 
 	private static int showError(String message) {
-		org.openlca.app.util.Error
-				.showBox(M.InvalidMemoryValue, message);
+		MsgBox.error(M.InvalidMemoryValue, message);
 		return -1;
 	}
 

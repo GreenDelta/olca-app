@@ -17,7 +17,7 @@ import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.tools.mapping.replacer.Replacer;
 import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.io.maps.FlowMap;
 import org.slf4j.Logger;
@@ -68,7 +68,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		IProvider source = tool.sourceSystem;
 		IProvider target = tool.targetSystem;
 		if (source == null || target == null) {
-			Error.showBox("No source or target system selected",
+			MsgBox.error("No source or target system selected",
 					"In order to generate a mapping you need to "
 							+ "assign a data provider (database, "
 							+ "JSON-LD, or ILCD package) for the "
@@ -95,7 +95,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		// check if we can apply the mapping
 		IProvider source = tool.sourceSystem;
 		if (!(source instanceof DBProvider)) {
-			Error.showBox("Source system should be a database",
+			MsgBox.error("Source system should be a database",
 					"This only works when the source system "
 							+ "is a database where the flows should "
 							+ "be replaced with flows from the target "
@@ -104,12 +104,12 @@ public class MappingMenu extends EditorActionBarContributor {
 		}
 		IProvider target = tool.targetSystem;
 		if (target == null) {
-			Error.showBox("No target system selected",
+			MsgBox.error("No target system selected",
 					"No target system was selected.");
 			return;
 		}
 		if (!tool.checked.get()) {
-			Error.showBox("Unchecked mappings",
+			MsgBox.error("Unchecked mappings",
 					"You should first run a check before applying the mapping.");
 			return;
 		}

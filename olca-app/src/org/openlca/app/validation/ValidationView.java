@@ -28,7 +28,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.TreeClipboard;
 import org.openlca.app.util.trees.Trees;
@@ -98,7 +98,7 @@ public class ValidationView extends ViewPart {
 			StatusList[] model = createModel(result);
 			instance.viewer.setInput(model);
 			if (model.length == 0)
-				Info.showBox(M.DatabaseValidationCompleteNoErrorsWereFound);
+				MsgBox.info(M.DatabaseValidationCompleteNoErrorsWereFound);
 		} catch (Exception e) {
 			log.error("Error validating database", e);
 		}

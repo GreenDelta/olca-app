@@ -14,8 +14,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.NumberGenerator;
 import org.openlca.core.model.Uncertainty;
@@ -346,7 +346,7 @@ public class UncertaintyDialog extends Dialog {
 				return true;
 			} catch (Exception e) {
 				if (interpreterScope == null)
-					Error.showBox(s + " " + M.IsNotValidNumber);
+					MsgBox.error(s + " " + M.IsNotValidNumber);
 				return false;
 			}
 		}
@@ -358,7 +358,7 @@ public class UncertaintyDialog extends Dialog {
 				interpreterScope.eval(s);
 				return true;
 			} catch (Exception e) {
-				Error.showBox(M.FormulaEvaluationFailed + ": " + s);
+				MsgBox.error(M.FormulaEvaluationFailed + ": " + s);
 				return false;
 			}
 		}

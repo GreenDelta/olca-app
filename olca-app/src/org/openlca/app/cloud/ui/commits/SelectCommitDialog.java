@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.db.Database;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -54,7 +54,7 @@ public class SelectCommitDialog extends FormDialog {
 			viewer.setInput(client.fetchCommitHistory());
 		} catch (Exception e) {
 			log.warn("Error loading commit history", e);
-			Error.showBox(e.getMessage());
+			MsgBox.error(e.getMessage());
 		}
 		return;
 	}

@@ -20,6 +20,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.upgrades.Upgrades;
@@ -158,7 +159,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 		}
 
 		private void error(String message) {
-			org.openlca.app.util.Error.showBox(M.CouldNotOpenDatabase, message);
+			MsgBox.error(M.CouldNotOpenDatabase, message);
 			closeDatabase();
 		}
 

@@ -7,8 +7,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
 import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Error;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
@@ -32,17 +31,17 @@ class SFAddParamAction extends Action {
 		if (param == null)
 			return;
 		if (exists(param)) {
-			Info.showBox(M.ParameterAlreadyAdded,
+			MsgBox.info(M.ParameterAlreadyAdded,
 					M.SelectedParameterWasAlreadyAdded);
 			return;
 		}
 		if (otherExists(param)) {
-			Error.showBox(M.ParameterWithSameNameExists,
+			MsgBox.error(M.ParameterWithSameNameExists,
 					M.ParameterWithSameNameExistsInMethod);
 			return;
 		}
 		if (!Parameter.isValidName(param.name)) {
-			Error.showBox(M.InvalidParameterName, param.name + " "
+			MsgBox.error(M.InvalidParameterName, param.name + " "
 					+ M.IsNotValidParameterName);
 			return;
 		}
@@ -55,7 +54,7 @@ class SFAddParamAction extends Action {
 		ShapeFileParameter param = Viewers
 				.getFirstSelected(section.parameterTable.viewer);
 		if (param == null) {
-			Error.showBox(M.NoParameterSelected, M.NoShapefileParameterSelected);
+			MsgBox.error(M.NoParameterSelected, M.NoShapefileParameterSelected);
 			return null;
 		}
 		return param;

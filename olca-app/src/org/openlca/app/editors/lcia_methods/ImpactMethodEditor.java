@@ -13,6 +13,7 @@ import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFilePage;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
 import org.openlca.app.editors.parameters.ParameterPage;
+import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
@@ -56,8 +57,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> {
 			String message = errors.get(0);
 			if (errors.size() > 1)
 				message += " (" + (errors.size() - 1) + " more)";
-			org.openlca.app.util.Error.showBox(
-					M.FormulaEvaluationFailed, message);
+			MsgBox.error(M.FormulaEvaluationFailed, message);
 		}
 	}
 

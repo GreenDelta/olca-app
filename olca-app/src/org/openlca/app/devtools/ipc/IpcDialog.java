@@ -9,8 +9,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.util.Error;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 
 public class IpcDialog extends FormDialog {
@@ -19,7 +18,7 @@ public class IpcDialog extends FormDialog {
 
 	public static int show() {
 		if (Database.get() == null) {
-			Info.showBox(M.NoDatabaseOpened, M.NeedOpenDatabase);
+			MsgBox.error(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return Window.CANCEL;
 		}
 		return new IpcDialog().open();
@@ -55,7 +54,7 @@ public class IpcDialog extends FormDialog {
 			// TODO: need a UI for managing the server
 			super.okPressed();
 		} catch (Exception e) {
-			Error.showBox("Failed to start IPC server",
+			MsgBox.error("Failed to start IPC server",
 					e.getMessage());
 		}
 	}

@@ -29,7 +29,7 @@ import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.cloud.api.RepositoryClient;
@@ -215,7 +215,7 @@ public class SyncView extends ViewPart {
 				Navigator.refresh();
 			}
 			if (error != null)
-				Error.showBox("Error during download", error.getMessage());
+				MsgBox.error("Error during download", error.getMessage());
 			else {
 				update(currentSelection, currentCommitId);
 			}

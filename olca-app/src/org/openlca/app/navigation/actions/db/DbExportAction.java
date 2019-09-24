@@ -27,6 +27,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Popup;
 import org.openlca.cloud.api.RepositoryConfig;
 import org.slf4j.Logger;
@@ -80,7 +81,7 @@ public class DbExportAction extends Action implements INavigationAction {
 			log.trace("delete existing file {}", zip);
 			boolean deleted = zip.delete();
 			if (!deleted) {
-				org.openlca.app.util.Error.showBox(M.CouldNotOverwriteFile + ": " + zip.getName());
+				MsgBox.error(M.CouldNotOverwriteFile + ": " + zip.getName());
 				return;
 			}
 		}

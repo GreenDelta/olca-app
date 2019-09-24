@@ -17,7 +17,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
@@ -96,14 +96,13 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		UnitGroup group = editor.getModel();
 		for (Unit unit : getAllSelected()) {
 			if (Objects.equals(group.referenceUnit, unit)) {
-				Error.showBox(M.CannotDeleteReferenceUnit,
+				MsgBox.error(M.CannotDeleteReferenceUnit,
 						M.ReferenceUnitCannotBeDeleted);
 				continue;
 			}
 			UnitUseSearch usage = new UnitUseSearch(Database.get());
 			if (!usage.findUses(unit).isEmpty()) {
-				Error.showBox(M.CannotDeleteUnit,
-						M.UnitIsUsed);
+				MsgBox.error(M.CannotDeleteUnit, M.UnitIsUsed);
 				continue;
 			}
 			group.units.remove(unit);
@@ -188,7 +187,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 				return;
 			if (!new UnitDao(Database.get()).getForName(text).isEmpty()
 					|| editor.getModel().getUnit(text) != null) {
-				Error.showBox("A unit with the name '" + text + "' already exists");
+				MsgBox.error("A unit with the name '" + text + "' already exists");
 				return;
 			}
 			unit.name = text;

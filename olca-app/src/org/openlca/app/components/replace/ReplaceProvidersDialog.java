@@ -14,7 +14,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ProcessCombo;
@@ -32,7 +32,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 
 	public static void openDialog() {
 		if (Database.get() == null) {
-			Info.showBox(M.NoDatabaseOpened, M.NeedOpenDatabase);
+			MsgBox.error(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return;
 		}
 		new ReplaceProvidersDialog().open();

@@ -18,7 +18,7 @@ import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.tools.mapping.model.JsonProvider;
 import org.openlca.app.tools.mapping.model.ProviderType;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 
@@ -46,7 +46,7 @@ class ProviderRow {
 		Controls.onClick(dbLink, e -> {
 			IDatabase db = Database.get();
 			if (db == null) {
-				Error.showBox(M.NoDatabaseOpened);
+				MsgBox.error(M.NoDatabaseOpened);
 				return;
 			}
 			DBProvider provider = new DBProvider(db);
@@ -71,7 +71,7 @@ class ProviderRow {
 				break;
 			}
 			if (provider == null) {
-				Error.showBox("Unknown flow source (ILCD "
+				MsgBox.error("Unknown flow source (ILCD "
 						+ "or JSON-LD packages are supported).");
 				return;
 			}

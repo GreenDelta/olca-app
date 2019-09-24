@@ -16,8 +16,7 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.tools.mapping.model.ProviderType;
-import org.openlca.app.util.Error;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.MsgBox;
 import org.openlca.io.maps.FlowMap;
 
 public class MappingTool extends SimpleFormEditor {
@@ -47,11 +46,11 @@ public class MappingTool extends SimpleFormEditor {
 			} else if (type == ProviderType.CSV_FILE) {
 				open(FlowMap.fromCsv(file));
 			} else {
-				Info.showBox("Unsupported format file format. Supported are "
+				MsgBox.info("Unsupported format file format. Supported are "
 						+ "flow mappings from CSV files and JSON-LD packages.");
 			}
 		} catch (Exception e) {
-			Error.showBox("Could not open file", e.getMessage());
+			MsgBox.error("Could not open file", e.getMessage());
 		}
 	}
 

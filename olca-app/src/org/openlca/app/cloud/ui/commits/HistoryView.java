@@ -24,7 +24,7 @@ import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.BaseLabelProvider;
@@ -123,7 +123,7 @@ public class HistoryView extends ViewPart {
 			if (e.getErrorCode() == Status.NOT_FOUND.getStatusCode())
 				return null;
 			log.warn("Error loading previous commit", e);
-			Error.showBox(e.getMessage());
+			MsgBox.error(e.getMessage());
 			return null;
 		}
 	}
@@ -134,7 +134,7 @@ public class HistoryView extends ViewPart {
 			historyViewer.setInput(client.fetchCommitHistory());
 		} catch (Exception e) {
 			log.warn("Error loading commit history", e);
-			Error.showBox(e.getMessage());
+			MsgBox.error(e.getMessage());
 		}
 	}
 
@@ -166,7 +166,7 @@ public class HistoryView extends ViewPart {
 				references.addAll(client.getReferences(commit.id));
 			} catch (Exception e) {
 				log.warn("Error loading commit history", e);
-				Error.showBox(e.getMessage());
+				MsgBox.error(e.getMessage());
 			}
 		});
 		for (FetchRequestData data : new ArrayList<>(references))

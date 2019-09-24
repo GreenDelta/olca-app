@@ -18,8 +18,8 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.Warning;
 import org.openlca.core.model.Location;
 import org.openlca.core.results.ContributionItem;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ class LocationMap {
 			browser.execute("setData(" + json + ")");
 		} catch (Exception e) {
 			log.warn("Error setting location data", e);
-			Warning.showBox(M.MapCanNotBeDisplayed);
+			MsgBox.warning(M.MapCanNotBeDisplayed);
 		}
 	}
 

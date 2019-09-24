@@ -13,7 +13,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Process;
@@ -47,7 +47,7 @@ public final class SaveProcessDialog extends Wizard {
 	public boolean performFinish() {
 		String name = page.nameText.getText();
 		if (Strings.nullOrEmpty(name)) {
-			Error.showBox(M.NameCannotBeEmpty);
+			MsgBox.error(M.NameCannotBeEmpty);
 			return false;
 		}
 		boolean createMeta = page.metaCheck.getSelection();

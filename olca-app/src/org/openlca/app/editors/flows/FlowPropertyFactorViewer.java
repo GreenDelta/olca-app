@@ -19,7 +19,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
@@ -124,7 +124,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 			return;
 		Flow flow = editor.getModel();
 		if (fac.equals(flow.getReferenceFactor())) {
-			Error.showBox(M.CannotDeleteReferenceFlowProperty,
+			MsgBox.error(M.CannotDeleteReferenceFlowProperty,
 					M.ReferenceFlowPropertyCannotBeDeleted);
 			return;
 		}
@@ -132,7 +132,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 				flow, Database.get());
 		List<CategorizedDescriptor> list = search.findUses(fac);
 		if (!list.isEmpty()) {
-			Error.showBox(M.CannotDeleteFlowProperty,
+			MsgBox.error(M.CannotDeleteFlowProperty,
 					M.FlowPropertyIsUsed);
 			return;
 		}

@@ -21,9 +21,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Error;
 import org.openlca.app.util.Fn;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
@@ -192,7 +192,7 @@ class MappingDialog extends FormDialog {
 						: tool.targetSystem;
 
 				if (p == null) {
-					Error.showBox("Cannot select flow",
+					MsgBox.error("Cannot select flow",
 							"No data source for flows connected");
 					return;
 				}

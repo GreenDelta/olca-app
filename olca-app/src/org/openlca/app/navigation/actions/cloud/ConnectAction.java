@@ -30,7 +30,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.util.Colors;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.cloud.api.CredentialSupplier;
@@ -52,7 +52,7 @@ public class ConnectAction extends Action implements INavigationAction {
 		if (!runner.run())
 			return;
 		if (runner.error != null)
-			Error.showBox(runner.error.getMessage());
+			MsgBox.error(runner.error.getMessage());
 		else {
 			App.runWithProgress(M.RebuildingIndex, Reindexing::execute);
 			Navigator.refresh(Navigator.getNavigationRoot());

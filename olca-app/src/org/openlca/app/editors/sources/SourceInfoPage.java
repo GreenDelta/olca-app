@@ -26,7 +26,7 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.FileType;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FileStore;
@@ -189,7 +189,7 @@ class SourceInfoPage extends ModelPage<Source> {
 			log.trace("open file {}", file);
 			Desktop.browse(file.toURI().toString());
 		} else {
-			Info.showBox(M.FileDoesNotExist);
+			MsgBox.info(M.FileDoesNotExist);
 		}
 	}
 

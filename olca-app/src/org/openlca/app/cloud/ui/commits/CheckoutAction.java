@@ -12,7 +12,7 @@ import org.openlca.app.cloud.index.Reindexing;
 import org.openlca.app.cloud.ui.FetchNotifierMonitor;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
@@ -45,7 +45,7 @@ class CheckoutAction extends Action {
 			doCheckout(commit);
 		} catch (Exception e) {
 			log.error("Error while receiving commit data", e);
-			Error.showBox(M.CommitError);
+			MsgBox.error(M.CommitError);
 		} finally {
 			Database.getIndexUpdater().enable();
 			App.runWithProgress(M.RebuildingIndex, Reindexing::execute);

@@ -42,8 +42,8 @@ import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Info;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -75,7 +75,7 @@ public class BigParameterTable extends SimpleFormEditor {
 
 	public static void show() {
 		if (Database.get() == null) {
-			Info.showBox(M.NoDatabaseOpened, M.NeedOpenDatabase);
+			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return;
 		}
 		String id = "BigParameterTable";
@@ -278,7 +278,7 @@ public class BigParameterTable extends SimpleFormEditor {
 			// first check that the parameter or the owner
 			// is currently not edited in another editor
 			if (param.owner == null && App.hasDirtyEditor(p)) {
-				Info.showBox("Cannot edit " + p.name,
+				MsgBox.info("Cannot edit " + p.name,
 						"The parameter is currently "
 								+ "modified in another editor.");
 				return;
@@ -287,7 +287,7 @@ public class BigParameterTable extends SimpleFormEditor {
 					&& App.hasDirtyEditor(param.owner)) {
 				String label = Strings.cut(
 						Labels.getDisplayName(param.owner), 50);
-				Info.showBox("Cannot edit " + p.name, label +
+				MsgBox.info("Cannot edit " + p.name, label +
 						" is currently modified in another editor.");
 				return;
 			}

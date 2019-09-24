@@ -33,8 +33,7 @@ import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
-import org.openlca.app.util.Error;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Commit;
@@ -66,7 +65,7 @@ public class FetchAction extends Action implements INavigationAction {
 		runner.run();
 		if (runner.error != null) {
 			log.error("Error during fetch action", runner.error);
-			Error.showBox(runner.error.getMessage());
+			MsgBox.error(runner.error.getMessage());
 		}
 		Navigator.refresh();
 		HistoryView.refresh();
@@ -105,7 +104,7 @@ public class FetchAction extends Action implements INavigationAction {
 			if (error != null)
 				return false;
 			if (commits.isEmpty()) {
-				showNoChangesBox();
+				MsgBox.info(M.UpToDate);
 				return false;
 			}
 			CommitEntryDialog dialog = new CommitEntryDialog(commits, client);
@@ -203,10 +202,6 @@ public class FetchAction extends Action implements INavigationAction {
 			data.remove("inputs");
 			data.remove("outputs");
 			data.add("exchanges", exchanges);
-		}
-
-		private void showNoChangesBox() {
-			Info.showBox(M.UpToDate);
 		}
 
 		private List<DiffResult> createDifferences(Set<FetchRequestData> remotes) {

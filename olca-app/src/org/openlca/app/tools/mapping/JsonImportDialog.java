@@ -16,8 +16,7 @@ import org.openlca.app.M;
 import org.openlca.app.tools.mapping.model.JsonProvider;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Error;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.io.maps.FlowMap;
 import org.openlca.util.Strings;
@@ -46,12 +45,12 @@ class JsonImportDialog extends Dialog {
 				return null;
 			}
 			if (d.selectedMap == null) {
-				Info.showBox("Not yet implemented.");
+				MsgBox.info("Not yet implemented.");
 				return null;
 			}
 			return d.selectedMap;
 		} catch (Exception e) {
-			Error.showBox("Failed to open file as JSON-LD package");
+			MsgBox.error("Failed to open file as JSON-LD package");
 			Logger log = LoggerFactory.getLogger(JsonImportDialog.class);
 			log.error("failed to open JSON-LD package " + file, e);
 			return null;

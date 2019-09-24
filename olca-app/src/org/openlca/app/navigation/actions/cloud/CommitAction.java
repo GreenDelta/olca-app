@@ -29,8 +29,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
-import org.openlca.app.util.Error;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.TimeEstimatingMonitor;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
@@ -57,12 +56,12 @@ public class CommitAction extends Action implements INavigationAction {
 		Runner runner = new Runner();
 		runner.run();
 		if (!runner.upToDate && runner.error == null)
-			Error.showBox(M.RejectMessage);
+			MsgBox.error(M.RejectMessage);
 		else if (runner.error != null) {
 			log.error("Error during commit action", runner.error);
-			Error.showBox(runner.error.getMessage());
+			MsgBox.error(runner.error.getMessage());
 		} else if (runner.noChanges)
-			Info.showBox(M.NoChangesInLocalDb);
+			MsgBox.info(M.NoChangesInLocalDb);
 		HistoryView.refresh();
 	}
 

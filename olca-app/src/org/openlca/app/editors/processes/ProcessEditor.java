@@ -15,6 +15,7 @@ import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.app.editors.processes.allocation.AllocationPage;
 import org.openlca.app.editors.processes.exchanges.ProcessExchangePage;
 import org.openlca.app.editors.processes.social.SocialAspectsPage;
+import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.util.AllocationCleanup;
@@ -54,8 +55,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 			String message = errors.get(0);
 			if (errors.size() > 1)
 				message += " (" + (errors.size() - 1) + " more)";
-			org.openlca.app.util.Error.showBox(
-					M.FormulaEvaluationFailed, message);
+			MsgBox.error(M.FormulaEvaluationFailed, message);
 		}
 	}
 

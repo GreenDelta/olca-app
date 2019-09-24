@@ -10,7 +10,7 @@ import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.wizards.io.FileImportPage;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.refdata.GeoKmzImport;
@@ -50,7 +50,7 @@ public class KmzImportWizard extends Wizard implements IImportWizard {
 		File file = fileImportPage.getFiles()[0];
 		boolean wasValidFile = new GeoKmzImport(file, Database.get()).run();
 		if (!wasValidFile)
-			Info.showBox(M.CouldNotFindKMLData);
+			MsgBox.info(M.CouldNotFindKMLData);
 		monitor.done();
 	}
 

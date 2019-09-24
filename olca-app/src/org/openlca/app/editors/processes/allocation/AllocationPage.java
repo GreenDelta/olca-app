@@ -22,8 +22,8 @@ import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Error;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
@@ -60,13 +60,13 @@ public class AllocationPage extends ModelPage<Process> {
 		try {
 			double val = Double.parseDouble(text);
 			if (val < -0.0001 || val > 1.0001) {
-				Error.showBox(M.InvalidAllocationFactor,
+				MsgBox.error(M.InvalidAllocationFactor,
 						M.InvalidAllocationFactorMessage);
 				return null;
 			}
 			return val;
 		} catch (Exception e) {
-			Error.showBox(M.InvalidNumber, text + " "
+			MsgBox.error(M.InvalidNumber, text + " "
 					+ M.IsNotValidNumber);
 			return null;
 		}
@@ -74,7 +74,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 	@Subscribe
 	public void handleExchangesChange(Event event) {
-		if (!event.match(editor.EXCHANGES_CHANGED))
+		if (!event.match(ProcessEditor.EXCHANGES_CHANGED))
 			return;
 		log.trace("update allocation page");
 		AllocationSync.updateFactors(process());

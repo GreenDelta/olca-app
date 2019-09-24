@@ -232,7 +232,7 @@ class ExchangeTable {
 		selection.forEach(e -> process.exchanges.remove(e));
 		viewer.setInput(process.exchanges);
 		editor.setDirty(true);
-		editor.postEvent(editor.EXCHANGES_CHANGED, this);
+		editor.postEvent(ProcessEditor.EXCHANGES_CHANGED, this);
 	}
 
 	private void add(List<BaseDescriptor> descriptors) {
@@ -260,7 +260,7 @@ class ExchangeTable {
 			return;
 		viewer.setInput(process.exchanges);
 		editor.setDirty(true);
-		editor.postEvent(editor.EXCHANGES_CHANGED, this);
+		editor.postEvent(ProcessEditor.EXCHANGES_CHANGED, this);
 	}
 
 	private void onPaste(String text) {
@@ -276,7 +276,7 @@ class ExchangeTable {
 		}
 		viewer.setInput(process.exchanges);
 		editor.setDirty(true);
-		editor.postEvent(editor.EXCHANGES_CHANGED, this);
+		editor.postEvent(ProcessEditor.EXCHANGES_CHANGED, this);
 		editor.getParameterSupport().evaluate();
 	}
 

@@ -18,6 +18,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.derby.DerbyDatabase;
@@ -49,8 +50,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public boolean performFinish() {
 		if (Database.get() == null) {
-			org.openlca.app.util.Error.showBox(M.NoDatabaseOpened,
-					M.DBImportNoTarget);
+			MsgBox.error(M.NoDatabaseOpened, M.DBImportNoTarget);
 			return true;
 		}
 		try {
@@ -79,15 +79,12 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		if (state == VersionState.UP_TO_DATE)
 			return true;
 		if (state == null || state == VersionState.ERROR) {
-			org.openlca.app.util.Error.showBox(M.ConnectionFailed,
+			MsgBox.error(M.ConnectionFailed,
 					M.DBImportNoTargetConnectionFailedMessage);
 			return false;
 		}
 		if (state == VersionState.HIGHER_VERSION) {
-			org.openlca.app.util.Error
-					.showBox(
-							M.VersionNewer,
-							M.DBImportVersionNewerMessage);
+			MsgBox.error(M.VersionNewer, M.DBImportVersionNewerMessage);
 			return false;
 		}
 		if (config.mode == config.FILE_MODE)

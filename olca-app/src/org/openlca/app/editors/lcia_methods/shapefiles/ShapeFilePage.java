@@ -20,6 +20,7 @@ import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Parameter;
@@ -106,13 +107,12 @@ public class ShapeFilePage extends ModelPage<ImpactMethod> {
 
 	List<ShapeFileParameter> checkRunImport(File file) {
 		if (!ShapeFileUtils.isValid(file)) {
-			org.openlca.app.util.Error.showBox("Invalid file", "The file "
+			MsgBox.error("Invalid file", "The file "
 					+ file.getName() + " is not a valid shape file.");
 			return Collections.emptyList();
 		}
 		if (ShapeFileUtils.alreadyExists(method(), file)) {
-			org.openlca.app.util.Error
-					.showBox("File already exists", "A shape file with the given "
+			MsgBox.error("File already exists", "A shape file with the given "
 							+ "name already exists for this method.");
 			return Collections.emptyList();
 		}
@@ -130,7 +130,7 @@ public class ShapeFilePage extends ModelPage<ImpactMethod> {
 				shapeFile);
 		for (ShapeFileParameter parameter : params) {
 			if (!Parameter.isValidName(parameter.name)) {
-				org.openlca.app.util.Error.showBox("Invalid parameter",
+				MsgBox.error("Invalid parameter",
 						"The parameter name '" + parameter.name
 								+ "' is not supported");
 				ShapeFileUtils.deleteFile(method(), shapeFile);

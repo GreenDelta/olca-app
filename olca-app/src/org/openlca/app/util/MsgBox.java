@@ -11,37 +11,39 @@ import org.openlca.app.M;
 
 /**
  * A helper class for opening message boxes in the UI thread. The methods can be
- * called in other threads the the UI thread.
+ * called from other threads than the UI thread.
  */
-class MessageBox {
+public class MsgBox {
 
 	enum Type {
 		ERROR, WARNING, INFO
 	}
 
-	private MessageBox() {
+	private MsgBox() {
 	}
 
-	static void show(final String message, Type type) {
-		String title = null;
-		switch (type) {
-		case ERROR:
-			title = M.Error;
-			break;
-		case WARNING:
-			title = M.Warning;
-			break;
-		case INFO:
-			title = M.Information;
-			break;
-		default:
-			break;
-		}
-		show(title, message, type);
+	public static void info(String text) {
+		info(M.Information, text);
 	}
 
-	static void show(final String title, final String message, final Type type) {
-		new BoxJob(title, message, type).schedule();
+	public static void info(String title, String text) {
+		new BoxJob(title, text, Type.INFO).schedule();
+	}
+
+	public static void warning(String text) {
+		warning(M.Warning, text);
+	}
+
+	public static void warning(String title, String text) {
+		new BoxJob(title, text, Type.WARNING).schedule();
+	}
+
+	public static void error(String text) {
+		error(M.Error, text);
+	}
+
+	public static void error(String title, String text) {
+		new BoxJob(title, text, Type.ERROR).schedule();
 	}
 
 	private static class BoxJob extends UIJob {
@@ -52,8 +54,8 @@ class MessageBox {
 
 		public BoxJob(String title, String message, Type type) {
 			super("Open message box");
-			this.title = title;
-			this.message = message;
+			this.title = title == null ? "?" : title;
+			this.message = message == null ? "?" : message;
 			this.type = type;
 		}
 
@@ -63,7 +65,7 @@ class MessageBox {
 			if (display == null)
 				return Status.CANCEL_STATUS;
 			Shell shell = display.getActiveShell();
-			if(shell == null)
+			if (shell == null)
 				shell = new Shell(display);
 			openBox(shell);
 			return Status.OK_STATUS;

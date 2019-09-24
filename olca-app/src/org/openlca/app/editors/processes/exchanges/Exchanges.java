@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.usage.ExchangeUseSearch;
 import org.openlca.core.model.Exchange;
@@ -88,8 +89,7 @@ class Exchanges {
 		if (process.quantitativeReference == null)
 			return false;
 		if (exchanges.contains(process.quantitativeReference)) {
-			org.openlca.app.util.Error.showBox(M.CannotDeleteRefFlow,
-					M.CannotDeleteRefFlowMessage);
+			MsgBox.error(M.CannotDeleteRefFlow, M.CannotDeleteRefFlowMessage);
 			return true;
 		}
 		return false;
@@ -110,8 +110,7 @@ class Exchanges {
 		List<CategorizedDescriptor> list = search.findUses(products);
 		if (list.isEmpty())
 			return false;
-		org.openlca.app.util.Error.showBox(M.CannotRemoveExchanges,
-				M.ExchangesAreUsed);
+		MsgBox.error(M.CannotRemoveExchanges, M.ExchangesAreUsed);
 		return true;
 	}
 

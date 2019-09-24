@@ -12,7 +12,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.util.Datasets;
 import org.openlca.core.database.CategorizedEntityDao;
@@ -65,7 +65,7 @@ class RenameAction extends Action implements INavigationAction {
 			return;
 		String newName = dialog.getValue();
 		if (newName == null || newName.trim().isEmpty()) {
-			Error.showBox(M.NameCannotBeEmpty);
+			MsgBox.error(M.NameCannotBeEmpty);
 			return;
 		}
 		if (element instanceof CategoryElement) {

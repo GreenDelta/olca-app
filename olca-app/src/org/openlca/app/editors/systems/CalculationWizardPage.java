@@ -16,7 +16,7 @@ import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
@@ -160,7 +160,7 @@ class CalculationWizardPage extends WizardPage {
 		try {
 			iterationCount = Integer.parseInt(text);
 		} catch (Exception e2) {
-			Error.showBox(M.InvalidNumber, text + " " + M.IsNotValidNumber);
+			MsgBox.error(M.InvalidNumber, text + " " + M.IsNotValidNumber);
 		}
 	}
 

@@ -22,8 +22,8 @@ import org.openlca.app.editors.processes.kml.KmlUtil;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Error;
 import org.openlca.app.util.FileType;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.model.DQSystem;
@@ -106,7 +106,7 @@ class InfoPage extends ModelPage<Process> {
 		Hyperlink link = UI.formLink(parent, toolkit, getDqLabel());
 		Controls.onClick(link, e -> {
 			if (getModel().dqSystem == null) {
-				Error.showBox("Please select a data quality system first");
+				MsgBox.error("Please select a data quality system first");
 				return;
 			}
 			String oldVal = getModel().dqEntry;

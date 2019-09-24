@@ -29,10 +29,9 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.Warning;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -258,7 +257,7 @@ public class ParameterSection {
 			supplier.get().add(param);
 		}
 		if (skipped) {
-			Warning.showBox(M.SomeParametersWereNotAdded);
+			MsgBox.warning(M.SomeParametersWereNotAdded);
 		}
 		setInput();
 		editor.setDirty(true);
@@ -322,12 +321,12 @@ public class ParameterSection {
 				return;
 			String name = text.trim();
 			if (!Parameter.isValidName(name)) {
-				Error.showBox(M.InvalidParameterName, name + " "
+				MsgBox.error(M.InvalidParameterName, name + " "
 						+ M.IsNotValidParameterName);
 				return;
 			}
 			if (exists(name)) {
-				Error.showBox(M.InvalidParameterName,
+				MsgBox.error(M.InvalidParameterName,
 						M.ParameterWithSameNameExists);
 				return;
 			}

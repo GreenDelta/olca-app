@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Control;
 import org.openlca.app.components.DialogCellEditor;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.editors.processes.data_quality.DataQualityShell;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Uncertainty;
@@ -44,7 +44,7 @@ class DataQualityCellEditor extends DialogCellEditor {
 	@Override
 	protected Object openDialogBox(Control control) {
 		if (exchange == null || editor.getModel().exchangeDqSystem == null) {
-			Error.showBox("Please select a data quality system first");
+			MsgBox.error("Please select a data quality system first");
 			return null;
 		}
 		DQSystem system = editor.getModel().exchangeDqSystem;

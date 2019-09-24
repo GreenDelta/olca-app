@@ -6,7 +6,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFileUtils;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -41,7 +41,7 @@ public class LocationEditor extends ModelEditor<Location> {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		if (!infoPage.hasValidKml) {
-			Info.showBox("Kml editor",
+			MsgBox.info("Kml editor",
 					"The provided kml is invalid, please check your input");
 			return;
 		}

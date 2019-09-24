@@ -20,8 +20,8 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.Warning;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.io.maps.FlowMapEntry;
@@ -76,7 +76,7 @@ class MappingPage extends FormPage {
 		updateCheckState.run();
 		Controls.onSelect(checkButton, _e -> {
 			if (tool.sourceSystem == null || tool.targetSystem == null) {
-				Warning.showBox("No source or target system",
+				MsgBox.warning("No source or target system",
 						"You need to select a source and target"
 								+ " system against which you want"
 								+ " to check the mapping.");

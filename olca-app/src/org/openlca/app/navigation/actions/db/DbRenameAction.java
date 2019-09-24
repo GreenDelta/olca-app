@@ -18,6 +18,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.validation.ValidationView;
 import org.openlca.core.database.DbUtils;
@@ -71,8 +72,7 @@ public class DbRenameAction extends Action implements INavigationAction {
 		String newName = dialog.getValue();
 		if (!DbUtils.isValidName(newName) || Database.getConfigurations()
 				.nameExists(newName.trim())) {
-			org.openlca.app.util.Error
-					.showBox(M.DatabaseRenameError);
+			MsgBox.error(M.DatabaseRenameError);
 			return;
 		}
 		doRename(newName);

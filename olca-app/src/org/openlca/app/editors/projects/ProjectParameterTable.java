@@ -30,6 +30,7 @@ import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
@@ -417,6 +418,7 @@ class ProjectParameterTable {
 			this.key = key;
 		}
 
+		@Override
 		protected String getText(ParameterRedef redef) {
 			ProjectVariant variant = findVariant(key);
 			ParameterRedef variantRedef = findVariantRedef(variant, redef);
@@ -443,8 +445,7 @@ class ProjectParameterTable {
 				reportSync.valueChanged(redef, variant, d);
 				editor.setDirty(true);
 			} catch (Exception e) {
-				org.openlca.app.util.Error.showBox(M.InvalidNumber, text + " "
-						+ M.IsNotValidNumber);
+				MsgBox.error(M.InvalidNumber, text + " " + M.IsNotValidNumber);
 			}
 		}
 	}
