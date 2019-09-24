@@ -3,9 +3,7 @@ const ZipPlugin = require('zip-webpack-plugin');
 const path = require('path');
 const dist = path.resolve(__dirname, 'dist');
 
-module.exports = {
-    mode: 'production',
-    devtool: 'source-map',
+const config = {
 
     entry: {
         home: './src/home/home.tsx',
@@ -52,11 +50,6 @@ module.exports = {
             { from: 'node_modules/heatmap.js/build/heatmap.min.js', to: dist + '/lib/heatmap.min.js', type: 'file' },
             { from: 'node_modules/heatmap.js/plugins/leaflet-heatmap/leaflet-heatmap.js', to: dist + '/lib/leaflet-heatmap.js', type: 'file' },
         ]),
-        new ZipPlugin({
-            path: path.resolve(__dirname, '../olca-app/html'),
-            filename: "base_html.zip",
-            exclude: [/\.map$/],
-        })
     ],
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.
@@ -71,7 +64,7 @@ module.exports = {
         "react-dom": "ReactDOM",
         "chart.js": "Chart",
         "codemirror": "CodeMirror",
-        
+
         // when OpenLayers would come with a distribution library
         // in the npm package, we could map these prefixes... and
         // the build would be probably faster
@@ -80,6 +73,23 @@ module.exports = {
         // "ol/layer": "ol.layer",
         // "ol/source": "ol.source",
         // "ol/style": "ol.style",
-        
+
     },
+};
+
+module.exports = (env, argv) => {
+
+    if (argv.mode === 'development') {
+        config.devtool = 'source-map';
+    }
+
+    if (argv.mode === 'production') {
+        config.plugins.push(new ZipPlugin({
+            path: path.resolve(__dirname, '../olca-app/html'),
+            filename: "base_html.zip",
+            exclude: [/\.map$/],
+        }))
+    }
+
+    return config;
 };

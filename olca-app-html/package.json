@@ -4,7 +4,8 @@
   "description": "HTML pages of the openLCA application",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js --mode=production",
+    "dev": "webpack --config webpack.config.js --mode=development --watch"
   },
   "author": "",
   "license": "MPL-2.0",
