@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="platform" sequenceNumber="6">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<target name="platform" sequenceNumber="6">
 <locations>
   <location path="${eclipse_home}" type="Profile"/>
   <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
@@ -6,15 +8,19 @@
     <repository location="http://download.eclipse.org/tools/gef/updates/legacy/releases/"/>
   </location>
 	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.17.0.v20190305-2225"/>
-		<unit id="org.eclipse.rcp.feature.group" version="4.11.0.v20190307-0500"/>
-		<unit id="org.eclipse.rcp.source.feature.group" version="4.11.0.v20190307-0500"/>
-		<repository location="http://download.eclipse.org/eclipse/updates/4.11"/>
-	</location>
-	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		<unit id="org.eclipse.swtchart" version="0.7.0.201906051446"/>
 		<unit id="org.eclipse.swtchart.extensions" version="0.7.0.201906051446"/>
 		<repository location="https://msrocka.github.io/swtcharts-update-site/target/repository"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="http://download.eclipse.org/eclipse/updates/4.12"/>
+		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.18.0.v20190528-1257"/>
+		<unit id="org.eclipse.rcp.feature.group" version="4.12.0.v20190605-1801"/>
+		<unit id="org.eclipse.rcp.source.feature.group" version="4.12.0.v20190605-1801"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="http://download.eclipse.org/nebula/releases/latest"/>
+		<unit id="org.eclipse.nebula.feature.feature.group" version="2.1.0.201907151344"/>
 	</location>
 </locations>
 </target>

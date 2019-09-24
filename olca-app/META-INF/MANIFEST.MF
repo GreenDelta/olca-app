@@ -12,14 +12,16 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.views,
  org.eclipse.ui.navigator,
  org.eclipse.ui.console,
- org.eclipse.mylyn.commons.ui,
  org.eclipse.ui.intro,
  org.eclipse.nebula.widgets.tablecombo,
  org.eclipse.draw2d,
  org.eclipse.gef,
  com.ibm.icu,
  org.eclipse.swtchart,
- org.eclipse.swtchart.extensions
+ org.eclipse.swtchart.extensions,
+ org.apache.felix.scr,
+ org.eclipse.equinox.event,
+ org.eclipse.nebula.widgets.opal.notifier
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  libs/common-2.6.0.jar,
