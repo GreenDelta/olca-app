@@ -20,8 +20,8 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.FileType;
-import org.openlca.app.util.Info;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.ProductSystemWizard;
 import org.openlca.core.model.ModelType;
@@ -68,7 +68,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 				Descriptors.toDescriptor(p));
 		ExcelExport export = new ExcelExport(f, Database.get(), list);
 		App.run(M.ExportProcess, export, () -> {
-			Info.popup(M.ExportDone);
+			Popup.info(M.ExportDone);
 		});
 	}
 

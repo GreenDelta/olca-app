@@ -6,67 +6,53 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.nebula.widgets.opal.notifier.Notifier;
 import org.eclipse.nebula.widgets.opal.notifier.NotifierColorsFactory.NotifierTheme;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.progress.UIJob;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 
-/**
- * A pop-up for messages. For specialized versions look at inheriting classes
- * like {@link InformationPopup}.
- */
-class Popup {
+public class Popup {
 
-	private String message;
-	private String title;
-	private Icon icon = Icon.INFO;
-
-	public Popup() {
-
+	private Popup() {
 	}
 
-	private Popup(String message) {
-		this.message = message;
+	public static void info(String text) {
+		info(M.Information, text);
 	}
 
-	Popup(String title, String message) {
-		this(message);
-		this.title = title;
+	public static void info(String title, String text) {
+		show(Icon.INFO.get(), title, text);
 	}
 
-	public String getMessage() {
-		return message;
+	public static void warning(String text) {
+		warning(M.Warning, text);
 	}
 
-	Popup defaultTitle(String t) {
-		this.title = t;
-		return this;
+	public static void warning(String title, String text) {
+		show(Icon.WARNING.get(), title, text);
 	}
 
-	Popup popupShellImage(Icon icon) {
-		this.icon = icon;
-		return this;
+	public static void error(String text) {
+		error(M.Error, text);
 	}
 
-	public Image getPopupShellImage() {
-		return icon.get();
+	public static void error(String title, String text) {
+		show(Icon.ERROR.get(), title, text);
 	}
 
-	/**
-	 * Override this to add something below the label.
-	 */
-	protected void makeLink(Composite composite) {
-	}
-
-	void show() {
+	private static void show(Image image, String title, String text) {
 		UIJob job = new UIJob("Open popup") {
+
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor) {
 				Display display = getDisplay();
 				if (display == null || display.isDisposed())
 					return Status.CANCEL_STATUS;
-				Notifier.notify(icon.get(), title, message,
-						NotifierTheme.GRAY_THEME);
+				Notifier.notify(
+						image,
+						title != null ? title : "?",
+						text != null ? text : "?",
+						NotifierTheme.YELLOW_THEME);
 				return Status.OK_STATUS;
 			}
 		};

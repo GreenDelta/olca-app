@@ -21,7 +21,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.FileType;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.io.xls.CsvMatrixExport;
@@ -160,7 +160,7 @@ class CsvExportShell extends Shell {
 				: columnCombo.getText();
 		App.run(M.ExportMatrix,
 				new CsvMatrixExport(conf),
-				() -> Info.popup(M.ExportDone));
+				() -> Popup.info(M.ExportDone));
 		this.dispose();
 	}
 

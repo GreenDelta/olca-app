@@ -7,14 +7,6 @@ public class Error {
 	private Error() {
 	}
 
-	public static void showPopup(String message) {
-		ErrorPopup.show(message);
-	}
-
-	public static void showPopup(String title, String message) {
-		ErrorPopup.show(title, message);
-	}
-
 	public static void showBox(String message) {
 		MessageBox.show(message, Type.ERROR);
 	}

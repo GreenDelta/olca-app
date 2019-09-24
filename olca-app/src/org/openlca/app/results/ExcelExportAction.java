@@ -10,7 +10,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.FileType;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.Popup;
 import org.openlca.io.xls.results.system.ResultExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +46,7 @@ public class ExcelExportAction extends Action {
 		export.setDQResult(editor.getDqResult());
 		App.run(M.Export, export, () -> {
 			if (export.doneWithSuccess()) {
-				Info.popup(M.ExportDone);
+				Popup.info(M.ExportDone);
 			}
 		});
 	}

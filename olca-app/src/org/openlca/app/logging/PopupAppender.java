@@ -6,7 +6,7 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.util.Error;
+import org.openlca.app.util.Popup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,39 +33,33 @@ public class PopupAppender extends AppenderSkeleton {
 
 	@Override
 	protected void append(LoggingEvent event) {
-		if (openPopupCount.get() >= MAX_POPUPS) {
+		if (event == null || !event.getLevel().isGreaterOrEqual(Level.ERROR))
+			return;
+		if (!PlatformUI.isWorkbenchRunning()
+				|| openPopupCount.get() >= MAX_POPUPS) {
 			return;
 		}
-		if (!PlatformUI.isWorkbenchRunning())
-			return;
-		if (event.getLevel().isGreaterOrEqual(Level.ERROR)) {
-			String message = createMessage(event);
-			try {
-				openPopupCount.incrementAndGet();
-				new PopupTokenWatch().start();
-				Error.showPopup(message);
-			} catch (Exception e) {
-				handlePopupError(e);
+
+		try {
+			openPopupCount.incrementAndGet();
+			new PopupTokenWatch().start();
+			String message = event.getMessage() != null
+					? event.getMessage().toString() + "<br/>"
+					: "";
+			message += "<b>See the log file (under Help)"
+					+ " for further information.</b>";
+
+			Popup.error("An internal error occurred", message);
+		} catch (Exception e) {
+			// If the creation of the popup creates an error itself
+			// handle it here.
+			if (failureCounter.incrementAndGet() > 3) {
+				log.warn("Showing of failed error popups "
+						+ "stopped because of repetetive failures");
+			} else {
+				log.error("Show message failed", e);
 			}
 		}
-	}
-
-	/** If the creation of the popup creates an error itself handle it here. */
-	private void handlePopupError(Exception e) {
-		if (failureCounter.incrementAndGet() > 3) {
-			log.warn("Showing of failed error popups "
-					+ "stopped because of repetetive failures");
-		} else {
-			log.error("Show message failed", e);
-		}
-	}
-
-	private String createMessage(LoggingEvent event) {
-		String message = null;
-		if (event.getMessage() instanceof String) {
-			message = (String) event.getMessage();
-		}
-		return message;
 	}
 
 	private class PopupTokenWatch extends Thread {

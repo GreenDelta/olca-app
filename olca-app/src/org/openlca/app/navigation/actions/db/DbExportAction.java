@@ -27,7 +27,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.Popup;
 import org.openlca.cloud.api.RepositoryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,6 +136,6 @@ public class DbExportAction extends Action implements INavigationAction {
 		if (active)
 			Navigator.refresh();
 		HistoryView.refresh();
-		Info.popup(M.ExportDone, M.DatabaseWasExportedToFile + ": " + zip.getName());
+		Popup.info(M.ExportDone, M.DatabaseWasExportedToFile + ": " + zip.getName());
 	}
 }

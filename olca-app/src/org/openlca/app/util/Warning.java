@@ -7,14 +7,6 @@ public class Warning {
 	private Warning() {
 	}
 
-	public static void showPopup(String message) {
-		new WarningPopup(message).show();
-	}
-
-	public static void showPopup(String title, String message) {
-		new WarningPopup(title, message).show();
-	}
-
 	public static void showBox(String message) {
 		MessageBox.show(message, Type.WARNING);
 	}

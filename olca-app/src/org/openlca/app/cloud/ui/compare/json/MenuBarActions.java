@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.Popup;
 
 import com.google.gson.JsonElement;
 
@@ -103,7 +103,7 @@ class MenuBarActions {
 		if (node != null)
 			leftTree.select(node);
 		else
-			Info.popup("No more changes found");
+			Popup.info("No more changes found");
 	}
 
 	private void applySelection(List<JsonNode> selection, boolean leftToRight) {

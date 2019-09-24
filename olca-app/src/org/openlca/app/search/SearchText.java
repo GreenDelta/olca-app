@@ -21,7 +21,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Info;
+import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
@@ -68,7 +68,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 	private void doSearch(ModelType typeFilter) {
 		if (Database.get() == null) {
-			Info.popup(M.NeedOpenDatabase);
+			Popup.info(M.NeedOpenDatabase);
 			return;
 		}
 		String term = text.getText();
@@ -213,6 +213,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 			typeFilter = type;
 		}
 
+		@Override
 		public void run() {
 			doSearch(typeFilter);
 		}
