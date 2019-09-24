@@ -56,18 +56,12 @@ export class MapComponent extends Component<Props, State> {
         );
     }
 
-    componentDidUpdate() {
-        if (this.props.kml !== this.kml) {
-            this.setKml(this.props.kml);
-        }
-    }
-
     componentDidMount() {
         const raster = new Tile({
             source: new OSM(),
         });
         this.features = new VectorSource();
-        this.setKml(this.props.kml);
+        this.initKml(this.props.kml);
         this.features.on("change", () => {
             this.kml = this.format.writeFeatures(
                 this.features.getFeatures(), {
@@ -142,28 +136,30 @@ export class MapComponent extends Component<Props, State> {
         this.map.addInteraction(this.snap);
     }
 
-    private setKml(kml: string) {
+    /**
+     * This should be called before after the feature vector was created but
+     * before listeners are added to the vector.
+     */
+    private initKml(kml: string) {
         this.kml = kml;
         if (!this.features) {
             return;
         }
-        this.features.clear();
         if (!kml) {
             return;
         }
-        const features = this.format.readFeatures(kml, {
-            dataProjection: "EPSG:4326",
-            featureProjection: "EPSG:3857",
-        });
-        // we need to un-register the event listeners in order to not
-        // run into infinite loops here
-        const fns = this.features.getListeners("change");
-        if (fns) {
-            fns.forEach((f) => this.features.removeEventListener("change", f));
-        }
-        features.forEach((feature) => this.features.addFeature(feature));
-        if (fns) {
-            fns.forEach((f) => this.features.addEventListener("change", f));
+        try {
+            const features = this.format.readFeatures(kml, {
+                dataProjection: "EPSG:4326",
+                featureProjection: "EPSG:3857",
+            });
+            features.forEach((feature) => this.features.addFeature(feature));
+        } catch (e) {
+            /* tslint:disable */
+            if (console && console.log) {
+                console.log("failed to parse KML features", e);
+            }
+            /* tslint:enable */
         }
     }
 }
