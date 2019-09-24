@@ -43,7 +43,7 @@ public class LocationEditor extends ModelEditor<Location> {
 				String kml = Geometries.pointToKml(lat, lon);
 				getModel().kmz = Geometries.kmlToKmz(kml);
 			}
-			// TODO: refresh KML view in infoPage
+			infoPage.refreshKmlView();
 		}
 		invalidateIntersections();
 		super.doSave(monitor);

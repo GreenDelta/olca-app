@@ -3,17 +3,12 @@ import { render } from "react-dom";
 import { MapComponent } from "./map";
 import { TextComponent } from "./text";
 
-type PageProps = {
-    kml: string;
-    type: "map" | "text";
-};
+let _kml: string | null;
 
-let kml: string | null;
-
-const Page = (props: PageProps) => {
-    const elem = props.type === "map"
-        ? <MapComponent kml={kml} onChange={(newKml) => kml = newKml} />
-        : <TextComponent kml={kml} onChange={(newKml) => kml = newKml} />;
+const Page = ({ type }: { type: "map" | "text" }) => {
+    const elem = type === "map"
+        ? <MapComponent kml={_kml} onChange={(newKml) => _kml = newKml} />
+        : <TextComponent kml={_kml} onChange={(newKml) => _kml = newKml} />;
     return elem;
 };
 
@@ -26,15 +21,15 @@ declare global {
 }
 
 window.openMap = (kml?: string) => {
-    render(
-        <Page type="map" kml={kml ? kml : null} />,
+    _kml = kml ? kml : null;
+    render(<Page type="map" />,
         document.getElementById("react-root"));
 };
 
 window.openText = (kml?: string) => {
-    render(
-        <Page type="text" kml={kml ? kml : null} />,
+    _kml = kml ? kml : null;
+    render(<Page type="text" />,
         document.getElementById("react-root"));
 };
 
-window.getKml = () => kml;
+window.getKml = () => _kml;

@@ -31,6 +31,10 @@ class LocationInfoPage extends ModelPage<Location> {
 	private ScrolledForm form;
 	private Browser browser;
 
+	private final int KML_MAP_TOOL = 0;
+	private final int KML_TEXT_TOOL = 1;
+	private int kmlTool = KML_MAP_TOOL;
+
 	LocationInfoPage(LocationEditor editor) {
 		super(editor, "LocationInfoPage", M.GeneralInformation);
 	}
@@ -67,41 +71,42 @@ class LocationInfoPage extends ModelPage<Location> {
 		UI.gridData(browser, true, true).minimumHeight = 360;
 
 		UI.onLoaded(browser, HtmlFolder.getUrl("kml_editor.html"), () -> {
-			openMap(KmlUtil.toKml(getModel().kmz));
+			openKmlTool(KmlUtil.toKml(getModel().kmz), KML_MAP_TOOL);
 		});
 
-		Action showMap = Actions.create(M.Map, Icon.MAP.descriptor(),
-				() -> openMap(KmlUtil.toKml(getModel().kmz)));
-		Action showText = Actions.create(M.Text, Images.descriptor(FileType.XML),
-				() -> openText(KmlUtil.toKml(getModel().kmz)));
+		Action showMap = Actions.create(M.Map,
+				Icon.MAP.descriptor(),
+				() -> openKmlTool(KmlUtil.toKml(getModel().kmz), KML_MAP_TOOL));
+		Action showText = Actions.create(M.Text,
+				Images.descriptor(FileType.MARKUP),
+				() -> openKmlTool(KmlUtil.toKml(getModel().kmz), KML_TEXT_TOOL));
+		Action clear = Actions.onRemove(this::clearKml);
 		Action save = Actions.onSave(this::saveKml);
-		Actions.bind(section, showMap, showText, save);
+		Actions.bind(section, showMap, showText, clear, save);
 	}
 
-	private void openMap(String kml) {
+	private void openKmlTool(String kml, int tool) {
+		this.kmlTool = tool;
+		String fn = tool == KML_MAP_TOOL
+				? "openMap"
+				: "openText";
 		try {
 			if (Strings.isNullOrEmpty(kml)) {
-				browser.execute("openMap()");
+				browser.execute(fn + "()");
 				return;
 			}
-			browser.execute("openMap('"
+			browser.execute(fn + "('"
 					+ kml.replaceAll("\\R", " ") + "')");
 		} catch (Exception e) {
-			log.error("failed to set KML data in map", e);
+			log.error("failed to set KML data via " + fn, e);
 		}
 	}
 
-	private void openText(String kml) {
-		try {
-			if (Strings.isNullOrEmpty(kml)) {
-				browser.execute("openText()");
-				return;
-			}
-			browser.execute("openText('"
-					+ kml.replaceAll("\\R", " ") + "')");
-		} catch (Exception e) {
-			log.error("failed to set KML data in editor", e);
-		}
+	private void clearKml() {
+		Location loc = getModel();
+		loc.kmz = null;
+		getEditor().setDirty(true);
+		openKmlTool(null, kmlTool);
 	}
 
 	private void saveKml() {
@@ -115,5 +120,9 @@ class LocationInfoPage extends ModelPage<Location> {
 		} catch (Exception e) {
 			log.error("failed to get KML from browser", e);
 		}
+	}
+
+	void refreshKmlView() {
+		openKmlTool(KmlUtil.toKml(getModel().kmz), kmlTool);
 	}
 }

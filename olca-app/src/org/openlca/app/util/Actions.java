@@ -9,17 +9,10 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.rcp.images.Images;
 
-/**
- * Factory methods for some standard actions, ready for Java 8, e.g.:
- * <p/>
- * <code> Actions.onAdd(() -> aBlock); </code>
- */
 public class Actions {
 
 	private Actions() {
@@ -76,8 +69,10 @@ public class Actions {
 		return new Action() {
 			{
 				setText(M.RemoveSelected);
-				setImageDescriptor(Icon.DELETE.descriptor());
-				setDisabledImageDescriptor(Icon.DELETE_DISABLED.descriptor());
+				setImageDescriptor(
+						Icon.DELETE.descriptor());
+				setDisabledImageDescriptor(
+						Icon.DELETE_DISABLED.descriptor());
 			}
 
 			@Override
@@ -92,12 +87,10 @@ public class Actions {
 			{
 				setText(M.Save);
 				setToolTipText(M.Save);
-				ImageDescriptor image = Images.platformDescriptor(
-						ISharedImages.IMG_ETOOL_SAVE_EDIT);
-				setImageDescriptor(image);
-				ImageDescriptor imageDis = Images.platformDescriptor(
-						ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED);
-				setDisabledImageDescriptor(imageDis);
+				setImageDescriptor(
+						Icon.SAVE.descriptor());
+				setDisabledImageDescriptor(
+						Icon.SAVE_DISABLED.descriptor());
 			}
 
 			@Override
