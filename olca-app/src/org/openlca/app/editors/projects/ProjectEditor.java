@@ -1,5 +1,7 @@
 package org.openlca.app.editors.projects;
 
+import java.util.Calendar;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -13,7 +15,6 @@ import org.openlca.core.model.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ibm.icu.util.Calendar;
 
 public class ProjectEditor extends ModelEditor<Project> {
 

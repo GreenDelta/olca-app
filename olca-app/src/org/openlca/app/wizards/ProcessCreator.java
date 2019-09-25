@@ -1,5 +1,6 @@
 package org.openlca.app.wizards;
 
+import java.util.Calendar;
 import java.util.UUID;
 
 import org.openlca.core.database.FlowDao;
@@ -16,7 +17,6 @@ import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 import com.google.common.base.Strings;
-import com.ibm.icu.util.Calendar;
 
 /**
  * Controller for the creation of a process from wizard data. The user can

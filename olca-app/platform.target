@@ -2,7 +2,6 @@
 <?pde version="3.8"?>
 <target name="platform" sequenceNumber="6">
 <locations>
-  <location path="${eclipse_home}" type="Profile"/>
   <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
     <unit id="org.eclipse.gef.all.feature.group" version="3.11.0.201606061308"/>
     <repository location="http://download.eclipse.org/tools/gef/updates/legacy/releases/"/>
@@ -17,10 +16,15 @@
 		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.18.0.v20190528-1257"/>
 		<unit id="org.eclipse.rcp.feature.group" version="4.12.0.v20190605-1801"/>
 		<unit id="org.eclipse.rcp.source.feature.group" version="4.12.0.v20190605-1801"/>
+		<unit id="org.eclipse.platform.sdk" version="4.12.0.I20190605-1800"/>
 	</location>
 	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/nebula/releases/latest"/>
 		<unit id="org.eclipse.nebula.feature.feature.group" version="2.1.0.201907151344"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="http://download.eclipse.org/modeling/emf/emf/builds/release"/>
+		<unit id="org.eclipse.emf.sdk.feature.group" version="2.19.0.v20190824-1315"/>
 	</location>
 </locations>
 </target>
