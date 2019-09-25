@@ -23,7 +23,7 @@ project and other open source software.
       <programArgs>-nl en -data @noDefault
       </programArgs>
       <vmArgs>-Xmx3584M
--Dosgi.framework.extensions=org.eclipse.fx.osgi
+-Dpython.console.encoding=UTF-8
 --add-modules=ALL-SYSTEM
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts

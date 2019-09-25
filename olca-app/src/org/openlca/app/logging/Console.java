@@ -15,41 +15,45 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-/**
- * The logger console.
- */
 public class Console extends AppenderSkeleton {
 
 	private static Console instance;
-	private MessageConsoleStream logStream;
+	private MessageConsoleStream stream;
 	private MessageConsole console;
 
 	public static void show() {
-		if (instance == null)
+		if (instance == null) {
 			instance = new Console();
+		}
 		instance.console.activate();
-		Logger.getLogger("org.openlca").info("Logging on console");
 	}
 
 	public static void dispose() {
-		if (instance != null) {
-			instance.close();
-			IConsoleManager manager = ConsolePlugin.getDefault()
-					.getConsoleManager();
-			manager.removeConsoles(new IConsole[] { instance.console });
-			instance.console.destroy();
-			instance = null;
-		}
+		if (instance == null)
+			return;
+		instance.close();
+		IConsoleManager manager = ConsolePlugin.getDefault()
+				.getConsoleManager();
+		manager.removeConsoles(new IConsole[] { instance.console });
+		instance.console.destroy();
+		instance = null;
+		System.setOut(System.out);
+		System.setErr(System.err);
 	}
 
 	private Console() {
-		console = findOrCreateConsole("Logs");
-		logStream = console.newMessageStream();
+		console = findOrCreate("openLCA");
+		stream = console.newMessageStream();
 		Logger logger = Logger.getLogger("org.openlca");
 		logger.addAppender(this);
+
+		// link sys.out and sys.err
+		PrintStream pout = new PrintStream(stream);
+		System.setOut(pout);
+		System.setErr(pout);
 	}
 
-	private MessageConsole findOrCreateConsole(String name) {
+	private MessageConsole findOrCreate(String name) {
 		ConsolePlugin plugin = ConsolePlugin.getDefault();
 		IConsoleManager conMan = plugin.getConsoleManager();
 		IConsole[] existing = conMan.getConsoles();
@@ -63,14 +67,16 @@ public class Console extends AppenderSkeleton {
 
 	@Override
 	protected void append(LoggingEvent evt) {
-		if (logStream.isClosed())
+		if (stream.isClosed())
 			return;
 		String message;
 		if (evt.getLevel().toInt() <= Level.DEBUG_INT) {
 			LocationInfo info = evt.getLocationInformation();
 			message = "" + evt.getLevel().toString()
 					+ " [" + DateFormatUtils.format(evt.timeStamp, "HH:mm:ss.SS") + "]"
-					+ " @" + info.getClassName() + ">" + info.getMethodName() + ">" + info.getLineNumber()
+					+ " @" + info.getClassName()
+					+ ">" + info.getMethodName()
+					+ ">" + info.getLineNumber()
 					+ " - " + evt.getMessage();
 		} else {
 			message = "" + evt.getLevel().toString()
@@ -79,19 +85,17 @@ public class Console extends AppenderSkeleton {
 		tryPrintMessage(message, evt.getThrowableInformation());
 	}
 
-	private void tryPrintMessage(String message,
-			ThrowableInformation throwableInformation) {
+	private void tryPrintMessage(String message, ThrowableInformation info) {
 		try {
-			logStream.println(message);
-			if (throwableInformation != null) {
-				Throwable throwable = throwableInformation.getThrowable();
+			stream.println(message);
+			if (info != null) {
+				Throwable throwable = info.getThrowable();
 				if (throwable != null) {
-					logStream.println(throwable.getMessage());
-					throwable.printStackTrace(new PrintStream(logStream));
+					stream.println(throwable.getMessage());
+					throwable.printStackTrace(new PrintStream(stream));
 				}
 			}
 		} catch (Exception e) {
-			// do nothing
 		}
 	}
 
@@ -99,10 +103,10 @@ public class Console extends AppenderSkeleton {
 	public void close() {
 		Logger logger = Logger.getLogger("org.openlca");
 		logger.removeAppender(this);
-		if (!logStream.isClosed()) {
+		if (!stream.isClosed()) {
 			try {
-				logStream.flush();
-				logStream.close();
+				stream.flush();
+				stream.close();
 			} catch (Exception e) {
 				logger.error("Cannot close console stream.", e);
 			}

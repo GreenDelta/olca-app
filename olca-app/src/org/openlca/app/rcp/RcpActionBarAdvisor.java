@@ -31,12 +31,14 @@ import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.editors.parameters.BigParameterTable;
+import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.mapping.MappingTool;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
+import org.openlca.app.util.FileType;
 import org.openlca.core.model.ModelType;
 
 @SuppressWarnings("restriction")
@@ -167,6 +169,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		MenuManager devMenu = new MenuManager(M.DeveloperTools);
 		menu.add(devMenu);
 		devMenu.add(Actions.create("SQL", Icon.SQL.descriptor(), SqlEditor::open));
+		devMenu.add(Actions.create("Console", Images.descriptor(FileType.DEFAULT), Console::show));
 		devMenu.add(Actions.create("Python", Icon.PYTHON.descriptor(), PythonEditor::open));
 		devMenu.add(Actions.create("IPC Server", Icon.DATABASE.descriptor(), IpcDialog::show));
 	}
