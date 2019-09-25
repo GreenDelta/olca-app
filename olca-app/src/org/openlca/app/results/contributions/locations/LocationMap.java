@@ -2,13 +2,10 @@ package org.openlca.app.results.contributions.locations;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.ProgressAdapter;
-import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -18,7 +15,6 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
 import org.openlca.core.results.ContributionItem;
@@ -29,7 +25,6 @@ import com.google.gson.Gson;
 
 class LocationMap {
 
-	private static final Logger log = LoggerFactory.getLogger(LocationMap.class);
 	private LocationPage page;
 	private Browser browser;
 
@@ -48,17 +43,8 @@ class LocationMap {
 		browserComp.setLayout(new FillLayout());
 		browser = new Browser(browserComp, SWT.NONE);
 		browser.setJavascriptEnabled(true);
-		AtomicBoolean loaded = new AtomicBoolean(false);
-		browser.addProgressListener(new ProgressAdapter() {
-			@Override
-			public void completed(ProgressEvent event) {
-				if (loaded.get())
-					return;
-				loaded.set(true);
-				page.refreshSelection();
-			}
-		});
-		browser.setUrl(HtmlFolder.getUrl("location_heatmap.html"));
+		UI.onLoaded(browser, HtmlFolder.getUrl("location_heatmap.html"), 
+				() -> page.refreshSelection());
 	}
 
 	void setInput(List<LocationItem> items) {
@@ -83,8 +69,8 @@ class LocationMap {
 		try {
 			browser.execute("setData(" + json + ")");
 		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(LocationMap.class);
 			log.warn("Error setting location data", e);
-			MsgBox.warning(M.MapCanNotBeDisplayed);
 		}
 	}
 
