@@ -9,6 +9,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.HtmlFolder;
@@ -70,18 +71,37 @@ class LocationInfoPage extends ModelPage<Location> {
 		browser.setJavascriptEnabled(true);
 		UI.gridData(browser, true, true).minimumHeight = 360;
 
+		// init the KML editor
 		UI.onLoaded(browser, HtmlFolder.getUrl("kml_editor.html"), () -> {
 			openKmlTool(KmlUtil.toKml(getModel().kmz), KML_MAP_TOOL);
 		});
 
+		// switch between map and text tool 
 		Action showMap = Actions.create(M.Map,
 				Icon.MAP.descriptor(),
-				() -> openKmlTool(KmlUtil.toKml(getModel().kmz), KML_MAP_TOOL));
+				() -> openKmlTool(browserKml(), KML_MAP_TOOL));
 		Action showText = Actions.create(M.Text,
 				Images.descriptor(FileType.MARKUP),
-				() -> openKmlTool(KmlUtil.toKml(getModel().kmz), KML_TEXT_TOOL));
-		Action clear = Actions.onRemove(this::clearKml);
-		Action save = Actions.onSave(this::saveKml);
+				() -> openKmlTool(browserKml(), KML_TEXT_TOOL));
+		
+		// clear the KML in the editor
+		Action clear = Actions.create(M.Clear, Icon.DELETE.descriptor(), () -> {
+			Location loc = getModel();
+			loc.kmz = null;
+			getEditor().setDirty(true);
+			openKmlTool(null, kmlTool);
+		});
+		
+		// save the KML
+		Action save = Actions.onSave(() -> {
+			String kml = browserKml();
+			// TODO: validate KML
+			byte[] kmz = KmlUtil.toKmz(kml);
+			getModel().kmz = kmz;
+			getEditor().setDirty(true);
+			Editors.callSaveActive();
+		});
+		
 		Actions.bind(section, showMap, showText, clear, save);
 	}
 
@@ -102,23 +122,13 @@ class LocationInfoPage extends ModelPage<Location> {
 		}
 	}
 
-	private void clearKml() {
-		Location loc = getModel();
-		loc.kmz = null;
-		getEditor().setDirty(true);
-		openKmlTool(null, kmlTool);
-	}
-
-	private void saveKml() {
+	private String browserKml() {
 		try {
 			Object obj = browser.evaluate("return getKml()");
-			String kml = obj == null ? null : obj.toString();
-			// TODO: validate KML
-			byte[] kmz = KmlUtil.toKmz(kml);
-			getModel().kmz = kmz;
-			getEditor().setDirty(true);
+			return obj == null ? null : obj.toString();
 		} catch (Exception e) {
 			log.error("failed to get KML from browser", e);
+			return null;
 		}
 	}
 

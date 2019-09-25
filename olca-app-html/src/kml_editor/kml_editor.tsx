@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { render } from "react-dom";
+import React from "react";
+import ReactDOM from "react-dom";
 import { MapComponent } from "./map";
 import { TextComponent } from "./text";
 
+type Tool = "map" | "text";
 let _kml: string | null;
 
-const Page = ({ type }: { type: "map" | "text" }) => {
+const Page = ({ type }: { type: Tool }) => {
     const elem = type === "map"
         ? <MapComponent kml={_kml} onChange={(newKml) => _kml = newKml} />
         : <TextComponent kml={_kml} onChange={(newKml) => _kml = newKml} />;
@@ -20,16 +21,17 @@ declare global {
     }
 }
 
-window.openMap = (kml?: string) => {
-    _kml = kml ? kml : null;
-    render(<Page type="map" />,
-        document.getElementById("react-root"));
-};
+window.openMap = (kml?: string) => render("map", kml);
+window.openText = (kml?: string) => render("text", kml);
 
-window.openText = (kml?: string) => {
+function render(tool: Tool, kml?: string) {
     _kml = kml ? kml : null;
-    render(<Page type="text" />,
-        document.getElementById("react-root"));
-};
+    // KML handling between map and editor instances
+    // and external calls is hard, thus we force 
+    // these tool to mount as new instances here
+    const elem = document.getElementById("react-root");
+    ReactDOM.unmountComponentAtNode(elem)
+    ReactDOM.render(<Page type={tool} />, elem);
+}
 
 window.getKml = () => _kml;

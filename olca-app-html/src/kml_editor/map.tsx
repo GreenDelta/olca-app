@@ -56,25 +56,6 @@ export class MapComponent extends Component<Props, State> {
         );
     }
 
-    componentDidUpdate(prevProps: Props) {
-        if (this.props.kml === prevProps.kml) {
-            return;
-        }
-        // update the feature vector when the KML changed
-        this.kml = this.props.kml;
-        if (!this.props.kml) {
-            this.features.clear();
-            return;
-        }
-        // avoid call cycles by removing the change listeners
-        const listeners = this.features.getListeners("change");
-        listeners.forEach(
-            (li) => this.features.removeEventListener("change", li));
-        this.initKml(this.props.kml);
-        listeners.forEach(
-            (li) => this.features.addEventListener("change", li));
-    }
-
     componentDidMount() {
         const raster = new Tile({
             source: new OSM(),
