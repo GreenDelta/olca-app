@@ -42,7 +42,7 @@ export class MapComponent extends Component<Props, State> {
             <>
                 <div>
                     <select id="type" value={this.state.featureType}
-                        style={{ width: 150, margin: "10px 0px", fontSize: "1em" }}
+                        style={{ width: 150, margin: "10px 0px" }}
                         onChange={(e) => this.setType(
                             e.target.value as GeometryType)}>
                         <option value="Point">Point</option>
@@ -54,6 +54,25 @@ export class MapComponent extends Component<Props, State> {
                 <div id="map" />
             </>
         );
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.kml === prevProps.kml) {
+            return;
+        }
+        // update the feature vector when the KML changed
+        this.kml = this.props.kml;
+        if (!this.props.kml) {
+            this.features.clear();
+            return;
+        }
+        // avoid call cycles by removing the change listeners
+        const listeners = this.features.getListeners("change");
+        listeners.forEach(
+            (li) => this.features.removeEventListener("change", li));
+        this.initKml(this.props.kml);
+        listeners.forEach(
+            (li) => this.features.addEventListener("change", li));
     }
 
     componentDidMount() {
@@ -75,16 +94,16 @@ export class MapComponent extends Component<Props, State> {
             source: this.features,
             style: new Style({
                 fill: new Fill({
-                    color: "rgba(255, 255, 255, 0.2)",
+                    color: "rgba(0, 0, 81, 0.3)",
                 }),
                 stroke: new Stroke({
-                    color: "#ffcc33",
+                    color: "#000051",
                     width: 2,
                 }),
                 image: new CircleStyle({
                     radius: 7,
                     fill: new Fill({
-                        color: "#ffcc33",
+                        color: "#000051",
                     }),
                 }),
             }),
