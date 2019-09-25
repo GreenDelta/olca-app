@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, CSSProperties } from "react";
 import { render } from "react-dom";
 import messages from "./messages";
 
@@ -82,29 +82,34 @@ type BlockProps = {
 
 const Block = (props: BlockProps) => {
 
-    const elemStyle = {
+    const elemStyle: CSSProperties = {
         marginBottom: 50,
         width: props.open ? "100%" : "auto",
     };
+    if (!props.open) {
+        elemStyle.display = "inline-block";
+    }
     const content = props.messages[props.msgKey + ".text"] + " " +
         props.messages[props.msgKey + ".link"];
 
     return (
-        <div className={"block " + props.className + (props.open ? " expanded" : "")}
-            style={elemStyle}
-            onClick={() => props.onClick(props.className)}>
-            <span className="block-content">
-                <span className="title"
-                    style={props.open ? { display: "none" } : { display: "inline" }}>
-                    {props.messages[`${props.msgKey}.title`]}
-                    <img className="chevron-right" src="images/chevron_right.png" />
+        <div>
+            <div className={"block " + props.className + (props.open ? " expanded" : "")}
+                style={elemStyle}
+                onClick={() => props.onClick(props.className)}>
+                <span className="block-content">
+                    <span className="title"
+                        style={props.open ? { display: "none" } : { display: "inline" }}>
+                        {props.messages[`${props.msgKey}.title`]}
+                        <img className="chevron-right" src="images/chevron_right.png" />
+                    </span>
+                    <span className="content"
+                        style={props.open ? { display: "inline" } : { display: "none" }}>
+                        <span
+                            dangerouslySetInnerHTML={{ __html: content }} />
+                    </span>
                 </span>
-                <span className="content"
-                    style={props.open ? { display: "inline" } : { display: "none" }}>
-                    <span
-                        dangerouslySetInnerHTML={{ __html: content }} />
-                </span>
-            </span>
+            </div>
         </div>
     );
 };
