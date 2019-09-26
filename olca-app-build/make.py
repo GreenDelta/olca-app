@@ -179,12 +179,12 @@ def pack_macos(version_date):
         out_ini_path = base + "openLCA.app/Contents/Eclipse/eclipse.ini"
         with open(out_ini_path, mode='w', encoding='utf-8', newline='\n') as o:
             o.write(text)
-    
+
     shutil.rmtree(base + "MacOS")
     os.remove(base + "Info.plist")
 
     # package the JRE
-    jre_tar = glob.glob('runtime/jre/jre-*-macosx-x64.tar')
+    jre_tar = glob.glob('runtime/jre/*mac*.tar')
     print(jre_tar)
     if len(jre_tar) == 0:
         print('ERROR: no JRE for Mac OSX found')
