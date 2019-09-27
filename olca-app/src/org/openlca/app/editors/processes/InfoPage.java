@@ -3,21 +3,24 @@ package org.openlca.app.editors.processes;
 import java.util.Objects;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.editors.processes.data_quality.DataQualityShell;
+import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Controls;
@@ -27,9 +30,12 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.core.model.DQSystem;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.util.Strings;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 class InfoPage extends ModelPage<Process> {
 
@@ -106,16 +112,21 @@ class InfoPage extends ModelPage<Process> {
 		Hyperlink link = UI.formLink(parent, toolkit, getDqLabel());
 		Controls.onClick(link, e -> {
 			if (getModel().dqSystem == null) {
-				MsgBox.error("Please select a data quality system first");
+				MsgBox.info("No data quality system was selected");
 				return;
 			}
 			String oldVal = getModel().dqEntry;
 			DQSystem system = getModel().dqSystem;
 			String entry = getModel().dqEntry;
-			DataQualityShell shell = DataQualityShell.withoutUncertainty(parent.getShell(), system, entry);
-			shell.onOk = InfoPage.this::onDqEntryDialogOk;
-			shell.onDelete = InfoPage.this::onDqEntryDialogDelete;
-			shell.addDisposeListener(e2 -> {
+			DataQualityShell shell = DataQualityShell.withoutUncertainty(
+					parent.getShell(), system, entry);
+			shell.onOk = (_shell) -> {
+				getModel().dqEntry = _shell.getSelection();
+			};
+			shell.onDelete = (_shell) -> {
+				getModel().dqEntry = null;
+			};
+			shell.addDisposeListener(_e -> {
 				if (Objects.equals(oldVal, getModel().dqEntry))
 					return;
 				link.setText(getDqLabel());
@@ -126,14 +137,6 @@ class InfoPage extends ModelPage<Process> {
 		});
 		new CommentControl(parent, getToolkit(), "dqEntry", getComments());
 		return link;
-	}
-
-	private void onDqEntryDialogOk(DataQualityShell shell) {
-		getModel().dqEntry = shell.getSelection();
-	}
-
-	private void onDqEntryDialogDelete(DataQualityShell shell) {
-		getModel().dqEntry = null;
 	}
 
 	private String getDqLabel() {
@@ -170,7 +173,7 @@ class InfoPage extends ModelPage<Process> {
 		combo.setInput(Database.get());
 		getBinding().onModel(() -> getModel(), "location", combo);
 		combo.addSelectionChangedListener((s) -> {
-			kmlLink.setText(kmlLabel());
+			kmlLink.setText(KmlUtil.getDisplayText(getModel()));
 			kmlLink.getParent().pack();
 		});
 		new CommentControl(comp, getToolkit(), "location", getComments());
@@ -186,22 +189,45 @@ class InfoPage extends ModelPage<Process> {
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		kmlLink = toolkit.createImageHyperlink(comp, SWT.TOP);
+		UI.gridData(kmlLink, true, false).horizontalSpan = 2;
+		kmlLink.setText(KmlUtil.getDisplayText(getModel()));
+		UI.filler(parent);
+
+		// open the KML feature when the link is clicked
 		Controls.onClick(kmlLink, e -> {
 			Process p = getModel();
-			if (p.location != null) {
-				App.openEditor(p.location);
+			String kml = null;
+			if (p.location != null && p.location.kmz != null) {
+				kml = KmlUtil.toKml(p.location.kmz);
 			}
+			if (Strings.nullOrEmpty(kml)) {
+				MsgBox.info("No KML assigned",
+						"The process has no location with KML assigned.");
+				return;
+			}
+
+			// set the shell flags explicitly, otherwise the thing
+			// cannot be resized on macOS
+			Shell pshell = parent.getShell();
+			Shell shell = new Shell(pshell, SWT.CLOSE
+					| SWT.MAX | SWT.MIN | SWT.RESIZE);
+			shell.setText(kmlLink.getText());
+			int width = (int) (pshell.getSize().x * 2. / 3.);
+			int height = (int) (width * 9. / 16.);
+			shell.setSize(width, height);
+			UI.center(pshell, shell);
+			shell.setLayout(new FillLayout());
+			Browser browser = new Browser(shell, SWT.NONE);
+			browser.setJavascriptEnabled(true);
+			shell.open();
+			String _kml = kml;
+			UI.onLoaded(browser, HtmlFolder.getUrl("kml_results.html"), () -> {
+				JsonObject obj = new JsonObject();
+				obj.addProperty("amount", 1.0);
+				obj.addProperty("kml", _kml);
+				browser.execute("addFeature(" + new Gson().toJson(obj) + ")");
+			});
+
 		});
-		UI.gridData(kmlLink, true, false).horizontalSpan = 2;
-		kmlLink.setText(kmlLabel());
-		UI.filler(parent);
 	}
-
-	private String kmlLabel() {
-		Location loc = getModel().location;
-		if (loc == null || loc.kmz == null)
-			return "none";
-		return KmlUtil.getDisplayText(loc.kmz);
-	}
-
 }

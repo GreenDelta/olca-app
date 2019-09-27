@@ -16,6 +16,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.openlca.app.M;
+import org.openlca.core.model.Process;
 import org.openlca.geo.kml.FeatureType;
 import org.openlca.util.BinUtils;
 import org.openlca.util.Strings;
@@ -62,9 +63,15 @@ public class KmlUtil {
 		return writer.toString();
 	}
 
+	public static String getDisplayText(Process p) {
+		if (p == null || p.location == null || p.location.kmz == null)
+			return "none";
+		return getDisplayText(p.location.kmz);
+	}
+
 	public static String getDisplayText(byte[] kmz) {
 		String kml = toKml(kmz);
-		if (kml == null)
+		if (Strings.nullOrEmpty(kml))
 			return "none";
 		try {
 			SAXBuilder builder = new SAXBuilder();
