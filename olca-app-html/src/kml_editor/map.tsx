@@ -24,6 +24,7 @@ export class MapComponent extends Component<Props, State> {
     draw: Draw;
     snap: Snap;
     kml: string;
+    cancel: (e: KeyboardEvent) => void;
     format = new KML({
         extractStyles: false,
         writeStyles: false,
@@ -102,11 +103,29 @@ export class MapComponent extends Component<Props, State> {
             source: this.features,
         }));
         this.setType(GeometryType.POLYGON);
+
+        // cancel drawing when `Escape` is pressed
+        this.cancel = (e) => {
+            if (e.code !== "Escape") {
+                return;
+            }
+            if (!this.map || !this.draw) {
+                return;
+            }
+            this.map.removeInteraction(this.draw);
+            this.map.addInteraction(this.draw);
+        };
+        document.addEventListener("keydown", this.cancel);
     }
 
     componentWillUnmount() {
+        if (this.cancel) {
+            document.removeEventListener("keydown", this.cancel);
+            this.cancel = null;
+        }
         if (this.map) {
             this.map.dispose();
+            this.map = null;
         }
     }
 
