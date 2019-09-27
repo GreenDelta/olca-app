@@ -71,6 +71,19 @@ class LocationInfoPage extends ModelPage<Location> {
 		browser.setJavascriptEnabled(true);
 		UI.gridData(browser, true, true).minimumHeight = 360;
 
+		// bind the onChange function
+		UI.bindFunction(browser, "onChange", (args) -> {
+			if (args == null || args.length == 0)
+				return null;
+			if (!(args[0] instanceof String))
+				return null;
+			String kml = (String) args[0];
+			Location loc = getModel();
+			loc.kmz = KmlUtil.toKmz(kml);
+			getEditor().setDirty(true);
+			return null;
+		});
+
 		// init the KML editor
 		UI.onLoaded(browser, HtmlFolder.getUrl("kml_editor.html"), () -> {
 			openKmlTool(KmlUtil.toKml(getModel().kmz), KML_MAP_TOOL);
