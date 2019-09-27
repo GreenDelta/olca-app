@@ -70,7 +70,7 @@ function addFeature({ amount, kml }: FeatureData) {
         return;
     }
     if (!_refAmount) {
-        _refAmount = amount;
+        _refAmount = Math.abs(amount);
     }
     const feature = _kml.readFeature(kml, {
         dataProjection: "EPSG:4326",
