@@ -126,7 +126,7 @@ def pack_linux(version_date):
 
     # package the JRE
     if not exists(product_dir + '/jre'):
-        jre_tar = glob.glob('runtime/jre/jre-*linux*x64*.tar')
+        jre_tar = glob.glob('runtime/jre/*linux*.tar')
         if len(jre_tar) == 0:
             print('  WARNING: No Linux JRE found')
         else:
