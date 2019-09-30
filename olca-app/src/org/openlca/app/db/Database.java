@@ -39,9 +39,9 @@ public class Database {
 	public static IDatabase activate(IDatabaseConfiguration config)
 			throws Exception {
 		try {
-			Database.database = config.createInstance();
+			database = config.createInstance();
 			listener = new DatabaseListener(Database.database);
-			Database.database.addListener(listener);
+			database.addListener(listener);
 			Cache.create(database);
 			Database.config = config;
 			Logger log = LoggerFactory.getLogger(Database.class);
@@ -52,9 +52,9 @@ public class Database {
 				repoConfig.credentials.setTokenSupplier(TokenDialog::prompt);
 				connect(new RepositoryClient(repoConfig));
 			}
-			return Database.database;
+			return database;
 		} catch (Exception e) {
-			Database.database = null;
+			database = null;
 			Cache.close();
 			Database.config = null;
 			throw e;

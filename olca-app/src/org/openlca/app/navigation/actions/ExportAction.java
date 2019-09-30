@@ -14,10 +14,11 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.MsgBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ExportAction extends Action implements INavigationAction {
+public class ExportAction extends Action implements INavigationAction {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -49,8 +50,13 @@ class ExportAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
+		if (Database.get() == null) {
+			MsgBox.info("No opened database",
+					"You need to open the database for the export first.");
+			return;
+		}
 		try {
-			IHandlerService service = (IHandlerService) PlatformUI
+			IHandlerService service = PlatformUI
 					.getWorkbench().getService(IHandlerService.class);
 			service.executeCommand(ActionFactory.EXPORT.getCommandId(), null);
 		} catch (Exception e) {

@@ -33,6 +33,8 @@ import org.openlca.app.editors.StartPage;
 import org.openlca.app.editors.parameters.BigParameterTable;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LogFileEditor;
+import org.openlca.app.navigation.actions.ExportAction;
+import org.openlca.app.navigation.actions.ImportAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.mapping.MappingTool;
@@ -48,8 +50,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction closeAction;
 	private IWorkbenchAction closeAllAction;
 	private IWorkbenchAction exitAction;
-	private IWorkbenchAction exportAction;
-	private IWorkbenchAction importAction;
 	private IWorkbenchAction preferencesAction;
 	private IWorkbenchAction saveAction;
 	private IWorkbenchAction saveAllAction;
@@ -122,8 +122,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(new Separator());
 		menu.add(preferencesAction);
 		menu.add(new Separator());
-		menu.add(importAction);
-		menu.add(exportAction);
+		menu.add(new ImportAction());
+		menu.add(new ExportAction());
 		menu.add(new Separator());
 		menu.add(exitAction);
 		menuBar.add(menu);
@@ -204,14 +204,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		preferencesAction = ActionFactory.PREFERENCES.create(window);
 		preferencesAction.setImageDescriptor(Icon.PREFERENCES.descriptor());
 		preferencesAction.setText(M.Settings);
-
-		// import & export
-		importAction = ActionFactory.IMPORT.create(window);
-		importAction.setImageDescriptor(Icon.IMPORT.descriptor());
-		importAction.setText(M.Import);
-		exportAction = ActionFactory.EXPORT.create(window);
-		exportAction.setImageDescriptor(Icon.EXPORT.descriptor());
-		exportAction.setText(M.Export);
 
 		// other
 		exitAction = ActionFactory.QUIT.create(window);
