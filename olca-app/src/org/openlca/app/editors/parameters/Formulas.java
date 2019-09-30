@@ -15,6 +15,7 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.expressions.Scope;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,15 @@ public class Formulas {
 		try {
 			Scope s = makeLocalScope(p.parameters, p.id);
 			evalParams(p.parameters, s);
-			evalExchanges(p.exchanges, s);
+			for (Exchange e : p.exchanges) {
+				if (Strings.notEmpty(e.amountFormula)) {
+					e.amount = eval(e.amountFormula, s);
+				}
+				eval(e.uncertainty, s);
+				if (Strings.notEmpty(e.costFormula)) {
+					e.costs = eval(e.costFormula, s);
+				}
+			}
 		} catch (Exception e) {
 			log.warn("unexpected error in formula evaluation", e);
 		}
@@ -78,8 +87,14 @@ public class Formulas {
 		try {
 			Scope s = makeLocalScope(m.parameters, m.id);
 			evalParams(m.parameters, s);
-			for (ImpactCategory ic : m.impactCategories)
-				evalFactors(ic.impactFactors, s);
+			for (ImpactCategory ic : m.impactCategories) {
+				for (ImpactFactor f : ic.impactFactors) {
+					if (Strings.notEmpty(f.formula)) {
+						f.value = eval(f.formula, s);
+					}
+					eval(f.uncertainty, s);
+				}
+			}
 		} catch (Exception e) {
 			log.warn("unexpected error in formula evaluation", e);
 		}
@@ -95,37 +110,22 @@ public class Formulas {
 		}
 	}
 
-	private void evalExchanges(List<Exchange> exchanges, Scope s) {
-		for (Exchange e : exchanges) {
-			if (e.amountFormula != null)
-				e.amount = eval(e.amountFormula, s);
-			eval(e.uncertainty, s);
-			if (e.costFormula != null)
-				e.costs = eval(e.costFormula, s);
-		}
-	}
-
-	private void evalFactors(List<ImpactFactor> factors, Scope s) {
-		for (ImpactFactor f : factors) {
-			if (f.formula != null)
-				f.value = eval(f.formula, s);
-			eval(f.uncertainty, s);
-		}
-	}
-
 	private void eval(Uncertainty u, Scope s) {
 		if (u == null)
 			return;
-		if (u.formula1 != null)
+		if (Strings.notEmpty(u.formula1)) {
 			u.parameter1 = eval(u.formula1, s);
-		if (u.formula2 != null)
+		}
+		if (Strings.notEmpty(u.formula2)) {
 			u.parameter2 = eval(u.formula2, s);
-		if (u.formula3 != null)
+		}
+		if (Strings.notEmpty(u.formula3)) {
 			u.parameter3 = eval(u.formula3, s);
+		}
 	}
 
 	private double eval(String formula, Scope s) {
-		if (formula == null || formula.trim().isEmpty() || s == null)
+		if (Strings.nullOrEmpty(formula) || s == null)
 			return 0;
 		try {
 			double val = s.eval(formula);
@@ -142,21 +142,24 @@ public class Formulas {
 		FormulaInterpreter interpreter = new FormulaInterpreter();
 		ParameterDao dao = new ParameterDao(db);
 		Scope globalScope = interpreter.getGlobalScope();
-		for (Parameter p : dao.getGlobalParameters())
+		for (Parameter p : dao.getGlobalParameters()) {
 			bind(p, globalScope);
+		}
 		Scope localScope = interpreter.createScope(scopeId);
-		for (Parameter p : params)
+		for (Parameter p : params) {
 			bind(p, localScope);
+		}
 		return localScope;
 	}
 
 	private void bind(Parameter param, Scope scope) {
 		if (param == null || scope == null)
 			return;
-		if (param.isInputParameter)
+		if (param.isInputParameter || Strings.nullOrEmpty(param.formula)) {
 			scope.bind(param.name, Double.toString(param.value));
-		else
+		} else {
 			scope.bind(param.name, param.formula);
+		}
 	}
 
 }
