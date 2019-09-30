@@ -8,20 +8,6 @@
     <link rel="stylesheet" href="lib/milligram.min.css">
     <link rel="stylesheet" href="lib/Chart.min.css">
     <style>
-        @font-face {
-            font-family: 'TheSans';
-            font-weight: normal;
-            font-style: normal;
-            src: url('fonts/TheSans_Plain.ttf') format('truetype');
-        }
-
-        @font-face {
-            font-family: 'TheSans';
-            font-weight: bold;
-            font-style: normal;
-            src: url('fonts/TheSans_B7_Bold.ttf') format('truetype');
-        }
-
         body {
             color: #212121 !important;
             font-family: 'TheSans', Helvetica, Arial, sans-serif;
@@ -35,6 +21,12 @@
     <script src="lib/react-dom.js"></script>
     <script src="lib/Chart.min.js"></script>
     <script src="report.js"></script>
+    <script>
+        // do not delete the line below; it is
+        // replaced with a data call when a
+        // report is exported
+        //{{set_data_call}}
+    </script>
 </body>
 
 </html>

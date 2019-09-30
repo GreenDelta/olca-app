@@ -4,8 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.StandardCopyOption;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.action.Action;
@@ -74,21 +73,25 @@ public class ReportToolbar extends EditorActionBarContributor {
 			try {
 				copyLibs(targetDir, htmlFolder);
 				String json = new Gson().toJson(report);
-				String messages = M.asJson();
-				String call = "$(window).load( function() { setData(" + json
-						+ ", " + messages + ")});";
-				File template = HtmlFolder.getFile(RcpActivator.getDefault()
-						.getBundle(), "report.html");
-				List<String> templateLines = Files.readAllLines(
-						template.toPath(), Charset.forName("utf-8"));
-				List<String> reportLines = new ArrayList<>();
-				for (String line : templateLines) {
-					String reportLine = line;
-					if (line.contains(CALL_HOOK))
-						reportLine = line.replace(CALL_HOOK, call);
-					reportLines.add(reportLine);
-				}
-				writeReport(report.title, reportLines, targetDir);
+				String call = "document.addEventListener(\"DOMContentLoaded\", "
+						+ "function() { setData(" + json + "); });";
+				File template = HtmlFolder.getFile(
+						RcpActivator.getDefault().getBundle(), "report.html");
+				StringBuilder text = new StringBuilder();
+				Files.readAllLines(template.toPath(), Charset.forName("utf-8"))
+						.stream().map(line -> line.contains(CALL_HOOK)
+								? line.replace(CALL_HOOK, call)
+								: line)
+						.forEach(line -> {
+							text.append(line);
+							text.append('\n');
+						});
+
+				String fileName = report.title == null
+						? "report.html"
+						: report.title.replaceAll("\\W+", "_") + ".html";
+				File file = new File(targetDir, fileName);
+				Files.write(file.toPath(), text.toString().getBytes("utf-8"));
 			} catch (Exception e) {
 				log.error("failed to export report", e);
 			}
@@ -96,25 +99,20 @@ public class ReportToolbar extends EditorActionBarContributor {
 
 		private void copyLibs(File targetDir, File htmlFolder)
 				throws IOException {
-			File libDir = new File(htmlFolder, "libs");
+			File lib = new File(htmlFolder, "report.js");
+			if (lib.exists()) {
+				File tlib = new File(targetDir, "report.js");
+				Files.copy(lib.toPath(), tlib.toPath(),
+						StandardCopyOption.REPLACE_EXISTING);
+			}
+			File libDir = new File(htmlFolder, "lib");
 			if (!libDir.exists())
 				return;
-			File targetLibDir = new File(targetDir, "libs");
-			if (!targetLibDir.exists())
+			File targetLibDir = new File(targetDir, "lib");
+			if (!targetLibDir.exists()) {
 				targetLibDir.mkdirs();
+			}
 			FileUtils.copyDirectory(libDir, targetLibDir);
 		}
-
-		private void writeReport(String title, List<String> lines,
-				File targetDir) throws IOException {
-			String fileName = null;
-			if (title == null)
-				fileName = "report.html";
-			else
-				fileName = title.replaceAll("\\W+", "_") + ".html";
-			File file = new File(targetDir, fileName);
-			Files.write(file.toPath(), lines, Charset.forName("utf-8"));
-		}
 	}
-
 }
