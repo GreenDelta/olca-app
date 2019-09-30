@@ -53,23 +53,23 @@ class KmlResultView extends FormPage {
 		ScrolledForm form = UI.formHeader(mform,
 				Labels.getDisplayName(setup.productSystem),
 				Images.get(result.result));
-		FormToolkit toolkit = mform.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
-		Composite composite = toolkit.createComposite(body);
-		UI.gridLayout(composite, 2);
+		FormToolkit tk = mform.getToolkit();
+		Composite body = UI.formBody(form, tk);
+		Composite comp = tk.createComposite(body);
+		UI.gridLayout(comp, 2);
 		flowImpactSelection = ResultTypeSelection
 				.on(result.result)
 				.withEventHandler(new KmlSelectionHandler(result))
-				.create(composite, toolkit);
-		browser = new Browser(composite, SWT.NONE);
+				.create(comp, tk);
+		browser = new Browser(body, SWT.NONE);
 		browser.setJavascriptEnabled(true);
 
 		UI.onLoaded(browser, HtmlFolder.getUrl("kml_results.html"), () -> {
 			loaded = true;
-			Set<FlowDescriptor> flowDescriptors = result.result.getFlows();
-			if (flowDescriptors.isEmpty())
+			Set<FlowDescriptor> flows = result.result.getFlows();
+			if (flows.isEmpty())
 				return;
-			FlowDescriptor flow = flowDescriptors.iterator().next();
+			FlowDescriptor flow = flows.iterator().next();
 			flowImpactSelection.selectWithEvent(flow);
 		});
 
