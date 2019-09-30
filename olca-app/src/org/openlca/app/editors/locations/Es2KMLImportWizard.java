@@ -13,11 +13,11 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.wizards.io.FileImportPage;
 import org.openlca.core.model.ModelType;
-import org.openlca.io.refdata.GeoKmzImport;
+import org.openlca.io.ecospold2.input.KMLImport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class KmzImportWizard extends Wizard implements IImportWizard {
+public class Es2KMLImportWizard extends Wizard implements IImportWizard {
 
 	public static final String ID = "wizard.import.kmz";
 	private FileImportPage fileImportPage;
@@ -35,7 +35,16 @@ public class KmzImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public boolean performFinish() {
 		try {
-			getContainer().run(true, false, (monitor) -> runImport(monitor));
+			getContainer().run(true, false, monitor -> {
+				monitor.beginTask(M.ImportingXMLData,
+						IProgressMonitor.UNKNOWN);
+				File file = fileImportPage.getFiles()[0];
+				boolean wasValidFile = new KMLImport(file,
+						Database.get()).run();
+				if (!wasValidFile)
+					MsgBox.info(M.CouldNotFindKMLData);
+				monitor.done();
+			});
 			Navigator.refresh(Navigator.findElement(ModelType.LOCATION));
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
@@ -43,15 +52,4 @@ public class KmzImportWizard extends Wizard implements IImportWizard {
 		}
 		return true;
 	}
-
-	private void runImport(IProgressMonitor monitor) {
-		monitor.beginTask(M.ImportingXMLData,
-				IProgressMonitor.UNKNOWN);
-		File file = fileImportPage.getFiles()[0];
-		boolean wasValidFile = new GeoKmzImport(file, Database.get()).run();
-		if (!wasValidFile)
-			MsgBox.info(M.CouldNotFindKMLData);
-		monitor.done();
-	}
-
 }

@@ -9,7 +9,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.wizards.IWizardDescriptor;
 import org.openlca.app.M;
-import org.openlca.app.editors.locations.KmzImportWizard;
+import org.openlca.app.editors.locations.Es2KMLImportWizard;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
@@ -40,7 +40,7 @@ class ImportXmlKmlAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		IWizardDescriptor descriptor = PlatformUI.getWorkbench()
-				.getImportWizardRegistry().findWizard(KmzImportWizard.ID);
+				.getImportWizardRegistry().findWizard(Es2KMLImportWizard.ID);
 		if (descriptor == null)
 			return;
 		try {

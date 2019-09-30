@@ -516,6 +516,10 @@
                name="startupMessageRect"
                value="7,525,445,20">
          </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
       </product>
    </extension>
    <extension
@@ -733,7 +737,7 @@
 		   <description>Import SimaPro CSV files.</description>
 	   </wizard>
 	   <wizard
-          class="org.openlca.app.editors.locations.KmzImportWizard"
+          class="org.openlca.app.editors.locations.Es2KMLImportWizard"
           icon="icons/file/xml.png"
           id="wizard.import.kmz"
           name="EcoSpold2 geographies">
