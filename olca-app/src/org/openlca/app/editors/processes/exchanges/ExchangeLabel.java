@@ -27,6 +27,7 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
+import org.openlca.util.Strings;
 
 class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		ITableColorProvider, ITableFontProvider {
@@ -102,7 +103,13 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		case 7:
 			return getDefaultProvider(e);
 		case 8:
-			return e.dqEntry;
+			// data quality entry
+			if (Strings.nullOrEmpty(e.dqEntry))
+				return null;
+			Process p = editor.getModel();
+			if (p.exchangeDqSystem == null)
+				return null;
+			return p.exchangeDqSystem.applyScoreLabels(e.dqEntry);
 		case 9:
 			return e.description;
 		}

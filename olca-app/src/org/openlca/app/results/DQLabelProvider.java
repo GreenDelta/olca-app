@@ -1,6 +1,5 @@
 package org.openlca.app.results;
 
-import java.math.RoundingMode;
 import java.util.Collections;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -42,7 +41,7 @@ abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabe
 		return null;
 	}
 
-	protected abstract double[] getQuality(Object obj);
+	protected abstract int[] getQuality(Object obj);
 
 	@Override
 	public void update(ViewerCell cell) {
@@ -59,14 +58,17 @@ abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabe
 
 	@Override
 	public String getToolTipText(Object element) {
-		double[] quality = getQuality(element);
+		int[] quality = getQuality(element);
 		if (quality == null)
 			return null;
 		String text = "";
 		Collections.sort(dqSystem.indicators);
 		for (int i = 0; i < dqSystem.indicators.size(); i++) {
 			DQIndicator indicator = dqSystem.indicators.get(i);
-			text += indicator.name + ": " + quality[indicator.position - 1];
+			int idx = indicator.position - 1;
+			if (idx >= quality.length)
+				continue;
+			text += indicator.name + ": " + dqSystem.getScoreLabel(quality[idx]);
 			if (i != dqSystem.indicators.size() - 1) {
 				text += "\n";
 			}
@@ -86,15 +88,13 @@ abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabe
 		if (col < startCol)
 			return getText(element, col);
 		int pos = col - startCol;
-		double[] quality = getQuality(element);
+		int[] quality = getQuality(element);
 		if (quality == null)
 			return null;
 		if (quality[pos] == 0)
 			return null;
-		double value = quality[pos];
-		RoundingMode roundingMode = dataQualityResult.setup.roundingMode;
-		int iValue = (int) (roundingMode == RoundingMode.CEILING ? Math.ceil(value) : Math.round(value));
-		return Integer.toString(iValue);
+		int value = quality[pos];
+		return dqSystem.getScoreLabel(value);
 	}
 
 	@Override
@@ -102,10 +102,10 @@ abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabe
 		if (col < startCol)
 			return getBackgroundColor(element, col);
 		int pos = col - startCol;
-		double[] quality = getQuality(element);
+		int[] quality = getQuality(element);
 		if (quality == null)
 			return null;
-		return DQUI.getColor(quality[pos], dqSystem.getScoreCount(), dataQualityResult.setup.roundingMode);
+		return DQUI.getColor(quality[pos], dqSystem.getScoreCount());
 	}
 
 	@Override

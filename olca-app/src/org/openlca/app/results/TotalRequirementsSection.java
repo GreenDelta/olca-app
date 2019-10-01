@@ -313,7 +313,7 @@ class TotalRequirementsSection {
 		}
 
 		@Override
-		protected double[] getQuality(Object obj) {
+		protected int[] getQuality(Object obj) {
 			if (!(obj instanceof Item))
 				return null;
 			Item item = (Item) obj;

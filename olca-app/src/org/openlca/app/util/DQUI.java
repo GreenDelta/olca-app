@@ -1,7 +1,5 @@
 package org.openlca.app.util;
 
-import java.math.RoundingMode;
-
 import org.eclipse.swt.graphics.Color;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.DQResult;
@@ -48,27 +46,22 @@ public class DQUI {
 	}
 
 	public static Color getColor(int value, int total) {
-		return getColor((double) value, total, null);
-	}
-
-	public static Color getColor(double value, int total, RoundingMode rounding) {
-		int index = (int) (rounding == RoundingMode.CEILING ? Math.ceil(value) : Math.round(value));
-		if (index == 0)
+		if (value <= 0)
 			return Colors.white();
-		if (index == 1)
+		if (value == 1)
 			return Colors.get(125, 250, 125);
-		if (index == total)
+		if (value == total)
 			return Colors.get(250, 125, 125);
 		int median = total / 2 + 1;
-		if (index == median)
+		if (value == median)
 			return Colors.get(250, 250, 125);
-		if (index < median) {
+		if (value < median) {
 			int divisor = median - 1;
-			int factor = index - 1;
+			int factor = value - 1;
 			return Colors.get(125 + (125 * factor / divisor), 250, 125);
 		}
 		int divisor = median - 1;
-		int factor = index - median;
+		int factor = value - median;
 		return Colors.get(250, 250 - (125 * factor / divisor), 125);
 	}
 

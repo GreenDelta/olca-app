@@ -260,7 +260,7 @@ public class InventoryPage extends FormPage {
 		}
 
 		@Override
-		protected double[] getQuality(Object obj) {
+		protected int[] getQuality(Object obj) {
 			if (obj instanceof FlowDescriptor) {
 				FlowDescriptor flow = (FlowDescriptor) obj;
 				return dqResult.get(flow);

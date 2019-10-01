@@ -266,7 +266,7 @@ public class TotalImpactResultPage extends FormPage {
 		}
 
 		@Override
-		protected double[] getQuality(Object obj) {
+		protected int[] getQuality(Object obj) {
 			if (dqResult == null)
 				return null;
 			Item item = (Item) obj;

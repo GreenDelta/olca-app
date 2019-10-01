@@ -1,6 +1,7 @@
 package org.openlca.app.editors.processes;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -109,10 +110,16 @@ class InfoPage extends ModelPage<Process> {
 
 	private Hyperlink createDqEntryRow(Composite parent) {
 		UI.formLabel(parent, toolkit, M.DataQualityEntry);
-		Hyperlink link = UI.formLink(parent, toolkit, getDqLabel());
+		Supplier<String> dqLabel = () -> {
+			Process p = getModel();
+			return p.dqSystem == null || Strings.nullOrEmpty(p.dqEntry)
+					? "(not specified)"
+					: p.dqSystem.applyScoreLabels(p.dqEntry);
+		};
+		Hyperlink link = UI.formLink(parent, toolkit, dqLabel.get());
 		Controls.onClick(link, e -> {
 			if (getModel().dqSystem == null) {
-				MsgBox.info("No data quality system was selected");
+				MsgBox.info("No data quality system is selected");
 				return;
 			}
 			String oldVal = getModel().dqEntry;
@@ -129,7 +136,7 @@ class InfoPage extends ModelPage<Process> {
 			shell.addDisposeListener(_e -> {
 				if (Objects.equals(oldVal, getModel().dqEntry))
 					return;
-				link.setText(getDqLabel());
+				link.setText(dqLabel.get());
 				link.pack();
 				getEditor().setDirty(true);
 			});
@@ -137,32 +144,6 @@ class InfoPage extends ModelPage<Process> {
 		});
 		new CommentControl(parent, getToolkit(), "dqEntry", getComments());
 		return link;
-	}
-
-	private String getDqLabel() {
-		Process p = getModel();
-		if (p.dqEntry == null)
-			return "(not specified)";
-		if (p.dqSystem == null)
-			return p.dqEntry;
-		int[] vals = p.dqSystem.toValues(p.dqEntry);
-		if (vals == null)
-			return p.dqEntry;
-		String label = "(";
-		for (int i = 0; i < vals.length; i++) {
-			if (vals[i] == 0) {
-				label += "n.a.";
-			} else {
-				String e = p.dqSystem.getScoreLabel(vals[i]);
-				if (e == null)
-					return p.dqEntry;
-				label += e;
-			}
-			if (i < (vals.length - 1)) {
-				label += "; ";
-			}
-		}
-		return label + ")";
 	}
 
 	private void createGeographySection(Composite body) {
