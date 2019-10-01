@@ -45,7 +45,7 @@ export const IndicatorChart = ({ report, contributions }: IndicatorConfig) => {
             };
             data.datasets.push({
                 label: "Other",
-                backgroundColor: _color(999, 0.5),
+                backgroundColor: "rgba(121, 121, 121, 0.5)",
                 data: variants.map((variant) => getContribution(
                     { report, indicator, variant, rest: true })),
             });
@@ -223,33 +223,32 @@ function _barConfig(data: ChartData,
 
 function _color(i: number, alpha?: number): string {
     const colors = [
-        "#e53039",
-        "#296fc4",
-        "#ffc923",
-        "#52a84d",
-        "#844cad",
-        "#7fb7e5",
-        "#ff8900",
-        "#800080",
-        "#874c3f",
-        "#fcff64",
-        "#00b1f1",
-        "#70bb28",
-        "#125985",
-        "#e20073",
-        "#ffff55",
-        "#da0018",
-        "#006f9a",
-        "#ff9900",
+        "229, 48, 57",
+        "41, 111, 196",
+        "255, 201, 35",
+        "82, 168, 77",
+        "132, 76, 173",
+        "127, 183, 229",
+        "255, 137, 0",
+        "128, 0, 128",
+        "135, 76, 63",
+        "252, 255, 100",
+        "0, 177, 241",
+        "112, 187, 40",
+        "18, 89, 133",
+        "226, 0, 115",
+        "255, 255, 85",
+        "218, 0, 24",
+        "0, 111, 154",
+        "255, 153, 0",
     ];
-    let a = alpha ? Math.round(255 * alpha).toString(16) : "";
-    if (a.length === 1) {
-        a = "0" + a;
-    }
     if (i >= colors.length) {
-        return "#bdbdbd" + a;
+        return "rgb(0, 0, 0)";
     }
-    return colors[i] + a;
+    if (!alpha) {
+        return "rgb(" + colors[i] + ")";
+    }
+    return `rgba(${colors[i]}, ${alpha})`;
 }
 
 /** Returns the maximum indicator values in a map: indicator ID -> max. */
