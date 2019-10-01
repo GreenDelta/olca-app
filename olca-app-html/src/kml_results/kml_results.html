@@ -4,6 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=11">
 	<title>KML Result View</title>
 	<link rel="stylesheet" type="text/css" href="lib/ol.css">
 	<style type="text/css">
@@ -23,12 +24,15 @@
 </head>
 
 <body>
-	<div id="map">
-	</div>
-	<!--
-		<script src="libs/ol.js"></script>
-		<script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
-	-->
+	<div id="map"></div>
+	<script>
+        // fix the mouse pointer issue in an embedded IE
+        // see https://stackoverflow.com/a/37055626/599575
+        if (navigator && navigator.platform && navigator.platform.indexOf("Win") === 0) {
+            delete window.PointerEvent;
+            window.navigator.msPointerEnabled = false;
+        }
+    </script>
 	<script src="kml_results.js"></script>
 </body>
 
