@@ -136,8 +136,16 @@ def pack_linux(version_date):
             os.rename(jre_dir[0], p(product_dir + '/jre'))
             print('done')
 
+    # package the native libraries
+    if not os.path.exists('runtime/julia/linux'):
+        print('  WARNING: No native libraries')
+    else:
+        for f in glob.glob('runtime/julia/linux/*.*'):
+            shutil.copy2(f, product_dir)
+
     # copy the ini file
-    shutil.copy2('templates/openLCA_linux.ini', p(product_dir + "/openLCA.ini"))
+    shutil.copy2('templates/openLCA_linux.ini',
+                 p(product_dir + "/openLCA.ini"))
 
     printw('  Create distribtuion package')
     dist_pack = p('build/dist/openLCA_linux64_%s' % version_date)
