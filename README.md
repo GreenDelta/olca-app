@@ -147,18 +147,6 @@ mvn package
 This will copy the installed openLCA core modules and dependencies (see above)
 to the folder `olca-app/olca-app/libs`.
 
-#### Add the JavaFX-SWT bridge
-Since version 1.6, openLCA uses JavaFX components (e.g. the JavaFX WebView or
-charting components). The Java runtime contains a JavaFX-SWT bridge with which
-it is possible to embed JavaFX components in SWT applications. This bridge is
-contained in the library `jfxswt.jar` which you need to add to the Java
-runtime in Eclipse.
-
-To do this, open the preferences for the installed Java runtimes 
-`Window > Preferences > Java > Installed JREs`, select the enabled JRE and
-click on `Edit`. In the upcoming dialog, click on `Add External JARs` and select
-the `jre/lib/jfxswt.jar` library from the respective Java installation.
-
 #### Test the application
 Refresh your Eclipse workspace (select all and press `F5`). Open the file
 [olca-app/openLCA.product](./olca-app/openLCA.product) within  Eclipse and click
