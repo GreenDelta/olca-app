@@ -154,7 +154,7 @@ export const ComparisonChart = (props: CompProps) => {
     }
 
     if (type === "radar") {
-        config.options.scale = {
+        config.options.scales = {
             ticks: {
                 beginAtZero: true,
                 display: false,
