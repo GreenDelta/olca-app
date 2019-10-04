@@ -30,8 +30,7 @@ following tools installed:
 * a [Java Development Kit 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 * [Maven](http://maven.apache.org/)
 * the [Eclipse package for RCP developers](https://www.eclipse.org/downloads/packages/)
-* [Node.js](https://nodejs.org/) and [Gulp](http://gulpjs.com/) (for building
-  the HTML5 user interface components)
+* [Node.js](https://nodejs.org/) 
 
 When you have these tools installed you can build the application from source
 via the following steps:
@@ -67,7 +66,7 @@ Your development directory should now look like this:
       olca-app
       olca-app-build
       olca-app-html
-      olca-app-runtime
+      olca-refdata
       ...
 
 #### Building the HTML pages
@@ -85,14 +84,16 @@ package manager that comes with your Node.js installation):
 npm install
 ```
 
-This will create a folder `olca-app-html/node_modules` with the dependent
-modules. After this, you can create the html package via Gulp:
 
-```
-gulp
+This also installs a local version of `webpack` which is used to create the
+distribution package. The build of this package can be invoked via:
+
+```bash
+npm run build
 ```
 
-This will build and package the HTML files to `olca-app/olca-app/html/base_html-.zip`.
+The output is generated in the `dist` folder of this directory and packaged
+into a zip file that is copied to the `../olca-app/html` folder.
 
 #### Prepare the Eclipse workspace
 Download the current Eclipse package for RCP and RAP developers (to have
@@ -108,13 +109,13 @@ folder to have a clean structure):
       olca-app
       olca-app-build
       olca-app-html
-      olca-app-runtime
+      olca-app-refdata
       ...
 
 After this, open Eclipse and select the created workspace directory. Import the
 projects into Eclipse via `Import > General > Existing Projects into Workspace`
 (select the `olca/olca-app` directory). You should now see the `olca-app`, 
-`olca-app-build`, and `olca-app-runtime` projects in your Eclipse workspace.
+`olca-app-build`, projects in your Eclipse workspace.
 
 #### Loading the target platform 
 The file `platform.target` in the `olca-app` project contains the definition of
@@ -135,6 +136,7 @@ Go back to the command line and navigate to the
 
 ```bash
 cd olca-app/olca-app
+```
 
 and run 
 
@@ -160,7 +162,7 @@ the `jre/lib/jfxswt.jar` library from the respective Java installation.
 #### Test the application
 Refresh your Eclipse workspace (select all and press `F5`). Open the file
 [olca-app/openLCA.product](./olca-app/openLCA.product) within  Eclipse and click
-on the run icon. openLCA should now start.
+on the run icon inside the `openLCA.product` tab. openLCA should now start.
 
 If you want to build an installable product, see the description in the 
 [olca-app-build](./olca-app-build) sub-project or simply use the Eclipse export
