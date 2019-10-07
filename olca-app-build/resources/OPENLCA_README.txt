@@ -62,7 +62,11 @@ License: https://github.com/google/guava/blob/master/COPYING (APL 2.0)
 
 = heatmap.js =
 Homepage: https://github.com/pa7/heatmap.js
-License:https://github.com/pa7/heatmap.js/blob/master/LICENSE (MIT)
+License: https://github.com/pa7/heatmap.js/blob/master/LICENSE (MIT)
+
+= HikaryCP =
+Homepage: https://github.com/brettwooldridge/HikariCP
+License: https://github.com/brettwooldridge/HikariCP/blob/dev/LICENSE (APL 2.0)
 
 = Jersey =
 Homepage: https://jersey.java.net/
@@ -88,7 +92,17 @@ License: https://github.com/Leaflet/Leaflet/blob/master/LICENSE (BSD)
 Homepage: http://www.mapdb.org/
 License: https://github.com/jankotek/mapdb/blob/master/license.txt (APL 2.0)
 
-= 
+= Milligram =
+Homepage: https://milligram.io/
+License: https://github.com/milligram/milligram/blob/master/license (MIT)
+
+= NanoHTTPD =
+Homepage: https://github.com/NanoHttpd/nanohttpd
+License: https://github.com/NanoHttpd/nanohttpd/blob/master/LICENSE.md (BSD)
+
+= Normalize.css =
+Homepage: https://necolas.github.io/normalize.css/
+License: https://github.com/necolas/normalize.css/blob/master/LICENSE.md (MIT)
 
 = OpenBLAS =
 Homepage: http://www.openblas.net/
@@ -98,14 +112,18 @@ License: https://github.com/xianyi/OpenBLAS/blob/develop/LICENSE (BSD)
 Homepage: http://openlayers.org/
 License: https://github.com/openlayers/ol3/blob/master/LICENSE.md (BSD)
 
+= React =
+Homepage: https://reactjs.org/
+License: https://github.com/facebook/react/blob/master/LICENSE (MIT)
+
 = SLF4J = 
 Homepage: http://www.slf4j.org/
 License: http://www.slf4j.org/license.html (MIT)
 
-= Silk Icons =
-Homepage: http://www.famfamfam.com/lab/icons/silk/
-License: http://creativecommons.org/licenses/by/2.5/ (CC 2.5)
-
 = SuperCSV =
 Homepage: http://super-csv.github.io/super-csv/index.html
 License: http://super-csv.github.io/super-csv/license.html (APL 2.0)
+
+= zt-zip =
+Homepage: https://github.com/zeroturnaround/zt-zip
+License: https://github.com/zeroturnaround/zt-zip/blob/master/LICENSE (APL 2.0)
