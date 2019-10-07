@@ -1,4 +1,4 @@
-== License ==
+# License
 
 The openLCA project makes available all content in this package 
 ("Content"). Unless otherwise indicated below, the Content is provided 
@@ -21,41 +21,25 @@ A copy of the full license text and also copies of the licenses of the
 third party content can be found in the installation directory 
 (/licenses).
 
-== Java Runtime Environment == 
+= Java Runtime Environment =
 The openLCA install package may includes a Java Runtime Environment 
-(JRE) in order to run openLCA. The JRE is licensed under the Oracle 
-Binary Code License Agreement for the Java SE Platform Products 
-and JavaFX 
-(http://www.oracle.com/technetwork/java/javase/terms/license/index.html).
-A current version of the JRE is freely available for multiple operating
-systems from http://www.oracle.com/technetwork/java/javase/downloads/index.html.
-
-== Third Party Content ==
-
-= AngularJS =
-Homepage: http://angularjs.org/
-License: https://github.com/angular/angular.js/blob/master/LICENSE (MIT) 
+(JRE) from the AdoptOpenJDK project in order to run openLCA. This JRE
+is licensed under GPLv2+CE license.
+Homepage: https://adoptopenjdk.net/index.html
+License: https://openjdk.java.net/legal/gplv2+ce.html (GPLv2+CE)
 
 = Apache Projects =
 Homepage: http://www.apache.org/
 License: http://www.apache.org/licenses/LICENSE-2.0.txt (APL 2.0)
 
-= Bootstrap =
-Homepage: http://getbootstrap.com/
-License: https://github.com/twbs/bootstrap/blob/master/LICENSE (MIT)
- 
 = Chart.js =
 Homepage: http://www.chartjs.org/
-License: https://github.com/nnnick/Chart.js/blob/master/LICENSE.md (MIT) 
+License: https://github.com/chartjs/Chart.js/blob/master/LICENSE.md (MIT) 
 
 = Codemirror =
 Homepage: https://codemirror.net/
 License: https://codemirror.net/LICENSE (MIT)
  
-= D3 =
-Homepage: http://d3js.org/
-License: https://github.com/mbostock/d3/blob/master/LICENSE (BSD)
-
 = Eclipse =
 Homepage: http://eclipse.org/
 License: http://www.eclipse.org/legal/epl-v10.html (EPL 1.0)
@@ -76,6 +60,10 @@ License: https://github.com/google/gson/blob/master/LICENSE (APL 2.0)
 Homepage: https://github.com/google/guava
 License: https://github.com/google/guava/blob/master/COPYING (APL 2.0)
 
+= heatmap.js =
+Homepage: https://github.com/pa7/heatmap.js
+License:https://github.com/pa7/heatmap.js/blob/master/LICENSE (MIT)
+
 = Jersey =
 Homepage: https://jersey.java.net/
 License: https://jersey.java.net/license.html (CDDL 1.1)
@@ -92,9 +80,15 @@ License: https://github.com/jquery/jquery/blob/master/LICENSE.txt (MIT)
 Homepage: http://www.jython.org/
 License: http://www.jython.org/license.html (PSF License v2)
 
+= Leaflet =
+Homepage: https://leafletjs.com/
+License: https://github.com/Leaflet/Leaflet/blob/master/LICENSE (BSD)
+
 = MapDB =
 Homepage: http://www.mapdb.org/
 License: https://github.com/jankotek/mapdb/blob/master/license.txt (APL 2.0)
+
+= 
 
 = OpenBLAS =
 Homepage: http://www.openblas.net/
