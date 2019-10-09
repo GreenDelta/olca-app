@@ -2,6 +2,8 @@ package org.openlca.app;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -46,7 +48,18 @@ public class App {
 		if (solver != null)
 			return solver;
 		try {
-			File dir = new File(Platform.getInstallLocation().getURL().toURI());
+			File dir;
+			URL url = Platform.getInstallLocation().getURL();
+			try {
+				// url.toURI() does not work for URLs with specific characters
+				// which is the case when the application is installed in
+				// folders like C:\Program Files (x86)\openLCA; see
+				// https://community.oracle.com/blogs/kohsuke/2007/04/25/how-convert-javaneturl-javaiofile
+				dir = new File(url.toURI());
+			} catch (URISyntaxException e) {
+				dir = new File(url.getPath());
+			}
+
 			if (Julia.loadFromDir(dir)) {
 				solver = new JuliaSolver();
 				log.info("Loaded Julia-BLAS solver as default matrix solver");

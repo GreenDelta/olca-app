@@ -85,7 +85,6 @@ def pack_win(version, version_date):
     shutil.make_archive(zip_file, 'zip', 'build/win32.win32.x86_64')
     print('done')
 
-    """
     # create installer
     pack_dir = 'build/win32.win32.x86_64'
     inst_files = glob.glob('resources/installer_static_win/*')
@@ -112,7 +111,6 @@ def pack_win(version, version_date):
     subprocess.call(cmd)
     shutil.move(p(pack_dir + '/setup.exe'),
                 p('build/dist/openLCA_win64_' + version_date + ".exe"))
-    """
 
 
 def pack_linux(version_date):
