@@ -1,21 +1,26 @@
 package org.openlca.app.editors.processes.exchanges;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
+import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.usage.ExchangeUseSearch;
 import org.openlca.core.model.Exchange;
-import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,44 +78,93 @@ class Exchanges {
 			return e.flow.flowType == FlowType.WASTE_FLOW;
 	}
 
-	static boolean canRemove(Process process, List<Exchange> exchanges) {
-		if (process == null || exchanges == null)
+	/**
+	 * Checks if the given exchanges can be removed from the process. The exchanges
+	 * cannot be removed and a corresponding error message is displayed when:
+	 * 
+	 * <li>one of the given exchanges is the reference flow of the process
+	 * <li>at least one of the exchanges is used in a product system
+	 * <li>at least one of the exchanges is needed as default provider link
+	 */
+	static boolean canRemove(Process p, List<Exchange> exchanges) {
+		if (p == null || exchanges == null)
 			return false;
-		if (containsRefFlow(process, exchanges))
-			return false;
-		if (containsUsed(process, exchanges))
-			return false;
-		else
-			return true;
-	}
 
-	private static boolean containsRefFlow(Process process,
-			List<Exchange> exchanges) {
-		if (process.quantitativeReference == null)
-			return false;
-		if (exchanges.contains(process.quantitativeReference)) {
+		// check reference flow
+		if (p.quantitativeReference != null
+				&& exchanges.contains(p.quantitativeReference)) {
 			MsgBox.error(M.CannotDeleteRefFlow, M.CannotDeleteRefFlowMessage);
-			return true;
+			return false;
 		}
-		return false;
-	}
 
-	private static boolean containsUsed(Process process,
-			List<Exchange> exchanges) {
-		List<Exchange> products = new ArrayList<>();
-		for (Exchange exchange : exchanges) {
-			Flow flow = exchange.flow;
-			if (flow != null && flow.flowType != FlowType.ELEMENTARY_FLOW)
-				products.add(exchange);
+		// collect product and waste flows
+		List<Exchange> techFlows = exchanges.stream()
+				.filter(e -> e.flow != null
+						&& e.flow.flowType != FlowType.ELEMENTARY_FLOW)
+				.collect(Collectors.toList());
+		if (techFlows.isEmpty())
+			return true;
+
+		// check usage in product systems
+		List<CategorizedDescriptor> usages = new ExchangeUseSearch(
+				Database.get(), p).findUses(techFlows);
+		if (!usages.isEmpty()) {
+			MsgBox.error(M.CannotRemoveExchanges, M.ExchangesAreUsed);
+			return false;
 		}
-		if (products.isEmpty())
+
+		// check provider links
+		List<Exchange> providers = techFlows.stream()
+				.filter(e -> (e.isInput && e.flow.flowType == FlowType.WASTE_FLOW)
+						|| (!e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW))
+				.collect(Collectors.toList());
+		if (providers.isEmpty())
+			return true;
+		for (Exchange provider : providers) {
+			String query = "select f_owner from tbl_exchanges where "
+					+ "f_default_provider = " + p.id + " and "
+					+ "f_flow = " + provider.flow.id + "";
+			IDatabase db = Database.get();
+			AtomicReference<ProcessDescriptor> ref = new AtomicReference<>();
+			try {
+				NativeSql.on(db).query(query, r -> {
+					long owner = r.getLong(1);
+					ProcessDescriptor d = new ProcessDao(db).getDescriptor(owner);
+					if (d != null) {
+						ref.set(d);
+						return false;
+					}
+					return true;
+				});
+			} catch (Exception e) {
+				Logger log = LoggerFactory.getLogger(Exchanges.class);
+				log.error("Failed to query default providers " + query, e);
+				return false;
+			}
+			if (ref.get() == null)
+				continue;
+
+			// we found an usage as default provider, now we need to make sure
+			// that there is no other exchange with the same flow and direction
+			// that can fulfill this role (and that is not in the list of
+			// exchanges to be deleted).
+			boolean ok = p.exchanges.stream().filter(e -> e.id != provider.id
+					&& e.isInput == provider.isInput
+					&& e.flow != null
+					&& e.flow.id == provider.flow.id
+					&& !exchanges.contains(e)).findAny().isPresent();
+			if (ok)
+				continue;
+
+			MsgBox.error("Flow used as default provider",
+					"This process is linked as default provider with flow `"
+							+ Strings.cut(Labels.getDisplayName(provider.flow), 75)
+							+ "` in process `"
+							+ Strings.cut(Labels.getDisplayName(ref.get()), 75)
+							+ "`.");
 			return false;
-		ExchangeUseSearch search = new ExchangeUseSearch(Database.get(),
-				process);
-		List<CategorizedDescriptor> list = search.findUses(products);
-		if (list.isEmpty())
-			return false;
-		MsgBox.error(M.CannotRemoveExchanges, M.ExchangesAreUsed);
+		}
+
 		return true;
 	}
 
