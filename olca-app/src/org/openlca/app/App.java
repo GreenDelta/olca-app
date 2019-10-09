@@ -3,6 +3,8 @@ package org.openlca.app;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
@@ -75,9 +77,9 @@ public class App {
 	}
 
 	/**
-	 * Returns the version of the openLCA application. If there is a version
-	 * defined in the ini-file (-olcaVersion argument) this is returned.
-	 * Otherwise the version of the application bundle is returned.
+	 * Returns the version of the openLCA application. If there is a version defined
+	 * in the ini-file (-olcaVersion argument) this is returned. Otherwise the
+	 * version of the application bundle is returned.
 	 */
 	public static String getVersion() {
 		String version = CommandArgument.VERSION.getValue();
@@ -130,8 +132,8 @@ public class App {
 	}
 
 	/**
-	 * Returns true if the given data set is currently opened in an editor that
-	 * has a dirty (= unsaved) state.
+	 * Returns true if the given data set is currently opened in an editor that has
+	 * a dirty (= unsaved) state.
 	 */
 	public static boolean hasDirtyEditor(RootEntity e) {
 		if (e == null)
@@ -140,8 +142,8 @@ public class App {
 	}
 
 	/**
-	 * Returns true if the given data set is currently opened in an editor that
-	 * has a dirty (= unsaved) state.
+	 * Returns true if the given data set is currently opened in an editor that has
+	 * a dirty (= unsaved) state.
 	 */
 	public static boolean hasDirtyEditor(BaseDescriptor d) {
 		IEditorReference ref = findEditor(d);
@@ -176,17 +178,17 @@ public class App {
 	}
 
 	/**
-	 * Wraps a runnable in a job and executes it using the Eclipse jobs
-	 * framework. No UI access is allowed for the runnable.
+	 * Wraps a runnable in a job and executes it using the Eclipse jobs framework.
+	 * No UI access is allowed for the runnable.
 	 */
 	public static Job run(String name, Runnable runnable) {
 		return run(name, runnable, null);
 	}
 
 	/**
-	 * See {@link App#run(String, Runnable)}. Additionally, this method allows
-	 * to give a callback which is executed in the UI thread when the runnable
-	 * is finished.
+	 * See {@link App#run(String, Runnable)}. Additionally, this method allows to
+	 * give a callback which is executed in the UI thread when the runnable is
+	 * finished.
 	 */
 	public static Job run(String name, Runnable runnable, Runnable callback) {
 		WrappedJob job = new WrappedJob(name, runnable);
@@ -228,6 +230,26 @@ public class App {
 		} catch (InvocationTargetException | InterruptedException e) {
 			log.error("Error while running progress " + name, e);
 		}
+	}
+
+	/**
+	 * Shows a progress indicator while running the given function and returns the
+	 * result of that function. Note that the result can be null when the function
+	 * call failed.
+	 */
+	public static <T> T exec(String task, Supplier<T> fn) {
+		AtomicReference<T> ref = new AtomicReference<T>();
+		try {
+			PlatformUI.getWorkbench().getProgressService()
+					.busyCursorWhile((monitor) -> {
+						monitor.beginTask(task, IProgressMonitor.UNKNOWN);
+						ref.set(fn.get());
+						monitor.done();
+					});
+		} catch (Exception e) {
+			log.error("exec " + task + " failed", e);
+		}
+		return ref.get();
 	}
 
 	/**
