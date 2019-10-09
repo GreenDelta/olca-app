@@ -19,7 +19,7 @@ application folder and to create the installers.
 
 The packager script can build distribution packages for the following platforms
 (but you do not need to build them all, if a platform product is missing it is
-simply ignored in the package):
+simply ignored in the package script):
 
 * Linux gtk x86_64
 * macOS cocoa x86_64
@@ -62,9 +62,9 @@ olca-app-build
 ```
 
 ## JRE
-We distribute openLCA with a version of the Java runtime environment (JRE). The
-Java runtimes for the specific platforms need to be located in the `jre` folder
-of the build directory:
+We distribute openLCA with a version of a Java runtime environment (JRE) from
+the [OpenJDK](https://adoptopenjdk.net/). The JREs for the specific platforms
+need to be located in the `jre` folder of the build directory:
 
 ```
 olca-app-build
@@ -72,20 +72,28 @@ olca-app-build
   - runtime
     - jre
       - win64     # the extracted JRE for windows 64 bit
-      - jre-<version>-linux-x64.tar
-      - jre-<version>-maxosx-x64.tar
+      - *linux*.tar
+      - *mac*.tar
 ```
 
-Note that openLCA currently only correctly works with a JRE 8u101.
+## Math libraries
+Additionally, we package some high performance math libraries with openLCA. The
+current library packages are available from the
+[olca-rust](https://github.com/msrocka/olca-rust/releases) and go into the
+following folder structure for the build:
 
-## Julia math libraries
-
+```
 olca-app-build
   - ...
   - runtime
-    - jre
-      - win64     # the extracted JRE for windows 64 bit
-      - jre-<version>-linux-x64.tar
-      - jre-<version>-maxosx-x64.tar
+    - julia
+      - linux
+        - olcar.so
+        - ...
+      - macos
+        - olcar.dylib
+        - ...
+      - win64
+        - olcar.dll
+        - ...
 ```
-
