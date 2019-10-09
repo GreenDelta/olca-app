@@ -34,7 +34,7 @@ project and other open source software.
 
    <splash
       location="olca-app"
-      startupProgressRect="0,399,540,5"
+      startupProgressRect="0,412,594,5"
       startupMessageRect="7,525,445,20"
       startupForegroundColor="000000" />
    <launcher name="openLCA">
@@ -55,7 +55,6 @@ project and other open source software.
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
-
 
    <plugins>
       <plugin id="com.ibm.icu"/>
