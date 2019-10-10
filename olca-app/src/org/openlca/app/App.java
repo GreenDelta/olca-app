@@ -44,22 +44,30 @@ public class App {
 	private App() {
 	}
 
+	/**
+	 * Get the folder where openLCA is installed. This is where our native math
+	 * libraries and the openLCA.ini file are located. On macOS this is the folder
+	 * `openLCA.app/Contents/Eclipse`. Also, the name of the ini file is
+	 * `eclipse.ini` on macOS.
+	 */
+	public static File getInstallLocation() {
+		URL url = Platform.getInstallLocation().getURL();
+		try {
+			// url.toURI() does not work for URLs with specific characters
+			// which is the case when the application is installed in
+			// folders like C:\Program Files (x86)\openLCA; see
+			// https://community.oracle.com/blogs/kohsuke/2007/04/25/how-convert-javaneturl-javaiofile
+			return new File(url.toURI());
+		} catch (URISyntaxException e) {
+			return new File(url.getPath());
+		}
+	}
+
 	public static IMatrixSolver getSolver() {
 		if (solver != null)
 			return solver;
 		try {
-			File dir;
-			URL url = Platform.getInstallLocation().getURL();
-			try {
-				// url.toURI() does not work for URLs with specific characters
-				// which is the case when the application is installed in
-				// folders like C:\Program Files (x86)\openLCA; see
-				// https://community.oracle.com/blogs/kohsuke/2007/04/25/how-convert-javaneturl-javaiofile
-				dir = new File(url.toURI());
-			} catch (URISyntaxException e) {
-				dir = new File(url.getPath());
-			}
-
+			File dir = getInstallLocation();
 			if (Julia.loadFromDir(dir)) {
 				solver = new JuliaSolver();
 				log.info("Loaded Julia-BLAS solver as default matrix solver");

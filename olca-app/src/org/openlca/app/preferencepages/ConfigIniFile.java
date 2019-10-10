@@ -1,15 +1,14 @@
 package org.openlca.app.preferencepages;
 
 import java.io.File;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.osgi.service.datalocation.Location;
+import org.openlca.app.App;
+import org.openlca.app.util.MsgBox;
 import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +22,9 @@ import org.slf4j.LoggerFactory;
 class ConfigIniFile {
 
 	private Language language = Language.ENGLISH;
-	private int maxMemory = 1500;
+	private int maxMemory = 3584;
 
-	public static ConfigIniFile read() {
+	static ConfigIniFile read() {
 		try {
 			File iniFile = getIniFile();
 			if (!iniFile.exists())
@@ -41,8 +40,11 @@ class ConfigIniFile {
 	public void write() {
 		try {
 			File iniFile = getIniFile();
-			if (!iniFile.exists())
+			if (!iniFile.exists()) {
+				MsgBox.error("Could not find *.ini file",
+						iniFile + " does not exist.");
 				return;
+			}
 			List<String> oldLines = Files.readAllLines(iniFile.toPath());
 			List<String> newLines = new ArrayList<>();
 			boolean nextIsLanguage = false;
@@ -67,13 +69,11 @@ class ConfigIniFile {
 	}
 
 	private static File getIniFile() {
-		Location location = Platform.getInstallLocation();
-		URL url = location.getURL();
-		File installDir = new File(url.getFile());
-		if (OS.get() != OS.MAC)
-			return new File(installDir, "openLCA.ini");
+		File dir = App.getInstallLocation();
+		if (OS.get() == OS.MAC)
+			return new File(dir, "eclipse.ini");
 		else
-			return new File(installDir, "Contents/MacOS/openLCA.ini");
+			return new File(dir, "openLCA.ini");
 	}
 
 	private static ConfigIniFile parseFile(File iniFile) throws Exception {
