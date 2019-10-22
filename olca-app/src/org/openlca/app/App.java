@@ -70,10 +70,10 @@ public class App {
 			File dir = getInstallLocation();
 			if (Julia.loadFromDir(dir)) {
 				solver = new JuliaSolver();
-				log.info("Loaded Julia-BLAS solver as default matrix solver");
+				log.info("Loaded math libraries from {}", dir);
 				return solver;
 			}
-			log.info("Julia libraries could not be loaded from {}", dir);
+			log.info("Math libraries could not be loaded from {}", dir);
 		} catch (Exception e) {
 			log.error("Failed to load libraries from folder <openLCA>/julia");
 		}

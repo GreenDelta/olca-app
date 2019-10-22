@@ -48,23 +48,19 @@ public class ReportCalculator implements Runnable {
 		report.netCosts.clear();
 		if (project.impactMethodId == null)
 			return;
-		ProjectResult projectResult = calcProject(project);
-		if (projectResult == null)
-			return;
-		appendResults(projectResult);
-		appendCostResults(projectResult);
-		if (project.nwSetId != null)
-			appendNwFactors();
-	}
-
-	private ProjectResult calcProject(Project project) {
+		ProjectResult result;
 		try {
 			SystemCalculator calculator = new SystemCalculator(
 					Cache.getMatrixCache(), App.getSolver());
-			return calculator.calculate(project);
+			result = calculator.calculate(project);
 		} catch (Exception e) {
 			log.error("Calculation of project failed", e);
-			return null;
+			return;
+		}
+		appendResults(result);
+		appendCostResults(result);
+		if (project.nwSetId != null) {
+			appendNwFactors();
 		}
 	}
 
@@ -127,8 +123,8 @@ public class ReportCalculator implements Runnable {
 		Contribution rest = new Contribution();
 		varResult.contributions.add(rest);
 		rest.rest = true;
-		rest.processId = (long) -1;
-		rest.amount = (double) 0;
+		rest.processId = -1;
+		rest.amount = 0;
 		Set<Long> ids = getContributionProcessIds();
 		Set<Long> foundIds = new TreeSet<>();
 		for (ContributionItem<CategorizedDescriptor> item : set.contributions) {
@@ -173,7 +169,7 @@ public class ReportCalculator implements Runnable {
 		for (long id : notFound) {
 			Contribution con = new Contribution();
 			varResult.contributions.add(con);
-			con.amount = (double) 0;
+			con.amount = 0;
 			con.rest = false;
 			con.processId = id;
 		}
