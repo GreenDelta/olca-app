@@ -71,11 +71,37 @@ public class DiffIndex {
 		index.put(dataset.refId, diff);
 	}
 
+	public void setTracked(String refId, boolean value) {
+		Diff diff = index.get(refId);
+		if (diff == null)
+			return;
+		boolean isTracked = diff.type != DiffType.UNTRACKED;
+		if (isTracked == value)
+			return;
+		if (!value) {
+			diff.type = DiffType.UNTRACKED;
+		} else if (diff.changed == null) {
+			diff.type = DiffType.NO_DIFF;
+			updateParents(diff, false);
+		} else if (diff.changed.equals(diff.dataset)) {
+			diff.type = DiffType.NEW;
+			updateParents(diff, true);
+		} else {
+			diff.type = DiffType.CHANGED;
+			updateParents(diff, true);
+		}
+		index.put(refId, diff);
+	}
+
 	public void update(Dataset dataset, DiffType newType) {
+		if (newType == DiffType.UNTRACKED)
+			return; // use setTracked()
 		Diff diff = index.get(dataset.refId);
 		if (diff == null)
 			return;
 		if (diff.type == DiffType.DELETED && newType == DiffType.DELETED)
+			return;
+		if (diff.type == DiffType.UNTRACKED && newType == DiffType.UNTRACKED)
 			return;
 		if (diff.type == DiffType.NEW && newType == DiffType.DELETED) {
 			// user added something and then deleted it again
@@ -86,16 +112,29 @@ public class DiffIndex {
 	}
 
 	private void updateDiff(Diff diff, Dataset dataset, DiffType newType) {
-		diff.type = newType;
+		updateDiff(diff, dataset, newType, false);
+	}
+
+	private void updateDiff(Diff diff, Dataset dataset, DiffType newType, boolean retrack) {
+		boolean ignore = diff.type == DiffType.UNTRACKED && !retrack;
+		if (!ignore) {
+			diff.type = newType;
+		}
 		if (newType == DiffType.NO_DIFF) {
-			updateParents(diff, false);
+			if (!ignore) {
+				updateParents(diff, false);
+			}
 			diff.dataset = dataset;
 			diff.changed = null;
+		} else if (newType == DiffType.UNTRACKED) {
+			updateParents(diff, false);
 		} else {
 			diff.changed = dataset;
-			updateParents(diff, true);
+			if (!ignore) {
+				updateParents(diff, true);
+			}
 		}
-		if (dataset.categoryRefId == null) {
+		if (dataset.categoryRefId == null && !ignore) {
 			ModelType type = dataset.type;
 			if (type == ModelType.CATEGORY) {
 				type = dataset.categoryType;
@@ -109,7 +148,7 @@ public class DiffIndex {
 		Set<String> elements = changedTopLevelElements.get(type);
 		if (elements == null)
 			elements = new HashSet<>();
-		if (newType == DiffType.NO_DIFF)
+		if (newType == DiffType.NO_DIFF || newType == DiffType.UNTRACKED)
 			elements.remove(refId);
 		else
 			elements.add(refId);

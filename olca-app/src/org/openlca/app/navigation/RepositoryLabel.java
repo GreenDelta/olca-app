@@ -1,5 +1,7 @@
 package org.openlca.app.navigation;
 
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.Diff;
@@ -9,6 +11,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
+import org.openlca.app.util.Colors;
+import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -62,6 +66,31 @@ class RepositoryLabel {
 		if (element instanceof ModelElement && isNew(element))
 			return null;
 		return CHANGED_STATE;
+	}
+
+	static Font getFont(INavigationElement<?> e) {
+		if (isTracked(e))
+			return null;
+		return UI.italicFont();
+	}
+
+	static Color getForeground(INavigationElement<?> e) {
+		if (isTracked(e))
+			return null;
+		return Colors.get(85, 85, 85);
+	}
+
+	private static boolean isTracked(INavigationElement<?> e) {
+		if (!Database.isConnected())
+			return true;
+		if (e instanceof DatabaseElement)
+			return true;
+		if (e instanceof GroupElement)
+			return true;
+		if (e instanceof ModelTypeElement)
+			return true;
+		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(e));
+		return diff.type != DiffType.UNTRACKED;
 	}
 
 	private static boolean isNew(INavigationElement<?> element) {

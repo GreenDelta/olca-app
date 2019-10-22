@@ -1,7 +1,9 @@
 package org.openlca.app.navigation;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMemento;
@@ -18,7 +20,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 
 public class NavigationLabelProvider extends ColumnLabelProvider
-		implements ICommonLabelProvider {
+		implements ICommonLabelProvider, IColorProvider {
 
 	private boolean indicateRepositoryState;
 
@@ -117,14 +119,28 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 
 	@Override
 	public Font getFont(Object elem) {
-		if (!(elem instanceof DatabaseElement))
+		if (!(elem instanceof INavigationElement<?>))
 			return null;
-		DatabaseElement dbElem = (DatabaseElement) elem;
-		if (Database.isActive(dbElem.getContent()))
-			return UI.boldFont();
-		return null;
+		if (elem instanceof DatabaseElement) {
+			DatabaseElement dbElem = (DatabaseElement) elem;
+			if (Database.isActive(dbElem.getContent()))
+				return UI.boldFont();
+			return null;
+		}
+		if (!indicateRepositoryState)
+			return null;
+		return RepositoryLabel.getFont((INavigationElement<?>) elem);
 	}
 
+	@Override
+	public Color getForeground(Object elem) {
+		if (!(elem instanceof INavigationElement<?>))
+			return null;
+		if (!indicateRepositoryState)
+			return null;
+		return RepositoryLabel.getForeground((INavigationElement<?>) elem);
+	}
+	
 	@Override
 	public String getToolTipText(Object element) {
 		return getDescription(element);

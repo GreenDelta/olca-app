@@ -22,6 +22,7 @@ import org.openlca.app.navigation.actions.cloud.OpenSyncViewAction;
 import org.openlca.app.navigation.actions.cloud.RebuildIndexAction;
 import org.openlca.app.navigation.actions.cloud.ShowCommentsAction;
 import org.openlca.app.navigation.actions.cloud.ShowInHistoryAction;
+import org.openlca.app.navigation.actions.cloud.ToggleTrackingAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.navigation.actions.db.DbCloseAction;
 import org.openlca.app.navigation.actions.db.DbCopyAction;
@@ -77,6 +78,8 @@ public class NavigationActionProvider extends CommonActionProvider {
 			new INavigationAction[] {
 					new CommitAction(),
 					new FetchAction(),
+					ToggleTrackingAction.untrack(),
+					ToggleTrackingAction.track(),
 					new ShowCommentsAction(),
 					new ShowInHistoryAction()
 			},

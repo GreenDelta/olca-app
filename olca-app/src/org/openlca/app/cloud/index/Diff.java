@@ -21,7 +21,7 @@ public class Diff implements Serializable {
 	}
 
 	public boolean hasChanged() {
-		return type != DiffType.NO_DIFF;
+		return type != DiffType.UNTRACKED && type != DiffType.NO_DIFF;
 	}
 
 	public boolean childrenHaveChanged() {
