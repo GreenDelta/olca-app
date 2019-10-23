@@ -66,45 +66,49 @@ public class DiffIndex {
 		Diff diff = index.get(dataset.refId);
 		if (diff != null)
 			return;
-		diff = new Diff(dataset, DiffType.NO_DIFF);
+		diff = new Diff(dataset);
 		diff.localId = localId;
 		index.put(dataset.refId, diff);
 	}
 
-	public void setTracked(String refId, boolean value) {
+	public void untrack(String refId) {
 		Diff diff = index.get(refId);
-		if (diff == null)
+		if (diff == null || diff.type == DiffType.UNTRACKED || diff.type == DiffType.DELETED)
 			return;
-		boolean isTracked = diff.type != DiffType.UNTRACKED;
-		if (isTracked == value)
+		diff.type = DiffType.UNTRACKED;
+		updateParents(diff, false);
+		index.put(refId, diff);
+	}
+
+	public void retrack(String refId) {
+		Diff diff = index.get(refId);
+		if (diff == null || diff.type != DiffType.UNTRACKED)
 			return;
-		if (!value) {
-			diff.type = DiffType.UNTRACKED;
-		} else if (diff.changed == null) {
+		if (diff.changed == null) {
 			diff.type = DiffType.NO_DIFF;
-			updateParents(diff, false);
 		} else if (diff.changed.equals(diff.dataset)) {
 			diff.type = DiffType.NEW;
-			updateParents(diff, true);
 		} else {
 			diff.type = DiffType.CHANGED;
-			updateParents(diff, true);
 		}
+		boolean isChanged = diff.changed != null;
+		updateParents(diff, isChanged);
 		index.put(refId, diff);
 	}
 
 	public void update(Dataset dataset, DiffType newType) {
-		if (newType == DiffType.UNTRACKED)
-			return; // use setTracked()
+		if (newType == DiffType.UNTRACKED) {
+			untrack(dataset.refId);
+			return;
+		}
 		Diff diff = index.get(dataset.refId);
 		if (diff == null)
 			return;
-		if (diff.type == DiffType.DELETED && newType == DiffType.DELETED)
-			return;
-		if (diff.type == DiffType.UNTRACKED && newType == DiffType.UNTRACKED)
+		if (diff.type == newType && newType != DiffType.CHANGED)
 			return;
 		if (diff.type == DiffType.NEW && newType == DiffType.DELETED) {
-			// user added something and then deleted it again
+			// user added something and then deleted it again, without
+			// committing
 			remove(dataset.refId);
 			return;
 		}
@@ -112,50 +116,58 @@ public class DiffIndex {
 	}
 
 	private void updateDiff(Diff diff, Dataset dataset, DiffType newType) {
-		updateDiff(diff, dataset, newType, false);
-	}
-
-	private void updateDiff(Diff diff, Dataset dataset, DiffType newType, boolean retrack) {
-		boolean ignore = diff.type == DiffType.UNTRACKED && !retrack;
-		if (!ignore) {
+		boolean changed = newType != DiffType.NO_DIFF;
+		if (diff.type != DiffType.UNTRACKED) {
 			diff.type = newType;
 		}
 		if (newType == DiffType.NO_DIFF) {
-			if (!ignore) {
-				updateParents(diff, false);
-			}
 			diff.dataset = dataset;
 			diff.changed = null;
-		} else if (newType == DiffType.UNTRACKED) {
-			updateParents(diff, false);
 		} else {
 			diff.changed = dataset;
-			if (!ignore) {
-				updateParents(diff, true);
-			}
 		}
-		if (dataset.categoryRefId == null && !ignore) {
-			ModelType type = dataset.type;
-			if (type == ModelType.CATEGORY) {
-				type = dataset.categoryType;
-			}
-			updateChangedTopLevelElements(type.name(), dataset.refId, newType);
-		}
+		updateParents(diff, changed);
 		index.put(dataset.refId, diff);
 	}
 
-	private void updateChangedTopLevelElements(String type, String refId, DiffType newType) {
+	private void updateParents(Diff diff, boolean changed) {
+		if (diff.changed != null) {
+			updateParents(diff.changed, changed);
+		}
+		if (diff.dataset != null) {
+			updateParents(diff.dataset, changed);
+		}
+	}
+
+	private void updateParents(Dataset dataset, boolean changed) {
+		String parentId = dataset.categoryRefId;
+		while (parentId != null) {
+			Diff parent = index.get(parentId);
+			if (parent == null)
+				break;
+			if (changed) {
+				parent.changedChildren.add(dataset.refId);
+			} else {
+				parent.changedChildren.remove(dataset.refId);
+			}
+			index.put(parentId, parent);
+			parentId = parent.dataset.categoryRefId;
+		}
+		ModelType categoryType = dataset.type == ModelType.CATEGORY ? dataset.categoryType : dataset.type;
+		updateChangedTopLevelElements(categoryType.name(), dataset.refId, changed);
+	}
+
+	private void updateChangedTopLevelElements(String type, String refId, boolean changed) {
 		Set<String> elements = changedTopLevelElements.get(type);
-		if (elements == null)
+		if (elements == null) {
 			elements = new HashSet<>();
-		if (newType == DiffType.NO_DIFF || newType == DiffType.UNTRACKED)
-			elements.remove(refId);
-		else
+		}
+		if (changed) {
 			elements.add(refId);
-		if (elements.isEmpty())
-			changedTopLevelElements.remove(type);
-		else
-			changedTopLevelElements.put(type, elements);
+		} else {
+			elements.remove(refId);
+		}
+		changedTopLevelElements.put(type, elements);
 	}
 
 	public Diff get(String key) {
@@ -164,14 +176,26 @@ public class DiffIndex {
 
 	public List<Diff> getChanged() {
 		List<Diff> changed = new ArrayList<>();
-		for (Diff diff : index.values())
-			if (diff.hasChanged())
+		for (Diff diff : index.values()) {
+			if (!diff.hasChanged()) {
 				changed.add(diff);
+			}
+		}
 		return changed;
 	}
 
-	public List<Diff> getAll() {
-		return new ArrayList<>(index.values());
+	public List<Diff> getAll(DiffType... types) {
+		if (types == null || types.length == 0)
+			return new ArrayList<>(index.values());
+		List<Diff> ofType = new ArrayList<>();
+		for (Diff diff : index.values()) {
+			for (DiffType type : types) {
+				if (diff.type == type) {
+					ofType.add(diff);
+				}
+			}
+		}
+		return ofType;
 	}
 
 	public boolean hasChanged(ModelType type) {
@@ -184,37 +208,8 @@ public class DiffIndex {
 		if (diff == null)
 			return;
 		Dataset ds = diff.getDataset();
-		updateChangedTopLevelElements(ds.categoryType.name(), ds.refId, DiffType.NO_DIFF);
+		updateChangedTopLevelElements(ds.categoryType.name(), ds.refId, false);
 		updateParents(diff, false);
-	}
-
-	private void updateParents(Diff diff, boolean add) {
-		if (diff.changed != null) // case 1)
-			updateParents(diff.changed, add);
-		if (diff.dataset != null) // case 2)
-			updateParents(diff.dataset, add);
-	}
-
-	private void updateParents(Dataset dataset, boolean add) {
-		String parentId = dataset.categoryRefId;
-		while (parentId != null) {
-			Diff parent = index.get(parentId);
-			if (parent == null)
-				break;
-			if (add)
-				parent.changedChildren.add(dataset.refId);
-			else
-				parent.changedChildren.remove(dataset.refId);
-			index.put(parentId, parent);
-			parentId = parent.dataset.categoryRefId;
-		}
-		ModelType categoryType = dataset.categoryType;
-		if (categoryType == null)
-			categoryType = dataset.type;
-		if (add)
-			updateChangedTopLevelElements(categoryType.name(), dataset.refId, DiffType.CHANGED);
-		else
-			updateChangedTopLevelElements(categoryType.name(), dataset.refId, DiffType.NO_DIFF);
 	}
 
 	public void commit() {

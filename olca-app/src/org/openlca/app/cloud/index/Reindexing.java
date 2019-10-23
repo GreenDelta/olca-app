@@ -1,7 +1,9 @@
 package org.openlca.app.cloud.index;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,6 +30,7 @@ public class Reindexing {
 	private DiffIndex index;
 	private RepositoryClient client;
 	private CategoryDao categoryDao;
+	private List<String> untracked = new ArrayList<>();
 
 	public static void execute() {
 		new Reindexing().run();
@@ -37,21 +40,26 @@ public class Reindexing {
 		Map<ModelType, Map<String, FetchRequestData>> datasets = init();
 		if (datasets == null)
 			return;
+		run(ModelType.CATEGORY, datasets.get(ModelType.CATEGORY));
 		for (ModelType type : ModelType.values()) {
-			if (!type.isCategorized())
+			if (!type.isCategorized() || type == ModelType.CATEGORY)
 				continue;
-			Map<String, CategorizedDescriptor> descriptorMap = getDescriptors(type);
 			Map<String, FetchRequestData> dataMap = datasets.get(type);
-			if (dataMap != null) {
-				remoteSync(dataMap.values(), descriptorMap);
-			}
-			if (type == ModelType.PARAMETER) {
-				localSync(dataMap, new ParameterDao(database).getGlobalDescriptors());
-			} else {
-				localSync(dataMap, descriptorMap.values());
-			}
+			run(type, dataMap);
 		}
 		index.commit();
+	}
+
+	private void run(ModelType type, Map<String, FetchRequestData> dataMap) {
+		Map<String, CategorizedDescriptor> descriptorMap = getDescriptors(type);
+		if (dataMap != null) {
+			remoteSync(dataMap.values(), descriptorMap);
+		}
+		if (type == ModelType.PARAMETER) {
+			localSync(dataMap, new ParameterDao(database).getGlobalDescriptors());
+		} else {
+			localSync(dataMap, descriptorMap.values());
+		}
 	}
 
 	private Map<ModelType, Map<String, FetchRequestData>> init() {
@@ -65,6 +73,7 @@ public class Reindexing {
 		if (index == null)
 			return null;
 		categoryDao = new CategoryDao(database);
+		index.getAll(DiffType.UNTRACKED).forEach(diff -> untracked.add(diff.getDataset().refId));
 		index.clear();
 		if (client.getConfig().getLastCommitId() == null)
 			return new HashMap<>();
@@ -93,7 +102,7 @@ public class Reindexing {
 			CategorizedDescriptor descriptor = descriptorMap.get(data.refId);
 			if (descriptor == null) {
 				if (!data.isDeleted()) {
-					put(data.asDataset());
+					putDeleted(data.asDataset());
 				}
 			} else {
 				put(data.asDataset(), descriptor, data.isDeleted());
@@ -119,30 +128,33 @@ public class Reindexing {
 		return descriptors;
 	}
 
-	private void put(Dataset dataset) {
+	private void putDeleted(Dataset dataset) {
 		index.add(dataset, 0);
 		index.update(dataset, DiffType.DELETED);
+		if (untracked.contains(dataset.refId)) {
+			index.untrack(dataset.refId);
+		}
 	}
 
 	private void put(Dataset dataset, CategorizedDescriptor descriptor, boolean deletedOnRemote) {
 		index.add(dataset, descriptor.id);
 		if (deletedOnRemote) {
 			index.update(dataset, DiffType.NEW);
-			return;
+		} else if (!areEqual(dataset, descriptor)) {
+			index.update(toDataset(descriptor), DiffType.CHANGED);
 		}
-		if (areEqual(dataset, descriptor))
-			return;
-		index.update(dataset, DiffType.CHANGED);
+		if (untracked.contains(dataset.refId)) {
+			index.untrack(dataset.refId);
+		}
 	}
 
 	private void put(CategorizedDescriptor descriptor) {
-		Category category = null;
-		if (descriptor.category != null) {
-			category = categoryDao.getForId(descriptor.category);
-		}
-		Dataset dataset = Datasets.toDataset(descriptor, category);
+		Dataset dataset = toDataset(descriptor);
 		index.add(dataset, descriptor.id);
 		index.update(dataset, DiffType.NEW);
+		if (untracked.contains(dataset.refId)) {
+			index.untrack(dataset.refId);
+		}
 	}
 
 	private boolean areEqual(Dataset dataset, CategorizedDescriptor descriptor) {
@@ -155,6 +167,14 @@ public class Reindexing {
 		if (dataset.lastChange != descriptor.lastChange)
 			return false;
 		return true;
+	}
+
+	private Dataset toDataset(CategorizedDescriptor descriptor) {
+		Category category = null;
+		if (descriptor.category != null) {
+			category = categoryDao.getForId(descriptor.category);
+		}
+		return Datasets.toDataset(descriptor, category);
 	}
 
 }

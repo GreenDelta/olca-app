@@ -54,13 +54,13 @@ class RefIdListBuilder {
 		return id;
 	}
 
-	private INavigationElement<?> findExistingParent(Dataset dataset) {
-		if (dataset.categoryRefId == null)
-			if (dataset.type == ModelType.CATEGORY)
-				return map.get(dataset.categoryType.name());
+	private INavigationElement<?> findExistingParent(Dataset d) {
+		if (d.categoryRefId == null)
+			if (d.type == ModelType.CATEGORY)
+				return map.get(d.categoryType.name());
 			else
-				return map.get(dataset.type.name());
-		Dataset parent = index.get(dataset.categoryRefId).getDataset();
+				return map.get(d.type.name());
+		Dataset parent = index.get(d.categoryRefId).getDataset();
 		if (map.containsKey(parent.refId))
 			return map.get(parent.refId);
 		return findExistingParent(parent);

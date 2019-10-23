@@ -40,7 +40,7 @@ public class ToggleTrackingAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		for (String refId: elementRefIds) {
+		for (String refId : elementRefIds) {
 			Diff diff = index.get(refId);
 			if (diff == null)
 				continue;
@@ -48,7 +48,11 @@ public class ToggleTrackingAction extends Action implements INavigationAction {
 				continue;
 			if (diff.type != DiffType.UNTRACKED && setTracked)
 				continue;
-			index.setTracked(refId, setTracked);
+			if (setTracked) {
+				index.retrack(refId);
+			} else {
+				index.untrack(refId);
+			}
 		}
 		Navigator.refresh();
 	}
@@ -70,7 +74,7 @@ public class ToggleTrackingAction extends Action implements INavigationAction {
 			String refId = ((ModelElement) e).getContent().refId;
 			this.elementRefIds.add(refId);
 		}
-		return !this.elementRefIds.isEmpty();
+		return true;
 	}
 
 }

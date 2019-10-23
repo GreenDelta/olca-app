@@ -124,12 +124,12 @@ public class CommitAction extends Action implements INavigationAction {
 			for (DiffResult change : selected) {
 				Dataset dataset = change.getDataset();
 				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE) {
-					List<String> categories = change.local.dataset.categories;
-					if (categories == null) {
+//					List<String> categories = change.local.dataset.categories;
+//					if (categories == null) {
 						dataset.categories = new ArrayList<>();
-					}else {
-						dataset.categories = new ArrayList<>(categories);						
-					}
+//					}else {
+//						dataset.categories = new ArrayList<>(categories);						
+//					}
 				}
 				datasets.add(dataset);
 			}
