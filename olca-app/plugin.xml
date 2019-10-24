@@ -141,6 +141,13 @@
             name="%ImpactMethodEditor">
       </editor>
       <editor
+            class="org.openlca.app.editors.lcia_methods.ImpactCategoryEditor"
+            default="false"
+            icon="icons/model/impact_category.png"
+            id="editors.impact.category"
+            name="Environmental indicator">
+      </editor>
+      <editor
             class="org.openlca.app.editors.processes.ProcessEditor"
             default="false"
             icon="icons/model/process.png"
@@ -343,6 +350,12 @@
             icon="icons/wizard/impact_method.png"
             id="wizards.new.impactmethod"
             name="%LCIAMethods">
+      </wizard>
+      <wizard
+            class="org.openlca.app.wizards.ImpactCategoryWizard"
+            icon="icons/wizard/impact_method.png"
+            id="wizards.new.impactcategory"
+            name="Environmental indicators">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.ProcessWizard"

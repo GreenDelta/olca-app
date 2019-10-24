@@ -78,6 +78,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> {
 	@Override
 	protected void doAfterUpdate() {
 		super.doAfterUpdate();
+		// TODO: this is not necessary anymore?
 		EntityCache cache = Cache.getEntityCache();
 		for (ImpactCategory category : getModel().impactCategories) {
 			cache.refresh(ImpactCategory.class, category.id);

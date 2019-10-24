@@ -28,7 +28,8 @@ public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
 		list.add(new ModelTypeElement(this, ModelType.FLOW));
 		list.add(new GroupElement(this, g(M.IndicatorsAndParameters,
 				GroupType.INDICATORS,
-				ModelType.IMPACT_METHOD,				
+				ModelType.IMPACT_METHOD,
+				ModelType.IMPACT_CATEGORY,
 				ModelType.DQ_SYSTEM,
 				ModelType.SOCIAL_INDICATOR,
 				ModelType.PARAMETER)));

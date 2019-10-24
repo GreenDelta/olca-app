@@ -435,6 +435,8 @@ public class Images {
 			return ModelIcon.FLOW_PROPERTY_CATEGORY;
 		case IMPACT_METHOD:
 			return ModelIcon.IMPACT_METHOD_CATEGORY;
+		case IMPACT_CATEGORY:
+			return ModelIcon.IMPACT_METHOD_CATEGORY; // TODO
 		case PROCESS:
 			return ModelIcon.PROCESS_CATEGORY;
 		case PRODUCT_SYSTEM:
