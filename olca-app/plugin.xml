@@ -144,7 +144,7 @@
             class="org.openlca.app.editors.lcia_methods.ImpactCategoryEditor"
             default="false"
             icon="icons/model/impact_category.png"
-            id="editors.impact.category"
+            id="editors.impactcategory"
             name="Environmental indicator">
       </editor>
       <editor

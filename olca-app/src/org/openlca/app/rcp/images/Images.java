@@ -290,6 +290,8 @@ public class Images {
 			return ModelIcon.FLOW_PROPERTY_WIZARD;
 		case IMPACT_METHOD:
 			return ModelIcon.IMPACT_METHOD_WIZARD;
+		case IMPACT_CATEGORY:
+			return ModelIcon.IMPACT_METHOD_WIZARD; // TODO
 		case LOCATION:
 			return ModelIcon.LOCATION_WIZARD;
 		case PARAMETER:

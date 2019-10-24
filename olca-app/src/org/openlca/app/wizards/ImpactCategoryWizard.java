@@ -47,7 +47,7 @@ public class ImpactCategoryWizard extends AbstractWizard<ImpactCategory> {
 			ic.name = getModelName();
 			ic.description = getModelDescription();
 			ic.referenceUnit = refUnit.getText();
-			return null;
+			return ic;
 		}
 
 	}
