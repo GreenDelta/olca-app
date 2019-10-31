@@ -12,9 +12,9 @@ import org.openlca.app.cloud.ui.compare.ModelLabelProvider;
 import org.openlca.app.cloud.ui.compare.ModelNodeBuilder;
 import org.openlca.app.cloud.ui.compare.ModelUtil;
 import org.openlca.app.cloud.ui.compare.json.DiffEditorDialog;
+import org.openlca.app.cloud.ui.compare.json.IDependencyResolver;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.model.Version;
@@ -25,10 +25,12 @@ import com.google.gson.JsonObject;
 class CompareHelper {
 
 	private JsonLoader loader;
+	private ActionType action;
 	private Map<String, JsonNode> nodes = new HashMap<>();
 
-	CompareHelper(JsonLoader loader) {
+	CompareHelper(JsonLoader loader, ActionType action) {
 		this.loader = loader;
+		this.action = action;
 	}
 
 	boolean openDiffEditor(DiffNode node, boolean viewMode) {
@@ -42,7 +44,7 @@ class CompareHelper {
 		int code = dialog.open();
 		if (code == IDialogConstants.CANCEL_ID)
 			return false;
-		if (!data.result.isConflict())
+		if (!data.result.conflict())
 			return false;
 		boolean localDiffersFromRemote = dialog.leftDiffersFromRight();
 		boolean keepLocalModel = code == DiffEditorDialog.KEEP_LOCAL_MODEL;
@@ -59,14 +61,13 @@ class CompareHelper {
 		if (data.node == null)
 			createNode(data);
 		else {
-			data.local = JsonUtil.toJsonObject(data.node.leftElement);
-			data.remote = JsonUtil.toJsonObject(data.node.rightElement);
+			data.local = JsonUtil.toJsonObject(data.node.localElement);
+			data.remote = JsonUtil.toJsonObject(data.node.remoteElement);
 		}
-		if (viewMode || !data.result.isConflict())
-			return DiffEditorDialog.forViewing(data.node, new ModelLabelProvider(),
-					ModelUtil.getDependencyResolver(), data.result.getType().direction);
-		DiffEditorDialog dialog = DiffEditorDialog.forEditing(data.node, new ModelLabelProvider(),
-				ModelUtil.getDependencyResolver(), data.result.getType().direction);
+		IDependencyResolver depResolver = ModelUtil.getDependencyResolver();
+		if (viewMode || !data.result.conflict())
+			return DiffEditorDialog.forViewing(data.node, new ModelLabelProvider(), depResolver, action);
+		DiffEditorDialog dialog = DiffEditorDialog.forEditing(data.node, new ModelLabelProvider(), depResolver, action);
 		return dialog;
 	}
 
@@ -75,7 +76,7 @@ class CompareHelper {
 			data.local = loader.getLocalJson(data.result.local.getDataset());
 		if (data.result.remote != null && !data.result.remote.isDeleted())
 			data.remote = loader.getRemoteJson(data.result.remote);
-		else if (data.result.getType().direction == Direction.LEFT_TO_RIGHT)
+		else if (action == ActionType.COMMIT || action == ActionType.COMPARE_BEHIND)
 			data.remote = loader.getRemoteJson(data.result.getDataset());
 		data.node = new ModelNodeBuilder().build(data.local, data.remote);
 		nodes.put(toKey(data.result.getDataset()), data.node);
@@ -111,7 +112,7 @@ class CompareHelper {
 		if (localDiffersFromRemote) {
 			Version version = Version.fromString(data.remote.get("version").getAsString());
 			version.incUpdate();
-			obj.addProperty("version", Version.asString(version.getValue()));			
+			obj.addProperty("version", Version.asString(version.getValue()));
 		}
 		obj.addProperty("lastChange", Dates.toDateTime(Calendar.getInstance().getTime()));
 		return obj;

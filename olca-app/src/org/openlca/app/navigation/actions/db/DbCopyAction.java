@@ -10,6 +10,7 @@ import org.eclipse.jface.window.Window;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.ui.commits.HistoryView;
+import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
@@ -99,6 +100,7 @@ public class DbCopyAction extends Action implements INavigationAction {
 				Database.activate(config);
 			Navigator.refresh();
 			HistoryView.refresh();
+			CompareView.clear();
 		} catch (Exception e) {
 			log.error("failed to copy database", e);
 		}

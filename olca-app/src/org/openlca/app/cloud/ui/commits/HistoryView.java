@@ -20,7 +20,7 @@ import org.openlca.app.cloud.ui.compare.ModelNodeBuilder;
 import org.openlca.app.cloud.ui.compare.ModelUtil;
 import org.openlca.app.cloud.ui.compare.json.DiffEditor;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
+import org.openlca.app.cloud.ui.diff.ActionType;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
@@ -83,7 +83,8 @@ public class HistoryView extends ViewPart {
 	private void createJsonViewer(Composite parent) {
 		diffViewer = DiffEditor.forViewing(parent);
 		diffViewer.setLabels(M.SelectedCommit, M.PreviousCommit);
-		diffViewer.initialize(null, new ModelLabelProvider(), ModelUtil.getDependencyResolver(), Direction.LEFT_TO_RIGHT);
+		boolean commitIsAhead = CloudUtil.commitIsAhead(current, null);
+		diffViewer.initialize(null, new ModelLabelProvider(), ModelUtil.getDependencyResolver(), commitIsAhead ? ActionType.COMPARE_AHEAD : ActionType.COMPARE_BEHIND);
 	}
 
 	private void createReferencesViewer(Composite parent) {

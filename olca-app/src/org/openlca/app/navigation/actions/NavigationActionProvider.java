@@ -18,7 +18,7 @@ import org.openlca.app.navigation.actions.cloud.CommitAction;
 import org.openlca.app.navigation.actions.cloud.ConnectAction;
 import org.openlca.app.navigation.actions.cloud.DisconnectAction;
 import org.openlca.app.navigation.actions.cloud.FetchAction;
-import org.openlca.app.navigation.actions.cloud.OpenSyncViewAction;
+import org.openlca.app.navigation.actions.cloud.OpenCompareViewAction;
 import org.openlca.app.navigation.actions.cloud.RebuildIndexAction;
 import org.openlca.app.navigation.actions.cloud.ShowCommentsAction;
 import org.openlca.app.navigation.actions.cloud.ShowInHistoryAction;
@@ -92,8 +92,8 @@ public class NavigationActionProvider extends CommonActionProvider {
 
 	private INavigationAction[][] cloudCompareActions = new INavigationAction[][] {
 			new INavigationAction[] {
-					new OpenSyncViewAction(false),
-					new OpenSyncViewAction(true)
+					new OpenCompareViewAction(false),
+					new OpenCompareViewAction(true)
 			}
 	};
 

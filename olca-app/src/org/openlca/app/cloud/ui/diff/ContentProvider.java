@@ -7,7 +7,10 @@ class ContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		DiffNode node = (DiffNode) ((Object[]) inputElement)[0];
+		Object[] elements = (Object[]) inputElement;
+		if (elements == null || elements.length == 0)
+			return new Object[0];
+		DiffNode node = (DiffNode) (elements)[0];
 		return node.children.toArray();
 	}
 

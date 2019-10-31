@@ -13,6 +13,7 @@ public class Diff implements Serializable {
 	public Dataset dataset;
 	public Dataset changed;
 	public DiffType type = DiffType.NO_DIFF;
+	public boolean tracked = true;
 	Set<String> changedChildren = new HashSet<>();
 
 	Diff(Dataset descriptor) {
@@ -20,7 +21,7 @@ public class Diff implements Serializable {
 	}
 
 	public boolean hasChanged() {
-		return type != DiffType.UNTRACKED && type != DiffType.NO_DIFF;
+		return tracked && type != DiffType.NO_DIFF;
 	}
 
 	public boolean childrenHaveChanged() {

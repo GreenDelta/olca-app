@@ -126,7 +126,7 @@ class MenuBarActions {
 			else if (!node.hadDifferences())
 				return;
 		JsonElement element = leftToRight ? node.originalElement
-				: node.rightElement;
+				: node.remoteElement;
 		node.setValue(element, leftToRight);
 		Set<JsonNode> dependent = getDependent(node);
 		if (dependent.isEmpty())

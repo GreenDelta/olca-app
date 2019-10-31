@@ -4,10 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openlca.app.cloud.CloudUtil;
+import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
-import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
+import org.openlca.app.cloud.index.DiffType;
 import org.openlca.cloud.model.data.Dataset;
-import org.openlca.cloud.util.Datasets;
+import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
@@ -20,11 +22,13 @@ public class DiffNodeBuilder {
 	private final Map<String, Category> categories = new HashMap<>();
 	private final DiffIndex index;
 	private final String database;
+	private final ActionType action;
 
-	public DiffNodeBuilder(IDatabase database, DiffIndex index) {
+	public DiffNodeBuilder(IDatabase database, DiffIndex index, ActionType action) {
 		putCategories(new CategoryDao(database).getRootCategories());
 		this.index = index;
 		this.database = database.getName();
+		this.action = action;
 	}
 
 	private void putCategories(List<Category> categories) {
@@ -39,14 +43,16 @@ public class DiffNodeBuilder {
 			return null;
 		DiffNode root = new DiffNode(null, database);
 		nodes.put("", root);
-		for (DiffResult result : this.diffs.values())
+		for (DiffResult result : this.diffs.values()) {
 			build(result);
+		}
 		return root;
 	}
 
 	private boolean init(List<DiffResult> diffs) {
-		for (DiffResult result : diffs)
+		for (DiffResult result : diffs) {
 			this.diffs.put(result.getDataset().refId, result);
+		}
 		nodes.clear();
 		return this.diffs.size() != 0;
 	}
@@ -56,19 +62,34 @@ public class DiffNodeBuilder {
 			return;
 		if (!result.getDataset().type.isCategorized())
 			return;
-		if (result.getType() == DiffResponse.NONE)
+		if (result.noAction())
 			return;
+		createNode(result);
+	}
+
+	private DiffNode createNode(DiffResult result) {
 		DiffNode parent = getOrCreateParentNode(result.getDataset());
 		DiffNode node = new DiffNode(parent, result);
 		parent.children.add(node);
 		nodes.put(result.getDataset().refId, node);
+		return node;
+	}
+
+	private DiffNode createNode(Category category) {
+		Diff diff = index.get(category.refId);
+		FetchRequestData remote = null;
+		if ((action == ActionType.COMMIT || action == ActionType.COMPARE_BEHIND) && diff.type != DiffType.NEW) {
+			// we are up to date, so if data set is not new, it is the same
+			// as original data set (avoid to load data from server)
+			remote = CloudUtil.toFetchRequestData(diff.dataset);
+		}
+		DiffResult result = new DiffResult(diff, remote);
+		return createNode(result);
 	}
 
 	private DiffNode getOrCreateParentNode(Dataset dataset) {
 		String parentId = dataset.categoryRefId;
-		ModelType categoryType = dataset.type;
-		if (categoryType == ModelType.CATEGORY)
-			categoryType = dataset.categoryType;
+		ModelType categoryType = dataset.type == ModelType.CATEGORY ? dataset.categoryType : dataset.type;
 		if (parentId == null)
 			return getOrCreateModelTypeNode(categoryType);
 		DiffNode categoryNode = nodes.get(parentId);
@@ -76,26 +97,9 @@ public class DiffNodeBuilder {
 			return categoryNode;
 		DiffResult result = diffs.get(parentId);
 		if (result != null)
-			return createNodeFromDiff(result);
+			return createNode(result);
 		Category category = categories.get(parentId);
-		return createNodeFromCategory(category);
-	}
-
-	private DiffNode createNodeFromCategory(Category category) {
-		DiffNode parent = getOrCreateParentNode(Datasets.toDataset(category));
-		DiffResult result = new DiffResult(index.get(category.refId));
-		DiffNode node = new DiffNode(parent, result);
-		parent.children.add(node);
-		nodes.put(category.refId, node);
-		return node;
-	}
-
-	private DiffNode createNodeFromDiff(DiffResult result) {
-		DiffNode parent = getOrCreateParentNode(result.getDataset());
-		DiffNode node = new DiffNode(parent, result);
-		parent.children.add(node);
-		nodes.put(result.getDataset().refId, node);
-		return node;
+		return createNode(category);
 	}
 
 	private DiffNode getOrCreateModelTypeNode(ModelType type) {

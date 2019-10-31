@@ -14,7 +14,6 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.cloud.util.Datasets;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
@@ -77,14 +76,6 @@ class RenameAction extends Action implements INavigationAction {
 
 	private void doUpdate(Category category, String newName) {
 		try {
-			// updates of category names are treated as if the user would:
-			// 1) create a new category
-			// 2) move all contents
-			// 3) delete the old category
-			// the new category is added in the dao already
-			if (Database.getIndexUpdater() != null) {
-				Database.getIndexUpdater().delete(Datasets.toDataset(category));
-			}
 			category.name = newName.trim();
 			new CategoryDao(Database.get()).update(category);
 			Navigator.refresh(element);

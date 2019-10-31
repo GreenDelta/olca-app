@@ -31,7 +31,7 @@ class RepositoryLabel {
 		if (e instanceof ModelTypeElement)
 			return null;
 		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(e));
-		if (diff.type != DiffType.NEW)
+		if (diff == null || !diff.tracked || diff.type != DiffType.NEW)
 			return null;
 		if (e instanceof CategoryElement) {
 			Category category = ((CategoryElement) e).getContent();
@@ -63,7 +63,7 @@ class RepositoryLabel {
 		boolean hasChanged = DiffUtil.hasChanged(element);
 		if (!hasChanged)
 			return null;
-		if (element instanceof ModelElement && isNew(element))
+		if (isNew(element))
 			return null;
 		return CHANGED_STATE;
 	}
@@ -90,7 +90,9 @@ class RepositoryLabel {
 		if (e instanceof ModelTypeElement)
 			return true;
 		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(e));
-		return diff.type != DiffType.UNTRACKED;
+		if (diff == null)
+			return true;
+		return diff.tracked;
 	}
 
 	private static boolean isNew(INavigationElement<?> element) {
@@ -101,6 +103,8 @@ class RepositoryLabel {
 		if (element instanceof ModelTypeElement)
 			return false;
 		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(element));
+		if (diff == null)
+			return true;
 		return diff.type == DiffType.NEW;
 	}
 

@@ -106,10 +106,8 @@ public class CommitDialog extends FormDialog {
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.CANCEL_ID,
-				IDialogConstants.CANCEL_LABEL, false);
-		createButton(parent, IDialogConstants.OK_ID, M.Commit, true)
-				.setEnabled(false);
+		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+		createButton(parent, IDialogConstants.OK_ID, M.Commit, true).setEnabled(false);
 	}
 
 	public String getMessage() {

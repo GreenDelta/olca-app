@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openlca.app.cloud.index.DiffIndex;
+import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.index.DiffUtil;
 import org.openlca.app.cloud.ui.diff.DiffResult;
-import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
@@ -34,12 +34,22 @@ class RefIdListBuilder {
 	Set<String> build() {
 		map.clear();
 		Set<String> refIds = Navigator.collect(selection, this::unwrap);
-		for (DiffResult result : changes)
-			if (result.getType() == DiffResponse.DELETE_FROM_REMOTE) {
-				if (findExistingParent(result.getDataset()) != null)
-					refIds.add(result.getDataset().refId);
-			}
+		for (DiffResult result : changes) {
+			if (!deleteFromRemote(result))
+				continue;
+			if (findExistingParent(result.getDataset()) == null)
+				continue;
+			refIds.add(result.getDataset().refId);
+		}
 		return refIds;
+	}
+
+	private boolean deleteFromRemote(DiffResult result) {
+		if (result.local.type != DiffType.DELETED)
+			return false;
+		if (result.remote.isDeleted())
+			return false;
+		return true;
 	}
 
 	private String unwrap(INavigationElement<?> element) {
@@ -55,11 +65,11 @@ class RefIdListBuilder {
 	}
 
 	private INavigationElement<?> findExistingParent(Dataset d) {
-		if (d.categoryRefId == null)
+		if (d.categoryRefId == null) {
 			if (d.type == ModelType.CATEGORY)
 				return map.get(d.categoryType.name());
-			else
-				return map.get(d.type.name());
+			return map.get(d.type.name());
+		}
 		Dataset parent = index.get(d.categoryRefId).getDataset();
 		if (map.containsKey(parent.refId))
 			return map.get(parent.refId);

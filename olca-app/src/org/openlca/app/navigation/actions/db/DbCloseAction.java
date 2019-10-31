@@ -6,6 +6,7 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.ui.commits.HistoryView;
+import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.editors.Editors;
@@ -58,6 +59,7 @@ public class DbCloseAction extends Action implements INavigationAction {
 			public void run() {
 				Navigator.refresh();
 				HistoryView.refresh();
+				CompareView.clear();
 				ValidationView.clear();
 			}
 		});

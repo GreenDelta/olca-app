@@ -422,10 +422,10 @@
             restorable="true">
       </view>
       <view
-            class="org.openlca.app.cloud.ui.diff.SyncView"
-            id="views.cloud.sync"
-            name="Sync repository"
-            icon="icons/cloud/sync.png"
+            class="org.openlca.app.cloud.ui.diff.CompareView"
+            id="views.cloud.compare"
+            name="Compare with repository"
+            icon="icons/cloud/compare.png"
             restorable="true">
       </view>  
    </extension>

@@ -1,10 +1,5 @@
 package org.openlca.app.navigation.actions.cloud;
 
-import static org.openlca.app.cloud.index.DiffType.CHANGED;
-import static org.openlca.app.cloud.index.DiffType.DELETED;
-import static org.openlca.app.cloud.index.DiffType.NEW;
-import static org.openlca.app.cloud.index.DiffType.NO_DIFF;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,8 +8,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.openlca.app.cloud.index.DiffIndex;
+import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.diff.DiffResult;
-import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.app.db.Database;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.database.CategorizedEntityDao;
@@ -27,21 +22,21 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class FetchIndexHelper {
+class Util {
 
-	private final static Logger log = LoggerFactory.getLogger(FetchIndexHelper.class);
+	private final static Logger log = LoggerFactory.getLogger(Util.class);
 	private DiffIndex index;
 	private Map<String, Long> localIds = new HashMap<>();
 
-	private FetchIndexHelper(DiffIndex index) {
+	private Util(DiffIndex index) {
 		this.index = index;
 	}
 
 	static void index(List<DiffResult> changed, DiffIndex index, Consumer<DiffResult> callback) {
-		FetchIndexHelper helper = new FetchIndexHelper(index);
-		helper.localIds = getLocalIds(changed);
+		Util util = new Util(index);
+		util.localIds = util.getLocalIds(changed);
 		for (DiffResult diff : changed) {
-			helper.index(diff);
+			util.index(diff);
 			if (callback == null)
 				continue;
 			callback.accept(diff);
@@ -49,7 +44,7 @@ class FetchIndexHelper {
 		index.commit();
 	}
 
-	private static Map<String, Long> getLocalIds(List<DiffResult> changed) {
+	private Map<String, Long> getLocalIds(List<DiffResult> changed) {
 		Map<ModelType, Set<String>> refIds = groupRefIdsByModelType(changed);
 		Map<String, Long> refIdToLocalId = new HashMap<>();
 		IDatabase db = Database.get();
@@ -66,7 +61,7 @@ class FetchIndexHelper {
 				// index problem, the new ids are calculated
 				Set<String> correctedIds = new HashSet<>();
 				for (DiffResult r : changed) {
-					if (r.getType() != DiffResponse.ADD_TO_LOCAL || !ids.contains(r.remote.refId))
+					if (r.local != null || r.remote.isDeleted() || !ids.contains(r.remote.refId))
 						continue;
 					String[] categories = r.remote.categories.toArray(new String[r.remote.categories.size()]);
 					String[] path = Strings.prepend(categories, r.remote.categoryType.name());
@@ -84,11 +79,10 @@ class FetchIndexHelper {
 		return refIdToLocalId;
 	}
 
-	private static Map<ModelType, Set<String>> groupRefIdsByModelType(
-			List<DiffResult> changed) {
+	private Map<ModelType, Set<String>> groupRefIdsByModelType(List<DiffResult> changed) {
 		Map<ModelType, Set<String>> refIds = new HashMap<>();
 		for (DiffResult result : changed) {
-			if (result.getType() != DiffResponse.ADD_TO_LOCAL)
+			if (result.local != null || result.remote.isDeleted())
 				continue;
 			ModelType mType = result.getDataset().type;
 			if (!mType.isCategorized())
@@ -106,78 +100,19 @@ class FetchIndexHelper {
 		Dataset dataset = diff.getDataset();
 		if (!dataset.type.isCategorized())
 			return;
-		DiffResponse responseType = diff.getType();
-		switch (responseType) {
-		case NONE:
-			if (bothDeleted(diff))
-				index.remove(dataset.refId);
-			else
-				index.update(dataset, NO_DIFF);
-			break;
-		case MODIFY_IN_LOCAL:
-			index.update(dataset, NO_DIFF);
-			break;
-		case ADD_TO_LOCAL:
-			index.add(dataset, localIds.get(dataset.refId));
-			break;
-		case DELETE_FROM_LOCAL:
-			index.remove(dataset.refId);
-			break;
-		case CONFLICT:
-			indexConflict(diff);
-			break;
-		default:
-			break;
-		}
-	}
-
-	private void indexConflict(DiffResult diff) {
-		if (diff.local.type == CHANGED)
-			indexChanged(diff);
-		else if (diff.local.type == NEW)
-			indexChanged(diff);
-		else if (diff.local.type == DELETED)
-			indexDeleted(diff);
-	}
-
-	private void indexDeleted(DiffResult diff) {
-		Dataset dataset = diff.getDataset();
-		if (diff.overwriteRemoteChanges())
-			index.update(dataset, DELETED);
-		else if (diff.overwriteLocalChanges())
-			index.update(dataset, NO_DIFF);
-	}
-
-	private void indexChanged(DiffResult diff) {
-		if (diff.overwriteRemoteChanges())
-			indexOverwritten(diff);
-		else
-			indexMerged(diff);
-	}
-
-	private void indexOverwritten(DiffResult diff) {
-		Dataset dataset = diff.getDataset();
 		if (diff.remote.isDeleted()) {
-			index.update(dataset, NEW);
-		} else {
-			index.update(dataset, CHANGED);
+			if (diff.local != null) {
+				if (diff.local.type == DiffType.NO_DIFF || diff.overwriteLocalChanges()) {
+					index.remove(dataset.refId);
+				} else if (diff.local.type.isOneOf(DiffType.NEW, DiffType.CHANGED)) {
+					index.update(dataset, DiffType.NEW);
+				}
+			}
+		} else if (diff.local == null) {
+			index.add(dataset, localIds.get(dataset.refId));
+		} else if (diff.overwriteLocalChanges()) {
+			index.update(dataset, DiffType.NO_DIFF);
 		}
-	}
-
-	private void indexMerged(DiffResult diff) {
-		Dataset dataset = diff.getDataset();
-		if (diff.remote.isDeleted())
-			index.remove(dataset.refId);
-		else
-			index.update(dataset, NO_DIFF);
-	}
-
-	private boolean bothDeleted(DiffResult diff) {
-		if (diff.remote == null)
-			return false;
-		if (!diff.remote.isDeleted())
-			return false;
-		return diff.local == null;
 	}
 
 }

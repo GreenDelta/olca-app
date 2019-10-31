@@ -1,5 +1,7 @@
 package org.openlca.app.cloud.ui.commits;
 
+import java.util.List;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
@@ -57,6 +59,11 @@ public class SelectCommitDialog extends FormDialog {
 			MsgBox.error(e.getMessage());
 		}
 		return;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Commit> getCommits() {
+		return (List<Commit>) viewer.getViewer().getInput();
 	}
 
 	private void updateButtons() {

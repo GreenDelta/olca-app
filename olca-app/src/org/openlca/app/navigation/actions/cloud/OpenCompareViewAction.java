@@ -5,25 +5,21 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.openlca.app.M;
+import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.ui.commits.SelectCommitDialog;
-import org.openlca.app.cloud.ui.diff.SyncView;
+import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openlca.cloud.model.data.Commit;
 
-public class OpenSyncViewAction extends Action implements INavigationAction {
+public class OpenCompareViewAction extends Action implements INavigationAction {
 
-	private final static Logger log = LoggerFactory.getLogger(OpenSyncViewAction.class);
 	private final boolean selectCommit;
 	private List<INavigationElement<?>> elements;
 
-	public OpenSyncViewAction(boolean selectCommit) {
+	public OpenCompareViewAction(boolean selectCommit) {
 		if (selectCommit)
 			setText(M.Commit);
 		else
@@ -33,22 +29,16 @@ public class OpenSyncViewAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		String commitId = null;
+		Commit commit = null;
+		List<Commit> commits = null;
 		if (selectCommit) {
 			SelectCommitDialog dialog = new SelectCommitDialog();
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return;
-			commitId = dialog.getSelection().id;
+			commit = dialog.getSelection();
+			commits = dialog.getCommits();
 		}
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		if (page == null)
-			return;
-		try {
-			SyncView view = (SyncView) page.showView(SyncView.ID);
-			view.update(elements, commitId);
-		} catch (PartInitException e) {
-			log.error("Error opening sync view", e);
-		}
+		CompareView.update(elements, commit, CloudUtil.commitIsAhead(commit, commits));
 	}
 
 	@Override

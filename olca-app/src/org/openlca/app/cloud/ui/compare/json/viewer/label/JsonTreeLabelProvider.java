@@ -4,17 +4,17 @@ import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
+import org.openlca.app.cloud.ui.diff.Site;
 
 public class JsonTreeLabelProvider extends StyledCellLabelProvider {
 
-	private final Side side;
+	private final Site site;
 	private final IJsonNodeLabelProvider nodeLabelProvider;
 	private final LabelStyle style = new LabelStyle();
 	
-	public JsonTreeLabelProvider(IJsonNodeLabelProvider nodeLabelProvider, Side side) {
+	public JsonTreeLabelProvider(IJsonNodeLabelProvider nodeLabelProvider, Site site) {
 		this.nodeLabelProvider = nodeLabelProvider;
-		this.side = side;
+		this.site = site;
 	}
 
 	@Override
@@ -26,13 +26,13 @@ public class JsonTreeLabelProvider extends StyledCellLabelProvider {
 		StyledString styledString = getStyledText(node);
 		cell.setText(styledString.toString());
 		cell.setStyleRanges(styledString.getStyleRanges());
-		cell.setImage(nodeLabelProvider.getImage(node, side));
+		cell.setImage(nodeLabelProvider.getImage(node, site));
 		super.update(cell);
 	}
 
 	private StyledString getStyledText(JsonNode node) {
-		String text = nodeLabelProvider.getText(node, side);
-		String otherText = nodeLabelProvider.getText(node, side.getOther());
+		String text = nodeLabelProvider.getText(node, site);
+		String otherText = nodeLabelProvider.getText(node, site.getOther());
 		text = adjustMultiline(node, text, otherText);
 		StyledString styled = new StyledString(text);
 		style.applyTo(styled, node);

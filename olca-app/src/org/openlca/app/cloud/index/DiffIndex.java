@@ -71,45 +71,24 @@ public class DiffIndex {
 		index.put(dataset.refId, diff);
 	}
 
-	public void untrack(String refId) {
+	public void setTracked(String refId, boolean value) {
 		Diff diff = index.get(refId);
-		if (diff == null || diff.type == DiffType.UNTRACKED || diff.type == DiffType.DELETED)
+		if (diff == null || diff.tracked == value || (!value && diff.type == DiffType.DELETED))
 			return;
-		diff.type = DiffType.UNTRACKED;
-		updateParents(diff, false);
-		index.put(refId, diff);
-	}
-
-	public void retrack(String refId) {
-		Diff diff = index.get(refId);
-		if (diff == null || diff.type != DiffType.UNTRACKED)
-			return;
-		if (diff.changed == null) {
-			diff.type = DiffType.NO_DIFF;
-		} else if (diff.changed.equals(diff.dataset)) {
-			diff.type = DiffType.NEW;
-		} else {
-			diff.type = DiffType.CHANGED;
-		}
-		boolean isChanged = diff.changed != null;
+		diff.tracked = value;
+		boolean isChanged = value && diff.changed != null;
 		updateParents(diff, isChanged);
 		index.put(refId, diff);
 	}
 
 	public void update(Dataset dataset, DiffType newType) {
-		if (newType == DiffType.UNTRACKED) {
-			untrack(dataset.refId);
-			return;
-		}
 		Diff diff = index.get(dataset.refId);
 		if (diff == null)
 			return;
-		if (diff.type == newType && newType != DiffType.CHANGED)
-			return;
 		if (diff.type == DiffType.NEW && newType == DiffType.DELETED) {
-			// user added something and then deleted it again, without
-			// committing
+			// user added something and then deleted it again
 			remove(dataset.refId);
+			updateParents(diff, false);
 			return;
 		}
 		updateDiff(diff, dataset, newType);
@@ -117,9 +96,7 @@ public class DiffIndex {
 
 	private void updateDiff(Diff diff, Dataset dataset, DiffType newType) {
 		boolean changed = newType != DiffType.NO_DIFF;
-		if (diff.type != DiffType.UNTRACKED) {
-			diff.type = newType;
-		}
+		diff.type = newType;
 		if (newType == DiffType.NO_DIFF) {
 			diff.dataset = dataset;
 			diff.changed = null;
@@ -177,11 +154,21 @@ public class DiffIndex {
 	public List<Diff> getChanged() {
 		List<Diff> changed = new ArrayList<>();
 		for (Diff diff : index.values()) {
-			if (!diff.hasChanged()) {
+			if (diff.hasChanged()) {
 				changed.add(diff);
 			}
 		}
 		return changed;
+	}
+
+	public List<String> getUntracked() {
+		List<String> untracked = new ArrayList<>();
+		for (Diff diff : index.values()) {
+			if (!diff.tracked) {
+				untracked.add(diff.dataset.refId);
+			}
+		}
+		return untracked;
 	}
 
 	public List<Diff> getAll(DiffType... types) {
@@ -207,8 +194,6 @@ public class DiffIndex {
 		Diff diff = index.remove(key);
 		if (diff == null)
 			return;
-		Dataset ds = diff.getDataset();
-		updateChangedTopLevelElements(ds.categoryType.name(), ds.refId, false);
 		updateParents(diff, false);
 	}
 

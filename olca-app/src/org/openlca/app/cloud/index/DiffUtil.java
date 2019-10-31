@@ -26,11 +26,15 @@ public class DiffUtil {
 
 	private static boolean hasChanged(Dataset dataset) {
 		Diff diff = getDiff(dataset);
+		if (diff == null)
+			return false;
 		return diff.hasChanged() || diff.childrenHaveChanged();
 	}
 
 	private static boolean hasChanged(ModelType type) {
 		DiffIndex index = Database.getDiffIndex();
+		if (index == null )
+			return false;
 		return index.hasChanged(type);
 	}
 

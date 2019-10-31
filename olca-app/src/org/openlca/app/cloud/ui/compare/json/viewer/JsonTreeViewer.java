@@ -13,19 +13,21 @@ import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.viewer.label.IJsonNodeLabelProvider;
 import org.openlca.app.cloud.ui.compare.json.viewer.label.JsonTreeLabelProvider;
 import org.openlca.app.cloud.ui.compare.json.viewer.label.TextDiffDialog;
+import org.openlca.app.cloud.ui.diff.ActionType;
+import org.openlca.app.cloud.ui.diff.Site;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
 
 public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 
-	private Side side;
-	Direction direction;
+	private Site site;
+	ActionType action;
 
-	public JsonTreeViewer(Composite parent, Side side, Direction direction) {
-		super(parent, side);
-		this.side = side;
-		this.direction = direction;
+	public JsonTreeViewer(Composite parent, Site site, ActionType action) {
+		super(parent, site);
+		this.site = site;
+		this.action = action;
 	}
 
 	@Override
@@ -42,7 +44,7 @@ public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 	}
 
 	public void setLabelProvider(IJsonNodeLabelProvider labelProvider) {
-		getViewer().setLabelProvider(new JsonTreeLabelProvider(labelProvider, side));
+		getViewer().setLabelProvider(new JsonTreeLabelProvider(labelProvider, site));
 	}
 
 	@Override
@@ -50,7 +52,7 @@ public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 		TreeViewer viewer = new TreeViewer(parent, SWT.MULTI | SWT.NO_FOCUS | SWT.HIDE_SELECTION | SWT.BORDER);
 		viewer.setContentProvider(new ContentProvider());
 		Tree tree = viewer.getTree();
-		if (viewerParameters[0] == Side.LEFT)
+		if (viewerParameters[0] == Site.LOCAL)
 			tree.getVerticalBar().setVisible(false);
 		UI.gridData(tree, true, true);
 		viewer.addDoubleClickListener((e) -> onDoubleClick(e));
@@ -62,7 +64,7 @@ public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 		JsonNode node = (JsonNode) sel.getFirstElement();
 		if (!node.getElement().isJsonPrimitive())
 			return;
-		new TextDiffDialog(node, direction).open();
+		new TextDiffDialog(node, action).open();
 	}
 
 	public List<JsonNode> getSelection() {
@@ -72,24 +74,6 @@ public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 	@Override
 	public void setInput(JsonNode[] input) {
 		super.setInput(input);
-	}
-
-	public static enum Side {
-
-		LEFT, RIGHT;
-
-		public Side getOther() {
-			if (this == LEFT)
-				return RIGHT;
-			return LEFT;
-		}
-
-	}
-
-	public static enum Direction {
-
-		LEFT_TO_RIGHT, RIGHT_TO_LEFT;
-
 	}
 
 }

@@ -45,8 +45,7 @@ public class DiffDialog extends FormDialog {
 		viewer = new FetchDiffViewer(body, loader);
 		form.reflow(true);
 		viewer.setInput(Collections.singletonList(rootNode));
-		viewer.setOnMerge(() -> getButton(OK)
-				.setEnabled(!viewer.hasConflicts()));
+		viewer.setOnMerge(() -> getButton(OK).setEnabled(!viewer.hasConflicts()));
 	}
 
 	@Override

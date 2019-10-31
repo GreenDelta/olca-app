@@ -8,8 +8,6 @@ import java.util.Queue;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
-import org.openlca.cloud.model.data.Dataset;
-import org.openlca.cloud.util.Datasets;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
@@ -232,10 +230,7 @@ public class CopyPaste {
 		CategorizedDescriptor entity = element.getContent();
 		Category category = getCategory(categoryElement);
 		Optional<Category> parent = Optional.ofNullable(category);
-		entity = Daos.categorized(Database.get(), entity.type).updateCategory(entity, parent);
-		// need to notifiy index updater manually here
-		Dataset dataset = Datasets.toDataset(entity, category);
-		Database.getIndexUpdater().update(dataset, entity.id);
+		Daos.categorized(Database.get(), entity.type).updateCategory(entity, parent);
 	}
 
 	private static void copy(CategoryElement element, INavigationElement<?> category) {

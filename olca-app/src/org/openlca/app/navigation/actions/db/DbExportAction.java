@@ -14,6 +14,7 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.ui.commits.HistoryView;
+import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
@@ -134,8 +135,10 @@ public class DbExportAction extends Action implements INavigationAction {
 	}
 
 	private void updateUI(final File zip, final boolean active) {
-		if (active)
+		if (active) {
 			Navigator.refresh();
+			CompareView.clear();
+		}
 		HistoryView.refresh();
 		Popup.info(M.ExportDone, M.DatabaseWasExportedToFile + ": " + zip.getName());
 	}

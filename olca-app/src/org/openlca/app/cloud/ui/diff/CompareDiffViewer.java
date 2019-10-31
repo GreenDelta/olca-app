@@ -5,10 +5,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.util.trees.Trees;
 
-class SyncDiffViewer extends DiffTreeViewer {
+class CompareDiffViewer extends DiffTreeViewer {
 
-	public SyncDiffViewer(Composite parent, JsonLoader jsonLoader) {
-		super(parent, jsonLoader, true);
+	CompareDiffViewer(Composite parent, JsonLoader jsonLoader) {
+		// Type will be set on update, see CompareView.update
+		super(parent, jsonLoader, null);
 	}
 
 	@Override
@@ -20,8 +21,7 @@ class SyncDiffViewer extends DiffTreeViewer {
 
 	@Override
 	protected void onMerge(DiffNode node) {
-		if (!node.hasChanged())
-			return;
+
 	}
 
 }

@@ -10,6 +10,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.index.Reindexing;
 import org.openlca.app.cloud.ui.FetchNotifierMonitor;
+import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.MsgBox;
@@ -51,6 +52,7 @@ class CheckoutAction extends Action {
 			App.runWithProgress(M.RebuildingIndex, Reindexing::execute);
 			Navigator.refresh();
 			HistoryView.refresh();
+			CompareView.clear();
 		}
 	}
 

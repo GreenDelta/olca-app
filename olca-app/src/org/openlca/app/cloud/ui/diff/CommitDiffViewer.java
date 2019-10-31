@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.index.DiffType;
-import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.app.util.UI;
 
 public class CommitDiffViewer extends DiffTreeViewer {
@@ -24,7 +23,7 @@ public class CommitDiffViewer extends DiffTreeViewer {
 	private boolean lockNewElements;
 
 	public CommitDiffViewer(Composite parent, JsonLoader jsonLoader, boolean lockNewElements) {
-		super(parent, jsonLoader);
+		super(parent, jsonLoader, ActionType.COMMIT);
 		this.lockNewElements = lockNewElements;
 	}
 
@@ -72,7 +71,7 @@ public class CommitDiffViewer extends DiffTreeViewer {
 	private List<DiffNode> findNodes(Set<String> refIds, DiffNode node) {
 		List<DiffNode> elements = new ArrayList<>();
 		for (DiffNode child : node.children) {
-			if (!child.isModelTypeNode() && child.hasChanged()) {
+			if (!child.isModelTypeNode() && child.getContent().local.tracked && child.hasChanged()) {
 				String refId = child.getContent().getDataset().refId;
 				// null is used as hack to select all
 				if (refIds == null || refIds.contains(refId))
@@ -93,11 +92,12 @@ public class CommitDiffViewer extends DiffTreeViewer {
 	}
 
 	private void setChecked(CheckboxTreeViewer viewer, DiffNode node, boolean value, boolean selectChildren) {
-		if (node.isModelTypeNode() || node.getContent().getType() == DiffResponse.NONE) {
+		DiffResult result = node.getContent();
+		if (node.isModelTypeNode() || !result.local.tracked || result.noAction()) {
 			viewer.setChecked(node, false);
 		} else if (value) {
 			selected.add(node);
-		} else if (lockNewElements && node.getContent().local.type == DiffType.NEW) {
+		} else if (lockNewElements && result.local.type == DiffType.NEW) {
 			viewer.setChecked(node, true);
 		} else {
 			selected.remove(node);

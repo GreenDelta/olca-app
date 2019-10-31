@@ -12,6 +12,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.Announcements;
 import org.openlca.app.cloud.ui.commits.HistoryView;
+import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.editors.Editors;
@@ -156,6 +157,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 				Announcements.check(Database.getRepositoryClient());
 			}
 			HistoryView.refresh();
+			CompareView.clear();
 		}
 
 		private void error(String message) {

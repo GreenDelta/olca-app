@@ -1,6 +1,5 @@
 package org.openlca.app.cloud.index;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +29,7 @@ public class Reindexing {
 	private DiffIndex index;
 	private RepositoryClient client;
 	private CategoryDao categoryDao;
-	private List<String> untracked = new ArrayList<>();
+	private List<String> untracked;
 
 	public static void execute() {
 		new Reindexing().run();
@@ -73,7 +72,7 @@ public class Reindexing {
 		if (index == null)
 			return null;
 		categoryDao = new CategoryDao(database);
-		index.getAll(DiffType.UNTRACKED).forEach(diff -> untracked.add(diff.getDataset().refId));
+		untracked = index.getUntracked();
 		index.clear();
 		if (client.getConfig().getLastCommitId() == null)
 			return new HashMap<>();
@@ -132,7 +131,7 @@ public class Reindexing {
 		index.add(dataset, 0);
 		index.update(dataset, DiffType.DELETED);
 		if (untracked.contains(dataset.refId)) {
-			index.untrack(dataset.refId);
+			index.setTracked(dataset.refId, false);
 		}
 	}
 
@@ -144,7 +143,7 @@ public class Reindexing {
 			index.update(toDataset(descriptor), DiffType.CHANGED);
 		}
 		if (untracked.contains(dataset.refId)) {
-			index.untrack(dataset.refId);
+			index.setTracked(dataset.refId, false);
 		}
 	}
 
@@ -153,7 +152,7 @@ public class Reindexing {
 		index.add(dataset, descriptor.id);
 		index.update(dataset, DiffType.NEW);
 		if (untracked.contains(dataset.refId)) {
-			index.untrack(dataset.refId);
+			index.setTracked(dataset.refId, false);
 		}
 	}
 

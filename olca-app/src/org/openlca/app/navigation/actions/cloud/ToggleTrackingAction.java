@@ -8,7 +8,6 @@ import java.util.Set;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
-import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
@@ -44,16 +43,11 @@ public class ToggleTrackingAction extends Action implements INavigationAction {
 			Diff diff = index.get(refId);
 			if (diff == null)
 				continue;
-			if (diff.type == DiffType.UNTRACKED && !setTracked)
+			if (diff.tracked == setTracked)
 				continue;
-			if (diff.type != DiffType.UNTRACKED && setTracked)
-				continue;
-			if (setTracked) {
-				index.retrack(refId);
-			} else {
-				index.untrack(refId);
-			}
+			index.setTracked(refId, setTracked);
 		}
+		index.commit();
 		Navigator.refresh();
 	}
 

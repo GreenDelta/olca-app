@@ -8,7 +8,6 @@ import java.util.Stack;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.cloud.JsonLoader;
-import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.app.util.trees.Trees;
 
 public class FetchDiffViewer extends DiffTreeViewer {
@@ -16,7 +15,7 @@ public class FetchDiffViewer extends DiffTreeViewer {
 	private Runnable onMerge;
 
 	public FetchDiffViewer(Composite parent, JsonLoader jsonLoader) {
-		super(parent, jsonLoader);
+		super(parent, jsonLoader, ActionType.FETCH);
 	}
 
 	@Override
@@ -68,7 +67,7 @@ public class FetchDiffViewer extends DiffTreeViewer {
 			if (node.isModelTypeNode())
 				continue;
 			DiffResult result = (DiffResult) node.content;
-			if (result.getType() != DiffResponse.CONFLICT)
+			if (!result.conflict())
 				continue;
 			if (result.overwriteLocalChanges())
 				continue;
@@ -80,4 +79,5 @@ public class FetchDiffViewer extends DiffTreeViewer {
 		}
 		return conflicts;
 	}
+
 }

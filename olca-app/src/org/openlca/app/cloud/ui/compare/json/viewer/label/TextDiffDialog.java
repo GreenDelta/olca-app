@@ -13,20 +13,20 @@ import org.openlca.app.cloud.ui.compare.ModelLabelProvider;
 import org.openlca.app.cloud.ui.compare.ModelUtil;
 import org.openlca.app.cloud.ui.compare.PropertyLabels;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
+import org.openlca.app.cloud.ui.diff.ActionType;
+import org.openlca.app.cloud.ui.diff.Site;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 
 public class TextDiffDialog extends FormDialog {
 
 	private final JsonNode node;
-	private final Direction direction;
+	private final ActionType action;
 	
-	public TextDiffDialog(JsonNode node, Direction direction) {
+	public TextDiffDialog(JsonNode node, ActionType action) {
 		super(UI.shell());
 		this.node = node;
-		this.direction = direction;
+		this.action = action;
 	}
 
 	@Override
@@ -47,15 +47,15 @@ public class TextDiffDialog extends FormDialog {
 		UI.gridLayout(body, 2, 0, 0).makeColumnsEqualWidth = true;
 		UI.gridData(body, true, true);
 		ModelLabelProvider label = new ModelLabelProvider();
-		String leftText = label.getValueText(node, Side.LEFT);
-		String rightText = label.getValueText(node, Side.RIGHT);
-		createText(body, leftText, rightText, Side.LEFT);
-		createText(body, rightText, leftText, Side.RIGHT);
+		String leftText = label.getValueText(node, Site.LOCAL);
+		String rightText = label.getValueText(node, Site.REMOTE);
+		createText(body, leftText, rightText, Site.LOCAL);
+		createText(body, rightText, leftText, Site.REMOTE);
 	}
 	
-	private void createText(Composite parent, String value, String otherValue, Side side) {
+	private void createText(Composite parent, String value, String otherValue, Site site) {
 		StyledString styled = new StyledString(value);
-		new DiffStyle().applyTo(styled, otherValue, side, direction);
+		new DiffStyle().applyTo(styled, otherValue, site, action);
 		StyledText text = new StyledText(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
 		text.setText(styled.toString());
 		text.setStyleRanges(styled.getStyleRanges());

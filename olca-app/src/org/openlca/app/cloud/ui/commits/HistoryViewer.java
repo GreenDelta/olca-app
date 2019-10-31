@@ -1,6 +1,7 @@
 package org.openlca.app.cloud.ui.commits;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -37,8 +38,15 @@ class HistoryViewer extends AbstractTableViewer<Commit> {
 	protected List<Action> getAdditionalActions() {
 		List<Action> actions = new ArrayList<>();
 		actions.add(new CheckoutAction(this));
-		actions.add(new OpenSyncViewAction(this));
+		actions.add(new OpenCompareViewAction(this));
 		return actions;
+	}
+	
+	List<Commit> getCommits() {
+		Object input = getViewer().getInput();
+		if (input instanceof Object[])
+			return null;
+		return Arrays.asList((Commit[]) getViewer().getInput());
 	}
 
 	class HistoryLabel extends org.eclipse.jface.viewers.LabelProvider

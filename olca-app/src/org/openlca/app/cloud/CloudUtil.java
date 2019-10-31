@@ -1,19 +1,24 @@
 package org.openlca.app.cloud;
 
 import java.util.Calendar;
+import java.util.List;
 
+import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.util.Labels;
 import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.cloud.util.Datasets;
+import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.util.Strings;
+import org.slf4j.LoggerFactory;
 
 public class CloudUtil {
 
@@ -31,7 +36,6 @@ public class CloudUtil {
 			category = ((CategoryElement) element.getParent()).getContent();
 		return Datasets.toDataset(descriptor, category);
 	}
-
 
 	public static String getFileReferenceText(FetchRequestData reference) {
 		String modelType = Labels.modelType(reference.categoryType);
@@ -92,4 +96,47 @@ public class CloudUtil {
 	private static String timeText(int value, String timeUnit) {
 		return value + " " + timeUnit + (value > 1 ? "s" : "") + " ago";
 	}
+
+	public static FetchRequestData toFetchRequestData(Dataset dataset) {
+		FetchRequestData data = new FetchRequestData();
+		data.type = dataset.type;
+		data.refId = dataset.refId;
+		data.name = dataset.name;
+		data.version = dataset.version;
+		data.lastChange = dataset.lastChange;
+		data.categoryType = dataset.categoryType;
+		data.categoryRefId = dataset.categoryRefId;
+		data.categories = dataset.categories;
+		return data;
+	}
+
+	public static boolean commitIsAhead(Commit commit, List<Commit> commits) {
+		RepositoryClient client = Database.getRepositoryClient();
+		if (client == null)
+			return false;
+		String lastCommitId = client.getConfig().getLastCommitId();
+		if (commits == null) {
+			try {
+				commits = client.fetchCommitHistory();
+			} catch (WebRequestException e) {
+				LoggerFactory.getLogger(CloudUtil.class).error("Error during fetch commit history", e);
+				return false;
+			}
+		}
+		if (commits.size() == 0)
+			return false;
+		if (commit == null) {
+			commit = commits.get(commits.size() - 1);			
+		}
+		if (lastCommitId == null)
+			return true;
+		for (Commit c : commits) {
+			if (c.id.equals(lastCommitId))
+				return false;
+			if (c.id.equals(commit.id))
+				return true;
+		}
+		return true;
+	}
+
 }

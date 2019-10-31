@@ -9,6 +9,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.openlca.app.M;
 import org.openlca.app.cloud.ui.commits.HistoryView;
+import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.UI;
@@ -46,6 +47,7 @@ public class DatabaseWizard extends Wizard {
 			getContainer().run(true, false, runner);
 			Navigator.refresh();
 			HistoryView.refresh();
+			CompareView.clear();
 			ValidationView.clear();
 			return true;
 		} catch (Exception e) {

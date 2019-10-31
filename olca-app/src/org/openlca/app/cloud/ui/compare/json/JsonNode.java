@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openlca.app.cloud.ui.compare.json.JsonUtil.ElementFinder;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
+import org.openlca.app.cloud.ui.diff.Site;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -16,8 +16,8 @@ public class JsonNode {
 
 	public String property;
 	public JsonNode parent;
-	public JsonElement leftElement;
-	public JsonElement rightElement;
+	public JsonElement localElement;
+	public JsonElement remoteElement;
 	public boolean readOnly;
 	public List<JsonNode> children = new ArrayList<>();
 	JsonElement originalElement;
@@ -34,45 +34,45 @@ public class JsonNode {
 			ElementFinder elementFinder, boolean readOnly) {
 		this.parent = parent;
 		this.property = property;
-		this.leftElement = leftElement;
-		this.rightElement = rightElement;
+		this.localElement = leftElement;
+		this.remoteElement = rightElement;
 		this.originalElement = originalElement;
 		this.elementFinder = elementFinder;
 		this.readOnly = readOnly;
 	}
 
 	public JsonElement getElement() {
-		if (leftElement != null)
-			return leftElement;
-		return rightElement;
+		if (localElement != null)
+			return localElement;
+		return remoteElement;
 	}
 
-	public JsonElement getElement(Side side) {
-		if (side == Side.LEFT)
-			return leftElement;
-		return rightElement;
+	public JsonElement getElement(Site site) {
+		if (site == Site.LOCAL)
+			return localElement;
+		return remoteElement;
 	}
 
 	public boolean hasEqualValues() {
-		return JsonUtil.equal(property, leftElement, rightElement, elementFinder);
+		return JsonUtil.equal(property, localElement, remoteElement, elementFinder);
 	}
 
 	boolean hadDifferences() {
-		return !JsonUtil.equal(property, leftElement, originalElement, elementFinder);
+		return !JsonUtil.equal(property, localElement, originalElement, elementFinder);
 	}
 
 	void setValue(JsonElement toSet, boolean leftToRight) {
-		if (parent.leftElement == null)
+		if (parent.localElement == null)
 			return;
-		JsonElement current = this.leftElement;
-		this.leftElement = toSet;
+		JsonElement current = this.localElement;
+		this.localElement = toSet;
 		if (parent != null)
 			updateParent(toSet, current);
 		updateChildren(leftToRight);
 	}
 
 	private void updateParent(JsonElement toSet, JsonElement current) {
-		JsonElement parentElement = parent.leftElement;
+		JsonElement parentElement = parent.localElement;
 		if (parentElement.isJsonObject())
 			updateParent(parentElement.getAsJsonObject(), toSet, current);
 		else if (parentElement.isJsonArray())
@@ -84,7 +84,7 @@ public class JsonNode {
 	}
 
 	private void updateParent(JsonArray parentElement, JsonElement toSet, JsonElement current) {
-		JsonObject arrayParent = parent.parent.leftElement.getAsJsonObject();
+		JsonObject arrayParent = parent.parent.localElement.getAsJsonObject();
 		JsonArray array = parentElement.getAsJsonArray();
 		if (toSet == null) {
 			// remove
@@ -98,7 +98,7 @@ public class JsonNode {
 			else
 				array = JsonUtil.replace(index, array, toSet);
 		}
-		parent.leftElement = array;
+		parent.localElement = array;
 		arrayParent.add(parent.property, array);
 	}
 
@@ -108,28 +108,28 @@ public class JsonNode {
 		Set<Integer> assigned = new HashSet<>();
 		for (JsonNode child : children) {
 			JsonElement element = getElement(child, leftToRight, assigned);
-			child.leftElement = element;
+			child.localElement = element;
 			child.updateChildren(leftToRight);
 		}
 	}
 
 	private JsonElement getElement(JsonNode node, boolean leftToRight, Set<Integer> assigned) {
-		if (leftElement == null)
+		if (localElement == null)
 			return null;
-		if (leftElement.isJsonObject())
-			return leftElement.getAsJsonObject().get(node.property);
-		if (!leftElement.isJsonArray())
+		if (localElement.isJsonObject())
+			return localElement.getAsJsonObject().get(node.property);
+		if (!localElement.isJsonArray())
 			return null;
 		JsonElement toFind = null;
 		if (leftToRight)
 			toFind = node.originalElement;
 		else
-			toFind = node.rightElement;
-		int index = elementFinder.find(property, toFind, leftElement.getAsJsonArray(), assigned);
+			toFind = node.remoteElement;
+		int index = elementFinder.find(property, toFind, localElement.getAsJsonArray(), assigned);
 		if (index == -1)
 			return null;
 		assigned.add(index);
-		return leftElement.getAsJsonArray().get(index);
+		return localElement.getAsJsonArray().get(index);
 	}
 
 }

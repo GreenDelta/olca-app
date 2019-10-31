@@ -3,7 +3,7 @@ package org.openlca.app.cloud.index;
 
 public enum DiffType {
 
-	NO_DIFF, NEW, CHANGED, DELETED, UNTRACKED;
+	NO_DIFF, NEW, CHANGED, DELETED;
 
 	public boolean isOneOf(DiffType... types) {
 		if (types == null)

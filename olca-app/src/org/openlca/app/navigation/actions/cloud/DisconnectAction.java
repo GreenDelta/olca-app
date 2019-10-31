@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.cloud.ui.commits.HistoryView;
+import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.CommentsEditor;
 import org.openlca.app.navigation.DatabaseElement;
@@ -28,6 +29,7 @@ public class DisconnectAction extends Action implements INavigationAction {
 		Database.disconnect();
 		Navigator.refresh(Navigator.getNavigationRoot());
 		HistoryView.refresh();
+		CompareView.clear();
 	}
 
 	@Override

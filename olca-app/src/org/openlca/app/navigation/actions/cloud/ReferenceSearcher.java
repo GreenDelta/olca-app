@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
@@ -59,10 +60,9 @@ class ReferenceSearcher {
 			allFound.addAll(refs);
 			List<Diff> diffs = getChanged(refs);
 			for (Diff diff : diffs) {
-				DiffResult diffResult = new DiffResult(diff);
+				DiffResult diffResult = new DiffResult(diff, CloudUtil.toFetchRequestData(diff.getDataset()));
 				if (diffResult.local.localId == 0)
 					continue;
-				diffResult.ignoreRemote = true;
 				allChanged.add(diffResult.local.localId);
 				results.add(diffResult);
 			}

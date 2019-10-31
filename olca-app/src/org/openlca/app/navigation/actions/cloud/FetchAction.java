@@ -24,10 +24,11 @@ import org.openlca.app.cloud.ui.FetchNotifierMonitor;
 import org.openlca.app.cloud.ui.commits.CommitEntryDialog;
 import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil;
+import org.openlca.app.cloud.ui.diff.ActionType;
+import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.cloud.ui.diff.DiffNode;
 import org.openlca.app.cloud.ui.diff.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.diff.DiffResult;
-import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -69,6 +70,7 @@ public class FetchAction extends Action implements INavigationAction {
 		}
 		Navigator.refresh();
 		HistoryView.refresh();
+		CompareView.clear();
 	}
 
 	private class Runner {
@@ -117,7 +119,7 @@ public class FetchAction extends Action implements INavigationAction {
 			try {
 				Set<FetchRequestData> descriptors = client.requestFetch();
 				differences = createDifferences(descriptors);
-				root = new DiffNodeBuilder(client.getConfig().database, index).build(differences);
+				root = new DiffNodeBuilder(client.getConfig().database, index, ActionType.FETCH).build(differences);
 			} catch (Exception e) {
 				error = e;
 			}
@@ -141,7 +143,7 @@ public class FetchAction extends Action implements INavigationAction {
 			Set<FileReference> toFetch = new HashSet<>();
 			Map<Dataset, JsonObject> mergedData = new HashMap<>();
 			for (DiffResult result : differences) {
-				if (result.getType() == DiffResponse.NONE)
+				if (result.noAction())
 					continue;
 				Dataset dataset = result.getDataset();
 				JsonObject data = result.getMergedData();
@@ -167,7 +169,7 @@ public class FetchAction extends Action implements INavigationAction {
 							FetchNotifierMonitor monitor = new FetchNotifierMonitor(m, M.FetchingData);
 							client.fetch(toFetch, mergedData, monitor);
 							monitor.beginTask(M.IndexingDatasets, differences.size());
-							FetchIndexHelper.index(differences, index, (e) -> monitor.worked());
+							Util.index(differences, index, (e) -> monitor.worked());
 							monitor.done();
 						} catch (WebRequestException e) {
 							throw new InvocationTargetException(e, e.getMessage());
@@ -208,7 +210,7 @@ public class FetchAction extends Action implements INavigationAction {
 			List<DiffResult> differences = new ArrayList<>();
 			for (FetchRequestData identifier : remotes) {
 				Diff local = index.get(identifier.refId);
-				differences.add(new DiffResult(identifier, local));
+				differences.add(new DiffResult(local, identifier));
 			}
 			return differences;
 		}
