@@ -41,7 +41,8 @@ class InfoSection {
 
 	private static String targetAmountText(CalculationSetup setup) {
 		String refFlowName = setup.productSystem.referenceExchange.flow.name;
-		return setup.getAmount() + " " + setup.getUnit().name + " " + refFlowName;
+		return Math.abs(setup.getDemandValue()) + " "
+				+ setup.getUnit().name + " " + refFlowName;
 	}
 
 	static void text(Composite comp, FormToolkit toolkit, String label, String val) {

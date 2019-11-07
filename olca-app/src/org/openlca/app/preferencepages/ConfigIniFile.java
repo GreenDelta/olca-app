@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.openlca.app.App;
 import org.openlca.app.util.MsgBox;
 import org.openlca.util.OS;
+import org.python.jline.internal.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +62,7 @@ class ConfigIniFile {
 					newLines.add(line);
 				}
 			}
+			Log.info("update ini file {}", iniFile.getAbsolutePath());
 			Files.write(iniFile.toPath(), newLines);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(ConfigIniFile.class);

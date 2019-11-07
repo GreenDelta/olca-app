@@ -6,7 +6,6 @@ import java.io.InputStream;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.openlca.app.App;
@@ -56,13 +55,13 @@ public class RcpActivator extends AbstractUIPlugin {
 		super.start(context);
 		plugin = this;
 		File workspace = Workspace.init();
-		log.trace("Workspace initialised at {}", workspace);
 		LoggerConfig.setUp();
+		log.info("start openLCA {}, install location={}, workspace={}",
+				App.getVersion(), App.getInstallLocation(), workspace);
 		WorkbenchLayout.initialize(workspace);
-		log.trace("Start application. Workspace: {}.", Platform.getLocation());
-		log.trace("Bundle {} started", PLUGIN_ID);
 		log.trace("initialize HTML folder");
-		HtmlFolder.initialize(RcpActivator.getDefault().getBundle(), "html/base_html.zip");
+		HtmlFolder.initialize(RcpActivator.getDefault().getBundle(),
+				"html/base_html.zip");
 		SslCertificates.load();
 		Preferences.init();
 		App.getSolver();
