@@ -1,5 +1,6 @@
 package org.openlca.app.navigation.actions.cloud;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,24 +18,27 @@ import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.jsonld.Dates;
 import org.openlca.util.KeyGen;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
+
 class Util {
 
 	private final static Logger log = LoggerFactory.getLogger(Util.class);
-	private DiffIndex index;
-	private Map<String, Long> localIds = new HashMap<>();
+	private final DiffIndex index;
+	private final Map<String, Long> localIds;
 
-	private Util(DiffIndex index) {
+	private Util(DiffIndex index, Map<String, Long> localIds) {
 		this.index = index;
+		this.localIds = localIds;
 	}
 
-	static void index(List<DiffResult> changed, DiffIndex index, Consumer<DiffResult> callback) {
-		Util util = new Util(index);
-		util.localIds = util.getLocalIds(changed);
+	static void indexFetch(List<DiffResult> changed, DiffIndex index, Consumer<DiffResult> callback) {
+		Util util = new Util(index, getLocalIds(changed));
 		for (DiffResult diff : changed) {
 			util.index(diff);
 			if (callback == null)
@@ -44,7 +48,7 @@ class Util {
 		index.commit();
 	}
 
-	private Map<String, Long> getLocalIds(List<DiffResult> changed) {
+	private static Map<String, Long> getLocalIds(List<DiffResult> changed) {
 		Map<ModelType, Set<String>> refIds = groupRefIdsByModelType(changed);
 		Map<String, Long> refIdToLocalId = new HashMap<>();
 		IDatabase db = Database.get();
@@ -79,7 +83,7 @@ class Util {
 		return refIdToLocalId;
 	}
 
-	private Map<ModelType, Set<String>> groupRefIdsByModelType(List<DiffResult> changed) {
+	private static Map<ModelType, Set<String>> groupRefIdsByModelType(List<DiffResult> changed) {
 		Map<ModelType, Set<String>> refIds = new HashMap<>();
 		for (DiffResult result : changed) {
 			if (result.local != null || result.remote.isDeleted())
@@ -97,22 +101,47 @@ class Util {
 
 	private void index(DiffResult diff) {
 		log.debug("Indexing: " + diff.toString());
-		Dataset dataset = diff.getDataset();
-		if (!dataset.type.isCategorized())
+		if (!diff.remote.type.isCategorized())
 			return;
 		if (diff.remote.isDeleted()) {
 			if (diff.local != null) {
-				if (diff.local.type == DiffType.NO_DIFF || diff.overwriteLocalChanges()) {
-					index.remove(dataset.refId);
-				} else if (diff.local.type.isOneOf(DiffType.NEW, DiffType.CHANGED)) {
-					index.update(dataset, DiffType.NEW);
+				if (!diff.overwriteRemoteChanges) {
+					index.remove(diff.remote.refId);
+				} else {
+					index.update(diff.local.getDataset(), DiffType.NEW);
 				}
 			}
 		} else if (diff.local == null) {
-			index.add(dataset, localIds.get(dataset.refId));
-		} else if (diff.overwriteLocalChanges()) {
-			index.update(dataset, DiffType.NO_DIFF);
+			index.add(diff.remote.asDataset(), localIds.get(diff.remote.refId));
+		} else if (diff.overwriteLocalChanges) {
+			index.update(diff.remote.asDataset(), DiffType.NO_DIFF);
+		} else if (diff.mergedData != null) {
+			index.update(mergedDataToDataset(diff), diff.local.type);
+		} else if (diff.noAction() && diff.local != null && diff.local.type != DiffType.NO_DIFF) {
+			index.update(diff.local.getDataset(), DiffType.NO_DIFF);
 		}
+	}
+
+	private Dataset mergedDataToDataset(DiffResult result) {
+		Dataset d = new Dataset();
+		d.type = result.remote.type;
+		d.refId = result.remote.refId;
+		d.name = result.mergedData.get("name").getAsString();
+		d.lastChange = Dates.getTime(result.mergedData.get("lastChange").getAsString());
+		d.version = result.mergedData.get("version").getAsString();
+		JsonElement category = result.mergedData.get("category");
+		if (category != null) {
+			d.categoryRefId = category.getAsJsonObject().get("@id").getAsString();
+			d.categories = d.categoryRefId.equals(result.remote.categoryRefId) ? result.remote.categories
+					: result.local.getDataset().categories;
+		} else {
+			d.categories = new ArrayList<>();
+		}
+		if (result.remote.type == ModelType.CATEGORY) {
+			d.categoryType = result.remote.categoryType != null ? result.remote.categoryType
+					: result.local.getDataset().categoryType;
+		}
+		return d;
 	}
 
 }

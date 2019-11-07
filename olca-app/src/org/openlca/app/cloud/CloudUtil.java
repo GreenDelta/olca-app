@@ -1,7 +1,9 @@
 package org.openlca.app.cloud;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.CategoryElement;
@@ -14,6 +16,7 @@ import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.cloud.util.Datasets;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
+import org.openlca.core.database.CategoryDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
@@ -126,7 +129,7 @@ public class CloudUtil {
 		if (commits.size() == 0)
 			return false;
 		if (commit == null) {
-			commit = commits.get(commits.size() - 1);			
+			commit = commits.get(commits.size() - 1);
 		}
 		if (lastCommitId == null)
 			return true;
@@ -137,6 +140,19 @@ public class CloudUtil {
 				return true;
 		}
 		return true;
+	}
+
+	public static Map<String, Category> buildCategoryMap(RepositoryClient client) {
+		Map<String, Category> categories = new HashMap<>();
+		putCategories(new CategoryDao(client.getConfig().database).getRootCategories(), categories);
+		return categories;
+	}
+
+	private static void putCategories(List<Category> categories, Map<String, Category> map) {
+		for (Category c : categories) {
+			map.put(c.refId, c);
+			putCategories(c.childCategories, map);
+		}
 	}
 
 }

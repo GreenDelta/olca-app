@@ -78,9 +78,10 @@ public class DiffNodeBuilder {
 	private DiffNode createNode(Category category) {
 		Diff diff = index.get(category.refId);
 		FetchRequestData remote = null;
-		if ((action == ActionType.COMMIT || action == ActionType.COMPARE_BEHIND) && diff.type != DiffType.NEW) {
-			// we are up to date, so if data set is not new, it is the same
-			// as original data set (avoid to load data from server)
+		boolean isCommitAndNotNew = action == ActionType.COMMIT && diff.type != DiffType.NEW;
+		boolean isFetchAndUnchanged = action == ActionType.FETCH && diff.type == DiffType.NO_DIFF;
+		if (isCommitAndNotNew || isFetchAndUnchanged) {
+			// avoid to load data from server which we know is the same
 			remote = CloudUtil.toFetchRequestData(diff.dataset);
 		}
 		DiffResult result = new DiffResult(diff, remote);

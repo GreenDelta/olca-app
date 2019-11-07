@@ -146,14 +146,14 @@ public class FetchAction extends Action implements INavigationAction {
 				if (result.noAction())
 					continue;
 				Dataset dataset = result.getDataset();
-				JsonObject data = result.getMergedData();
+				JsonObject data = result.mergedData;
 				String type = JsonUtil.getString(data, "@type");
 				if (Process.class.getSimpleName().equals(type)) {
 					joinExchanges(data);
 				}
 				if (data != null) {
 					mergedData.put(dataset, data);
-				} else if (!result.overwriteRemoteChanges()) {
+				} else if (!result.overwriteRemoteChanges) {
 					toFetch.add(dataset.asFileReference());
 				}
 			}
@@ -169,7 +169,7 @@ public class FetchAction extends Action implements INavigationAction {
 							FetchNotifierMonitor monitor = new FetchNotifierMonitor(m, M.FetchingData);
 							client.fetch(toFetch, mergedData, monitor);
 							monitor.beginTask(M.IndexingDatasets, differences.size());
-							Util.index(differences, index, (e) -> monitor.worked());
+							Util.indexFetch(differences, index, (e) -> monitor.worked());
 							monitor.done();
 						} catch (WebRequestException e) {
 							throw new InvocationTargetException(e, e.getMessage());

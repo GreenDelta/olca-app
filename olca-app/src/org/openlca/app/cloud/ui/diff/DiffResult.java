@@ -13,9 +13,9 @@ public class DiffResult {
 
 	public final FetchRequestData remote;
 	public final Diff local;
-	private JsonObject mergedData;
-	private boolean overwriteLocalChanges;
-	private boolean overwriteRemoteChanges;
+	public JsonObject mergedData;
+	public boolean overwriteLocalChanges;
+	public boolean overwriteRemoteChanges;
 
 	public DiffResult(Diff local, FetchRequestData remote) {
 		this.local = local != null ? local.copy() : null;
@@ -58,7 +58,7 @@ public class DiffResult {
 		case NEW:
 			return true;
 		case CHANGED:
-			return !local.dataset.equals(remote);
+			return remote.isDeleted() || !local.dataset.equals(remote);
 		case DELETED: 
 			return remote.isAdded() || !local.dataset.equals(remote);
 		case NO_DIFF:
@@ -66,31 +66,7 @@ public class DiffResult {
 		}
 		return false;
 	}
-
-	public JsonObject getMergedData() {
-		return mergedData;
-	}
-
-	public boolean overwriteLocalChanges() {
-		return overwriteLocalChanges;
-	}
-
-	public boolean overwriteRemoteChanges() {
-		return overwriteRemoteChanges;
-	}
-
-	void setMergedData(JsonObject mergedData) {
-		this.mergedData = mergedData;
-	}
-
-	void setOverwriteLocalChanges(boolean overwriteLocalChanges) {
-		this.overwriteLocalChanges = overwriteLocalChanges;
-	}
-
-	void setOverwriteRemoteChanges(boolean overwriteRemoteChanges) {
-		this.overwriteRemoteChanges = overwriteRemoteChanges;
-	}
-
+	
 	void reset() {
 		overwriteLocalChanges = false;
 		overwriteRemoteChanges = false;

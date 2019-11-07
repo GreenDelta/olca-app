@@ -69,11 +69,11 @@ public class FetchDiffViewer extends DiffTreeViewer {
 			DiffResult result = (DiffResult) node.content;
 			if (!result.conflict())
 				continue;
-			if (result.overwriteLocalChanges())
+			if (result.overwriteLocalChanges)
 				continue;
-			if (result.overwriteRemoteChanges())
+			if (result.overwriteRemoteChanges)
 				continue;
-			if (result.getMergedData() != null)
+			if (result.mergedData != null)
 				continue;
 			conflicts.add(node);
 		}

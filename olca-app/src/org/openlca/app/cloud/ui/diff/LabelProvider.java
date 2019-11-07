@@ -27,7 +27,7 @@ class LabelProvider extends org.eclipse.jface.viewers.LabelProvider {
 		if (result.remote != null && (action == ActionType.FETCH || action == ActionType.COMPARE_AHEAD))
 			return result.remote.name;
 		if (result.local != null)
-			return result.local.dataset.name;
+			return result.local.getDataset().name;
 		return result.remote.name;
 	}
 
@@ -55,13 +55,23 @@ class LabelProvider extends org.eclipse.jface.viewers.LabelProvider {
 		if (result.conflict()) {
 			if (action == ActionType.COMPARE_AHEAD || action == ActionType.COMPARE_BEHIND)
 				return getOverlayForComparisonConflict(result);
-			if (result.getMergedData() != null || result.overwriteLocalChanges() || result.overwriteRemoteChanges())
-				return Overlay.MERGED;
+			if (result.mergedData != null || result.overwriteLocalChanges || result.overwriteRemoteChanges)
+				return getOverlayForMerged(result);
 			return Overlay.CONFLICT;
 		}
 		if (action == ActionType.FETCH || action == ActionType.COMPARE_AHEAD)
 			return getOverlayForFetch(result);
 		return getOverlayForCommit(result);
+	}
+
+	private Overlay getOverlayForMerged(DiffResult result) {
+		if (!result.overwriteLocalChanges)
+			return Overlay.MERGED;
+		if (result.remote.isDeleted())
+			return Overlay.DELETE_FROM_LOCAL;
+		if (result.local == null || result.local.type == DiffType.DELETED)
+			return Overlay.ADD_TO_LOCAL;
+		return Overlay.MODIFY_IN_LOCAL;
 	}
 
 	private Overlay getOverlayForFetch(DiffResult result) {

@@ -126,27 +126,12 @@ public class CommitAction extends Action implements INavigationAction {
 				return;
 			Set<Dataset> datasets = new HashSet<>();
 			for (DiffResult change : selected) {
-				Dataset dataset = change.local.getDataset();
-				if (useLocalCategories(change)) {
-					List<String> categories = change.local.dataset.categories;
-					if (categories == null) {
-						dataset.categories = new ArrayList<>();
-					} else {
-						dataset.categories = new ArrayList<>(categories);
-					}
-				}
-				datasets.add(dataset);
+				datasets.add(change.local.getDataset());
 			}
 			commit(datasets);
 			if (!upToDate)
 				return;
 			Navigator.refresh(Navigator.getNavigationRoot());
-		}
-
-		private boolean useLocalCategories(DiffResult r) {
-			if (r.remote == null || r.local.type != DiffType.DELETED)
-				return false;
-			return !r.remote.isDeleted() && r.remote.version.equals(r.local.dataset.version);
 		}
 
 		private void commit(Set<Dataset> datasets) {
@@ -217,7 +202,8 @@ public class CommitAction extends Action implements INavigationAction {
 		}
 
 		private boolean openCommitDialog() {
-			DiffNode node = new DiffNodeBuilder(Database.get(), Database.getDiffIndex(), ActionType.COMMIT).build(changes);
+			DiffNode node = new DiffNodeBuilder(Database.get(), Database.getDiffIndex(), ActionType.COMMIT)
+					.build(changes);
 			if (node == null) {
 				noChanges = true;
 				return false;
@@ -243,7 +229,8 @@ public class CommitAction extends Action implements INavigationAction {
 				return false;
 			if (references == null || references.isEmpty())
 				return true;
-			DiffNode node = new DiffNodeBuilder(Database.get(), Database.getDiffIndex(), ActionType.COMMIT).build(references);
+			DiffNode node = new DiffNodeBuilder(Database.get(), Database.getDiffIndex(), ActionType.COMMIT)
+					.build(references);
 			ReferencesResultDialog dialog = new ReferencesResultDialog(node, client);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return false;

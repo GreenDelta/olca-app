@@ -58,9 +58,9 @@ class CompareHelper {
 
 	private DiffEditorDialog prepareDialog(DiffData data, boolean viewMode) {
 		data.node = nodes.get(toKey(data.result.getDataset()));
-		if (data.node == null)
+		if (data.node == null) {
 			createNode(data);
-		else {
+		} else {
 			data.local = JsonUtil.toJsonObject(data.node.localElement);
 			data.remote = JsonUtil.toJsonObject(data.node.remoteElement);
 		}
@@ -72,23 +72,26 @@ class CompareHelper {
 	}
 
 	private void createNode(DiffData data) {
-		if (data.result.local != null)
+		if (data.result.local != null) {
 			data.local = loader.getLocalJson(data.result.local.getDataset());
-		if (data.result.remote != null && !data.result.remote.isDeleted())
+		}
+		if (data.result.remote != null && !data.result.remote.isDeleted()) {
 			data.remote = loader.getRemoteJson(data.result.remote);
-		else if (action == ActionType.COMMIT || action == ActionType.COMPARE_BEHIND)
+		} else if (action == ActionType.COMMIT || action == ActionType.COMPARE_BEHIND) {
 			data.remote = loader.getRemoteJson(data.result.getDataset());
+		}
 		data.node = new ModelNodeBuilder().build(data.local, data.remote);
 		nodes.put(toKey(data.result.getDataset()), data.node);
 	}
 
 	private void updateResult(DiffData data, boolean localDiffersFromRemote, boolean keepLocalModel) {
 		data.result.reset();
-		if (overwriteRemoteChanges(data, localDiffersFromRemote, keepLocalModel))
-			data.result.setOverwriteRemoteChanges(true);
-		else
-			data.result.setOverwriteLocalChanges(true);
-		data.result.setMergedData(getMergedData(data, localDiffersFromRemote, keepLocalModel));
+		if (overwriteRemoteChanges(data, localDiffersFromRemote, keepLocalModel)) {
+			data.result.overwriteRemoteChanges = true;
+		} else {
+			data.result.overwriteLocalChanges = true;
+		}
+		data.result.mergedData = getMergedData(data, localDiffersFromRemote, keepLocalModel);
 	}
 
 	private boolean overwriteRemoteChanges(DiffData data, boolean localDiffersFromRemote, boolean keepLocalModel) {
@@ -99,12 +102,13 @@ class CompareHelper {
 
 	private JsonObject getMergedData(DiffData data, boolean localDiffersFromRemote, boolean keepLocalModel) {
 		JsonObject obj = null;
-		if (data.hasLocal() && data.hasRemote())
+		if (data.hasLocal() && data.hasRemote()) {
 			obj = data.local;
-		else if (data.hasLocal() && keepLocalModel)
+		} else if (data.hasLocal() && keepLocalModel) {
 			obj = data.local;
-		else if (data.hasRemote() && !keepLocalModel)
+		} else if (data.hasRemote() && !keepLocalModel) {
 			obj = data.remote;
+		}
 		if (obj == null)
 			return null;
 		if (!data.hasRemote())
