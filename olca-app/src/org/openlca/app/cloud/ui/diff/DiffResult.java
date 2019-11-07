@@ -62,7 +62,7 @@ public class DiffResult {
 		case DELETED: 
 			return remote.isAdded() || !local.dataset.equals(remote);
 		case NO_DIFF:
-			return remote.isAdded();
+			return false;
 		}
 		return false;
 	}

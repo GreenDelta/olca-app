@@ -113,12 +113,10 @@ class Util {
 			}
 		} else if (diff.local == null) {
 			index.add(diff.remote.asDataset(), localIds.get(diff.remote.refId));
-		} else if (diff.overwriteLocalChanges) {
-			index.update(diff.remote.asDataset(), DiffType.NO_DIFF);
-		} else if (diff.mergedData != null) {
+		} else if (!diff.overwriteLocalChanges && diff.mergedData != null) {
 			index.update(mergedDataToDataset(diff), diff.local.type);
-		} else if (diff.noAction() && diff.local != null && diff.local.type != DiffType.NO_DIFF) {
-			index.update(diff.local.getDataset(), DiffType.NO_DIFF);
+		} else {
+			index.update(diff.remote.asDataset(), DiffType.NO_DIFF);
 		}
 	}
 
