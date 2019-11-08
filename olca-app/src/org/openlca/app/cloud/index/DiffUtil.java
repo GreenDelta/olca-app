@@ -42,7 +42,7 @@ public class DiffUtil {
 		DiffIndex index = Database.getDiffIndex();
 		if (index == null)
 			return null;
-		return index.get(dataset.refId);
+		return index.get(dataset);
 	}
 
 }

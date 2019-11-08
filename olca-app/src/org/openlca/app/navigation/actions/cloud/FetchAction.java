@@ -209,7 +209,7 @@ public class FetchAction extends Action implements INavigationAction {
 		private List<DiffResult> createDifferences(Set<FetchRequestData> remotes) {
 			List<DiffResult> differences = new ArrayList<>();
 			for (FetchRequestData identifier : remotes) {
-				Diff local = index.get(identifier.refId);
+				Diff local = index.get(identifier);
 				differences.add(new DiffResult(local, identifier));
 			}
 			return differences;

@@ -38,6 +38,7 @@ import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.LibraryRestriction;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.cloud.model.data.FileReference;
 import org.openlca.core.database.IDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,9 +161,9 @@ public class CommitAction extends Action implements INavigationAction {
 					orderResults();
 					for (DiffResult change : selected) {
 						Dataset dataset = change.getDataset();
-						DiffType before = index.get(dataset.refId).type;
+						DiffType before = index.get(dataset).type;
 						if (before == DiffType.DELETED)
-							index.remove(dataset.refId);
+							index.remove(dataset);
 						else
 							index.update(dataset, DiffType.NO_DIFF);
 						monitor.worked();
@@ -210,7 +211,7 @@ public class CommitAction extends Action implements INavigationAction {
 			}
 			CommitDialog dialog = new CommitDialog(node, client);
 			dialog.setBlockOnOpen(true);
-			Set<String> refIds = new RefIdListBuilder(selection, changes, index).build();
+			Set<FileReference> refIds = new RefListBuilder(selection, changes, index).build();
 			dialog.setInitialSelection(refIds);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return false;

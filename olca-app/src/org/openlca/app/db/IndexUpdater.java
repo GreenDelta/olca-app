@@ -61,7 +61,7 @@ public class IndexUpdater {
 	}
 
 	private void update(Dataset dataset, long localId, DiffIndex index) {
-		Diff existing = index.get(dataset.refId);
+		Diff existing = index.get(dataset);
 		if (existing == null) {
 			insert(dataset, localId);
 			return;

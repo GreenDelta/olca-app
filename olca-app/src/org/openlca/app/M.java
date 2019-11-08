@@ -906,6 +906,7 @@ public class M extends NLS {
 	public static String UpdateReferenceCurrency;
 	public static String UpdateWasAlreadyAddedOrExecuted;
 	public static String UpdatingProductSystem;
+	public static String UpgradingRepositoryIndex;
 	public static String UpstreamInclDirect;
 	public static String UpstreamTotal;
 	public static String Usage;

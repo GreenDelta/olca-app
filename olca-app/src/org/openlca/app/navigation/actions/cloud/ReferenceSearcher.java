@@ -13,6 +13,7 @@ import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.diff.DiffResult;
+import org.openlca.cloud.model.data.FileReference;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.references.IReferenceSearch;
@@ -102,7 +103,7 @@ class ReferenceSearcher {
 				continue;
 			}
 			alreadySearchedUsages.add(id);
-			Diff diff = index.get(idToRefId.get(id));
+			Diff diff = index.get(FileReference.from(type, idToRefId.get(id)));
 			if (diff == null || diff.type != DiffType.CHANGED)
 				continue;
 			toCheck.remove(id);
@@ -113,7 +114,7 @@ class ReferenceSearcher {
 		IUseSearch<?> useSearch = IUseSearch.FACTORY.createFor(type, database);
 		List<CategorizedDescriptor> usedIn = useSearch.findUses(toCheck);
 		for (CategorizedDescriptor descriptor : usedIn) {
-			Diff diff = index.get(descriptor.refId);
+			Diff diff = index.get(FileReference.from(descriptor.type, descriptor.refId));
 			if (diff == null || diff.type == DiffType.NO_DIFF || diff.type == DiffType.NEW)
 				continue;
 			results.add(descriptor);
@@ -137,7 +138,7 @@ class ReferenceSearcher {
 			}
 		}
 		for (CategorizedDescriptor descriptor : descriptors)
-			idToRefId.put(descriptor.id, descriptor.refId);
+			idToRefId.put(descriptor.id, descriptor.type.name() + descriptor.refId);
 		return descriptors;
 	}
 
@@ -146,7 +147,7 @@ class ReferenceSearcher {
 		for (CategorizedDescriptor d : refs) {
 			if (allChanged.contains(d.id))
 				continue;
-			Diff diff = index.get(d.refId);
+			Diff diff = index.get(FileReference.from(d.type, d.refId));
 			if (diff == null || !diff.hasChanged())
 				continue;
 			relevant.add(diff);
@@ -161,7 +162,7 @@ class ReferenceSearcher {
 				continue;
 			ModelType type = result.local.getDataset().type;
 			addId(typeToIds, type, result.local.localId);
-			idToRefId.put(result.local.localId, result.local.getDataset().refId);
+			idToRefId.put(result.local.localId, result.local.getDataset().toId());
 		}
 		return typeToIds;
 	}
@@ -170,7 +171,7 @@ class ReferenceSearcher {
 		Map<ModelType, Set<Long>> typeToIds = new HashMap<>();
 		for (CategorizedDescriptor descriptor : toCheck) {
 			addId(typeToIds, descriptor.type, descriptor.id);
-			idToRefId.put(descriptor.id, descriptor.refId);
+			idToRefId.put(descriptor.id, descriptor.type.name() + descriptor.refId);
 		}
 		return typeToIds;
 	}

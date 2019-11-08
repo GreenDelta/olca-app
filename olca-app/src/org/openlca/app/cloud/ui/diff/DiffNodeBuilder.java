@@ -10,6 +10,7 @@ import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.cloud.model.data.FileReference;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
@@ -17,8 +18,8 @@ import org.openlca.core.model.ModelType;
 
 public class DiffNodeBuilder {
 
-	private final Map<String, DiffNode> nodes = new HashMap<>();
-	private final Map<String, DiffResult> diffs = new HashMap<>();
+	private final Map<FileReference, DiffNode> nodes = new HashMap<>();
+	private final Map<FileReference, DiffResult> diffs = new HashMap<>();
 	private final Map<String, Category> categories = new HashMap<>();
 	private final DiffIndex index;
 	private final String database;
@@ -42,7 +43,7 @@ public class DiffNodeBuilder {
 		if (!init(diffs))
 			return null;
 		DiffNode root = new DiffNode(null, database);
-		nodes.put("", root);
+		nodes.put(null, root);
 		for (DiffResult result : this.diffs.values()) {
 			build(result);
 		}
@@ -51,14 +52,14 @@ public class DiffNodeBuilder {
 
 	private boolean init(List<DiffResult> diffs) {
 		for (DiffResult result : diffs) {
-			this.diffs.put(result.getDataset().refId, result);
+			this.diffs.put(result.getDataset().asFileReference(), result);
 		}
 		nodes.clear();
 		return this.diffs.size() != 0;
 	}
 
 	private void build(DiffResult result) {
-		if (nodes.containsKey(result.getDataset().refId))
+		if (nodes.containsKey(result.getDataset().asFileReference()))
 			return;
 		if (!result.getDataset().type.isCategorized())
 			return;
@@ -71,12 +72,12 @@ public class DiffNodeBuilder {
 		DiffNode parent = getOrCreateParentNode(result.getDataset());
 		DiffNode node = new DiffNode(parent, result);
 		parent.children.add(node);
-		nodes.put(result.getDataset().refId, node);
+		nodes.put(result.getDataset().asFileReference(), node);
 		return node;
 	}
 
 	private DiffNode createNode(Category category) {
-		Diff diff = index.get(category.refId);
+		Diff diff = index.get(FileReference.from(ModelType.CATEGORY, category.refId));
 		FetchRequestData remote = null;
 		boolean isCommitAndNotNew = action == ActionType.COMMIT && diff.type != DiffType.NEW;
 		boolean isFetchAndUnchanged = action == ActionType.FETCH && diff.type == DiffType.NO_DIFF;
@@ -93,10 +94,11 @@ public class DiffNodeBuilder {
 		ModelType categoryType = dataset.type == ModelType.CATEGORY ? dataset.categoryType : dataset.type;
 		if (parentId == null)
 			return getOrCreateModelTypeNode(categoryType);
-		DiffNode categoryNode = nodes.get(parentId);
+		FileReference parentRef = FileReference.from(ModelType.CATEGORY, parentId);
+		DiffNode categoryNode = nodes.get(parentRef);
 		if (categoryNode != null)
 			return categoryNode;
-		DiffResult result = diffs.get(parentId);
+		DiffResult result = diffs.get(parentRef);
 		if (result != null)
 			return createNode(result);
 		Category category = categories.get(parentId);
@@ -104,13 +106,14 @@ public class DiffNodeBuilder {
 	}
 
 	private DiffNode getOrCreateModelTypeNode(ModelType type) {
-		DiffNode typeNode = nodes.get(type.name());
+		FileReference ref = FileReference.from(type, "");
+		DiffNode typeNode = nodes.get(ref);
 		if (typeNode != null)
 			return typeNode;
-		DiffNode root = nodes.get("");
+		DiffNode root = nodes.get(null);
 		typeNode = new DiffNode(root, type);
 		root.children.add(typeNode);
-		nodes.put(type.name(), typeNode);
+		nodes.put(ref, typeNode);
 		return typeNode;
 	}
 

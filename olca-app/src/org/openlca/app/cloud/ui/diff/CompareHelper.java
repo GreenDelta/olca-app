@@ -16,7 +16,6 @@ import org.openlca.app.cloud.ui.compare.json.IDependencyResolver;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.model.Version;
 import org.openlca.jsonld.Dates;
 
@@ -57,7 +56,7 @@ class CompareHelper {
 	}
 
 	private DiffEditorDialog prepareDialog(DiffData data, boolean viewMode) {
-		data.node = nodes.get(toKey(data.result.getDataset()));
+		data.node = nodes.get(data.result.getDataset().toId());
 		if (data.node == null) {
 			createNode(data);
 		} else {
@@ -81,7 +80,7 @@ class CompareHelper {
 			data.remote = loader.getRemoteJson(data.result.getDataset());
 		}
 		data.node = new ModelNodeBuilder().build(data.local, data.remote);
-		nodes.put(toKey(data.result.getDataset()), data.node);
+		nodes.put(data.result.getDataset().toId(), data.node);
 	}
 
 	private void updateResult(DiffData data, boolean localDiffersFromRemote, boolean keepLocalModel) {
@@ -136,10 +135,6 @@ class CompareHelper {
 			return Images.get(node.getModelType());
 		DiffResult result = (DiffResult) node.content;
 		return Images.getForCategory(result.getDataset().categoryType);
-	}
-
-	private String toKey(Dataset dataset) {
-		return dataset.type.name() + dataset.refId;
 	}
 
 	private class DiffData {

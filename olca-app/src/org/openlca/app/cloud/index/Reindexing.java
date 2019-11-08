@@ -74,6 +74,7 @@ public class Reindexing {
 		categoryDao = new CategoryDao(database);
 		untracked = index.getUntracked();
 		index.clear();
+		index.init();
 		if (client.getConfig().getLastCommitId() == null)
 			return new HashMap<>();
 		try {
@@ -130,8 +131,8 @@ public class Reindexing {
 	private void putDeleted(Dataset dataset) {
 		index.add(dataset, 0);
 		index.update(dataset, DiffType.DELETED);
-		if (untracked.contains(dataset.refId)) {
-			index.setTracked(dataset.refId, false);
+		if (untracked.contains(dataset.toId())) {
+			index.setTracked(dataset, false);
 		}
 	}
 
@@ -142,8 +143,8 @@ public class Reindexing {
 		} else if (!areEqual(dataset, descriptor)) {
 			index.update(toDataset(descriptor), DiffType.CHANGED);
 		}
-		if (untracked.contains(dataset.refId)) {
-			index.setTracked(dataset.refId, false);
+		if (untracked.contains(dataset.toId())) {
+			index.setTracked(dataset, false);
 		}
 	}
 
@@ -151,19 +152,19 @@ public class Reindexing {
 		Dataset dataset = toDataset(descriptor);
 		index.add(dataset, descriptor.id);
 		index.update(dataset, DiffType.NEW);
-		if (untracked.contains(dataset.refId)) {
-			index.setTracked(dataset.refId, false);
+		if (untracked.contains(dataset.toId())) {
+			index.setTracked(dataset, false);
 		}
 	}
 
 	private boolean areEqual(Dataset dataset, CategorizedDescriptor descriptor) {
-		if (!dataset.refId.equals(descriptor.refId))
-			return false;
 		if (dataset.type != descriptor.type)
 			return false;
-		if (!Strings.nullOrEqual(dataset.version, Version.asString(descriptor.version)))
-			return false;
 		if (dataset.lastChange != descriptor.lastChange)
+			return false;
+		if (!dataset.refId.equals(descriptor.refId))
+			return false;
+		if (!Strings.nullOrEqual(dataset.version, Version.asString(descriptor.version)))
 			return false;
 		return true;
 	}

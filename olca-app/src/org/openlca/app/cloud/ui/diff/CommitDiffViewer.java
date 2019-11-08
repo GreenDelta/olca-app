@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.cloud.JsonLoader;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.util.UI;
+import org.openlca.cloud.model.data.FileReference;
 
 public class CommitDiffViewer extends DiffTreeViewer {
 
@@ -27,7 +28,7 @@ public class CommitDiffViewer extends DiffTreeViewer {
 		this.lockNewElements = lockNewElements;
 	}
 
-	public void setSelection(Set<String> initialSelection) {
+	public void setSelection(Set<FileReference> initialSelection) {
 		selected = findNodes(initialSelection, root);
 		Set<String> expanded = new HashSet<>();
 		Tree tree = getViewer().getTree();
@@ -51,16 +52,16 @@ public class CommitDiffViewer extends DiffTreeViewer {
 	// method
 	// // reveals path internally for all elements, which is unnecessary because
 	// // this is already done in a more efficient way in setInitialSelection
-	private void setChecked(Set<String> refIds, TreeItem[] items) {
+	private void setChecked(Set<FileReference> ids, TreeItem[] items) {
 		for (TreeItem item : items) {
 			DiffNode node = (DiffNode) item.getData();
 			if (node != null && !node.isModelTypeNode()) {
-				String refId = node.getContent().getDataset().refId;
+				FileReference ref = node.getContent().getDataset().asFileReference();
 				// null is used as hack to select all
-				if (refIds == null || refIds.contains(refId))
+				if (ids == null || ids.contains(ref))
 					item.setChecked(true);
 			}
-			setChecked(refIds, item.getItems());
+			setChecked(ids, item.getItems());
 		}
 	}
 
@@ -68,16 +69,16 @@ public class CommitDiffViewer extends DiffTreeViewer {
 		setSelection(null);
 	}
 
-	private List<DiffNode> findNodes(Set<String> refIds, DiffNode node) {
+	private List<DiffNode> findNodes(Set<FileReference> refs, DiffNode node) {
 		List<DiffNode> elements = new ArrayList<>();
 		for (DiffNode child : node.children) {
 			if (!child.isModelTypeNode() && child.getContent().local.tracked && child.hasChanged()) {
-				String refId = child.getContent().getDataset().refId;
+				FileReference ref = child.getContent().getDataset().asFileReference();
 				// null is used as hack to select all
-				if (refIds == null || refIds.contains(refId))
+				if (refs == null || refs.contains(ref))
 					elements.add(child);
 			}
-			elements.addAll(findNodes(refIds, child));
+			elements.addAll(findNodes(refs, child));
 		}
 		return elements;
 	}

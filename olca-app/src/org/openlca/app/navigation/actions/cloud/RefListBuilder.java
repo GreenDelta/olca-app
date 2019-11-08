@@ -15,33 +15,36 @@ import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.cloud.model.data.Dataset;
+import org.openlca.cloud.model.data.FileReference;
+import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
-class RefIdListBuilder {
+class RefListBuilder {
 
 	private final List<INavigationElement<?>> selection;
 	private final List<DiffResult> changes;
 	private final DiffIndex index;
-	private final Map<String, INavigationElement<?>> map = new HashMap<>();
+	private final Map<FileReference, INavigationElement<?>> map = new HashMap<>();
 
-	RefIdListBuilder(List<INavigationElement<?>> selection,
+	RefListBuilder(List<INavigationElement<?>> selection,
 			List<DiffResult> changes, DiffIndex index) {
 		this.selection = selection;
 		this.changes = changes;
 		this.index = index;
 	}
 
-	Set<String> build() {
+	Set<FileReference> build() {
 		map.clear();
-		Set<String> refIds = Navigator.collect(selection, this::unwrap);
+		Set<FileReference> refs = Navigator.collect(selection, this::unwrap);
 		for (DiffResult result : changes) {
 			if (!deleteFromRemote(result))
 				continue;
 			if (findExistingParent(result.getDataset()) == null)
 				continue;
-			refIds.add(result.getDataset().refId);
+			refs.add(result.getDataset().asFileReference());
 		}
-		return refIds;
+		return refs;
 	}
 
 	private boolean deleteFromRemote(DiffResult result) {
@@ -52,37 +55,43 @@ class RefIdListBuilder {
 		return true;
 	}
 
-	private String unwrap(INavigationElement<?> element) {
-		String id = toId(element);
-		if (id == null)
+	private FileReference unwrap(INavigationElement<?> element) {
+		FileReference ref = toRef(element);
+		if (ref == null)
 			return null;
-		map.put(id, element);
+		map.put(ref, element);
 		if (!DiffUtil.hasChanged(element))
 			return null;
 		if (!(element instanceof ModelElement || element instanceof CategoryElement))
 			return null;
-		return id;
+		return ref;
 	}
 
 	private INavigationElement<?> findExistingParent(Dataset d) {
 		if (d.categoryRefId == null) {
 			if (d.type == ModelType.CATEGORY)
-				return map.get(d.categoryType.name());
-			return map.get(d.type.name());
+				return map.get(FileReference.from(ModelType.CATEGORY, d.categoryType.name()));
+			return map.get(FileReference.from(ModelType.CATEGORY, d.type.name()));
 		}
-		Dataset parent = index.get(d.categoryRefId).getDataset();
-		if (map.containsKey(parent.refId))
-			return map.get(parent.refId);
+		Dataset parent = index.get(FileReference.from(ModelType.CATEGORY, d.categoryRefId)).getDataset();
+		if (map.containsKey(parent.asFileReference()))
+			return map.get(parent.asFileReference());
 		return findExistingParent(parent);
 	}
 
-	private String toId(INavigationElement<?> element) {
-		if (element instanceof ModelElement)
-			return ((ModelElement) element).getContent().refId;
-		if (element instanceof CategoryElement)
-			return ((CategoryElement) element).getContent().refId;
-		if (element instanceof ModelTypeElement)
-			return ((ModelTypeElement) element).getContent().name();
+	private FileReference toRef(INavigationElement<?> element) {
+		if (element instanceof ModelElement) {
+			CategorizedDescriptor d = ((ModelElement) element).getContent();
+			return FileReference.from(d.type, d.refId);
+		}
+		if (element instanceof CategoryElement) {
+			Category c = ((CategoryElement) element).getContent();
+			return FileReference.from(ModelType.CATEGORY, c.refId);
+		}
+		if (element instanceof ModelTypeElement) {
+			ModelType t = ((ModelTypeElement) element).getContent();
+			return FileReference.from(ModelType.CATEGORY, t.name());
+		}
 		return null;
 	}
 

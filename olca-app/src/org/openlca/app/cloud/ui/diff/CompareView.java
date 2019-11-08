@@ -195,26 +195,26 @@ public class CompareView extends ViewPart {
 		List<DiffResult> differences = new ArrayList<>();
 		Set<String> checked = new HashSet<>();
 		for (FetchRequestData identifier : remotes) {
-			Diff local = index.get(identifier.refId);
+			Diff local = index.get(identifier);
 			if (local != null && !isContainedIn(local.getDataset(), elements))
 				continue;
 			if (local == null && !isContainedIn(identifier, elements))
 				continue;
 			if (local == null && identifier.isDeleted()) {
-				checked.add(identifier.refId);
+				checked.add(identifier.toId());
 				continue;
 			}
 			if (local != null && local.type != DiffType.DELETED && !identifier.isDeleted()
 					&& local.getDataset().type != ModelType.CATEGORY
 					&& local.getDataset().equals(identifier)) {
-				checked.add(identifier.refId);
+				checked.add(identifier.toId());
 				continue;
 			}
 			differences.add(new DiffResult(local, identifier));
-			checked.add(identifier.refId);
+			checked.add(identifier.toId());
 		}
 		for (Diff diff : index.getAll()) {
-			if (checked.contains(diff.getDataset().refId))
+			if (checked.contains(diff.getDataset().toId()))
 				continue;
 			if (!isContainedIn(diff.getDataset(), elements))
 				continue;

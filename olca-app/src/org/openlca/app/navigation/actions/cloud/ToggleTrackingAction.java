@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jface.action.Action;
+import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.db.Database;
@@ -13,12 +14,13 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
+import org.openlca.cloud.model.data.Dataset;
 
 public class ToggleTrackingAction extends Action implements INavigationAction {
 
 	private final boolean setTracked;
 	private DiffIndex index;
-	private List<String> elementRefIds;
+	private List<Dataset> elements;
 
 	public static ToggleTrackingAction track() {
 		return new ToggleTrackingAction(true);
@@ -39,13 +41,13 @@ public class ToggleTrackingAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		for (String refId : elementRefIds) {
-			Diff diff = index.get(refId);
+		for (Dataset element : elements) {
+			Diff diff = index.get(element);
 			if (diff == null)
 				continue;
 			if (diff.tracked == setTracked)
 				continue;
-			index.setTracked(refId, setTracked);
+			index.setTracked(diff.getDataset(), setTracked);
 		}
 		index.commit();
 		Navigator.refresh();
@@ -58,15 +60,14 @@ public class ToggleTrackingAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
-		this.elementRefIds = new ArrayList<>();
+		this.elements = new ArrayList<>();
 		index = Database.getDiffIndex();
 		if (index == null)
 			return false;
 		Set<INavigationElement<?>> deepSelection = Navigator.collect(elements,
 				e -> e instanceof ModelElement ? e : null);
 		for (INavigationElement<?> e : deepSelection) {
-			String refId = ((ModelElement) e).getContent().refId;
-			this.elementRefIds.add(refId);
+			this.elements.add(CloudUtil.toDataset(e));
 		}
 		return true;
 	}

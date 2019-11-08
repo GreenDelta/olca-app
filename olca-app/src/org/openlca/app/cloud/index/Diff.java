@@ -39,7 +39,7 @@ public class Diff implements Serializable {
 		if (!(obj instanceof Diff))
 			return false;
 		Diff diff = (Diff) obj;
-		return getDataset().refId.equals(diff.getDataset().refId);
+		return getDataset().toId().equals(diff.getDataset().toId());
 	}
 
 	public Diff copy() {

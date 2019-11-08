@@ -106,7 +106,7 @@ class Util {
 		if (diff.remote.isDeleted()) {
 			if (diff.local != null) {
 				if (!diff.overwriteRemoteChanges) {
-					index.remove(diff.remote.refId);
+					index.remove(diff.local.getDataset());
 				} else {
 					index.update(diff.local.getDataset(), DiffType.NEW);
 				}

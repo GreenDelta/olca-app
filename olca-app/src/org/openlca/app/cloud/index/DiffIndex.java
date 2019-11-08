@@ -12,6 +12,7 @@ import org.mapdb.DBMaker;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.model.data.Dataset;
+import org.openlca.cloud.model.data.FileReference;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Dirs;
 
@@ -25,24 +26,41 @@ public class DiffIndex {
 
 	public static DiffIndex getFor(RepositoryClient client) {
 		RepositoryConfig config = client.getConfig();
-		return new DiffIndex(getIndexFile(config));
+		return new DiffIndex(getIndexDirectory(config));
 	}
 
-	public static File getIndexFile(RepositoryConfig config) {
+	public static File getIndexDirectory(RepositoryConfig config) {
 		return new File(config.database.getFileStorageLocation(), "cloud/" + config.repositoryId);
 	}
 
 	private DiffIndex(File indexDirectory) {
-		if (!indexDirectory.exists())
+		if (!indexDirectory.exists()) {
 			indexDirectory.mkdirs();
+		}
 		file = new File(indexDirectory, "indexfile");
 		createDb(file);
+	}
+
+	public void init() {
+		db.atomicInteger("version").set(2);
+	}
+
+	File getDir() {
+		if (file == null)
+			return null;
+		return file.getParentFile();
 	}
 
 	private void createDb(File file) {
 		db = DBMaker.fileDB(file).lockDisable().closeOnJvmShutdown().make();
 		index = db.hashMap("diffIndex");
 		changedTopLevelElements = db.hashMap("changedTopLevelElements");
+	}
+
+	void open() {
+		if (db == null || !db.isClosed())
+			return;
+		createDb(file);
 	}
 
 	public void close() {
@@ -63,31 +81,31 @@ public class DiffIndex {
 	}
 
 	public void add(Dataset dataset, long localId) {
-		Diff diff = index.get(dataset.refId);
+		Diff diff = index.get(dataset.toId());
 		if (diff != null)
 			return;
 		diff = new Diff(dataset);
 		diff.localId = localId;
-		index.put(dataset.refId, diff);
+		index.put(dataset.toId(), diff);
 	}
 
-	public void setTracked(String refId, boolean value) {
-		Diff diff = index.get(refId);
+	public void setTracked(FileReference ref, boolean value) {
+		Diff diff = index.get(ref.toId());
 		if (diff == null || diff.tracked == value || (!value && diff.type == DiffType.DELETED))
 			return;
 		diff.tracked = value;
 		boolean isChanged = value && diff.changed != null;
 		updateParents(diff, isChanged);
-		index.put(refId, diff);
+		index.put(ref.toId(), diff);
 	}
 
 	public void update(Dataset dataset, DiffType newType) {
-		Diff diff = index.get(dataset.refId);
+		Diff diff = index.get(dataset.toId());
 		if (diff == null)
 			return;
 		if (diff.type == DiffType.NEW && newType == DiffType.DELETED) {
 			// user added something and then deleted it again
-			remove(dataset.refId);
+			remove(dataset);
 			updateParents(diff, false);
 			return;
 		}
@@ -104,7 +122,7 @@ public class DiffIndex {
 			diff.changed = dataset;
 		}
 		updateParents(diff, changed);
-		index.put(dataset.refId, diff);
+		index.put(dataset.toId(), diff);
 	}
 
 	private void updateParents(Diff diff, boolean changed) {
@@ -117,18 +135,18 @@ public class DiffIndex {
 	}
 
 	private void updateParents(Dataset dataset, boolean changed) {
-		String parentId = dataset.categoryRefId;
-		while (parentId != null) {
-			Diff parent = index.get(parentId);
+		String parentKey =  ModelType.CATEGORY.name() + dataset.categoryRefId;
+		while (parentKey != null) {
+			Diff parent = index.get(parentKey);
 			if (parent == null)
 				break;
 			if (changed) {
-				parent.changedChildren.add(dataset.refId);
+				parent.changedChildren.add(dataset.toId());
 			} else {
-				parent.changedChildren.remove(dataset.refId);
+				parent.changedChildren.remove(dataset.toId());
 			}
-			index.put(parentId, parent);
-			parentId = parent.dataset.categoryRefId;
+			index.put(parentKey, parent);
+			parentKey = ModelType.CATEGORY.name() + parent.dataset.categoryRefId;
 		}
 		ModelType categoryType = dataset.type == ModelType.CATEGORY ? dataset.categoryType : dataset.type;
 		updateChangedTopLevelElements(categoryType.name(), dataset.refId, changed);
@@ -147,8 +165,8 @@ public class DiffIndex {
 		changedTopLevelElements.put(type, elements);
 	}
 
-	public Diff get(String key) {
-		return index.get(key);
+	public Diff get(FileReference ref) {
+		return index.get(ref.toId());
 	}
 
 	public List<Diff> getChanged() {
@@ -165,7 +183,7 @@ public class DiffIndex {
 		List<String> untracked = new ArrayList<>();
 		for (Diff diff : index.values()) {
 			if (!diff.tracked) {
-				untracked.add(diff.dataset.refId);
+				untracked.add(diff.dataset.toId());
 			}
 		}
 		return untracked;
@@ -190,8 +208,8 @@ public class DiffIndex {
 		return elements != null && !elements.isEmpty();
 	}
 
-	public void remove(String key) {
-		Diff diff = index.remove(key);
+	public void remove(FileReference ref) {
+		Diff diff = index.remove(ref.toId());
 		if (diff == null)
 			return;
 		updateParents(diff, false);
