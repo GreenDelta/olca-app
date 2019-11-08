@@ -69,7 +69,7 @@ public class ConnectAction extends Action implements INavigationAction {
 			if (dialog.open() != Dialog.OK)
 				return false;
 			RepositoryConfig config = dialog.createConfig();
-			String text = M.ConnectingToRepository + config.getServerUrl() + " " + config.repositoryId;
+			String text = M.ConnectingToRepository + ": " +  config.getServerUrl() + " " + config.repositoryId;
 			App.runWithProgress(text, () -> connect(config));
 			HistoryView.refresh();
 			CompareView.clear();
