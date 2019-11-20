@@ -74,13 +74,13 @@ public class CalculationWizard extends Wizard {
 		setWindowTitle(M.CalculationProperties);
 	}
 
-	public static void open(ProductSystem productSystem) {
-		if (productSystem == null)
+	public static void open(ProductSystem system) {
+		if (system == null)
 			return;
-		boolean doContinue = checkForUnsavedContent(productSystem);
+		boolean doContinue = checkForUnsavedContent(system);
 		if (!doContinue)
 			return;
-		CalculationWizard wizard = new CalculationWizard(productSystem);
+		CalculationWizard wizard = new CalculationWizard(system);
 		WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
 		dialog.open();
 	}
@@ -131,7 +131,8 @@ public class CalculationWizard extends Wizard {
 		boolean storeInventoryResult = page.doStoreInventoryResult();
 		saveDefaults(setup, dqSetup);
 		try {
-			Calculation calculation = new Calculation(setup, dqSetup, storeInventoryResult);
+			Calculation calculation = new Calculation(
+					setup, dqSetup, storeInventoryResult);
 			getContainer().run(true, true, calculation);
 			if (calculation.outOfMemory)
 				MemoryError.show();
@@ -194,7 +195,8 @@ public class CalculationWizard extends Wizard {
 		}
 
 		@Override
-		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor)
+				throws InvocationTargetException, InterruptedException {
 			outOfMemory = false;
 			monitor.beginTask(M.RunCalculation, IProgressMonitor.UNKNOWN);
 			int size = productSystem.processes.size();
@@ -224,7 +226,8 @@ public class CalculationWizard extends Wizard {
 
 		private void analyse() {
 			log.trace("run analysis");
-			SystemCalculator calculator = new SystemCalculator(Cache.getMatrixCache(), App.getSolver());
+			SystemCalculator calculator = new SystemCalculator(
+					Cache.getMatrixCache(), App.getSolver());
 			FullResult result = calculator.calculateFull(setup);
 			log.trace("calculation done, open editor");
 			setInventory(result);
@@ -235,7 +238,8 @@ public class CalculationWizard extends Wizard {
 
 		private void solve() {
 			log.trace("run quick calculation");
-			SystemCalculator calculator = new SystemCalculator(Cache.getMatrixCache(), App.getSolver());
+			SystemCalculator calculator = new SystemCalculator(
+					Cache.getMatrixCache(), App.getSolver());
 			ContributionResult result = calculator.calculateContributions(setup);
 			log.trace("calculation done, open editor");
 			setInventory(result);
@@ -246,15 +250,19 @@ public class CalculationWizard extends Wizard {
 
 		private void calcRegionalized() {
 			log.trace("calculate regionalized result");
-			RegionalizedCalculator calc = new RegionalizedCalculator(setup, App.getSolver());
-			RegionalizedResult result = calc.calculate(Database.get(), Cache.getMatrixCache());
+			RegionalizedCalculator calc = new RegionalizedCalculator(
+					setup, App.getSolver());
+			RegionalizedResult result = calc.calculate(
+					Database.get(), Cache.getMatrixCache());
 			if (result == null) {
 				MsgBox.info(M.NoRegionalizedInformation_Message);
 				return;
 			}
 			setInventory(result.result);
-			DQResult dqResult = DQResult.calculate(Database.get(), result.result, dqSetup);
-			ResultEditorInput input = getEditorInput(result, setup, result.parameterSet, dqResult);
+			DQResult dqResult = DQResult.calculate(
+					Database.get(), result.result, dqSetup);
+			ResultEditorInput input = getEditorInput(
+					result, setup, result.parameterSet, dqResult);
 			Editors.open(input, RegionalizedResultEditor.ID);
 		}
 
@@ -277,7 +285,8 @@ public class CalculationWizard extends Wizard {
 				exchange.isInput = result.isInput(d);
 				productSystem.inventory.add(exchange);
 			}
-			productSystem = new ProductSystemDao(Database.get()).update(productSystem);
+			productSystem = new ProductSystemDao(
+					Database.get()).update(productSystem);
 		}
 
 	}

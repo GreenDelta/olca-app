@@ -15,7 +15,10 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.editors.systems.CalculationWizard;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.preferencepages.FeatureFlag;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Actions;
@@ -26,6 +29,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.wizards.ProductSystemWizard;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.xls.process.output.ExcelExport;
@@ -37,13 +41,28 @@ public class ProcessToolbar extends EditorActionBarContributor {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public void contributeToToolBar(IToolBarManager manager) {
-		manager.add(Actions.create(M.CreateProductSystem,
+	public void contributeToToolBar(IToolBarManager toolbar) {
+		toolbar.add(Actions.create(M.CreateProductSystem,
 				Images.descriptor(ModelType.PRODUCT_SYSTEM, Overlay.NEW),
 				() -> createSystem(getProcess())));
-		manager.add(Actions.create(M.ExportToExcel,
+		toolbar.add(Actions.create(M.ExportToExcel,
 				Images.descriptor(FileType.EXCEL),
 				() -> exportToExcel(getProcess())));
+
+		// fast network calculation
+		if (!FeatureFlag.FAST_NETWORK_CALCULATION.isEnabled())
+			return;
+		toolbar.add(Actions.create("Fast network calculation",
+				Icon.RUN.descriptor(),
+				() -> {
+					Process p = getProcess();
+					if (p == null)
+						return;
+					ProductSystem sys = ProductSystem.from(p);
+					sys.withoutNetwork = true;
+					CalculationWizard.open(sys);
+				}));
+
 	}
 
 	private Process getProcess() {

@@ -8,8 +8,10 @@ import org.openlca.app.Preferences;
  */
 public enum FeatureFlag {
 
-	MATRIX_IMAGE_EXPORT("Enable matrix image export");
+	MATRIX_IMAGE_EXPORT("Enable matrix image export"),
 
+	FAST_NETWORK_CALCULATION("Enable fast network calculation of processes");
+	
 	private final String description;
 
 	private FeatureFlag(String description) {
