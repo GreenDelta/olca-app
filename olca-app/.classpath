@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="libs/jython-standalone-2.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jython-standalone-2.7.2b2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/super-csv-2.4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-cloud-1.9.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.9.0.jar"/>
