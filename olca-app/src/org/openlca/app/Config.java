@@ -40,20 +40,4 @@ public final class Config {
 	 */
 	public static final String HELP_URL = "http://www.openlca.org/manuals";
 
-	private static Boolean browserEnabled;
-
-	public static boolean isBrowserEnabled() {
-		if (browserEnabled != null)
-			return browserEnabled;
-		boolean disabled = Preferences.getStore().getBoolean("olca.disable.browser");
-		browserEnabled = !disabled;
-		return browserEnabled;
-	}
-
-	public static void setBrowserEnabled(boolean enabled) {
-		browserEnabled = enabled;
-		boolean disabled = !enabled;
-		Preferences.getStore().setValue("olca.disable.browser", disabled);
-	}
-
 }
