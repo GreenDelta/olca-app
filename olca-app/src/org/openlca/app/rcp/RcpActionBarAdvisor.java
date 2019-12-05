@@ -29,6 +29,7 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.components.replace.ReplaceFlowsDialog;
 import org.openlca.app.components.replace.ReplaceProvidersDialog;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.devtools.ipc.IpcDialog;
 import org.openlca.app.devtools.python.PythonEditor;
@@ -37,6 +38,7 @@ import org.openlca.app.editors.StartPage;
 import org.openlca.app.editors.parameters.BigParameterTable;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LogFileEditor;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.ExportAction;
 import org.openlca.app.navigation.actions.ImportAction;
 import org.openlca.app.rcp.images.Icon;
@@ -51,6 +53,8 @@ import org.openlca.core.model.ModelType;
 import org.openlca.io.ecospold2.input.EcoSpold2Import;
 import org.openlca.io.ecospold2.input.ImportConfig;
 import org.openlca.io.ecospold2.input.MethodImport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("restriction")
 public class RcpActionBarAdvisor extends ActionBarAdvisor {
@@ -212,7 +216,18 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		}
 		if (imp == null)
 			return;
-		App.runWithProgress("Run import", imp);
+
+		try {
+			Database.getIndexUpdater().beginTransaction();
+			App.runWithProgress("Run import", imp);
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("EcoSpold 2 import failed", e);
+		} finally {
+			Database.getIndexUpdater().endTransaction();
+			Navigator.refresh();
+			Cache.evictAll();
+		}
 	}
 
 	private void createDeveloperMenu(MenuManager menu) {
