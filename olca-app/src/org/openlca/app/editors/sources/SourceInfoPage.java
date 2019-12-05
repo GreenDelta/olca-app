@@ -125,7 +125,7 @@ class SourceInfoPage extends ModelPage<Source> {
 	}
 
 	private void selectFile() {
-		File file = FileChooser.forImport("*.*");
+		File file = FileChooser.open("*.*");
 		if (file == null)
 			return;
 		String fileName = file.getName();

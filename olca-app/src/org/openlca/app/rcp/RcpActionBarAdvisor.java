@@ -1,5 +1,6 @@
 package org.openlca.app.rcp;
 
+import java.io.File;
 import java.util.Objects;
 
 import org.eclipse.core.runtime.IExtension;
@@ -22,10 +23,13 @@ import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.registry.ActionSetRegistry;
 import org.eclipse.ui.internal.registry.IActionSetDescriptor;
+import org.openlca.app.App;
 import org.openlca.app.Config;
 import org.openlca.app.M;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.components.replace.ReplaceFlowsDialog;
 import org.openlca.app.components.replace.ReplaceProvidersDialog;
+import org.openlca.app.db.Database;
 import org.openlca.app.devtools.ipc.IpcDialog;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
@@ -41,7 +45,12 @@ import org.openlca.app.tools.mapping.MappingTool;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.FileType;
+import org.openlca.app.util.MsgBox;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
+import org.openlca.io.ecospold2.input.EcoSpold2Import;
+import org.openlca.io.ecospold2.input.ImportConfig;
+import org.openlca.io.ecospold2.input.MethodImport;
 
 @SuppressWarnings("restriction")
 public class RcpActionBarAdvisor extends ActionBarAdvisor {
@@ -162,7 +171,48 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		menu.add(new Separator());
 		menu.add(new FormulaConsoleAction());
+
+		// add tools actions for ecoinvent imports
+		if (App.runsInDevMode()) {
+			menu.add(new Separator());
+			MenuManager eiMenu = new MenuManager("ecoinvent 3.x");
+			menu.add(eiMenu);
+			eiMenu.add(Actions.create("Import processes", 
+					() -> runSpold2Import(ModelType.PROCESS)));
+			eiMenu.add(Actions.create("Import LCIA methods", 
+					() -> runSpold2Import(ModelType.IMPACT_METHOD)));
+		}
 		menuBar.add(menu);
+	}
+
+	private void runSpold2Import(ModelType type) {
+		IDatabase db = Database.get();
+		if (db == null) {
+			MsgBox.error("No database opened",
+					"You need to open a database for the import");
+			return;
+		}
+		File file = FileChooser.open("*.zip");
+		if (file == null)
+			return;
+		File[] files = new File[] {file};
+		
+		Runnable imp = null;
+		if (type == ModelType.IMPACT_METHOD) {
+			imp = new MethodImport(files, db);
+		} else if (type == ModelType.PROCESS) {
+			ImportConfig conf = new ImportConfig(db);
+			conf.checkFormulas = true;
+			conf.skipNullExchanges = true;
+			conf.withParameterFormulas = false;
+			conf.withParameters = false;
+			EcoSpold2Import imp_ = new EcoSpold2Import(conf);
+			imp_.setFiles(files);
+			imp = imp_;
+		}
+		if (imp == null)
+			return;
+		App.runWithProgress("Run import", imp);
 	}
 
 	private void createDeveloperMenu(MenuManager menu) {

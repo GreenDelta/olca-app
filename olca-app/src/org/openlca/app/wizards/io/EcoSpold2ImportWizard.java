@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -67,10 +68,12 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 		if (files == null || files.length == 0 || db == null)
 			return null;
 		ImportConfig conf = new ImportConfig(db);
-		conf.checkFormulas = true;
-		conf.skipNullExchanges = true;
-		conf.withParameterFormulas = false;
-		conf.withParameters = false;
+		if (App.runsInDevMode()) {
+			conf.checkFormulas = true;
+			conf.skipNullExchanges = true;
+			conf.withParameterFormulas = false;
+			conf.withParameters = false;
+		}
 		if (filePage.mappingFile != null) {
 			conf.setFlowMap(FlowMap.fromCsv(filePage.mappingFile));
 		}

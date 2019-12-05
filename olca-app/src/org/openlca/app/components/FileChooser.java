@@ -139,51 +139,30 @@ public class FileChooser {
 		return selectForPath(path);
 	}
 
-	/**
-	 * Selects a file/directory for an import. Returns null if the user
-	 * cancelled the dialog. flag indicates if a file or directory dialog should
-	 * be opened
-	 */
-	public static File forImport(int flag) {
-		return forImport(flag, null);
-	}
-
-	/**
-	 * Selects a file/directory for an import. Returns null if the user
-	 * cancelled the dialog. flag indicates if a file or directory dialog should
-	 * be opened
-	 */
-	public static File forImport(int flag, String filterPath) {
-		return forImport(null, filterPath, flag);
-	}
-
-	/**
-	 * Selects a file/directory for an import. Returns null if the user
-	 * cancelled the dialog.
-	 */
-	public static File forImport(String extension) {
-		return forImport(extension, null);
-	}
-
-	/**
-	 * Selects a file/directory for an import. Returns null if the user
-	 * cancelled the dialog.
-	 */
-	public static File forImport(String extension, String filterPath) {
-		return forImport(extension, filterPath, FILE_DIALOG);
-	}
-
-	/**
-	 * Selects a file/directory for an import. Returns null if the user
-	 * cancelled the dialog. flag indicates if a file or directory dialog should
-	 * be opened
-	 */
-	private static File forImport(String extension, String filterPath, int flag) {
+	public static File openFolder() {
 		Shell shell = UI.shell();
 		if (shell == null)
 			return null;
-		String path = openDialog(shell, extension, null, filterPath, flag,
-				SWT.OPEN);
+		String path = openDialog(
+				shell, null, null, null, DIRECTORY_DIALOG, SWT.OPEN);
+		if (path == null)
+			return null;
+		File file = new File(path);
+		if (!file.exists() || !file.isDirectory())
+			return null;
+		return file;
+	}
+
+
+	/**
+	 * Selects a file for reading. Returns null if the user cancelled the dialog.
+	 */
+	public static File open(String extension) {
+		Shell shell = UI.shell();
+		if (shell == null)
+			return null;
+		String path = openDialog(
+				shell, extension, null, null, FILE_DIALOG, SWT.OPEN);
 		if (path == null)
 			return null;
 		File file = new File(path);

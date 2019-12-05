@@ -36,7 +36,7 @@ public class DbImportAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		File file = FileChooser.forImport("*.zolca");
+		File file = FileChooser.open("*.zolca");
 		if (file == null || !file.exists())
 			return;
 		File dbFolder = new File(App.getWorkspace(),

@@ -55,7 +55,7 @@ class ProviderRow {
 
 		// select a file as provider
 		Controls.onClick(fileLink, e -> {
-			File file = FileChooser.forImport("*.zip");
+			File file = FileChooser.open("*.zip");
 			if (file == null)
 				return;
 			ProviderType type = ProviderType.of(file);

@@ -139,7 +139,7 @@ public class FileImportPage extends WizardPage {
 		Button button = new Button(comp, SWT.NONE);
 		button.setText(M.Browse);
 		Controls.onSelect(button, e -> {
-			mappingFile = FileChooser.forImport("*.csv");
+			mappingFile = FileChooser.open("*.csv");
 			if (mappingFile == null) {
 				text.setText("");
 			} else {
