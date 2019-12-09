@@ -43,7 +43,6 @@ public class Main {
 				importDQS(db);
 			}
 		}
-		Util.embedUpdates(db);
 		db.close();
 		System.out.println("  done");
 	}

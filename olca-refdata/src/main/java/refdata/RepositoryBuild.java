@@ -1,11 +1,11 @@
 package refdata;
 
 import static org.openlca.core.model.ModelType.CURRENCY;
+import static org.openlca.core.model.ModelType.DQ_SYSTEM;
 import static org.openlca.core.model.ModelType.FLOW;
 import static org.openlca.core.model.ModelType.FLOW_PROPERTY;
 import static org.openlca.core.model.ModelType.LOCATION;
 import static org.openlca.core.model.ModelType.UNIT_GROUP;
-import static org.openlca.core.model.ModelType.DQ_SYSTEM;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -49,7 +49,6 @@ public class RepositoryBuild {
 			File data = downloadData(db, client, descriptors);
 			Files.move(data.toPath(), F("download/" + name + ".zip").toPath());
 		}
-		Util.embedUpdates(db);
 		db.close();
 	}
 

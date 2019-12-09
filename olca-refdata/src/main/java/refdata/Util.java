@@ -3,12 +3,7 @@ package refdata;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Set;
 
-import org.openlca.core.database.IDatabase;
-import org.openlca.updates.UpdateHelper;
-import org.openlca.updates.UpdateMetaInfo;
-import org.openlca.updates.UpdateMetaInfoStore;
 import org.openlca.util.Dirs;
 import org.zeroturnaround.zip.ZipUtil;
 
@@ -50,13 +45,4 @@ class Util {
 		return new File(path);
 	}
 
-	static void embedUpdates(IDatabase db) {
-		UpdateMetaInfoStore store = new UpdateMetaInfoStore(db);
-		UpdateHelper helper = new UpdateHelper(db, null, null);
-		Set<UpdateMetaInfo> all = helper.getAllUpdates();
-		for (UpdateMetaInfo m : all) {
-			m.executed = true;
-			store.save(m);
-		}
-	}
 }

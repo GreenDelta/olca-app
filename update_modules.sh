@@ -5,14 +5,9 @@
 current_path=$(pwd)
 app_path=$(pwd)/olca-app
 modules_path=$(pwd)/../olca-modules
-updates_path=$(pwd)/../olca-updates
 
 echo "install olca-modules from $modules_path" 
 cd $modules_path
-mvn install -DskipTests=true
-
-echo "install olca-updates from $updates_path"
-cd $updates_path
 mvn install -DskipTests=true
 
 echo "update packages in $app_path/libs"
