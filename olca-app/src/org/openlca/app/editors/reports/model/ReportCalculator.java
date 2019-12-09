@@ -7,10 +7,12 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.model.ReportIndicatorResult.Contribution;
 import org.openlca.app.editors.reports.model.ReportIndicatorResult.VariantResult;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.math.SystemCalculator;
@@ -33,6 +35,7 @@ public class ReportCalculator implements Runnable {
 
 	private final Project project;
 	private final Report report;
+	public boolean hadError = false;
 
 	public ReportCalculator(Project project, Report report) {
 		this.project = project;
@@ -53,8 +56,17 @@ public class ReportCalculator implements Runnable {
 			SystemCalculator calculator = new SystemCalculator(
 					Cache.getMatrixCache(), App.getSolver());
 			result = calculator.calculate(project);
+			hadError = false;
+		} catch (OutOfMemoryError e) {
+			MsgBox.error(M.OutOfMemory, M.CouldNotAllocateMemoryError);
+			hadError = true;
+			return;
 		} catch (Exception e) {
+			MsgBox.error("The calculation of the project failed "
+					+ "with an unexpected error: " + e.getMessage()
+					+ ". See the log file for further information.");
 			log.error("Calculation of project failed", e);
+			hadError = true;
 			return;
 		}
 		appendResults(result);
