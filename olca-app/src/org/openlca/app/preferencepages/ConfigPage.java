@@ -4,14 +4,15 @@ import java.util.Objects;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.openlca.app.M;
+import org.openlca.app.rcp.WindowLayout;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;
@@ -43,19 +44,29 @@ public class ConfigPage extends PreferencePage implements
 	}
 
 	@Override
-	protected Control createContents(final Composite parent) {
+	protected Control createContents(Composite parent) {
 		Composite body = new Composite(parent, SWT.NONE);
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true);
-		Composite composite = UI.formComposite(body);
-		UI.gridLayout(composite, 2);
-		UI.gridData(composite, true, false);
-		createLanguageCombo(composite);
-		memoryText = UI.formText(composite, M.MaximumMemoryUsage);
+		Composite comp = UI.formComposite(body);
+		UI.gridLayout(comp, 2);
+		UI.gridData(comp, true, false);
+		createLanguageCombo(comp);
+
+		memoryText = UI.formText(comp, M.MaximumMemoryUsage);
 		memoryText.setText(Integer.toString(iniFile.getMaxMemory()));
 		memoryText.addModifyListener((e) -> setDirty());
-		new Label(composite, SWT.NONE);
-		createNoteComposite(composite.getFont(), composite, M.Note
+
+		UI.filler(comp);
+		Button b = new Button(comp, SWT.NONE);
+		b.setText("Reset window layout");
+		Controls.onSelect(b, _e -> {
+			WindowLayout.reset();
+			b.setEnabled(false);
+		});
+
+		UI.filler(comp);
+		createNoteComposite(comp.getFont(), comp, M.Note
 				+ ": ", M.SelectLanguageNoteMessage);
 		return body;
 	}
@@ -64,7 +75,13 @@ public class ConfigPage extends PreferencePage implements
 		UI.formLabel(composite, M.Language);
 		languageCombo = new Combo(composite, SWT.READ_ONLY);
 		UI.gridData(languageCombo, true, false);
-		initComboValues();
+		Language[] languages = Language.values();
+		String[] items = new String[languages.length];
+		for (int i = 0; i < languages.length; i++) {
+			items[i] = languages[i].getDisplayName();
+		}
+		languageCombo.setItems(items);
+		selectLanguage(iniFile.getLanguage());
 		Controls.onSelect(languageCombo, (e) -> {
 			int idx = languageCombo.getSelectionIndex();
 			if (idx < 0)
@@ -77,15 +94,6 @@ public class ConfigPage extends PreferencePage implements
 		});
 	}
 
-	private void initComboValues() {
-		Language[] languages = Language.values();
-		String[] items = new String[languages.length];
-		for (int i = 0; i < languages.length; i++) {
-			items[i] = languages[i].getDisplayName();
-		}
-		languageCombo.setItems(items);
-		selectLanguage(iniFile.getLanguage());
-	}
 
 	private void setDirty() {
 		getApplyButton().setEnabled(true);

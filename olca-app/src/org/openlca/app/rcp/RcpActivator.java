@@ -42,23 +42,24 @@ public class RcpActivator extends AbstractUIPlugin {
 	 *            the plugin)
 	 * @return The file found at the specified path as an input stream
 	 */
-	public static InputStream getStream(final String path) {
+	public static InputStream getStream(String path) {
 		try {
-			return FileLocator.openStream(plugin.getBundle(), new Path(path), false);
+			return FileLocator.openStream(
+					plugin.getBundle(), new Path(path), false);
 		} catch (final IOException e) {
 			return null;
 		}
 	}
 
 	@Override
-	public void start(final BundleContext context) throws Exception {
+	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
 		File workspace = Workspace.init();
 		LoggerConfig.setUp();
 		log.info("start openLCA {}, install location={}, workspace={}",
 				App.getVersion(), App.getInstallLocation(), workspace);
-		WorkbenchLayout.initialize(workspace);
+		WindowLayout.initialize();
 		log.trace("initialize HTML folder");
 		HtmlFolder.initialize(RcpActivator.getDefault().getBundle(),
 				"html/base_html.zip");
@@ -68,7 +69,7 @@ public class RcpActivator extends AbstractUIPlugin {
 	}
 
 	@Override
-	public void stop(final BundleContext context) throws Exception {
+	public void stop(BundleContext context) throws Exception {
 		log.trace("Stop bundle {}", PLUGIN_ID);
 		Console.dispose();
 		try {
