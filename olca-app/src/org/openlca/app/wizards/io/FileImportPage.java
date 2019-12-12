@@ -197,7 +197,7 @@ public class FileImportPage extends WizardPage {
 			}
 		}
 		List<File> childs = new ArrayList<>();
-		for (File file : folder.listFiles()) {
+		for (File file : listFiles(folder)) {
 			if (!file.isFile())
 				continue;
 			if (exts.isEmpty()) {
@@ -208,10 +208,28 @@ public class FileImportPage extends WizardPage {
 			for (String ext : exts) {
 				if (name.endsWith(ext)) {
 					childs.add(file);
+					break;
 				}
 			}
 		}
 		return childs;
+	}
+
+	/**
+	 * Returns the content of the given folder. If the given file is not a directory
+	 * or has no content an empty array is returned.
+	 */
+	private static File[] listFiles(File dir) {
+		if (dir == null || !dir.isDirectory())
+			return new File[0];
+		// it seems that we had some issues on Windows
+		// where isDirectory returned true but
+		// listFiles returned null; so we try to check
+		// these cases here
+		File[] files = dir.listFiles();
+		if (files == null)
+			return new File[0];
+		return files;
 	}
 
 	private class DirectoryContentProvider implements ITreeContentProvider {
@@ -222,13 +240,13 @@ public class FileImportPage extends WizardPage {
 
 		@Override
 		public Object[] getChildren(Object parent) {
+			if (!(parent instanceof File))
+				return null;
+			File dir = (File) parent;
 			ArrayList<File> childs = new ArrayList<>();
-			if (parent instanceof File) {
-				File file = (File) parent;
-				for (File child : file.listFiles()) {
-					if (child.isDirectory()) {
-						childs.add(child);
-					}
+			for (File f : listFiles(dir)) {
+				if (f.isDirectory()) {
+					childs.add(f);
 				}
 			}
 			return childs.toArray();
@@ -238,11 +256,11 @@ public class FileImportPage extends WizardPage {
 		public Object[] getElements(Object obj) {
 			if (!(obj instanceof File))
 				return null;
-			File file = (File) obj;
+			File dir = (File) obj;
 			ArrayList<File> dirs = new ArrayList<>();
-			for (File child : file.listFiles()) {
-				if (child.isDirectory()) {
-					dirs.add(child);
+			for (File f : listFiles(dir)) {
+				if (f.isDirectory()) {
+					dirs.add(f);
 				}
 			}
 			return dirs.toArray();
@@ -260,9 +278,9 @@ public class FileImportPage extends WizardPage {
 		public boolean hasChildren(Object obj) {
 			if (!(obj instanceof File))
 				return false;
-			File file = (File) obj;
-			for (File child : file.listFiles()) {
-				if (child.isDirectory())
+			File dir = (File) obj;
+			for (File f : listFiles(dir)) {
+				if (f.isDirectory())
 					return true;
 			}
 			return false;
