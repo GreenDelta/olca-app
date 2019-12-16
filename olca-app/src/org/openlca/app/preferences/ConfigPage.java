@@ -15,6 +15,7 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.WindowLayout;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.julia.Julia;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,13 +58,26 @@ public class ConfigPage extends PreferencePage implements
 		memoryText.setText(Integer.toString(iniFile.getMaxMemory()));
 		memoryText.addModifyListener((e) -> setDirty());
 
+		// reset window layout
 		UI.filler(comp);
-		Button b = new Button(comp, SWT.NONE);
+		Composite bcomp = new Composite(comp, SWT.NONE);
+		UI.gridLayout(bcomp, 1, 5, 0);
+		Button b = new Button(bcomp, SWT.NONE);
 		b.setText("Reset window layout");
 		Controls.onSelect(b, _e -> {
 			WindowLayout.reset();
 			b.setEnabled(false);
 		});
+
+		if (!Julia.isWithUmfpack()) {
+			Button libButton = new Button(bcomp, SWT.NONE);
+			libButton.setText("Download additional calculation libraries");
+			Controls.onSelect(
+					libButton,
+					_e -> LibraryDownload.open());
+			UI.gridData(b, true, false);
+			UI.gridData(libButton, true, false);
+		}
 
 		UI.filler(comp);
 		createNoteComposite(comp.getFont(), comp, M.Note

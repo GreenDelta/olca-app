@@ -12,6 +12,7 @@ import java.util.zip.ZipFile;
 
 import org.openlca.app.App;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Question;
 import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,19 @@ public class LibraryDownload implements Runnable {
 	private String error;
 
 	public static void open() {
+		boolean b = Question.ask("Download calculation libraries",
+				"You can download additional libraries to make"
+						+ " the calculation faster. However, this currently"
+						+ " only improves the calculation speed of product"
+						+ " systems with sparse matrices in the quick"
+						+ " calculation. Also, some of these libraries are"
+						+ " licensed under the GNU General Public License v2"
+						+ " (see https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)."
+						+ " By downloading these libraries you accept the terms and"
+						+ " conditions of this license. Do you want to download"
+						+ " these additional calculation libraries?");
+		if (!b)
+			return;
 		LibraryDownload download = new LibraryDownload();
 		App.runWithProgress("Download native libraries", download, () -> {
 			if (download.error != null) {
