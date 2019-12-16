@@ -46,6 +46,16 @@ const Page = (props: Props) => {
     return (
         <>
             <Header {...props} />
+            <div style={{
+                backgroundColor: "rgb(128, 0, 128)",
+                marginBottom: 25,
+                textAlign: "center",
+            }}>
+                <span>
+                    You can make the calculation in openLCA faster. {" "}
+                    <a href="#" style={{fontWeight: "bold"}}>Learn more.</a>
+                </span>
+            </div>
             {blocks}
             <div className="placeholder" />
             <a className="gd-logo"
