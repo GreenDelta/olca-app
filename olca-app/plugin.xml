@@ -438,23 +438,23 @@
             name="%Logging">
       </page>
       <page
-      		class="org.openlca.app.preferencepages.NumberFormatPage"
+      		class="org.openlca.app.preferences.NumberFormatPage"
       		id="preferencepages.numberformat"
       		name="%NumberFormat">
       </page>
       <page
-            class="org.openlca.app.preferencepages.FeatureFlagPage"
+            class="org.openlca.app.preferences.FeatureFlagPage"
             id="preferencepages.featureflag"
             name="Experimental features">
       </page>
       <page
-            class="org.openlca.app.preferencepages.IoPreferencePage"
+            class="org.openlca.app.preferences.IoPreferencePage"
             id="org.openlca.io.IoPreferencePage"
             name="%ImportExport">
       </page>
       <page
             id="preferencepages.config"
-            class="org.openlca.app.preferencepages.ConfigPage"
+            class="org.openlca.app.preferences.ConfigPage"
             name="%Configuration">
       </page>
       <page
@@ -659,7 +659,7 @@
             class="org.openlca.app.Preferences">
       </initializer>
       <initializer
-            class="org.openlca.app.preferencepages.IoPreference">
+            class="org.openlca.app.preferences.IoPreference">
       </initializer>
       <initializer
             class="org.openlca.app.cloud.ui.preferences.CloudPreference">

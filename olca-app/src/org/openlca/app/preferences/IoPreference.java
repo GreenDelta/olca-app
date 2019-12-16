@@ -1,4 +1,4 @@
-package org.openlca.app.preferencepages;
+package org.openlca.app.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;

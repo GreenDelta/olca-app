@@ -1,4 +1,4 @@
-package org.openlca.app.preferencepages;
+package org.openlca.app.preferences;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;

@@ -1,4 +1,4 @@
-package org.openlca.app.preferencepages;
+package org.openlca.app.preferences;
 
 import java.util.ArrayList;
 import java.util.Collections;

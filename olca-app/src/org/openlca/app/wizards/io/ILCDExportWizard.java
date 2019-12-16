@@ -11,7 +11,7 @@ import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.preferencepages.IoPreference;
+import org.openlca.app.preferences.IoPreference;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;

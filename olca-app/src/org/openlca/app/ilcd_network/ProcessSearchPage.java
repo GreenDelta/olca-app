@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
-import org.openlca.app.preferencepages.IoPreference;
+import org.openlca.app.preferences.IoPreference;
 import org.openlca.app.util.Dialog;
 import org.openlca.app.util.UI;
 import org.openlca.ilcd.descriptors.DescriptorList;
