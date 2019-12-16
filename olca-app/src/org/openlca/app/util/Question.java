@@ -18,8 +18,9 @@ public class Question {
 		String[] labels = new String[] { IDialogConstants.YES_LABEL,
 				IDialogConstants.NO_LABEL,
 				IDialogConstants.CANCEL_LABEL };
-		MessageDialog dialog = new MessageDialog(UI.shell(), title, null, message, MessageDialog.QUESTION_WITH_CANCEL,
-				labels, 0);
+		MessageDialog dialog = new MessageDialog(
+				UI.shell(), title, null, message,
+				MessageDialog.QUESTION_WITH_CANCEL, labels, 0);
 		int result = dialog.open();
 		if (result == 0)
 			return IDialogConstants.YES_ID;
@@ -31,9 +32,14 @@ public class Question {
 	}
 
 	public static int askWithAll(String title, String message) {
-		String[] labels = new String[] { IDialogConstants.YES_LABEL, IDialogConstants.YES_TO_ALL_LABEL,
-				IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL };
-		MessageDialog dialog = new MessageDialog(UI.shell(), title, null, message, MessageDialog.QUESTION, labels, 0);
+		String[] labels = new String[] {
+				IDialogConstants.YES_LABEL,
+				IDialogConstants.YES_TO_ALL_LABEL,
+				IDialogConstants.NO_LABEL,
+				IDialogConstants.CANCEL_LABEL };
+		MessageDialog dialog = new MessageDialog(
+				UI.shell(), title, null, message,
+				MessageDialog.QUESTION, labels, 0);
 		int result = dialog.open();
 		if (result == 0)
 			return IDialogConstants.YES_ID;
