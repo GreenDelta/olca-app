@@ -47,12 +47,6 @@ const Page = (props: Props) => {
     return (
         <>
             <Header {...props} />
-            <div style={{
-                backgroundColor: "rgb(128, 0, 128)",
-                marginBottom: 25,
-                textAlign: "center",
-            }}>
-            </div>
             <LibHint {...props} />
             {blocks}
             <div className="placeholder" />
@@ -90,10 +84,10 @@ const LibHint = (props: Props) => {
         }
     };
     return (
-        <div style={{ textAlign: "center", marginBottom: 30 }}>
+        <div style={{ marginBottom: 70 }}>
             <span style={{
-                backgroundColor: "rgba(128, 0, 128, 0.7)",
-                padding: "0 10px",
+                backgroundColor: "rgba(255, 153, 0, 0.8)",
+                padding: "10px",
             }}>
                 You can make the calculation in openLCA faster. {" "}
                 <a href="#" onClick={() => handleClick()}>
