@@ -71,7 +71,7 @@ class InfoPage extends ModelPage<Process> {
 	private void createButtons(Composite comp) {
 		UI.filler(comp, toolkit);
 		Composite inner = toolkit.createComposite(comp);
-		UI.gridLayout(inner, 2, 5, 0);
+		UI.gridLayout(inner, 3, 5, 0);
 
 		// create product system
 		Button b = toolkit.createButton(inner, M.CreateProductSystem, SWT.NONE);
