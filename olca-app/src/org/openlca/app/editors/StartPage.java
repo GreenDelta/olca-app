@@ -12,10 +12,12 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.preferences.LibraryDownload;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.EclipseCommandLine;
 import org.openlca.app.util.UI;
+import org.openlca.julia.Julia;
 import org.openlca.util.OS;
 
 import com.google.gson.Gson;
@@ -46,6 +48,8 @@ public class StartPage extends SimpleFormEditor {
 			comp.setLayout(new FillLayout());
 			Browser browser = new Browser(comp, SWT.NONE);
 			browser.setJavascriptEnabled(true);
+
+			// handles link clicks and opens them in the browser
 			UI.bindFunction(browser, "onOpenLink", (args) -> {
 				if (args == null || args.length == 0)
 					return null;
@@ -56,14 +60,21 @@ public class StartPage extends SimpleFormEditor {
 				return null;
 			});
 
-			UI.onLoaded(browser, HtmlFolder.getUrl("home.html"), () -> {
-				HashMap<String, String> props = new HashMap<>();
-				props.put("version", getVersion());
-				String lang = EclipseCommandLine.getArg("nl");
-				props.put("lang", lang == null ? "en" : lang);
-				String config = new Gson().toJson(props);
-				browser.execute("setData(" + config + ")");
+			// handles click on the "native library hint"
+			UI.bindFunction(browser, "onLibHintClick", (args) -> {
+				LibraryDownload.open();
+				return null;
+			});
 
+			// set the start page configuration
+			UI.onLoaded(browser, HtmlFolder.getUrl("home.html"), () -> {
+				HashMap<String, Object> config = new HashMap<>();
+				config.put("version", getVersion());
+				String lang = EclipseCommandLine.getArg("nl");
+				config.put("lang", lang == null ? "en" : lang);
+				config.put("showLibHint", !Julia.isWithUmfpack());
+				String json = new Gson().toJson(config);
+				browser.execute("setData(" + json + ")");
 			});
 		}
 

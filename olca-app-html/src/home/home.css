@@ -2,14 +2,16 @@
     font-family: 'TheSans';
     font-weight: normal;
     font-style: normal;
-    src: url('fonts/TheSans_Plain.ttf') format('truetype');
+    src: url('fonts/TheSans_Plain.eot?#iefix') format('embedded-opentype'),
+         url('fonts/TheSans_Plain.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'TheSans';
     font-weight: bold;
     font-style: normal;
-    src: url('fonts/TheSans_B7_Bold.ttf') format('truetype');
+    src: url('fonts/TheSans_B7_Bold.eot?#iefix') format('embedded-opentype'),
+         url('fonts/TheSans_B7_Bold.ttf') format('truetype');
 }
 
 html, body {
