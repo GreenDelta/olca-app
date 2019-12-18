@@ -13,22 +13,22 @@ import org.openlca.core.model.FlowType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class LinkingProperties {
+public class LinkingProperties {
 
 	/**
 	 * Contains the IDs of product or waste flows that have more than one
 	 * provider. If this set is empty, there are no such flows in the database.
 	 */
-	final Set<Long> multiProviderFlows = new HashSet<>();
+	public final Set<Long> multiProviderFlows = new HashSet<>();
 
 	/**
 	 * Contains the IDs of processes where product inputs or waste outputs are
 	 * __not__ linked to a default provider. If this set is empty, there are no
 	 * such unlinked processes in the database.
 	 */
-	final Set<Long> processesWithoutProviders = new HashSet<>();
+	public final Set<Long> processesWithoutProviders = new HashSet<>();
 
-	static LinkingProperties check(IDatabase db) {
+	public static LinkingProperties check(IDatabase db) {
 		LinkingProperties props = new LinkingProperties();
 		if (db == null)
 			return props;

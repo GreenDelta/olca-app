@@ -96,8 +96,7 @@ const LibHint = (props: Props) => {
                 padding: "0 10px",
             }}>
                 You can make the calculation in openLCA faster. {" "}
-                <a href="#" style={{ fontWeight: "bold" }}
-                    onClick={() => handleClick()}>
+                <a href="#" onClick={() => handleClick()}>
                     Learn more.
                 </a>
             </span>

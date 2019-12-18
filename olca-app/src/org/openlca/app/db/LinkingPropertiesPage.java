@@ -49,7 +49,10 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			LinkingProperties props = LinkingProperties.check(Database.get());
 			ref.set(props);
 		});
-		LinkingProperties props = ref.get();
+		show(ref.get());
+	}
+
+	public static void show(LinkingProperties props) {
 		if (props == null)
 			return;
 		String key = Cache.getAppCache().put(props);

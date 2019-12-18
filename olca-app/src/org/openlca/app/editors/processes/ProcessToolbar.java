@@ -3,8 +3,10 @@ package org.openlca.app.editors.processes;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbenchWizard;
@@ -14,16 +16,18 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.LinkingProperties;
+import org.openlca.app.db.LinkingPropertiesPage;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.systems.CalculationWizard;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.ProductSystemWizard;
@@ -48,21 +52,9 @@ public class ProcessToolbar extends EditorActionBarContributor {
 		toolbar.add(Actions.create(M.ExportToExcel,
 				Images.descriptor(FileType.EXCEL),
 				() -> exportToExcel(getProcess())));
-
-		// fast network calculation
-		if (!FeatureFlag.FAST_NETWORK_CALCULATION.isEnabled())
-			return;
 		toolbar.add(Actions.create("Fast network calculation",
 				Icon.RUN.descriptor(),
-				() -> {
-					Process p = getProcess();
-					if (p == null)
-						return;
-					ProductSystem sys = ProductSystem.from(p);
-					sys.withoutNetwork = true;
-					CalculationWizard.open(sys);
-				}));
-
+				() -> fastCalculation(getProcess())));
 	}
 
 	private Process getProcess() {
@@ -109,6 +101,114 @@ public class ProcessToolbar extends EditorActionBarContributor {
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(ProcessToolbar.class);
 			log.error("failed to open product system dialog for process", e);
+		}
+	}
+
+	static void fastCalculation(Process process) {
+		if (process == null)
+			return;
+		FactCalculationDialog.show(process);
+	}
+
+	private static class FactCalculationDialog {
+
+		static void show(Process process) {
+			String hint = "The fast network calculation creates an in-memory "
+					+ "product system of all processes in the database. This only "
+					+ "gives correct results when there are unambiguous links "
+					+ "between these processes (e.g. every product is only produced "
+					+ "by a single process or every product input has a default "
+					+ "provider set). You can also check the linking properties of "
+					+ "the databases under `Database > Check linking properties`.";
+			String[] buttons = { "Run calculation", "Check linking", "Cancel" };
+
+			MessageDialog dialog = new MessageDialog(
+					UI.shell(),
+					"Fast network calculation", // title
+					null, // image
+					hint,
+					MessageDialog.INFORMATION, // image type
+					0, // default button
+					buttons);
+
+			switch (dialog.open()) {
+			case 0:
+				runCalculation(process);
+				break;
+			case 1:
+				checkLinking(process);
+				break;
+			default:
+				break;
+			}
+		}
+		
+		static void runCalculation(Process process) {
+			ProductSystem sys = ProductSystem.from(process);
+			sys.withoutNetwork = true;
+			CalculationWizard.open(sys);
+		}
+
+		static void checkLinking(Process process) {
+			AtomicReference<LinkingProperties> ref = new AtomicReference<>();
+			App.runWithProgress("Check database links", () -> {
+				LinkingProperties props = LinkingProperties.check(Database.get());
+				ref.set(props);
+			});
+			LinkingProperties props = ref.get();
+			if (props == null) {
+				MsgBox.error("The linking check gave no results");
+				return;
+			}
+			if (props.multiProviderFlows.isEmpty()
+					|| props.processesWithoutProviders.isEmpty()) {
+				handleUnambiguousLinks(process, props);
+			} else {
+				handleAmbiguousLinks(props);
+			}
+		}
+
+		private static void handleAmbiguousLinks(LinkingProperties props) {
+			String msg = "There are ambiguous links between processes "
+					+ "in the database. This can lead to different results "
+					+ "in the calculation depending on the process linking.";
+			String[] buttons = { "Show details", "Cancel" };
+			MessageDialog dialog = new MessageDialog(
+					UI.shell(),
+					"Fast network calculation", // title
+					null, // image
+					msg,
+					MessageDialog.WARNING, // image type
+					0, // default button
+					buttons);
+			if (dialog.open() == 0) {
+				LinkingPropertiesPage.show(props);
+			}
+		}
+
+		private static void handleUnambiguousLinks(
+				Process process, LinkingProperties props) {
+			String msg = "The processes in the database can be"
+					+ " linked unambiguously";
+			String[] buttons = { "Run calculation", "Show details", "Cancel" };
+			MessageDialog dialog = new MessageDialog(
+					UI.shell(),
+					"Fast network calculation", // title
+					null, // image
+					msg,
+					MessageDialog.INFORMATION, // image type
+					0, // default button
+					buttons);
+			switch (dialog.open()) {
+			case 0:
+				runCalculation(process);
+				break;
+			case 1:
+				LinkingPropertiesPage.show(props);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
