@@ -1,23 +1,22 @@
-# olca-app
-This repository contains the source code of the [openLCA](http://openlca.org) 
-application. openLCA is a Java application that runs on the Eclipse Rich Client
-Platform ([Eclipse RCP](http://wiki.eclipse.org/index.php/Rich_Client_Platform)).
-This project depends on the [olca-modules](https://github.com/GreenDelta/olca-modules)
-and [olca-update](https://github.com/GreenDelta/olca-updates) projects which are
-plain [Maven](http://maven.apache.org/) projects that contain the core 
-functionalities (e.g. the model, database access, calculations, and
-data exchange) and update logic for databases. 
+# openLCA
+This repository contains the source code of [openLCA](http://openlca.org).
+openLCA is a Java application that runs on the Eclipse Rich Client Platform
+([Eclipse RCP](http://wiki.eclipse.org/index.php/Rich_Client_Platform)). This
+project depends on the [olca-modules](https://github.com/GreenDelta/olca-modules)
+project which is a plain [Maven](http://maven.apache.org/) project that contains
+the core functionalities of openLCA (e.g. the model, database access,
+calculations, data exchange, and database updates). 
 
 This repository has the following sub-projects:
 
 * [olca-app](./olca-app): contains the source code of the openLCA RCP 
   application.
 * [olca-app-build](./olca-app-build): contains the build scripts for compiling
-  openLCA and creating the installers for Windows, Linux, and MacOS.
+  openLCA and creating the installers for Windows, Linux, and macOS.
 * [olca-app-html](./olca-app-html): contains the source code for the HTML views
   in openLCA (like the start page or the report views).
-* [olca-app-runtime](./olca-app-runtime): contains the **old** build scripts for
-  creating the Eclipse RCP runtime for openLCA.
+* [olca-refdata](./olca-refdata): contains the current reference data (units,
+  quantities, and flows) that are packaged with openLCA.
 
 See also the README files that are contained in these sub-projects.
 
@@ -27,7 +26,7 @@ in HTML5 and JavaScript. To compile it from source you need to have the
 following tools installed:
 
 * [Git](https://git-scm.com/) (optional)
-* a [Java Development Kit 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+* a [Java Development Kit v8](https://adoptopenjdk.net/)
 * [Maven](http://maven.apache.org/)
 * the [Eclipse package for RCP developers](https://www.eclipse.org/downloads/packages/)
 * [Node.js](https://nodejs.org/) 
@@ -35,12 +34,11 @@ following tools installed:
 When you have these tools installed you can build the application from source
 via the following steps:
 
-#### Install the openLCA core and update modules
-The core and update modules contain the application logic that is independent
-from the user interface and can be also used in other applications. These
-modules are plain Maven projects and can be installed via `mvn install`. See the
-[olca-modules](https://github.com/GreenDelta/olca-modules) and 
-[olca-updates](https://github.com/GreenDelta/olca-updates) repositories for more
+#### Install the openLCA core modules
+The core modules contain the application logic that is independent from the user
+interface and can be also used in other applications. These modules are plain
+Maven projects and can be installed via `mvn install`. See the
+[olca-modules](https://github.com/GreenDelta/olca-modules) repository for more
 information.
 
 #### Get the source code of the application
@@ -61,13 +59,15 @@ git clone https://github.com/GreenDelta/olca-app.git
 
 Your development directory should now look like this:
 
-    olca-app
-      .git
-      olca-app
-      olca-app-build
-      olca-app-html
-      olca-refdata
-      ...
+```
+olca-app
+  .git
+  olca-app
+  olca-app-build
+  olca-app-html
+  olca-refdata
+  ...
+```
 
 #### Building the HTML pages
 To build the HTML pages of the user interface navigate to the
@@ -83,7 +83,6 @@ package manager that comes with your Node.js installation):
 ```
 npm install
 ```
-
 
 This also installs a local version of `webpack` which is used to create the
 distribution package. The build of this package can be invoked via:
@@ -101,16 +100,18 @@ everything together you can extract it into your development directory). Create
 a workspace directory in your development directory (e.g. under the eclipse
 folder to have a clean structure):
 
-    eclipse
-      ...
-      workspace
-    olca-app
-      .git
-      olca-app
-      olca-app-build
-      olca-app-html
-      olca-app-refdata
-      ...
+```
+eclipse
+  ...
+  workspace
+olca-app
+  .git
+  olca-app
+  olca-app-build
+  olca-app-html
+  olca-app-refdata
+  ...
+```
 
 After this, open Eclipse and select the created workspace directory. Import the
 projects into Eclipse via `Import > General > Existing Projects into Workspace`
