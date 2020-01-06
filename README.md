@@ -131,7 +131,7 @@ configuring Eclipse can be quite challenging. If you get errors like
 [this discussion](https://stackoverflow.com/questions/10547007/unable-locate-installable-unit-in-target-definition)
 may help. 
 
-### Copy the Maven modules
+#### Copy the Maven modules
 Go back to the command line and navigate to the 
 `olca-app/olca-app` folder:
 
