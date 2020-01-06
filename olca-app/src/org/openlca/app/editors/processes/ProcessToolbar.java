@@ -52,9 +52,9 @@ public class ProcessToolbar extends EditorActionBarContributor {
 		toolbar.add(Actions.create(M.ExportToExcel,
 				Images.descriptor(FileType.EXCEL),
 				() -> exportToExcel(getProcess())));
-		toolbar.add(Actions.create("Fast network calculation",
+		toolbar.add(Actions.create("Direct calculation",
 				Icon.RUN.descriptor(),
-				() -> fastCalculation(getProcess())));
+				() -> directCalculation(getProcess())));
 	}
 
 	private Process getProcess() {
@@ -104,7 +104,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 		}
 	}
 
-	static void fastCalculation(Process process) {
+	static void directCalculation(Process process) {
 		if (process == null)
 			return;
 		FactCalculationDialog.show(process);
@@ -113,7 +113,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 	private static class FactCalculationDialog {
 
 		static void show(Process process) {
-			String hint = "The fast network calculation creates an in-memory "
+			String hint = "The direct calculation creates an in-memory "
 					+ "product system of all processes in the database. This only "
 					+ "gives correct results when there are unambiguous links "
 					+ "between these processes (e.g. every product is only produced "
@@ -124,7 +124,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 
 			MessageDialog dialog = new MessageDialog(
 					UI.shell(),
-					"Fast network calculation", // title
+					"Direct calculation", // title
 					null, // image
 					hint,
 					MessageDialog.INFORMATION, // image type
@@ -175,7 +175,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 			String[] buttons = { "Show details", "Cancel" };
 			MessageDialog dialog = new MessageDialog(
 					UI.shell(),
-					"Fast network calculation", // title
+					"Direct calculation", // title
 					null, // image
 					msg,
 					MessageDialog.WARNING, // image type
@@ -193,7 +193,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 			String[] buttons = { "Run calculation", "Show details", "Cancel" };
 			MessageDialog dialog = new MessageDialog(
 					UI.shell(),
-					"Fast network calculation", // title
+					"Direct calculation", // title
 					null, // image
 					msg,
 					MessageDialog.INFORMATION, // image type

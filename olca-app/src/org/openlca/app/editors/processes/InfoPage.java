@@ -78,10 +78,10 @@ class InfoPage extends ModelPage<Process> {
 		b.setImage(Images.get(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
 		Controls.onSelect(b, e -> ProcessToolbar.createSystem(getModel()));
 
-		// fast network calculation
-		b = toolkit.createButton(inner, "Fast network calculation", SWT.NONE);
+		// direct calculation
+		b = toolkit.createButton(inner, "Direct calculation", SWT.NONE);
 		b.setImage(Icon.RUN.get());
-		Controls.onSelect(b, e -> ProcessToolbar.fastCalculation(getModel()));
+		Controls.onSelect(b, e -> ProcessToolbar.directCalculation(getModel()));
 
 		// export to Excel
 		b = toolkit.createButton(inner, M.ExportToExcel, SWT.NONE);
