@@ -48,6 +48,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.ParameterDao;
@@ -59,7 +60,7 @@ import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.expressions.Scope;
@@ -189,7 +190,7 @@ public class BigParameterTable extends SimpleFormEditor {
 			Map<Long, ProcessDescriptor> processes = new ProcessDao(db)
 					.getDescriptors().stream()
 					.collect(Collectors.toMap(d -> d.id, d -> d));
-			Map<Long, ImpactMethodDescriptor> methods = new ImpactMethodDao(db)
+			Map<Long, ImpactCategoryDescriptor> impacts = new ImpactCategoryDao(db)
 					.getDescriptors().stream()
 					.collect(Collectors.toMap(d -> d.id, d -> d));
 			Map<Long, Long> owners = new HashMap<>();
@@ -215,8 +216,8 @@ public class BigParameterTable extends SimpleFormEditor {
 					return;
 				if (pr.scope == ParameterScope.PROCESS) {
 					p.owner = processes.get(p.ownerID);
-				} else if (pr.scope == ParameterScope.IMPACT_METHOD) {
-					p.owner = methods.get(p.ownerID);
+				} else if (pr.scope == ParameterScope.IMPACT_CATEGORY) {
+					p.owner = impacts.get(p.ownerID);
 				}
 			});
 
@@ -495,8 +496,8 @@ public class BigParameterTable extends SimpleFormEditor {
 			switch (p.scope()) {
 			case GLOBAL:
 				return Images.get(ModelType.PARAMETER);
-			case IMPACT_METHOD:
-				return Images.get(ModelType.IMPACT_METHOD);
+			case IMPACT_CATEGORY:
+				return Images.get(ModelType.IMPACT_CATEGORY);
 			case PROCESS:
 				return Images.get(ModelType.PROCESS);
 			default:

@@ -38,8 +38,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FileStore;
-import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.geo.kml.FeatureType;
 import org.openlca.util.Dirs;
 import org.openlca.util.Strings;
@@ -53,23 +53,21 @@ import com.vividsolutions.jts.geom.LineString;
 public class ShapeFileUtils {
 
 	/**
-	 * Get the folder where the shape-files are stored for the given LCIA,
-	 * method.
+	 * Get the folder where the shape-files are stored for the given LCIA category.
 	 */
-	public static File getFolder(ImpactMethod method) {
-		if (method == null || method.refId == null)
+	public static File getFolder(ImpactCategory impact) {
+		if (impact == null || impact.refId == null)
 			return null;
-		return DatabaseDir.getDir(method);
+		return DatabaseDir.getDir(impact);
 	}
 
 	/**
-	 * Get the folder where the shape-files are stored for the given LCIA,
-	 * method.
+	 * Get the folder where the shape-files are stored for the given LCIA category.
 	 */
-	public static File getFolder(ImpactMethodDescriptor method) {
-		if (method == null || method.refId == null)
+	public static File getFolder(ImpactCategoryDescriptor impact) {
+		if (impact == null || impact.refId == null)
 			return null;
-		return new FileStore(Database.get()).getFolder(method);
+		return new FileStore(Database.get()).getFolder(impact);
 	}
 
 	/**
@@ -96,10 +94,10 @@ public class ShapeFileUtils {
 	}
 
 	/**
-	 * Returns true if a shape-file with the given name already exists for the
-	 * given method.
+	 * Returns true if a shape-file with the given name already exists for the given
+	 * LCIA category.
 	 */
-	static boolean alreadyExists(ImpactMethod method, File shapeFile) {
+	static boolean alreadyExists(ImpactCategory method, File shapeFile) {
 		File folder = getFolder(method);
 		if (folder == null || !folder.exists())
 			return false;
@@ -108,12 +106,12 @@ public class ShapeFileUtils {
 	}
 
 	/**
-	 * Imports the given shape-file and the associated files into the folder for
-	 * the given impact method.
+	 * Imports the given shape-file and the associated files into the folder for the
+	 * given impact category.
 	 */
-	static String importFile(ImpactMethod method, File shapeFile)
+	static String importFile(ImpactCategory impact, File shapeFile)
 			throws Exception {
-		File methodFolder = getFolder(method);
+		File methodFolder = getFolder(impact);
 		if (!methodFolder.exists())
 			methodFolder.mkdirs();
 		for (File f : getAllFiles(shapeFile)) {
@@ -126,9 +124,9 @@ public class ShapeFileUtils {
 		}
 		String shapeFileName = FilenameUtils.removeExtension(shapeFile
 				.getName());
-		DataStore dataStore = openDataStore(method, shapeFileName);
+		DataStore dataStore = openDataStore(impact, shapeFileName);
 		Collection<ShapeFileParameter> params = readParameters(dataStore);
-		writeParameters(method, shapeFileName, params);
+		writeParameters(impact, shapeFileName, params);
 		dataStore.dispose();
 		return shapeFileName;
 	}
@@ -153,20 +151,20 @@ public class ShapeFileUtils {
 	}
 
 	/**
-	 * Returns the names of the shape-files of the given method (without file
+	 * Returns the names of the shape-files of the given LCIA category (without file
 	 * extension).
 	 */
-	public static List<String> getShapeFiles(ImpactMethod method) {
-		File folder = getFolder(method);
+	public static List<String> getShapeFiles(ImpactCategory impact) {
+		File folder = getFolder(impact);
 		return getShapeFiles(folder);
 	}
 
 	/**
-	 * Returns the names of the shape-files of the given method (without file
+	 * Returns the names of the shape-files of the given LCIA category (without file
 	 * extension).
 	 */
-	public static List<String> getShapeFiles(ImpactMethodDescriptor method) {
-		File folder = getFolder(method);
+	public static List<String> getShapeFiles(ImpactCategoryDescriptor impact) {
+		File folder = getFolder(impact);
 		return getShapeFiles(folder);
 	}
 
@@ -184,11 +182,11 @@ public class ShapeFileUtils {
 	}
 
 	/**
-	 * Delete the shape-file with the given name (without file extension) from
-	 * the folder of the given LCIA method.
+	 * Delete the shape-file with the given name (without file extension) from the
+	 * folder of the given LCIA category.
 	 */
-	static void deleteFile(ImpactMethod method, String shapeFileName) {
-		File folder = getFolder(method);
+	static void deleteFile(ImpactCategory impact, String shapeFileName) {
+		File folder = getFolder(impact);
 		if (folder == null || !folder.exists())
 			return;
 		File shapeFile = new File(folder, shapeFileName + ".shp");
@@ -204,9 +202,9 @@ public class ShapeFileUtils {
 		}
 	}
 
-	public static List<ShapeFileParameter> getParameters(ImpactMethod method,
+	public static List<ShapeFileParameter> getParameters(ImpactCategory impact,
 			String shapeFileName) throws IOException {
-		File folder = getFolder(method);
+		File folder = getFolder(impact);
 		File paramFile = new File(folder, shapeFileName + ".gisolca");
 		if (!paramFile.exists())
 			return Collections.emptyList();
@@ -228,10 +226,10 @@ public class ShapeFileUtils {
 		}
 	}
 
-	private static void writeParameters(ImpactMethod method,
+	private static void writeParameters(ImpactCategory impact,
 			String shapeFileName, Collection<ShapeFileParameter> parameters)
 			throws IOException {
-		File folder = getFolder(method);
+		File folder = getFolder(impact);
 		if (!folder.exists())
 			folder.mkdirs();
 		File paramFile = new File(folder, shapeFileName + ".gisolca");
@@ -243,13 +241,13 @@ public class ShapeFileUtils {
 		}
 	}
 
-	static void openFileInMap(ImpactMethod method, String shapeFileName) {
-		openFileInMap(method, shapeFileName, null);
+	static void openFileInMap(ImpactCategory impact, String shapeFileName) {
+		openFileInMap(impact, shapeFileName, null);
 	}
 
-	static void openFileInMap(ImpactMethod method, String shapeFileName,
+	static void openFileInMap(ImpactCategory impact, String shapeFileName,
 			ShapeFileParameter parameter) {
-		DataStore dataStore = openDataStore(method, shapeFileName);
+		DataStore dataStore = openDataStore(impact, shapeFileName);
 		if (dataStore == null)
 			return;
 		Logger log = LoggerFactory.getLogger(ShapeFileUtils.class);
@@ -311,9 +309,9 @@ public class ShapeFileUtils {
 		};
 	}
 
-	private static DataStore openDataStore(ImpactMethod method,
+	private static DataStore openDataStore(ImpactCategory impact,
 			String shapeFileName) {
-		File folder = ShapeFileUtils.getFolder(method);
+		File folder = ShapeFileUtils.getFolder(impact);
 		if (folder == null)
 			return null;
 		Logger log = LoggerFactory.getLogger(ShapeFileUtils.class);

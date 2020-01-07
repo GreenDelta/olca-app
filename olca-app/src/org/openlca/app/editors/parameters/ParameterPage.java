@@ -19,8 +19,8 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
-import org.openlca.app.editors.lcia_methods.ImpactMethodSourceHandler;
+import org.openlca.app.editors.lcia_methods.ImpactCategoryEditor;
+import org.openlca.app.editors.lcia_methods.ImpactParameterSourceHandler;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.search.ParameterUsagePage;
@@ -32,7 +32,7 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.CategorizedEntity;
-import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Process;
@@ -72,12 +72,12 @@ public class ParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
 		return page;
 	}
 
-	public static ParameterPage<ImpactMethod> create(ImpactMethodEditor editor) {
-		ParameterPage<ImpactMethod> page = new ParameterPage<>(
-				editor, ParameterScope.IMPACT_METHOD,
+	public static ParameterPage<ImpactCategory> create(ImpactCategoryEditor editor) {
+		ParameterPage<ImpactCategory> page = new ParameterPage<>(
+				editor, ParameterScope.IMPACT_CATEGORY,
 				() -> editor.getModel().parameters);
 		page.support = editor.getParameterSupport();
-		page.sourceHandler = new ImpactMethodSourceHandler(editor);
+		page.sourceHandler = new ImpactParameterSourceHandler(editor);
 		return page;
 	}
 

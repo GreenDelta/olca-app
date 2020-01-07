@@ -14,12 +14,12 @@ import org.openlca.core.model.Uncertainty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ImpactMethodSourceHandler implements SourceHandler {
+public class ImpactParameterSourceHandler implements SourceHandler {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	private final ImpactMethodEditor editor;
+	private final ImpactCategoryEditor editor;
 
-	public ImpactMethodSourceHandler(ImpactMethodEditor editor) {
+	public ImpactParameterSourceHandler(ImpactCategoryEditor editor) {
 		this.editor = editor;
 	}
 
