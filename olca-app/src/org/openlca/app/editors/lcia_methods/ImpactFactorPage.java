@@ -23,34 +23,30 @@ import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.model.ImpactCategory;
-import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.util.Strings;
 
 import com.google.common.eventbus.Subscribe;
 
-class ImpactFactorPage extends ModelPage<ImpactMethod> {
+class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
-	private ImpactMethodEditor editor;
+	private ImpactCategoryEditor editor;
 	private FormToolkit toolkit;
 	private ImpactFactorTable factorTable;
-	private ImpactCategoryViewer categoryViewer;
 	private ScrolledForm form;
 	private ImageHyperlink commentControl;
 
-	ImpactFactorPage(ImpactMethodEditor editor) {
+	ImpactFactorPage(ImpactCategoryEditor editor) {
 		super(editor, "ImpactFactorsPage", M.ImpactFactors);
 		this.editor = editor;
-		editor.onSaved(() -> onSaved());
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
+	protected void createFormContent(IManagedForm mform) {
 		form = UI.formHeader(this);
-		toolkit = managedForm.getToolkit();
+		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.ImpactFactors);
 		UI.gridData(section, true, true);
@@ -60,36 +56,15 @@ class ImpactFactorPage extends ModelPage<ImpactMethod> {
 		createCategoryViewer(client);
 		factorTable = new ImpactFactorTable(editor);
 		factorTable.render(client, section);
-		categoryViewer.selectFirst();
 		form.reflow(true);
 	}
 
-	private void onSaved() {
-		if (categoryViewer == null || factorTable == null)
-			return;
-		ImpactCategoryDescriptor descriptor = categoryViewer.getSelected();
-		if (descriptor == null)
-			return;
-		categoryViewer.setInput(getDescriptorList());
-		categoryViewer.select(descriptor);
-		for (ImpactCategory cat : editor.getModel().impactCategories) {
-			if (equal(descriptor, cat)) {
-				categoryViewer.select(Descriptors.toDescriptor(cat));
-				break;
-			}
-		}
-	}
 
 	private void createCategoryViewer(Composite client) {
 		Composite container = toolkit.createComposite(client);
 		UI.gridLayout(container, App.isCommentingEnabled() ? 3 : 2, 10, 0);
 		UI.gridData(container, true, false);
 		new Label(container, SWT.NONE).setText(M.ImpactCategory);
-		categoryViewer = new ImpactCategoryViewer(container);
-		CategoryChange categoryChange = new CategoryChange();
-		categoryViewer.addSelectionChangedListener(categoryChange);
-		categoryViewer.setInput(getDescriptorList());
-		editor.getEventBus().register(categoryChange);
 		commentControl = new ImageHyperlink(container, SWT.NONE);
 		UI.gridData(commentControl, false, false).verticalAlignment = SWT.TOP;
 		Controls.onClick(commentControl, (e) -> {

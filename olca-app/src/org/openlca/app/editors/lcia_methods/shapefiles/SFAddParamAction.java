@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
-import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
+import org.openlca.app.editors.lcia_methods.ImpactCategoryEditor;
 import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
@@ -61,7 +61,7 @@ class SFAddParamAction extends Action {
 	}
 
 	private boolean exists(ShapeFileParameter param) {
-		for (Parameter realParam : section.method().parameters) {
+		for (Parameter realParam : section.impact().parameters) {
 			if (Strings.nullOrEqual(param.name, realParam.name)
 					&& Strings.nullOrEqual("SHAPE_FILE",
 							realParam.sourceType)
@@ -73,7 +73,7 @@ class SFAddParamAction extends Action {
 	}
 
 	private boolean otherExists(ShapeFileParameter param) {
-		for (Parameter p : section.method().parameters) {
+		for (Parameter p : section.impact().parameters) {
 			if (Strings.nullOrEqual(param.name, p.name)
 					&& !Strings.nullOrEqual(section.shapeFile,
 							p.externalSource))
@@ -92,10 +92,10 @@ class SFAddParamAction extends Action {
 		p.value = (shapeParam.min + shapeParam.max) / 2;
 		p.uncertainty = Uncertainty.uniform(
 				shapeParam.min, shapeParam.max);
-		p.scope = ParameterScope.IMPACT_METHOD;
+		p.scope = ParameterScope.IMPACT_CATEGORY;
 		p.sourceType = "SHAPE_FILE";
-		section.method().parameters.add(p);
-		ImpactMethodEditor editor = section.page.editor;
+		section.impact().parameters.add(p);
+		ImpactCategoryEditor editor = section.page.editor;
 		editor.setDirty(true);
 		editor.setActivePage(ParameterPage.ID);
 		editor.getParameterSupport().evaluate();

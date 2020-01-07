@@ -58,11 +58,11 @@ class ImpactFactorTable {
 
 	private boolean showFormulas = true;
 	private IDatabase database = Database.get();
-	private ImpactMethodEditor editor;
+	private ImpactCategoryEditor editor;
 	private ImpactCategory category;
 	private TableViewer viewer;
 
-	public ImpactFactorTable(ImpactMethodEditor editor) {
+	public ImpactFactorTable(ImpactCategoryEditor editor) {
 		this.editor = editor;
 		editor.getParameterSupport().afterEvaluation(this::refresh);
 	}

@@ -17,7 +17,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.Uncertainty;
 
@@ -53,7 +53,7 @@ class SFSection {
 		Actions.bind(parameterTable.viewer, showAction, addAction);
 	}
 
-	ImpactMethod method() {
+	ImpactCategory impact() {
 		return page.editor.getModel();
 	}
 
@@ -62,14 +62,14 @@ class SFSection {
 				|| Question.ask(M.DeleteShapeFile, M.ReallyDeleteShapeFile);
 		if (!del)
 			return false;
-		ShapeFileUtils.deleteFile(method(), shapeFile);
+		ShapeFileUtils.deleteFile(impact(), shapeFile);
 		section.dispose();
 		page.removeSection(this);
 		return true;
 	}
 
 	private void removeExternalSourceReferences() {
-		for (Parameter parameter : method().parameters) {
+		for (Parameter parameter : impact().parameters) {
 			if (!parameter.isInputParameter)
 				continue;
 			if (shapeFile.equals(parameter.externalSource)) {
@@ -86,7 +86,7 @@ class SFSection {
 	 */
 	private void updateExternalSourceReferences(Set<String> stillLinked,
 			Map<String, ShapeFileParameter> nameToParam) {
-		for (Parameter parameter : method().parameters) {
+		for (Parameter parameter : impact().parameters) {
 			if (!parameter.isInputParameter)
 				continue;
 			if (!shapeFile.equals(parameter.externalSource))
@@ -107,7 +107,7 @@ class SFSection {
 
 	private Set<String> getReferencedParameters() {
 		Set<String> names = new HashSet<>();
-		for (Parameter parameter : method().parameters)
+		for (Parameter parameter : impact().parameters)
 			if (parameter.isInputParameter)
 				if (shapeFile.equals(parameter.externalSource))
 					names.add(parameter.name);

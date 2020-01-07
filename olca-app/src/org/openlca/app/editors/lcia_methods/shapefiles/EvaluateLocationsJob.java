@@ -12,8 +12,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.KmlUtil;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.database.ParameterDao;
-import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.ImpactMethod.ParameterMean;
+import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ImpactCategory.ParameterMean;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.geo.kml.KmlFeature;
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 class EvaluateLocationsJob implements IRunnableWithProgress {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private ImpactMethod method;
+	private ImpactCategory impact;
 	private ShapeFileFolder shapeFileFolder;
 	private ParameterCache parameterCache;
 	private ParameterCalculator parameterCalculator;
@@ -35,8 +35,8 @@ class EvaluateLocationsJob implements IRunnableWithProgress {
 	private IProgressMonitor monitor;
 	private List<String> shapeFiles;
 
-	public EvaluateLocationsJob(ImpactMethod method) {
-		this.method = method;
+	public EvaluateLocationsJob(ImpactCategory method) {
+		this.impact = method;
 	}
 
 	@Override
@@ -52,7 +52,7 @@ class EvaluateLocationsJob implements IRunnableWithProgress {
 
 	private List<LocationDescriptor> init() {
 		beginTask(M.Initializing);
-		shapeFileFolder = new ShapeFileFolder(ShapeFileUtils.getFolder(method));
+		shapeFileFolder = new ShapeFileFolder(ShapeFileUtils.getFolder(impact));
 		shapeFiles = shapeFileFolder.getShapeFiles();
 		if (shapeFiles.size() == 0)
 			return Collections.emptyList();
@@ -60,8 +60,8 @@ class EvaluateLocationsJob implements IRunnableWithProgress {
 		List<Parameter> parameters = getShapeFileParameters();
 		if (parameters.size() == 0)
 			return Collections.emptyList();
-		ParameterMean meanFn = method.parameterMean != null
-				? method.parameterMean
+		ParameterMean meanFn = impact.parameterMean != null
+				? impact.parameterMean
 				: ParameterMean.WEIGHTED_MEAN;
 		parameterCalculator = new ParameterCalculator(parameters,
 				shapeFileFolder, meanFn);
@@ -71,7 +71,7 @@ class EvaluateLocationsJob implements IRunnableWithProgress {
 
 	private void evaluate(LocationDescriptor location) {
 		subTask(location.name);
-		for (String shapeFile : ShapeFileUtils.getShapeFiles(method))
+		for (String shapeFile : ShapeFileUtils.getShapeFiles(impact))
 			parameterCache.remove(location.id, shapeFile);
 		KmlFeature feature = getKmlFeature(location);
 		if (feature != null)
@@ -80,9 +80,9 @@ class EvaluateLocationsJob implements IRunnableWithProgress {
 	}
 
 	private List<Parameter> getShapeFileParameters() {
-		if (method == null)
+		if (impact == null)
 			return Collections.emptyList();
-		long methodId = method.id;
+		long methodId = impact.id;
 		String query = "select m.parameters from ImpactMethod m where " + "m.id = :methodId";
 		ParameterDao dao = new ParameterDao(Database.get());
 		List<Parameter> allParams = dao.getAll(query, Collections.singletonMap("methodId", methodId));

@@ -16,13 +16,13 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
+import org.openlca.app.editors.lcia_methods.ImpactCategoryEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Parameter;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
  * Shows imported shape-files and parameters from these shape-files that can be
  * used in a localized LCIA method.
  */
-public class ShapeFilePage extends ModelPage<ImpactMethod> {
+public class ShapeFilePage extends ModelPage<ImpactCategory> {
 
-	final ImpactMethodEditor editor;
+	final ImpactCategoryEditor editor;
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit tk;
@@ -42,7 +42,7 @@ public class ShapeFilePage extends ModelPage<ImpactMethod> {
 	private SFSection[] sections;
 	private ScrolledForm form;
 
-	public ShapeFilePage(ImpactMethodEditor editor) {
+	public ShapeFilePage(ImpactCategoryEditor editor) {
 		super(editor, "ShapeFilePage", "Shape files (beta)");
 		this.editor = editor;
 	}
@@ -54,7 +54,7 @@ public class ShapeFilePage extends ModelPage<ImpactMethod> {
 		body = UI.formBody(form, tk);
 		new SFParamMeanSection(this).render(body, tk);
 		createFileSection();
-		List<String> shapeFiles = ShapeFileUtils.getShapeFiles(method());
+		List<String> shapeFiles = ShapeFileUtils.getShapeFiles(impact());
 		sections = new SFSection[shapeFiles.size()];
 		for (int i = 0; i < shapeFiles.size(); i++) {
 			sections[i] = new SFSection(this, i, shapeFiles.get(i));
@@ -80,17 +80,17 @@ public class ShapeFilePage extends ModelPage<ImpactMethod> {
 		Controls.onSelect(evaluateButton, (e) -> {
 			try {
 				new ProgressMonitorDialog(UI.shell()).run(true, true,
-						new EvaluateLocationsJob(method()));
+						new EvaluateLocationsJob(impact()));
 			} catch (Exception ex) {
 				log.error("Failed to evaluate locations", ex);
 			}
 		});
 	}
 
-	private void createFolderLink(Composite composite) {
-		UI.formLabel(composite, tk, "Location");
-		ImageHyperlink link = tk.createImageHyperlink(composite, SWT.TOP);
-		File folder = ShapeFileUtils.getFolder(method());
+	private void createFolderLink(Composite comp) {
+		UI.formLabel(comp, tk, "Location");
+		ImageHyperlink link = tk.createImageHyperlink(comp, SWT.TOP);
+		File folder = ShapeFileUtils.getFolder(impact());
 		link.setText(Strings.cut(folder.getAbsolutePath(), 75));
 		link.setImage(Icon.FOLDER.get());
 		link.setForeground(Colors.linkBlue());
@@ -111,7 +111,7 @@ public class ShapeFilePage extends ModelPage<ImpactMethod> {
 					+ file.getName() + " is not a valid shape file.");
 			return Collections.emptyList();
 		}
-		if (ShapeFileUtils.alreadyExists(method(), file)) {
+		if (ShapeFileUtils.alreadyExists(impact(), file)) {
 			MsgBox.error("File already exists", "A shape file with the given "
 							+ "name already exists for this method.");
 			return Collections.emptyList();
@@ -125,15 +125,15 @@ public class ShapeFilePage extends ModelPage<ImpactMethod> {
 	}
 
 	private List<ShapeFileParameter> runImport(File file) throws Exception {
-		String shapeFile = ShapeFileUtils.importFile(method(), file);
-		List<ShapeFileParameter> params = ShapeFileUtils.getParameters(method(),
+		String shapeFile = ShapeFileUtils.importFile(impact(), file);
+		List<ShapeFileParameter> params = ShapeFileUtils.getParameters(impact(),
 				shapeFile);
 		for (ShapeFileParameter parameter : params) {
 			if (!Parameter.isValidName(parameter.name)) {
 				MsgBox.error("Invalid parameter",
 						"The parameter name '" + parameter.name
 								+ "' is not supported");
-				ShapeFileUtils.deleteFile(method(), shapeFile);
+				ShapeFileUtils.deleteFile(impact(), shapeFile);
 				return Collections.emptyList();
 			}
 		}
@@ -168,7 +168,7 @@ public class ShapeFilePage extends ModelPage<ImpactMethod> {
 		form.reflow(true);
 	}
 
-	private ImpactMethod method() {
+	private ImpactCategory impact() {
 		return editor.getModel();
 	}
 

@@ -1,14 +1,13 @@
 package org.openlca.app.editors.lcia_methods.shapefiles;
 
-import org.openlca.app.M;
-
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.ImpactMethod.ParameterMean;
+import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ImpactCategory.ParameterMean;
 
 class SFParamMeanSection {
 
@@ -26,8 +25,8 @@ class SFParamMeanSection {
 				M.WeightedArithmeticMean,
 				M.ArithmeticMean
 		});
-		ImpactMethod m = page.editor.getModel();
-		int idx = m.parameterMean == ParameterMean.ARITHMETIC_MEAN ? 1 : 0;
+		ImpactCategory i = page.editor.getModel();
+		int idx = i.parameterMean == ParameterMean.ARITHMETIC_MEAN ? 1 : 0;
 		combo.select(idx);
 		onChange(combo);
 	}

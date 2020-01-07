@@ -23,8 +23,8 @@ class SFShowMapAction extends Action {
 		ShapeFileParameter param = Viewers
 				.getFirstSelected(section.parameterTable.viewer);
 		if (param == null)
-			ShapeFileUtils.openFileInMap(section.method(), section.shapeFile);
+			ShapeFileUtils.openFileInMap(section.impact(), section.shapeFile);
 		else
-			ShapeFileUtils.openFileInMap(section.method(), section.shapeFile, param);
+			ShapeFileUtils.openFileInMap(section.impact(), section.shapeFile, param);
 	}
 }

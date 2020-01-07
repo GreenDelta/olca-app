@@ -42,13 +42,13 @@ public class ImpactParameterSourceHandler implements SourceHandler {
 	}
 
 	@Override
-	public void sourceChanged(Parameter parameter, String source) {
+	public void sourceChanged(Parameter param, String source) {
 		ShapeFileParameter sfParam = null;
 		try {
 			List<ShapeFileParameter> sfParams = ShapeFileUtils.getParameters(
 					editor.getModel(), source);
 			for (ShapeFileParameter sfp : sfParams) {
-				if (parameter.name.equals(sfp.name))
+				if (param.name.equals(sfp.name))
 					sfParam = sfp;
 			}
 		} catch (IOException e) {
@@ -56,15 +56,15 @@ public class ImpactParameterSourceHandler implements SourceHandler {
 		}
 		if (sfParam == null)
 			return;
-		parameter.refId = UUID.randomUUID().toString();
-		parameter.externalSource = source;
-		parameter.isInputParameter = true;
-		parameter.description = "from shapefile: " + source;
-		parameter.value = (sfParam.min + sfParam.max) / 2;
-		parameter.uncertainty = Uncertainty.uniform(
+		param.refId = UUID.randomUUID().toString();
+		param.externalSource = source;
+		param.isInputParameter = true;
+		param.description = "from shapefile: " + source;
+		param.value = (sfParam.min + sfParam.max) / 2;
+		param.uncertainty = Uncertainty.uniform(
 				sfParam.min, sfParam.max);
-		parameter.scope = ParameterScope.IMPACT_METHOD;
-		parameter.sourceType = "SHAPE_FILE";
+		param.scope = ParameterScope.IMPACT_CATEGORY;
+		param.sourceType = "SHAPE_FILE";
 		editor.getParameterSupport().evaluate();
 	}
 

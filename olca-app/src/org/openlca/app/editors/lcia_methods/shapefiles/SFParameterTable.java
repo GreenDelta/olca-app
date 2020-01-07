@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.editors.lcia_methods.ImpactMethodEditor;
+import org.openlca.app.editors.lcia_methods.ImpactCategoryEditor;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.core.model.ModelType;
@@ -20,7 +20,7 @@ class SFParameterTable {
 	TableViewer viewer;
 	List<ShapeFileParameter> params;
 
-	SFParameterTable(ImpactMethodEditor editor, String shapeFile, Composite parent) {
+	SFParameterTable(ImpactCategoryEditor editor, String shapeFile, Composite parent) {
 		viewer = Tables.createViewer(parent, M.Name, M.Minimum, M.Maximum);
 		viewer.setLabelProvider(new Label());
 		Tables.bindColumnWidths(viewer, 0.4, 0.3, 0.3);
