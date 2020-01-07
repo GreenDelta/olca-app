@@ -1,4 +1,4 @@
-package org.openlca.app.preferencepages;
+package org.openlca.app.preferences;
 
 import org.openlca.app.Preferences;
 
@@ -9,7 +9,7 @@ import org.openlca.app.Preferences;
 public enum FeatureFlag {
 
 	MATRIX_IMAGE_EXPORT("Enable matrix image export");
-
+	
 	private final String description;
 
 	private FeatureFlag(String description) {

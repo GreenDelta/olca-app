@@ -9,8 +9,8 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.cloud.ui.compare.json.viewer.label.IJsonNodeLabelProvider;
+import org.openlca.app.cloud.ui.diff.ActionType;
 import org.openlca.app.util.UI;
 
 public class DiffEditorDialog extends FormDialog {
@@ -20,7 +20,7 @@ public class DiffEditorDialog extends FormDialog {
 	private DiffEditor editor;
 	private JsonNode root;
 	private boolean editMode;
-	private Direction direction;
+	private ActionType action;
 	private IJsonNodeLabelProvider labelProvider;
 	private IDependencyResolver dependencyResolver;
 	private String title;
@@ -28,23 +28,23 @@ public class DiffEditorDialog extends FormDialog {
 
 	public static DiffEditorDialog forEditing(JsonNode root,
 			IJsonNodeLabelProvider labelProvider,
-			IDependencyResolver dependencyResolver, Direction direction) {
+			IDependencyResolver dependencyResolver, ActionType action) {
 		DiffEditorDialog dialog = new DiffEditorDialog(root);
 		dialog.labelProvider = labelProvider;
 		dialog.dependencyResolver = dependencyResolver;
 		dialog.editMode = true;
-		dialog.direction = direction;
+		dialog.action = action;
 		return dialog;
 	}
 
 	public static DiffEditorDialog forViewing(JsonNode root,
 			IJsonNodeLabelProvider labelProvider,
-			IDependencyResolver dependencyResolver, Direction direction) {
+			IDependencyResolver dependencyResolver, ActionType action) {
 		DiffEditorDialog dialog = new DiffEditorDialog(root);
 		dialog.labelProvider = labelProvider;
 		dialog.dependencyResolver = dependencyResolver;
 		dialog.editMode = false;
-		dialog.direction = direction;
+		dialog.action = action;
 		return dialog;
 	}
 
@@ -84,15 +84,15 @@ public class DiffEditorDialog extends FormDialog {
 			editor = DiffEditor.forEditing(body, toolkit);
 		else
 			editor = DiffEditor.forViewing(body, toolkit);
-		editor.initialize(root, labelProvider, dependencyResolver, direction);
+		editor.initialize(root, labelProvider, dependencyResolver, action);
 		UI.gridData(editor, true, true);
 		form.reflow(true);
 	}
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		boolean hasLeft = root.leftElement != null;
-		boolean hasRight = root.rightElement != null;
+		boolean hasLeft = root.localElement != null;
+		boolean hasRight = root.remoteElement != null;
 		if (!editMode)
 			createButton(parent, IDialogConstants.OK_ID, M.Close, true);
 		else if (hasLeft && hasRight)

@@ -26,6 +26,7 @@ import org.openlca.app.cloud.ui.diff.DiffNode;
 import org.openlca.app.cloud.ui.diff.DiffResult;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.model.data.FileReference;
 
 public class CommitDialog extends FormDialog {
 
@@ -33,7 +34,7 @@ public class CommitDialog extends FormDialog {
 	private String message;
 	private CommitDiffViewer viewer;
 	private RepositoryClient client;
-	private Set<String> initialSelection = new HashSet<>();
+	private Set<FileReference> initialSelection = new HashSet<>();
 
 	public CommitDialog(DiffNode node, RepositoryClient client) {
 		// TODO if a category is renamed it should be handled as 'deletion of
@@ -46,7 +47,7 @@ public class CommitDialog extends FormDialog {
 		setBlockOnOpen(true);
 	}
 
-	public void setInitialSelection(Set<String> initialSelection) {
+	public void setInitialSelection(Set<FileReference> initialSelection) {
 		this.initialSelection = initialSelection;
 	}
 
@@ -106,10 +107,8 @@ public class CommitDialog extends FormDialog {
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.CANCEL_ID,
-				IDialogConstants.CANCEL_LABEL, false);
-		createButton(parent, IDialogConstants.OK_ID, M.Commit, true)
-				.setEnabled(false);
+		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+		createButton(parent, IDialogConstants.OK_ID, M.Commit, true).setEnabled(false);
 	}
 
 	public String getMessage() {

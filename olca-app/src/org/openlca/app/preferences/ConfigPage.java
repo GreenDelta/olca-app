@@ -1,4 +1,4 @@
-package org.openlca.app.preferencepages;
+package org.openlca.app.preferences;
 
 import java.util.Objects;
 
@@ -8,15 +8,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.openlca.app.Config;
 import org.openlca.app.M;
+import org.openlca.app.rcp.WindowLayout;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.julia.Julia;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +28,6 @@ public class ConfigPage extends PreferencePage implements
 	private Combo languageCombo;
 	private Text memoryText;
 	private ConfigIniFile iniFile;
-	private boolean browserEnabled;
-
-	private Button browserCheck;
 
 	@Override
 	public String getTitle() {
@@ -42,7 +38,6 @@ public class ConfigPage extends PreferencePage implements
 	public void init(IWorkbench workbench) {
 		try {
 			iniFile = ConfigIniFile.read();
-			browserEnabled = Config.isBrowserEnabled();
 		} catch (Exception e) {
 			log.error("failed to read openLCA.ini", e);
 			iniFile = new ConfigIniFile();
@@ -50,25 +45,42 @@ public class ConfigPage extends PreferencePage implements
 	}
 
 	@Override
-	protected Control createContents(final Composite parent) {
+	protected Control createContents(Composite parent) {
 		Composite body = new Composite(parent, SWT.NONE);
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true);
-		Composite composite = UI.formComposite(body);
-		UI.gridLayout(composite, 2);
-		UI.gridData(composite, true, false);
-		createLanguageCombo(composite);
-		memoryText = UI.formText(composite, M.MaximumMemoryUsage);
+		Composite comp = UI.formComposite(body);
+		UI.gridLayout(comp, 2);
+		UI.gridData(comp, true, false);
+		createLanguageCombo(comp);
+
+		memoryText = UI.formText(comp, M.MaximumMemoryUsage);
 		memoryText.setText(Integer.toString(iniFile.getMaxMemory()));
 		memoryText.addModifyListener((e) -> setDirty());
-		browserCheck = UI.formCheckBox(composite, M.UseBrowserFeatures);
-		browserCheck.setSelection(browserEnabled);
-		Controls.onSelect(browserCheck, (e) -> {
-			browserEnabled = browserCheck.getSelection();
-			setDirty();
+
+		// reset window layout
+		UI.filler(comp);
+		Composite bcomp = new Composite(comp, SWT.NONE);
+		UI.gridLayout(bcomp, 1, 5, 0);
+		Button b = new Button(bcomp, SWT.NONE);
+		b.setText("Reset window layout");
+		Controls.onSelect(b, _e -> {
+			WindowLayout.reset();
+			b.setEnabled(false);
 		});
-		new Label(composite, SWT.NONE);
-		createNoteComposite(composite.getFont(), composite, M.Note
+
+		if (!Julia.isWithUmfpack()) {
+			Button libButton = new Button(bcomp, SWT.NONE);
+			libButton.setText("Download additional calculation libraries");
+			Controls.onSelect(
+					libButton,
+					_e -> LibraryDownload.open());
+			UI.gridData(b, true, false);
+			UI.gridData(libButton, true, false);
+		}
+
+		UI.filler(comp);
+		createNoteComposite(comp.getFont(), comp, M.Note
 				+ ": ", M.SelectLanguageNoteMessage);
 		return body;
 	}
@@ -77,7 +89,13 @@ public class ConfigPage extends PreferencePage implements
 		UI.formLabel(composite, M.Language);
 		languageCombo = new Combo(composite, SWT.READ_ONLY);
 		UI.gridData(languageCombo, true, false);
-		initComboValues();
+		Language[] languages = Language.values();
+		String[] items = new String[languages.length];
+		for (int i = 0; i < languages.length; i++) {
+			items[i] = languages[i].getDisplayName();
+		}
+		languageCombo.setItems(items);
+		selectLanguage(iniFile.getLanguage());
 		Controls.onSelect(languageCombo, (e) -> {
 			int idx = languageCombo.getSelectionIndex();
 			if (idx < 0)
@@ -90,15 +108,6 @@ public class ConfigPage extends PreferencePage implements
 		});
 	}
 
-	private void initComboValues() {
-		Language[] languages = Language.values();
-		String[] items = new String[languages.length];
-		for (int i = 0; i < languages.length; i++) {
-			items[i] = languages[i].getDisplayName();
-		}
-		languageCombo.setItems(items);
-		selectLanguage(iniFile.getLanguage());
-	}
 
 	private void setDirty() {
 		getApplyButton().setEnabled(true);
@@ -112,8 +121,6 @@ public class ConfigPage extends PreferencePage implements
 			return;
 		iniFile.setMaxMemory(memVal);
 		iniFile.write();
-		if (browserEnabled != Config.isBrowserEnabled())
-			Config.setBrowserEnabled(browserEnabled);
 		getApplyButton().setEnabled(false);
 		isDirty = false;
 	}
@@ -122,13 +129,10 @@ public class ConfigPage extends PreferencePage implements
 	protected void performDefaults() {
 		Language defaultLang = Language.ENGLISH;
 		int maxMem = ConfigMemCheck.getDefault();
-		browserEnabled = true;
 		selectLanguage(defaultLang);
 		memoryText.setText(Integer.toString(maxMem));
-		browserCheck.setSelection(browserEnabled);
 		iniFile.setLanguage(defaultLang);
 		iniFile.setMaxMemory(maxMem);
-		Config.setBrowserEnabled(browserEnabled);
 		super.performDefaults();
 		performApply();
 	}
@@ -144,8 +148,9 @@ public class ConfigPage extends PreferencePage implements
 				break;
 			}
 		}
-		if (item != -1)
+		if (item != -1) {
 			languageCombo.select(item);
+		}
 	}
 
 	@Override
@@ -156,10 +161,7 @@ public class ConfigPage extends PreferencePage implements
 
 	@Override
 	public boolean performOk() {
-		if (!isDirty)
-			return true;
-		if (Question.ask(M.SaveChangesQuestion,
-				M.SaveChangesQuestion)) {
+		if (isDirty) {
 			performApply();
 		}
 		return true;

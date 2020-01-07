@@ -12,16 +12,16 @@ public class Diff implements Serializable {
 	public long localId;
 	public Dataset dataset;
 	public Dataset changed;
-	public DiffType type;
+	public DiffType type = DiffType.NO_DIFF;
+	public boolean tracked = true;
 	Set<String> changedChildren = new HashSet<>();
 
-	Diff(Dataset descriptor, DiffType type) {
+	Diff(Dataset descriptor) {
 		this.dataset = descriptor;
-		this.type = type;
 	}
 
 	public boolean hasChanged() {
-		return type != DiffType.NO_DIFF;
+		return tracked && type != DiffType.NO_DIFF;
 	}
 
 	public boolean childrenHaveChanged() {
@@ -39,13 +39,14 @@ public class Diff implements Serializable {
 		if (!(obj instanceof Diff))
 			return false;
 		Diff diff = (Diff) obj;
-		return getDataset().refId.equals(diff.getDataset().refId);
+		return getDataset().toId().equals(diff.getDataset().toId());
 	}
 
 	public Diff copy() {
-		Diff diff = new Diff(dataset, type);
+		Diff diff = new Diff(dataset);
 		diff.changed = changed;
 		diff.localId = localId;
+		diff.type = type;
 		return diff;
 	}
 

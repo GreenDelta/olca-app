@@ -64,10 +64,10 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 
 	private EcoSpold2Import createImport() {
 		File[] files = filePage.getFiles();
-		IDatabase database = Database.get();
-		if (files == null || files.length == 0 || database == null)
+		IDatabase db = Database.get();
+		if (files == null || files.length == 0 || db == null)
 			return null;
-		ImportConfig conf = new ImportConfig(database);
+		ImportConfig conf = new ImportConfig(db);
 		if (App.runsInDevMode()) {
 			conf.checkFormulas = true;
 			conf.skipNullExchanges = true;

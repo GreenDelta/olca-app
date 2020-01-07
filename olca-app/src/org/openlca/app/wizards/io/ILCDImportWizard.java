@@ -11,7 +11,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.preferencepages.IoPreference;
+import org.openlca.app.preferences.IoPreference;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.io.ilcd.ILCDImport;
 import org.openlca.io.ilcd.input.ImportConfig;

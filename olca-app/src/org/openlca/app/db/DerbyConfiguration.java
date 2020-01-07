@@ -1,5 +1,6 @@
 package org.openlca.app.db;
 
+import java.io.File;
 import java.util.Objects;
 
 import org.openlca.core.database.derby.DerbyDatabase;
@@ -12,10 +13,18 @@ public class DerbyConfiguration implements IDatabaseConfiguration {
 
 	private String name;
 
+	/**
+	 * experimental: An optional full path to the directory that contains the
+	 * database. This is currently not an option provided by the user interface.
+	 */
+	private String folder;
+
 	@Override
 	public DerbyDatabase createInstance() throws Exception {
-		DerbyDatabase db = new DerbyDatabase(DatabaseDir.getRootFolder(name));
-		return db;
+		if (folder != null) {
+			return new DerbyDatabase(new File(folder));
+		}
+		return new DerbyDatabase(DatabaseDir.getRootFolder(name));
 	}
 
 	@Override

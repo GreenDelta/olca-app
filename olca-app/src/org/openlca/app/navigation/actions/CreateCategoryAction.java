@@ -14,7 +14,6 @@ import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
-import org.openlca.cloud.util.Datasets;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
@@ -86,9 +85,6 @@ class CreateCategoryAction extends Action implements INavigationAction {
 			c.category = parent;
 			parent.childCategories.add(c);
 			dao.update(parent);
-			// have to add to diff index manually here
-			Database.getIndexUpdater().insert(
-					Datasets.toDataset(c), c.id);
 		}
 	}
 

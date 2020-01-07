@@ -13,30 +13,35 @@ abstract class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	DiffNode root;
 	private CompareHelper mergeHelper;
-	private boolean viewMode;
+	private ActionType action;
 
-	DiffTreeViewer(Composite parent, JsonLoader jsonLoader) {
-		this(parent, jsonLoader, false);
-	}
-
-	DiffTreeViewer(Composite parent, JsonLoader jsonLoader, boolean viewMode) {
+	DiffTreeViewer(Composite parent, JsonLoader jsonLoader, ActionType action) {
 		super(parent);
-		mergeHelper = new CompareHelper(jsonLoader);
-		this.viewMode = viewMode;
+		this.mergeHelper = new CompareHelper(jsonLoader, action);
+		this.action = action;
+		setLabelProvider(action);
 	}
 
 	protected void configureViewer(TreeViewer viewer, boolean checkable) {
 		viewer.setContentProvider(new ContentProvider());
-		viewer.setLabelProvider(new LabelProvider());
 		viewer.setComparator(new Comparator());
 		viewer.addDoubleClickListener(this::onDoubleClick);
+	}
+
+	void setLabelProvider(ActionType action) {
+		getViewer().setLabelProvider(new LabelProvider(action));
 	}
 
 	@Override
 	public void setInput(Collection<DiffNode> collection) {
 		mergeHelper.reset();
-		root = collection.iterator().next();
-		super.setInput(collection);
+		if (collection.isEmpty()) {
+			root = null;
+			super.setInput((Collection<DiffNode>) null);
+		} else {
+			root = collection.iterator().next();
+			super.setInput(collection);
+		}
 	}
 
 	@Override
@@ -47,8 +52,9 @@ abstract class DiffTreeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	private void onDoubleClick(DoubleClickEvent event) {
 		DiffNode selected = getSelected(event);
-		boolean merged = mergeHelper.openDiffEditor(selected, viewMode);
-		if (merged && !viewMode) {
+		boolean isComparison = action == ActionType.COMPARE_AHEAD || action == ActionType.COMPARE_BEHIND;
+		boolean merged = mergeHelper.openDiffEditor(selected, isComparison);
+		if (merged && !isComparison) {
 			getViewer().refresh(selected);
 			onMerge(selected);
 		}

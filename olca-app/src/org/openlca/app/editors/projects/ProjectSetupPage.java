@@ -27,9 +27,6 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
-import org.openlca.app.editors.reports.ReportViewer;
-import org.openlca.app.editors.reports.Reports;
-import org.openlca.app.editors.reports.model.ReportCalculator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
@@ -82,8 +79,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 		variantSync = new ReportVariantSync(editor);
 		editor.onSaved(() -> {
 			project = editor.getModel();
-			if (variantViewer != null)
+			if (variantViewer != null) {
 				variantViewer.setInput(project.variants);
+			}
 		});
 	}
 
@@ -119,14 +117,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Button b = toolkit.createButton(c, M.Report, SWT.NONE);
 		UI.gridData(b, false, false).widthHint = 100;
 		b.setImage(Images.get(ModelType.PROJECT));
-		Controls.onSelect(b, e -> {
-			ReportCalculator calc = new ReportCalculator(
-					getModel(), editor.getReport());
-			App.runWithProgress(M.Calculate, calc, () -> {
-				Reports.save(getModel(), editor.getReport(), database);
-				ReportViewer.open(editor.getReport());
-			});
-		});
+		Controls.onSelect(b, e -> ProjectEditorActions.calculate(
+				project, editor.getReport()));
 	}
 
 	private void createVariantsSection(Composite body) {

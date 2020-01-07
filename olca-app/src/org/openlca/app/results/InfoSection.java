@@ -23,25 +23,25 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class InfoSection {
 
-	static void create(Composite body, FormToolkit toolkit, CalculationSetup setup) {
+	static void create(Composite body, FormToolkit tk, CalculationSetup setup) {
 		if (setup == null || setup.productSystem == null)
 			return;
-		Composite comp = UI.formSection(body, toolkit, M.GeneralInformation);
-		link(comp, toolkit, M.ProductSystem, setup.productSystem);
-		text(comp, toolkit, M.AllocationMethod, Labels.getEnumText(setup.allocationMethod));
-		text(comp, toolkit, M.TargetAmount, targetAmountText(setup));
+		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
+		link(comp, tk, M.ProductSystem, setup.productSystem);
+		text(comp, tk, M.AllocationMethod, Labels.getEnumText(setup.allocationMethod));
+		text(comp, tk, M.TargetAmount, targetAmountText(setup));
 		if (setup.impactMethod != null) {
-			link(comp, toolkit, M.ImpactAssessmentMethod, setup.impactMethod);
+			link(comp, tk, M.ImpactAssessmentMethod, setup.impactMethod);
 		}
 		if (setup.nwSet != null) {
-			text(comp, toolkit, M.NormalizationAndWeightingSet, setup.nwSet.name);
+			text(comp, tk, M.NormalizationAndWeightingSet, setup.nwSet.name);
 		}
-		buttons(comp, toolkit);
+		buttons(comp, tk);
 	}
 
 	private static String targetAmountText(CalculationSetup setup) {
 		String refFlowName = setup.productSystem.referenceExchange.flow.name;
-		return Math.abs(setup.getDemandValue()) + " "
+		return Math.abs(setup.getAmount()) + " "
 				+ setup.getUnit().name + " " + refFlowName;
 	}
 

@@ -1,7 +1,7 @@
 package org.openlca.app.cloud.ui.diff;
 
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
+import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Labels;
@@ -10,6 +10,12 @@ import org.openlca.core.model.ModelType;
 
 class LabelProvider extends org.eclipse.jface.viewers.LabelProvider {
 
+	private final ActionType action;
+
+	LabelProvider(ActionType action) {
+		this.action = action;
+	}
+
 	@Override
 	public String getText(Object element) {
 		if (element == null)
@@ -17,7 +23,12 @@ class LabelProvider extends org.eclipse.jface.viewers.LabelProvider {
 		DiffNode node = (DiffNode) element;
 		if (node.isModelTypeNode())
 			return Labels.modelType((ModelType) node.content);
-		return ((DiffResult) node.content).getDisplayName();
+		DiffResult result = (DiffResult) node.content;
+		if (result.remote != null && (action == ActionType.FETCH || action == ActionType.COMPARE_AHEAD))
+			return result.remote.name;
+		if (result.local != null)
+			return result.local.getDataset().name;
+		return result.remote.name;
 	}
 
 	@Override
@@ -39,29 +50,91 @@ class LabelProvider extends org.eclipse.jface.viewers.LabelProvider {
 	}
 
 	private Overlay getOverlay(DiffResult result) {
-		DiffResponse response = result.getType();
-		if (response == null)
+		if (result.noAction())
 			return null;
-		switch (response) {
-		case ADD_TO_LOCAL:
-			return Overlay.ADD_TO_LOCAL;
-		case ADD_TO_REMOTE:
-			return Overlay.ADD_TO_REMOTE;
-		case MODIFY_IN_LOCAL:
-			return Overlay.MODIFY_IN_LOCAL;
-		case MODIFY_IN_REMOTE:
-			return Overlay.MODIFY_IN_REMOTE;
-		case DELETE_FROM_LOCAL:
-			return Overlay.DELETE_FROM_LOCAL;
-		case DELETE_FROM_REMOTE:
-			return Overlay.DELETE_FROM_REMOTE;
-		case CONFLICT:
-			if (result.getMergedData() == null && !result.overwriteLocalChanges() && !result.overwriteRemoteChanges())
-				return Overlay.CONFLICT;
-			return Overlay.MERGED;
-		default:
-			return null;
+		if (result.conflict()) {
+			if (action == ActionType.COMPARE_AHEAD || action == ActionType.COMPARE_BEHIND)
+				return getOverlayForComparisonConflict(result);
+			if (result.mergedData != null || result.overwriteLocalChanges || result.overwriteRemoteChanges)
+				return getOverlayForMerged(result);
+			return Overlay.CONFLICT;
 		}
+		if (action == ActionType.FETCH || action == ActionType.COMPARE_AHEAD)
+			return getOverlayForFetch(result);
+		return getOverlayForCommit(result);
+	}
+
+	private Overlay getOverlayForMerged(DiffResult result) {
+		if (!result.overwriteLocalChanges)
+			return Overlay.MERGED;
+		if (result.remote.isDeleted())
+			return Overlay.DELETE_FROM_LOCAL;
+		if (result.local == null || result.local.type == DiffType.DELETED)
+			return Overlay.ADD_TO_LOCAL;
+		return Overlay.MODIFY_IN_LOCAL;
+	}
+
+	private Overlay getOverlayForFetch(DiffResult result) {
+		if (result.local == null)
+			return Overlay.ADD_TO_LOCAL;
+		if (result.remote == null)
+			return Overlay.DELETE_FROM_LOCAL;
+		if (result.local.type == DiffType.NO_DIFF) {
+			if (result.remote.isDeleted())
+				return Overlay.DELETE_FROM_LOCAL;
+			return Overlay.MODIFY_IN_LOCAL;
+		}
+		if (result.local.type == DiffType.DELETED)
+			return Overlay.ADD_TO_LOCAL;
+		if (result.local.type == DiffType.CHANGED)
+			return Overlay.MODIFY_IN_LOCAL;
+		return null;
+	}
+
+	private Overlay getOverlayForCommit(DiffResult result) {
+		if (result.local == null)
+			return Overlay.DELETE_FROM_REMOTE;
+		if (result.remote == null)
+			return Overlay.ADD_TO_REMOTE;
+		if (result.local.type == DiffType.NO_DIFF) {
+			if (result.remote.isDeleted())
+				return Overlay.ADD_TO_REMOTE;
+			return Overlay.MODIFY_IN_REMOTE;
+		}
+		if (result.local.type == DiffType.DELETED)
+			return Overlay.DELETE_FROM_REMOTE;
+		if (result.local.type == DiffType.CHANGED)
+			return Overlay.MODIFY_IN_REMOTE;
+		return null;
+	}
+
+	private Overlay getOverlayForComparisonConflict(DiffResult result) {
+		if (action == ActionType.COMPARE_AHEAD) {
+			// if remote dataset was unchanged or both deleted, "noAction" would
+			// have return null in "getOverlay()" so it must imply a conflict
+			if (result.local.type.isOneOf(DiffType.NEW, DiffType.CHANGED, DiffType.DELETED))
+				return Overlay.CONFLICT;
+			if (result.remote.isDeleted())
+				return Overlay.DELETE_FROM_LOCAL;
+			return Overlay.MODIFY_IN_LOCAL;
+		}
+		switch (result.local.type) {
+		case NEW:
+			if (result.remote.isAdded() || result.remote.isDeleted())
+				return Overlay.ADD_TO_REMOTE;
+			return Overlay.MODIFY_IN_REMOTE;
+		case CHANGED:
+			if (result.remote.isDeleted())
+				return Overlay.ADD_TO_REMOTE;
+			return Overlay.MODIFY_IN_REMOTE;
+		case DELETED:
+			return Overlay.DELETE_FROM_REMOTE;
+		case NO_DIFF:
+			if (result.remote.isDeleted())
+				return Overlay.ADD_TO_REMOTE;
+			return Overlay.MODIFY_IN_REMOTE;
+		}
+		return null;
 	}
 
 }

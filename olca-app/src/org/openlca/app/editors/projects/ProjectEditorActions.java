@@ -24,28 +24,12 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBar) {
 		toolBar.add(Actions.onCalculate(() -> {
-			doCalcualtion();
-
+			log.trace("action -> calculate project");
+			ProjectEditor e = getEditor();
+			if (e == null)
+				return;
+			calculate(e.getModel(), e.getReport());
 		}));
-	}
-
-	private void doCalcualtion() {
-		log.trace("action -> calculate project");
-		ProjectEditor editor = getEditor();
-		if (editor == null)
-			return;
-		Project project = editor.getModel();
-		Report report = editor.getReport();
-		calculateReport(project, report);
-	}
-
-	private void calculateReport(Project project, Report report) {
-		App.runWithProgress(M.Calculate,
-				new ReportCalculator(project, report),
-				() -> {
-					Reports.save(project, report, Database.get());
-					ReportViewer.open(report);
-				});
 	}
 
 	private ProjectEditor getEditor() {
@@ -62,4 +46,13 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 		return editor;
 	}
 
+	static void calculate(Project project, Report report) {
+		ReportCalculator calculator = new ReportCalculator(project, report);
+		App.runWithProgress(M.Calculate, calculator, () -> {
+			if (calculator.hadError)
+				return;
+			Reports.save(project, report, Database.get());
+			ReportViewer.open(report);
+		});
+	}
 }

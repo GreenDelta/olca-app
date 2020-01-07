@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.M;
-import org.openlca.app.preferencepages.IoPreference;
+import org.openlca.app.preferences.IoPreference;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.ProductSystemDao;

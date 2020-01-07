@@ -11,7 +11,9 @@ import org.eclipse.ui.PlatformUI;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.Announcements;
+import org.openlca.app.cloud.index.DiffIndexUpgrades;
 import org.openlca.app.cloud.ui.commits.HistoryView;
+import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.editors.Editors;
@@ -87,6 +89,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 	private class Activation implements IRunnableWithProgress {
 
 		private VersionState versionState;
+		private int indexVersion;
 
 		@Override
 		public void run(IProgressMonitor monitor)
@@ -99,6 +102,9 @@ public class DbActivateAction extends Action implements INavigationAction {
 				IDatabase db = Database.activate(config);
 				log.trace("Get version state");
 				versionState = VersionState.get(db);
+				if (Database.isConnected()) {
+					indexVersion = DiffIndexUpgrades.getVersion(Database.getDiffIndex());
+				}
 				monitor.done();
 			} catch (Exception e) {
 				log.error("Failed to activate database", e);
@@ -124,6 +130,10 @@ public class DbActivateAction extends Action implements INavigationAction {
 				return;
 			}
 			handleVersionState(state);
+			if (activation.indexVersion > 0 && activation.indexVersion != DiffIndexUpgrades.CURRENT_VERSION) {
+				App.runWithProgress(M.UpgradingRepositoryIndex,
+						() -> DiffIndexUpgrades.upgradeFrom(Database.getDiffIndex(), activation.indexVersion));
+			}
 		}
 
 		private void handleVersionState(VersionState state) {
@@ -156,6 +166,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 				Announcements.check(Database.getRepositoryClient());
 			}
 			HistoryView.refresh();
+			CompareView.clear();
 		}
 
 		private void error(String message) {

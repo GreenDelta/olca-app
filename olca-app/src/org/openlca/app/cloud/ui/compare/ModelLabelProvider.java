@@ -3,8 +3,8 @@ package org.openlca.app.cloud.ui.compare;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Side;
 import org.openlca.app.cloud.ui.compare.json.viewer.label.IJsonNodeLabelProvider;
+import org.openlca.app.cloud.ui.diff.Site;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Exchange;
@@ -22,24 +22,24 @@ import com.google.gson.JsonElement;
 public class ModelLabelProvider implements IJsonNodeLabelProvider {
 
 	@Override
-	public String getText(JsonNode node, Side side) {
-		JsonElement element = node.getElement(side);
-		JsonElement otherElement = node.getElement(side.getOther());
-		if (isFiller(element, node.parent.getElement(side)))
+	public String getText(JsonNode node, Site site) {
+		JsonElement element = node.getElement(site);
+		JsonElement otherElement = node.getElement(site.getOther());
+		if (isFiller(element, node.parent.getElement(site)))
 			return null;
-		String propertyLabel = getPropertyText(node, side);
+		String propertyLabel = getPropertyText(node, site);
 		boolean isArrayElement = node.parent.getElement().isJsonArray();
 		JsonElement parent = getParent(node);
 		if (showPropertyOnly(element, otherElement, parent, isArrayElement))
 			return propertyLabel;
-		String valueLabel = getValueText(node, side);
+		String valueLabel = getValueText(node, site);
 		return propertyLabel + ": " + valueLabel;
 	}
 
 	@Override
-	public String getPropertyText(JsonNode node, Side side) {
-		JsonElement element = node.getElement(side);
-		if (isFiller(element, node.parent.getElement(side)))
+	public String getPropertyText(JsonNode node, Site site) {
+		JsonElement element = node.getElement(site);
+		if (isFiller(element, node.parent.getElement(site)))
 			return null;
 		JsonElement parent = getParent(node);
 		String type = ModelUtil.getType(parent);
@@ -47,9 +47,9 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 	}
 
 	@Override
-	public String getValueText(JsonNode node, Side side) {
-		JsonElement element = node.getElement(side);
-		if (isFiller(element, node.parent.getElement(side)))
+	public String getValueText(JsonNode node, Site site) {
+		JsonElement element = node.getElement(site);
+		if (isFiller(element, node.parent.getElement(site)))
 			return null;
 		JsonElement parent = getParent(node);
 		String value = getValue(element, parent);
@@ -107,11 +107,11 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 	}
 
 	@Override
-	public Image getImage(JsonNode node, Side side) {
+	public Image getImage(JsonNode node, Site site) {
 		JsonElement parent = node.parent.getElement();
 		if (parent.isJsonArray())
 			parent = node.parent.parent.getElement();
-		return getImage(node.property, node.getElement(side), parent);
+		return getImage(node.property, node.getElement(site), parent);
 	}
 
 	private Image getImage(String property, JsonElement element,

@@ -12,11 +12,10 @@ import org.openlca.app.cloud.ui.compare.ModelLabelProvider;
 import org.openlca.app.cloud.ui.compare.ModelNodeBuilder;
 import org.openlca.app.cloud.ui.compare.ModelUtil;
 import org.openlca.app.cloud.ui.compare.json.DiffEditorDialog;
+import org.openlca.app.cloud.ui.compare.json.IDependencyResolver;
 import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil;
-import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer.Direction;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.model.Version;
 import org.openlca.jsonld.Dates;
 
@@ -25,10 +24,12 @@ import com.google.gson.JsonObject;
 class CompareHelper {
 
 	private JsonLoader loader;
+	private ActionType action;
 	private Map<String, JsonNode> nodes = new HashMap<>();
 
-	CompareHelper(JsonLoader loader) {
+	CompareHelper(JsonLoader loader, ActionType action) {
 		this.loader = loader;
+		this.action = action;
 	}
 
 	boolean openDiffEditor(DiffNode node, boolean viewMode) {
@@ -42,7 +43,7 @@ class CompareHelper {
 		int code = dialog.open();
 		if (code == IDialogConstants.CANCEL_ID)
 			return false;
-		if (!data.result.isConflict())
+		if (!data.result.conflict())
 			return false;
 		boolean localDiffersFromRemote = dialog.leftDiffersFromRight();
 		boolean keepLocalModel = code == DiffEditorDialog.KEEP_LOCAL_MODEL;
@@ -55,39 +56,41 @@ class CompareHelper {
 	}
 
 	private DiffEditorDialog prepareDialog(DiffData data, boolean viewMode) {
-		data.node = nodes.get(toKey(data.result.getDataset()));
-		if (data.node == null)
+		data.node = nodes.get(data.result.getDataset().toId());
+		if (data.node == null) {
 			createNode(data);
-		else {
-			data.local = JsonUtil.toJsonObject(data.node.leftElement);
-			data.remote = JsonUtil.toJsonObject(data.node.rightElement);
+		} else {
+			data.local = JsonUtil.toJsonObject(data.node.localElement);
+			data.remote = JsonUtil.toJsonObject(data.node.remoteElement);
 		}
-		if (viewMode || !data.result.isConflict())
-			return DiffEditorDialog.forViewing(data.node, new ModelLabelProvider(),
-					ModelUtil.getDependencyResolver(), data.result.getType().direction);
-		DiffEditorDialog dialog = DiffEditorDialog.forEditing(data.node, new ModelLabelProvider(),
-				ModelUtil.getDependencyResolver(), data.result.getType().direction);
+		IDependencyResolver depResolver = ModelUtil.getDependencyResolver();
+		if (viewMode || !data.result.conflict())
+			return DiffEditorDialog.forViewing(data.node, new ModelLabelProvider(), depResolver, action);
+		DiffEditorDialog dialog = DiffEditorDialog.forEditing(data.node, new ModelLabelProvider(), depResolver, action);
 		return dialog;
 	}
 
 	private void createNode(DiffData data) {
-		if (data.result.local != null)
+		if (data.result.local != null) {
 			data.local = loader.getLocalJson(data.result.local.getDataset());
-		if (data.result.remote != null && !data.result.remote.isDeleted())
+		}
+		if (data.result.remote != null && !data.result.remote.isDeleted()) {
 			data.remote = loader.getRemoteJson(data.result.remote);
-		else if (data.result.getType().direction == Direction.LEFT_TO_RIGHT)
+		} else if (action == ActionType.COMMIT || action == ActionType.COMPARE_BEHIND) {
 			data.remote = loader.getRemoteJson(data.result.getDataset());
+		}
 		data.node = new ModelNodeBuilder().build(data.local, data.remote);
-		nodes.put(toKey(data.result.getDataset()), data.node);
+		nodes.put(data.result.getDataset().toId(), data.node);
 	}
 
 	private void updateResult(DiffData data, boolean localDiffersFromRemote, boolean keepLocalModel) {
 		data.result.reset();
-		if (overwriteRemoteChanges(data, localDiffersFromRemote, keepLocalModel))
-			data.result.setOverwriteRemoteChanges(true);
-		else
-			data.result.setOverwriteLocalChanges(true);
-		data.result.setMergedData(getMergedData(data, localDiffersFromRemote, keepLocalModel));
+		if (overwriteRemoteChanges(data, localDiffersFromRemote, keepLocalModel)) {
+			data.result.overwriteRemoteChanges = true;
+		} else {
+			data.result.overwriteLocalChanges = true;
+		}
+		data.result.mergedData = getMergedData(data, localDiffersFromRemote, keepLocalModel);
 	}
 
 	private boolean overwriteRemoteChanges(DiffData data, boolean localDiffersFromRemote, boolean keepLocalModel) {
@@ -98,12 +101,13 @@ class CompareHelper {
 
 	private JsonObject getMergedData(DiffData data, boolean localDiffersFromRemote, boolean keepLocalModel) {
 		JsonObject obj = null;
-		if (data.hasLocal() && data.hasRemote())
+		if (data.hasLocal() && data.hasRemote()) {
 			obj = data.local;
-		else if (data.hasLocal() && keepLocalModel)
+		} else if (data.hasLocal() && keepLocalModel) {
 			obj = data.local;
-		else if (data.hasRemote() && !keepLocalModel)
+		} else if (data.hasRemote() && !keepLocalModel) {
 			obj = data.remote;
+		}
 		if (obj == null)
 			return null;
 		if (!data.hasRemote())
@@ -111,7 +115,7 @@ class CompareHelper {
 		if (localDiffersFromRemote) {
 			Version version = Version.fromString(data.remote.get("version").getAsString());
 			version.incUpdate();
-			obj.addProperty("version", Version.asString(version.getValue()));			
+			obj.addProperty("version", Version.asString(version.getValue()));
 		}
 		obj.addProperty("lastChange", Dates.toDateTime(Calendar.getInstance().getTime()));
 		return obj;
@@ -131,10 +135,6 @@ class CompareHelper {
 			return Images.get(node.getModelType());
 		DiffResult result = (DiffResult) node.content;
 		return Images.getForCategory(result.getDataset().categoryType);
-	}
-
-	private String toKey(Dataset dataset) {
-		return dataset.type.name() + dataset.refId;
 	}
 
 	private class DiffData {

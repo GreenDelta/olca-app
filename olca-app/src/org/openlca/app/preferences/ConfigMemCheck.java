@@ -1,4 +1,4 @@
-package org.openlca.app.preferencepages;
+package org.openlca.app.preferences;
 
 import org.openlca.app.M;
 import org.openlca.app.util.MsgBox;

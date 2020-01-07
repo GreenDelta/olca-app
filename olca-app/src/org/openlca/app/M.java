@@ -257,6 +257,7 @@ public class M extends NLS {
 	public static String DirectContributionsImpactCategoryResultsOverview;
 	public static String Direction;
 	public static String Disabled;
+	public static String DiscardLocalChanges;
 	public static String DisconnectFromRepository;
 	public static String Display;
 	public static String DontShowSmallerThen;
@@ -616,6 +617,7 @@ public class M extends NLS {
 	public static String OutOfMemory;
 	public static String Output;
 	public static String Outputs;
+	public static String OverwriteRemoteChanges;
 	public static String OverwriteFile;
 	public static String OverwriteFileQuestion;
 
@@ -904,6 +906,7 @@ public class M extends NLS {
 	public static String UpdateReferenceCurrency;
 	public static String UpdateWasAlreadyAddedOrExecuted;
 	public static String UpdatingProductSystem;
+	public static String UpgradingRepositoryIndex;
 	public static String UpstreamInclDirect;
 	public static String UpstreamTotal;
 	public static String Usage;

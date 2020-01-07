@@ -4,6 +4,7 @@ import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.cloud.model.data.Dataset;
+import org.openlca.core.model.ModelType;
 
 public class IndexUpdater {
 
@@ -60,18 +61,23 @@ public class IndexUpdater {
 	}
 
 	private void update(Dataset dataset, long localId, DiffIndex index) {
-		Diff existing = index.get(dataset.refId);
-		if (existing == null)  {
+		Diff existing = index.get(dataset);
+		if (existing == null) {
 			insert(dataset, localId);
 			return;
 		}
+		// Parent categories are updated when child categories are added or
+		// removed, this must not trigger a change
+		if (dataset.type == ModelType.CATEGORY && dataset.equals(existing.getDataset()))
+			return;
 		DiffType previousType = existing.type;
-		if (previousType == DiffType.NEW)
+		if (previousType == DiffType.NEW) {
 			index.update(dataset, DiffType.NEW);
-		else
+		} else {
 			index.update(dataset, DiffType.CHANGED);
+		}
 	}
-
+	
 	public void delete(Dataset dataset) {
 		DiffIndex index = getIndex();
 		if (index == null)
@@ -92,5 +98,5 @@ public class IndexUpdater {
 		DiffIndex index = Database.getDiffIndex();
 		return index;
 	}
-	
+
 }

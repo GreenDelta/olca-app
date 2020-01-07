@@ -70,7 +70,7 @@ public class ShapeFilePage extends ModelPage<ImpactMethod> {
 		Button importButton = tk.createButton(comp, M.Import, SWT.NONE);
 		importButton.setImage(Icon.IMPORT.get());
 		Controls.onSelect(importButton, (e) -> {
-			File file = FileChooser.forImport("*.shp");
+			File file = FileChooser.open("*.shp");
 			if (file != null)
 				checkRunImport(file);
 		});

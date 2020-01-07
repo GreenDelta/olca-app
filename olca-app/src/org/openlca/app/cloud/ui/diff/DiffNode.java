@@ -3,7 +3,6 @@ package org.openlca.app.cloud.ui.diff;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.core.model.ModelType;
 
 public class DiffNode {
@@ -42,7 +41,7 @@ public class DiffNode {
 		if (isModelTypeNode())
 			return false;
 		DiffResult result = (DiffResult) content;
-		return result.getType() != DiffResponse.NONE;
+		return !result.noAction();
 	}
 
 	public DiffResult getContent() {

@@ -33,12 +33,6 @@
 
 		<dependency>
 			<groupId>org.openlca</groupId>
-			<artifactId>olca-updates</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.openlca</groupId>
 			<artifactId>olca-cloud</artifactId>
 			<version>${project.version}</version>
 		</dependency>

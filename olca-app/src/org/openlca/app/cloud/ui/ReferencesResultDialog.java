@@ -25,6 +25,7 @@ import org.openlca.app.cloud.ui.diff.DiffResult;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.cloud.model.data.FileReference;
 
 public class ReferencesResultDialog extends FormDialog {
 
@@ -55,15 +56,15 @@ public class ReferencesResultDialog extends FormDialog {
 		createModelViewer(body, toolkit);
 		form.reflow(true);
 		viewer.setInput(Collections.singleton(node));
-		Set<String> initialSelection = getNewElements(node);
+		Set<FileReference> initialSelection = getNewElements(node);
 		viewer.setSelection(initialSelection);
 	}
 
-	private Set<String> getNewElements(DiffNode node) {
-		Set<String> newElements = new HashSet<>();
+	private Set<FileReference> getNewElements(DiffNode node) {
+		Set<FileReference> newElements = new HashSet<>();
 		DiffResult result = node.getContent();
 		if (result != null && result.local.type == DiffType.NEW)
-			newElements.add(result.getDataset().refId);
+			newElements.add(result.getDataset().asFileReference());
 		if (node.children == null)
 			return newElements;
 		for (DiffNode child : node.children)

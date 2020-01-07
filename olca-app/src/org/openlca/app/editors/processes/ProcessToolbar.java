@@ -3,8 +3,10 @@ package org.openlca.app.editors.processes;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbenchWizard;
@@ -14,18 +16,24 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.LinkingProperties;
+import org.openlca.app.db.LinkingPropertiesPage;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.editors.systems.CalculationWizard;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.ProductSystemWizard;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.xls.process.output.ExcelExport;
@@ -37,13 +45,16 @@ public class ProcessToolbar extends EditorActionBarContributor {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public void contributeToToolBar(IToolBarManager manager) {
-		manager.add(Actions.create(M.CreateProductSystem,
+	public void contributeToToolBar(IToolBarManager toolbar) {
+		toolbar.add(Actions.create(M.CreateProductSystem,
 				Images.descriptor(ModelType.PRODUCT_SYSTEM, Overlay.NEW),
 				() -> createSystem(getProcess())));
-		manager.add(Actions.create(M.ExportToExcel,
+		toolbar.add(Actions.create(M.ExportToExcel,
 				Images.descriptor(FileType.EXCEL),
 				() -> exportToExcel(getProcess())));
+		toolbar.add(Actions.create("Direct calculation",
+				Icon.RUN.descriptor(),
+				() -> directCalculation(getProcess())));
 	}
 
 	private Process getProcess() {
@@ -90,6 +101,114 @@ public class ProcessToolbar extends EditorActionBarContributor {
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(ProcessToolbar.class);
 			log.error("failed to open product system dialog for process", e);
+		}
+	}
+
+	static void directCalculation(Process process) {
+		if (process == null)
+			return;
+		FactCalculationDialog.show(process);
+	}
+
+	private static class FactCalculationDialog {
+
+		static void show(Process process) {
+			String hint = "The direct calculation creates an in-memory "
+					+ "product system of all processes in the database. This only "
+					+ "gives correct results when there are unambiguous links "
+					+ "between these processes (e.g. every product is only produced "
+					+ "by a single process or every product input has a default "
+					+ "provider set). You can also check the linking properties of "
+					+ "the databases under `Database > Check linking properties`.";
+			String[] buttons = { "Run calculation", "Check linking", "Cancel" };
+
+			MessageDialog dialog = new MessageDialog(
+					UI.shell(),
+					"Direct calculation", // title
+					null, // image
+					hint,
+					MessageDialog.INFORMATION, // image type
+					0, // default button
+					buttons);
+
+			switch (dialog.open()) {
+			case 0:
+				runCalculation(process);
+				break;
+			case 1:
+				checkLinking(process);
+				break;
+			default:
+				break;
+			}
+		}
+		
+		static void runCalculation(Process process) {
+			ProductSystem sys = ProductSystem.from(process);
+			sys.withoutNetwork = true;
+			CalculationWizard.open(sys);
+		}
+
+		static void checkLinking(Process process) {
+			AtomicReference<LinkingProperties> ref = new AtomicReference<>();
+			App.runWithProgress("Check database links", () -> {
+				LinkingProperties props = LinkingProperties.check(Database.get());
+				ref.set(props);
+			});
+			LinkingProperties props = ref.get();
+			if (props == null) {
+				MsgBox.error("The linking check gave no results");
+				return;
+			}
+			if (props.multiProviderFlows.isEmpty()
+					|| props.processesWithoutProviders.isEmpty()) {
+				handleUnambiguousLinks(process, props);
+			} else {
+				handleAmbiguousLinks(props);
+			}
+		}
+
+		private static void handleAmbiguousLinks(LinkingProperties props) {
+			String msg = "There are ambiguous links between processes "
+					+ "in the database. This can lead to different results "
+					+ "in the calculation depending on the process linking.";
+			String[] buttons = { "Show details", "Cancel" };
+			MessageDialog dialog = new MessageDialog(
+					UI.shell(),
+					"Direct calculation", // title
+					null, // image
+					msg,
+					MessageDialog.WARNING, // image type
+					0, // default button
+					buttons);
+			if (dialog.open() == 0) {
+				LinkingPropertiesPage.show(props);
+			}
+		}
+
+		private static void handleUnambiguousLinks(
+				Process process, LinkingProperties props) {
+			String msg = "The processes in the database can be"
+					+ " linked unambiguously";
+			String[] buttons = { "Run calculation", "Show details", "Cancel" };
+			MessageDialog dialog = new MessageDialog(
+					UI.shell(),
+					"Direct calculation", // title
+					null, // image
+					msg,
+					MessageDialog.INFORMATION, // image type
+					0, // default button
+					buttons);
+			switch (dialog.open()) {
+			case 0:
+				runCalculation(process);
+				break;
+			case 1:
+				LinkingPropertiesPage.show(props);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }

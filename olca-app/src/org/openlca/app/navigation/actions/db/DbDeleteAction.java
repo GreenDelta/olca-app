@@ -12,6 +12,7 @@ import org.eclipse.osgi.util.NLS;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.ui.commits.HistoryView;
+import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
@@ -85,6 +86,7 @@ public class DbDeleteAction extends Action implements INavigationAction {
 		App.run(M.DeleteDatabase, () -> doDelete(), () -> {
 			Navigator.refresh();
 			HistoryView.refresh();
+			CompareView.clear();
 			ValidationView.clear();
 		});
 	}

@@ -124,7 +124,7 @@ class SFSection {
 
 		@Override
 		public void run() {
-			File file = FileChooser.forImport("*.shp");
+			File file = FileChooser.open("*.shp");
 			if (file == null)
 				return;
 			Set<String> previouslyLinked = getReferencedParameters();

@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.openlca.app.db.Database;
 import org.openlca.core.database.CategorizedEntityDao;
+import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -22,6 +23,14 @@ public class CategoryElement extends NavigationElement<Category> {
 
 	public CategoryElement(INavigationElement<?> parent, Category category) {
 		super(parent, category);
+	}
+	
+	@Override
+	public void update() {
+		super.update();
+		Category category = getContent();
+		// refId might have changed
+		setContent(new CategoryDao(Database.get()).getForId(category.id));
 	}
 
 	@Override

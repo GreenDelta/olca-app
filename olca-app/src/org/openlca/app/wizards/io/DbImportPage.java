@@ -112,7 +112,7 @@ class DbImportPage extends WizardPage {
 	}
 
 	private void selectFile() {
-		File zolcaFile = FileChooser.forImport("*.zolca");
+		File zolcaFile = FileChooser.open("*.zolca");
 		if (zolcaFile == null)
 			return;
 		fileText.setText(zolcaFile.getAbsolutePath());

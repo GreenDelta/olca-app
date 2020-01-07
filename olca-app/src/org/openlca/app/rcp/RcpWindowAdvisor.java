@@ -38,9 +38,9 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	@Override
 	public void postWindowOpen() {
-		if (Config.isBrowserEnabled())
-			if (isStandardPerspective())
+		if (isStandardPerspective()) {
 				StartPage.open();
+		}
 	}
 
 	private boolean isStandardPerspective() {

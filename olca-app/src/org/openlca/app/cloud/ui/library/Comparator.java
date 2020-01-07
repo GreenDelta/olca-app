@@ -24,12 +24,8 @@ public class Comparator extends ViewerComparator {
 	}
 
 	private int compare(Viewer viewer, Dataset d1, Dataset d2) {
-		ModelType type1 = d1.type;
-		if (type1 == ModelType.CATEGORY)
-			type1 = d1.categoryType;
-		ModelType type2 = d2.type;
-		if (type2 == ModelType.CATEGORY)
-			type2 = d2.categoryType;
+		ModelType type1 = d1.type == ModelType.CATEGORY ? d1.categoryType : d1.type;
+		ModelType type2 = d2.type == ModelType.CATEGORY ? d2.categoryType : d2.type;
 		int c = ModelTypeComparison.compare(type1, type2);
 		if (c != 0)
 			return c;

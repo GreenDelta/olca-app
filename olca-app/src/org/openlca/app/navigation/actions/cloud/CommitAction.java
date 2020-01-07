@@ -13,16 +13,18 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.ui.CommitDialog;
 import org.openlca.app.cloud.ui.ReferencesResultDialog;
 import org.openlca.app.cloud.ui.commits.HistoryView;
+import org.openlca.app.cloud.ui.diff.ActionType;
+import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.cloud.ui.diff.DiffNode;
 import org.openlca.app.cloud.ui.diff.DiffNodeBuilder;
 import org.openlca.app.cloud.ui.diff.DiffResult;
-import org.openlca.app.cloud.ui.diff.DiffResult.DiffResponse;
 import org.openlca.app.cloud.ui.library.LibraryResultDialog;
 import org.openlca.app.cloud.ui.preferences.CloudPreference;
 import org.openlca.app.db.Database;
@@ -35,6 +37,8 @@ import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.LibraryRestriction;
 import org.openlca.cloud.model.data.Dataset;
+import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.cloud.model.data.FileReference;
 import org.openlca.core.database.IDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +67,7 @@ public class CommitAction extends Action implements INavigationAction {
 		} else if (runner.noChanges)
 			MsgBox.info(M.NoChangesInLocalDb);
 		HistoryView.refresh();
+		CompareView.clear();
 	}
 
 	@Override
@@ -122,16 +127,7 @@ public class CommitAction extends Action implements INavigationAction {
 				return;
 			Set<Dataset> datasets = new HashSet<>();
 			for (DiffResult change : selected) {
-				Dataset dataset = change.getDataset();
-				if (change.getType() == DiffResponse.DELETE_FROM_REMOTE) {
-					List<String> categories = change.local.dataset.categories;
-					if (categories == null) {
-						dataset.categories = new ArrayList<>();
-					}else {
-						dataset.categories = new ArrayList<>(categories);						
-					}
-				}
-				datasets.add(dataset);
+				datasets.add(change.local.getDataset());
 			}
 			commit(datasets);
 			if (!upToDate)
@@ -165,9 +161,9 @@ public class CommitAction extends Action implements INavigationAction {
 					orderResults();
 					for (DiffResult change : selected) {
 						Dataset dataset = change.getDataset();
-						DiffType before = index.get(dataset.refId).type;
+						DiffType before = index.get(dataset).type;
 						if (before == DiffType.DELETED)
-							index.remove(dataset.refId);
+							index.remove(dataset);
 						else
 							index.update(dataset, DiffType.NO_DIFF);
 						monitor.worked();
@@ -207,14 +203,15 @@ public class CommitAction extends Action implements INavigationAction {
 		}
 
 		private boolean openCommitDialog() {
-			DiffNode node = new DiffNodeBuilder(Database.get(), Database.getDiffIndex()).build(changes);
+			DiffNode node = new DiffNodeBuilder(Database.get(), Database.getDiffIndex(), ActionType.COMMIT)
+					.build(changes);
 			if (node == null) {
 				noChanges = true;
 				return false;
 			}
 			CommitDialog dialog = new CommitDialog(node, client);
 			dialog.setBlockOnOpen(true);
-			Set<String> refIds = new RefIdListBuilder(selection, changes, index).build();
+			Set<FileReference> refIds = new RefListBuilder(selection, changes, index).build();
 			dialog.setInitialSelection(refIds);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return false;
@@ -233,7 +230,8 @@ public class CommitAction extends Action implements INavigationAction {
 				return false;
 			if (references == null || references.isEmpty())
 				return true;
-			DiffNode node = new DiffNodeBuilder(Database.get(), Database.getDiffIndex()).build(references);
+			DiffNode node = new DiffNodeBuilder(Database.get(), Database.getDiffIndex(), ActionType.COMMIT)
+					.build(references);
 			ReferencesResultDialog dialog = new ReferencesResultDialog(node, client);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return false;
@@ -266,9 +264,13 @@ public class CommitAction extends Action implements INavigationAction {
 		private List<DiffResult> createDifferences(DiffIndex index, List<Diff> changes) {
 			List<DiffResult> differences = new ArrayList<>();
 			for (Diff diff : changes) {
-				DiffResult diffResult = new DiffResult(diff);
-				diffResult.ignoreRemote = true;
-				differences.add(diffResult);
+				FetchRequestData remote = null;
+				// we are up to date, so if data set is not new, it is the same
+				// as original data set (avoid to load data from server)
+				if (diff.type != DiffType.NEW) {
+					remote = CloudUtil.toFetchRequestData(diff.dataset);
+				}
+				differences.add(new DiffResult(diff, remote));
 			}
 			return differences;
 		}

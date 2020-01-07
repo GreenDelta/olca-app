@@ -20,7 +20,7 @@
 	</location>
 	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/nebula/releases/latest"/>
-		<unit id="org.eclipse.nebula.feature.feature.group" version="2.1.0.201907151344"/>
+		<unit id="org.eclipse.nebula.feature.feature.group" version="2.3.0.201912241810"/>
 	</location>
 	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/modeling/emf/emf/builds/release"/>

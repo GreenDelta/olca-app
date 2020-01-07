@@ -5,6 +5,7 @@ import messages from "./messages";
 type Data = {
     version: string;
     lang: string;
+    showLibHint: boolean;
 };
 
 type Props = {
@@ -46,6 +47,7 @@ const Page = (props: Props) => {
     return (
         <>
             <Header {...props} />
+            <LibHint {...props} />
             {blocks}
             <div className="placeholder" />
             <a className="gd-logo"
@@ -71,6 +73,30 @@ const Header = ({ data, messages }: Props) => (
         </div>
     </header>
 );
+
+const LibHint = (props: Props) => {
+    if (!props || !props.data || !props.data.showLibHint) {
+        return <></>;
+    }
+    const handleClick = () => {
+        if (window.onLibHintClick) {
+            window.onLibHintClick();
+        }
+    };
+    return (
+        <div style={{ marginBottom: 70 }}>
+            <span style={{
+                backgroundColor: "rgba(255, 153, 0, 0.8)",
+                padding: "10px",
+            }}>
+                You can make the calculation in openLCA faster. {" "}
+                <a href="#" onClick={() => handleClick()}>
+                    Learn more.
+                </a>
+            </span>
+        </div>
+    );
+};
 
 type BlockProps = {
     className: string;
@@ -160,6 +186,7 @@ const setData = (data: Data) => {
 setData({
     version: "Version 1.9.0",
     lang: "en",
+    showLibHint: false,
 });
 
 // expose the setData function by binding it to the window object
@@ -168,6 +195,7 @@ declare global {
     interface Window {
         setData: any;
         onOpenLink: any;
+        onLibHintClick: any;
     }
 }
 window.setData = setData;

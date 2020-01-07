@@ -129,6 +129,11 @@ public class UI {
 				JFaceResources.DEFAULT_FONT);
 	}
 
+	public static Font italicFont() {
+		return JFaceResources.getFontRegistry().getItalic(
+				JFaceResources.DEFAULT_FONT);
+	}
+
 	public static Font defaultFont() {
 		return JFaceResources.getFontRegistry().defaultFont();
 	}

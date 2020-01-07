@@ -435,10 +435,10 @@
             restorable="true">
       </view>
       <view
-            class="org.openlca.app.cloud.ui.diff.SyncView"
-            id="views.cloud.sync"
-            name="Sync repository"
-            icon="icons/cloud/sync.png"
+            class="org.openlca.app.cloud.ui.diff.CompareView"
+            id="views.cloud.compare"
+            name="Compare with repository"
+            icon="icons/cloud/compare.png"
             restorable="true">
       </view>  
    </extension>
@@ -451,23 +451,23 @@
             name="%Logging">
       </page>
       <page
-      		class="org.openlca.app.preferencepages.NumberFormatPage"
+      		class="org.openlca.app.preferences.NumberFormatPage"
       		id="preferencepages.numberformat"
       		name="%NumberFormat">
       </page>
       <page
-            class="org.openlca.app.preferencepages.FeatureFlagPage"
+            class="org.openlca.app.preferences.FeatureFlagPage"
             id="preferencepages.featureflag"
             name="Experimental features">
       </page>
       <page
-            class="org.openlca.app.preferencepages.IoPreferencePage"
+            class="org.openlca.app.preferences.IoPreferencePage"
             id="org.openlca.io.IoPreferencePage"
             name="%ImportExport">
       </page>
       <page
             id="preferencepages.config"
-            class="org.openlca.app.preferencepages.ConfigPage"
+            class="org.openlca.app.preferences.ConfigPage"
             name="%Configuration">
       </page>
       <page
@@ -501,7 +501,7 @@
          </property>
          <property
                name="aboutText"
-               value="openLCA 1.10.0&#x0A;&#x0A;Copyright (c) 2007 - 2019 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
+               value="openLCA 1.10&#x0A;&#x0A;Copyright (c) 2007 - 2019 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
          </property>
          <property
                name="aboutImage"
@@ -672,7 +672,7 @@
             class="org.openlca.app.Preferences">
       </initializer>
       <initializer
-            class="org.openlca.app.preferencepages.IoPreference">
+            class="org.openlca.app.preferences.IoPreference">
       </initializer>
       <initializer
             class="org.openlca.app.cloud.ui.preferences.CloudPreference">

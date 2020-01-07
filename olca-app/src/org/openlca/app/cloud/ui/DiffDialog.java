@@ -21,6 +21,8 @@ public class DiffDialog extends FormDialog {
 	private DiffNode rootNode;
 	private FetchDiffViewer viewer;
 	private JsonLoader loader;
+	private static final int DISCARD_LOCAL_CHANGES = 2;
+	private static final int OVERWRITE_REMOTE_CHANGES = 3;
 
 	public DiffDialog(DiffNode rootNode, JsonLoader loader) {
 		super(UI.shell());
@@ -31,7 +33,7 @@ public class DiffDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(500, 600);
+		return new Point(800, 600);
 	}
 
 	@Override
@@ -45,8 +47,7 @@ public class DiffDialog extends FormDialog {
 		viewer = new FetchDiffViewer(body, loader);
 		form.reflow(true);
 		viewer.setInput(Collections.singletonList(rootNode));
-		viewer.setOnMerge(() -> getButton(OK)
-				.setEnabled(!viewer.hasConflicts()));
+		viewer.setOnMerge(() -> getButton(OK).setEnabled(!viewer.hasConflicts()));
 	}
 
 	@Override
@@ -56,6 +57,48 @@ public class DiffDialog extends FormDialog {
 		if (id == OK)
 			button.setEnabled(!viewer.hasConflicts());
 		return button;
+	}
+
+	@Override
+	protected void createButtonsForButtonBar(Composite parent) {
+		createButton(parent, DISCARD_LOCAL_CHANGES, M.DiscardLocalChanges, false);
+		createButton(parent, OVERWRITE_REMOTE_CHANGES, M.OverwriteRemoteChanges, false);
+		super.createButtonsForButtonBar(parent);
+	}
+
+	@Override
+	protected void buttonPressed(int buttonId) {
+		if (buttonId == DISCARD_LOCAL_CHANGES) {
+			discardLocalChanges();
+		} else if (buttonId == OVERWRITE_REMOTE_CHANGES) {
+			overwriteRemoteChanges();
+		} else {
+			super.buttonPressed(buttonId);
+		}
+	}
+	
+	private void discardLocalChanges() {
+		for (DiffNode node : viewer.getConflicts()) {
+			node.getContent().mergedData = null;
+			node.getContent().overwriteRemoteChanges = false;
+			node.getContent().overwriteLocalChanges = true;
+		}
+		viewer.refresh();
+		getButton(OK).setEnabled(true);
+		getButton(DISCARD_LOCAL_CHANGES).setEnabled(false);
+		getButton(OVERWRITE_REMOTE_CHANGES).setEnabled(false);
+	}
+	
+	private void overwriteRemoteChanges() {
+		for (DiffNode node : viewer.getConflicts()) {
+			node.getContent().mergedData = null;
+			node.getContent().overwriteLocalChanges = false;
+			node.getContent().overwriteRemoteChanges = true;
+		}
+		viewer.refresh();
+		getButton(OK).setEnabled(true);
+		getButton(DISCARD_LOCAL_CHANGES).setEnabled(false);
+		getButton(OVERWRITE_REMOTE_CHANGES).setEnabled(false);
 	}
 
 }

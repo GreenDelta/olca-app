@@ -22,6 +22,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.io.maps.FlowMapEntry;
@@ -139,9 +140,10 @@ class MappingPage extends FormPage {
 			tool.mapping.entries.removeAll(entries);
 			table.refresh();
 		});
+		Action copy = TableClipboard.onCopy(table);
 
 		Actions.bind(section, add, edit, delete);
-		Actions.bind(table, add, edit, delete);
+		Actions.bind(table, add, edit, copy, delete);
 	}
 
 	private void syncMappings() {

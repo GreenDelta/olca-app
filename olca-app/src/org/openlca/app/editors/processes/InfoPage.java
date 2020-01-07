@@ -22,6 +22,7 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.editors.processes.data_quality.DataQualityShell;
 import org.openlca.app.rcp.HtmlFolder;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Controls;
@@ -70,10 +71,19 @@ class InfoPage extends ModelPage<Process> {
 	private void createButtons(Composite comp) {
 		UI.filler(comp, toolkit);
 		Composite inner = toolkit.createComposite(comp);
-		UI.gridLayout(inner, 2, 5, 0);
+		UI.gridLayout(inner, 3, 5, 0);
+
+		// create product system
 		Button b = toolkit.createButton(inner, M.CreateProductSystem, SWT.NONE);
 		b.setImage(Images.get(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
 		Controls.onSelect(b, e -> ProcessToolbar.createSystem(getModel()));
+
+		// direct calculation
+		b = toolkit.createButton(inner, "Direct calculation", SWT.NONE);
+		b.setImage(Icon.RUN.get());
+		Controls.onSelect(b, e -> ProcessToolbar.directCalculation(getModel()));
+
+		// export to Excel
 		b = toolkit.createButton(inner, M.ExportToExcel, SWT.NONE);
 		b.setImage(Images.get(FileType.EXCEL));
 		Controls.onSelect(b, e -> ProcessToolbar.exportToExcel(getModel()));

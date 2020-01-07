@@ -21,6 +21,7 @@ import org.openlca.app.cloud.Announcements;
 import org.openlca.app.cloud.TokenDialog;
 import org.openlca.app.cloud.index.Reindexing;
 import org.openlca.app.cloud.ui.commits.HistoryView;
+import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.cloud.ui.preferences.CloudConfiguration;
 import org.openlca.app.cloud.ui.preferences.CloudConfigurations;
 import org.openlca.app.cloud.ui.preferences.CloudPreferencePage;
@@ -68,9 +69,10 @@ public class ConnectAction extends Action implements INavigationAction {
 			if (dialog.open() != Dialog.OK)
 				return false;
 			RepositoryConfig config = dialog.createConfig();
-			String text = M.ConnectingToRepository + config.getServerUrl() + " " + config.repositoryId;
+			String text = M.ConnectingToRepository + ": " +  config.getServerUrl() + " " + config.repositoryId;
 			App.runWithProgress(text, () -> connect(config));
 			HistoryView.refresh();
+			CompareView.clear();
 			return true;
 		}
 

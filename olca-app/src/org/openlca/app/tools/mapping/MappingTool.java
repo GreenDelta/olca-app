@@ -36,7 +36,7 @@ public class MappingTool extends SimpleFormEditor {
 	}
 
 	public static void openFile() {
-		File file = FileChooser.forImport("*.*");
+		File file = FileChooser.open("*.*");
 		if (file == null)
 			return;
 		try {
