@@ -1,4 +1,4 @@
-package org.openlca.app.editors.lcia_methods.shapefiles;
+package org.openlca.app.editors.lcia.shapefiles;
 
 /**
  * A numeric attribute of the features in a shapefile that can be mapped to a

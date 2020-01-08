@@ -1,4 +1,4 @@
-package org.openlca.app.editors.lcia_methods;
+package org.openlca.app.editors.lcia;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;

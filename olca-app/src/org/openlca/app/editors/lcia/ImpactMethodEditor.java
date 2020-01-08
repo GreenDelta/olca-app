@@ -1,4 +1,4 @@
-package org.openlca.app.editors.lcia_methods;
+package org.openlca.app.editors.lcia;
 
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.ModelEditor;

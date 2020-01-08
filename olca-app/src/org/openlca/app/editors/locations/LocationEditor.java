@@ -3,7 +3,7 @@ package org.openlca.app.editors.locations;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFileUtils;
+import org.openlca.app.editors.lcia.shapefiles.ShapeFileUtils;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;

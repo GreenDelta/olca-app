@@ -1,4 +1,4 @@
-package org.openlca.app.editors.lcia_methods;
+package org.openlca.app.editors.lcia;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFilePage;
+import org.openlca.app.editors.lcia.shapefiles.ShapeFilePage;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
 import org.openlca.app.editors.parameters.ParameterPage;

@@ -134,14 +134,14 @@
             name="%FlowEditor">
       </editor>
       <editor
-            class="org.openlca.app.editors.lcia_methods.ImpactMethodEditor"
+            class="org.openlca.app.editors.lcia.ImpactMethodEditor"
             default="false"
             icon="icons/model/impact_method.png"
             id="editors.impactmethod"
             name="%ImpactMethodEditor">
       </editor>
       <editor
-            class="org.openlca.app.editors.lcia_methods.ImpactCategoryEditor"
+            class="org.openlca.app.editors.lcia.ImpactCategoryEditor"
             default="false"
             icon="icons/model/impact_category.png"
             id="editors.impactcategory"

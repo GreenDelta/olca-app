@@ -1,4 +1,4 @@
-package org.openlca.app.editors.lcia_methods.shapefiles;
+package org.openlca.app.editors.lcia.shapefiles;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.editors.lcia_methods.ImpactCategoryEditor;
+import org.openlca.app.editors.lcia.ImpactCategoryEditor;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.core.model.ModelType;

@@ -1,12 +1,12 @@
-package org.openlca.app.editors.lcia_methods;
+package org.openlca.app.editors.lcia;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFileParameter;
-import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFileUtils;
+import org.openlca.app.editors.lcia.shapefiles.ShapeFileParameter;
+import org.openlca.app.editors.lcia.shapefiles.ShapeFileUtils;
 import org.openlca.app.editors.parameters.SourceHandler;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;

@@ -1,10 +1,10 @@
-package org.openlca.app.editors.lcia_methods.shapefiles;
+package org.openlca.app.editors.lcia.shapefiles;
 
 import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
-import org.openlca.app.editors.lcia_methods.ImpactCategoryEditor;
+import org.openlca.app.editors.lcia.ImpactCategoryEditor;
 import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;

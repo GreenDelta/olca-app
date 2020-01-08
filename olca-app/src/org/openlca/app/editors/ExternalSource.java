@@ -3,7 +3,7 @@ package org.openlca.app.editors;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFileParameter;
+import org.openlca.app.editors.lcia.shapefiles.ShapeFileParameter;
 
 public class ExternalSource {
 

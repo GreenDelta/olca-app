@@ -1,4 +1,4 @@
-package org.openlca.app.editors.lcia_methods.shapefiles;
+package org.openlca.app.editors.lcia.shapefiles;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.lcia_methods.shapefiles;
+package org.openlca.app.editors.lcia.shapefiles;
 
 import java.awt.Color;
 

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.lcia_methods;
+package org.openlca.app.editors.lcia;
 
 import java.util.List;
 import java.util.Objects;

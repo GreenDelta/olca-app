@@ -1,4 +1,4 @@
-package org.openlca.app.editors.lcia_methods;
+package org.openlca.app.editors.lcia;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
-import org.openlca.app.editors.lcia_methods.NwFactorViewer.Wrapper;
+import org.openlca.app.editors.lcia.NwFactorViewer.Wrapper;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
