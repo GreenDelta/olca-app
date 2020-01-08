@@ -45,10 +45,16 @@ class FactorCalculator {
 				inputParams.put(redef.name, redef.value);
 			}
 		}
+		// TODO: this is currently not correct and we should rethink
+		// this when we implemented the updated regionalized LCIA
+		// calculation
 		if (setup.impactMethod != null) {
+
 			ImpactMethodDao methodDao = new ImpactMethodDao(db);
 			ImpactMethod method = methodDao.getForId(setup.impactMethod.id);
-			addToContext(method.parameters);
+			for (ImpactCategory impact : method.impactCategories) {
+				addToContext(impact.parameters);
+			}
 		}
 	}
 

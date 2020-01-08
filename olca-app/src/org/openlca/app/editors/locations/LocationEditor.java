@@ -4,9 +4,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.lcia_methods.shapefiles.ShapeFileUtils;
-import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.geo.parameter.ParameterCache;
 import org.openlca.geo.parameter.ShapeFileFolder;
 import org.openlca.util.Geometries;
@@ -50,13 +50,14 @@ public class LocationEditor extends ModelEditor<Location> {
 	}
 
 	private void invalidateIntersections() {
-		ImpactMethodDao dao = new ImpactMethodDao(Database.get());
-		for (ImpactMethodDescriptor method : dao.getDescriptors()) {
+		ImpactCategoryDao dao = new ImpactCategoryDao(Database.get());
+		for (ImpactCategoryDescriptor d : dao.getDescriptors()) {
 			ShapeFileFolder folder = new ShapeFileFolder(
-					ShapeFileUtils.getFolder(method));
+					ShapeFileUtils.getFolder(d));
 			ParameterCache cache = new ParameterCache(folder);
-			for (String shapeFile : ShapeFileUtils.getShapeFiles(method))
+			for (String shapeFile : ShapeFileUtils.getShapeFiles(d)) {
 				cache.remove(getModel().id, shapeFile);
+			}
 		}
 	}
 
