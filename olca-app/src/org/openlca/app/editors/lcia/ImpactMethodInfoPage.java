@@ -2,7 +2,6 @@ package org.openlca.app.editors.lcia;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -16,10 +15,11 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
-import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
@@ -27,12 +27,13 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.app.viewers.table.modify.ModifySupport;
+import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.NwFactor;
 import org.openlca.core.model.NwSet;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.util.Strings;
 
 class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
@@ -42,10 +43,8 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	private static final String REFERENCE_UNIT = M.ReferenceUnit;
 	private static final String COMMENT = "";
 
-	private TableViewer viewer;
-	private FormToolkit toolkit;
+	private TableViewer indicatorTable;
 	private ImpactMethodEditor editor;
-	private ScrolledForm form;
 
 	ImpactMethodInfoPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactMethodInfoPage", M.GeneralInformation);
@@ -54,60 +53,30 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		form = UI.formHeader(this);
-		toolkit = mform.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
-		InfoSection infoSection = new InfoSection(getEditor());
-		infoSection.render(body, toolkit);
-		createImpactCategoryViewer(body);
+		ScrolledForm form = UI.formHeader(this);
+		FormToolkit tk = mform.getToolkit();
+		Composite body = UI.formBody(form, tk);
+		InfoSection info = new InfoSection(getEditor());
+		info.render(body, tk);
+		createImpactCategoryViewer(tk, body);
 		body.setFocus();
 		form.reflow(true);
 	}
 
-	private void createImpactCategoryViewer(Composite body) {
-		Section section = UI.section(body, toolkit, M.ImpactCategories);
+	private void createImpactCategoryViewer(FormToolkit tk, Composite body) {
+		Section section = UI.section(body, tk, M.ImpactCategories);
 		UI.gridData(section, true, true);
-		Composite client = UI.sectionClient(section, toolkit, 1);
-		String[] properties = getProperties();
-		viewer = Tables.createViewer(client, properties);
-		viewer.setLabelProvider(new CategoryLabelProvider());
-		viewer.setInput(getCategories(true));
-		Tables.bindColumnWidths(viewer, 0.5, 0.25, 0.22);
-		bindModifySupport();
-		bindActions(viewer, section);
-		editor.onSaved(() -> viewer.setInput(getCategories(false)));
-	}
-
-	private String[] getProperties() {
-		return new String[] { NAME, DESCRIPTION, REFERENCE_UNIT, COMMENT };
-	}
-
-	private void bindModifySupport() {
-		ModifySupport<ImpactCategory> support = new ModifySupport<>(viewer);
-		support.bind(NAME, c -> c.name, (c, text) -> {
-			c.name = text;
-			fireCategoryChange();
-		});
-		support.bind(DESCRIPTION, c -> c.description, (c, text) -> {
-			c.description = text;
-			fireCategoryChange();
-		});
-		support.bind(REFERENCE_UNIT, c -> c.referenceUnit, (c, text) -> {
-			c.referenceUnit = text;
-			fireCategoryChange();
-		});
-		support.bind("", new CommentDialogModifier<ImpactCategory>(
-				editor.getComments(), c -> CommentPaths.get(c)));
-	}
-
-	private List<ImpactCategory> getCategories(boolean sorted) {
+		Composite comp = UI.sectionClient(section, tk, 1);
+		indicatorTable = Tables.createViewer(comp,
+				NAME, DESCRIPTION, REFERENCE_UNIT, COMMENT);
+		indicatorTable.setLabelProvider(new CategoryLabelProvider());
 		ImpactMethod method = editor.getModel();
 		List<ImpactCategory> categories = method.impactCategories;
-		if (!sorted)
-			return categories;
 		Collections.sort(categories,
 				(c1, c2) -> Strings.compare(c1.name, c2.name));
-		return categories;
+		indicatorTable.setInput(categories);
+		Tables.bindColumnWidths(indicatorTable, 0.5, 0.25, 0.22);
+		bindActions(indicatorTable, section);
 	}
 
 	private void bindActions(TableViewer viewer, Section section) {
@@ -127,26 +96,32 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 	private void onAdd() {
 		ImpactMethod method = editor.getModel();
-		ImpactCategory category = new ImpactCategory();
-		category.refId = UUID.randomUUID().toString();
-		category.name = M.NewImpactCategory;
-		method.impactCategories.add(category);
-		viewer.setInput(method.impactCategories);
+		CategorizedDescriptor d = ModelSelectionDialog.select(
+				ModelType.IMPACT_CATEGORY);
+		if (d == null)
+			return;
+		ImpactCategoryDao dao = new ImpactCategoryDao(Database.get());
+		ImpactCategory impact = dao.getForId(d.id);
+		if (impact == null)
+			return;
+		method.impactCategories.add(impact);
+		indicatorTable.setInput(method.impactCategories);
 		fireCategoryChange();
 	}
 
 	private void onRemove() {
 		ImpactMethod method = editor.getModel();
-		List<ImpactCategory> categories = Viewers.getAllSelected(viewer);
-		for (ImpactCategory category : categories) {
-			method.impactCategories.remove(category);
+		List<ImpactCategory> impacts = Viewers.getAllSelected(indicatorTable);
+		for (ImpactCategory impact : impacts) {
+			method.impactCategories.remove(impact);
 			for (NwSet set : method.nwSets) {
-				NwFactor factor = set.getFactor(category);
-				if (factor != null)
+				NwFactor factor = set.getFactor(impact);
+				if (factor != null) {
 					set.factors.remove(factor);
+				}
 			}
 		}
-		viewer.setInput(method.impactCategories);
+		indicatorTable.setInput(method.impactCategories);
 		fireCategoryChange();
 	}
 
@@ -159,29 +134,29 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 			ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int column) {
-			if (!(element instanceof ImpactCategory))
+		public Image getColumnImage(Object obj, int col) {
+			if (!(obj instanceof ImpactCategory))
 				return null;
-			ImpactCategory category = (ImpactCategory) element;
-			if (column == 0)
+			ImpactCategory i = (ImpactCategory) obj;
+			if (col == 0)
 				return Images.get(ModelType.IMPACT_CATEGORY);
-			if (column == 3)
-				return Images.get(editor.getComments(), CommentPaths.get(category));
+			if (col == 3)
+				return Images.get(editor.getComments(), CommentPaths.get(i));
 			return null;
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof ImpactCategory))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof ImpactCategory))
 				return null;
-			ImpactCategory category = (ImpactCategory) element;
-			switch (columnIndex) {
+			ImpactCategory i = (ImpactCategory) obj;
+			switch (col) {
 			case 0:
-				return category.name;
+				return i.name;
 			case 1:
-				return category.description;
+				return i.description;
 			case 2:
-				return category.referenceUnit;
+				return i.referenceUnit;
 			default:
 				return null;
 			}
