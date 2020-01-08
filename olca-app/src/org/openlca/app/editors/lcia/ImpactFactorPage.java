@@ -70,16 +70,17 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	ImpactFactorPage(ImpactCategoryEditor editor) {
 		super(editor, "ImpactFactorsPage", M.ImpactFactors);
 		this.editor = editor;
-		editor.getParameterSupport().afterEvaluation(this::refresh);
+		editor.getParameterSupport().afterEvaluation(() -> {
+			if (viewer != null) {
+				viewer.refresh();
+			}
+		});
 	}
 
 	private ImpactCategory category() {
 		return editor.getModel();
 	}
 
-	void refresh() {
-		viewer.refresh();
-	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {

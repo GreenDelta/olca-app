@@ -9,11 +9,11 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.db.Database;
@@ -53,12 +53,12 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		Composite body = UI.formBody(form, tk);
 		InfoSection info = new InfoSection(getEditor());
 		info.render(body, tk);
-		createImpactCategoryViewer(tk, body);
+		createIndicatorTable(tk, body);
 		body.setFocus();
 		form.reflow(true);
 	}
 
-	private void createImpactCategoryViewer(FormToolkit tk, Composite body) {
+	private void createIndicatorTable(FormToolkit tk, Composite body) {
 		Section section = UI.section(body, tk, M.ImpactCategories);
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk, 1);
@@ -74,20 +74,22 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		bindActions(indicatorTable, section);
 	}
 
-	private void bindActions(TableViewer viewer, Section section) {
+	private void bindActions(TableViewer indicatorTable, Section section) {
 		Action add = Actions.onAdd(() -> onAdd());
 		Action remove = Actions.onRemove(() -> onRemove());
-		Action copy = TableClipboard.onCopy(viewer);
-		Actions.bind(viewer, add, remove, copy);
-		CommentAction.bindTo(section, "impactCategories",
-				editor.getComments(), add, remove);
-		Tables.onDeletePressed(viewer, (event) -> onRemove());
-		Tables.onDoubleClick(viewer, (event) -> {
-			TableItem item = Tables.getItem(viewer, event);
-			if (item == null) {
-				onAdd();
+		Action copy = TableClipboard.onCopy(indicatorTable);
+
+		Action open = Actions.onOpen(() -> {
+			ImpactCategory i = Viewers.getFirstSelected(indicatorTable);
+			if (i != null) {
+				App.openEditor(i);
 			}
 		});
+		Actions.bind(indicatorTable, add, remove, open, copy);
+		CommentAction.bindTo(section, "impactCategories",
+				editor.getComments(), add, remove);
+		Tables.onDeletePressed(indicatorTable, _e -> onRemove());
+		Tables.onDoubleClick(indicatorTable, _e -> open.run());
 	}
 
 	private void onAdd() {
