@@ -38,11 +38,6 @@ import org.openlca.util.Strings;
 
 class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
-	private static final String NAME = M.Name;
-	private static final String DESCRIPTION = M.Description;
-	private static final String REFERENCE_UNIT = M.ReferenceUnit;
-	private static final String COMMENT = "";
-
 	private TableViewer indicatorTable;
 	private ImpactMethodEditor editor;
 
@@ -68,13 +63,13 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk, 1);
 		indicatorTable = Tables.createViewer(comp,
-				NAME, DESCRIPTION, REFERENCE_UNIT, COMMENT);
+				M.Name, M.Description, M.ReferenceUnit, "");
 		indicatorTable.setLabelProvider(new CategoryLabelProvider());
 		ImpactMethod method = editor.getModel();
-		List<ImpactCategory> categories = method.impactCategories;
-		Collections.sort(categories,
+		List<ImpactCategory> impacts = method.impactCategories;
+		Collections.sort(impacts,
 				(c1, c2) -> Strings.compare(c1.name, c2.name));
-		indicatorTable.setInput(categories);
+		indicatorTable.setInput(impacts);
 		Tables.bindColumnWidths(indicatorTable, 0.5, 0.25, 0.22);
 		bindActions(indicatorTable, section);
 	}
@@ -84,7 +79,8 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		Action remove = Actions.onRemove(() -> onRemove());
 		Action copy = TableClipboard.onCopy(viewer);
 		Actions.bind(viewer, add, remove, copy);
-		CommentAction.bindTo(section, "impactCategories", editor.getComments(), add, remove);
+		CommentAction.bindTo(section, "impactCategories",
+				editor.getComments(), add, remove);
 		Tables.onDeletePressed(viewer, (event) -> onRemove());
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);

@@ -39,9 +39,9 @@ class FlowInfoPage extends ModelPage<Flow> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
+	protected void createFormContent(IManagedForm mform) {
 		form = UI.formHeader(this);
-		toolkit = managedForm.getToolkit();
+		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
@@ -57,20 +57,20 @@ class FlowInfoPage extends ModelPage<Flow> {
 		Composite container = infoSection.getContainer();
 		checkBox(container, M.InfrastructureFlow, "infrastructureFlow");
 		readOnly(container, M.FlowType, Images.get(getModel()), "flowType");
-		Composite composite = UI.formSection(body, toolkit, M.AdditionalInformation, 3);
-		text(composite, M.CASNumber, "casNumber");
-		text(composite, M.Formula, "formula");
-		text(composite, M.Synonyms, "synonyms");
-		createLocationViewer(composite);
+		Composite comp = UI.formSection(body, toolkit, M.AdditionalInformation, 3);
+		text(comp, M.CASNumber, "casNumber");
+		text(comp, M.Formula, "formula");
+		text(comp, M.Synonyms, "synonyms");
+		createLocationViewer(comp);
 	}
 
-	private void createLocationViewer(Composite composite) {
-		new Label(composite, SWT.NONE).setText(M.Location);
-		LocationViewer viewer = new LocationViewer(composite);
+	private void createLocationViewer(Composite comp) {
+		new Label(comp, SWT.NONE).setText(M.Location);
+		LocationViewer viewer = new LocationViewer(comp);
 		viewer.setNullable(true);
 		viewer.setInput(Database.get());
 		getBinding().onModel(() -> getModel(), "location", viewer);
-		new CommentControl(composite, getToolkit(), "location", getComments());
+		new CommentControl(comp, getToolkit(), "location", getComments());
 	}
 
 	private void processButton(InfoSection infoSection) {

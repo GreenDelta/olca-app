@@ -82,8 +82,10 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 			ScrolledForm form = UI.formHeader(this);
 			FormToolkit toolkit = mform.getToolkit();
 			Composite body = UI.formBody(form, toolkit);
-			InfoSection infoSection = new InfoSection(getEditor());
-			infoSection.render(body, toolkit);
+			InfoSection info = new InfoSection(getEditor());
+			info.render(body, toolkit);
+			Composite comp = info.getContainer();
+			text(comp, M.ReferenceUnit, "referenceUnit");
 			body.setFocus();
 			form.reflow(true);
 		}
