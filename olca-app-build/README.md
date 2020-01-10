@@ -97,3 +97,43 @@ olca-app-build
         - olcar.dll
         - ...
 ```
+
+## Steps when building a release package
+
+1. Check that the `olca-app` and `olca-modules` repositories are on the master
+   branch and are in sync with our Github repository
+2. Update the `olca-modules` libraries in the `olca-app` project, e.g. by
+   running the `update_modules` script:
+
+```bash
+cd olca-app
+./update_modules.sh
+```
+
+3. Build the reference databases (also to make sure that they have the current
+   schema):
+
+```bash
+cd olca-refdata
+mvn package
+cd ..
+```
+
+4. Build the html-package and make sure that it contains the current background
+   image:
+
+```bash
+cd olca-app-html
+npm run build
+cd ..
+```
+
+5. Run the PDE export as described above
+6. Run the packaging script
+
+```bash
+cd olca-app-build
+python make.py
+```
+
+7. Do a smoke test ...
