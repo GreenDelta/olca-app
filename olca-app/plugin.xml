@@ -684,6 +684,7 @@
             id="wizard.import.ecospold1"
             name="%EcoSpold">
       </wizard>
+      <!--
       <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.EcoSpold2ImportWizard"
@@ -694,6 +695,7 @@
             Import EcoSpold 2 files
          </description>
       </wizard>
+      -->
       <wizard
             category="import.category.file"
             class="org.openlca.app.wizards.io.ILCDImportWizard"
@@ -790,6 +792,7 @@
             id="wizard.export.excel.process"
             name="%Processes">
        </wizard>
+       <!--
        <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold2ExportWizard"
@@ -800,6 +803,7 @@
             Export processes as EcoSpold 2 activity data sets
          </description>
       </wizard>
+      -->
       <wizard
             category="export.category.ecospold"
             class="org.openlca.app.wizards.io.EcoSpold01ExportMethodWizard"
