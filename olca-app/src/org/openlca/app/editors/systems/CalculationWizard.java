@@ -207,7 +207,7 @@ public class CalculationWizard extends Wizard {
 					analyse();
 					break;
 				case MONTE_CARLO_SIMULATION:
-					SimulationEditor.open(setup, Cache.getMatrixCache());
+					SimulationEditor.open(setup);
 					break;
 				case CONTRIBUTION_ANALYSIS:
 					solve();
@@ -227,7 +227,7 @@ public class CalculationWizard extends Wizard {
 		private void analyse() {
 			log.trace("run analysis");
 			SystemCalculator calculator = new SystemCalculator(
-					Cache.getMatrixCache(), App.getSolver());
+					Database.get(), App.getSolver());
 			FullResult result = calculator.calculateFull(setup);
 			log.trace("calculation done, open editor");
 			setInventory(result);
@@ -239,7 +239,7 @@ public class CalculationWizard extends Wizard {
 		private void solve() {
 			log.trace("run quick calculation");
 			SystemCalculator calculator = new SystemCalculator(
-					Cache.getMatrixCache(), App.getSolver());
+					Database.get(), App.getSolver());
 			ContributionResult result = calculator.calculateContributions(setup);
 			log.trace("calculation done, open editor");
 			setInventory(result);

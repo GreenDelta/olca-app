@@ -9,12 +9,12 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.Simulator;
-import org.openlca.core.matrix.cache.MatrixCache;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +30,10 @@ public class SimulationEditor extends SimpleFormEditor {
 	 * Initializes the Monte Carlo simulation of a product system and opens the
 	 * editor.
 	 */
-	public static void open(CalculationSetup setup, MatrixCache mcache) {
+	public static void open(CalculationSetup setup) {
 		try {
 			Simulator sim = Simulator.create(
-					setup, mcache, App.getSolver());
+					setup, Database.get(), App.getSolver());
 			String setupKey = Cache.getAppCache().put(setup);
 			String simKey = Cache.getAppCache().put(sim);
 			SimulationInput input = new SimulationInput(setupKey, simKey);

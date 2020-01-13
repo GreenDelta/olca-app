@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openlca.app.App;
-import org.openlca.app.db.Cache;
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
@@ -554,7 +553,7 @@ public class ScriptApi {
 			setup.impactMethod = Descriptors.toDescriptor(method);
 		setup.parameterRedefs.addAll(system.parameterRedefs);
 		SystemCalculator calculator = new SystemCalculator(
-				Cache.getMatrixCache(), App.getSolver());
+				database, App.getSolver());
 		return calculator.calculateSimple(setup);
 	}
 
@@ -570,7 +569,7 @@ public class ScriptApi {
 			setup.impactMethod = Descriptors.toDescriptor(method);
 		setup.parameterRedefs.addAll(system.parameterRedefs);
 		SystemCalculator calculator = new SystemCalculator(
-				Cache.getMatrixCache(), App.getSolver());
+				database, App.getSolver());
 		return calculator.calculateContributions(setup);
 	}
 
@@ -587,7 +586,7 @@ public class ScriptApi {
 			setup.impactMethod = Descriptors.toDescriptor(method);
 		setup.parameterRedefs.addAll(system.parameterRedefs);
 		Simulator simulator = Simulator.create(
-				setup, Cache.getMatrixCache(), App.getSolver());
+				setup, database, App.getSolver());
 		for (int i = 0; i < iterations; i++)
 			simulator.nextRun();
 		return simulator.getResult();

@@ -8,7 +8,6 @@ import java.util.TreeSet;
 
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.model.ReportIndicatorResult.Contribution;
 import org.openlca.app.editors.reports.model.ReportIndicatorResult.VariantResult;
@@ -54,7 +53,7 @@ public class ReportCalculator implements Runnable {
 		ProjectResult result;
 		try {
 			SystemCalculator calculator = new SystemCalculator(
-					Cache.getMatrixCache(), App.getSolver());
+					Database.get(), App.getSolver());
 			result = calculator.calculate(project);
 			hadError = false;
 		} catch (OutOfMemoryError e) {

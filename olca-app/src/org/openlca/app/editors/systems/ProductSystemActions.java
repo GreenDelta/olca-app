@@ -9,7 +9,6 @@ import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.preferences.FeatureFlag;
@@ -40,6 +39,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 		if (FeatureFlag.MATRIX_IMAGE_EXPORT.isEnabled())
 			toolBarManager.add(new MatrixImageExportAction());
 		toolBarManager.add(Actions.onCalculate(new Runnable() {
+			@Override
 			public void run() {
 				log.trace("action -> calculate product system");
 				ProductSystem productSystem = getProductSystem();
@@ -106,7 +106,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 					CalculationSetup setup = new CalculationSetup(
 							CalculationType.SIMPLE_CALCULATION, system);
 					MatrixData data = DataStructures.matrixData(
-							setup, App.getSolver(), Cache.getMatrixCache(),
+							setup, App.getSolver(), Database.get(),
 							Collections.emptyMap());
 					IMatrix matrix = data.techMatrix;
 					matrix = new MatrixRowSorter(matrix, App.getSolver()).run();
