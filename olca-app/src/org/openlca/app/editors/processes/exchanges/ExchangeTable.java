@@ -142,10 +142,10 @@ class ExchangeTable {
 			Exchange e = (Exchange) obj;
 			try {
 				double value = Double.parseDouble(amount);
-				e.amountFormula = null;
+				e.formula = null;
 				e.amount = value;
 			} catch (NumberFormatException ex) {
-				e.amountFormula = amount;
+				e.formula = amount;
 				editor.getParameterSupport().evaluate();
 			}
 			editor.setDirty(true);
@@ -298,8 +298,8 @@ class ExchangeTable {
 				return "";
 		case 2:
 			if (label.showFormulas
-					&& Strings.notEmpty(e.amountFormula))
-				return e.amountFormula;
+					&& Strings.notEmpty(e.formula))
+				return e.formula;
 			else
 				return Double.toString(e.amount);
 		case 4:

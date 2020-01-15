@@ -128,10 +128,10 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 	}
 
 	private String getAmountText(Exchange e) {
-		if (!showFormulas || e.amountFormula == null) {
+		if (!showFormulas || e.formula == null) {
 			return Numbers.format(e.amount);
 		}
-		return e.amountFormula;
+		return e.formula;
 	}
 
 	private String getCostValue(Exchange e) {

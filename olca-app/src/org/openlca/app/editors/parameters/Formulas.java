@@ -68,8 +68,8 @@ public class Formulas {
 			Scope s = makeLocalScope(p.parameters, p.id);
 			evalParams(p.parameters, s);
 			for (Exchange e : p.exchanges) {
-				if (Strings.notEmpty(e.amountFormula)) {
-					e.amount = eval(e.amountFormula, s);
+				if (Strings.notEmpty(e.formula)) {
+					e.amount = eval(e.formula, s);
 				}
 				eval(e.uncertainty, s);
 				if (Strings.notEmpty(e.costFormula)) {

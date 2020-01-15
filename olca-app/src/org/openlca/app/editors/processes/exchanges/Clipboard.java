@@ -152,7 +152,7 @@ class Clipboard {
 			try {
 				e.amount = Double.parseDouble(row[2]);
 			} catch (Exception ex) {
-				e.amountFormula = row[2];
+				e.formula = row[2];
 			}
 		}
 
