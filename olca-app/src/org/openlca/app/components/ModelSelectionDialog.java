@@ -120,6 +120,22 @@ public class ModelSelectionDialog extends FormDialog {
 			return multiSelection ? M.Sources : M.Source;
 		case UNIT_GROUP:
 			return multiSelection ? M.UnitGroups : M.UnitGroup;
+		case CATEGORY:
+			return multiSelection ? "Categories" : M.Category;
+		case CURRENCY:
+			return multiSelection ? M.Currencies : M.Currency;
+		case DQ_SYSTEM:
+			return multiSelection ? M.DataQualitySystems : M.DataQualitySystem;
+		case IMPACT_CATEGORY:
+			return multiSelection ? M.ImpactCategories : M.ImpactCategory;
+		case LOCATION:
+			return multiSelection ? M.Locations : M.Location;
+		case PARAMETER:
+			return multiSelection ? M.Parameters : M.Parameter;
+		case NW_SET:
+			return multiSelection ? M.NormalizationWeightingSets : M.NormalizationWeighting;
+		case UNIT:
+			return multiSelection ? M.Units : M.Unit;
 		default:
 			return "unknown?";
 		}

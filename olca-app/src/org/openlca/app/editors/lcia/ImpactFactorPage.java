@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -20,6 +21,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.components.DialogCellEditor;
 import org.openlca.app.components.FormulaCellEditor;
 import org.openlca.app.components.ModelSelectionDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
@@ -39,29 +41,24 @@ import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
 class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 	private final ImpactCategoryEditor editor;
-
-	private static final String FLOW = M.Flow;
-	private static final String CATEGORY = M.Category;
-	private static final String FLOW_PROPERTY = M.FlowProperty;
-	private static final String UNIT = M.Unit;
-	private static final String FACTOR = M.Factor;
-	private static final String UNCERTAINTY = M.Uncertainty;
-	private static final String COMMENT = "";
 
 	private boolean showFormulas = true;
 	private IDatabase database = Database.get();
@@ -80,7 +77,6 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	private ImpactCategory category() {
 		return editor.getModel();
 	}
-
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
@@ -101,32 +97,34 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 	public void render(Composite parent, Section section) {
 		viewer = Tables.createViewer(parent, new String[] {
-				FLOW, CATEGORY, FLOW_PROPERTY,
-				FACTOR, UNIT, UNCERTAINTY, COMMENT });
+				M.Flow, M.Category, M.FlowProperty,
+				M.Factor, M.Unit, M.Uncertainty, M.Location,
+				"" /* comment */ });
 		FactorLabelProvider label = new FactorLabelProvider();
-		Viewers.sortByLabels(viewer, label, 0, 1, 2, 4, 5);
+		Viewers.sortByLabels(viewer, label, 0, 1, 2, 4, 5, 6);
 		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.value, 3);
 		viewer.setLabelProvider(label);
 		ModifySupport<ImpactFactor> support = new ModifySupport<>(viewer);
-		support.bind(FLOW_PROPERTY, new FlowPropertyModifier());
-		support.bind(UNIT, new UnitModifier());
+		support.bind(M.FlowProperty, new FlowPropertyModifier());
+		support.bind(M.Unit, new UnitModifier());
 		bindFactorModifier(support);
-		support.bind(UNCERTAINTY, new UncertaintyCellEditor(
+		support.bind(M.Uncertainty, new UncertaintyCellEditor(
+				viewer.getTable(), editor));
+		support.bind(M.Location, new LocationModifier(
 				viewer.getTable(), editor));
 		support.bind("", new CommentDialogModifier<ImpactFactor>(
 				editor.getComments(),
 				f -> CommentPaths.get(category(), f)));
-		Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.15, 0.15, 0.15, 0.12);
+		Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.11, 0.11, 0.11, 0.11, 0.11);
 		bindActions(viewer, section);
 		viewer.getTable().getColumns()[3].setAlignment(SWT.RIGHT);
 	}
-
 
 	private void bindFactorModifier(ModifySupport<ImpactFactor> ms) {
 		// factor editor with auto-completion support for parameter names
 		FormulaCellEditor factorEditor = new FormulaCellEditor(viewer,
 				() -> editor.getModel().parameters);
-		ms.bind(FACTOR, factorEditor);
+		ms.bind(M.Factor, factorEditor);
 		factorEditor.onEdited((obj, factor) -> {
 			if (!(obj instanceof ImpactFactor))
 				return;
@@ -263,6 +261,10 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				return getFactorUnit(f);
 			case 5:
 				return Uncertainty.string(f.uncertainty);
+			case 6:
+				return f.location == null ? "": f.location.code != null
+								? f.location.code
+								: Labels.getDisplayName(f.location);
 			default:
 				return null;
 			}
@@ -346,6 +348,51 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				editor.setDirty(true);
 			}
 		}
+	}
+
+	private static class LocationModifier extends DialogCellEditor {
+
+		private final ImpactCategoryEditor editor;
+		private ImpactFactor factor;
+
+
+		LocationModifier(Composite parent, ImpactCategoryEditor editor) {
+			super(parent);
+			this.editor = editor;
+		}
+
+		@Override
+		protected void doSetValue(Object value) {
+			if (!(value instanceof ImpactFactor)) {
+				super.doSetValue("");
+				factor = null;
+				return;
+			}
+			factor = (ImpactFactor) value;
+			String s = Labels.getDisplayName(factor.location);
+			super.doSetValue(s == null ? "" : s);
+		}
+
+		@Override
+		protected Object openDialogBox(Control control) {
+			Location initial = factor == null
+					? null
+					: factor.location;
+			CategorizedDescriptor loc = ModelSelectionDialog.select(
+					ModelType.LOCATION);
+			if (loc == null)
+				return null;
+			LocationDao dao = new LocationDao(Database.get());
+			Location location = dao.getForId(loc.id);
+			if (factor != null) {
+				factor.location = location;
+			}
+			if (!Objects.equals(initial, location)) {
+				editor.setDirty(true);
+			}
+			return factor;
+		}
+
 	}
 
 	private class FormulaSwitchAction extends Action {
