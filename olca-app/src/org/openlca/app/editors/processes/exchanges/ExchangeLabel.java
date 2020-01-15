@@ -111,7 +111,13 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 				return null;
 			return p.exchangeDqSystem.applyScoreLabels(e.dqEntry);
 		case 9:
+			return e.location == null ? ""
+					: e.location.code != null
+							? e.location.code
+							: Labels.getDisplayName(e.location);
+		case 10:
 			return e.description;
+
 		}
 		return null;
 	}

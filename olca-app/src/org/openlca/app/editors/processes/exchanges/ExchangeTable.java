@@ -66,6 +66,7 @@ class ExchangeTable {
 	private static final String PROVIDER = M.DefaultProvider;
 	private static final String UNCERTAINTY = M.Uncertainty;
 	private static final String DESCRIPTION = M.Description;
+	public static final String LOCATION = M.Location;
 	private static final String COMMENT = "";
 	private final String AVOIDED;
 
@@ -102,11 +103,11 @@ class ExchangeTable {
 		viewer.addFilter(new Filter());
 		bindActions(section);
 		bindDoubleClick(viewer);
-		if (editor.hasAnyComment("exchanges")) {
-			Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.08, 0.08, 0.08, 0.08, 0.07, 0.07, 0.06);
-		} else {
-			Tables.bindColumnWidths(viewer, 0.2, 0.15, 0.1, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.07);
-		}
+		double x = editor.hasAnyComment("exchanges")
+				? 0.7 / 10
+				: 0.7 / 9;
+			Tables.bindColumnWidths(viewer,
+				0.15, 0.15, x, x, x, x, x, x, x, x, x);
 		Viewers.sortByLabels(viewer, label, 0, 1, 3, 4, 5, 6, 7, 8);
 		Viewers.sortByDouble(viewer, (Exchange e) -> e.amount, 2);
 		viewer.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
@@ -122,10 +123,13 @@ class ExchangeTable {
 		ms.bind(UNIT, new UnitCell(editor));
 		ms.bind(COSTS, new CostCellEditor(viewer, editor));
 		ms.bind(PEDIGREE, new DataQualityCellEditor(viewer, editor));
-		ms.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
+		ms.bind(UNCERTAINTY, new UncertaintyCellEditor(
+				viewer.getTable(), editor));
 		ms.bind(DESCRIPTION, new CommentEditor(viewer, editor));
 		ms.bind(PROVIDER, new ProviderCombo(editor));
 		ms.bind(AVOIDED, new AvoidedCheck(editor));
+		ms.bind(LOCATION, new LocationCell(
+				viewer.getTable(), editor));
 		ms.bind("", new CommentDialogModifier<Exchange>(
 				editor.getComments(), CommentPaths::get));
 		bindAmountModifier(ms);
@@ -209,7 +213,7 @@ class ExchangeTable {
 		List<String> columns = new ArrayList<>(
 				Arrays.asList(FLOW, CATEGORY, AMOUNT, UNIT,
 						COSTS, UNCERTAINTY, AVOIDED, PROVIDER,
-						PEDIGREE, DESCRIPTION));
+						PEDIGREE, LOCATION, DESCRIPTION));
 		if (editor.hasAnyComment("exchanges")) {
 			columns.add(COMMENT);
 		}

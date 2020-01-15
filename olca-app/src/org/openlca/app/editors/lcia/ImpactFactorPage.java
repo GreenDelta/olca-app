@@ -355,7 +355,6 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 		private final ImpactCategoryEditor editor;
 		private ImpactFactor factor;
 
-
 		LocationModifier(Composite parent, ImpactCategoryEditor editor) {
 			super(parent);
 			this.editor = editor;
