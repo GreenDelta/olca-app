@@ -45,8 +45,6 @@ public class TotalImpactResultPage extends FormPage {
 
 	private final ContributionResult result;
 	private final DQResult dqResult;
-	private final ImpactFactorProvider impactFactors;
-
 	private FormToolkit toolkit;
 	private TreeViewer viewer;
 	private ContributionCutoff spinner;
@@ -55,12 +53,11 @@ public class TotalImpactResultPage extends FormPage {
 	private boolean subgroupByProcesses = true;
 
 	public TotalImpactResultPage(FormEditor editor, ContributionResult result,
-			DQResult dqResult, CalculationSetup setup, ImpactFactorProvider impactFactors) {
+			DQResult dqResult, CalculationSetup setup) {
 		super(editor, "ImpactTreePage", M.ImpactAnalysis);
 		this.result = result;
 		this.setup = setup;
 		this.dqResult = dqResult;
-		this.impactFactors = impactFactors;
 	}
 
 	@Override
@@ -343,14 +340,6 @@ public class TotalImpactResultPage extends FormPage {
 		public void setCutoff(double cutoff) {
 			this.cutoff = cutoff;
 		}
-
-	}
-
-	public interface ImpactFactorProvider {
-
-		double get(ImpactCategoryDescriptor impact,
-				CategorizedDescriptor process,
-				FlowDescriptor flow);
 
 	}
 

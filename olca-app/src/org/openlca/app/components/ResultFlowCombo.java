@@ -1,4 +1,4 @@
-package org.openlca.app.viewers.combo;
+package org.openlca.app.components;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -10,23 +10,23 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Labels;
+import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
-public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
+public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 
-	private final EntityCache cache;
 	private final LabelProvider label = new LabelProvider();
 
-	public FlowViewer(Composite parent) {
+	public ResultFlowCombo(Composite parent) {
 		super(parent);
-		this.cache = Cache.getEntityCache();
-		setInput(new FlowDescriptor[0]);
+		setInput(new IndexFlow[0]);
 	}
 
 	@Override
@@ -50,6 +50,11 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 	}
 
 	@Override
+	public Class<IndexFlow> getType() {
+		return IndexFlow.class;
+	}
+
+	@Override
 	protected ViewerComparator getComparator() {
 		return new ViewerComparator() {
 			@Override
@@ -66,20 +71,16 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 		};
 	}
 
-	@Override
-	public Class<FlowDescriptor> getType() {
-		return FlowDescriptor.class;
-	}
-
 	private class LabelProvider extends BaseLabelProvider
 			implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof FlowDescriptor))
+			if (!(obj instanceof IndexFlow))
 				return null;
+			IndexFlow f = (IndexFlow) obj;
 			if (col == 0)
-				return Images.get((FlowDescriptor) obj);
+				return Images.get(f.flow);
 			if (col == 2)
 				return Images.get(ModelType.LOCATION);
 			return null;
@@ -87,52 +88,56 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof FlowDescriptor))
+			if (!(obj instanceof IndexFlow))
 				return null;
-			FlowDescriptor flow = (FlowDescriptor) obj;
+			IndexFlow f = (IndexFlow) obj;
+			if (f.flow == null)
+				return null;
+
+			EntityCache cache = Cache.getEntityCache();
 			switch (col) {
+
 			case 0:
-				return flow.name;
+				// name
+				return Labels.getDisplayName(f.flow);
+
 			case 1:
-				if (flow.category == null)
+				// category
+				if (f.flow.category == null)
 					return null;
-				Category category = cache.get(Category.class, flow.category);
-				return CategoryPath.getFull(category);
+				Category c = cache.get(Category.class, f.flow.category);
+				return CategoryPath.getFull(c);
+
 			case 2:
-				if (flow.location == null)
+				// location
+				if (f.location == null)
 					return null;
-				Location loc = cache.get(Location.class, flow.location);
+				// TODO: probably it would be good to add the
+				// location code to the location descriptor
+				Location loc = cache.get(Location.class, f.location.id);
 				return loc != null ? loc.code : null;
+
 			case 3:
-				return fullName(flow);
+				// full display label
+				String s = f.flow.name;
+				if (f.flow.category != null) {
+					c = cache.get(Category.class, f.flow.category);
+					if (c != null) {
+						s += " - " + CategoryPath.getShort(c);
+					}
+				}
+				if (f.location != null) {
+					loc = cache.get(Location.class, f.location.id);
+					if (loc != null) {
+						s += " - " + loc.code;
+					}
+				}
+				return s;
 			default:
-				return null;
+				break;
 			}
-		}
-
-		private String fullName(FlowDescriptor flow) {
-			if (flow == null)
-				return null;
-			String t = flow.name;
-			Category category = getCategory(flow);
-			if (category != null)
-				t += " - " + CategoryPath.getShort(category);
-			Location location = getLocation(flow);
-			if (location != null && location.code != null)
-				t += " - " + location.code;
-			return t;
-		}
-
-		private Category getCategory(FlowDescriptor flow) {
-			if (flow == null || flow.category == null)
-				return null;
-			return cache.get(Category.class, flow.category);
-		}
-
-		private Location getLocation(FlowDescriptor flow) {
-			if (flow == null || flow.location == null)
-				return null;
-			return cache.get(Location.class, flow.location);
+			return null;
 		}
 	}
+
 }
