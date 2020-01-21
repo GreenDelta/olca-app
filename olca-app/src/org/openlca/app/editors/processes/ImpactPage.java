@@ -139,7 +139,7 @@ class ImpactPage extends ModelPage<Process> {
 		List<Exchange> eList = getModel().exchanges;
 		double[] values = new double[eList.size()];
 		Exchange[] exchanges = new Exchange[eList.size()];
-		FlowIndex flowIdx = new FlowIndex();
+		FlowIndex flowIdx = FlowIndex.create(); // TODO: check regionalization
 		for (Exchange e : eList) {
 			if (e.flow == null ||
 					e.flow.flowType != FlowType.ELEMENTARY_FLOW)

@@ -106,8 +106,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 					CalculationSetup setup = new CalculationSetup(
 							CalculationType.SIMPLE_CALCULATION, system);
 					MatrixData data = DataStructures.matrixData(
-							setup, App.getSolver(), Database.get(),
-							Collections.emptyMap());
+							setup, Database.get(), Collections.emptyMap());
 					IMatrix matrix = data.techMatrix;
 					matrix = new MatrixRowSorter(matrix, App.getSolver()).run();
 					new MatrixImageExport(matrix, file).run();

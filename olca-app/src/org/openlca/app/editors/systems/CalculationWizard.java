@@ -3,11 +3,11 @@ package org.openlca.app.editors.systems;
 import java.lang.reflect.InvocationTargetException;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -31,6 +31,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.CalculationType;
@@ -45,7 +46,6 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.SimpleResult;
@@ -230,7 +230,7 @@ public class CalculationWizard extends Wizard {
 					Database.get(), App.getSolver());
 			FullResult result = calculator.calculateFull(setup);
 			log.trace("calculation done, open editor");
-			setInventory(result);
+			saveInventory(result);
 			DQResult dqResult = DQResult.calculate(Database.get(), result, dqSetup);
 			ResultEditorInput input = getEditorInput(result, setup, null, dqResult);
 			Editors.open(input, AnalyzeEditor.ID);
@@ -242,7 +242,7 @@ public class CalculationWizard extends Wizard {
 					Database.get(), App.getSolver());
 			ContributionResult result = calculator.calculateContributions(setup);
 			log.trace("calculation done, open editor");
-			setInventory(result);
+			saveInventory(result);
 			DQResult dqResult = DQResult.calculate(Database.get(), result, dqSetup);
 			ResultEditorInput input = getEditorInput(result, setup, null, dqResult);
 			Editors.open(input, QuickResultEditor.ID);
@@ -258,7 +258,7 @@ public class CalculationWizard extends Wizard {
 				MsgBox.info(M.NoRegionalizedInformation_Message);
 				return;
 			}
-			setInventory(result.result);
+			saveInventory(result.result);
 			DQResult dqResult = DQResult.calculate(
 					Database.get(), result.result, dqSetup);
 			ResultEditorInput input = getEditorInput(
@@ -266,28 +266,43 @@ public class CalculationWizard extends Wizard {
 			Editors.open(input, RegionalizedResultEditor.ID);
 		}
 
-		private void setInventory(SimpleResult result) {
+		private void saveInventory(SimpleResult r) {
 			if (!storeInventoryResult)
 				return;
-			productSystem.inventory.clear();
-			Map<Long, Flow> flows = new HashMap<>();
-			Set<Long> ids = new HashSet<>();
-			for (FlowDescriptor flow : result.getFlows()) {
-				ids.add(flow.id);
-			}
-			for (Flow flow : new FlowDao(Database.get()).getForIds(ids)) {
-				flows.put(flow.id, flow);
-			}
-			for (FlowDescriptor d : result.getFlows()) {
-				Flow flow = flows.get(d.id);
-				Exchange exchange = Exchange.from(flow);
-				exchange.amount = result.getTotalFlowResult(d);
-				exchange.isInput = result.isInput(d);
-				productSystem.inventory.add(exchange);
-			}
-			productSystem = new ProductSystemDao(
-					Database.get()).update(productSystem);
-		}
 
+			productSystem.inventory.clear();
+			IDatabase db = Database.get();
+			ProductSystemDao sysDao = new ProductSystemDao(db);
+			if (r.flowIndex == null || r.flowIndex.isEmpty()) {
+				productSystem = sysDao.update(productSystem);
+				return;
+			}
+
+			// load the used flows
+			Set<Long> flowIDs = new HashSet<>();
+			r.flowIndex.each((i, f) -> {
+				if (f.flow == null)
+					return;
+				flowIDs.add(f.flow.id);
+			});
+			Map<Long, Flow> flows = new FlowDao(db)
+					.getForIds(flowIDs).stream()
+					.collect(Collectors.toMap(f -> f.id, f -> f));
+
+			// create the exchanges
+			r.flowIndex.each((i, f) -> {
+				if (f.flow == null)
+					return;
+				Flow flow = flows.get(f.flow.id);
+				if (flow == null)
+					return;
+				Exchange e = Exchange.from(flow);
+				e.amount = r.getTotalFlowResult(f);
+				e.isInput = f.isInput;
+				productSystem.inventory.add(e);
+			});
+
+			productSystem = sysDao.update(productSystem);
+		}
 	}
 }
