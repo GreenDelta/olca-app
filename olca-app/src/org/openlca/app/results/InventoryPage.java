@@ -1,7 +1,6 @@
 package org.openlca.app.results;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -36,8 +35,8 @@ import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.util.Strings;
@@ -78,18 +77,22 @@ public class InventoryPage extends FormPage {
 	}
 
 	private void fillTrees(TreeViewer inputTree, TreeViewer outputTree) {
-		Collection<FlowDescriptor> flows = result.getFlows();
-		List<FlowDescriptor> inFlows = new ArrayList<>();
-		List<FlowDescriptor> outFlows = new ArrayList<>();
-		for (FlowDescriptor flow : flows) {
-			if (result.isInput(flow)) {
-				inFlows.add(flow);
-			} else {
-				outFlows.add(flow);
-			}
+		List<IndexFlow> inFlows = new ArrayList<>();
+		List<IndexFlow> outFlows = new ArrayList<>();
+		if (result.flowIndex != null) {
+			result.flowIndex.each((i, f) -> {
+				if (f.isInput) {
+					inFlows.add(f);
+				} else {
+					outFlows.add(f);
+				}
+			});
 		}
-		Comparator<FlowDescriptor> comparator = (f1, f2) -> Strings.compare(
-				f1.name, f2.name);
+		Comparator<IndexFlow> comparator = (f1, f2) -> {
+			if (f1.flow == null || f2.flow == null)
+				return 0;
+			return Strings.compare(f1.flow.name, f2.flow.name);
+		};
 		Collections.sort(inFlows, comparator);
 		Collections.sort(outFlows, comparator);
 		inputTree.setInput(inFlows);
@@ -97,22 +100,30 @@ public class InventoryPage extends FormPage {
 	}
 
 	private TreeViewer createTree(Composite parent, boolean forInputs) {
-		Section section = UI.section(parent, toolkit, forInputs ? M.Inputs : M.Outputs);
+
+		// create section and cutoff combo
+		Section section = UI.section(parent, toolkit,
+				forInputs ? M.Inputs : M.Outputs);
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, toolkit);
 		UI.gridLayout(comp, 1);
-		String[] headers = new String[] { M.Name, M.Category, M.SubCategory, M.Amount, M.Unit };
-		if (DQUI.displayExchangeQuality(dqResult)) {
-			headers = DQUI.appendTableHeaders(headers, dqResult.setup.exchangeDqSystem);
-		}
 		ContributionCutoff spinner = ContributionCutoff.create(comp, toolkit);
+
+		// create the tree
+		String[] headers = new String[] {
+				M.Name, M.Category, M.SubCategory, M.Amount, M.Unit };
+		if (DQUI.displayExchangeQuality(dqResult)) {
+			headers = DQUI.appendTableHeaders(
+					headers, dqResult.setup.exchangeDqSystem);
+		}
 		Label label = new Label();
 		TreeViewer viewer = Trees.createViewer(comp, headers, label);
 		viewer.setContentProvider(new ContentProvider());
 		createColumnSorters(viewer, label);
 		double[] widths = { .4, .2, .2, .15, .05 };
 		if (DQUI.displayExchangeQuality(dqResult)) {
-			widths = DQUI.adjustTableWidths(widths, dqResult.setup.exchangeDqSystem);
+			widths = DQUI.adjustTableWidths(
+					widths, dqResult.setup.exchangeDqSystem);
 		}
 		viewer.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(viewer.getTree(), DQUI.MIN_COL_WIDTH, widths);
@@ -137,7 +148,8 @@ public class InventoryPage extends FormPage {
 		Viewers.sortByLabels(viewer, label, 0, 1, 2, 4);
 		Viewers.sortByDouble(viewer, this::getAmount, 3);
 		if (DQUI.displayExchangeQuality(dqResult)) {
-			for (int i = 0; i < dqResult.setup.exchangeDqSystem.indicators.size(); i++) {
+			int len = dqResult.setup.exchangeDqSystem.indicators.size();
+			for (int i = 0; i < len; i++) {
 				Viewers.sortByDouble(viewer, label, i + 5);
 			}
 		}
@@ -150,9 +162,9 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public Object[] getChildren(Object e) {
-			if (!(e instanceof FlowDescriptor))
+			if (!(e instanceof IndexFlow))
 				return null;
-			FlowDescriptor flow = (FlowDescriptor) e;
+			IndexFlow flow = (IndexFlow) e;
 			double cutoffValue = Math.abs(getAmount(flow) * this.cutoff);
 			return result.getProcessContributions(flow).contributions.stream()
 					.filter(i -> i.amount != 0)
@@ -172,9 +184,7 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public boolean hasChildren(Object e) {
-			if (e instanceof FlowDescriptor)
-				return true;
-			return false;
+			return e instanceof IndexFlow;
 		}
 
 		@Override
@@ -188,7 +198,9 @@ public class InventoryPage extends FormPage {
 		private ContributionImage img = new ContributionImage();
 
 		Label() {
-			super(dqResult, dqResult != null ? dqResult.setup.exchangeDqSystem : null, 5);
+			super(dqResult, dqResult != null
+					? dqResult.setup.exchangeDqSystem
+					: null, 5);
 		}
 
 		@Override
@@ -199,8 +211,8 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public Image getImage(Object obj, int col) {
-			if (col == 0 && obj instanceof FlowDescriptor)
-				return Images.get((FlowDescriptor) obj);
+			if (col == 0 && obj instanceof IndexFlow)
+				return Images.get(((IndexFlow) obj).flow);
 			if (!(obj instanceof Contribution))
 				return null;
 			Contribution c = (Contribution) obj;
@@ -213,27 +225,28 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public String getText(Object obj, int col) {
-			if (obj instanceof FlowDescriptor)
-				return getFlowColumnText((FlowDescriptor) obj, col);
+			if (obj instanceof IndexFlow)
+				return getFlowColumnText((IndexFlow) obj, col);
 			if (obj instanceof Contribution)
 				return getProcessColumnText((Contribution) obj, col);
 			return null;
 		}
 
-		private String getFlowColumnText(FlowDescriptor flow, int col) {
-			Pair<String, String> category = Labels.getCategory(flow);
+		private String getFlowColumnText(IndexFlow f, int col) {
+			if (f.flow == null)
+				return null;
+			Pair<String, String> category = Labels.getCategory(f.flow);
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(flow);
+				return Labels.getDisplayName(f.flow);
 			case 1:
 				return category.getLeft();
 			case 2:
 				return category.getRight();
 			case 3:
-				double v = getAmount(flow);
-				return Numbers.format(v);
+				return Numbers.format(getAmount(f));
 			case 4:
-				return Labels.getRefUnit(flow);
+				return Labels.getRefUnit(f.flow);
 			default:
 				return null;
 			}
@@ -253,7 +266,7 @@ public class InventoryPage extends FormPage {
 				double v = getAmount(item);
 				return Numbers.format(v);
 			case 4:
-				return Labels.getRefUnit(item.flow);
+				return Labels.getRefUnit(item.flow.flow);
 			default:
 				return null;
 			}
@@ -261,24 +274,23 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		protected int[] getQuality(Object obj) {
-			if (obj instanceof FlowDescriptor) {
-				FlowDescriptor flow = (FlowDescriptor) obj;
-				return dqResult.get(flow);
+			if (obj instanceof IndexFlow) {
+				IndexFlow f = (IndexFlow) obj;
+				return dqResult.get(f.flow);
 			}
 			if (obj instanceof Contribution) {
 				Contribution item = (Contribution) obj;
-				return dqResult.get(item.item.item, item.flow);
+				return dqResult.get(item.item.item, item.flow.flow);
 			}
 			return null;
 		}
-
 	}
 
-	private double getAmount(Object element) {
-		if (element instanceof FlowDescriptor) {
-			return result.getTotalFlowResult((FlowDescriptor) element);
-		} else if (element instanceof Contribution) {
-			Contribution item = (Contribution) element;
+	private double getAmount(Object o) {
+		if (o instanceof IndexFlow) {
+			return result.getTotalFlowResult((IndexFlow) o);
+		} else if (o instanceof Contribution) {
+			Contribution item = (Contribution) o;
 			return item.item.amount;
 		}
 		return 0d;
@@ -287,9 +299,11 @@ public class InventoryPage extends FormPage {
 	private class Contribution {
 
 		final ContributionItem<CategorizedDescriptor> item;
-		final FlowDescriptor flow;
+		final IndexFlow flow;
 
-		private Contribution(ContributionItem<CategorizedDescriptor> item, FlowDescriptor flow) {
+		private Contribution(
+				ContributionItem<CategorizedDescriptor> item,
+				IndexFlow flow) {
 			this.item = item;
 			this.flow = flow;
 		}
