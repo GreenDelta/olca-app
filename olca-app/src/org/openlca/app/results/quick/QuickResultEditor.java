@@ -18,9 +18,6 @@ import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +72,7 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 			addPage(new InventoryPage(this, result, dqResult, setup));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(
-						this, result, dqResult, setup, this::getImpactFactor));
+						this, result, dqResult, setup));
 			if (result.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, result, setup));
 			addPage(new LocationPage(this, result, setup));
@@ -86,22 +83,6 @@ public class QuickResultEditor extends FormEditor implements IResultEditor<Contr
 		} catch (Exception e) {
 			log.error("failed to add pages", e);
 		}
-	}
-
-	private double getImpactFactor(
-			ImpactCategoryDescriptor impact,
-			CategorizedDescriptor process,
-			FlowDescriptor flow) {
-		int row = result.impactIndex.of(impact);
-		int col = result.flowIndex.of(flow);
-		double value = result.impactFactors.get(row, col);
-		if (result.isInput(flow)) {
-			// characterization factors for input flows are negative in the
-			// matrix. A simple abs() is not correct because the original
-			// characterization factor maybe was already negative (-(-(f))).
-			value = -value;
-		}
-		return value;
 	}
 
 	@Override
