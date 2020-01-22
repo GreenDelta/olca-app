@@ -10,6 +10,7 @@ import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.ProcessingType;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Currency;
@@ -80,6 +81,12 @@ public class Labels {
 				text = text + " - " + loc.code;
 		}
 		return text;
+	}
+
+	public static String getRefUnit(IndexFlow flow) {
+		if (flow == null)
+			return "";
+		return getRefUnit(flow.flow);
 	}
 
 	public static String getRefUnit(FlowDescriptor flow) {

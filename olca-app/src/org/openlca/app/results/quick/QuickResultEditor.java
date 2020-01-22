@@ -22,7 +22,8 @@ import org.openlca.core.results.ContributionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QuickResultEditor extends FormEditor implements IResultEditor<ContributionResult> {
+public class QuickResultEditor extends FormEditor
+		implements IResultEditor<ContributionResult> {
 
 	public static String ID = "QuickResultEditor";
 

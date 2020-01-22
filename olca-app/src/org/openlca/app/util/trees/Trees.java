@@ -49,7 +49,8 @@ public class Trees {
 	}
 
 	public static TreeViewer createViewer(Composite parent, String[] headers, IBaseLabelProvider label) {
-		TreeViewer viewer = new TreeViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
+		TreeViewer viewer = new TreeViewer(parent,
+				SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		Tree tree = viewer.getTree();
 		boolean hasColumns = headers != null && headers.length > 0;
 		tree.setLinesVisible(hasColumns);
@@ -67,7 +68,8 @@ public class Trees {
 		return viewer;
 	}
 
-	private static void createColumns(TreeViewer viewer, String[] labels, IBaseLabelProvider labelProvider) {
+	private static void createColumns(TreeViewer viewer,
+			String[] labels, IBaseLabelProvider labelProvider) {
 		if (labelProvider instanceof CellLabelProvider) {
 			ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
 		}

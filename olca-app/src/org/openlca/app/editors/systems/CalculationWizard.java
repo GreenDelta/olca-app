@@ -18,16 +18,13 @@ import org.eclipse.ui.IEditorPart;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.Preferences;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.results.quick.QuickResultEditor;
-import org.openlca.app.results.regionalized.RegionalizedResultEditor;
 import org.openlca.app.results.simulation.SimulationEditor;
-import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
@@ -49,8 +46,7 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.SimpleResult;
-import org.openlca.geo.RegionalizedCalculator;
-import org.openlca.geo.RegionalizedResult;
+import org.openlca.geo.RegCalculator;
 import org.openlca.geo.parameter.ParameterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -238,32 +234,26 @@ public class CalculationWizard extends Wizard {
 
 		private void solve() {
 			log.trace("run quick calculation");
-			SystemCalculator calculator = new SystemCalculator(
+			SystemCalculator calc = new SystemCalculator(
 					Database.get(), App.getSolver());
-			ContributionResult result = calculator.calculateContributions(setup);
+			ContributionResult r = calc.calculateContributions(setup);
 			log.trace("calculation done, open editor");
-			saveInventory(result);
-			DQResult dqResult = DQResult.calculate(Database.get(), result, dqSetup);
-			ResultEditorInput input = getEditorInput(result, setup, null, dqResult);
+			saveInventory(r);
+			DQResult dqResult = DQResult.calculate(Database.get(), r, dqSetup);
+			ResultEditorInput input = getEditorInput(r, setup, null, dqResult);
 			Editors.open(input, QuickResultEditor.ID);
 		}
 
 		private void calcRegionalized() {
 			log.trace("calculate regionalized result");
-			RegionalizedCalculator calc = new RegionalizedCalculator(
-					setup, App.getSolver());
-			RegionalizedResult result = calc.calculate(
-					Database.get(), Cache.getMatrixCache());
-			if (result == null) {
-				MsgBox.info(M.NoRegionalizedInformation_Message);
-				return;
-			}
-			saveInventory(result.result);
-			DQResult dqResult = DQResult.calculate(
-					Database.get(), result.result, dqSetup);
-			ResultEditorInput input = getEditorInput(
-					result, setup, result.parameterSet, dqResult);
-			Editors.open(input, RegionalizedResultEditor.ID);
+			RegCalculator calc = new RegCalculator(
+					Database.get(), App.getSolver());
+			FullResult r = calc.calculateFull(setup);
+			log.trace("calculation done, open editor");
+			saveInventory(r);
+			DQResult dqResult = DQResult.calculate(Database.get(), r, dqSetup);
+			ResultEditorInput input = getEditorInput(r, setup, null, dqResult);
+			Editors.open(input, AnalyzeEditor.ID);
 		}
 
 		private void saveInventory(SimpleResult r) {

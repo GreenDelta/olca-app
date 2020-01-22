@@ -13,14 +13,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.components.ResultFlowCombo;
 import org.openlca.app.results.contributions.ContributionChart;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
-import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResult;
@@ -36,7 +36,7 @@ class GroupResultSection {
 
 	private List<ProcessGrouping> groups;
 	private ContributionResult result;
-	private FlowViewer flowViewer;
+	private ResultFlowCombo flowViewer;
 	private ImpactCategoryViewer impactViewer;
 	private ContributionChart chart;
 	private GroupResultTable table;
@@ -50,7 +50,7 @@ class GroupResultSection {
 		Object selection;
 		String unit;
 		if (resultType == FLOW) {
-			FlowDescriptor flow = flowViewer.getSelected();
+			IndexFlow flow = flowViewer.getSelected();
 			unit = Labels.getRefUnit(flow);
 			selection = flow;
 		} else {
@@ -68,16 +68,15 @@ class GroupResultSection {
 			table.setInput(items, unit);
 			List<ContributionItem<?>> chartData = new ArrayList<>();
 			chartData.addAll(items);
-			chart.setData(chartData, unit);
 		}
 	}
 
-	private List<ContributionItem<ProcessGrouping>> calculate(Object selection) {
-		GroupingContribution calculator = new GroupingContribution(result, groups);
-		if (selection instanceof FlowDescriptor)
-			return calculator.calculate((FlowDescriptor) selection).contributions;
-		if (selection instanceof ImpactCategoryDescriptor)
-			return calculator.calculate((ImpactCategoryDescriptor) selection).contributions;
+	private List<ContributionItem<ProcessGrouping>> calculate(Object o) {
+		GroupingContribution calc = new GroupingContribution(result, groups);
+		if (o instanceof IndexFlow)
+			return calc.calculate((IndexFlow) o).contributions;
+		if (o instanceof ImpactCategoryDescriptor)
+			return calc.calculate((ImpactCategoryDescriptor) o).contributions;
 		return Collections.emptyList();
 	}
 
@@ -110,12 +109,13 @@ class GroupResultSection {
 	private void createFlowViewer(FormToolkit toolkit, Composite parent) {
 		Button flowsCheck = toolkit.createButton(parent, M.Flows, SWT.RADIO);
 		flowsCheck.setSelection(true);
-		flowViewer = new FlowViewer(parent);
-		Set<FlowDescriptor> flows = result.getFlows();
-		flowViewer.setInput(flows.toArray(new FlowDescriptor[flows.size()]));
-		flowViewer.addSelectionChangedListener((e) -> update());
-		if (flows.size() > 0)
+		flowViewer = new ResultFlowCombo(parent);
+		Set<IndexFlow> flows = result.getFlows();
+		flowViewer.setInput(flows);
+		flowViewer.addSelectionChangedListener(e -> update());
+		if (flows.size() > 0) {
 			flowViewer.select(flows.iterator().next());
+		}
 		new ResultTypeCheck(flowViewer, flowsCheck, FLOW);
 	}
 
