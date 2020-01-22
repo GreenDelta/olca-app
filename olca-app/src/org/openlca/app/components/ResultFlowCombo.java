@@ -22,8 +22,6 @@ import org.openlca.util.Strings;
 
 public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 
-	private final LabelProvider label = new LabelProvider();
-
 	public ResultFlowCombo(Composite parent) {
 		super(parent);
 		setInput(new IndexFlow[0]);
@@ -46,7 +44,7 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 
 	@Override
 	protected IBaseLabelProvider getLabelProvider() {
-		return label;
+		return new LabelProvider();
 	}
 
 	@Override
@@ -57,6 +55,9 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 	@Override
 	protected ViewerComparator getComparator() {
 		return new ViewerComparator() {
+
+			private LabelProvider label = new LabelProvider();
+
 			@Override
 			public int compare(Viewer viewer, Object e1, Object e2) {
 				for (int col = 0; col < 3; col++) {

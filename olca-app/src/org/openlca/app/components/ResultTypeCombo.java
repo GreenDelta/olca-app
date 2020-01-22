@@ -66,6 +66,10 @@ public class ResultTypeCombo {
 		}
 	}
 
+	public void initWithEvent() {
+
+	}
+
 	public Object getSelection() {
 		switch (selectedType) {
 		case FLOW:

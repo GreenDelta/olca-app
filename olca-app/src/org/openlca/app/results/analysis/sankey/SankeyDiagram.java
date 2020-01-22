@@ -2,7 +2,7 @@ package org.openlca.app.results.analysis.sankey;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -38,13 +38,14 @@ import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.matrix.ProcessLinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.FullResult;
+import org.openlca.util.Strings;
 
 public class SankeyDiagram extends GraphicalEditor implements PropertyChangeListener {
 
@@ -73,38 +74,37 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	}
 
 	private void createConnections(long startProcessId) {
-		Set<Long> processed = new HashSet<>();
+		Set<Long> handled = new HashSet<>();
 		Stack<Long> processes = new Stack<>();
 		processes.add(startProcessId);
 		while (!processes.isEmpty()) {
 			long nextId = processes.pop();
-			processed.add(nextId);
-			for (ProcessLink processLink : linkSearchMap.getIncomingLinks(nextId)) {
-				ProcessNode sourceNode = createdProcesses.get(processLink.providerId);
-				ProcessNode targetNode = createdProcesses.get(processLink.processId);
-				if (sourceNode == null || targetNode == null)
+			handled.add(nextId);
+			for (ProcessLink link : linkSearchMap.getIncomingLinks(nextId)) {
+				if (createdLinks.containsKey(link))
 					continue;
-				if (createdLinks.containsKey(processLink))
+				ProcessNode source = createdProcesses.get(link.providerId);
+				ProcessNode target = createdProcesses.get(link.processId);
+				if (source == null || target == null)
 					continue;
-				double ratio = sankeyResult.getLinkContribution(processLink);
-				Link link = new Link(sourceNode, targetNode, processLink, ratio);
-				createdLinks.put(processLink, link);
-				if (processed.contains(sourceNode.process.id))
+				double ratio = sankeyResult.getLinkContribution(link);
+				createdLinks.put(link, new Link(source, target, link, ratio));
+				if (handled.contains(source.process.id))
 					continue;
-				processes.add(sourceNode.process.id);
+				processes.add(source.process.id);
 			}
 		}
 	}
 
 	private ProcessNode createNode(CategorizedDescriptor process) {
-		ProcessNode node = new ProcessNode(process);
-		long processId = process.id;
-		node.directContribution = sankeyResult.getDirectContribution(processId);
-		node.directResult = sankeyResult.getDirectResult(processId);
-		node.upstreamContribution = sankeyResult.getUpstreamContribution(processId);
-		node.upstreamResult = sankeyResult.getUpstreamResult(processId);
-		createdProcesses.put(process.id, node);
-		return node;
+		ProcessNode n = new ProcessNode(process);
+		long id = process.id;
+		n.directContribution = sankeyResult.getDirectContribution(id);
+		n.directResult = sankeyResult.getDirectResult(id);
+		n.upstreamContribution = sankeyResult.getUpstreamContribution(id);
+		n.upstreamResult = sankeyResult.getUpstreamResult(id);
+		createdProcesses.put(id, n);
+		return n;
 	}
 
 	private void updateConnections() {
@@ -140,8 +140,6 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 
 	@Override
 	protected void configureGraphicalViewer() {
-		ArrayList<String> zoomContributions;
-		// configure viewer
 		super.configureGraphicalViewer();
 
 		MenuManager menu = SankeyMenu.create(this);
@@ -149,20 +147,17 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 
 		GraphicalViewer viewer = getGraphicalViewer();
 		viewer.setEditPartFactory(new SankeyEditPartFactory());
-		ScalableRootEditPart rootEditPart = new ScalableRootEditPart();
-		viewer.setRootEditPart(rootEditPart);
-
-		ZoomManager zoomManager = rootEditPart.getZoomManager();
+		ScalableRootEditPart root = new ScalableRootEditPart();
+		viewer.setRootEditPart(root);
 
 		// append zoom actions to action registry
-		getActionRegistry().registerAction(new ZoomInAction(zoomManager));
-		getActionRegistry().registerAction(new ZoomOutAction(zoomManager));
-
-		zoomContributions = new ArrayList<>();
-		zoomContributions.add(ZoomManager.FIT_ALL);
-		zoomContributions.add(ZoomManager.FIT_HEIGHT);
-		zoomContributions.add(ZoomManager.FIT_WIDTH);
-		zoomManager.setZoomLevelContributions(zoomContributions);
+		ZoomManager zoom = root.getZoomManager();
+		getActionRegistry().registerAction(new ZoomInAction(zoom));
+		getActionRegistry().registerAction(new ZoomOutAction(zoom));
+		zoom.setZoomLevelContributions(Arrays.asList(
+				ZoomManager.FIT_ALL,
+				ZoomManager.FIT_HEIGHT,
+				ZoomManager.FIT_WIDTH));
 
 		// create key handler
 		KeyHandler keyHandler = new KeyHandler();
@@ -215,30 +210,36 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 
 	// TODO: avoid double calculation here
 	private void initContent() {
-		Object defaultSelection = getDefaultSelection();
-		if (defaultSelection == null) {
+		Object s = getDefaultSelection();
+		if (s == null) {
 			getGraphicalViewer().setContents(
 					new ProductSystemNode(productSystem, this, null, 0.1));
 			return;
 		}
-		sankeyResult.calculate(defaultSelection);
+		sankeyResult.calculate(s); // => here
 		double cutoff = sankeyResult.findCutoff(30);
-		update(defaultSelection, cutoff);
+		update(s, cutoff); // => TODO: also calls sankeyResult.calculate(s)
 	}
 
 	public Object getDefaultSelection() {
 		if (result == null)
 			return null;
+
 		if (result.hasImpactResults()) {
-			Set<ImpactCategoryDescriptor> categories = result
-					.getImpacts();
-			if (!categories.isEmpty())
-				return categories.iterator().next();
+			ImpactCategoryDescriptor impact = result.getImpacts().stream()
+					.sorted((i1, i2) -> Strings.compare(i1.name, i2.name))
+					.findFirst().orElse(null);
+			if (impact != null)
+				return impact;
 		}
-		Set<FlowDescriptor> flows = result.getFlows();
-		if (!flows.isEmpty())
-			return flows.iterator().next();
-		return null;
+
+		IndexFlow flow = result.getFlows().stream()
+				.sorted((f1, f2) -> {
+					if (f1.flow == null || f2.flow == null)
+						return 0;
+					return Strings.compare(f1.flow.name, f2.flow.name);
+				}).findFirst().orElse(null);
+		return flow;
 	}
 
 	@Override
@@ -246,7 +247,8 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	}
 
 	public double getProductSystemResult() {
-		return sankeyResult.getUpstreamResult(productSystem.referenceProcess.id);
+		return sankeyResult.getUpstreamResult(
+				productSystem.referenceProcess.id);
 	}
 
 	@Override
@@ -270,15 +272,18 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	public void update(Object selection, double cutoff) {
 		if (selection == null || cutoff < 0d || cutoff > 1d)
 			return;
-		App.run("Calculate sankey results", () -> sankeyResult.calculate(selection), () -> {
-			node = new ProductSystemNode(productSystem, this, selection, cutoff);
-			createdProcesses.clear();
-			createdLinks.clear();
-			updateModel(cutoff);
-			getGraphicalViewer().deselectAll();
-			getGraphicalViewer().setContents(node);
-			node.setRouted(routed);
-		});
+		App.run("Calculate sankey results",
+				() -> sankeyResult.calculate(selection),
+				() -> {
+					node = new ProductSystemNode(
+							productSystem, this, selection, cutoff);
+					createdProcesses.clear();
+					createdLinks.clear();
+					updateModel(cutoff);
+					getGraphicalViewer().deselectAll();
+					getGraphicalViewer().setContents(node);
+					node.setRouted(routed);
+				});
 	}
 
 	public boolean isRouted() {

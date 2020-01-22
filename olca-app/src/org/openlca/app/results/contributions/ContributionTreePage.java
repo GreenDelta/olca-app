@@ -30,6 +30,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.FullResult;
@@ -46,11 +47,12 @@ public class ContributionTreePage extends FormPage {
 	private static final String[] HEADERS = { M.Contribution,
 			M.Process, M.Amount, M.Unit };
 
-	public ContributionTreePage(FormEditor editor, FullResult result, CalculationSetup setup) {
+	public ContributionTreePage(FormEditor editor,
+			FullResult result, CalculationSetup setup) {
 		super(editor, "analysis.ContributionTreePage", M.ContributionTree);
 		this.result = result;
 		this.setup = setup;
-		Iterator<FlowDescriptor> it = result.getFlows().iterator();
+		Iterator<IndexFlow> it = result.getFlows().stream().sorted(comparator);
 		if (it.hasNext())
 			selection = it.next();
 	}
@@ -73,7 +75,7 @@ public class ContributionTreePage extends FormPage {
 		UI.gridData(treeComp, true, true);
 		createTree(tk, treeComp);
 		form.reflow(true);
-		selector.selectWithEvent(selection);
+		selector.initWithEvent();
 	}
 
 	private void createTree(FormToolkit tk, Composite comp) {
@@ -100,7 +102,7 @@ public class ContributionTreePage extends FormPage {
 	private class SelectionHandler implements EventHandler {
 
 		@Override
-		public void flowSelected(FlowDescriptor flow) {
+		public void flowSelected(IndexFlow flow) {
 			selection = flow;
 			UpstreamTree model = result.getTree(flow);
 			tree.setInput(model);
