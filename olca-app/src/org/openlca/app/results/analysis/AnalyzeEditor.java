@@ -1,19 +1,16 @@
 package org.openlca.app.results.analysis;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
-import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.ImpactChecksPage;
 import org.openlca.app.results.InfoPage;
 import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.NwResultPage;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.ResultEditorInput;
-import org.openlca.app.results.SaveProcessDialog;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.contributions.ContributionTreePage;
@@ -30,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  * View for the analysis results of a product system.
  */
-public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResult> {
+public class AnalyzeEditor extends ResultEditor<FullResult> {
 
 	public static final String ID = "editors.analyze";
 
@@ -41,21 +38,6 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 	private CalculationSetup setup;
 	private FullResult result;
 	private DQResult dqResult;
-
-	@Override
-	public CalculationSetup getSetup() {
-		return setup;
-	}
-
-	@Override
-	public FullResult getResult() {
-		return result;
-	}
-
-	@Override
-	public DQResult getDqResult() {
-		return dqResult;
-	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput iInput)
@@ -80,7 +62,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 	protected void addPages() {
 		try {
 			addPage(new InfoPage(this, result, dqResult, setup));
-			addPage(new InventoryPage(this, result, dqResult, setup));
+			addPage(new InventoryPage(this));
 			if (result.hasImpactResults())
 				addPage(new TotalImpactResultPage(this, result, dqResult, setup));
 			if (result.hasImpactResults() && setup.nwSet != null)
@@ -100,27 +82,8 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 		}
 	}
 
-	@Override
-	public void doSave(final IProgressMonitor monitor) {
-	}
-
-	@Override
-	public void doSaveAs() {
-		SaveProcessDialog.open(this);
-	}
-
 	public SankeyDiagram getDiagram() {
 		return diagram;
-	}
-
-	@Override
-	public boolean isDirty() {
-		return false;
-	}
-
-	@Override
-	public boolean isSaveAsAllowed() {
-		return true;
 	}
 
 	@Override

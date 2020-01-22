@@ -1,8 +1,6 @@
 package org.openlca.app.results;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +13,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -39,24 +36,25 @@ import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.util.Strings;
 
 /**
  * Shows the inventory result with process contributions.
  */
 public class InventoryPage extends FormPage {
 
-	private FormToolkit toolkit;
-	private CalculationSetup setup;
-	private ContributionResult result;
-	private DQResult dqResult;
+	private final ResultEditor<? extends ContributionResult> editor;
+	private final CalculationSetup setup;
+	private final ContributionResult result;
+	private final DQResult dqResult;
 
-	public InventoryPage(FormEditor editor, ContributionResult result,
-			DQResult dqResult, CalculationSetup setup) {
+	private FormToolkit toolkit;
+
+	public InventoryPage(ResultEditor<? extends ContributionResult> editor) {
 		super(editor, "InventoryPage", M.InventoryResults);
-		this.result = result;
-		this.setup = setup;
-		this.dqResult = dqResult;
+		this.editor = editor;
+		this.result = editor.result;
+		this.setup = editor.setup;
+		this.dqResult = editor.dqResult;
 	}
 
 	@Override
@@ -79,22 +77,13 @@ public class InventoryPage extends FormPage {
 	private void fillTrees(TreeViewer inputTree, TreeViewer outputTree) {
 		List<IndexFlow> inFlows = new ArrayList<>();
 		List<IndexFlow> outFlows = new ArrayList<>();
-		if (result.flowIndex != null) {
-			result.flowIndex.each((i, f) -> {
-				if (f.isInput) {
-					inFlows.add(f);
-				} else {
-					outFlows.add(f);
-				}
-			});
-		}
-		Comparator<IndexFlow> comparator = (f1, f2) -> {
-			if (f1.flow == null || f2.flow == null)
-				return 0;
-			return Strings.compare(f1.flow.name, f2.flow.name);
-		};
-		Collections.sort(inFlows, comparator);
-		Collections.sort(outFlows, comparator);
+		editor.flows().forEach(f -> {
+			if (f.isInput) {
+				inFlows.add(f);
+			} else {
+				outFlows.add(f);
+			}
+		});
 		inputTree.setInput(inFlows);
 		outputTree.setInput(outFlows);
 	}
@@ -238,7 +227,11 @@ public class InventoryPage extends FormPage {
 			Pair<String, String> category = Labels.getCategory(f.flow);
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(f.flow);
+				String s = Labels.getDisplayName(f.flow);
+				if (f.location != null) {
+					s += " - " + f.location.code;
+				}
+				return s;
 			case 1:
 				return category.getLeft();
 			case 2:

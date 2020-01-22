@@ -4,13 +4,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.db.Cache;
-import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.ImpactChecksPage;
 import org.openlca.app.results.InfoPage;
 import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.NwResultPage;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.SaveProcessDialog;
 import org.openlca.app.results.TotalImpactResultPage;
@@ -22,8 +21,7 @@ import org.openlca.core.results.ContributionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QuickResultEditor extends FormEditor
-		implements IResultEditor<ContributionResult> {
+public class QuickResultEditor extends ResultEditor<ContributionResult> {
 
 	public static String ID = "QuickResultEditor";
 
@@ -43,27 +41,14 @@ public class QuickResultEditor extends FormEditor
 			result = Cache.getAppCache().remove(
 					input.resultKey, ContributionResult.class);
 			String dqResultKey = input.dqResultKey;
-			if (dqResultKey != null)
-				dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);
+			if (dqResultKey != null) {
+				dqResult = Cache.getAppCache().remove(
+						dqResultKey, DQResult.class);
+			}
 		} catch (Exception e) {
 			log.error("failed to load inventory result", e);
 			throw new PartInitException("failed to load inventory result", e);
 		}
-	}
-
-	@Override
-	public CalculationSetup getSetup() {
-		return setup;
-	}
-
-	@Override
-	public ContributionResult getResult() {
-		return result;
-	}
-
-	@Override
-	public DQResult getDqResult() {
-		return dqResult;
 	}
 
 	@Override

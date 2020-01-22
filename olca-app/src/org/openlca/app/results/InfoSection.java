@@ -86,7 +86,7 @@ class InfoSection {
 				M.SaveAsLCIResult, SWT.NONE);
 		lci.setImage(Images.get(ProcessType.LCI_RESULT));
 		Controls.onSelect(lci, e -> {
-			IResultEditor<?> editor = Editors.getActive();
+			ResultEditor<?> editor = Editors.getActive();
 			if (editor == null)
 				return;
 			SaveProcessDialog.open(editor);

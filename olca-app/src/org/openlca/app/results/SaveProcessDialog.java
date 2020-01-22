@@ -17,7 +17,6 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Process;
-import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.SystemProcess;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -25,15 +24,15 @@ import org.slf4j.LoggerFactory;
 
 public final class SaveProcessDialog extends Wizard {
 
-	private final IResultEditor<? extends ContributionResult> editor;
+	private final ResultEditor<?> editor;
 	private Page page;
 
-	private SaveProcessDialog(IResultEditor<?> editor) {
+	private SaveProcessDialog(ResultEditor<?> editor) {
 		this.editor = editor;
 		setNeedsProgressMonitor(true);
 	}
 
-	public static int open(IResultEditor<?> editor) {
+	public static int open(ResultEditor<?> editor) {
 		if (editor == null)
 			return Window.CANCEL;
 		SaveProcessDialog d = new SaveProcessDialog(editor);
@@ -57,10 +56,10 @@ public final class SaveProcessDialog extends Wizard {
 				Process p = null;
 				if (createMeta) {
 					p = SystemProcess.createWithMetaData(
-							Database.get(), editor.getSetup(), editor.getResult(), name);
+							Database.get(), editor.setup, editor.result, name);
 				} else {
 					p = SystemProcess.create(
-							Database.get(), editor.getSetup(), editor.getResult(), name);
+							Database.get(), editor.setup, editor.result, name);
 				}
 				ProcessDao dao = new ProcessDao(Database.get());
 				p = dao.insert(p);
@@ -98,7 +97,7 @@ public final class SaveProcessDialog extends Wizard {
 			setControl(parent);
 			UI.gridLayout(parent, 2);
 			nameText = UI.formText(parent, M.Name);
-			nameText.setText(editor.getSetup().productSystem.name + " - LCI");
+			nameText.setText(editor.setup.productSystem.name + " - LCI");
 			UI.filler(parent);
 			metaCheck = UI.checkBox(parent, M.CopyMetaDataFromReferenceProcess);
 			metaCheck.setSelection(true);
