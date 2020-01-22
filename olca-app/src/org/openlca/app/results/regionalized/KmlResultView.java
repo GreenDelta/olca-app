@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
@@ -22,7 +21,6 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.geo.RegionalizedResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,11 +64,7 @@ class KmlResultView extends FormPage {
 
 		UI.onLoaded(browser, HtmlFolder.getUrl("kml_results.html"), () -> {
 			loaded = true;
-			Set<FlowDescriptor> flows = result.result.getFlows();
-			if (flows.isEmpty())
-				return;
-			FlowDescriptor flow = flows.iterator().next();
-			flowImpactSelection.selectWithEvent(flow);
+			flowImpactSelection.initWithEvent();
 		});
 
 		UI.gridData(browser, true, true);

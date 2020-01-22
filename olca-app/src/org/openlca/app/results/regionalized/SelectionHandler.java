@@ -8,9 +8,9 @@ import java.util.Set;
 
 import org.openlca.app.components.ResultTypeCombo.EventHandler;
 import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.geo.RegionalizedResult;
@@ -27,7 +27,7 @@ abstract class SelectionHandler implements EventHandler {
 	protected abstract void processResultData(List<LocationResult> results);
 
 	@Override
-	public void flowSelected(FlowDescriptor flow) {
+	public void flowSelected(IndexFlow flow) {
 		ContributionResult provider = result.result;
 		Set<CategorizedDescriptor> processes = provider.getProcesses();
 		Map<Long, Double> results = new HashMap<>();

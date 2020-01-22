@@ -1,7 +1,5 @@
 package org.openlca.app.results.contributions;
 
-import java.util.Iterator;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -39,7 +37,7 @@ import org.openlca.core.results.UpstreamTree;
 
 public class ContributionTreePage extends FormPage {
 
-	private FullResult result;
+	private final FullResult result;
 	private TreeViewer tree;
 	private Object selection;
 	private CalculationSetup setup;
@@ -52,9 +50,6 @@ public class ContributionTreePage extends FormPage {
 		super(editor, "analysis.ContributionTreePage", M.ContributionTree);
 		this.result = result;
 		this.setup = setup;
-		Iterator<IndexFlow> it = result.getFlows().stream().sorted(comparator);
-		if (it.hasNext())
-			selection = it.next();
 	}
 
 	@Override
@@ -240,7 +235,5 @@ public class ContributionTreePage extends FormPage {
 				return 0;
 			return node.result / total;
 		}
-
 	}
-
 }
