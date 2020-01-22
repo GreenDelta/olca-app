@@ -82,7 +82,7 @@ public class AnalyzeEditor extends FormEditor implements IResultEditor<FullResul
 			addPage(new InfoPage(this, result, dqResult, setup));
 			addPage(new InventoryPage(this, result, dqResult, setup));
 			if (result.hasImpactResults())
-				addPage(new TotalImpactResultPage(this, result, dqResult, setup, this::getImpactFactor));
+				addPage(new TotalImpactResultPage(this, result, dqResult, setup));
 			if (result.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, result, setup));
 			addPage(new ProcessResultPage(this, result, setup));

@@ -74,7 +74,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 		});
 	}
 
-	private ImpactCategory category() {
+	private ImpactCategory impact() {
 		return editor.getModel();
 	}
 
@@ -89,7 +89,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 		section.setClient(client);
 		UI.gridLayout(client, 1);
 		render(client, section);
-		List<ImpactFactor> factors = category().impactFactors;
+		List<ImpactFactor> factors = impact().impactFactors;
 		sortFactors(factors);
 		viewer.setInput(factors);
 		form.reflow(true);
@@ -114,7 +114,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				viewer.getTable(), editor));
 		support.bind("", new CommentDialogModifier<ImpactFactor>(
 				editor.getComments(),
-				f -> CommentPaths.get(category(), f)));
+				f -> CommentPaths.get(impact(), f)));
 		Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.11, 0.11, 0.11, 0.11, 0.11);
 		bindActions(viewer, section);
 		viewer.getTable().getColumns()[3].setAlignment(SWT.RIGHT);
@@ -177,49 +177,34 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	}
 
 	private void onAdd() {
-		BaseDescriptor[] descriptors = ModelSelectionDialog.multiSelect(
+		BaseDescriptor[] flows = ModelSelectionDialog.multiSelect(
 				ModelType.FLOW);
-		if (descriptors != null) {
-			createFactors(Arrays.asList(descriptors));
+		if (flows != null) {
+			createFactors(Arrays.asList(flows));
 		}
 	}
 
-	private void createFactors(List<BaseDescriptor> descriptors) {
-		if (descriptors == null || descriptors.isEmpty())
+	private void createFactors(List<BaseDescriptor> flows) {
+		if (flows == null || flows.isEmpty())
 			return;
-		for (BaseDescriptor d : descriptors) {
+		for (BaseDescriptor d : flows) {
 			if (d == null || d.type != ModelType.FLOW)
-				continue;
-			if (contains(d))
 				continue;
 			Flow flow = new FlowDao(database).getForId(d.id);
 			if (flow == null)
 				continue;
-			ImpactFactor f = new ImpactFactor();
-			f.flow = flow;
-			f.flowPropertyFactor = flow.getReferenceFactor();
-			f.unit = flow.getReferenceFactor().flowProperty.unitGroup.referenceUnit;
-
-			f.value = 1.0;
-			category().impactFactors.add(f);
+			impact().addFactor(flow);
 		}
-		viewer.setInput(category().impactFactors);
+		viewer.setInput(impact().impactFactors);
 		editor.setDirty(true);
-	}
-
-	private boolean contains(BaseDescriptor flow) {
-		for (ImpactFactor f : category().impactFactors)
-			if (f.flow.id == flow.id)
-				return true;
-		return false;
 	}
 
 	private void onRemove() {
 		List<ImpactFactor> factors = Viewers.getAllSelected(viewer);
 		for (ImpactFactor factor : factors) {
-			category().impactFactors.remove(factor);
+			impact().impactFactors.remove(factor);
 		}
-		viewer.setInput(category().impactFactors);
+		viewer.setInput(impact().impactFactors);
 		editor.setDirty(true);
 	}
 
@@ -234,7 +219,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				return Images.get(f.flow);
 			if (column == 6)
 				return Images.get(editor.getComments(),
-						CommentPaths.get(category(), f));
+						CommentPaths.get(impact(), f));
 			return null;
 		}
 
@@ -273,7 +258,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 		private String getFactorUnit(ImpactFactor factor) {
 			if (factor.unit == null)
 				return null;
-			String impactUnit = category().referenceUnit;
+			String impactUnit = impact().referenceUnit;
 			if (Strings.notEmpty(impactUnit))
 				return impactUnit + "/" + factor.unit.name;
 			else
