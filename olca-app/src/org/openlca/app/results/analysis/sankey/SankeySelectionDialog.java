@@ -8,8 +8,8 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
-import org.openlca.app.components.ResultTypeSelection;
-import org.openlca.app.components.ResultTypeSelection.EventHandler;
+import org.openlca.app.components.ResultTypeCombo;
+import org.openlca.app.components.ResultTypeCombo.EventHandler;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -34,7 +34,7 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 				M.SettingsForTheSankeyDiagram);
 		Composite body = UI.formBody(form, toolkit);
 		UI.gridLayout(body, 2);
-		ResultTypeSelection.on(result)
+		ResultTypeCombo.on(result)
 				.withEventHandler(this).withSelection(selection)
 				.create(body, toolkit);
 		createCutoffSpinner(toolkit, body);

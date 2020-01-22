@@ -13,60 +13,61 @@ import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.CostResults;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.CostResultViewer;
-import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.IResult;
 import org.openlca.core.results.SimpleResult;
 
 /**
- * Two combo boxes showing flows and impact categories. The impact categories
- * are only shown if the are category items available. The user can activate the
- * flow or impact combo and the selection change fires the selection of the
- * current activated combo.
+ * Multiple combo boxes that allow to switch between different result types
+ * (flows, LCIA categories, costs). The respective items are only shown if the
+ * corresponding result is available.
  */
-public class ResultTypeSelection {
+public class ResultTypeCombo {
 
-	private ModelType resultType = ModelType.FLOW;
+	private ModelType selectedType = ModelType.FLOW;
 
-	private Collection<FlowDescriptor> flows;
+	private Collection<IndexFlow> flows;
 	private Collection<ImpactCategoryDescriptor> impacts;
 	private Collection<CostResultDescriptor> costs;
 	private Object initialSelection;
 	private EventHandler eventHandler;
 
-	private FlowViewer flowCombo;
+	private ResultFlowCombo flowCombo;
 	private ImpactCategoryViewer impactCombo;
 	private CostResultViewer costCombo;
 
-	public static Dispatch on(IResult result) {
-		ResultTypeSelection selection = new ResultTypeSelection();
-		selection.flows = result.getFlows();
-		if (result.hasImpactResults())
-			selection.impacts = result.getImpacts();
-		if (result.hasCostResults() && (result instanceof SimpleResult))
-			selection.costs = CostResults.getDescriptors((SimpleResult) result);
-		return new Dispatch(selection);
+	public static Builder on(IResult r) {
+		ResultTypeCombo c = new ResultTypeCombo();
+		c.flows = r.getFlows();
+		if (r.hasImpactResults()) {
+			c.impacts = r.getImpacts();
+		}
+		if (r.hasCostResults() && (r instanceof SimpleResult)) {
+			c.costs = CostResults.getDescriptors((SimpleResult) r);
+		}
+		return new Builder(c);
 	}
 
-	private ResultTypeSelection() {
+	private ResultTypeCombo() {
 	}
 
 	public void selectWithEvent(Object o) {
 		if (o == null)
 			return;
-		if (o instanceof FlowDescriptor)
-			selectFlow(o);
-		else if (o instanceof ImpactCategoryDescriptor)
-			selectImpact(o);
-		else if (o instanceof CostResultDescriptor)
-			selectCost(o);
+		if (o instanceof IndexFlow) {
+			selectFlow((IndexFlow) o);
+		} else if (o instanceof ImpactCategoryDescriptor) {
+			selectImpact((ImpactCategoryDescriptor) o);
+		} else if (o instanceof CostResultDescriptor) {
+			selectCost((CostResultDescriptor) o);
+		}
 	}
 
 	public Object getSelection() {
-		switch (resultType) {
+		switch (selectedType) {
 		case FLOW:
 			return flowCombo.getSelected();
 		case IMPACT_CATEGORY:
@@ -78,104 +79,110 @@ public class ResultTypeSelection {
 		}
 	}
 
-	private void selectImpact(Object o) {
-		resultType = ModelType.IMPACT_CATEGORY;
+	private void selectImpact(ImpactCategoryDescriptor impact) {
+		selectedType = ModelType.IMPACT_CATEGORY;
 		if (impactCombo != null) {
-			impactCombo.select((ImpactCategoryDescriptor) o);
+			impactCombo.select(impact);
 			impactCombo.setEnabled(true);
 		}
-		if (flowCombo != null)
+		if (flowCombo != null) {
 			flowCombo.setEnabled(false);
-		if (costCombo != null)
+		}
+		if (costCombo != null) {
 			costCombo.setEnabled(false);
+		}
 	}
 
-	private void selectFlow(Object o) {
-		resultType = ModelType.FLOW;
+	private void selectFlow(IndexFlow flow) {
+		selectedType = ModelType.FLOW;
 		if (flowCombo != null) {
-			flowCombo.select((FlowDescriptor) o);
+			flowCombo.select(flow);
 			flowCombo.setEnabled(true);
 		}
-		if (impactCombo != null)
+		if (impactCombo != null) {
 			impactCombo.setEnabled(false);
-		if (costCombo != null)
+		}
+		if (costCombo != null) {
 			costCombo.setEnabled(false);
+		}
 	}
 
-	private void selectCost(Object o) {
-		resultType = ModelType.CURRENCY;
+	private void selectCost(CostResultDescriptor costs) {
+		selectedType = ModelType.CURRENCY;
 		if (costCombo != null) {
-			costCombo.select((CostResultDescriptor) o);
+			costCombo.select(costs);
 			costCombo.setEnabled(true);
 		}
-		if (flowCombo != null)
+		if (flowCombo != null) {
 			flowCombo.setEnabled(false);
-		if (impactCombo != null)
+		}
+		if (impactCombo != null) {
 			impactCombo.setEnabled(false);
+		}
 	}
 
-	private void render(Composite parent, FormToolkit toolkit) {
+	private void render(Composite comp, FormToolkit tk) {
 		ModelType initType = getType(initialSelection);
 		if (initType != ModelType.UNKNOWN)
-			resultType = initType;
+			selectedType = initType;
 		if (flows != null && !flows.isEmpty())
-			initFlowCombo(toolkit, parent);
+			initFlowCombo(tk, comp);
 		if (impacts != null && !impacts.isEmpty())
-			initImpactCombo(toolkit, parent);
+			initImpactCombo(tk, comp);
 		if (costs != null && !costs.isEmpty())
-			initCostCombo(toolkit, parent);
+			initCostCombo(tk, comp);
 	}
 
-	private void initFlowCombo(FormToolkit toolkit, Composite section) {
+	private void initFlowCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.FLOW;
-		Button check = toolkit.createButton(section, M.Flow, SWT.RADIO);
+		Button check = tk.createButton(comp, M.Flow, SWT.RADIO);
 		check.setSelection(enabled);
-		flowCombo = new FlowViewer(section);
+		flowCombo = new ResultFlowCombo(comp);
 		flowCombo.setEnabled(enabled);
-		FlowDescriptor[] input = flows
-				.toArray(new FlowDescriptor[flows.size()]);
+		IndexFlow[] input = flows.toArray(new IndexFlow[0]);
 		flowCombo.setInput(input);
 		flowCombo.selectFirst();
-		flowCombo.addSelectionChangedListener((val) -> fireSelection());
-		if (enabled)
-			flowCombo.select((FlowDescriptor) initialSelection);
+		flowCombo.addSelectionChangedListener(_e -> fireSelection());
+		if (enabled) {
+			flowCombo.select((IndexFlow) initialSelection);
+		}
 		new ResultTypeCheck(flowCombo, check, ModelType.FLOW);
 	}
 
-	private void initImpactCombo(FormToolkit toolkit, Composite section) {
+	private void initImpactCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.IMPACT_CATEGORY;
-		Button check = toolkit.createButton(section, M.ImpactCategory,
-				SWT.RADIO);
+		Button check = tk.createButton(comp, M.ImpactCategory, SWT.RADIO);
 		check.setSelection(enabled);
-		impactCombo = new ImpactCategoryViewer(section);
+		impactCombo = new ImpactCategoryViewer(comp);
 		impactCombo.setEnabled(enabled);
 		impactCombo.setInput(impacts);
 		impactCombo.selectFirst();
 		impactCombo.addSelectionChangedListener((val) -> fireSelection());
-		if (enabled)
+		if (enabled) {
 			impactCombo.select((ImpactCategoryDescriptor) initialSelection);
+		}
 		new ResultTypeCheck(impactCombo, check, ModelType.IMPACT_CATEGORY);
 	}
 
-	private void initCostCombo(FormToolkit toolkit, Composite section) {
+	private void initCostCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.CURRENCY;
-		Button check = toolkit.createButton(section, M.CostCategory,
-				SWT.RADIO);
+		Button check = tk.createButton(comp, M.CostCategory, SWT.RADIO);
 		check.setSelection(enabled);
-		costCombo = new CostResultViewer(section);
+		costCombo = new CostResultViewer(comp);
 		costCombo.setEnabled(enabled);
 		costCombo.setInput(costs);
 		costCombo.selectFirst();
 		costCombo.addSelectionChangedListener((val) -> fireSelection());
-		if (enabled)
+		if (enabled) {
 			costCombo.select((CostResultDescriptor) initialSelection);
+		}
 		new ResultTypeCheck(costCombo, check, ModelType.CURRENCY);
 	}
 
 	private void fireSelection() {
-		if (eventHandler == null || resultType == null)
+		if (eventHandler == null || selectedType == null)
 			return;
-		switch (resultType) {
+		switch (selectedType) {
 		case FLOW:
 			eventHandler.flowSelected(flowCombo.getSelected());
 			break;
@@ -191,7 +198,7 @@ public class ResultTypeSelection {
 	}
 
 	private ModelType getType(Object o) {
-		if (o instanceof FlowDescriptor)
+		if (o instanceof IndexFlow)
 			return ModelType.FLOW;
 		else if (o instanceof ImpactCategoryDescriptor)
 			return ModelType.IMPACT_CATEGORY;
@@ -224,19 +231,17 @@ public class ResultTypeSelection {
 		public void widgetSelected(SelectionEvent e) {
 			if (check.getSelection()) {
 				viewer.setEnabled(true);
-				resultType = this.type;
+				selectedType = this.type;
 				fireSelection();
-			} else
+			} else {
 				viewer.setEnabled(false);
+			}
 		}
 	}
 
-	/**
-	 * The event handler for selection changes.
-	 */
 	public interface EventHandler {
 
-		void flowSelected(FlowDescriptor flow);
+		void flowSelected(IndexFlow flow);
 
 		void impactCategorySelected(ImpactCategoryDescriptor impact);
 
@@ -245,28 +250,28 @@ public class ResultTypeSelection {
 	}
 
 	/**
-	 * Dispatch class for the initialization of the widgets.
+	 * Builder class for the initialization of the widgets.
 	 */
-	public static class Dispatch {
+	public static class Builder {
 
-		private ResultTypeSelection selection;
+		private ResultTypeCombo selection;
 
-		private Dispatch(ResultTypeSelection selection) {
+		private Builder(ResultTypeCombo selection) {
 			this.selection = selection;
 		}
 
-		public Dispatch withSelection(Object item) {
+		public Builder withSelection(Object item) {
 			selection.initialSelection = item;
 			return this;
 		}
 
-		public Dispatch withEventHandler(EventHandler handler) {
+		public Builder withEventHandler(EventHandler handler) {
 			selection.eventHandler = handler;
 			return this;
 		}
 
-		public ResultTypeSelection create(Composite parent, FormToolkit toolkit) {
-			selection.render(parent, toolkit);
+		public ResultTypeCombo create(Composite comp, FormToolkit tk) {
+			selection.render(comp, tk);
 			return selection;
 		}
 	}

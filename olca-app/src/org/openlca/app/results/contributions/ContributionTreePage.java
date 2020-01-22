@@ -19,8 +19,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.components.ResultTypeSelection;
-import org.openlca.app.components.ResultTypeSelection.EventHandler;
+import org.openlca.app.components.ResultTypeCombo;
+import org.openlca.app.components.ResultTypeCombo.EventHandler;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
@@ -64,7 +64,7 @@ public class ContributionTreePage extends FormPage {
 		Composite body = UI.formBody(form, tk);
 		Composite comp = tk.createComposite(body);
 		UI.gridLayout(comp, 2);
-		ResultTypeSelection selector = ResultTypeSelection
+		ResultTypeCombo selector = ResultTypeCombo
 				.on(result)
 				.withEventHandler(new SelectionHandler())
 				.create(comp, tk);

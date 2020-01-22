@@ -3,7 +3,7 @@ package org.openlca.app.results.contributions.locations;
 import java.util.Collections;
 import java.util.List;
 
-import org.openlca.app.components.ResultTypeSelection.EventHandler;
+import org.openlca.app.components.ResultTypeCombo.EventHandler;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.CostResultDescriptor;

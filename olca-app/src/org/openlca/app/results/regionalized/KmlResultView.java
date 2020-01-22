@@ -16,7 +16,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
-import org.openlca.app.components.ResultTypeSelection;
+import org.openlca.app.components.ResultTypeCombo;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
@@ -34,7 +34,7 @@ class KmlResultView extends FormPage {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private RegionalizedResult result;
-	private ResultTypeSelection flowImpactSelection;
+	private ResultTypeCombo flowImpactSelection;
 	private boolean incompleteData = false;
 	private boolean loaded;
 	private CalculationSetup setup;
@@ -57,7 +57,7 @@ class KmlResultView extends FormPage {
 		Composite body = UI.formBody(form, tk);
 		Composite comp = tk.createComposite(body);
 		UI.gridLayout(comp, 2);
-		flowImpactSelection = ResultTypeSelection
+		flowImpactSelection = ResultTypeCombo
 				.on(result.result)
 				.withEventHandler(new KmlSelectionHandler(result))
 				.create(comp, tk);

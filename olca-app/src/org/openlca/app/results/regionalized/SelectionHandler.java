@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openlca.app.components.ResultTypeSelection.EventHandler;
+import org.openlca.app.components.ResultTypeCombo.EventHandler;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;

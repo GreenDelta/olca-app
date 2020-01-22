@@ -14,7 +14,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.components.ResultTypeSelection;
+import org.openlca.app.components.ResultTypeCombo;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
@@ -30,7 +30,7 @@ public class LocationPage extends FormPage {
 
 	ContributionResult result;
 
-	private ResultTypeSelection combos;
+	private ResultTypeCombo combos;
 	private LocationTree tree;
 	private LocationMap map;
 	private boolean showMap;
@@ -72,7 +72,7 @@ public class LocationPage extends FormPage {
 		UI.gridLayout(outer, 2, 5, 0);
 		Composite comboComp = tk.createComposite(outer);
 		UI.gridLayout(comboComp, 2);
-		combos = ResultTypeSelection.on(result)
+		combos = ResultTypeCombo.on(result)
 				.withEventHandler(new SelectionHandler(this))
 				.withSelection(result.getFlows().iterator().next())
 				.create(comboComp, tk);
