@@ -32,6 +32,7 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.io.CategoryPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +105,18 @@ public class Labels {
 		if (unit == null)
 			return "";
 		return unit.name;
+	}
+
+	/**
+	 * Returns the full category path of the given entity.
+	 */
+	public static String category(CategorizedDescriptor d) {
+		if (d == null || d.category == null)
+			return "";
+		Category c = Cache.getEntityCache().get(Category.class, d.category);
+		if (c == null)
+			return "";
+		return CategoryPath.getFull(c);
 	}
 
 	/**

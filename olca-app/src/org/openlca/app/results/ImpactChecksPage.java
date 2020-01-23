@@ -1,8 +1,6 @@
 package org.openlca.app.results;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -16,7 +14,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -25,35 +22,29 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.matrix.DIndex;
-import org.openlca.core.matrix.FlowIndex;
-import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.util.Strings;
 
+/**
+ * Shows flows that are not covered by the LCIA categories of the LCIA method of
+ * a result.
+ */
 public class ImpactChecksPage extends FormPage {
 
+	private final ResultEditor<ContributionResult> editor;
 	private final ContributionResult result;
-	private final CalculationSetup setup;
 
-	private Button groupCheck;
 	private TreeViewer tree;
 
-	public ImpactChecksPage(
-			FormEditor editor,
-			CalculationSetup setup,
-			ContributionResult result) {
+	public ImpactChecksPage(ResultEditor<ContributionResult> editor) {
 		super(editor, "ImpactChecksPage", M.LCIAChecks);
-		this.result = result;
-		this.setup = setup;
+		this.editor = editor;
+		this.result = editor.result;
 	}
 
 	@Override
@@ -64,118 +55,113 @@ public class ImpactChecksPage extends FormPage {
 				Images.get(result));
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
-		groupCheck = tk.createButton(body,
-				"Group by LCIA category",
-				SWT.CHECK);
-		groupCheck.setSelection(true);
-		Controls.onSelect(groupCheck, e -> setTreeInput());
 
+		// the grouping check
+		Button group = tk.createButton(body,
+				"Group by LCIA category", SWT.CHECK);
+		group.setSelection(true);
+		Controls.onSelect(group, e -> {
+			tree.setInput(
+					group.getSelection()
+							? groupedNodes()
+							: flatNodes());
+		});
+
+		// create the tree
 		tree = Trees.createViewer(body,
 				M.Name, M.Category, M.InventoryResult);
 		UI.gridData(tree.getControl(), true, true);
-		tree.setContentProvider(new Content());
+		tree.setContentProvider(new ContentProvider());
 		tree.setLabelProvider(new Label());
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(
 				tree.getTree(), 0.4, 0.4, 0.2);
 
+		// bind `onOpen`
 		Action onOpen = Actions.onOpen(() -> {
 			Node node = Viewers.getFirstSelected(tree);
 			if (node == null)
 				return;
-			if (node.isFlow()) {
-				App.openEditor((FlowDescriptor) node.descriptor);
-			} else {
-				App.openEditor(setup.impactMethod);
+			IndexFlow flow = node.flow();
+			if (flow != null) {
+				App.openEditor(flow.flow);
+				return;
+			}
+			ImpactCategoryDescriptor impact = node.impact();
+			if (impact != null) {
+				App.openEditor(impact);
 			}
 		});
 		Actions.bind(tree, onOpen);
 		Trees.onDoubleClick(tree, e -> onOpen.run());
 
-		setTreeInput();
-	}
-
-	private void setTreeInput() {
-		List<Node> nodes = groupCheck.getSelection()
+		tree.setInput(group.getSelection()
 				? groupedNodes()
-				: flatNodes();
-		for (Node n : nodes) {
-			if (n.childs != null) {
-				n.childs.sort(this::compare);
-			}
-		}
-		nodes.sort(this::compare);
-		tree.setInput(nodes);
-
+				: flatNodes());
 	}
 
+	/**
+	 * Returns a flat list of flow nodes that have no characterization factor in any
+	 * of the LCIA categories.
+	 */
 	private List<Node> flatNodes() {
-		FlowIndex flowIdx = result.flowIndex;
-		DIndex<ImpactCategoryDescriptor> impactIdx = result.impactIndex;
-		if (flowIdx == null || impactIdx == null
-				|| impactIdx.isEmpty())
-			return Collections.emptyList();
 		List<Node> nodes = new ArrayList<>();
-		for (int j = 0; j < flowIdx.size(); j++) {
+		for (IndexFlow flow : editor.flows()) {
 			boolean allZero = true;
-			for (int i = 0; i < impactIdx.size(); i++) {
-				double f = result.impactFactors.get(i, j);
+			for (ImpactCategoryDescriptor impact : editor.impacts()) {
+				double f = result.getImpactFactor(impact, flow);
 				if (f != 0) {
 					allZero = false;
 					break;
 				}
 			}
 			if (allZero) {
-				nodes.add(new Node(flowIdx.at(j)));
+				nodes.add(new Node(flow));
 			}
 		}
 		return nodes;
 	}
 
 	private List<Node> groupedNodes() {
-		FlowIndex flowIdx = result.flowIndex;
-		DIndex<ImpactCategoryDescriptor> impactIdx = result.impactIndex;
-		if (flowIdx == null || impactIdx == null
-				|| impactIdx.isEmpty())
-			return Collections.emptyList();
-		HashMap<Integer, Node> roots = new HashMap<>();
-		for (int j = 0; j < flowIdx.size(); j++) {
-			for (int i = 0; i < impactIdx.size(); i++) {
-				double f = result.impactFactors.get(i, j);
+		List<Node> nodes = new ArrayList<>();
+		for (ImpactCategoryDescriptor impact : editor.impacts()) {
+			Node root = new Node(impact);
+			for (IndexFlow flow : editor.flows()) {
+				double f = result.getImpactFactor(impact, flow);
 				if (f != 0)
 					continue;
-				Node root = roots.get(i);
-				if (root == null) {
-					root = new Node(impactIdx.at(i));
+				if (root.childs == null) {
 					root.childs = new ArrayList<>();
-					roots.put(i, root);
 				}
-				root.childs.add(new Node(flowIdx.at(j)));
+				root.childs.add(new Node(flow));
 			}
 		}
-		return new ArrayList<>(roots.values());
-	}
-
-	private int compare(Node n1, Node n2) {
-		String s1 = Labels.getDisplayName(n1.descriptor);
-		String s2 = Labels.getDisplayName(n2.descriptor);
-		return Strings.compare(s1, s2);
+		return nodes;
 	}
 
 	private class Node {
-		final BaseDescriptor descriptor;
+		final Object content;
 		List<Node> childs;
 
-		Node(BaseDescriptor d) {
-			this.descriptor = d;
+		Node(Object d) {
+			this.content = d;
 		}
 
-		boolean isFlow() {
-			return descriptor instanceof FlowDescriptor;
+		IndexFlow flow() {
+			return content instanceof IndexFlow
+					? (IndexFlow) content
+					: null;
 		}
+
+		ImpactCategoryDescriptor impact() {
+			return content instanceof ImpactCategoryDescriptor
+					? (ImpactCategoryDescriptor) content
+					: null;
+		}
+
 	}
 
-	private class Content extends ArrayContentProvider
+	private class ContentProvider extends ArrayContentProvider
 			implements ITreeContentProvider {
 
 		@Override
@@ -208,34 +194,41 @@ public class ImpactChecksPage extends FormPage {
 			if (col != 0 || !(obj instanceof Node))
 				return null;
 			Node n = (Node) obj;
-			return Images.get(n.descriptor);
+			IndexFlow flow = n.flow();
+			if (flow != null)
+				return Images.get(flow.flow);
+			ImpactCategoryDescriptor impact = n.impact();
+			if (impact != null)
+				return Images.get(impact);
+			return null;
 		}
 
 		@Override
-		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Node))
+		public String getColumnText(Object o, int col) {
+			if (!(o instanceof Node))
 				return null;
-			Node n = (Node) obj;
-			switch (col) {
-			case 0:
-				return Labels.getDisplayName(n.descriptor);
-			case 1:
-				if (n.isFlow())
-					return Labels.getShortCategory(
-							(FlowDescriptor) (n.descriptor));
-				else
+			Node n = (Node) o;
+
+			IndexFlow flow = n.flow();
+			if (flow != null) {
+				switch (col) {
+				case 0:
+					return editor.name(flow);
+				case 1:
+					return editor.category(flow);
+				case 2:
+					double val = result.getTotalFlowResult(flow);
+					String unit = editor.unit(flow);
+					return Numbers.format(val) + " " + unit;
+				default:
 					return null;
-			case 2:
-				if (!n.isFlow())
-					return null;
-				FlowDescriptor flow = (FlowDescriptor) n.descriptor;
-				double val = result.getTotalFlowResult(flow);
-				String unit = Labels.getRefUnit(flow);
-				return Numbers.format(val) + " " + unit;
-			default:
-				return null;
+				}
 			}
+
+			ImpactCategoryDescriptor impact = n.impact();
+			if (impact == null || col != 0)
+				return null;
+			return impact.name;
 		}
 	}
-
 }
