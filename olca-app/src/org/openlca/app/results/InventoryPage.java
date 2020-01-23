@@ -42,14 +42,14 @@ import org.openlca.core.results.ContributionResult;
  */
 public class InventoryPage extends FormPage {
 
-	private final ResultEditor<? extends ContributionResult> editor;
+	private final ResultEditor<?> editor;
 	private final CalculationSetup setup;
 	private final ContributionResult result;
 	private final DQResult dqResult;
 
 	private FormToolkit toolkit;
 
-	public InventoryPage(ResultEditor<? extends ContributionResult> editor) {
+	public InventoryPage(ResultEditor<?> editor) {
 		super(editor, "InventoryPage", M.InventoryResults);
 		this.editor = editor;
 		this.result = editor.result;
@@ -227,11 +227,7 @@ public class InventoryPage extends FormPage {
 			Pair<String, String> category = Labels.getCategory(f.flow);
 			switch (col) {
 			case 0:
-				String s = Labels.getDisplayName(f.flow);
-				if (f.location != null) {
-					s += " - " + f.location.code;
-				}
-				return s;
+				return editor.name(f);
 			case 1:
 				return category.getLeft();
 			case 2:
@@ -239,7 +235,7 @@ public class InventoryPage extends FormPage {
 			case 3:
 				return Numbers.format(getAmount(f));
 			case 4:
-				return Labels.getRefUnit(f.flow);
+				return editor.unit(f);
 			default:
 				return null;
 			}

@@ -2,7 +2,6 @@ package org.openlca.app.results;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -11,8 +10,6 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.contributions.ContributionChartSection;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.results.ContributionResult;
 
 /**
@@ -20,35 +17,29 @@ import org.openlca.core.results.ContributionResult;
  */
 public class InfoPage extends FormPage {
 
-	private CalculationSetup setup;
-	private ContributionResult result;
-	private DQResult dqResult;
-	private FormToolkit tk;
+	private final ResultEditor<?> editor;
 
-	public InfoPage(FormEditor editor, ContributionResult result,
-			DQResult dqResult, CalculationSetup setup) {
+	public InfoPage(ResultEditor<?> editor) {
 		super(editor, "AnalyzeInfoPage", M.GeneralInformation);
-		this.setup = setup;
-		this.result = result;
-		this.dqResult = dqResult;
+		this.editor = editor;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
+		ContributionResult result = editor.result;
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.getDisplayName(setup.productSystem),
-				Images.get(result));
-		tk = mform.getToolkit();
+				Labels.getDisplayName(editor.setup.productSystem),
+				Images.get(editor.result));
+		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
-		InfoSection.create(body, tk, setup);
+		InfoSection.create(body, tk, editor.setup);
 		if (result.hasImpactResults()) {
-			ContributionChartSection.forImpacts(result).render(body, tk);
+			ContributionChartSection.forImpacts(editor).render(body, tk);
 		}
-		ContributionChartSection.forFlows(result).render(body, tk);
-		if (dqResult != null) {
-			new DQInfoSection(body, tk, result, dqResult);
+		ContributionChartSection.forFlows(editor).render(body, tk);
+		if (editor.dqResult != null) {
+			new DQInfoSection(body, tk, result, editor.dqResult);
 		}
 		form.reflow(true);
 	}
-
 }

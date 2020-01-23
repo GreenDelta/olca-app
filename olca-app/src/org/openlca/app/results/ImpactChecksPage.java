@@ -36,12 +36,12 @@ import org.openlca.core.results.ContributionResult;
  */
 public class ImpactChecksPage extends FormPage {
 
-	private final ResultEditor<ContributionResult> editor;
+	private final ResultEditor<?> editor;
 	private final ContributionResult result;
 
 	private TreeViewer tree;
 
-	public ImpactChecksPage(ResultEditor<ContributionResult> editor) {
+	public ImpactChecksPage(ResultEditor<?> editor) {
 		super(editor, "ImpactChecksPage", M.LCIAChecks);
 		this.editor = editor;
 		this.result = editor.result;

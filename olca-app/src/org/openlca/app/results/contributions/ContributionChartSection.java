@@ -9,6 +9,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ResultFlowCombo;
 import org.openlca.app.results.ImageExportAction;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -19,7 +20,6 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.ContributionSet;
-import org.openlca.util.Strings;
 
 /**
  * Chart section of the first page in the analysis editor. Can contain flow or
@@ -31,26 +31,28 @@ public class ContributionChartSection {
 	private String sectionTitle = "";
 	private String selectionName = "";
 
-	private ContributionResult result;
+	private final ResultEditor<?> editor;
+	private final ContributionResult result;
 	private AbstractViewer<?, TableComboViewer> itemViewer;
 	private ContributionChart chart;
 
-	public static ContributionChartSection forFlows(ContributionResult r) {
-		ContributionChartSection s = new ContributionChartSection(r, true);
+	public static ContributionChartSection forFlows(ResultEditor<?> editor) {
+		ContributionChartSection s = new ContributionChartSection(editor, true);
 		s.sectionTitle = M.DirectContributionsFlowResultsOverview;
 		s.selectionName = M.Flow;
 		return s;
 	}
 
-	public static ContributionChartSection forImpacts(ContributionResult r) {
-		ContributionChartSection s = new ContributionChartSection(r, false);
+	public static ContributionChartSection forImpacts(ResultEditor<?> editor) {
+		ContributionChartSection s = new ContributionChartSection(editor, false);
 		s.sectionTitle = M.DirectContributionsImpactCategoryResultsOverview;
 		s.selectionName = M.ImpactCategory;
 		return s;
 	}
 
-	private ContributionChartSection(ContributionResult r, boolean forFlows) {
-		this.result = r;
+	private ContributionChartSection(ResultEditor<?> editor, boolean forFlows) {
+		this.editor = editor;
+		this.result = editor.result;
 		this.forFlows = forFlows;
 	}
 
@@ -68,27 +70,15 @@ public class ContributionChartSection {
 
 	private void createCombo(FormToolkit tk, Composite comp) {
 		tk.createLabel(comp, selectionName);
-
 		if (forFlows) {
 			ResultFlowCombo combo = new ResultFlowCombo(comp);
-			IndexFlow[] flows = result.getFlows().stream()
-					.sorted((f1, f2) -> {
-						if (f1.flow == null || f2.flow == null)
-							return 0;
-						return Strings.compare(f1.flow.name, f2.flow.name);
-					}).toArray(IndexFlow[]::new);
-			combo.setInput(flows);
+			combo.setInput(editor.flows());
 			this.itemViewer = combo;
-
 		} else {
 			ImpactCategoryViewer combo = new ImpactCategoryViewer(comp);
-			ImpactCategoryDescriptor[] impacts = result.getImpacts().stream()
-					.sorted((i1, i2) -> Strings.compare(i1.name, i2.name))
-					.toArray(ImpactCategoryDescriptor[]::new);
-			combo.setInput(impacts);
+			combo.setInput(editor.impacts());
 			this.itemViewer = combo;
 		}
-
 		itemViewer.addSelectionChangedListener(_e -> refresh());
 		itemViewer.selectFirst();
 	}

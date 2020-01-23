@@ -24,11 +24,7 @@ import org.slf4j.LoggerFactory;
 public class QuickResultEditor extends ResultEditor<ContributionResult> {
 
 	public static String ID = "QuickResultEditor";
-
 	private Logger log = LoggerFactory.getLogger(getClass());
-	private CalculationSetup setup;
-	private ContributionResult result;
-	private DQResult dqResult;
 
 	@Override
 	public void init(IEditorSite site, IEditorInput iInput)
@@ -40,31 +36,34 @@ public class QuickResultEditor extends ResultEditor<ContributionResult> {
 					CalculationSetup.class);
 			result = Cache.getAppCache().remove(
 					input.resultKey, ContributionResult.class);
-			String dqResultKey = input.dqResultKey;
-			if (dqResultKey != null) {
+			String dqkey = input.dqResultKey;
+			if (dqkey != null) {
 				dqResult = Cache.getAppCache().remove(
-						dqResultKey, DQResult.class);
+						dqkey, DQResult.class);
 			}
+			this.flows();
 		} catch (Exception e) {
 			log.error("failed to load inventory result", e);
-			throw new PartInitException("failed to load inventory result", e);
+			throw new PartInitException(
+					"failed to load inventory result", e);
 		}
 	}
 
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new InfoPage(this, result, dqResult, setup));
-			addPage(new InventoryPage(this, result, dqResult, setup));
-			if (result.hasImpactResults())
-				addPage(new TotalImpactResultPage(
-						this, result, dqResult, setup));
-			if (result.hasImpactResults() && setup.nwSet != null)
+			addPage(new InfoPage(this));
+			addPage(new InventoryPage(this));
+			if (result.hasImpactResults()) {
+				addPage(new TotalImpactResultPage(this));
+			}
+			if (result.hasImpactResults() && setup.nwSet != null) {
 				addPage(new NwResultPage(this, result, setup));
+			}
 			addPage(new LocationPage(this, result, setup));
 			addPage(new GroupPage(this, result, setup));
 			if (result.hasImpactResults()) {
-				addPage(new ImpactChecksPage(this, setup, result));
+				addPage(new ImpactChecksPage(this));
 			}
 		} catch (Exception e) {
 			log.error("failed to add pages", e);

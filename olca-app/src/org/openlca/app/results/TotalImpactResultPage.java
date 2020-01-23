@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -44,8 +43,10 @@ import org.openlca.core.results.ContributionResult;
 
 public class TotalImpactResultPage extends FormPage {
 
+	private final ResultEditor<?> editor;
 	private final ContributionResult result;
 	private final DQResult dqResult;
+	
 	private FormToolkit toolkit;
 	private TreeViewer viewer;
 	private ContributionCutoff spinner;
@@ -53,12 +54,12 @@ public class TotalImpactResultPage extends FormPage {
 
 	private boolean subgroupByProcesses = true;
 
-	public TotalImpactResultPage(FormEditor editor, ContributionResult result,
-			DQResult dqResult, CalculationSetup setup) {
+	public TotalImpactResultPage(ResultEditor<?> editor) {
 		super(editor, "ImpactTreePage", M.ImpactAnalysis);
-		this.result = result;
-		this.setup = setup;
-		this.dqResult = dqResult;
+		this.editor = editor;
+		this.result = editor.result;
+		this.setup = editor.setup;
+		this.dqResult = editor.dqResult;
 	}
 
 	@Override
@@ -94,7 +95,7 @@ public class TotalImpactResultPage extends FormPage {
 	}
 
 	private void setInput() {
-		List<Item> items = result.getImpacts().stream()
+		List<Item> items = editor.impacts().stream()
 				.map(impact -> new Item(impact))
 				.collect(Collectors.toList());
 		viewer.setInput(items);
@@ -193,7 +194,7 @@ public class TotalImpactResultPage extends FormPage {
 			case 3:
 				if (item.flowAmount() == null)
 					return "";
-				return item.flowUnit();
+				return editor.unit(item.flow);
 			case 4:
 				return format(item.impactFactor());
 			case 5:
@@ -221,7 +222,8 @@ public class TotalImpactResultPage extends FormPage {
 		private ContributionImage img = new ContributionImage();
 
 		LabelProvider() {
-			super(dqResult, dqResult != null ? dqResult.setup.exchangeDqSystem : null, 6);
+			super(dqResult, dqResult != null 
+					? dqResult.setup.exchangeDqSystem : null, 6);
 		}
 
 		@Override
@@ -299,6 +301,7 @@ public class TotalImpactResultPage extends FormPage {
 				return null;
 			Item parent = (Item) obj;
 			List<Item> childs = new ArrayList<>();
+
 			if (parent.type() == ModelType.IMPACT_CATEGORY && subgroupByProcesses) {
 				double cutoffValue = Math.abs(parent.result() * cutoff);
 				for (CategorizedDescriptor process : result.getProcesses()) {
@@ -310,6 +313,7 @@ public class TotalImpactResultPage extends FormPage {
 						childs.add(child);
 					}
 				}
+
 			} else {
 				double cutoffValue = Math.abs(parent.result() * cutoff);
 				result.flowIndex.each((i, f) -> {
@@ -412,17 +416,11 @@ public class TotalImpactResultPage extends FormPage {
 			return result.getDirectFlowResult(process, flow);
 		}
 
-		String flowUnit() {
-			if (flow == null)
-				return "?";
-			return Labels.getRefUnit(flow.flow);
-		}
-
 		String flowAmountString() {
 			if (type() != ModelType.FLOW)
 				return null;
 			String amount = Numbers.format(flowAmount());
-			String unit = flowUnit();
+			String unit = editor.unit(flow);
 			return amount + " " + unit;
 		}
 
@@ -450,7 +448,7 @@ public class TotalImpactResultPage extends FormPage {
 			case IMPACT_CATEGORY:
 				return impact.name;
 			case FLOW:
-				return flow != null ? flow.flow.name : null;
+				return editor.name(flow);
 			case PROCESS:
 				return Labels.getDisplayName(process);
 			default:
@@ -461,18 +459,17 @@ public class TotalImpactResultPage extends FormPage {
 		String category() {
 			switch (type()) {
 			case FLOW:
-				if (flow == null)
-					return null;
-				return Labels.getShortCategory(flow.flow);
+				return editor.category(flow);
 			case PROCESS:
-				return Labels.getShortCategory(process);
+				return Labels.category(process);
 			default:
 				return null;
 			}
 		}
 
 		double contribution() {
-			double total = Math.abs(result.getTotalImpactResult(impact));
+			double total = Math.abs(
+					result.getTotalImpactResult(impact));
 			double r = result();
 			if (r == 0)
 				return 0;

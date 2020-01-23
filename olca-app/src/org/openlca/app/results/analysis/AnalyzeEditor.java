@@ -61,10 +61,10 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new InfoPage(this, result, dqResult, setup));
+			addPage(new InfoPage(this));
 			addPage(new InventoryPage(this));
 			if (result.hasImpactResults())
-				addPage(new TotalImpactResultPage(this, result, dqResult, setup));
+				addPage(new TotalImpactResultPage(this));
 			if (result.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, result, setup));
 			addPage(new ProcessResultPage(this, result, setup));
@@ -75,7 +75,7 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, M.SankeyDiagram);
 			if (result.hasImpactResults()) {
-				addPage(new ImpactChecksPage(this, setup, result));
+				addPage(new ImpactChecksPage(this));
 			}
 		} catch (final PartInitException e) {
 			log.error("Add pages failed", e);

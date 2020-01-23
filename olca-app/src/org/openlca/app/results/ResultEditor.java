@@ -15,10 +15,10 @@ import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.SimpleResult;
+import org.openlca.core.results.ContributionResult;
 import org.openlca.util.Strings;
 
-public abstract class ResultEditor<T extends SimpleResult> extends FormEditor {
+public abstract class ResultEditor<T extends ContributionResult> extends FormEditor {
 
 	public T result;
 	public CalculationSetup setup;
