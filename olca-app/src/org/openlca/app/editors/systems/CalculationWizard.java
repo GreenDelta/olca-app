@@ -22,6 +22,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.results.ResultEditorInput;
+import org.openlca.app.results.Sort;
 import org.openlca.app.results.analysis.AnalyzeEditor;
 import org.openlca.app.results.quick.QuickResultEditor;
 import org.openlca.app.results.simulation.SimulationEditor;
@@ -46,7 +47,6 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.SimpleResult;
-import org.openlca.geo.RegCalculator;
 import org.openlca.geo.parameter.ParameterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,6 +162,7 @@ public class CalculationWizard extends Wizard {
 		saveDefault(CalculationType.class, setup.type);
 		Preferences.set("calc.numberOfRuns", Integer.toString(setup.numberOfRuns));
 		Preferences.set("calc.costCalculation", Boolean.toString(setup.withCosts));
+		Preferences.set("calc.regionalized", Boolean.toString(setup.withRegionalization));
 		if (dqSetup == null) {
 			Preferences.set("calc.dqAssessment", "false");
 			return;
@@ -208,9 +209,6 @@ public class CalculationWizard extends Wizard {
 				case CONTRIBUTION_ANALYSIS:
 					solve();
 					break;
-				case REGIONALIZED_CALCULATION:
-					calcRegionalized();
-					break;
 				default:
 					break;
 				}
@@ -225,10 +223,13 @@ public class CalculationWizard extends Wizard {
 			SystemCalculator calculator = new SystemCalculator(
 					Database.get(), App.getSolver());
 			FullResult result = calculator.calculateFull(setup);
-			log.trace("calculation done, open editor");
+			log.trace("calculation done");
 			saveInventory(result);
-			DQResult dqResult = DQResult.calculate(Database.get(), result, dqSetup);
-			ResultEditorInput input = getEditorInput(result, setup, null, dqResult);
+			DQResult dqResult = DQResult.calculate(
+					Database.get(), result, dqSetup);
+			Sort.sort(result);
+			ResultEditorInput input = getEditorInput(
+					result, setup, null, dqResult);
 			Editors.open(input, AnalyzeEditor.ID);
 		}
 
@@ -237,23 +238,14 @@ public class CalculationWizard extends Wizard {
 			SystemCalculator calc = new SystemCalculator(
 					Database.get(), App.getSolver());
 			ContributionResult r = calc.calculateContributions(setup);
-			log.trace("calculation done, open editor");
+			log.trace("calculation done");
 			saveInventory(r);
-			DQResult dqResult = DQResult.calculate(Database.get(), r, dqSetup);
-			ResultEditorInput input = getEditorInput(r, setup, null, dqResult);
+			DQResult dqResult = DQResult.calculate(
+					Database.get(), r, dqSetup);
+			Sort.sort(r);
+			ResultEditorInput input = getEditorInput(
+					r, setup, null, dqResult);
 			Editors.open(input, QuickResultEditor.ID);
-		}
-
-		private void calcRegionalized() {
-			log.trace("calculate regionalized result");
-			RegCalculator calc = new RegCalculator(
-					Database.get(), App.getSolver());
-			FullResult r = calc.calculateFull(setup);
-			log.trace("calculation done, open editor");
-			saveInventory(r);
-			DQResult dqResult = DQResult.calculate(Database.get(), r, dqSetup);
-			ResultEditorInput input = getEditorInput(r, setup, null, dqResult);
-			Editors.open(input, AnalyzeEditor.ID);
 		}
 
 		private void saveInventory(SimpleResult r) {

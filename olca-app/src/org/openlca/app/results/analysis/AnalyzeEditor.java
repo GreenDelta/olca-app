@@ -35,27 +35,21 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 
 	private SankeyDiagram diagram;
 	private int diagramIndex;
-	private CalculationSetup setup;
-	private FullResult result;
-	private DQResult dqResult;
 
 	@Override
 	public void init(IEditorSite site, IEditorInput iInput)
 			throws PartInitException {
 		super.init(site, iInput);
-		ResultEditorInput input = (ResultEditorInput) iInput;
-		String resultKey = input.resultKey;
-		String setupKey = input.setupKey;
-		FullResult result = Cache.getAppCache().remove(resultKey,
-				FullResult.class);
-		String dqResultKey = input.dqResultKey;
-		if (dqResultKey != null)
-			dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);
-		setup = Cache.getAppCache().remove(setupKey, CalculationSetup.class);
+		ResultEditorInput inp = (ResultEditorInput) iInput;
+		result = Cache.getAppCache().remove(inp.resultKey, FullResult.class);
+		if (inp.dqResultKey != null) {
+			dqResult = Cache.getAppCache().remove(
+					inp.dqResultKey, DQResult.class);
+		}
+		setup = Cache.getAppCache().remove(inp.setupKey, CalculationSetup.class);
 		ProductSystem system = setup.productSystem;
 		String name = M.AnalysisResultOf + " " + system.name;
 		setPartName(name);
-		this.result = result;
 	}
 
 	@Override

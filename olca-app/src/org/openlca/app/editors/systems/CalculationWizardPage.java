@@ -43,6 +43,7 @@ class CalculationWizardPage extends WizardPage {
 	private NwSetComboViewer nwViewer;
 	private Text iterationText;
 	private Button costCheck;
+	private Button regioCheck;
 	private Button dqAssessment;
 	private Button storeInventoryResult;
 	private Composite optionStack;
@@ -95,7 +96,6 @@ class CalculationWizardPage extends WizardPage {
 		CalculationType[] types = {
 				CalculationType.CONTRIBUTION_ANALYSIS,
 				CalculationType.UPSTREAM_ANALYSIS,
-				CalculationType.REGIONALIZED_CALCULATION,
 				CalculationType.MONTE_CARLO_SIMULATION,
 		};
 		UI.gridLayout(composite, types.length, 10, 0);
@@ -131,9 +131,15 @@ class CalculationWizardPage extends WizardPage {
 	private void createCommonOptions(Composite parent) {
 		commonOptions = new Composite(parent, SWT.NULL);
 		UI.gridLayout(commonOptions, 1, 10, 0);
+
+		regioCheck = new Button(commonOptions, SWT.CHECK);
+		regioCheck.setSelection(false);
+		regioCheck.setText("Regionalized calculation");
+
 		costCheck = new Button(commonOptions, SWT.CHECK);
 		costCheck.setSelection(false);
 		costCheck.setText(M.IncludeCostCalculation);
+
 		dqAssessment = new Button(commonOptions, SWT.CHECK);
 		dqAssessment.setSelection(false);
 		dqAssessment.setText(M.AssessDataQuality);
@@ -172,26 +178,26 @@ class CalculationWizardPage extends WizardPage {
 			return M.MonteCarloSimulation;
 		case CONTRIBUTION_ANALYSIS:
 			return M.QuickResults;
-		case REGIONALIZED_CALCULATION:
-			return M.RegionalizedLCIA;
 		default:
 			return M.Unknown;
 		}
 	}
 
-	private void createAllocationViewer(Composite parent) {
-		UI.formLabel(parent, M.AllocationMethod);
-		allocationViewer = new AllocationMethodViewer(parent, AllocationMethod.values());
+	private void createAllocationViewer(Composite comp) {
+		UI.formLabel(comp, M.AllocationMethod);
+		allocationViewer = new AllocationMethodViewer(
+				comp, AllocationMethod.values());
 		allocationViewer.setNullable(false);
 		allocationViewer.select(AllocationMethod.NONE);
 	}
 
-	private void createMethodComboViewer(Composite parent) {
-		UI.formLabel(parent, M.ImpactAssessmentMethod);
-		methodViewer = new ImpactMethodViewer(parent);
+	private void createMethodComboViewer(Composite comp) {
+		UI.formLabel(comp, M.ImpactAssessmentMethod);
+		methodViewer = new ImpactMethodViewer(comp);
 		methodViewer.setNullable(true);
 		methodViewer.setInput(Database.get());
-		methodViewer.addSelectionChangedListener((selection) -> nwViewer.setInput(methodViewer.getSelected()));
+		methodViewer.addSelectionChangedListener(
+				_e -> nwViewer.setInput(methodViewer.getSelected()));
 	}
 
 	private void loadDefaults() {
@@ -210,10 +216,9 @@ class CalculationWizardPage extends WizardPage {
 		if (Strings.isNullOrEmpty(itCount))
 			itCount = "100";
 		iterationText.setText(itCount);
-		boolean withCosts = getDefaultBoolean("calc.costCalculation");
-		costCheck.setSelection(withCosts);
-		boolean doDqAssessment = getDefaultBoolean("calc.dqAssessment");
-		dqAssessment.setSelection(doDqAssessment);
+		regioCheck.setSelection(booleanPref("calc.regionalized"));
+		costCheck.setSelection(booleanPref("calc.costCalculation"));
+		dqAssessment.setSelection(booleanPref("calc.dqAssessment"));
 		updateOptions();
 		if (type == CalculationType.MONTE_CARLO_SIMULATION)
 			return;
@@ -278,7 +283,7 @@ class CalculationWizardPage extends WizardPage {
 		return null;
 	}
 
-	private boolean getDefaultBoolean(String option) {
+	private boolean booleanPref(String option) {
 		String value = Preferences.get(option);
 		if (value == null)
 			return false;
@@ -299,15 +304,16 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	CalculationSetup getSetup(ProductSystem system) {
-		CalculationSetup setUp = new CalculationSetup(type, system);
-		setUp.withCosts = costCheck.getSelection();
-		setUp.allocationMethod = allocationViewer.getSelected();
-		setUp.impactMethod = methodViewer.getSelected();
+		CalculationSetup s = new CalculationSetup(type, system);
+		s.withCosts = costCheck.getSelection();
+		s.withRegionalization = regioCheck.getSelection();
+		s.allocationMethod = allocationViewer.getSelected();
+		s.impactMethod = methodViewer.getSelected();
 		NwSetDescriptor set = nwViewer.getSelected();
-		setUp.nwSet = set;
-		setUp.numberOfRuns = iterationCount;
-		setUp.parameterRedefs.addAll(system.parameterRedefs);
-		return setUp;
+		s.nwSet = set;
+		s.numberOfRuns = iterationCount;
+		s.parameterRedefs.addAll(system.parameterRedefs);
+		return s;
 	}
 
 	boolean doDqAssessment() {

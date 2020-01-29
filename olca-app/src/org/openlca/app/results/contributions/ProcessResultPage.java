@@ -1,7 +1,6 @@
 package org.openlca.app.results.contributions;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,6 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResult;
-import org.openlca.util.Strings;
 
 /**
  * Shows the single and upstream results of the processes in an analysis result.
@@ -129,11 +127,6 @@ public class ProcessResultPage extends FormPage {
 			if (f.isInput == input)
 				list.add(f);
 		}
-		Collections.sort(list, (f1, f2) -> {
-			if (f1.flow == null || f2.flow == null)
-				return 0;
-			return Strings.compare(f1.flow.name, f2.flow.name);
-		});
 		table.setInput(list);
 	}
 
