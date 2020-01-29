@@ -104,8 +104,8 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 				candidates.add(e);
 		}
 		Collections.sort(candidates, (e1, e2) -> Strings.compare(
-				Labels.getDisplayName(e1.flow),
-				Labels.getDisplayName(e2.flow)));
+				Labels.name(e1.flow),
+				Labels.name(e2.flow)));
 		return candidates;
 	}
 

@@ -100,7 +100,7 @@ public class ProcessResultPage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		toolkit = mform.getToolkit();
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.getDisplayName(setup.productSystem),
+				Labels.name(setup.productSystem),
 				Images.get(result));
 		Composite body = UI.formBody(form, toolkit);
 		createFlowSection(body);
@@ -279,12 +279,11 @@ public class ProcessResultPage extends FormPage {
 			case 1:
 				return getFlowLabel(flow.flow);
 			case 2:
-				return Numbers
-						.format(flowResult.getUpstreamTotal(flow));
+				return Numbers.format(flowResult.getUpstreamTotal(flow));
 			case 3:
 				return Numbers.format(flowResult.getDirectResult(flow));
 			case 4:
-				return Labels.getRefUnit(flow.flow);
+				return Labels.refUnit(flow);
 			default:
 				return null;
 			}

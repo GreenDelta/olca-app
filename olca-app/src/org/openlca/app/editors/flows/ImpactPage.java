@@ -108,13 +108,13 @@ class ImpactPage extends ModelPage<Flow> {
 		// sort and set display flags
 		factors.sort((f1, f2) -> {
 			int c = Strings.compare(
-					Labels.getDisplayName(f1.method),
-					Labels.getDisplayName(f2.method));
+					Labels.name(f1.method),
+					Labels.name(f2.method));
 			if (c != 0)
 				return c;
 			return Strings.compare(
-					Labels.getDisplayName(f1.impact),
-					Labels.getDisplayName(f2.impact));
+					Labels.name(f1.impact),
+					Labels.name(f2.impact));
 		});
 		ImpactMethodDescriptor m = null;
 		for (Factor f : factors) {
@@ -156,9 +156,9 @@ class ImpactPage extends ModelPage<Flow> {
 				return null;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(f.method);
+				return Labels.name(f.method);
 			case 1:
-				return Labels.getDisplayName(f.impact);
+				return Labels.name(f.impact);
 			case 2:
 				return Double.toString(f.value);
 			case 3:

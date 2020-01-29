@@ -65,12 +65,12 @@ public class TotalImpactResultPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.getDisplayName(setup.productSystem),
+				Labels.name(setup.productSystem),
 				Images.get(result));
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.ImpactAnalysis + ": "
-				+ Labels.getDisplayName(setup.impactMethod));
+				+ Labels.name(setup.impactMethod));
 		UI.gridData(section, true, true);
 		Composite client = toolkit.createComposite(section);
 		section.setClient(client);
@@ -395,7 +395,7 @@ public class TotalImpactResultPage extends FormPage {
 				iUnit = "1";
 			}
 			String fUnit = flow != null
-					? Labels.getRefUnit(flow.flow)
+					? Labels.refUnit(flow)
 					: "?";
 			return iUnit + "/" + fUnit;
 		}
@@ -450,7 +450,7 @@ public class TotalImpactResultPage extends FormPage {
 			case FLOW:
 				return editor.name(flow);
 			case PROCESS:
-				return Labels.getDisplayName(process);
+				return Labels.name(process);
 			default:
 				return null;
 			}

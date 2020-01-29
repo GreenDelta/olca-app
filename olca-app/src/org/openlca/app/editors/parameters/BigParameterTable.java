@@ -287,7 +287,7 @@ public class BigParameterTable extends SimpleFormEditor {
 			if (param.owner != null
 					&& App.hasDirtyEditor(param.owner)) {
 				String label = Strings.cut(
-						Labels.getDisplayName(param.owner), 50);
+						Labels.name(param.owner), 50);
 				MsgBox.info("Cannot edit " + p.name, label +
 						" is currently modified in another editor.");
 				return;
@@ -424,8 +424,8 @@ public class BigParameterTable extends SimpleFormEditor {
 				return 1;
 
 			return Strings.compare(
-					Labels.getDisplayName(this.owner),
-					Labels.getDisplayName(other.owner));
+					Labels.name(this.owner),
+					Labels.name(other.owner));
 		}
 
 		boolean matches(String filter, int type) {
@@ -449,7 +449,7 @@ public class BigParameterTable extends SimpleFormEditor {
 
 			if (type == FilterCombo.ALL || type == FilterCombo.SCOPES) {
 				String scope = owner != null
-						? Labels.getDisplayName(owner)
+						? Labels.name(owner)
 						: M.GlobalParameter;
 				scope = scope == null ? "" : scope.toLowerCase();
 				if (scope.contains(f))
@@ -540,7 +540,7 @@ public class BigParameterTable extends SimpleFormEditor {
 					return M.GlobalParameter;
 				if (param.owner == null)
 					return "!! missing !!";
-				return Labels.getDisplayName(param.owner);
+				return Labels.name(param.owner);
 			case 2:
 				return Double.toString(p.value);
 			case 3:

@@ -47,7 +47,7 @@ public class Widgets {
 				return link;
 			}
 			CategorizedEntity entity = (CategorizedEntity) value;
-			link.setText(Labels.getDisplayName(entity));
+			link.setText(Labels.name(entity));
 			link.setImage(Images.get(entity));
 			link.addHyperlinkListener(new ModelLinkClickedListener(entity));
 			new CommentControl(parent, toolkit, property, editor.getComments());

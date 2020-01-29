@@ -110,7 +110,7 @@ class SimulationPage extends FormPage {
 			Flow flow = exchange.flow;
 			Unit unit = system.targetUnit;
 			return String.format("%s %s %s", Numbers.format(amount, 2),
-					unit.name, Labels.getDisplayName(flow));
+					unit.name, Labels.name(flow));
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("failed to create text for quan. ref.", e);

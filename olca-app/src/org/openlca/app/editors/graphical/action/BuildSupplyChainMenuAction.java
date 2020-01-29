@@ -54,7 +54,7 @@ class BuildSupplyChainMenuAction extends EditorAction {
 			MenuItem item = new MenuItem(menu, SWT.NONE);
 			String label = getLabel(providers);
 			if (type != null) {
-				label += "/" + NLS.bind(M.Prefer, Labels.processType(type));
+				label += "/" + NLS.bind(M.Prefer, Labels.of(type));
 			}
 			item.setText(label);
 			Controls.onSelect(item, (e) -> {

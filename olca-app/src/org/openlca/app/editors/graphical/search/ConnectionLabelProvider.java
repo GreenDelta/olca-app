@@ -59,7 +59,7 @@ class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelPr
 		Candidate con = (Candidate) obj;
 		switch (col) {
 		case 0:
-			return Labels.getDisplayName(con.process);
+			return Labels.name(con.process);
 		case 3:
 			if (!con.processExists)
 				return "-";

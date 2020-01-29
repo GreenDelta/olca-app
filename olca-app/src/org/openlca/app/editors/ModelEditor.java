@@ -155,7 +155,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 		EntityCache cache = Cache.getEntityCache();
 		cache.refresh(descriptor.getClass(), descriptor.id);
 		cache.invalidate(modelClass, model.id);
-		this.setPartName(Labels.getDisplayName(model));
+		this.setPartName(Labels.name(model));
 		Cache.evict(descriptor);
 		for (Runnable handler : savedHandlers) {
 			if (handler != null) {

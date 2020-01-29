@@ -52,7 +52,7 @@ public final class GraphicalEditorInput implements IEditorInput {
 	public String getName() {
 		if (descriptor == null)
 			return "no content";
-		return Labels.getDisplayName(descriptor);
+		return Labels.name(descriptor);
 	}
 
 	@Override

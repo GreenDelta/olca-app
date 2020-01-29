@@ -232,8 +232,8 @@ class TotalRequirementsSection {
 			this.process = product.process;
 			FlowDescriptor flow = product.flow;
 			if (flow != null) {
-				this.product = Labels.getDisplayName(flow);
-				this.unit = Labels.getRefUnit(flow);
+				this.product = Labels.name(flow);
+				this.unit = Labels.refUnit(flow);
 				this.flowtype = flow.flowType;
 			}
 		}
@@ -295,7 +295,7 @@ class TotalRequirementsSection {
 			Item item = (Item) obj;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(item.process);
+				return Labels.name(item.process);
 			case 1:
 				return item.product;
 			case 2:

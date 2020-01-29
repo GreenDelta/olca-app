@@ -230,13 +230,13 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			ImpactFactor f = (ImpactFactor) o;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(f.flow);
+				return Labels.name(f.flow);
 			case 1:
 				return CategoryPath.getShort(f.flow.category);
 			case 2:
 				if (f.flowPropertyFactor == null)
 					return null;
-				return Labels.getDisplayName(f.flowPropertyFactor.flowProperty);
+				return Labels.name(f.flowPropertyFactor.flowProperty);
 			case 3:
 				if (f.formula == null || !showFormulas)
 					return Double.toString(f.value);
@@ -249,7 +249,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			case 6:
 				return f.location == null ? "": f.location.code != null
 								? f.location.code
-								: Labels.getDisplayName(f.location);
+								: Labels.name(f.location);
 			default:
 				return null;
 			}
@@ -353,7 +353,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				return;
 			}
 			factor = (ImpactFactor) value;
-			String s = Labels.getDisplayName(factor.location);
+			String s = Labels.name(factor.location);
 			super.doSetValue(s == null ? "" : s);
 		}
 

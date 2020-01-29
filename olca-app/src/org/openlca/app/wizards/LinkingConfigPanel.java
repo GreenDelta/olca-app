@@ -37,8 +37,8 @@ class LinkingConfigPanel {
 		preferProvidersRadio = UI.formRadio(methodGroup, M.PreferDefaultProviders);
 		onlyLinkProvidersRadio = UI.formRadio(methodGroup, M.OnlyLinkDefaultProviders);
 		Composite typeGroup = createRadioGroup(comp, M.PreferredProcessType);
-		preferUnitRadio = UI.formRadio(typeGroup, Labels.processType(ProcessType.UNIT_PROCESS));
-		preferSystemRadio = UI.formRadio(typeGroup, Labels.processType(ProcessType.LCI_RESULT));
+		preferUnitRadio = UI.formRadio(typeGroup, Labels.of(ProcessType.UNIT_PROCESS));
+		preferSystemRadio = UI.formRadio(typeGroup, Labels.of(ProcessType.LCI_RESULT));
 		createCutoffText(comp);
 		preferProvidersRadio.setSelection(true);
 		preferSystemRadio.setSelection(true);

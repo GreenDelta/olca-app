@@ -50,7 +50,7 @@ class ProviderCombo extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 		ProcessDescriptor[] providers = list.toArray(
 				new ProcessDescriptor[list.size()]);
 		Arrays.sort(providers, (p1, p2) -> Strings.compare(
-				Labels.getDisplayName(p1), Labels.getDisplayName(p2)));
+				Labels.name(p1), Labels.name(p2)));
 		return providers;
 	}
 
@@ -65,7 +65,7 @@ class ProviderCombo extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 	protected String getText(ProcessDescriptor d) {
 		if (d == null)
 			return M.None;
-		return Labels.getDisplayName(d);
+		return Labels.name(d);
 	}
 
 	@Override

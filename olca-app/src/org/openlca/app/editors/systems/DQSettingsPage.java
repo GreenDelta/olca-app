@@ -161,11 +161,11 @@ class DQSettingsPage extends WizardPage {
 		@Override
 		public String getText(Object element) {
 			if (element instanceof ProcessingType)
-				return Labels.processingType((ProcessingType) element);
+				return Labels.of((ProcessingType) element);
 			if (element instanceof AggregationType)
-				return Labels.aggregationType((AggregationType) element);
+				return Labels.of((AggregationType) element);
 			if (element instanceof RoundingMode)
-				return Labels.roundingMode((RoundingMode) element);
+				return Labels.of((RoundingMode) element);
 			return super.getText(element);
 		}
 

@@ -84,7 +84,7 @@ class Stats {
 			if (rcount == 0 && fcount == 0)
 				continue;
 			log.trace("Flow {} uuid={} :: {} replacements, {} failures in {}",
-					Labels.getDisplayName(flow), flow.refId, rcount, fcount, context);
+					Labels.name(flow), flow.refId, rcount, fcount, context);
 		}
 	}
 }

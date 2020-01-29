@@ -349,8 +349,8 @@ class MappingDialog extends FormDialog {
 				providers.addAll(new ProcessDao(db).getDescriptors(ids));
 				Collections.sort(providers,
 						(p1, p2) -> Strings.compare(
-								Labels.getDisplayName(p1),
-								Labels.getDisplayName(p2)));
+								Labels.name(p1),
+								Labels.name(p2)));
 			}
 
 			// fill the provider combo
@@ -359,7 +359,7 @@ class MappingDialog extends FormDialog {
 			int selected = 0;
 			for (int i = 0; i < providers.size(); i++) {
 				ProcessDescriptor p = providers.get(i);
-				items[i + 1] = Labels.getDisplayName(p);
+				items[i + 1] = Labels.name(p);
 				if (ref.provider != null
 						&& Objects.equals(p.refId, ref.provider.refId)) {
 					selected = i + 1;

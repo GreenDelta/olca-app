@@ -45,7 +45,7 @@ public class DescriptorViewer extends AbstractTableViewer<BaseDescriptor> {
 			BaseDescriptor d = (BaseDescriptor) obj;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(d);
+				return Labels.name(d);
 			case 1:
 				return d.description;
 			}

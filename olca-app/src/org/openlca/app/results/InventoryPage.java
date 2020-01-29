@@ -60,7 +60,7 @@ public class InventoryPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.getDisplayName(setup.productSystem),
+				Labels.name(setup.productSystem),
 				Images.get(result));
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
@@ -246,7 +246,7 @@ public class InventoryPage extends FormPage {
 			Pair<String, String> category = Labels.getCategory(process);
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(process);
+				return Labels.name(process);
 			case 1:
 				return category.getLeft();
 			case 2:
@@ -255,7 +255,7 @@ public class InventoryPage extends FormPage {
 				double v = getAmount(item);
 				return Numbers.format(v);
 			case 4:
-				return Labels.getRefUnit(item.flow.flow);
+				return Labels.refUnit(item.flow);
 			default:
 				return null;
 			}

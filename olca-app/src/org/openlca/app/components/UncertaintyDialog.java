@@ -148,7 +148,7 @@ public class UncertaintyDialog extends Dialog {
 		int idx = 0;
 		for (int i = 0; i < items.length; i++) {
 			UncertaintyType type = types[i];
-			items[i] = Labels.uncertaintyType(type);
+			items[i] = Labels.of(type);
 			if (uncertainty != null
 					&& uncertainty.distributionType == type)
 				idx = i;

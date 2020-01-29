@@ -107,7 +107,7 @@ class IndicatorTable {
 			ReportIndicator indicator = (ReportIndicator) element;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(indicator.descriptor);
+				return Labels.name(indicator.descriptor);
 			case 2:
 				return indicator.reportName;
 			case 3:

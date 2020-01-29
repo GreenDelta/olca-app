@@ -58,7 +58,7 @@ class ProcessFigure extends Figure {
 		String tooltip = null;
 		if (node.process instanceof ProcessDescriptor) {
 			ProcessDescriptor d = (ProcessDescriptor) node.process;
-			tooltip = Labels.processType(d.processType)
+			tooltip = Labels.of(d.processType)
 					+ ": " + node.getName();
 		} else {
 			tooltip = M.ProductSystem + ": " + node.getName();

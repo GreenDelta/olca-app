@@ -33,7 +33,7 @@ class LocationCell extends DialogCellEditor {
 			return;
 		}
 		exchange = (Exchange) value;
-		String s = Labels.getDisplayName(exchange.location);
+		String s = Labels.name(exchange.location);
 		super.doSetValue(s == null ? "" : s);
 	}
 

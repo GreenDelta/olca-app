@@ -85,7 +85,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		if (input instanceof GraphicalEditorInput) {
 			GraphicalEditorInput modelInput = (GraphicalEditorInput) input;
 			if (modelInput.getDescriptor() != null) {
-				setPartName(Labels.getDisplayName(modelInput.getDescriptor()));
+				setPartName(Labels.name(modelInput.getDescriptor()));
 			}
 		}
 		super.init(site, input);

@@ -1,15 +1,11 @@
 package org.openlca.app.results.regionalized;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
-import org.openlca.app.db.Database;
 import org.openlca.app.results.InfoPage;
 import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.NwResultPage;
@@ -21,15 +17,10 @@ import org.openlca.app.results.contributions.ContributionTreePage;
 import org.openlca.app.results.contributions.ProcessResultPage;
 import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
-import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.LongPair;
-import org.openlca.core.model.ImpactCategory;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.FullResult;
 import org.openlca.geo.RegionalizedResult;
-import org.openlca.geo.parameter.ParameterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +33,6 @@ public class RegionalizedResultEditor extends ResultEditor<FullResult> {
 	private CalculationSetup setup;
 	private SankeyDiagram diagram;
 	private int diagramIndex;
-	private FactorCalculator factorCalculator;
-	private ImpactCategoryDao impactCategoryDao;
-	private Map<Long, ImpactCategory> impactCategories = new HashMap<>();
-	private Map<LongPair, Map<FlowDescriptor, Double>> factorsMap = new HashMap<>();
 	private DQResult dqResult;
 
 	@Override
@@ -58,11 +45,6 @@ public class RegionalizedResultEditor extends ResultEditor<FullResult> {
 					CalculationSetup.class);
 			result = Cache.getAppCache().remove(input.resultKey,
 					RegionalizedResult.class);
-			impactCategoryDao = new ImpactCategoryDao(Database.get());
-			ParameterSet parameterSet = Cache.getAppCache().remove(
-					input.parameterSetKey, ParameterSet.class);
-			factorCalculator = new FactorCalculator(parameterSet,
-					Database.get(), setup);
 			String dqResultKey = input.dqResultKey;
 			if (dqResultKey != null)
 				dqResult = Cache.getAppCache().remove(dqResultKey, DQResult.class);

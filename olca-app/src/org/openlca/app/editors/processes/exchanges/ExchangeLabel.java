@@ -87,7 +87,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		Exchange e = (Exchange) obj;
 		switch (col) {
 		case 0:
-			return Labels.getDisplayName(e.flow);
+			return Labels.name(e.flow);
 		case 1:
 			if (e.flow == null)
 				return null;
@@ -95,7 +95,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		case 2:
 			return getAmountText(e);
 		case 3:
-			return Labels.getDisplayName(e.unit);
+			return Labels.name(e.unit);
 		case 4:
 			return getCostValue(e);
 		case 5:
@@ -114,7 +114,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			return e.location == null ? ""
 					: e.location.code != null
 							? e.location.code
-							: Labels.getDisplayName(e.location);
+							: Labels.name(e.location);
 		case 10:
 			return e.description;
 
@@ -130,7 +130,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 				e.defaultProviderId);
 		if (p == null)
 			return null;
-		return Labels.getDisplayName(p);
+		return Labels.name(p);
 	}
 
 	private String getAmountText(Exchange e) {

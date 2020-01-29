@@ -60,7 +60,7 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 		if (element instanceof Location)
 			return ((Location) element).name;
 		if (element instanceof BaseDescriptor)
-			return Labels.getDisplayName((BaseDescriptor) element);
+			return Labels.name((BaseDescriptor) element);
 		if (element instanceof Enum<?>)
 			return getEnumText(element);
 		if (element != null)
@@ -70,15 +70,15 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 
 	private String getEnumText(Object enumValue) {
 		if (enumValue instanceof AllocationMethod)
-			return Labels.allocationMethod((AllocationMethod) enumValue);
+			return Labels.of((AllocationMethod) enumValue);
 		if (enumValue instanceof FlowPropertyType)
-			return Labels.flowPropertyType((FlowPropertyType) enumValue);
+			return Labels.of((FlowPropertyType) enumValue);
 		if (enumValue instanceof FlowType)
-			return Labels.flowType((FlowType) enumValue);
+			return Labels.of((FlowType) enumValue);
 		if (enumValue instanceof ProcessType)
-			return Labels.processType((ProcessType) enumValue);
+			return Labels.of((ProcessType) enumValue);
 		if (enumValue instanceof UncertaintyType)
-			return Labels.uncertaintyType((UncertaintyType) enumValue);
+			return Labels.of((UncertaintyType) enumValue);
 		if (enumValue != null)
 			return enumValue.toString();
 		return null;
@@ -101,7 +101,7 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 	protected String getModelLabel(BaseDescriptor d) {
 		if (d == null)
 			return null;
-		return Strings.cut(Labels.getDisplayName(d), 75);
+		return Strings.cut(Labels.name(d), 75);
 	}
 
 	@Override

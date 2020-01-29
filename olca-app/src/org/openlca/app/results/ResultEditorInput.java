@@ -75,7 +75,7 @@ public class ResultEditorInput implements IEditorInput {
 			return "";
 		ProductSystemDescriptor d = cache.get(ProductSystemDescriptor.class,
 				productSystemId);
-		return M.Results + ": " + Labels.getDisplayName(d);
+		return M.Results + ": " + Labels.name(d);
 	}
 
 	@Override

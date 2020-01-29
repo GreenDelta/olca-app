@@ -181,7 +181,7 @@ class PinBoard {
 			}
 
 			// process name matches
-			String s = Labels.getDisplayName(
+			String s = Labels.name(
 					pp.process).toLowerCase(Locale.US);
 			if (s.contains(f)) {
 				input.add(pp);
@@ -189,7 +189,7 @@ class PinBoard {
 			}
 
 			// product name matches
-			s = Labels.getDisplayName(
+			s = Labels.name(
 					pp.flow).toLowerCase(Locale.US);
 			if (s.contains(f)) {
 				input.add(pp);
@@ -206,8 +206,8 @@ class PinBoard {
 				return -1;
 			if (!pinned1 && pinned2)
 				return 1;
-			String s1 = Labels.getDisplayName(pp1.process);
-			String s2 = Labels.getDisplayName(pp2.process);
+			String s1 = Labels.name(pp1.process);
+			String s2 = Labels.name(pp2.process);
 			return Strings.compare(s1, s2);
 		});
 
@@ -258,9 +258,9 @@ class PinBoard {
 				return null;
 			ProcessProduct pp = (ProcessProduct) obj;
 			if (col == 1)
-				return Labels.getDisplayName(pp.process);
+				return Labels.name(pp.process);
 			else if (col == 2)
-				return Labels.getDisplayName(pp.flow);
+				return Labels.name(pp.flow);
 			return null;
 		}
 	}

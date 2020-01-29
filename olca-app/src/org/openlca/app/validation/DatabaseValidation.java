@@ -50,7 +50,7 @@ public class DatabaseValidation {
 			if (monitor != null && monitor.isCanceled())
 				continue;
 			if (monitor != null)
-				monitor.subTask(Labels.modelType(type));
+				monitor.subTask(Labels.plural(type));
 			result.addAll(evaluate(type, byType.get(type)));
 		}
 		if (monitor != null)

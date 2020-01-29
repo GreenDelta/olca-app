@@ -239,7 +239,7 @@ class CausalFactorTable {
 				return null;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(exchange.flow);
+				return Labels.name(exchange.flow);
 			case 1:
 				return exchange.isInput ? M.Input : M.Output;
 			case 2:
@@ -275,7 +275,7 @@ class CausalFactorTable {
 		public String getTitle() {
 			if (product == null || product.flow == null)
 				return "";
-			return Labels.getDisplayName(product.flow);
+			return Labels.name(product.flow);
 		}
 
 		@Override

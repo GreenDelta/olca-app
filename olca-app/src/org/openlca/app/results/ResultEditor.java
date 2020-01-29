@@ -30,7 +30,7 @@ public abstract class ResultEditor<T extends ContributionResult> extends FormEdi
 	public String name(IndexFlow flow) {
 		return label(flow, _flowNames, () -> {
 			if (flow.flow.flowType != FlowType.ELEMENTARY_FLOW)
-				return Labels.getDisplayName(flow.flow);
+				return Labels.name(flow.flow);
 			String name = flow.flow.name;
 			if (flow.location != null) {
 				name += " - " + flow.location.code;
@@ -42,7 +42,7 @@ public abstract class ResultEditor<T extends ContributionResult> extends FormEdi
 	/** Returns the name of the reference unit of the given flow. */
 	public String unit(IndexFlow flow) {
 		return label(flow, _flowUnits, () -> {
-			return Labels.getRefUnit(flow);
+			return Labels.refUnit(flow);
 		});
 	}
 

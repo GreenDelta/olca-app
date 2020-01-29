@@ -47,12 +47,17 @@ class ExchangeFigure extends Label {
 	}
 
 	private String getPrefix() {
+		FlowType type = node.exchange.flow != null
+				? node.exchange.flow.flowType
+				: null;
+		if (type == null)
+			return "?";
 		if (node.exchange.isAvoided) {
-			if (node.exchange.flow.flowType == FlowType.PRODUCT_FLOW)
-				return M.AvoidedProductFlow;
-			return M.AvoidedWasteFlow;
+			return type == FlowType.PRODUCT_FLOW
+					? M.AvoidedProductFlow
+					: M.AvoidedWasteFlow;
 		}
-		return Labels.flowType(node.exchange.flow);
+		return Labels.of(type);
 	}
 
 	void setHighlighted(boolean value) {

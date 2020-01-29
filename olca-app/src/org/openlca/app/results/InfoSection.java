@@ -28,7 +28,7 @@ class InfoSection {
 			return;
 		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
 		link(comp, tk, M.ProductSystem, setup.productSystem);
-		text(comp, tk, M.AllocationMethod, Labels.getEnumText(setup.allocationMethod));
+		text(comp, tk, M.AllocationMethod, Labels.of(setup.allocationMethod));
 		text(comp, tk, M.TargetAmount, targetAmountText(setup));
 		if (setup.impactMethod != null) {
 			link(comp, tk, M.ImpactAssessmentMethod, setup.impactMethod);
@@ -62,13 +62,13 @@ class InfoSection {
 	}
 
 	private static void decorateLink(ImageHyperlink link, CategorizedEntity entity) {
-		link.setText(Labels.getDisplayName(entity));
+		link.setText(Labels.name(entity));
 		link.setImage(Images.get(entity));
 		Controls.onClick(link, (e) -> App.openEditor(entity));
 	}
 
 	private static void decorateLink(ImageHyperlink link, CategorizedDescriptor entity) {
-		link.setText(Labels.getDisplayName(entity));
+		link.setText(Labels.name(entity));
 		link.setImage(Images.get(entity));
 		Controls.onClick(link, (e) -> App.openEditor(entity));
 	}

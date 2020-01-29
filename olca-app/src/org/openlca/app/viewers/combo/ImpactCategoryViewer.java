@@ -76,7 +76,7 @@ public class ImpactCategoryViewer extends
 
 			switch (columnIndex) {
 			case 0:
-				return Labels.getDisplayName(category);
+				return Labels.name(category);
 			case 1:
 				return category.referenceUnit;
 			}

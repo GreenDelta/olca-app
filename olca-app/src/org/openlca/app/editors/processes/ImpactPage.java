@@ -204,8 +204,8 @@ class ImpactPage extends ModelPage<Process> {
 
 	private void sort(List<Node> roots) {
 		Collections.sort(roots, (n1, n2) -> {
-			String l1 = Labels.getDisplayName(n1.impact);
-			String l2 = Labels.getDisplayName(n2.impact);
+			String l1 = Labels.name(n1.impact);
+			String l2 = Labels.name(n2.impact);
 			return Strings.compare(l1, l2);
 		});
 		for (Node root : roots) {
@@ -222,8 +222,8 @@ class ImpactPage extends ModelPage<Process> {
 					return c;
 				if (n1.exchange == null || n2.exchange == null)
 					return c;
-				String l1 = Labels.getDisplayName(n1.exchange.flow);
-				String l2 = Labels.getDisplayName(n2.exchange.flow);
+				String l1 = Labels.name(n1.exchange.flow);
+				String l2 = Labels.name(n2.exchange.flow);
 				return Strings.compare(l1, l2);
 			});
 		}
@@ -297,9 +297,9 @@ class ImpactPage extends ModelPage<Process> {
 			switch (col) {
 			case 0:
 				if (n.exchange == null)
-					return Labels.getDisplayName(n.impact);
+					return Labels.name(n.impact);
 				else
-					return Labels.getDisplayName(n.exchange.flow);
+					return Labels.name(n.exchange.flow);
 			case 1:
 				if (n.exchange == null)
 					return null;

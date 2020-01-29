@@ -32,7 +32,7 @@ public class ProcessFigure extends Figure {
 	Font boldFont;
 
 	public ProcessFigure(ProcessNode node) {
-		setToolTip(new Label(Labels.getDisplayName(node.process)));
+		setToolTip(new Label(Labels.name(node.process)));
 		node.figure = this;
 		this.node = node;
 		setSize(WIDTH, HEIGHT);

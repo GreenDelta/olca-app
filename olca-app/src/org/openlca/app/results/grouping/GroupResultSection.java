@@ -50,7 +50,7 @@ class GroupResultSection {
 		String unit;
 		if (resultType == FLOW) {
 			IndexFlow flow = flowViewer.getSelected();
-			unit = Labels.getRefUnit(flow);
+			unit = Labels.refUnit(flow);
 			selection = flow;
 		} else {
 			ImpactCategoryDescriptor impact = impactViewer.getSelected();

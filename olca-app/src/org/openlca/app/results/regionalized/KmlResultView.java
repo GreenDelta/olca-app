@@ -49,7 +49,7 @@ class KmlResultView extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.getDisplayName(setup.productSystem),
+				Labels.name(setup.productSystem),
 				Images.get(result.result));
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);

@@ -100,7 +100,7 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 
 			case 0:
 				// name
-				return Labels.getDisplayName(f.flow);
+				return Labels.name(f.flow);
 
 			case 1:
 				// category

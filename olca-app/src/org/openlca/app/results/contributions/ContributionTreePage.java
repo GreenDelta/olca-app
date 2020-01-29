@@ -29,7 +29,6 @@ import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.IndexFlow;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.UpstreamNode;
@@ -56,7 +55,7 @@ public class ContributionTreePage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		FormToolkit tk = mform.getToolkit();
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.getDisplayName(setup.productSystem),
+				Labels.name(setup.productSystem),
 				Images.get(result));
 		Composite body = UI.formBody(form, tk);
 		Composite comp = tk.createComposite(body);
@@ -204,7 +203,7 @@ public class ContributionTreePage extends FormPage {
 			case 0:
 				return Numbers.percent(getContribution(node));
 			case 1:
-				return Labels.getDisplayName(node.provider.process);
+				return Labels.name(node.provider.process);
 			case 2:
 				return Numbers.format(node.result);
 			case 3:
@@ -215,9 +214,9 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		private String getUnit() {
-			if (selection instanceof FlowDescriptor) {
-				FlowDescriptor flow = (FlowDescriptor) selection;
-				return Labels.getRefUnit(flow);
+			if (selection instanceof IndexFlow) {
+				IndexFlow flow = (IndexFlow) selection;
+				return Labels.refUnit(flow);
 			} else if (selection instanceof ImpactCategoryDescriptor) {
 				ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
 				return impact.referenceUnit;

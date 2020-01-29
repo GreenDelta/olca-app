@@ -196,7 +196,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 			Node n = (Node) obj;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(n.context);
+				return Labels.name(n.context);
 			case 1:
 				return n.type;
 			case 2:

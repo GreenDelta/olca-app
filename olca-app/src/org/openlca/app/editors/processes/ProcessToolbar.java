@@ -69,7 +69,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 	static void exportToExcel(Process p) {
 		if (p == null)
 			return;
-		String name = Labels.getDisplayName(p);
+		String name = Labels.name(p);
 		name = name == null ? "process" : name;
 		name = name.replaceAll("[^a-zA-Z0-9]", "_") + ".xlsx";
 		File f = FileChooser.forExport("*.xlsx", name);

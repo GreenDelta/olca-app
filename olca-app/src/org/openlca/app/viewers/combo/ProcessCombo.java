@@ -77,7 +77,7 @@ public class ProcessCombo extends AbstractComboViewer<ProcessDescriptor> {
 						LocationDescriptor.class, p.location);
 				return loc != null ? loc.name : null;
 			case 2:
-				return Labels.getDisplayName(p);
+				return Labels.name(p);
 			default:
 				return null;
 			}

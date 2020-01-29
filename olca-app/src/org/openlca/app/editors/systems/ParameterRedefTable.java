@@ -212,7 +212,7 @@ class ParameterRedefTable {
 			case 0:
 				BaseDescriptor model = getModel(redef);
 				if (model != null)
-					return Labels.getDisplayName(model);
+					return Labels.name(model);
 				return "global";
 			case 1:
 				return redef.name;
@@ -262,9 +262,9 @@ class ParameterRedefTable {
 			if (processId1 == null || processId2 == null)
 				return 0;
 			BaseDescriptor d1 = cache.get(ProcessDescriptor.class, processId1);
-			String name1 = Labels.getDisplayName(d1);
+			String name1 = Labels.name(d1);
 			BaseDescriptor d2 = cache.get(ProcessDescriptor.class, processId2);
-			String name2 = Labels.getDisplayName(d2);
+			String name2 = Labels.name(d2);
 			return Strings.compare(name1, name2);
 		}
 

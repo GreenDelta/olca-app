@@ -195,8 +195,8 @@ class Candidate implements Comparable<Candidate> {
 
 	@Override
 	public int compareTo(Candidate o) {
-		String n1 = Labels.getDisplayName(process);
-		String n2 = Labels.getDisplayName(o.process);
+		String n1 = Labels.name(process);
+		String n2 = Labels.name(o.process);
 		return n1.toLowerCase().compareTo(n2.toLowerCase());
 	}
 

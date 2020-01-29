@@ -57,7 +57,7 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 		case 1:
 			return getRawAmount(a);
 		case 2:
-			return Labels.riskLevel(a.riskLevel);
+			return Labels.of(a.riskLevel);
 		case 3:
 			return getActivityValue(a);
 		case 4:
@@ -65,7 +65,7 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 		case 5:
 			return a.comment;
 		case 6:
-			return Labels.getDisplayName(a.source);
+			return Labels.name(a.source);
 		default:
 			return null;
 		}

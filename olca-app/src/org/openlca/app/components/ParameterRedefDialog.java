@@ -360,7 +360,7 @@ public class ParameterRedefDialog extends FormDialog {
 		public String getText(Object element) {
 			if (element instanceof ModelNode) {
 				ModelNode node = (ModelNode) element;
-				return Labels.getDisplayName(node.model);
+				return Labels.name(node.model);
 			}
 			if (element instanceof ParameterNode) {
 				ParameterNode node = (ParameterNode) element;

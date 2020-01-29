@@ -86,7 +86,7 @@ class ProviderDialog extends Dialog {
 		UI.gridData(combo, true, false).widthHint = 80;
 		String[] labels = new String[providers.size()];
 		for (int i = 0; i < labels.length; i++) {
-			labels[i] = Labels.getDisplayName(
+			labels[i] = Labels.name(
 					providers.get(i).process);
 		}
 		combo.setItems(labels);
@@ -147,7 +147,7 @@ class ProviderDialog extends Dialog {
 		T d = cache.get(clazz, id);
 		if (d == null)
 			return "?";
-		return Labels.getDisplayName(d);
+		return Labels.name(d);
 	}
 
 	@Override

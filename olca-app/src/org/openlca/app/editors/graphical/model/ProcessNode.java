@@ -124,7 +124,7 @@ public class ProcessNode extends Node {
 
 	@Override
 	public String getName() {
-		return Labels.getDisplayName(process);
+		return Labels.name(process);
 	}
 
 	public boolean isMinimized() {
@@ -371,7 +371,7 @@ public class ProcessNode extends Node {
 				? Long.toString(process.id)
 				: "null";
 		return "ProcessNode [ id =" + id + " name = "
-				+ Labels.getDisplayName(process) + " ]";
+				+ Labels.name(process) + " ]";
 	}
 
 }

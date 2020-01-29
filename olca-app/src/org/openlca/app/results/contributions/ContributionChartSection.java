@@ -89,7 +89,7 @@ public class ContributionChartSection {
 		ContributionSet<CategorizedDescriptor> cons = null;
 		if (e instanceof IndexFlow) {
 			IndexFlow flow = (IndexFlow) e;
-			unit = Labels.getRefUnit(flow.flow);
+			unit = Labels.refUnit(flow);
 			cons = result.getProcessContributions(flow);
 		} else if (e instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) e;

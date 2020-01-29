@@ -54,7 +54,7 @@ public class NwResultPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.getDisplayName(setup.productSystem),
+				Labels.name(setup.productSystem),
 				Images.get(result));
 		toolkit = mform.getToolkit();
 		body = UI.formBody(form, toolkit);
@@ -146,7 +146,7 @@ public class NwResultPage extends FormPage {
 					.cast(o);
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(item.item.impactCategory);
+				return Labels.name(item.item.impactCategory);
 			case 1:
 				return Numbers.format(item.amount);
 			case 2:

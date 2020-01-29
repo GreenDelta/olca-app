@@ -92,7 +92,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 			CategorizedDescriptor descriptor = element.getContent();
 			if (descriptor == null)
 				continue;
-			String name = Labels.getDisplayName(descriptor);
+			String name = Labels.name(descriptor);
 			int answer = dontAsk ? IDialogConstants.YES_ID : askDelete(name);
 			if (answer == IDialogConstants.CANCEL_ID) {
 				canceled = true;

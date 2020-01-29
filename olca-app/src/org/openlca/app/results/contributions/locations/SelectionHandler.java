@@ -41,7 +41,7 @@ class SelectionHandler implements EventHandler {
 	public void flowSelected(IndexFlow flow) {
 		if (calculator == null || flow == null)
 			return;
-		String unit = Labels.getRefUnit(flow);
+		String unit = Labels.refUnit(flow);
 		ContributionSet<Location> set = calculator.calculate(flow);
 		double total = result.getTotalFlowResult(flow);
 		setData(set, flow, total, unit);
@@ -101,8 +101,8 @@ class SelectionHandler implements EventHandler {
 				return Double.compare(c2.share, c1.share);
 			else
 				return Strings.compare(
-						Labels.getDisplayName(c1.item),
-						Labels.getDisplayName(c2.item));
+						Labels.name(c1.item),
+						Labels.name(c2.item));
 		});
 		page.setInput(items, unit);
 	}

@@ -22,7 +22,7 @@ class LabelProvider extends org.eclipse.jface.viewers.LabelProvider {
 			return null;
 		DiffNode node = (DiffNode) element;
 		if (node.isModelTypeNode())
-			return Labels.modelType((ModelType) node.content);
+			return Labels.plural((ModelType) node.content);
 		DiffResult result = (DiffResult) node.content;
 		if (result.remote != null && (action == ActionType.FETCH || action == ActionType.COMPARE_AHEAD))
 			return result.remote.name;

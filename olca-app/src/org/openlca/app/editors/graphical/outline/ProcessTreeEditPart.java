@@ -21,7 +21,7 @@ public class ProcessTreeEditPart extends AbstractTreeEditPart {
 
 	@Override
 	protected String getText() {
-		return Labels.getDisplayName(getModel());
+		return Labels.name(getModel());
 	}
 
 	@Override

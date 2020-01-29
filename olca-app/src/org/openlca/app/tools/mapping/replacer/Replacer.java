@@ -140,7 +140,7 @@ public class Replacer implements Runnable {
 					Flow flow = dao.getForId(flowID);
 					dao.delete(flow);
 					log.info("removed mapped flow {} uuid={}",
-							Labels.getDisplayName(flow), flow.refId);
+							Labels.name(flow), flow.refId);
 					e.sourceFlow.status = Status.ok("Applied and removed");
 				} else {
 					e.sourceFlow.status = Status.ok("Applied (not removed)");
