@@ -95,7 +95,7 @@ public class TotalImpactResultPage extends FormPage {
 	}
 
 	private void setInput() {
-		List<Item> items = editor.impacts().stream()
+		List<Item> items = result.getImpacts().stream()
 				.map(impact -> new Item(impact))
 				.collect(Collectors.toList());
 		viewer.setInput(items);

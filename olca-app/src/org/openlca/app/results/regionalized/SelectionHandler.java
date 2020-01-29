@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.openlca.app.components.ResultTypeCombo.EventHandler;
 import org.openlca.app.util.CostResultDescriptor;
@@ -28,11 +27,10 @@ abstract class SelectionHandler implements EventHandler {
 
 	@Override
 	public void flowSelected(IndexFlow flow) {
-		ContributionResult provider = result.result;
-		Set<CategorizedDescriptor> processes = provider.getProcesses();
+		ContributionResult r = result.result;
 		Map<Long, Double> results = new HashMap<>();
-		for (CategorizedDescriptor process : processes) {
-			double v = provider.getDirectFlowResult(process, flow);
+		for (CategorizedDescriptor process : r.getProcesses()) {
+			double v = r.getDirectFlowResult(process, flow);
 			results.put(process.id, v);
 		}
 		processResultData(getResultData(results));
@@ -40,11 +38,10 @@ abstract class SelectionHandler implements EventHandler {
 
 	@Override
 	public void impactCategorySelected(ImpactCategoryDescriptor impact) {
-		ContributionResult provider = result.result;
-		Set<CategorizedDescriptor> processes = provider.getProcesses();
+		ContributionResult r = result.result;
 		Map<Long, Double> results = new HashMap<>();
-		for (CategorizedDescriptor process : processes) {
-			double v = provider.getDirectImpactResult(process, impact);
+		for (CategorizedDescriptor process : r.getProcesses()) {
+			double v = r.getDirectImpactResult(process, impact);
 			results.put(process.id, v);
 		}
 		processResultData(getResultData(results));
@@ -52,11 +49,10 @@ abstract class SelectionHandler implements EventHandler {
 
 	@Override
 	public void costResultSelected(CostResultDescriptor cost) {
-		ContributionResult provider = result.result;
-		Set<CategorizedDescriptor> processes = provider.getProcesses();
+		ContributionResult r = result.result;
 		Map<Long, Double> results = new HashMap<>();
-		for (CategorizedDescriptor process : processes) {
-			double v = provider.getDirectCostResult(process);
+		for (CategorizedDescriptor process : r.getProcesses()) {
+			double v = r.getDirectCostResult(process);
 			v = cost.forAddedValue ? -v : v;
 			results.put(process.id, v);
 		}

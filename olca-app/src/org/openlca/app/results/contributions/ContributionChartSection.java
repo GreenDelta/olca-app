@@ -31,7 +31,6 @@ public class ContributionChartSection {
 	private String sectionTitle = "";
 	private String selectionName = "";
 
-	private final ResultEditor<?> editor;
 	private final ContributionResult result;
 	private AbstractViewer<?, TableComboViewer> itemViewer;
 	private ContributionChart chart;
@@ -51,7 +50,6 @@ public class ContributionChartSection {
 	}
 
 	private ContributionChartSection(ResultEditor<?> editor, boolean forFlows) {
-		this.editor = editor;
 		this.result = editor.result;
 		this.forFlows = forFlows;
 	}
@@ -72,11 +70,11 @@ public class ContributionChartSection {
 		tk.createLabel(comp, selectionName);
 		if (forFlows) {
 			ResultFlowCombo combo = new ResultFlowCombo(comp);
-			combo.setInput(editor.flows());
+			combo.setInput(result.getFlows());
 			this.itemViewer = combo;
 		} else {
 			ImpactCategoryViewer combo = new ImpactCategoryViewer(comp);
-			combo.setInput(editor.impacts());
+			combo.setInput(result.getImpacts());
 			this.itemViewer = combo;
 		}
 		itemViewer.addSelectionChangedListener(_e -> refresh());

@@ -41,7 +41,6 @@ public class QuickResultEditor extends ResultEditor<ContributionResult> {
 				dqResult = Cache.getAppCache().remove(
 						dqkey, DQResult.class);
 			}
-			this.flows();
 		} catch (Exception e) {
 			log.error("failed to load inventory result", e);
 			throw new PartInitException(

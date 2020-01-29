@@ -9,10 +9,9 @@ import java.util.Objects;
 import org.openlca.app.db.Cache;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionItem;
@@ -58,7 +57,7 @@ class TreeContentBuilder {
 	}
 
 	List<LocationItem> build(ContributionSet<Location> set,
-			BaseDescriptor selection, double total) {
+			Object selection, double total) {
 		List<LocationItem> items = new ArrayList<>();
 		for (ContributionItem<Location> contribution : set.contributions) {
 			if (Math.abs(contribution.share) < page.cutoff)
@@ -67,11 +66,13 @@ class TreeContentBuilder {
 				continue;
 			items.add(new LocationItem(contribution));
 		}
-		Contributions.calculate(index.keySet(), total, (location) -> getAmount(location, items, selection, total));
+		Contributions.calculate(index.keySet(), total,
+				(location) -> getAmount(location, items, selection, total));
 		return items;
 	}
 
-	private double getAmount(Location location, List<LocationItem> items, BaseDescriptor selection, double total) {
+	private double getAmount(Location location, List<LocationItem> items,
+			Object selection, double total) {
 		LocationItem elem = getItem(items, location);
 		if (elem == null)
 			return 0;
@@ -93,16 +94,15 @@ class TreeContentBuilder {
 		return amount;
 	}
 
-	private double getSingleResult(ProcessDescriptor process,
-			BaseDescriptor selection) {
+	private double getSingleResult(ProcessDescriptor process, Object selection) {
 		if (process == null || selection == null)
 			return 0;
 		if (selection instanceof ImpactCategoryDescriptor) {
 			ImpactCategoryDescriptor d = (ImpactCategoryDescriptor) selection;
 			return result.getDirectImpactResult(process, d);
 		}
-		if (selection instanceof FlowDescriptor) {
-			FlowDescriptor d = (FlowDescriptor) selection;
+		if (selection instanceof IndexFlow) {
+			IndexFlow d = (IndexFlow) selection;
 			return result.getDirectFlowResult(process, d);
 		}
 		if (selection instanceof CostResultDescriptor) {

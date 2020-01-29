@@ -3,7 +3,6 @@ package org.openlca.app.results.analysis.sankey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.function.ToDoubleFunction;
 
 import org.openlca.app.util.CostResultDescriptor;
@@ -153,7 +152,7 @@ class SankeyResult {
 
 	private void buildProcessIndex() {
 		processIndex = new LongIndex();
-		Set<CategorizedDescriptor> processSet = results.getProcesses();
+		List<CategorizedDescriptor> processSet = results.getProcesses();
 		processes = new CategorizedDescriptor[processSet.size()];
 		for (CategorizedDescriptor process : processSet) {
 			int i = processIndex.put(process.id);

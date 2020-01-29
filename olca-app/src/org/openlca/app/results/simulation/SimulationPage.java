@@ -1,7 +1,5 @@
 package org.openlca.app.results.simulation;
 
-import java.util.Set;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -16,21 +14,21 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.components.ResultFlowCombo;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
-import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.Simulator;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Unit;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.SimulationResult;
 import org.slf4j.Logger;
@@ -48,7 +46,7 @@ class SimulationPage extends FormPage {
 
 	private StatisticsCanvas statisticsCanvas;
 	private ProgressBar progressBar;
-	private FlowViewer flowViewer;
+	private ResultFlowCombo flowViewer;
 	private Section progressSection;
 	private ScrolledForm form;
 	private ImpactCategoryViewer impactViewer;
@@ -155,20 +153,17 @@ class SimulationPage extends FormPage {
 				M.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(section);
 		impactViewer.setEnabled(false);
-		Set<ImpactCategoryDescriptor> impacts = result.getImpacts();
-		impactViewer.setInput(impacts);
+		impactViewer.setInput(result.getImpacts());
 		impactViewer.addSelectionChangedListener((e) -> updateSelection());
 		impactViewer.selectFirst();
 		new ResultTypeCheck<>(impactViewer, impactCheck, IMPACT);
 	}
 
-	private void initFlowCheckViewer(FormToolkit toolkit, Composite section) {
-		Button flowsCheck = toolkit.createButton(section, M.Flows,
-				SWT.RADIO);
+	private void initFlowCheckViewer(FormToolkit tk, Composite section) {
+		Button flowsCheck = tk.createButton(section, M.Flows, SWT.RADIO);
 		flowsCheck.setSelection(true);
-		flowViewer = new FlowViewer(section);
-		Set<FlowDescriptor> flows = result.getFlows();
-		flowViewer.setInput(flows.toArray(new FlowDescriptor[flows.size()]));
+		flowViewer = new ResultFlowCombo(section);
+		flowViewer.setInput(result.getFlows());
 		flowViewer.selectFirst();
 		flowViewer.addSelectionChangedListener((e) -> updateSelection());
 		new ResultTypeCheck<>(flowViewer, flowsCheck, FLOW);
@@ -178,7 +173,7 @@ class SimulationPage extends FormPage {
 		if (result == null || statisticsCanvas == null)
 			return;
 		if (resultType == FLOW) {
-			FlowDescriptor flow = flowViewer.getSelected();
+			IndexFlow flow = flowViewer.getSelected();
 			if (flow == null)
 				return;
 			double[] vals = resultPin != null

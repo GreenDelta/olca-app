@@ -7,14 +7,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.results.IResultEditor;
 import org.openlca.app.results.InfoPage;
 import org.openlca.app.results.InventoryPage;
 import org.openlca.app.results.NwResultPage;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
@@ -27,17 +26,14 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.LongPair;
 import org.openlca.core.model.ImpactCategory;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResult;
 import org.openlca.geo.RegionalizedResult;
 import org.openlca.geo.parameter.ParameterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RegionalizedResultEditor extends FormEditor implements IResultEditor<FullResult> {
+public class RegionalizedResultEditor extends ResultEditor<FullResult> {
 
 	public static String ID = "RegionalizedResultEditor";
 
@@ -51,21 +47,6 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 	private Map<Long, ImpactCategory> impactCategories = new HashMap<>();
 	private Map<LongPair, Map<FlowDescriptor, Double>> factorsMap = new HashMap<>();
 	private DQResult dqResult;
-
-	@Override
-	public CalculationSetup getSetup() {
-		return setup;
-	}
-
-	@Override
-	public FullResult getResult() {
-		return result.result;
-	}
-
-	@Override
-	public DQResult getDqResult() {
-		return dqResult;
-	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput editorInput)
@@ -95,10 +76,10 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 	protected void addPages() {
 		try {
 			FullResult regioResult = this.result.result;
-			addPage(new InfoPage(this, regioResult, dqResult, setup));
-			addPage(new InventoryPage(this, regioResult, dqResult, setup));
+			addPage(new InfoPage(this));
+			addPage(new InventoryPage(this));
 			if (regioResult.hasImpactResults())
-				addPage(new TotalImpactResultPage(this, regioResult, dqResult, setup));
+				addPage(new TotalImpactResultPage(this));
 			if (regioResult.hasImpactResults() && setup.nwSet != null)
 				addPage(new NwResultPage(this, regioResult, setup));
 			addPage(new KmlResultView(this, result, setup));
@@ -135,44 +116,5 @@ public class RegionalizedResultEditor extends FormEditor implements IResultEdito
 			page = diagram;
 		}
 		return page;
-	}
-
-	private double getImpactFactor(ImpactCategoryDescriptor impact,
-			CategorizedDescriptor process, FlowDescriptor flow) {
-		if (!(process instanceof ProcessDescriptor))
-			return defaultFactor(impact, flow);
-		ProcessDescriptor p = (ProcessDescriptor) process;
-		if (p.location == null)
-			return defaultFactor(impact, flow);
-		Map<FlowDescriptor, Double> impactFactors = getImpactFactors(impact.id, p.location);
-		if (!impactFactors.containsKey(flow))
-			return 0d;
-		return impactFactors.get(flow);
-	}
-
-	private double defaultFactor(ImpactCategoryDescriptor impact, FlowDescriptor flow) {
-		FullResult result = this.result.result;
-		int row = result.impactIndex.of(impact);
-		int col = result.flowIndex.of(flow);
-		return Math.abs(result.impactFactors.get(row, col));
-	}
-
-	private Map<FlowDescriptor, Double> getImpactFactors(long categoryId,
-			long locationId) {
-		LongPair id = new LongPair(categoryId, locationId);
-		Map<FlowDescriptor, Double> factors = factorsMap.get(id);
-		if (factors == null) {
-			ImpactCategory category = getImpactCategory(categoryId);
-			factors = factorCalculator.calculate(category, locationId);
-			factorsMap.put(id, factors);
-		}
-		return factors;
-	}
-
-	private ImpactCategory getImpactCategory(long id) {
-		ImpactCategory category = impactCategories.get(id);
-		if (category == null)
-			impactCategories.put(id, category = impactCategoryDao.getForId(id));
-		return category;
 	}
 }

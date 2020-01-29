@@ -106,9 +106,9 @@ public class ImpactChecksPage extends FormPage {
 	 */
 	private List<Node> flatNodes() {
 		List<Node> nodes = new ArrayList<>();
-		for (IndexFlow flow : editor.flows()) {
+		for (IndexFlow flow : result.getFlows()) {
 			boolean allZero = true;
-			for (ImpactCategoryDescriptor impact : editor.impacts()) {
+			for (ImpactCategoryDescriptor impact : result.getImpacts()) {
 				double f = result.getImpactFactor(impact, flow);
 				if (f != 0) {
 					allZero = false;
@@ -124,9 +124,9 @@ public class ImpactChecksPage extends FormPage {
 
 	private List<Node> groupedNodes() {
 		List<Node> nodes = new ArrayList<>();
-		for (ImpactCategoryDescriptor impact : editor.impacts()) {
+		for (ImpactCategoryDescriptor impact : result.getImpacts()) {
 			Node root = new Node(impact);
-			for (IndexFlow flow : editor.flows()) {
+			for (IndexFlow flow : result.getFlows()) {
 				double f = result.getImpactFactor(impact, flow);
 				if (f != 0)
 					continue;

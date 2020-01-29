@@ -9,10 +9,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.CurrencyDao;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.ContributionItem;
 import org.openlca.core.results.ContributionResult;
@@ -39,7 +38,7 @@ class SelectionHandler implements EventHandler {
 	}
 
 	@Override
-	public void flowSelected(FlowDescriptor flow) {
+	public void flowSelected(IndexFlow flow) {
 		if (calculator == null || flow == null)
 			return;
 		String unit = Labels.getRefUnit(flow);
@@ -91,7 +90,7 @@ class SelectionHandler implements EventHandler {
 	}
 
 	private void setData(ContributionSet<Location> set,
-			BaseDescriptor selection, double total, String unit) {
+			Object selection, double total, String unit) {
 		List<LocationItem> items = inputBuilder.build(set, selection, total);
 		Collections.sort(items, (item1, item2) -> {
 			if (item1.contribution == null || item2.contribution == null)

@@ -77,7 +77,7 @@ public class InventoryPage extends FormPage {
 	private void fillTrees(TreeViewer inputTree, TreeViewer outputTree) {
 		List<IndexFlow> inFlows = new ArrayList<>();
 		List<IndexFlow> outFlows = new ArrayList<>();
-		editor.flows().forEach(f -> {
+		result.getFlows().forEach(f -> {
 			if (f.isInput) {
 				inFlows.add(f);
 			} else {

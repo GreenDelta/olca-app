@@ -3,7 +3,6 @@ package org.openlca.app.results.grouping;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -110,11 +109,11 @@ class GroupResultSection {
 		Button flowsCheck = toolkit.createButton(parent, M.Flows, SWT.RADIO);
 		flowsCheck.setSelection(true);
 		flowViewer = new ResultFlowCombo(parent);
-		Set<IndexFlow> flows = result.getFlows();
+		List<IndexFlow> flows = result.getFlows();
 		flowViewer.setInput(flows);
 		flowViewer.addSelectionChangedListener(e -> update());
 		if (flows.size() > 0) {
-			flowViewer.select(flows.iterator().next());
+			flowViewer.select(flows.get(0));
 		}
 		new ResultTypeCheck(flowViewer, flowsCheck, FLOW);
 	}
@@ -123,11 +122,12 @@ class GroupResultSection {
 		Button impactCheck = toolkit.createButton(parent, M.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(parent);
 		impactViewer.setEnabled(false);
-		Set<ImpactCategoryDescriptor> impacts = result.getImpacts();
+		List<ImpactCategoryDescriptor> impacts = result.getImpacts();
 		impactViewer.setInput(impacts);
 		impactViewer.addSelectionChangedListener((e) -> update());
-		if (impacts.size() > 0)
-			impactViewer.select(impacts.iterator().next());
+		if (impacts.size() > 0) {
+			impactViewer.select(impacts.get(0));
+		}
 		new ResultTypeCheck(impactViewer, impactCheck, IMPACT);
 	}
 
