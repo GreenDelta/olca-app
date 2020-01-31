@@ -26,5 +26,11 @@
 		<unit id="org.eclipse.rcp.feature.group" version="4.14.0.v20191210-0610"/>
 		<unit id="org.eclipse.rcp.source.feature.group" version="4.14.0.v20191210-0610"/>
 	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/nattable/releases/1.6.0/repository/"/>
+		<unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="1.6.0.201909181823"/>
+		<unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="1.6.0.201909181823"/>
+		<unit id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature.feature.group" version="1.2.0.201909181823"/>
+	</location>
 </locations>
 </target>

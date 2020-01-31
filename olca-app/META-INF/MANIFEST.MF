@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.swtchart.extensions,
  org.apache.felix.scr,
  org.eclipse.equinox.event,
- org.eclipse.nebula.widgets.opal.notifier
+ org.eclipse.nebula.widgets.opal.notifier,
+ org.eclipse.nebula.widgets.nattable.core;bundle-version="1.6.0"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  libs/common-2.6.0.jar,

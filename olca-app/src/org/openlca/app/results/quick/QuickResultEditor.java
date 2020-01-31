@@ -8,6 +8,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.results.ImpactChecksPage;
 import org.openlca.app.results.InfoPage;
 import org.openlca.app.results.InventoryPage;
+import org.openlca.app.results.InventoryPage2;
 import org.openlca.app.results.NwResultPage;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.ResultEditorInput;
@@ -64,6 +65,7 @@ public class QuickResultEditor extends ResultEditor<ContributionResult> {
 			if (result.hasImpactResults()) {
 				addPage(new ImpactChecksPage(this));
 			}
+			addPage(new InventoryPage2(this));
 		} catch (Exception e) {
 			log.error("failed to add pages", e);
 		}
