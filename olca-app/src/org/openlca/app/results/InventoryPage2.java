@@ -2,9 +2,11 @@ package org.openlca.app.results;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.theme.ModernNatTableThemeConfiguration;
-import org.eclipse.swt.SWT;
+import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -43,7 +45,11 @@ public class InventoryPage2 extends FormPage {
 		Composite body = UI.formBody(form, tk);
 
 		DataLayer data = new DataLayer(new DataProvider());
-		NatTable nat = new NatTable(body, SWT.NONE, data);
+		SelectionLayer selection = new SelectionLayer(data);
+		ViewportLayer viewPort = new ViewportLayer(selection);
+		viewPort.setRegionName(GridRegion.BODY);
+
+		NatTable nat = new NatTable(body, viewPort);
 		nat.setTheme(new ModernNatTableThemeConfiguration());
 
 		UI.gridData(nat, true, true);
