@@ -21,6 +21,8 @@ public enum Language {
 
 	GERMAN("German", "de"),
 
+	HUNGARIAN("Hungarian", "de"),
+	
 	ITALIAN("Italian", "it"),
 
 	PORTUGUESE("Portuguese", "pt"),
