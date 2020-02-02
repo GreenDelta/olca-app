@@ -21,7 +21,7 @@ public enum Language {
 
 	GERMAN("German", "de"),
 
-	HUNGARIAN("Hungarian", "de"),
+	HUNGARIAN("Hungarian", "hu"),
 	
 	ITALIAN("Italian", "it"),
 
