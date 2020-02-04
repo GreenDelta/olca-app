@@ -3,10 +3,15 @@ package org.openlca.app.results;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
+import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
+import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
-import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.CornerLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
+import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.theme.ModernNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
@@ -49,22 +54,43 @@ public class InventoryPage2 extends FormPage {
 		Composite body = UI.formBody(form, tk);
 		tk.paintBordersFor(body);
 
-		DataLayer data = new DataLayer(new DataProvider());
-		SelectionLayer selection = new SelectionLayer(data);
-		ViewportLayer viewPort = new ViewportLayer(selection);
+		// data + selection + view port
+		DataProvider dataProvider = new DataProvider();
+		DataLayer dataLayer = new DataLayer(dataProvider);
+		SelectionLayer selectionLayer = new SelectionLayer(dataLayer);
+		ViewportLayer viewPort = new ViewportLayer(selectionLayer);
 		viewPort.setRegionName(GridRegion.BODY);
 
-		DataLayer header = new DataLayer(new ColumnHeader());
-		ILayer columnLayer = new ColumnHeaderLayer(
-				header, viewPort, selection);
+		// column header
+		ColumnHeader columnHeaderProvider = new ColumnHeader();
+		ILayer columnHeaderLayer = new ColumnHeaderLayer(
+				new DataLayer(columnHeaderProvider),
+				viewPort, selectionLayer);
 
-		CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-		compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnLayer, 0, 0);
-		compositeLayer.setChildLayer(GridRegion.BODY, viewPort, 0, 1);
+		// row header
+		IDataProvider rowHeaderProvider = new DefaultRowHeaderDataProvider(dataProvider);
+		ILayer rowHeaderLayer = new RowHeaderLayer(new DataLayer(rowHeaderProvider),
+				viewPort, selectionLayer);
 
-		NatTable nat = new NatTable(body, compositeLayer);
+		// corner
+		DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
+				columnHeaderProvider, rowHeaderProvider);
+		DataLayer cornerDataLayer = new DataLayer(cornerDataProvider);
+		CornerLayer cornerLayer = new CornerLayer(cornerDataLayer,
+				rowHeaderLayer, columnHeaderLayer);
+
+		// grid layer
+		GridLayer gridLayer = new GridLayer(viewPort, columnHeaderLayer,
+				rowHeaderLayer, cornerLayer);
+
+		NatTable nat = new NatTable(body, gridLayer);
+		tk.paintBordersFor(nat);
+
+		// styling
 		nat.setTheme(new ModernNatTableThemeConfiguration());
 		nat.setBackground(Colors.white());
+		nat.setLayerPainter(
+				new NatGridLayerPainter(nat, DataLayer.DEFAULT_ROW_HEIGHT));
 
 		UI.gridData(nat, true, true);
 		form.reflow(true);
