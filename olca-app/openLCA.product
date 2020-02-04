@@ -57,6 +57,7 @@ project and other open source software.
    </vm>
 
    <plugins>
+      <plugin id="ca.odell.glazedlists"/>
       <plugin id="com.ibm.icu"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
@@ -65,6 +66,7 @@ project and other open source software.
       <plugin id="org.apache.batik.css"/>
       <plugin id="org.apache.batik.i18n"/>
       <plugin id="org.apache.batik.util"/>
+      <plugin id="org.apache.commons.codec"/>
       <plugin id="org.apache.commons.io"/>
       <plugin id="org.apache.commons.jxpath"/>
       <plugin id="org.apache.commons.logging"/>
@@ -124,6 +126,7 @@ project and other open source software.
       <plugin id="org.eclipse.jface.databinding"/>
       <plugin id="org.eclipse.jface.text"/>
       <plugin id="org.eclipse.nebula.widgets.nattable.core"/>
+      <plugin id="org.eclipse.nebula.widgets.nattable.extension.glazedlists"/>
       <plugin id="org.eclipse.nebula.widgets.opal.commons"/>
       <plugin id="org.eclipse.nebula.widgets.opal.notifier"/>
       <plugin id="org.eclipse.nebula.widgets.tablecombo"/>

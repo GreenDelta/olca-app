@@ -131,6 +131,12 @@ public class Labels {
 		return CategoryPath.getFull(c);
 	}
 
+	public static String category(IndexFlow flow) {
+		if (flow == null || flow.flow == null)
+			return "";
+		return category(flow.flow);
+	}
+
 	/**
 	 * We often have to show the category and sub-category of a flow in the
 	 * result pages. This method returns a pair where the left value is the
