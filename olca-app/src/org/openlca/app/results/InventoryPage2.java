@@ -3,7 +3,10 @@ package org.openlca.app.results;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
+import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
+import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.theme.ModernNatTableThemeConfiguration;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
@@ -14,6 +17,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
@@ -43,14 +47,24 @@ public class InventoryPage2 extends FormPage {
 				Images.get(result));
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
+		tk.paintBordersFor(body);
 
 		DataLayer data = new DataLayer(new DataProvider());
 		SelectionLayer selection = new SelectionLayer(data);
 		ViewportLayer viewPort = new ViewportLayer(selection);
 		viewPort.setRegionName(GridRegion.BODY);
 
-		NatTable nat = new NatTable(body, viewPort);
+		DataLayer header = new DataLayer(new ColumnHeader());
+		ILayer columnLayer = new ColumnHeaderLayer(
+				header, viewPort, selection);
+
+		CompositeLayer compositeLayer = new CompositeLayer(1, 2);
+		compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnLayer, 0, 0);
+		compositeLayer.setChildLayer(GridRegion.BODY, viewPort, 0, 1);
+
+		NatTable nat = new NatTable(body, compositeLayer);
 		nat.setTheme(new ModernNatTableThemeConfiguration());
+		nat.setBackground(Colors.white());
 
 		UI.gridData(nat, true, true);
 		form.reflow(true);
@@ -90,6 +104,40 @@ public class InventoryPage2 extends FormPage {
 		public int getRowCount() {
 			return result.getFlows().size();
 		}
+	}
+
+	private class ColumnHeader implements IDataProvider {
+
+		@Override
+		public Object getDataValue(int col, int row) {
+			switch (col) {
+			case 0:
+				return M.Flow;
+			case 1:
+				return M.Category;
+			case 2:
+				return M.Amount;
+			case 3:
+				return M.Unit;
+			default:
+				return null;
+			}
+		}
+
+		@Override
+		public void setDataValue(int col, int row, Object val) {
+		}
+
+		@Override
+		public int getColumnCount() {
+			return 4;
+		}
+
+		@Override
+		public int getRowCount() {
+			return 1;
+		}
+
 	}
 
 }
