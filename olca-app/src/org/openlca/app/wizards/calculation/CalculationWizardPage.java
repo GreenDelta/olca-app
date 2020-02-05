@@ -51,10 +51,10 @@ class CalculationWizardPage extends WizardPage {
 		setControl(body);
 
 		// main selectors
-		createAllocationCombo(parent);
-		createMethodCombo(parent);
-		createNWSetCombo(parent);
-		createTypeRadios(parent);
+		createAllocationCombo(body);
+		createMethodCombo(body);
+		createNWSetCombo(body);
+		createTypeRadios(body);
 
 		// separator
 		new Label(body, SWT.NONE);
@@ -99,12 +99,21 @@ class CalculationWizardPage extends WizardPage {
 		Composite comp = new Composite(parent, SWT.NO_RADIO_GROUP);
 		UI.gridLayout(comp, types.length, 10, 0);
 
-		for (CalculationType type : types) {
+		Button[] radios = new Button[types.length];
+		for (int i = 0; i < types.length; i++) {
 			Button radio = new Button(comp, SWT.RADIO);
-			radio.setText(getLabel(type));
-			radio.setSelection(setup.calcType == type);
+			radio.setText(getLabel(types[i]));
+			radio.setSelection(setup.calcType == types[i]);
+			radios[i] = radio;
 			Controls.onSelect(radio, e -> {
-				setup.calcType = type;
+				for (int j = 0; j < types.length; j++) {
+					if (radios[j] == radio) {
+						radio.setSelection(true);
+						setup.calcType = types[j];
+					} else {
+						radios[j].setSelection(false);
+					}
+				}
 				updateOptions();
 			});
 		}
@@ -123,20 +132,7 @@ class CalculationWizardPage extends WizardPage {
 	private void createCommonOptions(Composite parent) {
 		commonOptions = new Composite(parent, SWT.NULL);
 		UI.gridLayout(commonOptions, 1, 10, 0);
-
-		Button regioCheck = new Button(commonOptions, SWT.CHECK);
-		regioCheck.setText("Regionalized calculation");
-		regioCheck.setSelection(setup.calcSetup.withRegionalization);
-		Controls.onSelect(regioCheck, _e -> {
-			setup.calcSetup.withRegionalization = regioCheck.getSelection();
-		});
-
-		Button costCheck = new Button(commonOptions, SWT.CHECK);
-		costCheck.setText(M.IncludeCostCalculation);
-		costCheck.setSelection(setup.calcSetup.withCosts);
-		Controls.onSelect(costCheck, _e -> {
-			setup.calcSetup.withCosts = costCheck.getSelection();
-		});
+		addRegioAndCostChecks(commonOptions);
 
 		Button dqCheck = new Button(commonOptions, SWT.CHECK);
 		dqCheck.setText(M.AssessDataQuality);
@@ -162,13 +158,16 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createMonteCarloOptions(Composite parent) {
-		monteCarloOptions = new Composite(parent, SWT.NULL);
-		UI.gridLayout(monteCarloOptions, 2, 10, 0);
+		monteCarloOptions = new Composite(parent, SWT.NONE);
+		UI.gridLayout(monteCarloOptions, 1, 10, 0);
+		addRegioAndCostChecks(monteCarloOptions);
 
 		// number of iterations
-		Label label = UI.formLabel(monteCarloOptions, M.NumberOfIterations);
+		Composite inner = new Composite(monteCarloOptions, SWT.NONE);
+		UI.gridLayout(inner, 2, 10, 0);
+		Label label = UI.formLabel(inner, M.NumberOfIterations);
 		UI.gridData(label, false, false);
-		Text iterText = new Text(monteCarloOptions, SWT.BORDER);
+		Text iterText = new Text(inner, SWT.BORDER);
 		UI.gridData(iterText, false, false).widthHint = 80;
 		String itCount = Preferences.get("calc.numberOfRuns");
 		if (Strings.isNullOrEmpty(itCount)) {
@@ -182,6 +181,23 @@ class CalculationWizardPage extends WizardPage {
 			} catch (Exception e) {
 				MsgBox.error(M.InvalidNumber, text + " " + M.IsNotValidNumber);
 			}
+		});
+
+	}
+
+	private void addRegioAndCostChecks(Composite comp) {
+		Button regioCheck = new Button(comp, SWT.CHECK);
+		regioCheck.setText("Regionalized calculation");
+		regioCheck.setSelection(setup.calcSetup.withRegionalization);
+		Controls.onSelect(regioCheck, _e -> {
+			setup.calcSetup.withRegionalization = regioCheck.getSelection();
+		});
+
+		Button costCheck = new Button(comp, SWT.CHECK);
+		costCheck.setText(M.IncludeCostCalculation);
+		costCheck.setSelection(setup.calcSetup.withCosts);
+		Controls.onSelect(costCheck, _e -> {
+			setup.calcSetup.withCosts = costCheck.getSelection();
 		});
 	}
 
