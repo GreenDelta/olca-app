@@ -1,4 +1,4 @@
-package org.openlca.app.editors.systems;
+package org.openlca.app.wizards.calculation;
 
 import java.math.RoundingMode;
 

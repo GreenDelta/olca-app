@@ -24,7 +24,6 @@ import org.openlca.core.database.SocialIndicatorDao;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.math.CalculationType;
 import org.openlca.core.math.Simulator;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.Actor;
@@ -547,8 +546,7 @@ public class ScriptApi {
 
 	public SimpleResult calculate(ProductSystem system,
 			ImpactMethod method) {
-		CalculationSetup setup = new CalculationSetup(
-				CalculationType.SIMPLE_CALCULATION, system);
+		CalculationSetup setup = new CalculationSetup(system);
 		if (method != null)
 			setup.impactMethod = Descriptors.toDescriptor(method);
 		setup.parameterRedefs.addAll(system.parameterRedefs);
@@ -563,8 +561,7 @@ public class ScriptApi {
 
 	public ContributionResult analyze(
 			ProductSystem system, ImpactMethod method) {
-		CalculationSetup setup = new CalculationSetup(
-				CalculationType.UPSTREAM_ANALYSIS, system);
+		CalculationSetup setup = new CalculationSetup(system);
 		if (method != null)
 			setup.impactMethod = Descriptors.toDescriptor(method);
 		setup.parameterRedefs.addAll(system.parameterRedefs);
@@ -580,8 +577,8 @@ public class ScriptApi {
 
 	public SimulationResult simulate(
 			ProductSystem system, ImpactMethod method, int iterations) {
-		CalculationSetup setup = new CalculationSetup(
-				CalculationType.MONTE_CARLO_SIMULATION, system);
+		CalculationSetup setup = new CalculationSetup(system);
+		setup.withUncertainties = true;
 		if (method != null)
 			setup.impactMethod = Descriptors.toDescriptor(method);
 		setup.parameterRedefs.addAll(system.parameterRedefs);

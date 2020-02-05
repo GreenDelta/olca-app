@@ -17,8 +17,8 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
+import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.math.CalculationType;
 import org.openlca.core.math.DataStructures;
 import org.openlca.core.math.MatrixRowSorter;
 import org.openlca.core.matrix.MatrixData;
@@ -103,8 +103,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 				return;
 			App.run(M.ImageExport, () -> {
 				try {
-					CalculationSetup setup = new CalculationSetup(
-							CalculationType.SIMPLE_CALCULATION, system);
+					CalculationSetup setup = new CalculationSetup(system);
 					MatrixData data = DataStructures.matrixData(
 							setup, Database.get(), Collections.emptyMap());
 					IMatrix matrix = data.techMatrix;

@@ -22,6 +22,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowPropertyFactorViewer;
 import org.openlca.app.viewers.combo.UnitViewer;
+import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
