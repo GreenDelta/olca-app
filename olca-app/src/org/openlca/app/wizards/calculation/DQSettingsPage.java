@@ -34,10 +34,6 @@ class DQSettingsPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		if (setup.dqSetup == null) {
-			setup.initDQSetup();
-		}
-
 		Composite container = UI.formComposite(parent);
 		setControl(container);
 

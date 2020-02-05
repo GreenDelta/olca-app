@@ -22,13 +22,16 @@ import org.slf4j.LoggerFactory;
 class Setup {
 
 	final CalculationSetup calcSetup;
+	final DQCalculationSetup dqSetup;
 	CalculationType calcType;
-	DQCalculationSetup dqSetup;
 	boolean storeInventory;
+	boolean withDataQuality;
 
 	private Setup(ProductSystem system) {
 		calcSetup = new CalculationSetup(system);
 		calcSetup.parameterRedefs.addAll(system.parameterRedefs);
+		dqSetup = new DQCalculationSetup();
+		dqSetup.productSystemId = system.id;
 	}
 
 	/**
@@ -42,24 +45,19 @@ class Setup {
 		s.calcSetup.allocationMethod = loadAllocationPref();
 		s.calcSetup.impactMethod = loadImpactMethodPref();
 		s.calcSetup.nwSet = loadNwSetPref(s.calcSetup.impactMethod);
+		s.calcSetup.numberOfRuns = Preferences.getInt("calc.numberOfRuns");
 		s.calcSetup.withRegionalization = loadBooleanPref("calc.regionalized");
 		s.calcSetup.withCosts = loadBooleanPref("calc.costCalculation");
-		if (loadBooleanPref("calc.dqAssessment")) {
-			s.dqSetup = s.initDQSetup();
-		}
-		return s;
-	}
 
-	DQCalculationSetup initDQSetup() {
-		DQCalculationSetup s = new DQCalculationSetup();
-		s.productSystemId = calcSetup.productSystem.id;
-		s.aggregationType = loadEnumPref(AggregationType.class,
-				AggregationType.WEIGHTED_AVERAGE);
-		s.processingType = loadEnumPref(ProcessingType.class,
-				ProcessingType.EXCLUDE);
-		s.roundingMode = loadEnumPref(RoundingMode.class,
-				RoundingMode.HALF_UP);
-		dqSetup = s;
+		// data quality settings
+		s.withDataQuality = loadBooleanPref("calc.dqAssessment");
+		s.dqSetup.aggregationType = loadEnumPref(
+				AggregationType.class, AggregationType.WEIGHTED_AVERAGE);
+		s.dqSetup.processingType = loadEnumPref(
+				ProcessingType.class, ProcessingType.EXCLUDE);
+		s.dqSetup.roundingMode = loadEnumPref(
+				RoundingMode.class, RoundingMode.HALF_UP);
+
 		return s;
 	}
 
@@ -163,7 +161,7 @@ class Setup {
 				Boolean.toString(calcSetup.withRegionalization));
 
 		// data quality settings
-		if (dqSetup == null) {
+		if (!withDataQuality) {
 			Preferences.set("calc.dqAssessment", "false");
 			return;
 		}

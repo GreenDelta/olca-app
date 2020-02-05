@@ -29,7 +29,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
-import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.math.CalculationType;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.Exchange;
@@ -37,9 +37,7 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.FullResult;
 import org.openlca.core.results.SimpleResult;
-import org.openlca.geo.parameter.ParameterSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,14 +117,6 @@ public class CalculationWizard extends Wizard {
 		}
 	}
 
-	private ResultEditorInput getEditorInput(Object result,
-			CalculationSetup setup, ParameterSet parameterSet,
-			DQResult dqResult) {
-		ResultEditorInput input = ResultEditorInput.create(setup, result)
-				.with(dqResult).with(parameterSet);
-		return input;
-	}
-
 	private class Calculation implements IRunnableWithProgress {
 
 		private boolean outOfMemory;
@@ -134,64 +124,58 @@ public class CalculationWizard extends Wizard {
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
+
 			outOfMemory = false;
 			monitor.beginTask(M.RunCalculation, IProgressMonitor.UNKNOWN);
 			int size = setup.calcSetup.productSystem.processes.size();
 			log.trace("calculate a {} x {} system", size, size);
+			if (setup.calcType == CalculationType.MONTE_CARLO_SIMULATION) {
+				setup.calcSetup.withUncertainties = true;
+				SimulationEditor.open(setup.calcSetup);
+				return;
+			}
+			setup.calcSetup.withUncertainties = false;
+			boolean upstream = setup.calcType == CalculationType.UPSTREAM_ANALYSIS;
 
 			try {
-				switch (setup.calcType) {
-				case UPSTREAM_ANALYSIS:
-					analyse();
-					break;
-				case MONTE_CARLO_SIMULATION:
-					SimulationEditor.open(setup.calcSetup);
-					break;
-				case CONTRIBUTION_ANALYSIS:
-					solve();
-					break;
-				default:
-					break;
+
+				// run the calculation
+				log.trace("run calculation");
+				SystemCalculator calc = new SystemCalculator(
+						Database.get(), App.getSolver());
+				ContributionResult r = upstream
+						? calc.calculateFull(setup.calcSetup)
+						: calc.calculateContributions(setup.calcSetup);
+
+				// check storage and DQ calculation
+				if (setup.storeInventory) {
+					log.trace("store inventory");
+					saveInventory(r);
 				}
+				DQResult dqResult = null;
+				if (setup.withDataQuality) {
+					log.trace("calculate data quality result");
+					dqResult = DQResult.calculate(
+							Database.get(), r, setup.dqSetup);
+				}
+
+				// sort and open the editor
+				log.trace("sort result items");
+				Sort.sort(r);
+				log.trace("calculation done; open editor");
+				ResultEditorInput input = ResultEditorInput.create(
+						setup.calcSetup, r).with(dqResult);
+				Editors.open(input, upstream
+						? AnalyzeEditor.ID
+						: QuickResultEditor.ID);
+
 			} catch (OutOfMemoryError e) {
 				outOfMemory = true;
 			}
 			monitor.done();
 		}
 
-		private void analyse() {
-			log.trace("run analysis");
-			SystemCalculator calculator = new SystemCalculator(
-					Database.get(), App.getSolver());
-			FullResult result = calculator.calculateFull(setup.calcSetup);
-			log.trace("calculation done");
-			saveInventory(result);
-			DQResult dqResult = DQResult.calculate(
-					Database.get(), result, setup.dqSetup);
-			Sort.sort(result);
-			ResultEditorInput input = getEditorInput(
-					result, setup.calcSetup, null, dqResult);
-			Editors.open(input, AnalyzeEditor.ID);
-		}
-
-		private void solve() {
-			log.trace("run quick calculation");
-			SystemCalculator calc = new SystemCalculator(
-					Database.get(), App.getSolver());
-			ContributionResult r = calc.calculateContributions(setup.calcSetup);
-			log.trace("calculation done");
-			saveInventory(r);
-			DQResult dqResult = DQResult.calculate(
-					Database.get(), r, setup.dqSetup);
-			Sort.sort(r);
-			ResultEditorInput input = getEditorInput(
-					r, setup.calcSetup, null, dqResult);
-			Editors.open(input, QuickResultEditor.ID);
-		}
-
 		private void saveInventory(SimpleResult r) {
-			if (!setup.storeInventory)
-				return;
 			ProductSystem system = setup.calcSetup.productSystem;
 			system.inventory.clear();
 			IDatabase db = Database.get();

@@ -11,7 +11,6 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
-import org.openlca.geo.parameter.ParameterSet;
 
 public class ResultEditorInput implements IEditorInput {
 
@@ -42,13 +41,6 @@ public class ResultEditorInput implements IEditorInput {
 	public ResultEditorInput with(DQResult dqResult) {
 		if (dqResult != null)
 			dqResultKey = Cache.getAppCache().put(dqResult);
-		return this;
-	}
-
-	/** With parameters for regionalized calculations. */
-	public ResultEditorInput with(ParameterSet parameterSet) {
-		if (parameterSet != null)
-			parameterSetKey = Cache.getAppCache().put(parameterSet);
 		return this;
 	}
 

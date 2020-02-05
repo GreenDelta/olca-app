@@ -8,7 +8,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
-import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
@@ -20,7 +19,6 @@ import org.openlca.app.viewers.combo.NwSetComboViewer;
 import org.openlca.core.math.CalculationType;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.python.google.common.base.Strings;
 
 /**
  * Page for setting the calculation properties of a product system. Class must
@@ -42,6 +40,14 @@ class CalculationWizardPage extends WizardPage {
 		setDescription(M.CalculationWizardDescription);
 		setImageDescriptor(Icon.CALCULATION_WIZARD.descriptor());
 		setPageComplete(true);
+	}
+
+	@Override
+	public boolean canFlipToNextPage() {
+		if (!isPageComplete())
+			return false;
+		return setup.withDataQuality &&
+				setup.calcType != CalculationType.MONTE_CARLO_SIMULATION;
 	}
 
 	@Override
@@ -73,7 +79,34 @@ class CalculationWizardPage extends WizardPage {
 		new Label(body, SWT.NONE);
 
 		updateOptions();
-		dqAssessmentChanged();
+	}
+
+	private void createAllocationCombo(Composite comp) {
+		UI.formLabel(comp, M.AllocationMethod);
+		AllocationMethodViewer combo = new AllocationMethodViewer(
+				comp, AllocationMethod.values());
+		combo.setNullable(false);
+		if (setup.calcSetup.allocationMethod == null) {
+			combo.select(AllocationMethod.NONE);
+		} else {
+			combo.select(setup.calcSetup.allocationMethod);
+		}
+		combo.addSelectionChangedListener(m -> {
+			setup.calcSetup.allocationMethod = m;
+		});
+	}
+
+	private void createMethodCombo(Composite comp) {
+		UI.formLabel(comp, M.ImpactAssessmentMethod);
+		ImpactMethodViewer combo = new ImpactMethodViewer(comp);
+		combo.setNullable(true);
+		combo.setInput(Database.get());
+		combo.select(setup.calcSetup.impactMethod);
+		combo.addSelectionChangedListener(_e -> {
+			ImpactMethodDescriptor m = combo.getSelected();
+			setup.calcSetup.impactMethod = m;
+			nwViewer.setInput(m);
+		});
 	}
 
 	private void createNWSetCombo(Composite parent) {
@@ -119,14 +152,17 @@ class CalculationWizardPage extends WizardPage {
 		}
 	}
 
-	private void updateOptions() {
-		StackLayout layout = (StackLayout) optionStack.getLayout();
-		if (setup.calcType == CalculationType.MONTE_CARLO_SIMULATION) {
-			layout.topControl = monteCarloOptions;
-		} else {
-			layout.topControl = commonOptions;
+	private String getLabel(CalculationType type) {
+		switch (type) {
+		case UPSTREAM_ANALYSIS:
+			return M.Analysis;
+		case MONTE_CARLO_SIMULATION:
+			return M.MonteCarloSimulation;
+		case CONTRIBUTION_ANALYSIS:
+			return M.QuickResults;
+		default:
+			return M.Unknown;
 		}
-		optionStack.layout();
 	}
 
 	private void createCommonOptions(Composite parent) {
@@ -136,15 +172,10 @@ class CalculationWizardPage extends WizardPage {
 
 		Button dqCheck = new Button(commonOptions, SWT.CHECK);
 		dqCheck.setText(M.AssessDataQuality);
-		dqCheck.setSelection(setup.dqSetup != null);
+		dqCheck.setSelection(setup.withDataQuality);
 		Controls.onSelect(dqCheck, e -> {
-			boolean selected = dqCheck.getSelection();
-			if (selected) {
-				setup.initDQSetup();
-			} else {
-				setup.dqSetup = null;
-			}
-			dqAssessmentChanged();
+			setup.withDataQuality = dqCheck.getSelection();
+			getContainer().updateButtons();
 		});
 
 		if (Database.isConnected()) {
@@ -169,11 +200,13 @@ class CalculationWizardPage extends WizardPage {
 		UI.gridData(label, false, false);
 		Text iterText = new Text(inner, SWT.BORDER);
 		UI.gridData(iterText, false, false).widthHint = 80;
-		String itCount = Preferences.get("calc.numberOfRuns");
-		if (Strings.isNullOrEmpty(itCount)) {
-			itCount = "100";
+
+		int itCount = setup.calcSetup.numberOfRuns;
+		if (itCount < 1) {
+			itCount = 100;
+			setup.calcSetup.numberOfRuns = itCount;
 		}
-		iterText.setText(itCount);
+		iterText.setText(Integer.toString(itCount));
 		iterText.addModifyListener(_e -> {
 			String text = iterText.getText();
 			try {
@@ -201,59 +234,15 @@ class CalculationWizardPage extends WizardPage {
 		});
 	}
 
-	private String getLabel(CalculationType type) {
-		switch (type) {
-		case UPSTREAM_ANALYSIS:
-			return M.Analysis;
-		case MONTE_CARLO_SIMULATION:
-			return M.MonteCarloSimulation;
-		case CONTRIBUTION_ANALYSIS:
-			return M.QuickResults;
-		default:
-			return M.Unknown;
-		}
-	}
-
-	private void createAllocationCombo(Composite comp) {
-		UI.formLabel(comp, M.AllocationMethod);
-		AllocationMethodViewer combo = new AllocationMethodViewer(
-				comp, AllocationMethod.values());
-		combo.setNullable(false);
-		if (setup.calcSetup.allocationMethod == null) {
-			combo.select(AllocationMethod.NONE);
+	private void updateOptions() {
+		StackLayout layout = (StackLayout) optionStack.getLayout();
+		if (setup.calcType == CalculationType.MONTE_CARLO_SIMULATION) {
+			layout.topControl = monteCarloOptions;
 		} else {
-			combo.select(setup.calcSetup.allocationMethod);
+			layout.topControl = commonOptions;
 		}
-		combo.addSelectionChangedListener(m -> {
-			setup.calcSetup.allocationMethod = m;
-		});
-	}
-
-	private void createMethodCombo(Composite comp) {
-		UI.formLabel(comp, M.ImpactAssessmentMethod);
-		ImpactMethodViewer combo = new ImpactMethodViewer(comp);
-		combo.setNullable(true);
-		combo.setInput(Database.get());
-		combo.select(setup.calcSetup.impactMethod);
-		combo.addSelectionChangedListener(_e -> {
-			ImpactMethodDescriptor m = combo.getSelected();
-			setup.calcSetup.impactMethod = m;
-			nwViewer.setInput(m);
-		});
-	}
-
-
-	private void dqAssessmentChanged() {
-		if (getControl().isVisible()) {
-			getContainer().updateButtons();
-		}
-	}
-
-	@Override
-	public boolean canFlipToNextPage() {
-		if (!isPageComplete())
-			return false;
-		return setup.dqSetup != null;
+		optionStack.layout();
+		getContainer().updateButtons();
 	}
 
 }
