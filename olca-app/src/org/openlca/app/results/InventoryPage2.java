@@ -30,6 +30,7 @@ import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.painter.cell.BackgroundPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.ICellPainter;
 import org.eclipse.nebula.widgets.nattable.painter.cell.decorator.PaddingDecorator;
+import org.eclipse.nebula.widgets.nattable.painter.layer.NatGridLayerPainter;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.theme.ModernNatTableThemeConfiguration;
@@ -98,13 +99,6 @@ public class InventoryPage2 extends FormPage {
 		// data + selection + view port
 		ItemDataLayer dataLayer = new ItemDataLayer();
 
-		/*
-		 * DataProvider dataProvider = new DataProvider(); DataLayer dataLayer = new
-		 * DataLayer(dataProvider); SelectionLayer selectionLayer = new
-		 * SelectionLayer(dataLayer); ViewportLayer viewPort = new
-		 * ViewportLayer(selectionLayer); viewPort.setRegionName(GridRegion.BODY);
-		 */
-
 		// column header
 		ColumnHeader columnHeaderProvider = new ColumnHeader();
 		ILayer columnHeaderLayer = new ColumnHeaderLayer(
@@ -130,8 +124,6 @@ public class InventoryPage2 extends FormPage {
 		NatTable nat = new NatTable(body, gridLayer, false);
 		tk.paintBordersFor(nat);
 
-
-
 		nat.setConfigRegistry(new ConfigRegistry());
 		nat.addConfiguration(new DefaultNatTableStyleConfiguration());
 		nat.addConfiguration(new AbstractRegistryConfiguration() {
@@ -140,8 +132,8 @@ public class InventoryPage2 extends FormPage {
 			public void configureRegistry(IConfigRegistry configRegistry) {
 				TreeImagePainter treeImagePainter = new TreeImagePainter(
 						false,
-						GUIHelper.getImage("right"), //$NON-NLS-1$
-						GUIHelper.getImage("right_down"), null); //$NON-NLS-1$
+						GUIHelper.getImage("right"),
+						GUIHelper.getImage("right_down"), null);
 				ICellPainter treeStructurePainter = new BackgroundPainter(
 						new PaddingDecorator(
 								new IndentedTreeImagePainter(10,
@@ -160,13 +152,18 @@ public class InventoryPage2 extends FormPage {
 		// styling
 		nat.setTheme(new ModernNatTableThemeConfiguration());
 		nat.setBackground(Colors.white());
-//		nat.setLayerPainter(
-//				new NatGridLayerPainter(nat, DataLayer.DEFAULT_ROW_HEIGHT));
+		nat.setLayerPainter(
+				new NatGridLayerPainter(nat, DataLayer.DEFAULT_ROW_HEIGHT));
 
 		nat.configure();
 
 		UI.gridData(nat, true, true);
 		form.reflow(true);
+
+		// makes all columns equal in size and expands them to fill the
+		// available place.
+		dataLayer.dataLayer.setColumnPercentageSizing(true);
+
 	}
 
 	private void makeItems() {
@@ -181,6 +178,8 @@ public class InventoryPage2 extends FormPage {
 			rootItems.put(f, root);
 			for (CategorizedDescriptor p : result.getProcesses()) {
 				double contribution = result.getDirectFlowResult(p, f);
+				if (Math.abs(contribution) < 1e-15)
+					continue;
 				Item item = new Item();
 				item.process = p;
 				item.flow = f;
@@ -198,6 +197,8 @@ public class InventoryPage2 extends FormPage {
 
 		private final SelectionLayer selectionLayer;
 
+		private DataLayer dataLayer;
+
 		public ItemDataLayer() {
 
 			EventList<Item> eventList = GlazedLists.eventList(items);
@@ -209,11 +210,11 @@ public class InventoryPage2 extends FormPage {
 
 			this.bodyDataProvider = new ListDataProvider<Item>(
 					this.treeList, new ColumnAccessor());
-			DataLayer bodyDataLayer = new DataLayer(this.bodyDataProvider);
+			dataLayer = new DataLayer(this.bodyDataProvider);
 
 			// layer for event handling of GlazedLists and PropertyChanges
 			GlazedListsEventLayer<Item> glazedListsEventLayer = new GlazedListsEventLayer<>(
-					bodyDataLayer, this.treeList);
+					dataLayer, this.treeList);
 
 			GlazedListTreeData<Item> treeData = new GlazedListTreeData<>(this.treeList);
 			ITreeRowModel<Item> treeRowModel = new GlazedListTreeRowModel<>(treeData);
@@ -289,7 +290,7 @@ public class InventoryPage2 extends FormPage {
 				};
 			}
 			return (i1, i2) -> {
-				return Doubles.compare(i1.amount, i2.amount);
+				return -Doubles.compare(i1.amount, i2.amount);
 			};
 		}
 	}
