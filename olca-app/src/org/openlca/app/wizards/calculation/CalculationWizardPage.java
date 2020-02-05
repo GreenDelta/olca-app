@@ -92,15 +92,15 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createRadios(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NO_RADIO_GROUP);
+		Composite comp = new Composite(parent, SWT.NO_RADIO_GROUP);
 		CalculationType[] types = {
 				CalculationType.CONTRIBUTION_ANALYSIS,
 				CalculationType.UPSTREAM_ANALYSIS,
 				CalculationType.MONTE_CARLO_SIMULATION,
 		};
-		UI.gridLayout(composite, types.length, 10, 0);
+		UI.gridLayout(comp, types.length, 10, 0);
 		for (CalculationType cType : types) {
-			Button button = new Button(composite, SWT.RADIO);
+			Button button = new Button(comp, SWT.RADIO);
 			button.setText(getLabel(cType));
 			calculationRadios.put(cType, button);
 			Controls.onSelect(button, e -> {
@@ -303,27 +303,30 @@ class CalculationWizardPage extends WizardPage {
 		return defaultValue;
 	}
 
-	CalculationSetup getSetup(ProductSystem system) {
-		CalculationSetup s = new CalculationSetup(type, system);
-		s.withCosts = costCheck.getSelection();
-		s.withRegionalization = regioCheck.getSelection();
-		s.allocationMethod = allocationViewer.getSelected();
-		s.impactMethod = methodViewer.getSelected();
-		NwSetDescriptor set = nwViewer.getSelected();
-		s.nwSet = set;
-		s.numberOfRuns = iterationCount;
-		s.parameterRedefs.addAll(system.parameterRedefs);
+	Setup getSetup(ProductSystem system) {
+		Setup s = new Setup();
+		s.calcType = type;
+
+		// calculation settings
+		s.calcSetup = new CalculationSetup(system);
+		s.calcSetup.withCosts = costCheck.getSelection();
+		s.calcSetup.withRegionalization = regioCheck.getSelection();
+		s.calcSetup.allocationMethod = allocationViewer.getSelected();
+		s.calcSetup.impactMethod = methodViewer.getSelected();
+		s.calcSetup.nwSet = nwViewer.getSelected();
+		s.calcSetup.numberOfRuns = iterationCount;
+		s.calcSetup.parameterRedefs.addAll(system.parameterRedefs);
+
+		// check: store inventory
+		if (Database.isConnected() && storeInventoryResult != null) {
+			s.storeInventory = storeInventoryResult.getSelection();
+		}
+
 		return s;
 	}
 
 	boolean doDqAssessment() {
 		return dqAssessment.getSelection();
-	}
-
-	boolean doStoreInventoryResult() {
-		if (!Database.isConnected() || storeInventoryResult == null)
-			return false;
-		return storeInventoryResult.getSelection();
 	}
 
 }

@@ -1,7 +1,6 @@
 package org.openlca.app.wizards.calculation;
 
 import java.lang.reflect.InvocationTargetException;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +16,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IEditorPart;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
@@ -32,18 +30,13 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.math.CalculationType;
 import org.openlca.core.math.SystemCalculator;
-import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.DQCalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.math.data_quality.ProcessingType;
-import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.SimpleResult;
@@ -145,36 +138,6 @@ public class CalculationWizard extends Wizard {
 		ResultEditorInput input = ResultEditorInput.create(setup, result)
 				.with(dqResult).with(parameterSet);
 		return input;
-	}
-
-	private void saveDefaults(CalculationSetup setup, DQCalculationSetup dqSetup) {
-		if (setup == null)
-			return;
-		AllocationMethod am = setup.allocationMethod;
-		String amVal = am == null ? "NONE" : am.name();
-		Preferences.set("calc.allocation.method", amVal);
-		BaseDescriptor m = setup.impactMethod;
-		String mVal = m == null ? "" : m.refId;
-		Preferences.set("calc.impact.method", mVal);
-		BaseDescriptor nws = setup.nwSet;
-		String nwsVal = nws == null ? "" : nws.refId;
-		Preferences.set("calc.nwset", nwsVal);
-		saveDefault(CalculationType.class, setup.type);
-		Preferences.set("calc.numberOfRuns", Integer.toString(setup.numberOfRuns));
-		Preferences.set("calc.costCalculation", Boolean.toString(setup.withCosts));
-		Preferences.set("calc.regionalized", Boolean.toString(setup.withRegionalization));
-		if (dqSetup == null) {
-			Preferences.set("calc.dqAssessment", "false");
-			return;
-		}
-		Preferences.set("calc.dqAssessment", "true");
-		saveDefault(AggregationType.class, dqSetup.aggregationType);
-		saveDefault(ProcessingType.class, dqSetup.processingType);
-		saveDefault(RoundingMode.class, dqSetup.roundingMode);
-	}
-
-	private <T extends Enum<T>> void saveDefault(Class<T> clazz, T value) {
-		Preferences.set("calc." + clazz.getSimpleName(), value == null ? null : value.name());
 	}
 
 	private class Calculation implements IRunnableWithProgress {
