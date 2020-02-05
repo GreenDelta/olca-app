@@ -31,7 +31,6 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
-import org.openlca.core.math.data_quality.DQCalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -50,15 +49,11 @@ import org.slf4j.LoggerFactory;
  */
 public class CalculationWizard extends Wizard {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
-
-	ProductSystem productSystem;
-
-	private CalculationWizardPage page;
-	private DQSettingsPage dqPage;
+	private final Setup setup;
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public CalculationWizard(ProductSystem productSystem) {
-		this.productSystem = productSystem;
+		this.setup = Setup.init(productSystem);
 		setNeedsProgressMonitor(true);
 		setWindowTitle(M.CalculationProperties);
 	}
@@ -105,23 +100,15 @@ public class CalculationWizard extends Wizard {
 
 	@Override
 	public void addPages() {
-		page = new CalculationWizardPage();
-		addPage(page);
-		dqPage = new DQSettingsPage();
-		addPage(dqPage);
+		addPage(new CalculationWizardPage(setup));
+		addPage(new DQSettingsPage(setup));
 	}
 
 	@Override
 	public boolean performFinish() {
-		CalculationSetup setup = page.getSetup(productSystem);
-		DQCalculationSetup dqSetup = null;
-		if (page.doDqAssessment())
-			dqSetup = dqPage.getSetup(productSystem);
-		boolean storeInventoryResult = page.doStoreInventoryResult();
-		saveDefaults(setup, dqSetup);
+		setup.savePreferences();
 		try {
-			Calculation calculation = new Calculation(
-					setup, dqSetup, storeInventoryResult);
+			Calculation calculation = new Calculation();
 			getContainer().run(true, true, calculation);
 			if (calculation.outOfMemory)
 				MemoryError.show();
@@ -142,32 +129,23 @@ public class CalculationWizard extends Wizard {
 
 	private class Calculation implements IRunnableWithProgress {
 
-		private CalculationSetup setup;
-		private DQCalculationSetup dqSetup;
-		private boolean storeInventoryResult;
 		private boolean outOfMemory;
-
-		public Calculation(CalculationSetup setup, DQCalculationSetup dqSetup,
-				boolean storeInventoryResult) {
-			this.setup = setup;
-			this.dqSetup = dqSetup;
-			this.storeInventoryResult = storeInventoryResult;
-		}
 
 		@Override
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, InterruptedException {
 			outOfMemory = false;
 			monitor.beginTask(M.RunCalculation, IProgressMonitor.UNKNOWN);
-			int size = productSystem.processes.size();
+			int size = setup.calcSetup.productSystem.processes.size();
 			log.trace("calculate a {} x {} system", size, size);
+
 			try {
-				switch (setup.type) {
+				switch (setup.calcType) {
 				case UPSTREAM_ANALYSIS:
 					analyse();
 					break;
 				case MONTE_CARLO_SIMULATION:
-					SimulationEditor.open(setup);
+					SimulationEditor.open(setup.calcSetup);
 					break;
 				case CONTRIBUTION_ANALYSIS:
 					solve();
@@ -185,14 +163,14 @@ public class CalculationWizard extends Wizard {
 			log.trace("run analysis");
 			SystemCalculator calculator = new SystemCalculator(
 					Database.get(), App.getSolver());
-			FullResult result = calculator.calculateFull(setup);
+			FullResult result = calculator.calculateFull(setup.calcSetup);
 			log.trace("calculation done");
 			saveInventory(result);
 			DQResult dqResult = DQResult.calculate(
-					Database.get(), result, dqSetup);
+					Database.get(), result, setup.dqSetup);
 			Sort.sort(result);
 			ResultEditorInput input = getEditorInput(
-					result, setup, null, dqResult);
+					result, setup.calcSetup, null, dqResult);
 			Editors.open(input, AnalyzeEditor.ID);
 		}
 
@@ -200,26 +178,26 @@ public class CalculationWizard extends Wizard {
 			log.trace("run quick calculation");
 			SystemCalculator calc = new SystemCalculator(
 					Database.get(), App.getSolver());
-			ContributionResult r = calc.calculateContributions(setup);
+			ContributionResult r = calc.calculateContributions(setup.calcSetup);
 			log.trace("calculation done");
 			saveInventory(r);
 			DQResult dqResult = DQResult.calculate(
-					Database.get(), r, dqSetup);
+					Database.get(), r, setup.dqSetup);
 			Sort.sort(r);
 			ResultEditorInput input = getEditorInput(
-					r, setup, null, dqResult);
+					r, setup.calcSetup, null, dqResult);
 			Editors.open(input, QuickResultEditor.ID);
 		}
 
 		private void saveInventory(SimpleResult r) {
-			if (!storeInventoryResult)
+			if (!setup.storeInventory)
 				return;
-
-			productSystem.inventory.clear();
+			ProductSystem system = setup.calcSetup.productSystem;
+			system.inventory.clear();
 			IDatabase db = Database.get();
 			ProductSystemDao sysDao = new ProductSystemDao(db);
 			if (r.flowIndex == null || r.flowIndex.isEmpty()) {
-				productSystem = sysDao.update(productSystem);
+				sysDao.update(system);
 				return;
 			}
 
@@ -244,10 +222,10 @@ public class CalculationWizard extends Wizard {
 				Exchange e = Exchange.from(flow);
 				e.amount = r.getTotalFlowResult(f);
 				e.isInput = f.isInput;
-				productSystem.inventory.add(e);
+				system.inventory.add(e);
 			});
 
-			productSystem = sysDao.update(productSystem);
+			sysDao.update(system);
 		}
 	}
 }

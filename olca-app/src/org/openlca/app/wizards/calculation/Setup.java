@@ -3,6 +3,9 @@ package org.openlca.app.wizards.calculation;
 import java.math.RoundingMode;
 
 import org.openlca.app.Preferences;
+import org.openlca.app.db.Database;
+import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.database.NwSetDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.CalculationType;
 import org.openlca.core.math.data_quality.AggregationType;
@@ -11,22 +14,122 @@ import org.openlca.core.math.data_quality.ProcessingType;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.NwSetDescriptor;
+import org.python.google.common.base.Strings;
+import org.slf4j.LoggerFactory;
 
 class Setup {
 
-	CalculationSetup calcSetup;
+	final CalculationSetup calcSetup;
 	CalculationType calcType;
 	DQCalculationSetup dqSetup;
 	boolean storeInventory;
+
+	private Setup(ProductSystem system) {
+		calcSetup = new CalculationSetup(system);
+		calcSetup.parameterRedefs.addAll(system.parameterRedefs);
+	}
 
 	/**
 	 * Initializes a calculation setup with the stored preferences of the last
 	 * calculation.
 	 */
 	static Setup init(ProductSystem system) {
-		Setup setup = new Setup();
+		Setup s = new Setup(system);
+		s.calcType = loadEnumPref(CalculationType.class,
+				CalculationType.CONTRIBUTION_ANALYSIS);
+		s.calcSetup.allocationMethod = loadAllocationPref();
+		s.calcSetup.impactMethod = loadImpactMethodPref();
+		s.calcSetup.nwSet = loadNwSetPref(s.calcSetup.impactMethod);
+		s.calcSetup.withRegionalization = loadBooleanPref("calc.regionalized");
+		s.calcSetup.withCosts = loadBooleanPref("calc.costCalculation");
+		if (loadBooleanPref("calc.dqAssessment")) {
+			s.dqSetup = s.initDQSetup();
+		}
+		return s;
+	}
 
-		return setup;
+	DQCalculationSetup initDQSetup() {
+		DQCalculationSetup s = new DQCalculationSetup();
+		s.productSystemId = calcSetup.productSystem.id;
+		s.aggregationType = loadEnumPref(AggregationType.class,
+				AggregationType.WEIGHTED_AVERAGE);
+		s.processingType = loadEnumPref(ProcessingType.class,
+				ProcessingType.EXCLUDE);
+		s.roundingMode = loadEnumPref(RoundingMode.class,
+				RoundingMode.HALF_UP);
+		dqSetup = s;
+		return s;
+	}
+
+	private static AllocationMethod loadAllocationPref() {
+		String val = Preferences.get("calc.allocation.method");
+		if (val == null)
+			return AllocationMethod.NONE;
+		for (AllocationMethod method : AllocationMethod.values()) {
+			if (method.name().equals(val))
+				return method;
+		}
+		return AllocationMethod.NONE;
+	}
+
+	private static ImpactMethodDescriptor loadImpactMethodPref() {
+		String val = Preferences.get("calc.impact.method");
+		if (val == null || val.isEmpty())
+			return null;
+		try {
+			ImpactMethodDao dao = new ImpactMethodDao(Database.get());
+			for (ImpactMethodDescriptor d : dao.getDescriptors()) {
+				if (val.equals(d.refId))
+					return d;
+			}
+		} catch (Exception e) {
+			LoggerFactory.getLogger(Setup.class).error(
+					"failed to load LCIA methods", e);
+		}
+		return null;
+	}
+
+	private static NwSetDescriptor loadNwSetPref(ImpactMethodDescriptor method) {
+		if (method == null)
+			return null;
+		String val = Preferences.get("calc.nwset");
+		if (val == null || val.isEmpty())
+			return null;
+		try {
+			NwSetDao dao = new NwSetDao(Database.get());
+			for (NwSetDescriptor d : dao.getDescriptorsForMethod(method.id)) {
+				if (val.equals(d.refId))
+					return d;
+			}
+		} catch (Exception e) {
+			LoggerFactory.getLogger(Setup.class).error(
+					"failed to load NW sets", e);
+		}
+		return null;
+	}
+
+	private static boolean loadBooleanPref(String option) {
+		String value = Preferences.get(option);
+		if (value == null)
+			return false;
+		return "true".equals(value.toLowerCase());
+	}
+
+	private static <T extends Enum<T>> T loadEnumPref(
+			Class<T> type, T defaultVal) {
+		String name = Preferences.get(
+				"calc." + type.getSimpleName());
+		if (Strings.isNullOrEmpty(name))
+			return defaultVal;
+		try {
+			T value = Enum.valueOf(type, name);
+			if (value != null)
+				return value;
+		} catch (Exception e) {
+		}
+		return defaultVal;
 	}
 
 	void savePreferences() {

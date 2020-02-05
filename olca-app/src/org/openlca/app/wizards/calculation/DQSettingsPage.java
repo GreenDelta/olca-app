@@ -8,7 +8,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.openlca.app.M;
-import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.processes.DQSystemViewer;
 import org.openlca.app.util.Labels;
@@ -17,122 +16,99 @@ import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.DQSystemDao;
 import org.openlca.core.math.data_quality.AggregationType;
-import org.openlca.core.math.data_quality.DQCalculationSetup;
 import org.openlca.core.math.data_quality.ProcessingType;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.DQSystemDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
-import org.python.google.common.base.Strings;
 
 class DQSettingsPage extends WizardPage {
 
-	private DQSystemViewer processSystemViewer;
-	private DQSystemViewer exchangeSystemViewer;
-	private TypeCombo<AggregationType> aggregationTypeCombo;
-	private TypeCombo<ProcessingType> processingTypeCombo;
-	private TypeCombo<RoundingMode> roundingModeCombo;
+	private final Setup setup;
 
-	private boolean dqSystemsLoaded;
-	private AggregationType aggregationType;
-	private ProcessingType processingType;
-	private RoundingMode roundingMode;
-
-	public DQSettingsPage() {
+	public DQSettingsPage(Setup setup) {
 		super("DQSettingsPage");
+		this.setup = setup;
 		setTitle(M.DataQualityProperties);
 		setDescription(M.PleaseSelectProperties);
 	}
 
 	@Override
 	public void createControl(Composite parent) {
+		if (setup.dqSetup == null) {
+			setup.initDQSetup();
+		}
+
 		Composite container = UI.formComposite(parent);
 		setControl(container);
-		processSystemViewer = createDQSystemViewer(container, M.ProcessSchema);
-		exchangeSystemViewer = createDQSystemViewer(container, M.FlowSchema);
+
+		// DQ systems
+		createDQViewer(container, false);
+		createDQViewer(container, true);
+
+		// aggregation type
 		new Label(container, SWT.NULL).setText(M.AggregationType);
-		aggregationTypeCombo = new TypeCombo<>(container, AggregationType.class);
-		aggregationTypeCombo.setInput(AggregationType.values());
-		aggregationTypeCombo.addSelectionChangedListener((e) -> aggregationType = aggregationTypeCombo.getSelected());
+		TypeCombo<AggregationType> aggCombo = new TypeCombo<>(
+				container, AggregationType.class);
+		aggCombo.setInput(AggregationType.values());
+		aggCombo.select(setup.dqSetup.aggregationType);
+		aggCombo.addSelectionChangedListener(_e -> {
+			setup.dqSetup.aggregationType = aggCombo.getSelected();
+		});
+
+		// rounding mode
 		new Label(container, SWT.NULL).setText(M.RoundingMode);
-		roundingModeCombo = new TypeCombo<>(container, RoundingMode.class);
-		roundingModeCombo.setInput(new RoundingMode[] { RoundingMode.HALF_UP, RoundingMode.CEILING });
-		roundingModeCombo.addSelectionChangedListener((e) -> roundingMode = roundingModeCombo.getSelected());
+		TypeCombo<RoundingMode> roundCombo = new TypeCombo<>(
+				container, RoundingMode.class);
+		roundCombo.setInput(new RoundingMode[] {
+				RoundingMode.HALF_UP,
+				RoundingMode.CEILING });
+		roundCombo.select(setup.dqSetup.roundingMode);
+		roundCombo.addSelectionChangedListener(_e -> {
+			setup.dqSetup.roundingMode = roundCombo.getSelected();
+		});
+
+		// n.a. handling
 		new Label(container, SWT.NULL).setText(M.NaValueHandling);
-		processingTypeCombo = new TypeCombo<>(container, ProcessingType.class);
-		processingTypeCombo.setInput(ProcessingType.values());
-		processingTypeCombo.addSelectionChangedListener((e) -> processingType = processingTypeCombo.getSelected());
-		loadDqSystems();
-		loadDefaults();
+		TypeCombo<ProcessingType> naCombo = new TypeCombo<>(
+				container, ProcessingType.class);
+		naCombo.setInput(ProcessingType.values());
+		naCombo.addSelectionChangedListener(_e -> {
+			setup.dqSetup.processingType = naCombo.getSelected();
+		});
 	}
 
-	public DQCalculationSetup getSetup(ProductSystem system) {
-		DQCalculationSetup setup = new DQCalculationSetup();
-		setup.productSystemId = system.id;
-		DQSystemDao dqDao = new DQSystemDao(Database.get());
-		DQSystemDescriptor pSystemDesc = processSystemViewer.getSelected();
-		if (pSystemDesc != null) {
-			setup.processDqSystem = dqDao.getForId(pSystemDesc.id);
-		}
-		DQSystemDescriptor eSystemDesc = exchangeSystemViewer.getSelected();
-		if (eSystemDesc != null) {
-			setup.exchangeDqSystem = dqDao.getForId(eSystemDesc.id);
-		}
-		setup.aggregationType = aggregationType;
-		setup.roundingMode = roundingMode;
-		setup.processingType = processingType;
-		return setup;
-	}
-
-	private void loadDefaults() {
-		AggregationType aType = getDefaultValue(AggregationType.class,
-				AggregationType.WEIGHTED_AVERAGE);
-		aggregationTypeCombo.select(aType);
-		ProcessingType pType = getDefaultValue(ProcessingType.class,
-				ProcessingType.EXCLUDE);
-		processingTypeCombo.select(pType);
-		RoundingMode rounding = getDefaultValue(RoundingMode.class,
-				RoundingMode.HALF_UP);
-		roundingModeCombo.select(rounding);
-	}
-
-	private DQSystemViewer createDQSystemViewer(Composite parent, String label) {
-		UI.formLabel(parent, label);
-		DQSystemViewer viewer = new DQSystemViewer(parent);
-		viewer.setNullable(true);
-		return viewer;
-	}
-
-	private void loadDqSystems() {
-		if (dqSystemsLoaded)
-			return;
+	private void createDQViewer(Composite comp, boolean forExchanges) {
+		UI.formLabel(comp, forExchanges
+				? M.FlowSchema
+				: M.ProcessSchema);
+		DQSystemViewer combo = new DQSystemViewer(comp);
+		combo.setNullable(true);
 		DQSystemDao dao = new DQSystemDao(Database.get());
-		CalculationWizard wizard = (CalculationWizard) getWizard();
-		processSystemViewer.setInput(dao.getProcessDqSystems(wizard.productSystem.id));
-		exchangeSystemViewer.setInput(dao.getExchangeDqSystems(wizard.productSystem.id));
-		DQSystem processSystem = wizard.productSystem.referenceProcess.dqSystem;
-		DQSystem exchangeSystem = wizard.productSystem.referenceProcess.exchangeDqSystem;
-		if (processSystem != null) {
-			processSystemViewer.select(Descriptors.toDescriptor(processSystem));
+		ProductSystem system = setup.calcSetup.productSystem;
+		if (forExchanges) {
+			combo.setInput(dao.getExchangeDqSystems(system.id));
 		} else {
-			processSystemViewer.selectFirst();
+			combo.setInput(dao.getProcessDqSystems(system.id));
 		}
-		if (exchangeSystem != null) {
-			exchangeSystemViewer.select(Descriptors.toDescriptor(exchangeSystem));
+		DQSystem selected = forExchanges
+				? system.referenceProcess.exchangeDqSystem
+				: system.referenceProcess.dqSystem;
+		if (selected != null) {
+			combo.select(Descriptors.toDescriptor(selected));
 		} else {
-			exchangeSystemViewer.selectFirst();
+			combo.selectFirst();
 		}
-		dqSystemsLoaded = true;
-	}
 
-	private <T extends Enum<T>> T getDefaultValue(Class<T> type, T defaultValue) {
-		String name = Preferences.get("calc." + type.getSimpleName());
-		if (Strings.isNullOrEmpty(name))
-			return defaultValue;
-		T value = Enum.valueOf(type, name);
-		if (value == null)
-			return defaultValue;
-		return value;
+		combo.addSelectionChangedListener(dqSystem -> {
+			DQSystem s = dqSystem == null
+					? null
+					: new DQSystemDao(Database.get()).getForId(dqSystem.id);
+			if (forExchanges) {
+				setup.dqSetup.exchangeDqSystem = s;
+			} else {
+				setup.dqSetup.processDqSystem = s;
+			}
+		});
 	}
 
 	private class TypeCombo<T> extends AbstractComboViewer<T> {
@@ -151,24 +127,18 @@ class DQSettingsPage extends WizardPage {
 
 		@Override
 		protected IBaseLabelProvider getLabelProvider() {
-			return new LabelProvider();
+			return new BaseLabelProvider() {
+				@Override
+				public String getText(Object o) {
+					if (o instanceof ProcessingType)
+						return Labels.of((ProcessingType) o);
+					if (o instanceof AggregationType)
+						return Labels.of((AggregationType) o);
+					if (o instanceof RoundingMode)
+						return Labels.of((RoundingMode) o);
+					return super.getText(o);
+				}
+			};
 		}
-
 	}
-
-	private class LabelProvider extends BaseLabelProvider {
-
-		@Override
-		public String getText(Object element) {
-			if (element instanceof ProcessingType)
-				return Labels.of((ProcessingType) element);
-			if (element instanceof AggregationType)
-				return Labels.of((AggregationType) element);
-			if (element instanceof RoundingMode)
-				return Labels.of((RoundingMode) element);
-			return super.getText(element);
-		}
-
-	}
-
 }

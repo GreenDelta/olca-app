@@ -1,9 +1,5 @@
 package org.openlca.app.wizards.calculation;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
@@ -21,16 +17,10 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationMethodViewer;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
-import org.openlca.core.database.ImpactMethodDao;
-import org.openlca.core.database.NwSetDao;
-import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.CalculationType;
 import org.openlca.core.model.AllocationMethod;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.python.google.common.base.Strings;
-import org.slf4j.LoggerFactory;
 
 /**
  * Page for setting the calculation properties of a product system. Class must
@@ -38,24 +28,16 @@ import org.slf4j.LoggerFactory;
  */
 class CalculationWizardPage extends WizardPage {
 
-	private AllocationMethodViewer allocationViewer;
-	private ImpactMethodViewer methodViewer;
+	private final Setup setup;
+
 	private NwSetComboViewer nwViewer;
-	private Text iterationText;
-	private Button costCheck;
-	private Button regioCheck;
-	private Button dqAssessment;
-	private Button storeInventoryResult;
 	private Composite optionStack;
 	private Composite monteCarloOptions;
 	private Composite commonOptions;
-	private Map<CalculationType, Button> calculationRadios = new HashMap<>();
 
-	private CalculationType type;
-	private int iterationCount;
-
-	CalculationWizardPage() {
-		super(CalculationWizardPage.class.getCanonicalName());
+	CalculationWizardPage(Setup setup) {
+		super("CalculationWizardPage");
+		this.setup = setup;
 		setTitle(M.CalculationProperties);
 		setDescription(M.CalculationWizardDescription);
 		setImageDescriptor(Icon.CALCULATION_WIZARD.descriptor());
@@ -67,10 +49,21 @@ class CalculationWizardPage extends WizardPage {
 		Composite body = new Composite(parent, SWT.NULL);
 		UI.gridLayout(body, 2, 10, 10);
 		setControl(body);
-		createSelections(body);
+
+		// main selectors
+		createAllocationCombo(parent);
+		createMethodCombo(parent);
+		createNWSetCombo(parent);
+		createTypeRadios(parent);
+
+		// separator
 		new Label(body, SWT.NONE);
-		UI.gridData(new Label(body, SWT.SEPARATOR | SWT.HORIZONTAL), true, false);
+		UI.gridData(new Label(
+				body, SWT.SEPARATOR | SWT.HORIZONTAL),
+				true, false);
 		new Label(body, SWT.NONE);
+
+		// options
 		optionStack = new Composite(body, SWT.NULL);
 		StackLayout optionsLayout = new StackLayout();
 		optionStack.setLayout(optionsLayout);
@@ -78,96 +71,118 @@ class CalculationWizardPage extends WizardPage {
 		createCommonOptions(optionStack);
 		optionsLayout.topControl = commonOptions;
 		new Label(body, SWT.NONE);
-		loadDefaults();
+
+		updateOptions();
+		dqAssessmentChanged();
 	}
 
-	private void createSelections(Composite parent) {
-		createAllocationViewer(parent);
-		createMethodComboViewer(parent);
+	private void createNWSetCombo(Composite parent) {
 		UI.formLabel(parent, M.NormalizationAndWeightingSet);
 		nwViewer = new NwSetComboViewer(parent);
 		nwViewer.setDatabase(Database.get());
-		UI.formLabel(parent, M.CalculationType);
-		createRadios(parent);
+		if (setup.calcSetup.nwSet != null) {
+			nwViewer.select(setup.calcSetup.nwSet);
+		}
+		nwViewer.addSelectionChangedListener(nwSet -> {
+			setup.calcSetup.nwSet = nwSet;
+		});
 	}
 
-	private void createRadios(Composite parent) {
-		Composite comp = new Composite(parent, SWT.NO_RADIO_GROUP);
+	private void createTypeRadios(Composite parent) {
 		CalculationType[] types = {
 				CalculationType.CONTRIBUTION_ANALYSIS,
 				CalculationType.UPSTREAM_ANALYSIS,
 				CalculationType.MONTE_CARLO_SIMULATION,
 		};
+
+		UI.formLabel(parent, M.CalculationType);
+		Composite comp = new Composite(parent, SWT.NO_RADIO_GROUP);
 		UI.gridLayout(comp, types.length, 10, 0);
-		for (CalculationType cType : types) {
-			Button button = new Button(comp, SWT.RADIO);
-			button.setText(getLabel(cType));
-			calculationRadios.put(cType, button);
-			Controls.onSelect(button, e -> {
-				type = cType;
+
+		for (CalculationType type : types) {
+			Button radio = new Button(comp, SWT.RADIO);
+			radio.setText(getLabel(type));
+			radio.setSelection(setup.calcType == type);
+			Controls.onSelect(radio, e -> {
+				setup.calcType = type;
 				updateOptions();
-				for (Entry<CalculationType, Button> entry : calculationRadios.entrySet()) {
-					Button b = entry.getValue();
-					b.setSelection(cType == entry.getKey());
-				}
 			});
 		}
 	}
 
 	private void updateOptions() {
-		if (type == CalculationType.MONTE_CARLO_SIMULATION) {
-			setTopControl(optionStack, monteCarloOptions);
+		StackLayout layout = (StackLayout) optionStack.getLayout();
+		if (setup.calcType == CalculationType.MONTE_CARLO_SIMULATION) {
+			layout.topControl = monteCarloOptions;
 		} else {
-			setTopControl(optionStack, commonOptions);
+			layout.topControl = commonOptions;
 		}
-	}
-
-	private void setTopControl(Composite stack, Composite control) {
-		StackLayout layout = (StackLayout) stack.getLayout();
-		layout.topControl = control;
-		stack.layout();
+		optionStack.layout();
 	}
 
 	private void createCommonOptions(Composite parent) {
 		commonOptions = new Composite(parent, SWT.NULL);
 		UI.gridLayout(commonOptions, 1, 10, 0);
 
-		regioCheck = new Button(commonOptions, SWT.CHECK);
-		regioCheck.setSelection(false);
+		Button regioCheck = new Button(commonOptions, SWT.CHECK);
 		regioCheck.setText("Regionalized calculation");
+		regioCheck.setSelection(setup.calcSetup.withRegionalization);
+		Controls.onSelect(regioCheck, _e -> {
+			setup.calcSetup.withRegionalization = regioCheck.getSelection();
+		});
 
-		costCheck = new Button(commonOptions, SWT.CHECK);
-		costCheck.setSelection(false);
+		Button costCheck = new Button(commonOptions, SWT.CHECK);
 		costCheck.setText(M.IncludeCostCalculation);
+		costCheck.setSelection(setup.calcSetup.withCosts);
+		Controls.onSelect(costCheck, _e -> {
+			setup.calcSetup.withCosts = costCheck.getSelection();
+		});
 
-		dqAssessment = new Button(commonOptions, SWT.CHECK);
-		dqAssessment.setSelection(false);
-		dqAssessment.setText(M.AssessDataQuality);
-		Controls.onSelect(dqAssessment, e -> dqAssessmentChanged());
+		Button dqCheck = new Button(commonOptions, SWT.CHECK);
+		dqCheck.setText(M.AssessDataQuality);
+		dqCheck.setSelection(setup.dqSetup != null);
+		Controls.onSelect(dqCheck, e -> {
+			boolean selected = dqCheck.getSelection();
+			if (selected) {
+				setup.initDQSetup();
+			} else {
+				setup.dqSetup = null;
+			}
+			dqAssessmentChanged();
+		});
+
 		if (Database.isConnected()) {
-			storeInventoryResult = new Button(commonOptions, SWT.CHECK);
-			storeInventoryResult.setSelection(true);
-			storeInventoryResult.setText(M.StoreInventoryResult);
+			Button invenentoryCheck = new Button(commonOptions, SWT.CHECK);
+			invenentoryCheck.setSelection(setup.storeInventory);
+			invenentoryCheck.setText(M.StoreInventoryResult);
+			Controls.onSelect(invenentoryCheck, _e -> {
+				setup.storeInventory = invenentoryCheck.getSelection();
+			});
 		}
 	}
 
 	private void createMonteCarloOptions(Composite parent) {
 		monteCarloOptions = new Composite(parent, SWT.NULL);
 		UI.gridLayout(monteCarloOptions, 2, 10, 0);
+
+		// number of iterations
 		Label label = UI.formLabel(monteCarloOptions, M.NumberOfIterations);
 		UI.gridData(label, false, false);
-		iterationText = new Text(monteCarloOptions, SWT.BORDER);
-		UI.gridData(iterationText, false, false).widthHint = 80;
-		iterationText.addModifyListener(e -> numberOfRunsChanged());
-	}
-
-	private void numberOfRunsChanged() {
-		String text = iterationText.getText();
-		try {
-			iterationCount = Integer.parseInt(text);
-		} catch (Exception e2) {
-			MsgBox.error(M.InvalidNumber, text + " " + M.IsNotValidNumber);
+		Text iterText = new Text(monteCarloOptions, SWT.BORDER);
+		UI.gridData(iterText, false, false).widthHint = 80;
+		String itCount = Preferences.get("calc.numberOfRuns");
+		if (Strings.isNullOrEmpty(itCount)) {
+			itCount = "100";
 		}
+		iterText.setText(itCount);
+		iterText.addModifyListener(_e -> {
+			String text = iterText.getText();
+			try {
+				setup.calcSetup.numberOfRuns = Integer.parseInt(text);
+			} catch (Exception e) {
+				MsgBox.error(M.InvalidNumber, text + " " + M.IsNotValidNumber);
+			}
+		});
 	}
 
 	private String getLabel(CalculationType type) {
@@ -183,150 +198,46 @@ class CalculationWizardPage extends WizardPage {
 		}
 	}
 
-	private void createAllocationViewer(Composite comp) {
+	private void createAllocationCombo(Composite comp) {
 		UI.formLabel(comp, M.AllocationMethod);
-		allocationViewer = new AllocationMethodViewer(
+		AllocationMethodViewer combo = new AllocationMethodViewer(
 				comp, AllocationMethod.values());
-		allocationViewer.setNullable(false);
-		allocationViewer.select(AllocationMethod.NONE);
+		combo.setNullable(false);
+		if (setup.calcSetup.allocationMethod == null) {
+			combo.select(AllocationMethod.NONE);
+		} else {
+			combo.select(setup.calcSetup.allocationMethod);
+		}
+		combo.addSelectionChangedListener(m -> {
+			setup.calcSetup.allocationMethod = m;
+		});
 	}
 
-	private void createMethodComboViewer(Composite comp) {
+	private void createMethodCombo(Composite comp) {
 		UI.formLabel(comp, M.ImpactAssessmentMethod);
-		methodViewer = new ImpactMethodViewer(comp);
-		methodViewer.setNullable(true);
-		methodViewer.setInput(Database.get());
-		methodViewer.addSelectionChangedListener(
-				_e -> nwViewer.setInput(methodViewer.getSelected()));
+		ImpactMethodViewer combo = new ImpactMethodViewer(comp);
+		combo.setNullable(true);
+		combo.setInput(Database.get());
+		combo.select(setup.calcSetup.impactMethod);
+		combo.addSelectionChangedListener(_e -> {
+			ImpactMethodDescriptor m = combo.getSelected();
+			setup.calcSetup.impactMethod = m;
+			nwViewer.setInput(m);
+		});
 	}
 
-	private void loadDefaults() {
-		AllocationMethod allocationMethod = getDefaultAllocationMethod();
-		allocationViewer.select(allocationMethod);
-		ImpactMethodDescriptor method = getDefaultImpactMethod();
-		if (method != null)
-			methodViewer.select(method);
-		NwSetDescriptor nwset = getDefaultNwSet();
-		if (nwset != null)
-			nwViewer.select(nwset);
-		type = getDefaultValue(CalculationType.class,
-				CalculationType.CONTRIBUTION_ANALYSIS);
-		calculationRadios.get(type).setSelection(true);
-		String itCount = Preferences.get("calc.numberOfRuns");
-		if (Strings.isNullOrEmpty(itCount))
-			itCount = "100";
-		iterationText.setText(itCount);
-		regioCheck.setSelection(booleanPref("calc.regionalized"));
-		costCheck.setSelection(booleanPref("calc.costCalculation"));
-		dqAssessment.setSelection(booleanPref("calc.dqAssessment"));
-		updateOptions();
-		if (type == CalculationType.MONTE_CARLO_SIMULATION)
-			return;
-		dqAssessmentChanged();
-	}
 
 	private void dqAssessmentChanged() {
-		if (getControl().isVisible())
+		if (getControl().isVisible()) {
 			getContainer().updateButtons();
+		}
 	}
 
 	@Override
 	public boolean canFlipToNextPage() {
 		if (!isPageComplete())
 			return false;
-		return dqAssessment.getSelection();
-	}
-
-	private AllocationMethod getDefaultAllocationMethod() {
-		String val = Preferences.get("calc.allocation.method");
-		if (val == null)
-			return AllocationMethod.NONE;
-		for (AllocationMethod method : AllocationMethod.values()) {
-			if (method.name().equals(val))
-				return method;
-		}
-		return AllocationMethod.NONE;
-	}
-
-	private ImpactMethodDescriptor getDefaultImpactMethod() {
-		String val = Preferences.get("calc.impact.method");
-		if (val == null || val.isEmpty())
-			return null;
-		try {
-			ImpactMethodDao dao = new ImpactMethodDao(Database.get());
-			for (ImpactMethodDescriptor d : dao.getDescriptors()) {
-				if (val.equals(d.refId))
-					return d;
-			}
-		} catch (Exception e) {
-			LoggerFactory.getLogger(getClass()).error("failed to load LCIA methods", e);
-		}
-		return null;
-	}
-
-	private NwSetDescriptor getDefaultNwSet() {
-		String val = Preferences.get("calc.nwset");
-		if (val == null || val.isEmpty())
-			return null;
-		ImpactMethodDescriptor method = methodViewer.getSelected();
-		if (method == null)
-			return null;
-		try {
-			NwSetDao dao = new NwSetDao(Database.get());
-			for (NwSetDescriptor d : dao.getDescriptorsForMethod(method.id)) {
-				if (val.equals(d.refId))
-					return d;
-			}
-		} catch (Exception e) {
-			LoggerFactory.getLogger(getClass()).error("failed to load NW sets", e);
-		}
-		return null;
-	}
-
-	private boolean booleanPref(String option) {
-		String value = Preferences.get(option);
-		if (value == null)
-			return false;
-		return "true".equals(value.toLowerCase());
-	}
-
-	private <T extends Enum<T>> T getDefaultValue(Class<T> type, T defaultValue) {
-		String name = Preferences.get("calc." + type.getSimpleName());
-		if (Strings.isNullOrEmpty(name))
-			return defaultValue;
-		try {
-			T value = Enum.valueOf(type, name);
-			if (value != null)
-				return value;
-		} catch (Exception e) {
-		}
-		return defaultValue;
-	}
-
-	Setup getSetup(ProductSystem system) {
-		Setup s = new Setup();
-		s.calcType = type;
-
-		// calculation settings
-		s.calcSetup = new CalculationSetup(system);
-		s.calcSetup.withCosts = costCheck.getSelection();
-		s.calcSetup.withRegionalization = regioCheck.getSelection();
-		s.calcSetup.allocationMethod = allocationViewer.getSelected();
-		s.calcSetup.impactMethod = methodViewer.getSelected();
-		s.calcSetup.nwSet = nwViewer.getSelected();
-		s.calcSetup.numberOfRuns = iterationCount;
-		s.calcSetup.parameterRedefs.addAll(system.parameterRedefs);
-
-		// check: store inventory
-		if (Database.isConnected() && storeInventoryResult != null) {
-			s.storeInventory = storeInventoryResult.getSelection();
-		}
-
-		return s;
-	}
-
-	boolean doDqAssessment() {
-		return dqAssessment.getSelection();
+		return setup.dqSetup != null;
 	}
 
 }
