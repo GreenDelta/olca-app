@@ -41,9 +41,9 @@ class LocationInfoPage extends ModelPage<Location> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
+	protected void createFormContent(IManagedForm mform) {
 		form = UI.formHeader(this);
-		toolkit = managedForm.getToolkit();
+		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);

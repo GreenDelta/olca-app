@@ -1,5 +1,6 @@
 package org.openlca.app.components.mapview;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +16,13 @@ import org.eclipse.swt.widgets.Display;
 import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.LineString;
+import org.openlca.geo.geojson.MsgPack;
 import org.openlca.geo.geojson.MultiPolygon;
 import org.openlca.geo.geojson.Point;
 import org.openlca.geo.geojson.Polygon;
+import org.openlca.util.BinUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MapView {
 
@@ -86,6 +91,19 @@ public class MapView {
 		LayerConfig config = new LayerConfig(canvas.getDisplay(), layer);
 		layers.add(config);
 		return config;
+	}
+
+	public void addBaseLayers() {
+		try {
+			InputStream stream = getClass().getResourceAsStream(
+					"countries.msgpack.gz");
+			byte[] data = BinUtils.gunzip(BinUtils.read(stream));
+			FeatureCollection coll = MsgPack.unpack(data);
+			addLayer(coll);
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(getClass());
+			log.error("failed to add base layers", e);
+		}
 	}
 
 	/**
