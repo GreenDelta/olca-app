@@ -3,6 +3,7 @@ package org.openlca.app.components.mapview;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -13,6 +14,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.openlca.app.util.Colors;
 import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.LineString;
@@ -94,16 +96,28 @@ public class MapView {
 	}
 
 	public void addBaseLayers() {
-		try {
-			InputStream stream = getClass().getResourceAsStream(
-					"countries.msgpack.gz");
-			byte[] data = BinUtils.gunzip(BinUtils.read(stream));
-			FeatureCollection coll = MsgPack.unpack(data);
-			addLayer(coll);
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to add base layers", e);
-		}
+		Function<String, FeatureCollection> fn = (file) -> {
+			try {
+				InputStream stream = getClass().getResourceAsStream(file);
+				byte[] data = BinUtils.gunzip(BinUtils.read(stream));
+				return MsgPack.unpack(data);
+			} catch (Exception e) {
+				Logger log = LoggerFactory.getLogger(getClass());
+				log.error("failed to add base layer" + file, e);
+				return null;
+			}
+		};
+		Color blue = Colors.get(170, 218, 255);
+		Color brown = Colors.get(249, 246, 231);
+		addLayer(fn.apply("oceans.msgpack.gz"))
+				.fillColor(blue)
+				.borderColor(blue);
+		addLayer(fn.apply("land.msgpack.gz"))
+				.fillColor(brown);
+		addLayer(fn.apply("lakes.msgpack.gz"))
+				.fillColor(blue)
+				.borderColor(blue);
+		addLayer(fn.apply("countries.msgpack.gz"));
 	}
 
 	/**
@@ -308,4 +322,3 @@ public class MapView {
 		}
 	}
 }
-
