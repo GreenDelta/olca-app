@@ -36,7 +36,22 @@ final class Sync {
 			return;
 		if (Strings.nullOrEmpty(ref.flowCategory)) {
 			ref.flowCategory = path;
-		} else if (!Strings.nullOrEqual(path, ref.flowCategory)) {
+			return;
+		}
+		if (Strings.nullOrEmpty(path)) {
+			addWarning(ref, "the flow in the mapping "
+					+ "has a different category path");
+			return;
+		}
+		String p1 = ref.flowCategory.toLowerCase();
+		if (p1.startsWith("elementary flows/")) {
+			p1 = p1.substring(17);
+		}
+		String p2 = path.toLowerCase();
+		if (p2.startsWith("elementary flows/")) {
+			p2 = p2.substring(17);
+		}
+		if (!p1.equals(p2)) {
 			addWarning(ref, "the flow in the mapping "
 					+ "has a different category path");
 		}
