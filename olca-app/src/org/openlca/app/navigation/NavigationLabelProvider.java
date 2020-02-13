@@ -1,5 +1,7 @@
 package org.openlca.app.navigation;
 
+import java.io.File;
+
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -9,8 +11,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
@@ -18,6 +22,8 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.util.Categories;
 
 public class NavigationLabelProvider extends ColumnLabelProvider
 		implements ICommonLabelProvider, IColorProvider {
@@ -38,11 +44,49 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 
 	@Override
 	public String getDescription(Object obj) {
-		if (!(obj instanceof ModelElement))
+		// the description is shown in the status bar
+		if (!(obj instanceof NavigationElement))
 			return null;
-		ModelElement element = (ModelElement) obj;
-		BaseDescriptor d = element.getContent();
-		return d.description;
+
+		// for local databases show the full path to the folder
+		if (obj instanceof DatabaseElement) {
+			DatabaseElement elem = (DatabaseElement) obj;
+			IDatabaseConfiguration config = elem.getContent();
+			if (config == null)
+				return null;
+			if (config.isLocal()) {
+				File dbDir = new File(Workspace.getDir(), "databases");
+				File db = new File(dbDir, config.getName());
+				if (db.isDirectory())
+					return db.getAbsolutePath();
+			}
+			return config.getName();
+		}
+
+		// for models show the category path + name
+		if (obj instanceof ModelElement) {
+			ModelElement element = (ModelElement) obj;
+			CategorizedDescriptor d = element.getContent();
+			String name = Labels.getDisplayName(d);
+			if (d.category == null)
+				return name;
+			Category c = Cache.getEntityCache().get(
+					Category.class, d.category);
+			if (c == null)
+				return name;
+			return String.join(" / ", Categories.path(c)) + " / " + name;
+		}
+
+		// for categories show the full path
+		if (obj instanceof CategoryElement) {
+			CategoryElement elem = (CategoryElement) obj;
+			Category c = elem.getContent();
+			if (c == null)
+				return null;
+			return String.join(" / ", Categories.path(c));
+		}
+
+		return getText(obj);
 	}
 
 	@Override
@@ -140,7 +184,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return null;
 		return RepositoryLabel.getForeground((INavigationElement<?>) elem);
 	}
-	
+
 	@Override
 	public String getToolTipText(Object element) {
 		return getDescription(element);
