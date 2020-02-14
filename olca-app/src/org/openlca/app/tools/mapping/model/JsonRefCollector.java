@@ -4,9 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +15,7 @@ import java.util.zip.ZipFile;
 
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
+import org.openlca.core.model.descriptors.UnitDescriptor;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.jsonld.Json;
 import org.python.jline.internal.InputStreamReader;
@@ -35,12 +35,22 @@ class JsonRefCollector {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private final File file;
 
-	private List<ZipEntry> flowEntries = new ArrayList<>();
-	private List<ZipEntry> categoryEntries = new ArrayList<>();
-	private List<ZipEntry> propEntries = new ArrayList<>();
-	private List<ZipEntry> unitEntries = new ArrayList<>();
+	private final List<ZipEntry> flowEntries = new ArrayList<>();
+	private final List<ZipEntry> categoryEntries = new ArrayList<>();
+	private final List<ZipEntry> propEntries = new ArrayList<>();
+	private final List<ZipEntry> unitEntries = new ArrayList<>();
 
-	private Map<String, String> categoryPaths;
+	// flow ID -> category path
+	private final Map<String, String> categoryPaths = new HashMap<>();
+
+	// property ID -> property name
+	private final Map<String, String> propertyNames = new HashMap<>();
+
+	// property ID -> unit ID
+	private final Map<String, String> propertyUnits = new HashMap<>();
+
+	// unit ID -> unit name
+	private final Map<String, String> unitNames = new HashMap<>();
 
 	JsonRefCollector(File file) {
 		this.file = file;
@@ -48,17 +58,16 @@ class JsonRefCollector {
 
 	List<FlowRef> collect() {
 		log.trace("collect flow references from {}", file);
-
-		List<FlowRef> refs = new ArrayList<>();
 		try (ZipFile zip = new ZipFile(file)) {
 			scanEntries(zip);
-			categoryPaths = getCategoriePaths(zip);
+			categories(zip);
+			units(zip);
+			return buildFlows(zip);
 		} catch (Exception e) {
 			log.error("failed to collect flows from"
 					+ " zip file " + file, e);
+			return Collections.emptyList();
 		}
-
-		return refs;
 	}
 
 	private List<FlowRef> buildFlows(ZipFile zip) {
@@ -92,11 +101,20 @@ class JsonRefCollector {
 					if (!isRef)
 						continue;
 					propID = Json.getRefId(prop, "flowProperty");
+					break;
 				}
 			}
 			if (propID != null) {
 				ref.property = new FlowPropertyDescriptor();
 				ref.property.refId = propID;
+				ref.property.name = propertyNames.get(propID);
+
+				String unitID = propertyUnits.get(propID);
+				if (unitID != null) {
+					ref.unit = new UnitDescriptor();
+					ref.unit.refId = unitID;
+					ref.unit.name = unitNames.get(unitID);
+				}
 			}
 			flowRefs.add(ref);
 		}
@@ -121,7 +139,7 @@ class JsonRefCollector {
 		}
 	}
 
-	private Map<String, String> getCategoriePaths(ZipFile zip) {
+	private void categories(ZipFile zip) {
 		HashMap<String, String> names = new HashMap<>();
 		HashMap<String, String> parents = new HashMap<>();
 		for (ZipEntry e : categoryEntries) {
@@ -147,7 +165,6 @@ class JsonRefCollector {
 
 		}
 
-		HashMap<String, String> paths = new HashMap<>();
 		for (Map.Entry<String, String> e : names.entrySet()) {
 			String id = e.getKey();
 			StringBuilder path = new StringBuilder(e.getValue());
@@ -159,11 +176,61 @@ class JsonRefCollector {
 				path.insert(0, pname + "/");
 				parent = parents.get(parent);
 			}
-			paths.put(id, path.toString());
+			categoryPaths.put(id, path.toString());
 		}
-		return paths;
 	}
-	
+
+	private void units(ZipFile zip) {
+
+		// propUnitGroups: property -> unit group
+		HashMap<String, String> propUnitGroup = new HashMap<>();
+		for (ZipEntry e : propEntries) {
+			JsonObject obj = unpack(e, zip);
+			if (obj == null)
+				continue;
+			String id = Json.getString(obj, "@id");
+			if (id == null)
+				continue;
+			propertyNames.put(id, Json.getString(obj, "name"));
+			propUnitGroup.put(id, Json.getRefId(obj, "unitGroup"));
+		}
+
+		// groupUnit unit group -> reference unit
+		HashMap<String, String> groupUnit = new HashMap<>();
+		for (ZipEntry e : unitEntries) {
+			JsonObject obj = unpack(e, zip);
+			if (obj == null)
+				continue;
+			String groupID = Json.getString(obj, "@id");
+			if (groupID == null)
+				continue;
+
+			JsonArray units = Json.getArray(obj, "units");
+			if (units == null)
+				continue;
+			for (JsonElement elem : units) {
+				if (!elem.isJsonObject())
+					continue;
+				JsonObject unit = elem.getAsJsonObject();
+				boolean isRef = Json.getBool(unit, "referenceUnit", false);
+				if (!isRef)
+					continue;
+				String id = Json.getString(unit, "@id");
+				if (id == null)
+					continue;
+				groupUnit.put(groupID, id);
+				unitNames.put(id, Json.getString(unit, "name"));
+				break;
+			}
+		}
+
+		for (Map.Entry<String, String> e : propUnitGroup.entrySet()) {
+			String propID = e.getKey();
+			String groupID = e.getValue();
+			String unitID = groupUnit.get(groupID);
+			propertyUnits.put(propID, unitID);
+		}
+	}
 
 	private JsonObject unpack(ZipEntry e, ZipFile zip) {
 		try (InputStream in = zip.getInputStream(e);
@@ -175,13 +242,4 @@ class JsonRefCollector {
 			return null;
 		}
 	}
-
-	public static void main(String[] args) {
-		SimpleDateFormat time = new SimpleDateFormat("hh:mm:ss:SSS");
-		System.out.println("Start @ " + time.format(new Date()));
-		File f = new File("C:\\Users\\ms\\Desktop\\rems\\uslci_map.zip");
-		new JsonRefCollector(f).collect();
-		System.out.println("Finished @ " + time.format(new Date()));
-	}
-
 }
