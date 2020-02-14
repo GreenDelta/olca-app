@@ -57,8 +57,7 @@ public class JsonProvider implements IProvider {
 
 	@Override
 	public List<FlowRef> getFlowRefs() {
-		// TODO: not yet implemented
-		return null;
+		return new JsonRefCollector(file).collect();
 	}
 
 	@Override
