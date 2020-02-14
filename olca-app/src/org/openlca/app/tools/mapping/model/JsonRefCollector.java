@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.core.model.descriptors.UnitDescriptor;
@@ -83,8 +84,9 @@ class JsonRefCollector {
 			ref.flow = new FlowDescriptor();
 			ref.flow.refId = id;
 			ref.flow.name = Json.getString(obj, "name");
+			ref.flow.flowType = Json.getEnum(obj, "flowType", FlowType.class);
 
-			// the category ID
+			// the category
 			String catID = Json.getRefId(obj, "category");
 			ref.flowCategory = categoryPaths.get(catID);
 
