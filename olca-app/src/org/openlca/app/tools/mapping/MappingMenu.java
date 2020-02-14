@@ -115,7 +115,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		}
 
 		Optional<ReplacerConfig> opt = ReplacerDialog.open(
-				tool.mapping, tool.sourceSystem);
+				tool.mapping, target);
 		if (!opt.isPresent())
 			return;
 		Replacer replacer = new Replacer(opt.get());

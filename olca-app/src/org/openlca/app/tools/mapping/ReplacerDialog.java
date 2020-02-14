@@ -28,10 +28,10 @@ class ReplacerDialog extends FormDialog {
 	 * settings result in no possible replacements.
 	 */
 	static Optional<ReplacerConfig> open(
-			FlowMap mapping, IProvider source) {
-		if (mapping == null || source == null)
+			FlowMap mapping, IProvider target) {
+		if (mapping == null || target == null)
 			return Optional.empty();
-		ReplacerConfig conf = new ReplacerConfig(mapping, source);
+		ReplacerConfig conf = new ReplacerConfig(mapping, target);
 		ReplacerDialog dialog = new ReplacerDialog(conf);
 		if (dialog.open() != Dialog.OK || dialog.selection == null)
 			return Optional.empty();

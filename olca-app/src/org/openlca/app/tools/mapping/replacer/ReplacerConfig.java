@@ -13,6 +13,14 @@ import org.openlca.io.maps.FlowMap;
 public class ReplacerConfig {
 
 	public final FlowMap mapping;
+
+	/**
+	 * The provider of the target flows of the mapping. In a replacement, the source
+	 * flows (that should be replaced by the target flows) are always flows in the
+	 * currently active databases. Of course, the target flow provider could be also
+	 * the same database.
+	 * 
+	 */
 	public final IProvider provider;
 
 	public final List<CategorizedDescriptor> models = new ArrayList<>();
