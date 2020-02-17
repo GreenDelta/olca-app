@@ -67,7 +67,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (obj instanceof ModelElement) {
 			ModelElement element = (ModelElement) obj;
 			CategorizedDescriptor d = element.getContent();
-			String name = Labels.getDisplayName(d);
+			String name = Labels.name(d);
 			if (d.category == null)
 				return name;
 			Category c = Cache.getEntityCache().get(

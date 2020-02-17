@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-cloud-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-core-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-formula-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-geo-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-io-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-jsonld-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/msgpack-core-0.8.20.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jython-standalone-2.7.2b2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/super-csv-2.4.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-cloud-1.9.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.9.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-1.9.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-1.9.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-formula-1.9.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-geo-1.9.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-1.9.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-io-1.9.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-1.9.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-jsonld-1.9.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-1.9.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/slf4j-api-1.7.25.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/slf4j-log4j12-1.7.25.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.antlr-2.7.3.jar"/>
