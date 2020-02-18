@@ -66,7 +66,8 @@ class MapPage extends ModelPage<Location> {
 		if (coll == null)
 			return;
 		layer = map.addLayer(coll)
-				.fillColor(Colors.linkBlue())
+				.fillColor(Colors.get(173, 20, 87))
+				.borderColor(Colors.get(173, 20, 87))
 				.center();
 		map.update();
 	}

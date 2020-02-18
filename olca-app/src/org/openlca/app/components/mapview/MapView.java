@@ -17,8 +17,12 @@ import org.eclipse.swt.widgets.Display;
 import org.openlca.app.util.Colors;
 import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
+import org.openlca.geo.geojson.Geometry;
+import org.openlca.geo.geojson.GeometryCollection;
 import org.openlca.geo.geojson.LineString;
 import org.openlca.geo.geojson.MsgPack;
+import org.openlca.geo.geojson.MultiLineString;
+import org.openlca.geo.geojson.MultiPoint;
 import org.openlca.geo.geojson.MultiPolygon;
 import org.openlca.geo.geojson.Point;
 import org.openlca.geo.geojson.Polygon;
@@ -160,20 +164,17 @@ public class MapView {
 
 		// try to find a good initial zoom
 		Rectangle canvSize = canvas.getBounds();
+		zoom = 0;
 		for (int z = 0; z < 21; z++) {
-			zoom = z;
-			Point topLeft = new Point();
-			topLeft.x = bounds.minX;
-			topLeft.y = bounds.minY;
-			Point bottomRight = new Point();
-			bottomRight.x = bounds.maxX;
-			bottomRight.y = bounds.maxY;
+			Point topLeft = new Point(bounds.minX, bounds.minY);
+			Point bottomRight = new Point(bounds.maxX, bounds.maxY);
 			WebMercator.project(topLeft, z);
 			WebMercator.project(bottomRight, z);
 			if ((bottomRight.x - topLeft.x) > canvSize.width)
 				break;
 			if ((bottomRight.y - topLeft.y) > canvSize.height)
 				break;
+			zoom = z;
 		}
 
 		// finally, project the layers
@@ -204,29 +205,91 @@ public class MapView {
 				if (!translation.visible(f)) {
 					continue;
 				}
-				if (f.geometry instanceof Polygon) {
-					renderPolygon(gc, config, f, (Polygon) f.geometry);
-				} else if (f.geometry instanceof MultiPolygon) {
-					MultiPolygon mp = (MultiPolygon) f.geometry;
-					for (Polygon polygon : mp.polygons) {
-						renderPolygon(gc, config, f, polygon);
-					}
-				}
+				render(gc, config, f, f.geometry);
 			}
 		}
 	}
 
-	private void renderPolygon(GC gc, LayerConfig conf, Feature f, Polygon geom) {
-		int[] points = translation.translate(geom);
+	private void render(GC gc, LayerConfig conf, Feature f, Geometry g) {
+		if (g == null)
+			return;
+
+		// points
+		if (g instanceof Point) {
+			renderPoint(gc, conf, f, (Point) g);
+			return;
+		}
+		if (g instanceof MultiPoint) {
+			MultiPoint mp = (MultiPoint) g;
+			for (Point p : mp.points) {
+				renderPoint(gc, conf, f, p);
+			}
+			return;
+		}
+
+		// lines
+		if (g instanceof LineString) {
+			renderLine(gc, conf, f, (LineString) g);
+			return;
+		}
+		if (g instanceof MultiLineString) {
+			MultiLineString ml = (MultiLineString) g;
+			for (LineString line : ml.lineStrings) {
+				renderLine(gc, conf, f, line);
+			}
+			return;
+		}
+
+		// polygons
+		if (g instanceof Polygon) {
+			renderPolygon(gc, conf, f, (Polygon) g);
+			return;
+		}
+		if (f.geometry instanceof MultiPolygon) {
+			MultiPolygon mp = (MultiPolygon) f.geometry;
+			for (Polygon polygon : mp.polygons) {
+				renderPolygon(gc, conf, f, polygon);
+			}
+			return;
+		}
+
+		if (g instanceof GeometryCollection) {
+			GeometryCollection coll = (GeometryCollection) g;
+			for (Geometry gg : coll.geometries) {
+				render(gc, conf, f, gg);
+			}
+		}
+	}
+
+	private void renderPolygon(GC gc, LayerConfig conf, Feature f, Polygon polygon) {
+		int[] points = translation.translate(polygon);
 		Color fillColor = conf.getFillColor(f);
 		if (fillColor != null) {
 			gc.setBackground(fillColor);
 			gc.fillPolygon(points);
 		}
-		// TODO: currently only polygons are displayed
 		// TODO: fill inner rings as white polygons
 		// overlapping features can anyhow cause problems
 		gc.drawPolygon(points);
+	}
+
+	private void renderLine(GC gc, LayerConfig conf, Feature f, LineString line) {
+		int[] points = translation.translate(line);
+		gc.setLineWidth(5 + zoom);
+		gc.drawPolyline(points);
+		gc.setLineWidth(1);
+	}
+
+	private void renderPoint(GC gc, LayerConfig conf, Feature f, Point point) {
+		int[] p = translation.translate(point);
+		Color fillColor = conf.getFillColor(f);
+		int r = 5 + zoom;
+		if (fillColor != null) {
+			gc.setBackground(fillColor);
+			gc.fillOval(p[0], p[1], r, r);
+		} else {
+			gc.drawOval(p[0], p[1], r, r);
+		}
 	}
 
 	/**
@@ -286,15 +349,29 @@ public class MapView {
 
 		int[] translate(Polygon polygon) {
 			if (polygon == null || polygon.rings.size() < 1)
-				return null;
+				return new int[0];
 			LineString ring = polygon.rings.get(0);
-			int[] seq = new int[ring.points.size() * 2];
-			for (int i = 0; i < ring.points.size(); i++) {
-				Point p = ring.points.get(i);
+			return translate(ring);
+		}
+
+		int[] translate(LineString line) {
+			if (line == null)
+				return new int[0];
+			int[] seq = new int[line.points.size() * 2];
+			for (int i = 0; i < line.points.size(); i++) {
+				Point p = line.points.get(i);
 				seq[2 * i] = (int) (p.x + x);
 				seq[2 * i + 1] = (int) (p.y + y);
 			}
 			return seq;
+		}
+
+		int[] translate(Point point) {
+			if (point == null)
+				return new int[] { 0, 0 };
+			return new int[] {
+					(int) (point.x + x),
+					(int) (point.y + y) };
 		}
 	}
 
