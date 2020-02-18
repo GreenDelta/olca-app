@@ -62,6 +62,7 @@ public class MapView {
 
 	public void update() {
 		canvas.redraw();
+		canvas.update();
 	}
 
 	public void zoomIn() {
@@ -93,6 +94,13 @@ public class MapView {
 		LayerConfig config = new LayerConfig(canvas.getDisplay(), layer);
 		layers.add(config);
 		return config;
+	}
+
+	public void removeLayer(LayerConfig config) {
+		if (config == null)
+			return;
+		layers.remove(config);
+		projections.clear();
 	}
 
 	public void addBaseLayers() {
