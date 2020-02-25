@@ -219,7 +219,7 @@ class TableLabel extends LabelProvider
 			sunit += " (" + sprop + ")";
 			tunit += " (" + tprop + ")";
 		}
-		return f + " " + sunit + "/" + tunit;
+		return f + " " + tunit + "/" + sunit;
 	}
 
 	private String provider(FlowRef ref) {

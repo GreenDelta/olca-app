@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.tools.mapping.model.JsonProvider;
 import org.openlca.app.util.Colors;
@@ -28,7 +29,6 @@ import org.slf4j.LoggerFactory;
  */
 class JsonImportDialog extends Dialog {
 
-	private final File file;
 	private final JsonProvider provider;
 	private final List<FlowMap> flowMaps;
 	private FlowMap selectedMap;
@@ -40,7 +40,11 @@ class JsonImportDialog extends Dialog {
 		if (file == null)
 			return null;
 		try {
-			JsonImportDialog d = new JsonImportDialog(file);
+			JsonProvider provider = JsonProvider.of(file);
+			List<FlowMap> maps = App.exec("Search flow mappings ...",
+					() -> provider.getFlowMaps());
+
+			JsonImportDialog d = new JsonImportDialog(provider, maps);
 			if (d.open() != Dialog.OK) {
 				return null;
 			}
@@ -57,12 +61,11 @@ class JsonImportDialog extends Dialog {
 		}
 	}
 
-	JsonImportDialog(File file) {
+	JsonImportDialog(JsonProvider provider, List<FlowMap> flowMaps) {
 		super(UI.shell());
 		setBlockOnOpen(true);
-		this.provider = JsonProvider.of(file);
-		this.file = file;
-		this.flowMaps = provider.getFlowMaps();
+		this.provider = provider;
+		this.flowMaps = flowMaps;
 		Collections.sort(this.flowMaps,
 				(m1, m2) -> Strings.compare(m1.name, m2.name));
 	}
@@ -82,9 +85,9 @@ class JsonImportDialog extends Dialog {
 		Composite comp = new Composite(root, SWT.NONE);
 		UI.gridLayout(comp, 2, 10, 0);
 		UI.formLabel(comp, M.File);
-		String fileText = Strings.cut(file.getParent(), 50)
+		String fileText = Strings.cut(provider.file.getParent(), 50)
 				+ File.separator
-				+ Strings.cut(file.getName(), 50);
+				+ Strings.cut(provider.file.getName(), 50);
 		Label label = UI.formLabel(comp, fileText);
 		label.setForeground(Colors.linkBlue());
 
