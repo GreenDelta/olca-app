@@ -62,6 +62,7 @@ final class Sync {
 				BaseDescriptor packProp = packRef.property;
 				BaseDescriptor mapProp = mapRef.property;
 				if (Strings.nullOrEqual(packProp.refId, mapProp.refId)
+						&& packProp.name != null && mapProp.name != null
 						&& !Strings.nullOrEqual(packProp.name, mapProp.name)) {
 					mapRef.status = Status.error("the flow property in the data "
 							+ "package has the same ID but a different name: "
@@ -75,16 +76,19 @@ final class Sync {
 			// when the IDs are equal, the names must be equal too
 			if (mapRef.unit == null) {
 				mapRef.unit = packRef.unit;
-			} else {
-				if (packRef.unit == null) {
-					mapRef.status = Status.error("the flow in the data package"
-							+ " has no corresponding unit");
-					return;
-				}
+			} else if (packRef.unit != null) {
+
+				// mapping packages not always contain their reference units
+//				if (packRef.unit == null) {
+//					mapRef.status = Status.error("the flow in the data package"
+//							+ " has no corresponding unit");
+//					return;
+//				}
 
 				BaseDescriptor packUnit = packRef.unit;
 				BaseDescriptor mapUnit = mapRef.unit;
 				if (Strings.nullOrEqual(packUnit.refId, mapUnit.refId)
+						&& packUnit.name != null && mapUnit.name != null
 						&& !Strings.nullOrEqual(packUnit.name, mapUnit.name)) {
 					mapRef.status = Status.error("the flow unit in the data "
 							+ "package has the same ID but a different name: "
