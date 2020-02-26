@@ -45,6 +45,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		Button browseBtn = tk.createButton(
 				comp, "Open file", SWT.NONE);
 		browseBtn.setImage(Icon.FOLDER_OPEN.get());
+		// Controls.onClick(link, fn);
 
 		UI.filler(comp, tk);
 		Composite btnComp = tk.createComposite(comp);
