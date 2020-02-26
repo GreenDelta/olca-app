@@ -14,7 +14,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.editors.lcia.shapefiles.ShapeFilePage;
+import org.openlca.app.editors.lcia.geo.GeoPage;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
 import org.openlca.app.editors.parameters.ParameterPage;
@@ -37,8 +37,8 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-		// TODO Auto-generated method stub
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
 		super.init(site, input);
 		// evalFormulas() takes quite long; we skip this for LCIA methods
 		parameterSupport = new ParameterChangeSupport();
@@ -58,12 +58,12 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 
 	@Override
 	protected void addPages() {
-		// TODO LCIA factors, parameters, regionalization
 		try {
 			addPage(new InfoPage(this));
 			addPage(new ImpactFactorPage(this));
 			addPage(ParameterPage.create(this));
-			addPage(new ShapeFilePage(this));
+			addPage(new GeoPage(this));
+			// addPage(new ShapeFilePage(this));
 			addCommentPage();
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
