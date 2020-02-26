@@ -14,4 +14,10 @@ class GeoParam {
 	/** The maximum value of the parameter in the features of the GeoJSON file. */
 	double max;
 
+	/**
+	 * Defines how multiple values of this parameter in different geographic
+	 * features are aggregated.
+	 */
+	GeoAggType aggType;
+
 }

@@ -19,6 +19,8 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
+import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
+import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.geo.geojson.FeatureCollection;
 
 class GeoParamSection {
@@ -44,6 +46,8 @@ class GeoParamSection {
 		table.setLabelProvider(new Label());
 		Tables.bindColumnWidths(
 				table, 0.25, 0.25, 0.25, 0.25);
+		ModifySupport<GeoParam> ms = new ModifySupport<>(table);
+		ms.bind("Aggregation type", new AggTypeCell());
 
 		// bind the "open map" action
 		Action openMap = Actions.create(
@@ -61,6 +65,36 @@ class GeoParamSection {
 		if (page.setup == null)
 			return;
 		table.setInput(page.setup.params);
+	}
+
+	private class AggTypeCell
+			extends ComboBoxCellModifier<GeoParam, GeoAggType> {
+
+		@Override
+		protected GeoAggType[] getItems(GeoParam param) {
+			return GeoAggType.values();
+		}
+
+		@Override
+		protected GeoAggType getItem(GeoParam param) {
+			return param == null || param.aggType == null
+					? GeoAggType.WEIGHTED_AVERAGE
+					: param.aggType;
+		}
+
+		@Override
+		protected String getText(GeoAggType aggType) {
+			return aggType == null
+					? GeoAggType.WEIGHTED_AVERAGE.toString()
+					: aggType.toString();
+		}
+
+		@Override
+		protected void setItem(GeoParam param, GeoAggType aggType) {
+			if (param == null)
+				return;
+			param.aggType = aggType;
+		}
 	}
 
 	private class Label extends LabelProvider
@@ -88,7 +122,9 @@ class GeoParamSection {
 				return "[" + Numbers.format(p.min)
 						+ ", " + Numbers.format(p.max) + "]";
 			case 3:
-				return "Weighted average"; // TODO
+				return p.aggType == null
+						? GeoAggType.WEIGHTED_AVERAGE.toString()
+						: p.aggType.toString();
 			default:
 				return null;
 			}
@@ -132,7 +168,10 @@ class GeoParamSection {
 
 		@Override
 		protected Point getInitialSize() {
-			return new Point(500, 500);
+			Point bounds = UI.shell().getSize();
+			int width = (int) (bounds.x * 0.8);
+			int height = (int) (bounds.y * 0.8);
+			return new Point(width, height);
 		}
 
 		@Override
