@@ -38,6 +38,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		setupSection(body, tk);
 		paramSection = new GeoParamSection(this);
 		paramSection.drawOn(body, tk);
+
 		form.reflow(true);
 	}
 
