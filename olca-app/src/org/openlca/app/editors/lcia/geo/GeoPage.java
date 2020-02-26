@@ -24,6 +24,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 	Setup setup;
 
 	private GeoParamSection paramSection;
+	private GeoFlowSection flowSection;
 
 	public GeoPage(ImpactCategoryEditor editor) {
 		super(editor, "GeoPage", "Regionalized calculation");
@@ -38,7 +39,8 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		setupSection(body, tk);
 		paramSection = new GeoParamSection(this);
 		paramSection.drawOn(body, tk);
-
+		flowSection = new GeoFlowSection(this);
+		flowSection.drawOn(body, tk);
 		form.reflow(true);
 	}
 
@@ -60,16 +62,21 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 			File file = FileChooser.open("*.geojson");
 			if (file == null)
 				return;
-			setup = App.exec("Parse GeoJSON ...",
+			Setup s = App.exec("Parse GeoJSON ...",
 					() -> Setup.create(file));
-			if (setup.file != null) {
-				fileText.setText(setup.file);
+			if (s == null || s.file == null)
+				return;
+
+			// copy possible elementary flow bindings
+			// into the new setup (note that the parameters
+			// are already initialized in the new setup)
+			if (setup != null) {
+				s.bindings.addAll(setup.bindings);
 			}
+			setup = s;
+			fileText.setText(s.file);
 			paramSection.update();
-			// TODO: update parameters etc.
-			// we will not remove the flows from setup
-			// but update all parameters when the user
-			// changes the GeoJSON file
+			flowSection.update();
 		});
 
 		UI.filler(comp, tk);
@@ -81,7 +88,5 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		Button saveBtn = tk.createButton(
 				btnComp, "Save setup", SWT.NONE);
 		saveBtn.setImage(Icon.SAVE.get());
-
 	}
-
 }

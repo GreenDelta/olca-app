@@ -16,11 +16,12 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.io.CategoryPath;
 
-class GeoElemFlowSection {
+class GeoFlowSection {
 
 	private final GeoPage page;
+	private TableViewer table;
 
-	GeoElemFlowSection(GeoPage page) {
+	GeoFlowSection(GeoPage page) {
 		this.page = page;
 	}
 
@@ -32,7 +33,7 @@ class GeoElemFlowSection {
 		UI.gridLayout(comp, 1);
 
 		// create the table
-		TableViewer table = Tables.createViewer(comp,
+		table = Tables.createViewer(comp,
 				M.Flow,
 				M.Category,
 				M.Formula,
@@ -41,9 +42,15 @@ class GeoElemFlowSection {
 		Tables.bindColumnWidths(
 				table, 0.25, 0.25, 0.25, 0.25);
 		ModifySupport<GeoFlowBinding> ms = new ModifySupport<>(table);
-		ms.bind(M.Formula, /* TODO: new FormulaCell() */ null);
+		// ms.bind(M.Formula, /* TODO: new FormulaCell() */ null);
 
 		// TODO: bind actions
+	}
+
+	void update() {
+		if (page.setup == null)
+			return;
+		table.setInput(page.setup.bindings);
 	}
 
 	private class Label extends LabelProvider implements ITableLabelProvider {

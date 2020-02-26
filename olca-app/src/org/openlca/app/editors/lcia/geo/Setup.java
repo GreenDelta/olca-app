@@ -22,6 +22,13 @@ class Setup {
 	/** The parameters of the GeoJSON file. */
 	final List<GeoParam> params = new ArrayList<>();
 
+	/**
+	 * The elementary flows that are bound to parameters if the GeoJSON file via
+	 * parameters. These formulas are then used to calculate the reionalized
+	 * characterization factors.
+	 */
+	final List<GeoFlowBinding> bindings = new ArrayList<>();
+
 	private FeatureCollection features;
 
 	private Setup(String file) {
