@@ -72,7 +72,7 @@ class Setup {
 				Object obj = e.getValue();
 				if (!(obj instanceof Number))
 					continue;
-				String id = e.getKey().replaceAll("^\\W", "_")
+				String id = e.getKey().replaceAll("[\\W]", "_")
 						.toLowerCase();
 				double val = ((Number) obj).doubleValue();
 				GeoParam param = map.get(id);

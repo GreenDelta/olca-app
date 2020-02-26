@@ -21,7 +21,9 @@ import org.openlca.core.model.ImpactCategory;
 public class GeoPage extends ModelPage<ImpactCategory> {
 
 	final ImpactCategoryEditor editor;
-	private Setup setup;
+	Setup setup;
+
+	private GeoParamSection paramSection;
 
 	public GeoPage(ImpactCategoryEditor editor) {
 		super(editor, "GeoPage", "Regionalized calculation");
@@ -34,6 +36,8 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		setupSection(body, tk);
+		paramSection = new GeoParamSection(this);
+		paramSection.drawOn(body, tk);
 		form.reflow(true);
 	}
 
@@ -60,7 +64,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 			if (setup.file != null) {
 				fileText.setText(setup.file);
 			}
-
+			paramSection.update();
 			// TODO: update parameters etc.
 			// we will not remove the flows from setup
 			// but update all parameters when the user
