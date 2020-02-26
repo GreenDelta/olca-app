@@ -2,8 +2,12 @@ package org.openlca.app.editors.lcia.geo;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.GeoJSON;
 import org.openlca.util.Strings;
@@ -30,7 +34,7 @@ class Setup {
 		Setup setup = new Setup(
 				geojson.getAbsolutePath());
 		setup.getFeatures();
-
+		setup.initParams();
 		return setup;
 	}
 
@@ -50,6 +54,44 @@ class Setup {
 			features = new FeatureCollection();
 			return features;
 		}
+	}
+
+	private void initParams() {
+		FeatureCollection coll = getFeatures();
+		if (coll == null)
+			return;
+		params.clear();
+
+		Map<String, GeoParam> map = new HashMap<>();
+		for (Feature f : coll.features) {
+			if (f.properties == null)
+				continue;
+			for (Map.Entry<String, Object> e : f.properties.entrySet()) {
+				if (e.getKey() == null)
+					continue;
+				Object obj = e.getValue();
+				if (!(obj instanceof Number))
+					continue;
+				String id = e.getKey().replaceAll("^\\W", "_")
+						.toLowerCase();
+				double val = ((Number) obj).doubleValue();
+				GeoParam param = map.get(id);
+				if (param != null) {
+					param.min = Math.min(param.min, val);
+					param.max = Math.max(param.max, val);
+					continue;
+				}
+				param = new GeoParam();
+				param.name = e.getKey();
+				param.identifier = id;
+				param.min = val;
+				param.max = val;
+				map.put(id, param);
+			}
+		}
+		params.addAll(map.values());
+		Collections.sort(params,
+				(p1, p2) -> Strings.compare(p1.name, p2.name));
 	}
 
 }

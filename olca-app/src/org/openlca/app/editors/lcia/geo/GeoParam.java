@@ -8,9 +8,10 @@ class GeoParam {
 	/** The identifier of the parameter for usage in formulas */
 	String identifier;
 
+	/** The minimum value of the parameter in the features of the GeoJSON file. */
 	double min;
 
+	/** The maximum value of the parameter in the features of the GeoJSON file. */
 	double max;
 
-	double mean;
 }

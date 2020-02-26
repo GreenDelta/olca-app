@@ -1,5 +1,7 @@
 package org.openlca.app.editors.lcia.geo;
 
+import java.io.File;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -7,15 +9,19 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.App;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.lcia.ImpactCategoryEditor;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactCategory;
 
 public class GeoPage extends ModelPage<ImpactCategory> {
 
 	final ImpactCategoryEditor editor;
+	private Setup setup;
 
 	public GeoPage(ImpactCategoryEditor editor) {
 		super(editor, "GeoPage", "Regionalized calculation");
@@ -42,10 +48,24 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		Text fileText = tk.createText(comp, "");
 		fileText.setEditable(false);
 		UI.gridData(fileText, false, false).widthHint = 350;
-		Button browseBtn = tk.createButton(
+		Button fileBtn = tk.createButton(
 				comp, "Open file", SWT.NONE);
-		browseBtn.setImage(Icon.FOLDER_OPEN.get());
-		// Controls.onClick(link, fn);
+		fileBtn.setImage(Icon.FOLDER_OPEN.get());
+		Controls.onSelect(fileBtn, _e -> {
+			File file = FileChooser.open("*.geojson");
+			if (file == null)
+				return;
+			setup = App.exec("Parse GeoJSON ...",
+					() -> Setup.create(file));
+			if (setup.file != null) {
+				fileText.setText(setup.file);
+			}
+
+			// TODO: update parameters etc.
+			// we will not remove the flows from setup
+			// but update all parameters when the user
+			// changes the GeoJSON file
+		});
 
 		UI.filler(comp, tk);
 		Composite btnComp = tk.createComposite(comp);
