@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.RGBA;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Colors {
 
-	private static HashMap<RGB, Color> createdColors = new HashMap<>();
+	private static HashMap<RGBA, Color> createdColors = new HashMap<>();
 
 	private static Display display;
 
@@ -32,11 +33,24 @@ public class Colors {
 		return get(rgb);
 	}
 
+	public static Color get(int r, int g, int b) {
+		return get(new RGBA(r, g, b, 255));
+	}
+
 	public static Color get(RGB rgb) {
-		Color color = createdColors.get(rgb);
+		RGBA rgba = new RGBA(rgb.red, rgb.green, rgb.blue, 255);
+		return get(rgba);
+	}
+
+	public static Color get(int r, int g, int b, int a) {
+		return get(new RGBA(r, g, b, a));
+	}
+
+	public static Color get(RGBA rgba) {
+		Color color = createdColors.get(rgba);
 		if (color == null || color.isDisposed()) {
-			color = new Color(display, rgb);
-			createdColors.put(rgb, color);
+			color = new Color(display, rgba);
+			createdColors.put(rgba, color);
 		}
 		return color;
 	}
@@ -54,22 +68,23 @@ public class Colors {
 		String rh = s.substring(0, 2);
 		String gh = s.substring(2, 4);
 		String bh = s.substring(4, 6);
+		String ah = (s.length() > 7)
+				? s.substring(6, 8)
+				: null;
 
 		try {
 			int r = Integer.parseInt(rh, 16);
 			int g = Integer.parseInt(gh, 16);
 			int b = Integer.parseInt(bh, 16);
-			return get(r, g, b);
+			int a = ah != null
+					? Integer.parseInt(ah, 16)
+					: 255;
+			return get(r, g, b, a);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(Colors.class);
 			log.error("failed to parse hex color " + hex, e);
 			return black();
 		}
-	}
-
-	public static Color get(int r, int g, int b) {
-		RGB rgb = new RGB(r, g, b);
-		return get(rgb);
 	}
 
 	public static Color white() {

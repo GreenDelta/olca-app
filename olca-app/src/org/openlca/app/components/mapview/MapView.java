@@ -266,7 +266,9 @@ public class MapView {
 		Color fillColor = conf.getFillColor(f);
 		if (fillColor != null) {
 			gc.setBackground(fillColor);
+			gc.setAlpha(fillColor.getAlpha());
 			gc.fillPolygon(points);
+			gc.setAlpha(255);
 		}
 		// TODO: fill inner rings as white polygons
 		// overlapping features can anyhow cause problems
