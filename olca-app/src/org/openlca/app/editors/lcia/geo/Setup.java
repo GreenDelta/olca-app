@@ -70,6 +70,9 @@ class Setup {
 		params.clear();
 
 		Map<String, GeoParam> map = new HashMap<>();
+		Map<String, Double> sums = new HashMap<>();
+		Map<String, Integer> counts = new HashMap<>();
+
 		for (Feature f : coll.features) {
 			if (f.properties == null)
 				continue;
@@ -79,9 +82,19 @@ class Setup {
 				Object obj = e.getValue();
 				if (!(obj instanceof Number))
 					continue;
+
 				String id = e.getKey().replaceAll("[\\W]", "_")
 						.toLowerCase();
 				double val = ((Number) obj).doubleValue();
+
+				// update the values for computing the average
+				sums.compute(id, (key, oldVal) -> oldVal == null
+						? val
+						: oldVal + val);
+				counts.compute(id, (key, oldVal) -> oldVal == null
+						? 1
+						: oldVal + 1);
+
 				GeoParam param = map.get(id);
 				if (param != null) {
 					param.min = Math.min(param.min, val);
@@ -96,7 +109,16 @@ class Setup {
 				map.put(id, param);
 			}
 		}
-		params.addAll(map.values());
+
+		// set the average values as default values
+		for (GeoParam param : map.values()) {
+			Double sum = sums.get(param.identifier);
+			Integer count = counts.get(param.identifier);
+			param.defaultValue = sum != null && count != null
+					? sum / count
+					: 1;
+			params.add(param);
+		}
 		Collections.sort(params,
 				(p1, p2) -> Strings.compare(p1.name, p2.name));
 	}

@@ -15,13 +15,16 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.components.mapview.MapView;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
+import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.geo.geojson.FeatureCollection;
+import org.openlca.util.Strings;
 
 class GeoParamSection {
 
@@ -41,13 +44,15 @@ class GeoParamSection {
 
 		// create the table
 		table = Tables.createViewer(comp,
-				"Parameter", "Identifier", "Range",
+				"Parameter",
+				"Identifier",
+				"Default value",
+				"Range",
 				"Aggregation type");
 		table.setLabelProvider(new Label());
 		Tables.bindColumnWidths(
-				table, 0.25, 0.25, 0.25, 0.25);
-		ModifySupport<GeoParam> ms = new ModifySupport<>(table);
-		ms.bind("Aggregation type", new AggTypeCell());
+				table, 0.2, 0.2, 0.2, 0.2, 0.2);
+		bindModifiers();
 
 		// bind the "open map" action
 		Action openMap = Actions.create(
@@ -59,6 +64,31 @@ class GeoParamSection {
 		Actions.bind(section, openMap);
 
 		update();
+	}
+
+	private void bindModifiers() {
+		ModifySupport<GeoParam> ms = new ModifySupport<>(table);
+		ms.bind("Aggregation type", new AggTypeCell());
+		ms.bind("Default value", new TextCellModifier<GeoParam>() {
+			@Override
+			protected String getText(GeoParam param) {
+			  return param == null ? "" 
+			    : Double.toString(param.defaultValue);  
+			}
+
+			@Override
+			protected void setText(GeoParam param, String s) {
+			  if (param == null || Strings.nullOrEmpty(s))
+			    return;
+			  try {
+			    param.defaultValue = Double.parseDouble(s);
+			    table.refresh();
+			  } catch (Exception e) {
+			    MsgBox.error("Not a number",
+			      "The string " + s + " is not a valid number");
+			  }
+			}
+		});
 	}
 
 	void update() {
@@ -102,9 +132,10 @@ class GeoParamSection {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (col == 1) {
+			if (col == 1)
 				return Icon.FORMULA.get();
-			}
+			if (col == 2 || col == 4)
+				return Icon.EDIT.get();
 			return null;
 		}
 
@@ -119,9 +150,11 @@ class GeoParamSection {
 			case 1:
 				return p.identifier;
 			case 2:
+				return Numbers.format(p.defaultValue);
+			case 3:
 				return "[" + Numbers.format(p.min)
 						+ ", " + Numbers.format(p.max) + "]";
-			case 3:
+			case 4:
 				return p.aggType == null
 						? GeoAggType.WEIGHTED_AVERAGE.toString()
 						: p.aggType.toString();

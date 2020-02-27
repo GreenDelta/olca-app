@@ -15,6 +15,12 @@ class GeoParam {
 	double max;
 
 	/**
+	 * The default value that should be taken in the calculation of regionalized
+	 * factors when no intersecting geometry was found.
+	 */
+	double defaultValue;
+
+	/**
 	 * Defines how multiple values of this parameter in different geographic
 	 * features are aggregated.
 	 */

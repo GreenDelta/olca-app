@@ -22,34 +22,33 @@ class GeoFactorCalculator implements Runnable {
 	}
 
 	@Override
-	  public void run() {
+	public void run() {
 
-	    // check the input
-	    if (setup == null || impact == null) {
+		// check the input
+		if (setup == null || impact == null) {
 			log.error("no setup or LCIA category");
-	      return;
-	    }
-	    IDatabase db = Database.get();
-	    if (db == null) {
-	      log.error("no connected database");
-	      return;
-	    }
-	    if (setup.bindings.isEmpty()) {
+			return;
+		}
+		IDatabase db = Database.get();
+		if (db == null) {
+			log.error("no connected database");
+			return;
+		}
+		if (setup.bindings.isEmpty()) {
 			log.warn("no flow bindings; nothing to do");
-	      return;
-	    }
-	    
-	    // initialize the intersection calculator
-	    FeatureCollection coll = setup.getFeatures();
-	    if (coll == null || coll.features.isEmpty()) {
-	      log.error("no features available for the "
-	        + "intersection calculation");
-	      return;
-	    }
+			return;
+		}
+
+		// initialize the intersection calculator
+		FeatureCollection coll = setup.getFeatures();
+		if (coll == null || coll.features.isEmpty()) {
+			log.error("no features available for the "
+					+ "intersection calculation");
+			return;
+		}
 		IntersectionCalculator calc = IntersectionCalculator.on(coll);
 
-	      
-	  }
+	}
 
 	/**
 	 * Remove the factors for the flows that are part of the setup from the LCIA

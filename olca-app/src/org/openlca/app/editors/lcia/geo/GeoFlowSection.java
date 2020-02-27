@@ -144,24 +144,24 @@ class GeoFlowSection {
 	private class Label extends LabelProvider implements ITableLabelProvider {
 
 		@Override
-	  public Image getColumnImage(Object obj, int col) {
+		public Image getColumnImage(Object obj, int col) {
 
-	    if (!(obj instanceof GeoFlowBinding))
-	      return null;
-	    GeoFlowBinding b = (GeoFlowBinding) obj;
-	    if (b.flow == null)
-	      return null;
+			if (!(obj instanceof GeoFlowBinding))
+				return null;
+			GeoFlowBinding b = (GeoFlowBinding) obj;
+			if (b.flow == null)
+				return null;
 
-	    switch (col) {
-	      case 0:
-	        return Images.get(b.flow);
-	      case 1:
-	        return Images.get(b.flow.category);
-	      case 2:
-	        return Icon.FORMULA.get();
-	      default:
-	        return null;
-	  }
+			switch (col) {
+			case 0:
+				return Images.get(b.flow);
+			case 1:
+				return Images.get(b.flow.category);
+			case 2:
+				return Icon.EDIT.get();
+			default:
+				return null;
+			}
 		}
 
 		@Override
