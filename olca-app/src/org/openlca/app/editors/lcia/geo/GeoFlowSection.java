@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FormulaCellEditor;
 import org.openlca.app.components.ModelSelectionDialog;
@@ -21,6 +22,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
@@ -30,6 +32,7 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.io.CategoryPath;
 
 class GeoFlowSection {
@@ -62,10 +65,11 @@ class GeoFlowSection {
 		ms.bind(M.Formula, getFormulaEditor());
 
 		// bind actions
-		Action add = Actions.onAdd(() -> onAdd());
-		Action remove = Actions.onRemove(() -> onRemove());
-		Actions.bind(table, add, remove);
-		Actions.bind(section, add, remove);
+		Action add = Actions.onAdd(this::onAdd);
+		Action remove = Actions.onRemove(this::onRemove);
+		Action calc = Actions.onCalculate(this::onCalculate);
+		Actions.bind(table, add, remove, calc);
+		Actions.bind(section, add, remove, calc);
 	}
 
 	private void onRemove() {
@@ -105,6 +109,35 @@ class GeoFlowSection {
 			page.setup.bindings.add(b);
 		}
 		table.setInput(page.setup.bindings);
+	}
+
+	private void onCalculate() {
+		Setup setup = page.setup;
+		if (setup == null) {
+			MsgBox.error("Invalid calculation setup",
+					"No GeoJSON file is selected.");
+			return;
+		}
+		if (setup.bindings.isEmpty()) {
+			MsgBox.error("Invalid calculation setup",
+					"No flow bindings are defined.");
+			return;
+		}
+		FeatureCollection coll = setup.getFeatures();
+		if (coll == null || coll.features.isEmpty()) {
+			MsgBox.error("Invalid calculation setup",
+					"Could not find geographic features.");
+			return;
+		}
+
+		GeoFactorCalculator calc = new GeoFactorCalculator(
+				page.setup, page.editor.getModel());
+		App.runWithProgress(
+				"Calculate regionalized factors",
+				calc, () -> {
+					// TODO: update UI
+					MsgBox.info("Done!");
+				});
 	}
 
 	void update() {
