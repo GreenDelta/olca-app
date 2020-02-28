@@ -1,5 +1,6 @@
 package org.openlca.app.editors.lcia.geo;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -28,7 +29,9 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -130,8 +133,19 @@ class GeoFlowSection {
 			return;
 		}
 
+		// select the locations
+		CategorizedDescriptor[] locs = ModelSelectionDialog
+				.multiSelect(ModelType.LOCATION);
+		if (locs == null || locs.length == 0)
+			return;
+		LocationDao locDao = new LocationDao(Database.get());
+		List<Location> locations = Arrays.stream(locs)
+				.map(d -> locDao.getForId(d.id))
+				.filter(loc -> loc != null)
+				.collect(Collectors.toList());
+
 		GeoFactorCalculator calc = new GeoFactorCalculator(
-				page.setup, page.editor.getModel());
+				page.setup, page.editor.getModel(), locations);
 		App.runWithProgress(
 				"Calculate regionalized factors",
 				calc, () -> {

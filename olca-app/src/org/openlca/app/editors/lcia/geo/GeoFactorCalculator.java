@@ -2,6 +2,7 @@ package org.openlca.app.editors.lcia.geo;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.DoubleBinaryOperator;
@@ -19,22 +20,24 @@ import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.MsgPack;
 import org.openlca.util.BinUtils;
 import org.openlca.util.Pair;
-import org.openlca.util.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gnu.trove.map.hash.TLongDoubleHashMap;
+import gnu.trove.map.hash.TLongByteHashMap;
 import gnu.trove.set.hash.TLongHashSet;
 
 class GeoFactorCalculator implements Runnable {
 
 	private final Setup setup;
 	private final ImpactCategory impact;
+	private final List<Location> locations;
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	GeoFactorCalculator(Setup setup, ImpactCategory impact) {
+	GeoFactorCalculator(
+			Setup setup, ImpactCategory impact, List<Location> locations) {
 		this.setup = setup;
 		this.impact = impact;
+		this.locations = locations;
 	}
 
 	@Override
@@ -55,73 +58,16 @@ class GeoFactorCalculator implements Runnable {
 			return;
 		}
 
-		// calculate the intersections
+		// calculate the intersections, parameter values,
+		// and finally generate the LCIA factors
 		FeatureCollection coll = setup.getFeatures();
 		if (coll == null || coll.features.isEmpty()) {
 			log.error("no features available for the "
 					+ "intersection calculation");
 			return;
 		}
-
-		clearFactors();
-		TLongDoubleHashMap defaults = calcDefaultValues();
-
-//		IntersectionCalculator calc = IntersectionCalculator.on(coll);
-//		LocationDao locDao = new LocationDao(db);
-//		List<Pair<Location, List<Pair<Feature, Double>>>> intersections = locDao.getAll()
-//				.parallelStream()
-//				.map(loc -> Pair.of(loc, getIntersections(loc, calc)))
-//				.collect(Collectors.toList());
-	}
-
-	/**
-	 * Remove the factors for the flows that are part of the setup from the LCIA
-	 * category.
-	 */
-	private void clearFactors() {
-		TLongHashSet setupFlows = new TLongHashSet();
-		for (GeoFlowBinding b : setup.bindings) {
-			if (b.flow == null)
-				continue;
-			setupFlows.add(b.flow.id);
-		}
-		impact.impactFactors.removeIf(
-				f -> f.flow != null && setupFlows.contains(f.flow.id));
-	}
-
-	/**
-	 * Calculates the default characterization factors for the flows that are bound
-	 * in the setup. For the calculation of these factors the default values of the
-	 * geo-parameters are used. The value of the default characterization factor is
-	 * used for the factor with no location binding and for factors with location
-	 * bindings but without any intersecting features with parameter values.
-	 */
-	private TLongDoubleHashMap calcDefaultValues() {
-		TLongDoubleHashMap defaults = new TLongDoubleHashMap();
-
-		// init the formula interpreter
-		FormulaInterpreter fi = new FormulaInterpreter();
-		for (GeoParam param : setup.params) {
-			fi.bind(param.identifier,
-					Double.toString(param.defaultValue));
-		}
-
-		// calculate the default factors
-		for (GeoFlowBinding b : setup.bindings) {
-			if (b.flow == null)
-				continue;
-			try {
-				double val = fi.eval(b.formula);
-				defaults.put(b.flow.id, val);
-				ImpactFactor f = impact.addFactor(b.flow);
-				f.value = val;
-			} catch (Exception e) {
-				log.error("failed to evaluate formula {} "
-						+ " of binding with flow {}", b.formula, b.flow);
-			}
-		}
-
-		return defaults;
+		Map<Location, List<Pair<GeoParam, Double>>> params = calcParamVals(coll);
+		createFactors(params);
 	}
 
 	/**
@@ -129,18 +75,20 @@ class GeoFactorCalculator implements Runnable {
 	 * intersections with the given feature collection and the aggregation function
 	 * that is defined in the respective parameter.
 	 */
-	private List<Triple<Location, GeoParam, Double>> calcParamVals(
-			List<Location> locations, FeatureCollection coll) {
+	private Map<Location, List<Pair<GeoParam, Double>>> calcParamVals(
+			FeatureCollection coll) {
 		IntersectionCalculator calc = IntersectionCalculator.on(coll);
 		Map<Location, List<Pair<Feature, Double>>> map = locations.stream()
 				.map(loc -> Pair.of(loc, calcIntersections(loc, calc)))
 				.collect(Collectors.toMap(p -> p.first, p -> p.second));
 
-		List<Triple<Location, GeoParam, Double>> triples = new ArrayList<>();
+		Map<Location, List<Pair<GeoParam, Double>>> locParams = new HashMap<>();
 		map.forEach((loc, pairs) -> {
+			List<Pair<GeoParam, Double>> paramVals = new ArrayList<>();
+			locParams.put(loc, paramVals);
 			for (GeoParam param : setup.params) {
 				if (pairs.isEmpty()) {
-					triples.add(Triple.of(loc, param, null));
+					paramVals.add(Pair.of(param, null));
 					continue;
 				}
 
@@ -158,11 +106,11 @@ class GeoFactorCalculator implements Runnable {
 					shares.add(share);
 				}
 				Double aggVal = aggregate(param, vals, shares);
-				triples.add(Triple.of(loc, param, aggVal));
+				paramVals.add(Pair.of(param, aggVal));
 
 			}
 		});
-		return triples;
+		return locParams;
 	}
 
 	/**
@@ -274,17 +222,63 @@ class GeoFactorCalculator implements Runnable {
 	private void createFactors(
 			Map<Location, List<Pair<GeoParam, Double>>> locParams) {
 
-		// remove all LCIA factors with elementary flows
-		// from the setup bindings and defined locations
+		// remove all LCIA factors with a flow and location
+		// that will be calculated
+		TLongHashSet setupFlows = new TLongHashSet();
+		for (GeoFlowBinding b : setup.bindings) {
+			if (b.flow == null)
+				continue;
+			setupFlows.add(b.flow.id);
+		}
+		TLongHashSet setupLocations = new TLongHashSet();
+		for (Location loc : locations) {
+			setupLocations.add(loc.id);
+		}
+		TLongByteHashMap isDefaultPresent = new TLongByteHashMap();
+		List<ImpactFactor> removals = new ArrayList<>();
+		for (ImpactFactor factor : impact.impactFactors) {
+			if (factor.flow == null)
+				return;
+			long flowID = factor.flow.id;
+			if (!setupFlows.contains(flowID))
+				continue;
+			if (factor.location == null) {
+				isDefaultPresent.put(flowID, (byte) 1);
+			} else if (setupLocations.contains(factor.location.id)) {
+				removals.add(factor);
+			}
+		}
+		impact.impactFactors.removeAll(removals);
 
-		// generate default factors for flows from the
-		// setup bindings that are not yet present
+		// generate the non-regionalized default factors
+		// for setup flows that are not yet present
+		FormulaInterpreter fi = new FormulaInterpreter();
+		for (GeoParam param : setup.params) {
+			fi.bind(param.identifier,
+					Double.toString(param.defaultValue));
+		}
+		for (GeoFlowBinding b : setup.bindings) {
+			if (b.flow == null)
+				continue;
+			byte present = isDefaultPresent.get(b.flow.id);
+			if (present == (byte) 1)
+				continue;
+			try {
+				double val = fi.eval(b.formula);
+				ImpactFactor f = impact.addFactor(b.flow);
+				f.value = val;
+			} catch (Exception e) {
+				log.error("failed to evaluate formula {} "
+						+ " of binding with flow {}", b.formula, b.flow);
+			}
+		}
 
+		// finally, generate regionalized factors
 		for (Location loc : locParams.keySet()) {
 
 			// bind the location specific parameter values
 			// to a formula interpreter
-			FormulaInterpreter fi = new FormulaInterpreter();
+			fi = new FormulaInterpreter();
 			List<Pair<GeoParam, Double>> pairs = locParams.get(loc);
 			if (pairs == null)
 				continue;
@@ -309,7 +303,5 @@ class GeoFactorCalculator implements Runnable {
 				}
 			}
 		}
-
 	}
-
 }
