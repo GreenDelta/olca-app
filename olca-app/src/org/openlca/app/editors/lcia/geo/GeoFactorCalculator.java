@@ -78,7 +78,8 @@ class GeoFactorCalculator implements Runnable {
 	private Map<Location, List<Pair<GeoParam, Double>>> calcParamVals(
 			FeatureCollection coll) {
 		IntersectionCalculator calc = IntersectionCalculator.on(coll);
-		Map<Location, List<Pair<Feature, Double>>> map = locations.stream()
+		Map<Location, List<Pair<Feature, Double>>> map = locations
+				.parallelStream()
 				.map(loc -> Pair.of(loc, calcIntersections(loc, calc)))
 				.collect(Collectors.toMap(p -> p.first, p -> p.second));
 
@@ -297,6 +298,7 @@ class GeoFactorCalculator implements Runnable {
 					double val = fi.eval(b.formula);
 					ImpactFactor factor = impact.addFactor(b.flow);
 					factor.value = val;
+					factor.location = loc;
 				} catch (Exception e) {
 					log.error("Failed to calculate factor from formula "
 							+ b.formula + " in binding with flow " + b.flow, e);
