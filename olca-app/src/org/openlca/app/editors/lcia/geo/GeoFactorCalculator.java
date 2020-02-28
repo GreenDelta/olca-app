@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.DoubleBinaryOperator;
 import java.util.stream.Collectors;
 
 import org.openlca.app.db.Database;
@@ -200,10 +201,74 @@ class GeoFactorCalculator implements Runnable {
 		}
 	}
 
+	/**
+	 * Aggregates the given parameter values that were extracted from the
+	 * intersecting features with the aggregation function that is defined in the
+	 * given parameter. If the lists are empty `null` is returned which means that
+	 * the default parameter value should be used in this case. The shares are only
+	 * used when a weighted average should be calculated, which is the default
+	 * aggregation function. Note that the shares must have the same length as the
+	 * corresponding parameter values.
+	 */
 	private Double aggregate(GeoParam param,
 			List<Double> vals, List<Double> shares) {
 
-		return null;
+		if (param == null || vals.isEmpty()) {
+			return null;
+		}
+
+		// take the minimum or maximum value
+		if (param.aggType == GeoAggType.MINIMUM
+				|| param.aggType == GeoAggType.MAXIMUM) {
+
+			DoubleBinaryOperator fn = param.aggType == GeoAggType.MINIMUM
+					? Math::min
+					: Math::max;
+
+			double val = vals.get(0) == null ? 0 : vals.get(0);
+			for (int i = 1; i < vals.size(); i++) {
+				Double next = vals.get(i);
+				if (next == null)
+					continue;
+				val = fn.applyAsDouble(val, next);
+			}
+			return val;
+		}
+
+		// calculate the average value
+		if (param.aggType == GeoAggType.AVERAGE) {
+
+			double sum = 0;
+			int count = 0;
+			for (int i = 0; i < vals.size(); i++) {
+				Double next = vals.get(i);
+				if (next == null)
+					continue;
+				sum += next;
+				count++;
+			}
+
+			if (count == 0)
+				return null;
+			return sum / count;
+		}
+
+		// calculate the weighted average by default
+		double sum = 0;
+		double wsum = 0;
+		for (int i = 0; i < vals.size(); i++) {
+			Double next = vals.get(i);
+			Double share = vals.get(i);
+			if (next == null || share == null)
+				continue;
+			sum += next * share;
+			wsum += share;
+		}
+		if (wsum == 0) {
+			return null;
+		}
+		return sum / wsum;
+
 	}
 
 }
