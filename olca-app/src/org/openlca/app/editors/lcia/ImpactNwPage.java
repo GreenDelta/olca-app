@@ -60,7 +60,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 
 	@Subscribe
 	public void refresh(Event event) {
-		if (!event.match(editor.IMPACT_CATEGORY_CHANGE))
+		if (!event.matches(editor.IMPACT_CATEGORY_CHANGE))
 			return;
 		factorViewer.refresh();
 	}

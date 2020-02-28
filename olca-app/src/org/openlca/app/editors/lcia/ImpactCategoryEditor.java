@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 
 public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 
+	public final String FACTORS_CHANGED_EVENT = "FACTORS_CHANGED_EVENT";
+
 	private ParameterChangeSupport parameterSupport;
 
 	public ImpactCategoryEditor() {

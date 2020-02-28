@@ -74,7 +74,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 	@Subscribe
 	public void handleExchangesChange(Event event) {
-		if (!event.match(ProcessEditor.EXCHANGES_CHANGED))
+		if (!event.matches(ProcessEditor.EXCHANGES_CHANGED))
 			return;
 		log.trace("update allocation page");
 		AllocationSync.updateFactors(process());

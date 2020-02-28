@@ -4,24 +4,15 @@ import java.util.Objects;
 
 public class Event {
 
-	private String message;
-	private Object source;
+	public final String id;
+	public final Object sender;
 
-	public Event(String message, Object source) {
-		this.message = message;
-		this.source = source;
+	public Event(String id, Object sender) {
+		this.id = id;
+		this.sender = sender;
 	}
 
-	public boolean match(String message) {
-		return Objects.equals(message, this.message);
+	public boolean matches(String id) {
+		return Objects.equals(id, this.id);
 	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public Object getSource() {
-		return source;
-	}
-
 }

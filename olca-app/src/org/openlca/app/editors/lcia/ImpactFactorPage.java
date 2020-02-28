@@ -65,11 +65,16 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	private TableViewer viewer;
 
 	ImpactFactorPage(ImpactCategoryEditor editor) {
-		super(editor, "ImpactFactorsPage", M.ImpactFactors);
+		super(editor, "ImpactFactorPage", M.ImpactFactors);
 		this.editor = editor;
 		editor.getParameterSupport().afterEvaluation(() -> {
 			if (viewer != null) {
 				viewer.refresh();
+			}
+		});
+		editor.onEvent(editor.FACTORS_CHANGED_EVENT, sender -> {
+			if (viewer != null) {
+				viewer.setInput(impact().impactFactors);
 			}
 		});
 	}

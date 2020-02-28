@@ -149,8 +149,9 @@ class GeoFlowSection {
 		App.runWithProgress(
 				"Calculate regionalized factors",
 				calc, () -> {
-					// TODO: update UI
-					MsgBox.info("Done!");
+					page.editor.postEvent(
+							page.editor.FACTORS_CHANGED_EVENT, this);
+					page.editor.setActivePage("ImpactFactorPage");
 				});
 	}
 
