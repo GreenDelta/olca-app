@@ -271,4 +271,45 @@ class GeoFactorCalculator implements Runnable {
 
 	}
 
+	private void createFactors(
+			Map<Location, List<Pair<GeoParam, Double>>> locParams) {
+
+		// remove all LCIA factors with elementary flows
+		// from the setup bindings and defined locations
+
+		// generate default factors for flows from the
+		// setup bindings that are not yet present
+
+		for (Location loc : locParams.keySet()) {
+
+			// bind the location specific parameter values
+			// to a formula interpreter
+			FormulaInterpreter fi = new FormulaInterpreter();
+			List<Pair<GeoParam, Double>> pairs = locParams.get(loc);
+			if (pairs == null)
+				continue;
+			for (Pair<GeoParam, Double> pair : pairs) {
+				GeoParam param = pair.first;
+				double val = pair.second == null
+						? param.defaultValue
+						: pair.second;
+				fi.bind(param.identifier, Double.toString(val));
+			}
+
+			for (GeoFlowBinding b : setup.bindings) {
+				if (b.flow == null || b.formula == null)
+					continue;
+				try {
+					double val = fi.eval(b.formula);
+					ImpactFactor factor = impact.addFactor(b.flow);
+					factor.value = val;
+				} catch (Exception e) {
+					log.error("Failed to calculate factor from formula "
+							+ b.formula + " in binding with flow " + b.flow, e);
+				}
+			}
+		}
+
+	}
+
 }
