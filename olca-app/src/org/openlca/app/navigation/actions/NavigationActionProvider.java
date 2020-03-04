@@ -62,11 +62,6 @@ public class NavigationActionProvider extends CommonActionProvider {
 					new ImportAction(),
 					new ExportAction(),
 			},
-			// Location KML import actions
-			new INavigationAction[] {
-					new ImportKmlAction(),
-					new ImportXmlKmlAction()
-			},
 			// category actions
 			new INavigationAction[] {
 					new CreateCategoryAction(),

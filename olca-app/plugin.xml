@@ -752,16 +752,10 @@
 		   <description>Import SimaPro CSV files.</description>
 	   </wizard>
 	   <wizard
-          class="org.openlca.app.editors.locations.Es2KMLImportWizard"
-          icon="icons/file/xml.png"
-          id="wizard.import.kmz"
-          name="EcoSpold2 geographies">
-       </wizard>
-	   <wizard
-          class="org.openlca.app.editors.locations.KmlImportWizard"
-          icon="icons/file/xml.png"
-          id="wizard.import.kml"
-          name="KML geographies">
+          class="org.openlca.app.wizards.io.GeoJsonImportWizard"
+          icon="icons/model/location.png"
+          id="wizard.import.geojson"
+          name="Geometries from GeoJSON">
        </wizard>
     <wizard
           class="org.openlca.app.wizards.io.RepositoryImportWizard"
