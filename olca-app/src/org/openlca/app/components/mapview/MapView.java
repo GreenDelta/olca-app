@@ -91,7 +91,7 @@ public class MapView {
 	}
 
 	public LayerConfig addLayer(FeatureCollection layer) {
-		LayerConfig config = new LayerConfig(canvas.getDisplay(), layer);
+		LayerConfig config = new LayerConfig(layer);
 		layers.add(config);
 		return config;
 	}

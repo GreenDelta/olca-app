@@ -2,7 +2,6 @@ package org.openlca.app.components.mapview;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Display;
 import org.openlca.app.util.Colors;
 
 class ColorScale {
@@ -12,7 +11,7 @@ class ColorScale {
 
 	private final Color[] colors;
 
-	ColorScale(Display display, double min, double max) {
+	ColorScale(double min, double max) {
 		this.min = min;
 		this.max = max;
 
