@@ -48,12 +48,6 @@ public class MapView {
 		this.white = canvas.getDisplay().getSystemColor(SWT.COLOR_WHITE);
 		canvas.addPaintListener(e -> render(e.gc));
 
-		canvas.addDisposeListener(e -> {
-			for (LayerConfig config : layers) {
-				config.dispose();
-			}
-		});
-
 		// add mouse listeners
 		canvas.addMouseWheelListener(e -> {
 			translation.updateCenter(e.x, e.y, zoom);

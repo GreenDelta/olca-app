@@ -100,9 +100,4 @@ public class LayerConfig {
         return center;
     }
 
-    void dispose() {
-        if (fillScale != null) {
-            fillScale.dispose();
-        }
-    }
 }
