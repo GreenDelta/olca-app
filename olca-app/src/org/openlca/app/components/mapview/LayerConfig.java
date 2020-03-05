@@ -20,8 +20,6 @@ public class LayerConfig {
 		this.layer = layer;
 	}
 
-	// public configuration function
-
 	public LayerConfig fillColor(Color c) {
 		this.fillColor = c;
 		return this;
@@ -92,4 +90,17 @@ public class LayerConfig {
 		return center;
 	}
 
+	private class ColorScale {
+
+		private final double refVal;
+
+		public ColorScale(double min, double max) {
+			refVal = Math.max(Math.abs(min), Math.abs(max));
+		}
+
+		public Color get(double val) {
+			double share = val / refVal;
+			return Colors.getForContribution(share);
+		}
+	}
 }
