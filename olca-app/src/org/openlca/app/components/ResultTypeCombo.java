@@ -1,5 +1,6 @@
 package org.openlca.app.components;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.eclipse.swt.SWT;
@@ -10,7 +11,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.util.CostResultDescriptor;
-import org.openlca.app.util.CostResults;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.CostResultViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
@@ -43,12 +43,26 @@ public class ResultTypeCombo {
 	public static Builder on(IResult r) {
 		ResultTypeCombo c = new ResultTypeCombo();
 		c.flows = r.getFlows();
+
+		// add LCIA categories
 		if (r.hasImpactResults()) {
 			c.impacts = r.getImpacts();
 		}
+
+		// add cost / added value selection
 		if (r.hasCostResults() && (r instanceof SimpleResult)) {
-			c.costs = CostResults.getDescriptors((SimpleResult) r);
+			SimpleResult sr = (SimpleResult) r;
+			CostResultDescriptor d1 = new CostResultDescriptor();
+			d1.forAddedValue = false;
+			d1.name = M.Netcosts;
+			CostResultDescriptor d2 = new CostResultDescriptor();
+			d2.forAddedValue = true;
+			d2.name = M.AddedValue;
+			c.costs = sr.totalCosts >= 0
+					? Arrays.asList(d1, d2)
+					: Arrays.asList(d2, d1);
 		}
+
 		return new Builder(c);
 	}
 
