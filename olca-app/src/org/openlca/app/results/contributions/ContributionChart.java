@@ -20,7 +20,6 @@ import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.LineStyle;
 import org.eclipse.swtchart.Range;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.FaviColor;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.core.results.ContributionItem;
@@ -115,7 +114,7 @@ public class ContributionChart {
 		// create the new series
 		for (int i = 0; i < top.size(); i++) {
 			createBar("BS" + i, top.get(i).amount,
-					FaviColor.getForChart(i), barWidth);
+					Colors.getForChart(i), barWidth);
 			if (i < (top.size() - 1) || rest != 0) {
 				// create an empty space bar
 				createBar("BS''" + i, 0.0, Colors.white(), barWidth);

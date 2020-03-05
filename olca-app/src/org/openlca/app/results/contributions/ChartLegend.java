@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
-import org.openlca.app.FaviColor;
 import org.openlca.app.M;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
@@ -93,7 +92,7 @@ class ChartLegend {
 		image = new Image(Display.getCurrent(), 30, 15);
 		GC gc = new GC(image);
 		if (index != -1)
-			gc.setBackground(Colors.get(FaviColor.getRgbForChart(index)));
+			gc.setBackground(Colors.getForChart(index));
 		else
 			gc.setBackground(Colors.gray());
 		gc.fillRectangle(5, 5, 25, 5);

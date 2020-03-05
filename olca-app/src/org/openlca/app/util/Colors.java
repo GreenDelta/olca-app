@@ -7,8 +7,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.RGBA;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +20,51 @@ public class Colors {
 	private static HashMap<RGBA, Color> createdColors = new HashMap<>();
 
 	private static Display display;
-
 	static {
 		display = PlatformUI.getWorkbench().getDisplay();
-		PlatformUI.getWorkbench().addWorkbenchListener(new ShutDown());
+		display.disposeExec(() -> {
+			for (Color c : createdColors.values()) {
+				if (c != null && !c.isDisposed()) {
+					c.dispose();
+				}
+			}
+		});
+	}
+
+	private static RGB[] chartColors = {
+			new RGB(229, 48, 57),
+			new RGB(41, 111, 196),
+			new RGB(255, 201, 35),
+			new RGB(82, 168, 77),
+			new RGB(132, 76, 173),
+			new RGB(127, 183, 229),
+			new RGB(255, 137, 0),
+			new RGB(128, 0, 128),
+			new RGB(135, 76, 63),
+			new RGB(252, 255, 100),
+			new RGB(0, 177, 241),
+			new RGB(112, 187, 40),
+			new RGB(18, 89, 133),
+			new RGB(226, 0, 115),
+			new RGB(255, 255, 85),
+			new RGB(218, 0, 24),
+			new RGB(0, 111, 154),
+			new RGB(255, 153, 0)
+	};
+
+	/**
+	 * Returns the defined chart color for the given index. If the index is out of
+	 * the range of the pre-defined colors, a random color is returned.
+	 */
+	public static Color getForChart(int idx) {
+		if (idx >= 0 && idx < chartColors.length) {
+			RGB rgb = chartColors[idx];
+			return get(rgb);
+		}
+		int blue = 255 / Math.abs(idx);
+		int red = 255 - blue;
+		int green = (blue + red) / 2;
+		return get(red, green, blue, 255);
 	}
 
 	public static Color errorColor() {
@@ -111,19 +150,4 @@ public class Colors {
 		return display.getSystemColor(swtConstant);
 	}
 
-	private static class ShutDown implements IWorkbenchListener {
-
-		@Override
-		public boolean preShutdown(IWorkbench workbench, boolean forced) {
-			return true;
-		}
-
-		@Override
-		public void postShutdown(IWorkbench workbench) {
-			for (Color color : createdColors.values()) {
-				if (!color.isDisposed())
-					color.dispose();
-			}
-		}
-	}
 }
