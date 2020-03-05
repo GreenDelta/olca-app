@@ -148,8 +148,8 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			String groupName = url.substring(url.lastIndexOf('/') + 1);
 			String baseUrl = url.substring(0, url.lastIndexOf('/')) + "/ws";
 			String repoId = groupName + "/" + repoName;
-			CredentialSupplier credentials = getCredentials();
-			RepositoryConfig config = new RepositoryConfig(Database.get(), baseUrl, repoId, credentials);
+			RepositoryConfig config = new RepositoryConfig(Database.get(), baseUrl, repoId);
+			config.credentials = getCredentials();;
 			client = new RepositoryClient(config);
 			return true;
 		} catch (Exception e) {

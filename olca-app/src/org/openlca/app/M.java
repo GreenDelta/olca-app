@@ -17,6 +17,7 @@ public class M extends NLS {
 	public static String AboutOpenLCA;
 	public static String ALocationCodeIsRequired;
 	public static String AccessAndUseRestrictions;
+	public static String Active;
 	public static String ActivityQuantity;
 	public static String ActivityUnit;
 	public static String ActivityVariable;
@@ -25,6 +26,7 @@ public class M extends NLS {
 	public static String Add;
 	public static String AddIndicator;
 	public static String AddNewChildCategory;
+	public static String AddNewRepository;
 	public static String AddScore;
 	public static String AddSection;
 	public static String AddToMethodParameters;
@@ -135,10 +137,10 @@ public class M extends NLS {
 	public static String CompressingDatabase;
 	public static String Configuration;
 	public static String ConfigureEcospoldMessage;
+	public static String ConfigureRepositories;
 	public static String Connect;
 	public static String ConnectProviders;
 	public static String ConnectRecipients;
-	public static String ConnectToRepository;
 	public static String ConnectingToRepository;
 	public static String Connection;
 	public static String ConnectionFailed;
@@ -475,6 +477,7 @@ public class M extends NLS {
 	public static String LibraryDataSets;
 	public static String Line;
 	public static String LinkingProperties;
+	public static String LoadingRepositoryList;
 	public static String Local;
 	public static String LocalDatabase;
 	public static String LocalModel;
