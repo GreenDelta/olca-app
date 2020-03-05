@@ -14,7 +14,7 @@ import org.openlca.app.util.trees.TreeClipboard;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 
 /**
  * Table for showing the result contributions for locations of an analysis
@@ -43,8 +43,8 @@ class LocationTree {
 					App.openEditor(item.contribution.item);
 				}
 			}
-			if (obj instanceof ContributionItem) {
-				ContributionItem<?> item = (ContributionItem<?>) obj;
+			if (obj instanceof Contribution) {
+				Contribution<?> item = (Contribution<?>) obj;
 				if (item.item instanceof CategorizedDescriptor) {
 					App.openEditor((CategorizedDescriptor) item.item);
 				}

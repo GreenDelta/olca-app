@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 
 class TreeContentProvider implements ITreeContentProvider {
 
@@ -23,8 +23,8 @@ class TreeContentProvider implements ITreeContentProvider {
 		if (!(parent instanceof LocationItem))
 			return new Object[0];
 		LocationItem e = (LocationItem) parent;
-		List<ContributionItem<ProcessDescriptor>> items = e.processContributions;
-		return items.toArray(new ContributionItem[items.size()]);
+		List<Contribution<ProcessDescriptor>> items = e.processContributions;
+		return items.toArray(new Contribution[items.size()]);
 	}
 
 	@Override

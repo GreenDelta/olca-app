@@ -2,6 +2,7 @@ package org.openlca.app.results;
 
 import java.util.List;
 
+import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -24,7 +25,7 @@ import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.NwSetTable;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.Contributions;
 import org.openlca.core.results.ImpactResult;
@@ -106,7 +107,7 @@ public class NwResultPage extends FormPage {
 		Tables.bindColumnWidths(viewer, colWidths);
 		ContributionSet<ImpactResult> set = Contributions.calculate(
 				results, impactResult -> impactResult.value);
-		List<ContributionItem<ImpactResult>> items = set.contributions;
+		List<Contribution<ImpactResult>> items = set.contributions;
 		Contributions.sortDescending(items);
 		viewer.setInput(items);
 		Actions.bind(viewer, TableClipboard.onCopy(viewer));
@@ -132,8 +133,7 @@ public class NwResultPage extends FormPage {
 		public Image getColumnImage(Object o, int col) {
 			if (col != 0 || !(o instanceof ContributionItem))
 				return null;
-			ContributionItem<ImpactResult> item = ContributionItem.class
-					.cast(o);
+			Contribution<ImpactResult> item = Contribution.class.cast(o);
 			return image.getForTable(item.share);
 		}
 
@@ -142,8 +142,7 @@ public class NwResultPage extends FormPage {
 		public String getColumnText(Object o, int col) {
 			if (!(o instanceof ContributionItem))
 				return null;
-			ContributionItem<ImpactResult> item = ContributionItem.class
-					.cast(o);
+			Contribution<ImpactResult> item = Contribution.class.cast(o);
 			switch (col) {
 			case 0:
 				return Labels.name(item.item.impactCategory);

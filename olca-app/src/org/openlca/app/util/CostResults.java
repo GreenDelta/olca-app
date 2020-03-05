@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.openlca.app.M;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.SimpleResult;
 
@@ -36,7 +36,7 @@ public class CostResults {
 	public static void forAddedValues(ContributionSet<ProcessDescriptor> set) {
 		if (set == null || set.contributions == null)
 			return;
-		for (ContributionItem<?> item : set.contributions) {
+		for (Contribution<?> item : set.contributions) {
 			if (item.amount != 0)
 				item.amount = -item.amount;
 			if (item.share != 0)

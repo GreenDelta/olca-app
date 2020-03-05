@@ -34,7 +34,7 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 
 /**
@@ -123,8 +123,8 @@ public class InventoryPage extends FormPage {
 			if (obj instanceof CategorizedDescriptor) {
 				App.openEditor((CategorizedDescriptor) obj);
 			}
-			if (obj instanceof Contribution) {
-				App.openEditor(((Contribution) obj).item.item);
+			if (obj instanceof FlowContribution) {
+				App.openEditor(((FlowContribution) obj).item.item);
 			}
 		});
 		Trees.onDoubleClick(viewer, e -> onOpen.run());
@@ -159,15 +159,15 @@ public class InventoryPage extends FormPage {
 					.filter(i -> i.amount != 0)
 					.filter(i -> Math.abs(i.amount) >= cutoffValue)
 					.sorted((i1, i2) -> -Double.compare(i1.amount, i2.amount))
-					.map(i -> new Contribution(i, flow))
+					.map(i -> new FlowContribution(i, flow))
 					.collect(Collectors.toList())
 					.toArray();
 		}
 
 		@Override
 		public Object getParent(Object e) {
-			if (e instanceof Contribution)
-				return ((Contribution) e).flow;
+			if (e instanceof FlowContribution)
+				return ((FlowContribution) e).flow;
 			return null;
 		}
 
@@ -202,9 +202,9 @@ public class InventoryPage extends FormPage {
 		public Image getImage(Object obj, int col) {
 			if (col == 0 && obj instanceof IndexFlow)
 				return Images.get(((IndexFlow) obj).flow);
-			if (!(obj instanceof Contribution))
+			if (!(obj instanceof FlowContribution))
 				return null;
-			Contribution c = (Contribution) obj;
+			FlowContribution c = (FlowContribution) obj;
 			if (col == 0)
 				return Images.get(c.item.item);
 			if (col == 3)
@@ -216,8 +216,8 @@ public class InventoryPage extends FormPage {
 		public String getText(Object obj, int col) {
 			if (obj instanceof IndexFlow)
 				return getFlowColumnText((IndexFlow) obj, col);
-			if (obj instanceof Contribution)
-				return getProcessColumnText((Contribution) obj, col);
+			if (obj instanceof FlowContribution)
+				return getProcessColumnText((FlowContribution) obj, col);
 			return null;
 		}
 
@@ -241,7 +241,7 @@ public class InventoryPage extends FormPage {
 			}
 		}
 
-		private String getProcessColumnText(Contribution item, int col) {
+		private String getProcessColumnText(FlowContribution item, int col) {
 			CategorizedDescriptor process = item.item.item;
 			Pair<String, String> category = Labels.getCategory(process);
 			switch (col) {
@@ -267,8 +267,8 @@ public class InventoryPage extends FormPage {
 				IndexFlow f = (IndexFlow) obj;
 				return dqResult.get(f.flow);
 			}
-			if (obj instanceof Contribution) {
-				Contribution item = (Contribution) obj;
+			if (obj instanceof FlowContribution) {
+				FlowContribution item = (FlowContribution) obj;
 				return dqResult.get(item.item.item, item.flow.flow);
 			}
 			return null;
@@ -278,20 +278,20 @@ public class InventoryPage extends FormPage {
 	private double getAmount(Object o) {
 		if (o instanceof IndexFlow) {
 			return result.getTotalFlowResult((IndexFlow) o);
-		} else if (o instanceof Contribution) {
-			Contribution item = (Contribution) o;
+		} else if (o instanceof FlowContribution) {
+			FlowContribution item = (FlowContribution) o;
 			return item.item.amount;
 		}
 		return 0d;
 	}
 
-	private class Contribution {
+	private class FlowContribution {
 
-		final ContributionItem<CategorizedDescriptor> item;
+		final Contribution<CategorizedDescriptor> item;
 		final IndexFlow flow;
 
-		private Contribution(
-				ContributionItem<CategorizedDescriptor> item,
+		private FlowContribution(
+				Contribution<CategorizedDescriptor> item,
 				IndexFlow flow) {
 			this.item = item;
 			this.flow = flow;

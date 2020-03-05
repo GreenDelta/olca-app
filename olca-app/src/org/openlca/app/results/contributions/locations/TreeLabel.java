@@ -1,5 +1,6 @@
 package org.openlca.app.results.contributions.locations;
 
+import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -11,7 +12,7 @@ import org.openlca.app.util.Numbers;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 import org.openlca.util.Strings;
 
 class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
@@ -28,14 +29,14 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 
 	@Override
 	public Image getColumnImage(Object obj, int col) {
-		ContributionItem<?> item = null;
+		Contribution<?> item = null;
 		if (obj instanceof LocationItem) {
 			if (col == 0)
 				return Images.get(ModelType.LOCATION);
 			LocationItem element = (LocationItem) obj;
 			item = element.contribution;
 		} else if (obj instanceof ContributionItem) {
-			item = ContributionItem.class.cast(obj);
+			item = Contribution.class.cast(obj);
 			if (col == 0 && item.item instanceof BaseDescriptor)
 				return Images.get((BaseDescriptor) item.item);
 		}
@@ -53,13 +54,13 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 			return getText(e.contribution, col);
 		}
 		if (obj instanceof ContributionItem) {
-			ContributionItem<?> item = (ContributionItem<?>) obj;
+			Contribution<?> item = (Contribution<?>) obj;
 			return getText(item, col);
 		}
 		return null;
 	}
 
-	private String getText(ContributionItem<?> ci, int col) {
+	private String getText(Contribution<?> ci, int col) {
 		switch (col) {
 		case 0:
 			return getLabel(ci);
@@ -72,7 +73,7 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 		}
 	}
 
-	private String getLabel(ContributionItem<?> ci) {
+	private String getLabel(Contribution<?> ci) {
 		if (ci == null || ci.item == null)
 			return M.None;
 		if (ci.item instanceof BaseDescriptor)

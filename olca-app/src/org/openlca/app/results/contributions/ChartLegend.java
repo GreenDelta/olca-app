@@ -22,7 +22,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 
 class ChartLegend {
 
@@ -38,11 +38,11 @@ class ChartLegend {
 		composite.addDisposeListener((e) -> imageRegistry.dispose());
 	}
 
-	public void setData(List<ContributionItem<?>> data, double rest, String unit) {
+	public void setData(List<Contribution<?>> data, double rest, String unit) {
 		while (!createdLinks.isEmpty())
 			createdLinks.pop().dispose();
 		int colorIndex = 0;
-		for (ContributionItem<?> item : data) {
+		for (Contribution<?> item : data) {
 			if (item.amount == 0d) {
 				colorIndex++;
 				continue;

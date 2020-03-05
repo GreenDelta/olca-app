@@ -14,7 +14,7 @@ import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.Contributions;
@@ -59,7 +59,7 @@ class TreeContentBuilder {
 	List<LocationItem> build(ContributionSet<Location> set,
 			Object selection, double total) {
 		List<LocationItem> items = new ArrayList<>();
-		for (ContributionItem<Location> contribution : set.contributions) {
+		for (Contribution<Location> contribution : set.contributions) {
 			if (Math.abs(contribution.share) < page.cutoff)
 				continue;
 			if (contribution.amount == 0 && page.skipZeros)
@@ -82,8 +82,8 @@ class TreeContentBuilder {
 			double r = getSingleResult(p, selection);
 			if (r == 0 && page.skipZeros)
 				continue;
-			ContributionItem<ProcessDescriptor> item = new ContributionItem<>();
-			item.rest = p == null;
+			Contribution<ProcessDescriptor> item = new Contribution<>();
+			item.isRest = p == null;
 			item.item = p;
 			item.amount = r;
 			item.share = r / total;

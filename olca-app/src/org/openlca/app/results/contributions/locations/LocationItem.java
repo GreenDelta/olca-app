@@ -5,15 +5,15 @@ import java.util.List;
 
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 
 /** A location item in the tree. */
 class LocationItem {
 
-	final ContributionItem<Location> contribution;
-	final List<ContributionItem<ProcessDescriptor>> processContributions = new ArrayList<>();
+	final Contribution<Location> contribution;
+	final List<Contribution<ProcessDescriptor>> processContributions = new ArrayList<>();
 
-	LocationItem(ContributionItem<Location> contribution) {
+	LocationItem(Contribution<Location> contribution) {
 		this.contribution = contribution;
 	}
 

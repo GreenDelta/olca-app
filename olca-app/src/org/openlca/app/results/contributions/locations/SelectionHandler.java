@@ -13,7 +13,7 @@ import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.LocationContribution;
@@ -95,8 +95,8 @@ class SelectionHandler implements EventHandler {
 		Collections.sort(items, (item1, item2) -> {
 			if (item1.contribution == null || item2.contribution == null)
 				return 0;
-			ContributionItem<Location> c1 = item1.contribution;
-			ContributionItem<Location> c2 = item2.contribution;
+			Contribution<Location> c1 = item1.contribution;
+			Contribution<Location> c2 = item2.contribution;
 			if (Math.abs(c1.share - c2.share) > 1e-20)
 				return Double.compare(c2.share, c1.share);
 			else

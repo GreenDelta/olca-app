@@ -9,7 +9,6 @@ import java.util.TreeSet;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.reports.model.ReportIndicatorResult.Contribution;
 import org.openlca.app.editors.reports.model.ReportIndicatorResult.VariantResult;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
@@ -21,7 +20,7 @@ import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.ProjectResult;
 import org.openlca.util.Strings;
@@ -131,14 +130,14 @@ public class ReportCalculator implements Runnable {
 
 	private void appendProcessContributions(
 			ContributionSet<CategorizedDescriptor> set, VariantResult varResult) {
-		Contribution rest = new Contribution();
+		Contribution<Long> rest = new Contribution<>();
 		varResult.contributions.add(rest);
-		rest.rest = true;
-		rest.processId = -1;
+		rest.item = -1L;
+		rest.isRest = true;
 		rest.amount = 0;
 		Set<Long> ids = getContributionProcessIds();
 		Set<Long> foundIds = new TreeSet<>();
-		for (ContributionItem<CategorizedDescriptor> item : set.contributions) {
+		for (Contribution<CategorizedDescriptor> item : set.contributions) {
 			if (item.item == null)
 				continue;
 			if (!ids.contains(item.item.id))
@@ -152,12 +151,12 @@ public class ReportCalculator implements Runnable {
 	}
 
 	private void addContribution(VariantResult varResult,
-			ContributionItem<CategorizedDescriptor> item) {
-		Contribution con = new Contribution();
+			Contribution<CategorizedDescriptor> item) {
+		Contribution<Long> con = new Contribution<>();
 		varResult.contributions.add(con);
 		con.amount = item.amount;
-		con.rest = false;
-		con.processId = item.item.id;
+		con.isRest = false;
+		con.item = item.item.id;
 	}
 
 	private Set<Long> getContributionProcessIds() {
@@ -178,11 +177,11 @@ public class ReportCalculator implements Runnable {
 		TreeSet<Long> notFound = new TreeSet<>(ids);
 		notFound.removeAll(foundIds);
 		for (long id : notFound) {
-			Contribution con = new Contribution();
+			Contribution<Long> con = new Contribution<>();
 			varResult.contributions.add(con);
 			con.amount = 0;
-			con.rest = false;
-			con.processId = id;
+			con.isRest = false;
+			con.item = id;
 		}
 	}
 

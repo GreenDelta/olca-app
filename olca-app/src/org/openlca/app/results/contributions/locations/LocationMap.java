@@ -17,7 +17,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ class LocationMap {
 			return;
 		List<HeatmapPoint> points = new ArrayList<>();
 		for (LocationItem item : items) {
-			ContributionItem<Location> ci = item.contribution;
+			Contribution<Location> ci = item.contribution;
 			if (!showInMap(ci))
 				continue;
 			Location location = ci.item;
@@ -74,7 +74,7 @@ class LocationMap {
 		}
 	}
 
-	private boolean showInMap(ContributionItem<Location> ci) {
+	private boolean showInMap(Contribution<Location> ci) {
 		if (ci == null)
 			return false;
 		Location location = ci.item;

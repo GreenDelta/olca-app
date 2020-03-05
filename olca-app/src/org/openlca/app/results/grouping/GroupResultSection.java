@@ -21,7 +21,7 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.Contributions;
 import org.openlca.core.results.GroupingContribution;
@@ -62,15 +62,15 @@ class GroupResultSection {
 
 	private void updateResults(Object selection, String unit) {
 		if (selection != null && table != null) {
-			List<ContributionItem<ProcessGrouping>> items = calculate(selection);
+			List<Contribution<ProcessGrouping>> items = calculate(selection);
 			Contributions.sortDescending(items);
 			table.setInput(items, unit);
-			List<ContributionItem<?>> chartData = new ArrayList<>();
+			List<Contribution<?>> chartData = new ArrayList<>();
 			chartData.addAll(items);
 		}
 	}
 
-	private List<ContributionItem<ProcessGrouping>> calculate(Object o) {
+	private List<Contribution<ProcessGrouping>> calculate(Object o) {
 		GroupingContribution calc = new GroupingContribution(result, groups);
 		if (o instanceof IndexFlow)
 			return calc.calculate((IndexFlow) o).contributions;
