@@ -52,6 +52,13 @@ public class Colors {
 			new RGB(255, 153, 0)
 	};
 
+	private static final RGB[] contributionColors = {
+			new RGB(0, 150, 0),
+			new RGB(0, 100, 180),
+			new RGB(0, 150, 230),
+			new RGB(255, 0, 0)
+	};
+
 	/**
 	 * Returns the defined chart color for the given index. If the index is out of
 	 * the range of the pre-defined colors, a random color is returned.
@@ -148,6 +155,51 @@ public class Colors {
 
 	public static Color systemColor(int swtConstant) {
 		return display.getSystemColor(swtConstant);
+	}
+
+	/**
+	 * Gets the contribution color for the given ratio which must be in a range of
+	 * [-1, 1].
+	 */
+	public static Color getForContribution(double ratio) {
+		int perc = (int) (ratio * 100);
+		if (perc < -100) {
+			perc = -100;
+		}
+		if (perc > 100) {
+			perc = 100;
+		}
+		int value = perc + 100;
+
+		int prev = 0;
+		int index = 0;
+		int[] conSteps = { 80, 40, 81 };
+		double steps = 0;
+		for (int step : conSteps) {
+			steps = step;
+			if (value < step + prev) {
+				break;
+			} else {
+				index++;
+				prev += step;
+			}
+		}
+		value = value - prev;
+
+		RGB startColor = contributionColors[index];
+		RGB endColor = contributionColors[index + 1];
+
+		double diffRed = endColor.red - startColor.red;
+		double diffGreen = endColor.green - startColor.green;
+		double diffBlue = endColor.blue - startColor.blue;
+		double step = value % steps;
+		step /= steps;
+
+		int red = (int) (startColor.red + step * diffRed);
+		int green = (int) (startColor.green + step * diffGreen);
+		int blue = (int) (startColor.blue + step * diffBlue);
+
+		return get(red, green, blue);
 	}
 
 }

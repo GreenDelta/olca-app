@@ -2,7 +2,6 @@ package org.openlca.app.editors.lcia.shapefiles;
 
 import java.awt.Color;
 
-import org.eclipse.swt.graphics.RGB;
 import org.geotools.data.DataStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
@@ -19,7 +18,7 @@ import org.geotools.styling.Symbolizer;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
-import org.openlca.app.FaviColor;
+import org.openlca.app.util.Colors;
 import org.openlca.geo.kml.FeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,8 +70,8 @@ class SFMapStyle {
 	}
 
 	private static Color createColor(double c) {
-		RGB rgb = FaviColor.getForContribution(c);
-		return new Color(rgb.red, rgb.green, rgb.blue);
+		org.eclipse.swt.graphics.Color col = Colors.getForContribution(c);
+		return new Color(col.getRed(), col.getGreen(), col.getBlue());
 	}
 
 	private static Rule[] createRules(String parameter,

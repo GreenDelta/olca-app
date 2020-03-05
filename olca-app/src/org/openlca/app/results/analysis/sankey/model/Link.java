@@ -5,8 +5,6 @@ import java.util.Objects;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.gef.EditPart;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
-import org.openlca.app.FaviColor;
 import org.openlca.app.util.Colors;
 import org.openlca.core.model.ProcessLink;
 
@@ -70,8 +68,7 @@ public class Link {
 	}
 
 	Color getColor() {
-		RGB rgb = FaviColor.getForContribution(ratio);
-		return Colors.get(rgb);
+		return Colors.getForContribution(ratio);
 	}
 
 }

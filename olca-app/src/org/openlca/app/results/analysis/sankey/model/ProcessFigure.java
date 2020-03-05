@@ -10,9 +10,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
-import org.openlca.app.FaviColor;
 import org.openlca.app.M;
 import org.openlca.app.results.analysis.sankey.ProcessMouseClick;
 import org.openlca.app.util.Colors;
@@ -44,15 +42,11 @@ public class ProcessFigure extends Figure {
 	@Override
 	protected void paintFigure(Graphics graphics) {
 		graphics.pushState();
-		graphics.setBackgroundColor(getColor());
+		double contribution = node.upstreamContribution;
+		Color color = Colors.getForContribution(contribution);
+		graphics.setBackgroundColor(color);
 		paintBody(graphics);
 		graphics.popState();
-	}
-
-	private Color getColor() {
-		double contribution = node.upstreamContribution;
-		RGB rgb = FaviColor.getForContribution(contribution);
-		return Colors.get(rgb);
 	}
 
 	private void paintBody(Graphics g) {
