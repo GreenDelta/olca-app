@@ -73,9 +73,9 @@ class GroupResultSection {
 	private List<Contribution<ProcessGrouping>> calculate(Object o) {
 		GroupingContribution calc = new GroupingContribution(result, groups);
 		if (o instanceof IndexFlow)
-			return calc.calculate((IndexFlow) o).contributions;
+			return calc.calculate((IndexFlow) o);
 		if (o instanceof ImpactCategoryDescriptor)
-			return calc.calculate((ImpactCategoryDescriptor) o).contributions;
+			return calc.calculate((ImpactCategoryDescriptor) o);
 		return Collections.emptyList();
 	}
 

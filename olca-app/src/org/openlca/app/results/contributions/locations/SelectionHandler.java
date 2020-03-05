@@ -15,7 +15,6 @@ import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.LocationContribution;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -42,7 +41,7 @@ class SelectionHandler implements EventHandler {
 		if (calculator == null || flow == null)
 			return;
 		String unit = Labels.refUnit(flow);
-		ContributionSet<Location> set = calculator.calculate(flow);
+		List<Contribution<Location>> set = calculator.calculate(flow);
 		double total = result.getTotalFlowResult(flow);
 		setData(set, flow, total, unit);
 	}
@@ -52,7 +51,7 @@ class SelectionHandler implements EventHandler {
 		if (calculator == null || impact == null)
 			return;
 		String unit = impact.referenceUnit;
-		ContributionSet<Location> set = calculator.calculate(impact);
+		List<Contribution<Location>> set = calculator.calculate(impact);
 		double total = result.getTotalImpactResult(impact);
 		setData(set, impact, total, unit);
 	}
@@ -63,12 +62,12 @@ class SelectionHandler implements EventHandler {
 			return;
 		String unit = getCurrency();
 		if (cost.forAddedValue) {
-			ContributionSet<Location> set = calculator.addedValues();
+			List<Contribution<Location>> set = calculator.addedValues();
 			double total = result.totalCosts;
 			total = total == 0 ? 0 : -total;
 			setData(set, cost, total, unit);
 		} else {
-			ContributionSet<Location> set = calculator.netCosts();
+			List<Contribution<Location>> set = calculator.netCosts();
 			double total = result.totalCosts;
 			setData(set, cost, total, unit);
 		}
@@ -89,7 +88,7 @@ class SelectionHandler implements EventHandler {
 		}
 	}
 
-	private void setData(ContributionSet<Location> set,
+	private void setData(List<Contribution<Location>> set,
 			Object selection, double total, String unit) {
 		List<LocationItem> items = inputBuilder.build(set, selection, total);
 		Collections.sort(items, (item1, item2) -> {

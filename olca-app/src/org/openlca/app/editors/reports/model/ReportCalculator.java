@@ -2,6 +2,7 @@ package org.openlca.app.editors.reports.model;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -21,7 +22,6 @@ import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.ProjectResult;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -110,7 +110,7 @@ public class ReportCalculator implements Runnable {
 				varResult.variant = variant.name;
 				varResult.totalAmount = result.getTotalImpactResult(
 						variant, impact);
-				ContributionSet<CategorizedDescriptor> set = result
+				List<Contribution<CategorizedDescriptor>> set = result
 						.getResult(variant)
 						.getProcessContributions(impact);
 				appendProcessContributions(set, varResult);
@@ -129,7 +129,8 @@ public class ReportCalculator implements Runnable {
 	}
 
 	private void appendProcessContributions(
-			ContributionSet<CategorizedDescriptor> set, VariantResult varResult) {
+			List<Contribution<CategorizedDescriptor>> contributions,
+			VariantResult varResult) {
 		Contribution<Long> rest = new Contribution<>();
 		varResult.contributions.add(rest);
 		rest.item = -1L;
@@ -137,7 +138,7 @@ public class ReportCalculator implements Runnable {
 		rest.amount = 0;
 		Set<Long> ids = getContributionProcessIds();
 		Set<Long> foundIds = new TreeSet<>();
-		for (Contribution<CategorizedDescriptor> item : set.contributions) {
+		for (Contribution<CategorizedDescriptor> item : contributions) {
 			if (item.item == null)
 				continue;
 			if (!ids.contains(item.item.id))

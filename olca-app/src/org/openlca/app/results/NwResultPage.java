@@ -26,7 +26,6 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.Contributions;
 import org.openlca.core.results.ImpactResult;
 import org.openlca.core.results.SimpleResult;
@@ -105,9 +104,8 @@ public class NwResultPage extends FormPage {
 		TableViewer viewer = Tables.createViewer(composite, columns);
 		viewer.setLabelProvider(new Label());
 		Tables.bindColumnWidths(viewer, colWidths);
-		ContributionSet<ImpactResult> set = Contributions.calculate(
+		List<Contribution<ImpactResult>> items = Contributions.calculate(
 				results, impactResult -> impactResult.value);
-		List<Contribution<ImpactResult>> items = set.contributions;
 		Contributions.sortDescending(items);
 		viewer.setInput(items);
 		Actions.bind(viewer, TableClipboard.onCopy(viewer));

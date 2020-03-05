@@ -16,7 +16,6 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.ContributionSet;
 import org.openlca.core.results.Contributions;
 
 /**
@@ -56,10 +55,10 @@ class TreeContentBuilder {
 		}
 	}
 
-	List<LocationItem> build(ContributionSet<Location> set,
+	List<LocationItem> build(List<Contribution<Location>> contributions,
 			Object selection, double total) {
 		List<LocationItem> items = new ArrayList<>();
-		for (Contribution<Location> contribution : set.contributions) {
+		for (Contribution<Location> contribution : contributions) {
 			if (Math.abs(contribution.share) < page.cutoff)
 				continue;
 			if (contribution.amount == 0 && page.skipZeros)

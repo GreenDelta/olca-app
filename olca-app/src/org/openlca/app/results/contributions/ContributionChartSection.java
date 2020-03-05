@@ -1,6 +1,7 @@
 package org.openlca.app.results.contributions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.nebula.jface.tablecomboviewer.TableComboViewer;
 import org.eclipse.swt.widgets.Composite;
@@ -18,8 +19,8 @@ import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.ContributionSet;
 
 /**
  * Chart section of the first page in the analysis editor. Can contain flow or
@@ -86,7 +87,7 @@ public class ContributionChartSection {
 			return;
 		Object e = itemViewer.getSelected();
 		String unit = null;
-		ContributionSet<CategorizedDescriptor> cons = null;
+		List<Contribution<CategorizedDescriptor>> cons = null;
 		if (e instanceof IndexFlow) {
 			IndexFlow flow = (IndexFlow) e;
 			unit = Labels.refUnit(flow);
@@ -98,6 +99,6 @@ public class ContributionChartSection {
 		}
 		if (cons == null)
 			return;
-		chart.setData(new ArrayList<>(cons.contributions), unit);
+		chart.setData(new ArrayList<>(cons), unit);
 	}
 }

@@ -155,7 +155,7 @@ public class InventoryPage extends FormPage {
 				return null;
 			IndexFlow flow = (IndexFlow) e;
 			double cutoffValue = Math.abs(getAmount(flow) * this.cutoff);
-			return result.getProcessContributions(flow).contributions.stream()
+			return result.getProcessContributions(flow).stream()
 					.filter(i -> i.amount != 0)
 					.filter(i -> Math.abs(i.amount) >= cutoffValue)
 					.sorted((i1, i2) -> -Double.compare(i1.amount, i2.amount))
