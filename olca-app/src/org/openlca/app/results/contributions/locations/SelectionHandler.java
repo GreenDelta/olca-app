@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.app.components.ResultTypeCombo.EventHandler;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
@@ -15,7 +14,7 @@ import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.LocationContribution;
+import org.openlca.core.results.LocationResult;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,49 +24,52 @@ class SelectionHandler implements EventHandler {
 	private LocationPage page;
 	private ContributionResult result;
 
-	private LocationContribution calculator;
+	private LocationResult locations;
 	private TreeContentBuilder inputBuilder;
 
 	SelectionHandler(LocationPage page) {
 		this.page = page;
 		this.result = page.result;
 		this.inputBuilder = new TreeContentBuilder(page);
-		calculator = new LocationContribution(
-				result, Cache.getEntityCache());
+		locations = new LocationResult(result, Database.get());
 	}
 
 	@Override
 	public void flowSelected(IndexFlow flow) {
-		if (calculator == null || flow == null)
+		if (locations == null || flow == null)
 			return;
 		String unit = Labels.refUnit(flow);
-		List<Contribution<Location>> set = calculator.calculate(flow);
+		List<Contribution<Location>> set = locations
+				.getContributions(flow.flow);
 		double total = result.getTotalFlowResult(flow);
 		setData(set, flow, total, unit);
 	}
 
 	@Override
 	public void impactCategorySelected(ImpactCategoryDescriptor impact) {
-		if (calculator == null || impact == null)
+		if (locations == null || impact == null)
 			return;
 		String unit = impact.referenceUnit;
-		List<Contribution<Location>> set = calculator.calculate(impact);
+		List<Contribution<Location>> set = locations
+				.getContributions(impact);
 		double total = result.getTotalImpactResult(impact);
 		setData(set, impact, total, unit);
 	}
 
 	@Override
 	public void costResultSelected(CostResultDescriptor cost) {
-		if (calculator == null || cost == null)
+		if (locations == null || cost == null)
 			return;
 		String unit = getCurrency();
 		if (cost.forAddedValue) {
-			List<Contribution<Location>> set = calculator.addedValues();
+			List<Contribution<Location>> set = locations
+					.getAddedValueContributions();
 			double total = result.totalCosts;
 			total = total == 0 ? 0 : -total;
 			setData(set, cost, total, unit);
 		} else {
-			List<Contribution<Location>> set = calculator.netCosts();
+			List<Contribution<Location>> set = locations
+					.getNetCostsContributions();
 			double total = result.totalCosts;
 			setData(set, cost, total, unit);
 		}
