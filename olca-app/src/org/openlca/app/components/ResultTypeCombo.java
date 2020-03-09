@@ -4,12 +4,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.CostResultViewer;
@@ -71,12 +70,30 @@ public class ResultTypeCombo {
 	public void selectWithEvent(Object o) {
 		if (o == null)
 			return;
+		AbstractComboViewer<?>[] combos = {
+				flowCombo, impactCombo, costCombo,
+		};
+		boolean[] selection = null;
 		if (o instanceof IndexFlow) {
-			selectFlow((IndexFlow) o);
+			selectedType = ModelType.FLOW;
+			flowCombo.select((IndexFlow) o);
+			selection = new boolean[] { true, false, false };
 		} else if (o instanceof ImpactCategoryDescriptor) {
-			selectImpact((ImpactCategoryDescriptor) o);
+			selectedType = ModelType.IMPACT_CATEGORY;
+			impactCombo.select((ImpactCategoryDescriptor) o);
+			selection = new boolean[] { false, true, false };
 		} else if (o instanceof CostResultDescriptor) {
-			selectCost((CostResultDescriptor) o);
+			selectedType = ModelType.CURRENCY;
+			costCombo.select((CostResultDescriptor) o);
+			selection = new boolean[] { false, false, true };
+		}
+
+		if (selection == null)
+			return;
+		for (int i = 0; i < selection.length; i++) {
+			if (combos[i] != null) {
+				combos[i].setEnabled(selection[i]);
+			}
 		}
 	}
 
@@ -122,48 +139,6 @@ public class ResultTypeCombo {
 		}
 	}
 
-	private void selectImpact(ImpactCategoryDescriptor impact) {
-		selectedType = ModelType.IMPACT_CATEGORY;
-		if (impactCombo != null) {
-			impactCombo.select(impact);
-			impactCombo.setEnabled(true);
-		}
-		if (flowCombo != null) {
-			flowCombo.setEnabled(false);
-		}
-		if (costCombo != null) {
-			costCombo.setEnabled(false);
-		}
-	}
-
-	private void selectFlow(IndexFlow flow) {
-		selectedType = ModelType.FLOW;
-		if (flowCombo != null) {
-			flowCombo.select(flow);
-			flowCombo.setEnabled(true);
-		}
-		if (impactCombo != null) {
-			impactCombo.setEnabled(false);
-		}
-		if (costCombo != null) {
-			costCombo.setEnabled(false);
-		}
-	}
-
-	private void selectCost(CostResultDescriptor costs) {
-		selectedType = ModelType.CURRENCY;
-		if (costCombo != null) {
-			costCombo.select(costs);
-			costCombo.setEnabled(true);
-		}
-		if (flowCombo != null) {
-			flowCombo.setEnabled(false);
-		}
-		if (impactCombo != null) {
-			impactCombo.setEnabled(false);
-		}
-	}
-
 	private void render(Composite comp, FormToolkit tk) {
 		ModelType initType = getType(initialSelection);
 		if (initType != ModelType.UNKNOWN)
@@ -180,22 +155,40 @@ public class ResultTypeCombo {
 		boolean enabled = getType(initialSelection) == ModelType.FLOW;
 		Button check = tk.createButton(comp, M.Flow, SWT.RADIO);
 		check.setSelection(enabled);
+		Controls.onSelect(check, _e -> {
+			if (check.getSelection()) {
+				flowCombo.setEnabled(true);
+				selectedType = ModelType.FLOW;
+				fireSelection();
+			} else {
+				flowCombo.setEnabled(false);
+			}
+		});
+
 		flowCombo = new ResultFlowCombo(comp);
 		flowCombo.setEnabled(enabled);
-		IndexFlow[] input = flows.toArray(new IndexFlow[0]);
-		flowCombo.setInput(input);
+		flowCombo.setInput(flows);
 		flowCombo.selectFirst();
 		flowCombo.addSelectionChangedListener(_e -> fireSelection());
 		if (enabled) {
 			flowCombo.select((IndexFlow) initialSelection);
 		}
-		new ResultTypeCheck(flowCombo, check, ModelType.FLOW);
 	}
 
 	private void initImpactCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.IMPACT_CATEGORY;
 		Button check = tk.createButton(comp, M.ImpactCategory, SWT.RADIO);
 		check.setSelection(enabled);
+		Controls.onSelect(check, _e -> {
+			if (check.getSelection()) {
+				impactCombo.setEnabled(true);
+				selectedType = ModelType.IMPACT_CATEGORY;
+				fireSelection();
+			} else {
+				impactCombo.setEnabled(false);
+			}
+		});
+
 		impactCombo = new ImpactCategoryViewer(comp);
 		impactCombo.setEnabled(enabled);
 		impactCombo.setInput(impacts);
@@ -204,13 +197,22 @@ public class ResultTypeCombo {
 		if (enabled) {
 			impactCombo.select((ImpactCategoryDescriptor) initialSelection);
 		}
-		new ResultTypeCheck(impactCombo, check, ModelType.IMPACT_CATEGORY);
 	}
 
 	private void initCostCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.CURRENCY;
 		Button check = tk.createButton(comp, M.CostCategory, SWT.RADIO);
 		check.setSelection(enabled);
+		Controls.onSelect(check, _e -> {
+			if (check.getSelection()) {
+				costCombo.setEnabled(true);
+				selectedType = ModelType.CURRENCY;
+				fireSelection();
+			} else {
+				costCombo.setEnabled(false);
+			}
+		});
+
 		costCombo = new CostResultViewer(comp);
 		costCombo.setEnabled(enabled);
 		costCombo.setInput(costs);
@@ -219,7 +221,6 @@ public class ResultTypeCombo {
 		if (enabled) {
 			costCombo.select((CostResultDescriptor) initialSelection);
 		}
-		new ResultTypeCheck(costCombo, check, ModelType.CURRENCY);
 	}
 
 	private void fireSelection() {
@@ -249,37 +250,6 @@ public class ResultTypeCombo {
 			return ModelType.CURRENCY;
 		else
 			return ModelType.UNKNOWN;
-	}
-
-	private class ResultTypeCheck implements SelectionListener {
-
-		private AbstractComboViewer<?> viewer;
-		private Button check;
-		private ModelType type;
-
-		public ResultTypeCheck(AbstractComboViewer<?> viewer, Button check,
-				ModelType type) {
-			this.viewer = viewer;
-			this.check = check;
-			this.type = type;
-			check.addSelectionListener(this);
-		}
-
-		@Override
-		public void widgetDefaultSelected(SelectionEvent e) {
-			widgetSelected(e);
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			if (check.getSelection()) {
-				viewer.setEnabled(true);
-				selectedType = this.type;
-				fireSelection();
-			} else {
-				viewer.setEnabled(false);
-			}
-		}
 	}
 
 	public interface EventHandler {
@@ -318,5 +288,4 @@ public class ResultTypeCombo {
 			return selection;
 		}
 	}
-
 }
