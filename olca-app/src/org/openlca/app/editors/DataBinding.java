@@ -42,8 +42,8 @@ public class DataBinding {
 		this.editor = editor;
 	}
 
-	public <T> void onModel(final Supplier<?> supplier, final String property,
-			final AbstractComboViewer<T> viewer) {
+	public <T> void onModel(Supplier<?> supplier, String property,
+			AbstractComboViewer<T> viewer) {
 		log.trace("Register data binding - base descriptor - {}", property);
 		if (supplier == null || property == null || viewer == null)
 			return;

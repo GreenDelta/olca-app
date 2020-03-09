@@ -19,7 +19,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.IResult;
 import org.openlca.core.results.SimpleResult;
-import org.openlca.util.Strings;
 
 /**
  * Multiple combo boxes that allow to switch between different result types
@@ -89,7 +88,6 @@ public class ResultTypeCombo {
 
 		if (impacts != null) {
 			ImpactCategoryDescriptor impact = impacts.stream()
-					.sorted((i1, i2) -> Strings.compare(i1.name, i2.name))
 					.findFirst().orElse(null);
 			if (impact != null) {
 				selectWithEvent(impact);
@@ -99,11 +97,7 @@ public class ResultTypeCombo {
 
 		if (flows != null) {
 			IndexFlow flow = flows.stream()
-					.sorted((f1, f2) -> {
-						if (f1.flow == null || f2.flow == null)
-							return 0;
-						return Strings.compare(f1.flow.name, f2.flow.name);
-					}).findFirst().orElse(null);
+					.findFirst().orElse(null);
 			if (flow != null) {
 				selectWithEvent(flow);
 				return;
