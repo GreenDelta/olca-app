@@ -24,6 +24,10 @@ import org.openlca.geo.RegionalizedResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @deprecated regionalized results are now shown in the normal result views
+ */
+@Deprecated
 public class RegionalizedResultEditor extends ResultEditor<FullResult> {
 
 	public static String ID = "RegionalizedResultEditor";

@@ -3,14 +3,13 @@ package org.openlca.app.results.contributions.locations;
 import java.util.Collections;
 import java.util.List;
 
-import org.openlca.app.components.ResultTypeCombo.EventHandler;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.CurrencyDao;
-import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
@@ -19,7 +18,7 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class SelectionHandler implements EventHandler {
+class SelectionHandler implements Combo.EventHandler {
 
 	private LocationPage page;
 	private ContributionResult result;
@@ -35,13 +34,16 @@ class SelectionHandler implements EventHandler {
 	}
 
 	@Override
-	public void flowSelected(IndexFlow flow) {
+	public void flowSelected(FlowDescriptor flow) {
 		if (locations == null || flow == null)
 			return;
 		String unit = Labels.refUnit(flow);
 		List<Contribution<Location>> set = locations
-				.getContributions(flow.flow);
-		double total = result.getTotalFlowResult(flow);
+				.getContributions(flow);
+		double total = 0;
+		for (Contribution<Location> c : set) {
+			total += c.amount;
+		}
 		setData(set, flow, total, unit);
 	}
 

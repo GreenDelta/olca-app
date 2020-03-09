@@ -22,7 +22,8 @@ public abstract class AbstractComboViewer<T> extends
 
 	@Override
 	protected TableComboViewer createViewer(Composite parent) {
-		TableCombo combo = new TableCombo(parent, SWT.READ_ONLY | SWT.BORDER);
+		TableCombo combo = new TableCombo(parent,
+				SWT.READ_ONLY | SWT.BORDER | SWT.VIRTUAL);
 		UI.gridData(combo, true, false).widthHint = 350;
 		if (useColumnHeaders()) {
 			if (useColumnBounds())

@@ -33,12 +33,12 @@ public class ProductSystemActions extends EditorActionBarContributor {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		toolBarManager.add(new CsvExportAction());
-		toolBarManager.add(new ExcelExportAction());
+	public void contributeToToolBar(IToolBarManager toolbar) {
+		toolbar.add(new CsvExportAction());
+		toolbar.add(new ExcelExportAction());
 		if (FeatureFlag.MATRIX_IMAGE_EXPORT.isEnabled())
-			toolBarManager.add(new MatrixImageExportAction());
-		toolBarManager.add(Actions.onCalculate(new Runnable() {
+			toolbar.add(new MatrixImageExportAction());
+		toolbar.add(Actions.onCalculate(new Runnable() {
 			@Override
 			public void run() {
 				log.trace("action -> calculate product system");

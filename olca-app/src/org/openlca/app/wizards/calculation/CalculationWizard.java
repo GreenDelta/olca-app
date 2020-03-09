@@ -50,8 +50,8 @@ public class CalculationWizard extends Wizard {
 	private final Setup setup;
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public CalculationWizard(ProductSystem productSystem) {
-		this.setup = Setup.init(productSystem);
+	public CalculationWizard(ProductSystem system) {
+		this.setup = Setup.init(system);
 		setNeedsProgressMonitor(true);
 		setWindowTitle(M.CalculationProperties);
 	}

@@ -1,7 +1,6 @@
 package org.openlca.app.viewers.combo;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
-import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
@@ -21,7 +20,7 @@ import org.openlca.util.Strings;
 public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 
 	private final EntityCache cache;
-	private final LabelProvider label = new LabelProvider();
+	private LabelProvider _label;
 
 	public FlowViewer(Composite parent) {
 		super(parent);
@@ -45,15 +44,20 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 	}
 
 	@Override
-	protected IBaseLabelProvider getLabelProvider() {
-		return label;
+	protected LabelProvider getLabelProvider() {
+		if (_label == null) {
+			_label = new LabelProvider();
+		}
+		return _label;
 	}
 
 	@Override
 	protected ViewerComparator getComparator() {
+
 		return new ViewerComparator() {
 			@Override
 			public int compare(Viewer viewer, Object e1, Object e2) {
+				LabelProvider label = getLabelProvider();
 				for (int col = 0; col < 3; col++) {
 					String s1 = label.getColumnText(e1, col);
 					String s2 = label.getColumnText(e2, col);
