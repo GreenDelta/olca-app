@@ -61,6 +61,8 @@ public class Console extends AppenderSkeleton {
 			if (name.equals(existing[i].getName()))
 				return (MessageConsole) existing[i];
 		MessageConsole console = new MessageConsole(name, null);
+		// set the buffer size of the console
+		console.setWaterMarks(1000, 5000);
 		conMan.addConsoles(new IConsole[] { console });
 		return console;
 	}
