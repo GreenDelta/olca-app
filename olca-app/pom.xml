@@ -11,14 +11,6 @@
 		<geotools.version>10.3</geotools.version>
 	</properties>
 
-	<repositories>
-		<repository>
-			<id>osgeo</id>
-			<name>Open Source Geospatial Foundation Repository</name>
-			<url>http://download.osgeo.org/webdav/geotools/</url>
-		</repository>
-	</repositories>
-
 	<dependencies>
 
 		<dependency>
@@ -125,12 +117,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.2.4</version>
-		</dependency>
-
-		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.11</version>
@@ -158,46 +144,6 @@
 			<groupId>org.mapdb</groupId>
 			<artifactId>mapdb</artifactId>
 			<version>2.0-beta7</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-swt</artifactId>
-			<version>${geotools.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.geotools</groupId>
-					<artifactId>gt-epsg-hsql</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse</groupId>
-					<artifactId>core.commands</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse</groupId>
-					<artifactId>jface</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse</groupId>
-					<artifactId>ui.workbench</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse</groupId>
-					<artifactId>core.runtime</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse</groupId>
-					<artifactId>swt.gtk.linux.x86</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse</groupId>
-					<artifactId>equinox.common</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse</groupId>
-					<artifactId>swt.win32.win32.x86_64</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 	</dependencies>

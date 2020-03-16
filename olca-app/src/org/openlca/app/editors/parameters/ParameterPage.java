@@ -20,7 +20,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.lcia.ImpactCategoryEditor;
-import org.openlca.app.editors.lcia.ImpactParameterSourceHandler;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.search.ParameterUsagePage;
@@ -52,7 +51,6 @@ public class ParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
 	final Supplier<List<Parameter>> supplier;
 
 	ParameterChangeSupport support;
-	SourceHandler sourceHandler;
 	Composite body;
 	FormToolkit toolkit;
 
@@ -77,7 +75,6 @@ public class ParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
 				editor, ParameterScope.IMPACT_CATEGORY,
 				() -> editor.getModel().parameters);
 		page.support = editor.getParameterSupport();
-		page.sourceHandler = new ImpactParameterSourceHandler(editor);
 		return page;
 	}
 

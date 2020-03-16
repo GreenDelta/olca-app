@@ -30,12 +30,10 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.MsgBox;
-import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.app.viewers.table.modify.field.DoubleModifier;
@@ -92,8 +90,6 @@ public class ParameterSection {
 			props = new ArrayList<>(Arrays.asList(
 					M.Name, M.Formula, M.Value, M.Description));
 		}
-		if (page.sourceHandler != null)
-			props.add(M.ExternalSource);
 		if (editor.hasAnyComment("parameters"))
 			props.add("");
 		return props.toArray(new String[props.size()]);
@@ -117,11 +113,7 @@ public class ParameterSection {
 		viewer.setLabelProvider(label);
 		addSorters(viewer, label);
 		bindActions(section);
-		if (page.sourceHandler != null)
-			Tables.bindColumnWidths(viewer, 0.25, 0.25, 0.15, 0.15, 0.17);
-		else {
-			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17, 0.03);
-		}
+		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17, 0.03);
 		int col = forInputParameters ? 1 : 2;
 		viewer.getTable().getColumns()[col].setAlignment(SWT.RIGHT);
 	}
@@ -161,7 +153,6 @@ public class ParameterSection {
 		ms.bind(M.Description, new StringModifier<>(editor, "description"));
 		ms.bind(M.Value, new DoubleModifier<>(editor, "value", (elem) -> support.evaluate()));
 		ms.bind(M.Uncertainty, new UncertaintyCellEditor(viewer.getTable(), editor));
-		ms.bind(M.ExternalSource, new ExternalSourceModifier());
 		ms.bind("", new CommentDialogModifier<Parameter>(editor.getComments(), CommentPaths::get));
 		FormulaCellEditor formulaEditor = new FormulaCellEditor(viewer, supplier);
 		ms.bind(M.Formula, formulaEditor);
@@ -333,33 +324,6 @@ public class ParameterSection {
 			param.name = name;
 			editor.setDirty(true);
 			support.evaluate();
-		}
-	}
-
-	private class ExternalSourceModifier extends
-			ComboBoxCellModifier<Parameter, String> {
-
-		@Override
-		protected String[] getItems(Parameter element) {
-			return page.sourceHandler.getSources(element);
-		}
-
-		@Override
-		protected String getItem(Parameter element) {
-			return element.externalSource;
-		}
-
-		@Override
-		protected String getText(String value) {
-			return value;
-		}
-
-		@Override
-		protected void setItem(Parameter element, String item) {
-			if (!Question.ask(M.ExternalSourceChange, M.RecalculateQuestion))
-				return;
-			element.externalSource = item;
-			page.sourceHandler.sourceChanged(element, item);
 		}
 	}
 }

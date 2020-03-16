@@ -1,17 +1,12 @@
 package org.openlca.app.editors.locations;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.app.editors.lcia.shapefiles.ShapeFileUtils;
-import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.geo.parameter.ParameterCache;
-import org.openlca.geo.parameter.ShapeFileFolder;
 import org.openlca.util.Geometries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class LocationEditor extends ModelEditor<Location> {
 
@@ -46,20 +41,6 @@ public class LocationEditor extends ModelEditor<Location> {
 			}
 			infoPage.refreshKmlView();
 		}
-		invalidateIntersections();
 		super.doSave(monitor);
 	}
-
-	private void invalidateIntersections() {
-		ImpactCategoryDao dao = new ImpactCategoryDao(Database.get());
-		for (ImpactCategoryDescriptor d : dao.getDescriptors()) {
-			ShapeFileFolder folder = new ShapeFileFolder(
-					ShapeFileUtils.getFolder(d));
-			ParameterCache cache = new ParameterCache(folder);
-			for (String shapeFile : ShapeFileUtils.getShapeFiles(d)) {
-				cache.remove(getModel().id, shapeFile);
-			}
-		}
-	}
-
 }
