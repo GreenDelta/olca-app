@@ -1,7 +1,10 @@
 package org.openlca.app.results.contributions.locations;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -13,13 +16,20 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.trees.TreeClipboard;
+import org.openlca.app.util.trees.Trees;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 
@@ -32,12 +42,13 @@ public class LocationPage extends FormPage {
 	ContributionResult result;
 
 	private Combo combos;
-	private LocationTree tree;
+	private TreeViewer tree;
+	private TreeLabel label;
+
 	private LocationMap map;
 	boolean skipZeros = true;
 	double cutoff = 0.01;
 	private CalculationSetup setup;
-
 
 	public LocationPage(FormEditor editor,
 			ContributionResult result, CalculationSetup setup) {
@@ -101,7 +112,30 @@ public class LocationPage extends FormPage {
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
-		tree = new LocationTree(comp);
+		label = new TreeLabel();
+		String[] labels = { M.Location, M.Amount, M.Unit };
+		tree = Trees.createViewer(comp, labels, label);
+		tree.setContentProvider(new TreeContentProvider());
+		Trees.bindColumnWidths(tree.getTree(), 0.4, 0.3, 0.3);
+
+		// tree actions
+		Action onOpen = Actions.onOpen(() -> {
+			Object obj = Viewers.getFirstSelected(tree);
+			if (obj == null)
+				return;
+			if (obj instanceof Contribution) {
+				Contribution<?> c = (Contribution<?>) obj;
+				if (c.item instanceof CategorizedDescriptor) {
+					App.openEditor((CategorizedDescriptor) c.item);
+				} else if (c.item instanceof CategorizedEntity) {
+					App.openEditor((CategorizedEntity) c.item);
+				}
+			}
+		});
+		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree));
+		Trees.onDoubleClick(tree, e -> onOpen.run());
+		tree.getTree().getColumns()[1].setAlignment(SWT.RIGHT);
+
 	}
 
 	// the map can be a bit lazy. thus it can call this method to force an
@@ -113,11 +147,16 @@ public class LocationPage extends FormPage {
 	}
 
 	void setInput(List<Contribution<Location>> items, String unit) {
+		List<Contribution<Location>> sorted = items.stream()
+				.filter(c -> c.amount != 0)
+				.sorted((c1, c2) -> Double.compare(c2.amount, c1.amount))
+				.collect(Collectors.toList());
 		if (tree != null) {
-			tree.setInput(items, unit);
+			tree.setInput(sorted);
+			label.unit = unit;
 		}
 		if (map != null) {
-			map.setInput(items);
+			map.setInput(sorted);
 		}
 	}
 }

@@ -1,16 +1,12 @@
 package org.openlca.app.results.contributions.locations;
 
-import java.util.List;
-
 import org.openlca.app.db.Database;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.model.Currency;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.LocationResult;
 import org.slf4j.Logger;
@@ -33,9 +29,7 @@ class SelectionHandler implements Combo.EventHandler {
 		if (locations == null || flow == null)
 			return;
 		String unit = Labels.refUnit(flow);
-		List<Contribution<Location>> set = locations
-				.getContributions(flow);
-		page.setInput(set, unit);
+		page.setInput(locations.getContributions(flow), unit);
 	}
 
 	@Override
@@ -43,9 +37,7 @@ class SelectionHandler implements Combo.EventHandler {
 		if (locations == null || impact == null)
 			return;
 		String unit = impact.referenceUnit;
-		List<Contribution<Location>> set = locations
-				.getContributions(impact);
-		page.setInput(set, unit);
+		page.setInput(locations.getContributions(impact), unit);
 	}
 
 	@Override
@@ -54,13 +46,9 @@ class SelectionHandler implements Combo.EventHandler {
 			return;
 		String unit = getCurrency();
 		if (cost.forAddedValue) {
-			List<Contribution<Location>> set = locations
-					.getAddedValueContributions();
-			page.setInput(set, unit);
+			page.setInput(locations.getAddedValueContributions(), unit);
 		} else {
-			List<Contribution<Location>> set = locations
-					.getNetCostsContributions();
-			page.setInput(set, unit);
+			page.setInput(locations.getNetCostsContributions(), unit);
 		}
 	}
 
