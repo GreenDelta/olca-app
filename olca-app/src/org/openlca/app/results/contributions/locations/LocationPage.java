@@ -19,6 +19,8 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.model.Location;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 
 /**
@@ -32,20 +34,15 @@ public class LocationPage extends FormPage {
 	private Combo combos;
 	private LocationTree tree;
 	private LocationMap map;
-	private boolean showMap;
 	boolean skipZeros = true;
 	double cutoff = 0.01;
 	private CalculationSetup setup;
 
-	public LocationPage(FormEditor editor, ContributionResult result, CalculationSetup setup) {
-		this(editor, result, setup, true);
-	}
 
-	public LocationPage(FormEditor editor, ContributionResult result, CalculationSetup setup,
-			boolean showMap) {
+	public LocationPage(FormEditor editor,
+			ContributionResult result, CalculationSetup setup) {
 		super(editor, "analysis.MapPage", M.Locations);
 		this.setup = setup;
-		this.showMap = showMap;
 		this.result = result;
 	}
 
@@ -58,9 +55,7 @@ public class LocationPage extends FormPage {
 		Composite body = UI.formBody(form, tk);
 		createCombos(body, tk);
 		createTree(body, tk);
-		if (showMap) {
-			map = LocationMap.create(this, body, tk);
-		}
+		map = LocationMap.create(this, body, tk);
 		form.reflow(true);
 		refreshSelection();
 	}
@@ -104,9 +99,9 @@ public class LocationPage extends FormPage {
 	private void createTree(Composite body, FormToolkit tk) {
 		Section section = UI.section(body, tk, M.ContributionTreeLocations);
 		UI.gridData(section, true, true);
-		Composite composite = UI.sectionClient(section, tk);
-		UI.gridLayout(composite, 1);
-		tree = new LocationTree(composite, showMap);
+		Composite comp = UI.sectionClient(section, tk);
+		UI.gridLayout(comp, 1);
+		tree = new LocationTree(comp);
 	}
 
 	// the map can be a bit lazy. thus it can call this method to force an
@@ -117,11 +112,11 @@ public class LocationPage extends FormPage {
 		}
 	}
 
-	void setInput(List<LocationItem> items, String unit) {
+	void setInput(List<Contribution<Location>> items, String unit) {
 		if (tree != null) {
 			tree.setInput(items, unit);
 		}
-		if (map != null && showMap) {
+		if (map != null) {
 			map.setInput(items);
 		}
 	}

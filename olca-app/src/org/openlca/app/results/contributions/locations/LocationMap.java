@@ -47,19 +47,18 @@ class LocationMap {
 				() -> page.refreshSelection());
 	}
 
-	void setInput(List<LocationItem> items) {
+	void setInput(List<Contribution<Location>> items) {
 		if (browser == null)
 			return;
 		List<HeatmapPoint> points = new ArrayList<>();
-		for (LocationItem item : items) {
-			Contribution<Location> ci = item.contribution;
-			if (!showInMap(ci))
+		for (Contribution<Location> c : items) {
+			if (!showInMap(c))
 				continue;
-			Location location = ci.item;
+			Location location = c.item;
 			HeatmapPoint point = new HeatmapPoint();
 			point.latitude = location.latitude;
 			point.longitude = location.longitude;
-			point.weight = (int) (100d * ci.share);
+			point.weight = (int) (100d * c.share);
 			points.add(point);
 		}
 		if (points.size() == 1) {

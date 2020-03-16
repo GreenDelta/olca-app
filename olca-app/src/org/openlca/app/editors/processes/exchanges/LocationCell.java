@@ -1,7 +1,6 @@
 package org.openlca.app.editors.processes.exchanges;
 
-import java.util.Objects;
-
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.openlca.app.components.DialogCellEditor;
@@ -11,7 +10,6 @@ import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Exchange;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
@@ -39,21 +37,35 @@ class LocationCell extends DialogCellEditor {
 
 	@Override
 	protected Object openDialogBox(Control control) {
-		Location initial = exchange == null
-				? null
-				: exchange.location;
-		CategorizedDescriptor loc = ModelSelectionDialog.select(
-				ModelType.LOCATION);
-		if (loc == null)
+		if (exchange == null)
 			return null;
-		LocationDao dao = new LocationDao(Database.get());
-		Location location = dao.getForId(loc.id);
-		if (exchange != null) {
-			exchange.location = location;
-		}
-		if (!Objects.equals(initial, location)) {
+		ModelSelectionDialog dialog = new ModelSelectionDialog(
+				ModelType.LOCATION);
+		dialog.isEmptyOk = true;
+		if (dialog.open() != Window.OK)
+			return null;
+
+		CategorizedDescriptor loc = dialog.first();
+
+		// clear the location
+		if (loc == null) {
+			if (exchange.location == null)
+				return null;
+			// delete the location
+			exchange.location = null;
 			editor.setDirty(true);
+			return exchange;
 		}
+
+		// the same location was selected again
+		if (exchange.location != null
+				&& exchange.location.id == loc.id)
+			return null;
+
+		// a new location was selected
+		LocationDao dao = new LocationDao(Database.get());
+		exchange.location = dao.getForId(loc.id);
+		editor.setDirty(true);
 		return exchange;
 	}
 
