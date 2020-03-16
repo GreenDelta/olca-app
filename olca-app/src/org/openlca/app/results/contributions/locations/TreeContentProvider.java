@@ -1,30 +1,29 @@
 package org.openlca.app.results.contributions.locations;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.Contribution;
 
 class TreeContentProvider implements ITreeContentProvider {
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Object[] getElements(Object obj) {
 		if (obj == null)
 			return new Object[0];
-		List<LocationItem> items = List.class.cast(obj);
-		return items.toArray(new LocationItem[items.size()]);
+		if (obj instanceof Object[])
+			return (Object[]) obj;
+		if (obj instanceof Collection) {
+			Collection<?> coll = (Collection<?>) obj;
+			return coll.toArray();
+		}
+		return new Object[0];
 	}
 
 	@Override
 	public Object[] getChildren(Object parent) {
-		if (!(parent instanceof LocationItem))
-			return new Object[0];
-		LocationItem e = (LocationItem) parent;
-		List<Contribution<ProcessDescriptor>> items = e.processContributions;
-		return items.toArray(new Contribution[items.size()]);
+		// TODO: we could get the location contributions here ...
+		return null;
 	}
 
 	@Override
@@ -34,10 +33,7 @@ class TreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public boolean hasChildren(Object obj) {
-		if (!(obj instanceof LocationItem))
-			return false;
-		LocationItem element = (LocationItem) obj;
-		return element.processContributions.size() > 0;
+		return false;
 	}
 
 	@Override
