@@ -1,17 +1,16 @@
 package org.openlca.app.editors.locations;
 
 import java.io.StringReader;
-import java.io.StringWriter;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.components.mapview.LayerConfig;
@@ -29,6 +28,8 @@ import org.openlca.util.BinUtils;
 import org.python.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.GsonBuilder;
 
 class MapSection {
 
@@ -111,7 +112,7 @@ class MapSection {
 
 	private class GeoJSONDialog extends Dialog {
 
-		private Text text;
+		private StyledText text;
 
 		public GeoJSONDialog() {
 			super(UI.shell());
@@ -124,13 +125,15 @@ class MapSection {
 			UI.gridLayout(area, 1);
 			new Label(area, SWT.NONE).setText(
 					"See e.g. http://geojson.io for examples");
-			text = new Text(area, SWT.MULTI | SWT.BORDER);
+			text = new StyledText(area, SWT.MULTI | SWT.BORDER
+					| SWT.V_SCROLL | SWT.H_SCROLL);
+			text.setAlwaysShowScrollBars(false);
 			UI.gridData(text, true, true);
-			text.setText(getInitialJson());
+			text.setText(getJsonText());
 			return area;
 		}
 
-		private String getInitialJson() {
+		private String getJsonText() {
 			if (feature == null)
 				return "";
 			if (feature.features.isEmpty())
@@ -138,9 +141,11 @@ class MapSection {
 			Feature f = feature.features.get(0);
 			if (f.geometry == null)
 				return "";
-			StringWriter w = new StringWriter();
-			GeoJSON.write(f.geometry, w);
-			return w.toString();
+			String json = new GsonBuilder()
+					.setPrettyPrinting()
+					.create()
+					.toJson(f.toJson());
+			return json;
 		}
 
 		@Override

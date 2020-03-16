@@ -19,7 +19,6 @@ public class LocationEditor extends ModelEditor<Location> {
 	protected void addPages() {
 		try {
 			addPage(new LocationInfoPage(this));
-			addPage(new MapPage(this));
 			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);
