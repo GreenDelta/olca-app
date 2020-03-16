@@ -10,6 +10,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -47,7 +48,6 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.Unit;
@@ -105,7 +105,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				M.Flow, M.Category, M.FlowProperty,
 				M.Factor, M.Unit, M.Uncertainty, M.Location,
 				"" /* comment */ });
-		FactorLabelProvider label = new FactorLabelProvider();
+		FactorLabel label = new FactorLabel();
 		Viewers.sortByLabels(viewer, label, 0, 1, 2, 4, 5, 6);
 		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.value, 3);
 		viewer.setLabelProvider(label);
@@ -213,16 +213,17 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 		editor.setDirty(true);
 	}
 
-	private class FactorLabelProvider extends LabelProvider implements ITableLabelProvider {
+	private class FactorLabel extends LabelProvider
+			implements ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object o, int column) {
+		public Image getColumnImage(Object o, int col) {
 			if (!(o instanceof ImpactFactor))
 				return null;
 			ImpactFactor f = (ImpactFactor) o;
-			if (column == 0)
+			if (col == 0)
 				return Images.get(f.flow);
-			if (column == 6)
+			if (col == 6)
 				return Images.get(editor.getComments(),
 						CommentPaths.get(impact(), f));
 			return null;
@@ -272,7 +273,8 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 	}
 
-	private class FlowPropertyModifier extends ComboBoxCellModifier<ImpactFactor, FlowProperty> {
+	private class FlowPropertyModifier extends
+			ComboBoxCellModifier<ImpactFactor, FlowProperty> {
 
 		@Override
 		protected FlowProperty[] getItems(ImpactFactor element) {
@@ -364,24 +366,37 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 		@Override
 		protected Object openDialogBox(Control control) {
-			Location initial = factor == null
-					? null
-					: factor.location;
-			CategorizedDescriptor loc = ModelSelectionDialog.select(
-					ModelType.LOCATION);
-			if (loc == null)
+			if (factor == null)
 				return null;
-			LocationDao dao = new LocationDao(Database.get());
-			Location location = dao.getForId(loc.id);
-			if (factor != null) {
-				factor.location = location;
-			}
-			if (!Objects.equals(initial, location)) {
+			ModelSelectionDialog dialog = new ModelSelectionDialog(
+					ModelType.LOCATION);
+			dialog.isEmptyOk = true;
+			if (dialog.open() != Window.OK)
+				return null;
+
+			CategorizedDescriptor loc = dialog.first();
+
+			// clear the location
+			if (loc == null) {
+				if (factor.location == null)
+					return null;
+				// delete the location
+				factor.location = null;
 				editor.setDirty(true);
+				return factor;
 			}
+
+			// the same location was selected again
+			if (factor.location != null
+					&& factor.location.id == loc.id)
+				return null;
+
+			// a new location was selected
+			LocationDao dao = new LocationDao(Database.get());
+			factor.location = dao.getForId(loc.id);
+			editor.setDirty(true);
 			return factor;
 		}
-
 	}
 
 	private class FormulaSwitchAction extends Action {

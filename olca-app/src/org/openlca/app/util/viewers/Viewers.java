@@ -56,8 +56,8 @@ public class Viewers {
 	public static <T> List<T> getAllSelected(StructuredViewer viewer) {
 		if (viewer == null)
 			return Collections.emptyList();
-		IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-		return getAll(selection);
+		IStructuredSelection s = (IStructuredSelection) viewer.getSelection();
+		return getAll(s);
 	}
 
 	/** Get all elements from the given selection. */
@@ -74,7 +74,8 @@ public class Viewers {
 				T obj = (T) o;
 				list.add(obj);
 			} catch (ClassCastException e) {
-				log.error("Error casting obj of type " + o.getClass().getCanonicalName(), e);
+				log.error("Error casting obj of type "
+						+ o.getClass().getCanonicalName(), e);
 			}
 		}
 		return list;
