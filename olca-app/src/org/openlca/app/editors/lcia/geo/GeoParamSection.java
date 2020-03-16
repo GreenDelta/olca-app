@@ -1,18 +1,14 @@
 package org.openlca.app.editors.lcia.geo;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.components.mapview.MapView;
+import org.openlca.app.components.mapview.MapDialog;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.MsgBox;
@@ -55,15 +51,32 @@ class GeoParamSection {
 		bindModifiers();
 
 		// bind the "open map" action
-		Action openMap = Actions.create(
-				"Open map", Icon.MAP.descriptor(), () -> {
-					MapDialog dialog = new MapDialog(page.setup);
-					dialog.open();
-				});
+		Action openMap = Actions.create("Open map",
+				Icon.MAP.descriptor(), this::showMap);
 		Actions.bind(table, openMap);
 		Actions.bind(section, openMap);
 
 		update();
+	}
+
+	private void showMap() {
+		Setup setup = page.setup;
+		if (setup == null || setup.file == null)
+			return;
+		FeatureCollection coll = setup.getFeatures();
+		if (coll == null)
+			return;
+		GeoParam gp = Viewers.getFirstSelected(table);
+		String param = gp != null ? gp.name : null;
+		MapDialog.show(setup.file, map -> {
+			if (param == null) {
+				map.addLayer(coll).center();
+			} else {
+				map.addLayer(coll)
+						.fillScale(param)
+						.center();
+			}
+		});
 	}
 
 	private void bindModifiers() {
@@ -72,21 +85,21 @@ class GeoParamSection {
 		ms.bind("Default value", new TextCellModifier<GeoParam>() {
 			@Override
 			protected String getText(GeoParam param) {
-			  return param == null ? "" 
-			    : Double.toString(param.defaultValue);  
+				return param == null ? ""
+						: Double.toString(param.defaultValue);
 			}
 
 			@Override
 			protected void setText(GeoParam param, String s) {
-			  if (param == null || Strings.nullOrEmpty(s))
-			    return;
-			  try {
-			    param.defaultValue = Double.parseDouble(s);
-			    table.refresh();
-			  } catch (Exception e) {
-			    MsgBox.error("Not a number",
-			      "The string " + s + " is not a valid number");
-			  }
+				if (param == null || Strings.nullOrEmpty(s))
+					return;
+				try {
+					param.defaultValue = Double.parseDouble(s);
+					table.refresh();
+				} catch (Exception e) {
+					MsgBox.error("Not a number",
+							"The string " + s + " is not a valid number");
+				}
 			}
 		});
 	}
@@ -161,55 +174,6 @@ class GeoParamSection {
 			default:
 				return null;
 			}
-		}
-	}
-
-	private class MapDialog extends Dialog {
-
-		private final Setup setup;
-
-		public MapDialog(Setup setup) {
-			super(UI.shell());
-			this.setup = setup;
-		}
-
-		@Override
-		protected Control createDialogArea(Composite root) {
-
-			Composite area = (Composite) super.createDialogArea(root);
-			area.setLayout(new FillLayout());
-			if (setup == null || setup.file == null)
-				return area;
-			getShell().setText(setup.file);
-
-			FeatureCollection coll = setup.getFeatures();
-			if (coll == null)
-				return area;
-			GeoParam gp = Viewers.getFirstSelected(table);
-			String param = gp != null ? gp.name : null;
-
-			MapView map = new MapView(area);
-			if (param == null) {
-				map.addLayer(coll).center();
-			} else {
-				map.addLayer(coll)
-						.fillScale(param)
-						.center();
-			}
-			return area;
-		}
-
-		@Override
-		protected Point getInitialSize() {
-			Point bounds = UI.shell().getSize();
-			int width = (int) (bounds.x * 0.8);
-			int height = (int) (bounds.y * 0.8);
-			return new Point(width, height);
-		}
-
-		@Override
-		protected boolean isResizable() {
-			return true;
 		}
 	}
 

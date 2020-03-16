@@ -24,10 +24,7 @@ import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.GeoJSON;
 import org.openlca.geo.geojson.MsgPack;
-import org.openlca.util.BinUtils;
 import org.python.google.common.base.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.GsonBuilder;
 
@@ -52,7 +49,7 @@ class MapSection {
 
 		map = new MapView(comp);
 		map.addBaseLayers();
-		feature = unpack(location());
+		feature = MsgPack.unpackgz(location().geodata);
 		if (feature != null) {
 			updateMap();
 		}
@@ -84,31 +81,6 @@ class MapSection {
 		map.update();
 	}
 
-	private FeatureCollection unpack(Location loc) {
-		if (loc == null || loc.geodata == null)
-			return null;
-		try {
-			byte[] data = BinUtils.gunzip(loc.geodata);
-			return MsgPack.unpack(data);
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("Failed to load geodata from " + loc, e);
-			return null;
-		}
-	}
-
-	private byte[] pack(FeatureCollection coll) {
-		if (coll == null)
-			return null;
-		try {
-			byte[] data = MsgPack.pack(coll);
-			return BinUtils.gzip(data);
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("Failed to package geo data of " + location(), e);
-			return null;
-		}
-	}
 
 	private class GeoJSONDialog extends Dialog {
 
@@ -169,7 +141,7 @@ class MapSection {
 					location().geodata = null;
 				} else {
 					feature = GeoJSON.read(new StringReader(json));
-					location().geodata = pack(feature);
+					location().geodata = MsgPack.packgz(feature);
 				}
 			} catch (Exception e) {
 				MsgBox.error("Failed to parse GeoJSON",
