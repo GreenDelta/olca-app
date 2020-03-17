@@ -3,6 +3,7 @@ package org.openlca.app.results.contributions.locations;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -37,8 +38,8 @@ class Combo {
 	private List<ImpactCategoryDescriptor> impacts;
 	private List<CostResultDescriptor> costs;
 	private Object initialSelection;
-	private EventHandler eventHandler;
 
+	private Consumer<Object> handler;
 	private FlowViewer flowCombo;
 	private ImpactCategoryViewer impactCombo;
 	private CostResultViewer costCombo;
@@ -171,7 +172,7 @@ class Combo {
 			if (check.getSelection()) {
 				flowCombo.setEnabled(true);
 				selectedType = ModelType.FLOW;
-				fireSelection();
+				fire(flowCombo.getSelected());
 			} else {
 				flowCombo.setEnabled(false);
 			}
@@ -181,7 +182,7 @@ class Combo {
 		flowCombo.setEnabled(enabled);
 		flowCombo.setInput(flows);
 		flowCombo.selectFirst();
-		flowCombo.addSelectionChangedListener(_e -> fireSelection());
+		flowCombo.addSelectionChangedListener(this::fire);
 		if (enabled) {
 			flowCombo.select((FlowDescriptor) initialSelection);
 		}
@@ -195,7 +196,7 @@ class Combo {
 			if (check.getSelection()) {
 				impactCombo.setEnabled(true);
 				selectedType = ModelType.IMPACT_CATEGORY;
-				fireSelection();
+				fire(impactCombo.getSelected());
 			} else {
 				impactCombo.setEnabled(false);
 			}
@@ -205,7 +206,7 @@ class Combo {
 		impactCombo.setEnabled(enabled);
 		impactCombo.setInput(impacts);
 		impactCombo.selectFirst();
-		impactCombo.addSelectionChangedListener((val) -> fireSelection());
+		impactCombo.addSelectionChangedListener(this::fire);
 		if (enabled) {
 			impactCombo.select((ImpactCategoryDescriptor) initialSelection);
 		}
@@ -219,7 +220,7 @@ class Combo {
 			if (check.getSelection()) {
 				costCombo.setEnabled(true);
 				selectedType = ModelType.CURRENCY;
-				fireSelection();
+				fire(costCombo.getSelected());
 			} else {
 				costCombo.setEnabled(false);
 			}
@@ -229,27 +230,15 @@ class Combo {
 		costCombo.setEnabled(enabled);
 		costCombo.setInput(costs);
 		costCombo.selectFirst();
-		costCombo.addSelectionChangedListener((val) -> fireSelection());
+		costCombo.addSelectionChangedListener(this::fire);
 		if (enabled) {
 			costCombo.select((CostResultDescriptor) initialSelection);
 		}
 	}
 
-	private void fireSelection() {
-		if (eventHandler == null || selectedType == null)
-			return;
-		switch (selectedType) {
-		case FLOW:
-			eventHandler.flowSelected(flowCombo.getSelected());
-			break;
-		case IMPACT_CATEGORY:
-			eventHandler.impactCategorySelected(impactCombo.getSelected());
-			break;
-		case CURRENCY:
-			eventHandler.costResultSelected(costCombo.getSelected());
-			break;
-		default:
-			break;
+	private void fire(Object selection) {
+		if (handler != null) {
+			handler.accept(selection);
 		}
 	}
 
@@ -262,16 +251,6 @@ class Combo {
 			return ModelType.CURRENCY;
 		else
 			return ModelType.UNKNOWN;
-	}
-
-	public interface EventHandler {
-
-		void flowSelected(FlowDescriptor flow);
-
-		void impactCategorySelected(ImpactCategoryDescriptor impact);
-
-		void costResultSelected(CostResultDescriptor cost);
-
 	}
 
 	/**
@@ -290,8 +269,8 @@ class Combo {
 			return this;
 		}
 
-		public Builder withEventHandler(EventHandler handler) {
-			selection.eventHandler = handler;
+		public Builder onSelected(Consumer<Object> handler) {
+			selection.handler = handler;
 			return this;
 		}
 

@@ -18,9 +18,11 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.TreeClipboard;
@@ -30,8 +32,11 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.LocationResult;
 
 /**
  * Shows the contributions of the locations in the product system to an analysis
@@ -39,7 +44,9 @@ import org.openlca.core.results.ContributionResult;
  */
 public class LocationPage extends FormPage {
 
-	ContributionResult result;
+	private final ContributionResult result;
+	private final LocationResult locations;
+	private final CalculationSetup setup;
 
 	private Combo combos;
 	private TreeViewer tree;
@@ -48,13 +55,13 @@ public class LocationPage extends FormPage {
 	private LocationMap map;
 	boolean skipZeros = true;
 	double cutoff = 0.01;
-	private CalculationSetup setup;
 
 	public LocationPage(FormEditor editor,
 			ContributionResult result, CalculationSetup setup) {
 		super(editor, "analysis.MapPage", M.Locations);
 		this.setup = setup;
 		this.result = result;
+		this.locations = new LocationResult(result, Database.get());
 	}
 
 	@Override
@@ -78,7 +85,7 @@ public class LocationPage extends FormPage {
 		Composite comboComp = tk.createComposite(outer);
 		UI.gridLayout(comboComp, 2);
 		combos = Combo.on(result)
-				.withEventHandler(new SelectionHandler(this))
+				.onSelected(this::onSelected)
 				.withSelection(result.getFlows().iterator().next())
 				.create(comboComp, tk);
 
@@ -146,14 +153,35 @@ public class LocationPage extends FormPage {
 		}
 	}
 
-	void setInput(List<Contribution<Location>> items, String unit) {
+	private void onSelected(Object obj) {
+		label.update(obj);
+		if (obj instanceof FlowDescriptor) {
+			FlowDescriptor f = (FlowDescriptor) obj;
+			update(locations.getContributions(f));
+			return;
+		}
+		if (obj instanceof ImpactCategoryDescriptor) {
+			ImpactCategoryDescriptor i = (ImpactCategoryDescriptor) obj;
+			update(locations.getContributions(i));
+			return;
+		}
+		if (obj instanceof CostResultDescriptor) {
+			CostResultDescriptor c = (CostResultDescriptor) obj;
+			if (c.forAddedValue) {
+				update(locations.getAddedValueContributions());
+			} else {
+				update(locations.getNetCostsContributions());
+			}
+		}
+	}
+
+	private void update(List<Contribution<Location>> items) {
 		List<Contribution<Location>> sorted = items.stream()
 				.filter(c -> c.amount != 0)
 				.sorted((c1, c2) -> Double.compare(c2.amount, c1.amount))
 				.collect(Collectors.toList());
 		if (tree != null) {
 			tree.setInput(sorted);
-			label.unit = unit;
 		}
 		if (map != null) {
 			map.setInput(sorted);

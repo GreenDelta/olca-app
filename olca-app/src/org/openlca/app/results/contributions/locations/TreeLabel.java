@@ -6,20 +6,34 @@ import org.eclipse.swt.graphics.Image;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.util.Strings;
 
 class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 
-	String unit = "";
-
+	private String unit = "";
 	private ContributionImage image = new ContributionImage();
+
+	void update(Object selection) {
+		if (selection instanceof FlowDescriptor) {
+			unit = Labels.refUnit((FlowDescriptor) selection);
+		} else if (selection instanceof ImpactCategoryDescriptor) {
+			unit = ((ImpactCategoryDescriptor) selection).referenceUnit;
+		} else if (selection instanceof CostResultDescriptor) {
+			unit = Labels.getReferenceCurrencyCode();
+		} else {
+			unit = "";
+		}
+	}
 
 	@Override
 	public void dispose() {
