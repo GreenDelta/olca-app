@@ -44,7 +44,7 @@ import org.openlca.core.results.LocationResult;
  */
 public class LocationPage extends FormPage {
 
-	private final ContributionResult result;
+	final ContributionResult result;
 	private final LocationResult locations;
 	private final CalculationSetup setup;
 
@@ -62,6 +62,10 @@ public class LocationPage extends FormPage {
 		this.setup = setup;
 		this.result = result;
 		this.locations = new LocationResult(result, Database.get());
+	}
+
+	public Object getSelection() {
+		return combos == null ? null : combos.getSelection();
 	}
 
 	@Override
@@ -122,7 +126,7 @@ public class LocationPage extends FormPage {
 		label = new TreeLabel();
 		String[] labels = { M.Location, M.Amount, M.Unit };
 		tree = Trees.createViewer(comp, labels, label);
-		tree.setContentProvider(new TreeContentProvider());
+		tree.setContentProvider(new TreeContentProvider(this));
 		Trees.bindColumnWidths(tree.getTree(), 0.4, 0.3, 0.3);
 
 		// tree actions

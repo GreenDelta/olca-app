@@ -182,7 +182,10 @@ class Combo {
 		flowCombo.setEnabled(enabled);
 		flowCombo.setInput(flows);
 		flowCombo.selectFirst();
-		flowCombo.addSelectionChangedListener(this::fire);
+		flowCombo.addSelectionChangedListener(f -> {
+			fire(f);
+			check.setSelection(true);
+		});
 		if (enabled) {
 			flowCombo.select((FlowDescriptor) initialSelection);
 		}
@@ -206,7 +209,10 @@ class Combo {
 		impactCombo.setEnabled(enabled);
 		impactCombo.setInput(impacts);
 		impactCombo.selectFirst();
-		impactCombo.addSelectionChangedListener(this::fire);
+		impactCombo.addSelectionChangedListener(imp -> {
+			fire(imp);
+			check.setSelection(true);
+		});
 		if (enabled) {
 			impactCombo.select((ImpactCategoryDescriptor) initialSelection);
 		}
@@ -230,7 +236,10 @@ class Combo {
 		costCombo.setEnabled(enabled);
 		costCombo.setInput(costs);
 		costCombo.selectFirst();
-		costCombo.addSelectionChangedListener(this::fire);
+		costCombo.addSelectionChangedListener(c -> {
+			fire(c);
+			check.setSelection(true);
+		});
 		if (enabled) {
 			costCombo.select((CostResultDescriptor) initialSelection);
 		}
