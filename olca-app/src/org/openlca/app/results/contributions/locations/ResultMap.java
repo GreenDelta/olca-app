@@ -1,5 +1,6 @@
 package org.openlca.app.results.contributions.locations;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,14 +11,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.components.mapview.LayerConfig;
 import org.openlca.app.components.mapview.MapView;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
 import org.openlca.core.results.Contribution;
 import org.openlca.geo.calc.Bounds;
 import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
+import org.openlca.geo.geojson.GeoJSON;
 import org.openlca.geo.geojson.Geometry;
 import org.openlca.geo.geojson.MsgPack;
 import org.openlca.util.Pair;
@@ -47,6 +54,8 @@ class ResultMap {
 		ResultMap m = new ResultMap();
 		m.map = new MapView(comp);
 		m.map.addBaseLayers();
+		Actions.bind(section, Actions.create(
+				M.Export, Icon.EXPORT.descriptor(), m::export));
 		return m;
 	}
 
@@ -85,7 +94,7 @@ class ResultMap {
 		if (pairs.isEmpty())
 			return;
 		pairs.stream().sorted((p1, p2) -> {
-			return Double.compare(bsize(p1), bsize(p2));
+			return Double.compare(bsize(p2), bsize(p1));
 		}).forEach(p -> coll.features.add(p.second));
 
 		layer = map.addLayer(coll)
@@ -103,4 +112,23 @@ class ResultMap {
 		});
 	}
 
+	private void export() {
+		if (coll == null) {
+			MsgBox.info("No data",
+					"The map does not contain result data.");
+			return;
+		}
+		File file = FileChooser.forExport(
+				"*.geojson", "result.geojson");
+		if (file == null)
+			return;
+		try {
+			GeoJSON.write(coll, file);
+			Popup.info("Export done",
+					"Result map was written to " + file.getName());
+		} catch (Exception e) {
+			MsgBox.error("Export failed",
+					"Failed to write file " + file + ": " + e.getMessage());
+		}
+	}
 }

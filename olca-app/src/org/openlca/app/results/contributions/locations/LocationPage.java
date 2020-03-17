@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -77,8 +78,11 @@ public class LocationPage extends FormPage {
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		createCombos(body, tk);
-		createTree(body, tk);
-		map = ResultMap.on(body, tk);
+		SashForm sash = new SashForm(body, SWT.VERTICAL);
+		UI.gridData(sash, true, true);
+		tk.adapt(sash);
+		createTree(sash, tk);
+		map = ResultMap.on(sash, tk);
 		form.reflow(true);
 		refreshSelection();
 	}
