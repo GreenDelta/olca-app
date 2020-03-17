@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.openlca.core.model.Location;
+import org.openlca.core.results.Contribution;
 
 class TreeContentProvider implements ITreeContentProvider {
 
@@ -21,19 +23,34 @@ class TreeContentProvider implements ITreeContentProvider {
 	}
 
 	@Override
-	public Object[] getChildren(Object parent) {
-		// TODO: we could get the location contributions here ...
+	public Object[] getChildren(Object obj) {
+		if (!(obj instanceof Contribution))
+			return null;
+		Contribution<?> c = (Contribution<?>) obj;
+		if (c.childs != null && !c.childs.isEmpty())
+			return c.childs.toArray();
+		if (c.item instanceof Location) {
+			// TODO calculate the contribution tree
+			Location loc = (Location) c.item;
+			System.out.println("Load contributions for " + loc);
+			return new Object[0];
+		}
 		return null;
 	}
 
 	@Override
-	public Object getParent(Object element) {
+	public Object getParent(Object obj) {
 		return null;
 	}
 
 	@Override
 	public boolean hasChildren(Object obj) {
-		return false;
+		if (!(obj instanceof Contribution))
+			return false;
+		Contribution<?> c = (Contribution<?>) obj;
+		if (c.childs != null && !c.childs.isEmpty())
+			return false;
+		return c.item instanceof Location;
 	}
 
 	@Override
@@ -41,7 +58,8 @@ class TreeContentProvider implements ITreeContentProvider {
 	}
 
 	@Override
-	public void inputChanged(Viewer viewer, Object old, Object newInput) {
+	public void inputChanged(
+			Viewer viewer, Object old, Object newInput) {
 	}
 
 }
