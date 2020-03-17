@@ -23,6 +23,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+/**
+ * @deprecated we now use the {@link ResultMap} for visualizing the contribution
+ *             results of the locations.
+ */
+@Deprecated
 class LocationMap {
 
 	private LocationPage page;
