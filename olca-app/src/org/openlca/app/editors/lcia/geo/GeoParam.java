@@ -1,5 +1,9 @@
 package org.openlca.app.editors.lcia.geo;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 class GeoParam {
 
 	/** The name of the parameter in the GeoJSON file. */
@@ -25,5 +29,16 @@ class GeoParam {
 	 * features are aggregated.
 	 */
 	GeoAggType aggType;
+
+	static GeoParam fromJson(JsonObject obj) {
+		if (obj == null)
+			return null;
+		return new Gson().fromJson(obj, GeoParam.class);
+	}
+
+	JsonObject toJson() {
+		JsonElement elem = new Gson().toJsonTree(this);
+		return elem.getAsJsonObject();
+	}
 
 }

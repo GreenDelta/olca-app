@@ -16,10 +16,14 @@ import org.openlca.app.components.mapview.LayerConfig;
 import org.openlca.app.components.mapview.MapView;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.geo.calc.Bounds;
 import org.openlca.geo.geojson.Feature;
@@ -87,7 +91,7 @@ class ResultMap {
 			feature.geometry = g;
 			feature.properties = new HashMap<String, Object>();
 			feature.properties.put("result", c.amount);
-			// TODO: add some meta data about the selection
+			addMetaData(loc, feature, selection);
 			pairs.add(Pair.of(loc, feature));
 		}
 
@@ -101,6 +105,36 @@ class ResultMap {
 				.fillScale("result")
 				.center();
 		map.update();
+	}
+
+	private void addMetaData(Location loc, Feature f, Object selection) {
+		f.properties.put("location_code", loc.code);
+		f.properties.put("location", loc.name);
+		f.properties.put("location_id", loc.refId);
+		if (selection instanceof FlowDescriptor) {
+			FlowDescriptor flow = (FlowDescriptor) selection;
+			f.properties.put("flow_id", flow.refId);
+			f.properties.put("flow", Labels.name(flow));
+			f.properties.put("flow_category", Labels.category(flow));
+			f.properties.put("unit", Labels.refUnit(flow));
+			return;
+		}
+
+		if (selection instanceof ImpactCategoryDescriptor) {
+			ImpactCategoryDescriptor imp = (ImpactCategoryDescriptor) selection;
+			f.properties.put("impact_id", imp.refId);
+			f.properties.put("impact_name", imp.name);
+			f.properties.put("unit", imp.referenceUnit);
+			return;
+		}
+
+		if (selection instanceof CostResultDescriptor) {
+			CostResultDescriptor c = (CostResultDescriptor) selection;
+			f.properties.put("cost_type", c.forAddedValue
+					? "added value"
+					: "net costs");
+			f.properties.put("unit", Labels.getReferenceCurrencyCode());
+		}
 	}
 
 	private double bsize(Pair<Location, Feature> pair) {

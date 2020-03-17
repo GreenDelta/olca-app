@@ -63,7 +63,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 			if (file == null)
 				return;
 			Setup s = App.exec("Parse GeoJSON ...",
-					() -> Setup.create(file));
+					() -> Setup.read(file));
 			if (s == null || s.file == null)
 				return;
 

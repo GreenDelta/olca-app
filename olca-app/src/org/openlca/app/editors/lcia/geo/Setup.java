@@ -35,7 +35,7 @@ class Setup {
 		this.file = file;
 	}
 
-	static Setup create(File geojson) {
+	static Setup read(File geojson) {
 		if (geojson == null)
 			return null;
 		Setup setup = new Setup(
@@ -122,5 +122,6 @@ class Setup {
 		Collections.sort(params,
 				(p1, p2) -> Strings.compare(p1.name, p2.name));
 	}
+
 
 }
