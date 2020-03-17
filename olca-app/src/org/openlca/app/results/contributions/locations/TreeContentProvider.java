@@ -2,13 +2,13 @@ package org.openlca.app.results.contributions.locations;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.Location;
@@ -56,14 +56,22 @@ class TreeContentProvider implements ITreeContentProvider {
 
 		Location loc = (Location) c.item;
 		Object selection = page.getSelection();
+		Stream<Contribution<?>> stream = null;
 		if (selection instanceof FlowDescriptor) {
-			List<Contribution<?>> cons = contributions(
-					loc, (FlowDescriptor) selection);
-			c.childs = cons;
-			return cons.toArray();
+			stream = contributions(loc, (FlowDescriptor) selection);
+		} else if (selection instanceof CostResultDescriptor) {
+			stream = contributions(loc, (CostResultDescriptor) selection);
 		}
 
-		return null;
+		if (stream == null)
+			return null;
+
+		// TODO apply cutoff
+		c.childs = stream
+				.filter(con -> con.amount != 0)
+				.sorted((c1, c2) -> Double.compare(c2.amount, c1.amount))
+				.collect(Collectors.toList());
+		return c.childs.toArray();
 	}
 
 	@Override
@@ -90,7 +98,7 @@ class TreeContentProvider implements ITreeContentProvider {
 			Viewer viewer, Object old, Object newInput) {
 	}
 
-	private List<Contribution<?>> contributions(
+	private Stream<Contribution<?>> contributions(
 			Location loc, FlowDescriptor flow) {
 
 		// get the matrix row => IndexFlow
@@ -99,38 +107,48 @@ class TreeContentProvider implements ITreeContentProvider {
 				? flowIndex.of(flow.id, loc.id)
 				: flowIndex.of(flow.id);
 		if (idx < 0)
-			return Collections.emptyList();
+			return null;
 		IndexFlow iFlow = flowIndex.at(idx);
 		if (iFlow == null)
-			return Collections.emptyList();
+			return null;
 
 		// prepare the stream
 		double total = result.getTotalFlowResult(iFlow);
-		Stream<Contribution<?>> stream;
 
 		// in a regionalized result, the flow with the
 		// given location can occur in processes that
 		// have another location which is not the case
 		// in a non-regionalized result
 		if (flowIndex.isRegionalized) {
-			stream = result.techIndex.content().stream().map(p -> {
+			return result.techIndex.content().stream().map(p -> {
 				Contribution<?> c = Contribution.of(p.process);
 				c.amount = result.getDirectFlowResult(p, iFlow);
 				c.computeShare(total);
 				return c;
 			});
 		} else {
-			stream = processes(loc).stream().map(p -> {
+			return processes(loc).stream().map(p -> {
 				Contribution<?> c = Contribution.of(p);
 				c.amount = result.getDirectFlowResult(p, iFlow);
 				c.computeShare(total);
 				return c;
 			});
 		}
+	}
 
-		return stream.filter(c -> c.amount != 0)
-				.sorted((c1, c2) -> Double.compare(c2.amount, c1.amount))
-				.collect(Collectors.toList());
+	private Stream<Contribution<?>> contributions(
+			Location loc, CostResultDescriptor c) {
+		double total = c.forAddedValue
+				? -result.totalCosts
+				: result.totalCosts;
+		return processes(loc).stream().map(p -> {
+			Contribution<?> con = Contribution.of(p);
+			con.amount = c.forAddedValue
+					? -result.getDirectCostResult(p)
+					: result.getDirectCostResult(p);
+			con.computeShare(total);
+			return con;
+		});
 	}
 
 	private List<ProcessDescriptor> processes(Location loc) {
