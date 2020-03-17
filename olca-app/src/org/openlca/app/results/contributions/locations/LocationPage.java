@@ -52,7 +52,8 @@ public class LocationPage extends FormPage {
 	private TreeViewer tree;
 	private TreeLabel label;
 
-	private LocationMap map;
+	// private LocationMap map;
+	private ResultMap map;
 	boolean skipZeros = true;
 	double cutoff = 0.01;
 
@@ -77,7 +78,7 @@ public class LocationPage extends FormPage {
 		Composite body = UI.formBody(form, tk);
 		createCombos(body, tk);
 		createTree(body, tk);
-		map = LocationMap.create(this, body, tk);
+		map = ResultMap.on(body, tk);
 		form.reflow(true);
 		refreshSelection();
 	}
@@ -188,7 +189,7 @@ public class LocationPage extends FormPage {
 			tree.setInput(sorted);
 		}
 		if (map != null) {
-			map.setInput(sorted);
+			map.update(getSelection(), sorted);
 		}
 	}
 }
