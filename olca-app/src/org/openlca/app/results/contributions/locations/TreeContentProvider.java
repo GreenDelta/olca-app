@@ -13,6 +13,7 @@ import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
@@ -61,6 +62,8 @@ class TreeContentProvider implements ITreeContentProvider {
 			stream = contributions(loc, (FlowDescriptor) selection);
 		} else if (selection instanceof CostResultDescriptor) {
 			stream = contributions(loc, (CostResultDescriptor) selection);
+		} else if (selection instanceof ImpactCategoryDescriptor) {
+			stream = contributions(loc, (ImpactCategoryDescriptor) selection);
 		}
 
 		if (stream == null)
@@ -148,6 +151,41 @@ class TreeContentProvider implements ITreeContentProvider {
 					: result.getDirectCostResult(p);
 			con.computeShare(total);
 			return con;
+		});
+	}
+
+	private Stream<Contribution<?>> contributions(
+			Location loc, ImpactCategoryDescriptor impact) {
+
+		double total = result.getTotalImpactResult(impact);
+		if (!result.flowIndex.isRegionalized) {
+			return processes(loc).stream().map(p -> {
+				Contribution<?> c = Contribution.of(p);
+				c.amount = result.getDirectImpactResult(p, impact);
+				c.computeShare(total);
+				return c;
+			});
+		}
+
+		// first collect all flows in that location
+		List<IndexFlow> flows = new ArrayList<>();
+		result.flowIndex.each((i, iFlow) -> {
+			if (loc == null && iFlow.location == null) {
+				flows.add(iFlow);
+				return;
+			}
+			if (loc == null || iFlow.location == null)
+				return;
+			if (loc.id == iFlow.location.id) {
+				flows.add(iFlow);
+			}
+		});
+
+		return flows.stream().map(iFlow -> {
+			Contribution<?> c = Contribution.of(iFlow);
+			c.amount = result.getDirectFlowImpact(iFlow, impact);
+			c.computeShare(total);
+			return c;
 		});
 	}
 
