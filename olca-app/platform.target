@@ -7,11 +7,6 @@
     <repository location="http://download.eclipse.org/tools/gef/updates/legacy/releases/"/>
   </location>
 	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<unit id="org.eclipse.swtchart" version="0.7.0.201906051446"/>
-		<unit id="org.eclipse.swtchart.extensions" version="0.7.0.201906051446"/>
-		<repository location="https://msrocka.github.io/swtcharts-update-site/target/repository"/>
-	</location>
-	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/eclipse/updates/4.12"/>
 		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.18.0.v20190528-1257"/>
 		<unit id="org.eclipse.rcp.feature.group" version="4.12.0.v20190605-1801"/>
@@ -25,6 +20,10 @@
 	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/modeling/emf/emf/builds/release"/>
 		<unit id="org.eclipse.emf.sdk.feature.group" version="2.19.0.v20190824-1315"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/swtchart/releases/0.12.0/repository/"/>
+		<unit id="org.eclipse.swtchart.feature.feature.group" version="0.12.0.202003130409"/>
 	</location>
 </locations>
 </target>
