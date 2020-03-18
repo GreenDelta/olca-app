@@ -11,14 +11,15 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
+import org.openlca.app.AppArg;
 import org.openlca.app.M;
 import org.openlca.app.preferences.LibraryDownload;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.util.Desktop;
-import org.openlca.app.util.EclipseCommandLine;
 import org.openlca.app.util.UI;
 import org.openlca.julia.Julia;
 import org.openlca.util.OS;
+import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
 
@@ -70,8 +71,8 @@ public class StartPage extends SimpleFormEditor {
 			UI.onLoaded(browser, HtmlFolder.getUrl("home.html"), () -> {
 				HashMap<String, Object> config = new HashMap<>();
 				config.put("version", getVersion());
-				String lang = EclipseCommandLine.getArg("nl");
-				config.put("lang", lang == null ? "en" : lang);
+				String lang = AppArg.get("nl");
+				config.put("lang", Strings.nullOrEmpty(lang) ? "en" : lang);
 				config.put("showLibHint", !Julia.isWithUmfpack());
 				String json = new Gson().toJson(config);
 				browser.execute("setData(" + json + ")");

@@ -5,7 +5,7 @@ import java.net.URI;
 import java.net.URL;
 
 import org.eclipse.core.runtime.Platform;
-import org.openlca.app.CommandArgument;
+import org.openlca.app.AppArg;
 import org.openlca.app.Config;
 
 /**
@@ -71,7 +71,7 @@ public class Workspace {
 
 	private static File getDirFromCommandLine() {
 		try {
-			String path = CommandArgument.DATA_DIR.getValue();
+			String path = AppArg.DATA_DIR.getValue();
 			if (path == null)
 				return null;
 			File file = new File(path);

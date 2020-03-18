@@ -5,7 +5,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.openlca.app.CommandArgument;
+import org.openlca.app.AppArg;
 
 import com.google.common.base.Objects;
 
@@ -44,7 +44,7 @@ public class LoggerConfig {
 	}
 
 	private static void setLogLevel(Logger logger) {
-		String level = CommandArgument.LOG_LEVEL.getValue();
+		String level = AppArg.LOG_LEVEL.getValue();
 		if (level != null) {
 			setLevelFromCommandLine(logger, level);
 		} else {
