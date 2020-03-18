@@ -218,13 +218,6 @@
             name="Simulation Editor">
       </editor> 
       <editor
-            class="org.openlca.app.results.regionalized.RegionalizedResultEditor"
-            contributorClass="org.openlca.app.results.regionalized.RegionalizedResultActions"
-            icon="icons/model/impact_method.png"
-            id="RegionalizedResultEditor"
-            name="Regionalized LCIA result">
-      </editor>   
-      <editor
             id="ReportViewer"
             class="org.openlca.app.editors.reports.ReportViewer"
             icon="icons/model/project.png"
@@ -501,7 +494,7 @@
          </property>
          <property
                name="aboutText"
-               value="openLCA 1.10&#x0A;&#x0A;Copyright (c) 2007 - 2019 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
+               value="openLCA 2.0.0&#x0A;&#x0A;Copyright (c) 2007 - 2020 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
          </property>
          <property
                name="aboutImage"

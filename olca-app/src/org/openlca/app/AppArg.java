@@ -26,7 +26,7 @@ public enum AppArg {
 	DATA_DIR("olcaDataDir"),
 
 	/**
-	 * olcaVersion: the openLCA version which was set in the build.
+	 * olcaBuild: the openLCA build number which was set in the build.
 	 */
 	BUILD_NUMBER("olcaBuild"),
 
