@@ -55,8 +55,10 @@ public class Tables {
 	 * <li>grid data with horizontal and vertical fill
 	 * 
 	 */
-	public static TableViewer createViewer(Composite parent, String[] properties, IBaseLabelProvider labelProvider) {
-		TableViewer viewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
+	public static TableViewer createViewer(Composite parent, String[] properties,
+			IBaseLabelProvider labelProvider) {
+		TableViewer viewer = new TableViewer(parent,
+				SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		viewer.setContentProvider(new ArrayContentProvider());
 		boolean hasColumns = properties != null && properties.length > 0;
 		Table table = viewer.getTable();
@@ -77,7 +79,8 @@ public class Tables {
 		return viewer;
 	}
 
-	private static void createColumns(TableViewer viewer, String[] labels, IBaseLabelProvider labelProvider) {
+	private static void createColumns(TableViewer viewer, String[] labels,
+			IBaseLabelProvider labelProvider) {
 		if (labelProvider instanceof CellLabelProvider) {
 			ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
 		}

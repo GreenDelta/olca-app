@@ -43,7 +43,6 @@ import org.openlca.core.results.ContributionResult;
 
 public class TotalImpactResultPage extends FormPage {
 
-	private final ResultEditor<?> editor;
 	private final ContributionResult result;
 	private final DQResult dqResult;
 	
@@ -56,7 +55,6 @@ public class TotalImpactResultPage extends FormPage {
 
 	public TotalImpactResultPage(ResultEditor<?> editor) {
 		super(editor, "ImpactTreePage", M.ImpactAnalysis);
-		this.editor = editor;
 		this.result = editor.result;
 		this.setup = editor.setup;
 		this.dqResult = editor.dqResult;

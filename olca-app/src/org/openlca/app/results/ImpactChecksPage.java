@@ -37,14 +37,12 @@ import org.openlca.core.results.ContributionResult;
  */
 public class ImpactChecksPage extends FormPage {
 
-	private final ResultEditor<?> editor;
 	private final ContributionResult result;
 
 	private TreeViewer tree;
 
 	public ImpactChecksPage(ResultEditor<?> editor) {
 		super(editor, "ImpactChecksPage", M.LCIAChecks);
-		this.editor = editor;
 		this.result = editor.result;
 	}
 
@@ -71,7 +69,6 @@ public class ImpactChecksPage extends FormPage {
 		// create the tree
 		tree = Trees.createViewer(body,
 				M.Name, M.Category, M.InventoryResult);
-		UI.gridData(tree.getControl(), true, true);
 		tree.setContentProvider(new ContentProvider());
 		tree.setLabelProvider(new Label());
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);

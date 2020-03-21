@@ -44,11 +44,13 @@ public class Trees {
 		return createViewer(parent, headers, null);
 	}
 
-	public static TreeViewer createViewer(Composite parent, IBaseLabelProvider label) {
+	public static TreeViewer createViewer(
+			Composite parent, IBaseLabelProvider label) {
 		return createViewer(parent, null, label);
 	}
 
-	public static TreeViewer createViewer(Composite parent, String[] headers, IBaseLabelProvider label) {
+	public static TreeViewer createViewer(
+			Composite parent, String[] headers, IBaseLabelProvider label) {
 		TreeViewer viewer = new TreeViewer(parent,
 				SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		Tree tree = viewer.getTree();
