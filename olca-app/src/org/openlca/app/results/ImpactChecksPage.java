@@ -29,6 +29,7 @@ import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 
 /**
@@ -77,17 +78,14 @@ public class ImpactChecksPage extends FormPage {
 
 		// bind `onOpen`
 		Action onOpen = Actions.onOpen(() -> {
-			Node node = Viewers.getFirstSelected(tree);
-			if (node == null)
+			Contribution<?> c = Viewers.getFirstSelected(tree);
+			if (c == null)
 				return;
-			IndexFlow flow = node.flow();
-			if (flow != null) {
-				App.openEditor(flow.flow);
-				return;
-			}
-			ImpactCategoryDescriptor impact = node.impact();
-			if (impact != null) {
-				App.openEditor(impact);
+			if (c.item instanceof IndexFlow) {
+				IndexFlow f = (IndexFlow) c.item;
+				App.openEditor(f.flow);
+			} else if (c.item instanceof ImpactCategoryDescriptor) {
+				App.openEditor((ImpactCategoryDescriptor) c.item);
 			}
 		});
 		Actions.bind(tree, onOpen);
@@ -102,8 +100,8 @@ public class ImpactChecksPage extends FormPage {
 	 * Returns a flat list of flow nodes that have no characterization factor in any
 	 * of the LCIA categories.
 	 */
-	private List<Node> flatNodes() {
-		List<Node> nodes = new ArrayList<>();
+	private List<Contribution<?>> flatNodes() {
+		List<Contribution<?>> nodes = new ArrayList<>();
 		for (IndexFlow flow : result.getFlows()) {
 			boolean allZero = true;
 			for (ImpactCategoryDescriptor impact : result.getImpacts()) {
@@ -114,16 +112,16 @@ public class ImpactChecksPage extends FormPage {
 				}
 			}
 			if (allZero) {
-				nodes.add(new Node(flow));
+				nodes.add(Contribution.of(flow));
 			}
 		}
 		return nodes;
 	}
 
-	private List<Node> groupedNodes() {
-		List<Node> nodes = new ArrayList<>();
+	private List<Contribution<?>> groupedNodes() {
+		List<Contribution<?>> nodes = new ArrayList<>();
 		for (ImpactCategoryDescriptor impact : result.getImpacts()) {
-			Node impactNode = new Node(impact);
+			Contribution<?> impactNode = Contribution.of(impact);
 			nodes.add(impactNode);
 			for (IndexFlow flow : result.getFlows()) {
 				double f = result.getImpactFactor(impact, flow);
@@ -132,32 +130,10 @@ public class ImpactChecksPage extends FormPage {
 				if (impactNode.childs == null) {
 					impactNode.childs = new ArrayList<>();
 				}
-				impactNode.childs.add(new Node(flow));
+				impactNode.childs.add(Contribution.of(flow));
 			}
 		}
 		return nodes;
-	}
-
-	private class Node {
-		final Object content;
-		List<Node> childs;
-
-		Node(Object d) {
-			this.content = d;
-		}
-
-		IndexFlow flow() {
-			return content instanceof IndexFlow
-					? (IndexFlow) content
-					: null;
-		}
-
-		ImpactCategoryDescriptor impact() {
-			return content instanceof ImpactCategoryDescriptor
-					? (ImpactCategoryDescriptor) content
-					: null;
-		}
-
 	}
 
 	private class ContentProvider extends ArrayContentProvider
@@ -165,9 +141,9 @@ public class ImpactChecksPage extends FormPage {
 
 		@Override
 		public Object[] getChildren(Object parent) {
-			if (!(parent instanceof Node))
+			if (!(parent instanceof Contribution))
 				return null;
-			Node n = (Node) parent;
+			Contribution<?> n = (Contribution<?>) parent;
 			return n.childs == null ? null : n.childs.toArray();
 		}
 
@@ -178,9 +154,9 @@ public class ImpactChecksPage extends FormPage {
 
 		@Override
 		public boolean hasChildren(Object elem) {
-			if (!(elem instanceof Node))
+			if (!(elem instanceof Contribution))
 				return false;
-			Node n = (Node) elem;
+			Contribution<?> n = (Contribution<?>) elem;
 			return n.childs != null && n.childs.size() > 0;
 		}
 	}
@@ -190,26 +166,24 @@ public class ImpactChecksPage extends FormPage {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (col != 0 || !(obj instanceof Node))
+			if (col != 0 || !(obj instanceof Contribution))
 				return null;
-			Node n = (Node) obj;
-			IndexFlow flow = n.flow();
-			if (flow != null)
-				return Images.get(flow.flow);
-			ImpactCategoryDescriptor impact = n.impact();
-			if (impact != null)
-				return Images.get(impact);
+			Contribution<?> c = (Contribution<?>) obj;
+			if (c.item instanceof IndexFlow)
+				return Images.get((IndexFlow) c.item);
+			if (c.item instanceof ImpactCategoryDescriptor)
+				return Images.get((ImpactCategoryDescriptor) c.item);
 			return null;
 		}
 
 		@Override
 		public String getColumnText(Object o, int col) {
-			if (!(o instanceof Node))
+			if (!(o instanceof Contribution))
 				return null;
-			Node n = (Node) o;
+			Contribution<?> c = (Contribution<?>) o;
 
-			IndexFlow flow = n.flow();
-			if (flow != null) {
+			if (c.item instanceof IndexFlow) {
+				IndexFlow flow = (IndexFlow) c.item;
 				switch (col) {
 				case 0:
 					return Labels.name(flow);
@@ -224,10 +198,12 @@ public class ImpactChecksPage extends FormPage {
 				}
 			}
 
-			ImpactCategoryDescriptor impact = n.impact();
-			if (impact == null || col != 0)
+			// not a flow
+			if (col != 0)
 				return null;
-			return impact.name;
+			if (c.item instanceof ImpactCategoryDescriptor)
+				return ((ImpactCategoryDescriptor) c.item).name;
+			return null;
 		}
 	}
 }
