@@ -194,7 +194,7 @@ public class TotalImpactResultPage extends FormPage {
 			case 3:
 				if (item.flowAmount() == null)
 					return "";
-				return editor.unit(item.flow);
+				return Labels.refUnit(item.flow);
 			case 4:
 				return format(item.impactFactor());
 			case 5:
@@ -420,7 +420,7 @@ public class TotalImpactResultPage extends FormPage {
 			if (type() != ModelType.FLOW)
 				return null;
 			String amount = Numbers.format(flowAmount());
-			String unit = editor.unit(flow);
+			String unit = Labels.refUnit(flow);
 			return amount + " " + unit;
 		}
 
@@ -448,7 +448,7 @@ public class TotalImpactResultPage extends FormPage {
 			case IMPACT_CATEGORY:
 				return impact.name;
 			case FLOW:
-				return editor.name(flow);
+				return Labels.name(flow);
 			case PROCESS:
 				return Labels.name(process);
 			default:
@@ -459,7 +459,7 @@ public class TotalImpactResultPage extends FormPage {
 		String category() {
 			switch (type()) {
 			case FLOW:
-				return editor.category(flow);
+				return Labels.category(flow);
 			case PROCESS:
 				return Labels.category(process);
 			default:

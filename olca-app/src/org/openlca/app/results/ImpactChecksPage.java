@@ -22,6 +22,7 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
@@ -125,15 +126,16 @@ public class ImpactChecksPage extends FormPage {
 	private List<Node> groupedNodes() {
 		List<Node> nodes = new ArrayList<>();
 		for (ImpactCategoryDescriptor impact : result.getImpacts()) {
-			Node root = new Node(impact);
+			Node impactNode = new Node(impact);
+			nodes.add(impactNode);
 			for (IndexFlow flow : result.getFlows()) {
 				double f = result.getImpactFactor(impact, flow);
 				if (f != 0)
 					continue;
-				if (root.childs == null) {
-					root.childs = new ArrayList<>();
+				if (impactNode.childs == null) {
+					impactNode.childs = new ArrayList<>();
 				}
-				root.childs.add(new Node(flow));
+				impactNode.childs.add(new Node(flow));
 			}
 		}
 		return nodes;
@@ -213,12 +215,12 @@ public class ImpactChecksPage extends FormPage {
 			if (flow != null) {
 				switch (col) {
 				case 0:
-					return editor.name(flow);
+					return Labels.name(flow);
 				case 1:
-					return editor.category(flow);
+					return Labels.category(flow.flow);
 				case 2:
 					double val = result.getTotalFlowResult(flow);
-					String unit = editor.unit(flow);
+					String unit = Labels.refUnit(flow);
 					return Numbers.format(val) + " " + unit;
 				default:
 					return null;

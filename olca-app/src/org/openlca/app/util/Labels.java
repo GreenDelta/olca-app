@@ -119,6 +119,12 @@ public class Labels {
 		return unit.name;
 	}
 
+	public static String category(IndexFlow flow) {
+		if (flow == null || flow.flow == null)
+			return "";
+		return category(flow.flow);
+	}
+
 	/**
 	 * Returns the full category path of the given entity.
 	 */
