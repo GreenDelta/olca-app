@@ -2,6 +2,7 @@ package org.openlca.app.results;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -96,6 +97,13 @@ public class ImpactChecksPage extends FormPage {
 				: flatNodes());
 	}
 
+	private List<Contribution<?>> groupedNodes() {
+		return result.getImpacts()
+				.stream()
+				.map(Contribution::of)
+				.collect(Collectors.toList());
+	}
+
 	/**
 	 * Returns a flat list of flow nodes that have no characterization factor in any
 	 * of the LCIA categories.
@@ -112,25 +120,9 @@ public class ImpactChecksPage extends FormPage {
 				}
 			}
 			if (allZero) {
-				nodes.add(Contribution.of(flow));
-			}
-		}
-		return nodes;
-	}
-
-	private List<Contribution<?>> groupedNodes() {
-		List<Contribution<?>> nodes = new ArrayList<>();
-		for (ImpactCategoryDescriptor impact : result.getImpacts()) {
-			Contribution<?> impactNode = Contribution.of(impact);
-			nodes.add(impactNode);
-			for (IndexFlow flow : result.getFlows()) {
-				double f = result.getImpactFactor(impact, flow);
-				if (f != 0)
-					continue;
-				if (impactNode.childs == null) {
-					impactNode.childs = new ArrayList<>();
-				}
-				impactNode.childs.add(Contribution.of(flow));
+				Contribution<?> c = Contribution.of(flow);
+				c.amount = result.getTotalFlowResult(flow);
+				nodes.add(c);
 			}
 		}
 		return nodes;
@@ -140,11 +132,25 @@ public class ImpactChecksPage extends FormPage {
 			implements ITreeContentProvider {
 
 		@Override
-		public Object[] getChildren(Object parent) {
-			if (!(parent instanceof Contribution))
+		public Object[] getChildren(Object obj) {
+			if (!(obj instanceof Contribution))
 				return null;
-			Contribution<?> n = (Contribution<?>) parent;
-			return n.childs == null ? null : n.childs.toArray();
+			Contribution<?> c = (Contribution<?>) obj;
+			if (c.childs != null)
+				return c.childs.toArray();
+			if (!(c.item instanceof ImpactCategoryDescriptor))
+				return null;
+			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) c.item;
+			c.childs = new ArrayList<>();
+			for (IndexFlow flow : result.getFlows()) {
+				double f = result.getImpactFactor(impact, flow);
+				if (f != 0)
+					continue;
+				Contribution<?> child = Contribution.of(flow);
+				child.amount = result.getTotalFlowResult(flow);
+				c.childs.add(child);
+			}
+			return c.childs.toArray();
 		}
 
 		@Override
@@ -156,8 +162,10 @@ public class ImpactChecksPage extends FormPage {
 		public boolean hasChildren(Object elem) {
 			if (!(elem instanceof Contribution))
 				return false;
-			Contribution<?> n = (Contribution<?>) elem;
-			return n.childs != null && n.childs.size() > 0;
+			Contribution<?> c = (Contribution<?>) elem;
+			if (c.childs != null)
+				return true;
+			return c.item instanceof ImpactCategoryDescriptor;
 		}
 	}
 
@@ -190,9 +198,8 @@ public class ImpactChecksPage extends FormPage {
 				case 1:
 					return Labels.category(flow.flow);
 				case 2:
-					double val = result.getTotalFlowResult(flow);
 					String unit = Labels.refUnit(flow);
-					return Numbers.format(val) + " " + unit;
+					return Numbers.format(c.amount) + " " + unit;
 				default:
 					return null;
 				}
