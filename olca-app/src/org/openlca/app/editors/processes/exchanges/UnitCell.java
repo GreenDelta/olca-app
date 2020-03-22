@@ -37,7 +37,7 @@ class UnitCell extends ComboBoxCellModifier<Exchange, UnitItem> {
 			}
 		}
 		Collections.sort(items);
-		return items.toArray(new UnitItem[items.size()]);
+		return items.toArray(new UnitItem[0]);
 	}
 
 	@Override
