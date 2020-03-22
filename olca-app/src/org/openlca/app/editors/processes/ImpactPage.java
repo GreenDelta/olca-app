@@ -36,13 +36,16 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
+import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.ReferenceAmount;
 import org.openlca.core.matrix.DIndex;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.matrix.ImpactTable;
+import org.openlca.core.matrix.MatrixData;
 import org.openlca.core.matrix.ParameterTable;
 import org.openlca.core.matrix.format.IMatrix;
+import org.openlca.core.matrix.format.MatrixBuilder;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
@@ -51,6 +54,7 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
@@ -139,7 +143,7 @@ class ImpactPage extends ModelPage<Process> {
 		List<Exchange> eList = getModel().exchanges;
 		double[] values = new double[eList.size()];
 		Exchange[] exchanges = new Exchange[eList.size()];
-		FlowIndex flowIdx = FlowIndex.create(); // TODO: check regionalization
+		FlowIndex flowIdx = FlowIndex.createRegionalized();
 		for (Exchange e : eList) {
 			if (e.flow == null ||
 					e.flow.flowType != FlowType.ELEMENTARY_FLOW)
@@ -200,6 +204,76 @@ class ImpactPage extends ModelPage<Process> {
 		}
 		sort(roots);
 		return roots;
+	}
+
+	private MatrixData buildMatrices() {
+		MatrixData md = new MatrixData();
+
+		// build the impact index
+		md.impactIndex = new DIndex<>();
+		new ImpactCategoryDao(Database.get()).getDescriptors()
+				.forEach(d -> md.impactIndex.put(d));
+
+		// collect the elementary flow exchanges
+		List<Exchange> elemFlows = new ArrayList<>();
+		boolean regionalized = false;
+		for (Exchange e : getModel().exchanges) {
+			if (e.flow == null
+					|| e.flow.flowType != FlowType.ELEMENTARY_FLOW)
+				continue;
+			if (e.location != null) {
+				regionalized = true;
+			}
+			elemFlows.add(e);
+		}
+
+		// create the flow index and B matrix / vector
+		md.flowIndex = regionalized
+				? FlowIndex.createRegionalized()
+				: FlowIndex.create();
+		if (elemFlows.isEmpty())
+			return md;
+		MatrixBuilder enviBuilder = new MatrixBuilder();
+		for (Exchange e : elemFlows) {
+			FlowDescriptor flow = Descriptors.toDescriptor(e.flow);
+			LocationDescriptor loc = e.location != null
+					? Descriptors.toDescriptor(e.location)
+					: null;
+			int i = e.isInput
+					? md.flowIndex.putInput(flow, loc)
+					: md.flowIndex.putOutput(flow, loc);
+			double amount = ReferenceAmount.get(e);
+			if (e.isInput && amount != 0) {
+				amount = -amount;
+			}
+			enviBuilder.add(i, 1, amount);
+		}
+
+
+		// build the flow index
+		md.flowIndex = FlowIndex.createRegionalized();
+		for (Exchange e : getModel().exchanges) {
+			if (e.flow == null
+					|| e.flow.flowType != FlowType.ELEMENTARY_FLOW)
+				continue;
+			if (e.location == null) {
+				md.flowIndex.putInput(
+						Descriptors.toDescriptor(e.flow));
+			} else {
+				md.flowIndex.putInput(
+						Descriptors.toDescriptor(e.flow),
+						Descriptors.toDescriptor(e.location));
+			}
+		}
+
+
+
+		// check if we can calculate something
+		if (md.flowIndex.isEmpty()
+				|| md.impactIndex.isEmpty())
+			return md;
+
+		return md;
 	}
 
 	private void sort(List<Node> roots) {
