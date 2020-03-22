@@ -76,6 +76,15 @@ class FactorClipboard {
 			return null;
 
 		// find a matching flow for the unit
+		// the unit in the table has the format:
+		// <LCIA ref. unit> / <flow unit>
+		// the following only works if the LCIA
+		// ref. unit does not contain a slash, but
+		// this should be very unlikely
+		int i = unit.indexOf('/');
+		if (i >= 0) {
+			unit = unit.substring(i + 1).trim();
+		}
 		ImpactFactor factor = new ImpactFactor();
 		for (Flow flow : candidates) {
 			for (FlowPropertyFactor p : flow.flowPropertyFactors) {

@@ -2,7 +2,6 @@ package org.openlca.app.editors.flows;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -111,13 +110,6 @@ class ImpactPage extends ModelPage<Flow> {
 					f1.location.code,
 					f2.location.code);
 		});
-		ImpactCategoryDescriptor impact = null;
-		for (Factor f : factors) {
-			if (!Objects.equals(f.impact, impact)) {
-				f.displayImpact = true;
-				impact = f.impact;
-			}
-		}
 		return factors;
 	}
 
@@ -126,7 +118,6 @@ class ImpactPage extends ModelPage<Flow> {
 		LocationDescriptor location;
 		double value;
 		String unit;
-		boolean displayImpact;
 	}
 
 	private class Label extends LabelProvider
@@ -137,8 +128,6 @@ class ImpactPage extends ModelPage<Flow> {
 			if (col != 0 || !(obj instanceof Factor))
 				return null;
 			Factor f = (Factor) obj;
-			if (!f.displayImpact)
-				return null;
 			return Images.get(f.impact);
 		}
 
@@ -147,8 +136,6 @@ class ImpactPage extends ModelPage<Flow> {
 			if (!(obj instanceof Factor))
 				return null;
 			Factor f = (Factor) obj;
-			if (col == 0 && !f.displayImpact)
-				return null;
 			switch (col) {
 			case 0:
 				return Labels.name(f.impact);
