@@ -154,11 +154,13 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	}
 
 	void bindActions(TableViewer viewer, Section section) {
-		Action copy = TableClipboard.onCopy(viewer);
 		Action add = Actions.onAdd(this::onAdd);
 		Action remove = Actions.onRemove(this::onRemove);
-		Actions.bind(viewer, add, remove, copy);
-		Tables.onDeletePressed(viewer, (e) -> onRemove());
+		Action copy = TableClipboard.onCopy(viewer);
+		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
+
+		Actions.bind(viewer, add, remove, copy, paste);
+		Tables.onDeletePressed(viewer, _e -> onRemove());
 		Tables.onDrop(viewer, this::createFactors);
 		Tables.onDoubleClick(viewer, (event) -> {
 			TableItem item = Tables.getItem(viewer, event);
@@ -167,8 +169,9 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				return;
 			}
 			ImpactFactor factor = Viewers.getFirstSelected(viewer);
-			if (factor != null && factor.flow != null)
+			if (factor != null && factor.flow != null) {
 				App.openEditor(factor.flow);
+			}
 		});
 		Action formulaSwitch = new FormulaSwitchAction();
 		Actions.bind(section, add, remove, formulaSwitch);
@@ -202,6 +205,16 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 		for (ImpactFactor factor : factors) {
 			impact().impactFactors.remove(factor);
 		}
+		viewer.setInput(impact().impactFactors);
+		editor.setDirty(true);
+	}
+
+	private void onPaste(String text) {
+		List<ImpactFactor> factors = App.exec(
+				"Parse factors", () -> FactorClipboard.read(text));
+		if (factors.isEmpty())
+			return;
+		impact().impactFactors.addAll(factors);
 		viewer.setInput(impact().impactFactors);
 		editor.setDirty(true);
 	}
@@ -242,7 +255,8 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			case 4:
 				return Uncertainty.string(f.uncertainty);
 			case 5:
-				return f.location == null ? "": f.location.code != null
+				return f.location == null ? ""
+						: f.location.code != null
 								? f.location.code
 								: Labels.name(f.location);
 			default:
