@@ -50,18 +50,19 @@ public class ModifySupport<T> {
 	 * editor directly operates on the values in the respective table and that the
 	 * values are set in the respective editor.
 	 */
-	public void bind(String property, CellEditor editor) {
+	public ModifySupport<T> bind(String property, CellEditor editor) {
 		int idx = findIndex(property);
 		if (idx == -1)
-			return;
+			return this;
 		editors[idx] = editor;
+		return this;
 	}
 
 	/**
 	 * Binds the given getter and setter to the given table property. Null values
 	 * for the getter are allowed. The setter is only called if text was changed.
 	 */
-	public void bind(String property, Getter<T> getter, Setter<T> setter) {
+	public ModifySupport<T> bind(String property, Getter<T> getter, Setter<T> setter) {
 		TextCellModifier<T> modifier = new TextCellModifier<T>() {
 			@Override
 			protected String getText(T element) {
@@ -81,18 +82,19 @@ public class ModifySupport<T> {
 				setter.setText(element, text);
 			}
 		};
-		bind(property, modifier);
+		return bind(property, modifier);
 	}
 
 	/**
 	 * Binds the given modifier to the given property of the viewer.
 	 */
-	public void bind(String property, ICellModifier<T> modifier) {
+	public ModifySupport<T> bind(String property, ICellModifier<T> modifier) {
 		int index = findIndex(property);
 		if (index == -1)
-			return;
+			return this;
 		cellModifiers.put(columnProperties[index], modifier);
 		setEditor(modifier, index);
+		return this;
 	}
 
 	private int findIndex(String property) {

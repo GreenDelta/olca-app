@@ -12,6 +12,7 @@ import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.ProcessingType;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Flow;
@@ -123,6 +124,12 @@ public class Labels {
 		if (flow == null || flow.flow == null)
 			return "";
 		return category(flow.flow);
+	}
+
+	public static String category(CategorizedEntity e) {
+		if (e == null || e.category == null)
+			return "";
+		return CategoryPath.getFull(e.category);
 	}
 
 	/**

@@ -1,10 +1,8 @@
 package org.openlca.app.editors.lcia;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -38,19 +36,15 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowProperty;
-import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Uncertainty;
-import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.io.CategoryPath;
@@ -102,30 +96,29 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 	public void render(Composite parent, Section section) {
 		viewer = Tables.createViewer(parent, new String[] {
-				M.Flow, M.Category, M.FlowProperty,
-				M.Factor, M.Unit, M.Uncertainty, M.Location,
-				"" /* comment */ });
+				M.Flow, M.Category, M.Factor, M.Unit,
+				M.Uncertainty, M.Location, "" /* comment */ });
 		FactorLabel label = new FactorLabel();
-		Viewers.sortByLabels(viewer, label, 0, 1, 2, 4, 5, 6);
-		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.value, 3);
+		Viewers.sortByLabels(viewer, label, 0, 1, 3, 4, 5);
+		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.value, 2);
 		viewer.setLabelProvider(label);
 		ModifySupport<ImpactFactor> support = new ModifySupport<>(viewer);
-		support.bind(M.FlowProperty, new FlowPropertyModifier());
-		support.bind(M.Unit, new UnitModifier());
-		bindFactorModifier(support);
-		support.bind(M.Uncertainty, new UncertaintyCellEditor(
-				viewer.getTable(), editor));
-		support.bind(M.Location, new LocationModifier(
-				viewer.getTable(), editor));
-		support.bind("", new CommentDialogModifier<ImpactFactor>(
-				editor.getComments(),
-				f -> CommentPaths.get(impact(), f)));
-		Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.11, 0.11, 0.11, 0.11, 0.11);
+		support.bind(M.Unit, new UnitCell(editor))
+				.bind(M.Uncertainty, new UncertaintyCellEditor(
+						viewer.getTable(), editor))
+				.bind(M.Location, new LocationModifier(
+						viewer.getTable(), editor))
+				.bind("", new CommentDialogModifier<ImpactFactor>(
+						editor.getComments(),
+						f -> CommentPaths.get(impact(), f)));
+		bindValue(support);
+
+		Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.125, 0.125, 0.125, 0.125);
 		bindActions(viewer, section);
 		viewer.getTable().getColumns()[3].setAlignment(SWT.RIGHT);
 	}
 
-	private void bindFactorModifier(ModifySupport<ImpactFactor> ms) {
+	private void bindValue(ModifySupport<ImpactFactor> ms) {
 		// factor editor with auto-completion support for parameter names
 		FormulaCellEditor factorEditor = new FormulaCellEditor(viewer,
 				() -> editor.getModel().parameters);
@@ -238,21 +231,17 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			case 0:
 				return Labels.name(f.flow);
 			case 1:
-				return CategoryPath.getShort(f.flow.category);
+				return Labels.category(f.flow);
 			case 2:
-				if (f.flowPropertyFactor == null)
-					return null;
-				return Labels.name(f.flowPropertyFactor.flowProperty);
-			case 3:
 				if (f.formula == null || !showFormulas)
 					return Double.toString(f.value);
 				else
 					return f.formula;
-			case 4:
+			case 3:
 				return getFactorUnit(f);
-			case 5:
+			case 4:
 				return Uncertainty.string(f.uncertainty);
-			case 6:
+			case 5:
 				return f.location == null ? "": f.location.code != null
 								? f.location.code
 								: Labels.name(f.location);
@@ -271,75 +260,6 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				return "1/" + factor.unit.name;
 		}
 
-	}
-
-	private class FlowPropertyModifier extends
-			ComboBoxCellModifier<ImpactFactor, FlowProperty> {
-
-		@Override
-		protected FlowProperty[] getItems(ImpactFactor element) {
-			List<FlowProperty> items = new ArrayList<>();
-			for (FlowPropertyFactor factor : element.flow.flowPropertyFactors)
-				items.add(factor.flowProperty);
-			return items.toArray(new FlowProperty[items.size()]);
-		}
-
-		@Override
-		protected FlowProperty getItem(ImpactFactor element) {
-			if (element.flowPropertyFactor == null)
-				return null;
-			return element.flowPropertyFactor.flowProperty;
-		}
-
-		@Override
-		protected String getText(FlowProperty value) {
-			return value.name;
-		}
-
-		@Override
-		protected void setItem(ImpactFactor f, FlowProperty prop) {
-			if (f.flowPropertyFactor == null
-					|| !Objects.equals(prop, f.flowPropertyFactor.flowProperty)) {
-				FlowPropertyFactor factor = f.flow.getFactor(prop);
-				f.flowPropertyFactor = factor;
-				editor.setDirty(true);
-			}
-		}
-	}
-
-	private class UnitModifier extends ComboBoxCellModifier<ImpactFactor, Unit> {
-
-		@Override
-		protected Unit[] getItems(ImpactFactor f) {
-			if (f.flowPropertyFactor == null)
-				return new Unit[0];
-			if (f.flowPropertyFactor.flowProperty == null)
-				return new Unit[0];
-			if (f.flowPropertyFactor.flowProperty.unitGroup == null)
-				return new Unit[0];
-			List<Unit> items = new ArrayList<>();
-			for (Unit unit : f.flowPropertyFactor.flowProperty.unitGroup.units)
-				items.add(unit);
-			return items.toArray(new Unit[items.size()]);
-		}
-
-		@Override
-		protected Unit getItem(ImpactFactor f) {
-			return f.unit;
-		}
-
-		@Override
-		protected String getText(Unit value) {
-			return value.name;
-		}
-
-		@Override
-		protected void setItem(ImpactFactor f, Unit u) {
-			if (!Objects.equals(u, f.unit)) {
-				f.unit = u;
-				editor.setDirty(true);
-			}
-		}
 	}
 
 	private static class LocationModifier extends DialogCellEditor {
