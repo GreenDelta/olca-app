@@ -56,6 +56,7 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 			ScenarioSection section = new ScenarioSection(s);
 			section.render(tk, body);
 			sections.add(section);
+			form.reflow(true);
 		});
 
 		// create sections for existing scenarios
@@ -72,6 +73,7 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 
 		Scenario scenario;
 		Section section;
+		private ParameterRedefTable paramTable;
 
 		ScenarioSection(Scenario scenario) {
 			this.scenario = scenario;
@@ -109,6 +111,16 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 				editor.setDirty(true);
 			});
 
+			// parameters
+			Section paramSection = UI.section(
+					comp, tk, M.Parameters);
+			UI.gridData(paramSection, true, false);
+			paramTable = new ParameterRedefTable(
+					editor, () -> scenario.parameterRedefs);
+			paramTable.create(tk,
+					UI.sectionClient(paramSection, tk));
+			paramTable.bindActions(paramSection);
+
 			Actions.bind(section,
 					Actions.onRemove(this::onRemove));
 		}
@@ -118,7 +130,7 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 			for (Scenario s : scenarios()) {
 				if (Objects.equals(s, this.scenario)) {
 					this.scenario = s;
-					// TODO: push parameter redefs
+					paramTable.update();
 					break;
 				}
 			}

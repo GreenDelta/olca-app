@@ -114,8 +114,6 @@ class ParameterRedefTable {
 		return new String[] { CONTEXT, PARAMETER, AMOUNT, UNCERTAINTY, COMMENT };
 	}
 
-
-
 	public void bindActions(Section section) {
 		Action add = Actions.onAdd(this::add);
 		Action remove = Actions.onRemove(this::remove);
