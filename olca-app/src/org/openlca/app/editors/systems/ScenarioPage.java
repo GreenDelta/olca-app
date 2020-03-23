@@ -1,9 +1,9 @@
 package org.openlca.app.editors.systems;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -25,10 +25,14 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 
 	private ProductSystemEditor editor;
 	private ScrolledForm form;
+	private final List<ScenarioSection> sections = new ArrayList<>();
 
 	public ScenarioPage(ProductSystemEditor editor) {
 		super(editor, "ScenarioPage", "Scenarios");
 		this.editor = editor;
+		editor.onSaved(() -> {
+			sections.forEach(s -> s.update());
+		});
 	}
 
 	private List<Scenario> scenarios() {
@@ -41,6 +45,7 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 
+		// `add scenario` button
 		Button addButton = tk.createButton(
 				body, "Add scenario", SWT.NONE);
 		addButton.setImage(Icon.ADD.get());
@@ -48,11 +53,16 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 			Scenario s = new Scenario();
 			s.name = "New scenario";
 			getModel().scenarios.add(s);
-			new ScenarioSection(s).render(tk, body);
+			ScenarioSection section = new ScenarioSection(s);
+			section.render(tk, body);
+			sections.add(section);
 		});
 
+		// create sections for existing scenarios
 		for (Scenario s : scenarios()) {
-			new ScenarioSection(s).render(tk, body);
+			ScenarioSection section = new ScenarioSection(s);
+			section.render(tk, body);
+			sections.add(section);
 		}
 
 		form.reflow(true);
@@ -65,25 +75,20 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 
 		ScenarioSection(Scenario scenario) {
 			this.scenario = scenario;
-			editor.onSaved(() -> {
-				// sync JPA state
-				for (Scenario s : scenarios()) {
-					if (Objects.equals(s, this.scenario)) {
-						this.scenario = s;
-						// TODO: push parameter redefs
-						break;
-					}
-				}
-			});
 		}
 
 		void render(FormToolkit tk, Composite body) {
 			section = UI.section(body, tk,
 					scenario.name != null ? scenario.name : "");
 			Composite comp = UI.sectionClient(section, tk);
+			UI.gridLayout(comp, 1);
+
+			Composite textComp = tk.createComposite(comp);
+			UI.gridData(textComp, true, false);
+			UI.gridLayout(textComp, 2, 10, 0);
 
 			// name
-			Text nameText = UI.formText(comp, tk, M.Name);
+			Text nameText = UI.formText(textComp, tk, M.Name);
 			if (scenario.name != null) {
 				nameText.setText(scenario.name);
 			}
@@ -94,24 +99,37 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 			});
 
 			// description
-			Text descriptionText = UI.formMultiText(comp, tk);
+			Text descrText = UI.formMultiText(
+					textComp, tk, M.Description);
 			if (scenario.description != null) {
-				descriptionText.setText(scenario.description);
+				descrText.setText(scenario.description);
 			}
-			descriptionText.addModifyListener(e -> {
-				scenario.description = descriptionText.getText();
+			descrText.addModifyListener(e -> {
+				scenario.description = descrText.getText();
 				editor.setDirty(true);
 			});
 
-			Action delete = Actions.onRemove(() -> {
-				editor.getModel().scenarios.remove(scenario);
-				section.dispose();
-				form.reflow(true);
-				editor.setDirty(true);
-			});
-			Actions.bind(section, delete);
+			Actions.bind(section,
+					Actions.onRemove(this::onRemove));
 		}
 
-	}
+		void update() {
+			// sync JPA state
+			for (Scenario s : scenarios()) {
+				if (Objects.equals(s, this.scenario)) {
+					this.scenario = s;
+					// TODO: push parameter redefs
+					break;
+				}
+			}
+		}
 
+		void onRemove() {
+			sections.remove(this);
+			editor.getModel().scenarios.remove(scenario);
+			section.dispose();
+			form.reflow(true);
+			editor.setDirty(true);
+		}
+	}
 }

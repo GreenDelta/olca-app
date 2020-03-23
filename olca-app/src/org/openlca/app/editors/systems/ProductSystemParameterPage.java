@@ -19,7 +19,11 @@ public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 	public ProductSystemParameterPage(ProductSystemEditor editor) {
 		super(editor, "ProductSystemParameterPage", M.Parameters);
 		this.editor = editor;
-		editor.onSaved(() -> refreshBindings());
+		editor.onSaved(() -> {
+			if (table != null) {
+				table.update();
+			}
+		});
 	}
 
 	@Override
@@ -30,14 +34,10 @@ public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 		Section section = UI.section(body, toolkit, M.Parameters);
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, toolkit, 1);
-		table = new ParameterRedefTable(editor);
+		table = new ParameterRedefTable(
+				editor, () -> editor.getModel().parameterRedefs);
 		table.create(toolkit, composite);
 		table.bindActions(section);
-	}
-
-	void refreshBindings() {
-		if (table != null)
-			table.setInput(editor.getModel().parameterRedefs);
 	}
 
 }

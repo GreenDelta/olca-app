@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -37,7 +38,6 @@ import org.openlca.core.database.Daos;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -56,6 +56,7 @@ class ParameterRedefTable {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private ProductSystemEditor editor;
+	private final Supplier<List<ParameterRedef>> supplier;
 
 	private static final String PARAMETER = M.Parameter;
 	private static final String CONTEXT = M.Context;
@@ -65,13 +66,29 @@ class ParameterRedefTable {
 
 	private TableViewer viewer;
 
-	public ParameterRedefTable(ProductSystemEditor editor) {
+	public ParameterRedefTable(
+			ProductSystemEditor editor,
+			Supplier<List<ParameterRedef>> supplier) {
 		this.editor = editor;
+		this.supplier = supplier;
+
+	}
+
+	public void update() {
+		if (viewer == null)
+			return;
+		List<ParameterRedef> redefs = supplier.get();
+		Collections.sort(redefs, new ParameterComparator());
+		viewer.setInput(redefs);
 	}
 
 	public void create(FormToolkit toolkit, Composite composite) {
+		// configure the table
 		viewer = Tables.createViewer(composite, getColumnHeaders());
 		viewer.setLabelProvider(new LabelProvider());
+		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17);
+
+		// bind modifiers
 		new ModifySupport<ParameterRedef>(viewer)
 				.bind(AMOUNT, new DoubleModifier<>(editor, "value"))
 				.bind(UNCERTAINTY, new UncertaintyCellEditor(
@@ -79,8 +96,9 @@ class ParameterRedefTable {
 				.bind("", new CommentDialogModifier<>(
 						editor.getComments(),
 						p -> CommentPaths.get(p, getContext(p))));
-		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17);
-		List<ParameterRedef> redefs = editor.getModel().parameterRedefs;
+
+		// set the input
+		List<ParameterRedef> redefs = supplier.get();
 		Collections.sort(redefs, new ParameterComparator());
 		viewer.setInput(redefs);
 	}
@@ -96,10 +114,7 @@ class ParameterRedefTable {
 		return new String[] { CONTEXT, PARAMETER, AMOUNT, UNCERTAINTY, COMMENT };
 	}
 
-	public void setInput(List<ParameterRedef> redefs) {
-		Collections.sort(redefs, new ParameterComparator());
-		viewer.setInput(redefs);
-	}
+
 
 	public void bindActions(Section section) {
 		Action add = Actions.onAdd(this::add);
@@ -124,19 +139,18 @@ class ParameterRedefTable {
 	}
 
 	private void add() {
-		ProductSystem system = editor.getModel();
-		List<ParameterRedef> systemRedefs = system.parameterRedefs;
+		List<ParameterRedef> existing = supplier.get();
 		List<ParameterRedef> redefs = ParameterRedefDialog.select(
-				system.processes);
+				editor.getModel().processes);
 		if (redefs.isEmpty())
 			return;
 		log.trace("add new parameter redef");
 		for (ParameterRedef redef : redefs) {
-			if (!contains(redef, systemRedefs)) {
-				systemRedefs.add(redef.clone());
+			if (!contains(redef, existing)) {
+				existing.add(redef.clone());
 			}
 		}
-		viewer.setInput(systemRedefs);
+		viewer.setInput(existing);
 		editor.setDirty(true);
 	}
 
@@ -146,7 +160,7 @@ class ParameterRedefTable {
 				() -> newList.addAll(ParameterClipboard.read(text)));
 		if (newList.isEmpty())
 			return;
-		List<ParameterRedef> redefs = editor.getModel().parameterRedefs;
+		List<ParameterRedef> redefs = supplier.get();
 		boolean added = false;
 		for (ParameterRedef redef : newList) {
 			if (!contains(redef, redefs)) {
@@ -172,12 +186,10 @@ class ParameterRedefTable {
 
 	private void remove() {
 		log.trace("remove parameter redef");
-		ProductSystem system = editor.getModel();
-		List<ParameterRedef> systemRedefs = system.parameterRedefs;
-		List<ParameterRedef> redefs = Viewers.getAllSelected(viewer);
-		for (ParameterRedef redef : redefs)
-			systemRedefs.remove(redef);
-		viewer.setInput(systemRedefs);
+		List<ParameterRedef> redefs = supplier.get();
+		List<ParameterRedef> selected = Viewers.getAllSelected(viewer);
+		redefs.removeAll(selected);
+		viewer.setInput(redefs);
 		editor.setDirty(true);
 	}
 
