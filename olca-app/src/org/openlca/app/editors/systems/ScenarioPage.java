@@ -82,6 +82,7 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 		void render(FormToolkit tk, Composite body) {
 			section = UI.section(body, tk,
 					scenario.name != null ? scenario.name : "");
+			UI.gridData(section, true, false);
 			Composite comp = UI.sectionClient(section, tk);
 			UI.gridLayout(comp, 1);
 

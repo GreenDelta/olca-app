@@ -13,6 +13,7 @@ import org.openlca.core.math.data_quality.DQCalculationSetup;
 import org.openlca.core.math.data_quality.ProcessingType;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.Scenario;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
@@ -26,6 +27,7 @@ class Setup {
 	CalculationType calcType;
 	boolean storeInventory;
 	boolean withDataQuality;
+	Scenario scenario;
 
 	private Setup(ProductSystem system) {
 		calcSetup = new CalculationSetup(system);
