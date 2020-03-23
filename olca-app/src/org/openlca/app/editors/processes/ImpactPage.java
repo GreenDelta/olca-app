@@ -25,6 +25,7 @@ import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -60,6 +61,7 @@ import org.openlca.util.Strings;
 
 class ImpactPage extends ModelPage<Process> {
 
+	private ImpactMethodViewer combo;
 	private Button zeroCheck;
 	private TreeViewer tree;
 	private ContributionResult result;
@@ -74,9 +76,9 @@ class ImpactPage extends ModelPage<Process> {
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		Composite comp = tk.createComposite(body);
-		UI.gridLayout(comp, 3);
+		UI.gridLayout(comp, 4);
 		UI.formLabel(comp, tk, M.ImpactAssessmentMethod);
-		ImpactMethodViewer combo = new ImpactMethodViewer(comp);
+		combo = new ImpactMethodViewer(comp);
 		List<ImpactMethodDescriptor> list = new ImpactMethodDao(Database.get())
 				.getDescriptors()
 				.stream().sorted((m1, m2) -> Strings.compare(
@@ -90,13 +92,20 @@ class ImpactPage extends ModelPage<Process> {
 		Controls.onSelect(
 				zeroCheck, e -> setTreeInput(combo.getSelected()));
 
+		Button reload = tk.createButton(comp, M.Reload, SWT.NONE);
+		reload.setImage(Icon.REFRESH.get());
+		Controls.onSelect(reload, _e -> {
+			result = null;
+			setTreeInput(combo.getSelected());
+		});
+
 		tree = Trees.createViewer(body,
 				M.Name, M.Category, M.Amount, M.Result);
 		UI.gridData(tree.getControl(), true, true);
 		tree.setContentProvider(new Content());
 		tree.setLabelProvider(new Label());
 		Trees.bindColumnWidths(tree.getTree(),
-				0.25, 0.25, 0.25, 0.25);
+				0.35, 0.35, 0.15, 0.15);
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		tree.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
 
@@ -123,11 +132,20 @@ class ImpactPage extends ModelPage<Process> {
 	}
 
 	private void setTreeInput(ImpactMethodDescriptor method) {
-		if (result == null) {
-			result = App.exec("Compute LCIA results ...", this::compute);
+		if (tree == null)
+			return;
+		if (method == null) {
+			tree.setInput(Collections.emptyList());
+			return;
 		}
-		if (result == null
-				|| !result.hasFlowResults()
+		if (result == null) {
+			App.runInUI("Compute LCIA results ...", () -> {
+				result = compute();
+				setTreeInput(method);
+			});
+			return;
+		}
+		if (!result.hasFlowResults()
 				|| !result.hasImpactResults()) {
 			tree.setInput(Collections.emptyList());
 			return;
@@ -136,7 +154,12 @@ class ImpactPage extends ModelPage<Process> {
 				.getCategoryDescriptors(method.id)
 				.stream()
 				.sorted((d1, d2) -> Strings.compare(d1.name, d2.name))
-				.map(d -> Contribution.of(d, result.getTotalImpactResult(d)))
+				.map(d -> {
+					Contribution<?> c = Contribution.of(
+							d, result.getTotalImpactResult(d));
+					c.unit = d.referenceUnit;
+					return c;
+				})
 				.collect(Collectors.toList());
 		tree.setInput(cons);
 	}
@@ -183,7 +206,7 @@ class ImpactPage extends ModelPage<Process> {
 			if (e.isInput && amount != 0) {
 				amount = -amount;
 			}
-			enviBuilder.add(i, 1, amount);
+			enviBuilder.add(i, 0, amount);
 		}
 		r.directFlowResults = enviBuilder.finish();
 		r.totalFlowResults = r.directFlowResults.getColumn(0);
@@ -230,6 +253,7 @@ class ImpactPage extends ModelPage<Process> {
 					continue;
 				Contribution<?> child = Contribution.of(flow, value);
 				child.computeShare(total);
+				child.unit = impact.referenceUnit;
 				childs.add(child);
 			}
 
@@ -291,12 +315,8 @@ class ImpactPage extends ModelPage<Process> {
 			case 0:
 				if (c.item instanceof IndexFlow)
 					return Labels.name((IndexFlow) c.item);
-				if (c.item instanceof ImpactCategoryDescriptor) {
-					ImpactCategoryDescriptor d = (ImpactCategoryDescriptor) c.item;
-					return Strings.nullOrEmpty(d.referenceUnit)
-							? Labels.name(d)
-							: Labels.name(d) + " [" + d.referenceUnit + "]";
-				}
+				if (c.item instanceof ImpactCategoryDescriptor)
+					return Labels.name((ImpactCategoryDescriptor) c.item);
 				return null;
 			case 1:
 				if (c.item instanceof IndexFlow)
@@ -309,7 +329,9 @@ class ImpactPage extends ModelPage<Process> {
 				double a = result.getTotalFlowResult(iFlow);
 				return Numbers.format(a) + " " + Labels.refUnit(iFlow);
 			case 3:
-				return Numbers.format(c.amount);
+				return Strings.nullOrEmpty(c.unit)
+						? Numbers.format(c.amount)
+						: Numbers.format(c.amount) + " " + c.unit;
 			default:
 				return null;
 			}
