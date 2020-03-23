@@ -112,9 +112,9 @@ class CalculationWizardPage extends WizardPage {
 		Controls.onSelect(combo, e -> {
 			int i = combo.getSelectionIndex();
 			if (i == 0) {
-				setup.scenario = null;
+				setup.setScenario(null);
 			} else {
-				setup.scenario = scenarios.get(i - 1);
+				setup.setScenario(scenarios.get(i - 1));
 			}
 		});
 	}

@@ -27,13 +27,23 @@ class Setup {
 	CalculationType calcType;
 	boolean storeInventory;
 	boolean withDataQuality;
-	Scenario scenario;
 
 	private Setup(ProductSystem system) {
 		calcSetup = new CalculationSetup(system);
 		calcSetup.parameterRedefs.addAll(system.parameterRedefs);
 		dqSetup = new DQCalculationSetup();
 		dqSetup.productSystemId = system.id;
+	}
+
+	void setScenario(Scenario scenario) {
+		calcSetup.parameterRedefs.clear();
+		if (scenario == null) {
+			calcSetup.parameterRedefs.addAll(
+					calcSetup.productSystem.parameterRedefs);
+		} else {
+			calcSetup.parameterRedefs.addAll(
+					scenario.parameterRedefs);
+		}
 	}
 
 	/**
