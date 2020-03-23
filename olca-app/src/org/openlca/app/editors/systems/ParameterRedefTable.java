@@ -72,11 +72,13 @@ class ParameterRedefTable {
 	public void create(FormToolkit toolkit, Composite composite) {
 		viewer = Tables.createViewer(composite, getColumnHeaders());
 		viewer.setLabelProvider(new LabelProvider());
-		ModifySupport<ParameterRedef> modifySupport = new ModifySupport<>(viewer);
-		modifySupport.bind(AMOUNT, new DoubleModifier<>(editor, "value"));
-		modifySupport.bind(UNCERTAINTY, new UncertaintyCellEditor(viewer.getTable(), editor));
-		modifySupport.bind("", new CommentDialogModifier<ParameterRedef>(editor.getComments(),
-				(p) -> CommentPaths.get(p, getContext(p))));
+		new ModifySupport<ParameterRedef>(viewer)
+				.bind(AMOUNT, new DoubleModifier<>(editor, "value"))
+				.bind(UNCERTAINTY, new UncertaintyCellEditor(
+						viewer.getTable(), editor))
+				.bind("", new CommentDialogModifier<>(
+						editor.getComments(),
+						p -> CommentPaths.get(p, getContext(p))));
 		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17);
 		List<ParameterRedef> redefs = editor.getModel().parameterRedefs;
 		Collections.sort(redefs, new ParameterComparator());
@@ -94,9 +96,9 @@ class ParameterRedefTable {
 		return new String[] { CONTEXT, PARAMETER, AMOUNT, UNCERTAINTY, COMMENT };
 	}
 
-	public void setInput(List<ParameterRedef> redefinitions) {
-		Collections.sort(redefinitions, new ParameterComparator());
-		viewer.setInput(redefinitions);
+	public void setInput(List<ParameterRedef> redefs) {
+		Collections.sort(redefs, new ParameterComparator());
+		viewer.setInput(redefs);
 	}
 
 	public void bindActions(Section section) {

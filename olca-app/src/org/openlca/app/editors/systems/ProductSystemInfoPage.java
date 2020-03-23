@@ -47,9 +47,9 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
+	protected void createFormContent(IManagedForm mform) {
 		form = UI.formHeader(this);
-		FormToolkit tk = managedForm.getToolkit();
+		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, tk);

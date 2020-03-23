@@ -27,6 +27,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 			int gIdx = addPage(new ProductSystemGraphEditor(this), gInput);
 			setPageText(gIdx, M.ModelGraph);
 			addPage(new StatisticsPage(this));
+			addPage(new ScenarioPage(this));
 			addCommentPage();
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
