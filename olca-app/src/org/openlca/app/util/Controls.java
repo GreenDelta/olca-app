@@ -2,6 +2,7 @@ package org.openlca.app.util;
 
 import java.util.function.Consumer;
 
+import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
@@ -31,31 +32,35 @@ public class Controls {
 	}
 
 	public static void onSelect(Combo combo, Consumer<SelectionEvent> consumer) {
-		combo.addSelectionListener(createSelectionListener(consumer));
+		combo.addSelectionListener(selectionListener(consumer));
 	}
 
 	public static void onSelect(Button button, Consumer<SelectionEvent> consumer) {
-		button.addSelectionListener(createSelectionListener(consumer));
+		button.addSelectionListener(selectionListener(consumer));
 	}
 
 	public static void onSelect(MenuItem item, Consumer<SelectionEvent> consumer) {
-		item.addSelectionListener(createSelectionListener(consumer));
+		item.addSelectionListener(selectionListener(consumer));
 	}
 
 	public static void onSelect(Scale scale, Consumer<SelectionEvent> consumer) {
-		scale.addSelectionListener(createSelectionListener(consumer));
+		scale.addSelectionListener(selectionListener(consumer));
 	}
 
 	public static void onSelect(Link link, Consumer<SelectionEvent> consumer) {
-		link.addSelectionListener(createSelectionListener(consumer));
+		link.addSelectionListener(selectionListener(consumer));
 	}
 
 	public static void onSelect(Spinner spinner,
 			Consumer<SelectionEvent> consumer) {
-		spinner.addSelectionListener(createSelectionListener(consumer));
+		spinner.addSelectionListener(selectionListener(consumer));
 	}
 
-	private static SelectionListener createSelectionListener(
+	public static void onSelect(TableCombo combo, Consumer<SelectionEvent> fn) {
+		combo.addSelectionListener(selectionListener(fn));
+	}
+
+	private static SelectionListener selectionListener(
 			Consumer<SelectionEvent> consumer) {
 		return new SelectionListener() {
 

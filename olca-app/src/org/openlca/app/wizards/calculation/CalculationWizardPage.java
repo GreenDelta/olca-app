@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -94,16 +94,20 @@ class CalculationWizardPage extends WizardPage {
 				setup.calcSetup.productSystem.scenarios);
 		if (scenarios.isEmpty())
 			return;
-		Combo combo = UI.formCombo(comp, "Scenario");
-		combo.setBackground(Colors.white());
+
+		UI.formLabel(comp, "Scenarios");
+		TableCombo combo = new TableCombo(comp,
+				SWT.READ_ONLY | SWT.BORDER);
+		UI.gridData(combo, true, false);
 		scenarios.sort((s1, s2) -> Strings.compare(s1.name, s2.name));
-		String[] items = new String[scenarios.size() + 1];
-		for (int i = 0; i < items.length; i++) {
-			items[i] = i == 0
+		for (int i = 0; i < scenarios.size() + 1; i++) {
+			String text = i == 0
 					? " - none -"
 					: scenarios.get(i - 1).name;
+			TableItem item = new TableItem(combo.getTable(), SWT.NONE);
+			item.setText(text);
 		}
-		combo.setItems(items);
+
 		combo.select(0);
 		Controls.onSelect(combo, e -> {
 			int i = combo.getSelectionIndex();
