@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
@@ -14,10 +13,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Scenario;
 
@@ -45,22 +43,24 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 
-		// `add scenario` button
-		Button addButton = tk.createButton(
-				body, "Add scenario", SWT.NONE);
-		addButton.setImage(Icon.ADD.get());
-		Controls.onSelect(addButton, e -> {
-			Scenario s = new Scenario();
-			s.name = "New scenario";
-			getModel().scenarios.add(s);
-			ScenarioSection section = new ScenarioSection(s);
-			section.render(tk, body);
-			sections.add(section);
-			form.reflow(true);
-		});
+		// render the baseline scenario
+		Scenario baseLine = getModel().scenarios.stream()
+				.filter(s -> s.isBaseline)
+				.findFirst()
+				.orElse(null);
+		if (baseLine == null) {
+			baseLine = new Scenario();
+			baseLine.name = "Baseline";
+			baseLine.isBaseline = true;
+			getModel().scenarios.add(baseLine);
+		}
+		new ScenarioSection(baseLine)
+				.render(tk, body);
 
 		// create sections for existing scenarios
 		for (Scenario s : scenarios()) {
+			if (s.isBaseline)
+				continue;
 			ScenarioSection section = new ScenarioSection(s);
 			section.render(tk, body);
 			sections.add(section);
@@ -73,17 +73,22 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 
 		Scenario scenario;
 		Section section;
-		private ParameterRedefTable paramTable;
+		ParameterRedefTable paramTable;
+		FormToolkit tk;
+		Composite body;
 
 		ScenarioSection(Scenario scenario) {
 			this.scenario = scenario;
 		}
 
-		void render(FormToolkit tk, Composite body) {
+		ScenarioSection render(FormToolkit tk, Composite body) {
+			this.tk = tk;
+			this.body = body;
 			section = UI.section(body, tk,
 					scenario.name != null ? scenario.name : "");
 			UI.gridData(section, true, false);
 			Composite comp = UI.sectionClient(section, tk);
+			UI.gridData(comp, true, false);
 			UI.gridLayout(comp, 1);
 
 			Composite textComp = tk.createComposite(comp);
@@ -117,13 +122,21 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 					comp, tk, M.Parameters);
 			UI.gridData(paramSection, true, false);
 			paramTable = new ParameterRedefTable(
-					editor, () -> scenario.parameterRedefs);
+					editor, () -> scenario.parameters);
 			paramTable.create(tk,
 					UI.sectionClient(paramSection, tk));
 			paramTable.bindActions(paramSection);
 
-			Actions.bind(section,
-					Actions.onRemove(this::onRemove));
+			// only non-baseline scenarios can be removed
+			Action onAdd = Actions.onAdd(this::onCopy);
+			if (scenario.isBaseline) {
+				Actions.bind(section, onAdd);
+			}
+			if (!scenario.isBaseline) {
+				Actions.bind(section, onAdd,
+						Actions.onRemove(this::onRemove));
+			}
+			return this;
 		}
 
 		void update() {
@@ -141,6 +154,20 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 			sections.remove(this);
 			editor.getModel().scenarios.remove(scenario);
 			section.dispose();
+			form.reflow(true);
+			editor.setDirty(true);
+		}
+
+		void onCopy() {
+			Scenario s = new Scenario();
+			s.name = "New scenario";
+			for (ParameterRedef redef : scenario.parameters) {
+				s.parameters.add(redef.clone());
+			}
+			getModel().scenarios.add(s);
+			ScenarioSection section = new ScenarioSection(s)
+					.render(tk, body);
+			sections.add(section);
 			form.reflow(true);
 			editor.setDirty(true);
 		}

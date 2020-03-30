@@ -94,12 +94,18 @@ class CalculationWizardPage extends WizardPage {
 				setup.calcSetup.productSystem.scenarios);
 		if (scenarios.isEmpty())
 			return;
+		scenarios.sort((s1, s2) -> {
+			if (s1.isBaseline)
+				return -1;
+			if (s2.isBaseline)
+				return 1;
+			return Strings.compare(s1.name, s2.name);
+		});
 
 		UI.formLabel(comp, "Scenarios");
 		TableCombo combo = new TableCombo(comp,
 				SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
-		scenarios.sort((s1, s2) -> Strings.compare(s1.name, s2.name));
 		for (int i = 0; i < scenarios.size() + 1; i++) {
 			String text = i == 0
 					? " - none -"

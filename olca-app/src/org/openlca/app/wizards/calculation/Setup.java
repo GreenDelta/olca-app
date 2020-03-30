@@ -42,7 +42,7 @@ class Setup {
 					calcSetup.productSystem.parameterRedefs);
 		} else {
 			calcSetup.parameterRedefs.addAll(
-					scenario.parameterRedefs);
+					scenario.parameters);
 		}
 	}
 
