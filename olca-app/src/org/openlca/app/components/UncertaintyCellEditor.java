@@ -4,6 +4,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.editors.lcia.ImpactCategoryEditor;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ImpactFactor;
@@ -32,10 +33,13 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 	public UncertaintyCellEditor(Composite parent, ModelEditor<?> editor) {
 		super(parent);
 		this.editor = editor;
-		if (editor instanceof ProcessEditor) {
-			ProcessEditor e = (ProcessEditor) editor;
-			// interpreter = e.getInterpreter(); TODO: Formulas.getInterpreter
-			interpreterScope = e.getModel().id;
+		if ((editor instanceof ProcessEditor)
+				|| (editor instanceof ImpactCategoryEditor)) {
+			// TODO: currently the formula interpreter / scope
+			// is always null => we have to decide if we want
+			// to support formulas in uncertainty parameters or not
+			// TODO: Formulas.getInterpreter / getScope
+			interpreterScope = editor.getModel().id;
 		}
 	}
 
