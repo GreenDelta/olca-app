@@ -21,13 +21,13 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 	protected void addPages() {
 		try {
 			addPage(new ProductSystemInfoPage(this));
-			addPage(new ProductSystemParameterPage(this));
+			// addPage(new ProductSystemParameterPage(this));
+			addPage(new ParameterPage2(this));
 			BaseDescriptor descriptor = getEditorInput().getDescriptor();
 			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
 			int gIdx = addPage(new ProductSystemGraphEditor(this), gInput);
 			setPageText(gIdx, M.ModelGraph);
 			addPage(new StatisticsPage(this));
-			addPage(new ScenarioPage(this));
 			addCommentPage();
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());

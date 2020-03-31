@@ -23,7 +23,7 @@ import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
 import org.openlca.core.math.CalculationType;
 import org.openlca.core.model.AllocationMethod;
-import org.openlca.core.model.Scenario;
+import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.util.Strings;
 
@@ -64,7 +64,7 @@ class CalculationWizardPage extends WizardPage {
 		setControl(body);
 
 		// main selectors
-		createScenarioCombo(body);
+		createParamSetCombo(body);
 		createAllocationCombo(body);
 		createMethodCombo(body);
 		createNWSetCombo(body);
@@ -89,12 +89,12 @@ class CalculationWizardPage extends WizardPage {
 		updateOptions();
 	}
 
-	private void createScenarioCombo(Composite comp) {
-		List<Scenario> scenarios = new ArrayList<>(
-				setup.calcSetup.productSystem.scenarios);
-		if (scenarios.isEmpty())
+	private void createParamSetCombo(Composite comp) {
+		List<ParameterRedefSet> paramSets = new ArrayList<>(
+				setup.calcSetup.productSystem.parameterSets);
+		if (paramSets.isEmpty())
 			return;
-		scenarios.sort((s1, s2) -> {
+		paramSets.sort((s1, s2) -> {
 			if (s1.isBaseline)
 				return -1;
 			if (s2.isBaseline)
@@ -102,14 +102,14 @@ class CalculationWizardPage extends WizardPage {
 			return Strings.compare(s1.name, s2.name);
 		});
 
-		UI.formLabel(comp, "Scenarios");
+		UI.formLabel(comp, "Parameter set");
 		TableCombo combo = new TableCombo(comp,
 				SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
-		for (int i = 0; i < scenarios.size() + 1; i++) {
+		for (int i = 0; i < paramSets.size() + 1; i++) {
 			String text = i == 0
 					? " - none -"
-					: scenarios.get(i - 1).name;
+					: paramSets.get(i - 1).name;
 			TableItem item = new TableItem(combo.getTable(), SWT.NONE);
 			item.setText(text);
 		}
@@ -118,9 +118,9 @@ class CalculationWizardPage extends WizardPage {
 		Controls.onSelect(combo, e -> {
 			int i = combo.getSelectionIndex();
 			if (i == 0) {
-				setup.setScenario(null);
+				setup.setParameters(null);
 			} else {
-				setup.setScenario(scenarios.get(i - 1));
+				setup.setParameters(paramSets.get(i - 1));
 			}
 		});
 	}

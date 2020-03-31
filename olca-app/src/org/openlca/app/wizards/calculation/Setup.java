@@ -12,8 +12,8 @@ import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.DQCalculationSetup;
 import org.openlca.core.math.data_quality.ProcessingType;
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.Scenario;
 import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
@@ -35,14 +35,14 @@ class Setup {
 		dqSetup.productSystemId = system.id;
 	}
 
-	void setScenario(Scenario scenario) {
+	void setParameters(ParameterRedefSet params) {
 		calcSetup.parameterRedefs.clear();
-		if (scenario == null) {
+		if (params == null) {
 			calcSetup.parameterRedefs.addAll(
 					calcSetup.productSystem.parameterRedefs);
 		} else {
 			calcSetup.parameterRedefs.addAll(
-					scenario.parameters);
+					params.parameters);
 		}
 	}
 

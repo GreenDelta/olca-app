@@ -16,25 +16,25 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ParameterRedef;
+import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.Scenario;
 
-class ScenarioPage extends ModelPage<ProductSystem> {
+class ParameterPage2 extends ModelPage<ProductSystem> {
 
 	private ProductSystemEditor editor;
 	private ScrolledForm form;
-	private final List<ScenarioSection> sections = new ArrayList<>();
+	private final List<ParameterSection> sections = new ArrayList<>();
 
-	public ScenarioPage(ProductSystemEditor editor) {
-		super(editor, "ScenarioPage", "Scenarios");
+	public ParameterPage2(ProductSystemEditor editor) {
+		super(editor, "ParameterPage2", "Parameters");
 		this.editor = editor;
 		editor.onSaved(() -> {
 			sections.forEach(s -> s.update());
 		});
 	}
 
-	private List<Scenario> scenarios() {
-		return editor.getModel().scenarios;
+	private List<ParameterRedefSet> paramSets() {
+		return editor.getModel().parameterSets;
 	}
 
 	@Override
@@ -44,24 +44,25 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 		Composite body = UI.formBody(form, tk);
 
 		// render the baseline scenario
-		Scenario baseLine = getModel().scenarios.stream()
+		ParameterRedefSet baseLine = getModel().parameterSets
+				.stream()
 				.filter(s -> s.isBaseline)
 				.findFirst()
 				.orElse(null);
 		if (baseLine == null) {
-			baseLine = new Scenario();
+			baseLine = new ParameterRedefSet();
 			baseLine.name = "Baseline";
 			baseLine.isBaseline = true;
-			getModel().scenarios.add(baseLine);
+			getModel().parameterSets.add(baseLine);
 		}
-		new ScenarioSection(baseLine)
+		new ParameterSection(baseLine)
 				.render(tk, body);
 
 		// create sections for existing scenarios
-		for (Scenario s : scenarios()) {
+		for (ParameterRedefSet s : paramSets()) {
 			if (s.isBaseline)
 				continue;
-			ScenarioSection section = new ScenarioSection(s);
+			ParameterSection section = new ParameterSection(s);
 			section.render(tk, body);
 			sections.add(section);
 		}
@@ -69,23 +70,23 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 		form.reflow(true);
 	}
 
-	private class ScenarioSection {
+	private class ParameterSection {
 
-		Scenario scenario;
+		ParameterRedefSet paramSet;
 		Section section;
 		ParameterRedefTable paramTable;
 		FormToolkit tk;
 		Composite body;
 
-		ScenarioSection(Scenario scenario) {
-			this.scenario = scenario;
+		ParameterSection(ParameterRedefSet paramSet) {
+			this.paramSet = paramSet;
 		}
 
-		ScenarioSection render(FormToolkit tk, Composite body) {
+		ParameterSection render(FormToolkit tk, Composite body) {
 			this.tk = tk;
 			this.body = body;
 			section = UI.section(body, tk,
-					scenario.name != null ? scenario.name : "");
+					paramSet.name != null ? paramSet.name : "");
 			UI.gridData(section, true, false);
 			Composite comp = UI.sectionClient(section, tk);
 			UI.gridData(comp, true, false);
@@ -97,23 +98,23 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 
 			// name
 			Text nameText = UI.formText(textComp, tk, M.Name);
-			if (scenario.name != null) {
-				nameText.setText(scenario.name);
+			if (paramSet.name != null) {
+				nameText.setText(paramSet.name);
 			}
 			nameText.addModifyListener(e -> {
-				scenario.name = nameText.getText();
-				section.setText(scenario.name);
+				paramSet.name = nameText.getText();
+				section.setText(paramSet.name);
 				editor.setDirty(true);
 			});
 
 			// description
 			Text descrText = UI.formMultiText(
 					textComp, tk, M.Description);
-			if (scenario.description != null) {
-				descrText.setText(scenario.description);
+			if (paramSet.description != null) {
+				descrText.setText(paramSet.description);
 			}
 			descrText.addModifyListener(e -> {
-				scenario.description = descrText.getText();
+				paramSet.description = descrText.getText();
 				editor.setDirty(true);
 			});
 
@@ -122,17 +123,17 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 					comp, tk, M.Parameters);
 			UI.gridData(paramSection, true, false);
 			paramTable = new ParameterRedefTable(
-					editor, () -> scenario.parameters);
+					editor, () -> paramSet.parameters);
 			paramTable.create(tk,
 					UI.sectionClient(paramSection, tk));
 			paramTable.bindActions(paramSection);
 
 			// only non-baseline scenarios can be removed
 			Action onAdd = Actions.onAdd(this::onCopy);
-			if (scenario.isBaseline) {
+			if (paramSet.isBaseline) {
 				Actions.bind(section, onAdd);
 			}
-			if (!scenario.isBaseline) {
+			if (!paramSet.isBaseline) {
 				Actions.bind(section, onAdd,
 						Actions.onRemove(this::onRemove));
 			}
@@ -141,9 +142,9 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 
 		void update() {
 			// sync JPA state
-			for (Scenario s : scenarios()) {
-				if (Objects.equals(s, this.scenario)) {
-					this.scenario = s;
+			for (ParameterRedefSet s : paramSets()) {
+				if (Objects.equals(s, this.paramSet)) {
+					this.paramSet = s;
 					paramTable.update();
 					break;
 				}
@@ -152,20 +153,20 @@ class ScenarioPage extends ModelPage<ProductSystem> {
 
 		void onRemove() {
 			sections.remove(this);
-			editor.getModel().scenarios.remove(scenario);
+			editor.getModel().parameterSets.remove(paramSet);
 			section.dispose();
 			form.reflow(true);
 			editor.setDirty(true);
 		}
 
 		void onCopy() {
-			Scenario s = new Scenario();
-			s.name = "New scenario";
-			for (ParameterRedef redef : scenario.parameters) {
+			ParameterRedefSet s = new ParameterRedefSet();
+			s.name = "New parameter set";
+			for (ParameterRedef redef : paramSet.parameters) {
 				s.parameters.add(redef.clone());
 			}
-			getModel().scenarios.add(s);
-			ScenarioSection section = new ScenarioSection(s)
+			getModel().parameterSets.add(s);
+			ParameterSection section = new ParameterSection(s)
 					.render(tk, body);
 			sections.add(section);
 			form.reflow(true);
