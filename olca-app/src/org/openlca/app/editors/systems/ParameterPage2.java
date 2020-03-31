@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
@@ -13,16 +16,22 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.util.Strings;
 
 class ParameterPage2 extends ModelPage<ProductSystem> {
 
 	private ProductSystemEditor editor;
 	private ScrolledForm form;
+	private FormToolkit tk;
+	private Composite body;
+	private AddButton addButton;
 	private final List<ParameterSection> sections = new ArrayList<>();
 
 	public ParameterPage2(ProductSystemEditor editor) {
@@ -40,34 +49,46 @@ class ParameterPage2 extends ModelPage<ProductSystem> {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		form = UI.formHeader(this);
-		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.formBody(form, tk);
+		tk = mform.getToolkit();
+		body = UI.formBody(form, tk);
 
-		// render the baseline scenario
-		ParameterRedefSet baseLine = getModel().parameterSets
+		// create the baseline scenario if necessary
+		ParameterRedefSet base = getModel().parameterSets
 				.stream()
 				.filter(s -> s.isBaseline)
 				.findFirst()
 				.orElse(null);
-		if (baseLine == null) {
-			baseLine = new ParameterRedefSet();
-			baseLine.name = "Baseline";
-			baseLine.isBaseline = true;
-			getModel().parameterSets.add(baseLine);
+		if (base == null) {
+			base = new ParameterRedefSet();
+			base.name = "Baseline";
+			base.isBaseline = true;
+			getModel().parameterSets.add(base);
 		}
-		new ParameterSection(baseLine)
-				.render(tk, body);
 
-		// create sections for existing scenarios
+		// sort and render the parameter sets
+		List<ParameterRedefSet> sets = paramSets();
+		sets.sort((s1, s2) -> {
+			if (s1.isBaseline)
+				return -1;
+			if (s2.isBaseline)
+				return 1;
+			return Strings.compare(s1.name, s2.name);
+		});
 		for (ParameterRedefSet s : paramSets()) {
-			if (s.isBaseline)
-				continue;
-			ParameterSection section = new ParameterSection(s);
-			section.render(tk, body);
-			sections.add(section);
+			sections.add(new ParameterSection(s));
 		}
 
+		// render the add button at the end of the list
+		addButton = new AddButton();
 		form.reflow(true);
+	}
+
+	private void addNew(ParameterRedefSet s) {
+		getModel().parameterSets.add(s);
+		sections.add(new ParameterSection(s));
+		addButton.render();
+		form.reflow(true);
+		editor.setDirty(true);
 	}
 
 	private class ParameterSection {
@@ -75,16 +96,13 @@ class ParameterPage2 extends ModelPage<ProductSystem> {
 		ParameterRedefSet paramSet;
 		Section section;
 		ParameterRedefTable paramTable;
-		FormToolkit tk;
-		Composite body;
 
 		ParameterSection(ParameterRedefSet paramSet) {
 			this.paramSet = paramSet;
+			render();
 		}
 
-		ParameterSection render(FormToolkit tk, Composite body) {
-			this.tk = tk;
-			this.body = body;
+		void render() {
 			section = UI.section(body, tk,
 					paramSet.name != null ? paramSet.name : "");
 			UI.gridData(section, true, false);
@@ -109,7 +127,7 @@ class ParameterPage2 extends ModelPage<ProductSystem> {
 
 			// description
 			Text descrText = UI.formMultiText(
-					textComp, tk, M.Description);
+					textComp, tk, M.Description, 40);
 			if (paramSet.description != null) {
 				descrText.setText(paramSet.description);
 			}
@@ -129,15 +147,17 @@ class ParameterPage2 extends ModelPage<ProductSystem> {
 			paramTable.bindActions(paramSection);
 
 			// only non-baseline scenarios can be removed
-			Action onAdd = Actions.onAdd(this::onCopy);
+			Action onCopy = Actions.create(
+					"Copy parameter set",
+					Icon.COPY.descriptor(),
+					this::onCopy);
 			if (paramSet.isBaseline) {
-				Actions.bind(section, onAdd);
+				Actions.bind(section, onCopy);
 			}
 			if (!paramSet.isBaseline) {
-				Actions.bind(section, onAdd,
+				Actions.bind(section, onCopy,
 						Actions.onRemove(this::onRemove));
 			}
-			return this;
 		}
 
 		void update() {
@@ -161,16 +181,41 @@ class ParameterPage2 extends ModelPage<ProductSystem> {
 
 		void onCopy() {
 			ParameterRedefSet s = new ParameterRedefSet();
-			s.name = "New parameter set";
+			s.name = paramSet.name + " - Copy";
+			s.description = paramSet.description;
 			for (ParameterRedef redef : paramSet.parameters) {
 				s.parameters.add(redef.clone());
 			}
-			getModel().parameterSets.add(s);
-			ParameterSection section = new ParameterSection(s)
-					.render(tk, body);
-			sections.add(section);
-			form.reflow(true);
-			editor.setDirty(true);
+			addNew(s);
 		}
 	}
+
+	class AddButton {
+
+		Composite comp;
+
+		AddButton() {
+			render();
+		}
+
+		void render() {
+			if (comp != null) {
+				comp.dispose();
+			}
+			comp = tk.createComposite(body);
+			GridLayout btnGrid = UI.gridLayout(comp, 1);
+			btnGrid.marginLeft = 0;
+			btnGrid.marginTop = 0;
+			btnGrid.marginBottom = 10;
+			Button addButton = tk.createButton(
+					comp, "Add parameter set", SWT.NONE);
+			addButton.setImage(Icon.ADD.get());
+			Controls.onSelect(addButton, e -> {
+				ParameterRedefSet s = new ParameterRedefSet();
+				s.name = "New parameter set";
+				addNew(s);
+			});
+		}
+	}
+
 }
