@@ -34,6 +34,7 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.field.DoubleModifier;
+import org.openlca.app.viewers.table.modify.field.StringModifier;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ModelType;
@@ -56,15 +57,8 @@ class ParameterRedefTable {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private ProductSystemEditor editor;
+	private TableViewer table;
 	private final Supplier<List<ParameterRedef>> supplier;
-
-	private static final String PARAMETER = M.Parameter;
-	private static final String CONTEXT = M.Context;
-	private static final String AMOUNT = M.Amount;
-	private static final String UNCERTAINTY = M.Uncertainty;
-	private static final String COMMENT = "";
-
-	private TableViewer viewer;
 
 	public ParameterRedefTable(
 			ProductSystemEditor editor,
@@ -75,24 +69,32 @@ class ParameterRedefTable {
 	}
 
 	public void update() {
-		if (viewer == null)
+		if (table == null)
 			return;
 		List<ParameterRedef> redefs = supplier.get();
 		Collections.sort(redefs, new ParameterComparator());
-		viewer.setInput(redefs);
+		table.setInput(redefs);
 	}
 
-	public void create(FormToolkit toolkit, Composite composite) {
+	public void create(FormToolkit tk, Composite comp) {
 		// configure the table
-		viewer = Tables.createViewer(composite, getColumnHeaders());
-		viewer.setLabelProvider(new LabelProvider());
-		Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17);
+		table = Tables.createViewer(comp,
+				/* 0 */ M.Context,
+				/* 1 */ M.Parameter,
+				/* 2 */ M.Amount,
+				/* 3 */ M.Uncertainty,
+				/* 4 */ M.Description,
+				/* 5 */ "" // comment
+		);
+		table.setLabelProvider(new LabelProvider());
+		Tables.bindColumnWidths(table, 0.25, 0.2, 0.15, 0.2, 0.15, 0.05);
 
 		// bind modifiers
-		new ModifySupport<ParameterRedef>(viewer)
-				.bind(AMOUNT, new DoubleModifier<>(editor, "value"))
-				.bind(UNCERTAINTY, new UncertaintyCellEditor(
-						viewer.getTable(), editor))
+		new ModifySupport<ParameterRedef>(table)
+				.bind(M.Amount, new DoubleModifier<>(editor, "value"))
+				.bind(M.Description, new StringModifier<>(editor, "description"))
+				.bind(M.Uncertainty, new UncertaintyCellEditor(
+						table.getTable(), editor))
 				.bind("", new CommentDialogModifier<>(
 						editor.getComments(),
 						p -> CommentPaths.get(p, getContext(p))));
@@ -100,7 +102,7 @@ class ParameterRedefTable {
 		// set the input
 		List<ParameterRedef> redefs = supplier.get();
 		Collections.sort(redefs, new ParameterComparator());
-		viewer.setInput(redefs);
+		table.setInput(redefs);
 	}
 
 	private CategorizedDescriptor getContext(ParameterRedef p) {
@@ -110,27 +112,23 @@ class ParameterRedefTable {
 				.getDescriptor(p.contextId);
 	}
 
-	private String[] getColumnHeaders() {
-		return new String[] { CONTEXT, PARAMETER, AMOUNT, UNCERTAINTY, COMMENT };
-	}
-
 	public void bindActions(Section section) {
 		Action add = Actions.onAdd(this::add);
 		Action remove = Actions.onRemove(this::remove);
-		Action copy = TableClipboard.onCopy(viewer);
-		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
+		Action copy = TableClipboard.onCopy(table);
+		Action paste = TableClipboard.onPaste(table, this::onPaste);
 		Action usage = Actions.create(M.Usage, Icon.LINK.descriptor(), () -> {
-			ParameterRedef redef = Viewers.getFirstSelected(viewer);
+			ParameterRedef redef = Viewers.getFirstSelected(table);
 			if (redef != null) {
 				ParameterUsagePage.show(redef.name);
 			}
 		});
 		CommentAction.bindTo(section, "parameterRedefs",
 				editor.getComments(), add, remove);
-		Actions.bind(viewer, add, remove, copy, paste, usage);
-		Tables.onDeletePressed(viewer, (e) -> remove());
-		Tables.onDoubleClick(viewer, (event) -> {
-			TableItem item = Tables.getItem(viewer, event);
+		Actions.bind(table, add, remove, copy, paste, usage);
+		Tables.onDeletePressed(table, (e) -> remove());
+		Tables.onDoubleClick(table, (event) -> {
+			TableItem item = Tables.getItem(table, event);
 			if (item == null)
 				add();
 		});
@@ -148,7 +146,7 @@ class ParameterRedefTable {
 				existing.add(redef.clone());
 			}
 		}
-		viewer.setInput(existing);
+		table.setInput(existing);
 		editor.setDirty(true);
 	}
 
@@ -167,7 +165,7 @@ class ParameterRedefTable {
 			}
 		}
 		if (added) {
-			viewer.setInput(redefs);
+			table.setInput(redefs);
 			editor.setDirty(true);
 		}
 	}
@@ -185,9 +183,9 @@ class ParameterRedefTable {
 	private void remove() {
 		log.trace("remove parameter redef");
 		List<ParameterRedef> redefs = supplier.get();
-		List<ParameterRedef> selected = Viewers.getAllSelected(viewer);
+		List<ParameterRedef> selected = Viewers.getAllSelected(table);
 		redefs.removeAll(selected);
-		viewer.setInput(redefs);
+		table.setInput(redefs);
 		editor.setDirty(true);
 	}
 
@@ -207,7 +205,7 @@ class ParameterRedefTable {
 				if (model == null)
 					return Images.get(ModelType.PARAMETER);
 				return Images.get(model);
-			case 4:
+			case 5:
 				String path = CommentPaths.get(redef, getContext(redef));
 				return Images.get(editor.getComments(), path);
 			default:
@@ -232,6 +230,8 @@ class ParameterRedefTable {
 				return Double.toString(redef.value);
 			case 3:
 				return Uncertainty.string(redef.uncertainty);
+			case 4:
+				return redef.description;
 			default:
 				return null;
 			}

@@ -1,7 +1,5 @@
 package org.openlca.app.components;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,10 +35,11 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -63,47 +62,41 @@ public class ParameterRedefDialog extends FormDialog {
 	 * contexts.
 	 */
 	public static List<ParameterRedef> select(Set<Long> validContexts) {
-		TreeModel model = loadModel(Database.get(), Cache.getEntityCache(),
-				validContexts);
-		ParameterRedefDialog dialog = new ParameterRedefDialog(UI.shell(),
-				model);
-		if (dialog.open() != OK)
-			return Collections.emptyList();
-		else
-			return dialog.getSelection();
+		TreeModel model = loadModel(Database.get(),
+				Cache.getEntityCache(), validContexts);
+		ParameterRedefDialog d = new ParameterRedefDialog(UI.shell(), model);
+		return d.open() != OK
+				? Collections.emptyList()
+				: d.getSelection();
 	}
 
-	private static TreeModel loadModel(IDatabase database, EntityCache cache,
+	private static TreeModel loadModel(IDatabase db, EntityCache cache,
 			Set<Long> validContexts) {
-		try (Connection con = database.createConnection()) {
-			List<ParameterRedef> parameters = new ArrayList<>();
+		try {
 			String query = "select * from tbl_parameters where is_input_param = 1";
-			ResultSet results = con.createStatement().executeQuery(query);
-			while (results.next()) {
-				ParameterRedef redef = fetchRedef(results);
-				if (redef.contextId == null
-						|| validContexts.contains(redef.contextId))
-					parameters.add(redef);
-			}
-			results.close();
+			List<ParameterRedef> parameters = new ArrayList<>();
+			NativeSql.on(db).query(query, r -> {
+				ParameterRedef redef = new ParameterRedef();
+				long context = r.getLong("f_owner");
+				if (!r.wasNull() && context != 0L) {
+					if (!validContexts.contains(context)) {
+						return true;
+					}
+					redef.contextId = context;
+				}
+				redef.name = r.getString("name");
+				redef.description = r.getString("description");
+				redef.value = r.getDouble("value");
+				parameters.add(redef);
+				return true;
+			});
 			return buildModel(parameters, cache);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(ParameterRedefDialog.class);
 			log.error("Failed to load parameter from database");
 			return new TreeModel();
 		}
-	}
 
-	private static ParameterRedef fetchRedef(ResultSet results)
-			throws Exception {
-		ParameterRedef redef = new ParameterRedef();
-		redef.name = results.getString("name");
-		redef.value = results.getDouble("value");
-		long modelId = results.getLong("f_owner");
-		if (!results.wasNull()) {
-			redef.contextId = modelId;
-		}
-		return redef;
 	}
 
 	private static TreeModel buildModel(List<ParameterRedef> parameters,
@@ -135,11 +128,10 @@ public class ParameterRedefDialog extends FormDialog {
 	}
 
 	private static BaseDescriptor getModel(long modelId, EntityCache cache) {
-		BaseDescriptor model = cache.get(ImpactMethodDescriptor.class, modelId);
-		if (model != null)
-			return model;
-		else
-			return cache.get(ProcessDescriptor.class, modelId);
+		BaseDescriptor model = cache.get(ProcessDescriptor.class, modelId);
+		return model != null
+				? model
+				: cache.get(ImpactCategoryDescriptor.class, modelId);
 	}
 
 	private ParameterRedefDialog(Shell shell, TreeModel model) {

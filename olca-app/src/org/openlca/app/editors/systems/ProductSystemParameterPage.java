@@ -10,6 +10,10 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
 
+/**
+ * @deprecated this is replaced by the new parameter page.
+ */
+@Deprecated
 public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 
 	private ProductSystemEditor editor;
