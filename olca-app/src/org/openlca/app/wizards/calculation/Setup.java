@@ -30,20 +30,29 @@ class Setup {
 
 	private Setup(ProductSystem system) {
 		calcSetup = new CalculationSetup(system);
-		calcSetup.parameterRedefs.addAll(system.parameterRedefs);
 		dqSetup = new DQCalculationSetup();
 		dqSetup.productSystemId = system.id;
+
+		// add parameter redefinitions
+		if (system.parameterSets.size() > 0) {
+			ParameterRedefSet baseline = system.parameterSets
+					.stream()
+					.filter(ps -> ps.isBaseline)
+					.findFirst()
+					.orElse(system.parameterSets.get(0));
+			if (baseline != null) {
+				calcSetup.parameterRedefs.addAll(
+						baseline.parameters);
+			}
+		}
 	}
 
 	void setParameters(ParameterRedefSet params) {
 		calcSetup.parameterRedefs.clear();
-		if (params == null) {
-			calcSetup.parameterRedefs.addAll(
-					calcSetup.productSystem.parameterRedefs);
-		} else {
-			calcSetup.parameterRedefs.addAll(
-					params.parameters);
-		}
+		if (params == null)
+			return;
+		calcSetup.parameterRedefs.addAll(
+				params.parameters);
 	}
 
 	/**

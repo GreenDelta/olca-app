@@ -72,7 +72,6 @@ class ParameterRedefTable {
 		if (table == null)
 			return;
 		List<ParameterRedef> redefs = supplier.get();
-		Collections.sort(redefs, new ParameterComparator());
 		table.setInput(redefs);
 	}
 

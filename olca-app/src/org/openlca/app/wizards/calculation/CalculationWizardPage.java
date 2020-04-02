@@ -92,8 +92,9 @@ class CalculationWizardPage extends WizardPage {
 	private void createParamSetCombo(Composite comp) {
 		List<ParameterRedefSet> paramSets = new ArrayList<>(
 				setup.calcSetup.productSystem.parameterSets);
-		if (paramSets.isEmpty())
+		if (paramSets.size() < 2)
 			return;
+
 		paramSets.sort((s1, s2) -> {
 			if (s1.isBaseline)
 				return -1;
@@ -106,22 +107,18 @@ class CalculationWizardPage extends WizardPage {
 		TableCombo combo = new TableCombo(comp,
 				SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
-		for (int i = 0; i < paramSets.size() + 1; i++) {
-			String text = i == 0
-					? " - none -"
-					: paramSets.get(i - 1).name;
-			TableItem item = new TableItem(combo.getTable(), SWT.NONE);
+		for (int i = 0; i < paramSets.size(); i++) {
+			String text = paramSets.get(i).name;
+			TableItem item = new TableItem(
+					combo.getTable(), SWT.NONE);
 			item.setText(text);
 		}
 
 		combo.select(0);
+		setup.setParameters(paramSets.get(0));
 		Controls.onSelect(combo, e -> {
 			int i = combo.getSelectionIndex();
-			if (i == 0) {
-				setup.setParameters(null);
-			} else {
-				setup.setParameters(paramSets.get(i - 1));
-			}
+			setup.setParameters(paramSets.get(i));
 		});
 	}
 
