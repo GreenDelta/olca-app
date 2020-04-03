@@ -15,8 +15,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.cloud.CommitAction;
-import org.openlca.app.navigation.actions.cloud.ConnectAction;
-import org.openlca.app.navigation.actions.cloud.DisconnectAction;
+import org.openlca.app.navigation.actions.cloud.ConfigureRepositoriesAction;
 import org.openlca.app.navigation.actions.cloud.FetchAction;
 import org.openlca.app.navigation.actions.cloud.OpenCompareViewAction;
 import org.openlca.app.navigation.actions.cloud.RebuildIndexAction;
@@ -80,8 +79,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 			},
 			new INavigationAction[] {
 					new RebuildIndexAction(),
-					new ConnectAction(),
-					new DisconnectAction()
+					new ConfigureRepositoriesAction()
 			}
 	};
 

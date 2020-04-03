@@ -125,7 +125,9 @@ public class App {
 	}
 
 	public static void openEditor(CategorizedDescriptor d) {
-		if (d == null || d.type == null) {
+		// the model editor will try to load the thing from
+		// the database, thus the ID has to be >= 0 here
+		if (d == null || d.type == null || d.id <= 0) {
 			log.error("model is null, could not open editor");
 			return;
 		}
