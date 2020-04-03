@@ -53,7 +53,7 @@ public class RepositoryBuild {
 	}
 
 	private static RepositoryClient createClient(IDatabase db) {
-		RepositoryConfig config = new RepositoryConfig(db, URL, REPO, null);
+		RepositoryConfig config = new RepositoryConfig(db, URL, REPO);
 		return new RepositoryClient(config);
 	}
 

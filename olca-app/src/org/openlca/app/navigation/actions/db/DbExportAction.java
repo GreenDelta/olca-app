@@ -127,9 +127,7 @@ public class DbExportAction extends Action implements INavigationAction {
 	}
 
 	private boolean exclude(String relativePath) {
-		if (relativePath.equals(DatabaseDir.FILE_STORAGE + File.separator + RepositoryConfig.PROPERTIES_FILE))
-			return true;
-		if (relativePath.startsWith(DatabaseDir.FILE_STORAGE + File.separator + RepositoryConfig.INDEX_DIR))
+		if (relativePath.startsWith(DatabaseDir.FILE_STORAGE + File.separator + RepositoryConfig.DIR))
 			return true;
 		return false;
 	}

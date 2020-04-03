@@ -14,7 +14,6 @@ import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FileReference;
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Dirs;
 
 // NOT SYNCHRONIZED //
 public class DiffIndex {
@@ -26,11 +25,7 @@ public class DiffIndex {
 
 	public static DiffIndex getFor(RepositoryClient client) {
 		RepositoryConfig config = client.getConfig();
-		return new DiffIndex(getIndexDirectory(config));
-	}
-
-	public static File getIndexDirectory(RepositoryConfig config) {
-		return new File(config.database.getFileStorageLocation(), "cloud/" + config.repositoryId);
+		return new DiffIndex(config.getConfigDir());
 	}
 
 	private DiffIndex(File indexDirectory) {
@@ -73,8 +68,11 @@ public class DiffIndex {
 	public void clear() {
 		close();
 		File dir = file.getParentFile();
-		Dirs.delete(dir.toPath());
-		dir.mkdirs();
+		for (File file : dir.listFiles()) {
+			if (file.getName().startsWith("indexfile")) {
+				file.delete();
+			}
+		}
 		file = new File(dir, "indexfile");
 		createDb(file);
 		db.commit();
@@ -135,7 +133,7 @@ public class DiffIndex {
 	}
 
 	private void updateParents(Dataset dataset, boolean changed) {
-		String parentKey =  ModelType.CATEGORY.name() + dataset.categoryRefId;
+		String parentKey = ModelType.CATEGORY.name() + dataset.categoryRefId;
 		while (parentKey != null) {
 			Diff parent = index.get(parentKey);
 			if (parent == null)

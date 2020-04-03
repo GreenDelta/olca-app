@@ -45,7 +45,9 @@ import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.cloud.model.data.FileReference;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
+import org.openlca.core.database.Daos;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.input.JsonImport;
 import org.slf4j.Logger;
@@ -80,13 +82,14 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 	public boolean performFinish() {
 		Exception e = run((m) -> {
 			try {
-				if (total == selection.size()) {
+				Set<FileReference> filtered = filterExisting(selection);
+				if (total == filtered.size()) {
 					FetchNotifierMonitor monitor = new FetchNotifierMonitor(m, M.DownloadingData);
 					client.download(new HashSet<>(), null, monitor);
 					return null;
 				} else {
 					m.beginTask(M.DownloadingData, IProgressMonitor.UNKNOWN);
-					File tmp = client.downloadJson(selection);
+					File tmp = client.downloadJson(filtered);
 					m.beginTask(M.ImportData, IProgressMonitor.UNKNOWN);
 					ZipStore store = ZipStore.open(tmp);
 					JsonImport jsonImport = new JsonImport(store, Database.get());
@@ -107,6 +110,34 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 		return true;
 	}
 
+	private Set<FileReference> filterExisting(Set<FileReference> in) {
+		Set<FileReference> out = new HashSet<>();
+		Map<ModelType, Set<String>> idsPerType = new HashMap<>();
+		for (FileReference ref : in) {
+			Set<String> ids = idsPerType.get(ref.type);
+			if (ids == null) {
+				idsPerType.put(ref.type, ids = new HashSet<>());
+			}
+			ids.add(ref.refId);
+		}
+		for (ModelType type : idsPerType.keySet()) {
+			Set<String> ids = idsPerType.get(type);
+			for (CategorizedDescriptor d : Daos.categorized(Database.get(), type).getDescriptorsForRefIds(ids)) {
+				ids.remove(d.refId);
+			}
+		}
+		for (ModelType type : idsPerType.keySet()) {
+			Set<String> ids = idsPerType.get(type);
+			for (String id : ids) {
+				FileReference ref = new FileReference();
+				ref.type = type;
+				ref.refId = id;
+				out.add(ref);
+			}
+		}
+		return out;
+	}
+
 	private boolean initClient() {
 		try {
 			String url = repo;
@@ -117,8 +148,8 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			String groupName = url.substring(url.lastIndexOf('/') + 1);
 			String baseUrl = url.substring(0, url.lastIndexOf('/')) + "/ws";
 			String repoId = groupName + "/" + repoName;
-			CredentialSupplier credentials = getCredentials();
-			RepositoryConfig config = new RepositoryConfig(Database.get(), baseUrl, repoId, credentials);
+			RepositoryConfig config = new RepositoryConfig(Database.get(), baseUrl, repoId);
+			config.credentials = getCredentials();;
 			client = new RepositoryClient(config);
 			return true;
 		} catch (Exception e) {
