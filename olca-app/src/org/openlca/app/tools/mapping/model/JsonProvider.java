@@ -57,8 +57,7 @@ public class JsonProvider implements IProvider {
 
 	@Override
 	public List<FlowRef> getFlowRefs() {
-		// TODO: not yet implemented
-		return null;
+		return new JsonRefCollector(file).collect();
 	}
 
 	@Override
@@ -82,12 +81,7 @@ public class JsonProvider implements IProvider {
 
 	@Override
 	public void sync(Stream<FlowRef> externalRefs) {
-		if (externalRefs == null)
-			return;
-		externalRefs.forEach(ref -> {
-			if (Sync.isInvalidFlowRef(ref))
-				return;
-		});
+		Sync.packageSync(this, externalRefs);
 	}
 
 }

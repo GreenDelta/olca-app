@@ -27,7 +27,14 @@ class InfoSection {
 		if (setup == null || setup.productSystem == null)
 			return;
 		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
-		link(comp, tk, M.ProductSystem, setup.productSystem);
+
+		if (setup.productSystem.withoutNetwork) {
+			link(comp, tk, M.ReferenceProcess,
+					setup.productSystem.referenceProcess);
+		} else {
+			link(comp, tk, M.ProductSystem, setup.productSystem);
+		}
+
 		text(comp, tk, M.AllocationMethod, Labels.getEnumText(setup.allocationMethod));
 		text(comp, tk, M.TargetAmount, targetAmountText(setup));
 		if (setup.impactMethod != null) {
@@ -45,32 +52,29 @@ class InfoSection {
 				+ setup.getUnit().name + " " + refFlowName;
 	}
 
-	static void text(Composite comp, FormToolkit toolkit, String label, String val) {
-		Text text = UI.formText(comp, toolkit, label);
-		text.setText(val);
+	static void text(Composite comp, FormToolkit tk, String label, String val) {
+		Text text = UI.formText(comp, tk, label);
+		if (val != null) {
+			text.setText(val);
+		}
 		text.setEditable(false);
 	}
 
-	static void link(Composite parent, FormToolkit toolkit, String label, Object entity) {
-		new Label(parent, SWT.NONE).setText(label);
-		ImageHyperlink link = new ImageHyperlink(parent, SWT.TOP);
+	static void link(Composite comp, FormToolkit tk, String label, Object entity) {
+		new Label(comp, SWT.NONE).setText(label);
+		ImageHyperlink link = new ImageHyperlink(comp, SWT.TOP);
 		link.setForeground(Colors.linkBlue());
-		if (entity instanceof CategorizedDescriptor)
-			decorateLink(link, (CategorizedDescriptor) entity);
-		else if (entity instanceof CategorizedEntity)
-			decorateLink(link, (CategorizedEntity) entity);
-	}
-
-	private static void decorateLink(ImageHyperlink link, CategorizedEntity entity) {
-		link.setText(Labels.getDisplayName(entity));
-		link.setImage(Images.get(entity));
-		Controls.onClick(link, (e) -> App.openEditor(entity));
-	}
-
-	private static void decorateLink(ImageHyperlink link, CategorizedDescriptor entity) {
-		link.setText(Labels.getDisplayName(entity));
-		link.setImage(Images.get(entity));
-		Controls.onClick(link, (e) -> App.openEditor(entity));
+		if (entity instanceof CategorizedDescriptor) {
+			CategorizedDescriptor d = (CategorizedDescriptor) entity;
+			link.setText(Labels.getDisplayName(d));
+			link.setImage(Images.get(d));
+			Controls.onClick(link, e -> App.openEditor(d));
+		} else if (entity instanceof CategorizedEntity) {
+			CategorizedEntity ce = (CategorizedEntity) entity;
+			link.setText(Labels.getDisplayName(ce));
+			link.setImage(Images.get(ce));
+			Controls.onClick(link, e -> App.openEditor(ce));
+		}
 	}
 
 	private static void buttons(Composite comp, FormToolkit tk) {

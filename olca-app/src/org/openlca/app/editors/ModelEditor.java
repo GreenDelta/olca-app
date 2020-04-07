@@ -201,6 +201,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 			clone.name = newName;
 			clone = dao.insert(clone);
 			App.openEditor(clone);
+			Navigator.refresh();
 		} catch (Exception e) {
 			log.error("failed to save " + model + " as " + newName, e);
 		}
