@@ -134,14 +134,18 @@ public class BigParameterTable extends SimpleFormEditor {
 			filter.addModifyListener(e -> doFilter.run());
 			filterCombo.onChange = doFilter;
 
-			table = Tables.createViewer(
-					body, M.Name, M.ParameterScope,
-					M.Value, M.Formula, M.Description);
-			double w = 1.0 / 5.0;
-			Tables.bindColumnWidths(table, w, w, w, w, w);
+			table = Tables.createViewer(body,
+					M.Name,
+					M.ParameterScope,
+					M.Value,
+					M.Formula,
+					M.Uncertainty,
+					M.Description);
+			double w = 1.0 / 6.0;
+			Tables.bindColumnWidths(table, w, w, w, w, w, w);
 			Label label = new Label();
 			table.setLabelProvider(label);
-			Viewers.sortByLabels(table, label, 0, 1, 3, 4);
+			Viewers.sortByLabels(table, label, 0, 1, 3, 4, 5);
 			Viewers.sortByDouble(table, (Param p) -> p.parameter.value, 2);
 
 			bindActions();
@@ -550,6 +554,10 @@ public class BigParameterTable extends SimpleFormEditor {
 						? "!! error !! " + p.formula
 						: p.formula;
 			case 4:
+				return !p.isInputParameter || p.uncertainty == null
+						? null
+						: p.uncertainty.toString();
+			case 5:
 				return p.description;
 			default:
 				return null;
