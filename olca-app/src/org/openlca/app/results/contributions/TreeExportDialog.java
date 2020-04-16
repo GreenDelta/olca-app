@@ -51,11 +51,13 @@ class TreeExportDialog extends FormDialog {
 		var levelText = UI.formText(comp, tk, "Max. number of levels");
 		tk.createButton(comp, "Unlimited", SWT.CHECK);
 
+		// minimum contribution
+		UI.formText(comp, tk, "Min. contribution %");
+		tk.createButton(comp, "Unlimited", SWT.CHECK);
+
 		// recursion limit
 		UI.formText(comp, tk, "Max. recursion depth").setEnabled(false);
 		UI.formLabel(comp, tk, "Repetitions");
-		UI.formText(comp, tk, "Min. recursion contribution").setEnabled(false);
-		UI.formLabel(comp, tk, "%");
 	}
 
 	@Override
