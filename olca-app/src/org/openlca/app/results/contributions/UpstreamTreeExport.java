@@ -7,11 +7,17 @@ import java.util.Objects;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
 import org.openlca.io.xls.Excel;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,14 +69,37 @@ class UpstreamTreeExport implements Runnable {
 		}
 		try (var wb = new XSSFWorkbook()) {
 			sheet = wb.createSheet("Upstream tree");
-			// TODO: write some meta data
-			row = 0;
-			maxColumn = 0;
 
+			var header = Excel.headerStyle(wb);
+			Excel.cell(sheet, 0, 0,
+					"Upstream contributions to: " + refName())
+					.setCellStyle(header);
+			Excel.cell(sheet, 1, 0, "Processes")
+					.setCellStyle(header);
+
+			// write the tree
+			row = 1;
+			maxColumn = 0;
 			totalResult = tree.root.result;
 			Path path = new Path(tree.root);
 			traverse(path);
 
+			// write the values
+			var unit = unit();
+			var resultHeader = Strings.nullOrEmpty(unit)
+					? "Result"
+					: "Result [" + unit + "]";
+			Excel.cell(sheet, 1, maxColumn + 1, resultHeader)
+					.setCellStyle(header);
+			for (int i = 0; i < values.size(); i++) {
+				Excel.cell(sheet, i + 2, maxColumn + 1, values.get(i));
+			}
+
+			// set the column widths
+			for (int col = 0; col < maxColumn; col++) {
+				sheet.setColumnWidth(col, 750);
+			}
+			sheet.setColumnWidth(maxColumn, 50 * 255);
 
 			// write the file
 			try (var fout = new FileOutputStream(file);
@@ -83,9 +112,55 @@ class UpstreamTreeExport implements Runnable {
 		}
 	}
 
+	private String refName() {
+		var ref = tree.ref;
+		if (ref == null)
+			return "";
 
+		if (ref instanceof IndexFlow) {
+			var iflow = (IndexFlow) ref;
+			if (iflow.flow == null
+					|| iflow.flow.name == null)
+				return "";
+			if (iflow.location == null
+					|| iflow.location.code == null)
+				return iflow.flow.name;
+			return iflow.flow.name + " - "
+					+ iflow.location.code;
+		}
+
+		return ref instanceof BaseDescriptor
+				? ((BaseDescriptor) ref).name
+				: "";
+	}
+
+	private String unit() {
+		var ref = tree.ref;
+		if (ref == null)
+			return "";
+
+		if (ref instanceof IndexFlow)
+			return Labels.refUnit((IndexFlow) ref);
+
+		if (ref instanceof FlowDescriptor)
+			return Labels.refUnit((FlowDescriptor) ref);
+
+		if (ref instanceof ImpactCategoryDescriptor)
+			return ((ImpactCategoryDescriptor) ref).referenceUnit;
+
+		if (ref instanceof CostResultDescriptor)
+			return Labels.getReferenceCurrencyCode();
+
+		return "";
+	}
 
 	private void traverse(Path path) {
+
+		if (row >= 1048574) {
+			// 1048575 is the maximum row number of an
+			// Excel sheet.
+			return;
+		}
 
 		var node = path.node;
 		double result = path.node.result;
