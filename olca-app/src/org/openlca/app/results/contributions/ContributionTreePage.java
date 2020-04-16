@@ -22,6 +22,7 @@ import org.openlca.app.components.ResultTypeCombo.EventHandler;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -80,17 +81,28 @@ public class ContributionTreePage extends FormPage {
 		tree.setContentProvider(new ContributionContentProvider());
 		tk.adapt(tree.getTree(), false, false);
 		tk.paintBordersFor(tree.getTree());
+		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
+		Trees.bindColumnWidths(tree.getTree(),
+				0.20, 0.50, 0.20, 0.10);
+
+		// action bindings
 		Action onOpen = Actions.onOpen(() -> {
 			UpstreamNode n = Viewers.getFirstSelected(tree);
 			if (n == null || n.provider == null)
 				return;
 			App.openEditor(n.provider.process);
 		});
-		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree));
+
+		Action onExport = Actions.create(M.ExportToExcel,
+				Images.descriptor(FileType.EXCEL), () -> {
+					Object input = tree.getInput();
+					if (!(input instanceof UpstreamTree))
+						return;
+					TreeExportDialog.open((UpstreamTree) input);
+				});
+
+		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree), onExport);
 		Trees.onDoubleClick(tree, e -> onOpen.run());
-		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
-		Trees.bindColumnWidths(tree.getTree(),
-				0.20, 0.50, 0.20, 0.10);
 	}
 
 	private class SelectionHandler implements EventHandler {
