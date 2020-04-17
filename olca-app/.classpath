@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="libs/FastInfoset-1.2.16.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/istack-commons-runtime-3.0.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jaxb-runtime-2.3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/stax-ex-1.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/txw2-2.3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.activation-api-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.xml.bind-api-2.3.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/derby-10.14.2.0.jar"/>

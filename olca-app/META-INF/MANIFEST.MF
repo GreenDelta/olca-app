@@ -77,4 +77,9 @@ Bundle-ClassPath: .,
  libs/derby-10.14.2.0.jar,
  libs/HikariCP-3.2.0.jar,
  libs/jakarta.activation-api-1.2.2.jar,
- libs/jakarta.xml.bind-api-2.3.3.jar
+ libs/jakarta.xml.bind-api-2.3.3.jar,
+ libs/FastInfoset-1.2.16.jar,
+ libs/istack-commons-runtime-3.0.8.jar,
+ libs/jaxb-runtime-2.3.2.jar,
+ libs/stax-ex-1.8.1.jar,
+ libs/txw2-2.3.2.jar
