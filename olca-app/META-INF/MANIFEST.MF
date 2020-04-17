@@ -75,4 +75,6 @@ Bundle-ClassPath: .,
  libs/xmlbeans-2.6.0.jar,
  libs/zt-zip-1.8.jar,
  libs/derby-10.14.2.0.jar,
- libs/HikariCP-3.2.0.jar
+ libs/HikariCP-3.2.0.jar,
+ libs/jakarta.activation-api-1.2.2.jar,
+ libs/jakarta.xml.bind-api-2.3.3.jar
