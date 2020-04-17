@@ -244,7 +244,9 @@ public class ContributionTreePage extends FormPage {
 			double total = ((UpstreamTree) tree.getInput()).root.result;
 			if (total == 0)
 				return 0;
-			return node.result / total;
+			return total < 0 && node.result > 0
+					? - node.result / total
+					: node.result / total;
 		}
 	}
 }
