@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -18,15 +19,18 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.FormulaCellEditor;
 import org.openlca.app.components.UncertaintyCellEditor;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
@@ -35,8 +39,11 @@ import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.app.viewers.table.modify.field.DoubleModifier;
 import org.openlca.app.viewers.table.modify.field.StringModifier;
+import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
+import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Uncertainty;
+import org.openlca.formula.Formulas;
 import org.openlca.util.Strings;
 
 /**
@@ -130,9 +137,10 @@ public class ParameterSection {
 				ParameterUsagePage.show(p.name);
 			}
 		});
+		var toGlobal = new ConvertToGlobalAction();
 		CommentAction.bindTo(section, "parameters",
 				editor.getComments(), add, remove);
-		Actions.bind(table, add, remove, copy, paste, usage);
+		Actions.bind(table, add, remove, copy, paste, usage, toGlobal);
 		Tables.onDeletePressed(table, (e) -> onRemove());
 	}
 
@@ -302,6 +310,83 @@ public class ParameterSection {
 			param.name = name;
 			editor.setDirty(true);
 			support.evaluate();
+		}
+	}
+
+	private class ConvertToGlobalAction extends Action {
+
+		ConvertToGlobalAction() {
+			setText("Convert to global parameter");
+			setToolTipText("Convert to global parameter");
+			setImageDescriptor(Icon.UP.descriptor());
+		}
+
+		@Override
+		public void run() {
+
+			// check
+			Parameter param = Viewers.getFirstSelected(table);
+			if (param == null)
+				return;
+			String err = check(param);
+			if (err != null) {
+				MsgBox.info("Cannot be converted to global parameter", err);
+				return;
+			}
+
+			// ask
+			boolean b = Question.ask(
+					"Convert to global parameter?",
+					"Do you want to convert the selected parameter `"
+							+ param.name + "` into a global parameter?");
+			if (!b)
+				return;
+
+			// do it
+			page.parameters().remove(param);
+			var global = param.clone();
+			global.scope = ParameterScope.GLOBAL;
+			new ParameterDao(Database.get()).insert(global);
+			page.setGlobalTableInput();
+			Navigator.refresh();
+			setInput();
+			editor.setDirty(true);
+		}
+
+		private String check(Parameter param) {
+
+			try {
+				var dao = new ParameterDao(Database.get());
+				if (dao.existsGlobal(param.name)) {
+					return "A global parameter with the name `"
+							+ param.name + "` already exists.";
+				}
+
+				if (param.isInputParameter)
+					return null;
+
+				// check that there are no references to local parameters
+				var variables = Formulas.getVariables(param.formula);
+				for (var localParam : page.parameters()) {
+					if (Objects.equals(localParam, param))
+						continue;
+					if (localParam.name == null)
+						continue;
+					String local = localParam.name.trim().toLowerCase();
+					for (var variable : variables) {
+						if (variable.trim().toLowerCase().equals(local)) {
+							return "The parameter `" + param.name
+									+ "` cannot be converted into a global"
+									+ " parameter as its formula has references"
+									+ " to non-global parameters.";
+						}
+					}
+				}
+
+				return null;
+			} catch (Exception e) {
+				return e.getMessage();
+			}
 		}
 	}
 }

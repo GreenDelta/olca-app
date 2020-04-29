@@ -3,7 +3,6 @@ package org.openlca.app.editors.parameters;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -12,7 +11,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
@@ -27,7 +25,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Parameter;
@@ -47,8 +44,9 @@ public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 
 	final ModelEditor<T> editor;
 	final ParameterScope scope;
-
 	ParameterChangeSupport support;
+
+	private TableViewer globalTable;
 	Composite body;
 	FormToolkit toolkit;
 
@@ -71,18 +69,18 @@ public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 		page.support = editor.getParameterSupport();
 		return page;
 	}
-	
+
 	List<Parameter> parameters() {
 		return editor.getModel().parameters;
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(this);
-		toolkit = managedForm.getToolkit();
+	protected void createFormContent(IManagedForm mform) {
+		var form = UI.formHeader(this);
+		toolkit = mform.getToolkit();
 		body = UI.formBody(form, toolkit);
 		try {
-			createGlobalParamterSection();
+			createGlobalSection(body, toolkit);
 			ParameterSection.forInputParameters(this);
 			ParameterSection.forDependentParameters(this);
 			body.setFocus();
@@ -92,51 +90,48 @@ public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 		}
 	}
 
-	private void createGlobalParamterSection() {
-		Section section = UI.section(body, toolkit, M.GlobalParameters);
-		Composite client = UI.sectionClient(section, toolkit);
-		UI.gridLayout(client, 1);
+	private void createGlobalSection(Composite body, FormToolkit tk) {
+		var section = UI.section(body, tk, M.GlobalParameters);
+		var comp = UI.sectionClient(section, tk);
+		UI.gridLayout(comp, 1);
 		String[] columns = { M.Name, M.Value,
 				M.Uncertainty, M.Description };
-		TableViewer table = Tables.createViewer(client, columns);
+		globalTable = Tables.createViewer(comp, columns);
 		ParameterLabel label = new ParameterLabel();
-		table.setLabelProvider(label);
-		Viewers.sortByLabels(table, label, 0, 2, 3);
-		Viewers.sortByDouble(table, (Parameter p) -> p.value, 1);
-		Tables.bindColumnWidths(table.getTable(), 0.4, 0.3);
-		table.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
+		globalTable.setLabelProvider(label);
+		Viewers.sortByLabels(globalTable, label, 0, 2, 3);
+		Viewers.sortByDouble(globalTable, (Parameter p) -> p.value, 1);
+		Tables.bindColumnWidths(globalTable.getTable(), 0.4, 0.3);
+		globalTable.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 		section.setExpanded(false);
-		bindGlobalParamActions(section, table);
-		setGlobalTableInput(table);
+		bindGlobalParamActions(section, globalTable);
+		setGlobalTableInput();
 	}
 
 	private void bindGlobalParamActions(Section section, TableViewer table) {
-		Action copy = TableClipboard.onCopy(table);
-		Action refresh = Actions.create(M.Reload,
-				Icon.REFRESH.descriptor(), () -> {
-					setGlobalTableInput(table);
-					support.evaluate();
-					editor.setDirty(true);
-				});
-		Action usage = Actions.create(M.Usage,
-				Icon.LINK.descriptor(), () -> {
-					Parameter p = Viewers.getFirstSelected(table);
-					if (p != null) {
-						ParameterUsagePage.show(p.name);
-					}
-				});
+		var copy = TableClipboard.onCopy(table);
+		var refresh = Actions.create(M.Reload, Icon.REFRESH.descriptor(), () -> {
+			setGlobalTableInput();
+			support.evaluate();
+			editor.setDirty(true);
+		});
+		var usage = Actions.create(M.Usage, Icon.LINK.descriptor(), () -> {
+			Parameter p = Viewers.getFirstSelected(table);
+			if (p != null) {
+				ParameterUsagePage.show(p.name);
+			}
+		});
 		Actions.bind(table, copy, refresh, usage);
 		Actions.bind(section, refresh);
 	}
 
-	private void setGlobalTableInput(TableViewer table) {
-		IDatabase database = Database.get();
-		ParameterDao dao = new ParameterDao(database);
+	void setGlobalTableInput() {
+		ParameterDao dao = new ParameterDao(Database.get());
 		List<Parameter> params = dao.getGlobalParameters();
 		Collections.sort(params, (p1, p2) -> {
 			return Strings.compare(p1.name, p2.name);
 		});
-		table.setInput(params);
+		globalTable.setInput(params);
 	}
 
 	private class ParameterLabel extends LabelProvider implements
