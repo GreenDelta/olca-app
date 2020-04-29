@@ -16,6 +16,7 @@ import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.jsonld.Dates;
@@ -112,6 +113,10 @@ class Util {
 				}
 			}
 		} else if (diff.local == null) {
+			if (!localIds.containsKey(diff.remote.refId)) {
+				CategorizedEntity localModel = Daos.categorized(Database.get(), diff.remote.type).getForRefId(diff.remote.refId);
+				localIds.put(diff.remote.refId, localModel.id);
+			}
 			index.add(diff.remote.asDataset(), localIds.get(diff.remote.refId));
 		} else if (!diff.overwriteLocalChanges && diff.mergedData != null) {
 			index.update(mergedDataToDataset(diff), diff.local.type);
