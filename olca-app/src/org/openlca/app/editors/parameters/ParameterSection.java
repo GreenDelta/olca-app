@@ -1,14 +1,11 @@
 package org.openlca.app.editors.parameters;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Supplier;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -54,7 +51,6 @@ public class ParameterSection {
 	private boolean forInputParameters = true;
 	private final ParameterPage<?> page;
 	private final ModelEditor<?> editor;
-	private final Supplier<List<Parameter>> supplier;
 	private ParameterChangeSupport support;
 
 	static ParameterSection forInputParameters(ParameterPage<?> page) {
@@ -68,7 +64,6 @@ public class ParameterSection {
 	private ParameterSection(ParameterPage<?> page, boolean forInputParameters) {
 		this.forInputParameters = forInputParameters;
 		this.editor = page.editor;
-		this.supplier = page.supplier;
 		this.page = page;
 		this.support = page.support;
 		String[] props = getProperties();
@@ -81,17 +76,14 @@ public class ParameterSection {
 	}
 
 	private String[] getProperties() {
-		List<String> props;
-		if (forInputParameters) {
-			props = new ArrayList<>(Arrays.asList(
-					M.Name, M.Value, M.Uncertainty, M.Description));
-		} else {
-			props = new ArrayList<>(Arrays.asList(
-					M.Name, M.Formula, M.Value, M.Description));
-		}
-		if (editor.hasAnyComment("parameters"))
+		var props = forInputParameters
+				? List.of(M.Name, M.Value, M.Uncertainty, M.Description)
+				: List.of(M.Name, M.Formula, M.Value, M.Description);
+		if (editor.hasAnyComment("parameters")) {
+			props = new ArrayList<>(props);
 			props.add("");
-		return props.toArray(new String[props.size()]);
+		}
+		return props.toArray(new String[0]);
 	}
 
 	private void addDoubleClickHandler() {
@@ -128,17 +120,16 @@ public class ParameterSection {
 	}
 
 	private void bindActions(Section section) {
-		Action add = Actions.onAdd(() -> onAdd());
-		Action remove = Actions.onRemove(() -> onRemove());
-		Action copy = TableClipboard.onCopy(table);
-		Action paste = TableClipboard.onPaste(table, this::onPaste);
-		Action usage = Actions.create(M.Usage,
-				Icon.LINK.descriptor(), () -> {
-					Parameter p = Viewers.getFirstSelected(table);
-					if (p != null) {
-						ParameterUsagePage.show(p.name);
-					}
-				});
+		var add = Actions.onAdd(() -> onAdd());
+		var remove = Actions.onRemove(() -> onRemove());
+		var copy = TableClipboard.onCopy(table);
+		var paste = TableClipboard.onPaste(table, this::onPaste);
+		var usage = Actions.create(M.Usage, Icon.LINK.descriptor(), () -> {
+			Parameter p = Viewers.getFirstSelected(table);
+			if (p != null) {
+				ParameterUsagePage.show(p.name);
+			}
+		});
 		CommentAction.bindTo(section, "parameters",
 				editor.getComments(), add, remove);
 		Actions.bind(table, add, remove, copy, paste, usage);
@@ -146,14 +137,14 @@ public class ParameterSection {
 	}
 
 	private void createCellModifiers() {
-		ModelEditor<?> editor = page.editor;
-		ModifySupport<Parameter> ms = new ModifySupport<>(table);
+		var editor = page.editor;
+		var ms = new ModifySupport<Parameter>(table);
 		ms.bind(M.Name, new NameModifier());
 		ms.bind(M.Description, new StringModifier<>(editor, "description"));
 		ms.bind(M.Value, new DoubleModifier<>(editor, "value", (elem) -> support.evaluate()));
 		ms.bind(M.Uncertainty, new UncertaintyCellEditor(table.getTable(), editor));
 		ms.bind("", new CommentDialogModifier<Parameter>(editor.getComments(), CommentPaths::get));
-		FormulaCellEditor formulaEditor = new FormulaCellEditor(table, supplier);
+		var formulaEditor = new FormulaCellEditor(table, () -> page.parameters());
 		ms.bind(M.Formula, formulaEditor);
 		formulaEditor.onEdited((obj, formula) -> {
 			if (!(obj instanceof Parameter))
@@ -167,33 +158,28 @@ public class ParameterSection {
 	}
 
 	private void fillInitialInput() {
-		if (supplier == null)
-			return;
-		Collections.sort(supplier.get(),
+		Collections.sort(page.parameters(),
 				(o1, o2) -> Strings.compare(o1.name, o2.name));
 		setInput();
 	}
 
 	private void setInput() {
-		if (supplier == null)
-			return;
 		List<Parameter> input = new ArrayList<>();
-		for (Parameter param : supplier.get()) {
-			if (param.isInputParameter == forInputParameters)
+		for (var param : page.parameters()) {
+			if (param.isInputParameter == forInputParameters) {
 				input.add(param);
+			}
 		}
 		table.setInput(input);
 	}
 
 	private void onAdd() {
-		if (supplier == null)
-			return;
-		List<Parameter> params = supplier.get();
+		var params = page.parameters();
 		int count = params.size();
 		String name = "p_" + count++;
 		while (exists(name))
 			name = "p_" + count++;
-		Parameter p = new Parameter();
+		var p = new Parameter();
 		p.refId = UUID.randomUUID().toString();
 		p.name = name;
 		p.scope = page.scope;
@@ -207,21 +193,19 @@ public class ParameterSection {
 	}
 
 	private boolean exists(String name) {
-		for (Parameter parameter : supplier.get()) {
-			if (name == null && parameter.name == null)
+		for (var param : page.parameters()) {
+			if (name == null && param.name == null)
 				return true;
-			if (name == null || parameter.name == null)
+			if (name == null || param.name == null)
 				continue;
-			if (name.toLowerCase().equals(parameter.name.toLowerCase()))
+			if (name.toLowerCase().equals(param.name.toLowerCase()))
 				return true;
 		}
 		return false;
 	}
 
 	private void onRemove() {
-		if (supplier == null)
-			return;
-		List<Parameter> params = supplier.get();
+		List<Parameter> params = page.parameters();
 		List<Parameter> selection = Viewers.getAllSelected(table);
 		for (Parameter parameter : selection) {
 			params.remove(parameter);
@@ -232,8 +216,6 @@ public class ParameterSection {
 	}
 
 	private void onPaste(String text) {
-		if (supplier == null)
-			return;
 		List<Parameter> params = forInputParameters
 				? Clipboard.readAsInputParams(text, page.scope)
 				: Clipboard.readAsCalculatedParams(text, page.scope);
@@ -244,7 +226,7 @@ public class ParameterSection {
 				skipped = true;
 				continue;
 			}
-			supplier.get().add(param);
+			page.parameters().add(param);
 		}
 		if (skipped) {
 			MsgBox.warning(M.SomeParametersWereNotAdded);

@@ -2,7 +2,6 @@ package org.openlca.app.editors.parameters;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -30,10 +29,10 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
+import org.openlca.core.model.ParameterizedEntity;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.util.Strings;
@@ -41,41 +40,40 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Parameter page for LCIA methods or processes. */
-public class ParameterPage<T extends CategorizedEntity> extends ModelPage<T> {
+public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 
 	public static final String ID = "ParameterPage";
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final ModelEditor<?> editor;
+	final ModelEditor<T> editor;
 	final ParameterScope scope;
-	final Supplier<List<Parameter>> supplier;
 
 	ParameterChangeSupport support;
 	Composite body;
 	FormToolkit toolkit;
 
-	private ParameterPage(ModelEditor<T> editor,
-			ParameterScope scope, Supplier<List<Parameter>> supplier) {
+	private ParameterPage(ModelEditor<T> editor, ParameterScope scope) {
 		super(editor, ID, M.Parameters);
 		this.editor = editor;
 		this.scope = scope;
-		this.supplier = supplier;
 	}
 
 	public static ParameterPage<Process> create(ProcessEditor editor) {
 		ParameterPage<Process> page = new ParameterPage<>(
-				editor, ParameterScope.PROCESS,
-				() -> editor.getModel().parameters);
+				editor, ParameterScope.PROCESS);
 		page.support = editor.getParameterSupport();
 		return page;
 	}
 
 	public static ParameterPage<ImpactCategory> create(ImpactCategoryEditor editor) {
 		ParameterPage<ImpactCategory> page = new ParameterPage<>(
-				editor, ParameterScope.IMPACT_CATEGORY,
-				() -> editor.getModel().parameters);
+				editor, ParameterScope.IMPACT_CATEGORY);
 		page.support = editor.getParameterSupport();
 		return page;
+	}
+	
+	List<Parameter> parameters() {
+		return editor.getModel().parameters;
 	}
 
 	@Override
