@@ -35,12 +35,12 @@ class ActorInfoPage extends ModelPage<Actor> {
 		Composite composite = UI.formSection(body, toolkit, M.AdditionalInformation, 3);
 		text(composite, M.Address, "address");
 		text(composite, M.City, "city");
+		text(composite, M.ZipCode, "zipCode");
 		text(composite, M.Country, "country");
 		text(composite, M.Email, "email");
 		text(composite, M.Telefax, "telefax");
 		text(composite, M.Telephone, "telephone");
 		text(composite, M.Website, "website");
-		text(composite, M.ZipCode, "zipCode");
 	}
 
 }
