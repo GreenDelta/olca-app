@@ -9,6 +9,7 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
+import org.openlca.util.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 			return;
 		}
 		String name = getModel().name;
-		if (!Parameter.isValidName(name)) {
+		if (!Parameters.isValidName(name)) {
 			MsgBox.error(M.InvalidParameterName,
 					name + " " + M.IsNotValidParameterName);
 			return;

@@ -44,6 +44,7 @@ import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.formula.Formulas;
+import org.openlca.util.Parameters;
 import org.openlca.util.Strings;
 
 /**
@@ -230,7 +231,7 @@ public class ParameterSection {
 		boolean skipped = false;
 		for (Parameter param : params) {
 			String name = param.name;
-			if (!Parameter.isValidName(name) || exists(name)) {
+			if (!Parameters.isValidName(name) || exists(name)) {
 				skipped = true;
 				continue;
 			}
@@ -297,7 +298,7 @@ public class ParameterSection {
 			if (Objects.equals(text, param.name))
 				return;
 			String name = text.trim();
-			if (!Parameter.isValidName(name)) {
+			if (!Parameters.isValidName(name)) {
 				MsgBox.error(M.InvalidParameterName, name + " "
 						+ M.IsNotValidParameterName);
 				return;
