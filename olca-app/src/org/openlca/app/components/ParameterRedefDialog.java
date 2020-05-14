@@ -14,8 +14,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -148,7 +146,7 @@ public class ParameterRedefDialog extends FormDialog {
 
 	private List<ParameterRedef> getSelection() {
 		List<Object> list = Viewers.getAll(selection);
-		if (list == null)
+		if (list.isEmpty())
 			return Collections.emptyList();
 		List<ParameterRedef> selection = new ArrayList<>();
 		for (Object element : list) {
@@ -178,12 +176,7 @@ public class ParameterRedefDialog extends FormDialog {
 		Label filterLabel = UI.formLabel(body, toolkit, M.Filter);
 		filterLabel.setFont(UI.boldFont());
 		filterText = UI.formText(body, SWT.SEARCH);
-		filterText.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				viewer.refresh();
-			}
-		});
+		filterText.addModifyListener(e -> viewer.refresh());
 
 		Section section = UI.section(body, toolkit, M.Parameters);
 		UI.gridData(section, true, true);
@@ -277,13 +270,13 @@ public class ParameterRedefDialog extends FormDialog {
 	}
 
 	private static class TreeModel {
-		private List<ModelNode> modelNodes = new ArrayList<>();
-		private List<ParameterNode> globalParameters = new ArrayList<>();
+		final List<ModelNode> modelNodes = new ArrayList<>();
+		final List<ParameterNode> globalParameters = new ArrayList<>();
 	}
 
 	private static class ModelNode {
-		private BaseDescriptor model;
-		private List<ParameterNode> parameters = new ArrayList<>();
+		BaseDescriptor model;
+		final List<ParameterNode> parameters = new ArrayList<>();
 	}
 
 	private static class ParameterNode {
@@ -291,7 +284,7 @@ public class ParameterRedefDialog extends FormDialog {
 		private ModelNode modelNode;
 	}
 
-	private class ContentProvider implements ITreeContentProvider {
+	private static class ContentProvider implements ITreeContentProvider {
 
 		@Override
 		public void dispose() {
@@ -335,7 +328,7 @@ public class ParameterRedefDialog extends FormDialog {
 
 	}
 
-	private class LabelProvider extends org.eclipse.jface.viewers.LabelProvider {
+	private static class LabelProvider extends org.eclipse.jface.viewers.LabelProvider {
 
 		@Override
 		public Image getImage(Object element) {

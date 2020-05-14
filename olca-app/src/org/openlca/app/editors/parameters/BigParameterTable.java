@@ -255,7 +255,7 @@ public class BigParameterTable extends SimpleFormEditor {
 		private FormulaInterpreter buildInterpreter() {
 			FormulaInterpreter fi = new FormulaInterpreter();
 			for (Param param : params) {
-				Scope scope = null;
+				Scope scope;
 				if (param.ownerID == null) {
 					scope = fi.getGlobalScope();
 				} else {
@@ -298,7 +298,7 @@ public class BigParameterTable extends SimpleFormEditor {
 			}
 
 			// build dialog with validation
-			InputDialog dialog = null;
+			InputDialog dialog;
 			FormulaInterpreter fi = null;
 			if (p.isInputParameter) {
 				dialog = new InputDialog(UI.shell(),
@@ -396,7 +396,7 @@ public class BigParameterTable extends SimpleFormEditor {
 	}
 
 	/** Stores a parameter object and its owner. */
-	private class Param implements Comparable<Param> {
+	private static class Param implements Comparable<Param> {
 
 		/**
 		 * We have the owner ID as a separate field because a parameter could
@@ -472,9 +472,7 @@ public class BigParameterTable extends SimpleFormEditor {
 			if (type == FilterCombo.ALL || type == FilterCombo.DESCRIPTIONS) {
 				if (parameter.description != null) {
 					String d = parameter.description.toLowerCase();
-					if (d.contains(f)) {
-						return true;
-					}
+					return d.contains(f);
 				}
 			}
 

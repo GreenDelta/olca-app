@@ -109,8 +109,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 			tree.setLabelProvider(new Label());
 			tree.setInput(this.tree);
 			if (this.tree.nodes.size() >= 1) {
-				tree.setExpandedElements(
-						new Object[] { this.tree.nodes.get(0) });
+				tree.setExpandedElements(this.tree.nodes.get(0));
 			}
 			Trees.onDoubleClick(tree, e -> onOpen(tree));
 			Action open = Actions.create(M.Open,
@@ -131,7 +130,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 
 	}
 
-	private class ContentProvider implements ITreeContentProvider {
+	private static class ContentProvider implements ITreeContentProvider {
 
 		@Override
 		public void dispose() {
@@ -173,7 +172,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 		}
 	}
 
-	private class Label extends LabelProvider implements ITableLabelProvider {
+	private static class Label extends LabelProvider implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {

@@ -2,24 +2,18 @@ package org.openlca.app.util.viewers;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.widgets.Combo;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.trees.Trees;
-import org.openlca.app.viewers.BaseLabelProvider;
-import org.openlca.app.viewers.BaseNameComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,9 +59,7 @@ public class Viewers {
 		if (selection == null || selection.isEmpty())
 			return Collections.emptyList();
 		List<T> list = new ArrayList<>();
-		Iterator<?> it = selection.iterator();
-		while (it.hasNext()) {
-			Object o = it.next();
+		for (Object o : selection) {
 			try {
 				// caller has to assign to right class
 				@SuppressWarnings("unchecked")
@@ -81,23 +73,14 @@ public class Viewers {
 		return list;
 	}
 
-	public static ComboViewer createBaseViewer(Combo combo) {
-		ComboViewer viewer = new ComboViewer(combo);
-		viewer.setContentProvider(new ArrayContentProvider());
-		viewer.setComparator(new BaseNameComparator());
-		viewer.setLabelProvider(new BaseLabelProvider());
-		viewer.setUseHashlookup(true);
-		return viewer;
-	}
-
 	public static <T> void sortByDouble(ColumnViewer viewer, Function<T, Double> fn, int col) {
 		DoubleComparator<T> s = new DoubleComparator<>(col, fn);
 		addComparator(viewer, s);
 	}
 
 	public static <T> void sortByDouble(ColumnViewer viewer, ITableLabelProvider labelProvider, int... cols) {
-		for (int i = 0; i < cols.length; i++) {
-			LabelComparator<T> s = new LabelComparator<>(cols[i], labelProvider);
+		for (int col : cols) {
+			LabelComparator<T> s = new LabelComparator<>(col, labelProvider);
 			s.asNumbers = true;
 			addComparator(viewer, s);
 		}
@@ -118,8 +101,8 @@ public class Viewers {
 
 	public static <T> void sortByLabels(ColumnViewer viewer,
 			ITableLabelProvider labelProvider, int... cols) {
-		for (int i = 0; i < cols.length; i++) {
-			LabelComparator<T> s = new LabelComparator<>(cols[i], labelProvider);
+		for (int col : cols) {
+			LabelComparator<T> s = new LabelComparator<>(col, labelProvider);
 			addComparator(viewer, s);
 		}
 	}
