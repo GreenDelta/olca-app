@@ -8,11 +8,14 @@ import java.util.stream.Collectors;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.components.ParameterUsageView;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ParameterDao;
@@ -26,6 +29,7 @@ public class RenameParameterDialog extends FormDialog {
 	private final ParameterUsageTree usageTree;
 	private final Parameter param;
 	private final List<Parameter> otherParams;
+	private Text text;
 
 	private RenameParameterDialog(
 			Parameter param, ParameterUsageTree usageTree) {
@@ -59,7 +63,10 @@ public class RenameParameterDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(600, 400);
+		var height = usageTree.nodes.isEmpty()
+				? 250
+				: 400;
+		return new Point(600, height);
 	}
 
 	@Override
@@ -69,7 +76,7 @@ public class RenameParameterDialog extends FormDialog {
 		var comp = tk.createComposite(body);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);
-		var text = UI.formText(comp, tk, "New name");
+		text = UI.formText(comp, tk, "New name");
 		if (param.name != null) {
 			text.setText(param.name);
 		}
@@ -86,6 +93,25 @@ public class RenameParameterDialog extends FormDialog {
 				text.setToolTipText("");
 			}
 		});
+
+		if (usageTree.nodes.isEmpty()) {
+			UI.formLabel(body, tk,
+					"The parameter is currently not used"
+							+ " so it is save to rename it.");
+			return;
+		}
+
+		UI.formLabel(body, tk,
+				"The parameter will be also renamed where it is used:")
+				.setFont(UI.boldFont());
+
+		// create the usage tree
+		comp = tk.createComposite(body);
+		// the composite is too wide without this hack
+		UI.gridData(comp, false, true).widthHint = getInitialSize().x - 50;
+		UI.gridLayout(comp, 1, 10, 0);
+		comp.setBackground(Colors.errorColor());
+		ParameterUsageView.show(comp, usageTree);
 	}
 
 	private String check(String name) {
@@ -106,8 +132,14 @@ public class RenameParameterDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
-
-
+		var name = text.getText();
 		super.okPressed();
+		if (Strings.nullOrEqual(name, param.name)) {
+			return;
+		}
+		App.runWithProgress(
+				"Rename parameter",
+				() -> Parameters.rename(Database.get(), param, name),
+				() -> Navigator.refresh());
 	}
 }
