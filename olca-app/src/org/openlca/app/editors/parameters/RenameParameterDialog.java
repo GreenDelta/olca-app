@@ -30,6 +30,7 @@ public class RenameParameterDialog extends FormDialog {
 	private final Parameter param;
 	private final List<Parameter> otherParams;
 	private Text text;
+	private String newName;
 
 	private RenameParameterDialog(
 			Parameter param, ParameterUsageTree usageTree) {
@@ -44,14 +45,22 @@ public class RenameParameterDialog extends FormDialog {
 	}
 
 	public static void open(Parameter param) {
+		open(param, null);
+	}
+
+	public static void open(Parameter param, String newName) {
 		if (param == null)
 			return;
 		var db = Database.get();
 		var tree = new AtomicReference<ParameterUsageTree>();
 		App.run(
 				"Collect dependencies",
-				() -> tree.set(ParameterUsageTree.build(param.name, db)),
-				() -> new RenameParameterDialog(param, tree.get()).open());
+				() -> tree.set(ParameterUsageTree.of(param, db)),
+				() -> {
+					var dialog = new RenameParameterDialog(param, tree.get());
+					dialog.newName = newName;
+					dialog.open();
+				});
 	}
 
 	@Override
@@ -76,10 +85,14 @@ public class RenameParameterDialog extends FormDialog {
 		var comp = tk.createComposite(body);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);
+
 		text = UI.formText(comp, tk, "New name");
-		if (param.name != null) {
+		if (newName != null) {
+			text.setText(newName);
+		} else if (param.name != null) {
 			text.setText(param.name);
 		}
+
 		text.addModifyListener(e -> {
 			var name = text.getText().trim();
 			var err = check(name);

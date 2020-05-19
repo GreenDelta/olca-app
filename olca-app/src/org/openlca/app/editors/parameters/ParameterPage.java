@@ -1,6 +1,5 @@
 package org.openlca.app.editors.parameters;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -128,13 +127,11 @@ public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 	void setGlobalTableInput() {
 		ParameterDao dao = new ParameterDao(Database.get());
 		List<Parameter> params = dao.getGlobalParameters();
-		Collections.sort(params, (p1, p2) -> {
-			return Strings.compare(p1.name, p2.name);
-		});
+		params.sort((p1, p2) -> Strings.compare(p1.name, p2.name));
 		globalTable.setInput(params);
 	}
 
-	private class ParameterLabel extends LabelProvider implements
+	private static class ParameterLabel extends LabelProvider implements
 			ITableLabelProvider {
 
 		@Override

@@ -19,15 +19,35 @@ import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.usage.ParameterUsageTree;
+import org.openlca.core.model.Parameter;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.util.Strings;
 
 public class ParameterUsagePage extends SimpleFormEditor {
 
 	private ParameterUsageTree tree;
 
+	public static void show(Parameter param) {
+		show(param, null);
+	}
+
+	public static void show(Parameter param, CategorizedDescriptor owner) {
+		if (param == null || Strings.nullOrEmpty(param.name))
+			return;
+		var ref = new AtomicReference<>();
+		App.runWithProgress("Search for usage", () -> {
+			ref.set(ParameterUsageTree.of(param, owner, Database.get()));
+		}, () -> {
+			String resultKey = Cache.getAppCache().put(ref.get());
+			Input input = new Input(param.name, resultKey);
+			Editors.open(input, "ParameterUsagePage");
+		});
+	}
+	
 	public static void show(String param) {
 		var ref = new AtomicReference<>();
 		App.runWithProgress("Search for usage of '" + param + "' ...", () -> {
-			ref.set(ParameterUsageTree.build(param, Database.get()));
+			ref.set(ParameterUsageTree.of(param, Database.get()));
 		}, () -> {
 			String resultKey = Cache.getAppCache().put(ref.get());
 			Input input = new Input(param, resultKey);
@@ -40,13 +60,13 @@ public class ParameterUsagePage extends SimpleFormEditor {
 			throws PartInitException {
 		super.init(site, input);
 		if (!(input instanceof Input)) {
-			tree = new ParameterUsageTree("?");
+			tree = ParameterUsageTree.empty();
 		} else {
 			var pin = (Input) input;
 			tree = Cache.getAppCache().remove(
 					pin.id, ParameterUsageTree.class);
 			if (tree == null) {
-				tree = new ParameterUsageTree("?");
+				tree = ParameterUsageTree.empty();
 			}
 		}
 	}

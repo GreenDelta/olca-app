@@ -172,7 +172,7 @@ public class BigParameterTable extends SimpleFormEditor {
 						Param p = Viewers.getFirstSelected(table);
 						if (p == null)
 							return;
-						ParameterUsagePage.show(p.parameter.name);
+						ParameterUsagePage.show(p.parameter, p.owner);
 					});
 			Action onEvaluate = Actions.create(
 					M.EvaluateAllFormulas, Icon.RUN.descriptor(), () -> {

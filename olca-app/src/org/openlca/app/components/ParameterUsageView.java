@@ -1,6 +1,5 @@
 package org.openlca.app.components;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -17,7 +16,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.usage.ParameterUsageTree;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.database.usage.ParameterUsageTree.UsageType;
 
 /**
  * Renders a parameter usage tree in a composite.
@@ -55,10 +54,10 @@ public class ParameterUsageView {
 		ParameterUsageTree.Node node = Viewers.getFirstSelected(tree);
 		if (node == null)
 			return;
-		node = node.root();
-		if (!(node.context instanceof CategorizedDescriptor))
+		var root = node.root();
+		if (root == null || root.model == null)
 			return;
-		App.openEditor((CategorizedDescriptor) node.context);
+		App.openEditor(root.model);
 	}
 
 	private static class ContentProvider implements ITreeContentProvider {
@@ -111,11 +110,21 @@ public class ParameterUsageView {
 				return null;
 			var node = (ParameterUsageTree.Node) obj;
 			if (col == 0)
-				return Images.get(node.context);
-			if (col == 1 && node.type != null)
+				return modelIcon(node);
+			if (col == 1 && node.usageType != null)
 				return Icon.LINK.get();
-			if (col == 2 && node.formula != null)
+			if (col == 2 && node.usage != null)
 				return Icon.EXPRESSION.get();
+			return null;
+		}
+
+		private Image modelIcon(ParameterUsageTree.Node node) {
+			var n = node;
+			do {
+				if (n.model != null)
+					return Images.get(n.model);
+				n = n.parent;
+			} while (n != null);
 			return null;
 		}
 
@@ -125,14 +134,31 @@ public class ParameterUsageView {
 				return null;
 			var node = (ParameterUsageTree.Node) obj;
 			switch (col) {
-				case 0:
-					return Labels.name(node.context);
-				case 1:
-					return node.type;
-				case 2:
-					return node.formula;
-				default:
-					return null;
+			case 0:
+				return node.model != null
+						? Labels.name(node.model)
+						: node.name;
+			case 1:
+				return usageType(node.usageType);
+			case 2:
+				return node.usage;
+			default:
+				return null;
+			}
+		}
+
+		private String usageType(UsageType type) {
+			if (type == null)
+				return "";
+			switch (type) {
+			case FORMULA:
+				return M.Formula;
+			case DEFINITION:
+				return "Parameter definition";
+			case REDEFINITION:
+				return "Parameter redefinition";
+			default:
+				return "?";
 			}
 		}
 	}
