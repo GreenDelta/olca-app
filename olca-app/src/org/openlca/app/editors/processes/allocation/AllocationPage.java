@@ -1,17 +1,16 @@
 package org.openlca.app.editors.processes.allocation;
 
+import java.util.function.Function;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.Event;
 import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
@@ -36,6 +35,7 @@ import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,17 +43,17 @@ import com.google.common.eventbus.Subscribe;
 
 public class AllocationPage extends ModelPage<Process> {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
-	private ProcessEditor editor;
+	private final Logger log = LoggerFactory.getLogger(getClass());
+	private final ProcessEditor editor;
 	private FormToolkit tk;
-	private TableViewer factorViewer;
-	private CausalFactorTable causalFactorTable;
+	private TableViewer table;
+	private CausalFactorTable causalTable;
 
 	public AllocationPage(ProcessEditor editor) {
 		super(editor, "process.AllocationPage", M.Allocation);
 		this.editor = editor;
 		editor.getEventBus().register(this);
-		editor.onSaved(() -> setTableInputs());
+		editor.onSaved(this::setTableInputs);
 	}
 
 	static Double parseFactor(String text) {
@@ -82,38 +82,42 @@ public class AllocationPage extends ModelPage<Process> {
 	}
 
 	private void setTableInputs() {
-		if (factorViewer != null)
-			factorViewer.setInput(Util.getProviderFlows(process()));
-		if (causalFactorTable != null)
-			causalFactorTable.refresh();
+		if (table != null)
+			table.setInput(Util.getProviderFlows(process()));
+		if (causalTable != null) {
+			causalTable.refresh();
+		}
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(this);
-		tk = managedForm.getToolkit();
-		Composite body = UI.formBody(form, tk);
-		Composite composite = UI.formComposite(body, tk);
-		createDefaultCombo(composite);
-		createCalcButton(composite);
+	protected void createFormContent(IManagedForm mform) {
+		var form = UI.formHeader(this);
+		tk = mform.getToolkit();
+		var body = UI.formBody(form, tk);
+		var comp = UI.formComposite(body, tk);
+		createDefaultCombo(comp);
+		createCalcButton(comp);
 		createPhysicalEconomicSection(body);
 		createCausalSection(body);
 		form.reflow(true);
-		causalFactorTable.setInitialInput();
+		causalTable.setInitialInput();
 	}
 
-	private void createDefaultCombo(Composite composite) {
-		UI.formLabel(composite, tk, M.DefaultMethod);
-		AllocationMethod[] methods = { AllocationMethod.NONE,
-				AllocationMethod.CAUSAL, AllocationMethod.ECONOMIC,
-				AllocationMethod.PHYSICAL, };
-		AllocationMethodViewer viewer = new AllocationMethodViewer(composite,
-				methods);
-		AllocationMethod selected = process().defaultAllocationMethod;
-		if (selected == null)
+	private void createDefaultCombo(Composite comp) {
+		UI.formLabel(comp, tk, M.DefaultMethod);
+		AllocationMethod[] methods = {
+				AllocationMethod.NONE,
+				AllocationMethod.CAUSAL,
+				AllocationMethod.ECONOMIC,
+				AllocationMethod.PHYSICAL,
+		};
+		var combo = new AllocationMethodViewer(comp, methods);
+		var selected = process().defaultAllocationMethod;
+		if (selected == null) {
 			selected = AllocationMethod.NONE;
-		viewer.select(selected);
-		viewer.addSelectionChangedListener(selection -> {
+		}
+		combo.select(selected);
+		combo.addSelectionChangedListener(selection -> {
 			process().defaultAllocationMethod = selection;
 			editor.setDirty(true);
 		});
@@ -121,64 +125,66 @@ public class AllocationPage extends ModelPage<Process> {
 
 	private void createCalcButton(Composite comp) {
 		UI.filler(comp, tk);
-		Button button = tk.createButton(comp, M.CalculateDefaultValues, SWT.NONE);
+		var button = tk.createButton(comp, M.CalculateDefaultValues, SWT.NONE);
 		button.setImage(Icon.RUN.get());
 		Controls.onSelect(button, e -> {
 			AllocationSync.calculateDefaults(process());
-			factorViewer.refresh();
-			causalFactorTable.refresh();
+			table.refresh();
+			causalTable.refresh();
 			editor.setDirty(true);
 		});
 	}
 
 	private void createPhysicalEconomicSection(Composite body) {
-		Section section = UI.section(body, tk, M.PhysicalAndEconomicAllocation);
-		Composite composite = UI.sectionClient(section, tk, 1);
-		String[] colNames = { M.Product, M.Physical, M.Economic };
-		if (editor.hasAnyComment("allocationFactors")) {
-			colNames = new String[] { M.Product, M.Physical, "", M.Economic, "" };
-		}
-		factorViewer = Tables.createViewer(composite, colNames);
+		var section = UI.section(body, tk, M.PhysicalAndEconomicAllocation);
+		var comp = UI.sectionClient(section, tk, 1);
+
+		var columns = editor.hasAnyComment("allocationFactors")
+				? new String[]{M.Product, M.Physical, "", M.Economic, ""}
+				: new String[]{M.Product, M.Physical, M.Economic};
+
+		table = Tables.createViewer(comp, columns);
+
 		// set keys for modifier binding
 		if (editor.hasAnyComment("allocationFactors")) {
-			colNames[2] = M.Physical + "-comment";
-			colNames[4] = M.Economic + "-comment";
+			columns[2] = M.Physical + "-comment";
+			columns[4] = M.Economic + "-comment";
 		}
-		factorViewer.setColumnProperties(colNames);
-		factorViewer.setLabelProvider(new FactorLabel());
-		factorViewer.setInput(Util.getProviderFlows(process()));
-		Action copy = TableClipboard.onCopy(factorViewer);
-		ModifySupport<Exchange> modifySupport = new ModifySupport<>(factorViewer);
-		modifySupport.bind(M.Physical, new ValueModifier(AllocationMethod.PHYSICAL));
-		modifySupport.bind(M.Economic, new ValueModifier(AllocationMethod.ECONOMIC));
+		table.setColumnProperties(columns);
+		table.setLabelProvider(new FactorLabel());
+		table.setInput(Util.getProviderFlows(process()));
+		Action copy = TableClipboard.onCopy(table);
+
+		var modifier = new ModifySupport<Exchange>(table)
+				.bind(M.Physical, new ValueModifier(AllocationMethod.PHYSICAL))
+				.bind(M.Economic, new ValueModifier(AllocationMethod.ECONOMIC));
 		if (editor.hasComment("allocationFactors")) {
-			modifySupport.bind(M.Physical + "-comment", createCommentModifier(AllocationMethod.PHYSICAL));
-			modifySupport.bind(M.Economic + "-comment", createCommentModifier(AllocationMethod.ECONOMIC));
-			Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0, 0.3, 0);
+			modifier.bind(M.Physical + "-comment", commentModifier(AllocationMethod.PHYSICAL));
+			modifier.bind(M.Economic + "-comment", commentModifier(AllocationMethod.ECONOMIC));
+			Tables.bindColumnWidths(table, 0.3, 0.3, 0, 0.3, 0);
 		} else {
-			Tables.bindColumnWidths(factorViewer, 0.3, 0.3, 0.3);
+			Tables.bindColumnWidths(table, 0.3, 0.3, 0.3);
 		}
-		CommentAction.bindTo(factorViewer, "allocationFactors", editor.getComments(), copy);
-		factorViewer.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
-		factorViewer.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
+		CommentAction.bindTo(table, "allocationFactors", editor.getComments(), copy);
+		table.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
+		table.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 	}
 
-	private CommentDialogModifier<Exchange> createCommentModifier(AllocationMethod method) {
-		return new CommentDialogModifier<>(editor.getComments(), (e) -> getPath(e, method));
-	}
-
-	private String getPath(Exchange e, AllocationMethod m) {
-		AllocationFactor factor = getFactor(e, m);
-		if (factor == null)
-			return null;
-		return CommentPaths.get(factor, e);
+	private CommentDialogModifier<Exchange> commentModifier(AllocationMethod method) {
+		Function<Exchange, String> path = (Exchange e) -> {
+			var factor = getFactor(e, method);
+			return factor != null
+					? CommentPaths.get(factor, e)
+					: null;
+		};
+		return new CommentDialogModifier<>(editor.getComments(), path);
 	}
 
 	private void createCausalSection(Composite body) {
-		Section section = UI.section(body, tk, M.CausalAllocation);
+		var section = UI.section(body, tk, M.CausalAllocation);
 		UI.gridData(section, true, true);
-		causalFactorTable = new CausalFactorTable(editor);
-		causalFactorTable.render(section, tk);
+		causalTable = new CausalFactorTable(editor);
+		causalTable.render(section, tk);
 		CommentAction.bindTo(section, "allocationFactors", editor.getComments());
 	}
 
@@ -193,70 +199,72 @@ public class AllocationPage extends ModelPage<Process> {
 		return editor.getModel();
 	}
 
-	private AllocationFactor getFactor(Exchange exchange, AllocationMethod method) {
-		if (exchange == null || method == null)
+	private AllocationFactor getFactor(Exchange e, AllocationMethod m) {
+		if (e == null || m == null)
 			return null;
-		for (AllocationFactor factor : process().allocationFactors) {
-			if (factor.method != method)
+		for (var factor : process().allocationFactors) {
+			if (factor.method != m)
 				continue;
-			if (factor.productId != exchange.flow.id)
+			if (factor.productId != e.flow.id)
 				continue;
 			return factor;
 		}
 		return null;
 	}
 
-	private String getFactorLabel(Exchange exchange, AllocationMethod method) {
-		AllocationFactor factor = getFactor(exchange, method);
-		if (factor == null)
+	private String getFactorLabel(Exchange e, AllocationMethod m) {
+		var f = getFactor(e, m);
+		if (f == null)
 			return Double.toString(1);
-		return Double.toString(factor.value);
+		return Strings.nullOrEmpty(f.formula)
+				? Double.toString(f.value)
+				: f.formula + " = " + f.value;
 	}
 
 	private class FactorLabel extends LabelProvider implements
 			ITableLabelProvider {
 
 		@Override
-		public String getColumnText(Object element, int col) {
-			if (!(element instanceof Exchange))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof Exchange))
 				return null;
-			Exchange exchange = (Exchange) element;
+			var e = (Exchange) obj;
 			switch (col) {
-			case 0:
-				return productText(exchange);
-			case 1:
-				return getFactorLabel(exchange, AllocationMethod.PHYSICAL);
-			case 2:
-				if (editor.hasAnyComment("allocationFactors"))
+				case 0:
+					return productText(e);
+				case 1:
+					return getFactorLabel(e, AllocationMethod.PHYSICAL);
+				case 2:
+					if (editor.hasAnyComment("allocationFactors"))
+						return null;
+					return getFactorLabel(e, AllocationMethod.ECONOMIC);
+				case 3:
+					if (!editor.hasAnyComment("allocationFactors"))
+						return null;
+					return getFactorLabel(e, AllocationMethod.ECONOMIC);
+				default:
 					return null;
-				return getFactorLabel(exchange, AllocationMethod.ECONOMIC);
-			case 3:
-				if (!editor.hasAnyComment("allocationFactors"))
-					return null;
-				return getFactorLabel(exchange, AllocationMethod.ECONOMIC);
-			default:
-				return null;
 			}
 		}
 
 		@Override
-		public Image getColumnImage(Object element, int col) {
+		public Image getColumnImage(Object obj, int col) {
 			if (col == 0)
 				return Images.get(FlowType.PRODUCT_FLOW);
 			if (col == 2) {
-				Exchange exchange = (Exchange) element;
-				AllocationFactor factor = getFactor(exchange, AllocationMethod.PHYSICAL);
+				Exchange exchange = (Exchange) obj;
+				var factor = getFactor(exchange, AllocationMethod.PHYSICAL);
 				if (factor == null)
 					return null;
 				String path = CommentPaths.get(factor, exchange);
 				return Images.get(editor.getComments(), path);
 			}
 			if (col == 4) {
-				Exchange exchange = (Exchange) element;
-				AllocationFactor factor = getFactor(exchange, AllocationMethod.ECONOMIC);
+				var exchange = (Exchange) obj;
+				var factor = getFactor(exchange, AllocationMethod.ECONOMIC);
 				if (factor == null)
 					return null;
-				String path = CommentPaths.get(factor, exchange);
+				var path = CommentPaths.get(factor, exchange);
 				return Images.get(editor.getComments(), path);
 			}
 			return null;
@@ -265,27 +273,27 @@ public class AllocationPage extends ModelPage<Process> {
 
 	private class ValueModifier extends TextCellModifier<Exchange> {
 
-		private AllocationMethod method;
+		private final AllocationMethod method;
 
 		public ValueModifier(AllocationMethod method) {
 			this.method = method;
 		}
 
 		@Override
-		protected String getText(Exchange exchange) {
-			return getFactorLabel(exchange, method);
+		protected String getText(Exchange e) {
+			return getFactorLabel(e, method);
 		}
 
 		@Override
-		protected void setText(Exchange exchange, String text) {
+		protected void setText(Exchange e, String text) {
 			Double val = parseFactor(text);
 			if (val == null)
 				return;
-			AllocationFactor factor = getFactor(exchange, method);
+			AllocationFactor factor = getFactor(e, method);
 			if (factor == null) {
 				factor = new AllocationFactor();
 				factor.method = method;
-				factor.productId = exchange.flow.id;
+				factor.productId = e.flow.id;
 				process().allocationFactors.add(factor);
 			}
 			factor.value = val;
@@ -296,7 +304,5 @@ public class AllocationPage extends ModelPage<Process> {
 		public boolean canModify(Exchange element) {
 			return Util.getProviderFlows(process()).size() > 1;
 		}
-
 	}
-
 }
