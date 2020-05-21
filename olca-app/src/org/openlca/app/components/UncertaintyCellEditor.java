@@ -4,15 +4,12 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.app.editors.lcia.ImpactCategoryEditor;
-import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
-import org.openlca.expressions.FormulaInterpreter;
 
 /**
  * An uncertainty cell editor for exchanges, LCIA factors, parameters, and
@@ -20,9 +17,7 @@ import org.openlca.expressions.FormulaInterpreter;
  */
 public class UncertaintyCellEditor extends DialogCellEditor {
 
-	private ModelEditor<?> editor;
-	private FormulaInterpreter interpreter;
-	private long interpreterScope = -1;
+	private final ModelEditor<?> editor;
 
 	// types for which this cell editor can be used
 	private ImpactFactor factor;
@@ -33,18 +28,6 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 	public UncertaintyCellEditor(Composite parent, ModelEditor<?> editor) {
 		super(parent);
 		this.editor = editor;
-		if ((editor instanceof ProcessEditor)
-				|| (editor instanceof ImpactCategoryEditor)) {
-			// TODO: currently the formula interpreter / scope
-			// is always null => we have to decide if we want
-			// to support formulas in uncertainty parameters or not
-			// TODO: Formulas.getInterpreter / getScope
-			interpreterScope = editor.getModel().id;
-		}
-	}
-
-	public UncertaintyCellEditor(Composite parent) {
-		super(parent);
 	}
 
 	@Override
@@ -68,15 +51,11 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 
 	@Override
 	protected Object openDialogBox(Control control) {
-		Uncertainty initial = getInitial();
-		UncertaintyDialog dialog = new UncertaintyDialog(control.getShell(),
-				initial);
-		if (interpreter != null)
-			dialog.setInterpreter(interpreter, interpreterScope);
+		var dialog = new UncertaintyDialog(
+				control.getShell(), getInitial());
 		if (dialog.open() != Window.OK)
 			return null;
-		Uncertainty uncertainty = dialog.getUncertainty();
-		setUncertainty(uncertainty);
+		setUncertainty(dialog.getUncertainty());
 		return exchange != null ? exchange : factor;
 	}
 

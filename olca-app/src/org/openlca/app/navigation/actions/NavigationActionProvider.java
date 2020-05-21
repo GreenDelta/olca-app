@@ -146,7 +146,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 	}
 
 	private INavigationAction[] getDatabaseActions() {
-		int count = App.runsInDevMode() ? 14 : 7;
+		int count = App.runsInDevMode() ? 13 : 7;
 		INavigationAction[] actions = new INavigationAction[count];
 		actions[0] = new DbExportAction();
 		actions[1] = new DbActivateAction();
@@ -158,11 +158,10 @@ public class NavigationActionProvider extends CommonActionProvider {
 		if (App.runsInDevMode()) {
 			actions[7] = new XEI3MetaDataImportAction();
 			actions[8] = new XEI3MarketProcessCleanUp();
-			actions[9] = new XParameterCheckAction();
-			actions[10] = new XNexusIndexExportAction();
-			actions[11] = new XNexusEcoinventIndexExportAction();
-			actions[12] = new XRefDataExport();
-			actions[13] = new XRefDataImport();
+			actions[9] = new XNexusIndexExportAction();
+			actions[10] = new XNexusEcoinventIndexExportAction();
+			actions[11] = new XRefDataExport();
+			actions[12] = new XRefDataImport();
 		}
 		return actions;
 	}

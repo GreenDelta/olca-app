@@ -7,7 +7,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -20,24 +19,22 @@ import org.openlca.app.util.UI;
 import org.openlca.core.math.NumberGenerator;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
-import org.openlca.expressions.FormulaInterpreter;
-import org.openlca.expressions.Scope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Dialog for editing uncertainty informations . */
+/**
+ * Dialog for editing uncertainty informations .
+ */
 public class UncertaintyDialog extends Dialog {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	private FormToolkit toolkit;
-	private UncertaintyType[] types = UncertaintyType.values();
+	private final FormToolkit toolkit;
 	private Combo combo;
 	private StackLayout stackLayout;
 
 	private UncertaintyPanel[] clients;
 	private UncertaintyPanel selectedClient;
-	private Scope interpreterScope;
 
 	private Uncertainty uncertainty;
 	private double defaultMean;
@@ -45,24 +42,16 @@ public class UncertaintyDialog extends Dialog {
 	public UncertaintyDialog(Shell shell, Uncertainty initial) {
 		super(shell);
 		toolkit = new FormToolkit(shell.getDisplay());
-		if (initial == null)
-			initial = new Uncertainty();
-		this.uncertainty = initial.clone();
+		this.uncertainty = initial == null
+				? new Uncertainty()
+				: initial.clone();
 		if (uncertainty.parameter1 != null) {
 			defaultMean = uncertainty.parameter1;
 		}
-
 	}
 
 	public Uncertainty getUncertainty() {
 		return uncertainty;
-	}
-
-	public void setInterpreter(FormulaInterpreter interpreter, long scope) {
-		if (!interpreter.hasScope(scope))
-			this.interpreterScope = interpreter.getGlobalScope();
-		else
-			this.interpreterScope = interpreter.getScope(scope);
 	}
 
 	@Override
@@ -148,6 +137,7 @@ public class UncertaintyDialog extends Dialog {
 		UI.gridLayout(comp, 2);
 		combo = UI.formCombo(comp, toolkit,
 				M.UncertaintyDistribution);
+		var types = UncertaintyType.values();
 		String[] items = new String[types.length];
 		int idx = 0;
 		for (int i = 0; i < items.length; i++) {
@@ -177,6 +167,7 @@ public class UncertaintyDialog extends Dialog {
 		UI.gridData(stack, true, true);
 		stackLayout = new StackLayout();
 		stack.setLayout(stackLayout);
+		var types = UncertaintyType.values();
 		clients = new UncertaintyPanel[types.length];
 		for (int i = 0; i < types.length; i++) {
 			Composite comp = toolkit.createComposite(stack);
@@ -196,22 +187,20 @@ public class UncertaintyDialog extends Dialog {
 
 	private class UncertaintyPanel {
 
-		private Composite composite;
-		private Uncertainty _uncertainty;
+		private final Composite composite;
+		private final Uncertainty _uncertainty;
 		private Text[] texts;
 
 		UncertaintyPanel(Composite composite, UncertaintyType type) {
 			this.composite = composite;
-			if (type == uncertainty.distributionType)
-				_uncertainty = uncertainty;
-			else
-				_uncertainty = createUncertainty(type);
+			_uncertainty = type == uncertainty.distributionType
+					? uncertainty
+					: createUncertainty(type);
 			if (type != UncertaintyType.NONE)
 				createTextFields();
 			else {
-				Label label = toolkit.createLabel(composite,
-						M.NoDistribution);
-				label.setForeground(Colors.darkGray());
+				toolkit.createLabel(composite, M.NoDistribution)
+						.setForeground(Colors.darkGray());
 			}
 		}
 
@@ -257,15 +246,11 @@ public class UncertaintyDialog extends Dialog {
 		private String[] getLabels() {
 			switch (_uncertainty.distributionType) {
 			case LOG_NORMAL:
-				return new String[] { M.GeometricMean,
-						M.GeometricStandardDeviation };
-			case NONE:
-				return new String[0];
+				return new String[] { M.GeometricMean, M.GeometricStandardDeviation };
 			case NORMAL:
 				return new String[] { M.Mean, M.StandardDeviation };
 			case TRIANGLE:
-				return new String[] { M.Minimum, M.Mode,
-						M.Maximum };
+				return new String[] { M.Minimum, M.Mode, M.Maximum };
 			case UNIFORM:
 				return new String[] { M.Minimum, M.Maximum };
 			default:
@@ -294,15 +279,11 @@ public class UncertaintyDialog extends Dialog {
 		private boolean hasParameter(int parameter) {
 			switch (_uncertainty.distributionType) {
 			case LOG_NORMAL:
-				return parameter == 1 || parameter == 2;
-			case NONE:
-				return false;
 			case NORMAL:
+			case UNIFORM:
 				return parameter == 1 || parameter == 2;
 			case TRIANGLE:
 				return parameter == 1 || parameter == 2 || parameter == 3;
-			case UNIFORM:
-				return parameter == 1 || parameter == 2;
 			default:
 				return false;
 			}
@@ -315,59 +296,28 @@ public class UncertaintyDialog extends Dialog {
 				String s = texts[i].getText();
 				int param = i + 1;
 				try {
-					if (isValidNumber(s))
-						set(param, Double.parseDouble(s), null);
-					else if (isValidFormula(s))
-						set(param, interpreterScope.eval(s), s);
+					set(param, Double.parseDouble(s));
 				} catch (Exception e) {
-					log.error("failed to set uncertainty value", e);
+					MsgBox.error(s + " " + M.IsNotValidNumber);
 				}
 			}
 			return _uncertainty;
 		}
 
-		private void set(int param, double val, String s) {
+		private void set(int param, double val) {
 			switch (param) {
 			case 1:
-				_uncertainty.formula1 = s;
 				_uncertainty.parameter1 = val;
 				break;
 			case 2:
-				_uncertainty.formula2 = s;
 				_uncertainty.parameter2 = val;
 				break;
 			case 3:
-				_uncertainty.formula3 = s;
 				_uncertainty.parameter3 = val;
 				break;
 			default:
 				break;
 			}
 		}
-
-		private boolean isValidNumber(String s) {
-			try {
-				Double.parseDouble(s);
-				return true;
-			} catch (Exception e) {
-				if (interpreterScope == null)
-					MsgBox.error(s + " " + M.IsNotValidNumber);
-				return false;
-			}
-		}
-
-		private boolean isValidFormula(String s) {
-			if (interpreterScope == null)
-				return false;
-			try {
-				interpreterScope.eval(s);
-				return true;
-			} catch (Exception e) {
-				MsgBox.error(M.FormulaEvaluationFailed + ": " + s);
-				return false;
-			}
-		}
-
 	}
-
 }
