@@ -29,7 +29,6 @@ public class ProcessEditor extends ModelEditor<Process> {
 	public static final String SOURCES_CHANGED = "SOURCES_CHANGED";
 
 	public static String ID = "editors.process";
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private ParameterChangeSupport parameterSupport;
 
 	public ProcessEditor() {
@@ -50,7 +49,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 
 	private void evalFormulas() {
 		Process p = getModel();
-		List<String> errors = Formulas.eval(Database.get(), p);
+		var errors = Formulas.eval(Database.get(), p);
 		if (!errors.isEmpty()) {
 			String message = errors.get(0);
 			if (errors.size() > 1)
@@ -82,6 +81,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 			addPage(new ImpactPage(this));
 			addCommentPage();
 		} catch (Exception e) {
+			var log = LoggerFactory.getLogger(getClass());
 			log.error("failed to add page", e);
 		}
 	}

@@ -13,10 +13,12 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.Event;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
+import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -69,6 +71,52 @@ public class AllocationPage extends ModelPage<Process> {
 			MsgBox.error(M.InvalidNumber, text + " "
 					+ M.IsNotValidNumber);
 			return null;
+		}
+	}
+
+	/**
+	 * Update the given allocation factor with the given value. Returns true
+	 * if it was updated and false when the value is the same as before or
+	 * invalid.
+	 */
+	 boolean update(AllocationFactor factor, String value) {
+		if (factor == null)
+			return false;
+		if (Strings.nullOrEmpty(value)) {
+			MsgBox.error(M.InvalidAllocationFactor, value + M.IsNotValidNumber);
+			return false;
+		}
+
+		// check if it is a number
+		try {
+			double val = Double.parseDouble(value);
+			if (Double.compare(val, factor.value) == 0) {
+				// do nothing if the value is the same
+				// and no formula was set before
+				if (Strings.nullOrEmpty(factor.formula)) {
+					return false;
+				}
+			}
+			factor.value = val;
+			factor.formula = null;
+			return true;
+		} catch (Exception ignored) {
+		}
+
+		// check if it is a valid formula
+		try {
+			var scope = Formulas.createScope(Database.get(), process());
+			double val = scope.eval(value);
+			if (Strings.nullOrEqual(value, factor.formula)) {
+				// do nothing when the formula is the same as before
+				return false;
+			}
+			factor.formula = value;
+			factor.value = val;
+			return true;
+		} catch (Exception e) {
+			MsgBox.error(M.InvalidAllocationFactor, value + M.IsNotValidNumber);
+			return false;
 		}
 	}
 
@@ -286,18 +334,19 @@ public class AllocationPage extends ModelPage<Process> {
 
 		@Override
 		protected void setText(Exchange e, String text) {
-			Double val = parseFactor(text);
-			if (val == null)
-				return;
-			AllocationFactor factor = getFactor(e, method);
-			if (factor == null) {
+			var factor = getFactor(e, method);
+			boolean isNew = factor == null;
+			if (isNew) {
 				factor = new AllocationFactor();
 				factor.method = method;
 				factor.productId = e.flow.id;
-				process().allocationFactors.add(factor);
 			}
-			factor.value = val;
-			editor.setDirty(true);
+			if (update(factor, text)) {
+				if (isNew) {
+					process().allocationFactors.add(factor);
+				}
+				editor.setDirty(true);
+			}
 		}
 
 		@Override

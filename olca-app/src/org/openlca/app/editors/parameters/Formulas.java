@@ -6,10 +6,9 @@ import java.util.List;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
-import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ImpactCategory;
-import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.Parameter;
+import org.openlca.core.model.ParameterizedEntity;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.expressions.FormulaInterpreter;
@@ -23,10 +22,10 @@ import org.slf4j.LoggerFactory;
  */
 public class Formulas {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	private List<String> errors = new ArrayList<>();
-	private IDatabase db;
+	private final List<String> errors = new ArrayList<>();
+	private final IDatabase db;
 
 	private Formulas(IDatabase db) {
 		this.db = db;
@@ -65,15 +64,20 @@ public class Formulas {
 
 	private List<String> eval(Process p) {
 		try {
-			Scope s = makeLocalScope(p.parameters, p.id);
-			evalParams(p.parameters, s);
-			for (Exchange e : p.exchanges) {
+			var scope = createScope(db, p);
+			evalParams(p.parameters, scope);
+			for (var e : p.exchanges) {
 				if (Strings.notEmpty(e.formula)) {
-					e.amount = eval(e.formula, s);
+					e.amount = eval(e.formula, scope);
 				}
-				eval(e.uncertainty, s);
+				eval(e.uncertainty, scope);
 				if (Strings.notEmpty(e.costFormula)) {
-					e.costs = eval(e.costFormula, s);
+					e.costs = eval(e.costFormula, scope);
+				}
+			}
+			for (var af : p.allocationFactors) {
+				if (Strings.notEmpty(af.formula)) {
+					af.value = eval(af.formula, scope);
 				}
 			}
 		} catch (Exception e) {
@@ -84,9 +88,9 @@ public class Formulas {
 
 	private List<String> eval(ImpactCategory c) {
 		try {
-			Scope s = makeLocalScope(c.parameters, c.id);
+			var s = createScope(db, c);
 			evalParams(c.parameters, s);
-			for (ImpactFactor f : c.impactFactors) {
+			for (var f : c.impactFactors) {
 				if (Strings.notEmpty(f.formula)) {
 					f.value = eval(f.formula, s);
 				}
@@ -99,11 +103,10 @@ public class Formulas {
 	}
 
 	private void evalParams(List<Parameter> params, Scope s) {
-		for (Parameter param : params) {
+		for (var param : params) {
 			if (param.isInputParameter)
 				continue;
-			double val = eval(param.formula, s);
-			param.value = val;
+			param.value = eval(param.formula, s);
 		}
 	}
 
@@ -135,25 +138,31 @@ public class Formulas {
 		}
 	}
 
-	private Scope makeLocalScope(List<Parameter> params, long scopeId) {
-		FormulaInterpreter interpreter = new FormulaInterpreter();
-		ParameterDao dao = new ParameterDao(db);
-		Scope globalScope = interpreter.getGlobalScope();
-		for (Parameter p : dao.getGlobalParameters()) {
-			bind(p, globalScope);
+	/**
+	 * Creates an evaluation scope for the given entity with bindings to local
+	 * parameters and a reference to a global scope which contains the database
+	 * parameters.
+	 */
+	public static Scope createScope(IDatabase db, ParameterizedEntity entity) {
+		var interpreter = new FormulaInterpreter();
+		var global = interpreter.getGlobalScope();
+		if (db == null || entity == null)
+			return global;
+		for (var param : new ParameterDao(db).getGlobalParameters()) {
+			bind(param, global);
 		}
-		Scope localScope = interpreter.createScope(scopeId);
-		for (Parameter p : params) {
-			bind(p, localScope);
+		var localScope = interpreter.createScope(entity.id);
+		for (var param : entity.parameters) {
+			bind(param, localScope);
 		}
 		return localScope;
 	}
 
-	private void bind(Parameter param, Scope scope) {
+	private static void bind(Parameter param, Scope scope) {
 		if (param == null || scope == null)
 			return;
 		if (param.isInputParameter || Strings.nullOrEmpty(param.formula)) {
-			scope.bind(param.name, Double.toString(param.value));
+			scope.bind(param.name, param.value);
 		} else {
 			scope.bind(param.name, param.formula);
 		}
