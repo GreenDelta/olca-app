@@ -46,7 +46,7 @@ import com.google.common.eventbus.Subscribe;
 public class AllocationPage extends ModelPage<Process> {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	private final ProcessEditor editor;
+	final ProcessEditor editor;
 	private FormToolkit tk;
 	private TableViewer table;
 	private CausalFactorTable causalTable;
@@ -75,11 +75,10 @@ public class AllocationPage extends ModelPage<Process> {
 	}
 
 	/**
-	 * Update the given allocation factor with the given value. Returns true
-	 * if it was updated and false when the value is the same as before or
-	 * invalid.
+	 * Update the given allocation factor with the given value. Returns true if it
+	 * was updated and false when the value is the same as before or invalid.
 	 */
-	 boolean update(AllocationFactor factor, String value) {
+	boolean update(AllocationFactor factor, String value) {
 		if (factor == null)
 			return false;
 		if (Strings.nullOrEmpty(value)) {
@@ -188,8 +187,8 @@ public class AllocationPage extends ModelPage<Process> {
 		var comp = UI.sectionClient(section, tk, 1);
 
 		var columns = editor.hasAnyComment("allocationFactors")
-				? new String[]{M.Product, M.Physical, "", M.Economic, ""}
-				: new String[]{M.Product, M.Physical, M.Economic};
+				? new String[] { M.Product, M.Physical, "", M.Economic, "" }
+				: new String[] { M.Product, M.Physical, M.Economic };
 
 		table = Tables.createViewer(comp, columns);
 
@@ -231,7 +230,7 @@ public class AllocationPage extends ModelPage<Process> {
 	private void createCausalSection(Composite body) {
 		var section = UI.section(body, tk, M.CausalAllocation);
 		UI.gridData(section, true, true);
-		causalTable = new CausalFactorTable(editor);
+		causalTable = new CausalFactorTable(this);
 		causalTable.render(section, tk);
 		CommentAction.bindTo(section, "allocationFactors", editor.getComments());
 	}
@@ -260,15 +259,6 @@ public class AllocationPage extends ModelPage<Process> {
 		return null;
 	}
 
-	private String getFactorLabel(Exchange e, AllocationMethod m) {
-		var f = getFactor(e, m);
-		if (f == null)
-			return Double.toString(1);
-		return Strings.nullOrEmpty(f.formula)
-				? Double.toString(f.value)
-				: f.formula + " = " + f.value;
-	}
-
 	private class FactorLabel extends LabelProvider implements
 			ITableLabelProvider {
 
@@ -278,21 +268,30 @@ public class AllocationPage extends ModelPage<Process> {
 				return null;
 			var e = (Exchange) obj;
 			switch (col) {
-				case 0:
-					return productText(e);
-				case 1:
-					return getFactorLabel(e, AllocationMethod.PHYSICAL);
-				case 2:
-					if (editor.hasAnyComment("allocationFactors"))
-						return null;
-					return getFactorLabel(e, AllocationMethod.ECONOMIC);
-				case 3:
-					if (!editor.hasAnyComment("allocationFactors"))
-						return null;
-					return getFactorLabel(e, AllocationMethod.ECONOMIC);
-				default:
+			case 0:
+				return productText(e);
+			case 1:
+				return getFactorLabel(e, AllocationMethod.PHYSICAL);
+			case 2:
+				if (editor.hasAnyComment("allocationFactors"))
 					return null;
+				return getFactorLabel(e, AllocationMethod.ECONOMIC);
+			case 3:
+				if (!editor.hasAnyComment("allocationFactors"))
+					return null;
+				return getFactorLabel(e, AllocationMethod.ECONOMIC);
+			default:
+				return null;
 			}
+		}
+
+		private String getFactorLabel(Exchange e, AllocationMethod m) {
+			var f = getFactor(e, m);
+			if (f == null)
+				return "1";
+			return Strings.nullOrEmpty(f.formula)
+					? Double.toString(f.value)
+					: f.formula + " = " + f.value;
 		}
 
 		@Override
@@ -329,7 +328,12 @@ public class AllocationPage extends ModelPage<Process> {
 
 		@Override
 		protected String getText(Exchange e) {
-			return getFactorLabel(e, method);
+			var factor = getFactor(e, method);
+			if (factor == null)
+				return "1.0";
+			return Strings.nullOrEmpty(factor.formula)
+					? Double.toString(factor.value)
+					: factor.formula;
 		}
 
 		@Override

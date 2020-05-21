@@ -43,12 +43,14 @@ import org.openlca.util.Strings;
  */
 class CausalFactorTable {
 
-	private ProcessEditor editor;
+	private final ProcessEditor editor;
+	private final AllocationPage page;
 	private Column[] columns;
 	private TableViewer viewer;
 
-	public CausalFactorTable(ProcessEditor editor) {
-		this.editor = editor;
+	public CausalFactorTable(AllocationPage page) {
+		this.page = page;
+		this.editor = page.editor;
 		initColumns();
 	}
 
@@ -160,8 +162,8 @@ class CausalFactorTable {
 			int index = showComments ? 2 * i : i;
 			modifySupport.bind(keys[index + 4], new ValueModifier(columns[i].product));
 			if (showComments) {
-				Exchange product = columns[i].product;
-				modifySupport.bind(keys[index + 5], new CommentDialogModifier<Exchange>(editor.getComments(),
+				var product = columns[i].product;
+				modifySupport.bind(keys[index + 5], new CommentDialogModifier<>(editor.getComments(),
 						(e) -> CommentPaths.get(getFactor(product, e), product, e)));
 			}
 		}
@@ -196,7 +198,9 @@ class CausalFactorTable {
 	}
 
 	private AllocationFactor getFactor(Exchange product, Exchange exchange) {
-		for (AllocationFactor factor : process().allocationFactors) {
+		if (product == null || exchange == null)
+			return null;
+		for (var factor : process().allocationFactors) {
 			if (factor.method != AllocationMethod.CAUSAL)
 				continue;
 			if (product.flow.id != factor.productId)
@@ -221,11 +225,14 @@ class CausalFactorTable {
 			if (col == 0)
 				return Images.get(exchange.flow);
 			if (col > 3 && col % 2 == 1 && editor.hasAnyComment("allocationFactors")) {
-				Exchange product = getProduct(col);
-				AllocationFactor factor = getFactor(product, exchange);
+				var product = getProduct(col);
+				if (product == null)
+					return null;
+				var factor = getFactor(product, exchange);
 				if (factor == null)
 					return null;
-				return Images.get(editor.getComments(), CommentPaths.get(factor, product, exchange));
+				return Images.get(editor.getComments(),
+						CommentPaths.get(factor, product, exchange));
 			}
 			return null;
 		}
@@ -255,17 +262,20 @@ class CausalFactorTable {
 		}
 
 		private String getFactorLabel(Exchange exchange, int col) {
-			AllocationFactor factor = getFactor(getProduct(col), exchange);
-			if (factor == null)
-				return Double.toString(1.0);
-			return Double.toString(factor.value);
+			var f = getFactor(getProduct(col), exchange);
+			if (f == null)
+				return "1";
+			return Strings.nullOrEmpty(f.formula)
+					? Double.toString(f.value)
+					: f.formula + " = " + f.value;
+
 		}
 	}
 
-	private class Column implements Comparable<Column> {
+	private static class Column implements Comparable<Column> {
 
-		private Exchange product;
-		private String key;
+		private final Exchange product;
+		private final String key;
 
 		public Column(Exchange product) {
 			this.product = product;
@@ -286,7 +296,7 @@ class CausalFactorTable {
 
 	private class ValueModifier extends TextCellModifier<Exchange> {
 
-		private Exchange product;
+		private final Exchange product;
 
 		public ValueModifier(Exchange product) {
 			this.product = product;
@@ -294,27 +304,30 @@ class CausalFactorTable {
 
 		@Override
 		protected String getText(Exchange exchange) {
-			AllocationFactor factor = getFactor(product, exchange);
+			var factor = getFactor(product, exchange);
 			if (factor == null)
-				return Double.toString(1);
-			return Double.toString(factor.value);
+				return "1";
+			return Strings.nullOrEmpty(factor.formula)
+					? Double.toString(factor.value)
+					: factor.formula;
 		}
 
 		@Override
 		protected void setText(Exchange exchange, String text) {
-			Double val = AllocationPage.parseFactor(text);
-			if (val == null)
-				return;
-			AllocationFactor factor = getFactor(product, exchange);
-			if (factor == null) {
+			var factor = getFactor(product, exchange);
+			boolean isNew = factor == null;
+			if (isNew) {
 				factor = new AllocationFactor();
 				factor.method = AllocationMethod.CAUSAL;
 				factor.exchange = exchange;
 				factor.productId = product.flow.id;
-				process().allocationFactors.add(factor);
 			}
-			factor.value = val;
-			editor.setDirty(true);
+			if (page.update(factor, text)) {
+				if (isNew) {
+					process().allocationFactors.add(factor);
+				}
+				editor.setDirty(true);
+			}
 		}
 	}
 
