@@ -266,8 +266,7 @@ class GeoFactorCalculator implements Runnable {
 				continue;
 			try {
 				double val = fi.eval(b.formula);
-				ImpactFactor f = impact.addFactor(b.flow);
-				f.value = val;
+				impact.factor(b.flow, val);
 			} catch (Exception e) {
 				log.error("failed to evaluate formula {} "
 						+ " of binding with flow {}", b.formula, b.flow);
@@ -296,8 +295,7 @@ class GeoFactorCalculator implements Runnable {
 					continue;
 				try {
 					double val = fi.eval(b.formula);
-					ImpactFactor factor = impact.addFactor(b.flow);
-					factor.value = val;
+					var factor = impact.factor(b.flow, val);
 					factor.location = loc;
 				} catch (Exception e) {
 					log.error("Failed to calculate factor from formula "

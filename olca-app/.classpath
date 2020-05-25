@@ -43,7 +43,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-2.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-geo-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-io-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-2.0.0.jar"/>

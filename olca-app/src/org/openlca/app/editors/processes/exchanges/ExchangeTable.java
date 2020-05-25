@@ -255,8 +255,9 @@ class ExchangeTable {
 			Flow flow = dao.getForId(flowId);
 			if (!canAdd(flow))
 				continue;
-			Exchange e = process.exchange(flow);
-			e.isInput = forInputs;
+			var e = forInputs
+					? process.input(flow, 1)
+					: process.output(flow, 1);
 			if (d.type == ModelType.PROCESS
 					&& Exchanges.canHaveProvider(e)) {
 				e.defaultProviderId = d.id;

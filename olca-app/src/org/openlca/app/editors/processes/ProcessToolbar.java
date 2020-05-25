@@ -143,19 +143,19 @@ public class ProcessToolbar extends EditorActionBarContributor {
 			}
 		}
 		
-		static void runCalculation(Process process) {
-			ProductSystem sys = ProductSystem.from(process);
-			sys.withoutNetwork = true;
-			CalculationWizard.open(sys);
+		static void runCalculation(Process p) {
+			var system = ProductSystem.of(p);
+			system.withoutNetwork = true;
+			CalculationWizard.open(system);
 		}
 
 		static void checkLinking(Process process) {
-			AtomicReference<LinkingProperties> ref = new AtomicReference<>();
+			var ref = new AtomicReference<LinkingProperties>();
 			App.runWithProgress("Check database links", () -> {
-				LinkingProperties props = LinkingProperties.check(Database.get());
+				var props = LinkingProperties.check(Database.get());
 				ref.set(props);
 			});
-			LinkingProperties props = ref.get();
+			var props = ref.get();
 			if (props == null) {
 				MsgBox.error("The linking check gave no results");
 				return;
@@ -173,7 +173,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 					+ "in the database. This can lead to different results "
 					+ "in the calculation depending on the process linking.";
 			String[] buttons = { "Show details", "Cancel" };
-			MessageDialog dialog = new MessageDialog(
+			var dialog = new MessageDialog(
 					UI.shell(),
 					"Direct calculation", // title
 					null, // image
@@ -191,7 +191,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 			String msg = "The processes in the database can be"
 					+ " linked unambiguously";
 			String[] buttons = { "Run calculation", "Show details", "Cancel" };
-			MessageDialog dialog = new MessageDialog(
+			var dialog = new MessageDialog(
 					UI.shell(),
 					"Direct calculation", // title
 					null, // image
