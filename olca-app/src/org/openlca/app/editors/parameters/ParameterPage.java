@@ -27,7 +27,6 @@ import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Parameter;
-import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.ParameterizedEntity;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
@@ -42,35 +41,27 @@ public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	final ModelEditor<T> editor;
-	final ParameterScope scope;
 	ParameterChangeSupport support;
 
 	private TableViewer globalTable;
 	Composite body;
 	FormToolkit toolkit;
 
-	private ParameterPage(ModelEditor<T> editor, ParameterScope scope) {
+	private ParameterPage(ModelEditor<T> editor) {
 		super(editor, ID, M.Parameters);
 		this.editor = editor;
-		this.scope = scope;
 	}
 
 	public static ParameterPage<Process> create(ProcessEditor editor) {
-		ParameterPage<Process> page = new ParameterPage<>(
-				editor, ParameterScope.PROCESS);
+		var page = new ParameterPage<>(editor);
 		page.support = editor.getParameterSupport();
 		return page;
 	}
 
 	public static ParameterPage<ImpactCategory> create(ImpactCategoryEditor editor) {
-		ParameterPage<ImpactCategory> page = new ParameterPage<>(
-				editor, ParameterScope.IMPACT_CATEGORY);
+		var page = new ParameterPage<>(editor);
 		page.support = editor.getParameterSupport();
 		return page;
-	}
-
-	List<Parameter> parameters() {
-		return editor.getModel().parameters;
 	}
 
 	@Override

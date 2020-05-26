@@ -1,10 +1,8 @@
 package org.openlca.app.editors.parameters;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -13,13 +11,14 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FormulaCellEditor;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentDialogModifier;
@@ -42,6 +41,7 @@ import org.openlca.app.viewers.table.modify.field.StringModifier;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
+import org.openlca.core.model.ParameterizedEntity;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.formula.Formulas;
 import org.openlca.util.Parameters;
@@ -56,17 +56,17 @@ import org.openlca.util.Strings;
 public class ParameterSection {
 
 	private TableViewer table;
-	private boolean forInputParameters = true;
+	private final boolean forInputParameters;
 	private final ParameterPage<?> page;
-	private final ModelEditor<?> editor;
-	private ParameterChangeSupport support;
+	private final ModelEditor<? extends ParameterizedEntity> editor;
+	private final ParameterChangeSupport support;
 
-	static ParameterSection forInputParameters(ParameterPage<?> page) {
-		return new ParameterSection(page, true);
+	static void forInputParameters(ParameterPage<?> page) {
+		new ParameterSection(page, true);
 	}
 
-	static ParameterSection forDependentParameters(ParameterPage<?> page) {
-		return new ParameterSection(page, false);
+	static void forDependentParameters(ParameterPage<?> page) {
+		new ParameterSection(page, false);
 	}
 
 	private ParameterSection(ParameterPage<?> page, boolean forInputParameters) {
@@ -74,16 +74,40 @@ public class ParameterSection {
 		this.editor = page.editor;
 		this.page = page;
 		this.support = page.support;
-		String[] props = getProperties();
-		createComponents(page.body, page.toolkit, props);
+		createComponents(page.body, page.toolkit);
 		createCellModifiers();
-		addDoubleClickHandler();
 		support.afterEvaluation(this::setInput);
 		editor.onSaved(this::setInput);
-		fillInitialInput();
+		entity().parameters.sort((o1, o2) -> Strings.compare(o1.name, o2.name));
+		setInput();
 	}
 
-	private String[] getProperties() {
+	private ParameterizedEntity entity() {
+		return editor.getModel();
+	}
+
+	private void createComponents(Composite body, FormToolkit toolkit) {
+		String title = forInputParameters ? M.InputParameters : M.DependentParameters;
+		Section section = UI.section(body, toolkit, title);
+		UI.gridData(section, true, true);
+		Composite parent = UI.sectionClient(section, toolkit, 1);
+		table = Tables.createViewer(parent, columns());
+		ParameterLabelProvider label = new ParameterLabelProvider();
+		table.setLabelProvider(label);
+		addSorters(table, label);
+		bindActions(section);
+		Tables.bindColumnWidths(table, 0.3, 0.3, 0.2, 0.17, 0.03);
+		int col = forInputParameters ? 1 : 2;
+		table.getTable().getColumns()[col].setAlignment(SWT.RIGHT);
+		Tables.onDoubleClick(table, e -> {
+			var item = Tables.getItem(table, e);
+			if (item == null) {
+				onAdd();
+			}
+		});
+	}
+
+	private String[] columns() {
 		var props = forInputParameters
 				? List.of(M.Name, M.Value, M.Uncertainty, M.Description)
 				: List.of(M.Name, M.Formula, M.Value, M.Description);
@@ -92,29 +116,6 @@ public class ParameterSection {
 			props.add("");
 		}
 		return props.toArray(new String[0]);
-	}
-
-	private void addDoubleClickHandler() {
-		Tables.onDoubleClick(table, (event) -> {
-			TableItem item = Tables.getItem(table, event);
-			if (item == null)
-				onAdd();
-		});
-	}
-
-	private void createComponents(Composite body, FormToolkit toolkit, String[] properties) {
-		String title = forInputParameters ? M.InputParameters : M.DependentParameters;
-		Section section = UI.section(body, toolkit, title);
-		UI.gridData(section, true, true);
-		Composite parent = UI.sectionClient(section, toolkit, 1);
-		table = Tables.createViewer(parent, properties);
-		ParameterLabelProvider label = new ParameterLabelProvider();
-		table.setLabelProvider(label);
-		addSorters(table, label);
-		bindActions(section);
-		Tables.bindColumnWidths(table, 0.3, 0.3, 0.2, 0.17, 0.03);
-		int col = forInputParameters ? 1 : 2;
-		table.getTable().getColumns()[col].setAlignment(SWT.RIGHT);
 	}
 
 	private void addSorters(TableViewer table, ParameterLabelProvider label) {
@@ -128,8 +129,8 @@ public class ParameterSection {
 	}
 
 	private void bindActions(Section section) {
-		var add = Actions.onAdd(() -> onAdd());
-		var remove = Actions.onRemove(() -> onRemove());
+		var add = Actions.onAdd(this::onAdd);
+		var remove = Actions.onRemove(this::onRemove);
 		var copy = TableClipboard.onCopy(table);
 		var paste = TableClipboard.onPaste(table, this::onPaste);
 		var usage = Actions.create(M.Usage, Icon.LINK.descriptor(), () -> {
@@ -152,8 +153,8 @@ public class ParameterSection {
 		ms.bind(M.Description, new StringModifier<>(editor, "description"));
 		ms.bind(M.Value, new DoubleModifier<>(editor, "value", (elem) -> support.evaluate()));
 		ms.bind(M.Uncertainty, new UncertaintyCellEditor(table.getTable(), editor));
-		ms.bind("", new CommentDialogModifier<Parameter>(editor.getComments(), CommentPaths::get));
-		var formulaEditor = new FormulaCellEditor(table, () -> page.parameters());
+		ms.bind("", new CommentDialogModifier<>(editor.getComments(), CommentPaths::get));
+		var formulaEditor = new FormulaCellEditor(table, () -> entity().parameters);
 		ms.bind(M.Formula, formulaEditor);
 		formulaEditor.onEdited((obj, formula) -> {
 			if (!(obj instanceof Parameter))
@@ -166,15 +167,9 @@ public class ParameterSection {
 		});
 	}
 
-	private void fillInitialInput() {
-		Collections.sort(page.parameters(),
-				(o1, o2) -> Strings.compare(o1.name, o2.name));
-		setInput();
-	}
-
 	private void setInput() {
 		List<Parameter> input = new ArrayList<>();
-		for (var param : page.parameters()) {
+		for (var param : entity().parameters) {
 			if (param.isInputParameter == forInputParameters) {
 				input.add(param);
 			}
@@ -183,51 +178,55 @@ public class ParameterSection {
 	}
 
 	private void onAdd() {
-		var params = page.parameters();
-		int count = params.size();
-		String name = "p_" + count++;
-		while (exists(name))
-			name = "p_" + count++;
-		var p = new Parameter();
-		p.refId = UUID.randomUUID().toString();
-		p.name = name;
-		p.scope = page.scope;
-		p.isInputParameter = forInputParameters;
-		p.value = 1.0;
-		if (!forInputParameters)
-			p.formula = "1.0";
-		params.add(p);
+		var e = entity();
+		var params = e.parameters;
+		int count = params.size() + 1;
+		String name = "p_" + count;
+		while (exists(name)) {
+			count++;
+			name = "p_" + count;
+		}
+		if (forInputParameters) {
+			e.parameter(name, 1.0);
+		} else {
+			e.parameter(name, "1.0");
+		}
 		setInput();
 		editor.setDirty(true);
 	}
 
 	private boolean exists(String name) {
-		for (var param : page.parameters()) {
-			if (name == null && param.name == null)
-				return true;
-			if (name == null || param.name == null)
+		if (name == null)
+			return false;
+		var _name = name.trim().toLowerCase();
+		for (var param : entity().parameters) {
+			var other = param.name;
+			if (other == null)
 				continue;
-			if (name.toLowerCase().equals(param.name.toLowerCase()))
+			if (_name.equals(other.trim().toLowerCase()))
 				return true;
 		}
 		return false;
 	}
 
 	private void onRemove() {
-		List<Parameter> params = page.parameters();
+		// TODO: give a hint when the parameter is used in a redefinition
+		var params = entity().parameters;
 		List<Parameter> selection = Viewers.getAllSelected(table);
-		for (Parameter parameter : selection) {
-			params.remove(parameter);
-		}
+		if (selection.isEmpty())
+			return;
+		if (!params.removeAll(selection))
+			return;
 		setInput();
 		editor.setDirty(true);
 		support.evaluate();
 	}
 
 	private void onPaste(String text) {
-		List<Parameter> params = forInputParameters
-				? Clipboard.readAsInputParams(text, page.scope)
-				: Clipboard.readAsCalculatedParams(text, page.scope);
+		var scope = entity().parameterScope();
+		var params = forInputParameters
+				? Clipboard.readAsInputParams(text, scope)
+				: Clipboard.readAsCalculatedParams(text, scope);
 		boolean skipped = false;
 		for (Parameter param : params) {
 			String name = param.name;
@@ -235,7 +234,7 @@ public class ParameterSection {
 				skipped = true;
 				continue;
 			}
-			page.parameters().add(param);
+			entity().parameters.add(param);
 		}
 		if (skipped) {
 			MsgBox.warning(M.SomeParametersWereNotAdded);
@@ -297,7 +296,10 @@ public class ParameterSection {
 				return;
 			if (Objects.equals(text, param.name))
 				return;
+
 			String name = text.trim();
+
+			// check the parameter name
 			if (!Parameters.isValidName(name)) {
 				MsgBox.error(M.InvalidParameterName, name + " "
 						+ M.IsNotValidParameterName);
@@ -308,9 +310,33 @@ public class ParameterSection {
 						M.ParameterWithSameNameExists);
 				return;
 			}
-			param.name = name;
-			editor.setDirty(true);
-			support.evaluate();
+
+			boolean isUsed = Parameters.isUsed(
+					param, entity(), Database.get());
+			if (!isUsed) {
+				param.name = name;
+				editor.setDirty(true);
+				support.evaluate();
+				return;
+			}
+
+			boolean b = Question.ask("Rename parameter?",
+					"The parameter is already used." +
+					"This will rename the parameter where it " +
+					"is used and save the data set. " +
+					"Should we do that?");
+			if (!b)
+				return;
+
+			// save the entity, rename it, and reopen it
+			try {
+				Editors.getActivePage().saveEditor(editor, false);
+				var entity = Parameters.rename(
+						param, entity(), Database.get(), name);
+				App.openEditor(entity);
+			} catch (Exception e) {
+				MsgBox.error("Renaming failed: " + e.getMessage());
+			}
 		}
 	}
 
@@ -344,7 +370,7 @@ public class ParameterSection {
 				return;
 
 			// do it
-			page.parameters().remove(param);
+			entity().parameters.remove(param);
 			var global = param.clone();
 			global.scope = ParameterScope.GLOBAL;
 			new ParameterDao(Database.get()).insert(global);
@@ -368,7 +394,7 @@ public class ParameterSection {
 
 				// check that there are no references to local parameters
 				var variables = Formulas.getVariables(param.formula);
-				for (var localParam : page.parameters()) {
+				for (var localParam : entity().parameters) {
 					if (Objects.equals(localParam, param))
 						continue;
 					if (localParam.name == null)
