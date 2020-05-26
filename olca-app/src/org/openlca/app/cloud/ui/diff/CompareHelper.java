@@ -1,6 +1,6 @@
 package org.openlca.app.cloud.ui.diff;
 
-import java.util.Calendar;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +17,6 @@ import org.openlca.app.cloud.ui.compare.json.JsonNode;
 import org.openlca.app.cloud.ui.compare.json.JsonUtil;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.core.model.Version;
-import org.openlca.jsonld.Dates;
 
 import com.google.gson.JsonObject;
 
@@ -117,7 +116,7 @@ class CompareHelper {
 			version.incUpdate();
 			obj.addProperty("version", Version.asString(version.getValue()));
 		}
-		obj.addProperty("lastChange", Dates.toDateTime(Calendar.getInstance().getTime()));
+		obj.addProperty("lastChange", Instant.now().toString());
 		return obj;
 	}
 

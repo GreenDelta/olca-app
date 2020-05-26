@@ -46,7 +46,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-io-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-2.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-jsonld-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/poi-3.12.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-3.12.jar"/>

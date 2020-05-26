@@ -18,7 +18,7 @@ import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.jsonld.Dates;
+import org.openlca.jsonld.Json;
 import org.openlca.util.KeyGen;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -125,7 +125,8 @@ class Util {
 		d.type = result.remote.type;
 		d.refId = result.remote.refId;
 		d.name = result.mergedData.get("name").getAsString();
-		d.lastChange = Dates.getTime(result.mergedData.get("lastChange").getAsString());
+		var lastChanged = Json.getDate(result.mergedData, "lastChange");
+		d.lastChange = lastChanged != null ? lastChanged.getTime() : 0L;
 		d.version = result.mergedData.get("version").getAsString();
 		JsonElement category = result.mergedData.get("category");
 		if (category != null) {
