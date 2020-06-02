@@ -331,7 +331,7 @@ public class Labels {
 		case IMPACT_METHOD:
 			return M.ImpactAssessmentMethods;
 		case IMPACT_CATEGORY:
-			return "Environmental indicators"; // TODO
+			return M.ImpactCategories;
 		case PROCESS:
 			return M.Processes;
 		case PRODUCT_SYSTEM:
@@ -372,7 +372,7 @@ public class Labels {
 		case IMPACT_METHOD:
 			return M.ImpactAssessmentMethod;
 		case IMPACT_CATEGORY:
-			return "Environmental indicator"; // TODO
+			return M.ImpactCategory;
 		case PROCESS:
 			return M.Process;
 		case PRODUCT_SYSTEM:

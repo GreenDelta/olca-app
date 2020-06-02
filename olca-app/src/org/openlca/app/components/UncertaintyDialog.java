@@ -42,14 +42,16 @@ public class UncertaintyDialog extends Dialog {
 	private Uncertainty uncertainty;
 	private double defaultMean;
 
-	public UncertaintyDialog(Shell parentShell, Uncertainty initial) {
-		super(parentShell);
-		toolkit = new FormToolkit(parentShell.getDisplay());
+	public UncertaintyDialog(Shell shell, Uncertainty initial) {
+		super(shell);
+		toolkit = new FormToolkit(shell.getDisplay());
 		if (initial == null)
 			initial = new Uncertainty();
 		this.uncertainty = initial.clone();
-		if (uncertainty.parameter1 != null)
+		if (uncertainty.parameter1 != null) {
 			defaultMean = uncertainty.parameter1;
+		}
+
 	}
 
 	public Uncertainty getUncertainty() {
@@ -186,8 +188,9 @@ public class UncertaintyDialog extends Dialog {
 
 	@Override
 	public boolean close() {
-		if (toolkit != null)
+		if (toolkit != null) {
 			toolkit.dispose();
+		}
 		return super.close();
 	}
 
