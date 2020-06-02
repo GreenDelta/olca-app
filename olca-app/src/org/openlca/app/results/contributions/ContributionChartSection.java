@@ -1,26 +1,26 @@
 package org.openlca.app.results.contributions;
 
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.List;
 
 import org.eclipse.nebula.jface.tablecomboviewer.TableComboViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.components.ResultFlowCombo;
 import org.openlca.app.results.ImageExportAction;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
-import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.ContributionSet;
 
 /**
  * Chart section of the first page in the analysis editor. Can contain flow or
@@ -32,26 +32,26 @@ public class ContributionChartSection {
 	private String sectionTitle = "";
 	private String selectionName = "";
 
-	private ContributionResult provider;
+	private final ContributionResult result;
 	private AbstractViewer<?, TableComboViewer> itemViewer;
 	private ContributionChart chart;
 
-	public static ContributionChartSection forFlows(ContributionResult provider) {
-		ContributionChartSection section = new ContributionChartSection(provider, true);
-		section.sectionTitle = M.DirectContributionsFlowResultsOverview;
-		section.selectionName = M.Flow;
-		return section;
+	public static ContributionChartSection forFlows(ResultEditor<?> editor) {
+		ContributionChartSection s = new ContributionChartSection(editor, true);
+		s.sectionTitle = M.DirectContributionsFlowResultsOverview;
+		s.selectionName = M.Flow;
+		return s;
 	}
 
-	public static ContributionChartSection forImpacts(ContributionResult provider) {
-		ContributionChartSection section = new ContributionChartSection(provider, false);
-		section.sectionTitle = M.DirectContributionsImpactCategoryResultsOverview;
-		section.selectionName = M.ImpactCategory;
-		return section;
+	public static ContributionChartSection forImpacts(ResultEditor<?> editor) {
+		ContributionChartSection s = new ContributionChartSection(editor, false);
+		s.sectionTitle = M.DirectContributionsImpactCategoryResultsOverview;
+		s.selectionName = M.ImpactCategory;
+		return s;
 	}
 
-	private ContributionChartSection(ContributionResult provider, boolean forFlows) {
-		this.provider = provider;
+	private ContributionChartSection(ResultEditor<?> editor, boolean forFlows) {
+		this.result = editor.result;
 		this.forFlows = forFlows;
 	}
 
@@ -61,56 +61,44 @@ public class ContributionChartSection {
 		UI.gridLayout(comp, 1);
 		Composite header = tk.createComposite(comp);
 		UI.gridLayout(header, 2);
-		createItemCombo(tk, header);
+		createCombo(tk, header);
 		chart = ContributionChart.create(comp, tk);
 		Actions.bind(section, new ImageExportAction(comp));
 		refresh();
 	}
 
-	private void createItemCombo(FormToolkit toolkit, Composite header) {
-		toolkit.createLabel(header, selectionName);
-		if (forFlows)
-			createFlowViewer(header);
-		else
-			createImpactViewer(header);
+	private void createCombo(FormToolkit tk, Composite comp) {
+		tk.createLabel(comp, selectionName);
+		if (forFlows) {
+			ResultFlowCombo combo = new ResultFlowCombo(comp);
+			combo.setInput(result.getFlows());
+			this.itemViewer = combo;
+		} else {
+			ImpactCategoryViewer combo = new ImpactCategoryViewer(comp);
+			combo.setInput(result.getImpacts());
+			this.itemViewer = combo;
+		}
+		itemViewer.addSelectionChangedListener(_e -> refresh());
 		itemViewer.selectFirst();
-	}
-
-	private void createFlowViewer(Composite header) {
-		FlowViewer viewer = new FlowViewer(header);
-		Set<FlowDescriptor> set = provider.getFlows();
-		FlowDescriptor[] flows = set.toArray(new FlowDescriptor[set.size()]);
-		viewer.setInput(flows);
-		viewer.addSelectionChangedListener((selection) -> refresh());
-		this.itemViewer = viewer;
-	}
-
-	private void createImpactViewer(Composite header) {
-		ImpactCategoryViewer viewer = new ImpactCategoryViewer(header);
-		Set<ImpactCategoryDescriptor> set = provider.getImpacts();
-		ImpactCategoryDescriptor[] impacts = set.toArray(new ImpactCategoryDescriptor[set.size()]);
-		viewer.setInput(impacts);
-		viewer.addSelectionChangedListener((selection) -> refresh());
-		this.itemViewer = viewer;
 	}
 
 	private void refresh() {
 		if (chart == null)
 			return;
-		Object selection = itemViewer.getSelected();
+		Object e = itemViewer.getSelected();
 		String unit = null;
-		ContributionSet<CategorizedDescriptor> contributionSet = null;
-		if (selection instanceof FlowDescriptor) {
-			FlowDescriptor flow = (FlowDescriptor) selection;
-			unit = Labels.getRefUnit(flow);
-			contributionSet = provider.getProcessContributions(flow);
-		} else if (selection instanceof ImpactCategoryDescriptor) {
-			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
+		List<Contribution<CategorizedDescriptor>> cons = null;
+		if (e instanceof IndexFlow) {
+			IndexFlow flow = (IndexFlow) e;
+			unit = Labels.refUnit(flow);
+			cons = result.getProcessContributions(flow);
+		} else if (e instanceof ImpactCategoryDescriptor) {
+			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) e;
 			unit = impact.referenceUnit;
-			contributionSet = provider.getProcessContributions(impact);
+			cons = result.getProcessContributions(impact);
 		}
-		if (contributionSet == null)
+		if (cons == null)
 			return;
-		chart.setData(new ArrayList<ContributionItem<?>>(contributionSet.contributions), unit);
+		chart.setData(new ArrayList<>(cons), unit);
 	}
 }

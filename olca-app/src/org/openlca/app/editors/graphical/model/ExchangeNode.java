@@ -33,7 +33,7 @@ public class ExchangeNode extends Node {
 	public String getName() {
 		if (exchange == null)
 			return "";
-		return Labels.getDisplayName(Descriptors.toDescriptor(exchange.flow));
+		return Labels.name(Descriptors.toDescriptor(exchange.flow));
 	}
 
 	public boolean matches(ExchangeNode node) {

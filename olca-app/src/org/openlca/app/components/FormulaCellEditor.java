@@ -94,8 +94,8 @@ public class FormulaCellEditor extends TextCellEditor {
 			formula = ((Parameter) value).formula;
 		} else if (value instanceof Exchange) {
 			Exchange e = (Exchange) value;
-			if (Strings.notEmpty(e.amountFormula)) {
-				formula = e.amountFormula;
+			if (Strings.notEmpty(e.formula)) {
+				formula = e.formula;
 			} else {
 				formula = Double.toString(e.amount);
 			}

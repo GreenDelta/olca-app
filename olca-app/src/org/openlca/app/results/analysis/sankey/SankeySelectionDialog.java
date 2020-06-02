@@ -8,11 +8,11 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
-import org.openlca.app.components.ResultTypeSelection;
-import org.openlca.app.components.ResultTypeSelection.EventHandler;
+import org.openlca.app.components.ResultTypeCombo;
+import org.openlca.app.components.ResultTypeCombo.EventHandler;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.FullResult;
 
@@ -28,16 +28,16 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 	}
 
 	@Override
-	protected void createFormContent(final IManagedForm mform) {
-		FormToolkit toolkit = mform.getToolkit();
+	protected void createFormContent(IManagedForm mform) {
+		FormToolkit tk = mform.getToolkit();
 		ScrolledForm form = UI.formHeader(mform,
 				M.SettingsForTheSankeyDiagram);
-		Composite body = UI.formBody(form, toolkit);
+		Composite body = UI.formBody(form, tk);
 		UI.gridLayout(body, 2);
-		ResultTypeSelection.on(result)
+		ResultTypeCombo.on(result)
 				.withEventHandler(this).withSelection(selection)
-				.create(body, toolkit);
-		createCutoffSpinner(toolkit, body);
+				.create(body, tk);
+		createCutoffSpinner(tk, body);
 	}
 
 	private void createCutoffSpinner(FormToolkit tk, Composite comp) {
@@ -58,7 +58,7 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 	}
 
 	@Override
-	public void flowSelected(FlowDescriptor flow) {
+	public void flowSelected(IndexFlow flow) {
 		this.selection = flow;
 	}
 

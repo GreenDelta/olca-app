@@ -163,8 +163,8 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			table.setLabelProvider(new TableLabel());
 			Tables.bindColumnWidths(table, 1.0);
 			list.sort((d1, d2) -> Strings.compare(
-					Labels.getDisplayName(d1),
-					Labels.getDisplayName(d2)));
+					Labels.name(d1),
+					Labels.name(d2)));
 			table.setInput(list);
 			Tables.onDoubleClick(table, e -> {
 				CategorizedDescriptor d = Viewers.getFirstSelected(table);
@@ -193,7 +193,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 				if (!(o instanceof BaseDescriptor))
 					return null;
 				BaseDescriptor d = (BaseDescriptor) o;
-				return Labels.getDisplayName(d);
+				return Labels.name(d);
 			}
 		}
 	}

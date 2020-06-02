@@ -2,6 +2,7 @@ package org.openlca.app.results.grouping;
 
 import java.util.List;
 
+import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -14,7 +15,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ProcessGrouping;
 
 class GroupResultTable {
@@ -39,7 +40,7 @@ class GroupResultTable {
 		viewer.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 	}
 
-	public void setInput(List<ContributionItem<ProcessGrouping>> items,
+	public void setInput(List<Contribution<ProcessGrouping>> items,
 			String unit) {
 		this.unit = unit;
 		viewer.setInput(items);
@@ -61,7 +62,7 @@ class GroupResultTable {
 		public Image getColumnImage(Object element, int column) {
 			if (!(element instanceof ContributionItem) || column != 0)
 				return null;
-			ContributionItem<?> item = (ContributionItem) element;
+			Contribution<?> item = (Contribution) element;
 			return image.getForTable(item.share);
 		}
 
@@ -70,7 +71,7 @@ class GroupResultTable {
 		public String getColumnText(Object element, int column) {
 			if (!(element instanceof ContributionItem))
 				return null;
-			ContributionItem<ProcessGrouping> resultItem = (ContributionItem<ProcessGrouping>) element;
+			Contribution<ProcessGrouping> resultItem = (Contribution<ProcessGrouping>) element;
 			switch (column) {
 			case GROUP_COL:
 				return getName(resultItem);
@@ -83,7 +84,7 @@ class GroupResultTable {
 			}
 		}
 
-		private String getName(ContributionItem<ProcessGrouping> resultItem) {
+		private String getName(Contribution<ProcessGrouping> resultItem) {
 			ProcessGrouping group = resultItem.item;
 			if (group != null)
 				return group.name;

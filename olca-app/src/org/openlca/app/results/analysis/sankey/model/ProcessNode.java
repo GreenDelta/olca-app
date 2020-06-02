@@ -32,7 +32,7 @@ public class ProcessNode extends Node {
 
 	@Override
 	public String getName() {
-		return Labels.getDisplayName(process);
+		return Labels.name(process);
 	}
 
 	public Rectangle getXyLayoutConstraints() {

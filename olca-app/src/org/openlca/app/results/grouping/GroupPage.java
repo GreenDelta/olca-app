@@ -122,7 +122,7 @@ public class GroupPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.getDisplayName(setup.productSystem),
+				Labels.name(setup.productSystem),
 				Images.get(result));
 		FormToolkit toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
@@ -325,7 +325,7 @@ public class GroupPage extends FormPage {
 				return group.name;
 			} else if (element instanceof ProcessDescriptor) {
 				ProcessDescriptor p = (ProcessDescriptor) element;
-				return Labels.getDisplayName(p);
+				return Labels.name(p);
 			} else
 				return null;
 		}

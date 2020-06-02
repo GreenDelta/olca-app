@@ -4,9 +4,7 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
-import org.openlca.app.FaviColor;
 import org.openlca.app.util.Colors;
 
 /**
@@ -54,8 +52,7 @@ public class ContributionImage {
 			if (this.color != null) {
 				gc.setBackground(this.color);
 			} else {
-				RGB color = FaviColor.getForContribution(c);
-				gc.setBackground(Colors.get(color));
+				gc.setBackground(Colors.getForContribution(c));
 			}
 			int width = Math.abs(contributionInt);
 			gc.fillRectangle(5, 5, width, 5);

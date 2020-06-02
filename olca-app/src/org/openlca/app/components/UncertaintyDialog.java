@@ -66,11 +66,9 @@ public class UncertaintyDialog extends Dialog {
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		toolkit.adapt(parent);
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
-				true);
+		createButton(parent, IDialogConstants.OK_ID, M.OK, true);
 		createButton(parent, IDialogConstants.HELP_ID, M.Test, false);
-		createButton(parent, IDialogConstants.CANCEL_ID,
-				IDialogConstants.CANCEL_LABEL, false);
+		createButton(parent, IDialogConstants.CANCEL_ID, M.Cancel, false);
 		getShell().pack();
 	}
 
@@ -91,31 +89,35 @@ public class UncertaintyDialog extends Dialog {
 		if (buttonId != IDialogConstants.HELP_ID)
 			return;
 		try {
-			final NumberGenerator generator = makeGenerator();
-			UncertaintyShell.show(generator);
+			UncertaintyShell.show(makeGenerator());
 		} catch (Exception e) {
 			log.error("failed to run uncertainty test");
 		}
 	}
 
 	private NumberGenerator makeGenerator() {
-		Uncertainty uncertainty = selectedClient.fetchUncertainty();
-		switch (uncertainty.distributionType) {
+		Uncertainty u = selectedClient.fetchUncertainty();
+		switch (u.distributionType) {
 		case LOG_NORMAL:
-			return NumberGenerator.logNormal(uncertainty.parameter1,
-					uncertainty.parameter2);
+			return NumberGenerator.logNormal(
+					u.parameter1,
+					u.parameter2);
 		case NONE:
-			return NumberGenerator.discrete(uncertainty.parameter1);
+			return NumberGenerator.discrete(
+					u.parameter1);
 		case NORMAL:
-			return NumberGenerator.normal(uncertainty.parameter1,
-					uncertainty.parameter2);
+			return NumberGenerator.normal(
+					u.parameter1,
+					u.parameter2);
 		case TRIANGLE:
-			return NumberGenerator.triangular(uncertainty.parameter1,
-					uncertainty.parameter2,
-					uncertainty.parameter3);
+			return NumberGenerator.triangular(
+					u.parameter1,
+					u.parameter2,
+					u.parameter3);
 		case UNIFORM:
-			return NumberGenerator.uniform(uncertainty.parameter1,
-					uncertainty.parameter2);
+			return NumberGenerator.uniform(
+					u.parameter1,
+					u.parameter2);
 		default:
 			return NumberGenerator.discrete(1);
 		}
@@ -127,28 +129,28 @@ public class UncertaintyDialog extends Dialog {
 		toolkit.adapt(root);
 		Composite area = (Composite) super.createDialogArea(root);
 		toolkit.adapt(area);
-		Composite container = toolkit.createComposite(area);
-		UI.gridData(container, true, true);
-		UI.gridLayout(container, 1);
-		createCombo(container);
-		createCompositeStack(container);
+		Composite comp = toolkit.createComposite(area);
+		UI.gridData(comp, true, true);
+		UI.gridLayout(comp, 1);
+		createCombo(comp);
+		createCompositeStack(comp);
 		initComposite();
 		getShell().pack();
 		UI.center(getParentShell(), getShell());
 		return area;
 	}
 
-	private void createCombo(Composite container) {
-		Composite comboComposite = toolkit.createComposite(container);
-		UI.gridData(comboComposite, true, false);
-		UI.gridLayout(comboComposite, 2);
-		combo = UI.formCombo(comboComposite, toolkit,
+	private void createCombo(Composite parent) {
+		Composite comp = toolkit.createComposite(parent);
+		UI.gridData(comp, true, false);
+		UI.gridLayout(comp, 2);
+		combo = UI.formCombo(comp, toolkit,
 				M.UncertaintyDistribution);
 		String[] items = new String[types.length];
 		int idx = 0;
 		for (int i = 0; i < items.length; i++) {
 			UncertaintyType type = types[i];
-			items[i] = Labels.uncertaintyType(type);
+			items[i] = Labels.of(type);
 			if (uncertainty != null
 					&& uncertainty.distributionType == type)
 				idx = i;
@@ -168,16 +170,16 @@ public class UncertaintyDialog extends Dialog {
 		getShell().pack();
 	}
 
-	private void createCompositeStack(Composite container) {
-		Composite stack = toolkit.createComposite(container);
+	private void createCompositeStack(Composite parent) {
+		Composite stack = toolkit.createComposite(parent);
 		UI.gridData(stack, true, true);
 		stackLayout = new StackLayout();
 		stack.setLayout(stackLayout);
 		clients = new UncertaintyPanel[types.length];
 		for (int i = 0; i < types.length; i++) {
-			Composite composite = toolkit.createComposite(stack);
-			UI.gridLayout(composite, 2);
-			UncertaintyPanel client = new UncertaintyPanel(composite, types[i]);
+			Composite comp = toolkit.createComposite(stack);
+			UI.gridLayout(comp, 2);
+			UncertaintyPanel client = new UncertaintyPanel(comp, types[i]);
 			clients[i] = client;
 		}
 	}

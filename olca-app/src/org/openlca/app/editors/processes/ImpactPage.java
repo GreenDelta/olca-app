@@ -1,11 +1,10 @@
 package org.openlca.app.editors.processes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
@@ -24,9 +23,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -36,13 +35,16 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.ReferenceAmount;
 import org.openlca.core.matrix.DIndex;
 import org.openlca.core.matrix.FlowIndex;
-import org.openlca.core.matrix.ImpactTable;
+import org.openlca.core.matrix.ImpactBuilder;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.matrix.ParameterTable;
-import org.openlca.core.matrix.format.IMatrix;
+import org.openlca.core.matrix.format.MatrixBuilder;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
@@ -51,14 +53,18 @@ import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.LocationDescriptor;
+import org.openlca.core.results.Contribution;
+import org.openlca.core.results.ContributionResult;
 import org.openlca.expressions.FormulaInterpreter;
-import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
 class ImpactPage extends ModelPage<Process> {
 
+	private ImpactMethodViewer combo;
 	private Button zeroCheck;
 	private TreeViewer tree;
+	private ContributionResult result;
 
 	ImpactPage(ProcessEditor editor) {
 		super(editor, "ProcessImpactPage", M.ImpactAnalysis);
@@ -70,9 +76,9 @@ class ImpactPage extends ModelPage<Process> {
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		Composite comp = tk.createComposite(body);
-		UI.gridLayout(comp, 3);
+		UI.gridLayout(comp, 4);
 		UI.formLabel(comp, tk, M.ImpactAssessmentMethod);
-		ImpactMethodViewer combo = new ImpactMethodViewer(comp);
+		combo = new ImpactMethodViewer(comp);
 		List<ImpactMethodDescriptor> list = new ImpactMethodDao(Database.get())
 				.getDescriptors()
 				.stream().sorted((m1, m2) -> Strings.compare(
@@ -86,24 +92,32 @@ class ImpactPage extends ModelPage<Process> {
 		Controls.onSelect(
 				zeroCheck, e -> setTreeInput(combo.getSelected()));
 
+		Button reload = tk.createButton(comp, M.Reload, SWT.NONE);
+		reload.setImage(Icon.REFRESH.get());
+		Controls.onSelect(reload, _e -> {
+			result = null;
+			setTreeInput(combo.getSelected());
+		});
+
 		tree = Trees.createViewer(body,
 				M.Name, M.Category, M.Amount, M.Result);
 		UI.gridData(tree.getControl(), true, true);
 		tree.setContentProvider(new Content());
 		tree.setLabelProvider(new Label());
 		Trees.bindColumnWidths(tree.getTree(),
-				0.25, 0.25, 0.25, 0.25);
+				0.35, 0.35, 0.15, 0.15);
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		tree.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
 
 		Action onOpen = Actions.onOpen(() -> {
-			Node node = Viewers.getFirstSelected(tree);
-			if (node == null)
+			Contribution<?> c = Viewers.getFirstSelected(tree);
+			if (c == null)
 				return;
-			if (node.exchange != null) {
-				App.openEditor(node.exchange.flow);
-			} else if (node.impact != null) {
-				App.openEditor(combo.getSelected());
+			if (c.item instanceof IndexFlow) {
+				App.openEditor(((IndexFlow) c.item).flow);
+			}
+			if (c.item instanceof ImpactCategoryDescriptor) {
+				App.openEditor((ImpactCategoryDescriptor) c.item);
 			}
 		});
 		Actions.bind(tree, onOpen);
@@ -118,134 +132,136 @@ class ImpactPage extends ModelPage<Process> {
 	}
 
 	private void setTreeInput(ImpactMethodDescriptor method) {
-		AtomicReference<List<Node>> ref = new AtomicReference<>();
-		boolean skipZeros = zeroCheck.getSelection();
-		App.runWithProgress("Load tree", () -> {
-			ref.set(buildTree(method, skipZeros));
-		}, () -> {
-			List<Node> nodes = ref.get();
-			if (nodes != null) {
-				tree.setInput(nodes);
-			}
-		});
-	}
-
-	private List<Node> buildTree(ImpactMethodDescriptor method,
-			boolean skipZeros) {
-		if (method == null)
-			return Collections.emptyList();
-
-		// index the elementary flows
-		List<Exchange> eList = getModel().exchanges;
-		double[] values = new double[eList.size()];
-		Exchange[] exchanges = new Exchange[eList.size()];
-		FlowIndex flowIdx = new FlowIndex();
-		for (Exchange e : eList) {
-			if (e.flow == null ||
-					e.flow.flowType != FlowType.ELEMENTARY_FLOW)
-				continue;
-			FlowDescriptor d = Descriptors.toDescriptor(e.flow);
-			int i = e.isInput
-					? flowIdx.putInput(d)
-					: flowIdx.putOutput(d);
-			exchanges[i] = e;
-			values[i] = ReferenceAmount.get(e);
+		if (tree == null)
+			return;
+		if (method == null) {
+			tree.setInput(Collections.emptyList());
+			return;
 		}
-		if (flowIdx.isEmpty())
-			return Collections.emptyList();
-
-		// create the impact matrix
-		FormulaInterpreter interpreter = ParameterTable.interpreter(
-				Database.get(),
-				new HashSet<Long>(Arrays.asList(
-						getModel().id,
-						method.id)),
-				Collections.emptySet());
-		ImpactTable iTable = ImpactTable.build(
-				Cache.getMatrixCache(), method.id, flowIdx);
-		if (iTable == null) {
-			// when the LCIA method has no categories,
-			// iTable will be null
-			return Collections.emptyList();
-		}
-
-		IMatrix matrix = iTable.createMatrix(
-				App.getSolver(), interpreter);
-
-		// build the tree
-		List<Node> roots = new ArrayList<>();
-		DIndex<ImpactCategoryDescriptor> impactIdx = iTable.impactIndex;
-		for (int i = 0; i < impactIdx.size(); i++) {
-			Node root = new Node();
-			root.impact = impactIdx.at(i);
-			roots.add(root);
-			for (int j = 0; j < flowIdx.size(); j++) {
-				double factor = matrix.get(i, j);
-				if (exchanges[j].isInput) {
-					factor = -factor;
-				}
-				double result = values[j] * factor;
-				if (result == 0 && skipZeros)
-					continue;
-				root.result += result;
-				Node child = new Node();
-				child.result = result;
-				child.exchange = exchanges[j];
-				child.impact = root.impact;
-				if (root.childs == null) {
-					root.childs = new ArrayList<>();
-				}
-				root.childs.add(child);
-			}
-		}
-		sort(roots);
-		return roots;
-	}
-
-	private void sort(List<Node> roots) {
-		Collections.sort(roots, (n1, n2) -> {
-			String l1 = Labels.getDisplayName(n1.impact);
-			String l2 = Labels.getDisplayName(n2.impact);
-			return Strings.compare(l1, l2);
-		});
-		for (Node root : roots) {
-			if (root.childs == null)
-				continue;
-			if (root.result != 0) {
-				for (Node child : root.childs) {
-					child.share = child.result / root.result;
-				}
-			}
-			Collections.sort(root.childs, (n1, n2) -> {
-				int c = Double.compare(n2.share, n1.share);
-				if (c != 0)
-					return c;
-				if (n1.exchange == null || n2.exchange == null)
-					return c;
-				String l1 = Labels.getDisplayName(n1.exchange.flow);
-				String l2 = Labels.getDisplayName(n2.exchange.flow);
-				return Strings.compare(l1, l2);
+		if (result == null) {
+			App.runInUI("Compute LCIA results ...", () -> {
+				result = compute();
+				setTreeInput(method);
 			});
+			return;
 		}
+		if (!result.hasFlowResults()
+				|| !result.hasImpactResults()) {
+			tree.setInput(Collections.emptyList());
+			return;
+		}
+		List<Contribution<?>> cons = new ImpactMethodDao(Database.get())
+				.getCategoryDescriptors(method.id)
+				.stream()
+				.sorted((d1, d2) -> Strings.compare(d1.name, d2.name))
+				.map(d -> {
+					Contribution<?> c = Contribution.of(
+							d, result.getTotalImpactResult(d));
+					c.unit = d.referenceUnit;
+					return c;
+				})
+				.collect(Collectors.toList());
+		tree.setInput(cons);
 	}
 
-	private class Node {
-		ImpactCategoryDescriptor impact;
-		double share;
-		double result;
-		Exchange exchange;
-		List<Node> childs;
+	private ContributionResult compute() {
+		IDatabase db = Database.get();
+		ContributionResult r = new ContributionResult();
+
+		// build the impact index
+		r.impactIndex = new DIndex<>();
+		new ImpactCategoryDao(db)
+				.getDescriptors()
+				.forEach(d -> r.impactIndex.put(d));
+
+		// collect the elementary flow exchanges
+		List<Exchange> elemFlows = new ArrayList<>();
+		boolean regionalized = false;
+		for (Exchange e : getModel().exchanges) {
+			if (e.flow == null
+					|| e.flow.flowType != FlowType.ELEMENTARY_FLOW)
+				continue;
+			if (e.location != null) {
+				regionalized = true;
+			}
+			elemFlows.add(e);
+		}
+
+		// create the flow index and B matrix / vector
+		r.flowIndex = regionalized
+				? FlowIndex.createRegionalized()
+				: FlowIndex.create();
+		if (elemFlows.isEmpty())
+			return r;
+		MatrixBuilder enviBuilder = new MatrixBuilder();
+		for (Exchange e : elemFlows) {
+			FlowDescriptor flow = Descriptors.toDescriptor(e.flow);
+			LocationDescriptor loc = e.location != null
+					? Descriptors.toDescriptor(e.location)
+					: null;
+			int i = e.isInput
+					? r.flowIndex.putInput(flow, loc)
+					: r.flowIndex.putOutput(flow, loc);
+			double amount = ReferenceAmount.get(e);
+			if (e.isInput && amount != 0) {
+				amount = -amount;
+			}
+			enviBuilder.add(i, 0, amount);
+		}
+		r.directFlowResults = enviBuilder.finish();
+		r.totalFlowResults = r.directFlowResults.getColumn(0);
+
+		// build the formula interpreter
+		Set<Long> contexts = new HashSet<>();
+		contexts.add(getModel().id);
+		r.impactIndex.each((i, d) -> contexts.add(d.id));
+		FormulaInterpreter interpreter = ParameterTable.interpreter(
+				db, contexts, Collections.emptySet());
+
+		// create the impact matrix and results
+		r.impactFactors = new ImpactBuilder(db)
+				.build(r.flowIndex, r.impactIndex, interpreter).impactMatrix;
+		r.totalImpactResults = App.getSolver()
+				.multiply(r.impactFactors, r.totalFlowResults);
+		r.directFlowImpacts = r.impactFactors.copy();
+		App.getSolver().scaleColumns(
+				r.directFlowImpacts, r.totalFlowResults);
+
+		return r;
 	}
 
 	private class Content extends ArrayContentProvider
 			implements ITreeContentProvider {
 
 		@Override
-		public Object[] getChildren(Object parent) {
-			if (!(parent instanceof Node))
+		public Object[] getChildren(Object obj) {
+			if (!(obj instanceof Contribution))
 				return null;
-			Node n = (Node) parent;
-			return n.childs == null ? null : n.childs.toArray();
+			Contribution<?> c = (Contribution<?>) obj;
+			if (c.childs != null)
+				return c.childs.toArray();
+			if (!(c.item instanceof ImpactCategoryDescriptor))
+				return null;
+
+			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) c.item;
+			double total = result.getTotalImpactResult(impact);
+			boolean withoutZeros = zeroCheck.getSelection();
+			List<Contribution<?>> childs = new ArrayList<>();
+			for (IndexFlow flow : result.getFlows()) {
+				double value = result.getDirectFlowImpact(flow, impact);
+				if (value == 0 && withoutZeros)
+					continue;
+				Contribution<?> child = Contribution.of(flow, value);
+				child.computeShare(total);
+				child.unit = impact.referenceUnit;
+				childs.add(child);
+			}
+
+			Collections.sort(childs,
+					(c1, c2) -> Double.compare(c2.amount, c1.amount));
+			c.childs = childs;
+			return childs.toArray();
+
 		}
 
 		@Override
@@ -255,10 +271,12 @@ class ImpactPage extends ModelPage<Process> {
 
 		@Override
 		public boolean hasChildren(Object elem) {
-			if (!(elem instanceof Node))
+			if (!(elem instanceof Contribution))
 				return false;
-			Node n = (Node) elem;
-			return n.childs != null && n.childs.size() > 0;
+			Contribution<?> c = (Contribution<?>) elem;
+			if (c.childs != null)
+				return true;
+			return c.item instanceof ImpactCategoryDescriptor;
 		}
 	}
 
@@ -275,53 +293,45 @@ class ImpactPage extends ModelPage<Process> {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof Node))
+			if (!(obj instanceof Contribution))
 				return null;
-			Node n = (Node) obj;
+			Contribution<?> c = (Contribution<?>) obj;
 			if (col == 0) {
-				if (n.exchange == null)
-					return Images.get(ModelType.IMPACT_CATEGORY);
-				else
-					return Images.get(FlowType.ELEMENTARY_FLOW);
+				return c.item instanceof ImpactCategoryDescriptor
+						? Images.get(ModelType.IMPACT_CATEGORY)
+						: Images.get(FlowType.ELEMENTARY_FLOW);
 			}
-			if (col != 3 || n.exchange == null)
-				return null;
-			return img.getForTable(n.share);
+			if (col == 3 && c.item instanceof IndexFlow)
+				return img.getForTable(c.share);
+			return null;
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Node))
+			if (!(obj instanceof Contribution))
 				return null;
-			Node n = (Node) obj;
+			Contribution<?> c = (Contribution<?>) obj;
 			switch (col) {
 			case 0:
-				if (n.exchange == null)
-					return Labels.getDisplayName(n.impact);
-				else
-					return Labels.getDisplayName(n.exchange.flow);
+				if (c.item instanceof IndexFlow)
+					return Labels.name((IndexFlow) c.item);
+				if (c.item instanceof ImpactCategoryDescriptor)
+					return Labels.name((ImpactCategoryDescriptor) c.item);
+				return null;
 			case 1:
-				if (n.exchange == null)
-					return null;
-				else
-					return CategoryPath.getShort(
-							n.exchange.flow.category);
+				if (c.item instanceof IndexFlow)
+					return Labels.category((IndexFlow) c.item);
+				return null;
 			case 2:
-				if (n.exchange == null)
+				if (!(c.item instanceof IndexFlow))
 					return null;
-				if (n.exchange.unit == null)
-					return Numbers.format(n.exchange.amount);
-				else
-					return Numbers.format(n.exchange.amount)
-							+ " " + n.exchange.unit.name;
+				IndexFlow iFlow = (IndexFlow) c.item;
+				double a = result.getTotalFlowResult(iFlow);
+				return Numbers.format(a) + " " + Labels.refUnit(iFlow);
 			case 3:
-				if (n.impact == null)
-					return null;
-				if (n.impact.referenceUnit == null)
-					return Numbers.format(n.result);
-				else
-					return Numbers.format(n.result)
-							+ " " + n.impact.referenceUnit;
+				return Strings.nullOrEmpty(c.unit)
+						? Numbers.format(c.amount)
+						: Numbers.format(c.amount) + " " + c.unit;
 			default:
 				return null;
 			}

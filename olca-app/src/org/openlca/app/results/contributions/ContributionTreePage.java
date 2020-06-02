@@ -1,7 +1,5 @@
 package org.openlca.app.results.contributions;
 
-import java.util.Iterator;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -19,8 +17,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.components.ResultTypeSelection;
-import org.openlca.app.components.ResultTypeSelection.EventHandler;
+import org.openlca.app.components.ResultTypeCombo;
+import org.openlca.app.components.ResultTypeCombo.EventHandler;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
@@ -30,7 +28,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.UpstreamNode;
@@ -38,7 +36,7 @@ import org.openlca.core.results.UpstreamTree;
 
 public class ContributionTreePage extends FormPage {
 
-	private FullResult result;
+	private final FullResult result;
 	private TreeViewer tree;
 	private Object selection;
 	private CalculationSetup setup;
@@ -46,25 +44,23 @@ public class ContributionTreePage extends FormPage {
 	private static final String[] HEADERS = { M.Contribution,
 			M.Process, M.Amount, M.Unit };
 
-	public ContributionTreePage(FormEditor editor, FullResult result, CalculationSetup setup) {
+	public ContributionTreePage(FormEditor editor,
+			FullResult result, CalculationSetup setup) {
 		super(editor, "analysis.ContributionTreePage", M.ContributionTree);
 		this.result = result;
 		this.setup = setup;
-		Iterator<FlowDescriptor> it = result.getFlows().iterator();
-		if (it.hasNext())
-			selection = it.next();
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		FormToolkit tk = mform.getToolkit();
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.getDisplayName(setup.productSystem),
+				Labels.name(setup.productSystem),
 				Images.get(result));
 		Composite body = UI.formBody(form, tk);
 		Composite comp = tk.createComposite(body);
 		UI.gridLayout(comp, 2);
-		ResultTypeSelection selector = ResultTypeSelection
+		ResultTypeCombo selector = ResultTypeCombo
 				.on(result)
 				.withEventHandler(new SelectionHandler())
 				.create(comp, tk);
@@ -73,7 +69,7 @@ public class ContributionTreePage extends FormPage {
 		UI.gridData(treeComp, true, true);
 		createTree(tk, treeComp);
 		form.reflow(true);
-		selector.selectWithEvent(selection);
+		selector.initWithEvent();
 	}
 
 	private void createTree(FormToolkit tk, Composite comp) {
@@ -100,7 +96,7 @@ public class ContributionTreePage extends FormPage {
 	private class SelectionHandler implements EventHandler {
 
 		@Override
-		public void flowSelected(FlowDescriptor flow) {
+		public void flowSelected(IndexFlow flow) {
 			selection = flow;
 			UpstreamTree model = result.getTree(flow);
 			tree.setInput(model);
@@ -207,7 +203,7 @@ public class ContributionTreePage extends FormPage {
 			case 0:
 				return Numbers.percent(getContribution(node));
 			case 1:
-				return Labels.getDisplayName(node.provider.process);
+				return Labels.name(node.provider.process);
 			case 2:
 				return Numbers.format(node.result);
 			case 3:
@@ -218,9 +214,9 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		private String getUnit() {
-			if (selection instanceof FlowDescriptor) {
-				FlowDescriptor flow = (FlowDescriptor) selection;
-				return Labels.getRefUnit(flow);
+			if (selection instanceof IndexFlow) {
+				IndexFlow flow = (IndexFlow) selection;
+				return Labels.refUnit(flow);
 			} else if (selection instanceof ImpactCategoryDescriptor) {
 				ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
 				return impact.referenceUnit;
@@ -238,7 +234,5 @@ public class ContributionTreePage extends FormPage {
 				return 0;
 			return node.result / total;
 		}
-
 	}
-
 }

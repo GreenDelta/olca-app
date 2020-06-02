@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openlca.app.App;
-import org.openlca.app.db.Cache;
 import org.openlca.core.database.ActorDao;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
@@ -25,7 +24,6 @@ import org.openlca.core.database.SocialIndicatorDao;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.math.CalculationType;
 import org.openlca.core.math.Simulator;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.Actor;
@@ -548,13 +546,12 @@ public class ScriptApi {
 
 	public SimpleResult calculate(ProductSystem system,
 			ImpactMethod method) {
-		CalculationSetup setup = new CalculationSetup(
-				CalculationType.SIMPLE_CALCULATION, system);
+		CalculationSetup setup = new CalculationSetup(system);
 		if (method != null)
 			setup.impactMethod = Descriptors.toDescriptor(method);
 		setup.parameterRedefs.addAll(system.parameterRedefs);
 		SystemCalculator calculator = new SystemCalculator(
-				Cache.getMatrixCache(), App.getSolver());
+				database, App.getSolver());
 		return calculator.calculateSimple(setup);
 	}
 
@@ -564,13 +561,12 @@ public class ScriptApi {
 
 	public ContributionResult analyze(
 			ProductSystem system, ImpactMethod method) {
-		CalculationSetup setup = new CalculationSetup(
-				CalculationType.UPSTREAM_ANALYSIS, system);
+		CalculationSetup setup = new CalculationSetup(system);
 		if (method != null)
 			setup.impactMethod = Descriptors.toDescriptor(method);
 		setup.parameterRedefs.addAll(system.parameterRedefs);
 		SystemCalculator calculator = new SystemCalculator(
-				Cache.getMatrixCache(), App.getSolver());
+				database, App.getSolver());
 		return calculator.calculateContributions(setup);
 	}
 
@@ -581,13 +577,13 @@ public class ScriptApi {
 
 	public SimulationResult simulate(
 			ProductSystem system, ImpactMethod method, int iterations) {
-		CalculationSetup setup = new CalculationSetup(
-				CalculationType.MONTE_CARLO_SIMULATION, system);
+		CalculationSetup setup = new CalculationSetup(system);
+		setup.withUncertainties = true;
 		if (method != null)
 			setup.impactMethod = Descriptors.toDescriptor(method);
 		setup.parameterRedefs.addAll(system.parameterRedefs);
 		Simulator simulator = Simulator.create(
-				setup, Cache.getMatrixCache(), App.getSolver());
+				setup, database, App.getSolver());
 		for (int i = 0; i < iterations; i++)
 			simulator.nextRun();
 		return simulator.getResult();

@@ -62,7 +62,7 @@ public class Console extends AppenderSkeleton {
 				return (MessageConsole) existing[i];
 		MessageConsole console = new MessageConsole(name, null);
 		// set the buffer size of the console
-		console.setWaterMarks(1000, 5000);
+		console.setWaterMarks(1000, 25000);
 		conMan.addConsoles(new IConsole[] { console });
 		return console;
 	}

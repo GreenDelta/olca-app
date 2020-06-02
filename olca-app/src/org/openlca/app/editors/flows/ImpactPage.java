@@ -1,10 +1,7 @@
 package org.openlca.app.editors.flows;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -23,17 +20,17 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,16 +47,16 @@ class ImpactPage extends ModelPage<Flow> {
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		TableViewer table = Tables.createViewer(body,
-				M.ImpactAssessmentMethod, M.ImpactCategory,
+				M.ImpactCategory, M.Location,
 				M.ImpactFactor, M.Unit);
 		table.setLabelProvider(new Label());
 		table.setInput(loadFactors());
-		Tables.bindColumnWidths(table, 0.3, 0.3, 0.2, 0.2);
+		Tables.bindColumnWidths(table, 0.4, 0.2, 0.2, 0.2);
 
 		Action onOpen = Actions.onOpen(() -> {
 			Factor f = Viewers.getFirstSelected(table);
 			if (f != null) {
-				App.openEditor(f.method);
+				App.openEditor(f.impact);
 			}
 		});
 		Actions.bind(table, onOpen);
@@ -69,16 +66,9 @@ class ImpactPage extends ModelPage<Flow> {
 
 	private List<Factor> loadFactors() {
 		IDatabase db = Database.get();
-		Map<ImpactCategoryDescriptor, ImpactMethodDescriptor> rmap = new HashMap<>();
-		ImpactMethodDao mdao = new ImpactMethodDao(db);
-		mdao.getDescriptors().forEach(m -> {
-			mdao.getCategoryDescriptors(m.id).forEach(c -> {
-				rmap.put(c, m);
-			});
-		});
-		String sql = "select f_impact_category, f_unit,"
-				+ " value from tbl_impact_factors"
-				+ " where f_flow = " + getModel().id;
+		String sql = "select f_impact_category, f_unit, f_location, "
+				+ "value from tbl_impact_factors where f_flow = "
+				+ getModel().id;
 		EntityCache ecache = Cache.getEntityCache();
 		List<Factor> factors = new ArrayList<>();
 		try {
@@ -92,11 +82,11 @@ class ImpactPage extends ModelPage<Flow> {
 				if (unit != null) {
 					f.unit = unit.name;
 				}
-				f.value = r.getDouble(3);
-				ImpactMethodDescriptor m = rmap.get(f.impact);
-				if (m == null)
-					return true;
-				f.method = m;
+				long locID = r.getLong(3);
+				if (!r.wasNull()) {
+					f.location = ecache.get(LocationDescriptor.class, locID);
+				}
+				f.value = r.getDouble(4);
 				factors.add(f);
 				return true;
 			});
@@ -108,30 +98,26 @@ class ImpactPage extends ModelPage<Flow> {
 		// sort and set display flags
 		factors.sort((f1, f2) -> {
 			int c = Strings.compare(
-					Labels.getDisplayName(f1.method),
-					Labels.getDisplayName(f2.method));
+					Labels.name(f1.impact),
+					Labels.name(f2.impact));
 			if (c != 0)
 				return c;
+			if (f1.location == null)
+				return -1;
+			if (f2.location == null)
+				return 1;
 			return Strings.compare(
-					Labels.getDisplayName(f1.impact),
-					Labels.getDisplayName(f2.impact));
+					f1.location.code,
+					f2.location.code);
 		});
-		ImpactMethodDescriptor m = null;
-		for (Factor f : factors) {
-			if (!Objects.equals(f.method, m)) {
-				f.displayMethod = true;
-				m = f.method;
-			}
-		}
 		return factors;
 	}
 
 	private class Factor {
-		ImpactMethodDescriptor method;
 		ImpactCategoryDescriptor impact;
+		LocationDescriptor location;
 		double value;
 		String unit;
-		boolean displayMethod;
 	}
 
 	private class Label extends LabelProvider
@@ -142,9 +128,7 @@ class ImpactPage extends ModelPage<Flow> {
 			if (col != 0 || !(obj instanceof Factor))
 				return null;
 			Factor f = (Factor) obj;
-			if (!f.displayMethod)
-				return null;
-			return Images.get(f.method);
+			return Images.get(f.impact);
 		}
 
 		@Override
@@ -152,21 +136,22 @@ class ImpactPage extends ModelPage<Flow> {
 			if (!(obj instanceof Factor))
 				return null;
 			Factor f = (Factor) obj;
-			if (col == 0 && !f.displayMethod)
-				return null;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(f.method);
+				return Labels.name(f.impact);
 			case 1:
-				return Labels.getDisplayName(f.impact);
+				return f.location != null
+						? f.location.code
+						: null;
 			case 2:
-				return Double.toString(f.value);
+				return Numbers.format(f.value);
 			case 3:
 				String catUnit = f.impact.referenceUnit;
-				if (catUnit == null)
-					return null;
+				if (catUnit == null) {
+					catUnit = "1";
+				}
 				if (f.unit == null)
-					return catUnit;
+					return "?";
 				return catUnit + " / " + f.unit;
 			default:
 				return null;

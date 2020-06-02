@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
-import org.openlca.app.FaviColor;
 import org.openlca.app.M;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
@@ -23,7 +22,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 
 class ChartLegend {
 
@@ -39,11 +38,11 @@ class ChartLegend {
 		composite.addDisposeListener((e) -> imageRegistry.dispose());
 	}
 
-	public void setData(List<ContributionItem<?>> data, double rest, String unit) {
+	public void setData(List<Contribution<?>> data, double rest, String unit) {
 		while (!createdLinks.isEmpty())
 			createdLinks.pop().dispose();
 		int colorIndex = 0;
-		for (ContributionItem<?> item : data) {
+		for (Contribution<?> item : data) {
 			if (item.amount == 0d) {
 				colorIndex++;
 				continue;
@@ -93,7 +92,7 @@ class ChartLegend {
 		image = new Image(Display.getCurrent(), 30, 15);
 		GC gc = new GC(image);
 		if (index != -1)
-			gc.setBackground(Colors.get(FaviColor.getRgbForChart(index)));
+			gc.setBackground(Colors.getForChart(index));
 		else
 			gc.setBackground(Colors.gray());
 		gc.fillRectangle(5, 5, 25, 5);

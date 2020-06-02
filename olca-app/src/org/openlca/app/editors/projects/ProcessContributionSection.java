@@ -134,7 +134,7 @@ class ProcessContributionSection {
 			ReportProcess process = (ReportProcess) element;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(process.descriptor);
+				return Labels.name(process.descriptor);
 			case 1:
 				return process.reportName;
 			case 2:

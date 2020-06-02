@@ -26,7 +26,7 @@ class RiskCombo {
 		String[] labels = new String[levels.length];
 		int selected = -1;
 		for (int i = 0; i < levels.length; i++) {
-			labels[i] = Labels.riskLevel(levels[i]);
+			labels[i] = Labels.of(levels[i]);
 			if (aspect.riskLevel == levels[i])
 				selected = i;
 		}

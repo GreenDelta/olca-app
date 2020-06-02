@@ -8,6 +8,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Exchange;
@@ -47,32 +48,61 @@ class Clipboard {
 		return list;
 	}
 
+	/**
+	 * Maps a row to an exchange if it can at least identify the flow. The columns
+	 * of the row are mapped as follows:
+	 * <ul>
+	 * <li>0 => name
+	 * <li>1 => category
+	 * <li>2 => amount
+	 * <li>3 => unit
+	 * <li>4 => costs
+	 * <li>5 => uncertainty
+	 * <li>6 =>avoided
+	 * <li>7 => provider
+	 * <li>8 => data quality
+	 * <li>9 => location
+	 * <li>10 => description
+	 * </ul>
+	 */
 	private static class Mapper {
+
 		final Logger log = LoggerFactory.getLogger(getClass());
 		final FlowDao flowDao = new FlowDao(Database.get());
-		final CurrencyDao currencyDao = new CurrencyDao(Database.get());
 
 		Exchange doIt(String[] row, boolean isInput) {
 			if (row == null || row.length == 0)
 				return null;
 			log.trace("create exchange '{}' from clipboard", row[0]);
+
 			Flow flow = findFlow(row);
 			if (flow == null)
 				return null;
 			Exchange e = new Exchange();
 			e.flow = flow;
 			e.isInput = isInput;
+
 			mapAmount(e, row);
 			mapUnit(e, row);
 			mapCosts(e, row);
-			if (row.length > 5)
+
+			if (row.length > 5) {
 				e.uncertainty = Uncertainty.fromString(row[5]);
+			}
+
 			mapIsAvoided(e, row);
 			mapProvider(e, row);
-			if (row.length > 8 && !Strings.nullOrEmpty(row[8]))
+
+			if (row.length > 8 && !Strings.nullOrEmpty(row[8])) {
 				e.dqEntry = row[8];
-			if (row.length > 9)
-				e.description = row[9];
+			}
+
+			mapLocation(e, row);
+
+			if (row.length > 10) {
+				e.description = row[10];
+			}
+
 			return e;
 		}
 
@@ -152,7 +182,7 @@ class Clipboard {
 			try {
 				e.amount = Double.parseDouble(row[2]);
 			} catch (Exception ex) {
-				e.amountFormula = row[2];
+				e.formula = row[2];
 			}
 		}
 
@@ -201,9 +231,9 @@ class Clipboard {
 		}
 
 		/**
-		 * It is important that the flow direction is already specified before
-		 * calling this method because if the exchange is an avoided product or
-		 * waste flow the flow direction will change in this method.
+		 * It is important that the flow direction is already specified before calling
+		 * this method because if the exchange is an avoided product or waste flow the
+		 * flow direction will change in this method.
 		 */
 		private void mapIsAvoided(Exchange e, String[] row) {
 			if (e == null || e.flow == null || row.length < 7)
@@ -236,7 +266,8 @@ class Clipboard {
 			String amount = s.substring(0, splitIdx).trim();
 			String currencySymbol = s.substring(splitIdx + 1).trim();
 			Currency currency = null;
-			for (Currency cu : currencyDao.getAll()) {
+			CurrencyDao dao = new CurrencyDao(Database.get());
+			for (Currency cu : dao.getAll()) {
 				if (Strings.nullOrEqual(currencySymbol, cu.code)) {
 					currency = cu;
 					break;
@@ -270,6 +301,24 @@ class Clipboard {
 			} else {
 				e.defaultProviderId = d.id;
 			}
+		}
+
+		/**
+		 * row[9] contains a possible location code
+		 */
+		private void mapLocation(Exchange e, String[] row) {
+			if (row.length < 10)
+				return;
+			String code = row[9];
+			if (Strings.nullOrEmpty(code))
+				return;
+			LocationDao dao = new LocationDao(Database.get());
+			e.location = dao.getDescriptors()
+					.stream()
+					.filter(d -> Strings.nullOrEqual(code, d.code))
+					.map(d -> dao.getForId(d.id))
+					.findFirst()
+					.orElse(null);
 		}
 	}
 }

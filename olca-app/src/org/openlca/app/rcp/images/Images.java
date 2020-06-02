@@ -7,6 +7,7 @@ import org.openlca.app.navigation.Group;
 import org.openlca.app.navigation.GroupType;
 import org.openlca.app.util.FileType;
 import org.openlca.cloud.model.Comments;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
@@ -23,6 +24,12 @@ import org.openlca.core.results.FullResult;
 import org.openlca.core.results.IResult;
 
 public class Images {
+
+	public static Image get(IndexFlow iflow) {
+		if (iflow == null)
+			return null;
+		return get(iflow.flow);
+	}
 
 	public static Image get(RootEntity entity) {
 		if (entity instanceof Source) {
@@ -290,6 +297,8 @@ public class Images {
 			return ModelIcon.FLOW_PROPERTY_WIZARD;
 		case IMPACT_METHOD:
 			return ModelIcon.IMPACT_METHOD_WIZARD;
+		case IMPACT_CATEGORY:
+			return ModelIcon.IMPACT_METHOD_WIZARD; // TODO
 		case LOCATION:
 			return ModelIcon.LOCATION_WIZARD;
 		case PARAMETER:
@@ -435,6 +444,8 @@ public class Images {
 			return ModelIcon.FLOW_PROPERTY_CATEGORY;
 		case IMPACT_METHOD:
 			return ModelIcon.IMPACT_METHOD_CATEGORY;
+		case IMPACT_CATEGORY:
+			return ModelIcon.IMPACT_METHOD_CATEGORY; // TODO
 		case PROCESS:
 			return ModelIcon.PROCESS_CATEGORY;
 		case PRODUCT_SYSTEM:

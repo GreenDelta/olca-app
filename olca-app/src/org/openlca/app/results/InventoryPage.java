@@ -1,9 +1,6 @@
 package org.openlca.app.results;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +13,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -36,34 +32,33 @@ import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.util.Strings;
 
 /**
  * Shows the inventory result with process contributions.
  */
 public class InventoryPage extends FormPage {
 
-	private FormToolkit toolkit;
-	private CalculationSetup setup;
-	private ContributionResult result;
-	private DQResult dqResult;
+	private final CalculationSetup setup;
+	private final ContributionResult result;
+	private final DQResult dqResult;
 
-	public InventoryPage(FormEditor editor, ContributionResult result,
-			DQResult dqResult, CalculationSetup setup) {
+	private FormToolkit toolkit;
+
+	public InventoryPage(ResultEditor<?> editor) {
 		super(editor, "InventoryPage", M.InventoryResults);
-		this.result = result;
-		this.setup = setup;
-		this.dqResult = dqResult;
+		this.result = editor.result;
+		this.setup = editor.setup;
+		this.dqResult = editor.dqResult;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.getDisplayName(setup.productSystem),
+				Labels.name(setup.productSystem),
 				Images.get(result));
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
@@ -78,41 +73,44 @@ public class InventoryPage extends FormPage {
 	}
 
 	private void fillTrees(TreeViewer inputTree, TreeViewer outputTree) {
-		Collection<FlowDescriptor> flows = result.getFlows();
-		List<FlowDescriptor> inFlows = new ArrayList<>();
-		List<FlowDescriptor> outFlows = new ArrayList<>();
-		for (FlowDescriptor flow : flows) {
-			if (result.isInput(flow)) {
-				inFlows.add(flow);
+		List<IndexFlow> inFlows = new ArrayList<>();
+		List<IndexFlow> outFlows = new ArrayList<>();
+		result.getFlows().forEach(f -> {
+			if (f.isInput) {
+				inFlows.add(f);
 			} else {
-				outFlows.add(flow);
+				outFlows.add(f);
 			}
-		}
-		Comparator<FlowDescriptor> comparator = (f1, f2) -> Strings.compare(
-				f1.name, f2.name);
-		Collections.sort(inFlows, comparator);
-		Collections.sort(outFlows, comparator);
+		});
 		inputTree.setInput(inFlows);
 		outputTree.setInput(outFlows);
 	}
 
 	private TreeViewer createTree(Composite parent, boolean forInputs) {
-		Section section = UI.section(parent, toolkit, forInputs ? M.Inputs : M.Outputs);
+
+		// create section and cutoff combo
+		Section section = UI.section(parent, toolkit,
+				forInputs ? M.Inputs : M.Outputs);
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, toolkit);
 		UI.gridLayout(comp, 1);
-		String[] headers = new String[] { M.Name, M.Category, M.SubCategory, M.Amount, M.Unit };
-		if (DQUI.displayExchangeQuality(dqResult)) {
-			headers = DQUI.appendTableHeaders(headers, dqResult.setup.exchangeDqSystem);
-		}
 		ContributionCutoff spinner = ContributionCutoff.create(comp, toolkit);
+
+		// create the tree
+		String[] headers = new String[] {
+				M.Name, M.Category, M.SubCategory, M.Amount, M.Unit };
+		if (DQUI.displayExchangeQuality(dqResult)) {
+			headers = DQUI.appendTableHeaders(
+					headers, dqResult.setup.exchangeDqSystem);
+		}
 		Label label = new Label();
 		TreeViewer viewer = Trees.createViewer(comp, headers, label);
 		viewer.setContentProvider(new ContentProvider());
 		createColumnSorters(viewer, label);
 		double[] widths = { .4, .2, .2, .15, .05 };
 		if (DQUI.displayExchangeQuality(dqResult)) {
-			widths = DQUI.adjustTableWidths(widths, dqResult.setup.exchangeDqSystem);
+			widths = DQUI.adjustTableWidths(
+					widths, dqResult.setup.exchangeDqSystem);
 		}
 		viewer.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(viewer.getTree(), DQUI.MIN_COL_WIDTH, widths);
@@ -123,8 +121,8 @@ public class InventoryPage extends FormPage {
 			if (obj instanceof CategorizedDescriptor) {
 				App.openEditor((CategorizedDescriptor) obj);
 			}
-			if (obj instanceof Contribution) {
-				App.openEditor(((Contribution) obj).item.item);
+			if (obj instanceof FlowContribution) {
+				App.openEditor(((FlowContribution) obj).item.item);
 			}
 		});
 		Trees.onDoubleClick(viewer, e -> onOpen.run());
@@ -137,7 +135,8 @@ public class InventoryPage extends FormPage {
 		Viewers.sortByLabels(viewer, label, 0, 1, 2, 4);
 		Viewers.sortByDouble(viewer, this::getAmount, 3);
 		if (DQUI.displayExchangeQuality(dqResult)) {
-			for (int i = 0; i < dqResult.setup.exchangeDqSystem.indicators.size(); i++) {
+			int len = dqResult.setup.exchangeDqSystem.indicators.size();
+			for (int i = 0; i < len; i++) {
 				Viewers.sortByDouble(viewer, label, i + 5);
 			}
 		}
@@ -150,31 +149,29 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public Object[] getChildren(Object e) {
-			if (!(e instanceof FlowDescriptor))
+			if (!(e instanceof IndexFlow))
 				return null;
-			FlowDescriptor flow = (FlowDescriptor) e;
+			IndexFlow flow = (IndexFlow) e;
 			double cutoffValue = Math.abs(getAmount(flow) * this.cutoff);
-			return result.getProcessContributions(flow).contributions.stream()
+			return result.getProcessContributions(flow).stream()
 					.filter(i -> i.amount != 0)
 					.filter(i -> Math.abs(i.amount) >= cutoffValue)
 					.sorted((i1, i2) -> -Double.compare(i1.amount, i2.amount))
-					.map(i -> new Contribution(i, flow))
+					.map(i -> new FlowContribution(i, flow))
 					.collect(Collectors.toList())
 					.toArray();
 		}
 
 		@Override
 		public Object getParent(Object e) {
-			if (e instanceof Contribution)
-				return ((Contribution) e).flow;
+			if (e instanceof FlowContribution)
+				return ((FlowContribution) e).flow;
 			return null;
 		}
 
 		@Override
 		public boolean hasChildren(Object e) {
-			if (e instanceof FlowDescriptor)
-				return true;
-			return false;
+			return e instanceof IndexFlow;
 		}
 
 		@Override
@@ -188,7 +185,9 @@ public class InventoryPage extends FormPage {
 		private ContributionImage img = new ContributionImage();
 
 		Label() {
-			super(dqResult, dqResult != null ? dqResult.setup.exchangeDqSystem : null, 5);
+			super(dqResult, dqResult != null
+					? dqResult.setup.exchangeDqSystem
+					: null, 5);
 		}
 
 		@Override
@@ -199,11 +198,11 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public Image getImage(Object obj, int col) {
-			if (col == 0 && obj instanceof FlowDescriptor)
-				return Images.get((FlowDescriptor) obj);
-			if (!(obj instanceof Contribution))
+			if (col == 0 && obj instanceof IndexFlow)
+				return Images.get(((IndexFlow) obj).flow);
+			if (!(obj instanceof FlowContribution))
 				return null;
-			Contribution c = (Contribution) obj;
+			FlowContribution c = (FlowContribution) obj;
 			if (col == 0)
 				return Images.get(c.item.item);
 			if (col == 3)
@@ -213,38 +212,39 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public String getText(Object obj, int col) {
-			if (obj instanceof FlowDescriptor)
-				return getFlowColumnText((FlowDescriptor) obj, col);
-			if (obj instanceof Contribution)
-				return getProcessColumnText((Contribution) obj, col);
+			if (obj instanceof IndexFlow)
+				return getFlowColumnText((IndexFlow) obj, col);
+			if (obj instanceof FlowContribution)
+				return getProcessColumnText((FlowContribution) obj, col);
 			return null;
 		}
 
-		private String getFlowColumnText(FlowDescriptor flow, int col) {
-			Pair<String, String> category = Labels.getCategory(flow);
+		private String getFlowColumnText(IndexFlow f, int col) {
+			if (f.flow == null)
+				return null;
+			Pair<String, String> category = Labels.getCategory(f.flow);
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(flow);
+				return Labels.name(f);
 			case 1:
 				return category.getLeft();
 			case 2:
 				return category.getRight();
 			case 3:
-				double v = getAmount(flow);
-				return Numbers.format(v);
+				return Numbers.format(getAmount(f));
 			case 4:
-				return Labels.getRefUnit(flow);
+				return Labels.refUnit(f);
 			default:
 				return null;
 			}
 		}
 
-		private String getProcessColumnText(Contribution item, int col) {
+		private String getProcessColumnText(FlowContribution item, int col) {
 			CategorizedDescriptor process = item.item.item;
 			Pair<String, String> category = Labels.getCategory(process);
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(process);
+				return Labels.name(process);
 			case 1:
 				return category.getLeft();
 			case 2:
@@ -253,7 +253,7 @@ public class InventoryPage extends FormPage {
 				double v = getAmount(item);
 				return Numbers.format(v);
 			case 4:
-				return Labels.getRefUnit(item.flow);
+				return Labels.refUnit(item.flow);
 			default:
 				return null;
 			}
@@ -261,35 +261,36 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		protected int[] getQuality(Object obj) {
-			if (obj instanceof FlowDescriptor) {
-				FlowDescriptor flow = (FlowDescriptor) obj;
-				return dqResult.get(flow);
+			if (obj instanceof IndexFlow) {
+				IndexFlow f = (IndexFlow) obj;
+				return dqResult.get(f.flow);
 			}
-			if (obj instanceof Contribution) {
-				Contribution item = (Contribution) obj;
-				return dqResult.get(item.item.item, item.flow);
+			if (obj instanceof FlowContribution) {
+				FlowContribution item = (FlowContribution) obj;
+				return dqResult.get(item.item.item, item.flow.flow);
 			}
 			return null;
 		}
-
 	}
 
-	private double getAmount(Object element) {
-		if (element instanceof FlowDescriptor) {
-			return result.getTotalFlowResult((FlowDescriptor) element);
-		} else if (element instanceof Contribution) {
-			Contribution item = (Contribution) element;
+	private double getAmount(Object o) {
+		if (o instanceof IndexFlow) {
+			return result.getTotalFlowResult((IndexFlow) o);
+		} else if (o instanceof FlowContribution) {
+			FlowContribution item = (FlowContribution) o;
 			return item.item.amount;
 		}
 		return 0d;
 	}
 
-	private class Contribution {
+	private class FlowContribution {
 
-		final ContributionItem<CategorizedDescriptor> item;
-		final FlowDescriptor flow;
+		final Contribution<CategorizedDescriptor> item;
+		final IndexFlow flow;
 
-		private Contribution(ContributionItem<CategorizedDescriptor> item, FlowDescriptor flow) {
+		private FlowContribution(
+				Contribution<CategorizedDescriptor> item,
+				IndexFlow flow) {
 			this.item = item;
 			this.flow = flow;
 		}

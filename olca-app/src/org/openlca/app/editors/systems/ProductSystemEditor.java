@@ -21,7 +21,8 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 	protected void addPages() {
 		try {
 			addPage(new ProductSystemInfoPage(this));
-			addPage(new ProductSystemParameterPage(this));
+			// addPage(new ProductSystemParameterPage(this));
+			addPage(new ParameterPage2(this));
 			BaseDescriptor descriptor = getEditorInput().getDescriptor();
 			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
 			int gIdx = addPage(new ProductSystemGraphEditor(this), gInput);

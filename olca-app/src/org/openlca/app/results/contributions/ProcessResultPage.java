@@ -1,7 +1,6 @@
 package org.openlca.app.results.contributions;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +34,12 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResult;
-import org.openlca.util.Strings;
 
 /**
  * Shows the single and upstream results of the processes in an analysis result.
@@ -99,7 +98,7 @@ public class ProcessResultPage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		toolkit = mform.getToolkit();
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.getDisplayName(setup.productSystem),
+				Labels.name(setup.productSystem),
 				Images.get(result));
 		Composite body = UI.formBody(form, toolkit);
 		createFlowSection(body);
@@ -123,24 +122,23 @@ public class ProcessResultPage extends FormPage {
 
 	private void fillFlows(TableViewer table) {
 		boolean input = table == inputTable;
-		List<FlowDescriptor> list = new ArrayList<>();
-		for (FlowDescriptor f : result.getFlows()) {
-			if (result.isInput(f) == input)
+		List<IndexFlow> list = new ArrayList<>();
+		for (IndexFlow f : result.getFlows()) {
+			if (f.isInput == input)
 				list.add(f);
 		}
-		Collections.sort(list,
-				(f1, f2) -> Strings.compare(f1.name, f2.name));
 		table.setInput(list);
 	}
 
 	private void createFlowSection(Composite parent) {
-		Section section = UI.section(parent, toolkit, M.FlowContributionsToProcessResults);
+		Section section = UI.section(parent, toolkit,
+				M.FlowContributionsToProcessResults);
 		UI.gridData(section, true, true);
-		Composite composite = toolkit.createComposite(section);
-		section.setClient(composite);
-		UI.gridLayout(composite, 1);
+		Composite comp = toolkit.createComposite(section);
+		section.setClient(comp);
+		UI.gridLayout(comp, 1);
 
-		Composite container = new Composite(composite, SWT.NONE);
+		Composite container = new Composite(comp, SWT.NONE);
 		UI.gridData(container, true, false);
 		UI.gridLayout(container, 5);
 		UI.formLabel(container, toolkit, M.Process);
@@ -163,7 +161,7 @@ public class ProcessResultPage extends FormPage {
 			outputTable.refresh();
 		});
 
-		Composite resultContainer = new Composite(composite, SWT.NONE);
+		Composite resultContainer = new Composite(comp, SWT.NONE);
 		resultContainer.setLayout(new GridLayout(2, true));
 		UI.gridData(resultContainer, true, true);
 		UI.formLabel(resultContainer, M.Inputs);
@@ -177,9 +175,9 @@ public class ProcessResultPage extends FormPage {
 		TableViewer table = Tables.createViewer(parent, EXCHANGE_COLUMN_LABELS, label);
 		decorateResultViewer(table);
 		Viewers.sortByLabels(table, label, 1, 4);
-		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult.getUpstreamContribution(f), 0);
-		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult.getUpstreamTotal(f), 2);
-		Viewers.sortByDouble(table, (FlowDescriptor f) -> flowResult.getDirectResult(f), 3);
+		Viewers.sortByDouble(table, (IndexFlow f) -> flowResult.getUpstreamContribution(f), 0);
+		Viewers.sortByDouble(table, (IndexFlow f) -> flowResult.getUpstreamTotal(f), 2);
+		Viewers.sortByDouble(table, (IndexFlow f) -> flowResult.getDirectResult(f), 3);
 		Actions.bind(table, TableClipboard.onCopy(table));
 		table.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 		table.getTable().getColumns()[3].setAlignment(SWT.RIGHT);
@@ -255,37 +253,38 @@ public class ProcessResultPage extends FormPage {
 
 		@Override
 		public Image getColumnImage(Object o, int col) {
-			if (!(o instanceof FlowDescriptor) || col != 0)
+			if (!(o instanceof IndexFlow) || col != 0)
 				return null;
-			FlowDescriptor flow = (FlowDescriptor) o;
+			IndexFlow flow = (IndexFlow) o;
 			double c = flowResult.getUpstreamContribution(flow);
 			return image.getForTable(c);
 		}
 
 		@Override
 		public String getColumnText(Object o, int col) {
-			if (!(o instanceof FlowDescriptor))
+			if (!(o instanceof IndexFlow))
 				return null;
-			FlowDescriptor flow = (FlowDescriptor) o;
+			IndexFlow flow = (IndexFlow) o;
 			switch (col) {
 			case 0:
 				return Numbers.percent(
 						flowResult.getUpstreamContribution(flow));
 			case 1:
-				return getFlowLabel(flow);
+				return getFlowLabel(flow.flow);
 			case 2:
-				return Numbers
-						.format(flowResult.getUpstreamTotal(flow));
+				return Numbers.format(flowResult.getUpstreamTotal(flow));
 			case 3:
 				return Numbers.format(flowResult.getDirectResult(flow));
 			case 4:
-				return Labels.getRefUnit(flow);
+				return Labels.refUnit(flow);
 			default:
 				return null;
 			}
 		}
 
 		private String getFlowLabel(FlowDescriptor flow) {
+			if (flow == null)
+				return "";
 			String val = flow.name;
 			if (flow.category == null)
 				return val;
@@ -332,20 +331,19 @@ public class ProcessResultPage extends FormPage {
 
 		@Override
 		public boolean select(Viewer viewer, Object parent, Object o) {
-			if (!(o instanceof FlowDescriptor
+			if (!(o instanceof IndexFlow
 					|| o instanceof ImpactCategoryDescriptor))
 				return false;
-			boolean forFlow = o instanceof FlowDescriptor;
+			boolean forFlow = o instanceof IndexFlow;
 			double cutoff = forFlow ? flowCutOff : impactCutOff;
 			if (cutoff == 0)
 				return true;
 			double c = 0;
 			if (forFlow)
-				c = flowResult
-						.getUpstreamContribution((FlowDescriptor) o);
+				c = flowResult.getUpstreamContribution((IndexFlow) o);
 			else
-				c = impactResult
-						.getUpstreamContribution((ImpactCategoryDescriptor) o);
+				c = impactResult.getUpstreamContribution(
+						(ImpactCategoryDescriptor) o);
 			return c * 100 > cutoff;
 		}
 	}
@@ -364,7 +362,7 @@ public class ProcessResultPage extends FormPage {
 			this.process = process;
 		}
 
-		private double getUpstreamContribution(FlowDescriptor flow) {
+		private double getUpstreamContribution(IndexFlow flow) {
 			if (process == null || flow == null)
 				return 0;
 			double total = result.getTotalFlowResult(flow);
@@ -375,13 +373,13 @@ public class ProcessResultPage extends FormPage {
 			return c > 1 ? 1 : c;
 		}
 
-		private double getDirectResult(FlowDescriptor flow) {
+		private double getDirectResult(IndexFlow flow) {
 			if (process == null || flow == null)
 				return 0;
 			return result.getDirectFlowResult(process, flow);
 		}
 
-		private double getUpstreamTotal(FlowDescriptor flow) {
+		private double getUpstreamTotal(IndexFlow flow) {
 			if (process == null || flow == null)
 				return 0;
 			return result.getUpstreamFlowResult(process, flow);

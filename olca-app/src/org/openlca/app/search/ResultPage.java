@@ -86,7 +86,7 @@ class ResultPage extends FormPage {
 			results = new ArrayList<>();
 			HashMap<Long, Integer> distances = new HashMap<>();
 			for (BaseDescriptor d : rawResults) {
-				String n = Labels.getDisplayName(d);
+				String n = Labels.name(d);
 				if (n == null)
 					continue;
 				int dist = n.toLowerCase().indexOf(term);
@@ -129,7 +129,7 @@ class ResultPage extends FormPage {
 			UI.gridData(comp, true, false);
 			UI.gridLayout(comp, 1).verticalSpacing = 3;
 			ImageHyperlink link = tk.createImageHyperlink(comp, SWT.TOP);
-			link.setText(Labels.getDisplayName(d));
+			link.setText(Labels.name(d));
 			link.setImage(Images.get(d));
 			link.setForeground(Colors.linkBlue());
 			link.setData(d);

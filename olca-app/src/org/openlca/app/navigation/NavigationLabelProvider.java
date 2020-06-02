@@ -67,7 +67,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (obj instanceof ModelElement) {
 			ModelElement element = (ModelElement) obj;
 			CategorizedDescriptor d = element.getContent();
-			String name = Labels.getDisplayName(d);
+			String name = Labels.name(d);
 			if (d.category == null)
 				return name;
 			Category c = Cache.getEntityCache().get(
@@ -154,9 +154,9 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (content instanceof Category)
 			return ((Category) content).name;
 		if (content instanceof ModelType)
-			return Labels.modelType((ModelType) content);
+			return Labels.plural((ModelType) content);
 		if (content instanceof BaseDescriptor)
-			return Labels.getDisplayName((BaseDescriptor) content);
+			return Labels.name((BaseDescriptor) content);
 		else
 			return null;
 	}

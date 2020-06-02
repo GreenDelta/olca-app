@@ -98,15 +98,11 @@ public class App {
 	}
 
 	/**
-	 * Returns the version of the openLCA application. If there is a version defined
-	 * in the ini-file (-olcaVersion argument) this is returned. Otherwise the
-	 * version of the application bundle is returned.
+	 * Returns the version of the openLCA application.
 	 */
 	public static String getVersion() {
-		String version = CommandArgument.VERSION.getValue();
-		if (version != null)
-			return version;
-		return RcpActivator.getDefault().getBundle().getVersion().toString();
+		return RcpActivator.getDefault()
+				.getBundle().getVersion().toString();
 	}
 
 	public static boolean isCommentingEnabled() {
@@ -118,7 +114,7 @@ public class App {
 	 * experimental features and development tools).
 	 */
 	public static boolean runsInDevMode() {
-		String val = CommandArgument.DEV_MODE.getValue();
+		String val = AppArg.DEV_MODE.getValue();
 		if (val == null)
 			return false;
 		return val.equals("true");

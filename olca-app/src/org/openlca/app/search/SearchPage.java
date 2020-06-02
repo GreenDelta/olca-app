@@ -37,7 +37,7 @@ public class SearchPage extends SimpleFormEditor {
 	public static void forUsage(CategorizedDescriptor d) {
 		if (d == null || d.type == null)
 			return;
-		String title = "Find usages of " + Labels.getDisplayName(d);
+		String title = "Find usages of " + Labels.name(d);
 		AtomicReference<List<BaseDescriptor>> ref = new AtomicReference<>();
 		App.run(title, () -> {
 			List<CategorizedDescriptor> list = IUseSearch.FACTORY.createFor(
@@ -92,7 +92,7 @@ public class SearchPage extends SimpleFormEditor {
 
 		public Input(CategorizedDescriptor d, String resultKey) {
 			super("search", resultKey,
-					M.UsageOf + " " + Labels.getDisplayName(d));
+					M.UsageOf + " " + Labels.name(d));
 			forSearch = false;
 			this.resultKey = resultKey;
 		}

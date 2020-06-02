@@ -134,11 +134,18 @@
             name="%FlowEditor">
       </editor>
       <editor
-            class="org.openlca.app.editors.lcia_methods.ImpactMethodEditor"
+            class="org.openlca.app.editors.lcia.ImpactMethodEditor"
             default="false"
             icon="icons/model/impact_method.png"
             id="editors.impactmethod"
             name="%ImpactMethodEditor">
+      </editor>
+      <editor
+            class="org.openlca.app.editors.lcia.ImpactCategoryEditor"
+            default="false"
+            icon="icons/model/impact_category.png"
+            id="editors.impactcategory"
+            name="Environmental indicator">
       </editor>
       <editor
             class="org.openlca.app.editors.processes.ProcessEditor"
@@ -210,13 +217,6 @@
             id="SimulationEditor"
             name="Simulation Editor">
       </editor> 
-      <editor
-            class="org.openlca.app.results.regionalized.RegionalizedResultEditor"
-            contributorClass="org.openlca.app.results.regionalized.RegionalizedResultActions"
-            icon="icons/model/impact_method.png"
-            id="RegionalizedResultEditor"
-            name="Regionalized LCIA result">
-      </editor>   
       <editor
             id="ReportViewer"
             class="org.openlca.app.editors.reports.ReportViewer"
@@ -343,6 +343,12 @@
             icon="icons/wizard/impact_method.png"
             id="wizards.new.impactmethod"
             name="%LCIAMethods">
+      </wizard>
+      <wizard
+            class="org.openlca.app.wizards.ImpactCategoryWizard"
+            icon="icons/wizard/impact_method.png"
+            id="wizards.new.impactcategory"
+            name="Environmental indicators">
       </wizard>
       <wizard
             class="org.openlca.app.wizards.ProcessWizard"
@@ -488,7 +494,7 @@
          </property>
          <property
                name="aboutText"
-               value="openLCA 1.10&#x0A;&#x0A;Copyright (c) 2007 - 2019 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
+               value="openLCA 2.0.0&#x0A;&#x0A;Copyright (c) 2007 - 2020 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
          </property>
          <property
                name="aboutImage"
@@ -739,16 +745,10 @@
 		   <description>Import SimaPro CSV files.</description>
 	   </wizard>
 	   <wizard
-          class="org.openlca.app.editors.locations.Es2KMLImportWizard"
-          icon="icons/file/xml.png"
-          id="wizard.import.kmz"
-          name="EcoSpold2 geographies">
-       </wizard>
-	   <wizard
-          class="org.openlca.app.editors.locations.KmlImportWizard"
-          icon="icons/file/xml.png"
-          id="wizard.import.kml"
-          name="KML geographies">
+          class="org.openlca.app.wizards.io.GeoJsonImportWizard"
+          icon="icons/model/location.png"
+          id="wizard.import.geojson"
+          name="Geometries from GeoJSON">
        </wizard>
     <wizard
           class="org.openlca.app.wizards.io.RepositoryImportWizard"

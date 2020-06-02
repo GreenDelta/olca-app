@@ -2,14 +2,12 @@ package org.openlca.app.components;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -18,66 +16,87 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
-import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
+import com.google.common.base.Strings;
+
 public class ModelSelectionDialog extends FormDialog {
 
+	/**
+	 * Indicates whether multiple elements can be selected in the dialog or not.
+	 */
+	public boolean forMultiple = false;
+
+	/**
+	 * Indicates whether the OK button can be clicked on an empty selection.
+	 */
+	public boolean isEmptyOk = false;
+
+	/**
+	 * The selected elements. Note that this array can be null when nothing was
+	 * selected.
+	 */
+	public CategorizedDescriptor[] selection;
+
 	private final ModelType modelType;
-	private boolean multiSelection = false;
 	private TreeViewer viewer;
 	private Text filterText;
-	private CategorizedDescriptor[] selection;
+
+	public ModelSelectionDialog(ModelType modelType) {
+		super(UI.shell());
+		this.modelType = modelType;
+		setBlockOnOpen(true);
+	}
 
 	public static CategorizedDescriptor select(ModelType type) {
 		if (type == null || !type.isCategorized())
 			return null;
-		ModelSelectionDialog dialog = new ModelSelectionDialog(UI.shell(), type);
-		if (dialog.open() == OK) {
-			CategorizedDescriptor[] selection = dialog.getSelection();
-			if (selection == null || selection.length == 0)
-				return null;
-			return selection[0];
-		}
-		return null;
+		ModelSelectionDialog d = new ModelSelectionDialog(type);
+		return d.open() == OK
+				? d.first()
+				: null;
 	}
 
 	public static CategorizedDescriptor[] multiSelect(ModelType type) {
 		if (type == null || !type.isCategorized())
 			return null;
-		ModelSelectionDialog dialog = new ModelSelectionDialog(UI.shell(), type);
-		dialog.multiSelection = true;
-		if (dialog.open() == OK)
-			return dialog.getSelection();
+		ModelSelectionDialog d = new ModelSelectionDialog(type);
+		d.forMultiple = true;
+		if (d.open() == OK)
+			return d.selection;
 		return null;
 	}
 
-	private ModelSelectionDialog(Shell parentShell, ModelType modelType) {
-		super(parentShell);
-		this.modelType = modelType;
-		setBlockOnOpen(true);
+	/**
+	 * Returns the first element from the selection or null when the selection is
+	 * empty.
+	 */
+	public CategorizedDescriptor first() {
+		if (selection == null || selection.length == 0)
+			return null;
+		return selection[0];
 	}
 
 	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
-		getButton(IDialogConstants.OK_ID).setEnabled(false);
-		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
+	protected void createButtonsForButtonBar(Composite comp) {
+		createButton(comp, IDialogConstants.OK_ID, M.OK, false);
+		getButton(IDialogConstants.OK_ID).setEnabled(isEmptyOk);
+		createButton(comp, IDialogConstants.CANCEL_ID, M.Cancel, true);
 	}
 
 	@Override
@@ -101,35 +120,54 @@ public class ModelSelectionDialog extends FormDialog {
 			return "unknown?";
 		switch (modelType) {
 		case ACTOR:
-			return multiSelection ? M.Actors : M.Actor;
+			return forMultiple ? M.Actors : M.Actor;
 		case FLOW:
-			return multiSelection ? M.Flows : M.Flow;
+			return forMultiple ? M.Flows : M.Flow;
 		case FLOW_PROPERTY:
-			return multiSelection ? M.FlowProperties : M.FlowProperty;
+			return forMultiple ? M.FlowProperties : M.FlowProperty;
 		case IMPACT_METHOD:
-			return multiSelection ? M.ImpactAssessmentMethods : M.ImpactAssessmentMethod;
+			return forMultiple
+					? M.ImpactAssessmentMethods
+					: M.ImpactAssessmentMethod;
 		case PROCESS:
-			return multiSelection ? M.Processes : M.Process;
+			return forMultiple ? M.Processes : M.Process;
 		case PRODUCT_SYSTEM:
-			return multiSelection ? M.ProductSystems : M.ProductSystem;
+			return forMultiple ? M.ProductSystems : M.ProductSystem;
 		case PROJECT:
-			return multiSelection ? M.Projects : M.Project;
+			return forMultiple ? M.Projects : M.Project;
 		case SOCIAL_INDICATOR:
-			return multiSelection ? M.SocialIndicators : M.SocialIndicator;
+			return forMultiple ? M.SocialIndicators : M.SocialIndicator;
 		case SOURCE:
-			return multiSelection ? M.Sources : M.Source;
+			return forMultiple ? M.Sources : M.Source;
 		case UNIT_GROUP:
-			return multiSelection ? M.UnitGroups : M.UnitGroup;
+			return forMultiple ? M.UnitGroups : M.UnitGroup;
+		case CATEGORY:
+			return forMultiple ? "Categories" : M.Category;
+		case CURRENCY:
+			return forMultiple ? M.Currencies : M.Currency;
+		case DQ_SYSTEM:
+			return forMultiple ? M.DataQualitySystems : M.DataQualitySystem;
+		case IMPACT_CATEGORY:
+			return forMultiple ? M.ImpactCategories : M.ImpactCategory;
+		case LOCATION:
+			return forMultiple ? M.Locations : M.Location;
+		case PARAMETER:
+			return forMultiple ? M.Parameters : M.Parameter;
+		case NW_SET:
+			return forMultiple
+					? M.NormalizationWeightingSets
+					: M.NormalizationWeighting;
+		case UNIT:
+			return forMultiple ? M.Units : M.Unit;
 		default:
 			return "unknown?";
 		}
 	}
 
-	private void createViewer(Composite composite) {
-		if (multiSelection)
-			viewer = NavigationTree.forMultiSelection(composite, modelType);
-		else
-			viewer = NavigationTree.forSingleSelection(composite, modelType);
+	private void createViewer(Composite comp) {
+		viewer = forMultiple
+				? NavigationTree.forMultiSelection(comp, modelType)
+				: NavigationTree.forSingleSelection(comp, modelType);
 		ModelTextFilter filter = new ModelTextFilter(filterText, viewer);
 		viewer.setFilters(new ViewerFilter[] { filter });
 		UI.gridData(viewer.getTree(), true, true);
@@ -173,51 +211,53 @@ public class ModelSelectionDialog extends FormDialog {
 		return new Point(loc.x, loc.y + marginTop);
 	}
 
-	private CategorizedDescriptor[] getSelection() {
-		return selection;
-	}
-
 	private class SelectionChangedListener
 			implements ISelectionChangedListener {
 
 		@Override
-		public void selectionChanged(SelectionChangedEvent event) {
-			if (event.getSelection() != null && !event.getSelection().isEmpty()) {
-				IStructuredSelection s = (IStructuredSelection) event.getSelection();
-				List<INavigationElement<?>> elements = new ArrayList<>();
-				for (Object selected : s.toArray())
-					elements.add((INavigationElement<?>) selected);
-				Set<CategorizedDescriptor> descriptors = Navigator.collect(elements, this::unwrap);
-				selection = descriptors.toArray(new CategorizedDescriptor[descriptors.size()]);
+		public void selectionChanged(SelectionChangedEvent e) {
+
+			List<Object> allSelected = Viewers.getAllSelected(viewer);
+			List<CategorizedDescriptor> descriptors = new ArrayList<>();
+			String filter = filterText.getText().toLowerCase();
+
+			for (Object obj : allSelected) {
+				if (!(obj instanceof ModelElement))
+					continue;
+				CategorizedDescriptor d = ((ModelElement) obj).getContent();
+				if (d == null || d.type != modelType)
+					continue;
+
+				// make sure that the selected element
+				// is visible and not hidden because of
+				// the filter
+				if (!Strings.isNullOrEmpty(filter)) {
+					String label = Labels.name(d);
+					if (label == null ||
+							!label.toLowerCase().contains(filter))
+						continue;
+				}
+
+				descriptors.add(d);
 			}
-			getButton(IDialogConstants.OK_ID).setEnabled(selection != null && selection.length > 0);
-		}
-
-		private CategorizedDescriptor unwrap(INavigationElement<?> element) {
-			if (!(element instanceof ModelElement))
-				return null;
-			ModelElement modelElement = (ModelElement) element;
-			if (!matches(modelElement))
-				return null;
-			return modelElement.getContent();
-		}
-
-		private boolean matches(ModelElement elem) {
-			return elem.getContent().name.toLowerCase()
-					.contains(filterText.getText().toLowerCase());
+			selection = descriptors.toArray(new CategorizedDescriptor[0]);
+			if (!isEmptyOk) {
+				getButton(IDialogConstants.OK_ID).setEnabled(
+						selection != null && selection.length > 0);
+			}
 		}
 	}
 
 	private class DoubleClickListener implements IDoubleClickListener {
 
 		@Override
-		public void doubleClick(DoubleClickEvent event) {
-			IStructuredSelection currentSelection = (IStructuredSelection) event
-					.getSelection();
-			if (currentSelection.getFirstElement() instanceof ModelElement) {
-				ModelElement element = (ModelElement) currentSelection.getFirstElement();
-				CategorizedDescriptor modelComponent = element.getContent();
-				selection = new CategorizedDescriptor[] { modelComponent };
+		public void doubleClick(DoubleClickEvent e) {
+			Object obj = Viewers.getFirstSelected(viewer);
+			if (obj instanceof ModelElement) {
+				ModelElement elem = (ModelElement) obj;
+				selection = new CategorizedDescriptor[] {
+						elem.getContent()
+				};
 				okPressed();
 			}
 		}

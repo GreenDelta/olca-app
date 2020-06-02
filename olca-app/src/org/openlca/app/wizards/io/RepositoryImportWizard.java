@@ -425,7 +425,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 		public String getText(Object element) {
 			Node node = (Node) element;
 			if (node.data == null)
-				return Labels.modelType(node.type);
+				return Labels.plural(node.type);
 			return node.data.name;
 		}
 

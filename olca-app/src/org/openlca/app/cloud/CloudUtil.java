@@ -41,7 +41,7 @@ public class CloudUtil {
 	}
 
 	public static String getFileReferenceText(FetchRequestData reference) {
-		String modelType = Labels.modelType(reference.categoryType);
+		String modelType = Labels.plural(reference.categoryType);
 		return modelType + "/" + toFullPath(reference);
 	}
 

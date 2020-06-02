@@ -3,6 +3,7 @@ package org.openlca.app.editors;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -34,7 +35,9 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Objects;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 public abstract class ModelEditor<T extends CategorizedEntity>
 		extends FormEditor {
@@ -82,12 +85,39 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 		savedHandlers.add(handler);
 	}
 
+	/**
+	 * @deprecated Do not expose the event bus anymore we even could replace the
+	 *             event bus with a simple list of subscribers.
+	 */
+	@Deprecated
 	public EventBus getEventBus() {
 		return eventBus;
 	}
 
-	public void postEvent(String message, Object source) {
-		eventBus.post(new Event(message, source));
+
+	/**
+	 * Post an event with the given ID and sender to possible subscribers.
+	 */
+	public void postEvent(String eventID, Object sender) {
+		eventBus.post(new Event(eventID, sender));
+	}
+
+	/**
+	 * Subscribes a handler for events with the given ID to this editor. When an
+	 * event occurs the original sender of that event is injected to the respective
+	 * handlers.
+	 */
+	public void onEvent(String eventID, Consumer<Object> handler) {
+		if (handler == null)
+			return;
+		eventBus.register(new Object() {
+			@Subscribe
+			public void handle(Event e) {
+				if (e == null || !Objects.equal(e.id, eventID))
+					return;
+				handler.accept(e.sender);
+			}
+		});
 	}
 
 	public DataBinding getBinding() {
@@ -155,7 +185,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 		EntityCache cache = Cache.getEntityCache();
 		cache.refresh(descriptor.getClass(), descriptor.id);
 		cache.invalidate(modelClass, model.id);
-		this.setPartName(Labels.getDisplayName(model));
+		this.setPartName(Labels.name(model));
 		Cache.evict(descriptor);
 		for (Runnable handler : savedHandlers) {
 			if (handler != null) {

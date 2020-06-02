@@ -22,6 +22,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowPropertyFactorViewer;
 import org.openlca.app.viewers.combo.UnitViewer;
+import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -46,9 +47,9 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
+	protected void createFormContent(IManagedForm mform) {
 		form = UI.formHeader(this);
-		FormToolkit tk = managedForm.getToolkit();
+		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, tk);
@@ -104,8 +105,8 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 				candidates.add(e);
 		}
 		Collections.sort(candidates, (e1, e2) -> Strings.compare(
-				Labels.getDisplayName(e1.flow),
-				Labels.getDisplayName(e2.flow)));
+				Labels.name(e1.flow),
+				Labels.name(e2.flow)));
 		return candidates;
 	}
 

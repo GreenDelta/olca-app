@@ -46,15 +46,15 @@ public class SankeySelectionAction extends Action {
 		openAndUpdate(result);
 	}
 
-	private void openAndUpdate(FullResult result) {
-		SankeySelectionDialog dialog = new SankeySelectionDialog(result);
-		dialog.cutoff = sankeyDiagram.node.cutoff;
-		dialog.selection = lastSelection;
-		if (dialog.open() == Window.OK) {
-			lastSelection = dialog.selection;
+	private void openAndUpdate(FullResult r) {
+		SankeySelectionDialog d = new SankeySelectionDialog(r);
+		d.cutoff = sankeyDiagram.node.cutoff;
+		d.selection = lastSelection;
+		if (d.open() == Window.OK) {
+			lastSelection = d.selection;
 			if (lastSelection == null)
 				return;
-			sankeyDiagram.update(lastSelection, dialog.cutoff);
+			sankeyDiagram.update(lastSelection, d.cutoff);
 		}
 	}
 }

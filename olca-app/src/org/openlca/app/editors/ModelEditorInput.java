@@ -56,7 +56,7 @@ public final class ModelEditorInput implements IEditorInput {
 	public String getName() {
 		if (descriptor == null)
 			return "no content";
-		return Strings.cut(Labels.getDisplayName(descriptor), 75);
+		return Strings.cut(Labels.name(descriptor), 75);
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public final class ModelEditorInput implements IEditorInput {
 	public String getToolTipText() {
 		if (descriptor == null)
 			return "no content";
-		return Labels.getDisplayName(descriptor);
+		return Labels.name(descriptor);
 	}
 
 }

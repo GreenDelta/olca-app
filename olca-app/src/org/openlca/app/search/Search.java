@@ -81,7 +81,7 @@ class Search implements Runnable {
 				&& d.refId.equalsIgnoreCase(terms[0])) {
 			return true;
 		}
-		String label = Labels.getDisplayName(d);
+		String label = Labels.name(d);
 		if (label == null)
 			return false;
 		String feed = label.toLowerCase();
@@ -95,8 +95,8 @@ class Search implements Runnable {
 	private class ResultComparator implements Comparator<BaseDescriptor> {
 		@Override
 		public int compare(BaseDescriptor o1, BaseDescriptor o2) {
-			String label1 = Labels.getDisplayName(o1).toLowerCase();
-			String label2 = Labels.getDisplayName(o2).toLowerCase();
+			String label1 = Labels.name(o1).toLowerCase();
+			String label2 = Labels.name(o2).toLowerCase();
 			for (String term : terms) {
 				int idx1 = label1.indexOf(term);
 				int idx2 = label2.indexOf(term);

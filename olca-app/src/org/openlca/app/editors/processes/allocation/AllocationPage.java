@@ -74,7 +74,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 	@Subscribe
 	public void handleExchangesChange(Event event) {
-		if (!event.match(ProcessEditor.EXCHANGES_CHANGED))
+		if (!event.matches(ProcessEditor.EXCHANGES_CHANGED))
 			return;
 		log.trace("update allocation page");
 		AllocationSync.updateFactors(process());
@@ -183,7 +183,7 @@ public class AllocationPage extends ModelPage<Process> {
 	}
 
 	private String productText(Exchange exchange) {
-		String text = Labels.getDisplayName(exchange.flow);
+		String text = Labels.name(exchange.flow);
 		text += " (" + Numbers.format(exchange.amount, 2) + " "
 				+ exchange.unit.name + ")";
 		return text;

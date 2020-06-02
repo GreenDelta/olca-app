@@ -1,8 +1,12 @@
 package org.openlca.app.results.contributions.locations;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -13,14 +17,27 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.components.ResultTypeSelection;
+import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.trees.TreeClipboard;
+import org.openlca.app.util.trees.Trees;
+import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.Location;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.LocationResult;
 
 /**
  * Shows the contributions of the locations in the product system to an analysis
@@ -28,40 +45,44 @@ import org.openlca.core.results.ContributionResult;
  */
 public class LocationPage extends FormPage {
 
-	ContributionResult result;
+	final ContributionResult result;
+	private final LocationResult locations;
+	private final CalculationSetup setup;
 
-	private ResultTypeSelection combos;
-	private LocationTree tree;
-	private LocationMap map;
-	private boolean showMap;
+	private Combo combos;
+	private TreeViewer tree;
+	private TreeLabel label;
+
+	// private LocationMap map;
+	private ResultMap map;
 	boolean skipZeros = true;
 	double cutoff = 0.01;
-	private CalculationSetup setup;
 
-	public LocationPage(FormEditor editor, ContributionResult result, CalculationSetup setup) {
-		this(editor, result, setup, true);
-	}
-
-	public LocationPage(FormEditor editor, ContributionResult result, CalculationSetup setup,
-			boolean showMap) {
+	public LocationPage(FormEditor editor,
+			ContributionResult result, CalculationSetup setup) {
 		super(editor, "analysis.MapPage", M.Locations);
 		this.setup = setup;
-		this.showMap = showMap;
 		this.result = result;
+		this.locations = new LocationResult(result, Database.get());
+	}
+
+	public Object getSelection() {
+		return combos == null ? null : combos.getSelection();
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.getDisplayName(setup.productSystem),
+				Labels.name(setup.productSystem),
 				Images.get(result));
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		createCombos(body, tk);
-		createTree(body, tk);
-		if (showMap) {
-			map = LocationMap.create(this, body, tk);
-		}
+		SashForm sash = new SashForm(body, SWT.VERTICAL);
+		UI.gridData(sash, true, true);
+		tk.adapt(sash);
+		createTree(sash, tk);
+		map = ResultMap.on(sash, tk);
 		form.reflow(true);
 		refreshSelection();
 	}
@@ -72,8 +93,8 @@ public class LocationPage extends FormPage {
 		UI.gridLayout(outer, 2, 5, 0);
 		Composite comboComp = tk.createComposite(outer);
 		UI.gridLayout(comboComp, 2);
-		combos = ResultTypeSelection.on(result)
-				.withEventHandler(new SelectionHandler(this))
+		combos = Combo.on(result)
+				.onSelected(this::onSelected)
 				.withSelection(result.getFlows().iterator().next())
 				.create(comboComp, tk);
 
@@ -89,7 +110,7 @@ public class LocationPage extends FormPage {
 		tk.adapt(spinner);
 		tk.createLabel(checkComp, "%");
 		Controls.onSelect(spinner, e -> {
-			cutoff = ((double) spinner.getSelection()) / 100d;
+			cutoff = (spinner.getSelection()) / 100d;
 			refreshSelection();
 		});
 
@@ -105,9 +126,32 @@ public class LocationPage extends FormPage {
 	private void createTree(Composite body, FormToolkit tk) {
 		Section section = UI.section(body, tk, M.ContributionTreeLocations);
 		UI.gridData(section, true, true);
-		Composite composite = UI.sectionClient(section, tk);
-		UI.gridLayout(composite, 1);
-		tree = new LocationTree(composite, showMap);
+		Composite comp = UI.sectionClient(section, tk);
+		UI.gridLayout(comp, 1);
+		label = new TreeLabel();
+		String[] labels = { M.Location, M.Amount, M.Unit };
+		tree = Trees.createViewer(comp, labels, label);
+		tree.setContentProvider(new TreeContentProvider(this));
+		Trees.bindColumnWidths(tree.getTree(), 0.4, 0.3, 0.3);
+
+		// tree actions
+		Action onOpen = Actions.onOpen(() -> {
+			Object obj = Viewers.getFirstSelected(tree);
+			if (obj == null)
+				return;
+			if (obj instanceof Contribution) {
+				Contribution<?> c = (Contribution<?>) obj;
+				if (c.item instanceof CategorizedDescriptor) {
+					App.openEditor((CategorizedDescriptor) c.item);
+				} else if (c.item instanceof CategorizedEntity) {
+					App.openEditor((CategorizedEntity) c.item);
+				}
+			}
+		});
+		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree));
+		Trees.onDoubleClick(tree, e -> onOpen.run());
+		tree.getTree().getColumns()[1].setAlignment(SWT.RIGHT);
+
 	}
 
 	// the map can be a bit lazy. thus it can call this method to force an
@@ -118,12 +162,38 @@ public class LocationPage extends FormPage {
 		}
 	}
 
-	void setInput(List<LocationItem> items, String unit) {
-		if (tree != null) {
-			tree.setInput(items, unit);
+	private void onSelected(Object obj) {
+		label.update(obj);
+		if (obj instanceof FlowDescriptor) {
+			FlowDescriptor f = (FlowDescriptor) obj;
+			update(locations.getContributions(f));
+			return;
 		}
-		if (map != null && showMap) {
-			map.setInput(items);
+		if (obj instanceof ImpactCategoryDescriptor) {
+			ImpactCategoryDescriptor i = (ImpactCategoryDescriptor) obj;
+			update(locations.getContributions(i));
+			return;
+		}
+		if (obj instanceof CostResultDescriptor) {
+			CostResultDescriptor c = (CostResultDescriptor) obj;
+			if (c.forAddedValue) {
+				update(locations.getAddedValueContributions());
+			} else {
+				update(locations.getNetCostsContributions());
+			}
+		}
+	}
+
+	private void update(List<Contribution<Location>> items) {
+		List<Contribution<Location>> sorted = items.stream()
+				.filter(c -> c.amount != 0)
+				.sorted((c1, c2) -> Double.compare(c2.amount, c1.amount))
+				.collect(Collectors.toList());
+		if (tree != null) {
+			tree.setInput(sorted);
+		}
+		if (map != null) {
+			map.update(getSelection(), sorted);
 		}
 	}
 }

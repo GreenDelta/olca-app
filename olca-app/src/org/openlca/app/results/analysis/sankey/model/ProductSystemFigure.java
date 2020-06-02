@@ -11,9 +11,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
-import org.openlca.app.FaviColor;
 import org.openlca.app.M;
 import org.openlca.app.results.analysis.sankey.actions.SankeySelectionAction;
 import org.openlca.app.results.analysis.sankey.layout.GraphLayoutManager;
@@ -125,8 +123,7 @@ public class ProductSystemFigure extends Figure {
 		int x = 25;
 		int y = 140;
 		for (int i = -100; i < 100; i += 2) {
-			RGB rgb = FaviColor.getForContribution(i / 100d);
-			graphics.setBackgroundColor(Colors.get(rgb));
+			graphics.setBackgroundColor(Colors.getForContribution(i / 100d));
 			int posX = x + 3 * ((100 + i) / 2);
 			graphics.fillRectangle(new Rectangle(posX, y, 4, 20));
 		}

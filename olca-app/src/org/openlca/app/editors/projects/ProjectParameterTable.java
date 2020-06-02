@@ -393,7 +393,7 @@ class ProjectParameterTable {
 			if (model == null)
 				return "global";
 			else
-				return Labels.getDisplayName(model);
+				return Labels.name(model);
 		}
 
 		private BaseDescriptor getModel(ParameterRedef redef) {

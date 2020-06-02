@@ -98,7 +98,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 			}
 		});
 		bind(link, l -> {
-			l.setText(Labels.getDisplayName(stats.refProcess));
+			l.setText(Labels.name(stats.refProcess));
 		});
 
 		UI.formLabel(comp, "");
@@ -213,7 +213,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 			LinkDegree link = (LinkDegree) obj;
 			switch (col) {
 			case 0:
-				return Labels.getDisplayName(link.process);
+				return Labels.name(link.process);
 			case 1:
 				return Integer.toString(link.degree);
 			default:

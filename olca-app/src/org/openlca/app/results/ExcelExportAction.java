@@ -27,7 +27,7 @@ public class ExcelExportAction extends Action {
 
 	@Override
 	public void run() {
-		IResultEditor<?> editor = Editors.getActive();
+		ResultEditor<?> editor = Editors.getActive();
 		if (editor == null) {
 			log.error("unexpected error: the product system editor is not active");
 			return;
@@ -35,20 +35,19 @@ public class ExcelExportAction extends Action {
 		runExport(editor);
 	}
 
-	private void runExport(IResultEditor<?> editor) {
-		String fileName = editor.getSetup().productSystem.name;
+	private void runExport(ResultEditor<?> editor) {
+		String fileName = editor.setup.productSystem.name;
 		fileName = fileName.replaceAll("[^A-Za-z0-9]", "_") + ".xlsx";
 		File file = FileChooser.forExport("*.xlsx", fileName);
 		if (file == null)
 			return;
-		ResultExport export = new ResultExport(editor.getSetup(),
-				editor.getResult(), file, Cache.getEntityCache());
-		export.setDQResult(editor.getDqResult());
+		ResultExport export = new ResultExport(editor.setup,
+				editor.result, file, Cache.getEntityCache());
+		export.setDQResult(editor.dqResult);
 		App.run(M.Export, export, () -> {
 			if (export.doneWithSuccess()) {
 				Popup.info(M.ExportDone);
 			}
 		});
 	}
-
 }

@@ -278,7 +278,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 		@Override
 		protected String getText(AllocationMethod value) {
-			return Labels.getEnumText(value);
+			return Labels.of(value);
 		}
 
 		@Override
@@ -382,7 +382,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			case 1:
 				return system.name;
 			case 3:
-				return Labels.getEnumText(variant.allocationMethod);
+				return Labels.of(variant.allocationMethod);
 			case 4:
 				return getFlowText(system);
 			case 5:
@@ -401,7 +401,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			if (system == null || system.referenceExchange == null)
 				return null;
 			Exchange refExchange = system.referenceExchange;
-			return Labels.getDisplayName(refExchange.flow);
+			return Labels.name(refExchange.flow);
 		}
 	}
 }

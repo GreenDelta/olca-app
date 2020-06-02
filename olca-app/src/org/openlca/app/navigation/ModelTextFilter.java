@@ -47,7 +47,7 @@ public class ModelTextFilter extends ViewerFilter {
 	private boolean select(INavigationElement<?> element, String text) {
 		if (element instanceof ModelElement) {
 			ModelElement modelElement = (ModelElement) element;
-			String feed = Labels.getDisplayName(modelElement.getContent())
+			String feed = Labels.name(modelElement.getContent())
 					.toLowerCase();
 			return feed.contains(text);
 		}

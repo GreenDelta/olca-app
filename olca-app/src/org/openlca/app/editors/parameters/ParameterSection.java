@@ -30,17 +30,14 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.MsgBox;
-import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.app.viewers.table.modify.field.DoubleModifier;
 import org.openlca.app.viewers.table.modify.field.StringModifier;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.util.Strings;
@@ -53,7 +50,7 @@ import org.openlca.util.Strings;
  */
 public class ParameterSection {
 
-	private TableViewer viewer;
+	private TableViewer table;
 	private boolean forInputParameters = true;
 	private final ParameterPage<?> page;
 	private final ModelEditor<?> editor;
@@ -92,16 +89,14 @@ public class ParameterSection {
 			props = new ArrayList<>(Arrays.asList(
 					M.Name, M.Formula, M.Value, M.Description));
 		}
-		if (page.sourceHandler != null)
-			props.add(M.ExternalSource);
 		if (editor.hasAnyComment("parameters"))
 			props.add("");
 		return props.toArray(new String[props.size()]);
 	}
 
 	private void addDoubleClickHandler() {
-		Tables.onDoubleClick(viewer, (event) -> {
-			TableItem item = Tables.getItem(viewer, event);
+		Tables.onDoubleClick(table, (event) -> {
+			TableItem item = Tables.getItem(table, event);
 			if (item == null)
 				onAdd();
 		});
@@ -112,18 +107,14 @@ public class ParameterSection {
 		Section section = UI.section(body, toolkit, title);
 		UI.gridData(section, true, true);
 		Composite parent = UI.sectionClient(section, toolkit, 1);
-		viewer = Tables.createViewer(parent, properties);
+		table = Tables.createViewer(parent, properties);
 		ParameterLabelProvider label = new ParameterLabelProvider();
-		viewer.setLabelProvider(label);
-		addSorters(viewer, label);
+		table.setLabelProvider(label);
+		addSorters(table, label);
 		bindActions(section);
-		if (page.sourceHandler != null)
-			Tables.bindColumnWidths(viewer, 0.25, 0.25, 0.15, 0.15, 0.17);
-		else {
-			Tables.bindColumnWidths(viewer, 0.3, 0.3, 0.2, 0.17, 0.03);
-		}
+		Tables.bindColumnWidths(table, 0.3, 0.3, 0.2, 0.17, 0.03);
 		int col = forInputParameters ? 1 : 2;
-		viewer.getTable().getColumns()[col].setAlignment(SWT.RIGHT);
+		table.getTable().getColumns()[col].setAlignment(SWT.RIGHT);
 	}
 
 	private void addSorters(TableViewer table, ParameterLabelProvider label) {
@@ -139,31 +130,30 @@ public class ParameterSection {
 	private void bindActions(Section section) {
 		Action add = Actions.onAdd(() -> onAdd());
 		Action remove = Actions.onRemove(() -> onRemove());
-		Action copy = TableClipboard.onCopy(viewer);
-		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
+		Action copy = TableClipboard.onCopy(table);
+		Action paste = TableClipboard.onPaste(table, this::onPaste);
 		Action usage = Actions.create(M.Usage,
 				Icon.LINK.descriptor(), () -> {
-					Parameter p = Viewers.getFirstSelected(viewer);
+					Parameter p = Viewers.getFirstSelected(table);
 					if (p != null) {
 						ParameterUsagePage.show(p.name);
 					}
 				});
 		CommentAction.bindTo(section, "parameters",
 				editor.getComments(), add, remove);
-		Actions.bind(viewer, add, remove, copy, paste, usage);
-		Tables.onDeletePressed(viewer, (e) -> onRemove());
+		Actions.bind(table, add, remove, copy, paste, usage);
+		Tables.onDeletePressed(table, (e) -> onRemove());
 	}
 
 	private void createCellModifiers() {
 		ModelEditor<?> editor = page.editor;
-		ModifySupport<Parameter> ms = new ModifySupport<>(viewer);
+		ModifySupport<Parameter> ms = new ModifySupport<>(table);
 		ms.bind(M.Name, new NameModifier());
 		ms.bind(M.Description, new StringModifier<>(editor, "description"));
 		ms.bind(M.Value, new DoubleModifier<>(editor, "value", (elem) -> support.evaluate()));
-		ms.bind(M.Uncertainty, new UncertaintyCellEditor(viewer.getTable(), editor));
-		ms.bind(M.ExternalSource, new ExternalSourceModifier());
+		ms.bind(M.Uncertainty, new UncertaintyCellEditor(table.getTable(), editor));
 		ms.bind("", new CommentDialogModifier<Parameter>(editor.getComments(), CommentPaths::get));
-		FormulaCellEditor formulaEditor = new FormulaCellEditor(viewer, supplier);
+		FormulaCellEditor formulaEditor = new FormulaCellEditor(table, supplier);
 		ms.bind(M.Formula, formulaEditor);
 		formulaEditor.onEdited((obj, formula) -> {
 			if (!(obj instanceof Parameter))
@@ -171,7 +161,7 @@ public class ParameterSection {
 			Parameter param = (Parameter) obj;
 			param.formula = formula;
 			support.evaluate();
-			viewer.refresh();
+			table.refresh();
 			editor.setDirty(true);
 		});
 	}
@@ -192,7 +182,7 @@ public class ParameterSection {
 			if (param.isInputParameter == forInputParameters)
 				input.add(param);
 		}
-		viewer.setInput(input);
+		table.setInput(input);
 	}
 
 	private void onAdd() {
@@ -232,7 +222,7 @@ public class ParameterSection {
 		if (supplier == null)
 			return;
 		List<Parameter> params = supplier.get();
-		List<Parameter> selection = Viewers.getAllSelected(viewer);
+		List<Parameter> selection = Viewers.getAllSelected(table);
 		for (Parameter parameter : selection) {
 			params.remove(parameter);
 		}
@@ -266,16 +256,15 @@ public class ParameterSection {
 
 	private class ParameterLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
+
 		@Override
-		public Image getColumnImage(Object element, int col) {
-			Parameter parameter = (Parameter) element;
-			if (col == 0) {
-				if (parameter.externalSource == null)
-					return null;
-				// currently the only external sources are shape files
-				return Images.get(ModelType.IMPACT_METHOD);
-			} else if (col == getProperties().length - 1 && editor.hasAnyComment("parameters"))
-				return Images.get(editor.getComments(), CommentPaths.get(parameter));
+		public Image getColumnImage(Object obj, int col) {
+			if (!(obj instanceof Parameter))
+				return null;
+			Parameter param = (Parameter) obj;
+			int n = table.getTable().getColumnCount();
+			if (col == n && editor.hasAnyComment("parameters"))
+				return Images.get(editor.getComments(), CommentPaths.get(param));
 			return null;
 		}
 
@@ -299,8 +288,6 @@ public class ParameterSection {
 					return Double.toString(p.value);
 			case 3:
 				return p.description;
-			case 4:
-				return p.externalSource;
 			default:
 				return null;
 			}
@@ -333,33 +320,6 @@ public class ParameterSection {
 			param.name = name;
 			editor.setDirty(true);
 			support.evaluate();
-		}
-	}
-
-	private class ExternalSourceModifier extends
-			ComboBoxCellModifier<Parameter, String> {
-
-		@Override
-		protected String[] getItems(Parameter element) {
-			return page.sourceHandler.getSources(element);
-		}
-
-		@Override
-		protected String getItem(Parameter element) {
-			return element.externalSource;
-		}
-
-		@Override
-		protected String getText(String value) {
-			return value;
-		}
-
-		@Override
-		protected void setItem(Parameter element, String item) {
-			if (!Question.ask(M.ExternalSourceChange, M.RecalculateQuestion))
-				return;
-			element.externalSource = item;
-			page.sourceHandler.sourceChanged(element, item);
 		}
 	}
 }

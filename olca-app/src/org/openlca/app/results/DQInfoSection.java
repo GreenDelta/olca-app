@@ -2,7 +2,6 @@ package org.openlca.app.results;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -47,9 +46,9 @@ public class DQInfoSection {
 		UI.gridData(client, true, true);
 		InfoSection.link(client, toolkit, M.ProcessDataQualitySchema, dqResult.setup.processDqSystem);
 		InfoSection.link(client, toolkit, M.FlowDataQualitySchema, dqResult.setup.exchangeDqSystem);
-		InfoSection.text(client, toolkit, M.Aggregation, Labels.aggregationType(dqResult.setup.aggregationType));
-		InfoSection.text(client, toolkit, M.RoundingMode, Labels.roundingMode(dqResult.setup.roundingMode));
-		InfoSection.text(client, toolkit, M.NaValueHandling, Labels.processingType(dqResult.setup.processingType));
+		InfoSection.text(client, toolkit, M.Aggregation, Labels.of(dqResult.setup.aggregationType));
+		InfoSection.text(client, toolkit, M.RoundingMode, Labels.of(dqResult.setup.roundingMode));
+		InfoSection.text(client, toolkit, M.NaValueHandling, Labels.of(dqResult.setup.processingType));
 		statisticsTree(client, M.ProcessDataQualityStatistics, true);
 		statisticsTree(client, M.FlowDataQualityStatistics, false);
 	}
@@ -78,13 +77,12 @@ public class DQInfoSection {
 		}
 
 		@Override
-		public Object[] getChildren(Object parentElement) {
-			if (!(parentElement instanceof DQIndicator) && !forProcesses)
+		public Object[] getChildren(Object parent) {
+			if (!(parent instanceof DQIndicator) && !forProcesses)
 				return null;
-			Set<CategorizedDescriptor> processes = result.getProcesses();
 			List<Object> children = new ArrayList<>();
-			for (CategorizedDescriptor process : processes) {
-				children.add(new Tupel(process, (DQIndicator) parentElement));
+			for (CategorizedDescriptor p : result.getProcesses()) {
+				children.add(new Tupel(p, (DQIndicator) parent));
 			}
 			return children.toArray();
 		}
@@ -161,7 +159,7 @@ public class DQInfoSection {
 		private String getCoverage(int withQuality, int total) {
 			if (total == 0d)
 				return "0% (0/0)";
-			double coverage = Math.round(10000d * withQuality / (double) total) / 100d;
+			double coverage = Math.round(10000d * withQuality / total) / 100d;
 			return coverage + "% (" + withQuality + "/" + total + ")";
 		}
 	}

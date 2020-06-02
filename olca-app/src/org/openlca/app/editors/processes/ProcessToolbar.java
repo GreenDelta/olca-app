@@ -19,7 +19,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.LinkingProperties;
 import org.openlca.app.db.LinkingPropertiesPage;
 import org.openlca.app.editors.Editors;
-import org.openlca.app.editors.systems.CalculationWizard;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -31,6 +30,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.ProductSystemWizard;
+import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
@@ -69,7 +69,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 	static void exportToExcel(Process p) {
 		if (p == null)
 			return;
-		String name = Labels.getDisplayName(p);
+		String name = Labels.name(p);
 		name = name == null ? "process" : name;
 		name = name.replaceAll("[^a-zA-Z0-9]", "_") + ".xlsx";
 		File f = FileChooser.forExport("*.xlsx", name);

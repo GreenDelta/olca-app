@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.util.Numbers;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +52,17 @@ public final class Preferences extends AbstractPreferenceInitializer {
 		if (store == null)
 			return "";
 		return store.getString(key);
+	}
+
+	public static int getInt(String key) {
+		String s = get(key);
+		if (Strings.nullOrEmpty(s))
+			return 0;
+		try {
+			return Integer.parseInt(s);
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 
 	public static boolean is(String key) {

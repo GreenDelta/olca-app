@@ -2,7 +2,7 @@ package org.openlca.app;
 
 /**
  * Contains the configuration values of the application. Some of these values
- * can be overwritten via command line arguments (see {@link CommandArgument}).
+ * can be overwritten via command line arguments (see {@link AppArg}).
  */
 public final class Config {
 

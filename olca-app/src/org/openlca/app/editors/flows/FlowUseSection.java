@@ -100,7 +100,7 @@ class FlowUseSection {
 		}
 		List<ProcessDescriptor> list = dao.getDescriptors(firstIds);
 		list.sort((d1, d2) -> {
-			return Strings.compare(Labels.getDisplayName(d1), Labels.getDisplayName(d2));
+			return Strings.compare(Labels.name(d1), Labels.name(d2));
 		});
 		return list;
 	}
@@ -108,7 +108,7 @@ class FlowUseSection {
 	private void renderFlowLink(Image image, Composite composite,
 			ProcessDescriptor d) {
 		ImageHyperlink link = new ImageHyperlink(composite, SWT.TOP);
-		link.setText(Labels.getDisplayName(d));
+		link.setText(Labels.name(d));
 		if (d.description != null) {
 			link.setToolTipText(d.description);
 		}

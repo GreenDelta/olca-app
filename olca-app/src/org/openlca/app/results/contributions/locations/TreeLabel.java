@@ -6,19 +6,35 @@ import org.eclipse.swt.graphics.Image;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.ModelType;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.results.Contribution;
 import org.openlca.util.Strings;
 
 class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 
-	String unit = "";
-
+	private String unit = "";
 	private ContributionImage image = new ContributionImage();
+
+	void update(Object selection) {
+		if (selection instanceof FlowDescriptor) {
+			unit = Labels.refUnit((FlowDescriptor) selection);
+		} else if (selection instanceof ImpactCategoryDescriptor) {
+			unit = ((ImpactCategoryDescriptor) selection).referenceUnit;
+		} else if (selection instanceof CostResultDescriptor) {
+			unit = Labels.getReferenceCurrencyCode();
+		} else {
+			unit = "";
+		}
+	}
 
 	@Override
 	public void dispose() {
@@ -28,43 +44,32 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 
 	@Override
 	public Image getColumnImage(Object obj, int col) {
-		ContributionItem<?> item = null;
-		if (obj instanceof LocationItem) {
-			if (col == 0)
-				return Images.get(ModelType.LOCATION);
-			LocationItem element = (LocationItem) obj;
-			item = element.contribution;
-		} else if (obj instanceof ContributionItem) {
-			item = ContributionItem.class.cast(obj);
-			if (col == 0 && item.item instanceof BaseDescriptor)
-				return Images.get((BaseDescriptor) item.item);
-		}
-		if (item == null)
+		if (!(obj instanceof Contribution))
 			return null;
+		Contribution<?> c = (Contribution<?>) obj;
 		if (col == 1)
-			return image.getForTable(item.share);
+			return image.getForTable(c.share);
+		if (col != 0)
+			return null;
+		if (c.item instanceof BaseDescriptor)
+			return Images.get((BaseDescriptor) c.item);
+		if (c.item instanceof CategorizedEntity)
+			return Images.get((CategorizedEntity) c.item);
+		if (c.item instanceof IndexFlow)
+			return Images.get(((IndexFlow) c.item).flow);
 		return null;
 	}
 
 	@Override
 	public String getColumnText(Object obj, int col) {
-		if (obj instanceof LocationItem) {
-			LocationItem e = (LocationItem) obj;
-			return getText(e.contribution, col);
-		}
-		if (obj instanceof ContributionItem) {
-			ContributionItem<?> item = (ContributionItem<?>) obj;
-			return getText(item, col);
-		}
-		return null;
-	}
-
-	private String getText(ContributionItem<?> ci, int col) {
+		if (!(obj instanceof Contribution))
+			return null;
+		Contribution<?> c = (Contribution<?>) obj;
 		switch (col) {
 		case 0:
-			return getLabel(ci);
+			return getLabel(c);
 		case 1:
-			return Numbers.format(ci.amount);
+			return Numbers.format(c.amount);
 		case 2:
 			return unit;
 		default:
@@ -72,20 +77,24 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 		}
 	}
 
-	private String getLabel(ContributionItem<?> ci) {
-		if (ci == null || ci.item == null)
+	private String getLabel(Contribution<?> c) {
+		if (c == null || c.item == null)
 			return M.None;
-		if (ci.item instanceof BaseDescriptor)
-			return Labels.getDisplayName((BaseDescriptor) ci.item);
-		if (ci.item instanceof Location) {
-			Location loc = (Location) ci.item;
+		if (c.item instanceof Location) {
+			Location loc = (Location) c.item;
 			String label = loc.name;
-			if (loc.code != null && !Strings.nullOrEqual(loc.code, label)) {
+			if (loc.code != null
+					&& !Strings.nullOrEqual(loc.code, label)) {
 				label += " - " + loc.code;
 			}
 			return label;
 		}
-		return M.None;
+		if (c.item instanceof IndexFlow)
+			return Labels.name((IndexFlow) c.item);
+		if (c.item instanceof BaseDescriptor)
+			return Labels.name((BaseDescriptor) c.item);
+		if (c.item instanceof RootEntity)
+			return Labels.name((RootEntity) c.item);
+		return null;
 	}
-
 }

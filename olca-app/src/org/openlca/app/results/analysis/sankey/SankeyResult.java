@@ -3,15 +3,14 @@ package org.openlca.app.results.analysis.sankey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.function.ToDoubleFunction;
 
 import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.matrix.LongIndex;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.FullResult;
 import org.openlca.util.Doubles;
@@ -94,8 +93,8 @@ class SankeyResult {
 	public void calculate(Object selection) {
 		log.trace("Calculate Sankey result for selection {}", selection);
 		buildProcessIndex();
-		if (selection instanceof FlowDescriptor) {
-			FlowDescriptor f = (FlowDescriptor) selection;
+		if (selection instanceof IndexFlow) {
+			IndexFlow f = (IndexFlow) selection;
 			upstreamResults = vec(p -> results.getUpstreamFlowResult(p, f));
 			directResults = vec(p -> results.getDirectFlowResult(p, f));
 		} else if (selection instanceof ImpactCategoryDescriptor) {
@@ -153,7 +152,7 @@ class SankeyResult {
 
 	private void buildProcessIndex() {
 		processIndex = new LongIndex();
-		Set<CategorizedDescriptor> processSet = results.getProcesses();
+		List<CategorizedDescriptor> processSet = results.getProcesses();
 		processes = new CategorizedDescriptor[processSet.size()];
 		for (CategorizedDescriptor process : processSet) {
 			int i = processIndex.put(process.id);

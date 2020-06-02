@@ -2,15 +2,14 @@ package org.openlca.app.editors.reports.model;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.reports.model.ReportIndicatorResult.Contribution;
 import org.openlca.app.editors.reports.model.ReportIndicatorResult.VariantResult;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
@@ -22,8 +21,7 @@ import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.results.ContributionItem;
-import org.openlca.core.results.ContributionSet;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ProjectResult;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -54,7 +52,7 @@ public class ReportCalculator implements Runnable {
 		ProjectResult result;
 		try {
 			SystemCalculator calculator = new SystemCalculator(
-					Cache.getMatrixCache(), App.getSolver());
+					Database.get(), App.getSolver());
 			result = calculator.calculate(project);
 			hadError = false;
 		} catch (OutOfMemoryError e) {
@@ -112,7 +110,7 @@ public class ReportCalculator implements Runnable {
 				varResult.variant = variant.name;
 				varResult.totalAmount = result.getTotalImpactResult(
 						variant, impact);
-				ContributionSet<CategorizedDescriptor> set = result
+				List<Contribution<CategorizedDescriptor>> set = result
 						.getResult(variant)
 						.getProcessContributions(impact);
 				appendProcessContributions(set, varResult);
@@ -131,15 +129,16 @@ public class ReportCalculator implements Runnable {
 	}
 
 	private void appendProcessContributions(
-			ContributionSet<CategorizedDescriptor> set, VariantResult varResult) {
-		Contribution rest = new Contribution();
+			List<Contribution<CategorizedDescriptor>> contributions,
+			VariantResult varResult) {
+		Contribution<Long> rest = new Contribution<>();
 		varResult.contributions.add(rest);
-		rest.rest = true;
-		rest.processId = -1;
+		rest.item = -1L;
+		rest.isRest = true;
 		rest.amount = 0;
 		Set<Long> ids = getContributionProcessIds();
 		Set<Long> foundIds = new TreeSet<>();
-		for (ContributionItem<CategorizedDescriptor> item : set.contributions) {
+		for (Contribution<CategorizedDescriptor> item : contributions) {
 			if (item.item == null)
 				continue;
 			if (!ids.contains(item.item.id))
@@ -153,12 +152,12 @@ public class ReportCalculator implements Runnable {
 	}
 
 	private void addContribution(VariantResult varResult,
-			ContributionItem<CategorizedDescriptor> item) {
-		Contribution con = new Contribution();
+			Contribution<CategorizedDescriptor> item) {
+		Contribution<Long> con = new Contribution<>();
 		varResult.contributions.add(con);
 		con.amount = item.amount;
-		con.rest = false;
-		con.processId = item.item.id;
+		con.isRest = false;
+		con.item = item.item.id;
 	}
 
 	private Set<Long> getContributionProcessIds() {
@@ -179,11 +178,11 @@ public class ReportCalculator implements Runnable {
 		TreeSet<Long> notFound = new TreeSet<>(ids);
 		notFound.removeAll(foundIds);
 		for (long id : notFound) {
-			Contribution con = new Contribution();
+			Contribution<Long> con = new Contribution<>();
 			varResult.contributions.add(con);
 			con.amount = 0;
-			con.rest = false;
-			con.processId = id;
+			con.isRest = false;
+			con.item = id;
 		}
 	}
 

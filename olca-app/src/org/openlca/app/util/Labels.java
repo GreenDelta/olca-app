@@ -10,14 +10,16 @@ import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.ProcessingType;
+import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ImpactMethod.ParameterMean;
+import org.openlca.core.model.ImpactCategory.ParameterMean;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
@@ -31,6 +33,7 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.io.CategoryPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +44,7 @@ public class Labels {
 	private Labels() {
 	}
 
-	public static String getDisplayName(RootEntity entity) {
+	public static String name(RootEntity entity) {
 		if (entity == null || entity.name == null)
 			return "";
 		Location loc = null;
@@ -58,7 +61,7 @@ public class Labels {
 		return entity.name + " - " + loc.code;
 	}
 
-	public static String getDisplayName(BaseDescriptor d) {
+	public static String name(BaseDescriptor d) {
 		if (d == null)
 			return "";
 		EntityCache cache = Cache.getEntityCache();
@@ -82,7 +85,25 @@ public class Labels {
 		return text;
 	}
 
-	public static String getRefUnit(FlowDescriptor flow) {
+	public static String name(IndexFlow flow) {
+		if (flow == null || flow.flow == null)
+			return "";
+		if (flow.flow.flowType != FlowType.ELEMENTARY_FLOW)
+			return Labels.name(flow.flow);
+		String name = flow.flow.name;
+		if (flow.location != null) {
+			name += " - " + flow.location.code;
+		}
+		return name;
+	}
+
+	public static String refUnit(IndexFlow flow) {
+		if (flow == null)
+			return "";
+		return refUnit(flow.flow);
+	}
+
+	public static String refUnit(FlowDescriptor flow) {
 		if (flow == null)
 			return "";
 		FlowProperty refProp = Cache.getEntityCache().get(
@@ -97,6 +118,30 @@ public class Labels {
 		if (unit == null)
 			return "";
 		return unit.name;
+	}
+
+	public static String category(IndexFlow flow) {
+		if (flow == null || flow.flow == null)
+			return "";
+		return category(flow.flow);
+	}
+
+	public static String category(CategorizedEntity e) {
+		if (e == null || e.category == null)
+			return "";
+		return CategoryPath.getFull(e.category);
+	}
+
+	/**
+	 * Returns the full category path of the given entity.
+	 */
+	public static String category(CategorizedDescriptor d) {
+		if (d == null || d.category == null)
+			return "";
+		Category c = Cache.getEntityCache().get(Category.class, d.category);
+		if (c == null)
+			return "";
+		return CategoryPath.getFull(c);
 	}
 
 	/**
@@ -135,21 +180,21 @@ public class Labels {
 
 	public static String getEnumText(Object enumValue) {
 		if (enumValue instanceof AllocationMethod)
-			return Labels.allocationMethod((AllocationMethod) enumValue);
+			return Labels.of((AllocationMethod) enumValue);
 		if (enumValue instanceof FlowPropertyType)
-			return Labels.flowPropertyType((FlowPropertyType) enumValue);
+			return Labels.of((FlowPropertyType) enumValue);
 		if (enumValue instanceof FlowType)
-			return Labels.flowType((FlowType) enumValue);
+			return Labels.of((FlowType) enumValue);
 		if (enumValue instanceof ProcessType)
-			return Labels.processType((ProcessType) enumValue);
+			return Labels.of((ProcessType) enumValue);
 		if (enumValue instanceof UncertaintyType)
-			return Labels.uncertaintyType((UncertaintyType) enumValue);
+			return Labels.of((UncertaintyType) enumValue);
 		if (enumValue instanceof RiskLevel)
-			return Labels.riskLevel((RiskLevel) enumValue);
+			return Labels.of((RiskLevel) enumValue);
 		if (enumValue instanceof ModelType)
-			return Labels.modelTypeSingular((ModelType) enumValue);
+			return Labels.of((ModelType) enumValue);
 		if (enumValue instanceof ParameterMean)
-			return Labels.parameterMean((ParameterMean) enumValue);
+			return Labels.of((ParameterMean) enumValue);
 		if (enumValue != null)
 			return enumValue.toString();
 		return null;
@@ -159,7 +204,7 @@ public class Labels {
 	 * Returns the label for the given uncertainty distribution type. If the
 	 * given type is NULL the value for 'no distribution' is returned.
 	 */
-	public static String uncertaintyType(UncertaintyType type) {
+	public static String of(UncertaintyType type) {
 		if (type == null)
 			return M.NoDistribution;
 		switch (type) {
@@ -178,13 +223,7 @@ public class Labels {
 		}
 	}
 
-	public static String flowType(Flow flow) {
-		if (flow == null)
-			return null;
-		return flowType(flow.flowType);
-	}
-
-	public static String flowType(FlowType type) {
+	public static String of(FlowType type) {
 		if (type == null)
 			return null;
 		switch (type) {
@@ -199,7 +238,7 @@ public class Labels {
 		}
 	}
 
-	public static String processType(ProcessType t) {
+	public static String of(ProcessType t) {
 		if (t == null)
 			return null;
 		switch (t) {
@@ -212,7 +251,7 @@ public class Labels {
 		}
 	}
 
-	public static String allocationMethod(AllocationMethod m) {
+	public static String of(AllocationMethod m) {
 		if (m == null)
 			return null;
 		switch (m) {
@@ -231,7 +270,7 @@ public class Labels {
 		}
 	}
 
-	public static String flowPropertyType(FlowPropertyType t) {
+	public static String of(FlowPropertyType t) {
 		if (t == null)
 			return null;
 		switch (t) {
@@ -244,7 +283,7 @@ public class Labels {
 		}
 	}
 
-	public static String riskLevel(RiskLevel rl) {
+	public static String of(RiskLevel rl) {
 		if (rl == null)
 			return M.Unknown;
 		switch (rl) {
@@ -277,7 +316,7 @@ public class Labels {
 		}
 	}
 
-	public static String modelType(ModelType o) {
+	public static String plural(ModelType o) {
 		if (o == null)
 			return null;
 		switch (o) {
@@ -291,6 +330,8 @@ public class Labels {
 			return M.FlowProperties;
 		case IMPACT_METHOD:
 			return M.ImpactAssessmentMethods;
+		case IMPACT_CATEGORY:
+			return "Environmental indicators"; // TODO
 		case PROCESS:
 			return M.Processes;
 		case PRODUCT_SYSTEM:
@@ -316,7 +357,7 @@ public class Labels {
 		}
 	}
 
-	public static String modelTypeSingular(ModelType o) {
+	public static String of(ModelType o) {
 		if (o == null)
 			return null;
 		switch (o) {
@@ -330,6 +371,8 @@ public class Labels {
 			return M.FlowProperty;
 		case IMPACT_METHOD:
 			return M.ImpactAssessmentMethod;
+		case IMPACT_CATEGORY:
+			return "Environmental indicator"; // TODO
 		case PROCESS:
 			return M.Process;
 		case PRODUCT_SYSTEM:
@@ -353,7 +396,7 @@ public class Labels {
 		}
 	}
 
-	public static String aggregationType(AggregationType type) {
+	public static String of(AggregationType type) {
 		if (type == null)
 			return null;
 		switch (type) {
@@ -370,7 +413,7 @@ public class Labels {
 		}
 	}
 
-	public static String processingType(ProcessingType type) {
+	public static String of(ProcessingType type) {
 		if (type == null)
 			return null;
 		switch (type) {
@@ -383,7 +426,7 @@ public class Labels {
 		}
 	}
 
-	public static String roundingMode(RoundingMode mode) {
+	public static String of(RoundingMode mode) {
 		if (mode == null)
 			return null;
 		switch (mode) {
@@ -396,7 +439,7 @@ public class Labels {
 		}
 	}
 
-	public static String parameterMean(ParameterMean mean) {
+	public static String of(ParameterMean mean) {
 		if (mean == null)
 			return null;
 		switch (mean) {

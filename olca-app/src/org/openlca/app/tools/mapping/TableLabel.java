@@ -163,7 +163,7 @@ class TableLabel extends LabelProvider
 		if (ref == null || ref.flow == null)
 			return "?";
 		if (ref.flow.id != 0L)
-			return Labels.getDisplayName(ref.flow);
+			return Labels.name(ref.flow);
 		String s = ref.flow.name;
 		if (s == null) {
 			s = ref.flow.refId;

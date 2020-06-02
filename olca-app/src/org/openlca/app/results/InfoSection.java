@@ -27,14 +27,12 @@ class InfoSection {
 		if (setup == null || setup.productSystem == null)
 			return;
 		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
-
 		if (setup.productSystem.withoutNetwork) {
 			link(comp, tk, M.ReferenceProcess,
 					setup.productSystem.referenceProcess);
 		} else {
 			link(comp, tk, M.ProductSystem, setup.productSystem);
 		}
-
 		text(comp, tk, M.AllocationMethod, Labels.getEnumText(setup.allocationMethod));
 		text(comp, tk, M.TargetAmount, targetAmountText(setup));
 		if (setup.impactMethod != null) {
@@ -66,12 +64,12 @@ class InfoSection {
 		link.setForeground(Colors.linkBlue());
 		if (entity instanceof CategorizedDescriptor) {
 			CategorizedDescriptor d = (CategorizedDescriptor) entity;
-			link.setText(Labels.getDisplayName(d));
+			link.setText(Labels.name(d));
 			link.setImage(Images.get(d));
 			Controls.onClick(link, e -> App.openEditor(d));
 		} else if (entity instanceof CategorizedEntity) {
 			CategorizedEntity ce = (CategorizedEntity) entity;
-			link.setText(Labels.getDisplayName(ce));
+			link.setText(Labels.name(ce));
 			link.setImage(Images.get(ce));
 			Controls.onClick(link, e -> App.openEditor(ce));
 		}
@@ -90,7 +88,7 @@ class InfoSection {
 				M.SaveAsLCIResult, SWT.NONE);
 		lci.setImage(Images.get(ProcessType.LCI_RESULT));
 		Controls.onSelect(lci, e -> {
-			IResultEditor<?> editor = Editors.getActive();
+			ResultEditor<?> editor = Editors.getActive();
 			if (editor == null)
 				return;
 			SaveProcessDialog.open(editor);

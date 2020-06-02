@@ -17,12 +17,17 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+/**
+ * @deprecated we now use the {@link ResultMap} for visualizing the contribution
+ *             results of the locations.
+ */
+@Deprecated
 class LocationMap {
 
 	private LocationPage page;
@@ -47,19 +52,18 @@ class LocationMap {
 				() -> page.refreshSelection());
 	}
 
-	void setInput(List<LocationItem> items) {
+	void setInput(List<Contribution<Location>> items) {
 		if (browser == null)
 			return;
 		List<HeatmapPoint> points = new ArrayList<>();
-		for (LocationItem item : items) {
-			ContributionItem<Location> ci = item.contribution;
-			if (!showInMap(ci))
+		for (Contribution<Location> c : items) {
+			if (!showInMap(c))
 				continue;
-			Location location = ci.item;
+			Location location = c.item;
 			HeatmapPoint point = new HeatmapPoint();
 			point.latitude = location.latitude;
 			point.longitude = location.longitude;
-			point.weight = (int) (100d * ci.share);
+			point.weight = (int) (100d * c.share);
 			points.add(point);
 		}
 		if (points.size() == 1) {
@@ -74,7 +78,7 @@ class LocationMap {
 		}
 	}
 
-	private boolean showInMap(ContributionItem<Location> ci) {
+	private boolean showInMap(Contribution<Location> ci) {
 		if (ci == null)
 			return false;
 		Location location = ci.item;

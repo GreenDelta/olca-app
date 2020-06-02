@@ -3,6 +3,8 @@ package org.openlca.app.editors.reports.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openlca.core.results.Contribution;
+
 class ReportIndicatorResult {
 
 	final int indicatorId;
@@ -15,12 +17,7 @@ class ReportIndicatorResult {
 	static class VariantResult {
 		String variant;
 		double totalAmount;
-		final List<Contribution> contributions = new ArrayList<>();
+		final List<Contribution<Long>> contributions = new ArrayList<>();
 	}
 
-	static class Contribution {
-		long processId;
-		double amount;
-		boolean rest;
-	}
 }

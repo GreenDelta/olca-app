@@ -20,10 +20,9 @@ import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.LineStyle;
 import org.eclipse.swtchart.Range;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.FaviColor;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
-import org.openlca.core.results.ContributionItem;
+import org.openlca.core.results.Contribution;
 
 public class ContributionChart {
 
@@ -79,7 +78,7 @@ public class ContributionChart {
 		legend.label = label;
 	}
 
-	public void setData(List<ContributionItem<?>> items, String unit) {
+	public void setData(List<Contribution<?>> items, String unit) {
 
 		// delete the old series
 		Arrays.stream(chart.getSeriesSet().getSeries())
@@ -93,7 +92,7 @@ public class ContributionChart {
 		// real values to have a nice order in the chart.
 		Collections.sort(items, (i1, i2) -> -Double.compare(
 				Math.abs(i1.amount), Math.abs(i2.amount)));
-		List<ContributionItem<?>> top = items.size() <= 6
+		List<Contribution<?>> top = items.size() <= 6
 				? items
 				: items.subList(0, 5);
 		Collections.sort(top, (i1, i2) -> -Double.compare(
@@ -115,7 +114,7 @@ public class ContributionChart {
 		// create the new series
 		for (int i = 0; i < top.size(); i++) {
 			createBar("BS" + i, top.get(i).amount,
-					FaviColor.getForChart(i), barWidth);
+					Colors.getForChart(i), barWidth);
 			if (i < (top.size() - 1) || rest != 0) {
 				// create an empty space bar
 				createBar("BS''" + i, 0.0, Colors.white(), barWidth);
@@ -141,10 +140,10 @@ public class ContributionChart {
 		bars.setBarWidthStyle(BarWidthStyle.FIXED);
 	}
 
-	private void setYRange(List<ContributionItem<?>> top, double rest) {
+	private void setYRange(List<Contribution<?>> top, double rest) {
 		double min = rest < 0 ? rest : 0;
 		double max = rest > 0 ? rest : 0;
-		for (ContributionItem<?> item : top) {
+		for (Contribution<?> item : top) {
 			min = Math.min(min, item.amount);
 			max = Math.max(max, item.amount);
 		}

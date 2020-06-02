@@ -9,7 +9,6 @@ import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
-import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
@@ -39,10 +38,10 @@ public class Formulas {
 		return new Formulas(db).eval(process);
 	}
 
-	public static List<String> eval(IDatabase db, ImpactMethod method) {
-		if (db == null || method == null)
+	public static List<String> eval(IDatabase db, ImpactCategory impact) {
+		if (db == null || impact == null)
 			return Collections.emptyList();
-		return new Formulas(db).eval(method);
+		return new Formulas(db).eval(impact);
 	}
 
 	public static List<String> eval(List<Parameter> params) {
@@ -69,8 +68,8 @@ public class Formulas {
 			Scope s = makeLocalScope(p.parameters, p.id);
 			evalParams(p.parameters, s);
 			for (Exchange e : p.exchanges) {
-				if (Strings.notEmpty(e.amountFormula)) {
-					e.amount = eval(e.amountFormula, s);
+				if (Strings.notEmpty(e.formula)) {
+					e.amount = eval(e.formula, s);
 				}
 				eval(e.uncertainty, s);
 				if (Strings.notEmpty(e.costFormula)) {
@@ -83,17 +82,15 @@ public class Formulas {
 		return errors;
 	}
 
-	private List<String> eval(ImpactMethod m) {
+	private List<String> eval(ImpactCategory c) {
 		try {
-			Scope s = makeLocalScope(m.parameters, m.id);
-			evalParams(m.parameters, s);
-			for (ImpactCategory ic : m.impactCategories) {
-				for (ImpactFactor f : ic.impactFactors) {
-					if (Strings.notEmpty(f.formula)) {
-						f.value = eval(f.formula, s);
-					}
-					eval(f.uncertainty, s);
+			Scope s = makeLocalScope(c.parameters, c.id);
+			evalParams(c.parameters, s);
+			for (ImpactFactor f : c.impactFactors) {
+				if (Strings.notEmpty(f.formula)) {
+					f.value = eval(f.formula, s);
 				}
+				eval(f.uncertainty, s);
 			}
 		} catch (Exception e) {
 			log.warn("unexpected error in formula evaluation", e);

@@ -106,6 +106,8 @@ class CreateModelAction extends Action implements INavigationAction {
 			return M.NewFlowProperty;
 		case IMPACT_METHOD:
 			return M.NewLCIAMethod;
+		case IMPACT_CATEGORY:
+			return "New environmental indicator"; // TODO
 		case PROCESS:
 			return M.NewProcess;
 		case PRODUCT_SYSTEM:
