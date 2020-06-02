@@ -172,7 +172,7 @@ public class BigParameterTable extends SimpleFormEditor {
 						Param p = Viewers.getFirstSelected(table);
 						if (p == null)
 							return;
-						ParameterUsagePage.show(p.parameter.name);
+						ParameterUsagePage.show(p.parameter, p.owner);
 					});
 			Action onEvaluate = Actions.create(
 					M.EvaluateAllFormulas, Icon.RUN.descriptor(), () -> {
@@ -229,16 +229,16 @@ public class BigParameterTable extends SimpleFormEditor {
 		}
 
 		private void evaluateFormulas() {
-			FormulaInterpreter fi = buildInterpreter();
-			for (Param param : params) {
-				Parameter p = param.parameter;
+			var fi = buildInterpreter();
+			for (var param : params) {
+				var p = param.parameter;
 				if (p.isInputParameter) {
 					param.evalError = false;
 					continue;
 				}
-				Scope scope = param.ownerID == null
+				var scope = param.ownerID == null
 						? fi.getGlobalScope()
-						: fi.getScope(param.ownerID);
+						: fi.getScopeOrGlobal(param.ownerID);
 				try {
 					p.value = scope.eval(p.formula);
 					param.evalError = false;
@@ -253,20 +253,14 @@ public class BigParameterTable extends SimpleFormEditor {
 		 * formula interpreter.
 		 */
 		private FormulaInterpreter buildInterpreter() {
-			FormulaInterpreter fi = new FormulaInterpreter();
-			for (Param param : params) {
-				Scope scope = null;
-				if (param.ownerID == null) {
-					scope = fi.getGlobalScope();
-				} else {
-					scope = fi.getScope(param.ownerID);
-					if (scope == null) {
-						scope = fi.createScope(param.ownerID);
-					}
-				}
-				Parameter p = param.parameter;
+			var fi = new FormulaInterpreter();
+			for (var param : params) {
+				Scope scope = param.ownerID == null
+						? fi.getGlobalScope()
+						: fi.getOrCreate(param.ownerID);
+				var p = param.parameter;
 				if (p.isInputParameter) {
-					scope.bind(p.name, Double.toString(p.value));
+					scope.bind(p.name, p.value);
 				} else {
 					scope.bind(p.name, p.formula);
 				}
@@ -298,7 +292,7 @@ public class BigParameterTable extends SimpleFormEditor {
 			}
 
 			// build dialog with validation
-			InputDialog dialog = null;
+			InputDialog dialog;
 			FormulaInterpreter fi = null;
 			if (p.isInputParameter) {
 				dialog = new InputDialog(UI.shell(),
@@ -313,9 +307,9 @@ public class BigParameterTable extends SimpleFormEditor {
 						});
 			} else {
 				fi = buildInterpreter();
-				Scope scope = param.ownerID == null
+				var scope = param.ownerID == null
 						? fi.getGlobalScope()
-						: fi.getScope(param.ownerID);
+						: fi.getScopeOrGlobal(param.ownerID);
 				dialog = new InputDialog(UI.shell(),
 						"Edit formula", "Set a new parameter formula",
 						p.formula, s -> {
@@ -343,12 +337,12 @@ public class BigParameterTable extends SimpleFormEditor {
 				} catch (Exception e) {
 					param.evalError = true;
 				}
-			} else {
+			} else if (fi != null) {
 				try {
 					p.formula = val;
-					Scope scope = param.ownerID == null
+					var scope = param.ownerID == null
 							? fi.getGlobalScope()
-							: fi.getScope(param.ownerID);
+							: fi.getScopeOrGlobal(param.ownerID);
 					p.value = scope.eval(val);
 					param.evalError = false;
 				} catch (Exception e) {
@@ -396,7 +390,7 @@ public class BigParameterTable extends SimpleFormEditor {
 	}
 
 	/** Stores a parameter object and its owner. */
-	private class Param implements Comparable<Param> {
+	private static class Param implements Comparable<Param> {
 
 		/**
 		 * We have the owner ID as a separate field because a parameter could
@@ -472,9 +466,7 @@ public class BigParameterTable extends SimpleFormEditor {
 			if (type == FilterCombo.ALL || type == FilterCombo.DESCRIPTIONS) {
 				if (parameter.description != null) {
 					String d = parameter.description.toLowerCase();
-					if (d.contains(f)) {
-						return true;
-					}
+					return d.contains(f);
 				}
 			}
 
@@ -489,7 +481,7 @@ public class BigParameterTable extends SimpleFormEditor {
 
 	}
 
-	private class Label extends LabelProvider
+	private static class Label extends LabelProvider
 			implements ITableLabelProvider, ITableColorProvider {
 
 		@Override

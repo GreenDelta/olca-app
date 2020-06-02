@@ -1,8 +1,8 @@
 package org.openlca.app.editors.processes.allocation;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -18,12 +18,9 @@ class Util {
 	static List<Exchange> getProviderFlows(Process p) {
 		if (p == null)
 			return Collections.emptyList();
-		List<Exchange> list = new ArrayList<>();
-		for (Exchange e : p.exchanges) {
-			if (isProvider(e))
-				list.add(e);
-		}
-		return list;
+		return p.exchanges.stream()
+				.filter(Util::isProvider)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -34,13 +31,9 @@ class Util {
 	static List<Exchange> getNonProviderFlows(Process p) {
 		if (p == null)
 			return Collections.emptyList();
-		List<Exchange> list = new ArrayList<>();
-		for (Exchange e : p.exchanges) {
-			if (isProvider(e))
-				continue;
-			list.add(e);
-		}
-		return list;
+		return p.exchanges.stream()
+				.filter(e -> !isProvider(e))
+				.collect(Collectors.toList());
 	}
 
 	private static boolean isProvider(Exchange e) {
@@ -49,8 +42,6 @@ class Util {
 		FlowType type = e.flow.flowType;
 		if (type == FlowType.PRODUCT_FLOW && !e.isInput)
 			return true;
-		if (type == FlowType.WASTE_FLOW && e.isInput)
-			return true;
-		return false;
+		return type == FlowType.WASTE_FLOW && e.isInput;
 	}
 }

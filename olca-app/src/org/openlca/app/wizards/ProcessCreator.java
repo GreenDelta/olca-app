@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -53,19 +52,13 @@ class ProcessCreator {
 		if (!canCreate())
 			throw new RuntimeException("Invalid arguments for process creation");
 		try {
-			Process p = new Process();
-			p.refId = UUID.randomUUID().toString();
-			p.name = name;
+			Flow flow = getFlow();
+			Process p = Process.of(name, flow);
 			p.description = description;
 			p.lastChange = System.currentTimeMillis();
 			p.processType = ProcessType.UNIT_PROCESS;
-			Flow flow = getFlow();
-			Exchange qRef = p.exchange(flow);
-			qRef.isInput = flow.flowType == FlowType.WASTE_FLOW;
-			p.quantitativeReference = qRef;
-			ProcessDocumentation doc = new ProcessDocumentation();
+			var doc = new ProcessDocumentation();
 			doc.creationDate = Calendar.getInstance().getTime();
-			doc.id = p.id;
 			p.documentation = doc;
 			return p;
 		} catch (Exception e) {

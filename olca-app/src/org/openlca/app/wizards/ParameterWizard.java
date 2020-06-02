@@ -1,6 +1,5 @@
 package org.openlca.app.wizards;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,13 +13,13 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.components.ParameterProposals;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
-import org.openlca.core.model.ParameterScope;
+import org.openlca.expressions.FormulaInterpreter;
+import org.openlca.util.Parameters;
 import org.python.google.common.base.Strings;
 
 public class ParameterWizard extends AbstractWizard<Parameter> {
@@ -52,7 +51,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 
 	private class ParameterWizardPage extends AbstractWizardPage<Parameter> {
 
-		private List<Parameter> parameters;
+		private final List<Parameter> parameters;
 		private double lastCalculated = 0d;
 		private boolean contentAssistEnabled = false;
 
@@ -65,13 +64,12 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 		}
 
 		@Override
-		protected void createContents(Composite container) {
-			UI.formLabel(container, M.Type);
-			Composite formulaValueSwitcher = UI.formComposite(container);
-			UI.gridLayout(formulaValueSwitcher, 4);
-			inputButton = UI.formRadio(formulaValueSwitcher, M.InputParameter);
-			dependentButton = UI.formRadio(formulaValueSwitcher,
-					M.DependentParameter);
+		protected void createContents(Composite parent) {
+			UI.formLabel(parent, M.Type);
+			var comp = UI.formComposite(parent);
+			UI.gridLayout(comp, 4);
+			inputButton = UI.formRadio(comp, M.InputParameter);
+			dependentButton = UI.formRadio(comp, M.DependentParameter);
 			inputButton.setSelection(true);
 			Controls.onSelect(inputButton, (e) -> {
 				formulaLabels.switchControls();
@@ -82,7 +80,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 					contentAssistEnabled = true;
 				}
 			});
-			createFormulaAndAmount(container);
+			createFormulaAndAmount(parent);
 		}
 
 		private void createFormulaAndAmount(Composite container) {
@@ -103,21 +101,17 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 			p.isInputParameter = !dependentButton.getSelection();
 			if (Strings.isNullOrEmpty(formulaText.getText()))
 				return p;
-			if (p.isInputParameter)
-				p.value = getAmount();
-			else {
+			if (p.isInputParameter) {
+				try {
+					p.value = Double.parseDouble(formulaText.getText());
+				} catch (NumberFormatException e) {
+					p.value = 0d;
+				}
+			} else {
 				p.formula = formulaText.getText();
 				p.value = lastCalculated;
 			}
 			return p;
-		}
-
-		private double getAmount() {
-			try {
-				return Double.parseDouble(formulaText.getText());
-			} catch (NumberFormatException e) {
-				return 0d;
-			}
 		}
 
 		@Override
@@ -131,7 +125,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 				setPageComplete(false);
 				return;
 			}
-			if (!Parameter.isValidName(name)) {
+			if (!Parameters.isValidName(name)) {
 				setErrorMessage(name + " " + M.IsNotValidParameterName);
 				setPageComplete(false);
 				return;
@@ -149,38 +143,32 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 			if (inputButton.getSelection()) {
 				try {
 					Double.parseDouble(formula);
+					return true;
 				} catch (NumberFormatException e) {
 					setErrorMessage(formula + " " + M.IsNotValidNumber);
 					setPageComplete(false);
 					return false;
 				}
-			} else {
-				List<Parameter> parameters = new ArrayList<>(this.parameters);
-				Parameter dummy = createDummyParameter();
-				parameters.add(dummy);
-				try {
-					List<String> errors = Formulas.eval(parameters);
-					if (errors.size() > 0) {
-						lastCalculated = 0d;
-						setErrorMessage(formula + " " + M.IsInvalidFormula);
-						setPageComplete(false);
-						return false;
-					} else
-						lastCalculated = dummy.value;
-				} catch (Exception e) {
+			}
+
+			var interpreter = new FormulaInterpreter();
+			for (var param : this.parameters) {
+				if (param.isInputParameter) {
+					interpreter.bind(param.name, param.value);
+				} else {
+					interpreter.bind(param.name, param.formula);
 				}
 			}
-			return true;
+			try {
+				lastCalculated = interpreter.eval(formulaText.getText());
+				return true;
+			} catch (Exception e) {
+				lastCalculated = 0;
+				setErrorMessage(formula + " " + M.IsInvalidFormula);
+				setPageComplete(false);
+				return false;
+			}
 		}
-
-		private Parameter createDummyParameter() {
-			Parameter parameter = new Parameter();
-			parameter.name = getName();
-			parameter.formula = formulaText.getText();
-			parameter.scope = ParameterScope.GLOBAL;
-			return parameter;
-		}
-
 	}
 
 	private class TwoControlStack extends Composite {

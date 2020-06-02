@@ -203,7 +203,7 @@ public class CalculationWizard extends Wizard {
 				Flow flow = flows.get(f.flow.id);
 				if (flow == null)
 					return;
-				Exchange e = Exchange.from(flow);
+				var e = Exchange.of(flow);
 				e.amount = r.getTotalFlowResult(f);
 				e.isInput = f.isInput;
 				system.inventory.add(e);

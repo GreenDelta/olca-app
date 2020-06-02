@@ -11,8 +11,6 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ImpactCategory.ParameterMean;
-import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
@@ -37,7 +35,6 @@ class EnumFields {
 		put(Uncertainty.class, "distributionType", UncertaintyType.class);
 		put(Parameter.class, "parameterScope", ParameterScope.class);
 		put(Process.class, "processType", ProcessType.class);
-		put(ImpactMethod.class, "parameterMean", ParameterMean.class);
 		// support old schemas with typo
 		put(Process.class, "processTyp", ProcessType.class);
 		put(Process.class, "defaultAllocationMethod", AllocationMethod.class);

@@ -19,7 +19,6 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ImpactCategory.ParameterMean;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
@@ -193,8 +192,6 @@ public class Labels {
 			return Labels.of((RiskLevel) enumValue);
 		if (enumValue instanceof ModelType)
 			return Labels.of((ModelType) enumValue);
-		if (enumValue instanceof ParameterMean)
-			return Labels.of((ParameterMean) enumValue);
 		if (enumValue != null)
 			return enumValue.toString();
 		return null;
@@ -434,19 +431,6 @@ public class Labels {
 			return M.HalfUp;
 		case CEILING:
 			return M.Up;
-		default:
-			return null;
-		}
-	}
-
-	public static String of(ParameterMean mean) {
-		if (mean == null)
-			return null;
-		switch (mean) {
-		case ARITHMETIC_MEAN:
-			return M.ArithmeticMean;
-		case WEIGHTED_MEAN:
-			return M.WeightedArithmeticMean;
 		default:
 			return null;
 		}

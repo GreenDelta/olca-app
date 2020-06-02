@@ -130,7 +130,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	@Override
 	public ProductSystem createModel() {
-		ProductSystem system = ProductSystem.from(refProcess);
+		ProductSystem system = ProductSystem.of(refProcess);
 		system.name = getModelName();
 		system.description = getModelDescription();
 		return system;

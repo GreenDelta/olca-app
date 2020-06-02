@@ -194,7 +194,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			Flow flow = new FlowDao(database).getForId(d.id);
 			if (flow == null)
 				continue;
-			impact().addFactor(flow);
+			impact().factor(flow, 1);
 		}
 		viewer.setInput(impact().impactFactors);
 		editor.setDirty(true);

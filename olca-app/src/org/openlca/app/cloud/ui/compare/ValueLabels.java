@@ -7,7 +7,7 @@ import org.openlca.app.M;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Parameter;
-import org.openlca.jsonld.Dates;
+import org.openlca.jsonld.Json;
 
 import com.google.gson.JsonElement;
 
@@ -24,9 +24,11 @@ class ValueLabels {
 			Object enumValue = EnumFields.getEnum(parent, property, value);
 			value = Labels.getEnumText(enumValue);
 		} else if (DateFields.isDateOrTimestamp(parent, property)) {
-			Date date = Dates.fromString(value);
+			Date date = Json.parseDate(value);
 			if (date != null) {
-				DateFormat formatter = DateFields.isDate(parent, property) ? dateFormatter : timestampFormatter;
+				DateFormat formatter = DateFields.isDate(parent, property) 
+						? dateFormatter 
+						: timestampFormatter;
 				value = formatter.format(date);
 			}
 		}

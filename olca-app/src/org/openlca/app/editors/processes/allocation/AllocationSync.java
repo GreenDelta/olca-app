@@ -170,11 +170,8 @@ class AllocationSync {
 		else if (propertyType == FlowPropertyType.ECONOMIC
 				&& method == AllocationMethod.ECONOMIC)
 			return true;
-		else if (propertyType == FlowPropertyType.PHYSICAL
-				&& method == AllocationMethod.PHYSICAL)
-			return true;
-		else
-			return false;
+		return propertyType == FlowPropertyType.PHYSICAL
+					&& method == AllocationMethod.PHYSICAL;
 	}
 
 	private boolean canCalculateFromCosts(List<Exchange> products) {
@@ -204,7 +201,7 @@ class AllocationSync {
 	}
 
 	/** Simple internal class that represents an allocation factor. */
-	private class F {
+	private static class F {
 		final Exchange product;
 		double value;
 

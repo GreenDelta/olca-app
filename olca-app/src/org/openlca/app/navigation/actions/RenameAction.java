@@ -7,6 +7,7 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.parameters.RenameParameterDialog;
 import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
@@ -17,8 +18,10 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
+import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 class RenameAction extends Action implements INavigationAction {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private INavigationElement<?> element;
 
@@ -39,7 +42,8 @@ class RenameAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof ModelElement || element instanceof CategoryElement))
+		if (!(element instanceof ModelElement
+				|| element instanceof CategoryElement))
 			return false;
 		this.element = element;
 		return true;
@@ -52,17 +56,27 @@ class RenameAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		String name = null;
-		if (element instanceof CategoryElement) {
-			name = ((CategoryElement) element).getContent().name;
-		} else {
-			name = ((ModelElement) element).getContent().name;
+
+		// for parameters, open another dialog
+		if (element instanceof ModelElement) {
+			var d = ((ModelElement) element).getContent();
+			if (d.type == ModelType.PARAMETER) {
+				var param = new ParameterDao(Database.get())
+						.getForId(d.id);
+				RenameParameterDialog.open(param);
+				return;
+			}
 		}
-		InputDialog dialog = new InputDialog(UI.shell(), M.Rename,
+
+		var name = element instanceof CategoryElement
+				? ((CategoryElement) element).getContent().name
+				: ((ModelElement) element).getContent().name;
+
+		var dialog = new InputDialog(UI.shell(), M.Rename,
 				M.PleaseEnterANewName, name, null);
 		if (dialog.open() != Window.OK)
 			return;
-		String newName = dialog.getValue();
+		var newName = dialog.getValue();
 		if (newName == null || newName.trim().isEmpty()) {
 			MsgBox.error(M.NameCannotBeEmpty);
 			return;
@@ -84,13 +98,14 @@ class RenameAction extends Action implements INavigationAction {
 		}
 	}
 
-	private <T extends CategorizedEntity> void doUpdate(CategorizedDescriptor d, String newName) {
-		@SuppressWarnings("unchecked")
-		CategorizedEntityDao<T, ?> dao = (CategorizedEntityDao<T, ?>) Daos.categorized(Database.get(),
-				d.type);
+	@SuppressWarnings("unchecked")
+	private <T extends CategorizedEntity> void doUpdate(
+			CategorizedDescriptor d, String newName) {
+		var dao = (CategorizedEntityDao<T, ?>) Daos.categorized(
+				Database.get(), d.type);
 		T entity = dao.getForId(d.id);
 		entity.name = newName.trim();
-		entity = dao.update(entity);
+		dao.update(entity);
 		Navigator.refresh(element.getParent());
 	}
 
