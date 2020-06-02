@@ -93,6 +93,9 @@ public class ConfigureRepositoriesDialog extends FormDialog {
 		@Override
 		public void run() {
 			RepositoryConfig config = viewer.getSelected();
+			if (config.isActive()) {
+				Database.disconnect();
+			}
 			config.remove();
 			viewer.setInput(RepositoryConfig.loadAll(Database.get()));
 		}
@@ -126,6 +129,7 @@ public class ConfigureRepositoriesDialog extends FormDialog {
 					if (value) {
 						element.activate();
 					} else {
+						Database.disconnect();
 						element.deactivate();
 					}
 					setInput(RepositoryConfig.loadAll(Database.get()));

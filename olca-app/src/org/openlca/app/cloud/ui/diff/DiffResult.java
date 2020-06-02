@@ -6,6 +6,7 @@ import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
+import org.openlca.core.model.ModelType;
 
 import com.google.gson.JsonObject;
 
@@ -56,7 +57,7 @@ public class DiffResult {
 			return false;
 		switch (local.type) {
 		case NEW:
-			return true;
+			return local.getDataset().type != ModelType.CATEGORY || !local.dataset.equals(remote);
 		case CHANGED:
 			return remote.isDeleted() || !local.dataset.equals(remote);
 		case DELETED: 

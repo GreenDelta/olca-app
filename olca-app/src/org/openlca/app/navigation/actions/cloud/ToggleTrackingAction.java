@@ -10,6 +10,7 @@ import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.CategoryElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
@@ -65,7 +66,7 @@ public class ToggleTrackingAction extends Action implements INavigationAction {
 		if (index == null)
 			return false;
 		Set<INavigationElement<?>> deepSelection = Navigator.collect(elements,
-				e -> e instanceof ModelElement ? e : null);
+				e -> (e instanceof ModelElement || e instanceof CategoryElement) ? e : null);
 		for (INavigationElement<?> e : deepSelection) {
 			this.elements.add(CloudUtil.toDataset(e));
 		}
