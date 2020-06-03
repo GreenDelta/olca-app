@@ -108,42 +108,46 @@ public class Images {
 	}
 
 	public static Image get(FileType type) {
-		if (type == null)
-			return null;
-		switch (type) {
-		case CSV:
-			return ImageManager.get("file/csv.png");
-		case EXCEL:
-			return ImageManager.get("file/excel.png");
-		case IMAGE:
-			return ImageManager.get("file/image.png");
-		case MARKUP:
-			return ImageManager.get("file/markup.png");
-		case PDF:
-			return ImageManager.get("file/pdf.png");
-		case POWERPOINT:
-			return ImageManager.get("file/powerpoint.png");
-		case WORD:
-			return ImageManager.get("file/word.png");
-		case XML:
-			return ImageManager.get("file/xml.png");
-		case ZIP:
-			return ImageManager.get("file/zip.png");
-		case PYTHON:
-			return ImageManager.get("python.png");
-		case SQL:
-			return ImageManager.get("sql.png");
-		default:
-			return ImageManager.get("file.png");
-
-		}
+		return type == null
+				? null
+				: ImageManager.get(imgPath(type));
 	}
 
 	public static ImageDescriptor descriptor(FileType type) {
-		FileIcon icon = icon(type);
-		if (icon == null)
-			return ImageManager.descriptor(FileIcon.DEFAULT);
-		return ImageManager.descriptor(icon);
+		return type == null
+				? null
+				: ImageManager.descriptor(imgPath(type));
+	}
+
+	private static String imgPath(FileType type) {
+		if (type == null)
+			return "file.png";
+		switch (type) {
+		case CSV:
+			return "file/csv.png";
+		case EXCEL:
+			return "file/excel.png";
+		case IMAGE:
+			return "file/image.png";
+		case MARKUP:
+			return "file/markup.png";
+		case PDF:
+			return "file/pdf.png";
+		case POWERPOINT:
+			return "file/powerpoint.png";
+		case WORD:
+			return "file/word.png";
+		case XML:
+			return "file/xml.png";
+		case ZIP:
+			return "file/zip.png";
+		case PYTHON:
+			return "python.png";
+		case SQL:
+			return "sql.png";
+		default:
+			return "file.png";
+		}
 	}
 
 	public static Image get(ModelType type, Overlay overlay) {
@@ -319,9 +323,8 @@ public class Images {
 		case FLOW_PROPERTY:
 			return ModelIcon.FLOW_PROPERTY_WIZARD;
 		case IMPACT_METHOD:
-			return ModelIcon.IMPACT_METHOD_WIZARD;
 		case IMPACT_CATEGORY:
-			return ModelIcon.IMPACT_METHOD_WIZARD; // TODO
+			return ModelIcon.IMPACT_METHOD_WIZARD;// TODO
 		case LOCATION:
 			return ModelIcon.LOCATION_WIZARD;
 		case PARAMETER:
@@ -439,9 +442,8 @@ public class Images {
 		case FLOW_PROPERTY:
 			return ModelIcon.FLOW_PROPERTY_CATEGORY;
 		case IMPACT_METHOD:
-			return ModelIcon.IMPACT_METHOD_CATEGORY;
 		case IMPACT_CATEGORY:
-			return ModelIcon.IMPACT_METHOD_CATEGORY; // TODO
+			return ModelIcon.IMPACT_METHOD_CATEGORY;// TODO
 		case PROCESS:
 			return ModelIcon.PROCESS_CATEGORY;
 		case PRODUCT_SYSTEM:

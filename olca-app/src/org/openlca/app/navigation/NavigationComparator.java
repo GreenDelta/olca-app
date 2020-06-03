@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.openlca.core.model.ModelType;
+import org.openlca.util.Strings;
 
 public class NavigationComparator extends ViewerComparator {
 
@@ -21,10 +22,28 @@ public class NavigationComparator extends ViewerComparator {
 			return 0;
 		if (e1 instanceof ModelTypeElement && e2 instanceof ModelTypeElement)
 			return compare((ModelTypeElement) e1, (ModelTypeElement) e2);
+
+		// the scripting folder should be always the last element in the tree
+		if (!(e1 instanceof ScriptElement) && e2 instanceof ScriptElement)
+			return -1;
+		if (e1 instanceof ScriptElement && !(e2 instanceof ScriptElement))
+			return 1;
+		if (e1 instanceof ScriptElement) {
+			var f1 = ((ScriptElement) e1).getContent();
+			var f2 = ((ScriptElement) e2).getContent();
+			if (f1.isDirectory() && !f2.isDirectory())
+				return -1;
+			if (!f1.isDirectory() && f2.isDirectory())
+				return 1;
+			return Strings.compare(f1.getName(), f2.getName());
+		}
+
 		String name1 = getLabel(viewer, e1);
 		String name2 = getLabel(viewer, e2);
 
 		// TODO: document why this here makes sense: (?)
+		// probably the status suffix when the database is
+		// connected to a repository?
 		if (e1 instanceof DatabaseElement && name1.contains(" "))
 			name1 = name1.substring(0, name1.indexOf(" "));
 		if (e2 instanceof DatabaseElement && name2.contains(" "))
@@ -54,12 +73,12 @@ public class NavigationComparator extends ViewerComparator {
 	}
 
 	private String getLabel(Viewer viewer, Object e1) {
-		if (viewer == null || !(viewer instanceof ContentViewer))
+		if (!(viewer instanceof ContentViewer))
 			return e1.toString();
-		IBaseLabelProvider prov = ((ContentViewer) viewer).getLabelProvider();
+		var prov = ((ContentViewer) viewer).getLabelProvider();
 		if (prov instanceof ILabelProvider) {
-			ILabelProvider lprov = (ILabelProvider) prov;
-			String label = lprov.getText(e1);
+			var lprov = (ILabelProvider) prov;
+			var label = lprov.getText(e1);
 			if (label == null)
 				return "";
 			String changed = RepositoryLabel.CHANGED_STATE;

@@ -109,8 +109,13 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		}
 
 		var content = (elem).getContent();
-		if (content instanceof IDatabaseConfiguration)
-			return getDatabaseImage((IDatabaseConfiguration) content);
+		if (content instanceof IDatabaseConfiguration) {
+			var config = (IDatabaseConfiguration) content;
+			return Database.isActive(config)
+					? Icon.DATABASE.get()
+					: Icon.DATABASE_DISABLED.get();
+		}
+
 		if (content instanceof Group)
 			return Images.get((Group) content);
 		if (content instanceof ModelType)
@@ -123,37 +128,30 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (content instanceof File) {
 			var file = (File) content;
 			return file.isDirectory()
-				? Icon.FOLDER.get()
-				: Images.get(FileType.of(file));
+					? Icon.FOLDER.get()
+					: Images.get(FileType.of(file));
 		}
 
 		return null;
-	}
-
-	private Image getDatabaseImage(IDatabaseConfiguration config) {
-		if (Database.isActive(config))
-			return Icon.DATABASE.get();
-		else
-			return Icon.DATABASE_DISABLED.get();
 	}
 
 	@Override
 	public String getText(Object obj) {
 		if (!(obj instanceof INavigationElement))
 			return null;
-		INavigationElement<?> elem = (INavigationElement<?>) obj;
-		String baseText = getBaseText(elem);
+		var elem = (INavigationElement<?>) obj;
+		var baseText = getBaseText(elem);
 		if (baseText == null)
 			return null;
 		if (elem instanceof DatabaseElement) {
-			IDatabaseConfiguration config = ((DatabaseElement) elem).getContent();
-			String repoText = RepositoryLabel.getRepositoryText(config);
+			var config = ((DatabaseElement) elem).getContent();
+			var repoText = RepositoryLabel.getRepositoryText(config);
 			if (repoText != null)
 				baseText += repoText;
 		}
 		if (!indicateRepositoryState)
 			return baseText;
-		String state = RepositoryLabel.getStateIndicator(elem);
+		var state = RepositoryLabel.getStateIndicator(elem);
 		if (state == null)
 			return baseText;
 		return state + baseText;
@@ -162,7 +160,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 	private String getBaseText(INavigationElement<?> elem) {
 		if (elem instanceof GroupElement)
 			return ((GroupElement) elem).getContent().label;
-		Object content = (elem).getContent();
+		var content = (elem).getContent();
 		if (content instanceof IDatabaseConfiguration)
 			return ((IDatabaseConfiguration) content).getName();
 		if (content instanceof Category)
@@ -171,8 +169,9 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return Labels.plural((ModelType) content);
 		if (content instanceof BaseDescriptor)
 			return Labels.name((BaseDescriptor) content);
-		else
-			return null;
+		if (content instanceof File)
+			return ((File) content).getName();
+		return null;
 	}
 
 	@Override
