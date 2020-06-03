@@ -110,10 +110,40 @@ public class Images {
 	public static Image get(FileType type) {
 		if (type == null)
 			return null;
+		switch (type) {
+		case CSV:
+			return ImageManager.get("file/csv.png");
+		case EXCEL:
+			return ImageManager.get("file/excel.png");
+		case IMAGE:
+			return ImageManager.get("file/image.png");
+		case MARKUP:
+			return ImageManager.get("file/markup.png");
+		case PDF:
+			return ImageManager.get("file/pdf.png");
+		case POWERPOINT:
+			return ImageManager.get("file/powerpoint.png");
+		case WORD:
+			return ImageManager.get("file/word.png");
+		case XML:
+			return ImageManager.get("file/xml.png");
+		case ZIP:
+			return ImageManager.get("file/zip.png");
+		case PYTHON:
+			return ImageManager.get("python.png");
+		case SQL:
+			return ImageManager.get("sql.png");
+		default:
+			return ImageManager.get("file.png");
+
+		}
+	}
+
+	public static ImageDescriptor descriptor(FileType type) {
 		FileIcon icon = icon(type);
 		if (icon == null)
-			return ImageManager.get(FileIcon.DEFAULT);
-		return ImageManager.get(icon);
+			return ImageManager.descriptor(FileIcon.DEFAULT);
+		return ImageManager.descriptor(icon);
 	}
 
 	public static Image get(ModelType type, Overlay overlay) {
@@ -225,13 +255,6 @@ public class Images {
 		ModelIcon icon = icon(type);
 		if (icon == null)
 			return Icon.FOLDER.descriptor();
-		return ImageManager.descriptor(icon);
-	}
-
-	public static ImageDescriptor descriptor(FileType type) {
-		FileIcon icon = icon(type);
-		if (icon == null)
-			return ImageManager.descriptor(FileIcon.DEFAULT);
 		return ImageManager.descriptor(icon);
 	}
 
@@ -405,33 +428,6 @@ public class Images {
 		}
 	}
 
-	private static FileIcon icon(FileType type) {
-		if (type == null)
-			return null;
-		switch (type) {
-		case CSV:
-			return FileIcon.CSV;
-		case EXCEL:
-			return FileIcon.EXCEL;
-		case IMAGE:
-			return FileIcon.IMAGE;
-		case MARKUP:
-			return FileIcon.MARKUP;
-		case PDF:
-			return FileIcon.PDF;
-		case POWERPOINT:
-			return FileIcon.POWERPOINT;
-		case WORD:
-			return FileIcon.WORD;
-		case XML:
-			return FileIcon.XML;
-		case ZIP:
-			return FileIcon.ZIP;
-		default:
-			return FileIcon.DEFAULT;
-		}
-	}
-
 	static ModelIcon categoryIcon(ModelType modelType) {
 		if (modelType == null)
 			return null;
@@ -480,8 +476,8 @@ public class Images {
 	}
 
 	/**
-	 * Returns the shared image with the given name from the Eclipse platform.
-	 * See ISharedImages for the image names.
+	 * Returns the shared image with the given name from the Eclipse platform. See
+	 * ISharedImages for the image names.
 	 */
 	public static Image platformImage(String name) {
 		return PlatformUI.getWorkbench().getSharedImages().getImage(name);

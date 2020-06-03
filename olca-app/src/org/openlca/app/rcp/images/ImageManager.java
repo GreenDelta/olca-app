@@ -18,15 +18,9 @@ import org.openlca.app.rcp.RcpActivator;
 class ImageManager {
 
 	private static final String ROOT = "icons";
-	private static ImageRegistry registry = new ImageRegistry();
+	private static final ImageRegistry registry = new ImageRegistry();
 
 	static Image get(Icon icon) {
-		if (icon == null)
-			return null;
-		return get(icon.fileName);
-	}
-
-	static Image get(FileIcon icon) {
 		if (icon == null)
 			return null;
 		return get(icon.fileName);
@@ -38,7 +32,7 @@ class ImageManager {
 		return get(icon.fileName);
 	}
 
-	private static Image get(String filename) {
+	static Image get(String filename) {
 		if (filename == null)
 			return null;
 		Image image = registry.get(filename);
@@ -50,12 +44,6 @@ class ImageManager {
 	}
 
 	static Image get(Icon icon, Overlay overlay) {
-		if (icon == null || overlay == null)
-			return null;
-		return get(icon.fileName, overlay.fileName);
-	}
-
-	static Image get(FileIcon icon, Overlay overlay) {
 		if (icon == null || overlay == null)
 			return null;
 		return get(icon.fileName, overlay.fileName);
@@ -74,8 +62,8 @@ class ImageManager {
 		Image withOverlay = registry.get(id);
 		if (withOverlay != null && !withOverlay.isDisposed())
 			return withOverlay;
-		DecorationOverlayIcon withIcon = new DecorationOverlayIcon(get(filename), descriptor(overlay),
-				IDecoration.BOTTOM_RIGHT);
+		DecorationOverlayIcon withIcon = new DecorationOverlayIcon(
+				get(filename), descriptor(overlay), IDecoration.BOTTOM_RIGHT);
 		withOverlay = withIcon.createImage();
 		registry.put(id, withOverlay);
 		return withOverlay;
@@ -87,19 +75,13 @@ class ImageManager {
 		return descriptor(icon.fileName);
 	}
 
-	static ImageDescriptor descriptor(FileIcon icon) {
-		if (icon == null)
-			return null;
-		return descriptor(icon.fileName);
-	}
-
 	static ImageDescriptor descriptor(ModelIcon icon) {
 		if (icon == null)
 			return null;
 		return descriptor(icon.fileName);
 	}
 
-	private static ImageDescriptor descriptor(String filename) {
+	static ImageDescriptor descriptor(String filename) {
 		if (filename == null)
 			return null;
 		ImageDescriptor d = registry.getDescriptor(filename);
@@ -111,12 +93,6 @@ class ImageManager {
 	}
 
 	static ImageDescriptor descriptor(Icon icon, Overlay overlay) {
-		if (icon == null || overlay == null)
-			return null;
-		return descriptor(icon.fileName, overlay.fileName);
-	}
-
-	static ImageDescriptor descriptor(FileIcon icon, Overlay overlay) {
 		if (icon == null || overlay == null)
 			return null;
 		return descriptor(icon.fileName, overlay.fileName);

@@ -17,6 +17,7 @@ import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Category;
@@ -28,7 +29,7 @@ import org.openlca.util.Categories;
 public class NavigationLabelProvider extends ColumnLabelProvider
 		implements ICommonLabelProvider, IColorProvider {
 
-	private boolean indicateRepositoryState;
+	private final boolean indicateRepositoryState;
 
 	public NavigationLabelProvider() {
 		this(true);
@@ -86,6 +87,12 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return String.join(" / ", Categories.path(c));
 		}
 
+		// for script files and folders show the full file path
+		if (obj instanceof ScriptElement) {
+			var file = ((ScriptElement) obj).getContent();
+			return file.getAbsolutePath();
+		}
+
 		return getText(obj);
 	}
 
@@ -93,26 +100,33 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 	public Image getImage(Object obj) {
 		if (!(obj instanceof INavigationElement))
 			return null;
-		INavigationElement<?> elem = (INavigationElement<?>) obj;
-		Image withOverlay = null;
-		if (indicateRepositoryState)
-			withOverlay = RepositoryLabel.getWithOverlay(elem);
-		if (withOverlay != null)
-			return withOverlay;
-		Object content = (elem).getContent();
+		var elem = (INavigationElement<?>) obj;
+
+		if (indicateRepositoryState) {
+			var img = RepositoryLabel.getWithOverlay(elem);
+			if (img != null)
+				return img;
+		}
+
+		var content = (elem).getContent();
 		if (content instanceof IDatabaseConfiguration)
 			return getDatabaseImage((IDatabaseConfiguration) content);
 		if (content instanceof Group)
 			return Images.get((Group) content);
-		if (content instanceof ModelType) {
-			Category dummy = new Category();
-			dummy.modelType = (ModelType) content;
-			return Images.get(dummy);
-		}
+		if (content instanceof ModelType)
+			return Images.getForCategory((ModelType) content);
 		if (content instanceof Category)
 			return Images.get((Category) content);
 		if (content instanceof BaseDescriptor)
 			return Images.get((BaseDescriptor) content);
+
+		if (content instanceof File) {
+			var file = (File) content;
+			return file.isDirectory()
+				? Icon.FOLDER.get()
+				: Images.get(FileType.of(file));
+		}
+
 		return null;
 	}
 

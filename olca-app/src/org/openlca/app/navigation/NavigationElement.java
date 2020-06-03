@@ -11,7 +11,7 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 
 	private List<INavigationElement<?>> cache;
 	private T content;
-	private INavigationElement<?> parent;
+	private final INavigationElement<?> parent;
 
 	public NavigationElement(INavigationElement<?> parent, T content) {
 		this.parent = parent;
