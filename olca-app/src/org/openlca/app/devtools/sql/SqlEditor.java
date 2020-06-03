@@ -43,7 +43,7 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 	}
 
 	@Override
-	public void evalContent() {
+	public void eval() {
 		page.runAction.run();
 	}
 

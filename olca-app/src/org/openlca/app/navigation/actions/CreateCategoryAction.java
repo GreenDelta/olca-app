@@ -17,7 +17,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -25,8 +24,6 @@ import org.slf4j.LoggerFactory;
  * category
  */
 class CreateCategoryAction extends Action implements INavigationAction {
-
-	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private Category parent;
 	private ModelType modelType;
@@ -73,6 +70,7 @@ class CreateCategoryAction extends Action implements INavigationAction {
 			Navigator.refresh(element);
 			Navigator.select(category);
 		} catch (Exception e) {
+			var log = LoggerFactory.getLogger(getClass());
 			log.error("failed to save category", e);
 		}
 	}

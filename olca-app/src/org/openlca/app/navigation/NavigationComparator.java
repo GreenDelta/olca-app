@@ -3,7 +3,6 @@ package org.openlca.app.navigation;
 import java.util.Objects;
 
 import org.eclipse.jface.viewers.ContentViewer;
-import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
