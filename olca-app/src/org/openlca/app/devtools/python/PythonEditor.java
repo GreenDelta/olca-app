@@ -10,11 +10,11 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.devtools.IScriptEditor;
@@ -36,6 +36,7 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 
 	public static String TYPE = "PythonEditor";
 	private Page page;
+	private File file;
 
 	public static void open() {
 		Editors.open(new SimpleEditorInput(
@@ -46,6 +47,25 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 		var input = new SimpleEditorInput(
 				TYPE, file.getAbsolutePath(), file.getName());
 		Editors.open(input, TYPE);
+	}
+
+	@Override
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
+		super.init(site, input);
+		if (!(input instanceof SimpleEditorInput))
+			return;
+		var inp = (SimpleEditorInput) input;
+
+		// if the ID ends with `py` we assume that this is
+		// a path to a script file
+		if (!inp.id.endsWith(".py"))
+			return;
+		setPartName(inp.getName());
+		var file = new File(inp.id);
+		if (file.exists()) {
+			this.file = file;
+		}
 	}
 
 	@Override
@@ -67,18 +87,20 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 	@Override
 	public void doSaveAs() {
 		var dialog = new InputDialog(
-				UI.shell(), "Save script as file",
+				UI.shell(),
+				"Save script as file",
 				"Please enter a file name for the new script",
-				"script.py", name -> {
-			try {
-				if (Strings.nullOrEmpty(name))
-					return "The file name cannot be empty";
-				Paths.get(name);
-				return null;
-			} catch (Exception e) {
-				return name + " is not a valid file name";
-			}
-		});
+				file != null ? file.getName() : "script.py",
+				name -> {
+					try {
+						if (Strings.nullOrEmpty(name))
+							return "The file name cannot be empty";
+						Paths.get(name);
+						return null;
+					} catch (Exception e) {
+						return name + " is not a valid file name";
+					}
+				});
 
 		if (dialog.open() != Window.OK)
 			return;
@@ -124,15 +146,15 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			ScrolledForm form = UI.formHeader(
-					mform, getTitle(), Icon.PYTHON.get());
-			FormToolkit toolkit = mform.getToolkit();
-			Composite body = UI.formBody(form, toolkit);
+			var form = UI.formHeader(mform, getTitle(), Icon.PYTHON.get());
+			var tk = mform.getToolkit();
+			var body = UI.formBody(form, tk);
 			body.setLayout(new FillLayout());
 			try {
 				browser = new Browser(body, SWT.NONE);
 				browser.setJavascriptEnabled(true);
-				browser.setUrl(HtmlFolder.getUrl("python.html"));
+				UI.onLoaded(browser,
+						HtmlFolder.getUrl("python.html"), this::initScript);
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(getClass());
 				log.error("failed to create browser in Python editor", e);
@@ -149,6 +171,19 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 				Logger log = LoggerFactory.getLogger(getClass());
 				log.error("failed to get script content", e);
 				return "";
+			}
+		}
+
+		private void initScript() {
+			if (file == null)
+				return;
+			try {
+				var script = Files.readString(file.toPath())
+						.replace("'", "\\'")
+						.replaceAll("\\n", "\\\\n");
+				browser.execute("setContent('" + script + "')");
+			} catch (Exception e) {
+				MsgBox.error("Failed to set script from file: " + file.getName());
 			}
 		}
 	}
