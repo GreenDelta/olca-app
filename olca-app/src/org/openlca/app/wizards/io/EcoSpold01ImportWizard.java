@@ -14,7 +14,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Category;
 import org.openlca.io.EcoSpoldUnitFetch;
 import org.openlca.io.UnitMapping;
 import org.openlca.io.UnitMappingEntry;
@@ -27,9 +26,8 @@ import org.slf4j.LoggerFactory;
 
 public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private Category category;
 	private FileImportPage filePage;
 	private UnitMappingPage mappingPage;
 
@@ -73,8 +71,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setWindowTitle(M.ImportEcoSpold);
-		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
-				.descriptor());
+		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}
 
 	@Override
@@ -84,10 +81,9 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 			getContainer().run(true, true, m -> {
 				m.beginTask(M.ImportEcoSpold01DataSets,
 						IProgressMonitor.UNKNOWN);
-				EcoSpold01Import imp = new EcoSpold01Import(config());
-				imp.setProcessCategory(category);
+				var imp = new EcoSpold01Import(config());
 				imp.setFiles(filePage.getFiles());
-				ImportHandler handler = new ImportHandler(m);
+				var handler = new ImportHandler(m);
 				try {
 					handler.run(imp);
 				} catch (Exception e) {

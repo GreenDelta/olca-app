@@ -26,7 +26,7 @@ in HTML5 and JavaScript. To compile it from source you need to have the
 following tools installed:
 
 * [Git](https://git-scm.com/) (optional)
-* a [Java Development Kit v8](https://adoptopenjdk.net/)
+* a [Java Development Kit >= v13](https://adoptopenjdk.net/)
 * [Maven](http://maven.apache.org/)
 * the [Eclipse package for RCP developers](https://www.eclipse.org/downloads/packages/)
 * [Node.js](https://nodejs.org/) 

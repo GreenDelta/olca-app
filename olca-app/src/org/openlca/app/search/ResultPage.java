@@ -106,7 +106,6 @@ class ResultPage extends FormPage {
 		currentPage = 0;
 		pageCount = (int) Math.ceil((double) results.size() / (double) PAGE_SIZE);
 		renderPage();
-		return;
 	}
 
 	private void renderPage() {

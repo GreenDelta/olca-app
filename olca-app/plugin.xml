@@ -62,23 +62,23 @@
 	</extension>
 	<extension
          point="org.eclipse.ui.editors">
-         
-      <editor 
+
+      <editor
 			class="org.openlca.app.editors.StartPage"
 			default="false"
 			id="olca.StartPage"
 			name="%Welcome"
-			icon="icons/home.png">      
+			icon="icons/home.png">
       </editor>
-      
-      <editor 
+
+      <editor
 			class="org.openlca.app.editors.CommentsEditor"
 			default="false"
 			id="CommentsEditor"
 			name="%Comments"
-			icon="icons/cloud/show_comments.png">      
+			icon="icons/cloud/show_comments.png">
       </editor>
-      
+
       <!-- developer tools -->
       <editor
             class="org.openlca.app.devtools.sql.SqlEditor"
@@ -95,8 +95,8 @@
       		name="Python"
       		icon="icons/python.png"
       		contributorClass="org.openlca.app.devtools.Toolbar">
-      </editor>      
-      
+      </editor>
+
       <!-- model editors -->
       <editor
             class="org.openlca.app.editors.actors.ActorEditor"
@@ -168,7 +168,7 @@
             default="false"
             icon="icons/model/product_system.png"
             id="editors.productsystem"
-            name="%ProductSystemEditor" 
+            name="%ProductSystemEditor"
             contributorClass="org.openlca.app.editors.systems.ProductSystemActions">
       </editor>
       <editor
@@ -192,7 +192,7 @@
             id="editors.dqsystem"
             name="%ActorEditor">
       </editor>
-            
+
       <!-- result views -->
       <editor
             class="org.openlca.app.results.quick.QuickResultEditor"
@@ -216,27 +216,27 @@
             icon="icons/calculation/simulate.png"
             id="SimulationEditor"
             name="Simulation Editor">
-      </editor> 
+      </editor>
       <editor
             id="ReportViewer"
             class="org.openlca.app.editors.reports.ReportViewer"
             icon="icons/model/project.png"
             name="%ReportViewer"
             contributorClass="org.openlca.app.editors.reports.ReportToolbar">
-      </editor> 
+      </editor>
       <editor
             id="editors.LogFileEditor"
             class="org.openlca.app.logging.LogFileEditor"
             icon="icons/file.png"
             name="Log file">
-      </editor>       
+      </editor>
       <editor
             class="org.openlca.app.editors.graphical.ProductSystemGraphEditor"
             default="false"
             icon="icons/model/product_system.png"
             id="editors.productsystem.graphical"
             name="Product system graphical editor">
-      </editor>  
+      </editor>
       <editor
             id="SearchPage"
             class="org.openlca.app.search.SearchPage"
@@ -257,7 +257,7 @@
             icon="icons/model/location.png"
             id="editors.location"
             name="Location editor">
-      </editor>	  
+      </editor>
 
 	  <editor
             class="org.openlca.app.editors.parameters.GlobalParameterEditor"
@@ -265,7 +265,7 @@
             icon="icons/model/parameter.png"
             id="editors.parameter"
             name="Global parameter editor">
-      </editor>	  
+      </editor>
 
       <editor
             class="org.openlca.app.editors.parameters.BigParameterTable"
@@ -293,7 +293,7 @@
       </editor>
 
    </extension>
-   
+
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
@@ -386,8 +386,8 @@
             id="wizards.new.dqsystem"
             name="%DQSystems">
       </wizard>
-   </extension>   
-   
+   </extension>
+
    <extension
          id="org.openlca.app.Application"
          name="openLCA"
@@ -433,9 +433,9 @@
             name="Compare with repository"
             icon="icons/cloud/compare.png"
             restorable="true">
-      </view>  
+      </view>
    </extension>
-   
+
    <extension
          point="org.eclipse.ui.preferencePages">
 	  <page
@@ -541,7 +541,7 @@
 		            name="org.eclipse.ui.navigator.hideAvailableCustomizationsDialog"
 		            value="true">
 		         </property>
-			</options>           
+			</options>
       </viewer>
       <viewerContentBinding
             viewerId="views.navigation">
@@ -562,7 +562,7 @@
             <contentExtension
                   pattern="viewer.filter.wasteflow">
             </contentExtension>
-			<contentExtension 
+			<contentExtension
 				  pattern="navigator.linkHelper">
 			</contentExtension>
          </includes>
@@ -616,7 +616,7 @@
             class="org.openlca.app.navigation.actions.NavigationActionProvider"
             id="actionprovider.navigation"
             priority="normal">
-         <enablement></enablement>
+            <enablement />
       </actionProvider>
       <commonFilter
             activeByDefault="false"
@@ -671,8 +671,8 @@
             class="org.openlca.app.cloud.ui.preferences.CloudPreference">
       </initializer>
    </extension>
-   
-   
+
+
    <extension
          point="org.eclipse.ui.importWizards">
       <category
@@ -690,6 +690,12 @@
             id="wizard.import.ecospold1"
             name="%EcoSpold">
       </wizard>
+      <wizard
+          category="import.category.file"
+          class="org.openlca.app.wizards.io.HSCSimImportWizard"
+          icon="icons/javascript.png"
+          id="wizard.import.hsc"
+          name="HSC Sim Flow Sheet" />
       <!--
       <wizard
             category="import.category.file"
@@ -757,9 +763,9 @@
           name="Repository Import">
     </wizard>
    </extension>
-   
+
    <!-- export wizards -->
-   
+
    <extension
          point="org.eclipse.ui.exportWizards">
       <category
