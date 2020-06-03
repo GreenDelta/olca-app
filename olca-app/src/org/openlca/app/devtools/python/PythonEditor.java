@@ -42,6 +42,12 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 				TYPE, UUID.randomUUID().toString(), "Python"), TYPE);
 	}
 
+	public static void open(File file) {
+		var input = new SimpleEditorInput(
+				TYPE, file.getAbsolutePath(), file.getName());
+		Editors.open(input, TYPE);
+	}
+
 	@Override
 	protected FormPage getPage() {
 		return page = new Page();

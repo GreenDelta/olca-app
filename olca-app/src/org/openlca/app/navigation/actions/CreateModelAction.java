@@ -6,7 +6,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.M;
 import org.openlca.app.navigation.CategoryElement;
@@ -19,15 +18,12 @@ import org.openlca.app.util.UI;
 import org.openlca.app.wizards.INewModelWizard;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Opens the 'New'-wizard for a model type.
  */
 class CreateModelAction extends Action implements INavigationAction {
-
-	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private Category category;
 	private ModelType type;
@@ -67,9 +63,9 @@ class CreateModelAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		String wizardId = getWizardId();
+		var wizardId = getWizardId();
 		try {
-			IWorkbenchWizard wizard = PlatformUI.getWorkbench()
+			var wizard = PlatformUI.getWorkbench()
 					.getNewWizardRegistry()
 					.findWizard(wizardId)
 					.createWizard();
@@ -81,6 +77,7 @@ class CreateModelAction extends Action implements INavigationAction {
 			dialog.open();
 			Navigator.refresh(parent);
 		} catch (final CoreException e) {
+			var log = LoggerFactory.getLogger(getClass());
 			log.error("Open model wizard failed", e);
 		}
 	}
@@ -107,7 +104,7 @@ class CreateModelAction extends Action implements INavigationAction {
 		case IMPACT_METHOD:
 			return M.NewLCIAMethod;
 		case IMPACT_CATEGORY:
-			return "New environmental indicator"; // TODO
+			return M.NewImpactCategory;
 		case PROCESS:
 			return M.NewProcess;
 		case PRODUCT_SYSTEM:

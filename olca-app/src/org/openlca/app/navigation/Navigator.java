@@ -11,9 +11,6 @@ import java.util.Stack;
 import java.util.function.Function;
 
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -28,7 +25,7 @@ import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.viewers.Viewers;
@@ -59,26 +56,25 @@ public class Navigator extends CommonNavigator {
 		super.initListeners(viewer);
 		viewer.setUseHashlookup(true);
 		ColumnViewerToolTipSupport.enableFor(viewer);
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				onDoubleClick(event.getSelection());
+		viewer.addDoubleClickListener(evt -> {
+			var elem = Viewers.getFirst(evt.getSelection());
+			if (elem instanceof ModelElement) {
+				var model = ((ModelElement) elem).getContent();
+				App.openEditor(model);
+			} else if (elem instanceof DatabaseElement) {
+				var config = ((DatabaseElement) elem).getContent();
+				if (config != null && !Database.isActive(config)) {
+					new DbActivateAction(config).run();
+				}
+			} else if (elem instanceof ScriptElement) {
+				var file = ((ScriptElement) elem).getContent();
+				if (file.isDirectory())
+					return;
+				if (file.getName().endsWith(".py")) {
+					PythonEditor.open(file);
+				}
 			}
 		});
-	}
-
-	private void onDoubleClick(ISelection selection) {
-		Object element = Viewers.getFirst(selection);
-		if (element instanceof ModelElement) {
-			ModelElement e = (ModelElement) element;
-			App.openEditor(e.getContent());
-		} else if (element instanceof DatabaseElement) {
-			DatabaseElement e = (DatabaseElement) element;
-			IDatabaseConfiguration config = e.getContent();
-			if (config != null && !Database.isActive(config)) {
-				new DbActivateAction(config).run();
-			}
-		}
 	}
 
 	/**
@@ -252,7 +248,7 @@ public class Navigator extends CommonNavigator {
 	public INavigationElement<?>[] getAllSelected() {
 		List<INavigationElement<?>> selection = Viewers
 				.getAllSelected(getNavigationViewer());
-		return selection.toArray(new INavigationElement[selection.size()]);
+		return selection.toArray(new INavigationElement[0]);
 	}
 
 	public static Set<CategorizedDescriptor> collectDescriptors(

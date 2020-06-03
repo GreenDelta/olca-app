@@ -68,9 +68,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 				models.add((ModelElement) element);
 			}
 		}
-		if (models.isEmpty() && categories.isEmpty())
-			return false;
-		return true;
+		return !models.isEmpty() || !categories.isEmpty();
 	}
 
 	@Override
