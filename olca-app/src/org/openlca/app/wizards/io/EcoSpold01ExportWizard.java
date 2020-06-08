@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private ModelSelectionPage modelPage;
 	private Es1ExportConfigPage configPage;
 	private final ModelType type;
