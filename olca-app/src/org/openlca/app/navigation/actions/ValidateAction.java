@@ -12,6 +12,7 @@ import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.NavigationRoot;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.ScriptElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.validation.ValidationView;
 
@@ -47,20 +48,27 @@ public class ValidateAction extends Action implements INavigationAction {
 	@Override
 	public boolean accept(INavigationElement<?> elem) {
 		selection.clear();
-		if (forDB) {
-			if (!(elem instanceof DatabaseElement))
+
+		// database elements: only if forDB & isActive
+		if (elem instanceof DatabaseElement) {
+			if (!forDB)
 				return false;
-			DatabaseElement dbElem = (DatabaseElement) elem;
-			IDatabaseConfiguration config = dbElem.getContent();
+			var config = ((DatabaseElement) elem).getContent();
 			if (!Database.isActive(config))
 				return false;
 			selection.add(elem);
 			return true;
-		} else if (elem instanceof DatabaseElement) {
-			return false;
 		}
+		if (forDB)
+			return false;
+
+		// skip scripting elements (later also libraries etc.)
+		if (elem instanceof ScriptElement)
+			return false;
+
+		// model elements, categories etc.
 		selection.add(elem);
-		return !selection.isEmpty();
+		return true;
 	}
 
 	@Override

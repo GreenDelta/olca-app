@@ -838,6 +838,16 @@
       		id="org.openlca.app.wizards.io.JsonExportWizard"
       		name="JSON-LD">
       </wizard>
+      
+      <wizard
+      	id="org.openlca.app.wizards.io.SimaProCsvExportWizard"
+      	class="org.openlca.app.wizards.io.SimaProCsvExportWizard"
+      	name="SimaPro CSV"
+      	icon="icons/simapro.png">
+      	<description>
+          Export processes into a SimaPro CSV file
+      	</description>
+      </wizard>
    </extension>
 
 </plugin>
