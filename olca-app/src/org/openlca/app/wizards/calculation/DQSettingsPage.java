@@ -1,6 +1,7 @@
 package org.openlca.app.wizards.calculation;
 
 import java.math.RoundingMode;
+import java.util.List;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.wizard.WizardPage;
@@ -17,8 +18,7 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.DQSystemDao;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.ProcessingType;
-import org.openlca.core.model.DQSystem;
-import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.DQSystemDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 
 class DQSettingsPage extends WizardPage {
@@ -77,39 +77,46 @@ class DQSettingsPage extends WizardPage {
 		UI.formLabel(comp, forExchanges
 				? M.FlowSchema
 				: M.ProcessSchema);
-		DQSystemViewer combo = new DQSystemViewer(comp);
+		var combo = new DQSystemViewer(comp);
 		combo.setNullable(true);
-		DQSystemDao dao = new DQSystemDao(Database.get());
-		ProductSystem system = setup.calcSetup.productSystem;
-		if (forExchanges) {
-			combo.setInput(dao.getExchangeDqSystems(system.id));
+
+		var dao = new DQSystemDao(Database.get());
+		var system = setup.calcSetup.productSystem;
+
+		List<DQSystemDescriptor> dqSystems;
+		if (system.withoutNetwork) {
+			dqSystems = dao.getDescriptors();
 		} else {
-			combo.setInput(dao.getProcessDqSystems(system.id));
+			dqSystems = forExchanges
+					? dao.getExchangeDqSystems(system.id)
+					: dao.getProcessDqSystems(system.id);
 		}
-		DQSystem selected = forExchanges
-				? system.referenceProcess.exchangeDqSystem
-				: system.referenceProcess.dqSystem;
+		combo.setInput(dqSystems);
+
+		var selected = forExchanges
+				? setup.dqSetup.exchangeDqSystem
+				: setup.dqSetup.processDqSystem;
 		if (selected != null) {
 			combo.select(Descriptors.toDescriptor(selected));
 		} else {
 			combo.selectFirst();
 		}
 
-		combo.addSelectionChangedListener(dqSystem -> {
-			DQSystem s = dqSystem == null
+		combo.addSelectionChangedListener(d -> {
+			var dqSystem = d == null
 					? null
-					: new DQSystemDao(Database.get()).getForId(dqSystem.id);
+					: new DQSystemDao(Database.get()).getForId(d.id);
 			if (forExchanges) {
-				setup.dqSetup.exchangeDqSystem = s;
+				setup.dqSetup.exchangeDqSystem = dqSystem;
 			} else {
-				setup.dqSetup.processDqSystem = s;
+				setup.dqSetup.processDqSystem = dqSystem;
 			}
 		});
 	}
 
-	private class TypeCombo<T> extends AbstractComboViewer<T> {
+	private static class TypeCombo<T> extends AbstractComboViewer<T> {
 
-		private Class<T> clazz;
+		private final Class<T> clazz;
 
 		protected TypeCombo(Composite parent, Class<T> clazz) {
 			super(parent);

@@ -220,11 +220,11 @@ class CalculationWizardPage extends WizardPage {
 		});
 
 		if (Database.isConnected()) {
-			Button invenentoryCheck = new Button(commonOptions, SWT.CHECK);
-			invenentoryCheck.setSelection(setup.storeInventory);
-			invenentoryCheck.setText(M.StoreInventoryResult);
-			Controls.onSelect(invenentoryCheck, _e -> {
-				setup.storeInventory = invenentoryCheck.getSelection();
+			Button inventoryCheck = new Button(commonOptions, SWT.CHECK);
+			inventoryCheck.setSelection(setup.storeInventory);
+			inventoryCheck.setText(M.StoreInventoryResult);
+			Controls.onSelect(inventoryCheck, _e -> {
+				setup.storeInventory = inventoryCheck.getSelection();
 			});
 		}
 	}

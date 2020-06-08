@@ -2,6 +2,7 @@ package org.openlca.app.wizards.calculation;
 
 import java.math.RoundingMode;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.ImpactMethodDao;
@@ -78,7 +79,13 @@ class Setup {
 				ProcessingType.class, ProcessingType.EXCLUDE);
 		s.dqSetup.roundingMode = loadEnumPref(
 				RoundingMode.class, RoundingMode.HALF_UP);
-
+		// init the DQ systems from the ref. process
+		if (system.referenceProcess != null) {
+			var p = system.referenceProcess;
+			s.dqSetup.exchangeDqSystem = p.exchangeDqSystem;
+			s.dqSetup.processDqSystem = p.dqSystem;
+		}
+		
 		return s;
 	}
 

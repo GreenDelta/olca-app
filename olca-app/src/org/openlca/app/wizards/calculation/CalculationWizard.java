@@ -1,6 +1,5 @@
 package org.openlca.app.wizards.calculation;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -122,8 +121,7 @@ public class CalculationWizard extends Wizard {
 		private boolean outOfMemory;
 
 		@Override
-		public void run(IProgressMonitor monitor)
-				throws InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor) {
 
 			outOfMemory = false;
 			monitor.beginTask(M.RunCalculation, IProgressMonitor.UNKNOWN);
@@ -141,7 +139,7 @@ public class CalculationWizard extends Wizard {
 
 				// run the calculation
 				log.trace("run calculation");
-				SystemCalculator calc = new SystemCalculator(
+				var calc = new SystemCalculator(
 						Database.get(), App.getSolver());
 				ContributionResult r = upstream
 						? calc.calculateFull(setup.calcSetup)
