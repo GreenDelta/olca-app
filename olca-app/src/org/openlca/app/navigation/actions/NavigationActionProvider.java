@@ -48,6 +48,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 					new CreateModelAction(),
 					new OpenUsageAction(),
 					new DeleteModelAction(),
+					new DeleteScriptAction(),
 					ValidateAction.forModel()
 			},
 			// transfer actions
@@ -93,8 +94,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 	@Override
 	public void fillContextMenu(IMenuManager menu) {
 		ActionContext con = getContext();
-		IStructuredSelection selection = (IStructuredSelection) con
-				.getSelection();
+		var selection = (IStructuredSelection) con.getSelection();
 		List<INavigationElement<?>> elements = Viewers.getAll(selection);
 		if (showDbCreate(elements)) {
 			menu.add(new DbCreateAction());
