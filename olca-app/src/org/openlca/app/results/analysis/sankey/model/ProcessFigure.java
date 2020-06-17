@@ -92,7 +92,7 @@ public class ProcessFigure extends Figure {
 		int x = loc.x + size.width - 30;
 		int y = loc.y + 10;
 		int w = 20;
-		DQSystem system = dqResult.setup.processDqSystem;
+		DQSystem system = dqResult.setup.processSystem;
 		int h = (size.height - 20) / system.indicators.size();
 		int[] values = dqResult.get(node.process);
 		for (int i = 0; i < values.length; i++) {

@@ -44,17 +44,17 @@ public class DQInfoSection {
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 		UI.gridData(client, true, true);
-		InfoSection.link(client, toolkit, M.ProcessDataQualitySchema, dqResult.setup.processDqSystem);
-		InfoSection.link(client, toolkit, M.FlowDataQualitySchema, dqResult.setup.exchangeDqSystem);
+		InfoSection.link(client, toolkit, M.ProcessDataQualitySchema, dqResult.setup.processSystem);
+		InfoSection.link(client, toolkit, M.FlowDataQualitySchema, dqResult.setup.exchangeSystem);
 		InfoSection.text(client, toolkit, M.Aggregation, Labels.of(dqResult.setup.aggregationType));
 		InfoSection.text(client, toolkit, M.RoundingMode, Labels.of(dqResult.setup.roundingMode));
-		InfoSection.text(client, toolkit, M.NaValueHandling, Labels.of(dqResult.setup.processingType));
+		InfoSection.text(client, toolkit, M.NaValueHandling, Labels.of(dqResult.setup.naHandling));
 		statisticsTree(client, M.ProcessDataQualityStatistics, true);
 		statisticsTree(client, M.FlowDataQualityStatistics, false);
 	}
 
 	private void statisticsTree(Composite parent, String label, boolean forProcesses) {
-		DQSystem system = forProcesses ? dqResult.setup.processDqSystem : dqResult.setup.exchangeDqSystem;
+		DQSystem system = forProcesses ? dqResult.setup.processSystem : dqResult.setup.exchangeSystem;
 		if (system == null)
 			return;
 		UI.formLabel(parent, toolkit, label);

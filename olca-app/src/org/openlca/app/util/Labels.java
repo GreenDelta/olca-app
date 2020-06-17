@@ -9,7 +9,7 @@ import org.openlca.app.db.Database;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.AggregationType;
-import org.openlca.core.math.data_quality.ProcessingType;
+import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.CategorizedEntity;
@@ -410,7 +410,7 @@ public class Labels {
 		}
 	}
 
-	public static String of(ProcessingType type) {
+	public static String of(NAHandling type) {
 		if (type == null)
 			return null;
 		switch (type) {

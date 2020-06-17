@@ -68,11 +68,11 @@ public class DQUI {
 	public static boolean displayProcessQuality(DQResult result) {
 		if (result == null)
 			return false;
-		if (result.setup.processDqSystem == null)
+		if (result.setup.processSystem == null)
 			return false;
-		if (result.setup.processDqSystem.indicators.isEmpty())
+		if (result.setup.processSystem.indicators.isEmpty())
 			return false;
-		if (result.setup.processDqSystem.getScoreCount() == 0)
+		if (result.setup.processSystem.getScoreCount() == 0)
 			return false;
 		return true;
 	}
@@ -80,11 +80,11 @@ public class DQUI {
 	public static boolean displayExchangeQuality(DQResult result) {
 		if (result == null)
 			return false;
-		if (result.setup.exchangeDqSystem == null)
+		if (result.setup.exchangeSystem == null)
 			return false;
-		if (result.setup.exchangeDqSystem.indicators.isEmpty())
+		if (result.setup.exchangeSystem.indicators.isEmpty())
 			return false;
-		if (result.setup.exchangeDqSystem.getScoreCount() == 0)
+		if (result.setup.exchangeSystem.getScoreCount() == 0)
 			return false;
 		if (result.setup.aggregationType == AggregationType.NONE)
 			return false;

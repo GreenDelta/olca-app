@@ -101,7 +101,7 @@ public class InventoryPage extends FormPage {
 				M.Name, M.Category, M.SubCategory, M.Amount, M.Unit };
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			headers = DQUI.appendTableHeaders(
-					headers, dqResult.setup.exchangeDqSystem);
+					headers, dqResult.setup.exchangeSystem);
 		}
 		Label label = new Label();
 		TreeViewer viewer = Trees.createViewer(comp, headers, label);
@@ -110,7 +110,7 @@ public class InventoryPage extends FormPage {
 		double[] widths = { .4, .2, .2, .15, .05 };
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			widths = DQUI.adjustTableWidths(
-					widths, dqResult.setup.exchangeDqSystem);
+					widths, dqResult.setup.exchangeSystem);
 		}
 		viewer.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(viewer.getTree(), DQUI.MIN_COL_WIDTH, widths);
@@ -135,7 +135,7 @@ public class InventoryPage extends FormPage {
 		Viewers.sortByLabels(viewer, label, 0, 1, 2, 4);
 		Viewers.sortByDouble(viewer, this::getAmount, 3);
 		if (DQUI.displayExchangeQuality(dqResult)) {
-			int len = dqResult.setup.exchangeDqSystem.indicators.size();
+			int len = dqResult.setup.exchangeSystem.indicators.size();
 			for (int i = 0; i < len; i++) {
 				Viewers.sortByDouble(viewer, label, i + 5);
 			}
@@ -186,7 +186,7 @@ public class InventoryPage extends FormPage {
 
 		Label() {
 			super(dqResult, dqResult != null
-					? dqResult.setup.exchangeDqSystem
+					? dqResult.setup.exchangeSystem
 					: null, 5);
 		}
 

@@ -2,7 +2,6 @@ package org.openlca.app.wizards.calculation;
 
 import java.math.RoundingMode;
 
-import org.apache.poi.ss.formula.functions.T;
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.ImpactMethodDao;
@@ -11,7 +10,7 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.CalculationType;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.DQCalculationSetup;
-import org.openlca.core.math.data_quality.ProcessingType;
+import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
@@ -75,15 +74,15 @@ class Setup {
 		s.withDataQuality = loadBooleanPref("calc.dqAssessment");
 		s.dqSetup.aggregationType = loadEnumPref(
 				AggregationType.class, AggregationType.WEIGHTED_AVERAGE);
-		s.dqSetup.processingType = loadEnumPref(
-				ProcessingType.class, ProcessingType.EXCLUDE);
+		s.dqSetup.naHandling = loadEnumPref(
+				NAHandling.class, NAHandling.EXCLUDE);
 		s.dqSetup.roundingMode = loadEnumPref(
 				RoundingMode.class, RoundingMode.HALF_UP);
 		// init the DQ systems from the ref. process
 		if (system.referenceProcess != null) {
 			var p = system.referenceProcess;
-			s.dqSetup.exchangeDqSystem = p.exchangeDqSystem;
-			s.dqSetup.processDqSystem = p.dqSystem;
+			s.dqSetup.exchangeSystem = p.exchangeDqSystem;
+			s.dqSetup.processSystem = p.dqSystem;
 		}
 		
 		return s;
@@ -195,7 +194,7 @@ class Setup {
 		}
 		Preferences.set("calc.dqAssessment", "true");
 		savePreference(AggregationType.class, dqSetup.aggregationType);
-		savePreference(ProcessingType.class, dqSetup.processingType);
+		savePreference(NAHandling.class, dqSetup.naHandling);
 		savePreference(RoundingMode.class, dqSetup.roundingMode);
 	}
 

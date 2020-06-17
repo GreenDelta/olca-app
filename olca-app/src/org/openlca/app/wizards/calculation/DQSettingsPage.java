@@ -17,7 +17,7 @@ import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.DQSystemDao;
 import org.openlca.core.math.data_quality.AggregationType;
-import org.openlca.core.math.data_quality.ProcessingType;
+import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.model.descriptors.DQSystemDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 
@@ -65,11 +65,10 @@ class DQSettingsPage extends WizardPage {
 
 		// n.a. handling
 		new Label(container, SWT.NULL).setText(M.NaValueHandling);
-		TypeCombo<ProcessingType> naCombo = new TypeCombo<>(
-				container, ProcessingType.class);
-		naCombo.setInput(ProcessingType.values());
+		var naCombo = new TypeCombo<>(container, NAHandling.class);
+		naCombo.setInput(NAHandling.values());
 		naCombo.addSelectionChangedListener(_e -> {
-			setup.dqSetup.processingType = naCombo.getSelected();
+			setup.dqSetup.naHandling = naCombo.getSelected();
 		});
 	}
 
@@ -94,8 +93,8 @@ class DQSettingsPage extends WizardPage {
 		combo.setInput(dqSystems);
 
 		var selected = forExchanges
-				? setup.dqSetup.exchangeDqSystem
-				: setup.dqSetup.processDqSystem;
+				? setup.dqSetup.exchangeSystem
+				: setup.dqSetup.processSystem;
 		if (selected != null) {
 			combo.select(Descriptors.toDescriptor(selected));
 		} else {
@@ -107,9 +106,9 @@ class DQSettingsPage extends WizardPage {
 					? null
 					: new DQSystemDao(Database.get()).getForId(d.id);
 			if (forExchanges) {
-				setup.dqSetup.exchangeDqSystem = dqSystem;
+				setup.dqSetup.exchangeSystem = dqSystem;
 			} else {
-				setup.dqSetup.processDqSystem = dqSystem;
+				setup.dqSetup.processSystem = dqSystem;
 			}
 		});
 	}
@@ -133,8 +132,8 @@ class DQSettingsPage extends WizardPage {
 			return new BaseLabelProvider() {
 				@Override
 				public String getText(Object o) {
-					if (o instanceof ProcessingType)
-						return Labels.of((ProcessingType) o);
+					if (o instanceof NAHandling)
+						return Labels.of((NAHandling) o);
 					if (o instanceof AggregationType)
 						return Labels.of((AggregationType) o);
 					if (o instanceof RoundingMode)
