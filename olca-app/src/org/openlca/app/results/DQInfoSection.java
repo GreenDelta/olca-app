@@ -47,7 +47,7 @@ public class DQInfoSection {
 		InfoSection.link(client, toolkit, M.ProcessDataQualitySchema, dqResult.setup.processSystem);
 		InfoSection.link(client, toolkit, M.FlowDataQualitySchema, dqResult.setup.exchangeSystem);
 		InfoSection.text(client, toolkit, M.Aggregation, Labels.of(dqResult.setup.aggregationType));
-		InfoSection.text(client, toolkit, M.RoundingMode, Labels.of(dqResult.setup.roundingMode));
+		InfoSection.text(client, toolkit, M.RoundingMode, dqResult.setup.ceiling ? M.Up : M.HalfUp);
 		InfoSection.text(client, toolkit, M.NaValueHandling, Labels.of(dqResult.setup.naHandling));
 		statisticsTree(client, M.ProcessDataQualityStatistics, true);
 		statisticsTree(client, M.FlowDataQualityStatistics, false);

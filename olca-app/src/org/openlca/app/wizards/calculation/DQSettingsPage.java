@@ -53,14 +53,17 @@ class DQSettingsPage extends WizardPage {
 
 		// rounding mode
 		new Label(container, SWT.NULL).setText(M.RoundingMode);
-		TypeCombo<RoundingMode> roundCombo = new TypeCombo<>(
+		var roundCombo = new TypeCombo<RoundingMode>(
 				container, RoundingMode.class);
 		roundCombo.setInput(new RoundingMode[] {
 				RoundingMode.HALF_UP,
 				RoundingMode.CEILING });
-		roundCombo.select(setup.dqSetup.roundingMode);
+		roundCombo.select(setup.dqSetup.ceiling
+				? RoundingMode.CEILING
+				: RoundingMode.HALF_UP);
 		roundCombo.addSelectionChangedListener(_e -> {
-			setup.dqSetup.roundingMode = roundCombo.getSelected();
+			var rmode = roundCombo.getSelected();
+			setup.dqSetup.ceiling = rmode == RoundingMode.CEILING;
 		});
 
 		// n.a. handling

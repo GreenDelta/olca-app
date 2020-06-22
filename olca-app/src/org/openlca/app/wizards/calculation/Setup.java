@@ -1,7 +1,5 @@
 package org.openlca.app.wizards.calculation;
 
-import java.math.RoundingMode;
-
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.ImpactMethodDao;
@@ -76,15 +74,14 @@ class Setup {
 				AggregationType.class, AggregationType.WEIGHTED_AVERAGE);
 		s.dqSetup.naHandling = loadEnumPref(
 				NAHandling.class, NAHandling.EXCLUDE);
-		s.dqSetup.roundingMode = loadEnumPref(
-				RoundingMode.class, RoundingMode.HALF_UP);
+		s.dqSetup.ceiling = loadBooleanPref("calc.dqCeiling");
 		// init the DQ systems from the ref. process
 		if (system.referenceProcess != null) {
 			var p = system.referenceProcess;
 			s.dqSetup.exchangeSystem = p.exchangeDqSystem;
 			s.dqSetup.processSystem = p.dqSystem;
 		}
-		
+
 		return s;
 	}
 
@@ -171,21 +168,16 @@ class Setup {
 
 		// LCIA method
 		BaseDescriptor m = calcSetup.impactMethod;
-		Preferences.set("calc.impact.method",
-				m == null ? "" : m.refId);
+		Preferences.set("calc.impact.method", m == null ? "" : m.refId);
 
 		// NW set
 		BaseDescriptor nws = calcSetup.nwSet;
-		Preferences.set("calc.nwset",
-				nws == null ? "" : nws.refId);
+		Preferences.set("calc.nwset", nws == null ? "" : nws.refId);
 
 		// calculation options
-		Preferences.set("calc.numberOfRuns",
-				Integer.toString(calcSetup.numberOfRuns));
-		Preferences.set("calc.costCalculation",
-				Boolean.toString(calcSetup.withCosts));
-		Preferences.set("calc.regionalized",
-				Boolean.toString(calcSetup.withRegionalization));
+		Preferences.set("calc.numberOfRuns", calcSetup.numberOfRuns);
+		Preferences.set("calc.costCalculation", calcSetup.withCosts);
+		Preferences.set("calc.regionalized", calcSetup.withRegionalization);
 
 		// data quality settings
 		if (!withDataQuality) {
@@ -193,14 +185,13 @@ class Setup {
 			return;
 		}
 		Preferences.set("calc.dqAssessment", "true");
+		Preferences.set("calc.dqCeiling", dqSetup.ceiling);
 		savePreference(AggregationType.class, dqSetup.aggregationType);
 		savePreference(NAHandling.class, dqSetup.naHandling);
-		savePreference(RoundingMode.class, dqSetup.roundingMode);
 	}
 
 	private <T extends Enum<T>> void savePreference(Class<T> clazz, T value) {
-		Preferences.set(
-				"calc." + clazz.getSimpleName(),
+		Preferences.set("calc." + clazz.getSimpleName(),
 				value == null ? null : value.name());
 	}
 

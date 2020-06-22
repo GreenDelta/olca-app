@@ -35,6 +35,14 @@ public final class Preferences extends AbstractPreferenceInitializer {
 		return RcpActivator.getDefault().getPreferenceStore();
 	}
 
+	public static void set(String key, int value) {
+		set(key, Integer.toString(value));
+	}
+
+	public static void set(String key, boolean value) {
+		set(key, Boolean.toString(value));
+	}
+
 	public static void set(String key, String value) {
 		if (key == null)
 			return;
