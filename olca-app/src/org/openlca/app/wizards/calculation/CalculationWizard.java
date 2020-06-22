@@ -153,8 +153,8 @@ public class CalculationWizard extends Wizard {
 				DQResult dqResult = null;
 				if (setup.withDataQuality) {
 					log.trace("calculate data quality result");
-					dqResult = DQResult.calculate(
-							Database.get(), r, setup.dqSetup);
+					dqResult = DQResult.of(
+							Database.get(), setup.dqSetup, r);
 				}
 
 				// sort and open the editor

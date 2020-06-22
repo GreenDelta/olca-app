@@ -267,7 +267,7 @@ public class InventoryPage extends FormPage {
 			}
 			if (obj instanceof FlowContribution) {
 				FlowContribution item = (FlowContribution) obj;
-				return dqResult.get(item.item.item, item.flow.flow);
+				return dqResult.get(item.item.item, item.flow);
 			}
 			return null;
 		}

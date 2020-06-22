@@ -130,13 +130,13 @@ public class DQInfoSection {
 			case 1:
 				int withQuality = 0;
 				int total = 0;
-				if (forProcesses) {
-					withQuality = dqResult.statistics.getNoOfProcesses(indicator);
-					total = dqResult.statistics.getNoOfProcesses();
-				} else {
-					withQuality = dqResult.statistics.getNoOfExchanges(indicator);
-					total = dqResult.statistics.getNoOfExchanges();
-				}
+//				if (forProcesses) {
+//					withQuality = dqResult.statistics.getNoOfProcesses(indicator);
+//					total = dqResult.statistics.getNoOfProcesses();
+//				} else {
+//					withQuality = dqResult.statistics.getNoOfExchanges(indicator);
+//					total = dqResult.statistics.getNoOfExchanges();
+//				}
 				return getCoverage(withQuality, total);
 			default:
 				return null;
@@ -148,9 +148,9 @@ public class DQInfoSection {
 			case 0:
 				return value.process.name;
 			case 1:
-				int withQuality = dqResult.statistics.getNoOfExchanges(value.process, value.indicator);
-				int total = dqResult.statistics.getNoOfExchanges(value.process);
-				return getCoverage(withQuality, total);
+//				int withQuality = dqResult.statistics.getNoOfExchanges(value.process, value.indicator);
+//				int total = dqResult.statistics.getNoOfExchanges(value.process);
+//				return getCoverage(withQuality, total);
 			default:
 				return null;
 			}

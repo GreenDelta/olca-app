@@ -275,14 +275,14 @@ public class TotalImpactResultPage extends FormPage {
 			case IMPACT_CATEGORY:
 				return dqResult.get(item.impact);
 			case PROCESS:
-				return dqResult.get(item.process, item.impact);
+				return dqResult.get(item.impact, item.process);
 			case FLOW:
 				if (item.flow == null)
 					return null;
 				if (item.process != null)
-					return dqResult.get(item.process, item.flow.flow);
+					return dqResult.get(item.process, item.flow);
 				else
-					return dqResult.get(item.flow.flow, item.impact);
+					return dqResult.get(item.impact, item.flow);
 			default:
 				return null;
 			}
