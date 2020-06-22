@@ -263,7 +263,7 @@ public class InventoryPage extends FormPage {
 		protected int[] getQuality(Object obj) {
 			if (obj instanceof IndexFlow) {
 				IndexFlow f = (IndexFlow) obj;
-				return dqResult.get(f.flow);
+				return dqResult.get(f);
 			}
 			if (obj instanceof FlowContribution) {
 				FlowContribution item = (FlowContribution) obj;

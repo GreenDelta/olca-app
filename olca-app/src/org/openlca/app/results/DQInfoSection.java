@@ -49,8 +49,8 @@ public class DQInfoSection {
 		InfoSection.text(client, toolkit, M.Aggregation, Labels.of(dqResult.setup.aggregationType));
 		InfoSection.text(client, toolkit, M.RoundingMode, dqResult.setup.ceiling ? M.Up : M.HalfUp);
 		InfoSection.text(client, toolkit, M.NaValueHandling, Labels.of(dqResult.setup.naHandling));
-		statisticsTree(client, M.ProcessDataQualityStatistics, true);
-		statisticsTree(client, M.FlowDataQualityStatistics, false);
+//		statisticsTree(client, M.ProcessDataQualityStatistics, true);
+//		statisticsTree(client, M.FlowDataQualityStatistics, false);
 	}
 
 	private void statisticsTree(Composite parent, String label, boolean forProcesses) {

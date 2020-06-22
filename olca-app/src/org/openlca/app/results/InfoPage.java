@@ -33,13 +33,13 @@ public class InfoPage extends FormPage {
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		InfoSection.create(body, tk, editor.setup);
+		if (editor.dqResult != null) {
+			new DQInfoSection(body, tk, result, editor.dqResult);
+		}
 		if (result.hasImpactResults()) {
 			ContributionChartSection.forImpacts(editor).render(body, tk);
 		}
 		ContributionChartSection.forFlows(editor).render(body, tk);
-		if (editor.dqResult != null) {
-			new DQInfoSection(body, tk, result, editor.dqResult);
-		}
 		form.reflow(true);
 	}
 }
