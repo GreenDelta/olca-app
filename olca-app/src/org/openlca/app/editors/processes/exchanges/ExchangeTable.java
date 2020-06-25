@@ -38,7 +38,7 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
@@ -221,8 +221,7 @@ class ExchangeTable {
 	}
 
 	private void onAdd() {
-		BaseDescriptor[] descriptors = ModelSelectionDialog
-				.multiSelect(ModelType.FLOW);
+		var descriptors = ModelSelectionDialog.multiSelect(ModelType.FLOW);
 		if (descriptors != null) {
 			add(Arrays.asList(descriptors));
 		}
@@ -242,12 +241,12 @@ class ExchangeTable {
 		editor.postEvent(ProcessEditor.EXCHANGES_CHANGED, this);
 	}
 
-	private void add(List<BaseDescriptor> descriptors) {
+	private void add(List<Descriptor> descriptors) {
 		if (descriptors.isEmpty())
 			return;
 		Process process = editor.getModel();
 		boolean added = false;
-		for (BaseDescriptor d : descriptors) {
+		for (var d : descriptors) {
 			long flowId = Exchanges.refFlowID(d);
 			if (flowId < 1)
 				continue;

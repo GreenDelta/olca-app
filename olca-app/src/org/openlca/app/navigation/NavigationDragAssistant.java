@@ -9,7 +9,7 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.navigator.CommonDragAdapterAssistant;
 import org.openlca.app.components.ModelTransfer;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 
@@ -36,15 +36,15 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 			IStructuredSelection aSelection) {
 		boolean canBeDropped = true;
 		Iterator<?> it = aSelection.iterator();
-		List<BaseDescriptor> components = new ArrayList<>();
+		List<Descriptor> components = new ArrayList<>();
 		while (it.hasNext() && canBeDropped) {
 			Object o = it.next();
 			if (!(o instanceof ModelElement || o instanceof CategoryElement)) {
 				canBeDropped = false;
 			} else {
 				if (o instanceof ModelElement) {
-					ModelElement navElem = (ModelElement) o;
-					BaseDescriptor comp = navElem.getContent();
+					var navElem = (ModelElement) o;
+					var comp = navElem.getContent();
 					if (comp != null)
 						components.add(comp);
 				}

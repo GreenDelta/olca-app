@@ -29,7 +29,7 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 
 public class ProcessWizard extends AbstractWizard<Process> {
@@ -120,7 +120,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			labelStack.layout();
 			contentStack.layout();
 			if (refFlow != null) {
-				FlowDescriptor d = Descriptors.toDescriptor(refFlow);
+				FlowDescriptor d = Descriptor.of(refFlow);
 				INavigationElement<?> e = Navigator.findElement(d);
 				ISelection s = new StructuredSelection(e);
 				flowTree.setSelection(s, true);

@@ -30,7 +30,6 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Version;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,7 +180,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 
 	protected void doAfterUpdate() {
 		setDirty(false);
-		BaseDescriptor descriptor = getEditorInput().getDescriptor();
+		var descriptor = getEditorInput().getDescriptor();
 		EntityCache cache = Cache.getEntityCache();
 		cache.refresh(descriptor.getClass(), descriptor.id);
 		cache.invalidate(modelClass, model.id);

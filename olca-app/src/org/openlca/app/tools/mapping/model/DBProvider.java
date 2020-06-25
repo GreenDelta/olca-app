@@ -19,7 +19,7 @@ import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Unit;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.io.maps.Status;
 import org.openlca.util.Categories;
@@ -52,11 +52,10 @@ public class DBProvider implements IProvider {
 			Fn.with(props.get(flow.refFlowPropertyId), prop -> {
 				if (prop == null)
 					return;
-				ref.property = Descriptors.toDescriptor(prop);
+				ref.property = Descriptor.of(prop);
 				if (prop.unitGroup != null
 						&& prop.unitGroup.referenceUnit != null) {
-					ref.unit = Descriptors.toDescriptor(
-							prop.unitGroup.referenceUnit);
+					ref.unit = Descriptor.of(prop.unitGroup.referenceUnit);
 				}
 			});
 			refs.add(ref);
@@ -164,17 +163,17 @@ public class DBProvider implements IProvider {
 
 		// sync the reference data
 		if (ref.property == null) {
-			ref.property = Descriptors.toDescriptor(prop);
+			ref.property = Descriptor.of(prop);
 		}
 		if (ref.unit == null) {
-			ref.unit = Descriptors.toDescriptor(u);
+			ref.unit = Descriptor.of(u);
 		}
 		ref.flow.id = flow.id;
 		ref.property.id = prop.id;
 		ref.unit.id = u.id;
 
 		if (provider != null) {
-			ref.provider = Descriptors.toDescriptor(provider);
+			ref.provider = Descriptor.of(provider);
 		}
 
 		Sync.checkFlowName(ref, flow.name);

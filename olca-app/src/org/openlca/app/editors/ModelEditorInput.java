@@ -7,7 +7,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
 /**
@@ -15,9 +15,9 @@ import org.openlca.util.Strings;
  */
 public final class ModelEditorInput implements IEditorInput {
 
-	private BaseDescriptor descriptor;
+	private Descriptor descriptor;
 
-	public ModelEditorInput(BaseDescriptor descriptor) {
+	public ModelEditorInput(Descriptor descriptor) {
 		this.descriptor = descriptor;
 	}
 
@@ -41,7 +41,7 @@ public final class ModelEditorInput implements IEditorInput {
 		return null;
 	}
 
-	public BaseDescriptor getDescriptor() {
+	public Descriptor getDescriptor() {
 		return descriptor;
 	}
 

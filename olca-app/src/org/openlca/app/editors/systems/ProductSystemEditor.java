@@ -5,7 +5,6 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +22,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 			addPage(new ProductSystemInfoPage(this));
 			// addPage(new ProductSystemParameterPage(this));
 			addPage(new ParameterPage2(this));
-			BaseDescriptor descriptor = getEditorInput().getDescriptor();
+			var descriptor = getEditorInput().getDescriptor();
 			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
 			int gIdx = addPage(new ProductSystemGraphEditor(this), gInput);
 			setPageText(gIdx, M.ModelGraph);

@@ -12,7 +12,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
@@ -196,7 +196,7 @@ class TableLabel extends LabelProvider
 		String f = Numbers.format(e.factor);
 
 		// get the unit and property names
-		Function<BaseDescriptor, String> name = d -> {
+		Function<Descriptor, String> name = d -> {
 			if (d == null || d.name == null)
 				return "?";
 			return d.name;

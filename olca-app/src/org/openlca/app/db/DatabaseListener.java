@@ -6,8 +6,8 @@ import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.IDatabaseListener;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 class DatabaseListener implements IDatabaseListener {
 
@@ -23,7 +23,7 @@ class DatabaseListener implements IDatabaseListener {
 	}
 
 	@Override
-	public void modelInserted(BaseDescriptor descriptor) {
+	public void modelInserted(Descriptor descriptor) {
 		if (indexUpdater.disabled)
 			return;
 		Dataset dataset = toDataset(descriptor);
@@ -33,7 +33,7 @@ class DatabaseListener implements IDatabaseListener {
 	}
 
 	@Override
-	public void modelUpdated(BaseDescriptor descriptor) {
+	public void modelUpdated(Descriptor descriptor) {
 		if (indexUpdater.disabled)
 			return;
 		Dataset dataset = toDataset(descriptor);
@@ -43,7 +43,7 @@ class DatabaseListener implements IDatabaseListener {
 	}
 
 	@Override
-	public void modelDeleted(BaseDescriptor descriptor) {
+	public void modelDeleted(Descriptor descriptor) {
 		if (indexUpdater.disabled)
 			return;
 		Dataset dataset = toDataset(descriptor);
@@ -52,7 +52,7 @@ class DatabaseListener implements IDatabaseListener {
 		indexUpdater.delete(dataset);
 	}
 
-	private Dataset toDataset(BaseDescriptor descriptor) {
+	private Dataset toDataset(Descriptor descriptor) {
 		if (!(descriptor instanceof CategorizedDescriptor))
 			return null;
 		CategorizedDescriptor element = (CategorizedDescriptor) descriptor;

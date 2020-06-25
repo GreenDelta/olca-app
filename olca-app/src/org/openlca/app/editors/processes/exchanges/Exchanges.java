@@ -17,8 +17,8 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ class Exchanges {
 	/**
 	 * Get the ID of the reference flow of the given descriptor.
 	 */
-	static long refFlowID(BaseDescriptor d) {
+	static long refFlowID(Descriptor d) {
 		if (d == null)
 			return -1L;
 

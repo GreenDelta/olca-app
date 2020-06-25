@@ -5,7 +5,6 @@ import java.util.Objects;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.descriptors.Descriptors;
 
 public class ExchangeNode extends Node {
 
@@ -33,7 +32,7 @@ public class ExchangeNode extends Node {
 	public String getName() {
 		if (exchange == null)
 			return "";
-		return Labels.name(Descriptors.toDescriptor(exchange.flow));
+		return Labels.name(exchange.flow);
 	}
 
 	public boolean matches(ExchangeNode node) {

@@ -11,7 +11,7 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.core.model.descriptors.UnitDescriptor;
@@ -57,27 +57,27 @@ public class ILCDProvider implements IProvider {
 		try (ZipStore store = new ZipStore(file)) {
 
 			// collect units
-			Map<String, BaseDescriptor> units = new HashMap<>();
+			Map<String, Descriptor> units = new HashMap<>();
 			store.each(UnitGroup.class, ug -> {
 				Unit unit = UnitGroups.getReferenceUnit(ug);
 				if (unit == null)
 					return;
-				BaseDescriptor d = new UnitDescriptor();
+				Descriptor d = new UnitDescriptor();
 				d.name = unit.name;
 				d.description = LangString.getFirst(unit.comment, "en");
 				units.put(ug.getUUID(), d);
 			});
 
 			// collect flow properties
-			Map<String, BaseDescriptor> props = new HashMap<>();
+			Map<String, Descriptor> props = new HashMap<>();
 			store.each(FlowProperty.class, fp -> {
-				BaseDescriptor d = new FlowPropertyDescriptor();
+				Descriptor d = new FlowPropertyDescriptor();
 				d.refId = fp.getUUID();
 				d.name = LangString.getFirst(fp.getName(), "en");
 				props.put(d.refId, d);
 				Ref ug = FlowProperties.getUnitGroupRef(fp);
 				if (ug != null) {
-					BaseDescriptor unit = units.get(ug.uuid);
+					Descriptor unit = units.get(ug.uuid);
 					units.put(d.refId, unit);
 				}
 			});

@@ -10,10 +10,10 @@ import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ActorDescriptor;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.CurrencyDescriptor;
 import org.openlca.core.model.descriptors.DQSystemDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
@@ -36,7 +36,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
 /**
- * The transfer type for model descriptors (subclasses of BaseDescriptor). The
+ * The transfer type for model descriptors (subclasses of Descriptor). The
  * allowed input is an array of base descriptors. Accordingly, the return type
  * is an array of these descriptors.
  */
@@ -63,13 +63,13 @@ public final class ModelTransfer extends ByteArrayTransfer {
 	 * data should be the data of a respective drop-event (event.data) using
 	 * this ModelTransfer class.
 	 */
-	public static BaseDescriptor getDescriptor(Object data) {
-		if (data instanceof BaseDescriptor)
-			return (BaseDescriptor) data;
+	public static Descriptor getDescriptor(Object data) {
+		if (data instanceof Descriptor)
+			return (Descriptor) data;
 		if (data instanceof Object[]) {
 			Object[] objects = (Object[]) data;
-			if (objects.length > 0 && (objects[0] instanceof BaseDescriptor))
-				return (BaseDescriptor) objects[0];
+			if (objects.length > 0 && (objects[0] instanceof Descriptor))
+				return (Descriptor) objects[0];
 		}
 		return null;
 	}
@@ -79,15 +79,15 @@ public final class ModelTransfer extends ByteArrayTransfer {
 	 * should be the data of a respective drop-event (event.data) using this
 	 * ModelTransfer class.
 	 */
-	public static List<BaseDescriptor> getBaseDescriptors(Object data) {
-		if (data instanceof BaseDescriptor)
-			return Arrays.asList((BaseDescriptor) data);
+	public static List<Descriptor> getDescriptors(Object data) {
+		if (data instanceof Descriptor)
+			return Arrays.asList((Descriptor) data);
 		if (data instanceof Object[]) {
 			Object[] objects = (Object[]) data;
-			ArrayList<BaseDescriptor> descriptors = new ArrayList<>();
+			ArrayList<Descriptor> descriptors = new ArrayList<>();
 			for (int i = 0; i < objects.length; i++) {
-				if (objects[i] instanceof BaseDescriptor)
-					descriptors.add((BaseDescriptor) objects[i]);
+				if (objects[i] instanceof Descriptor)
+					descriptors.add((Descriptor) objects[i]);
 			}
 			return descriptors;
 		}
@@ -128,15 +128,15 @@ public final class ModelTransfer extends ByteArrayTransfer {
 			Gson gson = new Gson();
 			String json = new String(bytes, "utf-8");
 			JsonArray array = gson.fromJson(json, JsonArray.class);
-			List<BaseDescriptor> list = new ArrayList<>();
+			List<Descriptor> list = new ArrayList<>();
 			for (JsonElement e : array) {
-				BaseDescriptor d = toDescriptor(gson, e);
+				Descriptor d = toDescriptor(gson, e);
 				if (d != null) {
 					list.add(d);
 				}
 			}
-			BaseDescriptor[] descriptors = list.toArray(
-					new BaseDescriptor[list.size()]);
+			Descriptor[] descriptors = list.toArray(
+					new Descriptor[list.size()]);
 			return descriptors;
 		} catch (Exception e) {
 			log.error("Native to java transfer failed", e);
@@ -144,7 +144,7 @@ public final class ModelTransfer extends ByteArrayTransfer {
 		}
 	}
 
-	private BaseDescriptor toDescriptor(Gson gson, JsonElement e) {
+	private Descriptor toDescriptor(Gson gson, JsonElement e) {
 		if (!e.isJsonObject())
 			return null;
 		JsonElement typeElem = e.getAsJsonObject().get("type");
@@ -194,7 +194,7 @@ public final class ModelTransfer extends ByteArrayTransfer {
 			if (type.isCategorized())
 				return gson.fromJson(e, CategorizedDescriptor.class);
 			else
-				return gson.fromJson(e, BaseDescriptor.class);
+				return gson.fromJson(e, Descriptor.class);
 		}
 	}
 
@@ -204,7 +204,7 @@ public final class ModelTransfer extends ByteArrayTransfer {
 			return false;
 		Object[] data = (Object[]) object;
 		for (Object d : data) {
-			if (!(d instanceof BaseDescriptor))
+			if (!(d instanceof Descriptor))
 				return false;
 		}
 		return true;

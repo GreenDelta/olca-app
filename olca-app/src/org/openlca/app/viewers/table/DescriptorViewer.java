@@ -8,9 +8,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
-public class DescriptorViewer extends AbstractTableViewer<BaseDescriptor> {
+public class DescriptorViewer extends AbstractTableViewer<Descriptor> {
 
 	protected DescriptorViewer(Composite parent) {
 		super(parent);
@@ -31,18 +31,18 @@ public class DescriptorViewer extends AbstractTableViewer<BaseDescriptor> {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof BaseDescriptor))
+			if (!(obj instanceof Descriptor))
 				return null;
 			if (col != 0)
 				return null;
-			return Images.get((BaseDescriptor) obj);
+			return Images.get((Descriptor) obj);
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof BaseDescriptor))
+			if (!(obj instanceof Descriptor))
 				return null;
-			BaseDescriptor d = (BaseDescriptor) obj;
+			var d = (Descriptor) obj;
 			switch (col) {
 			case 0:
 				return Labels.name(d);

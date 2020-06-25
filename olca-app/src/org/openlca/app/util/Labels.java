@@ -28,8 +28,8 @@ import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
@@ -60,7 +60,7 @@ public class Labels {
 		return entity.name + " - " + loc.code;
 	}
 
-	public static String name(BaseDescriptor d) {
+	public static String name(Descriptor d) {
 		if (d == null)
 			return "";
 		EntityCache cache = Cache.getEntityCache();

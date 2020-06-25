@@ -23,7 +23,7 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,22 +91,22 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 		@Override
 		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 			monitor.beginTask(M.CreatingProductSystem, IProgressMonitor.UNKNOWN);
-			ProductSystemBuilder builder = new ProductSystemBuilder(Cache.getMatrixCache(), config);
+			var builder = new ProductSystemBuilder(Cache.getMatrixCache(), config);
 			for (ProcessNode node : nodes) {
-				ProcessProduct provider = new ProcessProduct();
+				var provider = new ProcessProduct();
 				provider.process = node.process;
 				ProcessDao dao = new ProcessDao(Database.get());
 				Process p = dao.getForId(node.process.id);
 				Exchange qRef = p.quantitativeReference;
 				if (qRef != null && qRef.flow != null) {
-					provider.flow = Descriptors.toDescriptor(qRef.flow);
+					provider.flow = Descriptor.of(qRef.flow);
 				}
 				builder.autoComplete(system, provider);
 				system = builder.saveUpdates(system);
 			}
 			ProductSystemGraphEditor editor = nodes.get(0).parent().editor;
 			editor.updateModel(monitor);
-			Database.get().notifyUpdate(Descriptors.toDescriptor(system));
+			Database.get().notifyUpdate(Descriptor.of(system));
 		}
 	}
 

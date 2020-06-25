@@ -49,7 +49,7 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -195,9 +195,9 @@ class ImpactPage extends ModelPage<Process> {
 			return r;
 		MatrixBuilder enviBuilder = new MatrixBuilder();
 		for (Exchange e : elemFlows) {
-			FlowDescriptor flow = Descriptors.toDescriptor(e.flow);
+			FlowDescriptor flow = Descriptor.of(e.flow);
 			LocationDescriptor loc = e.location != null
-					? Descriptors.toDescriptor(e.location)
+					? Descriptor.of(e.location)
 					: null;
 			int i = e.isInput
 					? r.flowIndex.putInput(flow, loc)

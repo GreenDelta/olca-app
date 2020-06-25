@@ -54,7 +54,7 @@ import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,8 +151,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			}
 		});
 		Action add = Actions.onAdd(() -> {
-			BaseDescriptor[] ds = ModelSelectionDialog.multiSelect(
-					ModelType.PRODUCT_SYSTEM);
+			var ds = ModelSelectionDialog.multiSelect(ModelType.PRODUCT_SYSTEM);
 			addVariants(ds);
 		});
 		Action remove = Actions.onRemove(this::removeVariant);
@@ -170,16 +169,15 @@ class ProjectSetupPage extends ModelPage<Project> {
 		});
 		Tables.onDrop(table, descriptors -> {
 			if (descriptors != null) {
-				addVariants(descriptors.toArray(
-						new BaseDescriptor[descriptors.size()]));
+				addVariants(descriptors.toArray(new Descriptor[0]));
 			}
 		});
 	}
 
-	private void addVariants(BaseDescriptor[] descriptors) {
+	private void addVariants(Descriptor[] descriptors) {
 		if (descriptors == null || descriptors.length == 0)
 			return;
-		for (BaseDescriptor d : descriptors) {
+		for (var d : descriptors) {
 			if (d == null)
 				continue;
 			ProductSystemDao dao = new ProductSystemDao(database);

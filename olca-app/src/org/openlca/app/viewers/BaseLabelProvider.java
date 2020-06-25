@@ -19,7 +19,7 @@ import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Unit;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
 public class BaseLabelProvider extends ColumnLabelProvider {
@@ -28,8 +28,8 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 	public Image getImage(Object element) {
 		if (element instanceof RootEntity)
 			return Images.get((RootEntity) element);
-		if (element instanceof BaseDescriptor)
-			return Images.get((BaseDescriptor) element);
+		if (element instanceof Descriptor)
+			return Images.get((Descriptor) element);
 		if (element instanceof Exchange)
 			return Images.get(((Exchange) element).flow);
 		if (element instanceof FlowType)
@@ -45,8 +45,8 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		if (element instanceof BaseDescriptor)
-			return getModelLabel((BaseDescriptor) element);
+		if (element instanceof Descriptor)
+			return getModelLabel((Descriptor) element);
 		if (element instanceof RootEntity)
 			return getModelLabel((RootEntity) element);
 		if (element instanceof ImpactCategory)
@@ -59,8 +59,8 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 			return ((Unit) element).name;
 		if (element instanceof Location)
 			return ((Location) element).name;
-		if (element instanceof BaseDescriptor)
-			return Labels.name((BaseDescriptor) element);
+		if (element instanceof Descriptor)
+			return Labels.name((Descriptor) element);
 		if (element instanceof Enum<?>)
 			return getEnumText(element);
 		if (element != null)
@@ -98,7 +98,7 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 		return label;
 	}
 
-	protected String getModelLabel(BaseDescriptor d) {
+	protected String getModelLabel(Descriptor d) {
 		if (d == null)
 			return null;
 		return Strings.cut(Labels.name(d), 75);
@@ -106,8 +106,8 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 
 	@Override
 	public String getToolTipText(Object obj) {
-		if (obj instanceof BaseDescriptor)
-			return ((BaseDescriptor) obj).description;
+		if (obj instanceof Descriptor)
+			return ((Descriptor) obj).description;
 		return null;
 	}
 

@@ -28,8 +28,8 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,7 +162,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends RootEntity> void delete(BaseDescriptor descriptor) {
+	private <T extends RootEntity> void delete(Descriptor descriptor) {
 		try {
 			log.trace("delete model {}", descriptor);
 			IDatabase database = Database.get();

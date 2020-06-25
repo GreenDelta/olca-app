@@ -25,8 +25,7 @@ import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.AbstractEntity;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.descriptors.BaseDescriptor;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +57,8 @@ public class DataBinding {
 		log.trace("Change value {} @ {}", property, bean);
 		try {
 			Object newValue = viewer.getSelected();
-			if (newValue instanceof BaseDescriptor) {
-				BaseDescriptor descriptor = (BaseDescriptor) newValue;
+			if (newValue instanceof Descriptor) {
+				var descriptor = (Descriptor) newValue;
 				Class<? extends AbstractEntity> modelClass = descriptor.type.getModelClass();
 				newValue = Daos.base(Database.get(), modelClass).getForId(descriptor.id);
 			}
@@ -83,7 +82,7 @@ public class DataBinding {
 		});
 	}
 
-	private void setModel(Object bean, String property, BaseDescriptor d) {
+	private void setModel(Object bean, String property, Descriptor d) {
 		log.trace("Change value {} @ {}", property, bean);
 		try {
 			Object newValue = null;
@@ -258,8 +257,8 @@ public class DataBinding {
 			return Labels.getEnumText(val);
 		else if (val instanceof RootEntity)
 			return ((RootEntity) val).name;
-		else if (val instanceof BaseDescriptor)
-			return ((BaseDescriptor) val).name;
+		else if (val instanceof Descriptor)
+			return ((Descriptor) val).name;
 		else if (val instanceof Date)
 			return DateFormat.getDateTimeInstance(DateFormat.SHORT,
 					DateFormat.SHORT).format((Date) val);
@@ -289,9 +288,9 @@ public class DataBinding {
 			Object val = Bean.getValue(bean, property);
 			if (val == null)
 				return;
-			if (BaseDescriptor.class.isAssignableFrom(viewer.getType())
-					&& !BaseDescriptor.class.isAssignableFrom(val.getClass())) {
-				val = Descriptors.toDescriptor((RootEntity) val);
+			if (Descriptor.class.isAssignableFrom(viewer.getType())
+					&& !Descriptor.class.isAssignableFrom(val.getClass())) {
+				val = Descriptor.of((RootEntity) val);
 			}
 			viewer.select((T) val);
 		} catch (Exception e) {
@@ -303,8 +302,7 @@ public class DataBinding {
 		try {
 			Object val = Bean.getValue(bean, property);
 			if (val instanceof RootEntity) {
-				BaseDescriptor descriptor = Descriptors
-						.toDescriptor((RootEntity) val);
+				var descriptor = Descriptor.of((RootEntity) val);
 				text.setContent(descriptor);
 			}
 		} catch (Exception e) {

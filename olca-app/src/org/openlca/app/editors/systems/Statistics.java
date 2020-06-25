@@ -17,7 +17,7 @@ import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.matrix.cache.ProcessTable;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ class Statistics {
 	private void doCalc(ProductSystem system, EntityCache cache) {
 		processCount = system.processes.size();
 		linkCount = system.processLinks.size();
-		refProcess = Descriptors.toDescriptor(system.referenceProcess);
+		refProcess = Descriptor.of(system.referenceProcess);
 		HashSet<LongPair> processProducts = new HashSet<>();
 		Multimap<Long, Long> inEdges = HashMultimap.create();
 		Multimap<Long, Long> outEdges = HashMultimap.create();

@@ -2,7 +2,6 @@ package org.openlca.app.editors.processes;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.action.IToolBarManager;
@@ -34,8 +33,7 @@ import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.Descriptors;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.xls.process.output.ExcelExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,8 +73,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 		File f = FileChooser.forExport("*.xlsx", name);
 		if (f == null)
 			return;
-		List<ProcessDescriptor> list = Arrays.asList(
-				Descriptors.toDescriptor(p));
+		var list = Arrays.asList(Descriptor.of(p));
 		ExcelExport export = new ExcelExport(f, Database.get(), list);
 		App.run(M.ExportProcess, export, () -> {
 			Popup.info(M.ExportDone);

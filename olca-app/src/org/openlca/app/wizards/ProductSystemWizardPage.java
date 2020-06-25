@@ -27,7 +27,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +66,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		createOptions(comp);
 		if (refProcess != null) {
 			nameText.setText(refProcess.name);
-			ProcessDescriptor descriptor = Descriptors.toDescriptor(refProcess);
+			ProcessDescriptor descriptor = Descriptor.of(refProcess);
 			INavigationElement<?> elem = Navigator.findElement(descriptor);
 			if (elem != null)
 				processTree.setSelection(new StructuredSelection(elem));

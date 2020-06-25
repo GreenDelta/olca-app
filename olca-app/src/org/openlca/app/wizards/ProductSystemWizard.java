@@ -15,7 +15,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +59,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			Runner runner = new Runner(system, config);
 			getContainer().run(true, true, runner);
 			system = runner.system;
-			Cache.registerNew(Descriptors.toDescriptor(system));
+			Cache.registerNew(Descriptor.of(system));
 			App.openEditor(system);
 			return true;
 		} catch (Exception e) {

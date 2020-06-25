@@ -18,7 +18,7 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.SocialIndicator;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,8 +86,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 			quantityCombo.setInput(Database.get());
 			FlowProperty aq = getModel().activityQuantity;
 			if (aq != null) {
-				FlowPropertyDescriptor d = Descriptors.toDescriptor(aq);
-				quantityCombo.select(d);
+				quantityCombo.select(Descriptor.of(aq));
 			}
 			quantityCombo.addSelectionChangedListener(this::quantityChanged);
 			new CommentControl(comp, getToolkit(), "activityQuantity", getComments());

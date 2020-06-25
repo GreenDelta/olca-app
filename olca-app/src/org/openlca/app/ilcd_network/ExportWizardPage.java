@@ -13,17 +13,17 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.navigation.ModelElement;
+import org.openlca.app.navigation.NavigationComparator;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
-import org.openlca.app.navigation.NavigationComparator;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 public class ExportWizardPage extends WizardPage implements ICheckStateListener {
 
 	private CheckboxTreeViewer viewer;
-	private List<BaseDescriptor> selectedModels = new ArrayList<>();
+	private List<Descriptor> selectedModels = new ArrayList<>();
 
 	public ExportWizardPage() {
 		super("ilcd.network.SelectProcessPage");
@@ -70,14 +70,14 @@ public class ExportWizardPage extends WizardPage implements ICheckStateListener 
 		for (Object element : elements) {
 			if (element instanceof ModelElement) {
 				ModelElement modelElement = (ModelElement) element;
-				BaseDescriptor model = modelElement.getContent();
+				var model = modelElement.getContent();
 				selectedModels.add(model);
 			}
 		}
 		setPageComplete(!selectedModels.isEmpty());
 	}
 
-	public List<BaseDescriptor> getSelectedModels() {
+	public List<Descriptor> getSelectedModels() {
 		return selectedModels;
 	}
 }

@@ -43,8 +43,8 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
@@ -340,7 +340,7 @@ class ProjectParameterTable {
 			if (!(element instanceof ParameterRedef))
 				return null;
 			ParameterRedef redef = (ParameterRedef) element;
-			BaseDescriptor model = getModel(redef);
+			var model = getModel(redef);
 			if (column == 0) {
 				if (model == null)
 					return Images.get(ModelType.PARAMETER);
@@ -389,19 +389,18 @@ class ProjectParameterTable {
 		}
 
 		private String getModelColumnText(ParameterRedef redef) {
-			BaseDescriptor model = getModel(redef);
+			var model = getModel(redef);
 			if (model == null)
 				return "global";
 			else
 				return Labels.name(model);
 		}
 
-		private BaseDescriptor getModel(ParameterRedef redef) {
+		private Descriptor getModel(ParameterRedef redef) {
 			if (redef == null || redef.contextId == null)
 				return null;
 			long modelId = redef.contextId;
-			BaseDescriptor model = cache.get(ImpactMethodDescriptor.class,
-					modelId);
+			var model = cache.get(ImpactMethodDescriptor.class, modelId);
 			if (model != null)
 				return model;
 			else

@@ -20,15 +20,15 @@ import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.usage.IUseSearch;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 public class SearchPage extends SimpleFormEditor {
 
 	private Input input;
-	private List<BaseDescriptor> results;
+	private List<Descriptor> results;
 
-	public static void show(String term, List<BaseDescriptor> results) {
+	public static void show(String term, List<Descriptor> results) {
 		String resultKey = Cache.getAppCache().put(results);
 		Input input = new Input(term, resultKey);
 		Editors.open(input, "SearchPage");
@@ -38,7 +38,7 @@ public class SearchPage extends SimpleFormEditor {
 		if (d == null || d.type == null)
 			return;
 		String title = "Find usages of " + Labels.name(d);
-		AtomicReference<List<BaseDescriptor>> ref = new AtomicReference<>();
+		AtomicReference<List<Descriptor>> ref = new AtomicReference<>();
 		App.run(title, () -> {
 			List<CategorizedDescriptor> list = IUseSearch.FACTORY.createFor(
 					d.type, Database.get()).findUses(d);

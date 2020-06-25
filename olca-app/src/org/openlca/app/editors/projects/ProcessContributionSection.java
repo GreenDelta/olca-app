@@ -25,7 +25,6 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
 
@@ -93,7 +92,7 @@ class ProcessContributionSection {
 		Report report = editor.getReport();
 		if (report == null)
 			return;
-		BaseDescriptor d = ModelSelectionDialog.select(ModelType.PROCESS);
+		var d = ModelSelectionDialog.select(ModelType.PROCESS);
 		if (!(d instanceof ProcessDescriptor))
 			return;
 		ProcessDescriptor descriptor = (ProcessDescriptor) d;

@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Comparator;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 /**
  * A helper class for creating trees, tree viewers and related resources.
@@ -89,7 +89,7 @@ public class Trees {
 	}
 
 	public static void addDropSupport(TreeViewer tree,
-			Consumer<List<BaseDescriptor>> handler) {
+			Consumer<List<Descriptor>> handler) {
 		Transfer transfer = ModelTransfer.getInstance();
 		DropTarget dropTarget = new DropTarget(tree.getTree(), DND.DROP_COPY
 				| DND.DROP_MOVE | DND.DROP_DEFAULT);
@@ -99,8 +99,7 @@ public class Trees {
 			public void drop(DropTargetEvent event) {
 				if (!transfer.isSupportedType(event.currentDataType))
 					return;
-				List<BaseDescriptor> list = ModelTransfer
-						.getBaseDescriptors(event.data);
+				var list = ModelTransfer.getDescriptors(event.data);
 				handler.accept(list);
 			}
 		});

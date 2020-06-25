@@ -20,7 +20,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.CalcExchange;
 import org.openlca.core.matrix.ProcessProduct;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
@@ -140,7 +140,7 @@ class ProviderDialog extends Dialog {
 		return new Point(x, y);
 	}
 
-	private <T extends BaseDescriptor> String getLabel(Class<T> clazz, long id) {
+	private <T extends Descriptor> String getLabel(Class<T> clazz, long id) {
 		EntityCache cache = Cache.getEntityCache();
 		if (cache == null)
 			return "?";

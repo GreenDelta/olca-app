@@ -7,7 +7,6 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 
 /**
  * The navigation tree-filter for the ILCD network export. Allows the selection
@@ -43,7 +42,7 @@ public class NavigationTreeFilter extends ViewerFilter {
 	}
 
 	private boolean validModel(ModelElement element) {
-		BaseDescriptor model = element.getContent();
+		var model = element.getContent();
 		return model.type.isOneOf(ModelType.PROCESS, ModelType.PRODUCT_SYSTEM);
 	}
 

@@ -24,7 +24,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -124,12 +124,12 @@ class FlowUseSection {
 	private void renderUsageLink(Image image, Composite composite, int rest) {
 		if (rest < 1)
 			return;
-		ImageHyperlink link = new ImageHyperlink(composite, SWT.TOP);
-		link.setText(rest + " more"); // TODO: @translate
+		var link = new ImageHyperlink(composite, SWT.TOP);
+		link.setText(rest + " more");
 		link.setImage(image);
 		link.setForeground(Colors.linkBlue());
 		Controls.onClick(link,
-				e -> SearchPage.forUsage(Descriptors.toDescriptor(flow)));
+				e -> SearchPage.forUsage(Descriptor.of(flow)));
 	}
 
 }

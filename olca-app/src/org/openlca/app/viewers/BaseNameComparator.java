@@ -7,7 +7,7 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 /**
  * Sorts objects by their respective names.
@@ -33,9 +33,9 @@ public class BaseNameComparator extends ViewerComparator {
 		} else if (e1 instanceof ImpactCategory && e2 instanceof ImpactCategory) {
 			s1 = ((ImpactCategory) e1).name;
 			s2 = ((ImpactCategory) e2).name;
-		} else if (e1 instanceof BaseDescriptor && e2 instanceof BaseDescriptor) {
-			s1 = ((BaseDescriptor) e1).name;
-			s2 = ((BaseDescriptor) e2).name;
+		} else if (e1 instanceof Descriptor && e2 instanceof Descriptor) {
+			s1 = ((Descriptor) e1).name;
+			s2 = ((Descriptor) e2).name;
 		}
 		return s1 != null && s2 != null ? s1.compareToIgnoreCase(s2) : 0;
 	}

@@ -26,9 +26,8 @@ import org.openlca.core.matrix.solvers.IMatrixSolver;
 import org.openlca.core.matrix.solvers.JavaSolver;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.eigen.NativeLibrary;
 import org.openlca.julia.Julia;
 import org.openlca.julia.JuliaSolver;
@@ -121,7 +120,7 @@ public class App {
 	}
 
 	public static void openEditor(CategorizedEntity model) {
-		openEditor(Descriptors.toDescriptor(model));
+		openEditor(Descriptor.of(model));
 	}
 
 	public static void openEditor(CategorizedDescriptor d) {
@@ -134,16 +133,15 @@ public class App {
 		log.trace("open editor for {} ", d);
 		String editorId = "editors." + d.type.getModelClass()
 				.getSimpleName().toLowerCase();
-		ModelEditorInput input = new ModelEditorInput(d);
+		var input = new ModelEditorInput(d);
 		Editors.open(input, editorId);
 	}
 
 	public static void closeEditor(CategorizedEntity entity) {
-		BaseDescriptor descriptor = Descriptors.toDescriptor(entity);
-		closeEditor(descriptor);
+		closeEditor(Descriptor.of(entity));
 	}
 
-	public static void closeEditor(BaseDescriptor d) {
+	public static void closeEditor(Descriptor d) {
 		IEditorReference ref = findEditor(d);
 		if (ref == null)
 			return;
@@ -157,21 +155,21 @@ public class App {
 	public static boolean hasDirtyEditor(RootEntity e) {
 		if (e == null)
 			return false;
-		return hasDirtyEditor(Descriptors.toDescriptor(e));
+		return hasDirtyEditor(Descriptor.of(e));
 	}
 
 	/**
 	 * Returns true if the given data set is currently opened in an editor that has
 	 * a dirty (= unsaved) state.
 	 */
-	public static boolean hasDirtyEditor(BaseDescriptor d) {
+	public static boolean hasDirtyEditor(Descriptor d) {
 		IEditorReference ref = findEditor(d);
 		if (ref == null)
 			return false;
 		return ref.isDirty();
 	}
 
-	private static IEditorReference findEditor(BaseDescriptor d) {
+	private static IEditorReference findEditor(Descriptor d) {
 		if (d == null)
 			return null;
 		for (IEditorReference ref : Editors.getReferences()) {

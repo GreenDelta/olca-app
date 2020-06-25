@@ -15,7 +15,7 @@ import org.openlca.app.preferences.IoPreference;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.ilcd.ILCDExport;
 import org.openlca.io.ilcd.output.ExportConfig;
 
@@ -52,7 +52,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 		File target = exportPage.getExportDestination();
 		if (target == null)
 			return false;
-		List<BaseDescriptor> descriptors = exportPage.getSelectedModels();
+		var descriptors = exportPage.getSelectedModels();
 		boolean errorOccured = false;
 		ExportConfig config = createConfig(target);
 		try {
@@ -65,11 +65,11 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 	}
 
 	private void runExport(IProgressMonitor monitor, ExportConfig config,
-			List<BaseDescriptor> descriptors) throws InvocationTargetException {
+			List<Descriptor> descriptors) throws InvocationTargetException {
 		monitor.beginTask(M.Export, descriptors.size());
 		int worked = 0;
 		ILCDExport export = new ILCDExport(config);
-		for (BaseDescriptor d : descriptors) {
+		for (var d : descriptors) {
 			if (monitor.isCanceled())
 				break;
 			monitor.setTaskName(d.name);

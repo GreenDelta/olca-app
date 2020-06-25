@@ -16,7 +16,7 @@ import org.openlca.core.database.SourceDao;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.SocialAspect;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 
 class Dialog extends FormDialog {
 
@@ -100,7 +100,7 @@ class Dialog extends FormDialog {
 				tk, ModelType.SOURCE);
 		UI.gridData(drop, true, false);
 		if (aspect.source != null) {
-			drop.setContent(Descriptors.toDescriptor(aspect.source));
+			drop.setContent(Descriptor.of(aspect.source));
 		}
 		drop.onChange(d -> {
 			if (d == null) {

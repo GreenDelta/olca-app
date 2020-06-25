@@ -45,8 +45,8 @@ import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Uncertainty;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
@@ -178,17 +178,16 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	}
 
 	private void onAdd() {
-		BaseDescriptor[] flows = ModelSelectionDialog.multiSelect(
-				ModelType.FLOW);
-		if (flows != null) {
-			createFactors(Arrays.asList(flows));
-		}
+		var flows = ModelSelectionDialog.multiSelect(ModelType.FLOW);
+		if (flows == null || flows.length == 0)
+			return;
+		createFactors(Arrays.asList(flows));
 	}
 
-	private void createFactors(List<BaseDescriptor> flows) {
+	private void createFactors(List<Descriptor> flows) {
 		if (flows == null || flows.isEmpty())
 			return;
-		for (BaseDescriptor d : flows) {
+		for (var d : flows) {
 			if (d == null || d.type != ModelType.FLOW)
 				continue;
 			Flow flow = new FlowDao(database).getForId(d.id);

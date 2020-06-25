@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.viewers.Comparator;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 /**
  * A helper class for creating tables, table viewers and related resources.
@@ -97,7 +97,7 @@ public class Tables {
 	}
 
 	public static void onDrop(TableViewer table,
-			Consumer<List<BaseDescriptor>> fn) {
+			Consumer<List<Descriptor>> fn) {
 		Transfer transfer = ModelTransfer.getInstance();
 		DropTarget target = new DropTarget(table.getTable(),
 				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
@@ -107,8 +107,7 @@ public class Tables {
 			public void drop(DropTargetEvent event) {
 				if (!transfer.isSupportedType(event.currentDataType))
 					return;
-				List<BaseDescriptor> list = ModelTransfer
-						.getBaseDescriptors(event.data);
+				var list = ModelTransfer.getDescriptors(event.data);
 				fn.accept(list);
 			}
 		});

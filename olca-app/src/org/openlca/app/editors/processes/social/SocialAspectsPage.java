@@ -31,7 +31,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.SocialIndicator;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 public class SocialAspectsPage extends ModelPage<Process> {
 
@@ -99,10 +99,10 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	}
 
 	private void addIndicator() {
-		BaseDescriptor[] list = ModelSelectionDialog.multiSelect(ModelType.SOCIAL_INDICATOR);
+		var list = ModelSelectionDialog.multiSelect(ModelType.SOCIAL_INDICATOR);
 		if (list == null)
 			return;
-		for (BaseDescriptor d : list) {
+		for (var d : list) {
 			SocialAspect aspect = Aspects.find(getModel(), d);
 			if (aspect != null)
 				continue;
@@ -110,7 +110,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		}
 	}
 
-	private void addIndicator(BaseDescriptor d) {
+	private void addIndicator(Descriptor d) {
 		SocialIndicatorDao dao = new SocialIndicatorDao(Database.get());
 		SocialIndicator i = dao.getForId(d.id);
 		SocialAspect a = new SocialAspect();

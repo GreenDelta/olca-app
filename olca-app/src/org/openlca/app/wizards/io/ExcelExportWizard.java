@@ -14,7 +14,6 @@ import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.xls.process.output.ExcelExport;
 import org.slf4j.Logger;
@@ -41,7 +40,7 @@ public class ExcelExportWizard extends Wizard implements IExportWizard {
 	public boolean performFinish() {
 		File dir = page.getExportDestination();
 		List<ProcessDescriptor> processes = new ArrayList<>();
-		for (BaseDescriptor descriptor : page.getSelectedModels()) {
+		for (var descriptor : page.getSelectedModels()) {
 			if (descriptor instanceof ProcessDescriptor)
 				processes.add((ProcessDescriptor) descriptor);
 		}

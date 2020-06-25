@@ -40,8 +40,8 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Uncertainty;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
@@ -194,11 +194,11 @@ class ParameterRedefTable {
 		private EntityCache cache = Cache.getEntityCache();
 
 		@Override
-		public Image getColumnImage(Object element, int column) {
-			if (!(element instanceof ParameterRedef))
+		public Image getColumnImage(Object obj, int column) {
+			if (!(obj instanceof ParameterRedef))
 				return null;
-			ParameterRedef redef = (ParameterRedef) element;
-			BaseDescriptor model = getModel(redef);
+			var redef = (ParameterRedef) obj;
+			var model = getModel(redef);
 			switch (column) {
 			case 0:
 				if (model == null)
@@ -219,10 +219,10 @@ class ParameterRedefTable {
 			ParameterRedef redef = (ParameterRedef) obj;
 			switch (col) {
 			case 0:
-				BaseDescriptor model = getModel(redef);
-				if (model != null)
-					return Labels.name(model);
-				return "global";
+				var model = getModel(redef);
+				return model != null
+						? Labels.name(model)
+						: "global";
 			case 1:
 				return redef.name;
 			case 2:
@@ -236,16 +236,14 @@ class ParameterRedefTable {
 			}
 		}
 
-		private BaseDescriptor getModel(ParameterRedef redef) {
+		private Descriptor getModel(ParameterRedef redef) {
 			if (redef == null || redef.contextId == null)
 				return null;
 			long modelId = redef.contextId;
-			BaseDescriptor model = cache.get(ImpactMethodDescriptor.class,
-					modelId);
-			if (model != null)
-				return model;
-			else
-				return cache.get(ProcessDescriptor.class, modelId);
+			var model = cache.get(ImpactMethodDescriptor.class, modelId);
+			return model != null
+					? model
+					: cache.get(ProcessDescriptor.class, modelId);
 		}
 	}
 
@@ -272,9 +270,9 @@ class ParameterRedefTable {
 		private int compareProcesses(Long processId1, Long processId2) {
 			if (processId1 == null || processId2 == null)
 				return 0;
-			BaseDescriptor d1 = cache.get(ProcessDescriptor.class, processId1);
+			var d1 = cache.get(ProcessDescriptor.class, processId1);
 			String name1 = Labels.name(d1);
-			BaseDescriptor d2 = cache.get(ProcessDescriptor.class, processId2);
+			var d2 = cache.get(ProcessDescriptor.class, processId2);
 			String name2 = Labels.name(d2);
 			return Strings.compare(name1, name2);
 		}

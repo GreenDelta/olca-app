@@ -19,7 +19,7 @@ import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ public class CloudUtil {
 	public static Dataset toDataset(INavigationElement<?> element) {
 		CategorizedDescriptor descriptor = null;
 		if (element instanceof CategoryElement) {
-			descriptor = Descriptors.toDescriptor(((CategoryElement) element)
+			descriptor = Descriptor.of(((CategoryElement) element)
 					.getContent());
 		} else if (element instanceof ModelElement)
 			descriptor = ((ModelElement) element).getContent();

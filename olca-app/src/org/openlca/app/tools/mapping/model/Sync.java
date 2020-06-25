@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.io.maps.Status;
 import org.openlca.util.Strings;
@@ -59,8 +59,8 @@ final class Sync {
 					return;
 				}
 
-				BaseDescriptor packProp = packRef.property;
-				BaseDescriptor mapProp = mapRef.property;
+				Descriptor packProp = packRef.property;
+				Descriptor mapProp = mapRef.property;
 				if (Strings.nullOrEqual(packProp.refId, mapProp.refId)
 						&& packProp.name != null && mapProp.name != null
 						&& !Strings.nullOrEqual(packProp.name, mapProp.name)) {
@@ -85,8 +85,8 @@ final class Sync {
 //					return;
 //				}
 
-				BaseDescriptor packUnit = packRef.unit;
-				BaseDescriptor mapUnit = mapRef.unit;
+				Descriptor packUnit = packRef.unit;
+				Descriptor mapUnit = mapRef.unit;
 				if (Strings.nullOrEqual(packUnit.refId, mapUnit.refId)
 						&& packUnit.name != null && mapUnit.name != null
 						&& !Strings.nullOrEqual(packUnit.name, mapUnit.name)) {

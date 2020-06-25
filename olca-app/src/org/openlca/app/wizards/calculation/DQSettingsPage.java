@@ -19,7 +19,7 @@ import org.openlca.core.database.DQSystemDao;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.model.descriptors.DQSystemDescriptor;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 
 class DQSettingsPage extends WizardPage {
 
@@ -99,7 +99,7 @@ class DQSettingsPage extends WizardPage {
 				? setup.dqSetup.exchangeSystem
 				: setup.dqSetup.processSystem;
 		if (selected != null) {
-			combo.select(Descriptors.toDescriptor(selected));
+			combo.select(Descriptor.of(selected));
 		} else {
 			combo.selectFirst();
 		}

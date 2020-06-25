@@ -11,8 +11,7 @@ import org.openlca.core.database.Daos;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +54,7 @@ abstract class AbstractWizard<T extends CategorizedEntity> extends
 			model.category = category;
 			model.lastChange = System.currentTimeMillis();
 			createDao().insert(model);
-			CategorizedDescriptor descriptor = Descriptors.toDescriptor(model);
+			var descriptor = Descriptor.of(model);
 			Cache.registerNew(descriptor);
 			App.openEditor(model);
 			return true;

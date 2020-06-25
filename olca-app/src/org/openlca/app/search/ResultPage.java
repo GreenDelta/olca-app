@@ -27,19 +27,19 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
 class ResultPage extends FormPage {
 
 	private final int PAGE_SIZE = 50;
-	private final List<BaseDescriptor> rawResults;
+	private final List<Descriptor> rawResults;
 	private final String title;
 
-	private List<BaseDescriptor> results;
+	private List<Descriptor> results;
 	private int currentPage = 0;
 	private int pageCount;
 
@@ -48,8 +48,7 @@ class ResultPage extends FormPage {
 	private Composite formBody;
 	private Composite pageComposite;
 
-	public ResultPage(SearchPage view, String title,
-			List<BaseDescriptor> results) {
+	public ResultPage(SearchPage view, String title, List<Descriptor> results) {
 		super(view, "SearchResultView.Page", M.SearchResults);
 		this.rawResults = results;
 		this.results = rawResults;
@@ -85,7 +84,7 @@ class ResultPage extends FormPage {
 			String term = filter.trim().toLowerCase();
 			results = new ArrayList<>();
 			HashMap<Long, Integer> distances = new HashMap<>();
-			for (BaseDescriptor d : rawResults) {
+			for (var d : rawResults) {
 				String n = Labels.name(d);
 				if (n == null)
 					continue;
@@ -123,7 +122,7 @@ class ResultPage extends FormPage {
 
 	private void createItems() {
 		LinkClick click = new LinkClick();
-		for (BaseDescriptor d : getPageResults()) {
+		for (Descriptor d : getPageResults()) {
 			Composite comp = tk.createComposite(pageComposite);
 			UI.gridData(comp, true, false);
 			UI.gridLayout(comp, 1).verticalSpacing = 3;
@@ -138,7 +137,7 @@ class ResultPage extends FormPage {
 		}
 	}
 
-	private List<BaseDescriptor> getPageResults() {
+	private List<Descriptor> getPageResults() {
 		if (results == null || results.isEmpty())
 			return Collections.emptyList();
 		int start = currentPage * 50;
@@ -151,7 +150,7 @@ class ResultPage extends FormPage {
 		return results.subList(start, end);
 	}
 
-	private void renderDescription(FormToolkit tk, BaseDescriptor d, Composite comp) {
+	private void renderDescription(FormToolkit tk, Descriptor d, Composite comp) {
 		if (d.description == null)
 			return;
 		String text = Strings.cut(d.description, 400);
@@ -161,7 +160,7 @@ class ResultPage extends FormPage {
 		}
 	}
 
-	private void renderCategory(FormToolkit tk, BaseDescriptor d, Composite comp) {
+	private void renderCategory(FormToolkit tk, Descriptor d, Composite comp) {
 		if (!(d instanceof CategorizedDescriptor))
 			return;
 		CategorizedDescriptor cd = (CategorizedDescriptor) d;

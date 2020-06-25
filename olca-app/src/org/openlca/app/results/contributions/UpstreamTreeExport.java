@@ -11,7 +11,7 @@ import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.matrix.ProcessProduct;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.UpstreamNode;
@@ -129,8 +129,8 @@ class UpstreamTreeExport implements Runnable {
 					+ iflow.location.code;
 		}
 
-		return ref instanceof BaseDescriptor
-				? ((BaseDescriptor) ref).name
+		return ref instanceof Descriptor
+				? ((Descriptor) ref).name
 				: "";
 	}
 

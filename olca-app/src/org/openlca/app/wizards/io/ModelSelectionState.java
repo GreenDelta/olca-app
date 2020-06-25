@@ -5,7 +5,6 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 
 class ModelSelectionState implements ICheckStateListener {
 
@@ -47,7 +46,7 @@ class ModelSelectionState implements ICheckStateListener {
 	}
 
 	private void updateSelection(ModelElement element, boolean selected) {
-		BaseDescriptor component = element.getContent();
+		var component = element.getContent();
 		if (selected)
 			page.getSelectedModels().add(component);
 		else

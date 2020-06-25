@@ -14,7 +14,7 @@ import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.ecospold1.output.EcoSpold1Export;
 import org.openlca.io.ecospold1.output.ExportConfig;
 import org.slf4j.Logger;
@@ -53,7 +53,7 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public boolean performFinish() {
 		boolean errorOccured = false;
-		List<BaseDescriptor> models = modelPage.getSelectedModels();
+		var models = modelPage.getSelectedModels();
 		ExportConfig config = getConfig();
 		try (EcoSpold1Export export = new EcoSpold1Export(
 				modelPage.getExportDestination(), config)) {
@@ -79,13 +79,13 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 			return configPage.getConfig();
 	}
 
-	private void doExport(List<BaseDescriptor> models,
+	private void doExport(List<Descriptor> models,
 			IProgressMonitor monitor, EcoSpold1Export export)
 			throws InterruptedException {
 		ProcessDao pDao = new ProcessDao(Database.get());
 		ImpactMethodDao mDao = new ImpactMethodDao(Database.get());
 		try {
-			for (BaseDescriptor d : models) {
+			for (var d : models) {
 				if (monitor.isCanceled())
 					break;
 				monitor.subTask(d.name);

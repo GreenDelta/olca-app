@@ -13,7 +13,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 import com.google.common.base.Strings;
 
@@ -30,7 +30,7 @@ class ProcessCreator {
 
 	String name;
 	String description;
-	BaseDescriptor flowProperty;
+	Descriptor flowProperty;
 	Flow flow;
 	String flowName;
 	boolean createWithProduct;

@@ -14,7 +14,6 @@ import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.ecospold2.output.EcoSpold2Export;
 import org.slf4j.Logger;
@@ -34,9 +33,9 @@ public class EcoSpold2ExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public boolean performFinish() {
 		File targetDir = page.getExportDestination();
-		List<BaseDescriptor> selection = page.getSelectedModels();
+		var selection = page.getSelectedModels();
 		List<ProcessDescriptor> processes = new ArrayList<>();
-		for (BaseDescriptor descriptor : selection) {
+		for (var descriptor : selection) {
 			if (descriptor instanceof ProcessDescriptor)
 				processes.add((ProcessDescriptor) descriptor);
 		}

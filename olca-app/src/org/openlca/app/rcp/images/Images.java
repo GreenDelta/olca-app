@@ -16,8 +16,8 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Source;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResult;
@@ -44,7 +44,7 @@ public class Images {
 		return get(ModelType.forModelClass(entity.getClass()));
 	}
 
-	public static Image get(BaseDescriptor d) {
+	public static Image get(Descriptor d) {
 		if (d == null || d.type == null)
 			return null;
 		switch (d.type) {
@@ -203,7 +203,7 @@ public class Images {
 		return descriptor(ModelType.forModelClass(entity.getClass()));
 	}
 
-	public static ImageDescriptor descriptor(BaseDescriptor d) {
+	public static ImageDescriptor descriptor(Descriptor d) {
 		if (d == null || d.type == null)
 			return null;
 		switch (d.type) {

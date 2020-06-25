@@ -33,8 +33,8 @@ import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
@@ -180,9 +180,9 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			public Image getColumnImage(Object o, int col) {
 				if (col != 0)
 					return null;
-				if (!(o instanceof BaseDescriptor))
+				if (!(o instanceof Descriptor))
 					return null;
-				BaseDescriptor d = (BaseDescriptor) o;
+				Descriptor d = (Descriptor) o;
 				return Images.get(d);
 			}
 
@@ -190,10 +190,9 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			public String getColumnText(Object o, int col) {
 				if (col != 0)
 					return null;
-				if (!(o instanceof BaseDescriptor))
+				if (!(o instanceof Descriptor))
 					return null;
-				BaseDescriptor d = (BaseDescriptor) o;
-				return Labels.name(d);
+				return Labels.name((Descriptor) o);
 			}
 		}
 	}

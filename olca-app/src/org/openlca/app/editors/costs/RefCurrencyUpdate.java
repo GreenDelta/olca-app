@@ -13,8 +13,7 @@ import org.openlca.app.util.Question;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Version;
-import org.openlca.core.model.descriptors.CurrencyDescriptor;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,10 +42,8 @@ class RefCurrencyUpdate implements Runnable {
 			return;
 		closeEditors();
 		App.run(M.UpdateReferenceCurrency,
-				new RefCurrencyUpdate(c), () -> {
-					CurrencyDescriptor d = Descriptors.toDescriptor(c);
-					App.openEditor(d);
-				});
+				new RefCurrencyUpdate(c),
+				() -> App.openEditor(Descriptor.of(c)));
 	}
 
 	private static void closeEditors() {

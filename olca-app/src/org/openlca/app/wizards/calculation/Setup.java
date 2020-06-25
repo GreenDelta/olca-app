@@ -12,7 +12,6 @@ import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.python.google.common.base.Strings;
@@ -167,11 +166,11 @@ class Setup {
 				am == null ? "NONE" : am.name());
 
 		// LCIA method
-		BaseDescriptor m = calcSetup.impactMethod;
+		var m = calcSetup.impactMethod;
 		Preferences.set("calc.impact.method", m == null ? "" : m.refId);
 
 		// NW set
-		BaseDescriptor nws = calcSetup.nwSet;
+		var nws = calcSetup.nwSet;
 		Preferences.set("calc.nwset", nws == null ? "" : nws.refId);
 
 		// calculation options

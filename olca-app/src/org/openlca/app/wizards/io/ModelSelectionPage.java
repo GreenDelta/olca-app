@@ -30,13 +30,13 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 class ModelSelectionPage extends WizardPage {
 
 	private ModelType[] types;
 	private File exportDestination;
-	private List<BaseDescriptor> selectedComponents = new ArrayList<>();
+	private List<Descriptor> selectedComponents = new ArrayList<>();
 	private CheckboxTreeViewer viewer;
 	private boolean targetIsDir;
 	private String fileExtension;
@@ -70,7 +70,7 @@ class ModelSelectionPage extends WizardPage {
 		return exportDestination;
 	}
 
-	public List<BaseDescriptor> getSelectedModels() {
+	public List<Descriptor> getSelectedModels() {
 		return selectedComponents;
 	}
 

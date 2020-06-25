@@ -13,7 +13,7 @@ import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.Contribution;
@@ -51,8 +51,8 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 			return image.getForTable(c.share);
 		if (col != 0)
 			return null;
-		if (c.item instanceof BaseDescriptor)
-			return Images.get((BaseDescriptor) c.item);
+		if (c.item instanceof Descriptor)
+			return Images.get((Descriptor) c.item);
 		if (c.item instanceof CategorizedEntity)
 			return Images.get((CategorizedEntity) c.item);
 		if (c.item instanceof IndexFlow)
@@ -91,8 +91,8 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 		}
 		if (c.item instanceof IndexFlow)
 			return Labels.name((IndexFlow) c.item);
-		if (c.item instanceof BaseDescriptor)
-			return Labels.name((BaseDescriptor) c.item);
+		if (c.item instanceof Descriptor)
+			return Labels.name((Descriptor) c.item);
 		if (c.item instanceof RootEntity)
 			return Labels.name((RootEntity) c.item);
 		return null;

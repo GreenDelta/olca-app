@@ -36,7 +36,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
@@ -125,8 +125,8 @@ public class ParameterRedefDialog extends FormDialog {
 		return model;
 	}
 
-	private static BaseDescriptor getModel(long modelId, EntityCache cache) {
-		BaseDescriptor model = cache.get(ProcessDescriptor.class, modelId);
+	private static Descriptor getModel(long modelId, EntityCache cache) {
+		var model = cache.get(ProcessDescriptor.class, modelId);
 		return model != null
 				? model
 				: cache.get(ImpactCategoryDescriptor.class, modelId);
@@ -255,7 +255,7 @@ public class ParameterRedefDialog extends FormDialog {
 
 	private boolean filterProcess(Object element, String term) {
 		ModelNode node = (ModelNode) element;
-		BaseDescriptor model = node.model;
+		var model = node.model;
 		if (StringUtils.containsIgnoreCase(model.name, term))
 			return true;
 		for (ParameterNode param : node.parameters)
@@ -275,7 +275,7 @@ public class ParameterRedefDialog extends FormDialog {
 	}
 
 	private static class ModelNode {
-		BaseDescriptor model;
+		Descriptor model;
 		final List<ParameterNode> parameters = new ArrayList<>();
 	}
 

@@ -16,7 +16,7 @@ import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 
 // TODO: add null checks?
@@ -72,7 +72,7 @@ public class CommentPaths {
 	}
 
 	public static String get(ImpactCategory category) {
-		return get(Descriptors.toDescriptor(category));
+		return get(Descriptor.of(category));
 	}
 
 	public static String get(ImpactCategoryDescriptor category) {

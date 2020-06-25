@@ -41,7 +41,7 @@ import org.openlca.core.model.SocialIndicator;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.ActorDescriptor;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -548,7 +548,7 @@ public class ScriptApi {
 			ImpactMethod method) {
 		CalculationSetup setup = new CalculationSetup(system);
 		if (method != null)
-			setup.impactMethod = Descriptors.toDescriptor(method);
+			setup.impactMethod = Descriptor.of(method);
 		setup.parameterRedefs.addAll(system.parameterRedefs);
 		SystemCalculator calculator = new SystemCalculator(
 				database, App.getSolver());
@@ -563,7 +563,7 @@ public class ScriptApi {
 			ProductSystem system, ImpactMethod method) {
 		CalculationSetup setup = new CalculationSetup(system);
 		if (method != null)
-			setup.impactMethod = Descriptors.toDescriptor(method);
+			setup.impactMethod = Descriptor.of(method);
 		setup.parameterRedefs.addAll(system.parameterRedefs);
 		SystemCalculator calculator = new SystemCalculator(
 				database, App.getSolver());
@@ -580,7 +580,7 @@ public class ScriptApi {
 		CalculationSetup setup = new CalculationSetup(system);
 		setup.withUncertainties = true;
 		if (method != null)
-			setup.impactMethod = Descriptors.toDescriptor(method);
+			setup.impactMethod = Descriptor.of(method);
 		setup.parameterRedefs.addAll(system.parameterRedefs);
 		Simulator simulator = Simulator.create(
 				setup, database, App.getSolver());

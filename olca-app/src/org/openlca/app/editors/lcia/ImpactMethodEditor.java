@@ -5,7 +5,7 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> {
 		for (ImpactCategory category : getModel().impactCategories) {
 			cache.refresh(ImpactCategory.class, category.id);
 			cache.invalidate(ImpactCategory.class, category.id);
-			Cache.evict(Descriptors.toDescriptor(category));
+			Cache.evict(Descriptor.of(category));
 		}
 	}
 

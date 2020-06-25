@@ -19,7 +19,7 @@ import org.openlca.core.model.AbstractEntity;
 import org.openlca.core.model.Callback.Message;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.output.JsonExport;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		IDatabase db = Database.get();
 		if (db == null)
 			return true;
-		List<BaseDescriptor> models = page.getSelectedModels();
+		var models = page.getSelectedModels();
 		if (models == null || models.isEmpty())
 			return true;
 		File target = page.getExportDestination();
@@ -67,10 +67,10 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 	private class Export implements IRunnableWithProgress {
 
 		private File zipFile;
-		private List<BaseDescriptor> models;
+		private List<Descriptor> models;
 		private IDatabase database;
 
-		public Export(File zipFile, List<BaseDescriptor> models,
+		public Export(File zipFile, List<Descriptor> models,
 				IDatabase database) {
 			this.zipFile = zipFile;
 			this.models = models;
@@ -93,7 +93,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		private void doExport(IProgressMonitor monitor, ZipStore store) {
 			JsonExport export = new JsonExport(database, store);
 			export.setClientInfo("openLCA " + App.getVersion());
-			for (BaseDescriptor model : models) {
+			for (var model : models) {
 				if (monitor.isCanceled())
 					break;
 				monitor.subTask(model.name);

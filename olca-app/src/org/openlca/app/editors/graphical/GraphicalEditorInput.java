@@ -7,20 +7,20 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 public final class GraphicalEditorInput implements IEditorInput {
 
-	private BaseDescriptor descriptor;
+	private Descriptor descriptor;
 
-	public GraphicalEditorInput(BaseDescriptor descriptor) {
+	public GraphicalEditorInput(Descriptor descriptor) {
 		this.descriptor = descriptor;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof GraphicalEditorInput) {
-			GraphicalEditorInput other = (GraphicalEditorInput) obj;
+			var other = (GraphicalEditorInput) obj;
 			return Objects.equals(this.descriptor, other.descriptor);
 		}
 		return false;
@@ -37,7 +37,7 @@ public final class GraphicalEditorInput implements IEditorInput {
 		return null;
 	}
 
-	public BaseDescriptor getDescriptor() {
+	public Descriptor getDescriptor() {
 		return descriptor;
 	}
 

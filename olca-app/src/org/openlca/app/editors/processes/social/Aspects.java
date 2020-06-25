@@ -5,14 +5,14 @@ import java.util.Objects;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.SocialIndicator;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 class Aspects {
 
 	private Aspects() {
 	}
 
-	static SocialAspect find(Process p, BaseDescriptor indicator) {
+	static SocialAspect find(Process p, Descriptor indicator) {
 		if (p == null || indicator == null)
 			return null;
 		for (SocialAspect a : p.socialAspects) {

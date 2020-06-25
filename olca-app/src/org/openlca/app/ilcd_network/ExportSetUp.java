@@ -3,14 +3,14 @@ package org.openlca.app.ilcd_network;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 public class ExportSetUp {
 
 	private String url;
 	private String user;
 	private String password;
-	private List<BaseDescriptor> exportTupels = new ArrayList<>();
+	private List<Descriptor> exportTupels = new ArrayList<>();
 
 	public String getUser() {
 		return user;
@@ -36,7 +36,7 @@ public class ExportSetUp {
 		this.url = url;
 	}
 
-	public List<BaseDescriptor> getExportTupels() {
+	public List<Descriptor> getExportTupels() {
 		return exportTupels;
 	}
 

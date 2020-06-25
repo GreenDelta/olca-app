@@ -20,7 +20,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.Source;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 class SourceViewer extends AbstractTableViewer<Source> {
 
@@ -61,12 +61,11 @@ class SourceViewer extends AbstractTableViewer<Source> {
 
 	@OnAdd
 	protected void onCreate() {
-		BaseDescriptor[] descriptors = ModelSelectionDialog
-				.multiSelect(ModelType.SOURCE);
+		var descriptors = ModelSelectionDialog.multiSelect(ModelType.SOURCE);
 		if (descriptors == null)
 			return;
 		boolean added = false;
-		for (BaseDescriptor d : descriptors) {
+		for (var d : descriptors) {
 			if (add(d)) {
 				added = true;
 			}
@@ -76,7 +75,7 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		update();
 	}
 
-	private boolean add(BaseDescriptor d) {
+	private boolean add(Descriptor d) {
 		if (d == null)
 			return false;
 		Source source = sourceDao.getForId(d.id);
@@ -107,7 +106,7 @@ class SourceViewer extends AbstractTableViewer<Source> {
 	}
 
 	@OnDrop
-	protected void onDrop(BaseDescriptor d) {
+	protected void onDrop(Descriptor d) {
 		if (!add(d))
 			return;
 		update();

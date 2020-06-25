@@ -22,8 +22,8 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Categories;
 
 public class NavigationLabelProvider extends ColumnLabelProvider
@@ -122,8 +122,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return Images.getForCategory((ModelType) content);
 		if (content instanceof Category)
 			return Images.get((Category) content);
-		if (content instanceof BaseDescriptor)
-			return Images.get((BaseDescriptor) content);
+		if (content instanceof Descriptor)
+			return Images.get((Descriptor) content);
 
 		if (content instanceof File) {
 			var file = (File) content;
@@ -167,8 +167,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return ((Category) content).name;
 		if (content instanceof ModelType)
 			return Labels.plural((ModelType) content);
-		if (content instanceof BaseDescriptor)
-			return Labels.name((BaseDescriptor) content);
+		if (content instanceof Descriptor)
+			return Labels.name((Descriptor) content);
 		if (content instanceof File)
 			return ((File) content).getName();
 		return null;

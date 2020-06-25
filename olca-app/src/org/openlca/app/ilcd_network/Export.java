@@ -14,7 +14,7 @@ import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.ilcd.io.SodaClient;
 import org.openlca.io.ilcd.output.ExportConfig;
 import org.openlca.io.ilcd.output.ProcessExport;
@@ -25,11 +25,11 @@ import org.slf4j.LoggerFactory;
 public class Export implements IRunnableWithProgress {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-	private List<BaseDescriptor> descriptors;
+	private List<Descriptor> descriptors;
 	private IProgressMonitor monitor;
 	private IDatabase database;
 
-	public Export(List<BaseDescriptor> exportTupels, IDatabase database) {
+	public Export(List<Descriptor> exportTupels, IDatabase database) {
 		this.descriptors = exportTupels;
 		this.database = database;
 	}
@@ -41,9 +41,9 @@ public class Export implements IRunnableWithProgress {
 		SodaClient client = tryCreateClient();
 		ExportConfig config = new ExportConfig(database, client);
 		config.lang = IoPreference.getIlcdLanguage();
-		Iterator<BaseDescriptor> it = descriptors.iterator();
+		Iterator<Descriptor> it = descriptors.iterator();
 		while (!monitor.isCanceled() && it.hasNext()) {
-			BaseDescriptor d = it.next();
+			Descriptor d = it.next();
 			monitor.subTask(d.name);
 			createRunExport(config, d);
 		}
@@ -67,14 +67,14 @@ public class Export implements IRunnableWithProgress {
 		log.info(taskName);
 	}
 
-	private void createRunExport(ExportConfig config, BaseDescriptor d) {
+	private void createRunExport(ExportConfig config, Descriptor d) {
 		if (d.type == ModelType.PROCESS)
 			tryExportProcess(config, d);
 		else if (d.type == ModelType.PRODUCT_SYSTEM)
 			tryExportSystem(config, d);
 	}
 
-	private void tryExportProcess(ExportConfig config, BaseDescriptor d) {
+	private void tryExportProcess(ExportConfig config, Descriptor d) {
 		try {
 			Process p = new ProcessDao(database).getForId(d.id);
 			ProcessExport export = new ProcessExport(config);
@@ -85,7 +85,7 @@ public class Export implements IRunnableWithProgress {
 		}
 	}
 
-	private void tryExportSystem(ExportConfig config, BaseDescriptor d) {
+	private void tryExportSystem(ExportConfig config, Descriptor d) {
 		try {
 			ProductSystem system = new ProductSystemDao(database).getForId(d.id);
 			SystemExport export = new SystemExport(config);

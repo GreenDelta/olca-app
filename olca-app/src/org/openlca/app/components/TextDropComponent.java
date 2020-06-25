@@ -22,7 +22,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 /**
  * A text field with an add and optional remove button which allows the drop of
@@ -30,12 +30,12 @@ import org.openlca.core.model.descriptors.BaseDescriptor;
  */
 public final class TextDropComponent extends Composite {
 
-	private BaseDescriptor content;
+	private Descriptor content;
 	private Text text;
 	private FormToolkit toolkit;
 	private ModelType modelType;
 	private Button removeButton;
-	private Consumer<BaseDescriptor> handler;
+	private Consumer<Descriptor> handler;
 
 	public TextDropComponent(Composite parent, FormToolkit toolkit, ModelType modelType) {
 		super(parent, SWT.FILL);
@@ -44,11 +44,11 @@ public final class TextDropComponent extends Composite {
 		createContent();
 	}
 
-	public void onChange(Consumer<BaseDescriptor> handler) {
+	public void onChange(Consumer<Descriptor> handler) {
 		this.handler = handler;
 	}
 
-	public void setContent(BaseDescriptor content) {
+	public void setContent(Descriptor content) {
 		if (content != null && content.type != modelType)
 			return;
 		this.content = content;
@@ -90,16 +90,17 @@ public final class TextDropComponent extends Composite {
 	}
 
 	private void createAddButton() {
-		Button addButton = toolkit.createButton(this, "", SWT.PUSH);
-		addButton.setToolTipText(M.TextDropComponent_ToolTipText);
-		addButton.setLayoutData(new TableWrapData());
-		addButton.setImage(Images.get(modelType));
-		addButton.addMouseListener(new MouseAdapter() {
+		var btn = toolkit.createButton(this, "", SWT.PUSH);
+		btn.setToolTipText(M.TextDropComponent_ToolTipText);
+		btn.setLayoutData(new TableWrapData());
+		btn.setImage(Images.get(modelType));
+		btn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(final MouseEvent e) {
-				BaseDescriptor descriptor = ModelSelectionDialog.select(modelType);
-				if (descriptor != null)
-					handleAdd(descriptor);
+				var d = ModelSelectionDialog.select(modelType);
+				if (d != null) {
+					handleAdd(d);
+				}
 			}
 		});
 	}
@@ -151,12 +152,12 @@ public final class TextDropComponent extends Composite {
 	}
 
 	private void handleAdd(Object data) {
-		BaseDescriptor descriptor = ModelTransfer.getDescriptor(data);
-		if (descriptor == null || descriptor.type != modelType)
+		var d = ModelTransfer.getDescriptor(data);
+		if (d == null || d.type != modelType)
 			return;
-		setContent(descriptor);
+		setContent(d);
 		if (handler != null) {
-			handler.accept(descriptor);
+			handler.accept(d);
 		}
 	}
 

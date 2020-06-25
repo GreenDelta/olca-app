@@ -11,7 +11,7 @@ import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ class Search implements Runnable {
 	ModelType typeFilter;
 	private String rawTerm;
 	private String[] terms;
-	private List<BaseDescriptor> result = new ArrayList<>();
+	private List<Descriptor> result = new ArrayList<>();
 
 	public Search(IDatabase database, String term) {
 		this.database = database;
@@ -33,7 +33,7 @@ class Search implements Runnable {
 			terms[i] = terms[i].trim();
 	}
 
-	public List<BaseDescriptor> getResult() {
+	public List<Descriptor> getResult() {
 		return result;
 	}
 
@@ -65,15 +65,15 @@ class Search implements Runnable {
 
 	private void fetchResults(List<?> descriptors) {
 		for (Object obj : descriptors) {
-			if (!(obj instanceof BaseDescriptor))
+			if (!(obj instanceof Descriptor))
 				continue;
-			BaseDescriptor descriptor = (BaseDescriptor) obj;
+			Descriptor descriptor = (Descriptor) obj;
 			if (match(descriptor))
 				result.add(descriptor);
 		}
 	}
 
-	private boolean match(BaseDescriptor d) {
+	private boolean match(Descriptor d) {
 		if (terms == null)
 			return false;
 		if (terms.length == 1
@@ -92,9 +92,9 @@ class Search implements Runnable {
 		return true;
 	}
 
-	private class ResultComparator implements Comparator<BaseDescriptor> {
+	private class ResultComparator implements Comparator<Descriptor> {
 		@Override
-		public int compare(BaseDescriptor o1, BaseDescriptor o2) {
+		public int compare(Descriptor o1, Descriptor o2) {
 			String label1 = Labels.name(o1).toLowerCase();
 			String label2 = Labels.name(o2).toLowerCase();
 			for (String term : terms) {

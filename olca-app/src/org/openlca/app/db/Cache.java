@@ -4,7 +4,7 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.cache.MatrixCache;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.BaseDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,20 +53,19 @@ public final class Cache {
 		return appCache;
 	}
 
-	public static void evict(BaseDescriptor descriptor) {
-		if (descriptor == null)
+	public static void evict(Descriptor d) {
+		if (d == null)
 			return;
-		log.trace("evict {} with ID {}", descriptor.getClass(),
-				descriptor.id);
-		if (descriptor.type == null)
+		log.trace("evict {} with ID {}", d.getClass(), d.id);
+		if (d.type == null)
 			evictAll(); // to be on the save side
-		else if (shouldEvictAll(descriptor.type)) {
+		else if (shouldEvictAll(d.type)) {
 			if (entityCache != null)
 				entityCache.invalidateAll();
-			evictFromMatrices(descriptor);
+			evictFromMatrices(d);
 		} else {
-			evictEntity(descriptor);
-			evictFromMatrices(descriptor);
+			evictEntity(d);
+			evictFromMatrices(d);
 		}
 	}
 
@@ -83,27 +82,27 @@ public final class Cache {
 			matrixCache.evictAll();
 	}
 
-	private static void evictEntity(BaseDescriptor descriptor) {
+	private static void evictEntity(Descriptor d) {
 		if (entityCache == null)
 			return;
-		long id = descriptor.id;
-		Class<?> clazz = descriptor.getClass();
+		long id = d.id;
+		Class<?> clazz = d.getClass();
 		log.trace("evict from entity cache {} with id={}", clazz, id);
 		entityCache.invalidate(clazz, id);
-		if (descriptor.type == null)
+		if (d.type == null)
 			return;
-		clazz = descriptor.type.getModelClass();
+		clazz = d.type.getModelClass();
 		log.trace("evict from entity cache {} with id={}", clazz, id);
 		entityCache.invalidate(clazz, id);
 	}
 
-	private static void evictFromMatrices(BaseDescriptor descriptor) {
+	private static void evictFromMatrices(Descriptor d) {
 		if (matrixCache == null)
 			return;
-		matrixCache.evict(descriptor.type, descriptor.id);
+		matrixCache.evict(d.type, d.id);
 	}
 
-	public static void registerNew(BaseDescriptor descriptor) {
+	public static void registerNew(Descriptor descriptor) {
 		if (matrixCache == null)
 			return;
 		log.trace("register new model {}", descriptor);

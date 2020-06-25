@@ -34,8 +34,8 @@ import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.BaseDescriptor;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
@@ -91,16 +91,16 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
 	@OnAdd
 	protected void onCreate() {
-		BaseDescriptor[] descriptors = ModelSelectionDialog
+		var descriptors = ModelSelectionDialog
 				.multiSelect(ModelType.FLOW_PROPERTY);
 		if (descriptors == null)
 			return;
-		for (BaseDescriptor d : descriptors) {
+		for (var d : descriptors) {
 			add(d);
 		}
 	}
 
-	private void add(BaseDescriptor d) {
+	private void add(Descriptor d) {
 		if (d == null)
 			return;
 		FlowProperty prop = cache.get(FlowProperty.class, d.id);
@@ -142,7 +142,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	}
 
 	@OnDrop
-	protected void onDrop(BaseDescriptor d) {
+	protected void onDrop(Descriptor d) {
 		if (d != null)
 			add(d);
 	}

@@ -14,7 +14,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.descriptors.Descriptors;
+import org.openlca.core.model.descriptors.Descriptor;
 
 class ExchangeFigure extends Label {
 
@@ -40,7 +40,7 @@ class ExchangeFigure extends Label {
 			return text;
 		if (node.exchange.flow.category != null) {
 			text += M.Category + ": " + Labels.getShortCategory(
-					Descriptors.toDescriptor(node.exchange.flow)) + "\n";
+					Descriptor.of(node.exchange.flow)) + "\n";
 		}
 		text += M.Amount + ": " + Numbers.format(node.exchange.amount);
 		return text;
