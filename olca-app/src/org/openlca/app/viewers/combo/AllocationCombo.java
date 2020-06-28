@@ -5,10 +5,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.core.model.AllocationMethod;
 
-public class AllocationMethodViewer extends
-		AbstractComboViewer<AllocationMethod> {
+public class AllocationCombo extends AbstractComboViewer<AllocationMethod> {
 
-	public AllocationMethodViewer(Composite parent, AllocationMethod[] values) {
+	public AllocationCombo(Composite parent, AllocationMethod... values) {
 		super(parent);
 		setNullText(M.None);
 		setInput(values);

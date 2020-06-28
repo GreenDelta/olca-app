@@ -29,7 +29,7 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.TableClipboard;
 import org.openlca.app.util.tables.Tables;
-import org.openlca.app.viewers.combo.AllocationMethodViewer;
+import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.core.model.AllocationFactor;
@@ -56,22 +56,6 @@ public class AllocationPage extends ModelPage<Process> {
 		this.editor = editor;
 		editor.getEventBus().register(this);
 		editor.onSaved(this::setTableInputs);
-	}
-
-	static Double parseFactor(String text) {
-		try {
-			double val = Double.parseDouble(text);
-			if (val < -0.0001 || val > 1.0001) {
-				MsgBox.error(M.InvalidAllocationFactor,
-						M.InvalidAllocationFactorMessage);
-				return null;
-			}
-			return val;
-		} catch (Exception e) {
-			MsgBox.error(M.InvalidNumber, text + " "
-					+ M.IsNotValidNumber);
-			return null;
-		}
 	}
 
 	/**
@@ -152,13 +136,11 @@ public class AllocationPage extends ModelPage<Process> {
 
 	private void createDefaultCombo(Composite comp) {
 		UI.formLabel(comp, tk, M.DefaultMethod);
-		AllocationMethod[] methods = {
+		var combo = new AllocationCombo(comp,
 				AllocationMethod.NONE,
 				AllocationMethod.CAUSAL,
 				AllocationMethod.ECONOMIC,
-				AllocationMethod.PHYSICAL,
-		};
-		var combo = new AllocationMethodViewer(comp, methods);
+				AllocationMethod.PHYSICAL);
 		var selected = process().defaultAllocationMethod;
 		if (selected == null) {
 			selected = AllocationMethod.NONE;

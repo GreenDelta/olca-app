@@ -14,6 +14,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerConfig;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -22,7 +24,7 @@ public class RcpActivator extends AbstractUIPlugin {
 
 	public static final String PLUGIN_ID = "olca-app";
 
-	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private static RcpActivator plugin;
 
 	/**

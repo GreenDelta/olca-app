@@ -18,7 +18,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.combo.AllocationMethodViewer;
+import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
 import org.openlca.core.math.CalculationType;
@@ -124,7 +124,7 @@ class CalculationWizardPage extends WizardPage {
 
 	private void createAllocationCombo(Composite comp) {
 		UI.formLabel(comp, M.AllocationMethod);
-		AllocationMethodViewer combo = new AllocationMethodViewer(
+		AllocationCombo combo = new AllocationCombo(
 				comp, AllocationMethod.values());
 		combo.setNullable(false);
 		if (setup.calcSetup.allocationMethod == null) {

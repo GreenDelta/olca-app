@@ -18,7 +18,7 @@ import org.openlca.app.components.FileSelection;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.combo.AllocationMethodViewer;
+import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.AllocationMethod;
@@ -36,7 +36,7 @@ public class SystemExportDialog extends WizardDialog {
 
 		private class SystemExportWizardPage extends WizardPage {
 
-			private AllocationMethodViewer allocationCombo;
+			private AllocationCombo allocationCombo;
 			private FileSelection fileChooser;
 			private ImpactMethodViewer impactCombo;
 
@@ -63,7 +63,7 @@ public class SystemExportDialog extends WizardDialog {
 
 				Group mgroup = createGroup(M.Methods, comp, 1);
 				UI.formLabel(mgroup, M.AllocationMethod);
-				allocationCombo = new AllocationMethodViewer(
+				allocationCombo = new AllocationCombo(
 						mgroup, AllocationMethod.values());
 				UI.formLabel(mgroup, M.ImpactAssessmentMethod);
 				impactCombo = new ImpactMethodViewer(mgroup);

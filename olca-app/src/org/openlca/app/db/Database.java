@@ -21,7 +21,7 @@ public class Database {
 	private static IDatabase database;
 	private static IDatabaseConfiguration config;
 	private static DatabaseListener listener;
-	private static DatabaseList configurations = loadConfigs();
+	private static final DatabaseList configurations = loadConfigs();
 	private static DiffIndex diffIndex;
 	private static RepositoryClient repositoryClient;
 	private static Server ipcServer;

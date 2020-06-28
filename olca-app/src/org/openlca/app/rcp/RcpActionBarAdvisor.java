@@ -3,7 +3,6 @@ package org.openlca.app.rcp;
 import java.io.File;
 import java.util.Objects;
 
-import org.eclipse.core.runtime.IExtension;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IMenuManager;
@@ -21,8 +20,6 @@ import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.internal.WorkbenchPlugin;
-import org.eclipse.ui.internal.registry.ActionSetRegistry;
-import org.eclipse.ui.internal.registry.IActionSetDescriptor;
 import org.openlca.app.App;
 import org.openlca.app.Config;
 import org.openlca.app.M;
@@ -43,6 +40,7 @@ import org.openlca.app.navigation.actions.ExportAction;
 import org.openlca.app.navigation.actions.ImportAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.tools.libraries.LibraryExportDialog;
 import org.openlca.app.tools.mapping.MappingTool;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
@@ -98,14 +96,13 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private void removeActionSets() {
 		// currently we just remove the cheat-sheets here; see:
 		// http://random-eclipse-tips.blogspot.de/2009/02/eclipse-rcp-removing-unwanted_02.html
-		ActionSetRegistry reg = WorkbenchPlugin.getDefault().getActionSetRegistry();
-		IActionSetDescriptor[] actionSets = reg.getActionSets();
-		for (int i = 0; i < actionSets.length; i++) {
-			if (Objects.equals(actionSets[i].getId(),
+		var reg = WorkbenchPlugin.getDefault().getActionSetRegistry();
+		for (var aset : reg.getActionSets()) {
+			if (Objects.equals(aset.getId(),
 					"org.eclipse.ui.cheatsheets.actionSet")) {
-				IExtension ext = actionSets[i].getConfigurationElement()
+				var ext = aset.getConfigurationElement()
 						.getDeclaringExtension();
-				reg.removeExtension(ext, new Object[] { actionSets[i] });
+				reg.removeExtension(ext, new Object[]{aset});
 			}
 		}
 	}
@@ -175,6 +172,11 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		menu.add(new Separator());
 		menu.add(new FormulaConsoleAction());
+
+		// library export
+		menu.add(Actions.create(
+				"Library export (experimental)",
+				LibraryExportDialog::show));
 
 		// add tools actions for ecoinvent imports
 		if (App.runsInDevMode()) {
