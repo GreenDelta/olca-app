@@ -7,6 +7,7 @@ import java.util.List;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.core.model.ModelType;
 
 /** Navigation element for databases. */
@@ -41,6 +42,17 @@ public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
 				ModelType.ACTOR,
 				ModelType.SOURCE,
 				ModelType.LOCATION)));
+
+		// add libraries
+		var db = Database.get();
+		if (db != null) {
+			var libs = db.getLibraries();
+			if (!libs.isEmpty()) {
+				var libDir = Workspace.getLibraryDir();
+				var elem = new LibraryDirElement(this, libDir).only(libs);
+				list.add(elem);
+			}
+		}
 		return list;
 	}
 
