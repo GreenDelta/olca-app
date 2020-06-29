@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -70,6 +73,11 @@ public class DbAddLibraryAction extends Action implements INavigationAction {
 			super.configureShell(newShell);
 			newShell.setText("Add a library to " + db.getName());
 		}
+		
+		@Override
+		protected Point getInitialSize() {
+			return new Point(500, 350);
+		}
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
@@ -93,14 +101,15 @@ public class DbAddLibraryAction extends Action implements INavigationAction {
 					.toArray(String[]::new);
 
 			// create and fill the combo
-			var combo = UI.formCombo(body, tk, "Form workspace:");
+			var workspaceCheck = tk.createButton(
+					body, "Form workspace:", SWT.RADIO);
+			workspaceCheck.setSelection(true);
+			var combo = new Combo(body, SWT.READ_ONLY);
+			UI.gridData(combo, true, false);
 			combo.setItems(items);
 			if (items.length > 0) {
 				combo.select(0);
 				selectedInfo = infos[0];
-			} else {
-				var ok = getButton(OK);
-				ok.setEnabled(false);
 			}
 			Controls.onSelect(combo, _e -> {
 				int idx = combo.getSelectionIndex();
@@ -108,6 +117,21 @@ public class DbAddLibraryAction extends Action implements INavigationAction {
 					return;
 				selectedInfo = infos[idx];
 			});
+			
+			// file selector; not yet implemented
+			var fileCheck = tk.createButton(
+					body, "Form zip file:", SWT.RADIO);
+			fileCheck.setSelection(false);
+			fileCheck.setEnabled(false);
+			var fileComp = tk.createComposite(body);
+			UI.gridLayout(fileComp, 2, 10, 0);
+			UI.gridData(fileComp, true, false);
+			
+			var fileText = tk.createText(fileComp, "");
+			fileText.setEnabled(false);
+			UI.gridData(fileText, true, false);
+			var fileBtn = tk.createButton(fileComp, "Browse", SWT.NONE);
+			fileBtn.setEnabled(false);
 		}
 
 		@Override
