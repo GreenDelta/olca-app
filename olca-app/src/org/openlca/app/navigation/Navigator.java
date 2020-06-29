@@ -27,6 +27,7 @@ import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
+import org.openlca.app.tools.libraries.LibraryInfoPage;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -73,6 +74,9 @@ public class Navigator extends CommonNavigator {
 				if (file.getName().endsWith(".py")) {
 					PythonEditor.open(file);
 				}
+			} else if (elem instanceof LibraryElement) {
+				var library = ((LibraryElement) elem).getContent();
+				LibraryInfoPage.show(library);
 			}
 		});
 	}
