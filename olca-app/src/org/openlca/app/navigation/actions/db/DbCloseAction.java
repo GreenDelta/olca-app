@@ -8,7 +8,6 @@ import org.openlca.app.M;
 import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
@@ -16,13 +15,12 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.validation.ValidationView;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Close the activated database */
+/**
+ * Close the activated database
+ */
 public class DbCloseAction extends Action implements INavigationAction {
-
-	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public DbCloseAction() {
 		setText(M.CloseDatabase);
@@ -30,12 +28,11 @@ public class DbCloseAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
+	public boolean accept(INavigationElement<?> elem) {
+		if (!(elem instanceof DatabaseElement))
 			return false;
-		DatabaseElement e = (DatabaseElement) element;
-		IDatabaseConfiguration config = e.getContent();
-		return Database.isActive(config);
+		var e = (DatabaseElement) elem;
+		return Database.isActive(e.getContent());
 	}
 
 	@Override
@@ -47,21 +44,18 @@ public class DbCloseAction extends Action implements INavigationAction {
 	public void run() {
 		if (!Editors.closeAll())
 			return;
-		App.run(M.CloseDatabase, new Runnable() {
-			public void run() {
-				try {
-					Database.close();
-				} catch (Exception e) {
-					log.error("Failed to close database", e);
-				}
+		App.run(M.CloseDatabase, () -> {
+			try {
+				Database.close();
+			} catch (Exception e) {
+				var log = LoggerFactory.getLogger(getClass());
+				log.error("Failed to close database", e);
 			}
-		}, new Runnable() {
-			public void run() {
-				Navigator.refresh();
-				HistoryView.refresh();
-				CompareView.clear();
-				ValidationView.clear();
-			}
+		}, () -> {
+			Navigator.refresh();
+			HistoryView.refresh();
+			CompareView.clear();
+			ValidationView.clear();
 		});
 	}
 

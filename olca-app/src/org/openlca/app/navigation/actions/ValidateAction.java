@@ -10,6 +10,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.LibraryDirElement;
+import org.openlca.app.navigation.LibraryElement;
 import org.openlca.app.navigation.NavigationRoot;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.ScriptElement;
@@ -62,8 +64,12 @@ public class ValidateAction extends Action implements INavigationAction {
 		if (forDB)
 			return false;
 
-		// skip scripting elements (later also libraries etc.)
+		// skip scripting elements and libraries
 		if (elem instanceof ScriptElement)
+			return false;
+		if (elem instanceof LibraryDirElement)
+			return false;
+		if (elem instanceof LibraryElement)
 			return false;
 
 		// model elements, categories etc.
