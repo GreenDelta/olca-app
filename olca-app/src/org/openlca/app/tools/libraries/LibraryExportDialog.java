@@ -1,13 +1,20 @@
 package org.openlca.app.tools.libraries;
 
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.Navigator;
+import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.library.Library;
+import org.openlca.core.library.LibraryExport;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Version;
 
@@ -37,6 +44,12 @@ public class LibraryExportDialog extends FormDialog {
 	}
 
 	@Override
+	protected void configureShell(Shell newShell) {
+		super.configureShell(newShell);
+		newShell.setText("Create a library");
+	}
+
+	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
 		var body = UI.formBody(mform.getForm(), tk);
@@ -59,12 +72,37 @@ public class LibraryExportDialog extends FormDialog {
 		allocCombo.addSelectionChangedListener(
 				m -> config.allocation = m);
 
+		var regioCheck = UI.formCheckBox(body, tk, "Regionalized");
+		regioCheck.setSelection(config.regionalized);
+		Controls.onSelect(regioCheck, _e ->
+				config.regionalized = regioCheck.getSelection());
+	}
+
+	@Override
+	protected void okPressed() {
+		var libDir = Workspace.getLibraryDir();
+		var lib = new Library(config.name, config.version);
+		var exportDir = libDir.getFolder(lib);
+		var name = lib.name + " " + lib.version;
+		if (exportDir.exists()) {
+			MsgBox.error(name + " already exists",
+					"A library with this name and version already exists");
+			return;
+		}
+		super.okPressed();
+		var export = new LibraryExport(db, exportDir)
+				.as(lib)
+				.solver(App.getSolver());
+		App.runWithProgress(
+				"Creating library " + name,
+				export,
+				Navigator::refresh);
 	}
 
 	private static class Config {
 		String name;
 		String version;
 		AllocationMethod allocation;
-		boolean withRegionalization;
+		boolean regionalized;
 	}
 }

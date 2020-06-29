@@ -7,6 +7,7 @@ import java.net.URL;
 import org.eclipse.core.runtime.Platform;
 import org.openlca.app.AppArg;
 import org.openlca.app.Config;
+import org.openlca.core.library.LibraryDir;
 
 /**
  * The workspace configuration of openLCA. The workspace is located in the
@@ -25,6 +26,11 @@ public class Workspace {
 		if (dir == null)
 			init();
 		return dir;
+	}
+
+	public static LibraryDir getLibraryDir() {
+		var libDir = new File(dir, "libraries");
+		return new LibraryDir(libDir);
 	}
 
 	/**

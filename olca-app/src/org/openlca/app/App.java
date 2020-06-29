@@ -82,7 +82,7 @@ public class App {
 		log.trace("Try init olca-eigen");
 		try {
 			NativeLibrary.loadFromDir(Workspace.getDir());
-		} catch (UnsatisfiedLinkError e) {
+		} catch (UnsatisfiedLinkError ignored) {
 		}
 		log.trace("olca-eigen loaded: {}", NativeLibrary.isLoaded());
 		if (!NativeLibrary.isLoaded()) {
@@ -232,10 +232,9 @@ public class App {
 
 	public static void runWithProgress(String name, Runnable fn,
 			Runnable callback) {
-		IProgressService progress = PlatformUI.getWorkbench()
-				.getProgressService();
+		var service = PlatformUI.getWorkbench().getProgressService();
 		try {
-			progress.run(true, false, m -> {
+			service.run(true, false, m -> {
 				m.beginTask(name, IProgressMonitor.UNKNOWN);
 				fn.run();
 				m.done();
@@ -255,7 +254,7 @@ public class App {
 	 * call failed.
 	 */
 	public static <T> T exec(String task, Supplier<T> fn) {
-		AtomicReference<T> ref = new AtomicReference<T>();
+		var ref = new AtomicReference<T>();
 		try {
 			PlatformUI.getWorkbench().getProgressService()
 					.busyCursorWhile((monitor) -> {
