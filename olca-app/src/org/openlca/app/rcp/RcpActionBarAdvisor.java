@@ -169,14 +169,16 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 				"New", MappingTool::createNew));
 		fmMenu.add(Actions.create(
 				"Open file", MappingTool::openFile));
-
-		menu.add(new Separator());
-		menu.add(new FormulaConsoleAction());
-
+		
 		// library export
 		menu.add(Actions.create(
 				"Library export (experimental)",
 				LibraryExportDialog::show));
+
+		// console
+		menu.add(new Separator());
+		menu.add(new FormulaConsoleAction());
+
 
 		// add tools actions for ecoinvent imports
 		if (App.runsInDevMode()) {

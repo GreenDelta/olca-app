@@ -129,7 +129,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return Images.get((Descriptor) content);
 
 		// libraries
-		if (content instanceof LibraryDirElement)
+		if (content instanceof LibraryDir)
 			return Icon.FOLDER.get();
 		if (content instanceof Library)
 			return Icon.DATABASE.get();
@@ -182,8 +182,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (content instanceof LibraryDir)
 			return "Libraries";
 		if (content instanceof Library) {
-			var lib = (Library) content;
-			return lib.name + " " + lib.version;
+			var info = ((Library) content).getInfo();
+			return info.name + " " + info.version;
 		}
 		if (content instanceof File)
 			return ((File) content).getName();

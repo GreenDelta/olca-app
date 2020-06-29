@@ -13,8 +13,8 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryExport;
+import org.openlca.core.library.LibraryInfo;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Version;
 
@@ -57,13 +57,13 @@ public class LibraryExportDialog extends FormDialog {
 
 		var name = UI.formText(body, tk, M.Name);
 		name.setText(config.name);
-		name.addModifyListener(_e ->
-				config.name = name.getText().trim());
+		name.addModifyListener(_e -> 
+			config.name = name.getText().trim());
 
 		var version = UI.formText(body, tk, M.Version);
 		version.setText(config.version);
-		version.addModifyListener(_e ->
-				config.version = Version.format(version.getText()));
+		version.addModifyListener(_e -> 
+			config.version = Version.format(version.getText()));
 
 		UI.formLabel(body, tk, M.AllocationMethod);
 		var allocCombo = new AllocationCombo(
@@ -74,24 +74,24 @@ public class LibraryExportDialog extends FormDialog {
 
 		var regioCheck = UI.formCheckBox(body, tk, "Regionalized");
 		regioCheck.setSelection(config.regionalized);
-		Controls.onSelect(regioCheck, _e ->
-				config.regionalized = regioCheck.getSelection());
+		Controls.onSelect(regioCheck, _e -> 
+			config.regionalized = regioCheck.getSelection());
 	}
 
 	@Override
 	protected void okPressed() {
 		var libDir = Workspace.getLibraryDir();
-		var lib = new Library(config.name, config.version);
-		var exportDir = libDir.getFolder(lib);
-		var name = lib.name + " " + lib.version;
-		if (exportDir.exists()) {
+		var info = config.toInfo();
+		var exportDir = libDir.getFolder(info);
+		var name = info.name + " " + info.version;
+		if (libDir.exists(info)) {
 			MsgBox.error(name + " already exists",
 					"A library with this name and version already exists");
 			return;
 		}
 		super.okPressed();
 		var export = new LibraryExport(db, exportDir)
-				.as(lib)
+				.as(info)
 				.solver(App.getSolver());
 		App.runWithProgress(
 				"Creating library " + name,
@@ -104,5 +104,13 @@ public class LibraryExportDialog extends FormDialog {
 		String version;
 		AllocationMethod allocation;
 		boolean regionalized;
+
+		LibraryInfo toInfo() {
+			var info = new LibraryInfo();
+			info.name = name;
+			info.version = version;
+			info.isRegionalized = regionalized;
+			return info;
+		}
 	}
 }
