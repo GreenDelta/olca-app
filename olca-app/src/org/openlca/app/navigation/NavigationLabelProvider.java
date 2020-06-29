@@ -20,6 +20,8 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.core.library.Library;
+import org.openlca.core.library.LibraryDir;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -116,6 +118,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 					: Icon.DATABASE_DISABLED.get();
 		}
 
+		// groups and models
 		if (content instanceof Group)
 			return Images.get((Group) content);
 		if (content instanceof ModelType)
@@ -125,6 +128,13 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (content instanceof Descriptor)
 			return Images.get((Descriptor) content);
 
+		// libraries
+		if (content instanceof LibraryDirElement)
+			return Icon.FOLDER.get();
+		if (content instanceof Library)
+			return Icon.DATABASE.get();
+
+		// files and folders
 		if (content instanceof File) {
 			var file = (File) content;
 			return file.isDirectory()
@@ -160,7 +170,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 	private String getBaseText(INavigationElement<?> elem) {
 		if (elem instanceof GroupElement)
 			return ((GroupElement) elem).getContent().label;
-		var content = (elem).getContent();
+		var content = elem.getContent();
 		if (content instanceof IDatabaseConfiguration)
 			return ((IDatabaseConfiguration) content).getName();
 		if (content instanceof Category)
@@ -169,6 +179,12 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return Labels.plural((ModelType) content);
 		if (content instanceof Descriptor)
 			return Labels.name((Descriptor) content);
+		if (content instanceof LibraryDir)
+			return "Libraries";
+		if (content instanceof Library) {
+			var lib = (Library) content;
+			return lib.name + " " + lib.version;
+		}
 		if (content instanceof File)
 			return ((File) content).getName();
 		return null;
