@@ -33,4 +33,15 @@ final class Tags {
 		model.tags = String.join(",", next);
 		return next;
 	}
+
+	public static String[] remove(CategorizedEntity model, String tag) {
+		var existing = of(model);
+		if (Strings.nullOrEmpty(tag))
+			return existing;
+		var next = Arrays.stream(existing)
+				.filter(other -> !tag.equalsIgnoreCase(other))
+				.toArray(String[]::new);
+		model.tags = String.join(",", next);
+		return next;
+	}
 }

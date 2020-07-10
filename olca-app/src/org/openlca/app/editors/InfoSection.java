@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -138,10 +139,10 @@ public class InfoSection {
 		UI.gridLayout(tagComp, 1);
 		UI.gridData(tagComp, true, false);
 
-		var innerComp = new AtomicReference<Composite>();
-
 		// render function for the tag list
-		Runnable render = () -> {
+		var innerComp = new AtomicReference<Composite>();
+		var recursion = new AtomicReference<Consumer<String[]>>();
+		Consumer<String[]> render = tags -> {
 			var inner = innerComp.get();
 			if (inner != null) {
 				inner.dispose();
@@ -150,19 +151,26 @@ public class InfoSection {
 			UI.gridData(inner, true, false);
 			innerComp.set(inner);
 
-			var tags = Tags.of(editor.getModel());
 			UI.gridLayout(inner, tags.length, 5, 0);
-			for (var tag : tags) {
-				new Tag(tag, inner, tk);
+			for (var t : tags) {
+				new Tag(t, inner, tk).onRemove(tag -> {
+					var fn = recursion.get();
+					if (fn == null)
+						return;
+					fn.accept(Tags.remove(editor.getModel(), tag));
+					editor.setDirty(true);
+				});
 			}
 			List.of(inner, tagComp, comp, container)
-					.forEach(it -> it.layout());
+					.forEach(Composite::layout);
 		};
-		render.run();
+		recursion.set(render);
+		render.accept(Tags.of(editor.getModel()));
 
 		Controls.onSelect(btn, _e -> {
-			Tags.add(editor.getModel(), UUID.randomUUID().toString().substring(0, 8));
-			render.run();
+			var tags = Tags.add(editor.getModel(),
+					UUID.randomUUID().toString().substring(0, 8));
+			render.accept(tags);
 			editor.setDirty(true);
 		});
 
@@ -248,12 +256,15 @@ public class InfoSection {
 	private static class Tag {
 
 		private final ImageHyperlink link;
+		private Consumer<String> clickFn;
 
 		Tag(String text, Composite comp, FormToolkit tk) {
+
 			link = tk.createImageHyperlink(comp, SWT.NONE);
 			link.setText(text);
 			link.setImage(Icon.DELETE_DISABLED.get());
 			link.setBackground(Colors.fromHex("#e8eaf6"));
+
 			link.addMouseTrackListener(new MouseTrackAdapter() {
 				@Override
 				public void mouseEnter(MouseEvent e) {
@@ -265,13 +276,16 @@ public class InfoSection {
 					link.setImage(Icon.DELETE_DISABLED.get());
 				}
 			});
+
+			Controls.onClick(link, _e -> {
+				if (clickFn != null) {
+					clickFn.accept(text);
+				}
+			});
 		}
 
-		void dispose() {
-			if (link.isDisposed())
-				return;
-			link.dispose();
+		void onRemove(Consumer<String> fn) {
+			clickFn = fn;
 		}
-
 	}
 }
