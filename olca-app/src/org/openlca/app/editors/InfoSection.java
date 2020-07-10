@@ -2,7 +2,7 @@ package org.openlca.app.editors;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
+import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -147,7 +147,6 @@ public class InfoSection {
 				inner.dispose();
 			}
 			inner = tk.createComposite(tagComp);
-			inner.setBackground(Colors.getForChart(new Random().nextInt(10)));
 			UI.gridData(inner, true, false);
 			innerComp.set(inner);
 
@@ -156,7 +155,8 @@ public class InfoSection {
 			for (var tag : tags) {
 				new Tag(tag, inner, tk);
 			}
-			tagComp.layout();
+			List.of(inner, tagComp, comp, container)
+					.forEach(it -> it.layout());
 		};
 		render.run();
 
