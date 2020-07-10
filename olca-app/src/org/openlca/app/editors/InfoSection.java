@@ -2,11 +2,15 @@ package org.openlca.app.editors;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 import java.util.Stack;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -21,6 +25,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
@@ -43,47 +48,48 @@ public class InfoSection {
 		this.editor = editor;
 	}
 
-	public void render(Composite body, FormToolkit toolkit) {
-		container = UI.formSection(body, toolkit, M.GeneralInformation, 3);
-		Widgets.text(container, M.Name, "name", editor, toolkit);
-		Widgets.multiText(container, M.Description, "description", editor, toolkit);
+	public void render(Composite body, FormToolkit tk) {
+		container = UI.formSection(body, tk, M.GeneralInformation, 3);
+		Widgets.text(container, M.Name, "name", editor, tk);
+		Widgets.multiText(container, M.Description, "description", editor, tk);
 		if (entity.category != null) {
 			new Label(container, SWT.NONE).setText(M.Category);
 			createBreadcrumb(container);
-			new CommentControl(container, toolkit, "category", editor.getComments());
+			new CommentControl(container, tk, "category", editor.getComments());
 		} else if (editor.hasComment("category")) {
 			new Label(container, SWT.NONE).setText(M.Category);
 			UI.filler(container);
-			new CommentControl(container, toolkit, "category", editor.getComments());
+			new CommentControl(container, tk, "category", editor.getComments());
 		}
-		createVersionText(toolkit);
-		Text uuidText = UI.formText(container, toolkit, "UUID");
+		createVersionText(tk);
+		Text uuidText = UI.formText(container, tk, "UUID");
 		uuidText.setEditable(false);
 		if (entity.refId != null)
 			uuidText.setText(entity.refId);
-		UI.filler(container, toolkit);
-		createDateText(toolkit);
+		UI.filler(container, tk);
+		createDateText(tk);
+		createTags(tk);
 	}
 
-	private void createVersionText(FormToolkit toolkit) {
-		UI.formLabel(container, toolkit, M.Version);
-		Composite composite = toolkit.createComposite(container);
-		GridLayout layout = UI.gridLayout(composite, 3);
+	private void createVersionText(FormToolkit tk) {
+		UI.formLabel(container, tk, M.Version);
+		var comp = tk.createComposite(container);
+		var layout = UI.gridLayout(comp, 3);
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
-		versionLabel = toolkit.createLabel(composite,
+		versionLabel = tk.createLabel(comp,
 				Version.asString(entity.version));
 		editor.onSaved(() -> {
 			entity = editor.getModel();
 			versionLabel.setText(Version.asString(entity.version));
 		});
-		new VersionLink(composite, toolkit, VersionLink.MAJOR);
-		new VersionLink(composite, toolkit, VersionLink.MINOR);
-		UI.filler(container, toolkit);
+		new VersionLink(comp, tk, VersionLink.MAJOR);
+		new VersionLink(comp, tk, VersionLink.MINOR);
+		UI.filler(container, tk);
 	}
 
 	private void createDateText(FormToolkit tk) {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		var format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		UI.formLabel(container, tk, M.LastChange);
 		Label text = UI.formLabel(container, tk, "");
 		if (entity.lastChange != 0) {
@@ -107,7 +113,7 @@ public class InfoSection {
 		UI.gridLayout(breadcrumb, stack.size() * 2 - 1, 0, 0);
 		while (!stack.isEmpty()) {
 			current = stack.pop();
-			Hyperlink link = null;
+			Hyperlink link;
 			if (current.category == null) {
 				link = new ImageHyperlink(breadcrumb, SWT.NONE);
 				((ImageHyperlink) link).setImage(Images.get(current));
@@ -121,13 +127,55 @@ public class InfoSection {
 		}
 	}
 
+	private void createTags(FormToolkit tk) {
+		UI.formLabel(container, tk, "Tags");
+		var comp = tk.createComposite(container);
+		UI.gridData(comp, true, false);
+		UI.gridLayout(comp, 2, 10, 0);
+		var btn = tk.createButton(comp, "Add a tag", SWT.NONE);
+
+		var tagComp = tk.createComposite(comp);
+		UI.gridLayout(tagComp, 1);
+		UI.gridData(tagComp, true, false);
+
+		var innerComp = new AtomicReference<Composite>();
+
+		// render function for the tag list
+		Runnable render = () -> {
+			var inner = innerComp.get();
+			if (inner != null) {
+				inner.dispose();
+			}
+			inner = tk.createComposite(tagComp);
+			inner.setBackground(Colors.getForChart(new Random().nextInt(10)));
+			UI.gridData(inner, true, false);
+			innerComp.set(inner);
+
+			var tags = Tags.of(editor.getModel());
+			UI.gridLayout(inner, tags.length, 5, 0);
+			for (var tag : tags) {
+				new Tag(tag, inner, tk);
+			}
+			tagComp.layout();
+		};
+		render.run();
+
+		Controls.onSelect(btn, _e -> {
+			Tags.add(editor.getModel(), UUID.randomUUID().toString().substring(0, 8));
+			render.run();
+			editor.setDirty(true);
+		});
+
+		UI.filler(container, tk);
+	}
+
 	public Composite getContainer() {
 		return container;
 	}
 
-	private class CategoryLinkClick extends HyperlinkAdapter {
+	private static class CategoryLinkClick extends HyperlinkAdapter {
 
-		private Category category;
+		private final Category category;
 
 		private CategoryLinkClick(Category category) {
 			this.category = category;
@@ -148,7 +196,6 @@ public class InfoSection {
 
 		private Image hoverIcon = null;
 		private Image icon = null;
-		private String tooltip = null;
 
 		public VersionLink(Composite parent, FormToolkit toolkit, int type) {
 			this.type = type;
@@ -158,6 +205,7 @@ public class InfoSection {
 		}
 
 		private void configureLink() {
+			String tooltip;
 			if (type == MAJOR) {
 				tooltip = M.UpdateMajorVersion;
 				hoverIcon = Icon.UP.get();
@@ -195,5 +243,35 @@ public class InfoSection {
 		public void linkExited(HyperlinkEvent e) {
 			link.setImage(icon);
 		}
+	}
+
+	private static class Tag {
+
+		private final ImageHyperlink link;
+
+		Tag(String text, Composite comp, FormToolkit tk) {
+			link = tk.createImageHyperlink(comp, SWT.NONE);
+			link.setText(text);
+			link.setImage(Icon.DELETE_DISABLED.get());
+			link.setBackground(Colors.fromHex("#e8eaf6"));
+			link.addMouseTrackListener(new MouseTrackAdapter() {
+				@Override
+				public void mouseEnter(MouseEvent e) {
+					link.setImage(Icon.DELETE.get());
+				}
+
+				@Override
+				public void mouseExit(MouseEvent e) {
+					link.setImage(Icon.DELETE_DISABLED.get());
+				}
+			});
+		}
+
+		void dispose() {
+			if (link.isDisposed())
+				return;
+			link.dispose();
+		}
+
 	}
 }

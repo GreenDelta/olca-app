@@ -177,8 +177,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		if (fileName == null)
 			return null;
 		File dir = new FileStore(Database.get()).getFolder(getModel());
-		File file = new File(dir, fileName);
-		return file;
+		return new File(dir, fileName);
 	}
 
 	private void openFile(HyperlinkEvent evt) {
