@@ -1,10 +1,11 @@
 package org.openlca.app.editors;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Stack;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -15,6 +16,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -24,6 +26,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
@@ -34,6 +37,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Version;
+import org.openlca.util.Strings;
 
 /**
  * This is the general info section that each editor has: name, description,
@@ -171,10 +175,13 @@ public class InfoSection {
 		render.accept(Tags.of(editor.getModel()));
 
 		Controls.onSelect(btn, _e -> {
-			var tags = Tags.add(editor.getModel(),
-					UUID.randomUUID().toString().substring(0, 8));
-			render.accept(tags);
-			editor.setDirty(true);
+			var model = editor.getModel();
+			var candidates = Tags.searchFor(model, Database.get());
+			new TagDialog(candidates, tag -> {
+				var tags = Tags.add(model, tag);
+				render.accept(tags);
+				editor.setDirty(true);
+			}).open();
 		});
 
 		UI.filler(container, tk);
@@ -301,10 +308,13 @@ public class InfoSection {
 	private static class TagDialog extends FormDialog {
 
 		private final String[] candidates;
+		private final Consumer<String> onOk;
+		private Text text;
 
-		TagDialog(String[] candidates) {
+		TagDialog(String[] candidates, Consumer<String> onOk) {
 			super(UI.shell());
 			this.candidates = candidates;
+			this.onOk = onOk;
 		}
 
 		@Override
@@ -313,23 +323,73 @@ public class InfoSection {
 			var body = UI.formBody(mform.getForm(), tk);
 			UI.gridLayout(body, 1, 10, 10);
 
+			// text for new tag
 			var textComp = tk.createComposite(body);
 			UI.gridLayout(textComp, 2, 10, 0);
 			UI.gridData(textComp, true, false);
 			var label = UI.formLabel(textComp, tk, "New tag:");
 			label.setFont(UI.boldFont());
-			var text = UI.formText(textComp, SWT.SEARCH);
+			text = UI.formText(textComp, SWT.SEARCH);
 			UI.gridData(text, true, false);
 
+			// list with existing tags
 			UI.formLabel(body, tk, "Used tags:");
-			var list = new org.eclipse.swt.widgets.List(body, SWT.NONE);
+			var list = new org.eclipse.swt.widgets.List(body, SWT.BORDER);
 			UI.gridData(list, true, true);
+			if (candidates != null) {
+				list.setItems(candidates);
+			}
+
+			// filter function
+			text.addModifyListener(_e -> {
+				if (candidates == null || candidates.length == 0)
+					return;
+				var term = text.getText().trim().toLowerCase();
+				if (term.isBlank()) {
+					list.setItems(candidates);
+					return;
+				}
+
+				var cands = Arrays.stream(candidates)
+						.filter(c -> c.toLowerCase().contains(term))
+						.sorted(Comparator.comparingInt(c -> c.indexOf(term)))
+						.toArray(String[]::new);
+				list.setItems(cands);
+				list.getParent().layout();
+			});
+
+			// selection handler
+			Controls.onSelect(list, _e -> {
+				var selection = list.getSelection();
+				if (selection == null || selection.length == 0)
+					return;
+				var tag = selection[0];
+				text.setText(tag);
+			});
 
 		}
 
 		@Override
 		protected Point getInitialSize() {
 			return new Point(450, 500);
+		}
+
+		@Override
+		protected void configureShell(Shell shell) {
+			super.configureShell(shell);
+			shell.setText("Add a new tag");
+			UI.center(UI.shell(), shell);
+		}
+
+		@Override
+		protected void okPressed() {
+			var tag = text.getText();
+			super.okPressed(); // will dispose the text!
+			if (Strings.nullOrEmpty(tag))
+				return;
+			if (onOk == null)
+				return;
+			onOk.accept(tag.trim());
 		}
 	}
 }

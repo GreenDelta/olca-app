@@ -1,7 +1,12 @@
 package org.openlca.app.editors;
 
 import java.util.Arrays;
+import java.util.HashSet;
 
+import javax.persistence.Table;
+
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.util.Strings;
 
@@ -43,5 +48,39 @@ final class Tags {
 				.toArray(String[]::new);
 		model.tags = String.join(",", next);
 		return next;
+	}
+
+	/**
+	 * Search for possible tags of the given model.
+	 */
+	public static String[] searchFor(CategorizedEntity model, IDatabase db) {
+		if (model == null)
+			return new String[0];
+		var type = model.getClass();
+		if (!type.isAnnotationPresent(Table.class))
+			return new String[0];
+
+		// collect candidates from the model table
+		var table = type.getAnnotation(Table.class);
+		var sql = "select tags from " + table.name();
+		var candidates = new HashSet<String>();
+		NativeSql.on(db).query(sql, r -> {
+			var tags = r.getString(1);
+			if (Strings.nullOrEmpty(tags))
+				return true;
+			Arrays.stream(tags.split(","))
+					.filter(tag -> !Strings.nullOrEmpty(tag))
+					.map(String::trim)
+					.forEach(candidates::add);
+			return true;
+		});
+
+		// remove existing tags from candidates
+		for (var existing : of(model)) {
+			candidates.remove(existing);
+		}
+		return candidates.stream()
+				.sorted()
+				.toArray(String[]::new);
 	}
 }

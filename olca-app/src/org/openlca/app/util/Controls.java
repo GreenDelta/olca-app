@@ -8,6 +8,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Spinner;
@@ -32,46 +33,48 @@ public class Controls {
 	}
 
 	public static void onSelect(Combo combo, Consumer<SelectionEvent> consumer) {
-		combo.addSelectionListener(selectionListener(consumer));
+		combo.addSelectionListener(handle(consumer));
 	}
 
 	public static void onSelect(Button button, Consumer<SelectionEvent> consumer) {
-		button.addSelectionListener(selectionListener(consumer));
+		button.addSelectionListener(handle(consumer));
 	}
 
 	public static void onSelect(MenuItem item, Consumer<SelectionEvent> consumer) {
-		item.addSelectionListener(selectionListener(consumer));
+		item.addSelectionListener(handle(consumer));
 	}
 
 	public static void onSelect(Scale scale, Consumer<SelectionEvent> consumer) {
-		scale.addSelectionListener(selectionListener(consumer));
+		scale.addSelectionListener(handle(consumer));
 	}
 
 	public static void onSelect(Link link, Consumer<SelectionEvent> consumer) {
-		link.addSelectionListener(selectionListener(consumer));
+		link.addSelectionListener(handle(consumer));
 	}
 
-	public static void onSelect(Spinner spinner,
-			Consumer<SelectionEvent> consumer) {
-		spinner.addSelectionListener(selectionListener(consumer));
+	public static void onSelect(Spinner spinner, Consumer<SelectionEvent> consumer) {
+		spinner.addSelectionListener(handle(consumer));
 	}
 
 	public static void onSelect(TableCombo combo, Consumer<SelectionEvent> fn) {
-		combo.addSelectionListener(selectionListener(fn));
+		combo.addSelectionListener(handle(fn));
 	}
 
-	private static SelectionListener selectionListener(
-			Consumer<SelectionEvent> consumer) {
+	public static void onSelect(List list, Consumer<SelectionEvent> fn) {
+		list.addSelectionListener(handle(fn));
+	}
+
+	private static SelectionListener handle(Consumer<SelectionEvent> fn) {
 		return new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				consumer.accept(e);
+				fn.accept(e);
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				consumer.accept(e);
+				fn.accept(e);
 			}
 		};
 	}
