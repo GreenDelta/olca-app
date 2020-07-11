@@ -21,12 +21,10 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
@@ -72,19 +70,19 @@ class FlowRefDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.formBody(mform.getForm(), tk);
+		var tk = mform.getToolkit();
+		var body = UI.formBody(mform.getForm(), tk);
 		UI.gridLayout(body, 1, 10, 10);
 
-		Composite filterComp = tk.createComposite(body);
+		var filterComp = tk.createComposite(body);
 		UI.gridLayout(filterComp, 2, 10, 0);
 		UI.gridData(filterComp, true, false);
-		Label filterLabel = UI.formLabel(filterComp, tk, M.Filter);
+		var filterLabel = UI.formLabel(filterComp, tk, M.Filter);
 		filterLabel.setFont(UI.boldFont());
-		Text filterText = UI.formText(filterComp, SWT.SEARCH);
+		var filterText = UI.formText(filterComp, SWT.SEARCH);
 		UI.gridData(filterText, true, false);
 
-		TreeViewer viewer = new TreeViewer(body,
+		var viewer = new TreeViewer(body,
 				SWT.BORDER | SWT.SINGLE | SWT.VIRTUAL);
 		UI.gridData(viewer.getControl(), true, true);
 		viewer.setContentProvider(tree);
@@ -247,7 +245,7 @@ class FlowRefDialog extends FormDialog {
 		final List<FlowRef> refs = new ArrayList<>();
 
 		void sort() {
-			childs.forEach(n -> n.sort());
+			childs.forEach(Node::sort);
 			childs.sort((n1, n2) -> Strings.compare(n1.category, n2.category));
 			refs.sort((r1, r2) -> Strings.compare(label(r1), label(r2)));
 		}

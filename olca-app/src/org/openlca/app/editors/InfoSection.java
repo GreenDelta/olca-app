@@ -12,9 +12,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.FormDialog;
+import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -253,6 +256,9 @@ public class InfoSection {
 		}
 	}
 
+	/**
+	 * Our tag widget that we use in the info-section.
+	 */
 	private static class Tag {
 
 		private final ImageHyperlink link;
@@ -286,6 +292,44 @@ public class InfoSection {
 
 		void onRemove(Consumer<String> fn) {
 			clickFn = fn;
+		}
+	}
+
+	/**
+	 * A dialog for selecting a new tag for a model.
+	 */
+	private static class TagDialog extends FormDialog {
+
+		private final String[] candidates;
+
+		TagDialog(String[] candidates) {
+			super(UI.shell());
+			this.candidates = candidates;
+		}
+
+		@Override
+		protected void createFormContent(IManagedForm mform) {
+			var tk = mform.getToolkit();
+			var body = UI.formBody(mform.getForm(), tk);
+			UI.gridLayout(body, 1, 10, 10);
+
+			var textComp = tk.createComposite(body);
+			UI.gridLayout(textComp, 2, 10, 0);
+			UI.gridData(textComp, true, false);
+			var label = UI.formLabel(textComp, tk, "New tag:");
+			label.setFont(UI.boldFont());
+			var text = UI.formText(textComp, SWT.SEARCH);
+			UI.gridData(text, true, false);
+
+			UI.formLabel(body, tk, "Used tags:");
+			var list = new org.eclipse.swt.widgets.List(body, SWT.NONE);
+			UI.gridData(list, true, true);
+
+		}
+
+		@Override
+		protected Point getInitialSize() {
+			return new Point(450, 500);
 		}
 	}
 }

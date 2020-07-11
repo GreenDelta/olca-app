@@ -20,7 +20,7 @@ import com.google.common.base.Objects;
  */
 public class Generator implements Runnable {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	private final IProvider sourceSystem;
 	private final IProvider targetSystem;
 	private final FlowMap mapping;
