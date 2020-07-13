@@ -21,7 +21,7 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		editor.onSaved(this::updateFormTitle);
 	}
 
-	private final void updateFormTitle() {
+	private void updateFormTitle() {
 		if (getManagedForm() == null || getManagedForm().getForm() == null)
 			return;
 		getManagedForm().getForm().setText(getFormTitle());
@@ -35,6 +35,10 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 	@Override
 	public ModelEditor<T> getEditor() {
 		return (ModelEditor<T>) super.getEditor();
+	}
+
+	public boolean isEditable() {
+		return getEditor().isEditable();
 	}
 
 	protected T getModel() {

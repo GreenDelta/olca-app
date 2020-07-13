@@ -41,16 +41,16 @@ import com.google.common.eventbus.Subscribe;
 public abstract class ModelEditor<T extends CategorizedEntity>
 		extends FormEditor {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
+	private final Class<T> modelClass;
+	private final EventBus eventBus = new EventBus();
+	private final DataBinding binding = new DataBinding(this);
+	private final List<Runnable> savedHandlers = new ArrayList<>();
+
 	private boolean dirty;
 	private T model;
 	private BaseDao<T> dao;
-	private Class<T> modelClass;
-	private EventBus eventBus = new EventBus();
 	private Comments comments;
-	private DataBinding binding = new DataBinding(this);
-
-	private List<Runnable> savedHandlers = new ArrayList<>();
 
 	public ModelEditor(Class<T> modelClass) {
 		this.modelClass = modelClass;
@@ -92,7 +92,6 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 	public EventBus getEventBus() {
 		return eventBus;
 	}
-
 
 	/**
 	 * Post an event with the given ID and sender to possible subscribers.
@@ -170,6 +169,10 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 		}
 	}
 
+	public boolean isEditable() {
+		return model != null && !model.isFromLibrary();
+	}
+
 	public void updateModel() {
 		if (model == null)
 			return;
@@ -214,7 +217,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 	@Override
 	@SuppressWarnings("unchecked")
 	public void doSaveAs() {
-		InputDialog diag = new InputDialog(UI.shell(), M.SaveAs, M.SaveAs,
+		var diag = new InputDialog(UI.shell(), M.SaveAs, M.SaveAs,
 				model.name + " - Copy", (name) -> {
 					if (Strings.nullOrEmpty(name))
 						return M.NameCannotBeEmpty;

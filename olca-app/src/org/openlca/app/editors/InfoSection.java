@@ -58,8 +58,18 @@ public class InfoSection {
 
 	public void render(Composite body, FormToolkit tk) {
 		container = UI.formSection(body, tk, M.GeneralInformation, 3);
-		Widgets.text(container, M.Name, "name", editor, tk);
-		Widgets.multiText(container, M.Description, "description", editor, tk);
+
+		// name, library, description
+		Widgets.text(container, M.Name, "name", editor, tk)
+				.setEditable(editor.isEditable());
+		if (entity.isFromLibrary()) {
+			Widgets.text(container, "Library", "library", editor, tk)
+					.setEditable(false);
+		}
+		Widgets.multiText(container, M.Description, "description", editor, tk)
+				.setEditable(editor.isEditable());
+
+		// category
 		if (entity.category != null) {
 			new Label(container, SWT.NONE).setText(M.Category);
 			createBreadcrumb(container);
@@ -69,12 +79,20 @@ public class InfoSection {
 			UI.filler(container);
 			new CommentControl(container, tk, "category", editor.getComments());
 		}
+
+		// version
 		createVersionText(tk);
-		Text uuidText = UI.formText(container, tk, "UUID");
+
+		// uuid
+		var uuidText = UI.formText(container, tk, "UUID");
 		uuidText.setEditable(false);
-		if (entity.refId != null)
+		uuidText.setEnabled(editor.isEditable());
+		if (entity.refId != null) {
 			uuidText.setText(entity.refId);
+		}
 		UI.filler(container, tk);
+
+		// date & tags
 		createDateText(tk);
 		createTags(tk);
 	}
@@ -132,6 +150,7 @@ public class InfoSection {
 			link.setText(current.name);
 			link.addHyperlinkListener(new CategoryLinkClick(current));
 			link.setForeground(Colors.linkBlue());
+			link.setEnabled(editor.isEditable());
 		}
 	}
 
@@ -141,6 +160,7 @@ public class InfoSection {
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);
 		var btn = tk.createButton(comp, "Add a tag", SWT.NONE);
+		btn.setEnabled(editor.isEditable());
 
 		var tagComp = tk.createComposite(comp);
 		UI.gridLayout(tagComp, 1);
@@ -160,13 +180,15 @@ public class InfoSection {
 
 			UI.gridLayout(inner, tags.length, 5, 0);
 			for (var t : tags) {
-				new Tag(t, inner, tk).onRemove(tag -> {
-					var fn = recursion.get();
-					if (fn == null)
-						return;
-					fn.accept(Tags.remove(editor.getModel(), tag));
-					editor.setDirty(true);
-				});
+				new Tag(t, inner, tk)
+						.setEnabled(editor.isEditable())
+						.onRemove(tag -> {
+							var fn = recursion.get();
+							if (fn == null)
+								return;
+							fn.accept(Tags.remove(editor.getModel(), tag));
+							editor.setDirty(true);
+						});
 			}
 			List.of(inner, tagComp, comp, container)
 					.forEach(Composite::layout);
@@ -236,6 +258,7 @@ public class InfoSection {
 			link.setToolTipText(tooltip);
 			link.setActiveImage(hoverIcon);
 			link.setImage(icon);
+			link.setEnabled(editor.isEditable());
 		}
 
 		@Override
@@ -297,8 +320,14 @@ public class InfoSection {
 			});
 		}
 
-		void onRemove(Consumer<String> fn) {
+		Tag setEnabled(boolean b) {
+			link.setEnabled(b);
+			return this;
+		}
+
+		Tag onRemove(Consumer<String> fn) {
 			clickFn = fn;
+			return this;
 		}
 	}
 

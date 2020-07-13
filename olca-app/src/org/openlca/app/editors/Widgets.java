@@ -86,7 +86,7 @@ public class Widgets {
 	public static Text text(Composite parent, String label, String property, ModelEditor<?> editor,
 			FormToolkit toolkit) {
 		Text text = UI.formText(parent, toolkit, label);
-		editor.getBinding().onString(() -> editor.getModel(), property, text);
+		editor.getBinding().onString(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
 		return text;
 	}
@@ -94,7 +94,7 @@ public class Widgets {
 	public static Text doubleText(Composite parent, String label, String property, ModelEditor<?> editor,
 			FormToolkit toolkit) {
 		Text text = UI.formText(parent, toolkit, label);
-		editor.getBinding().onDouble(() -> editor.getModel(), property, text);
+		editor.getBinding().onDouble(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
 		return text;
 	}
@@ -102,7 +102,7 @@ public class Widgets {
 	public static Text shortText(Composite parent, String label, String property, ModelEditor<?> editor,
 			FormToolkit toolkit) {
 		Text text = UI.formText(parent, toolkit, label);
-		editor.getBinding().onShort(() -> editor.getModel(), property, text);
+		editor.getBinding().onShort(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
 		return text;
 	}
@@ -110,7 +110,7 @@ public class Widgets {
 	public static Text multiText(Composite parent, String label, String property, ModelEditor<?> editor,
 			FormToolkit toolkit) {
 		Text text = UI.formMultiText(parent, toolkit, label);
-		editor.getBinding().onString(() -> editor.getModel(), property, text);
+		editor.getBinding().onString(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
 		return text;
 	}
@@ -118,7 +118,7 @@ public class Widgets {
 	public static Text multiText(Composite parent, String label, String property, ModelEditor<?> editor,
 			FormToolkit toolkit, int heightHint) {
 		Text text = UI.formMultiText(parent, toolkit, label, heightHint);
-		editor.getBinding().onString(() -> editor.getModel(), property, text);
+		editor.getBinding().onString(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
 		return text;
 	}
@@ -130,7 +130,7 @@ public class Widgets {
 		GridData data = new GridData();
 		data.widthHint = 150;
 		dateTime.setLayoutData(data);
-		editor.getBinding().onDate(() -> editor.getModel(), property, dateTime);
+		editor.getBinding().onDate(editor::getModel, property, dateTime);
 		new CommentControl(parent, toolkit, property, editor.getComments());
 		return dateTime;
 	}
@@ -138,7 +138,7 @@ public class Widgets {
 	public static Button checkBox(Composite parent, String label, String property, ModelEditor<?> editor,
 			FormToolkit toolkit) {
 		Button button = UI.formCheckBox(parent, toolkit, label);
-		editor.getBinding().onBoolean(() -> editor.getModel(), property, button);
+		editor.getBinding().onBoolean(editor::getModel, property, button);
 		new CommentControl(parent, toolkit, property, editor.getComments());
 		return button;
 	}
@@ -150,7 +150,7 @@ public class Widgets {
 		TextDropComponent text = new TextDropComponent(
 				parent, toolkit, modelType);
 		UI.gridData(text, true, false);
-		editor.getBinding().onModel(() -> editor.getModel(), property, text);
+		editor.getBinding().onModel(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
 		return text;
 	}
@@ -167,7 +167,7 @@ public class Widgets {
 
 	private static class ModelLinkClickedListener extends HyperlinkAdapter {
 
-		private Object model;
+		private final Object model;
 
 		public ModelLinkClickedListener(CategorizedEntity entity) {
 			this.model = entity;
