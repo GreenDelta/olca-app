@@ -154,6 +154,9 @@ class ProcessFigure extends Figure {
 			file = Icon.PROCESS_BG_MARKED.get();
 		if (node.process instanceof ProductSystemDescriptor)
 			file = Icon.PROCESS_BG_SYS.get();
+		else if (node.process.isFromLibrary()) {
+			file = Icon.PROCESS_BG_LIB.get();
+		}
 		else if (isLCI())
 			file = Icon.PROCESS_BG_LCI.get();
 		else
@@ -269,7 +272,8 @@ class ProcessFigure extends Figure {
 		if (!(d instanceof ProcessDescriptor))
 			return false;
 		ProcessDescriptor p = (ProcessDescriptor) d;
-		return p.processType == ProcessType.LCI_RESULT;
+		return p.processType == ProcessType.LCI_RESULT
+				|| p.isFromLibrary();
 	}
 
 	private class DoubleClickListener implements MouseListener {

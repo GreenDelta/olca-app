@@ -90,6 +90,7 @@ public enum Icon {
 	PROCESS_BG_LCI("graphical/process_bg_lci.jpg"),
 	PROCESS_BG_SYS("graphical/process_bg_sys.jpg"),
 	PROCESS_BG_MARKED("graphical/process_bg_marked.jpg"),
+	PROCESS_BG_LIB("graphical/process_bg_lib.jpg"),
 	PYTHON("python.png"),
 
 	QUICK_RESULT("quick_calculation.png"),
