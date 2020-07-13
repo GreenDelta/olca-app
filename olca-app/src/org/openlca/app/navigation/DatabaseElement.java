@@ -22,7 +22,7 @@ public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
 	protected List<INavigationElement<?>> queryChilds() {
 		if (!Database.isActive(getContent()))
 			return Collections.emptyList();
-		List<INavigationElement<?>> list = new ArrayList<>();
+		var list = new ArrayList<INavigationElement<?>>();
 		list.add(new ModelTypeElement(this, ModelType.PROJECT));
 		list.add(new ModelTypeElement(this, ModelType.PRODUCT_SYSTEM));
 		list.add(new ModelTypeElement(this, ModelType.PROCESS));

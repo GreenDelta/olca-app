@@ -55,5 +55,4 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 			return super.hashCode();
 		return Objects.hashCode(content);
 	}
-
 }
