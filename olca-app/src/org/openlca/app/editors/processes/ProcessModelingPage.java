@@ -39,16 +39,19 @@ class ProcessModelingPage extends ModelPage<Process> {
 	}
 
 	private void createModelingSection(Composite parent) {
-		Composite composite = UI.formSection(parent, toolkit, M.ModelingAndValidation, 3);
-		getManagedForm().getToolkit().createLabel(composite, M.ProcessType);
-		ProcessTypeViewer typeViewer = new ProcessTypeViewer(composite);
-		getBinding().onModel(() -> getModel(), "processType", typeViewer);
-		new CommentControl(composite, getToolkit(), "processType", getComments());
-		multiText(composite, M.LCIMethod, "documentation.inventoryMethod", 40);
-		multiText(composite, M.ModelingConstants, "documentation.modelingConstants", 40);
-		multiText(composite, M.DataCompleteness, "documentation.completeness", 40);
-		multiText(composite, M.DataSelection, "documentation.dataSelection", 40);
-		multiText(composite, M.DataTreatment, "documentation.dataTreatment", 40);
+		var comp = UI.formSection(parent, toolkit, M.ModelingAndValidation, 3);
+
+		getToolkit().createLabel(comp, M.ProcessType);
+		var typeCombo = new ProcessTypeViewer(comp);
+		getBinding().onModel(() -> getModel(), "processType", typeCombo);
+		typeCombo.setEnabled(isEditable());
+
+		new CommentControl(comp, getToolkit(), "processType", getComments());
+		multiText(comp, M.LCIMethod, "documentation.inventoryMethod", 40);
+		multiText(comp, M.ModelingConstants, "documentation.modelingConstants", 40);
+		multiText(comp, M.DataCompleteness, "documentation.completeness", 40);
+		multiText(comp, M.DataSelection, "documentation.dataSelection", 40);
+		multiText(comp, M.DataTreatment, "documentation.dataTreatment", 40);
 	}
 
 	private void createDataSourceSection(Composite parent) {

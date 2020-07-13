@@ -10,7 +10,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
@@ -94,8 +93,8 @@ class ExchangeTable {
 	}
 
 	private void render(Section section) {
-		Composite composite = UI.sectionClient(section, page.toolkit, 1);
-		viewer = Tables.createViewer(composite, getColumns());
+		var comp = UI.sectionClient(section, page.toolkit, 1);
+		viewer = Tables.createViewer(comp, getColumns());
 		label = new ExchangeLabel(editor);
 		viewer.setLabelProvider(label);
 		bindModifiers();
@@ -119,7 +118,9 @@ class ExchangeTable {
 	}
 
 	private void bindModifiers() {
-		ModifySupport<Exchange> ms = new ModifySupport<>(viewer);
+		if (!editor.isEditable())
+			return;
+		var ms = new ModifySupport<Exchange>(viewer);
 		ms.bind(UNIT, new UnitCell(editor));
 		ms.bind(COSTS, new CostCellEditor(viewer, editor));
 		ms.bind(PEDIGREE, new DataQualityCellEditor(viewer, editor));
@@ -158,6 +159,8 @@ class ExchangeTable {
 	}
 
 	private void bindActions(Section section) {
+		if (!editor.isEditable())
+			return;
 		Action add = Actions.onAdd(() -> onAdd());
 		Action remove = Actions.onRemove(() -> onRemove());
 		Action qRef = Actions.create(M.SetAsQuantitativeReference, null, () -> {

@@ -112,6 +112,7 @@ class InfoPage extends ModelPage<Process> {
 		dqViewer.setNullable(true);
 		dqViewer.setInput(Database.get());
 		getBinding().onModel(() -> getModel(), property, dqViewer);
+		dqViewer.setEnabled(isEditable());
 		new CommentControl(comp, getToolkit(), property, getComments());
 	}
 
@@ -149,6 +150,7 @@ class InfoPage extends ModelPage<Process> {
 			});
 			shell.open();
 		});
+		link.setEnabled(isEditable());
 		new CommentControl(parent, getToolkit(), "dqEntry", getComments());
 		return link;
 	}
@@ -160,6 +162,7 @@ class InfoPage extends ModelPage<Process> {
 		combo.setNullable(true);
 		combo.setInput(Database.get());
 		getBinding().onModel(() -> getModel(), "location", combo);
+		combo.setEnabled(isEditable());
 		combo.addSelectionChangedListener(loc -> {
 			String linkText = loc != null && loc.geodata != null
 					? "open in map"

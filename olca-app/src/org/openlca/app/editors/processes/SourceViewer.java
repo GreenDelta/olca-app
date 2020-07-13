@@ -61,6 +61,8 @@ class SourceViewer extends AbstractTableViewer<Source> {
 
 	@OnAdd
 	protected void onCreate() {
+		if (!editor.isEditable())
+			return;
 		var descriptors = ModelSelectionDialog.multiSelect(ModelType.SOURCE);
 		if (descriptors == null)
 			return;
@@ -78,11 +80,11 @@ class SourceViewer extends AbstractTableViewer<Source> {
 	private boolean add(Descriptor d) {
 		if (d == null)
 			return false;
-		Source source = sourceDao.getForId(d.id);
+		var source = sourceDao.getForId(d.id);
 		if (source == null)
 			return false;
-		Process p = editor.getModel();
-		ProcessDocumentation doc = p.documentation;
+		var p = editor.getModel();
+		var doc = p.documentation;
 		if (doc == null) {
 			doc = new ProcessDocumentation();
 			p.documentation = doc;
@@ -95,11 +97,13 @@ class SourceViewer extends AbstractTableViewer<Source> {
 
 	@OnRemove
 	protected void onRemove() {
-		Process process = editor.getModel();
+		if (!editor.isEditable())
+			return;
+		var process = editor.getModel();
 		if (process == null || process.documentation == null)
 			return;
-		ProcessDocumentation doc = process.documentation;
-		for (Source source : getAllSelected()) {
+		var doc = process.documentation;
+		for (var source : getAllSelected()) {
 			doc.sources.remove(source);
 		}
 		update();
@@ -107,13 +111,15 @@ class SourceViewer extends AbstractTableViewer<Source> {
 
 	@OnDrop
 	protected void onDrop(Descriptor d) {
+		if (!editor.isEditable())
+			return;
 		if (!add(d))
 			return;
 		update();
 	}
 
 	private void update() {
-		ProcessDocumentation doc = editor.getModel().documentation;
+		var doc = editor.getModel().documentation;
 		setInput(doc.sources);
 		editor.getEventBus().post(ProcessEditor.SOURCES_CHANGED);
 		editor.setDirty(true);

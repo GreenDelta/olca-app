@@ -70,35 +70,51 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 	}
 
 	protected Text text(Composite parent, String label, String property) {
-		return Widgets.text(parent, label, property, getEditor(), getToolkit());
+		var text = Widgets.text(parent, label, property, getEditor(), getToolkit());
+		text.setEditable(isEditable());
+		return text;
 	}
 
 	protected Text doubleText(Composite parent, String label, String property) {
-		return Widgets.doubleText(parent, label, property, getEditor(), getToolkit());
+		var text = Widgets.doubleText(parent, label, property, getEditor(), getToolkit());
+		text.setEditable(isEditable());
+		return text;
 	}
 
 	protected Text shortText(Composite parent, String label, String property) {
-		return Widgets.shortText(parent, label, property, getEditor(), getToolkit());
+		var text =  Widgets.shortText(parent, label, property, getEditor(), getToolkit());
+		text.setEditable(isEditable());
+		return text;
 	}
 
 	protected Text multiText(Composite parent, String label, String property) {
-		return Widgets.multiText(parent, label, property, getEditor(), getToolkit());
+		var text = Widgets.multiText(parent, label, property, getEditor(), getToolkit());
+		text.setEditable(isEditable());
+		return text;
 	}
 
 	protected Text multiText(Composite parent, String label, String property, int heightHint) {
-		return Widgets.multiText(parent, label, property, getEditor(), getToolkit(), heightHint);
+		var text = Widgets.multiText(parent, label, property, getEditor(), getToolkit(), heightHint);
+		text.setEditable(isEditable());
+		return text;
 	}
 
 	protected DateTime date(Composite parent, String label, String property) {
-		return Widgets.date(parent, label, property, getEditor(), getToolkit());
+		var dt = Widgets.date(parent, label, property, getEditor(), getToolkit());
+		dt.setEnabled(isEditable());
+		return dt;
 	}
 
 	protected Button checkBox(Composite parent, String label, String property) {
-		return Widgets.checkBox(parent, label, property, getEditor(), getToolkit());
+		var btn =  Widgets.checkBox(parent, label, property, getEditor(), getToolkit());
+		btn.setEnabled(isEditable());
+		return btn;
 	}
 
 	protected TextDropComponent dropComponent(Composite parent, String label, String property) {
-		return Widgets.dropComponent(parent, label, property, getEditor(), getToolkit());
+		var comp =  Widgets.dropComponent(parent, label, property, getEditor(), getToolkit());
+		comp.setEnabled(isEditable());
+		return comp;
 	}
 
 }
