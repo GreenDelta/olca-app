@@ -10,7 +10,7 @@ import org.openlca.core.model.ModelType;
  */
 public class ModelTypeFilter extends ViewerFilter {
 
-	private ModelType[] types;
+	private final ModelType[] types;
 
 	public ModelTypeFilter(ModelType... types) {
 		this.types = types;

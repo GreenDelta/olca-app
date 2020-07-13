@@ -19,7 +19,7 @@ public class LibraryElement extends NavigationElement<Library> {
 		var db = getDatabase();
 		if (db.isEmpty())
 			return Collections.emptyList();
-		
+
 		var list = new ArrayList<INavigationElement<?>>();
 		list.add(new ModelTypeElement(this, ModelType.PROCESS));
 		list.add(new ModelTypeElement(this, ModelType.FLOW));

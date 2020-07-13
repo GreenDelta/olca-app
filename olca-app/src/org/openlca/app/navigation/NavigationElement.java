@@ -3,6 +3,10 @@ package org.openlca.app.navigation;
 import java.util.List;
 import java.util.Objects;
 
+import org.openlca.core.library.Library;
+import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.util.Strings;
+
 /**
  * Basic implementation of a navigation element which manages an internal cache
  * for its child elements.
@@ -54,5 +58,16 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 		if (content == null)
 			return super.hashCode();
 		return Objects.hashCode(content);
+	}
+
+	static boolean matches(Descriptor d, Library lib) {
+		if (d == null)
+			return false;
+		if (lib == null || lib.getInfo() == null)
+			return !d.isFromLibrary();
+		if (Strings.nullOrEmpty(d.library))
+			return false;
+		var libID = lib.getInfo().id();
+		return Strings.nullOrEqual(libID, d.library);
 	}
 }

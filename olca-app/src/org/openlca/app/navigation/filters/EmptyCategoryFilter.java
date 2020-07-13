@@ -19,9 +19,7 @@ public final class EmptyCategoryFilter extends ViewerFilter {
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
 		if (!(element instanceof CategoryElement))
 			return true;
-		if (!hasContent(viewer, (CategoryElement) element))
-			return false;
-		return true;
+		return hasContent(viewer, (CategoryElement) element);
 	}
 
 	/**
