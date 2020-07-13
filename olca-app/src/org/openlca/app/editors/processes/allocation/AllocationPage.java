@@ -150,18 +150,20 @@ public class AllocationPage extends ModelPage<Process> {
 			process().defaultAllocationMethod = selection;
 			editor.setDirty(true);
 		});
+		combo.setEnabled(isEditable());
 	}
 
 	private void createCalcButton(Composite comp) {
 		UI.filler(comp, tk);
-		var button = tk.createButton(comp, M.CalculateDefaultValues, SWT.NONE);
-		button.setImage(Icon.RUN.get());
-		Controls.onSelect(button, e -> {
+		var btn = tk.createButton(comp, M.CalculateDefaultValues, SWT.NONE);
+		btn.setImage(Icon.RUN.get());
+		Controls.onSelect(btn, e -> {
 			AllocationSync.calculateDefaults(process());
 			table.refresh();
 			causalTable.refresh();
 			editor.setDirty(true);
 		});
+		btn.setEnabled(isEditable());
 	}
 
 	private void createPhysicalEconomicSection(Composite body) {
@@ -182,8 +184,14 @@ public class AllocationPage extends ModelPage<Process> {
 		table.setColumnProperties(columns);
 		table.setLabelProvider(new FactorLabel());
 		table.setInput(Util.getProviderFlows(process()));
-		Action copy = TableClipboard.onCopy(table);
+		table.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
+		table.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 
+		if (!isEditable())
+			return;
+
+		// modifiers and actions
+		Action copy = TableClipboard.onCopy(table);
 		var modifier = new ModifySupport<Exchange>(table)
 				.bind(M.Physical, new ValueModifier(AllocationMethod.PHYSICAL))
 				.bind(M.Economic, new ValueModifier(AllocationMethod.ECONOMIC));
@@ -195,8 +203,7 @@ public class AllocationPage extends ModelPage<Process> {
 			Tables.bindColumnWidths(table, 0.3, 0.3, 0.3);
 		}
 		CommentAction.bindTo(table, "allocationFactors", editor.getComments(), copy);
-		table.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
-		table.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
+
 	}
 
 	private CommentDialogModifier<Exchange> commentModifier(AllocationMethod method) {

@@ -129,6 +129,8 @@ public class ParameterSection {
 	}
 
 	private void bindActions(Section section) {
+		if (!editor.isEditable())
+			return;
 		var add = Actions.onAdd(this::onAdd);
 		var remove = Actions.onRemove(this::onRemove);
 		var copy = TableClipboard.onCopy(table);
@@ -148,6 +150,8 @@ public class ParameterSection {
 
 	private void createCellModifiers() {
 		var editor = page.editor;
+		if (!editor.isEditable())
+			return;
 		var ms = new ModifySupport<Parameter>(table);
 		ms.bind(M.Name, new NameModifier());
 		ms.bind(M.Description, new StringModifier<>(editor, "description"));

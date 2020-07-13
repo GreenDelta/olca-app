@@ -62,6 +62,8 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		Composite comp = UI.sectionClient(section, tk, 1);
 		UI.gridData(section, true, true);
 		createTree(comp);
+		if (!isEditable())
+			return;
 		Trees.onDoubleClick(tree, (e) -> editAspect());
 		Action add = Actions.onAdd(this::addIndicator);
 		Action edit = Actions.create(M.Edit, Icon.EDIT.descriptor(), this::editAspect);

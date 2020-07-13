@@ -147,6 +147,8 @@ class CausalFactorTable {
 	}
 
 	private void createModifySupport() {
+		if (!editor.isEditable())
+			return;
 		String[] keys = getColumnTitles();
 		boolean showComments = editor.hasAnyComment("allocationFactors");
 		for (int i = 0; i < columns.length; i++) {
@@ -157,7 +159,7 @@ class CausalFactorTable {
 			}
 		}
 		viewer.setColumnProperties(keys);
-		ModifySupport<Exchange> modifySupport = new ModifySupport<>(viewer);
+		var modifySupport = new ModifySupport<Exchange>(viewer);
 		for (int i = 0; i < columns.length; i++) {
 			int index = showComments ? 2 * i : i;
 			modifySupport.bind(keys[index + 4], new ValueModifier(columns[i].product));
