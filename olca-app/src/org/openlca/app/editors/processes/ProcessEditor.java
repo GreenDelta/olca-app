@@ -1,5 +1,7 @@
 package org.openlca.app.editors.processes;
 
+import java.util.Objects;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -13,7 +15,9 @@ import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.app.editors.processes.allocation.AllocationPage;
 import org.openlca.app.editors.processes.exchanges.ProcessExchangePage;
 import org.openlca.app.editors.processes.social.SocialAspectsPage;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.MsgBox;
+import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.util.AllocationCleanup;
@@ -37,11 +41,35 @@ public class ProcessEditor extends ModelEditor<Process> {
 			throws PartInitException {
 		super.init(site, input);
 		Process p = getModel();
-		if (p.documentation == null)
+		if (p.documentation == null) {
 			p.documentation = new ProcessDocumentation();
+		}
 		evalFormulas();
 		parameterSupport = new ParameterChangeSupport();
 		parameterSupport.onEvaluation(this::evalFormulas);
+
+		// load exchanges from the corresponding library
+		// if this is a library process
+		if (p.isFromLibrary()) {
+			var library = Workspace.getLibraryDir()
+					.get(p.library)
+					.orElse(null);
+			if (library != null) {
+				var exchanges = library.getExchanges(
+						ProcessProduct.of(p),
+						Database.get());
+				var qref = p.quantitativeReference;
+				var _qref = exchanges.stream()
+						.filter(e -> Objects.equals(qref.flow, e.flow)
+								& qref.isInput == e.isInput)
+						.findFirst().orElse(null);
+				if (_qref != null) {
+					p.quantitativeReference = _qref;
+				}
+				p.exchanges.clear();
+				p.exchanges.addAll(exchanges);
+			}
+		}
 	}
 
 	private void evalFormulas() {
