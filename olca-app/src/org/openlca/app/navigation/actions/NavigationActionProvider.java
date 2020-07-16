@@ -38,7 +38,7 @@ import org.openlca.app.util.viewers.Viewers;
  */
 public class NavigationActionProvider extends CommonActionProvider {
 
-	private INavigationAction[][] actions = new INavigationAction[][] {
+	private final INavigationAction[][] actions = new INavigationAction[][] {
 
 			getDatabaseActions(),
 
@@ -50,19 +50,23 @@ public class NavigationActionProvider extends CommonActionProvider {
 					new OpenUsageAction(),
 					new DeleteModelAction(),
 					new DeleteScriptAction(),
+					new DeleteLibraryAction(),
 					ValidateAction.forModel()
 			},
+
 			// transfer actions
 			new INavigationAction[] {
 					new CutAction(),
 					new CopyAction(),
 					new PasteAction()
 			},
+
 			// IO actions
 			new INavigationAction[] {
 					new ImportAction(),
 					new ExportAction(),
 			},
+			
 			// category actions
 			new INavigationAction[] {
 					new CreateCategoryAction(),
@@ -70,7 +74,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 			}
 	};
 
-	private INavigationAction[][] cloudActions = new INavigationAction[][] {
+	private final INavigationAction[][] cloudActions = new INavigationAction[][] {
 			new INavigationAction[] {
 					new CommitAction(),
 					new FetchAction(),
@@ -85,7 +89,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 			}
 	};
 
-	private INavigationAction[][] cloudCompareActions = new INavigationAction[][] {
+	private final INavigationAction[][] cloudCompareActions = new INavigationAction[][] {
 			new INavigationAction[] {
 					new OpenCompareViewAction(false),
 					new OpenCompareViewAction(true)

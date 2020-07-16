@@ -41,15 +41,19 @@ class DeleteModelAction extends Action implements INavigationAction {
 	private boolean showInUseMessage = true;
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
+	public boolean accept(INavigationElement<?> elem) {
 		models.clear();
 		categories.clear();
-		if (element instanceof CategoryElement) {
-			categories.add((CategoryElement) element);
+		if (elem instanceof CategoryElement) {
+			categories.add((CategoryElement) elem);
 			return true;
 		}
-		if (element instanceof ModelElement) {
-			models.add((ModelElement) element);
+		if (elem instanceof ModelElement) {
+			var e = (ModelElement) elem;
+			var model = e.getContent();
+			if (model == null || model.isFromLibrary())
+				return false;
+			models.add(e);
 			return true;
 		}
 		return false;
