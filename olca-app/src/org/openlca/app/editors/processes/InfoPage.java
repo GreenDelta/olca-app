@@ -33,7 +33,7 @@ import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.geo.geojson.FeatureCollection;
-import org.openlca.geo.geojson.MsgPack;
+import org.openlca.geo.geojson.ProtoPack;
 import org.openlca.util.Strings;
 
 class InfoPage extends ModelPage<Process> {
@@ -195,7 +195,7 @@ class InfoPage extends ModelPage<Process> {
 			Location location = getModel().location;
 			if (location == null || location.geodata == null)
 				return;
-			FeatureCollection coll = MsgPack.unpackgz(location.geodata);
+			FeatureCollection coll = ProtoPack.unpackgz(location.geodata);
 			if (coll == null)
 				return;
 			MapDialog.show(location.name, map -> {

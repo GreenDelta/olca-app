@@ -30,7 +30,7 @@ import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.GeoJSON;
 import org.openlca.geo.geojson.Geometry;
-import org.openlca.geo.geojson.MsgPack;
+import org.openlca.geo.geojson.ProtoPack;
 import org.openlca.util.Pair;
 
 class ResultMap {
@@ -81,7 +81,7 @@ class ResultMap {
 			Location loc = c.item;
 			if (loc == null || loc.geodata == null)
 				continue;
-			FeatureCollection fc = MsgPack.unpackgz(loc.geodata);
+			FeatureCollection fc = ProtoPack.unpackgz(loc.geodata);
 			if (fc == null || fc.features.isEmpty())
 				continue;
 			Geometry g = fc.features.get(0).geometry;

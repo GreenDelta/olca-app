@@ -17,7 +17,7 @@ import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.geo.calc.IntersectionCalculator;
 import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
-import org.openlca.geo.geojson.MsgPack;
+import org.openlca.geo.geojson.ProtoPack;
 import org.openlca.util.BinUtils;
 import org.openlca.util.Pair;
 import org.slf4j.Logger;
@@ -129,7 +129,7 @@ class GeoFactorCalculator implements Runnable {
 				log.info("No geodata for location {} found", loc);
 				return Collections.emptyList();
 			}
-			FeatureCollection coll = MsgPack.unpack(data);
+			FeatureCollection coll = ProtoPack.unpack(data);
 			if (coll == null || coll.features.isEmpty()) {
 				log.info("No geodata for location {} found", loc);
 				return Collections.emptyList();
