@@ -66,7 +66,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 					new ImportAction(),
 					new ExportAction(),
 			},
-			
+
 			// category actions
 			new INavigationAction[] {
 					new CreateCategoryAction(),
