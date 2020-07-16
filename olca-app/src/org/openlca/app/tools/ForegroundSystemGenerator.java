@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
 
+import org.openlca.app.navigation.Navigator;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.matrix.cache.ProcessTable;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.slf4j.LoggerFactory;
@@ -99,12 +102,31 @@ public class ForegroundSystemGenerator implements Runnable {
 			depth++;
 		}
 
+		// link with background system
+		var providers = ProcessTable.create(db).getProviders();
+		if (providers.size() > 0) {
+			for (int i = 0; i < size; i++) {
+				var provider = providers.get(
+						rand.nextInt(providers.size()));
+				var flow = flowDao.getForId(provider.flowId());
+				if (flow == null)
+					continue;
+				var recipient = processes[rand.nextInt(size)];
+				var exchange = flow.flowType == FlowType.WASTE_FLOW
+						? recipient.output(flow, rand.nextInt(5) + 5)
+						: recipient.input(flow, rand.nextInt(5) + 5);
+				exchange.defaultProviderId = provider.id();
+			}
+		}
+
 		// save the foreground system
 		var processDao = new ProcessDao(db);
 		for (var process : processes) {
 			processDao.insert(process);
 		}
 		log.info("created {} processes", size);
+
+		Navigator.refresh();
 	}
 
 	private String name(String prefix, int i) {
