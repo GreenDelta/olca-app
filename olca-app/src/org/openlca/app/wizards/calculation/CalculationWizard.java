@@ -1,6 +1,7 @@
 package org.openlca.app.wizards.calculation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.results.ResultEditorInput;
 import org.openlca.app.results.Sort;
 import org.openlca.app.results.analysis.AnalyzeEditor;
@@ -28,7 +30,9 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
+import org.openlca.core.library.LibraryCalculator;
 import org.openlca.core.math.CalculationType;
+import org.openlca.core.math.DataStructures;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.Exchange;
@@ -61,8 +65,8 @@ public class CalculationWizard extends Wizard {
 		boolean doContinue = checkForUnsavedContent(system);
 		if (!doContinue)
 			return;
-		CalculationWizard wizard = new CalculationWizard(system);
-		WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
+		var wizard = new CalculationWizard(system);
+		var dialog = new WizardDialog(UI.shell(), wizard);
 		dialog.open();
 	}
 
@@ -105,7 +109,7 @@ public class CalculationWizard extends Wizard {
 	public boolean performFinish() {
 		setup.savePreferences();
 		try {
-			Calculation calculation = new Calculation();
+			var calculation = new Calculation();
 			getContainer().run(true, true, calculation);
 			if (calculation.outOfMemory)
 				MemoryError.show();
@@ -125,13 +129,14 @@ public class CalculationWizard extends Wizard {
 
 			outOfMemory = false;
 			monitor.beginTask(M.RunCalculation, IProgressMonitor.UNKNOWN);
-			int size = setup.calcSetup.productSystem.processes.size();
-			log.trace("calculate a {} x {} system", size, size);
+
+			// for MC simulations, just open the simulation editor
 			if (setup.calcType == CalculationType.MONTE_CARLO_SIMULATION) {
 				setup.calcSetup.withUncertainties = true;
 				SimulationEditor.open(setup.calcSetup);
 				return;
 			}
+
 			setup.calcSetup.withUncertainties = false;
 			boolean upstream = setup.calcType == CalculationType.UPSTREAM_ANALYSIS;
 
@@ -139,30 +144,40 @@ public class CalculationWizard extends Wizard {
 
 				// run the calculation
 				log.trace("run calculation");
-				var calc = new SystemCalculator(
-						Database.get(), App.getSolver());
-				ContributionResult r = upstream
-						? calc.calculateFull(setup.calcSetup)
-						: calc.calculateContributions(setup.calcSetup);
+				ContributionResult result;
+				if (setup.hasLibraries) {
+					var db = Database.get();
+					var foregroundData = DataStructures.matrixData(
+							setup.calcSetup, db, Collections.emptyMap());
+					var calculator = new LibraryCalculator(
+							db, Workspace.getLibraryDir(), App.getSolver());
+					result = calculator.calculate(foregroundData);
+				} else {
+					var calc = new SystemCalculator(
+							Database.get(), App.getSolver());
+					result = upstream
+							? calc.calculateFull(setup.calcSetup)
+							: calc.calculateContributions(setup.calcSetup);
+				}
 
 				// check storage and DQ calculation
 				if (setup.storeInventory) {
 					log.trace("store inventory");
-					saveInventory(r);
+					saveInventory(result);
 				}
 				DQResult dqResult = null;
 				if (setup.withDataQuality) {
 					log.trace("calculate data quality result");
 					dqResult = DQResult.of(
-							Database.get(), setup.dqSetup, r);
+							Database.get(), setup.dqSetup, result);
 				}
 
 				// sort and open the editor
 				log.trace("sort result items");
-				Sort.sort(r);
+				Sort.sort(result);
 				log.trace("calculation done; open editor");
 				ResultEditorInput input = ResultEditorInput.create(
-						setup.calcSetup, r).with(dqResult);
+						setup.calcSetup, result).with(dqResult);
 				Editors.open(input, upstream
 						? AnalyzeEditor.ID
 						: QuickResultEditor.ID);
