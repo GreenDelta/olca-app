@@ -38,6 +38,7 @@ import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.ExportAction;
 import org.openlca.app.navigation.actions.ImportAction;
+import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.libraries.LibraryExportDialog;
@@ -171,9 +172,11 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 				"Open file", MappingTool::openFile));
 		
 		// library export
-		menu.add(Actions.create(
-				"Library export (experimental)",
-				LibraryExportDialog::show));
+		if (FeatureFlag.LIBRARIES.isEnabled()) {
+			menu.add(Actions.create(
+					"Library export (experimental)",
+					LibraryExportDialog::show));
+		}
 
 		// console
 		menu.add(new Separator());

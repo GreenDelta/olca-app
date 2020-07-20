@@ -8,11 +8,13 @@ import org.openlca.app.Preferences;
  */
 public enum FeatureFlag {
 
+	LIBRARIES("Enable libraries"),
+
 	MATRIX_IMAGE_EXPORT("Enable matrix image export");
 	
 	private final String description;
 
-	private FeatureFlag(String description) {
+	FeatureFlag(String description) {
 		this.description = description;
 	}
 

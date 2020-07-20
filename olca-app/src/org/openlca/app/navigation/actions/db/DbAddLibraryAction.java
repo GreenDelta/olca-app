@@ -17,6 +17,7 @@ import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
+import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
@@ -37,6 +38,8 @@ public class DbAddLibraryAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> elem) {
+		if (!FeatureFlag.LIBRARIES.isEnabled())
+			return false;
 		if (!(elem instanceof DatabaseElement))
 			return false;
 		var e = (DatabaseElement) elem;

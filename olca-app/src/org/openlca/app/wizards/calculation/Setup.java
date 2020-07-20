@@ -2,6 +2,7 @@ package org.openlca.app.wizards.calculation;
 
 import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
+import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NwSetDao;
 import org.openlca.core.math.CalculationSetup;
@@ -14,11 +15,13 @@ import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
+import org.openlca.util.ProductSystems;
 import org.python.google.common.base.Strings;
 import org.slf4j.LoggerFactory;
 
 class Setup {
 
+	final boolean hasLibraries;
 	final CalculationSetup calcSetup;
 	final DQCalculationSetup dqSetup;
 	CalculationType calcType;
@@ -26,6 +29,8 @@ class Setup {
 	boolean withDataQuality;
 
 	private Setup(ProductSystem system) {
+		hasLibraries = FeatureFlag.LIBRARIES.isEnabled()
+				&& ProductSystems.hasLibraryLinks(system, Database.get());
 		calcSetup = new CalculationSetup(system);
 		dqSetup = new DQCalculationSetup();
 		dqSetup.productSystemId = system.id;
@@ -79,6 +84,15 @@ class Setup {
 			var p = system.referenceProcess;
 			s.dqSetup.exchangeSystem = p.exchangeDqSystem;
 			s.dqSetup.processSystem = p.dqSystem;
+		}
+
+		// reset features that are currently not supported with libraries
+		if (s.hasLibraries) {
+			s.calcType = CalculationType.CONTRIBUTION_ANALYSIS;
+			s.calcSetup.impactMethod = null;
+			s.calcSetup.nwSet = null;
+			s.calcSetup.withCosts = false;
+			s.withDataQuality = false;
 		}
 
 		return s;
@@ -145,10 +159,8 @@ class Setup {
 		if (Strings.isNullOrEmpty(name))
 			return defaultVal;
 		try {
-			T value = Enum.valueOf(type, name);
-			if (value != null)
-				return value;
-		} catch (Exception e) {
+			return Enum.valueOf(type, name);
+		} catch (Exception ignored) {
 		}
 		return defaultVal;
 	}

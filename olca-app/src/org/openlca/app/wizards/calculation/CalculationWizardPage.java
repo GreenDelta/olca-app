@@ -2,6 +2,7 @@ package org.openlca.app.wizards.calculation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.nebula.widgets.tablecombo.TableCombo;
@@ -127,19 +128,16 @@ class CalculationWizardPage extends WizardPage {
 		AllocationCombo combo = new AllocationCombo(
 				comp, AllocationMethod.values());
 		combo.setNullable(false);
-		if (setup.calcSetup.allocationMethod == null) {
-			combo.select(AllocationMethod.NONE);
-		} else {
-			combo.select(setup.calcSetup.allocationMethod);
-		}
-		combo.addSelectionChangedListener(m -> {
-			setup.calcSetup.allocationMethod = m;
-		});
+		combo.select(Objects.requireNonNullElse(
+				setup.calcSetup.allocationMethod,
+				AllocationMethod.NONE));
+		combo.addSelectionChangedListener(
+				m -> setup.calcSetup.allocationMethod = m);
 	}
 
 	private void createMethodCombo(Composite comp) {
 		UI.formLabel(comp, M.ImpactAssessmentMethod);
-		ImpactMethodViewer combo = new ImpactMethodViewer(comp);
+		var combo = new ImpactMethodViewer(comp);
 		combo.setNullable(true);
 		combo.setInput(Database.get());
 		combo.select(setup.calcSetup.impactMethod);
@@ -148,6 +146,9 @@ class CalculationWizardPage extends WizardPage {
 			setup.calcSetup.impactMethod = m;
 			nwViewer.setInput(m);
 		});
+		if (setup.hasLibraries) {
+			combo.setEnabled(false);
+		}
 	}
 
 	private void createNWSetCombo(Composite parent) {
@@ -157,9 +158,11 @@ class CalculationWizardPage extends WizardPage {
 		if (setup.calcSetup.nwSet != null) {
 			nwViewer.select(setup.calcSetup.nwSet);
 		}
-		nwViewer.addSelectionChangedListener(nwSet -> {
-			setup.calcSetup.nwSet = nwSet;
-		});
+		nwViewer.addSelectionChangedListener(
+				nwSet -> setup.calcSetup.nwSet = nwSet);
+		if (setup.hasLibraries) {
+			nwViewer.setEnabled(false);
+		}
 	}
 
 	private void createTypeRadios(Composite parent) {
@@ -173,9 +176,9 @@ class CalculationWizardPage extends WizardPage {
 		Composite comp = new Composite(parent, SWT.NO_RADIO_GROUP);
 		UI.gridLayout(comp, types.length, 10, 0);
 
-		Button[] radios = new Button[types.length];
+		var radios = new Button[types.length];
 		for (int i = 0; i < types.length; i++) {
-			Button radio = new Button(comp, SWT.RADIO);
+			var radio = new Button(comp, SWT.RADIO);
 			radio.setText(getLabel(types[i]));
 			radio.setSelection(setup.calcType == types[i]);
 			radios[i] = radio;
@@ -190,6 +193,9 @@ class CalculationWizardPage extends WizardPage {
 				}
 				updateOptions();
 			});
+			if (setup.hasLibraries) {
+				radio.setEnabled(false);
+			}
 		}
 	}
 
@@ -211,16 +217,19 @@ class CalculationWizardPage extends WizardPage {
 		UI.gridLayout(commonOptions, 1, 10, 0);
 		addRegioAndCostChecks(commonOptions);
 
-		Button dqCheck = new Button(commonOptions, SWT.CHECK);
+		var dqCheck = new Button(commonOptions, SWT.CHECK);
 		dqCheck.setText(M.AssessDataQuality);
 		dqCheck.setSelection(setup.withDataQuality);
 		Controls.onSelect(dqCheck, e -> {
 			setup.withDataQuality = dqCheck.getSelection();
 			getContainer().updateButtons();
 		});
+		if (setup.hasLibraries) {
+			dqCheck.setEnabled(false);
+		}
 
 		if (Database.isConnected()) {
-			Button inventoryCheck = new Button(commonOptions, SWT.CHECK);
+			var inventoryCheck = new Button(commonOptions, SWT.CHECK);
 			inventoryCheck.setSelection(setup.storeInventory);
 			inventoryCheck.setText(M.StoreInventoryResult);
 			Controls.onSelect(inventoryCheck, _e -> {
@@ -260,19 +269,22 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void addRegioAndCostChecks(Composite comp) {
-		Button regioCheck = new Button(comp, SWT.CHECK);
+		var regioCheck = new Button(comp, SWT.CHECK);
 		regioCheck.setText("Regionalized calculation");
 		regioCheck.setSelection(setup.calcSetup.withRegionalization);
 		Controls.onSelect(regioCheck, _e -> {
 			setup.calcSetup.withRegionalization = regioCheck.getSelection();
 		});
 
-		Button costCheck = new Button(comp, SWT.CHECK);
+		var costCheck = new Button(comp, SWT.CHECK);
 		costCheck.setText(M.IncludeCostCalculation);
 		costCheck.setSelection(setup.calcSetup.withCosts);
 		Controls.onSelect(costCheck, _e -> {
 			setup.calcSetup.withCosts = costCheck.getSelection();
 		});
+		if (setup.hasLibraries) {
+			costCheck.setEnabled(false);
+		}
 	}
 
 	private void updateOptions() {
