@@ -1,6 +1,5 @@
 package org.openlca.app.navigation.actions.db;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -35,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DbActivateAction extends Action implements INavigationAction {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	private IDatabaseConfiguration config;
 
 	public DbActivateAction() {
@@ -92,8 +91,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 		private int indexVersion;
 
 		@Override
-		public void run(IProgressMonitor monitor)
-				throws InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor) {
 			try {
 				monitor.beginTask(M.OpenDatabase, IProgressMonitor.UNKNOWN);
 				log.trace("Close other database if open");
@@ -114,7 +112,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 
 	private class ActivationCallback implements Runnable {
 
-		private Activation activation;
+		private final Activation activation;
 
 		ActivationCallback(Activation activation) {
 			this.activation = activation;

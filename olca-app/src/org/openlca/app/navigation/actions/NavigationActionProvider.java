@@ -70,7 +70,8 @@ public class NavigationActionProvider extends CommonActionProvider {
 			// category actions
 			new INavigationAction[] {
 					new CreateCategoryAction(),
-					new RenameAction()
+					new RenameAction(),
+					new UseLibraryCategoryAction(),
 			}
 	};
 
