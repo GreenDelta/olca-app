@@ -9,6 +9,7 @@ import org.openlca.app.db.Database;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.descriptors.Descriptor;
 
 /**
  * Represents categories in the navigation tree.
@@ -29,20 +30,25 @@ public class CategoryElement extends NavigationElement<Category> {
 
 	@Override
 	protected List<INavigationElement<?>> queryChilds() {
-		Category category = getContent();
-		if (category == null) {
+		var category = getContent();
+		if (category == null)
 			return Collections.emptyList();
-		}
+		var lib = getLibrary().orElse(null);
+		var libID = lib != null && lib.getInfo() != null
+				? lib.getInfo().id()
+				: null;
 
 		var list = new ArrayList<INavigationElement<?>>();
 
 		// child categories
-		for (Category child : category.childCategories) {
-			list.add(new CategoryElement(this, child));
+		for (var child : category.childCategories) {
+			if (matches(Descriptor.of(child), lib)
+					|| (libID != null && hasElementsOf(child, libID))) {
+				list.add(new CategoryElement(this, child));
+			}
 		}
 
 		// models in this category
-		var lib = getLibrary().orElse(null);
 		var dao = Daos.categorized(Database.get(), category.modelType);
 		if (dao == null)
 			return list;

@@ -2,8 +2,12 @@ package org.openlca.app.navigation;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.openlca.app.db.Database;
+import org.openlca.core.database.Daos;
 import org.openlca.core.library.Library;
+import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
@@ -69,5 +73,29 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 			return false;
 		var libID = lib.getInfo().id();
 		return Strings.nullOrEqual(libID, d.library);
+	}
+
+	/**
+	 * Returns true if the given category contains (recursively) elements
+	 * from the given library.
+	 */
+	static boolean hasElementsOf(Category category, String library) {
+		if (category == null || library == null)
+			return false;
+		if (Strings.nullOrEqual(category.library, library))
+			return true;
+		for (var child : category.childCategories) {
+			if (hasElementsOf(child, library))
+				return true;
+		}
+		var db = Database.get();
+		if (db == null || category.modelType == null)
+			return false;
+		var dao = Daos.categorized(db, category.modelType);
+		if (dao == null)
+			return false;
+		return dao.getDescriptors(Optional.of(category))
+				.stream()
+				.anyMatch(d -> Strings.nullOrEqual(d.library, library));
 	}
 }

@@ -224,8 +224,7 @@ class ImpactPage extends ModelPage<Process> {
 		r.totalImpactResults = App.getSolver()
 				.multiply(r.impactFactors, r.totalFlowResults);
 		r.directFlowImpacts = r.impactFactors.copy();
-		App.getSolver().scaleColumns(
-				r.directFlowImpacts, r.totalFlowResults);
+		r.directFlowImpacts.scaleColumns(r.totalFlowResults);
 
 		return r;
 	}
