@@ -31,29 +31,25 @@ class CreateModelAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> elem) {
+		type = null;
+		category = null;
+
 		if (elem instanceof ModelTypeElement) {
-			ModelTypeElement e = (ModelTypeElement) elem;
-			parent = e;
-			category = null;
+			var e = (ModelTypeElement) elem;
 			type = e.getContent();
-			initDisplay();
-			return true;
 		}
 		if (elem instanceof CategoryElement) {
-			CategoryElement e = (CategoryElement) elem;
-			parent = e;
+			var e = (CategoryElement) elem;
 			category = e.getContent();
 			type = category.modelType;
-			initDisplay();
-			return true;
 		}
-		return false;
-	}
 
-	private void initDisplay() {
-		// force the display of the text and image of the current type
+		if (type == null || elem.getLibrary().isPresent())
+			return false;
+		parent = elem;
 		setText(getText());
 		setImageDescriptor(getImageDescriptor());
+		return true;
 	}
 
 	@Override
@@ -70,13 +66,13 @@ class CreateModelAction extends Action implements INavigationAction {
 					.findWizard(wizardId)
 					.createWizard();
 			if (wizard instanceof INewModelWizard) {
-				INewModelWizard modelWizard = (INewModelWizard) wizard;
+				var modelWizard = (INewModelWizard) wizard;
 				modelWizard.setCategory(category);
 			}
-			WizardDialog dialog = new WizardDialog(UI.shell(), wizard);
+			var dialog = new WizardDialog(UI.shell(), wizard);
 			dialog.open();
 			Navigator.refresh(parent);
-		} catch (final CoreException e) {
+		} catch (CoreException e) {
 			var log = LoggerFactory.getLogger(getClass());
 			log.error("Open model wizard failed", e);
 		}

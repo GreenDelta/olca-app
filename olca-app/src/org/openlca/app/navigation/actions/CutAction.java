@@ -15,19 +15,19 @@ class CutAction extends Action implements INavigationAction {
 	private List<INavigationElement<?>> selection;
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!CopyPaste.isSupported(element))
+	public boolean accept(INavigationElement<?> elem) {
+		if (!CopyPaste.isSupported(elem))
 			return false;
 		selection = new ArrayList<>();
-		selection.add(element);
+		selection.add(elem);
 		return true;
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		if (!CopyPaste.isSupported(elements))
+	public boolean accept(List<INavigationElement<?>> elems) {
+		if (!CopyPaste.isSupported(elems))
 			return false;
-		selection = elements;
+		selection = elems;
 		return true;
 	}
 

@@ -21,14 +21,14 @@ import org.slf4j.LoggerFactory;
 public class CopyPaste {
 
 	private enum Action {
-		NONE, COPY, CUT;
+		NONE, COPY, CUT
 	}
 
 	private static INavigationElement<?>[] cache = null;
 	private static Action currentAction = Action.NONE;
 
 	public static void copy(Collection<INavigationElement<?>> elements) {
-		copy(elements.toArray(new INavigationElement<?>[elements.size()]));
+		copy(elements.toArray(new INavigationElement<?>[0]));
 	}
 
 	public static void copy(INavigationElement<?>[] elements) {
@@ -38,27 +38,33 @@ public class CopyPaste {
 	}
 
 	public static void cut(Collection<INavigationElement<?>> elements) {
-		cut(elements.toArray(new INavigationElement<?>[elements.size()]));
+		cut(elements.toArray(new INavigationElement<?>[0]));
 	}
 
 	private static void cut(INavigationElement<?>[] elements) {
 		if (!isSupported(elements))
 			return;
 		initialize(Action.CUT, elements);
-		for (INavigationElement<?> element : cache) {
-			element.getParent().getChildren().remove(element);
-			Navigator.getInstance().getCommonViewer().refresh(element.getParent());
+		var navigator = Navigator.getInstance();
+		for (var elem : cache) {
+			elem.getParent().getChildren().remove(elem);
+			if (navigator != null) {
+				navigator.getCommonViewer().refresh(elem.getParent());
+			}
 		}
 	}
 
-	public static boolean isSupported(INavigationElement<?> element) {
-		return element instanceof ModelElement || element instanceof CategoryElement;
+	public static boolean isSupported(INavigationElement<?> elem) {
+		if (!(elem instanceof ModelElement)
+				&& !(elem instanceof CategoryElement))
+			return false;
+		return elem.getLibrary().isEmpty();
 	}
 
 	public static boolean isSupported(Collection<INavigationElement<?>> elements) {
 		if (elements == null)
 			return false;
-		return isSupported(elements.toArray(new INavigationElement[elements.size()]));
+		return isSupported(elements.toArray(new INavigationElement[0]));
 	}
 
 	public static boolean isSupported(INavigationElement<?>[] elements) {
@@ -147,7 +153,7 @@ public class CopyPaste {
 	}
 
 	public static boolean canMove(Collection<INavigationElement<?>> elements, INavigationElement<?> target) {
-		return canMove(elements.toArray(new INavigationElement[elements.size()]), target);
+		return canMove(elements.toArray(new INavigationElement[0]), target);
 	}
 
 	private static boolean canMove(INavigationElement<?>[] elements, INavigationElement<?> target) {
@@ -184,9 +190,8 @@ public class CopyPaste {
 		CategorizedEntity copy = copy(element);
 		if (copy == null)
 			return;
-		Category category = getCategory(categoryElement);
-		copy.category = category;
-		copy = insert(copy);
+		copy.category = getCategory(categoryElement);
+		insert(copy);
 	}
 
 	private static Category getCategory(INavigationElement<?> element) {
@@ -207,11 +212,13 @@ public class CopyPaste {
 			newParent.childCategories.add(category);
 		category.category = newParent;
 		CategoryDao dao = new CategoryDao(Database.get());
-		if (oldParent != null)
-			oldParent = dao.update(oldParent);
-		if (newParent != null)
-			newParent = dao.update(newParent);
-		category = dao.update(category);
+		if (oldParent != null) {
+			dao.update(oldParent);
+		}
+		if (newParent != null) {
+			dao.update(newParent);
+		}
+		dao.update(category);
 	}
 
 	private static boolean isChild(Category category, Category parent) {
@@ -254,7 +261,7 @@ public class CopyPaste {
 				else {
 					CategorizedEntity modelCopy = copy((ModelElement) child);
 					modelCopy.category = copy;
-					modelCopy = insert(modelCopy);
+					insert(modelCopy);
 				}
 			parent = copy;
 		}
@@ -283,9 +290,9 @@ public class CopyPaste {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T extends CategorizedEntity> T insert(T entity) {
+	private static <T extends CategorizedEntity> void insert(T entity) {
 		Class<T> clazz = (Class<T>) entity.getClass();
-		return Daos.base(Database.get(), clazz).insert(entity);
+		Daos.base(Database.get(), clazz).insert(entity);
 	}
 
 	public static boolean cacheIsEmpty() {

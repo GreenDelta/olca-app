@@ -35,19 +35,20 @@ class CreateCategoryAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> e) {
+		this.parent = null;
+		this.modelType = null;
+
 		if (e instanceof ModelTypeElement) {
-			ModelType type = (ModelType) e.getContent();
-			this.parent = null;
-			this.modelType = type;
-			return true;
+			this.modelType = (ModelType) e.getContent();
 		}
 		if (e instanceof CategoryElement) {
-			Category category = (Category) e.getContent();
+			var category = (Category) e.getContent();
 			parent = category;
 			modelType = category.modelType;
-			return true;
 		}
-		return false;
+
+		// also, do not allow creation of categories in libraries
+		return modelType != null && e.getLibrary().isEmpty();
 	}
 
 	@Override
@@ -59,14 +60,14 @@ class CreateCategoryAction extends Action implements INavigationAction {
 	public void run() {
 		if (modelType == null)
 			return;
-		Category category = createCategory();
+		var category = createCategory();
 		if (category == null)
 			return;
 		try {
 			tryInsert(category);
 			// we have to refresh the category starting from it's root
 			// otherwise the object model is out of sync.
-			INavigationElement<?> element = Navigator.findElement(category.modelType);
+			var element = Navigator.findElement(category.modelType);
 			Navigator.refresh(element);
 			Navigator.select(category);
 		} catch (Exception e) {
@@ -76,7 +77,7 @@ class CreateCategoryAction extends Action implements INavigationAction {
 	}
 
 	private void tryInsert(Category c) {
-		CategoryDao dao = new CategoryDao(Database.get());
+		var dao = new CategoryDao(Database.get());
 		if (parent == null)
 			dao.insert(c);
 		else {
@@ -91,7 +92,7 @@ class CreateCategoryAction extends Action implements INavigationAction {
 		if (name == null || name.trim().isEmpty())
 			return null;
 		name = name.trim();
-		Category c = new Category();
+		var c = new Category();
 		c.name = name;
 		c.refId = UUID.randomUUID().toString();
 		c.modelType = modelType;
@@ -99,7 +100,7 @@ class CreateCategoryAction extends Action implements INavigationAction {
 	}
 
 	private String getDialogValue() {
-		InputDialog dialog = new InputDialog(UI.shell(), M.NewCategory,
+		var dialog = new InputDialog(UI.shell(), M.NewCategory,
 				M.PleaseEnterTheNameOfTheNewCategory,
 				M.NewCategory, null);
 		int rc = dialog.open();
