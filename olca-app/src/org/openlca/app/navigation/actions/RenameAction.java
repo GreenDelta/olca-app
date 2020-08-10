@@ -26,9 +26,6 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Rename a category via the navigation tree.
- */
 class RenameAction extends Action implements INavigationAction {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -44,6 +41,8 @@ class RenameAction extends Action implements INavigationAction {
 	public boolean accept(INavigationElement<?> element) {
 		if (!(element instanceof ModelElement
 				|| element instanceof CategoryElement))
+			return false;
+		if (element.getLibrary().isPresent())
 			return false;
 		this.element = element;
 		return true;

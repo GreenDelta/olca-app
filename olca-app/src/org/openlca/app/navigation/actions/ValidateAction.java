@@ -71,6 +71,8 @@ public class ValidateAction extends Action implements INavigationAction {
 			return false;
 		if (elem instanceof LibraryElement)
 			return false;
+		if (elem.getLibrary().isPresent())
+			return false;
 
 		// model elements, categories etc.
 		selection.add(elem);

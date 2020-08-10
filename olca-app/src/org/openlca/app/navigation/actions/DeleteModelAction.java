@@ -45,6 +45,8 @@ class DeleteModelAction extends Action implements INavigationAction {
 		models.clear();
 		categories.clear();
 		if (elem instanceof CategoryElement) {
+			if (elem.getLibrary().isPresent())
+				return false;
 			categories.add((CategoryElement) elem);
 			return true;
 		}

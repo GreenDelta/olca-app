@@ -15,12 +15,9 @@ import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExportAction extends Action implements INavigationAction {
-
-	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public ExportAction() {
 		setText(M.Export);
@@ -60,6 +57,7 @@ public class ExportAction extends Action implements INavigationAction {
 					.getWorkbench().getService(IHandlerService.class);
 			service.executeCommand(ActionFactory.EXPORT.getCommandId(), null);
 		} catch (Exception e) {
+			var log = LoggerFactory.getLogger(getClass());
 			log.error("Failed to open export wizard", e);
 		}
 	}
