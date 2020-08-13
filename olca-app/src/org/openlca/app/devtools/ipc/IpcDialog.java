@@ -1,6 +1,7 @@
 package org.openlca.app.devtools.ipc;
 
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -26,12 +27,19 @@ public class IpcDialog extends FormDialog {
 
 	public IpcDialog() {
 		super(UI.shell());
-		setBlockOnOpen(true);
+		setBlockOnOpen(false);
+		setShellStyle(SWT.CLOSE
+				| SWT.MODELESS
+				| SWT.BORDER
+				| SWT.TITLE
+				| SWT.RESIZE
+				| SWT.MIN);
 	}
 
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
+
 		newShell.setText(M.StartIPCServer);
 	}
 
