@@ -261,12 +261,12 @@ public class UI {
 		return composite;
 	}
 
-	public static Composite formComposite(Composite parent, FormToolkit toolkit) {
-		if (toolkit == null)
+	public static Composite formComposite(Composite parent, FormToolkit tk) {
+		if (tk == null)
 			return formComposite(parent);
-		Composite composite = toolkit.createComposite(parent);
-		gridLayout(composite, 2);
-		return composite;
+		var comp = tk.createComposite(parent);
+		gridLayout(comp, 2);
+		return comp;
 	}
 
 	/** Creates a simple check box with the given text. */

@@ -847,8 +847,10 @@ public class M extends NLS {
 	public static String Start;
 	public static String StartDate;
 	public static String StartIPCServer;
+	public static String StartIPCInfo;
 	public static String Statistics;
 	public static String StoreInventoryResult;
+	public static String StopIPCInfo;
 	public static String SubCategory;
 	public static String SubgroupByProcesses;
 	public static String Synonyms;
