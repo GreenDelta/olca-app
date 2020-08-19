@@ -11,10 +11,6 @@
     <unit id="org.eclipse.swtchart.feature.feature.group" version="0.12.0.202003130409"/>
   </location>
   <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-    <repository location="http://download.eclipse.org/nebula/releases/latest"/>
-    <unit id="org.eclipse.nebula.feature.feature.group" version="2.3.0.201912241810"/>
-  </location>
-  <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
     <repository location="http://download.eclipse.org/modeling/emf/emf/builds/release"/>
     <unit id="org.eclipse.emf.sdk.feature.group" version="2.19.0.v20190824-1315"/>
   </location>
@@ -24,6 +20,10 @@
     <unit id="org.eclipse.platform.sdk" version="4.14.0.I20191210-0610"/>
     <unit id="org.eclipse.rcp.feature.group" version="4.14.0.v20191210-0610"/>
     <unit id="org.eclipse.rcp.source.feature.group" version="4.14.0.v20191210-0610"/>
+  </location>
+  <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+    <repository location="https://download.eclipse.org/nebula/releases/2.4.2/"/>
+    <unit id="org.eclipse.nebula.feature.feature.group" version="2.4.2.202007241204"/>
   </location>
 </locations>
 </target>
