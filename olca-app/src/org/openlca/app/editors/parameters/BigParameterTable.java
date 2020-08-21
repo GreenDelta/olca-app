@@ -220,7 +220,7 @@ public class BigParameterTable extends SimpleFormEditor {
 					return;
 				if (pr.scope == ParameterScope.PROCESS) {
 					p.owner = processes.get(p.ownerID);
-				} else if (pr.scope == ParameterScope.IMPACT_CATEGORY) {
+				} else if (pr.scope == ParameterScope.IMPACT) {
 					p.owner = impacts.get(p.ownerID);
 				}
 			});
@@ -492,7 +492,7 @@ public class BigParameterTable extends SimpleFormEditor {
 			switch (p.scope()) {
 			case GLOBAL:
 				return Images.get(ModelType.PARAMETER);
-			case IMPACT_CATEGORY:
+			case IMPACT:
 				return Images.get(ModelType.IMPACT_CATEGORY);
 			case PROCESS:
 				return Images.get(ModelType.PROCESS);
