@@ -856,6 +856,7 @@ public class M extends NLS {
 	public static String SystemProcess;
 	public static String SystemSaveProceedQuestion;
 	public static String Tab;
+	public static String Tags;
 	public static String TargetAmount;
 	public static String Technology;
 	public static String TechnologyDescription;

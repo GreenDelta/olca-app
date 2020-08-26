@@ -144,6 +144,10 @@ class Util {
 			d.categoryType = result.remote.categoryType != null ? result.remote.categoryType
 					: result.local.getDataset().categoryType;
 		}
+		JsonElement tags = result.mergedData.get("tags");
+		if (tags != null) {
+			d.tags = tags.getAsString();
+		}
 		return d;
 	}
 

@@ -7,6 +7,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Spinner;
@@ -54,7 +55,11 @@ public class Controls {
 			Consumer<SelectionEvent> consumer) {
 		spinner.addSelectionListener(createSelectionListener(consumer));
 	}
-
+	
+	public static void onSelect(List list, Consumer<SelectionEvent> fn) {
+		list.addSelectionListener(createSelectionListener(fn));
+	}
+	
 	private static SelectionListener createSelectionListener(
 			Consumer<SelectionEvent> consumer) {
 		return new SelectionListener() {

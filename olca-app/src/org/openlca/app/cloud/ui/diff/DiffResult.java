@@ -1,7 +1,5 @@
 package org.openlca.app.cloud.ui.diff;
 
-import java.util.ArrayList;
-
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.cloud.model.data.Dataset;
@@ -25,21 +23,8 @@ public class DiffResult {
 
 	public Dataset getDataset() {
 		if (remote != null)
-			return toDataset(remote);
+			return remote.asDataset();
 		return local.getDataset();
-	}
-
-	private Dataset toDataset(FetchRequestData data) {
-		Dataset dataset = new Dataset();
-		dataset.categoryType = data.categoryType;
-		dataset.categoryRefId = data.categoryRefId;
-		dataset.categories = data.categories != null ? new ArrayList<>(data.categories) : null;
-		dataset.type = data.type;
-		dataset.refId = data.refId;
-		dataset.name = data.name;
-		dataset.lastChange = data.lastChange;
-		dataset.version = data.version;
-		return dataset;
 	}
 
 	public boolean noAction() {

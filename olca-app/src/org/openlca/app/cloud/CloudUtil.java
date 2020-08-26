@@ -1,5 +1,6 @@
 package org.openlca.app.cloud;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -109,7 +110,10 @@ public class CloudUtil {
 		data.lastChange = dataset.lastChange;
 		data.categoryType = dataset.categoryType;
 		data.categoryRefId = dataset.categoryRefId;
-		data.categories = dataset.categories;
+		if (dataset.categories != null) {
+			data.categories = new ArrayList<>(dataset.categories);
+		}
+		data.tags = dataset.tags;
 		return data;
 	}
 

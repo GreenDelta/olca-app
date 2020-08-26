@@ -99,8 +99,10 @@ public class PropertyLabels {
 	private static void putBasicLabels(Class<?> clazz) {
 		put(clazz, "name", M.Name);
 		put(clazz, "description", M.Description);
-		if (CategorizedEntity.class.isAssignableFrom(clazz))
+		if (CategorizedEntity.class.isAssignableFrom(clazz)) {
 			put(clazz, "category", M.Category);
+			put(clazz, "tags", M.Tags);
+		}
 	}
 
 	private static void putCategoryLabels() {
