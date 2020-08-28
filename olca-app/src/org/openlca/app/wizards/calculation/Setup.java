@@ -16,7 +16,7 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.util.ProductSystems;
-import org.python.google.common.base.Strings;
+import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 class Setup {
@@ -156,7 +156,7 @@ class Setup {
 			Class<T> type, T defaultVal) {
 		String name = Preferences.get(
 				"calc." + type.getSimpleName());
-		if (Strings.isNullOrEmpty(name))
+		if (Strings.nullOrEmpty(name))
 			return defaultVal;
 		try {
 			return Enum.valueOf(type, name);

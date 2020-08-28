@@ -1,17 +1,10 @@
-package org.openlca.app.results.analysis;
+package org.openlca.app.results;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
-import org.openlca.app.results.ImpactChecksPage;
-import org.openlca.app.results.InfoPage;
-import org.openlca.app.results.InventoryPage;
-import org.openlca.app.results.NwResultPage;
-import org.openlca.app.results.ResultEditor;
-import org.openlca.app.results.ResultEditorInput;
-import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.contributions.ContributionTreePage;
 import org.openlca.app.results.contributions.ProcessResultPage;
@@ -21,7 +14,6 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.FullResult;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -30,8 +22,6 @@ import org.slf4j.LoggerFactory;
 public class AnalyzeEditor extends ResultEditor<FullResult> {
 
 	public static final String ID = "editors.analyze";
-
-	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private SankeyDiagram diagram;
 	private int diagramIndex;
@@ -72,6 +62,7 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 				addPage(new ImpactChecksPage(this));
 			}
 		} catch (final PartInitException e) {
+			var log = LoggerFactory.getLogger(getClass());
 			log.error("Add pages failed", e);
 		}
 	}

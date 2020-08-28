@@ -20,10 +20,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.app.results.ResultEditorInput;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.Sort;
-import org.openlca.app.results.analysis.AnalyzeEditor;
-import org.openlca.app.results.quick.QuickResultEditor;
 import org.openlca.app.results.simulation.SimulationEditor;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -176,12 +174,7 @@ public class CalculationWizard extends Wizard {
 				log.trace("sort result items");
 				Sort.sort(result);
 				log.trace("calculation done; open editor");
-				ResultEditorInput input = ResultEditorInput.create(
-						setup.calcSetup, result).with(dqResult);
-				Editors.open(input, upstream
-						? AnalyzeEditor.ID
-						: QuickResultEditor.ID);
-
+				ResultEditor.open(setup.calcSetup, result, dqResult);
 			} catch (OutOfMemoryError e) {
 				outOfMemory = true;
 			}

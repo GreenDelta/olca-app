@@ -12,12 +12,11 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 
-public class ResultEditorInput implements IEditorInput {
+class ResultEditorInput implements IEditorInput {
 
 	public final long productSystemId;
 	public final String resultKey;
 	public final String setupKey;
-	public String parameterSetKey;
 	public String dqResultKey;
 
 	public ResultEditorInput(long productSystemId, String resultKey, String setupKey) {
@@ -37,7 +36,9 @@ public class ResultEditorInput implements IEditorInput {
 		return new ResultEditorInput(systemId, resultKey, setupKey);
 	}
 
-	/** With data quality */
+	/**
+	 * With data quality
+	 */
 	public ResultEditorInput with(DQResult dqResult) {
 		if (dqResult != null)
 			dqResultKey = Cache.getAppCache().put(dqResult);
@@ -45,7 +46,7 @@ public class ResultEditorInput implements IEditorInput {
 	}
 
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 		return null;
 	}

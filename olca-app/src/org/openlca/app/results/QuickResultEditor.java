@@ -1,18 +1,10 @@
-package org.openlca.app.results.quick;
+package org.openlca.app.results;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.db.Cache;
-import org.openlca.app.results.ImpactChecksPage;
-import org.openlca.app.results.InfoPage;
-import org.openlca.app.results.InventoryPage;
-import org.openlca.app.results.NwResultPage;
-import org.openlca.app.results.ResultEditor;
-import org.openlca.app.results.ResultEditorInput;
-import org.openlca.app.results.SaveProcessDialog;
-import org.openlca.app.results.TotalImpactResultPage;
 import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.CalculationSetup;

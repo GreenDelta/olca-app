@@ -195,7 +195,7 @@
 
       <!-- result views -->
       <editor
-            class="org.openlca.app.results.quick.QuickResultEditor"
+            class="org.openlca.app.results.QuickResultEditor"
             default="false"
             icon="icons/quick_calculation.png"
             id="QuickResultEditor"
@@ -203,7 +203,7 @@
             contributorClass="org.openlca.app.results.quick.QuickResultActions">
       </editor>
       <editor
-            class="org.openlca.app.results.analysis.AnalyzeEditor"
+            class="org.openlca.app.results.AnalyzeEditor"
             contributorClass="org.openlca.app.results.analysis.AnalyzeResultActions"
             default="false"
             icon="icons/analysis.png"
