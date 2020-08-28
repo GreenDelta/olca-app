@@ -1,11 +1,14 @@
 package org.openlca.app.navigation.actions;
 
 import java.util.List;
+import java.util.function.Consumer;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
@@ -14,6 +17,7 @@ import org.openlca.app.cloud.ui.preferences.CloudPreference;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.cloud.CommitAction;
 import org.openlca.app.navigation.actions.cloud.ConfigureRepositoriesAction;
 import org.openlca.app.navigation.actions.cloud.FetchAction;
@@ -31,6 +35,8 @@ import org.openlca.app.navigation.actions.db.DbDeleteAction;
 import org.openlca.app.navigation.actions.db.DbExportAction;
 import org.openlca.app.navigation.actions.db.DbImportAction;
 import org.openlca.app.navigation.actions.db.DbRenameAction;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.viewers.Viewers;
 
 /**
@@ -96,6 +102,31 @@ public class NavigationActionProvider extends CommonActionProvider {
 					new OpenCompareViewAction(true)
 			}
 	};
+
+	@Override
+	public void fillActionBars(IActionBars actionBars) {
+		super.fillActionBars(actionBars);
+		var menu = actionBars.getMenuManager();
+		if (menu == null)
+			return;
+
+		// when we add an action we need to check if it
+		// was already added. we use the action title
+		// as ID to identify an action for this.
+		Consumer<Action> add = action -> {
+			action.setId(action.getText());
+			var existing = menu.find(action.getId());
+			if (existing != null)
+				return;
+			menu.add(action);
+		};
+
+		var refresh = Actions.create(
+				"Refresh",
+				Icon.REFRESH.descriptor(),
+				Navigator::refresh);
+		add.accept(refresh);
+	}
 
 	@Override
 	public void fillContextMenu(IMenuManager menu) {
