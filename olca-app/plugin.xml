@@ -200,11 +200,11 @@
             icon="icons/quick_calculation.png"
             id="QuickResultEditor"
             name="Quick results"
-            contributorClass="org.openlca.app.results.quick.QuickResultActions">
+            contributorClass="org.openlca.app.results.ResultEditorActions">
       </editor>
       <editor
             class="org.openlca.app.results.AnalyzeEditor"
-            contributorClass="org.openlca.app.results.analysis.AnalyzeResultActions"
+            contributorClass="org.openlca.app.results.ResultEditorActions"
             default="false"
             icon="icons/analysis.png"
             id="editors.analyze"
