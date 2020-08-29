@@ -73,9 +73,9 @@ class UpstreamTreeExport implements Runnable {
 			var header = Excel.headerStyle(wb);
 			Excel.cell(sheet, 0, 0,
 					"Upstream contributions to: " + refName())
-					.setCellStyle(header);
+					.ifPresent(c -> c.setCellStyle(header));
 			Excel.cell(sheet, 1, 0, "Processes")
-					.setCellStyle(header);
+					.ifPresent(c -> c.setCellStyle(header));
 
 			// write the tree
 			row = 1;
@@ -90,7 +90,7 @@ class UpstreamTreeExport implements Runnable {
 					? "Result"
 					: "Result [" + unit + "]";
 			Excel.cell(sheet, 1, maxColumn + 1, resultHeader)
-					.setCellStyle(header);
+					.ifPresent(c -> c.setCellStyle(header));
 			for (int i = 0; i < values.size(); i++) {
 				Excel.cell(sheet, i + 2, maxColumn + 1, values.get(i));
 			}
