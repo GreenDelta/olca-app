@@ -23,7 +23,6 @@ import org.openlca.core.model.Location;
 import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.GeoJSON;
-import org.openlca.geo.geojson.ProtoPack;
 import org.python.google.common.base.Strings;
 
 import com.google.gson.GsonBuilder;
@@ -49,7 +48,7 @@ class MapSection {
 
 		map = new MapView(comp);
 		map.addBaseLayers();
-		feature = ProtoPack.unpackgz(location().geodata);
+		feature = GeoJSON.unpack(location().geodata);
 		if (feature != null) {
 			updateMap();
 		}
@@ -141,7 +140,7 @@ class MapSection {
 					location().geodata = null;
 				} else {
 					feature = GeoJSON.read(new StringReader(json));
-					location().geodata = ProtoPack.packgz(feature);
+					location().geodata = GeoJSON.pack(feature);
 				}
 			} catch (Exception e) {
 				MsgBox.error("Failed to parse GeoJSON",

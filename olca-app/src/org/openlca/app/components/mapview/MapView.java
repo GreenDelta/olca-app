@@ -19,6 +19,7 @@ import org.openlca.geo.calc.Bounds;
 import org.openlca.geo.calc.WebMercator;
 import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
+import org.openlca.geo.geojson.GeoJSON;
 import org.openlca.geo.geojson.Geometry;
 import org.openlca.geo.geojson.GeometryCollection;
 import org.openlca.geo.geojson.LineString;
@@ -27,7 +28,6 @@ import org.openlca.geo.geojson.MultiPoint;
 import org.openlca.geo.geojson.MultiPolygon;
 import org.openlca.geo.geojson.Point;
 import org.openlca.geo.geojson.Polygon;
-import org.openlca.geo.geojson.ProtoPack;
 import org.openlca.util.BinUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +107,7 @@ public class MapView {
 		Function<String, FeatureCollection> fn = (file) -> {
 			try {
 				InputStream stream = getClass().getResourceAsStream(file);
-				return ProtoPack.unpackgz(BinUtils.read(stream));
+				return GeoJSON.unpack(BinUtils.read(stream));
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(getClass());
 				log.error("failed to add base layer" + file, e);

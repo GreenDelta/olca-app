@@ -326,13 +326,13 @@ public class AllocationPage extends ModelPage<Process> {
 		}
 
 		@Override
-		protected void setText(Exchange e, String text) {
-			var factor = getFactor(e, method);
+		protected void setText(Exchange exchange, String text) {
+			var factor = getFactor(exchange, method);
 			boolean isNew = factor == null;
 			if (isNew) {
 				factor = new AllocationFactor();
 				factor.method = method;
-				factor.productId = e.flow.id;
+				factor.productId = exchange.flow.id;
 			}
 			if (update(factor, text)) {
 				if (isNew) {
