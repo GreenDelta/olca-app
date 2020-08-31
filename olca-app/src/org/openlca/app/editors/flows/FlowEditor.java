@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 public class FlowEditor extends ModelEditor<Flow> {
 
 	public static String ID = "editors.flow";
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public FlowEditor() {
 		super(Flow.class);

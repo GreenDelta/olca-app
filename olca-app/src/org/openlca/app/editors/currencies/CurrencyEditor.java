@@ -81,7 +81,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 			UI.filler(comp, tk);
 			Button b = tk.createButton(comp, M.SetAsReferenceCurrency, SWT.NONE);
 			b.setImage(Images.get(ModelType.CURRENCY));
-			b.setEnabled(editor.isEditable());
+			b.setEnabled(isEditable());
 			Controls.onSelect(b, e -> RefCurrencyUpdate.run(getModel()));
 			UI.filler(comp, tk);
 		}

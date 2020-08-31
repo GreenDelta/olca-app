@@ -24,7 +24,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
-import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.field.DoubleModifier;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.usage.FlowPropertyFactorUseSearch;
@@ -45,22 +44,26 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	public FlowPropertyFactorViewer(Composite parent, EntityCache cache,
 			FlowEditor editor) {
 		super(parent);
-		ModifySupport<FlowPropertyFactor> ms = getModifySupport();
 		this.editor = editor;
 		this.cache = cache;
-		ms.bind(M.ConversionFactor, new ConversionModifier());
-		ms.bind(M.IsReference, new ReferenceModifier());
-		ms.bind("", new CommentDialogModifier<FlowPropertyFactor>(
-				editor.getComments(), CommentPaths::get));
 		Tables.bindColumnWidths(getViewer(), 0.2, 0.2, 0.2, 0.2, 0.17);
 		addDoubleClickHandler();
 		getViewer().getTable().getColumns()[1].setAlignment(SWT.RIGHT);
+
+		// bind modifiers
+		if (editor.isEditable()) {
+			getModifySupport()
+					.bind(M.ConversionFactor, new ConversionModifier())
+					.bind(M.IsReference, new ReferenceModifier())
+					.bind("", new CommentDialogModifier<FlowPropertyFactor>(
+							editor.getComments(), CommentPaths::get));
+		}
 	}
 
 	private void addDoubleClickHandler() {
 		Tables.onDoubleClick(getViewer(), (event) -> {
 			TableItem item = Tables.getItem(getViewer(), event);
-			if (item == null) {
+			if (item == null && editor.isEditable()) {
 				onCreate();
 				return;
 			}
@@ -85,12 +88,18 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	@Override
 	protected String[] getColumnHeaders() {
 		return new String[] {
-				M.Name, M.ConversionFactor, M.ReferenceUnit,
-				M.Formula, M.IsReference, "" };
+				M.Name,
+				M.ConversionFactor,
+				M.ReferenceUnit,
+				M.Formula,
+				M.IsReference,
+				"" };
 	}
 
 	@OnAdd
 	protected void onCreate() {
+		if (!editor.isEditable())
+			return;
 		var descriptors = ModelSelectionDialog
 				.multiSelect(ModelType.FLOW_PROPERTY);
 		if (descriptors == null)
@@ -101,6 +110,8 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	}
 
 	private void add(Descriptor d) {
+		if (!editor.isEditable())
+			return;
 		if (d == null)
 			return;
 		FlowProperty prop = cache.get(FlowProperty.class, d.id);
@@ -119,6 +130,8 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
 	@OnRemove
 	protected void onRemove() {
+		if (!editor.isEditable())
+			return;
 		FlowPropertyFactor fac = getSelected();
 		if (fac == null)
 			return;

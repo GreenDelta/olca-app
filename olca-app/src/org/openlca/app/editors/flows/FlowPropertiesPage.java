@@ -36,7 +36,7 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 		Section section = UI.section(body, toolkit, M.FlowProperties);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit, 1);
-		FlowPropertyFactorViewer viewer = new FlowPropertyFactorViewer(client, Cache.getEntityCache(), editor);
+		var viewer = new FlowPropertyFactorViewer(client, Cache.getEntityCache(), editor);
 		setInitialInput(viewer);
 		CommentAction.bindTo(section, viewer, "flowProperties", editor.getComments());
 		editor.onSaved(() -> viewer.setInput(getModel()));

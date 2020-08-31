@@ -23,7 +23,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.table.AbstractTableViewer;
 import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
-import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.TextCellModifier;
 import org.openlca.app.viewers.table.modify.field.DoubleModifier;
 import org.openlca.app.viewers.table.modify.field.StringModifier;
@@ -54,14 +53,19 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 				onCreate();
 		});
 		getViewer().getTable().getColumns()[3].setAlignment(SWT.RIGHT);
-		ModifySupport<Unit> ms = getModifySupport();
-		ms.bind(NAME, new NameModifier());
-		ms.bind(DESCRIPTION, new StringModifier<>(editor, "description"));
-		ms.bind(SYNONYMS, new StringModifier<>(editor, "synonyms"));
-		ms.bind(CONVERSION_FACTOR, new ConversionModifier());
-		ms.bind(IS_REFERENCE, new ReferenceModifier());
-		ms.bind("", new CommentDialogModifier<Unit>(editor.getComments(), CommentPaths::get));
 		Tables.bindColumnWidths(getViewer(), 0.25, 0.15, 0.15, 0.15, 0.15, 0.12);
+
+		// cell modifiers
+		if (!editor.isEditable())
+			return;
+		getModifySupport()
+				.bind(NAME, new NameModifier())
+				.bind(DESCRIPTION, new StringModifier<>(editor, "description"))
+				.bind(SYNONYMS, new StringModifier<>(editor, "synonyms"))
+				.bind(CONVERSION_FACTOR, new ConversionModifier())
+				.bind(IS_REFERENCE, new ReferenceModifier())
+				.bind("", new CommentDialogModifier<>(
+						editor.getComments(), CommentPaths::get));
 	}
 
 	@Override
@@ -71,11 +75,21 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { NAME, DESCRIPTION, SYNONYMS, CONVERSION_FACTOR, FORMULA, IS_REFERENCE, COMMENT };
+		return new String[] {
+				NAME,
+				DESCRIPTION,
+				SYNONYMS,
+				CONVERSION_FACTOR,
+				FORMULA,
+				IS_REFERENCE,
+				COMMENT
+		};
 	}
 
 	@OnAdd
 	protected void onCreate() {
+		if (!editor.isEditable())
+			return;
 		UnitDao dao = new UnitDao(Database.get());
 		Unit unit = new Unit();
 		String name = "new unit";
@@ -93,6 +107,8 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 	@OnRemove
 	protected void onRemove() {
+		if (!editor.isEditable())
+			return;
 		UnitGroup group = editor.getModel();
 		for (Unit unit : getAllSelected()) {
 			if (Objects.equals(group.referenceUnit, unit)) {
@@ -228,8 +244,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 			group.referenceUnit = u;
 			double f = u.conversionFactor;
 			for (Unit unit : group.units) {
-				double factor = unit.conversionFactor / f;
-				unit.conversionFactor = factor;
+				unit.conversionFactor /= f;
 			}
 			editor.setDirty(true);
 		}
