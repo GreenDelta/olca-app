@@ -12,7 +12,6 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
@@ -31,7 +30,7 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FileStore;
 import org.openlca.core.model.Source;
-import org.python.google.common.base.Strings;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,11 +38,10 @@ import com.google.common.io.Files;
 
 class SourceInfoPage extends ModelPage<Source> {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit tk;
 	private ImageHyperlink fileLink;
 	private ImageHyperlink deleteLink;
-	private ScrolledForm form;
 	private ImageView image;
 
 	SourceInfoPage(SourceEditor editor) {
@@ -52,11 +50,10 @@ class SourceInfoPage extends ModelPage<Source> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		form = UI.formHeader(this);
+		var form = UI.formHeader(this);
 		tk = mform.getToolkit();
-		Composite body = UI.formBody(form, tk);
-		InfoSection infoSection = new InfoSection(getEditor());
-		infoSection.render(body, tk);
+		var body = UI.formBody(form, tk);
+		new InfoSection(getEditor()).render(body, tk);
 		additionalInfo(body);
 		body.setFocus();
 		form.reflow(true);
@@ -70,7 +67,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		urlButton.setImage(Icon.MAP.get());
 		Controls.onSelect(urlButton, e -> {
 			String url = getModel().url;
-			if (Strings.isNullOrEmpty(url))
+			if (Strings.nullOrEmpty(url))
 				return;
 			Desktop.browse(url);
 		});
@@ -82,7 +79,7 @@ class SourceInfoPage extends ModelPage<Source> {
 
 		UI.filler(comp, tk);
 		UI.filler(comp, tk);
-		image = new ImageView(comp, () -> getDatabaseFile());
+		image = new ImageView(comp, this::getDatabaseFile);
 	}
 
 	private void fileSection(Composite parent) {
@@ -94,11 +91,16 @@ class SourceInfoPage extends ModelPage<Source> {
 		layout.horizontalSpacing = 10;
 		layout.numColumns = 3;
 		comp.setLayout(layout);
-		comp.addMouseTrackListener(new DeleteFileVisibility());
-		Button browseButton = tk.createButton(comp, M.Browse, SWT.NONE);
+
+		var browseButton = tk.createButton(comp, M.Browse, SWT.NONE);
+		var editable = getEditor().isEditable();
+		browseButton.setEnabled(editable);
 		Controls.onSelect(browseButton, e -> selectFile());
 		fileLink(comp);
-		deleteLink(comp);
+		if (editable) {
+			deleteLink(comp);
+			comp.addMouseTrackListener(new DeleteFileVisibility());
+		}
 		new CommentControl(parent, tk, "externalFile", getComments());
 	}
 

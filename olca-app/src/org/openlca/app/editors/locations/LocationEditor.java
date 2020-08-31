@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 public class LocationEditor extends ModelEditor<Location> {
 
 	public static String ID = "editors.location";
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public LocationEditor() {
 		super(Location.class);

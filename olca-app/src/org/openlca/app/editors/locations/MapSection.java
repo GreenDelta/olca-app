@@ -2,7 +2,6 @@ package org.openlca.app.editors.locations;
 
 import java.io.StringReader;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -12,7 +11,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.components.mapview.LayerConfig;
 import org.openlca.app.components.mapview.MapView;
 import org.openlca.app.util.Actions;
@@ -23,9 +21,9 @@ import org.openlca.core.model.Location;
 import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.GeoJSON;
-import org.python.google.common.base.Strings;
 
 import com.google.gson.GsonBuilder;
+import org.openlca.util.Strings;
 
 class MapSection {
 
@@ -40,12 +38,13 @@ class MapSection {
 	}
 
 	void render(Composite body, FormToolkit tk) {
-		Section section = UI.section(body, tk, "Geographic data");
-		UI.gridData(section, true, true);
-		Composite comp = UI.sectionClient(section, tk);
+		var section = UI.section(body, tk, "Geographic data");
+		UI.gridData(section, true, true).minimumHeight = 250;
+		var comp = UI.sectionClient(section, tk);
 		comp.setLayout(new FillLayout());
 		UI.gridData(comp, true, true);
 
+		// render the initial feature
 		map = new MapView(comp);
 		map.addBaseLayers();
 		feature = GeoJSON.unpack(location().geodata);
@@ -53,7 +52,10 @@ class MapSection {
 			updateMap();
 		}
 
-		Action edit = Actions.onEdit(() -> {
+		// bind actions
+		if (!editor.isEditable())
+			return;
+		var edit = Actions.onEdit(() -> {
 			new GeoJSONDialog().open();
 		});
 		Actions.bind(section, edit);
@@ -112,11 +114,10 @@ class MapSection {
 			Feature f = feature.features.get(0);
 			if (f.geometry == null)
 				return "";
-			String json = new GsonBuilder()
+			return new GsonBuilder()
 					.setPrettyPrinting()
 					.create()
 					.toJson(f.toJson());
-			return json;
 		}
 
 		@Override
@@ -131,9 +132,9 @@ class MapSection {
 
 		@Override
 		protected void okPressed() {
-			String json = text.getText();
+			var json = text.getText();
 			try {
-				if (Strings.isNullOrEmpty(json)) {
+				if (Strings.nullOrEmpty(json)) {
 					if (feature == null)
 						return;
 					feature = null;
