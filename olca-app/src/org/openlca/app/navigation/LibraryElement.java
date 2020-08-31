@@ -10,12 +10,25 @@ import org.openlca.core.model.ModelType;
 
 public class LibraryElement extends NavigationElement<Library> {
 
+	private ModelType only;
+
 	LibraryElement(INavigationElement<?> parent, Library library) {
 		super(parent, library);
 	}
 
+	static LibraryElement of(Library library, ModelType only) {
+		var elem = new LibraryElement(null, library);
+		elem.only = only;
+		return elem;
+	}
+
 	@Override
 	protected List<INavigationElement<?>> queryChilds() {
+		if (only != null) {
+			var typeElem = new ModelTypeElement(this, only);
+			return typeElem.getChildren();
+		}
+
 		var db = getDatabase();
 		if (db.isEmpty())
 			return Collections.emptyList();
