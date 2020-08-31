@@ -1,4 +1,4 @@
-package org.openlca.app.editors.costs;
+package org.openlca.app.editors.currencies;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 public class CurrencyEditor extends ModelEditor<Currency> {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public CurrencyEditor() {
 		super(Currency.class);
@@ -40,8 +40,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 	private class Page extends ModelPage<Currency> {
 
 		private CurrencyTable table;
-		private CurrencyEditor editor;
-		private ScrolledForm form;
+		private final CurrencyEditor editor;
 
 		private Page() {
 			super(CurrencyEditor.this, "CurrencyPage", M.GeneralInformation);
@@ -50,7 +49,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
-			form = UI.formHeader(this);
+			ScrolledForm form = UI.formHeader(this);
 			FormToolkit tk = managedForm.getToolkit();
 			Composite body = UI.formBody(form, tk);
 			InfoSection infoSection = new InfoSection(getEditor());
@@ -82,9 +81,8 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 			UI.filler(comp, tk);
 			Button b = tk.createButton(comp, M.SetAsReferenceCurrency, SWT.NONE);
 			b.setImage(Images.get(ModelType.CURRENCY));
-			Controls.onSelect(b, e -> {
-				RefCurrencyUpdate.run(getModel());
-			});
+			b.setEnabled(editor.isEditable());
+			Controls.onSelect(b, e -> RefCurrencyUpdate.run(getModel()));
 			UI.filler(comp, tk);
 		}
 	}

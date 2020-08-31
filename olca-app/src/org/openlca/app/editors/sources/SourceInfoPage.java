@@ -198,6 +198,8 @@ class SourceInfoPage extends ModelPage<Source> {
 		if (getModel().externalFile == null)
 			return;
 		File file = getDatabaseFile();
+		if (file == null)
+			return;
 		boolean doIt = Question.ask(M.DeleteFile,
 				M.SourceFileDeleteQuestion);
 		if (!doIt)

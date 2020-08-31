@@ -1,4 +1,4 @@
-package org.openlca.app.editors.costs;
+package org.openlca.app.editors.currencies;
 
 import java.util.ArrayList;
 import java.util.Collections;
