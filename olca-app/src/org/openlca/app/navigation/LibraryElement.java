@@ -3,8 +3,11 @@ package org.openlca.app.navigation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.library.Library;
 import org.openlca.core.model.ModelType;
 
@@ -16,6 +19,11 @@ public class LibraryElement extends NavigationElement<Library> {
 		super(parent, library);
 	}
 
+	/**
+	 * Constructs a library element that only contains models of the given type.
+	 * Such elements are used in model selection dialogs and behave a bit different
+	 * than library elements in the normal navigation.
+	 */
 	static LibraryElement of(Library library, ModelType only) {
 		var elem = new LibraryElement(null, library);
 		elem.only = only;
@@ -54,5 +62,24 @@ public class LibraryElement extends NavigationElement<Library> {
 						ModelType.SOURCE,
 						ModelType.LOCATION)));
 		return list;
+	}
+
+	/**
+	 * Returns the corresponding database if this element is under an active
+	 * database.
+	 */
+	public Optional<IDatabase> getDatabase() {
+		var parent = getParent();
+		while (parent != null) {
+			if (parent instanceof DatabaseElement) {
+				var dbElem = (DatabaseElement) parent;
+				var config = dbElem.getContent();
+				return Database.isActive(config)
+						? Optional.of(Database.get())
+						: Optional.empty();
+			}
+			parent = parent.getParent();
+		}
+		return Optional.empty();
 	}
 }
