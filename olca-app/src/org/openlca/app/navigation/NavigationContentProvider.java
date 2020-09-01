@@ -1,7 +1,6 @@
 package org.openlca.app.navigation;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IMemento;
@@ -20,12 +19,11 @@ public class NavigationContentProvider implements ICommonContentProvider {
 			return ((Collection<?>) parent).toArray();
 		if (!(parent instanceof INavigationElement))
 			return new Object[0];
-		INavigationElement<?> e = (INavigationElement<?>) parent;
-		List<INavigationElement<?>> childs = e.getChildren();
-		if (childs == null)
-			return new Object[0];
-		else
-			return childs.toArray();
+		var e = (INavigationElement<?>) parent;
+		var childs = e.getChildren();
+		return childs == null
+				? new Object[0]
+				: childs.toArray();
 	}
 
 	@Override

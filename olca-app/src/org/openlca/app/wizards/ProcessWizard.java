@@ -195,13 +195,13 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			productTreeContainer = new Composite(contentStack, SWT.NONE);
 			UI.gridData(productTreeContainer, true, false);
 			productTreeContainer.setLayout(gridLayout());
-			flowTree = NavigationTree.createViewer(productTreeContainer);
+			flowTree = NavigationTree.forSingleSelection(
+					productTreeContainer, ModelType.FLOW);
 			UI.gridData(flowTree.getTree(), true, true).heightHint = 200;
 			flowTree.addFilter(productFilter);
 			flowTree.addFilter(new EmptyCategoryFilter());
 			flowTree.addFilter(new ModelTextFilter(flowText, flowTree));
 			flowTree.addSelectionChangedListener(s -> checkInput());
-			flowTree.setInput(Navigator.findElement(ModelType.FLOW));
 		}
 
 		private void createPropertyViewer() {

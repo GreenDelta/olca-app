@@ -74,9 +74,8 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		}
 	}
 
-	private void createProcessTree(Composite composite) {
-		processTree = NavigationTree.createViewer(composite);
-		processTree.setInput(Navigator.findElement(ModelType.PROCESS));
+	private void createProcessTree(Composite comp) {
+		processTree = NavigationTree.forSingleSelection(comp, ModelType.PROCESS);
 		processTree.addFilter(new EmptyCategoryFilter());
 		processTree.addFilter(new ModelTextFilter(filterText, processTree));
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);

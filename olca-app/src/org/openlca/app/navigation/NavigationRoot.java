@@ -28,19 +28,16 @@ public class NavigationRoot extends PlatformObject implements
 	}
 
 	@Override
-	public List<INavigationElement<?>> getChildren() {
-		if (childs == null)
-			childs = loadChilds();
-		return childs;
-	}
-
-	@Override
 	public INavigationElement<?> getParent() {
 		return null;
 	}
 
-	private List<INavigationElement<?>> loadChilds() {
-		var childs = new ArrayList<INavigationElement<?>>();
+	@Override
+	public List<INavigationElement<?>> getChildren() {
+		if (childs != null)
+			return childs;
+
+		childs = new ArrayList<INavigationElement<?>>();
 
 		// add database elements
 		var dbs = Database.getConfigurations();
@@ -66,5 +63,4 @@ public class NavigationRoot extends PlatformObject implements
 
 		return childs;
 	}
-
 }

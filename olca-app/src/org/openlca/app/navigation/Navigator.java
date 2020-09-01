@@ -3,7 +3,6 @@ package org.openlca.app.navigation;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,7 +29,6 @@ import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.tools.libraries.LibraryInfoPage;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.viewers.Viewers;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 import com.google.common.base.Objects;
@@ -58,6 +56,7 @@ public class Navigator extends CommonNavigator {
 		super.initListeners(viewer);
 		viewer.setUseHashlookup(true);
 		ColumnViewerToolTipSupport.enableFor(viewer);
+
 		viewer.addDoubleClickListener(evt -> {
 			var elem = Viewers.getFirst(evt.getSelection());
 			if (elem instanceof ModelElement) {
@@ -243,32 +242,6 @@ public class Navigator extends CommonNavigator {
 			queue.addAll(next.getChildren());
 		}
 		return null;
-	}
-
-	public static List<NavigationElement<?>> findModelRoots(ModelType type) {
-		if (type == null)
-			return Collections.emptyList();
-		var root = getNavigationRoot();
-		if (root == null)
-			return Collections.emptyList();
-		var queue = new ArrayDeque<INavigationElement<?>>();
-		queue.add(root);
-		var coll = new ArrayList<NavigationElement<?>>();
-		while (!queue.isEmpty()) {
-			var next = queue.poll();
-			if (next instanceof ModelTypeElement) {
-				var elem = (ModelTypeElement) next;
-				if (elem.getContent() == type) {
-					var lib = elem.getLibrary();
-					coll.add(lib.isPresent()
-							? LibraryElement.of(lib.get(), type)
-							: elem);
-				}
-				continue;
-			}
-			queue.addAll(next.getChildren());
-		}
-		return coll;
 	}
 
 	public INavigationElement<?> getFirstSelected() {
