@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
@@ -35,7 +34,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.ReferenceAmount;
@@ -43,7 +41,10 @@ import org.openlca.core.matrix.DIndex;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.matrix.ImpactBuilder;
 import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.MatrixData;
 import org.openlca.core.matrix.ParameterTable;
+import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.TechIndex;
 import org.openlca.core.matrix.format.MatrixBuilder;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -53,10 +54,9 @@ import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.expressions.FormulaInterpreter;
+import org.openlca.core.results.solutions.EagerResultProvider;
 import org.openlca.util.Strings;
 
 class ImpactPage extends ModelPage<Process> {
@@ -155,8 +155,7 @@ class ImpactPage extends ModelPage<Process> {
 				.stream()
 				.sorted((d1, d2) -> Strings.compare(d1.name, d2.name))
 				.map(d -> {
-					Contribution<?> c = Contribution.of(
-							d, result.getTotalImpactResult(d));
+					var c = Contribution.of(d, result.getTotalImpactResult(d));
 					c.unit = d.referenceUnit;
 					return c;
 				})
@@ -165,19 +164,21 @@ class ImpactPage extends ModelPage<Process> {
 	}
 
 	private ContributionResult compute() {
-		IDatabase db = Database.get();
-		ContributionResult r = new ContributionResult();
 
-		// build the impact index
-		r.impactIndex = new DIndex<>();
-		new ImpactCategoryDao(db)
-				.getDescriptors()
-				.forEach(d -> r.impactIndex.put(d));
+		var data = new MatrixData();
+
+		// create a virtual demand of 1.0
+		var refProduct = new ProcessProduct();
+		refProduct.process = Descriptor.of(getModel());
+		refProduct.flow = new FlowDescriptor();
+		refProduct.flow.id = 42;
+		data.techIndex = new TechIndex(refProduct);
+		data.techIndex.setDemand(1.0);
 
 		// collect the elementary flow exchanges
-		List<Exchange> elemFlows = new ArrayList<>();
+		var elemFlows = new ArrayList<Exchange>();
 		boolean regionalized = false;
-		for (Exchange e : getModel().exchanges) {
+		for (var e : getModel().exchanges) {
 			if (e.flow == null
 					|| e.flow.flowType != FlowType.ELEMENTARY_FLOW)
 				continue;
@@ -186,47 +187,59 @@ class ImpactPage extends ModelPage<Process> {
 			}
 			elemFlows.add(e);
 		}
+		if (elemFlows.isEmpty()) {
+			// return an empty result if there are no elementary flows
+			return new ContributionResult(
+					EagerResultProvider.create(data, App.getSolver()));
+		}
 
 		// create the flow index and B matrix / vector
-		r.flowIndex = regionalized
+		data.flowIndex = regionalized
 				? FlowIndex.createRegionalized()
 				: FlowIndex.create();
-		if (elemFlows.isEmpty())
-			return r;
-		MatrixBuilder enviBuilder = new MatrixBuilder();
-		for (Exchange e : elemFlows) {
-			FlowDescriptor flow = Descriptor.of(e.flow);
-			LocationDescriptor loc = e.location != null
+		var enviBuilder = new MatrixBuilder();
+		for (var e : elemFlows) {
+			var flow = Descriptor.of(e.flow);
+			var loc = e.location != null
 					? Descriptor.of(e.location)
 					: null;
 			int i = e.isInput
-					? r.flowIndex.putInput(flow, loc)
-					: r.flowIndex.putOutput(flow, loc);
+					? data.flowIndex.putInput(flow, loc)
+					: data.flowIndex.putOutput(flow, loc);
 			double amount = ReferenceAmount.get(e);
 			if (e.isInput && amount != 0) {
 				amount = -amount;
 			}
 			enviBuilder.add(i, 0, amount);
 		}
-		r.directFlowResults = enviBuilder.finish();
-		r.totalFlowResults = r.directFlowResults.getColumn(0);
+		data.flowMatrix = enviBuilder.finish();
 
-		// build the formula interpreter
-		Set<Long> contexts = new HashSet<>();
+		// build the impact index and matrix
+		data.impactIndex = new DIndex<>();
+		var db = Database.get();
+		new ImpactCategoryDao(db)
+				.getDescriptors()
+				.forEach(d -> data.impactIndex.put(d));
+		var contexts = new HashSet<Long>();
 		contexts.add(getModel().id);
-		r.impactIndex.each((i, d) -> contexts.add(d.id));
-		FormulaInterpreter interpreter = ParameterTable.interpreter(
+		data.impactIndex.each((i, d) -> contexts.add(d.id));
+		var interpreter = ParameterTable.interpreter(
 				db, contexts, Collections.emptySet());
-
-		// create the impact matrix and results
-		r.impactFactors = new ImpactBuilder(db)
-				.build(r.flowIndex, r.impactIndex, interpreter).impactMatrix;
-		r.totalImpactResults = App.getSolver()
-				.multiply(r.impactFactors, r.totalFlowResults);
-		r.directFlowImpacts = r.impactFactors.copy();
-		r.directFlowImpacts.scaleColumns(r.totalFlowResults);
-
-		return r;
+		data.impactMatrix= new ImpactBuilder(db)
+				.build(data.flowIndex, data.impactIndex, interpreter)
+				.impactMatrix;
+		
+		// create the result
+		var provider = EagerResultProvider.create(data, App.getSolver());
+		var result = new ContributionResult(provider);
+		result.techIndex = provider.techIndex();
+		result.flowIndex = provider.flowIndex();
+		result.impactIndex = provider.impactIndex();
+		result.scalingVector = provider.scalingVector();
+		result.totalRequirements = provider.totalRequirements();
+		result.totalFlowResults = provider.totalFlows();
+		result.totalImpactResults = provider.totalImpacts();
+		return result;
 	}
 
 	private class Content extends ArrayContentProvider
