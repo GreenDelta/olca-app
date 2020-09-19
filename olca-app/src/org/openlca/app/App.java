@@ -21,14 +21,12 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.core.matrix.solvers.DenseSolver;
 import org.openlca.core.matrix.solvers.IMatrixSolver;
 import org.openlca.core.matrix.solvers.JavaSolver;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.eigen.NativeLibrary;
 import org.openlca.julia.Julia;
 import org.openlca.julia.JuliaSolver;
 import org.slf4j.Logger;
@@ -77,22 +75,8 @@ public class App {
 			log.error("Failed to load libraries from folder <openLCA>/julia");
 		}
 
-		// TODO: this is currently a fall back, we will remove the
-		// olca-eigen package when olca-rust is stable on all platforms
-		log.trace("Try init olca-eigen");
-		try {
-			NativeLibrary.loadFromDir(Workspace.getDir());
-		} catch (UnsatisfiedLinkError ignored) {
-		}
-		log.trace("olca-eigen loaded: {}", NativeLibrary.isLoaded());
-		if (!NativeLibrary.isLoaded()) {
-			// TODO: show some message ...
-			log.warn("could not load a high-performance"
-					+ " library for calculations");
-			solver = new JavaSolver();
-			return solver;
-		}
-		solver = new DenseSolver();
+		log.warn("could not load a high-performance library for calculations");
+		solver = new JavaSolver();
 		return solver;
 	}
 

@@ -1,7 +1,6 @@
 package org.openlca.app.editors.systems;
 
 import java.io.File;
-import java.util.Collections;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
@@ -21,8 +20,6 @@ import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.DataStructures;
 import org.openlca.core.math.MatrixRowSorter;
-import org.openlca.core.matrix.MatrixData;
-import org.openlca.core.matrix.format.IMatrix;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.io.MatrixImageExport;
 import org.slf4j.Logger;
@@ -103,10 +100,9 @@ public class ProductSystemActions extends EditorActionBarContributor {
 				return;
 			App.run(M.ImageExport, () -> {
 				try {
-					CalculationSetup setup = new CalculationSetup(system);
-					MatrixData data = DataStructures.matrixData(
-							setup, Database.get(), Collections.emptyMap());
-					IMatrix matrix = data.techMatrix;
+					var setup = new CalculationSetup(system);
+					var data = DataStructures.matrixData(Database.get(), setup);
+					var matrix = data.techMatrix;
 					matrix = new MatrixRowSorter(matrix, App.getSolver()).run();
 					new MatrixImageExport(matrix, file).run();
 				} catch (Exception e) {

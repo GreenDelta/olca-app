@@ -1,7 +1,6 @@
 package org.openlca.app.wizards.calculation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,16 +27,13 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
-import org.openlca.core.library.LibraryCalculator;
 import org.openlca.core.math.CalculationType;
-import org.openlca.core.math.DataStructures;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.SimpleResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,21 +138,14 @@ public class CalculationWizard extends Wizard {
 
 				// run the calculation
 				log.trace("run calculation");
-				ContributionResult result;
+				var calc = new SystemCalculator(
+						Database.get(), App.getSolver());
 				if (setup.hasLibraries) {
-					var db = Database.get();
-					var foregroundData = DataStructures.matrixData(
-							setup.calcSetup, db, Collections.emptyMap());
-					var calculator = new LibraryCalculator(
-							db, Workspace.getLibraryDir(), App.getSolver());
-					result = calculator.calculate(foregroundData);
-				} else {
-					var calc = new SystemCalculator(
-							Database.get(), App.getSolver());
-					result = upstream
-							? calc.calculateFull(setup.calcSetup)
-							: calc.calculateContributions(setup.calcSetup);
+					calc.withLibraries(Workspace.getLibraryDir());
 				}
+				var result = upstream
+						? calc.calculateFull(setup.calcSetup)
+						: calc.calculateContributions(setup.calcSetup);
 
 				// check storage and DQ calculation
 				if (setup.storeInventory) {

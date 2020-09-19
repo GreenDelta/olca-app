@@ -243,11 +243,12 @@ class TotalRequirementsSection {
 				return;
 			if (!(result instanceof ContributionResult))
 				return;
-			ContributionResult crp = (ContributionResult) result;
-			double[] vals = crp.directCostResults;
-			if (vals.length > idx && idx >= 0) {
-				double v = vals[idx];
-				costValue = costs == Costs.NET_COSTS ? v : v != 0 ? -v : 0;
+			var crp = (ContributionResult) result;
+			if (idx >= 0) {
+				double v = crp.provider.directCostsOf(idx);
+				costValue = costs == Costs.NET_COSTS
+						? v
+						: v != 0 ? -v : 0;
 			}
 		}
 
