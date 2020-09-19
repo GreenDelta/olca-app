@@ -6,7 +6,6 @@ import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.gef.EditPart;
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.util.Colors;
-import org.openlca.core.model.ProcessLink;
 
 public class Link {
 
@@ -18,25 +17,28 @@ public class Link {
 	final double ratio;
 	final ProcessNode sourceNode;
 	final ProcessNode targetNode;
-	final ProcessLink processLink;
 
-	public Link(ProcessNode sourceNode, ProcessNode targetNode, ProcessLink processLink, double ratio) {
+	public Link(ProcessNode sourceNode, ProcessNode targetNode, double ratio) {
 		this.ratio = ratio;
 		this.sourceNode = sourceNode;
 		this.targetNode = targetNode;
-		this.processLink = processLink;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null)
+	public boolean equals(Object o) {
+		if (o == null)
 			return false;
-		if (obj == this)
+		if (o == this)
 			return true;
-		if (!(obj instanceof Link))
+		if (!(o instanceof Link))
 			return false;
-		Link other = (Link) obj;
-		return Objects.equals(this.processLink, other.processLink);
+		var other = (Link) o;
+		return Objects.equals(
+				this.sourceNode.product,
+				other.sourceNode.product)
+				&& Objects.equals(
+				this.targetNode.product,
+				other.targetNode.product);
 	}
 
 	public void link() {
@@ -48,13 +50,13 @@ public class Link {
 	void setSelected(int value) {
 		editPart.setSelected(value);
 	}
-	
+
 	boolean isSelected() {
 		return editPart.getSelected() != EditPart.SELECTED_NONE;
 	}
 
 	boolean isVisible() {
-		return figure != null ? figure.isVisible() : false;
+		return figure != null && figure.isVisible();
 	}
 
 	int getWidth() {
@@ -62,9 +64,7 @@ public class Link {
 		int width = (int) Math.ceil(Math.abs(dWidth));
 		if (width == 0)
 			return 1;
-		if (width > Link.MAXIMIM_WIDTH)
-			return Link.MAXIMIM_WIDTH;
-		return width;
+		return Math.min(width, Link.MAXIMIM_WIDTH);
 	}
 
 	Color getColor() {

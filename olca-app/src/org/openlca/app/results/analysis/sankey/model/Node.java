@@ -12,7 +12,7 @@ abstract class Node implements Comparable<Node> {
 
 	public List<Node> children = new ArrayList<>();
 	Node parent;
-	PropertyChangeSupport listeners = new PropertyChangeSupport(this);;
+	PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
 	public boolean addChild(Node child) {
 		boolean b = children.add(child);

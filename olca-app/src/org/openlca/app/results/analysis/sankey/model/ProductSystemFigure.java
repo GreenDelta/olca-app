@@ -26,7 +26,7 @@ public class ProductSystemFigure extends Figure {
 
 	private boolean firstTime = true;
 	private boolean doPaint = true;
-	private ProductSystemNode node;
+	private final ProductSystemNode node;
 	/** Must be disposed when the edit part is deactivated */
 	Font infoFont;
 
@@ -132,7 +132,7 @@ public class ProductSystemFigure extends Figure {
 		graphics.drawText(M.Sankey_ScaleDescription, x + 35, y + 22);
 		graphics.drawLine(x, y, x + 300, y);
 		for (int i = 0; i <= 20; i++) {
-			int height = 0;
+			int height;
 			if (i == 0 || i == 20) {
 				height = 19;
 			} else if (i % 2 == 0) {

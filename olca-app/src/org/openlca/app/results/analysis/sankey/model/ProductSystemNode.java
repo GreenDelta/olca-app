@@ -10,11 +10,15 @@ import org.openlca.core.model.ProductSystem;
 public class ProductSystemNode extends Node implements PropertyChangeListener {
 
 	public final ProductSystem productSystem;
-	public final double cutoff;
 	public final SankeyDiagram editor;
+	public final double cutoff;
 	final Object selection;
 
-	public ProductSystemNode(ProductSystem productSystem, SankeyDiagram editor, Object selection, double cutoff) {
+	public ProductSystemNode(
+			ProductSystem productSystem,
+			SankeyDiagram editor,
+			Object selection,
+			double cutoff) {
 		this.productSystem = productSystem;
 		this.editor = editor;
 		this.selection = selection;
@@ -27,17 +31,16 @@ public class ProductSystemNode extends Node implements PropertyChangeListener {
 	}
 
 	public void setRouted(boolean enabled) {
-		ConnectionRouter router = ConnectionRouter.NULL;
+		var router = ConnectionRouter.NULL;
 		if (enabled)
 			router = LinkPart.ROUTER;
 		for (Node node : children) {
 			if (!(node instanceof ProcessNode))
 				continue;
-			ProcessNode pNode = (ProcessNode) node;
-			for (Link link : pNode.links) {
+			var pNode = (ProcessNode) node;
+			for (var link : pNode.links) {
 				link.figure.setConnectionRouter(router);
 			}
 		}
 	}
-
 }

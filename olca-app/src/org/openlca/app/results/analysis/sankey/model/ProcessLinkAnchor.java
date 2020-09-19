@@ -9,10 +9,12 @@ import org.eclipse.draw2d.geometry.Rectangle;
  */
 public class ProcessLinkAnchor extends AbstractConnectionAnchor {
 
-	private boolean recipient;
+	private final boolean recipient;
 
 	public ProcessLinkAnchor(Link link, boolean recipient) {
-		super(recipient ? link.targetNode.figure : link.sourceNode.figure);
+		super(recipient
+				? link.targetNode.figure
+				: link.sourceNode.figure);
 		this.recipient = recipient;
 	}
 
@@ -22,12 +24,9 @@ public class ProcessLinkAnchor extends AbstractConnectionAnchor {
 		Rectangle r = getOwner().getBounds().getCopy();
 		r.translate(horizontalTranslation, recipient ? -1 : 0);
 		getOwner().translateToAbsolute(r);
-		Point result = null;
-		if (recipient)
-			result = r.getBottom();
-		else
-			result = r.getTop();
-		return result;
+		return recipient
+				? r.getBottom()
+				: r.getTop();
 	}
 
 }

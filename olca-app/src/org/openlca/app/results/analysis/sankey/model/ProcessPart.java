@@ -18,13 +18,8 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.swt.graphics.Font;
-import org.openlca.app.db.Cache;
 import org.openlca.app.results.analysis.sankey.layout.LayoutPolicy;
 import org.openlca.app.results.analysis.sankey.layout.XYLayoutCommand;
-import org.openlca.core.database.EntityCache;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,12 +28,10 @@ import com.google.common.base.Objects;
 public class ProcessPart extends AbstractGraphicalEditPart implements
 		NodeEditPart, PropertyChangeListener {
 
-	private EntityCache cache = Cache.getEntityCache();
-
 	@Override
 	public void activate() {
 		super.activate();
-		((Node) getModel()).listeners.addPropertyChangeListener(this);
+		getModel().listeners.addPropertyChangeListener(this);
 	}
 
 	@Override
@@ -92,7 +85,7 @@ public class ProcessPart extends AbstractGraphicalEditPart implements
 				boldFont.dispose();
 		}
 		super.deactivate();
-		((Node) getModel()).listeners.removePropertyChangeListener(this);
+		getModel().listeners.removePropertyChangeListener(this);
 	}
 
 	@Override
@@ -186,9 +179,9 @@ public class ProcessPart extends AbstractGraphicalEditPart implements
 		if (!(linkObj instanceof Link))
 			return;
 		Link link = (Link) linkObj;
-		CategorizedDescriptor thisProcess = getModel().process;
-		CategorizedDescriptor provider = process(link.processLink.providerId);
-		CategorizedDescriptor recipient = process(link.processLink.processId);
+		var thisProcess = getModel().product;
+		var provider = link.sourceNode.product;
+		var recipient = link.targetNode.product;
 		boolean isLoop = Objects.equal(provider, recipient);
 		try {
 			if (thisProcess.equals(provider)) {
@@ -202,12 +195,5 @@ public class ProcessPart extends AbstractGraphicalEditPart implements
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("Failed to refresh connections for process " + thisProcess, e);
 		}
-	}
-
-	private CategorizedDescriptor process(long id) {
-		CategorizedDescriptor p = cache.get(ProcessDescriptor.class, id);
-		return p != null
-				? p
-				: cache.get(ProductSystemDescriptor.class, id);
 	}
 }

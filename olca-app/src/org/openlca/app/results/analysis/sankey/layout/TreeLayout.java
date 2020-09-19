@@ -1,8 +1,6 @@
 package org.openlca.app.results.analysis.sankey.layout;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +13,7 @@ import org.openlca.app.results.analysis.sankey.model.ProcessFigure;
 import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
 import org.openlca.core.matrix.ProcessLinkSearchMap;
+import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
@@ -34,31 +33,31 @@ public class TreeLayout {
 	/**
 	 * The processes painted as process nodes
 	 */
-	private final Set<Long> paintedProcesses = new HashSet<>();
+	private final Set<ProcessProduct> paintedProcesses = new HashSet<>();
 
 	private ProcessLinkSearchMap linkSearchMap;
 
 	public void layout(ProductSystemNode productSystemNode) {
 		linkSearchMap = productSystemNode.editor.linkSearchMap;
 		prepare(productSystemNode);
-		List<Node> nodes = new ArrayList<>();
-		Node mainNode = build(productSystemNode.productSystem);
+		List<TreeNode> nodes = new ArrayList<>();
+		TreeNode mainNode = build(productSystemNode.productSystem);
 		mainNode.sort();
 		nodes.add(mainNode);
 		for (Object o : productSystemNode.children) {
 			if (o instanceof ProcessNode) {
 				ProcessNode processNode = (ProcessNode) o;
 				if (!containing.contains(processNode.process.id)) {
-					Node node = new Node();
+					TreeNode node = new TreeNode();
 					node.processId = processNode.process.id;
-					build(productSystemNode.productSystem, new Node[] { node });
+					build(productSystemNode.productSystem, new TreeNode[]{node});
 					node.sort();
 					nodes.add(node);
 				}
 			}
 		}
 		int additionalHeight = 0;
-		for (final Node node : nodes) {
+		for (final TreeNode node : nodes) {
 			int newAdditionalHeight = 0;
 			locations.clear();
 			applyLayout(node, 0, node.getLeftDepth(), mainNode.getLeftDepth());
@@ -128,8 +127,8 @@ public class TreeLayout {
 		locations.clear();
 	}
 
-	private void applyLayout(final Node node, int addition,
-			final int actualDepth, final int maximalDepth) {
+	private void applyLayout(final TreeNode node, int addition,
+							 final int actualDepth, final int maximalDepth) {
 		int y = maximalDepth - actualDepth + 3;
 		final int x = node.getSize() / 2 + addition;
 		while (locations.get(new Point(x, y)) != null) {
@@ -138,7 +137,7 @@ public class TreeLayout {
 		}
 		locations.put(new Point(x, y), node.processId);
 		for (int i = 0; i < node.leftChildren.size(); i++) {
-			final Node child = node.leftChildren.get(i);
+			final TreeNode child = node.leftChildren.get(i);
 			int sizeAddition = 0;
 			for (int j = 0; j < i; j++) {
 				sizeAddition += node.leftChildren.get(j).getSize();
@@ -147,7 +146,7 @@ public class TreeLayout {
 					maximalDepth);
 		}
 		for (int i = 0; i < node.rightChildren.size(); i++) {
-			final Node child = node.rightChildren.get(i);
+			final TreeNode child = node.rightChildren.get(i);
 			int sizeAddition = 0;
 			for (int a = 0; a < node.leftChildren.size(); a++) {
 				sizeAddition += node.leftChildren.get(a).getSize();
@@ -160,22 +159,25 @@ public class TreeLayout {
 		}
 	}
 
-	private Node build(final ProductSystem productSystem) {
-		final Node node = new Node();
+	private TreeNode build(final ProductSystem productSystem) {
+		final TreeNode node = new TreeNode();
 		node.processId = productSystem.referenceProcess.id;
-		build(productSystem, new Node[] { node });
+		build(productSystem, new TreeNode[]{node});
 		return node;
 	}
 
-	private void build(ProductSystem system, Node[] nodes) {
-		List<Node> childs = new ArrayList<>();
-		for (Node node : nodes) {
+	private void build(ProductSystem system, TreeNode[] nodes) {
+
+		List<TreeNode> childs = new ArrayList<>();
+
+		for (TreeNode node : nodes) {
+			node.processNode.
 			long processId = node.processId;
 			for (ProcessLink link : linkSearchMap.getLinks(processId)) {
 				if (link.processId == processId) {
 					if (!containing.contains(link.providerId)
 							&& paintedProcesses.contains(link.providerId)) {
-						Node child = new Node();
+						TreeNode child = new TreeNode();
 						child.processId = link.providerId;
 						node.leftChildren.add(child);
 						containing.add(child.processId);
@@ -184,18 +186,19 @@ public class TreeLayout {
 				}
 			}
 		}
+
 		if (childs.size() > 0) {
-			build(system, childs.toArray(new Node[childs.size()]));
+			build(system, childs.toArray(new TreeNode[0]));
 		}
 		childs.clear();
-		for (Node node : nodes) {
+		for (TreeNode node : nodes) {
 			long providerId = node.processId;
 			for (ProcessLink link : linkSearchMap.getLinks(providerId)) {
 				if (link.providerId != providerId)
 					continue;
 				if (!containing.contains(link.processId)
 						&& paintedProcesses.contains(link.processId)) {
-					Node child = new Node();
+					TreeNode child = new TreeNode();
 					child.processId = link.processId;
 					node.rightChildren.add(child);
 					containing.add(child.processId);
@@ -203,36 +206,44 @@ public class TreeLayout {
 				}
 			}
 		}
+
 		if (childs.size() > 0) {
-			build(system, childs.toArray(new Node[childs.size()]));
+			build(system, childs.toArray(new TreeNode[childs.size()]));
 		}
 	}
 
-	private void prepare(final ProductSystemNode productSystemNode) {
-		for (Object node : productSystemNode.children) {
+	private void prepare(ProductSystemNode productSystemNode) {
+		for (var node : productSystemNode.children) {
 			if (node instanceof ProcessNode) {
-				final ProcessNode processNode = (ProcessNode) node;
-				paintedProcesses.add(processNode.process.id);
-				processNode.setXyLayoutConstraints(new Rectangle(0, 0,
-						processNode.figure.getSize().width, processNode.figure.getSize().height));
+				var processNode = (ProcessNode) node;
+				paintedProcesses.add(processNode.product);
+				processNode.setXyLayoutConstraints(new Rectangle(
+						0,
+						0,
+						processNode.figure.getSize().width,
+						processNode.figure.getSize().height));
 			}
 		}
 	}
 
-	class Node {
+	static class TreeNode {
 
-		List<Node> leftChildren = new ArrayList<>();
-		long processId;
-		List<Node> rightChildren = new ArrayList<>();
+		final ProcessNode processNode;
+
+		List<TreeNode> leftChildren = new ArrayList<>();
+		List<TreeNode> rightChildren = new ArrayList<>();
+
+		TreeNode(ProcessNode processNode) {
+			this.processNode = processNode;
+		}
 
 		int getLeftDepth() {
 			int depth = 0;
 			if (leftChildren.size() > 0) {
 				depth = 1;
 				int depthAdd = 0;
-				for (int i = 0; i < leftChildren.size(); i++) {
-					depthAdd = Math.max(depthAdd, leftChildren.get(i)
-							.getLeftDepth());
+				for (var leftChild : leftChildren) {
+					depthAdd = Math.max(depthAdd, leftChild.getLeftDepth());
 				}
 				depth += depthAdd;
 			}
@@ -244,27 +255,19 @@ public class TreeLayout {
 			if (rightChildren.size() == 0 && leftChildren.size() == 0) {
 				size = 1;
 			} else {
-				for (int i = 0; i < rightChildren.size(); i++) {
-					size += rightChildren.get(i).getSize();
+				for (var rightChild : rightChildren) {
+					size += rightChild.getSize();
 				}
-				for (int i = 0; i < leftChildren.size(); i++) {
-					size += leftChildren.get(i).getSize();
+				for (var leftChild : leftChildren) {
+					size += leftChild.getSize();
 				}
 			}
 			return size;
 		}
 
 		void sort() {
-			final List<Node> temp = new ArrayList<>();
-			temp.addAll(leftChildren);
-			Collections.sort(temp, new Comparator<Node>() {
-
-				@Override
-				public int compare(final Node o1, final Node o2) {
-					return ((Integer) o2.getSize()).compareTo(o1.getSize());
-				}
-
-			});
+			var temp = new ArrayList<>(leftChildren);
+			temp.sort((n1, n2) -> Integer.compare(n2.getSize(), n1.getSize()));
 			leftChildren.clear();
 			int count = 0;
 			int i = 0;

@@ -30,7 +30,7 @@ public class ProcessFigure extends Figure {
 	Font boldFont;
 
 	public ProcessFigure(ProcessNode node) {
-		setToolTip(new Label(Labels.name(node.process)));
+		setToolTip(new Label(Labels.name(node.product.process)));
 		node.figure = this;
 		this.node = node;
 		setSize(WIDTH, HEIGHT);
@@ -94,9 +94,9 @@ public class ProcessFigure extends Figure {
 		int w = 20;
 		DQSystem system = dqResult.setup.processSystem;
 		int h = (size.height - 20) / system.indicators.size();
-		int[] values = dqResult.get(node.process);
-		for (int i = 0; i < values.length; i++) {
-			Color color = DQUI.getColor(values[i], system.getScoreCount());
+		int[] values = dqResult.get(node.product);
+		for (int value : values) {
+			Color color = DQUI.getColor(value, system.getScoreCount());
 			g.setBackgroundColor(color);
 			g.drawRectangle(x, y, w, h);
 			g.fillRectangle(x + 1, y + 1, w - 1, h - 1);
