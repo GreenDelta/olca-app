@@ -5,11 +5,8 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ConnectionLayer;
@@ -24,7 +21,6 @@ import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
-import org.eclipse.gef.editparts.ZoomListener;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
@@ -40,12 +36,8 @@ import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.IndexFlow;
-import org.openlca.core.matrix.ProcessLinkSearchMap;
-import org.openlca.core.model.ProcessLink;
+import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.Sankey;
 import org.openlca.util.Strings;
@@ -58,9 +50,9 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	public ProductSystemNode node;
 	public double zoom = 1;
 	private boolean routed = false;
-	private Sankey<?> sankey;
-	private final List<Link> createdLinks = new ArrayList<>();
-	// private Map<Long, ProcessNode> createdProcesses = new HashMap<>();
+	public Sankey<?> sankey;
+	public final List<Link> createdLinks = new ArrayList<>();
+	public final Map<ProcessProduct, ProcessNode> createdNodes = new HashMap<>();
 	private final ProductSystem productSystem;
 
 	public SankeyDiagram(FullResult result, DQResult dqResult, CalculationSetup setup) {
@@ -73,18 +65,8 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		}
 	}
 
-	private void createConnections() {
-		createdLinks.clear();
-		if (sankey == null)
-			return;
-		sankey.traverse(node -> {
-			for (var provider : node.providers) {
-				var source = new ProcessNode(provider);
-				var target = new ProcessNode(node);
-				var share = sankey.getLinkShare(provider, node);
-				createdLinks.add(new Link(source, target, share));
-			}
-		});
+	private void createConnectionss() {
+
 
 		// TODO: remove dead code
 		/*
@@ -112,7 +94,21 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	}
 
 	private void updateConnections() {
-		createConnections();
+		createdLinks.clear();
+		if (sankey == null)
+			return;
+		sankey.traverse(node -> {
+			var target = createdNodes.get(node.product);
+			if (target ==null)
+				return;
+			for (var provider : node.providers) {
+				var source = createdNodes.get(provider.product);
+				if (source == null)
+					continue;
+				var share = sankey.getLinkShare(provider, node);
+				createdLinks.add(new Link(source, target, share));
+			}
+		});
 		for (var link : createdLinks) {
 			link.link();
 		}
@@ -124,7 +120,9 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 				.withMaximumNodeCount(500)
 				.build();
 		sankey.traverse(n -> {
-			node.addChild(new ProcessNode(n));
+			var node = new ProcessNode(n);
+			createdNodes.put(n.product, node);
+			this.node.addChild(node);
 		});
 
 		// TODO: remove dead code
@@ -272,7 +270,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	}
 
 	@Override
-	public void propertyChange(final PropertyChangeEvent evt) {
+	public void propertyChange(PropertyChangeEvent evt) {
 		if (evt.getPropertyName().equals("firstTimeInitialized")) {
 			createdLinks.clear();
 			updateConnections();

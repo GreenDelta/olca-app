@@ -15,8 +15,8 @@ public class Link {
 	PolylineConnection figure;
 	LinkPart editPart;
 	final double ratio;
-	final ProcessNode sourceNode;
-	final ProcessNode targetNode;
+	public final ProcessNode sourceNode;
+	public final ProcessNode targetNode;
 
 	public Link(ProcessNode sourceNode, ProcessNode targetNode, double ratio) {
 		this.ratio = ratio;

@@ -4,7 +4,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract class Node implements Comparable<Node> {
+public abstract class Node implements Comparable<Node> {
 
 	public static String PROPERTY_ADD = "NodeAddChild";
 	public static String PROPERTY_LAYOUT = "Layout";
