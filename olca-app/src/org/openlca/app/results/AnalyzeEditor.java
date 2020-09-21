@@ -1,5 +1,8 @@
 package org.openlca.app.results;
 
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -61,6 +64,23 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 			if (result.hasImpactResults()) {
 				addPage(new ImpactChecksPage(this));
 			}
+			
+			// add a page listener to initialize the Sankey diagram
+			// lazily when it is activated the first time
+			var sankeyInit = new AtomicReference<IPageChangedListener>();
+			IPageChangedListener fn = e -> {
+				if (e.getSelectedPage() != diagram)
+					return;
+				var listener = sankeyInit.get();
+				if (listener == null)
+					return;
+				diagram.initContent();
+				removePageChangedListener(listener);
+				sankeyInit.set(null);
+			};
+			sankeyInit.set(fn);
+			addPageChangedListener(fn);
+			
 		} catch (final PartInitException e) {
 			var log = LoggerFactory.getLogger(getClass());
 			log.error("Add pages failed", e);

@@ -46,7 +46,7 @@ public class ProductSystemFigure extends Figure {
 		}
 		if (doPaint) {
 			for (Node node : node.children) {
-				ProcessNode pNode = (ProcessNode) node;
+				var pNode = (ProcessNode) node;
 				if (!pNode.figure.isVisible()) {
 					pNode.figure.setVisible(true);
 				}

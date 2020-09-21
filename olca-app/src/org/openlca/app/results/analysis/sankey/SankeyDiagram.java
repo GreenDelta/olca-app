@@ -49,7 +49,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	public final FullResult result;
 	public ProductSystemNode node;
 	public double zoom = 1;
-	private boolean routed = false;
+	private boolean routed = true;
 	public Sankey<?> sankey;
 	public final List<Link> createdLinks = new ArrayList<>();
 	public final Map<ProcessProduct, ProcessNode> createdNodes = new HashMap<>();
@@ -62,39 +62,6 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		productSystem = setup.productSystem;
 		if (productSystem != null) {
 			setPartName(productSystem.name);
-		}
-	}
-
-	private void updateModel(Object selection, double cutoff) {
-		sankey = Sankey.of(selection, result)
-				.withMinimumShare(cutoff)
-				.withMaximumNodeCount(500)
-				.build();
-		sankey.traverse(n -> {
-			var node = new ProcessNode(n);
-			createdNodes.put(n.product, node);
-			this.node.addChild(node);
-		});
-	}
-
-	private void updateConnections() {
-		createdLinks.clear();
-		if (sankey == null)
-			return;
-		sankey.traverse(node -> {
-			var target = createdNodes.get(node.product);
-			if (target == null)
-				return;
-			for (var provider : node.providers) {
-				var source = createdNodes.get(provider.product);
-				if (source == null)
-					continue;
-				var share = sankey.getLinkShare(provider, node);
-				createdLinks.add(new Link(source, target, share));
-			}
-		});
-		for (var link : createdLinks) {
-			link.link();
 		}
 	}
 
@@ -133,8 +100,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 
 	@Override
 	protected void initializeGraphicalViewer() {
-		// create new root edit part with switched layers (connection layer
-		// under the process layer)
+
 		var editPart = new ScalableRootEditPart() {
 
 			@Override
@@ -166,17 +132,18 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		getGraphicalViewer()
 				.getEditDomain()
 				.setActiveTool(new PanningSelectionTool());
-		initContent();
+
+		getEditorSite();
 	}
 
-	private void initContent() {
+	public void initContent() {
 		Object s = getDefaultSelection();
 		if (s == null) {
 			getGraphicalViewer().setContents(
 					new ProductSystemNode(productSystem, this, null, 0.1));
 			return;
 		}
-		update(s, 0.01); // => TODO: also calls sankeyResult.calculate(s)
+		update(s, 0.01);
 	}
 
 	public Object getDefaultSelection() {
@@ -248,6 +215,39 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		routed = !routed;
 		if (node != null) {
 			node.setRouted(routed);
+		}
+	}
+
+	private void updateModel(Object selection, double cutoff) {
+		sankey = Sankey.of(selection, result)
+				.withMinimumShare(cutoff)
+				.withMaximumNodeCount(500)
+				.build();
+		sankey.traverse(n -> {
+			var node = new ProcessNode(n);
+			createdNodes.put(n.product, node);
+			this.node.addChild(node);
+		});
+	}
+
+	private void updateConnections() {
+		createdLinks.clear();
+		if (sankey == null)
+			return;
+		sankey.traverse(node -> {
+			var target = createdNodes.get(node.product);
+			if (target == null)
+				return;
+			for (var provider : node.providers) {
+				var source = createdNodes.get(provider.product);
+				if (source == null)
+					continue;
+				var share = sankey.getLinkShare(provider, node);
+				createdLinks.add(new Link(source, target, share));
+			}
+		});
+		for (var link : createdLinks) {
+			link.link();
 		}
 	}
 
