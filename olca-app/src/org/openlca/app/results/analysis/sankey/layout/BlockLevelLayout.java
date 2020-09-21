@@ -35,6 +35,7 @@ public class BlockLevelLayout {
 		if (root == null)
 			return;
 		var expanded = new HashSet<ProcessProduct>();
+		var added = new HashSet<ProcessProduct>();
 		sankey.traverse(n -> {
 			if (expanded.contains(n.product))
 				return;
@@ -43,8 +44,9 @@ public class BlockLevelLayout {
 			if (tree == null)
 				return;
 			for (var provider : n.providers) {
-				if (expanded.contains(provider.product))
+				if (added.contains(provider.product))
 					continue;
+				added.add(provider.product);
 				var child = mapFn.apply(provider);
 				if (child == null)
 					continue;
@@ -65,7 +67,7 @@ public class BlockLevelLayout {
 		}
 
 		// center and draw the levels as blocks
-		int vspace = 25;
+		int vspace = 50;
 		for (int i = 0; i < levels.length; i++) {
 			var level = levels[i];
 			var n = level.size();
@@ -74,8 +76,7 @@ public class BlockLevelLayout {
 			int x = totalWidth / 2 - width / 2;
 			for (var node : level) {
 				node.node.setXyLayoutConstraints(new Rectangle(
-						x, y, nodeSize.width, nodeSize.height
-				));
+						x, y, nodeSize.width, nodeSize.height));
 				x += nodeSize.width + hspace;
 			}
 		}
@@ -88,14 +89,6 @@ public class BlockLevelLayout {
 
 		Tree(ProcessNode node) {
 			this.node = node;
-		}
-
-		int height() {
-			int height = childs.stream()
-					.mapToInt(child -> child.height())
-					.max()
-					.orElse(0);
-			return height + 1;
 		}
 
 		@SuppressWarnings("unchecked")
