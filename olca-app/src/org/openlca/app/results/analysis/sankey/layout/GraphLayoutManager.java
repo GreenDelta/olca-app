@@ -55,9 +55,9 @@ public class GraphLayoutManager extends AbstractLayout {
 	public void layoutTree() {
 		log.trace("Apply tree-layout");
 		if (diagram != null && diagram.getModel() != null) {
-			TreeLayout layout = new TreeLayout();
-			layout.layout((ProductSystemNode) diagram.getModel());
-			// new BlockLevelLayout().applyOn((ProductSystemNode) diagram.getModel());
+			// TreeLayout layout = new TreeLayout();
+			// layout.layout((ProductSystemNode) diagram.getModel());
+			new BlockLevelLayout().applyOn((ProductSystemNode) diagram.getModel());
 		}
 	}
 

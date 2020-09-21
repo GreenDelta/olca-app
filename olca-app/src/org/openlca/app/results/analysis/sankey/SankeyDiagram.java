@@ -65,32 +65,16 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		}
 	}
 
-	private void createConnectionss() {
-
-
-		// TODO: remove dead code
-		/*
-		Set<Long> handled = new HashSet<>();
-		Stack<Long> processes = new Stack<>();
-		processes.add(startProcessId);
-		while (!processes.isEmpty()) {
-			long nextId = processes.pop();
-			handled.add(nextId);
-			for (ProcessLink link : linkSearchMap.getIncomingLinks(nextId)) {
-				if (createdLinks.containsKey(link))
-					continue;
-				ProcessNode source = createdProcesses.get(link.providerId);
-				ProcessNode target = createdProcesses.get(link.processId);
-				if (source == null || target == null)
-					continue;
-				double ratio = sankeyResult.getLinkContribution(link);
-
-				if (handled.contains(source.process.id))
-					continue;
-				processes.add(source.process.id);
-			}
-		}
-		*/
+	private void updateModel(Object selection, double cutoff) {
+		sankey = Sankey.of(selection, result)
+				.withMinimumShare(cutoff)
+				.withMaximumNodeCount(500)
+				.build();
+		sankey.traverse(n -> {
+			var node = new ProcessNode(n);
+			createdNodes.put(n.product, node);
+			this.node.addChild(node);
+		});
 	}
 
 	private void updateConnections() {
@@ -99,7 +83,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 			return;
 		sankey.traverse(node -> {
 			var target = createdNodes.get(node.product);
-			if (target ==null)
+			if (target == null)
 				return;
 			for (var provider : node.providers) {
 				var source = createdNodes.get(provider.product);
@@ -112,44 +96,6 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		for (var link : createdLinks) {
 			link.link();
 		}
-	}
-
-	private void updateModel(Object selection, double cutoff) {
-		sankey = Sankey.of(selection, result)
-				.withMinimumShare(cutoff)
-				.withMaximumNodeCount(500)
-				.build();
-		sankey.traverse(n -> {
-			var node = new ProcessNode(n);
-			createdNodes.put(n.product, node);
-			this.node.addChild(node);
-		});
-
-		// TODO: remove dead code
-		/*
-		Map<Long, CategorizedDescriptor> processes = new HashMap<>();
-		for (CategorizedDescriptor d : result.getProcesses())
-			processes.put(d.id, d);
-		if (cutoff == 0) {
-			for (Long processId : productSystem.processes) {
-				CategorizedDescriptor d = processes.get(processId);
-				if (d != null) {
-					node.addChild(createNode(d));
-				}
-			}
-		} else {
-			long refProcess = productSystem.referenceProcess.id;
-			Set<Long> processesToDraw = SankeyProcessList.calculate(
-					sankeyResult, refProcess, cutoff, linkSearchMap);
-			for (final Long processId : processesToDraw) {
-				CategorizedDescriptor process = processes.get(processId);
-				if (process != null) {
-					node.addChild(createNode(process));
-				}
-			}
-		}
-
-		 */
 	}
 
 	@Override
@@ -193,7 +139,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 
 			@Override
 			protected LayeredPane createPrintableLayers() {
-				LayeredPane pane = new LayeredPane();
+				var pane = new LayeredPane();
 				Layer layer = new ConnectionLayer();
 				layer.setPreferredSize(new Dimension(5, 5));
 				pane.add(layer, CONNECTION_LAYER);
@@ -210,7 +156,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		// zoom listener
 		editPart.getZoomManager()
 				.addZoomListener(z -> zoom = z);
-		editPart.getZoomManager().setZoomLevels(new double[]{
+		editPart.getZoomManager().setZoomLevels(new double[] {
 				0.005, 0.01, 0.02, 0.0375, 0.075,
 				0.125, 0.25, 0.5, 0.75, 1.0, 1.5,
 				2.0, 2.5, 3.0, 4.0, 5.0, 10.0, 20.0,
@@ -257,13 +203,6 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	public void doSave(IProgressMonitor monitor) {
 	}
 
-	public double getProductSystemResult() {
-		// TODO: check
-		return sankey == null || sankey.root == null
-				? 0
-				: sankey.root.total;
-	}
-
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
@@ -285,7 +224,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	public void update(Object selection, double cutoff) {
 		if (selection == null || cutoff < 0d || cutoff > 1d)
 			return;
-		App.run("Calculate sankey results",
+		App.runWithProgress("Calculate sankey results",
 				() -> sankey = Sankey.of(selection, result)
 						.withMinimumShare(cutoff)
 						.withMaximumNodeCount(500)

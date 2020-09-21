@@ -58,8 +58,8 @@ public class BlockLevelLayout {
 
 		// calculate the width of the graph
 		var nodeSize = root.node.figure.getSize();
-		var hspace = 25;
-		int totalWidth = 500;
+		var hspace = GraphLayoutManager.horizontalSpacing;
+		int totalWidth = 800;
 		for (var level : levels) {
 			int n = level.size();
 			int width = n * nodeSize.width + (n - 1) * hspace;
@@ -67,7 +67,7 @@ public class BlockLevelLayout {
 		}
 
 		// center and draw the levels as blocks
-		int vspace = 50;
+		int vspace = GraphLayoutManager.verticalSpacing;
 		for (int i = 0; i < levels.length; i++) {
 			var level = levels[i];
 			var n = level.size();
