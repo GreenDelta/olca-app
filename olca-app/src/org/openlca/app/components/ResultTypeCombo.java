@@ -15,7 +15,7 @@ import org.openlca.app.viewers.combo.CostResultViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.IResult;
 import org.openlca.core.results.SimpleResult;
 
@@ -29,7 +29,7 @@ public class ResultTypeCombo {
 	private ModelType selectedType = ModelType.FLOW;
 
 	private Collection<IndexFlow> flows;
-	private Collection<ImpactCategoryDescriptor> impacts;
+	private Collection<ImpactDescriptor> impacts;
 	private Collection<CostResultDescriptor> costs;
 	private Object initialSelection;
 	private EventHandler eventHandler;
@@ -78,9 +78,9 @@ public class ResultTypeCombo {
 			selectedType = ModelType.FLOW;
 			flowCombo.select((IndexFlow) o);
 			selection = new boolean[] { true, false, false };
-		} else if (o instanceof ImpactCategoryDescriptor) {
+		} else if (o instanceof ImpactDescriptor) {
 			selectedType = ModelType.IMPACT_CATEGORY;
-			impactCombo.select((ImpactCategoryDescriptor) o);
+			impactCombo.select((ImpactDescriptor) o);
 			selection = new boolean[] { false, true, false };
 		} else if (o instanceof CostResultDescriptor) {
 			selectedType = ModelType.CURRENCY;
@@ -104,7 +104,7 @@ public class ResultTypeCombo {
 	public void initWithEvent() {
 
 		if (impacts != null) {
-			ImpactCategoryDescriptor impact = impacts.stream()
+			var impact = impacts.stream()
 					.findFirst().orElse(null);
 			if (impact != null) {
 				selectWithEvent(impact);
@@ -195,7 +195,7 @@ public class ResultTypeCombo {
 		impactCombo.selectFirst();
 		impactCombo.addSelectionChangedListener((val) -> fireSelection());
 		if (enabled) {
-			impactCombo.select((ImpactCategoryDescriptor) initialSelection);
+			impactCombo.select((ImpactDescriptor) initialSelection);
 		}
 	}
 
@@ -244,7 +244,7 @@ public class ResultTypeCombo {
 	private ModelType getType(Object o) {
 		if (o instanceof IndexFlow)
 			return ModelType.FLOW;
-		else if (o instanceof ImpactCategoryDescriptor)
+		else if (o instanceof ImpactDescriptor)
 			return ModelType.IMPACT_CATEGORY;
 		else if (o instanceof CostResultDescriptor)
 			return ModelType.CURRENCY;
@@ -256,7 +256,7 @@ public class ResultTypeCombo {
 
 		void flowSelected(IndexFlow flow);
 
-		void impactCategorySelected(ImpactCategoryDescriptor impact);
+		void impactCategorySelected(ImpactDescriptor impact);
 
 		void costResultSelected(CostResultDescriptor cost);
 

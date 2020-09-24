@@ -23,13 +23,13 @@ import org.openlca.app.viewers.table.modify.ModifySupport;
 import org.openlca.app.viewers.table.modify.field.StringModifier;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.util.Strings;
 
 class IndicatorTable {
 
-	private ProjectEditor editor;
+	private final ProjectEditor editor;
 	private TableViewer viewer;
 
 	public IndicatorTable(ProjectEditor editor) {
@@ -70,11 +70,11 @@ class IndicatorTable {
 	private List<ReportIndicator> createReportIndicators(
 			ImpactMethodDescriptor method) {
 		ImpactMethodDao dao = new ImpactMethodDao(Database.get());
-		List<ImpactCategoryDescriptor> descriptors = dao
+		var descriptors = dao
 				.getCategoryDescriptors(method.id);
 		List<ReportIndicator> indicators = new ArrayList<>();
 		int id = 0;
-		for (ImpactCategoryDescriptor descriptor : descriptors) {
+		for (var descriptor : descriptors) {
 			ReportIndicator reportIndicator = new ReportIndicator(id++);
 			indicators.add(reportIndicator);
 			reportIndicator.descriptor = descriptor;

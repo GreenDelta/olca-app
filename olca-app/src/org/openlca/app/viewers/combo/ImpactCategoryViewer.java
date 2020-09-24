@@ -13,11 +13,10 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.util.Strings;
 
-public class ImpactCategoryViewer extends
-		AbstractComboViewer<ImpactCategoryDescriptor> {
+public class ImpactCategoryViewer extends AbstractComboViewer<ImpactDescriptor> {
 
 	private static final String[] COLUMN_HEADERS = new String[] {
 			M.Name, M.Unit };
@@ -25,12 +24,12 @@ public class ImpactCategoryViewer extends
 
 	public ImpactCategoryViewer(Composite parent) {
 		super(parent);
-		setInput(new ImpactCategoryDescriptor[0]);
+		setInput(new ImpactDescriptor[0]);
 	}
 
 	@Override
 	protected IBaseLabelProvider getLabelProvider() {
-		return new ImpactCategoryLabelProvider();
+		return new LabelProvider();
 	}
 
 	@Override
@@ -48,33 +47,29 @@ public class ImpactCategoryViewer extends
 		return COLUMN_HEADERS;
 	}
 
-	public void setInput(Collection<ImpactCategoryDescriptor> categories) {
-		setInput(categories.toArray(new ImpactCategoryDescriptor[categories
-				.size()]));
+	public void setInput(Collection<ImpactDescriptor> categories) {
+		setInput(categories.toArray(new ImpactDescriptor[0]));
 	}
 
 	@Override
-	public Class<ImpactCategoryDescriptor> getType() {
-		return ImpactCategoryDescriptor.class;
+	public Class<ImpactDescriptor> getType() {
+		return ImpactDescriptor.class;
 	}
 
-	private class ImpactCategoryLabelProvider extends BaseLabelProvider
+	private static class LabelProvider extends BaseLabelProvider
 			implements ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			switch (columnIndex) {
-			case 0:
-				return Images.get(ModelType.IMPACT_CATEGORY);
-			}
-			return null;
+		public Image getColumnImage(Object element, int column) {
+			return column == 0
+					? Images.get(ModelType.IMPACT_CATEGORY)
+					: null;
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			ImpactCategoryDescriptor category = (ImpactCategoryDescriptor) element;
-
-			switch (columnIndex) {
+		public String getColumnText(Object element, int column) {
+			var category = (ImpactDescriptor) element;
+			switch (column) {
 			case 0:
 				return Labels.name(category);
 			case 1:
@@ -85,19 +80,19 @@ public class ImpactCategoryViewer extends
 
 	}
 
-	private class ImpactCategoryComparator extends ViewerComparator {
+	private static class ImpactCategoryComparator extends ViewerComparator {
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			if (!(e1 instanceof ImpactCategoryDescriptor) || e1 == null) {
+			if (!(e1 instanceof ImpactDescriptor)) {
 				if (e2 != null)
 					return -1;
 				return 0;
 			}
-			if (!(e2 instanceof ImpactCategoryDescriptor) || e2 == null)
+			if (!(e2 instanceof ImpactDescriptor))
 				return 1;
-			ImpactCategoryDescriptor i1 = (ImpactCategoryDescriptor) e1;
-			ImpactCategoryDescriptor i2 = (ImpactCategoryDescriptor) e2;
+			var i1 = (ImpactDescriptor) e1;
+			var i2 = (ImpactDescriptor) e2;
 			int c = Strings.compare(i1.name, i2.name);
 			if (c != 0)
 				return c;

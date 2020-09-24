@@ -18,7 +18,7 @@ import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 
@@ -28,7 +28,7 @@ import org.openlca.core.results.ContributionResult;
  */
 public class ContributionChartSection {
 
-	private boolean forFlows = true;
+	private final boolean forFlows;
 	private String sectionTitle = "";
 	private String selectionName = "";
 
@@ -92,8 +92,8 @@ public class ContributionChartSection {
 			IndexFlow flow = (IndexFlow) e;
 			unit = Labels.refUnit(flow);
 			cons = result.getProcessContributions(flow);
-		} else if (e instanceof ImpactCategoryDescriptor) {
-			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) e;
+		} else if (e instanceof ImpactDescriptor) {
+			var impact = (ImpactDescriptor) e;
 			unit = impact.referenceUnit;
 			cons = result.getProcessContributions(impact);
 		}

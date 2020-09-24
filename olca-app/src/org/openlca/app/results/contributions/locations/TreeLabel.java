@@ -15,20 +15,20 @@ import org.openlca.core.model.Location;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.util.Strings;
 
 class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 
 	private String unit = "";
-	private ContributionImage image = new ContributionImage();
+	private final ContributionImage image = new ContributionImage();
 
 	void update(Object selection) {
 		if (selection instanceof FlowDescriptor) {
 			unit = Labels.refUnit((FlowDescriptor) selection);
-		} else if (selection instanceof ImpactCategoryDescriptor) {
-			unit = ((ImpactCategoryDescriptor) selection).referenceUnit;
+		} else if (selection instanceof ImpactDescriptor) {
+			unit = ((ImpactDescriptor) selection).referenceUnit;
 		} else if (selection instanceof CostResultDescriptor) {
 			unit = Labels.getReferenceCurrencyCode();
 		} else {

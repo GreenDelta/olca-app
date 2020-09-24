@@ -1,6 +1,6 @@
 package org.openlca.app.editors.reports.model;
 
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 
 /**
  * Wraps an LCIA category for a report with additional information.
@@ -8,7 +8,7 @@ import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
 public class ReportIndicator {
 
 	public final int id;
-	public ImpactCategoryDescriptor descriptor;
+	public ImpactDescriptor descriptor;
 	public String reportName;
 	public String reportDescription;
 	public boolean displayed;

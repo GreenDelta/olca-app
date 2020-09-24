@@ -37,7 +37,7 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.FullResult;
 
@@ -46,10 +46,12 @@ import org.openlca.core.results.FullResult;
  */
 public class ProcessResultPage extends FormPage {
 
-	private Map<Long, ProcessDescriptor> processes = new HashMap<>();
-	private FullResult result;
-	private ResultProvider flowResult;
-	private ResultProvider impactResult;
+	private final Map<Long, ProcessDescriptor> processes = new HashMap<>();
+	private final CalculationSetup setup;
+	private final FullResult result;
+	private final ResultProvider flowResult;
+	private final ResultProvider impactResult;
+	private final ContributionImage image = new ContributionImage();
 
 	private FormToolkit toolkit;
 	private ProcessViewer flowProcessViewer;
@@ -59,8 +61,6 @@ public class ProcessResultPage extends FormPage {
 	private TableViewer impactTable;
 	private Spinner flowSpinner;
 	private Spinner impactSpinner;
-	private CalculationSetup setup;
-	private ContributionImage image = new ContributionImage();
 	private double flowCutOff = 0.01;
 	private double impactCutOff = 0.01;
 
@@ -219,9 +219,9 @@ public class ProcessResultPage extends FormPage {
 		TableViewer table = Tables.createViewer(composite, IMPACT_COLUMN_LABELS, label);
 		decorateResultViewer(table);
 		Viewers.sortByLabels(table, label, 1, 4);
-		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult.getUpstreamContribution(i), 0);
-		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult.getUpstreamTotal(i), 2);
-		Viewers.sortByDouble(table, (ImpactCategoryDescriptor i) -> impactResult.getDirectResult(i), 3);
+		Viewers.sortByDouble(table, (ImpactDescriptor i) -> impactResult.getUpstreamContribution(i), 0);
+		Viewers.sortByDouble(table, (ImpactDescriptor i) -> impactResult.getUpstreamTotal(i), 2);
+		Viewers.sortByDouble(table, (ImpactDescriptor i) -> impactResult.getDirectResult(i), 3);
 		Actions.bind(table, TableClipboard.onCopy(table));
 		table.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 		table.getTable().getColumns()[3].setAlignment(SWT.RIGHT);
@@ -229,12 +229,12 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	private void decorateResultViewer(TableViewer table) {
-		table.setFilters(new ViewerFilter[] { new CutOffFilter() });
+		table.setFilters(new CutOffFilter());
 		UI.gridData(table.getTable(), true, true);
 		Tables.bindColumnWidths(table.getTable(), 0.20, 0.30, 0.20, 0.20, 0.10);
 	}
 
-	private class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
+	private static class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
 
 		public ProcessViewer(Composite parent) {
 			super(parent);
@@ -297,19 +297,19 @@ public class ProcessResultPage extends FormPage {
 
 		@Override
 		public Image getColumnImage(Object o, int col) {
-			if (!(o instanceof ImpactCategoryDescriptor))
+			if (!(o instanceof ImpactDescriptor))
 				return null;
 			if (col != 0)
 				return null;
-			ImpactCategoryDescriptor d = (ImpactCategoryDescriptor) o;
+			var d = (ImpactDescriptor) o;
 			return image.getForTable(impactResult.getUpstreamContribution(d));
 		}
 
 		@Override
 		public String getColumnText(Object o, int col) {
-			if (!(o instanceof ImpactCategoryDescriptor))
+			if (!(o instanceof ImpactDescriptor))
 				return null;
-			ImpactCategoryDescriptor d = (ImpactCategoryDescriptor) o;
+			var d = (ImpactDescriptor) o;
 			switch (col) {
 			case 0:
 				return Numbers.percent(impactResult.getUpstreamContribution(d));
@@ -331,8 +331,7 @@ public class ProcessResultPage extends FormPage {
 
 		@Override
 		public boolean select(Viewer viewer, Object parent, Object o) {
-			if (!(o instanceof IndexFlow
-					|| o instanceof ImpactCategoryDescriptor))
+			if (!(o instanceof IndexFlow || o instanceof ImpactDescriptor))
 				return false;
 			boolean forFlow = o instanceof IndexFlow;
 			double cutoff = forFlow ? flowCutOff : impactCutOff;
@@ -343,15 +342,15 @@ public class ProcessResultPage extends FormPage {
 				c = flowResult.getUpstreamContribution((IndexFlow) o);
 			else
 				c = impactResult.getUpstreamContribution(
-						(ImpactCategoryDescriptor) o);
+						(ImpactDescriptor) o);
 			return c * 100 > cutoff;
 		}
 	}
 
-	private class ResultProvider {
+	private static class ResultProvider {
 
+		private final FullResult result;
 		private CategorizedDescriptor process;
-		private FullResult result;
 
 		public ResultProvider(FullResult result) {
 			this.process = result.techIndex.getRefFlow().process;
@@ -385,7 +384,7 @@ public class ProcessResultPage extends FormPage {
 			return result.getUpstreamFlowResult(process, flow);
 		}
 
-		private double getUpstreamContribution(ImpactCategoryDescriptor d) {
+		private double getUpstreamContribution(ImpactDescriptor d) {
 			if (process == null || d == null)
 				return 0;
 			double total = result.getTotalImpactResult(d);
@@ -396,13 +395,13 @@ public class ProcessResultPage extends FormPage {
 			return c > 1 ? 1 : c;
 		}
 
-		private double getDirectResult(ImpactCategoryDescriptor category) {
+		private double getDirectResult(ImpactDescriptor category) {
 			if (process == null || category == null)
 				return 0;
 			return result.getDirectImpactResult(process, category);
 		}
 
-		private double getUpstreamTotal(ImpactCategoryDescriptor category) {
+		private double getUpstreamTotal(ImpactDescriptor category) {
 			if (process == null || category == null)
 				return 0;
 			return result.getUpstreamImpactResult(process, category);

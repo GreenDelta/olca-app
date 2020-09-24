@@ -37,7 +37,7 @@ import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ParameterRedefDialog extends FormDialog {
 
-	private TreeModel model;
+	private final TreeModel model;
 	private Text filterText;
 	private TreeViewer viewer;
 	private IStructuredSelection selection;
@@ -129,7 +129,7 @@ public class ParameterRedefDialog extends FormDialog {
 		var model = cache.get(ProcessDescriptor.class, modelId);
 		return model != null
 				? model
-				: cache.get(ImpactCategoryDescriptor.class, modelId);
+				: cache.get(ImpactDescriptor.class, modelId);
 	}
 
 	private ParameterRedefDialog(Shell shell, TreeModel model) {
@@ -194,7 +194,7 @@ public class ParameterRedefDialog extends FormDialog {
 			@Override
 			public boolean select(Viewer viewer, Object parentElement,
 					Object element) {
-				return filterNode(parentElement, element);
+				return filterNode(element);
 			}
 		});
 		viewer.setComparator(new ViewerComparator() {
@@ -232,7 +232,7 @@ public class ParameterRedefDialog extends FormDialog {
 		return 0;
 	}
 
-	private boolean filterNode(Object parent, Object element) {
+	private boolean filterNode(Object element) {
 		if (element instanceof TreeModel)
 			return true;
 		String text = filterText.getText();
@@ -248,7 +248,7 @@ public class ParameterRedefDialog extends FormDialog {
 
 	private boolean filterParameter(Object element, String term) {
 		ParameterNode node = (ParameterNode) element;
-		if (node.modelNode != null && filterNode(null, node.modelNode))
+		if (node.modelNode != null && filterNode(node.modelNode))
 			return true;
 		return contains(node, term);
 	}

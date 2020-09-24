@@ -34,7 +34,7 @@ import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.LocationResult;
@@ -169,13 +169,13 @@ public class LocationPage extends FormPage {
 			update(locations.getContributions(f));
 			return;
 		}
-		if (obj instanceof ImpactCategoryDescriptor) {
-			ImpactCategoryDescriptor i = (ImpactCategoryDescriptor) obj;
+		if (obj instanceof ImpactDescriptor) {
+			var i = (ImpactDescriptor) obj;
 			update(locations.getContributions(i));
 			return;
 		}
 		if (obj instanceof CostResultDescriptor) {
-			CostResultDescriptor c = (CostResultDescriptor) obj;
+			var c = (CostResultDescriptor) obj;
 			if (c.forAddedValue) {
 				update(locations.getAddedValueContributions());
 			} else {

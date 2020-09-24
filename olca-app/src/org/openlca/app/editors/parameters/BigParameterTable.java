@@ -60,8 +60,6 @@ import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.expressions.Scope;
 import org.openlca.util.Strings;
@@ -191,10 +189,10 @@ public class BigParameterTable extends SimpleFormEditor {
 
 		private void initParams() {
 			IDatabase db = Database.get();
-			Map<Long, ProcessDescriptor> processes = new ProcessDao(db)
+			var processes = new ProcessDao(db)
 					.getDescriptors().stream()
 					.collect(Collectors.toMap(d -> d.id, d -> d));
-			Map<Long, ImpactCategoryDescriptor> impacts = new ImpactCategoryDao(db)
+			var impacts = new ImpactCategoryDao(db)
 					.getDescriptors().stream()
 					.collect(Collectors.toMap(d -> d.id, d -> d));
 			Map<Long, Long> owners = new HashMap<>();

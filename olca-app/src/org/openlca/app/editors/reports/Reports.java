@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -23,7 +23,7 @@ import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,14 +68,14 @@ public final class Reports {
 	}
 
 	private static ReportParameter findOrCreateParameter(ParameterRedef redef,
-			Report report) {
+														 Report report) {
 		for (ReportParameter parameter : report.parameters) {
 			ParameterRedef reportRedef = parameter.redef;
 			if (reportRedef == null)
 				continue;
 			if (Objects.equals(redef.name, reportRedef.name)
 					&& Objects.equals(redef.contextId,
-							reportRedef.contextId))
+					reportRedef.contextId))
 				return parameter;
 		}
 		ReportParameter parameter = new ReportParameter();
@@ -86,14 +86,14 @@ public final class Reports {
 	}
 
 	private static void createReportIndicators(Project project, Report report,
-			IDatabase database) {
+											   IDatabase database) {
 		if (project.impactMethodId == null)
 			return;
 		ImpactMethodDao dao = new ImpactMethodDao(database);
-		List<ImpactCategoryDescriptor> descriptors = dao
+		List<ImpactDescriptor> descriptors = dao
 				.getCategoryDescriptors(project.impactMethodId);
 		int id = 0;
-		for (ImpactCategoryDescriptor d : descriptors) {
+		for (ImpactDescriptor d : descriptors) {
 			ReportIndicator i = new ReportIndicator(id++);
 			i.descriptor = d;
 			i.reportName = d.name;
@@ -105,13 +105,12 @@ public final class Reports {
 	private static Report openReport(Project project, IDatabase db) {
 		if (project == null)
 			return null;
-		File file = getReportFile(project, db);
+		File file = getReportFile(project);
 		if (file == null || !file.exists())
 			return null;
-		try (FileInputStream fis = new FileInputStream(file);
-				Reader reader = new InputStreamReader(fis, "utf-8")) {
-			Report r = new Gson().fromJson(reader, Report.class);
-			return r;
+		try (var fis = new FileInputStream(file);
+			 var reader = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
+			return new Gson().fromJson(reader, Report.class);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(Reports.class);
 			log.error("failed to open report file " + file, e);
@@ -123,9 +122,9 @@ public final class Reports {
 		if (report == null || project == null)
 			return;
 		Logger log = LoggerFactory.getLogger(Reports.class);
-		File file = getReportFile(project, database);
+		File file = getReportFile(project);
 		if (file == null) {
-			log.error("failed to get report file {} for {}" + file, report);
+			log.error("failed to get report file for {}", report);
 			return;
 		}
 		if (!file.getParentFile().exists())
@@ -140,7 +139,7 @@ public final class Reports {
 		}
 	}
 
-	private static File getReportFile(Project project, IDatabase database) {
+	private static File getReportFile(Project project) {
 		if (project == null)
 			return null;
 		File dir = DatabaseDir.getDir(project);
@@ -197,7 +196,7 @@ public final class Reports {
 	}
 
 	private static ReportSection createSection(int idx, Properties props,
-			ReportComponent component) {
+											   ReportComponent component) {
 		ReportSection section = new ReportSection();
 		section.index = idx;
 		section.title = props.getProperty(component.name() + ".title");

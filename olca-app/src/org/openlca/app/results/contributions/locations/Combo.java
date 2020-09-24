@@ -19,7 +19,7 @@ import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.IResult;
 import org.openlca.core.results.SimpleResult;
 
@@ -35,7 +35,7 @@ class Combo {
 	private ModelType selectedType = ModelType.FLOW;
 
 	private List<FlowDescriptor> flows;
-	private List<ImpactCategoryDescriptor> impacts;
+	private List<ImpactDescriptor> impacts;
 	private List<CostResultDescriptor> costs;
 	private Object initialSelection;
 
@@ -46,7 +46,7 @@ class Combo {
 
 	public static Builder on(IResult r) {
 		Combo c = new Combo();
-		c.flows = new ArrayList<FlowDescriptor>();
+		c.flows = new ArrayList<>();
 		TLongHashSet flowIDs = new TLongHashSet();
 		for (IndexFlow f : r.getFlows()) {
 			if (f.flow == null || flowIDs.contains(f.flow.id))
@@ -91,9 +91,9 @@ class Combo {
 			selectedType = ModelType.FLOW;
 			flowCombo.select((FlowDescriptor) o);
 			selection = new boolean[] { true, false, false };
-		} else if (o instanceof ImpactCategoryDescriptor) {
+		} else if (o instanceof ImpactDescriptor) {
 			selectedType = ModelType.IMPACT_CATEGORY;
-			impactCombo.select((ImpactCategoryDescriptor) o);
+			impactCombo.select((ImpactDescriptor) o);
 			selection = new boolean[] { false, true, false };
 		} else if (o instanceof CostResultDescriptor) {
 			selectedType = ModelType.CURRENCY;
@@ -117,7 +117,7 @@ class Combo {
 	public void initWithEvent() {
 
 		if (impacts != null) {
-			ImpactCategoryDescriptor impact = impacts.stream()
+			ImpactDescriptor impact = impacts.stream()
 					.findFirst().orElse(null);
 			if (impact != null) {
 				selectWithEvent(impact);
@@ -214,7 +214,7 @@ class Combo {
 			check.setSelection(true);
 		});
 		if (enabled) {
-			impactCombo.select((ImpactCategoryDescriptor) initialSelection);
+			impactCombo.select((ImpactDescriptor) initialSelection);
 		}
 	}
 
@@ -254,7 +254,7 @@ class Combo {
 	private ModelType getType(Object o) {
 		if (o instanceof FlowDescriptor)
 			return ModelType.FLOW;
-		else if (o instanceof ImpactCategoryDescriptor)
+		else if (o instanceof ImpactDescriptor)
 			return ModelType.IMPACT_CATEGORY;
 		else if (o instanceof CostResultDescriptor)
 			return ModelType.CURRENCY;

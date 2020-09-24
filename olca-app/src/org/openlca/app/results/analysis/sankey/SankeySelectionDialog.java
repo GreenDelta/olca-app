@@ -13,7 +13,7 @@ import org.openlca.app.components.ResultTypeCombo.EventHandler;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.IndexFlow;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.FullResult;
 
 public class SankeySelectionDialog extends FormDialog implements EventHandler {
@@ -63,7 +63,7 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 	}
 
 	@Override
-	public void impactCategorySelected(ImpactCategoryDescriptor impact) {
+	public void impactCategorySelected(ImpactDescriptor impact) {
 		this.selection = impact;
 	}
 

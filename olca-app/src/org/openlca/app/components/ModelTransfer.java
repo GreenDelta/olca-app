@@ -1,8 +1,7 @@
 package org.openlca.app.components;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,7 +15,7 @@ import org.openlca.core.model.descriptors.DQSystemDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
@@ -42,8 +41,7 @@ import com.google.gson.JsonElement;
  */
 public final class ModelTransfer extends ByteArrayTransfer {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
-
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private static final String NAME = "model_component_transfer";
 	private static final int ID = registerType(NAME);
 	private static ModelTransfer instance;
@@ -81,13 +79,13 @@ public final class ModelTransfer extends ByteArrayTransfer {
 	 */
 	public static List<Descriptor> getDescriptors(Object data) {
 		if (data instanceof Descriptor)
-			return Arrays.asList((Descriptor) data);
+			return Collections.singletonList((Descriptor) data);
 		if (data instanceof Object[]) {
 			Object[] objects = (Object[]) data;
 			ArrayList<Descriptor> descriptors = new ArrayList<>();
-			for (int i = 0; i < objects.length; i++) {
-				if (objects[i] instanceof Descriptor)
-					descriptors.add((Descriptor) objects[i]);
+			for (Object object : objects) {
+				if (object instanceof Descriptor)
+					descriptors.add((Descriptor) object);
 			}
 			return descriptors;
 		}
@@ -108,12 +106,8 @@ public final class ModelTransfer extends ByteArrayTransfer {
 	protected void javaToNative(Object object, TransferData data) {
 		if (!validate(object) || !isSupportedType(data))
 			return;
-		try {
-			String json = new Gson().toJson(object);
-			super.javaToNative(json.getBytes("utf-8"), data);
-		} catch (IOException e) {
-			log.error("Java to native transfer failed", e);
-		}
+		String json = new Gson().toJson(object);
+		super.javaToNative(json.getBytes(StandardCharsets.UTF_8), data);
 	}
 
 	@Override
@@ -126,7 +120,7 @@ public final class ModelTransfer extends ByteArrayTransfer {
 		byte[] bytes = (byte[]) o;
 		try {
 			Gson gson = new Gson();
-			String json = new String(bytes, "utf-8");
+			String json = new String(bytes, StandardCharsets.UTF_8);
 			JsonArray array = gson.fromJson(json, JsonArray.class);
 			List<Descriptor> list = new ArrayList<>();
 			for (JsonElement e : array) {
@@ -135,9 +129,7 @@ public final class ModelTransfer extends ByteArrayTransfer {
 					list.add(d);
 				}
 			}
-			Descriptor[] descriptors = list.toArray(
-					new Descriptor[list.size()]);
-			return descriptors;
+			return list.toArray(new Descriptor[0]);
 		} catch (Exception e) {
 			log.error("Native to java transfer failed", e);
 			return new Object[0];
@@ -151,8 +143,6 @@ public final class ModelTransfer extends ByteArrayTransfer {
 		if (typeElem == null || !typeElem.isJsonPrimitive())
 			return null;
 		ModelType type = ModelType.valueOf(typeElem.getAsString());
-		if (type == null)
-			return null;
 		switch (type) {
 		case ACTOR:
 			return gson.fromJson(e, ActorDescriptor.class);
@@ -167,7 +157,7 @@ public final class ModelTransfer extends ByteArrayTransfer {
 		case FLOW_PROPERTY:
 			return gson.fromJson(e, FlowPropertyDescriptor.class);
 		case IMPACT_CATEGORY:
-			return gson.fromJson(e, ImpactCategoryDescriptor.class);
+			return gson.fromJson(e, ImpactDescriptor.class);
 		case IMPACT_METHOD:
 			return gson.fromJson(e, ImpactMethodDescriptor.class);
 		case LOCATION:

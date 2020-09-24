@@ -37,9 +37,9 @@ import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.ReferenceAmount;
-import org.openlca.core.matrix.DIndex;
 import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.matrix.ImpactBuilder;
+import org.openlca.core.matrix.ImpactIndex;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.matrix.MatrixData;
 import org.openlca.core.matrix.ParameterTable;
@@ -52,7 +52,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
@@ -85,7 +85,7 @@ class ImpactPage extends ModelPage<Process> {
 						m1.name, m2.name))
 				.collect(Collectors.toList());
 		combo.setInput(list);
-		combo.addSelectionChangedListener(m -> setTreeInput(m));
+		combo.addSelectionChangedListener(this::setTreeInput);
 
 		zeroCheck = tk.createButton(comp, M.ExcludeZeroValues, SWT.CHECK);
 		zeroCheck.setSelection(true);
@@ -116,8 +116,8 @@ class ImpactPage extends ModelPage<Process> {
 			if (c.item instanceof IndexFlow) {
 				App.openEditor(((IndexFlow) c.item).flow);
 			}
-			if (c.item instanceof ImpactCategoryDescriptor) {
-				App.openEditor((ImpactCategoryDescriptor) c.item);
+			if (c.item instanceof ImpactDescriptor) {
+				App.openEditor((ImpactDescriptor) c.item);
 			}
 		});
 		Actions.bind(tree, onOpen);
@@ -215,7 +215,7 @@ class ImpactPage extends ModelPage<Process> {
 		data.flowMatrix = enviBuilder.finish();
 
 		// build the impact index and matrix
-		data.impactIndex = new DIndex<>();
+		data.impactIndex = new ImpactIndex();
 		var db = Database.get();
 		new ImpactCategoryDao(db)
 				.getDescriptors()
@@ -252,10 +252,10 @@ class ImpactPage extends ModelPage<Process> {
 			Contribution<?> c = (Contribution<?>) obj;
 			if (c.childs != null)
 				return c.childs.toArray();
-			if (!(c.item instanceof ImpactCategoryDescriptor))
+			if (!(c.item instanceof ImpactDescriptor))
 				return null;
 
-			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) c.item;
+			var impact = (ImpactDescriptor) c.item;
 			double total = result.getTotalImpactResult(impact);
 			boolean withoutZeros = zeroCheck.getSelection();
 			List<Contribution<?>> childs = new ArrayList<>();
@@ -269,8 +269,7 @@ class ImpactPage extends ModelPage<Process> {
 				childs.add(child);
 			}
 
-			Collections.sort(childs,
-					(c1, c2) -> Double.compare(c2.amount, c1.amount));
+			childs.sort((c1, c2) -> Double.compare(c2.amount, c1.amount));
 			c.childs = childs;
 			return childs.toArray();
 
@@ -288,14 +287,14 @@ class ImpactPage extends ModelPage<Process> {
 			Contribution<?> c = (Contribution<?>) elem;
 			if (c.childs != null)
 				return true;
-			return c.item instanceof ImpactCategoryDescriptor;
+			return c.item instanceof ImpactDescriptor;
 		}
 	}
 
 	private class Label extends ColumnLabelProvider
 			implements ITableLabelProvider {
 
-		private ContributionImage img = new ContributionImage();
+		private final ContributionImage img = new ContributionImage();
 
 		@Override
 		public void dispose() {
@@ -309,7 +308,7 @@ class ImpactPage extends ModelPage<Process> {
 				return null;
 			Contribution<?> c = (Contribution<?>) obj;
 			if (col == 0) {
-				return c.item instanceof ImpactCategoryDescriptor
+				return c.item instanceof ImpactDescriptor
 						? Images.get(ModelType.IMPACT_CATEGORY)
 						: Images.get(FlowType.ELEMENTARY_FLOW);
 			}
@@ -327,8 +326,8 @@ class ImpactPage extends ModelPage<Process> {
 			case 0:
 				if (c.item instanceof IndexFlow)
 					return Labels.name((IndexFlow) c.item);
-				if (c.item instanceof ImpactCategoryDescriptor)
-					return Labels.name((ImpactCategoryDescriptor) c.item);
+				if (c.item instanceof ImpactDescriptor)
+					return Labels.name((ImpactDescriptor) c.item);
 				return null;
 			case 1:
 				if (c.item instanceof IndexFlow)

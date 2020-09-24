@@ -20,7 +20,7 @@ import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Question;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 
 public class ProductSystemFigure extends Figure {
 
@@ -107,8 +107,8 @@ public class ProductSystemFigure extends Figure {
 			FlowDescriptor flow = (FlowDescriptor) selection;
 			return M.Flow + ": " + flow.name;
 		}
-		if (selection instanceof ImpactCategoryDescriptor) {
-			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
+		if (selection instanceof ImpactDescriptor) {
+			var impact = (ImpactDescriptor) selection;
 			return M.ImpactCategory + ": " + impact.name;
 		}
 		if (selection instanceof CostResultDescriptor) {

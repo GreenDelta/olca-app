@@ -29,7 +29,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.Unit;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -75,7 +75,7 @@ class ImpactPage extends ModelPage<Flow> {
 			NativeSql.on(db).query(sql, r -> {
 				Factor f = new Factor();
 				f.impact = ecache.get(
-						ImpactCategoryDescriptor.class, r.getLong(1));
+						ImpactDescriptor.class, r.getLong(1));
 				if (f.impact == null)
 					return true;
 				Unit unit = ecache.get(Unit.class, r.getLong(2));
@@ -113,14 +113,14 @@ class ImpactPage extends ModelPage<Flow> {
 		return factors;
 	}
 
-	private class Factor {
-		ImpactCategoryDescriptor impact;
+	private static class Factor {
+		ImpactDescriptor impact;
 		LocationDescriptor location;
 		double value;
 		String unit;
 	}
 
-	private class Label extends LabelProvider
+	private static class Label extends LabelProvider
 			implements ITableLabelProvider {
 
 		@Override

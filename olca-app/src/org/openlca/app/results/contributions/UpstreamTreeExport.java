@@ -13,7 +13,7 @@ import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
 import org.openlca.io.xls.Excel;
@@ -53,7 +53,7 @@ class UpstreamTreeExport implements Runnable {
 	private int row;
 	private int maxColumn;
 	private double totalResult;
-	private TDoubleArrayList values = new TDoubleArrayList(100);
+	private final TDoubleArrayList values = new TDoubleArrayList(100);
 
 	UpstreamTreeExport(File file, UpstreamTree tree) {
 		this.file = file;
@@ -145,8 +145,8 @@ class UpstreamTreeExport implements Runnable {
 		if (ref instanceof FlowDescriptor)
 			return Labels.refUnit((FlowDescriptor) ref);
 
-		if (ref instanceof ImpactCategoryDescriptor)
-			return ((ImpactCategoryDescriptor) ref).referenceUnit;
+		if (ref instanceof ImpactDescriptor)
+			return ((ImpactDescriptor) ref).referenceUnit;
 
 		if (ref instanceof CostResultDescriptor)
 			return Labels.getReferenceCurrencyCode();
@@ -202,7 +202,7 @@ class UpstreamTreeExport implements Runnable {
 		Excel.cell(sheet, row, col, label);
 	}
 
-	private class Path {
+	private static class Path {
 		final Path prefix;
 		final UpstreamNode node;
 		final int length;

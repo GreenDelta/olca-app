@@ -38,18 +38,18 @@ import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.ContributionResult;
 
 public class TotalImpactResultPage extends FormPage {
 
+	private final CalculationSetup setup;
 	private final ContributionResult result;
 	private final DQResult dqResult;
-	
+
 	private FormToolkit toolkit;
 	private TreeViewer viewer;
 	private ContributionCutoff spinner;
-	private CalculationSetup setup;
 
 	private boolean subgroupByProcesses = true;
 
@@ -94,7 +94,7 @@ public class TotalImpactResultPage extends FormPage {
 
 	private void setInput() {
 		List<Item> items = result.getImpacts().stream()
-				.map(impact -> new Item(impact))
+				.map(Item::new)
 				.collect(Collectors.toList());
 		viewer.setInput(items);
 	}
@@ -156,9 +156,9 @@ public class TotalImpactResultPage extends FormPage {
 
 	private class ClipboardLabel implements ClipboardLabelProvider {
 
-		private LabelProvider label = new LabelProvider();
+		private final LabelProvider label = new LabelProvider();
 
-		private String[] columns = {
+		private final String[] columns = {
 				M.Name,
 				M.Category,
 				M.InventoryResult,
@@ -217,7 +217,7 @@ public class TotalImpactResultPage extends FormPage {
 
 	private class LabelProvider extends DQLabelProvider {
 
-		private ContributionImage img = new ContributionImage();
+		private final ContributionImage img = new ContributionImage();
 
 		LabelProvider() {
 			super(dqResult, dqResult != null 
@@ -339,9 +339,7 @@ public class TotalImpactResultPage extends FormPage {
 			if (!(o instanceof Item))
 				return false;
 			Item item = (Item) o;
-			if (item.type() == ModelType.FLOW)
-				return false;
-			return true;
+			return item.type() != ModelType.FLOW;
 		}
 
 		@Override
@@ -353,20 +351,20 @@ public class TotalImpactResultPage extends FormPage {
 
 	private class Item {
 
-		final ImpactCategoryDescriptor impact;
+		final ImpactDescriptor impact;
 		final CategorizedDescriptor process;
 		final IndexFlow flow;
 
-		Item(ImpactCategoryDescriptor impact) {
+		Item(ImpactDescriptor impact) {
 			this(impact, null, null);
 
 		}
 
-		Item(ImpactCategoryDescriptor impact, CategorizedDescriptor process) {
+		Item(ImpactDescriptor impact, CategorizedDescriptor process) {
 			this(impact, process, null);
 		}
 
-		Item(ImpactCategoryDescriptor impact, CategorizedDescriptor process,
+		Item(ImpactDescriptor impact, CategorizedDescriptor process,
 				IndexFlow flow) {
 			this.impact = impact;
 			this.process = process;

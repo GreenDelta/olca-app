@@ -1,6 +1,5 @@
 package org.openlca.app.editors.reports.model;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +19,7 @@ import org.openlca.core.model.Currency;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ProjectResult;
 import org.openlca.util.Strings;
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 public class ReportCalculator implements Runnable {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private final Project project;
 	private final Report report;
@@ -85,12 +84,12 @@ public class ReportCalculator implements Runnable {
 					continue;
 				long categoryId = indicator.descriptor.id;
 				if (table.hasNormalisationFactors()) {
-					double nf = table.getNormalisationFactor(categoryId);
-					indicator.normalisationFactor = nf;
+					indicator.normalisationFactor =
+							table.getNormalisationFactor(categoryId);
 				}
 				if (table.hasWeightingFactors()) {
-					double wf = table.getWeightingFactor(categoryId);
-					indicator.weightingFactor = wf;
+					indicator.weightingFactor =
+							table.getWeightingFactor(categoryId);
 				}
 			}
 		} catch (Exception e) {
@@ -99,7 +98,7 @@ public class ReportCalculator implements Runnable {
 	}
 
 	private void appendResults(ProjectResult result) {
-		for (ImpactCategoryDescriptor impact : result.getImpacts()) {
+		for (ImpactDescriptor impact : result.getImpacts()) {
 			ReportIndicatorResult repResult = initReportResult(impact);
 			if (repResult == null)
 				continue; // should not add this indicator
@@ -118,7 +117,7 @@ public class ReportCalculator implements Runnable {
 		}
 	}
 
-	private ReportIndicatorResult initReportResult(ImpactCategoryDescriptor impact) {
+	private ReportIndicatorResult initReportResult(ImpactDescriptor impact) {
 		for (ReportIndicator indicator : report.indicators) {
 			if (!indicator.displayed)
 				continue;
@@ -152,7 +151,7 @@ public class ReportCalculator implements Runnable {
 	}
 
 	private void addContribution(VariantResult varResult,
-			Contribution<CategorizedDescriptor> item) {
+								 Contribution<CategorizedDescriptor> item) {
 		Contribution<Long> con = new Contribution<>();
 		varResult.contributions.add(con);
 		con.amount = item.amount;
@@ -163,8 +162,6 @@ public class ReportCalculator implements Runnable {
 	private Set<Long> getContributionProcessIds() {
 		Set<Long> ids = new TreeSet<>();
 		for (ReportProcess process : report.processes) {
-			if (process.descriptor == null)
-				continue;
 			ids.add(process.descriptor.id);
 		}
 		return ids;
@@ -174,7 +171,7 @@ public class ReportCalculator implements Runnable {
 	 * Add zero-contributions for processes that were not found in a variant result.
 	 */
 	private void addDefaultContributions(Set<Long> ids, Set<Long> foundIds,
-			VariantResult varResult) {
+										 VariantResult varResult) {
 		TreeSet<Long> notFound = new TreeSet<>(ids);
 		notFound.removeAll(foundIds);
 		for (long id : notFound) {
@@ -196,11 +193,10 @@ public class ReportCalculator implements Runnable {
 			double addedValue = costs == 0 ? 0 : -costs;
 			report.addedValues.add(cost(var, addedValue, currency));
 		}
-		Comparator<ReportCostResult> c = (r1, r2) -> {
-			return Strings.compare(r1.variant, r2.variant);
-		};
-		Collections.sort(report.netCosts, c);
-		Collections.sort(report.addedValues, c);
+		Comparator<ReportCostResult> c =
+				(r1, r2) -> Strings.compare(r1.variant, r2.variant);
+		report.netCosts.sort(c);
+		report.addedValues.sort(c);
 	}
 
 	private ReportCostResult cost(ProjectVariant var, double val, String cu) {

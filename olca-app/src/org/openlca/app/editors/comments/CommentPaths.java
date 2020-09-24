@@ -17,7 +17,7 @@ import org.openlca.core.model.Source;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 
 // TODO: add null checks?
 public class CommentPaths {
@@ -75,7 +75,7 @@ public class CommentPaths {
 		return get(Descriptor.of(category));
 	}
 
-	public static String get(ImpactCategoryDescriptor category) {
+	public static String get(ImpactDescriptor category) {
 		return "impactCategories[" + category.refId + "]";
 	}
 

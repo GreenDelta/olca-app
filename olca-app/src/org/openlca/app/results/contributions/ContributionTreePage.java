@@ -30,7 +30,7 @@ import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.IndexFlow;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
@@ -38,9 +38,9 @@ import org.openlca.core.results.UpstreamTree;
 public class ContributionTreePage extends FormPage {
 
 	private final FullResult result;
+	private final CalculationSetup setup;
 	private TreeViewer tree;
 	private Object selection;
-	private CalculationSetup setup;
 
 	private static final String[] HEADERS = { M.Contribution,
 			M.Process, M.Amount, M.Unit };
@@ -115,8 +115,7 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		@Override
-		public void impactCategorySelected(
-				ImpactCategoryDescriptor impact) {
+		public void impactCategorySelected(ImpactDescriptor impact) {
 			selection = impact;
 			UpstreamTree model = result.getTree(impact);
 			tree.setInput(model);
@@ -132,7 +131,7 @@ public class ContributionTreePage extends FormPage {
 		}
 	}
 
-	private class ContributionContentProvider implements ITreeContentProvider {
+	private static class ContributionContentProvider implements ITreeContentProvider {
 
 		private UpstreamTree tree;
 
@@ -184,7 +183,7 @@ public class ContributionTreePage extends FormPage {
 	private class ContributionLabelProvider extends BaseLabelProvider implements
 			ITableLabelProvider {
 
-		private ContributionImage image = new ContributionImage();
+		private final ContributionImage image = new ContributionImage();
 
 		@Override
 		public void dispose() {
@@ -227,10 +226,10 @@ public class ContributionTreePage extends FormPage {
 
 		private String getUnit() {
 			if (selection instanceof IndexFlow) {
-				IndexFlow flow = (IndexFlow) selection;
+				var flow = (IndexFlow) selection;
 				return Labels.refUnit(flow);
-			} else if (selection instanceof ImpactCategoryDescriptor) {
-				ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) selection;
+			} else if (selection instanceof ImpactDescriptor) {
+				var impact = (ImpactDescriptor) selection;
 				return impact.referenceUnit;
 			} else if (selection instanceof CostResultDescriptor) {
 				return Labels.getReferenceCurrencyCode();

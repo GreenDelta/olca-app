@@ -29,7 +29,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.util.trees.Trees;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.core.matrix.IndexFlow;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 
@@ -85,8 +85,8 @@ public class ImpactChecksPage extends FormPage {
 			if (c.item instanceof IndexFlow) {
 				IndexFlow f = (IndexFlow) c.item;
 				App.openEditor(f.flow);
-			} else if (c.item instanceof ImpactCategoryDescriptor) {
-				App.openEditor((ImpactCategoryDescriptor) c.item);
+			} else if (c.item instanceof ImpactDescriptor) {
+				App.openEditor((ImpactDescriptor) c.item);
 			}
 		});
 		Actions.bind(tree, onOpen);
@@ -112,7 +112,7 @@ public class ImpactChecksPage extends FormPage {
 		List<Contribution<?>> nodes = new ArrayList<>();
 		for (IndexFlow flow : result.getFlows()) {
 			boolean allZero = true;
-			for (ImpactCategoryDescriptor impact : result.getImpacts()) {
+			for (ImpactDescriptor impact : result.getImpacts()) {
 				double f = result.getImpactFactor(impact, flow);
 				if (f != 0) {
 					allZero = false;
@@ -138,9 +138,9 @@ public class ImpactChecksPage extends FormPage {
 			Contribution<?> c = (Contribution<?>) obj;
 			if (c.childs != null)
 				return c.childs.toArray();
-			if (!(c.item instanceof ImpactCategoryDescriptor))
+			if (!(c.item instanceof ImpactDescriptor))
 				return null;
-			ImpactCategoryDescriptor impact = (ImpactCategoryDescriptor) c.item;
+			ImpactDescriptor impact = (ImpactDescriptor) c.item;
 			c.childs = new ArrayList<>();
 			for (IndexFlow flow : result.getFlows()) {
 				double f = result.getImpactFactor(impact, flow);
@@ -165,11 +165,11 @@ public class ImpactChecksPage extends FormPage {
 			Contribution<?> c = (Contribution<?>) elem;
 			if (c.childs != null)
 				return true;
-			return c.item instanceof ImpactCategoryDescriptor;
+			return c.item instanceof ImpactDescriptor;
 		}
 	}
 
-	private class Label extends ColumnLabelProvider
+	private static class Label extends ColumnLabelProvider
 			implements ITableLabelProvider {
 
 		@Override
@@ -179,8 +179,8 @@ public class ImpactChecksPage extends FormPage {
 			Contribution<?> c = (Contribution<?>) obj;
 			if (c.item instanceof IndexFlow)
 				return Images.get((IndexFlow) c.item);
-			if (c.item instanceof ImpactCategoryDescriptor)
-				return Images.get((ImpactCategoryDescriptor) c.item);
+			if (c.item instanceof ImpactDescriptor)
+				return Images.get((ImpactDescriptor) c.item);
 			return null;
 		}
 
@@ -208,8 +208,8 @@ public class ImpactChecksPage extends FormPage {
 			// not a flow
 			if (col != 0)
 				return null;
-			if (c.item instanceof ImpactCategoryDescriptor)
-				return ((ImpactCategoryDescriptor) c.item).name;
+			if (c.item instanceof ImpactDescriptor)
+				return ((ImpactDescriptor) c.item).name;
 			return null;
 		}
 	}

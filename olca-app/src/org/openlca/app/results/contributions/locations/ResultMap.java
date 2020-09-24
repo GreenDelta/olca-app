@@ -23,7 +23,7 @@ import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.geo.calc.Bounds;
 import org.openlca.geo.geojson.Feature;
@@ -88,7 +88,7 @@ class ResultMap {
 				continue;
 			Feature feature = new Feature();
 			feature.geometry = g;
-			feature.properties = new HashMap<String, Object>();
+			feature.properties = new HashMap<>();
 			feature.properties.put("result", c.amount);
 			addMetaData(loc, feature, selection);
 			pairs.add(Pair.of(loc, feature));
@@ -119,8 +119,8 @@ class ResultMap {
 			return;
 		}
 
-		if (selection instanceof ImpactCategoryDescriptor) {
-			ImpactCategoryDescriptor imp = (ImpactCategoryDescriptor) selection;
+		if (selection instanceof ImpactDescriptor) {
+			var imp = (ImpactDescriptor) selection;
 			f.properties.put("impact_id", imp.refId);
 			f.properties.put("impact_name", imp.name);
 			f.properties.put("unit", imp.referenceUnit);

@@ -13,7 +13,7 @@ import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
@@ -62,8 +62,8 @@ class TreeContentProvider implements ITreeContentProvider {
 			stream = contributions(loc, (FlowDescriptor) selection);
 		} else if (selection instanceof CostResultDescriptor) {
 			stream = contributions(loc, (CostResultDescriptor) selection);
-		} else if (selection instanceof ImpactCategoryDescriptor) {
-			stream = contributions(loc, (ImpactCategoryDescriptor) selection);
+		} else if (selection instanceof ImpactDescriptor) {
+			stream = contributions(loc, (ImpactDescriptor) selection);
 		}
 
 		if (stream == null)
@@ -155,7 +155,7 @@ class TreeContentProvider implements ITreeContentProvider {
 	}
 
 	private Stream<Contribution<?>> contributions(
-			Location loc, ImpactCategoryDescriptor impact) {
+			Location loc, ImpactDescriptor impact) {
 
 		double total = result.getTotalImpactResult(impact);
 		if (!result.flowIndex.isRegionalized) {

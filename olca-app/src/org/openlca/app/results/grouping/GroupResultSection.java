@@ -1,6 +1,5 @@
 package org.openlca.app.results.grouping;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,7 +19,7 @@ import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.matrix.IndexFlow;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.Contributions;
@@ -33,11 +32,11 @@ class GroupResultSection {
 	private final int IMPACT = 1;
 	private int resultType = 0;
 
-	private List<ProcessGrouping> groups;
-	private ContributionResult result;
+	private final List<ProcessGrouping> groups;
+	private final ContributionResult result;
+
 	private ResultFlowCombo flowViewer;
 	private ImpactCategoryViewer impactViewer;
-	private ContributionChart chart;
 	private GroupResultTable table;
 
 	public GroupResultSection(List<ProcessGrouping> groups, ContributionResult result) {
@@ -53,7 +52,7 @@ class GroupResultSection {
 			unit = Labels.refUnit(flow);
 			selection = flow;
 		} else {
-			ImpactCategoryDescriptor impact = impactViewer.getSelected();
+			ImpactDescriptor impact = impactViewer.getSelected();
 			unit = impact.referenceUnit;
 			selection = impact;
 		}
@@ -65,8 +64,6 @@ class GroupResultSection {
 			List<Contribution<ProcessGrouping>> items = calculate(selection);
 			Contributions.sortDescending(items);
 			table.setInput(items, unit);
-			List<Contribution<?>> chartData = new ArrayList<>();
-			chartData.addAll(items);
 		}
 	}
 
@@ -74,8 +71,8 @@ class GroupResultSection {
 		GroupingContribution calc = new GroupingContribution(result, groups);
 		if (o instanceof IndexFlow)
 			return calc.calculate((IndexFlow) o);
-		if (o instanceof ImpactCategoryDescriptor)
-			return calc.calculate((ImpactCategoryDescriptor) o);
+		if (o instanceof ImpactDescriptor)
+			return calc.calculate((ImpactDescriptor) o);
 		return Collections.emptyList();
 	}
 
@@ -86,7 +83,7 @@ class GroupResultSection {
 		UI.gridLayout(comp, 1);
 		createCombos(tk, comp);
 		table = new GroupResultTable(comp);
-		chart = ContributionChart.create(comp, tk);
+		ContributionChart chart = ContributionChart.create(comp, tk);
 		chart.setLabel(new BaseLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -122,7 +119,7 @@ class GroupResultSection {
 		Button impactCheck = toolkit.createButton(parent, M.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(parent);
 		impactViewer.setEnabled(false);
-		List<ImpactCategoryDescriptor> impacts = result.getImpacts();
+		List<ImpactDescriptor> impacts = result.getImpacts();
 		impactViewer.setInput(impacts);
 		impactViewer.addSelectionChangedListener((e) -> update());
 		if (impacts.size() > 0) {
@@ -133,9 +130,9 @@ class GroupResultSection {
 
 	private class ResultTypeCheck implements SelectionListener {
 
-		private AbstractComboViewer<?> viewer;
-		private Button check;
-		private int type;
+		private final AbstractComboViewer<?> viewer;
+		private final Button check;
+		private final int type;
 
 		public ResultTypeCheck(AbstractComboViewer<?> viewer, Button check, int type) {
 			this.viewer = viewer;

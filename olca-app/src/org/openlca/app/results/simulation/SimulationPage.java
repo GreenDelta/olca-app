@@ -29,7 +29,7 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Unit;
-import org.openlca.core.model.descriptors.ImpactCategoryDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.SimulationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,7 +181,7 @@ class SimulationPage extends FormPage {
 					: result.getAll(flow);
 			statisticsCanvas.setValues(vals);
 		} else {
-			ImpactCategoryDescriptor cat = impactViewer.getSelected();
+			ImpactDescriptor cat = impactViewer.getSelected();
 			if (cat == null)
 				return;
 			double[] vals = resultPin != null
@@ -205,9 +205,9 @@ class SimulationPage extends FormPage {
 
 	private class ResultTypeCheck<T> implements SelectionListener {
 
-		private AbstractComboViewer<T> viewer;
-		private Button check;
-		private int type;
+		private final AbstractComboViewer<T> viewer;
+		private final Button check;
+		private final int type;
 
 		public ResultTypeCheck(AbstractComboViewer<T> viewer, Button check,
 				int type) {
