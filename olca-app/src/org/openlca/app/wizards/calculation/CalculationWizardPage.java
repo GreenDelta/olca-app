@@ -25,7 +25,6 @@ import org.openlca.app.viewers.combo.NwSetComboViewer;
 import org.openlca.core.math.CalculationType;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ParameterRedefSet;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.util.Strings;
 
 /**
@@ -142,13 +141,10 @@ class CalculationWizardPage extends WizardPage {
 		combo.setInput(Database.get());
 		combo.select(setup.calcSetup.impactMethod);
 		combo.addSelectionChangedListener(_e -> {
-			ImpactMethodDescriptor m = combo.getSelected();
-			setup.calcSetup.impactMethod = m;
-			nwViewer.setInput(m);
+			var method = combo.getSelected();
+			setup.calcSetup.impactMethod = method;
+			nwViewer.setInput(method);
 		});
-		if (setup.hasLibraries) {
-			combo.setEnabled(false);
-		}
 	}
 
 	private void createNWSetCombo(Composite parent) {
@@ -160,9 +156,6 @@ class CalculationWizardPage extends WizardPage {
 		}
 		nwViewer.addSelectionChangedListener(
 				nwSet -> setup.calcSetup.nwSet = nwSet);
-		if (setup.hasLibraries) {
-			nwViewer.setEnabled(false);
-		}
 	}
 
 	private void createTypeRadios(Composite parent) {
@@ -170,6 +163,11 @@ class CalculationWizardPage extends WizardPage {
 				CalculationType.CONTRIBUTION_ANALYSIS,
 				CalculationType.UPSTREAM_ANALYSIS,
 				CalculationType.MONTE_CARLO_SIMULATION,
+		};
+		boolean[] enabled = {
+				true,
+				true,
+				!setup.hasLibraries,
 		};
 
 		UI.formLabel(parent, M.CalculationType);
@@ -181,6 +179,7 @@ class CalculationWizardPage extends WizardPage {
 			var radio = new Button(comp, SWT.RADIO);
 			radio.setText(getLabel(types[i]));
 			radio.setSelection(setup.calcType == types[i]);
+			radio.setEnabled(enabled[i]);
 			radios[i] = radio;
 			Controls.onSelect(radio, e -> {
 				for (int j = 0; j < types.length; j++) {
@@ -193,9 +192,6 @@ class CalculationWizardPage extends WizardPage {
 				}
 				updateOptions();
 			});
-			if (setup.hasLibraries) {
-				radio.setEnabled(false);
-			}
 		}
 	}
 
