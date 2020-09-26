@@ -10,7 +10,9 @@ import org.openlca.core.results.Sankey;
 public class ProcessNode extends Node {
 
 	public static String CONNECTION = "Connection";
+	
 	public final ProcessProduct product;
+	public final ProductSystemNode parent;
 
 	public ProcessFigure figure;
 	public final List<Link> links = new ArrayList<>();
@@ -23,7 +25,8 @@ public class ProcessNode extends Node {
 	ProcessPart editPart;
 	private Rectangle xyLayoutConstraints = new Rectangle(0, 0, 0, 0);
 
-	public ProcessNode(Sankey.Node node) {
+	public ProcessNode(ProductSystemNode parent, Sankey.Node node) {
+		this.parent = parent;
 		this.product = node.product;
 		this.upstreamResult = node.total;
 		this.upstreamContribution = node.share;
