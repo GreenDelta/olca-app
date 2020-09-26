@@ -5,7 +5,6 @@ import java.util.List;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
-import org.eclipse.swt.graphics.Font;
 import org.openlca.app.results.analysis.sankey.layout.GraphLayoutManager;
 import org.openlca.app.results.analysis.sankey.layout.LayoutPolicy;
 

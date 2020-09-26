@@ -10,7 +10,7 @@ import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 public class XYLayoutCommand extends Command {
 
 	private Rectangle layout;
-	private Rectangle oldLayout;
+	private Rectangle oldPosition;
 	private ProcessNode processNode;
 
 	@Override
@@ -59,9 +59,12 @@ public class XYLayoutCommand extends Command {
 
 	@Override
 	public void execute() {
-		oldLayout = processNode.getXyLayoutConstraints();
-		Point newLocation = applyGrid(Math.max(layout.x, 0), Math.max(layout.y, 0));
-		processNode.setXyLayoutConstraints(new Rectangle(newLocation.x, newLocation.y, oldLayout.width, oldLayout.height));
+		oldPosition = processNode.getXyLayoutConstraints();
+		var point = applyGrid(Math.max(layout.x, 0), Math.max(layout.y, 0));
+		var nextPosition = new Rectangle(
+				point.x, point.y, oldPosition.width, oldPosition.height);
+		processNode.setXyLayoutConstraints(nextPosition);
+		processNode.figure.setBounds(nextPosition);
 	}
 
 	@Override
@@ -84,6 +87,9 @@ public class XYLayoutCommand extends Command {
 
 	@Override
 	public void undo() {
-		processNode.setXyLayoutConstraints(oldLayout);
+		if (oldPosition == null)
+			return;
+		processNode.setXyLayoutConstraints(oldPosition);
+		processNode.figure.setBounds(oldPosition);
 	}
 }

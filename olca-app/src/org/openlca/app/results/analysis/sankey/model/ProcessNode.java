@@ -33,7 +33,6 @@ public class ProcessNode extends Node {
 
 	public void add(Link link) {
 		links.add(link);
-		listeners.firePropertyChange(CONNECTION, null, link);
 	}
 
 	@Override
@@ -47,7 +46,6 @@ public class ProcessNode extends Node {
 
 	public void setXyLayoutConstraints(Rectangle xyLayoutConstraints) {
 		this.xyLayoutConstraints = xyLayoutConstraints;
-		listeners.firePropertyChange(Node.PROPERTY_LAYOUT, null, "not null");
 	}
 
 }

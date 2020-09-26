@@ -17,7 +17,6 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
-import org.eclipse.swt.graphics.Font;
 import org.openlca.app.results.analysis.sankey.layout.LayoutPolicy;
 import org.openlca.app.results.analysis.sankey.layout.XYLayoutCommand;
 import org.slf4j.Logger;
@@ -31,7 +30,6 @@ public class ProcessPart extends AbstractGraphicalEditPart implements
 	@Override
 	public void activate() {
 		super.activate();
-		getModel().listeners.addPropertyChangeListener(this);
 	}
 
 	@Override
@@ -77,15 +75,14 @@ public class ProcessPart extends AbstractGraphicalEditPart implements
 
 	@Override
 	public void deactivate() {
-		IFigure figure = getFigure();
+		var figure = getFigure();
 		if (figure instanceof ProcessFigure) {
-			ProcessFigure pFigure = (ProcessFigure) figure;
-			Font boldFont = pFigure.boldFont;
+			var pFigure = (ProcessFigure) figure;
+			var boldFont = pFigure.boldFont;
 			if (boldFont != null && !boldFont.isDisposed())
 				boldFont.dispose();
 		}
 		super.deactivate();
-		getModel().listeners.removePropertyChangeListener(this);
 	}
 
 	@Override

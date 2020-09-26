@@ -1,13 +1,10 @@
 package org.openlca.app.results.analysis.sankey.model;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import org.eclipse.draw2d.ConnectionRouter;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.core.model.ProductSystem;
 
-public class ProductSystemNode extends Node implements PropertyChangeListener {
+public class ProductSystemNode extends Node {
 
 	public final ProductSystem productSystem;
 	public final SankeyDiagram editor;
@@ -23,11 +20,6 @@ public class ProductSystemNode extends Node implements PropertyChangeListener {
 		this.editor = editor;
 		this.selection = selection;
 		this.cutoff = cutoff;
-	}
-
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		listeners.firePropertyChange(evt);
 	}
 
 	public void setRouted(boolean enabled) {
