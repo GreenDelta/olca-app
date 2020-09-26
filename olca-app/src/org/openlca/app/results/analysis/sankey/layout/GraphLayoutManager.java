@@ -18,8 +18,8 @@ public class GraphLayoutManager extends AbstractLayout {
 	public static int horizontalSpacing = 100;
 	public static int verticalSpacing = 200;
 
-	private ProductSystemPart diagram;
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final ProductSystemPart diagram;
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public GraphLayoutManager(ProductSystemPart diagram) {
 		this.diagram = diagram;
@@ -44,9 +44,10 @@ public class GraphLayoutManager extends AbstractLayout {
 			int hint2) {
 		container.validate();
 		List<?> children = container.getChildren();
-		Rectangle result = new Rectangle().setLocation(container.getClientArea().getLocation());
-		for (int i = 0; i < children.size(); i++) {
-			result.union(((IFigure) children.get(i)).getBounds());
+		Rectangle result = new Rectangle().setLocation(
+				container.getClientArea().getLocation());
+		for (Object child : children) {
+			result.union(((IFigure) child).getBounds());
 		}
 		result.resize(container.getInsets().getWidth(), container.getInsets().getHeight());
 		return result.getSize();

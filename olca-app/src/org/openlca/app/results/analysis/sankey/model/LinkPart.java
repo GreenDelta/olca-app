@@ -24,7 +24,7 @@ public class LinkPart extends AbstractConnectionEditPart {
 	protected IFigure createFigure() {
 		Link link = (Link) getModel();
 		link.editPart = this;
-		SankeyDiagram editor = ((ProductSystemNode) link.sourceNode.parent).editor;
+		SankeyDiagram editor = link.sourceNode.parent.editor;
 		PolylineConnection conn = new LinkFigure(link.getWidth(), editor);
 		if (editor.isRouted()) {
 			conn.setConnectionRouter(ROUTER);

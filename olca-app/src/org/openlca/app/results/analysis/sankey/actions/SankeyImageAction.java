@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SankeyImageAction extends Action {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	public SankeyDiagram sankeyDiagram;
 
 	@Override
@@ -73,8 +73,8 @@ public class SankeyImageAction extends Action {
 
 	private class ImageWriter implements Runnable {
 
-		private File file;
-		private Image image;
+		private final File file;
+		private final Image image;
 
 		public ImageWriter(File file, Image image) {
 			this.file = file;

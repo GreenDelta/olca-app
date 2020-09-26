@@ -31,12 +31,9 @@ public class ConnectionRouterImp extends BendpointConnectionRouter {
 
 	private void routeTopToBottom(Point start, Point end, PointList points) {
 		int offsetY = GraphLayoutManager.verticalSpacing / 4;
-		int midX = 0;
-		if (Math.abs(start.x - end.x) < ProcessFigure.WIDTH) {
-			midX = Math.max(start.x, end.x) + ProcessFigure.WIDTH;
-		} else {
-			midX = start.x + (end.x - start.x) / 2;
-		}
+		int midX = Math.abs(start.x - end.x) < ProcessFigure.WIDTH
+				? Math.max(start.x, end.x) + ProcessFigure.WIDTH
+				: start.x + (end.x - start.x) / 2;
 		points.addPoint(start.x, start.y - offsetY);
 		points.addPoint(midX, start.y - offsetY);
 		points.addPoint(midX, end.y + offsetY);

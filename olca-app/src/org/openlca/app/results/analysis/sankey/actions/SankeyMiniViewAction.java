@@ -49,12 +49,12 @@ public class SankeyMiniViewAction extends Action {
 		view.open();
 	}
 
-	private class MiniView extends ApplicationWindow {
+	private static class MiniView extends ApplicationWindow {
 
 		private boolean closed = false;
 
-		private GraphicalViewer viewer;
-		private ScalableRootEditPart part;
+		private final GraphicalViewer viewer;
+		private final ScalableRootEditPart part;
 
 		public MiniView(Shell shell, SankeyDiagram diagram) {
 			super(shell);

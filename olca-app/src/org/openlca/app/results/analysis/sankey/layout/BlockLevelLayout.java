@@ -85,7 +85,7 @@ public class BlockLevelLayout {
 	private static class Tree {
 
 		private final ProcessNode node;
-		private final List<Tree> childs = new ArrayList<Tree>();
+		private final List<Tree> childs = new ArrayList<>();
 
 		Tree(ProcessNode node) {
 			this.node = node;

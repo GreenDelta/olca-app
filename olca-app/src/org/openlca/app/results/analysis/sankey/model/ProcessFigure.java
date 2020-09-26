@@ -80,7 +80,7 @@ public class ProcessFigure extends Figure {
 	}
 
 	private void drawDqBar(Graphics g) {
-		DQResult dqResult = ((ProductSystemNode) node.parent).editor.dqResult;
+		DQResult dqResult = node.parent.editor.dqResult;
 		if (!DQUI.displayProcessQuality(dqResult))
 			return;
 		Point loc = getLocation();
