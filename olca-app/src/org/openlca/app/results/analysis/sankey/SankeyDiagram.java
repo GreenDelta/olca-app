@@ -177,10 +177,6 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		if (evt.getPropertyName().equals("firstTimeInitialized")) {
-			createdLinks.clear();
-			updateConnections();
-		}
 	}
 
 	@Override
@@ -223,17 +219,16 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 				.withMinimumShare(cutoff)
 				.withMaximumNodeCount(500)
 				.build();
+
+		// create the nodes
 		sankey.traverse(n -> {
 			var node = new ProcessNode(n);
 			createdNodes.put(n.product, node);
 			this.node.addChild(node);
 		});
-	}
 
-	private void updateConnections() {
+		// create the links
 		createdLinks.clear();
-		if (sankey == null)
-			return;
 		sankey.traverse(node -> {
 			var target = createdNodes.get(node.product);
 			if (target == null)
@@ -244,12 +239,11 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 					continue;
 				var linkShare = sankey.getLinkShare(provider, node);
 				var share = linkShare * provider.share;
-				createdLinks.add(new Link(source, target, share));
+				var link = new Link(source, target, share);
+				link.link();
+				createdLinks.add(link);
 			}
 		});
-		for (var link : createdLinks) {
-			link.link();
-		}
 	}
 
 }
