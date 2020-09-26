@@ -2,10 +2,8 @@ package org.openlca.app.results.analysis.sankey;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -48,10 +46,10 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	public final DQResult dqResult;
 	public final FullResult result;
 	public ProductSystemNode node;
+	
+	public Sankey<?> sankey;
 	public double zoom = 1;
 	private boolean routed = true;
-	public Sankey<?> sankey;
-	public final List<Link> createdLinks = new ArrayList<>();
 	public final Map<ProcessProduct, ProcessNode> createdNodes = new HashMap<>();
 	private final ProductSystem productSystem;
 
@@ -195,7 +193,6 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 				() -> {
 					node = new ProductSystemNode(
 							productSystem, this, selection, cutoff);
-					createdLinks.clear();
 					updateModel(selection, cutoff);
 					getGraphicalViewer().deselectAll();
 					getGraphicalViewer().setContents(node);
@@ -228,7 +225,6 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		});
 
 		// create the links
-		createdLinks.clear();
 		sankey.traverse(node -> {
 			var target = createdNodes.get(node.product);
 			if (target == null)
@@ -241,9 +237,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 				var share = linkShare * provider.share;
 				var link = new Link(source, target, share);
 				link.link();
-				createdLinks.add(link);
 			}
 		});
 	}
-
 }
