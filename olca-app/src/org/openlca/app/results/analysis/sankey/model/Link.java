@@ -3,7 +3,6 @@ package org.openlca.app.results.analysis.sankey.model;
 import java.util.Objects;
 
 import org.eclipse.draw2d.PolylineConnection;
-import org.eclipse.gef.EditPart;
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.util.Colors;
 
@@ -49,10 +48,6 @@ public class Link {
 
 	void setSelected(int value) {
 		editPart.setSelected(value);
-	}
-
-	boolean isSelected() {
-		return editPart.getSelected() != EditPart.SELECTED_NONE;
 	}
 
 	boolean isVisible() {

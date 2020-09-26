@@ -242,7 +242,8 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 				var source = createdNodes.get(provider.product);
 				if (source == null)
 					continue;
-				var share = sankey.getLinkShare(provider, node);
+				var linkShare = sankey.getLinkShare(provider, node);
+				var share = linkShare * provider.share;
 				createdLinks.add(new Link(source, target, share));
 			}
 		});
