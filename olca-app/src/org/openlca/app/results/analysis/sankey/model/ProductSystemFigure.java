@@ -45,10 +45,9 @@ public class ProductSystemFigure extends Figure {
 			}
 		}
 		if (doPaint) {
-			for (Node node : node.children) {
-				var pNode = (ProcessNode) node;
-				if (!pNode.figure.isVisible()) {
-					pNode.figure.setVisible(true);
+			for (var process : node.processNodes) {
+				if (!process.figure.isVisible()) {
+					process.figure.setVisible(true);
 				}
 			}
 			if (firstTime) {
@@ -64,7 +63,7 @@ public class ProductSystemFigure extends Figure {
 	}
 
 	private boolean checkAndAsk() {
-		if (node.children.size() <= 2000)
+		if (node.processNodes.size() <= 2000)
 			return true;
 		return Question.ask(M.SankeyDiagram, M.MoreThanXProcesses);
 	}

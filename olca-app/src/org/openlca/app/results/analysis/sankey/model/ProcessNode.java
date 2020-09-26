@@ -7,7 +7,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.results.Sankey;
 
-public class ProcessNode extends Node {
+public class ProcessNode {
 
 	public static String CONNECTION = "Connection";
 	

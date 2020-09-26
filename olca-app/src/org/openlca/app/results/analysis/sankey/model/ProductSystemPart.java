@@ -24,8 +24,8 @@ public class ProductSystemPart extends AbstractGraphicalEditPart {
 	}
 
 	@Override
-	public List<Node> getModelChildren() {
-		return ((ProductSystemNode) getModel()).children;
+	public List<ProcessNode> getModelChildren() {
+		return ((ProductSystemNode) getModel()).processNodes;
 	}
 
 	@Override

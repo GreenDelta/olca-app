@@ -9,7 +9,6 @@ import java.util.function.Function;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.app.results.analysis.sankey.model.Node;
 import org.openlca.app.results.analysis.sankey.model.ProcessFigure;
 import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
@@ -85,11 +84,9 @@ public class TreeLayout {
 			}
 
 			Map<ProcessProduct, ProcessFigure> figures = new HashMap<>();
-			for (Object n : systemNode.children) {
-				if (n instanceof ProcessNode) {
-					ProcessFigure figure = ((ProcessNode) n).figure;
-					figures.put(figure.node.product, figure);
-				}
+			for (var n : systemNode.processNodes) {
+				ProcessFigure figure = n.figure;
+				figures.put(figure.node.product, figure);
 			}
 
 			// apply layout
@@ -153,15 +150,12 @@ public class TreeLayout {
 	}
 
 	private void prepare(ProductSystemNode productSystemNode) {
-		for (Node node : productSystemNode.children) {
-			if (node instanceof ProcessNode) {
-				var processNode = (ProcessNode) node;
-				processNode.setXyLayoutConstraints(new Rectangle(
-						0,
-						0,
-						processNode.figure.getSize().width,
-						processNode.figure.getSize().height));
-			}
+		for (var node : productSystemNode.processNodes) {
+			node.setXyLayoutConstraints(new Rectangle(
+					0,
+					0,
+					node.figure.getSize().width,
+					node.figure.getSize().height));
 		}
 	}
 

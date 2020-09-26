@@ -224,7 +224,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		sankey.traverse(n -> {
 			var node = new ProcessNode(this.node, n);
 			createdNodes.put(n.product, node);
-			this.node.addChild(node);
+			this.node.processNodes.add(node);
 		});
 
 		// create the links

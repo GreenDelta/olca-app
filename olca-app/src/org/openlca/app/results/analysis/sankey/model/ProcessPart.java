@@ -117,11 +117,6 @@ public class ProcessPart extends AbstractGraphicalEditPart implements
 	}
 
 	@Override
-	public List<Node> getModelChildren() {
-		return getModel().children;
-	}
-
-	@Override
 	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connection) {
 		Link link = (Link) connection.getModel();
 		return new ProcessLinkAnchor(link, false);
