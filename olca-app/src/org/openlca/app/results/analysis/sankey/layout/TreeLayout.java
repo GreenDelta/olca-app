@@ -106,7 +106,7 @@ public class TreeLayout {
 					if (product != null) {
 						ProcessFigure figure = figures.get(product);
 						if (figure != null) {
-							figure.node.setXyLayoutConstraints(
+							figure.node.setLayoutConstraints(
 									new Rectangle(xPosition, yPosition
 											+ additionalHeight,
 											figure.getSize().width,
@@ -151,7 +151,7 @@ public class TreeLayout {
 
 	private void prepare(ProductSystemNode productSystemNode) {
 		for (var node : productSystemNode.processNodes) {
-			node.setXyLayoutConstraints(new Rectangle(
+			node.setLayoutConstraints(new Rectangle(
 					0,
 					0,
 					node.figure.getSize().width,

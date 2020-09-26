@@ -41,9 +41,9 @@ public class Link {
 	}
 
 	public void link() {
-		sourceNode.add(this);
+		sourceNode.links.add(this);
 		if (sourceNode != targetNode)
-			targetNode.add(this);
+			targetNode.links.add(this);
 	}
 
 	void setSelected(int value) {

@@ -2,7 +2,6 @@ package org.openlca.app.results.analysis.sankey.model;
 
 import java.util.List;
 
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.openlca.app.results.analysis.sankey.layout.GraphLayoutManager;
@@ -16,7 +15,7 @@ public class ProductSystemPart extends AbstractGraphicalEditPart {
 	}
 
 	@Override
-	protected IFigure createFigure() {
+	protected ProductSystemFigure createFigure() {
 		var figure = new ProductSystemFigure((ProductSystemNode) getModel());
 		figure.setLayoutManager(new GraphLayoutManager(this));
 		figure.addPropertyChangeListener(((ProductSystemNode) getModel()).editor);

@@ -59,11 +59,11 @@ public class XYLayoutCommand extends Command {
 
 	@Override
 	public void execute() {
-		oldPosition = processNode.getXyLayoutConstraints();
+		oldPosition = processNode.getLayoutConstraints();
 		var point = applyGrid(Math.max(layout.x, 0), Math.max(layout.y, 0));
 		var nextPosition = new Rectangle(
 				point.x, point.y, oldPosition.width, oldPosition.height);
-		processNode.setXyLayoutConstraints(nextPosition);
+		processNode.setLayoutConstraints(nextPosition);
 		processNode.figure.setBounds(nextPosition);
 	}
 
@@ -89,7 +89,7 @@ public class XYLayoutCommand extends Command {
 	public void undo() {
 		if (oldPosition == null)
 			return;
-		processNode.setXyLayoutConstraints(oldPosition);
+		processNode.setLayoutConstraints(oldPosition);
 		processNode.figure.setBounds(oldPosition);
 	}
 }

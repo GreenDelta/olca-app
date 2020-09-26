@@ -34,7 +34,7 @@ public class GraphLayoutManager extends AbstractLayout {
 			if (aPart instanceof ProcessPart) {
 				ProcessPart part = (ProcessPart) aPart;
 				ProcessNode node = part.getModel();
-				part.getFigure().setBounds(node.getXyLayoutConstraints());
+				part.getFigure().setBounds(node.getLayoutConstraints());
 			}
 		}
 	}

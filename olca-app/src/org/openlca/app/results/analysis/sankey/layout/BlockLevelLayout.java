@@ -75,7 +75,7 @@ public class BlockLevelLayout {
 			int y = vspace + i * (vspace + nodeSize.height);
 			int x = totalWidth / 2 - width / 2;
 			for (var node : level) {
-				node.node.setXyLayoutConstraints(new Rectangle(
+				node.node.setLayoutConstraints(new Rectangle(
 						x, y, nodeSize.width, nodeSize.height));
 				x += nodeSize.width + hspace;
 			}

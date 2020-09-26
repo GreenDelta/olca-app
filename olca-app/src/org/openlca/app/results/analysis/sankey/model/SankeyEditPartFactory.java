@@ -1,13 +1,7 @@
-package org.openlca.app.results.analysis.sankey;
+package org.openlca.app.results.analysis.sankey.model;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
-import org.openlca.app.results.analysis.sankey.model.Link;
-import org.openlca.app.results.analysis.sankey.model.LinkPart;
-import org.openlca.app.results.analysis.sankey.model.ProcessPart;
-import org.openlca.app.results.analysis.sankey.model.ProcessNode;
-import org.openlca.app.results.analysis.sankey.model.ProductSystemPart;
-import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
 
 public class SankeyEditPartFactory implements EditPartFactory {
 

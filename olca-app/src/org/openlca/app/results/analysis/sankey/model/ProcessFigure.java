@@ -34,7 +34,7 @@ public class ProcessFigure extends Figure {
 		node.figure = this;
 		this.node = node;
 		setSize(WIDTH, HEIGHT);
-		node.setXyLayoutConstraints(getBounds());
+		node.setLayoutConstraints(getBounds());
 		addMouseListener(new ProcessMouseClick(node));
 		setVisible(false);
 	}
@@ -42,7 +42,7 @@ public class ProcessFigure extends Figure {
 	@Override
 	protected void paintFigure(Graphics graphics) {
 		graphics.pushState();
-		double contribution = node.upstreamContribution;
+		double contribution = node.totalShare;
 		Color color = Colors.getForContribution(contribution);
 		graphics.setBackgroundColor(color);
 		paintBody(graphics);
@@ -53,9 +53,9 @@ public class ProcessFigure extends Figure {
 		Rectangle rect = new Rectangle(getLocation(), getSize());
 		g.fillRoundRectangle(rect, 15, 15);
 		String singleVal = format(node.directResult);
-		String singlePerc = format(node.directContribution * 100);
-		String totalVal = format(node.upstreamResult);
-		String totalPerc = format(node.upstreamContribution * 100);
+		String singlePerc = format(node.directShare * 100);
+		String totalVal = format(node.totalResul);
+		String totalPerc = format(node.totalShare * 100);
 		String single = singleVal + " (" + singlePerc + "%)";
 		String total = totalVal + " (" + totalPerc + "%)";
 		drawTexts(g, single, total);

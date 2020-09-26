@@ -27,13 +27,13 @@ import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.openlca.app.App;
 import org.openlca.app.results.analysis.sankey.actions.SankeyMenu;
 import org.openlca.app.results.analysis.sankey.model.Link;
 import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
+import org.openlca.app.results.analysis.sankey.model.SankeyEditPartFactory;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.ProcessProduct;
@@ -69,12 +69,11 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	protected void configureGraphicalViewer() {
 		super.configureGraphicalViewer();
 
-		MenuManager menu = SankeyMenu.create(this);
-		getGraphicalViewer().setContextMenu(menu);
 
 		GraphicalViewer viewer = getGraphicalViewer();
+		viewer.setContextMenu(SankeyMenu.create(this));
 		viewer.setEditPartFactory(new SankeyEditPartFactory());
-		ScalableRootEditPart root = new ScalableRootEditPart();
+		var root = new ScalableRootEditPart();
 		viewer.setRootEditPart(root);
 
 		// append zoom actions to action registry
@@ -87,14 +86,15 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 				ZoomManager.FIT_WIDTH));
 
 		// create key handler
-		KeyHandler keyHandler = new KeyHandler();
+		var keyHandler = new KeyHandler();
 		keyHandler.put(KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0),
 				getActionRegistry().getAction(GEFActionConstants.ZOOM_IN));
 		keyHandler.put(KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0),
 				getActionRegistry().getAction(GEFActionConstants.ZOOM_OUT));
 		viewer.setKeyHandler(keyHandler);
 
-		viewer.setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
+		viewer.setProperty(
+				MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
 				MouseWheelZoomHandler.SINGLETON);
 	}
 
