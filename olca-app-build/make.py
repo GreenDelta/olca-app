@@ -70,15 +70,6 @@ def pack_win(version, version_date):
             shutil.copytree(jre_dir, p(product_dir + '/jre'))
             print('done')
 
-    # julia libs
-    if not exists('runtime/julia/win64'):
-        print('  WARNING: Julia libraries not found in julia/win64')
-    else:
-        printw("  Copy Julia libraries")
-        for f in glob.glob('runtime/julia/win64/*.*'):
-            shutil.copy2(p(f), product_dir)
-        print('done')
-
     # zip file
     zip_file = p('build/dist/openLCA_win64_' + version_date)
     printw('  Create zip %s' % zip_file)
@@ -133,13 +124,6 @@ def pack_linux(version_date):
             jre_dir = glob.glob(product_dir + '/*jre*')
             os.rename(jre_dir[0], p(product_dir + '/jre'))
             print('done')
-
-    # package the native libraries
-    if not os.path.exists('runtime/julia/linux'):
-        print('  WARNING: No native libraries')
-    else:
-        for f in glob.glob('runtime/julia/linux/*.*'):
-            shutil.copy2(f, product_dir)
 
     # copy the ini file
     shutil.copy2('templates/openLCA_linux.ini',
@@ -198,13 +182,6 @@ def pack_macos(version_date):
     unzip(jre_tar[0], base + 'openLCA.app')
     jre_dir = glob.glob(base + 'openLCA.app' + '/*jre*')
     os.rename(jre_dir[0], base + 'openLCA.app' + '/jre')
-
-    # package the native libraries
-    if not os.path.exists('runtime/julia/macos'):
-        print('  WARNING: No native libraries')
-    else:
-        for f in glob.glob('runtime/julia/macos/*.*'):
-            shutil.copy2(f, base + 'openLCA.app/Contents/Eclipse')
 
     printw('  Create distribtuion package')
     dist_pack = p('build/dist/openLCA_macOS_%s' % version_date)
