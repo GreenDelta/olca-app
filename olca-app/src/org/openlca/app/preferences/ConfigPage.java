@@ -69,8 +69,8 @@ public class ConfigPage extends PreferencePage implements
 			b.setEnabled(false);
 		});
 
-		if (!Julia.isWithUmfpack()) {
-			Button libButton = new Button(bcomp, SWT.NONE);
+		if (!Julia.hasSparseLibraries()) {
+			var libButton = new Button(bcomp, SWT.NONE);
 			libButton.setText("Download additional calculation libraries");
 			Controls.onSelect(
 					libButton,

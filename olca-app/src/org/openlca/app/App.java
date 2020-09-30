@@ -64,17 +64,13 @@ public class App {
 		if (solver != null)
 			return solver;
 		try {
-			File dir = getInstallLocation();
-			if (Julia.loadFromDir(dir)) {
+			if (Julia.load()) {
 				solver = new JuliaSolver();
-				log.info("Loaded math libraries from {}", dir);
 				return solver;
 			}
-			log.info("Math libraries could not be loaded from {}", dir);
 		} catch (Exception e) {
-			log.error("Failed to load libraries from folder <openLCA>/julia");
+			log.error("Failed to load native libraries", e);
 		}
-
 		log.warn("could not load a high-performance library for calculations");
 		solver = new JavaSolver();
 		return solver;

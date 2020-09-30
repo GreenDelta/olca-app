@@ -69,12 +69,12 @@ public class StartPage extends SimpleFormEditor {
 
 			// set the start page configuration
 			UI.onLoaded(browser, HtmlFolder.getUrl("home.html"), () -> {
-				HashMap<String, Object> config = new HashMap<>();
+				var config = new HashMap<String, Object>();
 				config.put("version", getVersion());
-				String lang = AppArg.get("nl");
+				var lang = AppArg.get("nl");
 				config.put("lang", Strings.nullOrEmpty(lang) ? "en" : lang);
-				config.put("showLibHint", !Julia.isWithUmfpack());
-				String json = new Gson().toJson(config);
+				config.put("showLibHint", !Julia.hasSparseLibraries());
+				var json = new Gson().toJson(config);
 				browser.execute("setData(" + json + ")");
 			});
 		}
