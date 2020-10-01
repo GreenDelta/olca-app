@@ -18,13 +18,17 @@ import org.openlca.core.results.FullResult;
 
 public class SankeySelectionDialog extends FormDialog implements EventHandler {
 
-	public double cutoff = 0.1;
+	public double cutoff;
+	public int maxCount;
 	public Object selection;
 	private final FullResult result;
 
-	public SankeySelectionDialog(FullResult result) {
+	public SankeySelectionDialog(SankeyDiagram editor) {
 		super(UI.shell());
-		this.result = result;
+		this.result = editor.result;
+		this.selection = editor.selection;
+		this.cutoff = editor.cutoff;
+		this.maxCount = editor.maxCount;
 	}
 
 	@Override
@@ -38,13 +42,14 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 				.withEventHandler(this).withSelection(selection)
 				.create(body, tk);
 		createCutoffSpinner(tk, body);
+		createCountSpinner(tk, body);
 	}
 
 	private void createCutoffSpinner(FormToolkit tk, Composite comp) {
-		tk.createLabel(comp, M.DontShowSmallerThen);
-		Composite inner = tk.createComposite(comp);
+		tk.createLabel(comp, "Min. contribution share");
+		var inner = tk.createComposite(comp);
 		UI.gridLayout(inner, 2, 10, 0);
-		Spinner spinner = new Spinner(inner, SWT.BORDER);
+		var spinner = new Spinner(inner, SWT.BORDER);
 		spinner.setIncrement(100);
 		spinner.setMinimum(0);
 		spinner.setMaximum(100000);
@@ -55,6 +60,23 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 		});
 		tk.adapt(spinner);
 		tk.createLabel(inner, "%");
+	}
+	
+	private void createCountSpinner(FormToolkit tk, Composite comp) {
+		tk.createLabel(comp, "Max. number of processes");
+		var inner = tk.createComposite(comp);
+		UI.gridLayout(inner, 2, 10, 0);
+		var spinner = new Spinner(inner, SWT.BORDER);
+		spinner.setIncrement(10);
+		spinner.setMinimum(1);
+		spinner.setMaximum(result.techIndex.size());
+		spinner.setDigits(0);
+		spinner.setSelection(maxCount);
+		spinner.addModifyListener(e -> {
+			maxCount = spinner.getSelection();
+		});
+		tk.adapt(spinner);
+		tk.createLabel(inner, "");
 	}
 
 	@Override
@@ -70,7 +92,6 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 	@Override
 	public void costResultSelected(CostResultDescriptor cost) {
 		this.selection = cost;
-
 	}
 
 }

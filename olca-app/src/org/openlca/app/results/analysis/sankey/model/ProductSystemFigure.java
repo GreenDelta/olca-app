@@ -73,8 +73,8 @@ public class ProductSystemFigure extends Figure {
 		Font normalFont = g.getFont();
 		Font infoFont = getInfoFont(normalFont);
 		g.setFont(infoFont);
-		Object selection = node.selection;
-		double cutoffValue = node.cutoff * 100;
+		Object selection = node.editor.selection;
+		double cutoffValue = node.editor.cutoff * 100;
 		String cutoffText = M.DontShowSmallerThen + " "
 				+ Numbers.format(cutoffValue, 3) + "%";
 		if (selection != null) {
@@ -168,9 +168,7 @@ public class ProductSystemFigure extends Figure {
 			int x = arg0.getLocation().x;
 			int y = arg0.getLocation().y;
 			if (in(x, 350) && in(y, 120)) {
-				SankeySelectionAction psa = new SankeySelectionAction();
-				psa.setSankeyDiagram(node.editor);
-				psa.run();
+				new SankeySelectionAction(node.editor).run();
 			}
 		}
 

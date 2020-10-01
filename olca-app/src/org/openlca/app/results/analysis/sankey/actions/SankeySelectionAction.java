@@ -7,7 +7,6 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.analysis.sankey.SankeySelectionDialog;
-import org.openlca.core.results.FullResult;
 
 /**
  * Opens the {@link SankeySelectionDialog} and updates the Sankey diagram with
@@ -15,9 +14,12 @@ import org.openlca.core.results.FullResult;
  */
 public class SankeySelectionAction extends Action {
 
-	private Object lastSelection;
-	private SankeyDiagram sankeyDiagram;
+	private final SankeyDiagram editor;
 
+	public SankeySelectionAction(SankeyDiagram editor) {
+		this.editor = editor;
+	}
+	
 	@Override
 	public String getText() {
 		return M.SetSankeyDiagramOptions;
@@ -28,33 +30,13 @@ public class SankeySelectionAction extends Action {
 		return Icon.SANKEY_OPTIONS.descriptor();
 	}
 
-	public void setSankeyDiagram(SankeyDiagram sankeyDiagram) {
-		if (sankeyDiagram == this.sankeyDiagram)
-			return;
-		this.sankeyDiagram = sankeyDiagram;
-		if (sankeyDiagram != null)
-			lastSelection = sankeyDiagram.getDefaultSelection();
-	}
-
 	@Override
 	public void run() {
-		if (sankeyDiagram == null)
+		if (editor == null)
 			return;
-		FullResult result = sankeyDiagram.result;
-		if (result == null)
-			return;
-		openAndUpdate(result);
-	}
-
-	private void openAndUpdate(FullResult r) {
-		SankeySelectionDialog d = new SankeySelectionDialog(r);
-		d.cutoff = sankeyDiagram.node.cutoff;
-		d.selection = lastSelection;
+		var d = new SankeySelectionDialog(editor);
 		if (d.open() == Window.OK) {
-			lastSelection = d.selection;
-			if (lastSelection == null)
-				return;
-			sankeyDiagram.update(lastSelection, d.cutoff);
+			editor.update(d.selection, d.cutoff, d.maxCount);
 		}
 	}
 }

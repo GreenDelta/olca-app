@@ -9,11 +9,9 @@ public class SankeyMenu {
 	}
 
 	public static MenuManager create(SankeyDiagram diagram) {
-		MenuManager manager = new MenuManager();
-		SankeySelectionAction selectionAction = new SankeySelectionAction();
-		selectionAction.setSankeyDiagram(diagram);
-		manager.add(selectionAction);
-		SankeyImageAction imageAction = new SankeyImageAction();
+		var manager = new MenuManager();
+		manager.add(new SankeySelectionAction(diagram));
+		var imageAction = new SankeyImageAction();
 		imageAction.sankeyDiagram = diagram;
 		manager.add(imageAction);
 		manager.add(new SankeyMiniViewAction(diagram));

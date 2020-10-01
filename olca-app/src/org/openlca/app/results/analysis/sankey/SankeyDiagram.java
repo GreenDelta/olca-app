@@ -45,11 +45,15 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 	public final DQResult dqResult;
 	public final FullResult result;
-	public ProductSystemNode node;
-	
+
 	public Sankey<?> sankey;
+	public ProductSystemNode node;
 	public double zoom = 1;
+	public double cutoff = 0.0;
+	public int maxCount = 50;
+	public Object selection;
 	private boolean routed = true;
+
 	public final Map<ProcessProduct, ProcessNode> createdNodes = new HashMap<>();
 	private final ProductSystem productSystem;
 
@@ -66,7 +70,6 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	@Override
 	protected void configureGraphicalViewer() {
 		super.configureGraphicalViewer();
-
 
 		GraphicalViewer viewer = getGraphicalViewer();
 		viewer.setContextMenu(SankeyMenu.create(this));
@@ -135,33 +138,29 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	}
 
 	public void initContent() {
-		Object s = getDefaultSelection();
-		if (s == null) {
-			getGraphicalViewer().setContents(
-					new ProductSystemNode(productSystem, this, null, 0.1));
-			return;
-		}
-		update(s, 0.01);
-	}
-
-	public Object getDefaultSelection() {
 		if (result == null)
-			return null;
-
+			return;
+		Object initial = null;
 		if (result.hasImpactResults()) {
-			var impact = result.getImpacts()
+			initial = result.getImpacts()
 					.stream()
 					.min((i1, i2) -> Strings.compare(i1.name, i2.name))
 					.orElse(null);
-			if (impact != null)
-				return impact;
 		}
-
-		return result.getFlows().stream().min((f1, f2) -> {
-			if (f1.flow == null || f2.flow == null)
-				return 0;
-			return Strings.compare(f1.flow.name, f2.flow.name);
-		}).orElse(null);
+		if (initial == null) {
+			initial = result.getFlows()
+					.stream()
+					.min((f1, f2) -> {
+						if (f1.flow == null || f2.flow == null)
+							return 0;
+						return Strings.compare(f1.flow.name, f2.flow.name);
+					})
+					.orElse(null);
+		}
+		// TODO costs...
+		if (initial == null) 
+			return;
+		update(selection, cutoff, maxCount);
 	}
 
 	@Override
@@ -182,17 +181,24 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		return super.getGraphicalViewer();
 	}
 
-	public void update(Object selection, double cutoff) {
-		if (selection == null || cutoff < 0d || cutoff > 1d)
+	public void update(Object selection, double cutoff, int maxCount) {
+		if (selection == null
+				|| cutoff < 0d
+				|| cutoff > 1d
+				|| maxCount < 0)
 			return;
+		this.selection = selection;
+		this.cutoff = cutoff;
+		this.maxCount = maxCount;
+
 		App.runWithProgress("Calculate sankey results",
 				() -> sankey = Sankey.of(selection, result)
 						.withMinimumShare(cutoff)
-						.withMaximumNodeCount(500)
+						.withMaximumNodeCount(maxCount)
 						.build(),
 				() -> {
-					node = new ProductSystemNode(
-							productSystem, this, selection, cutoff);
+					
+					node = new ProductSystemNode(productSystem, this);
 					updateModel(selection, cutoff);
 					getGraphicalViewer().deselectAll();
 					getGraphicalViewer().setContents(node);
