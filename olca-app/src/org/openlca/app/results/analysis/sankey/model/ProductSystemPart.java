@@ -18,7 +18,6 @@ public class ProductSystemPart extends AbstractGraphicalEditPart {
 	protected ProductSystemFigure createFigure() {
 		var figure = new ProductSystemFigure((ProductSystemNode) getModel());
 		figure.setLayoutManager(new GraphLayoutManager(this));
-		figure.addPropertyChangeListener(((ProductSystemNode) getModel()).editor);
 		return figure;
 	}
 

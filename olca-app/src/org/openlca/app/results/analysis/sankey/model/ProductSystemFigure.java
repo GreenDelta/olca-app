@@ -153,15 +153,7 @@ public class ProductSystemFigure extends Figure {
 		}
 	}
 
-	private class SelectionChange implements MouseListener {
-
-		@Override
-		public void mouseReleased(MouseEvent evt) {
-		}
-
-		@Override
-		public void mouseDoubleClicked(MouseEvent evt) {
-		}
+	private class SelectionChange extends MouseListener.Stub {
 
 		@Override
 		public void mousePressed(MouseEvent arg0) {

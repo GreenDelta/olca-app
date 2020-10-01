@@ -1,7 +1,5 @@
 package org.openlca.app.results.analysis.sankey;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +38,7 @@ import org.openlca.core.results.FullResult;
 import org.openlca.core.results.Sankey;
 import org.openlca.util.Strings;
 
-public class SankeyDiagram extends GraphicalEditor implements PropertyChangeListener {
+public class SankeyDiagram extends GraphicalEditor {
 
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 	public final DQResult dqResult;
@@ -160,7 +158,7 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 		// TODO costs...
 		if (initial == null) 
 			return;
-		update(selection, cutoff, maxCount);
+		update(initial, cutoff, maxCount);
 	}
 
 	@Override
@@ -170,10 +168,6 @@ public class SankeyDiagram extends GraphicalEditor implements PropertyChangeList
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
-	}
-
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
 	}
 
 	@Override
