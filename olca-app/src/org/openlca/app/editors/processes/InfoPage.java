@@ -5,13 +5,11 @@ import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.components.mapview.MapDialog;
 import org.openlca.app.db.Database;
@@ -47,10 +45,10 @@ class InfoPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(this);
-		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.formBody(form, tk);
-		InfoSection info = new InfoSection(getEditor());
+		var form = UI.formHeader(this);
+		var tk = mform.getToolkit();
+		var body = UI.formBody(form, tk);
+		var info = new InfoSection(getEditor());
 		info.render(body, tk);
 		checkBox(info.getContainer(),
 				M.InfrastructureProcess, "infrastructureProcess");
@@ -66,18 +64,28 @@ class InfoPage extends ModelPage<Process> {
 
 	private void createButtons(Composite comp, FormToolkit tk) {
 		UI.filler(comp, tk);
-		Composite inner = tk.createComposite(comp);
-		UI.gridLayout(inner, 3, 5, 0);
+		var inner = tk.createComposite(comp);
+
+		// we can only support direct calculations when no
+		// libraries are bound to the database
+		boolean withDirect = Database.get()
+				.getLibraries()
+				.isEmpty();
+		int columns = withDirect ? 3 : 2;
+		UI.gridLayout(inner, columns, 5, 0);
 
 		// create product system
-		Button b = tk.createButton(inner, M.CreateProductSystem, SWT.NONE);
+		var b = tk.createButton(inner, M.CreateProductSystem, SWT.NONE);
 		b.setImage(Images.get(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
 		Controls.onSelect(b, e -> ProcessToolbar.createSystem(getModel()));
 
 		// direct calculation
-		b = tk.createButton(inner, "Direct calculation", SWT.NONE);
-		b.setImage(Icon.RUN.get());
-		Controls.onSelect(b, e -> ProcessToolbar.directCalculation(getModel()));
+		if (withDirect) {
+			b = tk.createButton(inner, "Direct calculation", SWT.NONE);
+			b.setImage(Icon.RUN.get());
+			Controls.onSelect(
+					b, e -> ProcessToolbar.directCalculation(getModel()));
+		}
 
 		// export to Excel
 		b = tk.createButton(inner, M.ExportToExcel, SWT.NONE);
