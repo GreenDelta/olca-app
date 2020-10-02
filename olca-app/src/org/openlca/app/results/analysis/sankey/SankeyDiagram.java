@@ -48,7 +48,7 @@ public class SankeyDiagram extends GraphicalEditor {
 	public ProductSystemNode node;
 	public double zoom = 1;
 	public double cutoff = 0.0;
-	public int maxCount = 50;
+	public int maxCount = 25;
 	public Object selection;
 	private boolean routed = true;
 
@@ -193,7 +193,7 @@ public class SankeyDiagram extends GraphicalEditor {
 				() -> {
 					
 					node = new ProductSystemNode(productSystem, this);
-					updateModel(selection, cutoff);
+					updateModel();
 					getGraphicalViewer().deselectAll();
 					getGraphicalViewer().setContents(node);
 					node.setRouted(routed);
@@ -211,11 +211,9 @@ public class SankeyDiagram extends GraphicalEditor {
 		}
 	}
 
-	private void updateModel(Object selection, double cutoff) {
-		sankey = Sankey.of(selection, result)
-				.withMinimumShare(cutoff)
-				.withMaximumNodeCount(500)
-				.build();
+	private void updateModel() {
+		if (sankey == null)
+			return;
 
 		// create the nodes
 		sankey.traverse(n -> {
