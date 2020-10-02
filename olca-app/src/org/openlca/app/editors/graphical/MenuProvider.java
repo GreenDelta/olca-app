@@ -16,7 +16,7 @@ import org.openlca.app.rcp.images.Icon;
 
 class MenuProvider extends ContextMenuProvider {
 
-	private ActionRegistry registry;
+	private final ActionRegistry registry;
 	private Collection<String> actionIds;
 
 	public MenuProvider(EditPartViewer viewer, ActionRegistry actionRegistry) {
@@ -25,7 +25,7 @@ class MenuProvider extends ContextMenuProvider {
 	}
 
 	@Override
-	public void buildContextMenu(final IMenuManager menu) {
+	public void buildContextMenu(IMenuManager menu) {
 		addEditActions(menu);
 		addSupplyChainActions(menu);
 		menu.add(new Separator());
@@ -45,7 +45,7 @@ class MenuProvider extends ContextMenuProvider {
 	}
 
 	/** Undo, Redo, and Delete */
-	private void addEditActions(final IMenuManager menu) {
+	private void addEditActions(IMenuManager menu) {
 		GEFActionConstants.addStandardActionGroups(menu);
 		IAction undoAction = registry.getAction(ActionFactory.UNDO.getId());
 		undoAction.setImageDescriptor(Icon.UNDO.descriptor());
@@ -62,25 +62,25 @@ class MenuProvider extends ContextMenuProvider {
 		menu.appendToGroup(GEFActionConstants.GROUP_EDIT, deleteAction);
 	}
 
-	private void addSupplyChainActions(final IMenuManager menu) {
+	private void addSupplyChainActions(IMenuManager menu) {
 		menu.add(registry.getAction(ActionIds.BUILD_SUPPLY_CHAIN_MENU));
 		menu.add(registry.getAction(ActionIds.REMOVE_SUPPLY_CHAIN));
 		menu.add(registry.getAction(ActionIds.REMOVE_ALL_CONNECTIONS));
 	}
 
-	private void addSearchActions(final IMenuManager menu) {
+	private void addSearchActions(IMenuManager menu) {
 		menu.add(registry.getAction(ActionIds.SEARCH_PROVIDERS));
 		menu.add(registry.getAction(ActionIds.SEARCH_RECIPIENTS));
 	}
 
-	private void addSpecialActions(final IMenuManager menu) {
+	private void addSpecialActions(IMenuManager menu) {
 		menu.add(registry.getAction(ActionIds.SAVE_IMAGE));
 		menu.add(registry.getAction(ActionIds.OPEN));
 		menu.add(registry.getAction(ActionIds.MARK));
 		menu.add(registry.getAction(ActionIds.UNMARK));
 	}
 
-	private void addLayoutActions(final IMenuManager menu) {
+	private void addLayoutActions(IMenuManager menu) {
 		menu.add(registry.getAction(ActionIds.EXPAND_ALL));
 		menu.add(registry.getAction(ActionIds.COLLAPSE_ALL));
 		menu.add(registry.getAction(ActionIds.MAXIMIZE_ALL));
@@ -88,13 +88,13 @@ class MenuProvider extends ContextMenuProvider {
 		menu.add(registry.getAction(ActionIds.LAYOUT_MENU));
 	}
 
-	private void addActionExtensions(final IMenuManager menu) {
+	private void addActionExtensions(IMenuManager menu) {
 		if (actionIds != null)
 			for (String actionId : actionIds)
 				menu.add(registry.getAction(actionId));
 	}
 
-	private void addShowViewActions(final IMenuManager menu) {
+	private void addShowViewActions(IMenuManager menu) {
 		menu.add(registry.getAction(ActionIds.SHOW_OUTLINE));
 		menu.add(registry.getAction(ActionIds.OPEN_MINIATURE_VIEW));
 	}

@@ -1,8 +1,6 @@
 package org.openlca.app.editors.graphical;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -57,8 +55,6 @@ public class GraphConfig {
 	CommandStack commandStack;
 	ProductSystemNode model;
 
-	private Collection<String> actionExtensionIds = new HashSet<>();
-
 	GraphConfig(GraphicalViewer viewer) {
 		this.viewer = viewer;
 	}
@@ -83,7 +79,7 @@ public class GraphConfig {
 		Transfer transfer = ModelTransfer.getInstance();
 		DropTarget dropTarget = new DropTarget(viewer.getControl(),
 				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
-		dropTarget.setTransfer(new Transfer[] { transfer });
+		dropTarget.setTransfer(transfer);
 		dropTarget.addDropListener(new GraphDropListener(
 				model, transfer, commandStack));
 		viewer.getEditDomain().setActiveTool(
@@ -99,7 +95,7 @@ public class GraphConfig {
 
 	List<String> configureActions() {
 		registerStaticActions();
-		List<String> updateableActions = new ArrayList<>();
+		var updateableActions = new ArrayList<String>();
 		updateableActions.add(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
 		updateableActions.add(ActionIds.REMOVE_SUPPLY_CHAIN);
 		updateableActions.add(ActionIds.REMOVE_ALL_CONNECTIONS);
@@ -128,7 +124,6 @@ public class GraphConfig {
 			actionRegistry.registerAction(action);
 			if (action instanceof UpdateAction)
 				updateableActions.add(action.getId());
-			actionExtensionIds.add(action.getId());
 		}
 		return updateableActions;
 	}
@@ -181,7 +176,6 @@ public class GraphConfig {
 
 	void configureContextMenu() {
 		MenuProvider provider = new MenuProvider(viewer, actionRegistry);
-		provider.setActionExtensions(actionExtensionIds);
 		viewer.setContextMenu(provider);
 	}
 

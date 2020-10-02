@@ -12,7 +12,6 @@ public class TreeConnectionRouter extends BendpointConnectionRouter {
 	public static final TreeConnectionRouter instance = new TreeConnectionRouter();
 
 	private TreeConnectionRouter() {
-
 	}
 
 	private ProcessFigure getProcessFigure(ConnectionAnchor anchor) {
@@ -39,7 +38,7 @@ public class TreeConnectionRouter extends BendpointConnectionRouter {
 				|| targetLoc.x > sourceLoc.x + source.getSize().width + LayoutManager.H_SPACE + target.getSize().width
 				|| target == source) {
 			points.addPoint(firstPoint.getTranslated(LayoutManager.H_SPACE / 2, 0));
-			int y1 = sourceLoc.y < targetLoc.y ? targetLoc.y : sourceLoc.y;
+			int y1 = Math.max(sourceLoc.y, targetLoc.y);
 			y1 -= LayoutManager.V_SPACE / 2;
 			points.addPoint(firstPoint.getTranslated(LayoutManager.H_SPACE / 2, 0).x, y1);
 			points.addPoint(lastPoint.getTranslated(-LayoutManager.H_SPACE / 2, 0).x, y1);

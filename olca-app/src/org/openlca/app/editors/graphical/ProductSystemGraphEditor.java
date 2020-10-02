@@ -31,16 +31,16 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 
 public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	public static final String ID = "editors.productsystem.graphical";
 
-	private ProductSystemEditor systemEditor;
+	private final ProductSystemEditor systemEditor;
+	private final LayoutType layoutType = LayoutType.TREE_LAYOUT;
+
 	private ProductSystemNode model;
-	private LayoutType layoutType = LayoutType.TREE_LAYOUT;
 	private OutlinePage outline;
 	private boolean routed;
 	private GraphConfig config;
@@ -51,6 +51,9 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	public ProductSystemGraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
 		editor.onSaved(() -> NodeLayoutStore.saveLayout(getModel()));
+		// draw nice routes when there are less then 100 processes
+		// in the system
+		routed = editor.getModel().processes.size() <= 100;
 	}
 
 	public ProductSystemEditor getSystemEditor() {
@@ -97,16 +100,15 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		String question = M.SystemSaveProceedQuestion;
 		if (Question.ask(M.Save + "?", question)) {
 			new ProgressMonitorDialog(UI.shell()).run(
-					false, false, monitor -> systemEditor.doSave(monitor));
+					false, false, systemEditor::doSave);
 			return true;
 		}
 		return false;
 	}
 
 	private ProductSystemNode createModel() {
-		ProductSystemNode node = new ProductSystemNode(this);
-		Process refProcess = getSystemEditor()
-				.getModel().referenceProcess;
+		var node = new ProductSystemNode(this);
+		var refProcess = getSystemEditor().getModel().referenceProcess;
 		if (refProcess == null)
 			return node;
 		ProcessNode p = ProcessNode.create(refProcess.id);
@@ -149,7 +151,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 				outNode = isProvider ? otherNode : node;
 				inNode = isProvider ? node : otherNode;
 			}
-			if (outNode == null || inNode == null)
+			if (outNode == null)
 				continue;
 			if (!outNode.isExpandedRight() && !inNode.isExpandedLeft())
 				continue;
@@ -162,7 +164,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	}
 
 	private GraphConfig createGraphConfig() {
-		GraphConfig conf = new GraphConfig(getGraphicalViewer());
+		var conf = new GraphConfig(getGraphicalViewer());
 		conf.actionRegistry = getActionRegistry();
 		conf.commandStack = getCommandStack();
 		conf.model = model;
@@ -204,7 +206,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	@Override
 	@SuppressWarnings("rawtypes")
-	public Object getAdapter(final Class type) {
+	public Object getAdapter(Class type) {
 		if (type == ZoomManager.class)
 			return ((ScalableRootEditPart) getGraphicalViewer().getRootEditPart()).getZoomManager();
 		if (type == IContentOutlinePage.class) {
@@ -290,12 +292,13 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	public void setRouted(boolean routed) {
 		this.routed = routed;
-		ConnectionRouter router = ConnectionRouter.NULL;
-		if (routed)
-			router = TreeConnectionRouter.instance;
-		for (ProcessNode node : model.getChildren())
-			for (Link link : node.links)
+		ConnectionRouter router = routed
+				? TreeConnectionRouter.instance
+				: ConnectionRouter.NULL;
+		for (var node : model.getChildren()) {
+			for (var link : node.links) {
 				link.figure.setConnectionRouter(router);
+			}
+		}
 	}
-
 }

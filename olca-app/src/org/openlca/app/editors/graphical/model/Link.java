@@ -54,14 +54,10 @@ public class Link {
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Link))
 			return false;
-		Link link = (Link) obj;
-		if (!Objects.equals(processLink, link.processLink))
-			return false;
-		if (!Objects.equals(outputNode, link.outputNode))
-			return false;
-		if (!Objects.equals(inputNode, link.inputNode))
-			return false;
-		return true;
+		var other = (Link) obj;
+		return Objects.equals(processLink, other.processLink)
+				&& Objects.equals(outputNode, other.outputNode)
+				&& Objects.equals(inputNode, other.inputNode);
 	}
 
 	public boolean isVisible() {
