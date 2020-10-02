@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ConnectionRouter;
@@ -86,7 +87,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 			throws PartInitException {
 		setEditDomain(new DefaultEditDomain(this));
 		if (input instanceof GraphicalEditorInput) {
-			GraphicalEditorInput modelInput = (GraphicalEditorInput) input;
+			var modelInput = (GraphicalEditorInput) input;
 			if (modelInput.getDescriptor() != null) {
 				setPartName(Labels.name(modelInput.getDescriptor()));
 			}
@@ -114,19 +115,6 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		ProcessNode p = ProcessNode.create(refProcess.id);
 		if (p != null) {
 			node.add(p);
-		}
-		return node;
-	}
-
-	private ProductSystemNode expandModel() {
-		ProductSystemNode node = new ProductSystemNode(this);
-		for (Long id : getSystemEditor().getModel().processes) {
-			if (id == null)
-				continue;
-			ProcessNode n = ProcessNode.create(id);
-			if (n != null) {
-				node.add(n);
-			}
 		}
 		return node;
 	}
@@ -251,15 +239,24 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 		return false;
 	}
 
+	/**
+	 * Expands all process nodes in the graphical editor.
+	 */
 	public void expand() {
-		model = expandModel();
-		if (getGraphicalViewer() != null) {
-			getGraphicalViewer().deselectAll();
-			getGraphicalViewer().setContents(model);
-			for (ProcessNode node : model.getChildren()) {
-				node.expandLeft();
-				node.expandRight();
-			}
+		model = new ProductSystemNode(this);
+		getSystemEditor().getModel().processes.stream()
+				.filter(Objects::nonNull)
+				.map(ProcessNode::create)
+				.filter(Objects::nonNull)
+				.forEach(node -> model.add(node));
+		var viewer = getGraphicalViewer();
+		if (viewer == null)
+			return;
+		viewer.deselectAll();
+		viewer.setContents(model);
+		for (var node : model.getChildren()) {
+			node.expandLeft();
+			node.expandRight();
 		}
 	}
 

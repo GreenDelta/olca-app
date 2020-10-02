@@ -42,7 +42,9 @@ class ExchangeFigure extends Label {
 			text += M.Category + ": " + Labels.getShortCategory(
 					Descriptor.of(node.exchange.flow)) + "\n";
 		}
-		text += M.Amount + ": " + Numbers.format(node.exchange.amount);
+		text += M.Amount + ": "
+				+ Numbers.format(node.exchange.amount)
+				+ " " + Labels.name(node.exchange.unit);
 		return text;
 	}
 
