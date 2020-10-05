@@ -57,16 +57,18 @@ class MenuProvider extends ContextMenuProvider {
 		redo.setDisabledImageDescriptor(Icon.REDO_DISABLED.descriptor());
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, redo);
 		
+		// add process
+		menu.appendToGroup(
+				GEFActionConstants.GROUP_EDIT, 
+				registry.getAction(AddProcessAction.ID));
+		
+		// delete
 		var delete = registry.getAction(ActionFactory.DELETE.getId());
 		delete.setText(M.Delete);
 		delete.setImageDescriptor(Icon.DELETE.descriptor());
 		delete.setDisabledImageDescriptor(Icon.DELETE_DISABLED.descriptor());
 		menu.appendToGroup(GEFActionConstants.GROUP_EDIT, delete);
 		
-		// add process
-		menu.appendToGroup(
-				GEFActionConstants.GROUP_EDIT, 
-				registry.getAction(AddProcessAction.ID));
 	}
 
 	private void addSupplyChainActions(IMenuManager menu) {
