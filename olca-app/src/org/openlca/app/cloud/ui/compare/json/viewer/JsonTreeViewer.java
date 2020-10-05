@@ -16,8 +16,8 @@ import org.openlca.app.cloud.ui.compare.json.viewer.label.TextDiffDialog;
 import org.openlca.app.cloud.ui.diff.ActionType;
 import org.openlca.app.cloud.ui.diff.Site;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
+import org.openlca.app.viewers.Viewers;
 
 public class JsonTreeViewer extends AbstractViewer<JsonNode, TreeViewer> {
 

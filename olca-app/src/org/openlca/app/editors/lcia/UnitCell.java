@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.openlca.app.editors.lcia.UnitCell.UnitItem;
-import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;

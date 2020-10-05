@@ -1,4 +1,4 @@
-package org.openlca.app.viewers.table;
+package org.openlca.app.viewers.tables;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -21,11 +21,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.tables.TableClipboard;
-import org.openlca.app.util.tables.Tables;
-import org.openlca.app.util.viewers.Viewers;
 import org.openlca.app.viewers.AbstractViewer;
-import org.openlca.app.viewers.table.modify.ModifySupport;
+import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

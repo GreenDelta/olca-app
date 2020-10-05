@@ -15,7 +15,7 @@ import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.table.AbstractTableViewer;
+import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.cloud.model.data.Commit;
 
 class HistoryViewer extends AbstractTableViewer<Commit> {

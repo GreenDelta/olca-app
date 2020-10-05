@@ -10,7 +10,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Labels;
-import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;

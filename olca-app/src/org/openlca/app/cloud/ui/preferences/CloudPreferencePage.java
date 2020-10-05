@@ -18,12 +18,12 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.tables.Tables;
-import org.openlca.app.util.viewers.Viewers;
-import org.openlca.app.viewers.table.AbstractTableViewer;
-import org.openlca.app.viewers.table.modify.field.BooleanModifier;
-import org.openlca.app.viewers.table.modify.field.PasswordModifier;
-import org.openlca.app.viewers.table.modify.field.StringModifier;
+import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.AbstractTableViewer;
+import org.openlca.app.viewers.tables.Tables;
+import org.openlca.app.viewers.tables.modify.field.BooleanModifier;
+import org.openlca.app.viewers.tables.modify.field.PasswordModifier;
+import org.openlca.app.viewers.tables.modify.field.StringModifier;
 
 public class CloudPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 

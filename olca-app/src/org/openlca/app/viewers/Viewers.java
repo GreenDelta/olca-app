@@ -1,4 +1,4 @@
-package org.openlca.app.util.viewers;
+package org.openlca.app.viewers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,8 +12,8 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.openlca.app.util.tables.Tables;
-import org.openlca.app.util.trees.Trees;
+import org.openlca.app.viewers.tables.Tables;
+import org.openlca.app.viewers.trees.Trees;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +82,7 @@ public class Viewers {
 		}));
 	}
 
-	public static <T> void sortByDouble(
+	public static void sortByDouble(
 			ColumnViewer viewer, 
 			ITableLabelProvider 
 			labelProvider, int... cols) {

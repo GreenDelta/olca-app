@@ -19,7 +19,7 @@ import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Viewers;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.LinkingConfig;
 import org.openlca.core.model.Exchange;

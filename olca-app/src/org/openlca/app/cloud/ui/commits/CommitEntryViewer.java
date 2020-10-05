@@ -5,8 +5,8 @@ import java.util.Collection;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.util.trees.Trees;
 import org.openlca.app.viewers.AbstractViewer;
+import org.openlca.app.viewers.trees.Trees;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Commit;
 

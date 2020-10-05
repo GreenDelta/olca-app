@@ -6,8 +6,8 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.util.tables.Tables;
-import org.openlca.app.viewers.table.AbstractTableViewer;
+import org.openlca.app.viewers.tables.AbstractTableViewer;
+import org.openlca.app.viewers.tables.Tables;
 import org.openlca.cloud.model.LibraryRestriction;
 
 class Viewer extends AbstractTableViewer<LibraryRestriction> {

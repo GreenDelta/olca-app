@@ -1,6 +1,6 @@
-package org.openlca.app.viewers.table.modify;
+package org.openlca.app.viewers.tables.modify;
 
-public abstract class TextCellModifier<T> implements ICellModifier<T> {
+public abstract class CheckBoxCellModifier<T> implements ICellModifier<T> {
 
 	@Override
 	public boolean canModify(T element) {
@@ -9,7 +9,7 @@ public abstract class TextCellModifier<T> implements ICellModifier<T> {
 
 	@Override
 	public final ICellModifier.CellEditingType getCellEditingType() {
-		return CellEditingType.TEXTBOX;
+		return CellEditingType.CHECKBOX;
 	}
 
 	@Override
@@ -24,14 +24,13 @@ public abstract class TextCellModifier<T> implements ICellModifier<T> {
 
 	@Override
 	public Object getValue(T element) {
-		return getText(element);
+		return isChecked(element);
 	}
 
 	@Override
 	public void modify(T element, Object value) {
-		setText(element,
-				value != null ? !value.toString().isEmpty() ? value.toString()
-						: null : null);
+		if (value instanceof Boolean)
+			setChecked(element, (Boolean) value);
 	}
 
 	@Override
@@ -39,8 +38,8 @@ public abstract class TextCellModifier<T> implements ICellModifier<T> {
 		return false;
 	}
 
-	protected abstract String getText(T element);
+	protected abstract boolean isChecked(T element);
 
-	protected abstract void setText(T element, String text);
+	protected abstract void setChecked(T element, boolean value);
 
 }

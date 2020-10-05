@@ -1,4 +1,4 @@
-package org.openlca.app.viewers.table.modify;
+package org.openlca.app.viewers.tables.modify;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +16,7 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
-import org.openlca.app.viewers.table.modify.ICellModifier.CellEditingType;
+import org.openlca.app.viewers.tables.modify.ICellModifier.CellEditingType;
 
 /**
  * Provides an easy and type safe way to add cell editors to a table viewer. It

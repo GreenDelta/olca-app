@@ -20,9 +20,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.tables.Tables;
-import org.openlca.app.viewers.table.AbstractTableViewer;
-import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
+import org.openlca.app.viewers.tables.AbstractTableViewer;
+import org.openlca.app.viewers.tables.Tables;
+import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
 import org.openlca.cloud.api.RepositoryConfig;
 
 public class ConfigureRepositoriesDialog extends FormDialog {

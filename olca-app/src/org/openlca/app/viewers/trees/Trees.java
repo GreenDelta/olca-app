@@ -1,4 +1,4 @@
-package org.openlca.app.util.trees;
+package org.openlca.app.viewers.trees;
 
 import java.util.List;
 import java.util.Timer;
@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Comparator;
+import org.openlca.app.viewers.Comparator;
 import org.openlca.core.model.descriptors.Descriptor;
 
 /**

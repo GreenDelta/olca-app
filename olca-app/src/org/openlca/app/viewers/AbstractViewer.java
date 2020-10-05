@@ -10,7 +10,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.util.viewers.Viewers;
 
 public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		org.eclipse.jface.viewers.ISelectionChangedListener {

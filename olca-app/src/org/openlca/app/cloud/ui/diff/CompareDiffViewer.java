@@ -3,7 +3,7 @@ package org.openlca.app.cloud.ui.diff;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.cloud.JsonLoader;
-import org.openlca.app.util.trees.Trees;
+import org.openlca.app.viewers.trees.Trees;
 
 class CompareDiffViewer extends DiffTreeViewer {
 

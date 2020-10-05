@@ -1,4 +1,4 @@
-package org.openlca.app.viewers.table.modify;
+package org.openlca.app.viewers.tables.modify;
 
 @FunctionalInterface
 public interface Setter<T> {

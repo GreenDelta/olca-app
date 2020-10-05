@@ -13,8 +13,8 @@ import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.tables.TableClipboard;
-import org.openlca.app.util.tables.Tables;
+import org.openlca.app.viewers.tables.TableClipboard;
+import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ProcessGrouping;
 

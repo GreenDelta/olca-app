@@ -30,8 +30,8 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.tables.Tables;
-import org.openlca.app.util.viewers.Viewers;
+import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
 

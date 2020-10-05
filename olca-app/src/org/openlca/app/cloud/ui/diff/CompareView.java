@@ -36,7 +36,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Viewers;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.Dataset;

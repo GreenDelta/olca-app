@@ -13,8 +13,8 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.trees.Trees;
-import org.openlca.app.util.viewers.Viewers;
+import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.usage.ParameterUsageTree;
 import org.openlca.core.database.usage.ParameterUsageTree.UsageType;
 

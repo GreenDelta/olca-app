@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Item;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.tables.Tables;
+import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.FlowProperty;

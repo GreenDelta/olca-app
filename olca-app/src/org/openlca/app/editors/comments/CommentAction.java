@@ -12,7 +12,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
-import org.openlca.app.viewers.table.AbstractTableViewer;
+import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.cloud.model.Comments;
 
 public class CommentAction extends Action {

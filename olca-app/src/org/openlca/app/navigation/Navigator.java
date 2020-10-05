@@ -28,7 +28,7 @@ import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.tools.libraries.LibraryInfoPage;
 import org.openlca.app.util.Colors;
-import org.openlca.app.util.viewers.Viewers;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 import com.google.common.base.Objects;

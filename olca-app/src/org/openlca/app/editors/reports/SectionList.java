@@ -22,7 +22,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Viewers;
+import org.openlca.app.viewers.Viewers;
 
 class SectionList {
 

@@ -1,4 +1,4 @@
-package org.openlca.app.util.tables;
+package org.openlca.app.viewers.tables;
 
 import java.util.List;
 import java.util.Timer;
@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Comparator;
+import org.openlca.app.viewers.Comparator;
 import org.openlca.core.model.descriptors.Descriptor;
 
 /**

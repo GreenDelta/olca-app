@@ -1,4 +1,4 @@
-package org.openlca.app.viewers.table.modify;
+package org.openlca.app.viewers.tables.modify;
 
 /**
  * A combo-box modifier for table cells. We have two type variables here: one

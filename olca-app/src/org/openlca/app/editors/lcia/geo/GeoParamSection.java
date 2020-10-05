@@ -14,11 +14,11 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.tables.Tables;
-import org.openlca.app.util.viewers.Viewers;
-import org.openlca.app.viewers.table.modify.ComboBoxCellModifier;
-import org.openlca.app.viewers.table.modify.ModifySupport;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.Tables;
+import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.ModifySupport;
+import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.util.Strings;
 

@@ -1,4 +1,4 @@
-package org.openlca.app.util.trees;
+package org.openlca.app.viewers.trees;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;

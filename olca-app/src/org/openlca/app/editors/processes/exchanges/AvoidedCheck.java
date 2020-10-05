@@ -3,7 +3,7 @@ package org.openlca.app.editors.processes.exchanges;
 import java.util.Objects;
 
 import org.openlca.app.editors.processes.ProcessEditor;
-import org.openlca.app.viewers.table.modify.CheckBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;

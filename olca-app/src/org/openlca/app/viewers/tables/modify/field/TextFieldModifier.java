@@ -1,11 +1,11 @@
-package org.openlca.app.viewers.table.modify.field;
+package org.openlca.app.viewers.tables.modify.field;
 
 import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.Bean;
-import org.openlca.app.viewers.table.modify.TextCellModifier;
+import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

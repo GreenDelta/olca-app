@@ -1,4 +1,4 @@
-package org.openlca.app.viewers.table.modify.field;
+package org.openlca.app.viewers.tables.modify.field;
 
 import java.util.function.Consumer;
 

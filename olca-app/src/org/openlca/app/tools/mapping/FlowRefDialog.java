@@ -30,7 +30,7 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Viewers;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.util.Strings;

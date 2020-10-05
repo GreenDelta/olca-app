@@ -16,7 +16,7 @@ import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Viewers;
+import org.openlca.app.viewers.Viewers;
 
 class MenuBar extends Composite {
 

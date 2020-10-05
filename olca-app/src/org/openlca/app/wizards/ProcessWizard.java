@@ -21,7 +21,7 @@ import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.navigation.filters.FlowTypeFilter;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.viewers.Viewers;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.combo.FlowPropertyViewer;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;

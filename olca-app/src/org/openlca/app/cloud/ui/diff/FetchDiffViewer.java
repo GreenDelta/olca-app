@@ -8,7 +8,7 @@ import java.util.Stack;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.cloud.JsonLoader;
-import org.openlca.app.util.trees.Trees;
+import org.openlca.app.viewers.trees.Trees;
 
 public class FetchDiffViewer extends DiffTreeViewer {
 

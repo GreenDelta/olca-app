@@ -1,4 +1,4 @@
-package org.openlca.app.viewers.table;
+package org.openlca.app.viewers.tables;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
