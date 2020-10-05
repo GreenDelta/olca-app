@@ -73,14 +73,21 @@ public class Viewers {
 		return list;
 	}
 
-	public static <T> void sortByDouble(ColumnViewer viewer, Function<T, Double> fn, int col) {
-		DoubleComparator<T> s = new DoubleComparator<>(col, fn);
-		addComparator(viewer, s);
+	public static <T> void sortByDouble(
+			ColumnViewer viewer, Function<T, Double> fn, int col) {
+ 		addComparator(viewer, Comparator.on(col, (T e1, T e2) -> {
+			double d1 = fn.apply(e1);
+			double d2 = fn.apply(e2);
+			return Double.compare(d1, d2);
+		}));
 	}
 
-	public static <T> void sortByDouble(ColumnViewer viewer, ITableLabelProvider labelProvider, int... cols) {
+	public static <T> void sortByDouble(
+			ColumnViewer viewer, 
+			ITableLabelProvider 
+			labelProvider, int... cols) {
 		for (int col : cols) {
-			LabelComparator<T> s = new LabelComparator<>(col, labelProvider);
+			var s = new LabelComparator<>(col, labelProvider);
 			s.asNumbers = true;
 			addComparator(viewer, s);
 		}

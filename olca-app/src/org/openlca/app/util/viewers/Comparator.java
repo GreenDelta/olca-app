@@ -12,6 +12,15 @@ public abstract class Comparator<T> extends ViewerComparator {
 		this.column = column;
 	}
 
+	public static <T> Comparator<T> on(int column, java.util.Comparator<T> fn) {
+		return new Comparator<>(column) {
+			@Override
+			protected int compare(T e1, T e2) {
+				return fn.compare(e1, e2);
+			}
+		};
+	}
+
 	protected abstract int compare(T e1, T e2);
 
 	@Override
