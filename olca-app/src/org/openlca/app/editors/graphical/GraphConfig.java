@@ -3,11 +3,6 @@ package org.openlca.app.editors.graphical;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LayeredPane;
@@ -25,10 +20,8 @@ import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.DeleteAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
-import org.eclipse.gef.ui.actions.UpdateAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
@@ -39,10 +32,8 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.editors.graphical.action.ActionFactory;
 import org.openlca.app.editors.graphical.action.ActionIds;
-import org.openlca.app.editors.graphical.action.EditorAction;
 import org.openlca.app.editors.graphical.model.AppEditPartFactory;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.app.rcp.RcpActivator;
 
 public class GraphConfig {
 
@@ -51,7 +42,7 @@ public class GraphConfig {
 
 	private final GraphicalViewer viewer;
 
-	ActionRegistry actionRegistry;
+	ActionRegistry actions;
 	CommandStack commandStack;
 	ProductSystemNode model;
 
@@ -89,8 +80,7 @@ public class GraphConfig {
 
 	void configureGraphicalViewer() {
 		viewer.setEditPartFactory(new AppEditPartFactory());
-		ScalableRootEditPart rootEditPart = new ScalableRootEditPart();
-		viewer.setRootEditPart(rootEditPart);
+		viewer.setRootEditPart(new ScalableRootEditPart());
 	}
 
 	List<String> configureActions() {
@@ -106,55 +96,36 @@ public class GraphConfig {
 		updateableActions.add(ActionIds.SEARCH_PROVIDERS);
 		updateableActions.add(ActionIds.SEARCH_RECIPIENTS);
 		updateableActions.add(ActionIds.OPEN_MINIATURE_VIEW);
-		List<String> updateableActionExtensions = configureActionExtensions();
-		updateableActions.addAll(updateableActionExtensions);
-		return updateableActions;
-	}
-
-	/**
-	 * Get the action extension points and register them as actions in the
-	 * graphical viewer
-	 */
-	private List<String> configureActionExtensions() {
-		List<String> updateableActions = new ArrayList<>();
-		List<Action> actions = loadActionExtensions();
-		for (Action action : actions) {
-			if (action instanceof EditorAction)
-				((EditorAction) action).setEditor(model.editor);
-			actionRegistry.registerAction(action);
-			if (action instanceof UpdateAction)
-				updateableActions.add(action.getId());
-		}
 		return updateableActions;
 	}
 
 	private void registerStaticActions() {
-		final ProductSystemGraphEditor editor = model.editor;
-		actionRegistry.registerAction(ActionFactory.buildSupplyChainMenu(editor));
-		actionRegistry.registerAction(ActionFactory.removeSupplyChain(editor));
-		actionRegistry.registerAction(ActionFactory.removeAllConnections(editor));
-		actionRegistry.registerAction(ActionFactory.mark(editor));
-		actionRegistry.registerAction(ActionFactory.unmark(editor));
-		actionRegistry.registerAction(ActionFactory.saveImage(editor));
-		actionRegistry.registerAction(ActionFactory.expandAll(editor));
-		actionRegistry.registerAction(ActionFactory.collapseAll(editor));
-		actionRegistry.registerAction(ActionFactory.maximizeAll(editor));
-		actionRegistry.registerAction(ActionFactory.minimizeAll(editor));
-		actionRegistry.registerAction(ActionFactory.layoutMenu(editor));
-		actionRegistry.registerAction(ActionFactory.searchProviders(editor));
-		actionRegistry.registerAction(ActionFactory.searchRecipients(editor));
-		actionRegistry.registerAction(ActionFactory.open(editor));
-		actionRegistry.registerAction(ActionFactory.openMiniatureView(editor));
-		actionRegistry.registerAction(ActionFactory.showOutline());
-		actionRegistry.registerAction(new ZoomInAction(getZoomManager()));
-		actionRegistry.registerAction(new ZoomOutAction(getZoomManager()));
+		var editor = model.editor;
+		actions.registerAction(ActionFactory.buildSupplyChainMenu(editor));
+		actions.registerAction(ActionFactory.removeSupplyChain(editor));
+		actions.registerAction(ActionFactory.removeAllConnections(editor));
+		actions.registerAction(ActionFactory.mark(editor));
+		actions.registerAction(ActionFactory.unmark(editor));
+		actions.registerAction(ActionFactory.saveImage(editor));
+		actions.registerAction(ActionFactory.expandAll(editor));
+		actions.registerAction(ActionFactory.collapseAll(editor));
+		actions.registerAction(ActionFactory.maximizeAll(editor));
+		actions.registerAction(ActionFactory.minimizeAll(editor));
+		actions.registerAction(ActionFactory.layoutMenu(editor));
+		actions.registerAction(ActionFactory.searchProviders(editor));
+		actions.registerAction(ActionFactory.searchRecipients(editor));
+		actions.registerAction(ActionFactory.open(editor));
+		actions.registerAction(ActionFactory.openMiniatureView(editor));
+		actions.registerAction(ActionFactory.showOutline());
+		actions.registerAction(new ZoomInAction(getZoomManager()));
+		actions.registerAction(new ZoomOutAction(getZoomManager()));
 		DeleteAction delAction = new DeleteAction((IWorkbenchPart) editor) {
 			@Override
 			protected ISelection getSelection() {
 				return editor.getSite().getWorkbenchWindow().getSelectionService().getSelection();
 			}
 		};
-		actionRegistry.registerAction(delAction);
+		actions.registerAction(delAction);
 	}
 
 	void configureZoomManager() {
@@ -165,9 +136,9 @@ public class GraphConfig {
 
 	void configureKeyHandler() {
 		KeyHandler keyHandler = new KeyHandler();
-		IAction delete = actionRegistry.getAction(org.eclipse.ui.actions.ActionFactory.DELETE.getId());
-		IAction zoomIn = actionRegistry.getAction(GEFActionConstants.ZOOM_IN);
-		IAction zoomOut = actionRegistry.getAction(GEFActionConstants.ZOOM_OUT);
+		IAction delete = actions.getAction(org.eclipse.ui.actions.ActionFactory.DELETE.getId());
+		IAction zoomIn = actions.getAction(GEFActionConstants.ZOOM_IN);
+		IAction zoomOut = actions.getAction(GEFActionConstants.ZOOM_OUT);
 		keyHandler.put(KeyStroke.getPressed(SWT.DEL, 127, 0), delete);
 		keyHandler.put(KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0), zoomIn);
 		keyHandler.put(KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0), zoomOut);
@@ -175,7 +146,7 @@ public class GraphConfig {
 	}
 
 	void configureContextMenu() {
-		MenuProvider provider = new MenuProvider(viewer, actionRegistry);
+		MenuProvider provider = new MenuProvider(viewer, actions);
 		viewer.setContextMenu(provider);
 	}
 
@@ -185,30 +156,6 @@ public class GraphConfig {
 
 	private ScalableRootEditPart getRootEditPart() {
 		return (ScalableRootEditPart) viewer.getRootEditPart();
-	}
-
-	private List<Action> loadActionExtensions() {
-		List<Action> adapters = new ArrayList<>();
-		IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(
-				"org.openlca.app.editors.graphical.actions");
-		for (IConfigurationElement element : elements) {
-			Action action = loadAction(element);
-			if (action == null)
-				continue;
-			adapters.add(action);
-		}
-		return adapters;
-	}
-
-	private Action loadAction(IConfigurationElement element) {
-		try {
-			return (Action) element.createExecutableExtension("class");
-		} catch (ClassCastException | CoreException e) {
-			IStatus status = new Status(IStatus.ERROR, RcpActivator.PLUGIN_ID,
-					"Error while loading action extensions for graphical editor", e);
-			RcpActivator.getDefault().getLog().log(status);
-			return null;
-		}
 	}
 
 }

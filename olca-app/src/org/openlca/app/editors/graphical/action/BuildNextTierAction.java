@@ -65,15 +65,14 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		for (ProcessNode node : nodes)
 			collectFor(node, providers, newConnections);
 		Command command = MassCreationCommand.nextTier(providers, newConnections, systemNode);
-		if (command == null)
-			return;
 		for (ProcessNode node : nodes)
 			command = command.chain(ExpansionCommand.expandLeft(node));
 		CommandUtil.executeCommand(command, systemNode.editor);
 		systemNode.editor.setDirty(true);
 	}
 
-	private void collectFor(ProcessNode node,
+	private void collectFor(
+			ProcessNode node,
 			List<CategorizedDescriptor> providers,
 			List<ProcessLink> newConnections) {
 		for (ExchangeNode enode : getLinkCandidates(node)) {
@@ -114,7 +113,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		if (e.flow == null)
 			return null;
 		if (providers == DefaultProviders.ONLY) {
-			if (e.defaultProviderId == 0l)
+			if (e.defaultProviderId == 0L)
 				return null;
 			return processDao.getDescriptor(e.defaultProviderId);
 		}
@@ -122,15 +121,13 @@ class BuildNextTierAction extends Action implements IBuildAction {
 				&& e.defaultProviderId != 0L)
 			return processDao.getDescriptor(e.defaultProviderId);
 
-		List<ProcessDescriptor> providers = getProviders(e);
-
 		ProcessDescriptor bestMatch = null;
-		for (ProcessDescriptor descriptor : providers) {
-			if (descriptor.processType == preferredType)
-				return descriptor;
+		for (var d : getProviders(e)) {
+			if (d.processType == preferredType)
+				return d;
 			if (bestMatch != null)
 				continue;
-			bestMatch = descriptor;
+			bestMatch = d;
 		}
 		return bestMatch;
 	}
@@ -138,13 +135,9 @@ class BuildNextTierAction extends Action implements IBuildAction {
 	private List<ProcessDescriptor> getProviders(Exchange e) {
 		if (e == null || e.flow == null)
 			return Collections.emptyList();
-
-		Set<Long> providerIds = null;
-		if (!e.isInput) {
-			providerIds = flowDao.getWhereInput(e.flow.id);
-		} else {
-			providerIds = flowDao.getWhereOutput(e.flow.id);
-		}
+		Set<Long> providerIds = e.isInput
+				? flowDao.getWhereOutput(e.flow.id)
+				: flowDao.getWhereInput(e.flow.id);
 		return processDao.getDescriptors(providerIds);
 	}
 

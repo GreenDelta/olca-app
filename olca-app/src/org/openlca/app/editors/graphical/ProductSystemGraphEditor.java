@@ -153,7 +153,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 
 	private GraphConfig createGraphConfig() {
 		var conf = new GraphConfig(getGraphicalViewer());
-		conf.actionRegistry = getActionRegistry();
+		conf.actions = getActionRegistry();
 		conf.commandStack = getCommandStack();
 		conf.model = model;
 		return conf;

@@ -2,7 +2,6 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-	<extension-point id="org.openlca.app.editors.graphical.actions" name="org.openlca.app.editors.graphical.actions" schema="schema/org.openlca.app.editors.graphical.actions.exsd"/>
 	<extension
 		point="org.eclipse.ui.commandImages">
 		<image
