@@ -16,8 +16,7 @@ class OpenAction extends EditorAction {
 
 	@Override
 	protected boolean accept(ISelection s) {
-		node = getSingleSelectionOfType(
-				s, ProcessNode.class);
+		node = GraphActions.firstSelectedOf(s, ProcessNode.class);
 		return node != null;
 	}
 

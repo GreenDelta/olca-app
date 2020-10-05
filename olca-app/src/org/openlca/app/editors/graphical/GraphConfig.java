@@ -30,7 +30,7 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.IWorkbenchPart;
 import org.openlca.app.components.ModelTransfer;
-import org.openlca.app.editors.graphical.action.ActionFactory;
+import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.ActionIds;
 import org.openlca.app.editors.graphical.model.AppEditPartFactory;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
@@ -101,22 +101,22 @@ public class GraphConfig {
 
 	private void registerStaticActions() {
 		var editor = model.editor;
-		actions.registerAction(ActionFactory.buildSupplyChainMenu(editor));
-		actions.registerAction(ActionFactory.removeSupplyChain(editor));
-		actions.registerAction(ActionFactory.removeAllConnections(editor));
-		actions.registerAction(ActionFactory.mark(editor));
-		actions.registerAction(ActionFactory.unmark(editor));
-		actions.registerAction(ActionFactory.saveImage(editor));
-		actions.registerAction(ActionFactory.expandAll(editor));
-		actions.registerAction(ActionFactory.collapseAll(editor));
-		actions.registerAction(ActionFactory.maximizeAll(editor));
-		actions.registerAction(ActionFactory.minimizeAll(editor));
-		actions.registerAction(ActionFactory.layoutMenu(editor));
-		actions.registerAction(ActionFactory.searchProviders(editor));
-		actions.registerAction(ActionFactory.searchRecipients(editor));
-		actions.registerAction(ActionFactory.open(editor));
-		actions.registerAction(ActionFactory.openMiniatureView(editor));
-		actions.registerAction(ActionFactory.showOutline());
+		actions.registerAction(GraphActions.buildSupplyChainMenu(editor));
+		actions.registerAction(GraphActions.removeSupplyChain(editor));
+		actions.registerAction(GraphActions.removeAllConnections(editor));
+		actions.registerAction(GraphActions.mark(editor));
+		actions.registerAction(GraphActions.unmark(editor));
+		actions.registerAction(GraphActions.saveImage(editor));
+		actions.registerAction(GraphActions.expandAll(editor));
+		actions.registerAction(GraphActions.collapseAll(editor));
+		actions.registerAction(GraphActions.maximizeAll(editor));
+		actions.registerAction(GraphActions.minimizeAll(editor));
+		actions.registerAction(GraphActions.layoutMenu(editor));
+		actions.registerAction(GraphActions.searchProviders(editor));
+		actions.registerAction(GraphActions.searchRecipients(editor));
+		actions.registerAction(GraphActions.open(editor));
+		actions.registerAction(GraphActions.openMiniatureView(editor));
+		actions.registerAction(GraphActions.showOutline());
 		actions.registerAction(new ZoomInAction(getZoomManager()));
 		actions.registerAction(new ZoomOutAction(getZoomManager()));
 		DeleteAction delAction = new DeleteAction((IWorkbenchPart) editor) {

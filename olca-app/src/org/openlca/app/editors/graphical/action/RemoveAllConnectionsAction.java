@@ -45,8 +45,8 @@ class RemoveAllConnectionsAction extends EditorAction {
 	}
 
 	@Override
-	protected boolean accept(ISelection selection) {
-		processNodes = getMultiSelectionOfType(selection, ProcessNode.class);
+	protected boolean accept(ISelection s) {
+		processNodes = GraphActions.allSelectedOf(s, ProcessNode.class);
 		if (processNodes.size() == 0)
 			return false;
 		for (ProcessNode node : processNodes)

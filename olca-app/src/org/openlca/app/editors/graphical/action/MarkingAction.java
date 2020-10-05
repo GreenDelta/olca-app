@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical.action;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
@@ -15,7 +16,7 @@ class MarkingAction extends EditorAction {
 	static final int MARK = 1;
 	static final int UNMARK = 2;
 	private List<ProcessNode> processNodes = new ArrayList<>();
-	private int type;
+	private final int type;
 
 	MarkingAction(int type) {
 		if (type == MARK) {
@@ -45,14 +46,12 @@ class MarkingAction extends EditorAction {
 	}
 
 	@Override
-	protected boolean accept(ISelection selection) {
-		List<ProcessNode> unfilteredNodes = getMultiSelectionOfType(selection,
-				ProcessNode.class);
+	protected boolean accept(ISelection s) {
 		boolean mark = type == MARK;
-		processNodes = new ArrayList<>();
-		for (ProcessNode node : unfilteredNodes)
-			if (node.isMarked() != mark)
-				processNodes.add(node);
+		processNodes = GraphActions.allSelectedOf(s, ProcessNode.class)
+				.stream()
+				.filter(node -> node.isMarked() != mark)
+				.collect(Collectors.toList());
 		return processNodes.size() > 0;
 	}
 }

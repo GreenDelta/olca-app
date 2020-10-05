@@ -26,8 +26,8 @@ class SearchConnectorsAction extends EditorAction {
 
 	static final int PROVIDER = 1;
 	static final int RECIPIENTS = 2;
+	private final int type;
 	private ProcessNode node;
-	private int type;
 
 	public SearchConnectorsAction(int type) {
 		super(type == PROVIDER
@@ -44,7 +44,7 @@ class SearchConnectorsAction extends EditorAction {
 
 	@Override
 	protected boolean accept(ISelection s) {
-		node = getSingleSelectionOfType(s, ProcessNode.class);
+		node = GraphActions.firstSelectedOf(s, ProcessNode.class);
 		if (node != null)
 			((MenuCreator) getMenuCreator()).fillMenu();
 		return node != null;

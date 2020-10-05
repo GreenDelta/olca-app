@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.action.ActionFactory;
+import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
 public class OutlinePage extends ContentOutlinePage {
@@ -48,8 +48,8 @@ public class OutlinePage extends ContentOutlinePage {
 	}
 
 	private void initializeActions() {
-		showAction = ActionFactory.show(model.editor, getViewer());
-		hideAction = ActionFactory.hide(model.editor, getViewer());
+		showAction = GraphActions.show(model.editor, getViewer());
+		hideAction = GraphActions.hide(model.editor, getViewer());
 	}
 
 	public void setEditDomain(EditDomain editDomain) {

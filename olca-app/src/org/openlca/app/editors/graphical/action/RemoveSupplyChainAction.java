@@ -21,10 +21,10 @@ import org.openlca.core.model.ProductSystem;
 class RemoveSupplyChainAction extends EditorAction {
 
 	private ProcessNode node;
-	private Set<Link> connections = new HashSet<>();
-	private Set<ProcessNode> nodes = new HashSet<>();
-	private Set<ProcessLink> links = new HashSet<>();
-	private Set<Long> processIds = new HashSet<>();
+	private final Set<Link> connections = new HashSet<>();
+	private final Set<ProcessNode> nodes = new HashSet<>();
+	private final Set<ProcessLink> links = new HashSet<>();
+	private final Set<Long> processIds = new HashSet<>();
 	// only used in collectSupplyChain
 	private MutableProcessLinkSearchMap linkSearch;
 
@@ -93,14 +93,14 @@ class RemoveSupplyChainAction extends EditorAction {
 	}
 
 	@Override
-	protected boolean accept(ISelection selection) {
-		node = getSingleSelectionOfType(selection, ProcessNode.class);
+	protected boolean accept(ISelection s) {
+		node = GraphActions.firstSelectedOf(s, ProcessNode.class);
 		return node != null;
 	}
 
 	private class RemoveCommand extends Command {
 
-		private Map<Long, Rectangle> layouts = new HashMap<>();
+		private final Map<Long, Rectangle> layouts = new HashMap<>();
 
 		@Override
 		public boolean canExecute() {

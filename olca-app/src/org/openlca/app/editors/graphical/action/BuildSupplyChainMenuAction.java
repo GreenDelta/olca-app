@@ -20,8 +20,8 @@ import org.openlca.core.model.ProcessType;
 class BuildSupplyChainMenuAction extends EditorAction {
 
 	private List<ProcessNode> nodes;
-	private BuildSupplyChainAction supplyChainAction = (BuildSupplyChainAction) ActionFactory.buildSupplyChain();
-	private BuildNextTierAction nextTierAction = (BuildNextTierAction) ActionFactory.buildNextTier();
+	private BuildSupplyChainAction supplyChainAction = GraphActions.buildSupplyChain();
+	private BuildNextTierAction nextTierAction = GraphActions.buildNextTier();
 
 	BuildSupplyChainMenuAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
@@ -32,16 +32,15 @@ class BuildSupplyChainMenuAction extends EditorAction {
 
 	private class MenuCreator implements IMenuCreator {
 
-		private Menu createMenu(Menu menu) {
+		private void createMenu(Menu menu) {
 			createItem(menu, supplyChainAction);
 			createItem(menu, nextTierAction);
-			return menu;
 		}
 
 		private void createItem(Menu menu, IBuildAction action) {
-			MenuItem item = new MenuItem(menu, SWT.CASCADE);
+			var item = new MenuItem(menu, SWT.CASCADE);
 			item.setText(action.getText());
-			Menu subMenu = new Menu(item);
+			var subMenu = new Menu(item);
 			createSubItem(subMenu, action, DefaultProviders.IGNORE, ProcessType.UNIT_PROCESS);
 			createSubItem(subMenu, action, DefaultProviders.IGNORE, ProcessType.LCI_RESULT);
 			createSubItem(subMenu, action, DefaultProviders.PREFER, ProcessType.UNIT_PROCESS);
@@ -80,6 +79,7 @@ class BuildSupplyChainMenuAction extends EditorAction {
 			}
 		}
 
+		@Override
 		public void dispose() {
 		}
 
@@ -97,12 +97,11 @@ class BuildSupplyChainMenuAction extends EditorAction {
 			createMenu(menu);
 			return menu;
 		}
-
 	}
 
 	@Override
-	protected boolean accept(ISelection selection) {
-		nodes = getMultiSelectionOfType(selection, ProcessNode.class);
+	protected boolean accept(ISelection s) {
+		nodes = GraphActions.allSelectedOf(s, ProcessNode.class);
 		return nodes != null && !nodes.isEmpty();
 	}
 }
