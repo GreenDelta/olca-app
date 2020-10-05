@@ -34,7 +34,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 
-public class ProductSystemGraphEditor extends GraphicalEditor {
+public class GraphEditor extends GraphicalEditor {
 
 	public static final String ID = "editors.productsystem.graphical";
 
@@ -49,7 +49,7 @@ public class ProductSystemGraphEditor extends GraphicalEditor {
 	private List<String> actionIds;
 	private boolean initialized = false;
 
-	public ProductSystemGraphEditor(ProductSystemEditor editor) {
+	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
 		editor.onSaved(() -> NodeLayoutStore.saveLayout(getModel()));
 		// draw nice routes when there are less then 100 processes

@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
+import org.openlca.app.editors.graphical.GraphEditor;
 
 public class CommandUtil {
 
@@ -11,7 +11,7 @@ public class CommandUtil {
 		return command.chain(toChain);
 	}
 
-	public static void executeCommand(Command command, ProductSystemGraphEditor editor) {
+	public static void executeCommand(Command command, GraphEditor editor) {
 		if (command == null)
 			return;
 		editor.getCommandStack().execute(command);

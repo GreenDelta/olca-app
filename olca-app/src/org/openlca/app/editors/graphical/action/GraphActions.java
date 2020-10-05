@@ -19,7 +19,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.viewers.Selections;
 
 public class GraphActions {
@@ -62,99 +62,99 @@ public class GraphActions {
 		return new BuildNextTierAction();
 	}
 
-	public static IAction buildSupplyChainMenu(ProductSystemGraphEditor editor) {
+	public static IAction buildSupplyChainMenu(GraphEditor editor) {
 		BuildSupplyChainMenuAction action = new BuildSupplyChainMenuAction();
 		action.editor = editor;
 		return action;
 	}
 
-	public static IAction minimizeAll(ProductSystemGraphEditor editor) {
+	public static IAction minimizeAll(GraphEditor editor) {
 		ChangeAllStateAction action = new ChangeAllStateAction(MINIMIZE);
 		action.editor = editor;
 		return action;
 	}
 
-	public static IAction maximizeAll(ProductSystemGraphEditor editor) {
+	public static IAction maximizeAll(GraphEditor editor) {
 		ChangeAllStateAction action = new ChangeAllStateAction(MAXIMIZE);
 		action.editor = editor;
 		return action;
 	}
 
-	public static IAction expandAll(ProductSystemGraphEditor editor) {
+	public static IAction expandAll(GraphEditor editor) {
 		MassExpansionAction action = new MassExpansionAction(EXPAND);
 		action.editor = editor;
 		return action;
 	}
 
-	public static IAction collapseAll(ProductSystemGraphEditor editor) {
+	public static IAction collapseAll(GraphEditor editor) {
 		MassExpansionAction action = new MassExpansionAction(COLLAPSE);
 		action.editor = editor;
 		return action;
 	}
 
-	public static IAction show(ProductSystemGraphEditor editor, TreeViewer viewer) {
+	public static IAction show(GraphEditor editor, TreeViewer viewer) {
 		return new HideShowAction(editor, viewer, SHOW);
 	}
 
-	public static IAction hide(ProductSystemGraphEditor editor, TreeViewer viewer) {
+	public static IAction hide(GraphEditor editor, TreeViewer viewer) {
 		return new HideShowAction(editor, viewer, HIDE);
 	}
 
-	public static IAction layoutMenu(ProductSystemGraphEditor editor) {
+	public static IAction layoutMenu(GraphEditor editor) {
 		LayoutMenuAction action = new LayoutMenuAction();
 		action.setEditor(editor);
 		return action;
 	}
 
-	public static IAction openMiniatureView(ProductSystemGraphEditor editor) {
+	public static IAction openMiniatureView(GraphEditor editor) {
 		OpenMiniatureViewAction action = new OpenMiniatureViewAction();
 		action.editor = editor;
 		return action;
 	}
 
-	public static IAction removeAllConnections(ProductSystemGraphEditor editor) {
+	public static IAction removeAllConnections(GraphEditor editor) {
 		RemoveAllConnectionsAction action = new RemoveAllConnectionsAction();
 		action.editor = editor;
 		return action;
 	}
 
-	public static IAction removeSupplyChain(ProductSystemGraphEditor editor) {
+	public static IAction removeSupplyChain(GraphEditor editor) {
 		RemoveSupplyChainAction action = new RemoveSupplyChainAction();
 		action.editor = editor;
 		return action;
 	}
 
-	public static IAction saveImage(ProductSystemGraphEditor editor) {
+	public static IAction saveImage(GraphEditor editor) {
 		SaveImageAction action = new SaveImageAction();
 		action.editor = editor;
 		return action;
 	}
 
-	public static IAction mark(ProductSystemGraphEditor editor) {
+	public static IAction mark(GraphEditor editor) {
 		MarkingAction action = new MarkingAction(MARK);
 		action.editor = editor;
 		return action;
 	}
 
-	public static IAction unmark(ProductSystemGraphEditor editor) {
+	public static IAction unmark(GraphEditor editor) {
 		MarkingAction action = new MarkingAction(UNMARK);
 		action.editor = editor;
 		return action;
 	}
 
-	public static IAction searchProviders(ProductSystemGraphEditor editor) {
+	public static IAction searchProviders(GraphEditor editor) {
 		SearchConnectorsAction action = new SearchConnectorsAction(PROVIDER);
 		action.editor = editor;
 		return action;
 	}
 
-	public static IAction searchRecipients(ProductSystemGraphEditor editor) {
+	public static IAction searchRecipients(GraphEditor editor) {
 		SearchConnectorsAction action = new SearchConnectorsAction(RECIPIENTS);
 		action.editor = editor;
 		return action;
 	}
 
-	public static IAction open(ProductSystemGraphEditor editor) {
+	public static IAction open(GraphEditor editor) {
 		OpenAction action = new OpenAction();
 		action.editor = editor;
 		return action;

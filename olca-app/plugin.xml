@@ -230,7 +230,7 @@
             name="Log file">
       </editor>
       <editor
-            class="org.openlca.app.editors.graphical.ProductSystemGraphEditor"
+            class="org.openlca.app.editors.graphical.GraphEditor"
             default="false"
             icon="icons/model/product_system.png"
             id="editors.productsystem.graphical"

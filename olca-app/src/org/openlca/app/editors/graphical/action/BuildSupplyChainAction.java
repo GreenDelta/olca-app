@@ -10,7 +10,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.UI;
@@ -61,7 +61,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 	public void run() {
 		if (nodes == null || nodes.isEmpty())
 			return;
-		ProductSystemGraphEditor editor = nodes.get(0).parent().editor;
+		GraphEditor editor = nodes.get(0).parent().editor;
 		ProductSystem system = editor.getModel().getProductSystem();
 		try {
 			if (editor.promptSaveIfNecessary())
@@ -104,7 +104,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 				builder.autoComplete(system, provider);
 				system = builder.saveUpdates(system);
 			}
-			ProductSystemGraphEditor editor = nodes.get(0).parent().editor;
+			GraphEditor editor = nodes.get(0).parent().editor;
 			editor.updateModel(monitor);
 			Database.get().notifyUpdate(Descriptor.of(system));
 		}

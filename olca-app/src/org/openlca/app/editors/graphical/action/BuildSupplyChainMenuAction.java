@@ -20,8 +20,8 @@ import org.openlca.core.model.ProcessType;
 class BuildSupplyChainMenuAction extends EditorAction {
 
 	private List<ProcessNode> nodes;
-	private BuildSupplyChainAction supplyChainAction = GraphActions.buildSupplyChain();
-	private BuildNextTierAction nextTierAction = GraphActions.buildNextTier();
+	private final BuildSupplyChainAction supplyChainAction = GraphActions.buildSupplyChain();
+	private final BuildNextTierAction nextTierAction = GraphActions.buildNextTier();
 
 	BuildSupplyChainMenuAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN_MENU);

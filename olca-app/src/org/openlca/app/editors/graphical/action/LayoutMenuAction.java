@@ -7,14 +7,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.layout.LayoutType;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 
 class LayoutMenuAction extends EditorAction {
 
-	private ProductSystemGraphEditor editor;
+	private GraphEditor editor;
 	private final LayoutAction minimalLayoutAction = new LayoutAction(
 			LayoutType.MINIMAL_TREE_LAYOUT);
 	private final LayoutAction treeLayoutAction = new LayoutAction(
@@ -28,7 +28,7 @@ class LayoutMenuAction extends EditorAction {
 	}
 
 	@Override
-	public void setEditor(ProductSystemGraphEditor editor) {
+	public void setEditor(GraphEditor editor) {
 		minimalLayoutAction.setModel(editor.getModel());
 		treeLayoutAction.setModel(editor.getModel());
 		this.editor = editor;

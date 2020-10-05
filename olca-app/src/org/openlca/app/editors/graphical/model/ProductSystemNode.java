@@ -3,7 +3,7 @@ package org.openlca.app.editors.graphical.model;
 import java.util.List;
 
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.matrix.cache.FlowTable;
 import org.openlca.core.model.ProcessLink;
@@ -11,11 +11,11 @@ import org.openlca.core.model.ProductSystem;
 
 public class ProductSystemNode extends Node {
 
-	public final ProductSystemGraphEditor editor;
+	public final GraphEditor editor;
 	public final MutableProcessLinkSearchMap linkSearch;
 	public final FlowTable flows = FlowTable.create(Database.get());
 
-	public ProductSystemNode(ProductSystemGraphEditor editor) {
+	public ProductSystemNode(GraphEditor editor) {
 		List<ProcessLink> links = editor.getSystemEditor()
 				.getModel().processLinks;
 		this.linkSearch = new MutableProcessLinkSearchMap(links);

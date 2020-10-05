@@ -13,7 +13,7 @@ import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
-import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.command.DeleteLinkCommand;
 
 class LinkPart extends AbstractConnectionEditPart {
@@ -51,7 +51,7 @@ class LinkPart extends AbstractConnectionEditPart {
 		return (Link) super.getModel();
 	}
 
-	private ProductSystemGraphEditor getEditor() {
+	private GraphEditor getEditor() {
 		return getModel().outputNode.parent().editor;
 	}
 

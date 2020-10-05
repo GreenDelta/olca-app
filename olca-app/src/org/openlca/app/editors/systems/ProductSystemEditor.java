@@ -3,7 +3,7 @@ package org.openlca.app.editors.systems;
 import org.openlca.app.M;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
-import org.openlca.app.editors.graphical.ProductSystemGraphEditor;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.core.model.ProductSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 			addPage(new ParameterPage2(this));
 			var descriptor = getEditorInput().getDescriptor();
 			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
-			int gIdx = addPage(new ProductSystemGraphEditor(this), gInput);
+			int gIdx = addPage(new GraphEditor(this), gInput);
 			setPageText(gIdx, M.ModelGraph);
 			addPage(new StatisticsPage(this));
 			addCommentPage();
