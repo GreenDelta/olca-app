@@ -2,14 +2,16 @@ package org.openlca.app.editors.graphical.action;
 
 import java.util.List;
 
+import org.eclipse.gef.ui.actions.UpdateAction;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
@@ -17,13 +19,13 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.matrix.LinkingConfig.DefaultProviders;
 import org.openlca.core.model.ProcessType;
 
-class BuildSupplyChainMenuAction extends EditorAction {
+public class BuildSupplyChainMenuAction extends Action implements UpdateAction {
 
+	private final GraphEditor editor;
 	private List<ProcessNode> nodes;
-	private final BuildSupplyChainAction supplyChainAction = GraphActions.buildSupplyChain();
-	private final BuildNextTierAction nextTierAction = GraphActions.buildNextTier();
 
-	BuildSupplyChainMenuAction() {
+	public BuildSupplyChainMenuAction(GraphEditor editor) {
+		this.editor = editor;
 		setId(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
 		setText(M.BuildSupplyChain);
 		setImageDescriptor(Icon.BUILD_SUPPLY_CHAIN.descriptor());
@@ -33,8 +35,8 @@ class BuildSupplyChainMenuAction extends EditorAction {
 	private class MenuCreator implements IMenuCreator {
 
 		private void createMenu(Menu menu) {
-			createItem(menu, supplyChainAction);
-			createItem(menu, nextTierAction);
+			createItem(menu, new BuildSupplyChainAction());
+			createItem(menu, new BuildNextTierAction());
 		}
 
 		private void createItem(Menu menu, IBuildAction action) {
@@ -100,8 +102,8 @@ class BuildSupplyChainMenuAction extends EditorAction {
 	}
 
 	@Override
-	protected boolean accept(ISelection s) {
-		nodes = GraphActions.allSelectedOf(s, ProcessNode.class);
-		return nodes != null && !nodes.isEmpty();
+	public void update() {
+		nodes = GraphActions.allSelectedOf(editor, ProcessNode.class);
+		setEnabled(!nodes.isEmpty());
 	}
 }

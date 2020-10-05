@@ -30,8 +30,10 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.IWorkbenchPart;
 import org.openlca.app.components.ModelTransfer;
+import org.openlca.app.editors.graphical.action.AddProcessAction;
+import org.openlca.app.editors.graphical.action.BuildSupplyChainMenuAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
-import org.openlca.app.editors.graphical.action.ActionIds;
+import org.openlca.app.editors.graphical.action.LayoutMenuAction;
 import org.openlca.app.editors.graphical.model.AppEditPartFactory;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
@@ -84,48 +86,46 @@ public class GraphConfig {
 	}
 
 	List<String> configureActions() {
-		registerStaticActions();
-		var updateableActions = new ArrayList<String>();
-		updateableActions.add(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
-		updateableActions.add(ActionIds.REMOVE_SUPPLY_CHAIN);
-		updateableActions.add(ActionIds.REMOVE_ALL_CONNECTIONS);
-		updateableActions.add(org.eclipse.ui.actions.ActionFactory.DELETE.getId());
-		updateableActions.add(ActionIds.OPEN);
-		updateableActions.add(ActionIds.MARK);
-		updateableActions.add(ActionIds.UNMARK);
-		updateableActions.add(ActionIds.SEARCH_PROVIDERS);
-		updateableActions.add(ActionIds.SEARCH_RECIPIENTS);
-		updateableActions.add(ActionIds.OPEN_MINIATURE_VIEW);
-		return updateableActions;
-	}
-
-	private void registerStaticActions() {
 		var editor = model.editor;
-		actions.registerAction(GraphActions.buildSupplyChainMenu(editor));
-		actions.registerAction(GraphActions.removeSupplyChain(editor));
-		actions.registerAction(GraphActions.removeAllConnections(editor));
-		actions.registerAction(GraphActions.mark(editor));
-		actions.registerAction(GraphActions.unmark(editor));
-		actions.registerAction(GraphActions.saveImage(editor));
-		actions.registerAction(GraphActions.expandAll(editor));
-		actions.registerAction(GraphActions.collapseAll(editor));
-		actions.registerAction(GraphActions.maximizeAll(editor));
-		actions.registerAction(GraphActions.minimizeAll(editor));
-		actions.registerAction(GraphActions.layoutMenu(editor));
-		actions.registerAction(GraphActions.searchProviders(editor));
-		actions.registerAction(GraphActions.searchRecipients(editor));
-		actions.registerAction(GraphActions.open(editor));
-		actions.registerAction(GraphActions.openMiniatureView(editor));
-		actions.registerAction(GraphActions.showOutline());
-		actions.registerAction(new ZoomInAction(getZoomManager()));
-		actions.registerAction(new ZoomOutAction(getZoomManager()));
-		DeleteAction delAction = new DeleteAction((IWorkbenchPart) editor) {
+		var delete = new DeleteAction((IWorkbenchPart) editor) {
 			@Override
 			protected ISelection getSelection() {
-				return editor.getSite().getWorkbenchWindow().getSelectionService().getSelection();
+				return editor.getSite()
+						.getWorkbenchWindow()
+						.getSelectionService()
+						.getSelection();
 			}
 		};
-		actions.registerAction(delAction);
+
+		var actions = new IAction[] {
+				new AddProcessAction(editor),
+				new BuildSupplyChainMenuAction(editor),
+				GraphActions.removeSupplyChain(editor),
+				GraphActions.removeAllConnections(editor),
+				GraphActions.mark(editor),
+				GraphActions.unmark(editor),
+				GraphActions.saveImage(editor),
+				GraphActions.expandAll(editor),
+				GraphActions.collapseAll(editor),
+				GraphActions.maximizeAll(editor),
+				GraphActions.minimizeAll(editor),
+				new LayoutMenuAction(editor),
+				GraphActions.searchProviders(editor),
+				GraphActions.searchRecipients(editor),
+				GraphActions.open(editor),
+				GraphActions.openMiniatureView(editor),
+				GraphActions.showOutline(),
+				new ZoomInAction(getZoomManager()),
+				new ZoomOutAction(getZoomManager()),
+				delete,
+		};
+
+		var ids = new ArrayList<String>();
+		for (var action : actions) {
+			this.actions.registerAction(action);
+			ids.add(action.getId());
+		}
+		return ids;
 	}
 
 	void configureZoomManager() {

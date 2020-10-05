@@ -22,7 +22,7 @@ public abstract class EditorAction extends Action implements UpdateAction {
 
 	@Override
 	public void update() {
-		setEnabled(accept(editor.getSelection()));
+		setEnabled(editor != null && accept(editor.getSelection()));
 	}
 
 	protected abstract boolean accept(ISelection selection);

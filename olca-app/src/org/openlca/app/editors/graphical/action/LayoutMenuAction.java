@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.action;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
@@ -12,33 +12,24 @@ import org.openlca.app.editors.graphical.layout.LayoutType;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 
-class LayoutMenuAction extends EditorAction {
+public class LayoutMenuAction extends Action {
 
-	private GraphEditor editor;
+	private final GraphEditor editor;
 	private final LayoutAction minimalLayoutAction = new LayoutAction(
 			LayoutType.MINIMAL_TREE_LAYOUT);
 	private final LayoutAction treeLayoutAction = new LayoutAction(
 			LayoutType.TREE_LAYOUT);
 
-	LayoutMenuAction() {
+	public LayoutMenuAction(GraphEditor editor) {
+		this.editor = editor;
+		minimalLayoutAction.setModel(editor.getModel());
+		treeLayoutAction.setModel(editor.getModel());
 		setId(ActionIds.LAYOUT_MENU);
 		setText(M.Layout);
 		setImageDescriptor(Icon.LAYOUT.descriptor());
 		setMenuCreator(new MenuCreator());
 	}
 
-	@Override
-	public void setEditor(GraphEditor editor) {
-		minimalLayoutAction.setModel(editor.getModel());
-		treeLayoutAction.setModel(editor.getModel());
-		this.editor = editor;
-	}
-
-	@Override
-	protected boolean accept(ISelection selection) {
-		return true;
-	}
-	
 	private class MenuCreator implements IMenuCreator {
 
 		private void createMenu(Menu menu) {

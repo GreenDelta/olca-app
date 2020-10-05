@@ -6,12 +6,12 @@ import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.action.ActionIds;
+import org.openlca.app.editors.graphical.action.AddProcessAction;
 import org.openlca.app.rcp.images.Icon;
 
 class MenuProvider extends ContextMenuProvider {
@@ -19,9 +19,9 @@ class MenuProvider extends ContextMenuProvider {
 	private final ActionRegistry registry;
 	private Collection<String> actionIds;
 
-	public MenuProvider(EditPartViewer viewer, ActionRegistry actionRegistry) {
+	public MenuProvider(EditPartViewer viewer, ActionRegistry registry) {
 		super(viewer);
-		this.registry = actionRegistry;
+		this.registry = registry;
 	}
 
 	@Override
@@ -47,19 +47,26 @@ class MenuProvider extends ContextMenuProvider {
 	/** Undo, Redo, and Delete */
 	private void addEditActions(IMenuManager menu) {
 		GEFActionConstants.addStandardActionGroups(menu);
-		IAction undoAction = registry.getAction(ActionFactory.UNDO.getId());
-		undoAction.setImageDescriptor(Icon.UNDO.descriptor());
-		undoAction.setDisabledImageDescriptor(Icon.UNDO_DISABLED.descriptor());
-		IAction redoAction = registry.getAction(ActionFactory.REDO.getId());
-		redoAction.setImageDescriptor(Icon.REDO.descriptor());
-		redoAction.setDisabledImageDescriptor(Icon.REDO_DISABLED.descriptor());
-		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, undoAction);
-		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, redoAction);
-		IAction deleteAction = registry.getAction(ActionFactory.DELETE.getId());
-		deleteAction.setText(M.Delete);
-		deleteAction.setImageDescriptor(Icon.DELETE.descriptor());
-		deleteAction.setDisabledImageDescriptor(Icon.DELETE_DISABLED.descriptor());
-		menu.appendToGroup(GEFActionConstants.GROUP_EDIT, deleteAction);
+		var undo = registry.getAction(ActionFactory.UNDO.getId());
+		undo.setImageDescriptor(Icon.UNDO.descriptor());
+		undo.setDisabledImageDescriptor(Icon.UNDO_DISABLED.descriptor());
+		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, undo);
+		
+		var redo = registry.getAction(ActionFactory.REDO.getId());
+		redo.setImageDescriptor(Icon.REDO.descriptor());
+		redo.setDisabledImageDescriptor(Icon.REDO_DISABLED.descriptor());
+		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, redo);
+		
+		var delete = registry.getAction(ActionFactory.DELETE.getId());
+		delete.setText(M.Delete);
+		delete.setImageDescriptor(Icon.DELETE.descriptor());
+		delete.setDisabledImageDescriptor(Icon.DELETE_DISABLED.descriptor());
+		menu.appendToGroup(GEFActionConstants.GROUP_EDIT, delete);
+		
+		// add process
+		menu.appendToGroup(
+				GEFActionConstants.GROUP_EDIT, 
+				registry.getAction(AddProcessAction.ID));
 	}
 
 	private void addSupplyChainActions(IMenuManager menu) {

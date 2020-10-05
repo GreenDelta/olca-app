@@ -1,9 +1,5 @@
 package org.openlca.app.editors.graphical.action;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.openlca.app.editors.graphical.action.ChangeAllStateAction.MAXIMIZE;
 import static org.openlca.app.editors.graphical.action.ChangeAllStateAction.MINIMIZE;
 import static org.openlca.app.editors.graphical.action.HideShowAction.HIDE;
@@ -15,6 +11,10 @@ import static org.openlca.app.editors.graphical.action.MassExpansionAction.EXPAN
 import static org.openlca.app.editors.graphical.action.SearchConnectorsAction.PROVIDER;
 import static org.openlca.app.editors.graphical.action.SearchConnectorsAction.RECIPIENTS;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.IAction;
@@ -25,6 +25,12 @@ import org.openlca.app.viewers.Selections;
 public class GraphActions {
 
 	private GraphActions() {
+	}
+
+	public static <T> T firstSelectedOf(GraphEditor editor, Class<T> type) {
+		return editor == null || type == null
+				? null
+				: firstSelectedOf(editor.getSelection(), type);
 	}
 
 	public static <T> T firstSelectedOf(ISelection s, Class<T> type) {
@@ -41,6 +47,12 @@ public class GraphActions {
 				: null;
 	}
 
+	public static <T> List<T> allSelectedOf(GraphEditor editor, Class<T> type) {
+		return editor == null || type == null
+				? Collections.emptyList()
+				: allSelectedOf(editor.getSelection(), type);
+	}
+
 	public static <T> List<T> allSelectedOf(ISelection s, Class<T> type) {
 		var objects = Selections.allOf(s);
 		if (objects.isEmpty() || type == null)
@@ -52,20 +64,6 @@ public class GraphActions {
 				.filter(type::isInstance)
 				.map(type::cast)
 				.collect(Collectors.toList());
-	}
-
-	public static BuildSupplyChainAction buildSupplyChain() {
-		return new BuildSupplyChainAction();
-	}
-
-	public static BuildNextTierAction buildNextTier() {
-		return new BuildNextTierAction();
-	}
-
-	public static IAction buildSupplyChainMenu(GraphEditor editor) {
-		BuildSupplyChainMenuAction action = new BuildSupplyChainMenuAction();
-		action.editor = editor;
-		return action;
 	}
 
 	public static IAction minimizeAll(GraphEditor editor) {
@@ -98,12 +96,6 @@ public class GraphActions {
 
 	public static IAction hide(GraphEditor editor, TreeViewer viewer) {
 		return new HideShowAction(editor, viewer, HIDE);
-	}
-
-	public static IAction layoutMenu(GraphEditor editor) {
-		LayoutMenuAction action = new LayoutMenuAction();
-		action.setEditor(editor);
-		return action;
 	}
 
 	public static IAction openMiniatureView(GraphEditor editor) {
