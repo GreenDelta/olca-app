@@ -19,7 +19,7 @@ import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.Selections;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.LinkingConfig;
 import org.openlca.core.model.Exchange;
@@ -85,7 +85,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	private void processSelected(SelectionChangedEvent e) {
-		Object obj = Viewers.getFirst(e.getSelection());
+		Object obj = Selections.firstOf(e);
 		if (!(obj instanceof ModelElement)) {
 			refProcess = null;
 			checkInput();

@@ -23,7 +23,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.Selections;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Exchange;
@@ -80,7 +80,7 @@ class CostDialog extends FormDialog {
 		});
 		setCurrencyContent(currencyCombo);
 		currencyCombo.addSelectionChangedListener(e -> {
-			currency = Viewers.getFirst(e.getSelection());
+			currency = Selections.firstOf(e);
 			exchange.currency = currency;
 			updateCurrencyLabels();
 		});

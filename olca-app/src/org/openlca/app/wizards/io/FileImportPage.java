@@ -32,7 +32,7 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.Selections;
 
 /**
  * Wizard page for file import: the user can select files from directories.
@@ -104,7 +104,7 @@ public class FileImportPage extends WizardPage {
 		directoryViewer.setContentProvider(new DirectoryContentProvider());
 		directoryViewer.setLabelProvider(new FileLabel());
 		directoryViewer.addSelectionChangedListener(e -> {
-			File folder = Viewers.getFirst(e.getStructuredSelection());
+			File folder = Selections.firstOf(e);
 			fileViewer.setInput(getFiles(folder, extensions));
 		});
 
@@ -116,7 +116,7 @@ public class FileImportPage extends WizardPage {
 		fileViewer.setContentProvider(ArrayContentProvider.getInstance());
 		fileViewer.setLabelProvider(new FileLabel());
 		fileViewer.addSelectionChangedListener(e -> {
-			selectedFiles = Viewers.getAll(e.getStructuredSelection());
+			selectedFiles = Selections.allOf(e);
 			setPageComplete(!selectedFiles.isEmpty());
 		});
 

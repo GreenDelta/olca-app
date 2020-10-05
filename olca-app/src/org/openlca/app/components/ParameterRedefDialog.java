@@ -30,7 +30,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.Selections;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
@@ -145,7 +145,7 @@ public class ParameterRedefDialog extends FormDialog {
 	}
 
 	private List<ParameterRedef> getSelection() {
-		List<Object> list = Viewers.getAll(selection);
+		List<Object> list = Selections.allOf(selection);
 		if (list.isEmpty())
 			return Collections.emptyList();
 		List<ParameterRedef> selection = new ArrayList<>();

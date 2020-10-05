@@ -1,76 +1,31 @@
 package org.openlca.app.viewers;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
 import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.trees.Trees;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Viewers {
 
-	private final static Logger log = LoggerFactory.getLogger(Viewers.class);
-
 	/** Get the first selected element from the given viewer. */
 	public static <T> T getFirstSelected(StructuredViewer viewer) {
-		if (viewer == null)
-			return null;
-		ISelection selection = viewer.getSelection();
-		return getFirst(selection);
-	}
-
-	/** Get the first element from the given selection. */
-	public static <T> T getFirst(ISelection selection) {
-		if (!(selection instanceof IStructuredSelection) || selection.isEmpty())
-			return null;
-		IStructuredSelection structSelection = (IStructuredSelection) selection;
-		try {
-			// caller has to assign the right class
-			@SuppressWarnings("unchecked")
-			T obj = (T) structSelection.getFirstElement();
-			return obj;
-		} catch (ClassCastException e) {
-			log.error("Error casting obj of type " + structSelection.getFirstElement().getClass().getCanonicalName(),
-					e);
-			return null;
-		}
+		return viewer == null
+				? null
+				: Selections.firstOf(viewer.getSelection());
 	}
 
 	/** Get all selected elements from the given viewer. */
 	public static <T> List<T> getAllSelected(StructuredViewer viewer) {
-		if (viewer == null)
-			return Collections.emptyList();
-		IStructuredSelection s = (IStructuredSelection) viewer.getSelection();
-		return getAll(s);
-	}
-
-	/** Get all elements from the given selection. */
-	public static <T> List<T> getAll(IStructuredSelection selection) {
-		if (selection == null || selection.isEmpty())
-			return Collections.emptyList();
-		List<T> list = new ArrayList<>();
-		for (Object o : selection) {
-			try {
-				// caller has to assign to right class
-				@SuppressWarnings("unchecked")
-				T obj = (T) o;
-				list.add(obj);
-			} catch (ClassCastException e) {
-				log.error("Error casting obj of type "
-						+ o.getClass().getCanonicalName(), e);
-			}
-		}
-		return list;
+		return viewer == null
+				? Collections.emptyList()
+				: Selections.allOf(viewer.getSelection());
 	}
 
 	public static <T> void sortByDouble(

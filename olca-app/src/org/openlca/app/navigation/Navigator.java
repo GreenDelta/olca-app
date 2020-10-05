@@ -28,6 +28,7 @@ import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.tools.libraries.LibraryInfoPage;
 import org.openlca.app.util.Colors;
+import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
@@ -58,7 +59,7 @@ public class Navigator extends CommonNavigator {
 		ColumnViewerToolTipSupport.enableFor(viewer);
 
 		viewer.addDoubleClickListener(evt -> {
-			var elem = Viewers.getFirst(evt.getSelection());
+			var elem = Selections.firstOf(evt);
 			if (elem instanceof ModelElement) {
 				var model = ((ModelElement) elem).getContent();
 				App.openEditor(model);

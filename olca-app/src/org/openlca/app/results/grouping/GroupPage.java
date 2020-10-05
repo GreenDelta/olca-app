@@ -38,6 +38,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.database.ProcessGroupSetDao;
@@ -154,7 +155,7 @@ public class GroupPage extends FormPage {
 		groupViewer.setInput(groups);
 		Actions.bind(groupViewer, new AddGroupAction(), new DeleteGroupAction());
 		groupViewer.addSelectionChangedListener(e -> {
-			ProcessGrouping g = Viewers.getFirst(e.getSelection());
+			ProcessGrouping g = Selections.firstOf(e);
 			if (g != null)
 				processViewer.setInput(g.processes);
 		});

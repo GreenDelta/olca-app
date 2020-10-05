@@ -17,7 +17,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.Selections;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 
@@ -48,8 +48,8 @@ public class CategoryDialog extends Dialog {
 				modelType);
 		viewer.setFilters(new ViewerFilter[] { new Filter() });
 		UI.gridData(viewer.getTree(), true, true);
-		viewer.addSelectionChangedListener((e) -> {
-			INavigationElement<?> element = Viewers.getFirst(e.getSelection());
+		viewer.addSelectionChangedListener(e -> {
+			INavigationElement<?> element = Selections.firstOf(e);
 			if (element instanceof CategoryElement) {
 				category = (Category) element.getContent();
 			} else {

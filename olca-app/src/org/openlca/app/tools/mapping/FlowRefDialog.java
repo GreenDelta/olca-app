@@ -30,7 +30,7 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.Selections;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.util.Strings;
@@ -91,12 +91,10 @@ class FlowRefDialog extends FormDialog {
 		viewer.setInput(tree);
 
 		viewer.addSelectionChangedListener(e -> {
-			Object obj = Viewers.getFirst(e.getSelection());
-			if (obj instanceof FlowRef) {
-				selected = (FlowRef) obj;
-			} else {
-				selected = null;
-			}
+			Object obj = Selections.firstOf(e);
+			selected = obj instanceof FlowRef
+					? (FlowRef) obj
+					: null;
 			Button ok = getButton(IDialogConstants.OK_ID);
 			ok.setEnabled(selected != null);
 		});

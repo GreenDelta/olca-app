@@ -22,7 +22,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.Selections;
 
 class SectionList {
 
@@ -133,14 +133,14 @@ class SectionList {
 					.getInstance());
 			componentViewer.setLabelProvider(new ComponentLabel());
 			componentViewer.setInput(ReportComponent.values());
-			componentViewer.addSelectionChangedListener((evt) -> {
-				ReportComponent c = Viewers.getFirst(evt.getSelection());
+			componentViewer.addSelectionChangedListener(e -> {
+				ReportComponent c = Selections.firstOf(e);
 				if (c == null || c == ReportComponent.NONE)
 					model.componentId = null;
-					else
-						model.componentId = c.getId();
-					editor.setDirty(true);
-				});
+				else
+					model.componentId = c.getId();
+				editor.setDirty(true);
+			});
 			if (model.componentId != null)
 				componentViewer.setSelection(new StructuredSelection(
 						ReportComponent.getForId(model.componentId)));

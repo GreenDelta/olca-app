@@ -37,7 +37,7 @@ import org.openlca.app.navigation.actions.db.DbImportAction;
 import org.openlca.app.navigation.actions.db.DbRenameAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
-import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.Selections;
 
 /**
  * Adds the actions to the context menu of the navigation tree.
@@ -132,7 +132,7 @@ public class NavigationActionProvider extends CommonActionProvider {
 	public void fillContextMenu(IMenuManager menu) {
 		ActionContext con = getContext();
 		var selection = (IStructuredSelection) con.getSelection();
-		List<INavigationElement<?>> elements = Viewers.getAll(selection);
+		List<INavigationElement<?>> elements = Selections.allOf(selection);
 		if (showDbCreate(elements)) {
 			menu.add(new DbCreateAction());
 			menu.add(new DbImportAction());

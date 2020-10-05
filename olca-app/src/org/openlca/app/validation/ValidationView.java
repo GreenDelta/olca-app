@@ -31,7 +31,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.validation.ModelStatus.Status;
-import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.CategoryDao;
@@ -66,12 +66,16 @@ public class ValidationView extends ViewPart {
 		String[] columnHeaders = { "Description", "Path" };
 		viewer = Trees.createViewer(parent, columnHeaders, new StatusLabel());
 		viewer.setContentProvider(new ContentProvider());
-		viewer.addDoubleClickListener((e) -> {
-			Object el = Viewers.getFirst(e.getSelection());
+		viewer.addDoubleClickListener(e -> {
+			Object el = Selections.firstOf(e);
 			if (el == null || el instanceof StatusList)
 				return;
-			ModelStatus status = el instanceof ModelStatus ? (ModelStatus) el : ((StatusEntry) el).status;
-			App.openEditor(Daos.categorized(Database.get(), status.modelType).getDescriptor(status.id));
+			ModelStatus status = el instanceof ModelStatus
+					? (ModelStatus) el
+					: ((StatusEntry) el).status;
+			var d = Daos.categorized(Database.get(), status.modelType)
+					.getDescriptor(status.id);
+			App.openEditor(d);
 		});
 		Action copy = TreeClipboard.onCopy(viewer.getTree());
 		Actions.bind(viewer, new Action(M.ExpandAll) {

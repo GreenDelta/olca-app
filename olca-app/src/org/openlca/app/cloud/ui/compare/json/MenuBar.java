@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.draw2d.GridData;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -16,7 +15,7 @@ import org.openlca.app.cloud.ui.compare.json.viewer.JsonTreeViewer;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.Selections;
 
 class MenuBar extends Composite {
 
@@ -104,7 +103,7 @@ class MenuBar extends Composite {
 	private List<JsonNode> getSelection(SelectionChangedEvent e) {
 		if (e == null)
 			return Collections.emptyList();
-		return Viewers.getAll((IStructuredSelection) e.getSelection());
+		return Selections.allOf(e.getSelection());
 	}
 
 	private boolean areRootsEqual() {

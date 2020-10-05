@@ -107,10 +107,12 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		viewer.setInput(internalInput);
 	}
 
+	@SuppressWarnings("unchecked")
 	public T getSelected() {
-		if (Viewers.getFirst(viewer.getSelection()) instanceof AbstractViewer.Null)
-			return null;
-		return Viewers.getFirst(viewer.getSelection());
+		var first = Viewers.getFirstSelected(viewer);
+		return first instanceof AbstractViewer.Null
+				? null
+				: (T) first;
 	}
 
 	public void select(T value) {
@@ -138,7 +140,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	@Override
 	@SuppressWarnings("unchecked")
 	public void selectionChanged(SelectionChangedEvent event) {
-		Object obj = Viewers.getFirst(event.getSelection());
+		Object obj = Selections.firstOf(event);
 		T selection = null;
 		if (!Null.class.isInstance(obj))
 			selection = (T) obj;
