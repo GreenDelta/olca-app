@@ -1,5 +1,8 @@
 package org.openlca.app.editors.graphical.action;
 
+import java.util.Date;
+import java.util.UUID;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -8,11 +11,21 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.command.CreateProcessCommand;
+import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.util.Strings;
 
 public class AddProcessAction extends Action {
 
@@ -54,11 +67,7 @@ public class AddProcessAction extends Action {
 			selectLabel.setFont(UI.boldFont());
 			tree = NavigationTree.forSingleSelection(body, ModelType.PROCESS);
 			UI.gridData(tree.getControl(), true, true);
-		}
-
-		@Override
-		protected void createButtonsForButtonBar(Composite parent) {
-			super.createButtonsForButtonBar(parent);
+			tree.addFilter(new ModelTextFilter(text, tree));
 		}
 
 		@Override
@@ -71,6 +80,59 @@ public class AddProcessAction extends Action {
 					? shell.y
 					: 600;
 			return new Point(width, height);
+		}
+
+		@Override
+		protected void createButtonsForButtonBar(Composite comp) {
+			super.createButtonsForButtonBar(comp);
+			createButton(comp, 8, "Create new", false)
+					.setEnabled(false);
+			createButton(comp, 16, "Select extisting", false)
+					.setEnabled(false);
+			createButton(comp, 32, M.Cancel, true);
+		}
+
+		@Override
+		protected void buttonPressed(int button) {
+			// cancel
+			if (button == 32) {
+				cancelPressed();
+				return;
+			}
+
+			// add existing
+			if (button == 16) {
+				var obj = Viewers.getFirstSelected(tree);
+				if (!(obj instanceof CategorizedDescriptor)) {
+					cancelPressed();
+					return;
+				}
+				addProcess((CategorizedDescriptor) obj);
+				return;
+			}
+
+			// create a new process
+			if (button == 8) {
+				var name = text.getText().trim();
+				if (Strings.nullOrEmpty(name)) {
+					cancelPressed();
+					return;
+				}
+				var process = new Process();
+				process.name = name;
+				process.refId = UUID.randomUUID().toString();
+				process.processType = ProcessType.UNIT_PROCESS;
+				process.lastChange = new Date().getTime();
+				process = Database.get().insert(process);
+				addProcess(Descriptor.of(process));
+			}
+		}
+
+		private void addProcess(CategorizedDescriptor d) {
+			var cmd = new CreateProcessCommand(
+					editor.getModel(), d);
+			editor.getCommandStack().execute(cmd);
+			super.okPressed();
 		}
 	}
 }

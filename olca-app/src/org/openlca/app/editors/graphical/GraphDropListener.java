@@ -13,9 +13,9 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class GraphDropListener extends DropTargetAdapter {
 
-	private ProductSystemNode model;
-	private CommandStack commandStack;
-	private Transfer transferType;
+	private final ProductSystemNode model;
+	private final CommandStack commandStack;
+	private final Transfer transferType;
 
 	GraphDropListener(ProductSystemNode model,
 			Transfer transfer, CommandStack commands) {
@@ -36,11 +36,11 @@ class GraphDropListener extends DropTargetAdapter {
 		for (Object obj : data) {
 			if (!(obj instanceof CategorizedDescriptor))
 				continue;
-			CategorizedDescriptor d = (CategorizedDescriptor) obj;
+			var d = (CategorizedDescriptor) obj;
 			if (d.type != ModelType.PRODUCT_SYSTEM
 					&& d.type != ModelType.PROCESS)
 				continue;
-			Command c = new CreateProcessCommand(model, d);
+			var c = new CreateProcessCommand(model, d);
 			command = CommandUtil.chain(c, command);
 		}
 		if (command == null || !command.canExecute())
