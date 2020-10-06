@@ -10,10 +10,8 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -105,7 +103,7 @@ public class ModelSelectionDialog extends FormDialog {
 		UI.formHeader(form, getTitle());
 		Composite body = UI.formBody(form.getForm(), tk);
 		UI.gridLayout(body, 1);
-		Label filterLabel = UI.formLabel(body, form.getToolkit(), M.Filter);
+		Label filterLabel = UI.formLabel(body, tk, M.Filter);
 		filterLabel.setFont(UI.boldFont());
 		filterText = UI.formText(body, SWT.SEARCH);
 		Section section = UI.section(body, tk, M.Content);
@@ -169,7 +167,7 @@ public class ModelSelectionDialog extends FormDialog {
 				? NavigationTree.forMultiSelection(comp, modelType)
 				: NavigationTree.forSingleSelection(comp, modelType);
 		ModelTextFilter filter = new ModelTextFilter(filterText, viewer);
-		viewer.setFilters(new ViewerFilter[] { filter });
+		viewer.setFilters(filter);
 		UI.gridData(viewer.getTree(), true, true);
 		viewer.addSelectionChangedListener(new SelectionChangedListener());
 		viewer.addDoubleClickListener(new DoubleClickListener());
@@ -177,15 +175,13 @@ public class ModelSelectionDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		int width = 600;
-		int height = 600;
-		Rectangle shellBounds = getShell().getDisplay().getBounds();
-		int shellWidth = shellBounds.x;
-		int shellHeight = shellBounds.y;
-		if (shellWidth > 0 && shellWidth < width)
-			width = shellWidth;
-		if (shellHeight > 0 && shellHeight < height)
-			height = shellHeight;
+		var shell = getShell().getDisplay().getBounds();
+		int width = shell.x > 0 && shell.x < 600
+				? shell.x
+				: 600;
+		int height = shell.y > 0 && shell.y < 600
+				? shell.y
+				: 600;
 		return new Point(width, height);
 	}
 

@@ -23,7 +23,7 @@ class MenuProvider extends ContextMenuProvider {
 		super(viewer);
 		this.registry = registry;
 	}
-
+	
 	@Override
 	public void buildContextMenu(IMenuManager menu) {
 		addEditActions(menu);

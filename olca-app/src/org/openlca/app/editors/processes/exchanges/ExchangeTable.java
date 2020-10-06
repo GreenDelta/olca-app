@@ -131,7 +131,7 @@ class ExchangeTable {
 		ms.bind(AVOIDED, new AvoidedCheck(editor));
 		ms.bind(LOCATION, new LocationCell(
 				viewer.getTable(), editor));
-		ms.bind("", new CommentDialogModifier<Exchange>(
+		ms.bind("", new CommentDialogModifier<>(
 				editor.getComments(), CommentPaths::get));
 		bindAmountModifier(ms);
 	}
@@ -161,8 +161,8 @@ class ExchangeTable {
 	private void bindActions(Section section) {
 		if (!editor.isEditable())
 			return;
-		Action add = Actions.onAdd(() -> onAdd());
-		Action remove = Actions.onRemove(() -> onRemove());
+		Action add = Actions.onAdd(this::onAdd);
+		Action remove = Actions.onRemove(this::onRemove);
 		Action qRef = Actions.create(M.SetAsQuantitativeReference, null, () -> {
 			Exchange e = Viewers.getFirstSelected(viewer);
 			if (e == null)
@@ -220,7 +220,7 @@ class ExchangeTable {
 		if (editor.hasAnyComment("exchanges")) {
 			columns.add(COMMENT);
 		}
-		return columns.toArray(new String[columns.size()]);
+		return columns.toArray(new String[0]);
 	}
 
 	private void onAdd() {
