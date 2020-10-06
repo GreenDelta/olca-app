@@ -18,7 +18,10 @@ import org.openlca.app.editors.graphical.command.CreateProcessCommand;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Labels;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
@@ -47,6 +50,10 @@ public class AddProcessAction extends Action {
 
 	private class Dialog extends FormDialog {
 
+		final int _CREATE = 8;
+		final int _SELECT = 16;
+		final int _CANCEL = 32;
+
 		TreeViewer tree;
 		Text text;
 
@@ -68,6 +75,38 @@ public class AddProcessAction extends Action {
 			tree = NavigationTree.forSingleSelection(body, ModelType.PROCESS);
 			UI.gridData(tree.getControl(), true, true);
 			tree.addFilter(new ModelTextFilter(text, tree));
+
+			// enable/disable select button
+			tree.addSelectionChangedListener(e -> {
+				var obj = Selections.firstOf(e);
+				if (obj instanceof CategorizedDescriptor) {
+					var d = (CategorizedDescriptor) obj;
+					if (d.type == ModelType.PROCESS
+							|| d.type == ModelType.PRODUCT_SYSTEM) {
+						getButton(_SELECT).setEnabled(true);
+						return;
+					}
+				}
+				getButton(_SELECT).setEnabled(false);
+			});
+
+			// add process on double click
+			tree.addDoubleClickListener(e -> {
+				var obj = Selections.firstOf(e);
+				if (obj instanceof CategorizedDescriptor) {
+					var d = (CategorizedDescriptor) obj;
+					if (d.type == ModelType.PROCESS
+							|| d.type == ModelType.PRODUCT_SYSTEM) {
+						addProcess(d);
+					}
+				}
+			});
+
+			// enable disable create button
+			text.addModifyListener(e -> {
+				var name = text.getText().trim();
+				getButton(_CREATE).setEnabled(Strings.notEmpty(name));
+			});
 		}
 
 		@Override
@@ -84,24 +123,23 @@ public class AddProcessAction extends Action {
 
 		@Override
 		protected void createButtonsForButtonBar(Composite comp) {
-			super.createButtonsForButtonBar(comp);
-			createButton(comp, 8, "Create new", false)
+			createButton(comp, _CREATE, "Create new", false)
 					.setEnabled(false);
-			createButton(comp, 16, "Select extisting", false)
+			createButton(comp, _SELECT, "Select extisting", false)
 					.setEnabled(false);
-			createButton(comp, 32, M.Cancel, true);
+			createButton(comp, _CANCEL, M.Cancel, true);
 		}
 
 		@Override
 		protected void buttonPressed(int button) {
 			// cancel
-			if (button == 32) {
+			if (button == _CANCEL) {
 				cancelPressed();
 				return;
 			}
 
-			// add existing
-			if (button == 16) {
+			// select existing
+			if (button == _SELECT) {
 				var obj = Viewers.getFirstSelected(tree);
 				if (!(obj instanceof CategorizedDescriptor)) {
 					cancelPressed();
@@ -112,7 +150,7 @@ public class AddProcessAction extends Action {
 			}
 
 			// create a new process
-			if (button == 8) {
+			if (button == _CREATE) {
 				var name = text.getText().trim();
 				if (Strings.nullOrEmpty(name)) {
 					cancelPressed();
@@ -129,6 +167,17 @@ public class AddProcessAction extends Action {
 		}
 
 		private void addProcess(CategorizedDescriptor d) {
+			if (d.type != ModelType.PROCESS
+					&& d.type != ModelType.PRODUCT_SYSTEM) {
+				return;
+			}
+			var system = editor.getModel().getProductSystem();
+			if (system.processes.contains(d.id)) {
+				MsgBox.info("The product system already"
+						+ " contains process `"
+						+ Labels.name(d) + "`.");
+				cancelPressed();
+			}
 			var cmd = new CreateProcessCommand(
 					editor.getModel(), d);
 			editor.getCommandStack().execute(cmd);
