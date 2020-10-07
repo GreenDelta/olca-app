@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -15,8 +16,10 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.command.CreateProcessCommand;
+import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
@@ -67,9 +70,17 @@ public class AddProcessAction extends Action {
 			var tk = mform.getToolkit();
 			var body = UI.formBody(mform.getForm(), tk);
 			UI.gridLayout(body, 1);
+
+			// create new text
 			var nameLabel = UI.formLabel(body, tk, "Create with name");
 			nameLabel.setFont(UI.boldFont());
 			text = UI.formText(body, SWT.NONE);
+			text.addModifyListener(e -> {
+				var name = text.getText().trim();
+				getButton(_CREATE).setEnabled(Strings.notEmpty(name));
+			});
+
+			// tree
 			var selectLabel = UI.formLabel(body, tk, "Or select existing");
 			selectLabel.setFont(UI.boldFont());
 			tree = NavigationTree.forSingleSelection(body, ModelType.PROCESS);
@@ -78,35 +89,32 @@ public class AddProcessAction extends Action {
 
 			// enable/disable select button
 			tree.addSelectionChangedListener(e -> {
-				var obj = Selections.firstOf(e);
-				if (obj instanceof CategorizedDescriptor) {
-					var d = (CategorizedDescriptor) obj;
-					if (d.type == ModelType.PROCESS
-							|| d.type == ModelType.PRODUCT_SYSTEM) {
-						getButton(_SELECT).setEnabled(true);
-						return;
-					}
-				}
-				getButton(_SELECT).setEnabled(false);
+				var d = unwrap(e.getSelection());
+				getButton(_SELECT).setEnabled(d != null);
 			});
 
 			// add process on double click
 			tree.addDoubleClickListener(e -> {
-				var obj = Selections.firstOf(e);
-				if (obj instanceof CategorizedDescriptor) {
-					var d = (CategorizedDescriptor) obj;
-					if (d.type == ModelType.PROCESS
-							|| d.type == ModelType.PRODUCT_SYSTEM) {
-						addProcess(d);
-					}
+				var d = unwrap(e.getSelection());
+				if (d != null) {
+					addProcess(d);
 				}
 			});
+		}
 
-			// enable disable create button
-			text.addModifyListener(e -> {
-				var name = text.getText().trim();
-				getButton(_CREATE).setEnabled(Strings.notEmpty(name));
-			});
+		private CategorizedDescriptor unwrap(ISelection s) {
+			var obj = Selections.firstOf(s);
+			CategorizedDescriptor d = null;
+			if (obj instanceof CategorizedDescriptor) {
+				d = (CategorizedDescriptor) obj;
+			} else if (obj instanceof ModelElement) {
+				d = ((ModelElement) obj).getContent();
+			}
+			if (d == null)
+				return null;
+			var matches = d.type == ModelType.PROCESS
+					|| d.type == ModelType.PRODUCT_SYSTEM;
+			return matches ? d : null;
 		}
 
 		@Override
@@ -163,6 +171,7 @@ public class AddProcessAction extends Action {
 				process.lastChange = new Date().getTime();
 				process = Database.get().insert(process);
 				addProcess(Descriptor.of(process));
+				Navigator.refresh();
 			}
 		}
 
