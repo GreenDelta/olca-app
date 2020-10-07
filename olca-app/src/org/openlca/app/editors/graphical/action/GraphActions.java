@@ -4,8 +4,6 @@ import static org.openlca.app.editors.graphical.action.ChangeAllStateAction.MAXI
 import static org.openlca.app.editors.graphical.action.ChangeAllStateAction.MINIMIZE;
 import static org.openlca.app.editors.graphical.action.HideShowAction.HIDE;
 import static org.openlca.app.editors.graphical.action.HideShowAction.SHOW;
-import static org.openlca.app.editors.graphical.action.MarkingAction.MARK;
-import static org.openlca.app.editors.graphical.action.MarkingAction.UNMARK;
 import static org.openlca.app.editors.graphical.action.MassExpansionAction.COLLAPSE;
 import static org.openlca.app.editors.graphical.action.MassExpansionAction.EXPAND;
 import static org.openlca.app.editors.graphical.action.SearchConnectorsAction.PROVIDER;
@@ -118,18 +116,6 @@ public class GraphActions {
 
 	public static IAction saveImage(GraphEditor editor) {
 		SaveImageAction action = new SaveImageAction();
-		action.editor = editor;
-		return action;
-	}
-
-	public static IAction mark(GraphEditor editor) {
-		MarkingAction action = new MarkingAction(MARK);
-		action.editor = editor;
-		return action;
-	}
-
-	public static IAction unmark(GraphEditor editor) {
-		MarkingAction action = new MarkingAction(UNMARK);
 		action.editor = editor;
 		return action;
 	}

@@ -34,6 +34,7 @@ import org.openlca.app.editors.graphical.action.AddProcessAction;
 import org.openlca.app.editors.graphical.action.BuildSupplyChainMenuAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.LayoutMenuAction;
+import org.openlca.app.editors.graphical.action.MarkingAction;
 import org.openlca.app.editors.graphical.model.AppEditPartFactory;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
@@ -102,8 +103,8 @@ public class GraphConfig {
 				new BuildSupplyChainMenuAction(editor),
 				GraphActions.removeSupplyChain(editor),
 				GraphActions.removeAllConnections(editor),
-				GraphActions.mark(editor),
-				GraphActions.unmark(editor),
+				MarkingAction.forMarking(editor),
+				MarkingAction.forUnmarking(editor),
 				GraphActions.saveImage(editor),
 				GraphActions.expandAll(editor),
 				GraphActions.collapseAll(editor),

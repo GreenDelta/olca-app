@@ -5,53 +5,78 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.gef.commands.Command;
-import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.gef.ui.actions.UpdateAction;
+import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.command.CommandUtil;
 import org.openlca.app.editors.graphical.command.MarkingCommand;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
-class MarkingAction extends EditorAction {
+public class MarkingAction extends Action implements UpdateAction {
 
-	static final int MARK = 1;
-	static final int UNMARK = 2;
-	private List<ProcessNode> processNodes = new ArrayList<>();
+	public static final String MARK_ID = "MarkingAction.MARK";
+	public static final String UNMARK_ID = "MarkingAction.UNMARK";
+	
+	private static final int MARK = 1;
+	private static final int UNMARK = 2;
+	
 	private final int type;
+	private final GraphEditor editor;
 
-	MarkingAction(int type) {
+	private List<ProcessNode> processNodes = new ArrayList<>();
+
+	public static MarkingAction forMarking(GraphEditor editor) {
+		return new MarkingAction(editor, MARK);
+	}
+
+	public static MarkingAction forUnmarking(GraphEditor editor) {
+		return new MarkingAction(editor, UNMARK);
+	}
+
+	MarkingAction(GraphEditor editor, int type) {
+		this.editor = editor;
+		this.type = type;
 		if (type == MARK) {
-			setId(ActionIds.MARK);
+			setId(MARK_ID);
 			setText(M.Mark);
 		} else if (type == UNMARK) {
-			setId(ActionIds.UNMARK);
+			setId(UNMARK_ID);
 			setText(M.Unmark);
 		}
-		this.type = type;
 	}
 
 	@Override
 	public void run() {
-		Command actualCommand = null;
+		Command cmd = null;
 		for (ProcessNode node : processNodes) {
 			boolean mark = type == MARK;
 			if (node.isMarked() == mark)
 				continue;
-			MarkingCommand newCommand = new MarkingCommand(node);
-			actualCommand = CommandUtil.chain(newCommand, actualCommand);
+			cmd = CommandUtil.chain(
+					new MarkingCommand(node),
+					cmd);
 		}
-		if (actualCommand == null)
+		if (cmd == null)
 			return;
-		editor.getCommandStack().execute(actualCommand);
-		editor.selectionChanged(editor.getSite().getPart(), editor.getSelection());
+		editor.getCommandStack().execute(cmd);
+		editor.selectionChanged(
+				editor.getSite().getPart(),
+				editor.getSelection());
 	}
 
 	@Override
-	protected boolean accept(ISelection s) {
+	public void update() {
+		if (editor == null) {
+			setEnabled(false);
+			return;
+		}
 		boolean mark = type == MARK;
-		processNodes = GraphActions.allSelectedOf(s, ProcessNode.class)
+		processNodes = GraphActions
+				.allSelectedOf(editor, ProcessNode.class)
 				.stream()
 				.filter(node -> node.isMarked() != mark)
 				.collect(Collectors.toList());
-		return processNodes.size() > 0;
+		setEnabled(!processNodes.isEmpty());
 	}
 }

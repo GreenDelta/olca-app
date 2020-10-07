@@ -12,6 +12,7 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.action.ActionIds;
 import org.openlca.app.editors.graphical.action.AddProcessAction;
+import org.openlca.app.editors.graphical.action.MarkingAction;
 import org.openlca.app.rcp.images.Icon;
 
 class MenuProvider extends ContextMenuProvider {
@@ -85,8 +86,8 @@ class MenuProvider extends ContextMenuProvider {
 	private void addSpecialActions(IMenuManager menu) {
 		menu.add(registry.getAction(ActionIds.SAVE_IMAGE));
 		menu.add(registry.getAction(ActionIds.OPEN));
-		menu.add(registry.getAction(ActionIds.MARK));
-		menu.add(registry.getAction(ActionIds.UNMARK));
+		menu.add(registry.getAction(MarkingAction.MARK_ID));
+		menu.add(registry.getAction(MarkingAction.UNMARK_ID));
 	}
 
 	private void addLayoutActions(IMenuManager menu) {
