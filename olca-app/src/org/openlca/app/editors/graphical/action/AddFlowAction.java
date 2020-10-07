@@ -1,6 +1,5 @@
 package org.openlca.app.editors.graphical.action;
 
-import org.eclipse.gef.ui.actions.UpdateAction;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -24,40 +23,39 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.util.Strings;
 
-public class AddFlowAction extends Action implements UpdateAction {
+public class AddFlowAction extends Action {
 
-	public static final String ID = "AddFlowAction";
 	private final GraphEditor editor;
-	private ProcessNode processNode;
+	private final boolean forInput;
+	private final ProcessNode node;
 
-	public AddFlowAction(GraphEditor editor) {
+	public static AddFlowAction forInput(
+			GraphEditor editor, ProcessNode node) {
+		return new AddFlowAction(editor, node, true);
+	}
+
+	public static AddFlowAction forOutput(
+			GraphEditor editor, ProcessNode node) {
+		return new AddFlowAction(editor, node, false);
+	}
+
+	private AddFlowAction(
+			GraphEditor editor,
+			ProcessNode node,
+			boolean forInput) {
 		this.editor = editor;
-		setId(ID);
-		setText("Add a flow");
+		this.node = node;
+		this.forInput = forInput;
+		setId("AddFlowAction");
+		setText(forInput ? "Add input" : "Add output");
 		setImageDescriptor(Images.descriptor(ModelType.FLOW));
 	}
 
 	@Override
-	public void update() {
-		if (editor == null) {
-			setEnabled(false);
-			return;
-		}
-		processNode = GraphActions.firstSelectedOf(
-				editor, ProcessNode.class);
-		if (processNode == null) {
-			setEnabled(false);
-			return;
-		}
-		var d = processNode.process;
-		setEnabled(d != null && d.type == ModelType.PROCESS);
-	}
-
-	@Override
 	public void run() {
-		if (processNode == null)
+		if (node == null)
 			return;
-		var d = processNode.process;
+		var d = node.process;
 		if (d == null || d.type != ModelType.PROCESS)
 			return;
 		new Dialog().open();

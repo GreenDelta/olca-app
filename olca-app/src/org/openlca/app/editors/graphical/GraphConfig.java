@@ -100,7 +100,6 @@ public class GraphConfig {
 
 		var actions = new IAction[] {
 				new AddProcessAction(editor),
-				new AddFlowAction(editor),
 				new BuildSupplyChainMenuAction(editor),
 				GraphActions.removeSupplyChain(editor),
 				GraphActions.removeAllConnections(editor),

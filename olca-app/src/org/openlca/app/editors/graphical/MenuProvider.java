@@ -14,7 +14,9 @@ import org.openlca.app.editors.graphical.action.EditExchangeAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.MarkingAction;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
+import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.core.model.ModelType;
 
 class MenuProvider extends ContextMenuProvider {
 
@@ -35,6 +37,16 @@ class MenuProvider extends ContextMenuProvider {
 		if (exchanges.size() == 1) {
 			menu.add(new EditExchangeAction(editor, exchanges.get(0)));
 			return;
+		}
+
+		var processes = GraphActions.allSelectedOf(editor, ProcessNode.class);
+		if (processes.size() == 1) {
+			var node = processes.get(0);
+			if (node.process != null && node.process.type == ModelType.PROCESS) {
+				menu.add(AddFlowAction.forInput(editor, node));
+				menu.add(AddFlowAction.forOutput(editor, node));
+				menu.add(new Separator());
+			}
 		}
 		
 		addEditActions(menu);
@@ -62,11 +74,8 @@ class MenuProvider extends ContextMenuProvider {
 		redo.setDisabledImageDescriptor(Icon.REDO_DISABLED.descriptor());
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, redo);
 
-		// add process
 		menu.appendToGroup(GEFActionConstants.GROUP_EDIT,
 				registry.getAction(AddProcessAction.ID));
-		menu.appendToGroup(GEFActionConstants.GROUP_EDIT,
-				registry.getAction(AddFlowAction.ID));
 
 		// delete
 		var delete = registry.getAction(ActionFactory.DELETE.getId());
