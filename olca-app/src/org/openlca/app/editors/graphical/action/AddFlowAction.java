@@ -3,6 +3,7 @@ package org.openlca.app.editors.graphical.action;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -10,6 +11,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.navigation.ModelElement;
@@ -20,6 +22,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.util.Strings;
 
@@ -58,8 +61,27 @@ public class AddFlowAction extends Action {
 		var d = node.process;
 		if (d == null || d.type != ModelType.PROCESS)
 			return;
-		new Dialog().open();
-		// 1. open the dialog that returns a flow
+		var dialog = new Dialog();
+		if (dialog.open() != Window.OK || dialog.flow == null)
+			return;
+		var flow = dialog.flow;
+		var db = Database.get();
+		var process = db.get(Process.class, d.id);
+		if (process == null)
+			return;
+		if (forInput) {
+			process.input(flow, 1.0);
+		} else {
+			process.output(flow, 1.0);
+		}
+		process = db.update(process);
+
+		// TODO: hack to update the process in the graph
+		node.getChildren().clear();
+		node.minimize();
+		node.maximize();
+
+
 		// 2. ask for an amount
 		// 3. add the exchange to the process
 		// 4. update the process
@@ -114,8 +136,12 @@ public class AddFlowAction extends Action {
 			// add process on double click
 			tree.addDoubleClickListener(e -> {
 				var d = unwrap(e.getSelection());
-				if (d != null) {
-					// TODO: add flow
+				if (d == null)
+					return;
+				var flow = Database.get().get(Flow.class, d.id);
+				if (flow != null) {
+					this.flow = flow;
+					okPressed();
 				}
 			});
 		}
