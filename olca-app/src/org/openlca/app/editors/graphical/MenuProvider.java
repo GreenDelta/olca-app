@@ -11,6 +11,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.action.ActionIds;
+import org.openlca.app.editors.graphical.action.AddFlowAction;
 import org.openlca.app.editors.graphical.action.AddProcessAction;
 import org.openlca.app.editors.graphical.action.MarkingAction;
 import org.openlca.app.rcp.images.Icon;
@@ -24,7 +25,7 @@ class MenuProvider extends ContextMenuProvider {
 		super(viewer);
 		this.registry = registry;
 	}
-	
+
 	@Override
 	public void buildContextMenu(IMenuManager menu) {
 		addEditActions(menu);
@@ -52,24 +53,25 @@ class MenuProvider extends ContextMenuProvider {
 		undo.setImageDescriptor(Icon.UNDO.descriptor());
 		undo.setDisabledImageDescriptor(Icon.UNDO_DISABLED.descriptor());
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, undo);
-		
+
 		var redo = registry.getAction(ActionFactory.REDO.getId());
 		redo.setImageDescriptor(Icon.REDO.descriptor());
 		redo.setDisabledImageDescriptor(Icon.REDO_DISABLED.descriptor());
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, redo);
-		
+
 		// add process
-		menu.appendToGroup(
-				GEFActionConstants.GROUP_EDIT, 
+		menu.appendToGroup(GEFActionConstants.GROUP_EDIT,
 				registry.getAction(AddProcessAction.ID));
-		
+		menu.appendToGroup(GEFActionConstants.GROUP_EDIT,
+				registry.getAction(AddFlowAction.ID));
+
 		// delete
 		var delete = registry.getAction(ActionFactory.DELETE.getId());
 		delete.setText(M.Delete);
 		delete.setImageDescriptor(Icon.DELETE.descriptor());
 		delete.setDisabledImageDescriptor(Icon.DELETE_DISABLED.descriptor());
 		menu.appendToGroup(GEFActionConstants.GROUP_EDIT, delete);
-		
+
 	}
 
 	private void addSupplyChainActions(IMenuManager menu) {

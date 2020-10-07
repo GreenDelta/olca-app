@@ -30,6 +30,7 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.IWorkbenchPart;
 import org.openlca.app.components.ModelTransfer;
+import org.openlca.app.editors.graphical.action.AddFlowAction;
 import org.openlca.app.editors.graphical.action.AddProcessAction;
 import org.openlca.app.editors.graphical.action.BuildSupplyChainMenuAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
@@ -100,6 +101,7 @@ public class GraphConfig {
 
 		var actions = new IAction[] {
 				new AddProcessAction(editor),
+				new AddFlowAction(editor),
 				new BuildSupplyChainMenuAction(editor),
 				GraphActions.removeSupplyChain(editor),
 				GraphActions.removeAllConnections(editor),

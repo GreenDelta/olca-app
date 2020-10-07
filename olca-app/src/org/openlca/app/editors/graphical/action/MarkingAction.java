@@ -47,6 +47,21 @@ public class MarkingAction extends Action implements UpdateAction {
 	}
 
 	@Override
+	public void update() {
+		if (editor == null) {
+			setEnabled(false);
+			return;
+		}
+		boolean mark = type == MARK;
+		processNodes = GraphActions
+				.allSelectedOf(editor, ProcessNode.class)
+				.stream()
+				.filter(node -> node.isMarked() != mark)
+				.collect(Collectors.toList());
+		setEnabled(!processNodes.isEmpty());
+	}
+
+	@Override
 	public void run() {
 		Command cmd = null;
 		for (ProcessNode node : processNodes) {
@@ -63,20 +78,5 @@ public class MarkingAction extends Action implements UpdateAction {
 		editor.selectionChanged(
 				editor.getSite().getPart(),
 				editor.getSelection());
-	}
-
-	@Override
-	public void update() {
-		if (editor == null) {
-			setEnabled(false);
-			return;
-		}
-		boolean mark = type == MARK;
-		processNodes = GraphActions
-				.allSelectedOf(editor, ProcessNode.class)
-				.stream()
-				.filter(node -> node.isMarked() != mark)
-				.collect(Collectors.toList());
-		setEnabled(!processNodes.isEmpty());
 	}
 }
