@@ -14,8 +14,8 @@ import org.eclipse.swt.widgets.Composite;
 public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		org.eclipse.jface.viewers.ISelectionChangedListener {
 
-	private List<Consumer<T>> listener = new ArrayList<>();
-	private V viewer;
+	private final List<Consumer<T>> listener = new ArrayList<>();
+	private final V viewer;
 	private boolean nullable;
 	private String nullText;
 	protected Object[] viewerParameters;
@@ -57,7 +57,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 
 	@SuppressWarnings("unchecked")
 	public Consumer<T>[] getSelectionChangedListeners() {
-		return listener.toArray(new Consumer[listener.size()]);
+		return listener.toArray(new Consumer[0]);
 	}
 
 	/**
@@ -164,8 +164,9 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	protected class Null {
 
 		@Override
-		public boolean equals(Object arg0) {
-			return true;
+		public boolean equals(Object other) {
+			return other == null
+					|| this.getClass().equals(other.getClass());
 		}
 
 		@Override

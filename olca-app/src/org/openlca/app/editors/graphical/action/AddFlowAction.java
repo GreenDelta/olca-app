@@ -17,17 +17,27 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.Labels;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
+import org.openlca.app.viewers.combo.FlowPropertyViewer;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.util.Strings;
 
 public class AddFlowAction extends Action {
 
+	private final IDatabase db = Database.get();
 	private final GraphEditor editor;
 	private final boolean forInput;
 	private final ProcessNode node;
@@ -65,7 +75,6 @@ public class AddFlowAction extends Action {
 		if (dialog.open() != Window.OK || dialog.flow == null)
 			return;
 		var flow = dialog.flow;
-		var db = Database.get();
 		var process = db.get(Process.class, d.id);
 		if (process == null)
 			return;
@@ -81,7 +90,6 @@ public class AddFlowAction extends Action {
 		node.minimize();
 		node.maximize();
 
-
 		// 2. ask for an amount
 		// 3. add the exchange to the process
 		// 4. update the process
@@ -96,6 +104,8 @@ public class AddFlowAction extends Action {
 		TreeViewer tree;
 		Text text;
 		Flow flow;
+		FlowType type = FlowType.PRODUCT_FLOW;
+		FlowPropertyDescriptor quantity;
 
 		Dialog() {
 			super(UI.shell());
@@ -109,7 +119,7 @@ public class AddFlowAction extends Action {
 			UI.gridLayout(body, 1);
 
 			// create new text
-			var nameLabel = UI.formLabel(body, tk, "Create with name");
+			var nameLabel = UI.formLabel(body, tk, "Create a new flow");
 			nameLabel.setFont(UI.boldFont());
 			text = UI.formText(body, SWT.NONE);
 			text.addModifyListener(e -> {
@@ -117,11 +127,39 @@ public class AddFlowAction extends Action {
 				getButton(_CREATE).setEnabled(Strings.notEmpty(name));
 			});
 
-			// TODO: type radios
-			// Flow property
+			// flow type selection
+			var typeComp = tk.createComposite(body);
+			UI.gridData(typeComp, true, false);
+			UI.gridLayout(typeComp, 3, 5, 0).makeColumnsEqualWidth = true;
+			var types = new FlowType[] {
+					FlowType.PRODUCT_FLOW,
+					FlowType.WASTE_FLOW,
+					FlowType.ELEMENTARY_FLOW,
+			};
+			for (var type : types) {
+				var btn = tk.createButton(typeComp, Labels.of(type), SWT.RADIO);
+				if (type == FlowType.PRODUCT_FLOW) {
+					btn.setSelection(true);
+				}
+				Controls.onSelect(btn, e -> {
+					this.type = type;
+				});
+			}
+
+			// flow property
+			var propComp = tk.createComposite(body);
+			UI.gridData(propComp, true, false);
+			UI.gridLayout(propComp, 1, 5, 0);
+			var propViewer = new FlowPropertyViewer(propComp);
+			propViewer.setInput(db);
+			propViewer.selectFirst();
+			this.quantity = propViewer.getSelected();
+			propViewer.addSelectionChangedListener(prop -> {
+				this.quantity = prop;
+			});
 
 			// tree
-			var selectLabel = UI.formLabel(body, tk, "Or select existing");
+			var selectLabel = UI.formLabel(body, tk, "Or select an existing");
 			selectLabel.setFont(UI.boldFont());
 			tree = NavigationTree.forSingleSelection(body, ModelType.FLOW);
 			UI.gridData(tree.getControl(), true, true);
@@ -178,6 +216,59 @@ public class AddFlowAction extends Action {
 			createButton(comp, _SELECT, "Select extisting", false)
 					.setEnabled(false);
 			createButton(comp, _CANCEL, M.Cancel, true);
+		}
+
+		@Override
+		protected void buttonPressed(int button) {
+			if (button == _CANCEL) {
+				cancelPressed();
+				return;
+			}
+
+			if (button == _SELECT) {
+				var d = unwrap(tree.getSelection());
+				if (d == null) {
+					cancelPressed();
+					return;
+				}
+				flow = db.get(Flow.class, d.id);
+				if (flow == null) {
+					cancelPressed();
+				} else {
+					okPressed();
+				}
+				return;
+			}
+
+			if (button != _CREATE)
+				return;
+			flow = createFlow();
+			if (flow == null) {
+				cancelPressed();
+			} else {
+				okPressed();
+			}
+		}
+
+		private Flow createFlow() {
+			var prop = quantity != null
+					? db.get(FlowProperty.class, quantity.id)
+					: null;
+			if (prop == null) {
+				MsgBox.error("Cannot create a flow without a quantity");
+				return null;
+			}
+			var name = this.text.getText().trim();
+			if (Strings.nullOrEmpty(name)) {
+				MsgBox.error("A name is required.");
+				return null;
+			}
+			var type = this.type == null
+					? FlowType.PRODUCT_FLOW
+					: this.type;
+			var flow =  db.insert(Flow.of(name, type, prop));
+			Navigator.refresh();
+			return flow;
 		}
 	}
 }
