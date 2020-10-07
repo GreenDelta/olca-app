@@ -19,13 +19,13 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected Connection createDummyConnection(Request req) {
-		PolylineConnection con = (PolylineConnection) super.createDummyConnection(req);
+		var con = (PolylineConnection) super.createDummyConnection(req);
 		con.setForegroundColor(Link.COLOR);
 		if (!(req instanceof CreateConnectionRequest)) {
 			con.setTargetDecoration(new PolygonDecoration());
 			return con;
 		}
-		CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) req).getStartCommand();
+		var cmd = (CreateLinkCommand) ((CreateConnectionRequest) req).getStartCommand();
 		if (cmd.output != null)
 			con.setTargetDecoration(new PolygonDecoration());
 		else if (cmd.input != null)

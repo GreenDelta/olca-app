@@ -8,7 +8,7 @@ import org.eclipse.draw2d.GridLayout;
 class IOFigure extends Figure {
 
 	IOFigure() {
-		GridLayout layout = new GridLayout(2, true);
+		var layout = new GridLayout(2, true);
 		layout.horizontalSpacing = 4;
 		layout.verticalSpacing = 0;
 		layout.marginHeight = 4;

@@ -5,6 +5,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
+import org.eclipse.gef.requests.SelectionRequest;
 import org.eclipse.gef.tools.ConnectionDragCreationTool;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.policy.ProcessLinkCreatePolicy;
@@ -13,11 +14,10 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 
 	@Override
 	protected IFigure createFigure() {
-		ExchangeNode node = getModel();
-		ExchangeFigure figure = new ExchangeFigure(node);
+		var node = getModel();
+		var figure = new ExchangeFigure(node);
 		node.figure = figure;
-		String name = node.getName();
-		figure.setText(name);
+		figure.setText(node.getName());
 		return figure;
 	}
 
@@ -27,7 +27,13 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 	}
 
 	@Override
-	public DragTracker getDragTracker(Request request) {
+	public DragTracker getDragTracker(Request req) {
+		
+		if (req instanceof SelectionRequest) {
+			var sel = (SelectionRequest) req;
+			if (sel.getLastButtonPressed() == 3)
+				return super.getDragTracker(req);
+		}
 		return new ConnectionDragCreationTool();
 	}
 
@@ -40,8 +46,17 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 	protected void refreshVisuals() {
 		if (getModel().isDummy())
 			return;
-		int hAlign = getModel().exchange.isInput ? SWT.LEFT : SWT.RIGHT;
-		getFigure().getParent().setConstraint(getFigure(), new GridData(hAlign, SWT.TOP, true, false));
+		int hAlign = getModel().exchange.isInput
+				? SWT.LEFT
+				: SWT.RIGHT;
+		var layout = new GridData(hAlign, SWT.TOP, true, false);
+		getFigure()
+				.getParent()
+				.setConstraint(getFigure(), layout);
 	}
 
+	@Override
+	public boolean isSelectable() {
+		return true;
+	}
 }

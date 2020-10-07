@@ -182,11 +182,11 @@ public class GraphEditor extends GraphicalEditor {
 	}
 
 	@Override
-	public void doSave(final IProgressMonitor monitor) {
+	public void doSave(IProgressMonitor monitor) {
 		systemEditor.doSave(monitor);
 	}
 
-	public void updateModel(final IProgressMonitor monitor) {
+	public void updateModel(IProgressMonitor monitor) {
 		monitor.beginTask(M.UpdatingProductSystem, IProgressMonitor.UNKNOWN);
 		systemEditor.updateModel();
 		monitor.done();
@@ -289,7 +289,7 @@ public class GraphEditor extends GraphicalEditor {
 
 	public void setRouted(boolean routed) {
 		this.routed = routed;
-		ConnectionRouter router = routed
+		var router = routed
 				? TreeConnectionRouter.instance
 				: ConnectionRouter.NULL;
 		for (var node : model.getChildren()) {
