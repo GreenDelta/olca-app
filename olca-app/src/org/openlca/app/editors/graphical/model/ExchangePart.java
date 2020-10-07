@@ -28,7 +28,6 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 
 	@Override
 	public DragTracker getDragTracker(Request req) {
-		
 		if (req instanceof SelectionRequest) {
 			var sel = (SelectionRequest) req;
 			if (sel.getLastButtonPressed() == 3)

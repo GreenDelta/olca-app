@@ -151,23 +151,18 @@ public class GraphEditor extends GraphicalEditor {
 		}
 	}
 
-	private GraphConfig createGraphConfig() {
-		var conf = new GraphConfig(getGraphicalViewer());
-		conf.actions = getActionRegistry();
-		conf.commandStack = getCommandStack();
-		conf.model = model;
-		return conf;
-	}
-
 	@Override
 	protected void configureGraphicalViewer() {
 		model = createModel();
 		super.configureGraphicalViewer();
-		config = createGraphConfig();
+		config = new GraphConfig(getGraphicalViewer());
+		config.actions = getActionRegistry();
+		config.commandStack = getCommandStack();
+		config.model = model;
 		config.configureGraphicalViewer();
 		actionIds = config.configureActions();
 		config.configureKeyHandler();
-		config.configureContextMenu();
+		new MenuProvider(this, getActionRegistry());
 	}
 
 	@Override

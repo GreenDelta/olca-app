@@ -27,7 +27,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.IWorkbenchPart;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.editors.graphical.action.AddFlowAction;
@@ -71,8 +70,8 @@ public class GraphConfig {
 			}
 
 		});
-		Transfer transfer = ModelTransfer.getInstance();
-		DropTarget dropTarget = new DropTarget(viewer.getControl(),
+		var transfer = ModelTransfer.getInstance();
+		var dropTarget = new DropTarget(viewer.getControl(),
 				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
 		dropTarget.setTransfer(transfer);
 		dropTarget.addDropListener(new GraphDropListener(
@@ -134,7 +133,9 @@ public class GraphConfig {
 	void configureZoomManager() {
 		getZoomManager().setZoomLevels(ZOOM_LEVELS);
 		getZoomManager().setZoomAnimationStyle(ZoomManager.ANIMATE_ZOOM_IN_OUT);
-		viewer.setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.NONE), MouseWheelZoomHandler.SINGLETON);
+		viewer.setProperty(
+				MouseWheelHandler.KeyGenerator.getKey(SWT.NONE), 
+				MouseWheelZoomHandler.SINGLETON);
 	}
 
 	void configureKeyHandler() {
@@ -146,11 +147,6 @@ public class GraphConfig {
 		keyHandler.put(KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0), zoomIn);
 		keyHandler.put(KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0), zoomOut);
 		viewer.setKeyHandler(keyHandler);
-	}
-
-	void configureContextMenu() {
-		MenuProvider provider = new MenuProvider(viewer, actions);
-		viewer.setContextMenu(provider);
 	}
 
 	private ZoomManager getZoomManager() {

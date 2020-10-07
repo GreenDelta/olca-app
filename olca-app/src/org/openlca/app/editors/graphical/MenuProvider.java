@@ -1,9 +1,6 @@
 package org.openlca.app.editors.graphical;
 
-import java.util.Collection;
-
 import org.eclipse.gef.ContextMenuProvider;
-import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.jface.action.IMenuManager;
@@ -13,21 +10,33 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.action.ActionIds;
 import org.openlca.app.editors.graphical.action.AddFlowAction;
 import org.openlca.app.editors.graphical.action.AddProcessAction;
+import org.openlca.app.editors.graphical.action.EditExchangeAction;
+import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.MarkingAction;
+import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.rcp.images.Icon;
 
 class MenuProvider extends ContextMenuProvider {
 
+	private final GraphEditor editor;
 	private final ActionRegistry registry;
-	private Collection<String> actionIds;
 
-	public MenuProvider(EditPartViewer viewer, ActionRegistry registry) {
-		super(viewer);
+	public MenuProvider(GraphEditor editor, ActionRegistry registry) {
+		super(editor.getGraphicalViewer());
 		this.registry = registry;
+		this.editor = editor;
+		editor.getGraphicalViewer().setContextMenu(this);
 	}
-
+	
 	@Override
 	public void buildContextMenu(IMenuManager menu) {
+
+		var exchanges = GraphActions.allSelectedOf(editor, ExchangeNode.class);
+		if (exchanges.size() == 1) {
+			menu.add(new EditExchangeAction(editor, exchanges.get(0)));
+			return;
+		}
+		
 		addEditActions(menu);
 		addSupplyChainActions(menu);
 		menu.add(new Separator());
@@ -37,13 +46,7 @@ class MenuProvider extends ContextMenuProvider {
 		menu.add(new Separator());
 		addLayoutActions(menu);
 		menu.add(new Separator());
-		addActionExtensions(menu);
-		menu.add(new Separator());
 		addShowViewActions(menu);
-	}
-
-	public void setActionExtensions(Collection<String> actionIds) {
-		this.actionIds = actionIds;
 	}
 
 	/** Undo, Redo, and Delete */
@@ -100,14 +103,9 @@ class MenuProvider extends ContextMenuProvider {
 		menu.add(registry.getAction(ActionIds.LAYOUT_MENU));
 	}
 
-	private void addActionExtensions(IMenuManager menu) {
-		if (actionIds != null)
-			for (String actionId : actionIds)
-				menu.add(registry.getAction(actionId));
-	}
-
 	private void addShowViewActions(IMenuManager menu) {
 		menu.add(registry.getAction(ActionIds.SHOW_OUTLINE));
 		menu.add(registry.getAction(ActionIds.OPEN_MINIATURE_VIEW));
 	}
+	
 }
