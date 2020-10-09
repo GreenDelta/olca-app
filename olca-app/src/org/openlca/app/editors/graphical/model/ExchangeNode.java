@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 
@@ -38,9 +39,14 @@ public class ExchangeNode extends Node {
 
 	@Override
 	public String getName() {
-		if (exchange == null)
+		if (exchange == null) {
 			return "";
-		return Labels.name(exchange.flow);
+		}
+		return !editor.config.showFlowAmounts
+				? Labels.name(exchange.flow)
+				: Numbers.format(exchange.amount, 2)
+				+ " " + Labels.name(exchange.unit)
+				+ " " + Labels.name(exchange.flow);
 	}
 
 	public boolean matches(ExchangeNode node) {
