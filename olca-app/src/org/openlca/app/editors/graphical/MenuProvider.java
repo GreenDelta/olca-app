@@ -12,6 +12,7 @@ import org.openlca.app.editors.graphical.action.AddFlowAction;
 import org.openlca.app.editors.graphical.action.AddProcessAction;
 import org.openlca.app.editors.graphical.action.EditExchangeAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
+import org.openlca.app.editors.graphical.action.GraphSettingsAction;
 import org.openlca.app.editors.graphical.action.MarkingAction;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -115,6 +116,7 @@ class MenuProvider extends ContextMenuProvider {
 	private void addShowViewActions(IMenuManager menu) {
 		menu.add(registry.getAction(ActionIds.SHOW_OUTLINE));
 		menu.add(registry.getAction(ActionIds.OPEN_MINIATURE_VIEW));
+		menu.add(new GraphSettingsAction(editor));
 	}
 	
 }

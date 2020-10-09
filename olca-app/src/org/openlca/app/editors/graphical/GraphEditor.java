@@ -75,7 +75,6 @@ public class GraphEditor extends GraphicalEditor {
 	private OutlinePage outline;
 	private boolean routed;
 	private ISelection selection;
-	CommandStack commandStack;
 	private boolean initialized = false;
 
 	// TODO: we may do not need this later when we build our
@@ -271,7 +270,7 @@ public class GraphEditor extends GraphicalEditor {
 				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
 		dropTarget.setTransfer(transfer);
 		dropTarget.addDropListener(new GraphDropListener(
-				model, transfer, commandStack));
+				model, transfer, getCommandStack()));
 		viewer.getEditDomain().setActiveTool(
 				new PanningSelectionTool());
 		viewer.setContents(model);
