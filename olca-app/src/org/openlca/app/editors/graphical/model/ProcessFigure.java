@@ -1,7 +1,5 @@
 package org.openlca.app.editors.graphical.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -55,7 +53,7 @@ class ProcessFigure extends Figure {
 	}
 
 	private void initializeFigure() {
-		String tooltip = null;
+		String tooltip;
 		if (node.process instanceof ProcessDescriptor) {
 			ProcessDescriptor d = (ProcessDescriptor) node.process;
 			tooltip = Labels.of(d.processType)
@@ -128,8 +126,9 @@ class ProcessFigure extends Figure {
 		g.setBackgroundColor(ColorConstants.white);
 		g.fillRectangle(new Rectangle(getLocation(), getSize()));
 		paintTop(g);
-		if (!node.isMinimized() || Animation.isRunning())
+		if (!node.isMinimized() || Animation.isRunning()) {
 			paintTable(g);
+		}
 		g.popState();
 		super.paintFigure(g);
 	}
@@ -149,15 +148,14 @@ class ProcessFigure extends Figure {
 	}
 
 	private void paintTop(Graphics graphics) {
-		Image file = null;
+		Image file;
 		if (node.isMarked())
 			file = Icon.PROCESS_BG_MARKED.get();
-		if (node.process instanceof ProductSystemDescriptor)
+		else if (node.process instanceof ProductSystemDescriptor)
 			file = Icon.PROCESS_BG_SYS.get();
 		else if (node.process.isFromLibrary()) {
 			file = Icon.PROCESS_BG_LIB.get();
-		}
-		else if (isLCI())
+		} else if (isLCI())
 			file = Icon.PROCESS_BG_LCI.get();
 		else
 			file = Icon.PROCESS_BG.get();
@@ -180,8 +178,7 @@ class ProcessFigure extends Figure {
 		int y = getLocation().y;
 		graphics.drawLine(new Point(x + margin, y + MINIMUM_HEIGHT
 				+ TEXT_HEIGHT + MARGIN_HEIGHT), new Point(x + width - margin,
-						y
-								+ MINIMUM_HEIGHT + TEXT_HEIGHT + MARGIN_HEIGHT));
+				y + MINIMUM_HEIGHT + TEXT_HEIGHT + MARGIN_HEIGHT));
 		if (height - margin > MINIMUM_HEIGHT + margin)
 			graphics.drawLine(new Point(x + width / 2, y + MINIMUM_HEIGHT + margin), new Point(x + width / 2, y
 					+ height - margin));
@@ -210,15 +207,6 @@ class ProcessFigure extends Figure {
 
 	ProcessExpander getRightExpander() {
 		return rightExpander;
-	}
-
-	ExchangeFigure[] getExchangeFigures() {
-		List<ExchangeFigure> figures = new ArrayList<>();
-		for (ExchangeFigure o2 : getIOFigure().getChildren())
-			figures.add(o2);
-		ExchangeFigure[] result = new ExchangeFigure[figures.size()];
-		figures.toArray(result);
-		return result;
 	}
 
 	@Override

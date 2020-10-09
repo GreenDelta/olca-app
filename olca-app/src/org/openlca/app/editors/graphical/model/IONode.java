@@ -1,12 +1,12 @@
 package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
+import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
+import org.openlca.util.Strings;
 
 class IONode extends Node {
 
@@ -30,13 +30,17 @@ class IONode extends Node {
 	}
 
 	private List<Exchange> filter(List<Exchange> exchanges, boolean inputs) {
-		List<Exchange> result = new ArrayList<>();
-		for (Exchange e : exchanges) {
+		var result = new ArrayList<Exchange>();
+		for (var e : exchanges) {
 			if (e.isInput == inputs
 					&& e.flow.flowType != FlowType.ELEMENTARY_FLOW)
 				result.add(e);
 		}
-		Collections.sort(result, new ExchangeComparator());
+		result.sort((e1, e2) -> {
+			var name1 = Labels.name(e1.flow);
+			var name2 = Labels.name(e2.flow);
+			return Strings.compare(name1, name2);
+		});
 		return result;
 	}
 
@@ -50,25 +54,5 @@ class IONode extends Node {
 	public List<ExchangeNode> getChildren() {
 		return (List<ExchangeNode>) super.getChildren();
 	}
-
-	private final class ExchangeComparator implements Comparator<Exchange> {
-
-		@Override
-		public int compare(Exchange o1, Exchange o2) {
-			String s1 = o1.flow.name.toLowerCase();
-			String s2 = o2.flow.name.toLowerCase();
-			int length = s1.length();
-			if (length > s2.length())
-				length = s2.length();
-			for (int i = 0; i < length; i++) {
-				if (s1.charAt(i) > s2.charAt(i))
-					return 1;
-				if (s1.charAt(i) < s2.charAt(i))
-					return -1;
-			}
-			return 0;
-		}
-
-	};
 
 }

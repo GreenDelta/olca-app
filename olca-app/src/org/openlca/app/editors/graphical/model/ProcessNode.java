@@ -274,7 +274,7 @@ public class ProcessNode extends Node {
 			if (process instanceof ProductSystemDescriptor)
 				return ProcessFigure.MINIMUM_HEIGHT + 3;
 			if (process instanceof ProcessDescriptor) {
-				ProcessDescriptor p = (ProcessDescriptor) process;
+				var p = (ProcessDescriptor) process;
 				return p.processType == ProcessType.LCI_RESULT
 						? ProcessFigure.MINIMUM_HEIGHT + 3
 						: ProcessFigure.MINIMUM_HEIGHT;
