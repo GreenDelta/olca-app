@@ -16,15 +16,15 @@ public class GraphConfig {
 	}
 
 	/**
-	 * Set the values from the given configuration to
-	 * this configuration.
+	 * Copies the settings of this configuration to the
+	 * given configuration.
 	 */
-	public void set(GraphConfig other) {
+	public void applyOn(GraphConfig other) {
 		if (other == null)
 			return;
-		showFlowIcons = other.showFlowIcons;
-		showFlowAmounts = other.showFlowAmounts;
-		showElementaryFlows = other.showElementaryFlows;
+		other.showFlowIcons = showFlowIcons;
+		other.showFlowAmounts = showFlowAmounts;
+		other.showElementaryFlows = showElementaryFlows;
 	}
 
 	@Override
