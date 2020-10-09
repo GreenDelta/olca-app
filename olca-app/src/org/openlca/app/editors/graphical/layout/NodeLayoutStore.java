@@ -98,7 +98,7 @@ public final class NodeLayoutStore {
 			node.apply(info);
 			return;
 		}
-		node = ProcessNode.create(info.id);
+		node = ProcessNode.create(model.editor, info.id);
 		if (node == null)
 			return;
 		model.add(node);

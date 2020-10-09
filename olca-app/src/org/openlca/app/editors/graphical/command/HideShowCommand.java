@@ -38,7 +38,7 @@ public class HideShowCommand extends Command {
 	public void execute() {
 		ProcessNode node = model.getProcessNode(process.id);
 		if (type == SHOW && node == null) {
-			node = new ProcessNode(process);
+			node = new ProcessNode(model.editor, process);
 			model.add(node);
 			model.editor.createNecessaryLinks(node);
 		}

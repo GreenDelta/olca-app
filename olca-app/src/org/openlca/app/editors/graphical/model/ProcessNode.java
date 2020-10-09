@@ -10,6 +10,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
@@ -22,7 +23,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
@@ -37,7 +37,8 @@ public class ProcessNode extends Node {
 	private boolean minimized = true;
 	private boolean marked = false;
 
-	public ProcessNode(CategorizedDescriptor d) {
+	public ProcessNode(GraphEditor editor, CategorizedDescriptor d) {
+		super(editor);
 		this.process = d;
 	}
 
@@ -46,13 +47,15 @@ public class ProcessNode extends Node {
 	 * process or product system (a sub-system). If it is an invalid ID we return
 	 * null, so you need to check that.
 	 */
-	public static ProcessNode create(long id) {
+	public static ProcessNode create(GraphEditor editor, long id) {
 		var cache = Cache.getEntityCache();
 		CategorizedDescriptor d = cache.get(ProcessDescriptor.class, id);
 		if (d == null) {
 			d = cache.get(ProductSystemDescriptor.class, id);
 		}
-		return d != null ? new ProcessNode(d) : null;
+		return d != null
+				? new ProcessNode(editor, d)
+				: null;
 	}
 
 	@Override
@@ -167,12 +170,13 @@ public class ProcessNode extends Node {
 					continue;
 				list.add(e);
 			}
-			add(new IONode(list));
+			add(new IONode(editor, list));
 		} else if (this.process.type == ModelType.PRODUCT_SYSTEM) {
-			ProductSystemDao dao = new ProductSystemDao(Database.get());
-			ProductSystem s = dao.getForId(this.process.id);
-			if (s != null && s.referenceExchange != null) {
-				add(new IONode(Collections.singletonList(s.referenceExchange)));
+			var dao = new ProductSystemDao(Database.get());
+			var system = dao.getForId(this.process.id);
+			if (system != null && system.referenceExchange != null) {
+				add(new IONode(editor,
+						Collections.singletonList(system.referenceExchange)));
 			}
 		}
 	}

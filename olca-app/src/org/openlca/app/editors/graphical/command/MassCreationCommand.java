@@ -72,7 +72,7 @@ public class MassCreationCommand extends Command {
 	private void addNode(CategorizedDescriptor process) {
 		if (sysNode.getProcessNode(process.id) != null)
 			return;
-		ProcessNode node = new ProcessNode(process);
+		ProcessNode node = new ProcessNode(sysNode.editor, process);
 		sysNode.getProductSystem().processes.add(process.id);
 		sysNode.add(node);
 		createdNodes.add(node);

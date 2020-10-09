@@ -35,7 +35,7 @@ public class CreateProcessCommand extends Command {
 	@Override
 	public void execute() {
 		model.getProductSystem().processes.add(process.id);
-		model.add(new ProcessNode(process));
+		model.add(new ProcessNode(model.editor, process));
 		if (model.editor.getOutline() != null)
 			model.editor.getOutline().refresh();
 		model.editor.setDirty(true);

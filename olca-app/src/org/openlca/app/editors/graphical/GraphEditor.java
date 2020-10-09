@@ -147,7 +147,7 @@ public class GraphEditor extends GraphicalEditor {
 		var refProcess = getSystemEditor().getModel().referenceProcess;
 		if (refProcess == null)
 			return node;
-		ProcessNode p = ProcessNode.create(refProcess.id);
+		ProcessNode p = ProcessNode.create(this, refProcess.id);
 		if (p != null) {
 			node.add(p);
 		}
@@ -356,7 +356,7 @@ public class GraphEditor extends GraphicalEditor {
 		model = new ProductSystemNode(this);
 		getSystemEditor().getModel().processes.stream()
 				.filter(Objects::nonNull)
-				.map(ProcessNode::create)
+				.map(id -> ProcessNode.create(this, id))
 				.filter(Objects::nonNull)
 				.forEach(node -> model.add(node));
 		var viewer = getGraphicalViewer();

@@ -130,7 +130,7 @@ class ProcessExpander extends ImageFigure {
 		ProcessNode node = sysNode.getProcessNode(processID);
 		if (node != null)
 			return node;
-		node = ProcessNode.create(processID);
+		node = ProcessNode.create(sysNode.editor, processID);
 		sysNode.add(node);
 		return node;
 	}

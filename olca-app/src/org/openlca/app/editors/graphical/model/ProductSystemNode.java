@@ -11,15 +11,14 @@ import org.openlca.core.model.ProductSystem;
 
 public class ProductSystemNode extends Node {
 
-	public final GraphEditor editor;
 	public final MutableProcessLinkSearchMap linkSearch;
 	public final FlowTable flows = FlowTable.create(Database.get());
 
 	public ProductSystemNode(GraphEditor editor) {
+		super(editor);
 		List<ProcessLink> links = editor.getSystemEditor()
 				.getModel().processLinks;
 		this.linkSearch = new MutableProcessLinkSearchMap(links);
-		this.editor = editor;
 	}
 
 	@SuppressWarnings("unchecked")

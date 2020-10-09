@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical.model;
 
 import java.util.Objects;
 
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -10,7 +11,8 @@ public class ExchangeNode extends Node {
 
 	public final Exchange exchange;
 
-	public ExchangeNode(Exchange exchange) {
+	public ExchangeNode(GraphEditor editor, Exchange exchange) {
+		super(editor);
 		this.exchange = exchange;
 	}
 
