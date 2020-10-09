@@ -11,17 +11,18 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.layout.Animation;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
-import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.Descriptor;
 
 class ExchangeFigure extends Label {
 
 	private static final Color BACKGROUND_COLOR = ColorConstants.white;
-	private static final Color TEXT_COLOR = ColorConstants.gray;
-	private static final Color TEXT_HIGHLIGHTED_COLOR = ColorConstants.lightBlue;
+	private static final Color TEXT_COLOR = Colors.get(33, 33, 33);
+	private static final Color TEXT_HIGHLIGHTED_COLOR = Colors.get(232, 234, 246);
+
 	private final ExchangeNode node;
 
 	ExchangeFigure(ExchangeNode node) {

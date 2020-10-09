@@ -75,20 +75,29 @@ class ProcessFigure extends Figure {
 	}
 
 	private void createHeader() {
-		Figure top = new Figure();
-		GridLayout topLayout = new GridLayout(3, false);
-		topLayout.horizontalSpacing = 0;
-		topLayout.verticalSpacing = 0;
-		topLayout.marginHeight = 0;
-		topLayout.marginWidth = 0;
-		top.setLayoutManager(topLayout);
+
+		var layout = new GridLayout(3, false);
+		layout.horizontalSpacing = 0;
+		layout.verticalSpacing = 0;
+		layout.marginHeight = 0;
+		layout.marginWidth = 0;
+
+		var top = new Figure();
+		top.setLayoutManager(layout);
+
 		leftExpander = new ProcessExpander(node, Side.INPUT);
-		rightExpander = new ProcessExpander(node, Side.OUTPUT);
 		top.add(leftExpander, new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		top.add(new Label(node.getName()), new GridData(SWT.FILL, SWT.FILL, true, false));
+
+		var label = new Label(node.getName());
+		// label.setIcon(Images.get(node.process));
+		top.add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
+
+		rightExpander = new ProcessExpander(node, Side.OUTPUT);
 		top.add(rightExpander, new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+
 		add(top, new GridData(SWT.FILL, SWT.FILL, true, false));
-		GridData dummyGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+
+		var dummyGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		dummyGridData.heightHint = TEXT_HEIGHT + 3 * MARGIN_HEIGHT;
 		add(new Figure(), dummyGridData);
 	}

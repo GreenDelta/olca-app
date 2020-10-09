@@ -29,7 +29,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.ui.IWorkbenchPart;
 import org.openlca.app.components.ModelTransfer;
-import org.openlca.app.editors.graphical.action.AddFlowAction;
 import org.openlca.app.editors.graphical.action.AddProcessAction;
 import org.openlca.app.editors.graphical.action.BuildSupplyChainMenuAction;
 import org.openlca.app.editors.graphical.action.GraphActions;

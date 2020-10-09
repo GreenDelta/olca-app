@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
@@ -14,7 +14,6 @@ import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.util.Labels;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.Exchange;
@@ -48,9 +47,8 @@ public class ProcessNode extends Node {
 	 * null, so you need to check that.
 	 */
 	public static ProcessNode create(long id) {
-		CategorizedDescriptor d = null;
-		EntityCache cache = Cache.getEntityCache();
-		d = cache.get(ProcessDescriptor.class, id);
+		var cache = Cache.getEntityCache();
+		CategorizedDescriptor d = cache.get(ProcessDescriptor.class, id);
 		if (d == null) {
 			d = cache.get(ProductSystemDescriptor.class, id);
 		}
@@ -174,7 +172,7 @@ public class ProcessNode extends Node {
 			ProductSystemDao dao = new ProductSystemDao(Database.get());
 			ProductSystem s = dao.getForId(this.process.id);
 			if (s != null && s.referenceExchange != null) {
-				add(new IONode(Arrays.asList(s.referenceExchange)));
+				add(new IONode(Collections.singletonList(s.referenceExchange)));
 			}
 		}
 	}
@@ -230,9 +228,7 @@ public class ProcessNode extends Node {
 	public List<ExchangeNode> getExchangeNodes() {
 		List<ExchangeNode> list = new ArrayList<>();
 		for (IONode io : getChildren()) {
-			for (ExchangeNode n : io.getChildren()) {
-				list.add(n);
-			}
+			list.addAll(io.getChildren());
 		}
 		return list;
 	}
