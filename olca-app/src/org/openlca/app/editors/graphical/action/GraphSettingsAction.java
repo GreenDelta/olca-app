@@ -32,7 +32,7 @@ public class GraphSettingsAction extends Action {
 		var config = GraphConfig.from(editor.config);
 		if (new Dialog(config).open() == Window.OK) {
 			config.applyOn(editor.config);
-			editor.getModel().refreshChildren();
+			editor.refresh();
 		}
 	}
 

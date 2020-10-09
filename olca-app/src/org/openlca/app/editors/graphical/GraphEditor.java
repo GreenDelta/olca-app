@@ -12,6 +12,7 @@ import org.eclipse.draw2d.LayeredPane;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.gef.DefaultEditDomain;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
@@ -65,8 +66,8 @@ import org.openlca.core.model.ProcessLink;
 public class GraphEditor extends GraphicalEditor {
 
 	public static final String ID = "editors.productsystem.graphical";
-	public static final double[] ZOOM_LEVELS = new double[] {
-			0.01, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0 };
+	public static final double[] ZOOM_LEVELS = new double[]{
+			0.01, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0};
 
 	// TODO: save this in the same way like the layout is currently stored
 	public final GraphConfig config = new GraphConfig();
@@ -216,7 +217,7 @@ public class GraphEditor extends GraphicalEditor {
 			}
 		};
 
-		var actions = new IAction[] {
+		var actions = new IAction[]{
 				new AddProcessAction(this),
 				new BuildSupplyChainMenuAction(this),
 				GraphActions.removeSupplyChain(this),
@@ -370,11 +371,34 @@ public class GraphEditor extends GraphicalEditor {
 		}
 	}
 
+	/**
+	 * Collapse all process nodes in the editor. Only the
+	 * reference process will be added.
+	 */
 	public void collapse() {
 		model = createModel();
-		if (getGraphicalViewer() != null) {
-			getGraphicalViewer().deselectAll();
-			getGraphicalViewer().setContents(model);
+		var viewer = getGraphicalViewer();
+		if (viewer == null)
+			return;
+		viewer.deselectAll();
+		viewer.setContents(model);
+	}
+
+	/**
+	 * Calls refresh on all created editparts.
+	 */
+	public void refresh() {
+		var viewer = getGraphicalViewer();
+		if (viewer == null)
+			return;
+		var reg = viewer.getEditPartRegistry();
+		if (reg == null)
+			return;
+		for (Object obj : reg.values()) {
+			if (obj instanceof EditPart) {
+				var part = (EditPart) obj;
+				part.refresh();
+			}
 		}
 	}
 
