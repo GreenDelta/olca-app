@@ -87,10 +87,12 @@ public class Images {
 	}
 
 	public static Image get(FlowType type) {
-		ModelIcon icon = icon(type);
-		if (icon == null)
+		if (type == null)
 			return null;
-		return ImageManager.get(icon);
+		ModelIcon icon = icon(type);
+		return icon == null
+				? null
+				: ImageManager.get(icon);
 	}
 
 	public static Image get(ProcessType type) {

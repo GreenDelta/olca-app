@@ -30,6 +30,12 @@ public class ExchangeNode extends Node {
 		return exchange.flow.flowType == FlowType.WASTE_FLOW;
 	}
 
+	public FlowType flowType() {
+		return exchange == null || exchange.flow == null
+				? null
+				: exchange.flow.flowType;
+	}
+
 	@Override
 	public String getName() {
 		if (exchange == null)

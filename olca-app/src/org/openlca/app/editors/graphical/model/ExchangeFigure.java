@@ -14,7 +14,6 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
-import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.Descriptor;
 
 class ExchangeFigure extends Label {
@@ -36,8 +35,8 @@ class ExchangeFigure extends Label {
 				: TEXT_COLOR);
 		setBackgroundColor(BACKGROUND_COLOR);
 		setToolTip(new Label(tooltip()));
-		var flowType = flowType();
-		if (flowType != null) {
+		var flowType = node.flowType();
+		if (flowType != null && node.config().showFlowIcons) {
 			setIcon(Images.get(flowType));
 		}
 	}
@@ -46,7 +45,7 @@ class ExchangeFigure extends Label {
 		var exchange = node.exchange;
 		if (exchange == null || exchange.flow == null)
 			return "";
-		var type = flowType();
+		var type = node.flowType();
 		var prefix = type == null
 				? "?"
 				: Labels.of(type);
@@ -73,12 +72,6 @@ class ExchangeFigure extends Label {
 					? BACKGROUND_COLOR
 					: TEXT_COLOR);
 		}
-	}
-
-	private FlowType flowType() {
-		return node.exchange != null && node.exchange.flow != null
-				? node.exchange.flow.flowType
-				: null;
 	}
 
 	@Override

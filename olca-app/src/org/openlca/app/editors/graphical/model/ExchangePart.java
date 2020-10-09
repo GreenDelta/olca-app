@@ -9,6 +9,7 @@ import org.eclipse.gef.requests.SelectionRequest;
 import org.eclipse.gef.tools.ConnectionDragCreationTool;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.policy.ProcessLinkCreatePolicy;
+import org.openlca.app.rcp.images.Images;
 
 class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 
@@ -43,12 +44,23 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 
 	@Override
 	protected void refreshVisuals() {
-		if (getModel().isDummy())
+		var node = getModel();
+		if (node.isDummy())
 			return;
+
+		if (!(node.figure instanceof ExchangeFigure))
+			return;
+		var figure = (ExchangeFigure) node.figure;
+
+		var icon = node.config().showFlowIcons
+				? Images.get(node.flowType())
+				: null;
+		figure.setIcon(icon);
+
 		var layout = new GridData(
 				SWT.LEFT, SWT.TOP, true, false);
-		getFigure().getParent()
-				.setConstraint(getFigure(), layout);
+
+		figure.getParent().setConstraint(figure, layout);
 	}
 
 	@Override

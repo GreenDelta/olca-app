@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
+import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 
 abstract class Node {
@@ -18,6 +19,12 @@ abstract class Node {
 
 	Node(GraphEditor editor) {
 		this.editor = editor;
+	}
+
+	public GraphConfig config() {
+		return editor != null
+				? editor.config
+				: new GraphConfig();
 	}
 
 	public Node parent() {
