@@ -68,6 +68,9 @@ public class GraphEditor extends GraphicalEditor {
 	public static final double[] ZOOM_LEVELS = new double[] {
 			0.01, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0 };
 
+	// TODO: save this in the same way like the layout is currently stored
+	public final GraphConfig config = new GraphConfig();
+
 	private final ProductSystemEditor systemEditor;
 	private final LayoutType layoutType = LayoutType.TREE_LAYOUT;
 

@@ -74,8 +74,7 @@ public final class NodeLayoutStore {
 		w.endObject();
 	}
 
-	public static boolean loadLayout(ProductSystemNode node)
-			throws NodeLayoutException {
+	public static boolean loadLayout(ProductSystemNode node) {
 		if (node == null || node.getProductSystem() == null)
 			return false;
 		File file = getLayoutFile(node.getProductSystem());
@@ -93,8 +92,7 @@ public final class NodeLayoutStore {
 		}
 	}
 
-	private static void apply(NodeLayoutInfo info, ProductSystemNode model)
-			throws NodeLayoutException {
+	private static void apply(NodeLayoutInfo info, ProductSystemNode model) {
 		ProcessNode node = model.getProcessNode(info.id);
 		if (node != null) {
 			node.apply(info);

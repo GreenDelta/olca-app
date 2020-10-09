@@ -51,7 +51,7 @@ class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 
 	@Override
 	public boolean isSelectable() {
-		return false;
+		return true;
 	}
 
 	private class CommandStackChangedListener implements CommandStackEventListener {

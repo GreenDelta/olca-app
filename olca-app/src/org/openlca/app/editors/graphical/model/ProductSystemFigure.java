@@ -9,7 +9,6 @@ import org.eclipse.draw2d.LineBorder;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.LayoutType;
 import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
-import org.openlca.app.editors.graphical.layout.NodeLayoutStore.NodeLayoutException;
 
 class ProductSystemFigure extends Figure {
 
@@ -45,7 +44,7 @@ class ProductSystemFigure extends Figure {
 			node.editor.setInitialized(true);
 			try {
 				layoutLoaded = NodeLayoutStore.loadLayout(node);
-			} catch (NodeLayoutException e) {
+			} catch (Exception e) {
 				layoutLoaded = false;
 			}
 		}
@@ -57,4 +56,5 @@ class ProductSystemFigure extends Figure {
 		refNode.expandRight();
 		getLayoutManager().layout(this, LayoutType.TREE_LAYOUT);
 	}
+
 }
