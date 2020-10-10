@@ -126,5 +126,11 @@ class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 	void revalidate() {
 		((GraphicalEditPart) getViewer().getContents()).getFigure().revalidate();
 	}
+	
+	@Override
+	protected void refreshVisuals() {
+		// TODO Auto-generated method stub
+		super.refreshVisuals();
+	}
 
 }

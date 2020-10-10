@@ -1,7 +1,6 @@
 package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
@@ -9,18 +8,13 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.db.Cache;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.util.Labels;
-import org.openlca.core.database.ProcessDao;
-import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -79,9 +73,9 @@ public class ProcessNode extends Node {
 	public void apply(NodeLayoutInfo layout) {
 		minimized = layout.minimized;
 		marked = layout.marked;
-		if (!minimized)
-			if (getChildren().isEmpty())
-				initializeExchangeNodes();
+		if (!minimized && getChildren().isEmpty()) {
+			add(new IONode(this));
+		}
 		Dimension prefSize = figure.getPreferredSize(-1, -1);
 		xyLayoutConstraints = new Rectangle(layout.getLocation(), prefSize);
 		figure.setBounds(getXyLayoutConstraints());
@@ -139,8 +133,9 @@ public class ProcessNode extends Node {
 
 	public void maximize() {
 		this.minimized = false;
-		if (getChildren().isEmpty())
-			initializeExchangeNodes();
+		if (getChildren().isEmpty()) {
+			add(new IONode(this));
+		}
 		refresh();
 	}
 
@@ -156,29 +151,6 @@ public class ProcessNode extends Node {
 
 	public boolean isMarked() {
 		return marked;
-	}
-
-	private void initializeExchangeNodes() {
-		if (this.process.type == ModelType.PROCESS) {
-			ProcessDao dao = new ProcessDao(Database.get());
-			Process p = dao.getForId(this.process.id);
-			if (p == null)
-				return;
-			List<Exchange> list = new ArrayList<>();
-			for (Exchange e : p.exchanges) {
-				if (e.flow.flowType == FlowType.ELEMENTARY_FLOW)
-					continue;
-				list.add(e);
-			}
-			add(new IONode(editor, list));
-		} else if (this.process.type == ModelType.PRODUCT_SYSTEM) {
-			var dao = new ProductSystemDao(Database.get());
-			var system = dao.getForId(this.process.id);
-			if (system != null && system.referenceExchange != null) {
-				add(new IONode(editor,
-						Collections.singletonList(system.referenceExchange)));
-			}
-		}
 	}
 
 	public void refresh() {
@@ -238,8 +210,9 @@ public class ProcessNode extends Node {
 	}
 
 	public List<ExchangeNode> loadExchangeNodes() {
-		if (getChildren().isEmpty())
-			initializeExchangeNodes();
+		if (getChildren().isEmpty()) {
+			add(new IONode(this));
+		}
 		return getExchangeNodes();
 	}
 
