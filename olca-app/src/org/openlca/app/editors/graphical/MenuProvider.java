@@ -44,8 +44,8 @@ class MenuProvider extends ContextMenuProvider {
 		if (processes.size() == 1) {
 			var node = processes.get(0);
 			if (node.process != null && node.process.type == ModelType.PROCESS) {
-				menu.add(AddFlowAction.forInput(editor, node));
-				menu.add(AddFlowAction.forOutput(editor, node));
+				menu.add(AddFlowAction.forInput(node));
+				menu.add(AddFlowAction.forOutput(node));
 				menu.add(new Separator());
 			}
 		}

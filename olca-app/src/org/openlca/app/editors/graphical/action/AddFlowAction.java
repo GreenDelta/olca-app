@@ -13,6 +13,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.model.IONode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTextFilter;
@@ -42,21 +43,16 @@ public class AddFlowAction extends Action {
 	private final boolean forInput;
 	private final ProcessNode node;
 
-	public static AddFlowAction forInput(
-			GraphEditor editor, ProcessNode node) {
-		return new AddFlowAction(editor, node, true);
+	public static AddFlowAction forInput(ProcessNode node) {
+		return new AddFlowAction(node, true);
 	}
 
-	public static AddFlowAction forOutput(
-			GraphEditor editor, ProcessNode node) {
-		return new AddFlowAction(editor, node, false);
+	public static AddFlowAction forOutput(ProcessNode node) {
+		return new AddFlowAction(node, false);
 	}
 
-	private AddFlowAction(
-			GraphEditor editor,
-			ProcessNode node,
-			boolean forInput) {
-		this.editor = editor;
+	private AddFlowAction(ProcessNode node, boolean forInput) {
+		this.editor = node.editor;
 		this.node = node;
 		this.forInput = forInput;
 		setId("AddFlowAction");
@@ -83,16 +79,23 @@ public class AddFlowAction extends Action {
 		} else {
 			process.output(flow, 1.0);
 		}
-		process = db.update(process);
+		// TODO: ask for an amount
 
-		// TODO: hack to update the process in the graph
+		db.update(process);
+
+		// if an elementary flow was added, make sure
+		// that our graph shows elementary flows
+		// note that we need to do this, before we
+		// create the IONode in order to avoid recreation
+		// of that node later
+		if (flow.flowType == FlowType.ELEMENTARY_FLOW) {
+			editor.config.showElementaryFlows = true;
+			editor.config.showFlowIcons = true;
+		}
+
 		node.getChildren().clear();
-		node.minimize();
-		node.maximize();
-
-		// 2. ask for an amount
-		// 3. add the exchange to the process
-		// 4. update the process
+		node.add(new IONode(node));
+		editor.refresh();
 	}
 
 	private class Dialog extends FormDialog {
@@ -141,9 +144,7 @@ public class AddFlowAction extends Action {
 				if (type == FlowType.PRODUCT_FLOW) {
 					btn.setSelection(true);
 				}
-				Controls.onSelect(btn, e -> {
-					this.type = type;
-				});
+				Controls.onSelect(btn, e -> this.type = type);
 			}
 
 			// flow property
@@ -154,9 +155,8 @@ public class AddFlowAction extends Action {
 			propViewer.setInput(db);
 			propViewer.selectFirst();
 			this.quantity = propViewer.getSelected();
-			propViewer.addSelectionChangedListener(prop -> {
-				this.quantity = prop;
-			});
+			propViewer.addSelectionChangedListener(
+					prop -> this.quantity = prop);
 
 			// tree
 			var selectLabel = UI.formLabel(body, tk, "Or select an existing");

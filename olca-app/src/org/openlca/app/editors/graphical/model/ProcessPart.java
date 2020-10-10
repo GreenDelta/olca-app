@@ -129,6 +129,8 @@ class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 
 	@Override
 	protected void refreshVisuals() {
+		// we recreate the IO node here when the
+		// display of elementary flows changed.
 		var thisNode = getModel();
 		var childs = thisNode.getChildren();
 		if (childs.isEmpty())

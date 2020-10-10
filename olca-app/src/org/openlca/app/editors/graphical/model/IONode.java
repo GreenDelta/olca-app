@@ -13,7 +13,7 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.util.Strings;
 
-class IONode extends Node {
+public class IONode extends Node {
 
 	/**
 	 * We store the information if this node was created
@@ -23,7 +23,7 @@ class IONode extends Node {
 	 */
 	final boolean isWithElementaryFlows;
 
-	IONode(ProcessNode parent) {
+	public IONode(ProcessNode parent) {
 		super(parent.editor);
 		isWithElementaryFlows = config().showElementaryFlows;
 		var exchanges = exchanges(parent);
