@@ -1,11 +1,6 @@
 package org.openlca.app.rcp;
 
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.ui.IPerspectiveDescriptor;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -21,34 +16,38 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 	}
 
 	@Override
-	public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
-		return new RcpActionBarAdvisor(configurer);
+	public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer conf) {
+		return new RcpActionBarAdvisor(conf);
 	}
 
 	@Override
 	public void preWindowOpen() {
-		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-		configurer.setInitialSize(new Point(800, 600));
-		configurer.setShowCoolBar(true);
-		configurer.setShowStatusLine(true);
-		configurer.setShowProgressIndicator(true);
-		configurer.setShowMenuBar(true);
-		configurer.setTitle(Config.APPLICATION_NAME + " " + App.getVersion());
+		var config = getWindowConfigurer();
+		config.setInitialSize(new Point(800, 600));
+		config.setShowCoolBar(true);
+		config.setShowStatusLine(true);
+		config.setShowProgressIndicator(true);
+		config.setShowMenuBar(true);
+		config.setTitle(Config.APPLICATION_NAME + " " + App.getVersion());
 	}
 
 	@Override
 	public void postWindowOpen() {
-		if (isStandardPerspective()) {
-				StartPage.open();
+
+		// close old editors that may are still
+		// open after an openLCA crash
+		var config = getWindowConfigurer();
+		if (config != null) {
+			var window = config.getWindow();
+			if (window != null) {
+				var page = window.getActivePage();
+				if (page != null) {
+					page.closeAllEditors(false);
+				}
+			}
 		}
-	}
 
-	private boolean isStandardPerspective() {
-		IWorkbench wb = PlatformUI.getWorkbench();
-		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-		IWorkbenchPage page = win.getActivePage();
-		IPerspectiveDescriptor perspective = page.getPerspective();
-		return perspective.getId().equals(RcpPerspective.ID);
+		// open the start page
+		StartPage.open();
 	}
-
 }
