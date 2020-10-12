@@ -22,7 +22,7 @@ import org.openlca.core.model.Unit;
 import org.openlca.util.Pair;
 import org.openlca.util.Strings;
 
-class FlowAmountDialog extends FormDialog {
+class ExchangeEditDialog extends FormDialog {
 
 	private final Exchange exchange;
 	private final List<Pair<FlowPropertyFactor, Unit>> units;
@@ -37,11 +37,11 @@ class FlowAmountDialog extends FormDialog {
 	static boolean open(Exchange exchange) {
 		if (exchange == null)
 			return false;
-		var dialog = new FlowAmountDialog(exchange);
+		var dialog = new ExchangeEditDialog(exchange);
 		return dialog.open() == OK;
 	}
 
-	private FlowAmountDialog(Exchange exchange) {
+	private ExchangeEditDialog(Exchange exchange) {
 		super(UI.shell());
 		this.exchange = exchange;
 		setBlockOnOpen(true);

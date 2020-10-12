@@ -8,9 +8,9 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.action.ActionIds;
-import org.openlca.app.editors.graphical.action.AddFlowAction;
+import org.openlca.app.editors.graphical.action.ExchangeAddAction;
 import org.openlca.app.editors.graphical.action.AddProcessAction;
-import org.openlca.app.editors.graphical.action.EditExchangeAction;
+import org.openlca.app.editors.graphical.action.ExchangeEditAction;
 import org.openlca.app.editors.graphical.action.GraphAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.GraphSettingsAction;
@@ -35,7 +35,7 @@ class MenuProvider extends ContextMenuProvider {
 	public void buildContextMenu(IMenuManager menu) {
 
 		var actions = new GraphAction[] {
-				new EditExchangeAction(),
+				new ExchangeEditAction(),
 				new AddProcessAction(),
 		};
 		for (var action : actions) {
@@ -48,8 +48,8 @@ class MenuProvider extends ContextMenuProvider {
 		if (processes.size() == 1) {
 			var node = processes.get(0);
 			if (node.process != null && node.process.type == ModelType.PROCESS) {
-				menu.add(AddFlowAction.forInput(node));
-				menu.add(AddFlowAction.forOutput(node));
+				menu.add(ExchangeAddAction.forInput(node));
+				menu.add(ExchangeAddAction.forOutput(node));
 				menu.add(new Separator());
 			}
 		}

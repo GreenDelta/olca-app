@@ -36,22 +36,22 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.util.Strings;
 
-public class AddFlowAction extends Action {
+public class ExchangeAddAction extends Action {
 
 	private final IDatabase db = Database.get();
 	private final GraphEditor editor;
 	private final boolean forInput;
 	private final ProcessNode node;
 
-	public static AddFlowAction forInput(ProcessNode node) {
-		return new AddFlowAction(node, true);
+	public static ExchangeAddAction forInput(ProcessNode node) {
+		return new ExchangeAddAction(node, true);
 	}
 
-	public static AddFlowAction forOutput(ProcessNode node) {
-		return new AddFlowAction(node, false);
+	public static ExchangeAddAction forOutput(ProcessNode node) {
+		return new ExchangeAddAction(node, false);
 	}
 
-	private AddFlowAction(ProcessNode node, boolean forInput) {
+	private ExchangeAddAction(ProcessNode node, boolean forInput) {
 		this.editor = node.editor;
 		this.node = node;
 		this.forInput = forInput;
@@ -81,7 +81,7 @@ public class AddFlowAction extends Action {
 		var exchange = forInput
 				? process.input(flow, 1.0)
 				: process.output(flow, 1.0);
-		FlowAmountDialog.open(exchange);
+		ExchangeEditDialog.open(exchange);
 		db.update(process);
 
 		// if an elementary flow was added, make sure

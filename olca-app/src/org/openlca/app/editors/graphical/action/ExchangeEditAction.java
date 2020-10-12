@@ -13,12 +13,12 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.util.Strings;
 
-public class EditExchangeAction extends Action implements GraphAction {
+public class ExchangeEditAction extends Action implements GraphAction {
 
 	private ExchangeNode exchangeNode;
 	private ProcessNode processNode;
 
-	public EditExchangeAction() {
+	public ExchangeEditAction() {
 		setId("EditExchangeAction");
 		setImageDescriptor(Icon.FORMULA.descriptor());
 	}
@@ -55,7 +55,7 @@ public class EditExchangeAction extends Action implements GraphAction {
 				.orElse(null);
 		if (exchange == null)
 			return;
-		if (!FlowAmountDialog.open(exchange))
+		if (!ExchangeEditDialog.open(exchange))
 			return;
 		db.update(process);
 		processNode.getChildren().clear();
