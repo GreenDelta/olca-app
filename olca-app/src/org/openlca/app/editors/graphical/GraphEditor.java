@@ -1,5 +1,6 @@
 package org.openlca.app.editors.graphical;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -66,8 +67,8 @@ import org.openlca.core.model.ProcessLink;
 public class GraphEditor extends GraphicalEditor {
 
 	public static final String ID = "editors.productsystem.graphical";
-	public static final double[] ZOOM_LEVELS = new double[]{
-			0.01, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0};
+	public static final double[] ZOOM_LEVELS = new double[] {
+			0.01, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0 };
 
 	// TODO: save this in the same way like the layout is currently stored
 	public final GraphConfig config = new GraphConfig();
@@ -217,7 +218,7 @@ public class GraphEditor extends GraphicalEditor {
 			}
 		};
 
-		var actions = new IAction[]{
+		var actions = new IAction[] {
 				new AddProcessAction(this),
 				new BuildSupplyChainMenuAction(this),
 				GraphActions.removeSupplyChain(this),
@@ -372,8 +373,8 @@ public class GraphEditor extends GraphicalEditor {
 	}
 
 	/**
-	 * Collapse all process nodes in the editor. Only the
-	 * reference process will be added.
+	 * Collapse all process nodes in the editor. Only the reference process will be
+	 * added.
 	 */
 	public void collapse() {
 		model = createModel();
@@ -385,19 +386,21 @@ public class GraphEditor extends GraphicalEditor {
 	}
 
 	/**
-	 * Calls refresh on all created editparts.
+	 * Calls refresh on all created edit parts.
 	 */
 	public void refresh() {
 		var viewer = getGraphicalViewer();
 		if (viewer == null)
 			return;
-		var reg = viewer.getEditPartRegistry();
-		if (reg == null)
-			return;
-		for (Object obj : reg.values()) {
-			if (obj instanceof EditPart) {
-				var part = (EditPart) obj;
-				part.refresh();
+		var queue = new ArrayDeque<EditPart>();
+		queue.add(viewer.getRootEditPart());
+		while (!queue.isEmpty()) {
+			var part = queue.poll();
+			part.refresh();
+			for (var child : part.getChildren()) {
+				if (child instanceof EditPart) {
+					queue.add((EditPart) child);
+				}
 			}
 		}
 	}
