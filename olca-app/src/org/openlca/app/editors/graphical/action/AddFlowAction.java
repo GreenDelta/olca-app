@@ -67,6 +67,8 @@ public class AddFlowAction extends Action {
 		var d = node.process;
 		if (d == null || d.type != ModelType.PROCESS)
 			return;
+
+		// add the flow
 		var dialog = new Dialog();
 		if (dialog.open() != Window.OK || dialog.flow == null)
 			return;
@@ -74,13 +76,12 @@ public class AddFlowAction extends Action {
 		var process = db.get(Process.class, d.id);
 		if (process == null)
 			return;
-		if (forInput) {
-			process.input(flow, 1.0);
-		} else {
-			process.output(flow, 1.0);
-		}
-		// TODO: ask for an amount
 
+		// set the flow amount and update the process
+		var exchange = forInput
+				? process.input(flow, 1.0)
+				: process.output(flow, 1.0);
+		FlowAmountDialog.open(exchange);
 		db.update(process);
 
 		// if an elementary flow was added, make sure

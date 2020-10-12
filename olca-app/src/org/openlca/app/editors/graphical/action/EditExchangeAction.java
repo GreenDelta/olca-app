@@ -11,8 +11,8 @@ public class EditExchangeAction extends Action {
 	private final GraphEditor editor;
 	private final ExchangeNode node;
 
-	public EditExchangeAction(GraphEditor editor, ExchangeNode node) {
-		this.editor = editor;
+	public EditExchangeAction(ExchangeNode node) {
+		this.editor = node.editor;
 		this.node = node;
 		setId("EditExchangeAction");
 		setImageDescriptor(Icon.FORMULA.descriptor());

@@ -36,7 +36,7 @@ class MenuProvider extends ContextMenuProvider {
 
 		var exchanges = GraphActions.allSelectedOf(editor, ExchangeNode.class);
 		if (exchanges.size() == 1) {
-			menu.add(new EditExchangeAction(editor, exchanges.get(0)));
+			menu.add(new EditExchangeAction(exchanges.get(0)));
 			return;
 		}
 
