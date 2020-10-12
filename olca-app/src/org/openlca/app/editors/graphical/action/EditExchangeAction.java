@@ -1,30 +1,65 @@
 package org.openlca.app.editors.graphical.action;
 
+import java.util.Objects;
+
 import org.eclipse.jface.action.Action;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
+import org.openlca.app.editors.graphical.model.IONode;
+import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Process;
 import org.openlca.util.Strings;
 
-public class EditExchangeAction extends Action {
+public class EditExchangeAction extends Action implements GraphAction {
 
-	private final GraphEditor editor;
-	private final ExchangeNode node;
+	private ExchangeNode exchangeNode;
+	private ProcessNode processNode;
 
-	public EditExchangeAction(ExchangeNode node) {
-		this.editor = node.editor;
-		this.node = node;
+	public EditExchangeAction() {
 		setId("EditExchangeAction");
 		setImageDescriptor(Icon.FORMULA.descriptor());
-		if (node.exchange == null || node.exchange.flow == null) {
-			setText("Edit amount");
-		} else {
-			setText("Edit amount of "
-					+ Strings.cut(node.exchange.flow.name, 30));
-		}
+	}
+
+	@Override
+	public boolean accepts(GraphEditor editor) {
+		var nodes = GraphActions.allSelectedOf(editor, ExchangeNode.class);
+		if (nodes.size() != 1)
+			return false;
+		var exchangeNode = nodes.get(0);
+		var processNode = exchangeNode.parent();
+		if (exchangeNode.exchange == null
+				|| exchangeNode.exchange.flow == null
+				|| processNode == null
+				|| processNode.process == null
+				|| processNode.process.type != ModelType.PROCESS)
+			return false;
+		this.processNode = processNode;
+		this.exchangeNode = exchangeNode;
+		setText("Edit amount of "
+				+ Strings.cut(exchangeNode.exchange.flow.name, 30));
+		return true;
 	}
 
 	@Override
 	public void run() {
+		var db = Database.get();
+		var process = db.get(Process.class, processNode.process.id);
+		if (process == null)
+			return;
+		var exchange = process.exchanges.stream()
+				.filter(e -> Objects.equals(e, exchangeNode.exchange))
+				.findFirst()
+				.orElse(null);
+		if (exchange == null)
+			return;
+		if (!FlowAmountDialog.open(exchange))
+			return;
+		db.update(process);
+		processNode.getChildren().clear();
+		processNode.add(new IONode(processNode));
+		processNode.editPart().refresh();
 	}
 }

@@ -14,7 +14,6 @@ import org.openlca.app.editors.graphical.action.EditExchangeAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.GraphSettingsAction;
 import org.openlca.app.editors.graphical.action.MarkingAction;
-import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.ModelType;
@@ -34,10 +33,9 @@ class MenuProvider extends ContextMenuProvider {
 	@Override
 	public void buildContextMenu(IMenuManager menu) {
 
-		var exchanges = GraphActions.allSelectedOf(editor, ExchangeNode.class);
-		if (exchanges.size() == 1) {
-			menu.add(new EditExchangeAction(exchanges.get(0)));
-			return;
+		var editExchange = new EditExchangeAction();
+		if (editExchange.accepts(editor)) {
+			menu.add(editExchange);
 		}
 
 		var processes = GraphActions.allSelectedOf(editor, ProcessNode.class);

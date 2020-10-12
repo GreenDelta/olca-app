@@ -95,7 +95,7 @@ public class ProcessNode extends Node {
 		editPart.refresh();
 	}
 
-	ProcessPart editPart() {
+	public ProcessPart editPart() {
 		return (ProcessPart) editPart;
 	}
 

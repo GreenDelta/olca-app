@@ -17,7 +17,7 @@ import org.openlca.app.editors.graphical.command.DeleteProcessCommand;
 import org.openlca.app.editors.graphical.command.XYLayoutCommand;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
 
-class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
+public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 
 	@Override
 	protected void addChildVisual(EditPart childEditPart, int index) {
@@ -121,6 +121,11 @@ class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 	public void refreshTargetConnections() {
 		// make public
 		super.refreshTargetConnections();
+	}
+
+	@Override
+	public void refresh() {
+		super.refresh();
 	}
 
 	void revalidate() {
