@@ -1,4 +1,4 @@
-package org.openlca.app;
+package org.openlca.app.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -46,7 +46,7 @@ public final class Preferences extends AbstractPreferenceInitializer {
 	public static void set(String key, String value) {
 		if (key == null)
 			return;
-		IPreferenceStore store = getStore();
+		var store = getStore();
 		if (store == null)
 			return;
 		String val = value == null ? "" : value;
@@ -73,15 +73,13 @@ public final class Preferences extends AbstractPreferenceInitializer {
 		}
 	}
 
-	public static boolean is(String key) {
+	public static boolean getBool(String key) {
 		if (key == null)
 			return false;
-		IPreferenceStore store = getStore();
-		if (store == null)
-			return false;
-		if (!store.contains(key))
-			return false;
-		return store.getBoolean(key);
+		var store = getStore();
+		return store == null
+				? false
+				: store.getBoolean(key);
 	}
 
 }

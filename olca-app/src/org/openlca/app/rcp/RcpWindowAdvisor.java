@@ -8,6 +8,7 @@ import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.openlca.app.App;
 import org.openlca.app.Config;
 import org.openlca.app.editors.StartPage;
+import org.openlca.app.preferences.Preferences;
 
 public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 
@@ -48,6 +49,8 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 		}
 
 		// open the start page
+		if (Preferences.getBool("hide.welcome.page"))
+			return;
 		StartPage.open();
 	}
 }

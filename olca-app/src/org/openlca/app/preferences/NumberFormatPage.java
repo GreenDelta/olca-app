@@ -10,7 +10,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.openlca.app.M;
-import org.openlca.app.Preferences;
 import org.openlca.app.editors.DataBinding;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;

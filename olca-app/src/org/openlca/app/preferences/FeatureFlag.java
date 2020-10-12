@@ -1,7 +1,5 @@
 package org.openlca.app.preferences;
 
-import org.openlca.app.Preferences;
-
 /**
  * Feature flags of the application. The flags are stored in the preference
  * store where their names are used as keys.

@@ -665,7 +665,7 @@
             class="org.openlca.app.logging.LoggerPreference">
       </initializer>
       <initializer
-            class="org.openlca.app.Preferences">
+            class="org.openlca.app.preferences.Preferences">
       </initializer>
       <initializer
             class="org.openlca.app.preferences.IoPreference">

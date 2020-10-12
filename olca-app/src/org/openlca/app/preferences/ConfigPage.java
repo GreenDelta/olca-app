@@ -57,7 +57,18 @@ public class ConfigPage extends PreferencePage implements
 		memoryText = UI.formText(comp, M.MaximumMemoryUsage);
 		memoryText.setText(Integer.toString(iniFile.getMaxMemory()));
 		memoryText.addModifyListener((e) -> setDirty());
-
+		
+		// show / hide start page
+		var hideStart = UI.formCheckBox(
+				comp, "Hide welcome page");
+		hideStart.setSelection(
+				Preferences.getBool("hide.welcome.page"));
+		Controls.onSelect(hideStart, e -> {
+			Preferences.set(
+					"hide.welcome.page", 
+					hideStart.getSelection());
+		});
+		
 		// reset window layout
 		UI.filler(comp);
 		Composite bcomp = new Composite(comp, SWT.NONE);
@@ -135,6 +146,7 @@ public class ConfigPage extends PreferencePage implements
 		iniFile.setMaxMemory(maxMem);
 		super.performDefaults();
 		performApply();
+		
 	}
 
 	private void selectLanguage(Language language) {

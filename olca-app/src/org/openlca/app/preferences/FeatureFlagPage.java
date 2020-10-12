@@ -4,7 +4,6 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.openlca.app.Preferences;
 
 public class FeatureFlagPage extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {

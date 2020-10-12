@@ -1,8 +1,8 @@
 package org.openlca.app.wizards.calculation;
 
-import org.openlca.app.Preferences;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferences.FeatureFlag;
+import org.openlca.app.preferences.Preferences;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NwSetDao;
 import org.openlca.core.math.CalculationSetup;
