@@ -1,82 +1,65 @@
 package org.openlca.app.editors.graphical.action;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.ui.actions.UpdateAction;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.command.CommandUtil;
-import org.openlca.app.editors.graphical.command.MarkingCommand;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
-public class MarkingAction extends Action implements UpdateAction {
+public class MarkingAction extends Action implements GraphAction {
 
-	public static final String MARK_ID = "MarkingAction.MARK";
-	public static final String UNMARK_ID = "MarkingAction.UNMARK";
-	
 	private static final int MARK = 1;
 	private static final int UNMARK = 2;
-	
+
 	private final int type;
-	private final GraphEditor editor;
+	private List<ProcessNode> processNodes;
 
-	private List<ProcessNode> processNodes = new ArrayList<>();
-
-	public static MarkingAction forMarking(GraphEditor editor) {
-		return new MarkingAction(editor, MARK);
+	public static MarkingAction forMarking() {
+		return new MarkingAction(MARK);
 	}
 
-	public static MarkingAction forUnmarking(GraphEditor editor) {
-		return new MarkingAction(editor, UNMARK);
+	public static MarkingAction forUnmarking() {
+		return new MarkingAction(UNMARK);
 	}
 
-	MarkingAction(GraphEditor editor, int type) {
-		this.editor = editor;
+	MarkingAction(int type) {
 		this.type = type;
 		if (type == MARK) {
-			setId(MARK_ID);
+			setId("MarkingAction.MARK");
 			setText(M.Mark);
 		} else if (type == UNMARK) {
-			setId(UNMARK_ID);
+			setId("MarkingAction.UNMARK");
 			setText(M.Unmark);
 		}
 	}
 
 	@Override
-	public void update() {
-		if (editor == null) {
-			setEnabled(false);
-			return;
-		}
+	public boolean accepts(GraphEditor editor) {
 		boolean mark = type == MARK;
 		processNodes = GraphActions
 				.allSelectedOf(editor, ProcessNode.class)
 				.stream()
 				.filter(node -> node.isMarked() != mark)
 				.collect(Collectors.toList());
-		setEnabled(!processNodes.isEmpty());
+		return !processNodes.isEmpty();
 	}
 
 	@Override
 	public void run() {
-		Command cmd = null;
-		for (ProcessNode node : processNodes) {
-			boolean mark = type == MARK;
-			if (node.isMarked() == mark)
-				continue;
-			cmd = CommandUtil.chain(
-					new MarkingCommand(node),
-					cmd);
-		}
-		if (cmd == null)
+		if (processNodes == null)
 			return;
-		editor.getCommandStack().execute(cmd);
-		editor.selectionChanged(
-				editor.getSite().getPart(),
-				editor.getSelection());
+		var editor = processNodes.get(0).editor;
+		editor.getGraphicalViewer().deselectAll();
+		for (var node : processNodes) {
+			if (type == MARK) {
+				node.mark();
+			} else {
+				node.unmark();
+			}
+			node.refresh();
+		}
+		editor.setDirty(true);
 	}
 }

@@ -47,7 +47,6 @@ import org.openlca.app.editors.graphical.action.AddProcessAction;
 import org.openlca.app.editors.graphical.action.BuildSupplyChainMenuAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.LayoutMenuAction;
-import org.openlca.app.editors.graphical.action.MarkingAction;
 import org.openlca.app.editors.graphical.layout.LayoutType;
 import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
 import org.openlca.app.editors.graphical.model.AppEditPartFactory;
@@ -223,8 +222,6 @@ public class GraphEditor extends GraphicalEditor {
 				new BuildSupplyChainMenuAction(this),
 				GraphActions.removeSupplyChain(this),
 				GraphActions.removeAllConnections(this),
-				MarkingAction.forMarking(this),
-				MarkingAction.forUnmarking(this),
 				GraphActions.saveImage(this),
 				GraphActions.expandAll(this),
 				GraphActions.collapseAll(this),

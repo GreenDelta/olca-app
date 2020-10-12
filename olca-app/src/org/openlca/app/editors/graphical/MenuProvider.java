@@ -11,6 +11,7 @@ import org.openlca.app.editors.graphical.action.ActionIds;
 import org.openlca.app.editors.graphical.action.AddFlowAction;
 import org.openlca.app.editors.graphical.action.AddProcessAction;
 import org.openlca.app.editors.graphical.action.EditExchangeAction;
+import org.openlca.app.editors.graphical.action.GraphAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.GraphSettingsAction;
 import org.openlca.app.editors.graphical.action.MarkingAction;
@@ -99,8 +100,15 @@ class MenuProvider extends ContextMenuProvider {
 	private void addSpecialActions(IMenuManager menu) {
 		menu.add(registry.getAction(ActionIds.SAVE_IMAGE));
 		menu.add(registry.getAction(ActionIds.OPEN));
-		menu.add(registry.getAction(MarkingAction.MARK_ID));
-		menu.add(registry.getAction(MarkingAction.UNMARK_ID));
+		var actions = new GraphAction[] {
+				MarkingAction.forMarking(),
+				MarkingAction.forUnmarking(),
+		};
+		for (var action : actions) {
+			if (action.accepts(editor)) {
+				menu.add(action);
+			}
+		}
 	}
 
 	private void addLayoutActions(IMenuManager menu) {
