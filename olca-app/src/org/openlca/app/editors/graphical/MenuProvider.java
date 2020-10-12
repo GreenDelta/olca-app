@@ -34,11 +34,16 @@ class MenuProvider extends ContextMenuProvider {
 	@Override
 	public void buildContextMenu(IMenuManager menu) {
 
-		var editExchange = new EditExchangeAction();
-		if (editExchange.accepts(editor)) {
-			menu.add(editExchange);
+		var actions = new GraphAction[] {
+				new EditExchangeAction(),
+				new AddProcessAction(),
+		};
+		for (var action : actions) {
+			if (action.accepts(editor)) {
+				menu.add(action);
+			}
 		}
-
+		
 		var processes = GraphActions.allSelectedOf(editor, ProcessNode.class);
 		if (processes.size() == 1) {
 			var node = processes.get(0);
@@ -73,9 +78,6 @@ class MenuProvider extends ContextMenuProvider {
 		redo.setImageDescriptor(Icon.REDO.descriptor());
 		redo.setDisabledImageDescriptor(Icon.REDO_DISABLED.descriptor());
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, redo);
-
-		menu.appendToGroup(GEFActionConstants.GROUP_EDIT,
-				registry.getAction(AddProcessAction.ID));
 
 		// delete
 		var delete = registry.getAction(ActionFactory.DELETE.getId());

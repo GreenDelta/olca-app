@@ -3,19 +3,22 @@ package org.openlca.app.editors.graphical.action;
 import java.util.Date;
 import java.util.UUID;
 
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.command.CreateProcessCommand;
+import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
@@ -33,16 +36,30 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
-public class AddProcessAction extends Action {
+public class AddProcessAction extends Action implements GraphAction {
 
-	public static final String ID = "AddProcessAction";
-	private final GraphEditor editor;
+	private ProductSystemNode systemNode;
+	private Point location;
 
-	public AddProcessAction(GraphEditor editor) {
-		this.editor = editor;
-		setId(ID);
+	public AddProcessAction() {
+		setId("AddProcessAction");
 		setText("Add a process");
 		setImageDescriptor(Images.descriptor(ModelType.PROCESS));
+	}
+
+	@Override
+	public boolean accepts(GraphEditor editor) {
+		systemNode = GraphActions.firstSelectedOf(
+				editor, ProductSystemNode.class);
+		if (systemNode == null 
+				|| systemNode.getProductSystem() == null)
+			return false;
+		var displayLoc = Display.getCurrent()
+				.getCursorLocation();
+		this.location = editor.getGraphicalViewer()
+				.getControl()
+				.toControl(displayLoc);
+		return true;
 	}
 
 	@Override
@@ -180,16 +197,37 @@ public class AddProcessAction extends Action {
 					&& d.type != ModelType.PRODUCT_SYSTEM) {
 				return;
 			}
-			var system = editor.getModel().getProductSystem();
+			
+			// add the process to the product system
+			var system = systemNode.getProductSystem();
 			if (system.processes.contains(d.id)) {
 				MsgBox.info("The product system already"
 						+ " contains process `"
 						+ Labels.name(d) + "`.");
 				cancelPressed();
 			}
-			var cmd = new CreateProcessCommand(
-					editor.getModel(), d);
-			editor.getCommandStack().execute(cmd);
+			system.processes.add(d.id);
+			
+			// create the process node
+			var editor = systemNode.editor;
+			var processNode = new ProcessNode(editor, d);
+			systemNode.add(processNode);
+			if (editor.getOutline() != null) {
+				editor.getOutline().refresh();
+			}
+			
+			// set the node position
+			processNode.maximize();
+			if (location != null) {
+				var rect = new Rectangle(
+						location.x,
+						location.y,
+						Math.max(processNode.getMinimumWidth(), 250),
+						Math.max(processNode.getMinimumHeight(), 150));
+				processNode.setXyLayoutConstraints(rect);
+			}
+			
+			editor.setDirty(true);
 			super.okPressed();
 		}
 	}

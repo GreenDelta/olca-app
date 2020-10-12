@@ -43,7 +43,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelTransfer;
-import org.openlca.app.editors.graphical.action.AddProcessAction;
 import org.openlca.app.editors.graphical.action.BuildSupplyChainMenuAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.LayoutMenuAction;
@@ -218,7 +217,6 @@ public class GraphEditor extends GraphicalEditor {
 		};
 
 		var actions = new IAction[] {
-				new AddProcessAction(this),
 				new BuildSupplyChainMenuAction(this),
 				GraphActions.removeSupplyChain(this),
 				GraphActions.removeAllConnections(this),
