@@ -10,6 +10,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.action.ActionIds;
 import org.openlca.app.editors.graphical.action.ExchangeAddAction;
 import org.openlca.app.editors.graphical.action.AddProcessAction;
+import org.openlca.app.editors.graphical.action.ExchangeDeleteAction;
 import org.openlca.app.editors.graphical.action.ExchangeEditAction;
 import org.openlca.app.editors.graphical.action.GraphAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
@@ -36,6 +37,7 @@ class MenuProvider extends ContextMenuProvider {
 
 		var actions = new GraphAction[] {
 				new ExchangeEditAction(),
+				new ExchangeDeleteAction(),
 				new AddProcessAction(),
 		};
 		for (var action : actions) {

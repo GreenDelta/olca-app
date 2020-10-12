@@ -11,7 +11,6 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.util.Strings;
 
 public class ExchangeEditAction extends Action implements GraphAction {
 
@@ -19,8 +18,9 @@ public class ExchangeEditAction extends Action implements GraphAction {
 	private ProcessNode processNode;
 
 	public ExchangeEditAction() {
-		setId("EditExchangeAction");
-		setImageDescriptor(Icon.FORMULA.descriptor());
+		setId("ExchangeEditAction");
+		setImageDescriptor(Icon.EDIT.descriptor());
+		setText("Edit amount");
 	}
 
 	@Override
@@ -38,8 +38,6 @@ public class ExchangeEditAction extends Action implements GraphAction {
 			return false;
 		this.processNode = processNode;
 		this.exchangeNode = exchangeNode;
-		setText("Edit amount of "
-				+ Strings.cut(exchangeNode.exchange.flow.name, 30));
 		return true;
 	}
 
