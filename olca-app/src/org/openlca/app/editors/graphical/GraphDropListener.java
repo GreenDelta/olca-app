@@ -36,7 +36,9 @@ class GraphDropListener extends DropTargetAdapter {
 
 		var systemNode = editor.getModel();
 		var system = systemNode.getProductSystem();
-
+		var location = editor.getGraphicalViewer()
+				.getControl()
+				.toControl(e.x, e.y);
 
 		var added = new AtomicBoolean(false);
 		ModelTransfer.getDescriptors(e.data)
@@ -56,7 +58,8 @@ class GraphDropListener extends DropTargetAdapter {
 					added.set(true);
 					node.maximize();
 					var rect = new Rectangle(
-							e.x, e.y,
+							location.x,
+							location.y,
 							Math.max(node.getMinimumWidth(), 250),
 							Math.max(node.getMinimumHeight(), 150));
 					node.setXyLayoutConstraints(rect);
