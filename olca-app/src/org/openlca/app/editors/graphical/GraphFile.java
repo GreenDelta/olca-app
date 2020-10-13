@@ -23,10 +23,19 @@ public final class GraphFile {
 	private GraphFile() {
 	}
 
-	public static void save(ProductSystemNode root) {
+	public static void save(GraphEditor editor) {
+		var root = editor != null
+				? editor.getModel()
+				: null;
 		if (root == null)
 			return;
 		try {
+
+			// add config
+			var rootObj = new JsonObject();
+			rootObj.add("config", editor.config.toJson());
+
+			// add node infos
 			var file = file(root.getProductSystem());
 			var nodeArray = new JsonArray();
 			for (var node : root.getChildren()) {
@@ -35,8 +44,8 @@ public final class GraphFile {
 					nodeArray.add(nodeObj);
 				}
 			}
-			var rootObj = new JsonObject();
 			rootObj.add("nodes", nodeArray);
+
 			Json.write(rootObj, file);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(GraphFile.class);
@@ -65,15 +74,23 @@ public final class GraphFile {
 		var root = editor.getModel();
 		if (root == null || root.getProductSystem() == null)
 			return false;
-		var file = file(root.getProductSystem());
-		if (!file.exists())
-			return false;
 		try {
+
+			// read JSON object from file
+			var file = file(root.getProductSystem());
+			if (!file.exists())
+				return false;
 			var rootObj = Json.readObject(file)
 					.orElse(null);
 			if (rootObj == null)
 				return false;
 
+			// apply graph config
+			var config = GraphConfig.fromJson(
+					Json.getObject(rootObj, "config"));
+			config.applyOn(editor.config);
+
+			// apply node infos
 			var nodeArray = Json.getArray(rootObj, "nodes");
 			applyNodes(nodeArray, root);
 

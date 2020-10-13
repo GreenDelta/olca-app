@@ -82,7 +82,7 @@ public class GraphEditor extends GraphicalEditor {
 
 	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
-		editor.onSaved(() -> GraphFile.save(getModel()));
+		editor.onSaved(() -> GraphFile.save(this));
 		// draw nice routes when there are less then 100 processes
 		// in the system
 		routed = editor.getModel().processes.size() <= 100;
