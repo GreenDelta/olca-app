@@ -1,5 +1,8 @@
 package org.openlca.app.wizards;
 
+import java.util.UUID;
+
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -22,21 +25,16 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.LinkingConfig;
-import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.slf4j.Logger;
+import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-
 class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
-
-	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private Process refProcess;
 	private Text filterText;
@@ -95,12 +93,13 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		try {
 			ProcessDao dao = new ProcessDao(Database.get());
 			refProcess = dao.getForId(elem.getContent().id);
-			if (Strings.isNullOrEmpty(nameText.getText())) {
+			if (Strings.nullOrEmpty(nameText.getText())) {
 				String name = Labels.name(refProcess);
 				nameText.setText(name != null ? name : "");
 			}
 			checkInput();
 		} catch (Exception ex) {
+			var log = LoggerFactory.getLogger(this.getClass());
 			log.error("failed to load process", ex);
 		}
 	}
@@ -129,7 +128,22 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	@Override
 	public ProductSystem createModel() {
-		ProductSystem system = ProductSystem.of(refProcess);
+		ProductSystem system;
+		if (refProcess != null) {
+			system = ProductSystem.of(refProcess);
+		} else {
+			// create an empty reference process
+			var processName = filterText.getText().trim();
+			if (Strings.nullOrEmpty(processName)) {
+				processName = nameText.getText().trim();
+			}
+			var process = new Process();
+			process.name = processName;
+			process.refId = UUID.randomUUID().toString();
+			system = new ProductSystem();
+			system.refId = UUID.randomUUID().toString();
+			system.referenceProcess = process;
+		}
 		system.name = getModelName();
 		system.description = getModelDescription();
 		return system;
@@ -138,19 +152,35 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	@Override
 	protected void checkInput() {
 		super.checkInput();
-		if (getErrorMessage() == null && !hasRefFlow()) {
-			setErrorMessage(M.NoReferenceProcessSelected);
+		if (getErrorMessage() != null) {
+			setPageComplete(false);
+			return;
 		}
-		setPageComplete(getErrorMessage() == null);
+		if (refProcess == null) {
+			setMessage("No reference process is selected. " +
+							"This will create a product system " +
+							"with an empty reference process.",
+					IMessageProvider.WARNING);
+			linkingPanel.setEnabled(false);
+		} else if (!hasRefFlow()) {
+			setMessage("The selected process does not have " +
+							"a product output or waste input as " +
+							"reference flow.",
+					IMessageProvider.WARNING);
+			linkingPanel.setEnabled(true);
+		} else {
+			linkingPanel.setEnabled(true);
+			setMessage(null);
+		}
 	}
 
 	private boolean hasRefFlow() {
 		if (refProcess == null)
 			return false;
-		Exchange qRef = refProcess.quantitativeReference;
+		var qRef = refProcess.quantitativeReference;
 		if (qRef == null || qRef.flow == null)
 			return false;
-		FlowType type = qRef.flow.flowType;
+		var type = qRef.flow.flowType;
 		if (type == FlowType.PRODUCT_FLOW)
 			return !qRef.isInput;
 		if (type == FlowType.WASTE_FLOW)

@@ -1,6 +1,5 @@
 package org.openlca.app.wizards;
 
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -9,6 +8,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.core.matrix.LinkingConfig;
 import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.model.ModelType;
@@ -23,7 +23,7 @@ import com.google.common.base.Strings;
 
 public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private Process process;
 
 	public ProductSystemWizard() {
@@ -41,11 +41,23 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
 	@Override
 	public boolean performFinish() {
-		ProductSystemWizardPage page = (ProductSystemWizardPage) getPage();
-		ProductSystem system = page.createModel();
-		if (system == null)
+		var page = (ProductSystemWizardPage) getPage();
+		var system = page.createModel();
+		if (system == null || system.referenceProcess == null)
 			return false;
 		system.category = getCategory();
+
+		// product system with new and empty ref. process
+		if (system.referenceProcess.id == 0L) {
+			var db = Database.get();
+			var refProcess = db.insert(system.referenceProcess);
+			system.referenceProcess = refProcess;
+			system.processes.add(refProcess.id);
+			db.insert(system);
+			App.openEditor(system);
+			return true;
+		}
+
 		LinkingConfig config = page.getLinkingConfig();
 		system.cutoff = config.cutoff;
 		addCreationInfo(system, page);
@@ -125,8 +137,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		}
 
 		@Override
-		public void run(IProgressMonitor monitor)
-				throws InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor) {
 			try {
 				monitor.beginTask(M.CreatingProductSystem,
 						IProgressMonitor.UNKNOWN);
