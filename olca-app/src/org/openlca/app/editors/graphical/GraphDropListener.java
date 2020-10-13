@@ -62,7 +62,7 @@ class GraphDropListener extends DropTargetAdapter {
 							location.y,
 							Math.max(node.getMinimumWidth(), 250),
 							Math.max(node.getMinimumHeight(), 150));
-					node.setXyLayoutConstraints(rect);
+					node.setBox(rect);
 				});
 
 		// update the editor

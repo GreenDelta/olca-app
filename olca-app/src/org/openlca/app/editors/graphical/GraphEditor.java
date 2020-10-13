@@ -58,6 +58,7 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
+import org.openlca.core.model.ProductSystem;
 
 public class GraphEditor extends GraphicalEditor {
 
@@ -88,8 +89,8 @@ public class GraphEditor extends GraphicalEditor {
 		routed = editor.getModel().processes.size() <= 100;
 	}
 
-	public ProductSystemEditor getSystemEditor() {
-		return systemEditor;
+	public ProductSystem getProductSystem() {
+		return systemEditor.getModel();
 	}
 
 	public void setDirty() {
@@ -262,7 +263,7 @@ public class GraphEditor extends GraphicalEditor {
 		if (!fileApplied) {
 			// no saved settings applied =>
 			// try to find a good configuration
-			var system = getSystemEditor().getModel();
+			var system = systemEditor.getModel();
 			if (system.referenceProcess != null) {
 				var refNode = model.getProcessNode(
 						system.referenceProcess.id);
@@ -352,7 +353,7 @@ public class GraphEditor extends GraphicalEditor {
 	 */
 	public void expand() {
 		model = new ProductSystemNode(this);
-		getSystemEditor().getModel().processes.stream()
+		getProductSystem().processes.stream()
 				.filter(Objects::nonNull)
 				.map(id -> ProcessNode.create(this, id))
 				.filter(Objects::nonNull)

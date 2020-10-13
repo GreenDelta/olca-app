@@ -54,7 +54,7 @@ public class MinimalTreeLayout {
 				if (node == null)
 					continue;
 				ProcessNode pNode = nodes.get(node.key);
-				pNode.setXyLayoutConstraints(new Rectangle(xPosition, yPosition,
+				pNode.setBox(new Rectangle(xPosition, yPosition,
 						pNode.getSize().width, pNode.getSize().height));
 			}
 		}

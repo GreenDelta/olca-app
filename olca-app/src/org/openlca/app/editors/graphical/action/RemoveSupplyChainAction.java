@@ -123,7 +123,7 @@ class RemoveSupplyChainAction extends EditorAction {
 			system.processLinks.removeAll(links);
 			systemNode.linkSearch.removeAll(links);
 			for (ProcessNode processNode : nodes) {
-				layouts.put(processNode.process.id, processNode.getXyLayoutConstraints());
+				layouts.put(processNode.process.id, processNode.getBox());
 				systemNode.remove(processNode);
 				processIds.add(processNode.process.id);
 			}
@@ -143,7 +143,7 @@ class RemoveSupplyChainAction extends EditorAction {
 				systemNode.getProductSystem().processes.add(processId);
 			for (ProcessNode node : nodes) {
 				systemNode.add(node);
-				node.setXyLayoutConstraints(layouts.remove(node.process.id));
+				node.setBox(layouts.remove(node.process.id));
 				systemNode.getProductSystem().processes.add(node.process.id);
 				if (node.parent().editor.getOutline() == null)
 					continue;

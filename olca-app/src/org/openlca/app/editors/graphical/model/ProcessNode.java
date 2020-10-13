@@ -27,7 +27,7 @@ public class ProcessNode extends Node {
 
 	public final CategorizedDescriptor process;
 	public final List<Link> links = new ArrayList<>();
-	private Rectangle xyLayoutConstraints;
+	private Rectangle box;
 	private boolean minimized = true;
 	private boolean marked = false;
 
@@ -65,8 +65,8 @@ public class ProcessNode extends Node {
 
 	void setFigure(IFigure figure) {
 		Dimension prefSize = figure.getPreferredSize(-1, -1);
-		if (xyLayoutConstraints == null)
-			xyLayoutConstraints = new Rectangle(0, 0, prefSize.width, prefSize.height);
+		if (box == null)
+			box = new Rectangle(0, 0, prefSize.width, prefSize.height);
 		this.figure = figure;
 	}
 
@@ -76,9 +76,10 @@ public class ProcessNode extends Node {
 		if (!minimized && getChildren().isEmpty()) {
 			add(new IONode(this));
 		}
-		Dimension prefSize = figure.getPreferredSize(-1, -1);
-		xyLayoutConstraints = new Rectangle(layout.getLocation(), prefSize);
-		figure.setBounds(getXyLayoutConstraints());
+		if (layout.box != null) {
+			box = layout.box;
+			figure.setBounds(box);
+		}
 		figure().getLeftExpander().setExpanded(layout.expandedLeft);
 		figure().getRightExpander().setExpanded(layout.expandedRight);
 		figure().refresh();
@@ -155,9 +156,9 @@ public class ProcessNode extends Node {
 
 	public void refresh() {
 		Point location = figure().getLocation();
-		if (xyLayoutConstraints != null)
-			location = xyLayoutConstraints.getLocation();
-		xyLayoutConstraints = new Rectangle(location, figure.getPreferredSize());
+		if (box != null)
+			location = box.getLocation();
+		box = new Rectangle(location, figure.getPreferredSize());
 		figure().refresh();
 	}
 
@@ -216,12 +217,12 @@ public class ProcessNode extends Node {
 		return getExchangeNodes();
 	}
 
-	public Rectangle getXyLayoutConstraints() {
-		return xyLayoutConstraints;
+	public Rectangle getBox() {
+		return box;
 	}
 
-	public void setXyLayoutConstraints(Rectangle constraints) {
-		this.xyLayoutConstraints = constraints;
+	public void setBox(Rectangle box) {
+		this.box = box;
 		editPart().revalidate();
 	}
 

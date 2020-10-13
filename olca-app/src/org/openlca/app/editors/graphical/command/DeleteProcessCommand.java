@@ -41,7 +41,7 @@ public class DeleteProcessCommand extends Command {
 
 		ProductSystemNode sysNode = node.parent();
 		ProductSystem system = sysNode.getProductSystem();
-		oldLayout = node.getXyLayoutConstraints();
+		oldLayout = node.getBox();
 		system.processes.remove(node.process.id);
 		sysNode.remove(node);
 		if (sysNode.editor.getOutline() != null) {
@@ -64,7 +64,7 @@ public class DeleteProcessCommand extends Command {
 	public void undo() {
 		ProductSystemNode sysNode = node.parent();
 		sysNode.add(node);
-		node.setXyLayoutConstraints(oldLayout);
+		node.setBox(oldLayout);
 		sysNode.getProductSystem().processes.add(node.process.id);
 		if (sysNode.editor.getOutline() != null) {
 			sysNode.editor.getOutline().refresh();

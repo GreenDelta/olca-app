@@ -15,7 +15,7 @@ public class ProductSystemNode extends Node {
 
 	public ProductSystemNode(GraphEditor editor) {
 		super(editor);
-		var system = editor.getSystemEditor().getModel();
+		var system = editor.getProductSystem();
 		this.linkSearch = new MutableProcessLinkSearchMap(
 				system.processLinks);
 		var refProcess = system.referenceProcess;
@@ -34,7 +34,7 @@ public class ProductSystemNode extends Node {
 	}
 
 	public ProductSystem getProductSystem() {
-		return editor.getSystemEditor().getModel();
+		return editor.getProductSystem();
 	}
 
 	public ProcessNode getProcessNode(long id) {

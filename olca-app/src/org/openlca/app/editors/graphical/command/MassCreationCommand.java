@@ -110,7 +110,7 @@ public class MassCreationCommand extends Command {
 			removeNode(node);
 		for (ProcessNode node : sysNode.getChildren())
 			if (oldConstraints.get(node.figure) != null)
-				node.setXyLayoutConstraints(oldConstraints.get(node.figure));
+				node.setBox(oldConstraints.get(node.figure));
 		createdLinks.clear();
 		createdNodes.clear();
 		oldConstraints.clear();

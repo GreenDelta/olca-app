@@ -225,7 +225,7 @@ public class AddProcessAction extends Action implements GraphAction {
 						location.y,
 						Math.max(processNode.getMinimumWidth(), 250),
 						Math.max(processNode.getMinimumHeight(), 150));
-				processNode.setXyLayoutConstraints(rect);
+				processNode.setBox(rect);
 			}
 			
 			editor.setDirty();

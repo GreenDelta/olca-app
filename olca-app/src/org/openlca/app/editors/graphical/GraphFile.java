@@ -56,11 +56,17 @@ public final class GraphFile {
 	private static JsonObject toJson(ProcessNode node) {
 		if (node == null || node.process == null)
 			return null;
-		var xy = node.getXyLayoutConstraints();
 		var json = new JsonObject();
 		json.addProperty("id", node.process.id);
-		json.addProperty("x", xy != null ? xy.x : 0);
-		json.addProperty("y", xy != null ? xy.y : 0);
+
+		var box = node.getBox();
+		if (box != null) {
+			json.addProperty("x", box.x);
+			json.addProperty("y",  box.y);
+			json.addProperty("width",  box.width);
+			json.addProperty("height",  box.height);
+		}
+		
 		json.addProperty("minimized", node.isMinimized());
 		json.addProperty("expandedLeft", node.isExpandedLeft());
 		json.addProperty("expandedRight", node.isExpandedLeft());
@@ -131,8 +137,10 @@ public final class GraphFile {
 			return null;
 		var info = new NodeLayoutInfo();
 		info.id = Json.getLong(obj, "id", 0);
-		info.x = Json.getInt(obj, "x", 0);
-		info.y = Json.getInt(obj, "y", 0);
+		info.box.x = Json.getInt(obj, "x", 0);
+		info.box.y = Json.getInt(obj, "y", 0);
+		info.box.width = Json.getInt(obj, "width", 175);
+		info.box.height = Json.getInt(obj, "height", 25);
 		info.minimized = Json.getBool(obj, "minimized", false);
 		info.expandedLeft = Json.getBool(obj, "expandedLeft", false);
 		info.expandedRight = Json.getBool(obj, "expandedRight", false);

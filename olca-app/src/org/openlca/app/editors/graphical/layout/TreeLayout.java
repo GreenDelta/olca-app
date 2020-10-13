@@ -102,7 +102,7 @@ public class TreeLayout {
 			long id = processNode.process.id;
 			Dimension size = processNode.getSize();
 			containing.put(id, 1);
-			processNode.setXyLayoutConstraints(new Rectangle(0, 0, size.width, size.height));
+			processNode.setBox(new Rectangle(0, 0, size.width, size.height));
 		}
 		for (long processId : productSystemNode.getProductSystem().processes)
 			if (productSystemNode.getProcessNode(processId) == null)
@@ -204,7 +204,7 @@ public class TreeLayout {
 					Dimension size = processNode.getSize();
 					if (size == null)
 						continue;
-					processNode.setXyLayoutConstraints(new Rectangle(xPosition, yPosition + additionalHeight,
+					processNode.setBox(new Rectangle(xPosition, yPosition + additionalHeight,
 							size.width, size.height));
 					newAdditionalHeight = Math.max(newAdditionalHeight, yPosition + additionalHeight + size.height);
 				}

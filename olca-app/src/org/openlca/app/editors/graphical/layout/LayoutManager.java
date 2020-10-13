@@ -37,7 +37,7 @@ public class LayoutManager extends AbstractLayout {
 			if (child.isVisible())
 				nodes.add(child);
 			else
-				child.setXyLayoutConstraints(new Rectangle(0, 0, child.getSize().width, child.getSize().height));
+				child.setBox(new Rectangle(0, 0, child.getSize().width, child.getSize().height));
 		}
 		MinimalTreeLayout layout = new MinimalTreeLayout();
 		layout.layout(nodes.toArray(new ProcessNode[nodes.size()]));
@@ -52,7 +52,7 @@ public class LayoutManager extends AbstractLayout {
 		for (ProcessNode child : node.getChildren()) {
 			if (child.figure == null)
 				continue;
-			child.figure.setBounds(child.getXyLayoutConstraints());
+			child.figure.setBounds(child.getBox());
 		}
 	}
 

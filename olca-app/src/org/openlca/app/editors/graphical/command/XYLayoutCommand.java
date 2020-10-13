@@ -48,7 +48,7 @@ public class XYLayoutCommand extends Command {
 
 	@Override
 	public void execute() {
-		previousLayout = node.getXyLayoutConstraints();
+		previousLayout = node.getBox();
 		Rectangle newConstraints = newContraints();
 		if (node.isMinimized() && newConstraints.height > node.getMinimumHeight()) {
 			node.maximize();
@@ -60,7 +60,7 @@ public class XYLayoutCommand extends Command {
 		if (newConstraints.width < node.getMinimumWidth())  {
 			newConstraints.width = node.getMinimumWidth();
 		}
-		node.setXyLayoutConstraints(newConstraints);
+		node.setBox(newConstraints);
 		node.parent().editor.setDirty();
 	}
 
@@ -90,7 +90,7 @@ public class XYLayoutCommand extends Command {
 
 	@Override
 	public void undo() {
-		node.setXyLayoutConstraints(previousLayout);
+		node.setBox(previousLayout);
 		node.parent().editor.setDirty();
 	}
 

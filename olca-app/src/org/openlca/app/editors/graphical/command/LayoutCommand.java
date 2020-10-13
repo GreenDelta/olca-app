@@ -64,7 +64,7 @@ public class LayoutCommand extends Command {
 	public void undo() {
 		for (ProcessNode node : model.getChildren())
 			if (oldConstraints.get(node.figure) != null)
-				node.setXyLayoutConstraints(oldConstraints.get(node.figure));
+				node.setBox(oldConstraints.get(node.figure));
 		model.editor.setDirty();
 	}
 
