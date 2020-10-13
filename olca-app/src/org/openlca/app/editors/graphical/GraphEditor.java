@@ -43,6 +43,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.action.BuildSupplyChainMenuAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.LayoutMenuAction;
+import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.LayoutType;
 import org.openlca.app.editors.graphical.model.AppEditPartFactory;
 import org.openlca.app.editors.graphical.model.Link;
@@ -74,7 +75,6 @@ public class GraphEditor extends GraphicalEditor {
 	private OutlinePage outline;
 	private boolean routed;
 	private ISelection selection;
-	private boolean initialized = false;
 
 	// TODO: we may do not need this later when we build our
 	// context menu more selection specific.
@@ -103,14 +103,6 @@ public class GraphEditor extends GraphicalEditor {
 
 	public ISelection getSelection() {
 		return selection;
-	}
-
-	public void setInitialized(boolean initialized) {
-		this.initialized = initialized;
-	}
-
-	public boolean isInitialized() {
-		return initialized;
 	}
 
 	@Override
@@ -238,18 +230,18 @@ public class GraphEditor extends GraphicalEditor {
 			@Override
 			protected LayeredPane createPrintableLayers() {
 				var pane = new LayeredPane();
-				
+
 				var models = new Layer();
 				models.setOpaque(false);
 				models.setLayoutManager(new StackLayout());
 				pane.add(models, PRIMARY_LAYER);
-				
+
 				// add the connection layer on top of the
 				// model layer
 				var connections = new ConnectionLayer();
 				connections.setPreferredSize(new Dimension(5, 5));
 				pane.add(connections, CONNECTION_LAYER);
-				
+
 				return pane;
 			}
 		});
@@ -264,8 +256,31 @@ public class GraphEditor extends GraphicalEditor {
 		viewer.setProperty(
 				MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
 				MouseWheelZoomHandler.SINGLETON);
-		
-		GraphFile.apply(this);
+
+		// load the graph settings
+		var fileApplied = GraphFile.apply(this);
+		if (!fileApplied) {
+			// no saved settings applied =>
+			// try to find a good configuration
+			var system = getSystemEditor().getModel();
+			if (system.referenceProcess != null) {
+				var refNode = model.getProcessNode(
+						system.referenceProcess.id);
+				if (refNode != null) {
+					refNode.expandLeft();
+					refNode.expandRight();
+				}
+			}
+
+			// initialize the tree layout
+			if (model != null && model.figure != null) {
+				var layout = model.figure.getLayoutManager();
+				if (layout instanceof LayoutManager) {
+					((LayoutManager) layout).layout(
+							model.figure, LayoutType.TREE_LAYOUT);
+				}
+			}
+		}
 	}
 
 	@Override
