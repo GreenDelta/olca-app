@@ -6,9 +6,9 @@ import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.LineBorder;
+import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.LayoutType;
-import org.openlca.app.editors.graphical.layout.GraphFile;
 
 class ProductSystemFigure extends Figure {
 
@@ -43,7 +43,7 @@ class ProductSystemFigure extends Figure {
 		if (!node.editor.isInitialized()) {
 			node.editor.setInitialized(true);
 			try {
-				layoutLoaded = GraphFile.loadLayout(node);
+				layoutLoaded = GraphFile.apply(node);
 			} catch (Exception e) {
 				layoutLoaded = false;
 			}
