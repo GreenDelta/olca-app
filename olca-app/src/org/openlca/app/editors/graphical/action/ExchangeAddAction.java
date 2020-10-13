@@ -268,6 +268,7 @@ public class ExchangeAddAction extends Action {
 					? FlowType.PRODUCT_FLOW
 					: this.type;
 			var flow =  db.insert(Flow.of(name, type, prop));
+			editor.getModel().flows.reload(db);
 			Navigator.refresh();
 			return flow;
 		}

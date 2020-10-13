@@ -250,14 +250,19 @@ public class GraphEditor extends GraphicalEditor {
 
 			@Override
 			protected LayeredPane createPrintableLayers() {
-				LayeredPane pane = new LayeredPane();
-				Layer layer = new ConnectionLayer();
-				layer.setPreferredSize(new Dimension(5, 5));
-				pane.add(layer, CONNECTION_LAYER);
-				layer = new Layer();
-				layer.setOpaque(false);
-				layer.setLayoutManager(new StackLayout());
-				pane.add(layer, PRIMARY_LAYER);
+				var pane = new LayeredPane();
+				
+				var models = new Layer();
+				models.setOpaque(false);
+				models.setLayoutManager(new StackLayout());
+				pane.add(models, PRIMARY_LAYER);
+				
+				// add the connection layer on top of the
+				// model layer
+				var connections = new ConnectionLayer();
+				connections.setPreferredSize(new Dimension(5, 5));
+				pane.add(connections, CONNECTION_LAYER);
+				
 				return pane;
 			}
 		});

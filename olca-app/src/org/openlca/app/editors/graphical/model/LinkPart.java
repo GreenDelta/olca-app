@@ -31,6 +31,7 @@ class LinkPart extends AbstractConnectionEditPart {
 		figure.setConnectionRouter(getConnectionRouter());
 		figure.setTargetDecoration(new PolygonDecoration());
 		figure.setVisible(isVisible());
+		figure.setLineWidth(1);
 		getModel().figure = figure;
 		return figure;
 	}
@@ -56,7 +57,9 @@ class LinkPart extends AbstractConnectionEditPart {
 	}
 
 	private ConnectionRouter getConnectionRouter() {
-		return getEditor().isRouted() ? TreeConnectionRouter.instance : ConnectionRouter.NULL;
+		return getEditor().isRouted()
+				? TreeConnectionRouter.instance
+				: ConnectionRouter.NULL;
 	}
 
 	private boolean isVisible() {
