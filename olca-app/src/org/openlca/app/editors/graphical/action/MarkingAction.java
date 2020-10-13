@@ -60,6 +60,6 @@ public class MarkingAction extends Action implements GraphAction {
 			}
 			node.refresh();
 		}
-		editor.setDirty(true);
+		editor.setDirty();
 	}
 }

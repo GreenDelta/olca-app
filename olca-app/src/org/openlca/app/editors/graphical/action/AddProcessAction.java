@@ -228,7 +228,7 @@ public class AddProcessAction extends Action implements GraphAction {
 				processNode.setXyLayoutConstraints(rect);
 			}
 			
-			editor.setDirty(true);
+			editor.setDirty();
 			super.okPressed();
 		}
 	}

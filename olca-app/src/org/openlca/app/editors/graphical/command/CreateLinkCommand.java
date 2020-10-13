@@ -44,7 +44,7 @@ public class CreateLinkCommand extends Command {
 		systemNode.linkSearch.put(processLink);
 		link = getLink();
 		link.link();
-		systemNode.editor.setDirty(true);
+		systemNode.editor.setDirty();
 	}
 
 	private ProcessLink getProcessLink() {
@@ -116,7 +116,7 @@ public class CreateLinkCommand extends Command {
 		link.unlink();
 		system.processLinks.remove(processLink);
 		sys.linkSearch.remove(processLink);
-		sys.editor.setDirty(true);
+		sys.editor.setDirty();
 	}
 
 	public Link getLink() {

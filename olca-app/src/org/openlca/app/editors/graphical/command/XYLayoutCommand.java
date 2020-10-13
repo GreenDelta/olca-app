@@ -61,7 +61,7 @@ public class XYLayoutCommand extends Command {
 			newConstraints.width = node.getMinimumWidth();
 		}
 		node.setXyLayoutConstraints(newConstraints);
-		node.parent().editor.setDirty(true);
+		node.parent().editor.setDirty();
 	}
 
 	private Rectangle newContraints() {
@@ -91,7 +91,7 @@ public class XYLayoutCommand extends Command {
 	@Override
 	public void undo() {
 		node.setXyLayoutConstraints(previousLayout);
-		node.parent().editor.setDirty(true);
+		node.parent().editor.setDirty();
 	}
 
 }

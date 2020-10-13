@@ -47,16 +47,14 @@ public class HideShowCommand extends Command {
 			link.updateVisibilty();
 		}
 		node.layout();
-		node.parent().editor.setDirty(true);
+		node.parent().editor.setDirty();
 	}
 
 	@Override
 	public boolean canExecute() {
 		if (process == null)
 			return false;
-		if (model == null)
-			return false;
-		return true;
+		return model != null;
 	}
 
 	@Override

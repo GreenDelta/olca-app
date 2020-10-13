@@ -40,7 +40,7 @@ public class DeleteLinkCommand extends Command {
 			sysNode.linkSearch.remove(link.processLink);
 			link.unlink();
 		}
-		sysNode.editor.setDirty(true);
+		sysNode.editor.setDirty();
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class DeleteLinkCommand extends Command {
 			link.link();
 			link.updateVisibilty();
 		}
-		sysNode.editor.setDirty(true);
+		sysNode.editor.setDirty();
 	}
 
 }

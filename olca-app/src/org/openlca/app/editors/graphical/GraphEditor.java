@@ -92,8 +92,8 @@ public class GraphEditor extends GraphicalEditor {
 		return systemEditor;
 	}
 
-	public void setDirty(boolean value) {
-		systemEditor.setDirty(value);
+	public void setDirty() {
+		systemEditor.setDirty(true);
 	}
 
 	@Override

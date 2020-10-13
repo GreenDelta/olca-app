@@ -68,7 +68,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		for (ProcessNode node : nodes)
 			command = command.chain(ExpansionCommand.expandLeft(node));
 		CommandUtil.executeCommand(command, systemNode.editor);
-		systemNode.editor.setDirty(true);
+		systemNode.editor.setDirty();
 	}
 
 	private void collectFor(

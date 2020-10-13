@@ -164,7 +164,7 @@ class RemoveSupplyChainAction extends EditorAction {
 
 		private void refresh() {
 			node.refresh();
-			editor.setDirty(true);
+			editor.setDirty();
 			if (editor.getOutline() != null)
 				editor.getOutline().refresh();
 		}

@@ -16,9 +16,7 @@ public class ChangeStateCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		if (node == null)
-			return false;
-		return true;
+		return node != null;
 	}
 
 	@Override
@@ -32,7 +30,7 @@ public class ChangeStateCommand extends Command {
 			node.maximize();
 		else
 			node.minimize();
-		node.parent().editor.setDirty(true);
+		node.parent().editor.setDirty();
 	}
 
 	@Override

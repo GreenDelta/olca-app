@@ -33,7 +33,7 @@ public class GraphSettingsAction extends Action {
 		if (new Dialog(config).open() == Window.OK) {
 			config.applyOn(editor.config);
 			editor.refresh();
-			editor.setDirty(true);
+			editor.setDirty();
 		}
 	}
 

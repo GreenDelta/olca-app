@@ -29,9 +29,7 @@ public class ReconnectLinkCommand extends Command {
 			return false;
 		if (targetNode == null)
 			return false;
-		if (oldLink == null)
-			return false;
-		return true;
+		return oldLink != null;
 	}
 
 	@Override
@@ -58,7 +56,7 @@ public class ReconnectLinkCommand extends Command {
 		link.inputNode = targetNode.parent();
 		link.processLink = processLink;
 		link.link();
-		systemNode.editor.setDirty(true);
+		systemNode.editor.setDirty();
 	}
 
 	@Override
@@ -76,7 +74,7 @@ public class ReconnectLinkCommand extends Command {
 		system.processLinks.add(link.processLink);
 		systemNode.linkSearch.put(link.processLink);
 		link.link();
-		systemNode.editor.setDirty(true);
+		systemNode.editor.setDirty();
 	}
 
 	@Override
@@ -89,7 +87,7 @@ public class ReconnectLinkCommand extends Command {
 		system.processLinks.add(oldLink.processLink);
 		systemNode.linkSearch.put(oldLink.processLink);
 		oldLink.link();
-		sourceNode.parent().editor.setDirty(true);
+		sourceNode.parent().editor.setDirty();
 	}
 
 }

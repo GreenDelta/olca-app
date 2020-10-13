@@ -64,7 +64,7 @@ public class MassCreationCommand extends Command {
 			if (node.figure.isVisible())
 				oldConstraints.put(node.figure, node.figure.getBounds().getCopy());
 		((LayoutManager) sysNode.figure.getLayoutManager()).layout(sysNode.figure, sysNode.editor.getLayoutType());
-		sysNode.editor.setDirty(true);
+		sysNode.editor.setDirty();
 		if (sysNode.editor.getOutline() != null)
 			sysNode.editor.getOutline().refresh();
 	}
@@ -116,7 +116,7 @@ public class MassCreationCommand extends Command {
 		oldConstraints.clear();
 		if (sysNode.editor.getOutline() != null)
 			sysNode.editor.getOutline().refresh();
-		sysNode.editor.setDirty(true);
+		sysNode.editor.setDirty();
 	}
 
 	private void removeNode(ProcessNode node) {

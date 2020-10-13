@@ -38,7 +38,7 @@ public class CreateProcessCommand extends Command {
 		model.add(new ProcessNode(model.editor, process));
 		if (model.editor.getOutline() != null)
 			model.editor.getOutline().refresh();
-		model.editor.setDirty(true);
+		model.editor.setDirty();
 	}
 
 	@Override
@@ -57,6 +57,6 @@ public class CreateProcessCommand extends Command {
 		model.remove(model.getProcessNode(process.id));
 		if (model.editor.getOutline() != null)
 			model.editor.getOutline().refresh();
-		model.editor.setDirty(true);
+		model.editor.setDirty();
 	}
 }

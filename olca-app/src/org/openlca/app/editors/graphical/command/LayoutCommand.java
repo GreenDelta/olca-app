@@ -31,9 +31,7 @@ public class LayoutCommand extends Command {
 			return false;
 		if (layoutManager == null)
 			return false;
-		if (model == null)
-			return false;
-		return true;
+		return model != null;
 	}
 
 	@Override
@@ -48,7 +46,7 @@ public class LayoutCommand extends Command {
 				oldConstraints.put(node.figure, node.figure
 						.getBounds().getCopy());
 		layoutManager.layout(model.figure, type);
-		model.editor.setDirty(true);
+		model.editor.setDirty();
 	}
 
 	@Override
@@ -59,7 +57,7 @@ public class LayoutCommand extends Command {
 	@Override
 	public void redo() {
 		layoutManager.layout(model.figure, type);
-		model.editor.setDirty(true);
+		model.editor.setDirty();
 	}
 
 	@Override
@@ -67,7 +65,7 @@ public class LayoutCommand extends Command {
 		for (ProcessNode node : model.getChildren())
 			if (oldConstraints.get(node.figure) != null)
 				node.setXyLayoutConstraints(oldConstraints.get(node.figure));
-		model.editor.setDirty(true);
+		model.editor.setDirty();
 	}
 
 }

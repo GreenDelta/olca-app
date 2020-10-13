@@ -47,7 +47,7 @@ public class DeleteProcessCommand extends Command {
 		if (sysNode.editor.getOutline() != null) {
 			sysNode.editor.getOutline().refresh();
 		}
-		sysNode.editor.setDirty(true);
+		sysNode.editor.setDirty();
 	}
 
 	@Override
@@ -73,6 +73,6 @@ public class DeleteProcessCommand extends Command {
 			linkCommand.undo();
 			linkCommand = null;
 		}
-		node.parent().editor.setDirty(true);
+		node.parent().editor.setDirty();
 	}
 }

@@ -1,6 +1,5 @@
 package org.openlca.app.editors.graphical.action;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -72,7 +71,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 		try {
 			if (editor.getOutline() != null)
 				editor.getOutline().refresh();
-			editor.setDirty(true);
+			editor.setDirty();
 		} catch (Exception e) {
 			log.error("Failed to apply layout to graph", e);
 		}
@@ -87,7 +86,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 		}
 
 		@Override
-		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor) {
 			monitor.beginTask(M.CreatingProductSystem, IProgressMonitor.UNKNOWN);
 			var builder = new ProductSystemBuilder(Cache.getMatrixCache(), config);
 			for (ProcessNode node : nodes) {

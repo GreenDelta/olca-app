@@ -68,7 +68,7 @@ class GraphDropListener extends DropTargetAdapter {
 		// update the editor
 		if (!added.get())
 			return;
-		editor.setDirty(true);
+		editor.setDirty();
 		if (editor.getOutline() != null) {
 			editor.getOutline().refresh();
 		}

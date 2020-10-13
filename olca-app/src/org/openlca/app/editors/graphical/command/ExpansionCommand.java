@@ -41,9 +41,7 @@ public class ExpansionCommand extends Command {
 	public boolean canExecute() {
 		if (side != LEFT && side != RIGHT)
 			return false;
-		if (type != EXPAND && type != COLLAPSE)
-			return false;
-		return true;
+		return type == EXPAND || type == COLLAPSE;
 	}
 
 	@Override
@@ -65,7 +63,7 @@ public class ExpansionCommand extends Command {
 				node.collapseRight();
 		}
 		node.layout();
-		node.parent().editor.setDirty(true);
+		node.parent().editor.setDirty();
 		node.select();
 		node.reveal();
 	}
