@@ -44,7 +44,7 @@ import org.openlca.app.editors.graphical.action.BuildSupplyChainMenuAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.LayoutMenuAction;
 import org.openlca.app.editors.graphical.layout.LayoutType;
-import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
+import org.openlca.app.editors.graphical.layout.GraphFile;
 import org.openlca.app.editors.graphical.model.AppEditPartFactory;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -83,7 +83,7 @@ public class GraphEditor extends GraphicalEditor {
 
 	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
-		editor.onSaved(() -> NodeLayoutStore.saveLayout(getModel()));
+		editor.onSaved(() -> GraphFile.saveLayout(getModel()));
 		// draw nice routes when there are less then 100 processes
 		// in the system
 		routed = editor.getModel().processes.size() <= 100;

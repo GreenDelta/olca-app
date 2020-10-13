@@ -1,9 +1,13 @@
 package org.openlca.app.editors.graphical.layout;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,67 +21,72 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
-public final class NodeLayoutStore {
+/**
+ * We save the current layout and some settings in an external file of the
+ * database folder.
+ */
+public final class GraphFile {
 
-	private NodeLayoutStore() {
+	private GraphFile() {
 	}
 
-	public static void saveLayout(ProductSystemNode model) {
-		if (model == null)
+	public static void save(ProductSystemNode root) {
+		if (root == null)
 			return;
 		List<NodeLayoutInfo> layoutInfo = new ArrayList<>();
-		for (ProcessNode node : model.getChildren()) {
+		for (ProcessNode node : root.getChildren()) {
 			if (!node.isVisible())
 				continue;
 			layoutInfo.add(new NodeLayoutInfo(node));
 		}
 		try {
-			File layoutFile = createLayoutFile(model);
-			writeAsJson(layoutInfo, layoutFile);
+			var file = file(root.getProductSystem());
+			try (var s = new FileOutputStream(file);
+				 var w = new OutputStreamWriter(s, StandardCharsets.UTF_8);
+				 var buffer = new BufferedWriter(w);
+				 var json = new JsonWriter(buffer)) {
+				json.beginObject();
+				json.name("nodes");
+				json.beginArray();
+				for (var node : root.getChildren()) {
+					writeNode(json, node);
+				}
+				json.endArray();
+				json.endObject();
+			}
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(NodeLayoutStore.class);
+			Logger log = LoggerFactory.getLogger(GraphFile.class);
 			log.error("Failed to save layout", e);
 		}
 	}
 
-	private static void writeAsJson(List<NodeLayoutInfo> layoutInfo,
-			File file) throws IOException {
-		JsonWriter w = new JsonWriter(new FileWriter(file));
-		w.beginObject();
-		w.name("nodes");
-		w.beginArray();
-		for (NodeLayoutInfo layout : layoutInfo)
-			writeAsJson(layout, w);
-		w.endArray();
-		w.endObject();
-		w.flush();
-		w.close();
-	}
-
-	private static void writeAsJson(NodeLayoutInfo info,
-			JsonWriter w) throws IOException {
+	private static void writeNode(JsonWriter w, ProcessNode node)
+		throws IOException{
+		if (node == null || node.process == null)
+			return;
+		var xy = node.getXyLayoutConstraints();
 		w.beginObject();
 		w.name("id");
-		w.value(info.id);
+		w.value(node.process.id);
 		w.name("x");
-		w.value(info.getLocation().x);
+		w.value(xy != null ? xy.x : 0);
 		w.name("y");
-		w.value(info.getLocation().y);
+		w.value(xy != null ? xy.y : 0);
 		w.name("minimized");
-		w.value(info.minimized);
+		w.value(node.isMinimized());
 		w.name("expandedLeft");
-		w.value(info.expandedLeft);
+		w.value(node.isExpandedLeft());
 		w.name("expandedRight");
-		w.value(info.expandedRight);
+		w.value(node.isExpandedRight());
 		w.name("marked");
-		w.value(info.marked);
+		w.value(node.isMarked());
 		w.endObject();
 	}
 
-	public static boolean loadLayout(ProductSystemNode node) {
+	public static boolean apply(ProductSystemNode node) {
 		if (node == null || node.getProductSystem() == null)
 			return false;
-		File file = getLayoutFile(node.getProductSystem());
+		File file = file(node.getProductSystem());
 		if (!file.exists())
 			return false;
 		try {
@@ -86,7 +95,7 @@ public final class NodeLayoutStore {
 				apply(layout, node);
 			return true;
 		} catch (IOException e) {
-			Logger log = LoggerFactory.getLogger(NodeLayoutStore.class);
+			Logger log = LoggerFactory.getLogger(GraphFile.class);
 			log.error("Failed to load layout", e);
 			return false;
 		}
@@ -144,27 +153,15 @@ public final class NodeLayoutStore {
 		return info;
 	}
 
-	private static File createLayoutFile(
-			ProductSystemNode node) throws IOException {
-		File f = getLayoutFile(node.getProductSystem());
-		if (f.exists())
-			f.delete();
-		f.createNewFile();
-		return f;
-	}
-
-	private static File getLayoutFile(ProductSystem system) {
+	private static File file(ProductSystem system) {
 		File dir = DatabaseDir.getDir(system);
-		if (!dir.exists())
-			dir.mkdirs();
-		File layoutFile = new File(dir, "layout.json");
-		return layoutFile;
-	}
-
-	public static class NodeLayoutException extends Exception {
-
-		private static final long serialVersionUID = -6387346828566795215L;
-
+		if (!dir.exists()) {
+			if (!dir.mkdirs()) {
+				throw new RuntimeException(
+						"failed to create folder " + dir);
+			}
+		}
+		return new File(dir, "layout.json");
 	}
 
 }

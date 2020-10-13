@@ -11,7 +11,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.layout.NodeLayoutStore;
+import org.openlca.app.editors.graphical.layout.GraphFile;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ProcessDao;
@@ -71,7 +71,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 			log.error("Failed to complete product system. ", e);
 		}
 		try {
-			NodeLayoutStore.loadLayout(editor.getModel());
+			GraphFile.loadLayout(editor.getModel());
 			if (editor.getOutline() != null)
 				editor.getOutline().refresh();
 			editor.setDirty(true);
