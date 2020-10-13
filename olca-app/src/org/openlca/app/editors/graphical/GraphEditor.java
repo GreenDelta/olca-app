@@ -118,9 +118,9 @@ public class GraphEditor extends GraphicalEditor {
 			throws PartInitException {
 		setEditDomain(new DefaultEditDomain(this));
 		if (input instanceof GraphicalEditorInput) {
-			var modelInput = (GraphicalEditorInput) input;
-			if (modelInput.getDescriptor() != null) {
-				setPartName(Labels.name(modelInput.getDescriptor()));
+			var ginp = (GraphicalEditorInput) input;
+			if (ginp.getDescriptor() != null) {
+				setPartName(Labels.name(ginp.getDescriptor()));
 			}
 		}
 		super.init(site, input);
@@ -136,18 +136,6 @@ public class GraphEditor extends GraphicalEditor {
 			return true;
 		}
 		return false;
-	}
-
-	private ProductSystemNode createModel() {
-		var node = new ProductSystemNode(this);
-		var refProcess = getSystemEditor().getModel().referenceProcess;
-		if (refProcess == null)
-			return node;
-		ProcessNode p = ProcessNode.create(this, refProcess.id);
-		if (p != null) {
-			node.add(p);
-		}
-		return node;
 	}
 
 	public void createNecessaryLinks(ProcessNode node) {
@@ -184,7 +172,7 @@ public class GraphEditor extends GraphicalEditor {
 
 	@Override
 	protected void configureGraphicalViewer() {
-		model = createModel();
+		model = new ProductSystemNode(this);
 		super.configureGraphicalViewer();
 		var viewer = getGraphicalViewer();
 		viewer.setEditPartFactory(new AppEditPartFactory());
@@ -276,6 +264,8 @@ public class GraphEditor extends GraphicalEditor {
 		viewer.setProperty(
 				MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
 				MouseWheelZoomHandler.SINGLETON);
+		
+		GraphFile.apply(this);
 	}
 
 	@Override
@@ -368,7 +358,7 @@ public class GraphEditor extends GraphicalEditor {
 	 * added.
 	 */
 	public void collapse() {
-		model = createModel();
+		model = new ProductSystemNode(this);
 		var viewer = getGraphicalViewer();
 		if (viewer == null)
 			return;

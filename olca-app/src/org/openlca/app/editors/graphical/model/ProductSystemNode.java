@@ -6,7 +6,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.matrix.cache.FlowTable;
-import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
 public class ProductSystemNode extends Node {
@@ -16,9 +15,16 @@ public class ProductSystemNode extends Node {
 
 	public ProductSystemNode(GraphEditor editor) {
 		super(editor);
-		List<ProcessLink> links = editor.getSystemEditor()
-				.getModel().processLinks;
-		this.linkSearch = new MutableProcessLinkSearchMap(links);
+		var system = editor.getSystemEditor().getModel();
+		this.linkSearch = new MutableProcessLinkSearchMap(
+				system.processLinks);
+		var refProcess = system.referenceProcess;
+		if (refProcess != null) {
+			var refNode = ProcessNode.create(editor, refProcess.id);
+			if (refNode != null) {
+				add(refNode);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")

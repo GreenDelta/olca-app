@@ -2,8 +2,6 @@ package org.openlca.app.editors.graphical;
 
 import java.io.File;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -12,6 +10,9 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.jsonld.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 /**
  * We save the current layout and some settings in an external file of the
@@ -58,7 +59,10 @@ public final class GraphFile {
 		return json;
 	}
 
-	public static boolean apply(ProductSystemNode root) {
+	public static boolean apply(GraphEditor editor) {
+		if (editor == null)
+			return false;
+		var root = editor.getModel();
 		if (root == null || root.getProductSystem() == null)
 			return false;
 		var file = file(root.getProductSystem());
@@ -88,7 +92,7 @@ public final class GraphFile {
 			if (!elem.isJsonObject())
 				continue;
 			var obj = elem.getAsJsonObject();
-			var info = info(obj);
+			var info = toInfo(obj);
 			if (info == null)
 				continue;
 			var node = root.getProcessNode(info.id);
@@ -105,7 +109,7 @@ public final class GraphFile {
 		}
 	}
 
-	private static NodeLayoutInfo info(JsonObject obj) {
+	private static NodeLayoutInfo toInfo(JsonObject obj) {
 		if (obj == null)
 			return null;
 		var info = new NodeLayoutInfo();
