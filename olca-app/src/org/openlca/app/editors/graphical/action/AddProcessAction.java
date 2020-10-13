@@ -205,6 +205,7 @@ public class AddProcessAction extends Action implements GraphAction {
 						+ " contains process `"
 						+ Labels.name(d) + "`.");
 				cancelPressed();
+				return;
 			}
 			system.processes.add(d.id);
 			

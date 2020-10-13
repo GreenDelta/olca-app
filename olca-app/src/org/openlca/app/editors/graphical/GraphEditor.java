@@ -34,15 +34,12 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.openlca.app.M;
-import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.editors.graphical.action.BuildSupplyChainMenuAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.LayoutMenuAction;
@@ -265,18 +262,13 @@ public class GraphEditor extends GraphicalEditor {
 			}
 		});
 
-		var transfer = ModelTransfer.getInstance();
-		var dropTarget = new DropTarget(viewer.getControl(),
-				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
-		dropTarget.setTransfer(transfer);
-		dropTarget.addDropListener(new GraphDropListener(
-				model, transfer, getCommandStack()));
+		GraphDropListener.on(this);
 		viewer.getEditDomain().setActiveTool(
 				new PanningSelectionTool());
 		viewer.setContents(model);
-
-		getZoomManager().setZoomLevels(ZOOM_LEVELS);
-		getZoomManager().setZoomAnimationStyle(ZoomManager.ANIMATE_ZOOM_IN_OUT);
+		var zoom = getZoomManager();
+		zoom.setZoomLevels(ZOOM_LEVELS);
+		zoom.setZoomAnimationStyle(ZoomManager.ANIMATE_ZOOM_IN_OUT);
 		viewer.setProperty(
 				MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
 				MouseWheelZoomHandler.SINGLETON);

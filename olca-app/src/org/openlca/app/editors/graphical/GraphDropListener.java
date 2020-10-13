@@ -1,50 +1,73 @@
 package org.openlca.app.editors.graphical;
 
-import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.CommandStack;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.Transfer;
-import org.openlca.app.editors.graphical.command.CommandUtil;
-import org.openlca.app.editors.graphical.command.CreateProcessCommand;
-import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.app.components.ModelTransfer;
+import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class GraphDropListener extends DropTargetAdapter {
 
-	private final ProductSystemNode model;
-	private final CommandStack commandStack;
-	private final Transfer transferType;
+	private final GraphEditor editor;
 
-	GraphDropListener(ProductSystemNode model,
-			Transfer transfer, CommandStack commands) {
-		this.model = model;
-		this.transferType = transfer;
-		this.commandStack = commands;
+	GraphDropListener(GraphEditor editor) {
+		this.editor = editor;
+	}
+
+	static void on(GraphEditor editor) {
+		var viewer = editor.getGraphicalViewer();
+		var target = new DropTarget(viewer.getControl(),
+				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
+		target.setTransfer(ModelTransfer.getInstance());
+		target.addDropListener(new GraphDropListener(editor));
 	}
 
 	@Override
 	public void drop(DropTargetEvent e) {
-		if (!transferType.isSupportedType(e.currentDataType))
+		var transfer = ModelTransfer.getInstance();
+		if (!transfer.isSupportedType(e.currentDataType))
 			return;
-		if (!(e.data instanceof Object[]))
-			return;
-		Object[] data = (Object[]) e.data;
 
-		Command command = null;
-		for (Object obj : data) {
-			if (!(obj instanceof CategorizedDescriptor))
-				continue;
-			var d = (CategorizedDescriptor) obj;
-			if (d.type != ModelType.PRODUCT_SYSTEM
-					&& d.type != ModelType.PROCESS)
-				continue;
-			var c = new CreateProcessCommand(model, d);
-			command = CommandUtil.chain(c, command);
-		}
-		if (command == null || !command.canExecute())
+		var systemNode = editor.getModel();
+		var system = systemNode.getProductSystem();
+
+
+		var added = new AtomicBoolean(false);
+		ModelTransfer.getDescriptors(e.data)
+				.stream()
+				.filter(d -> d instanceof CategorizedDescriptor
+						&& !system.processes.contains(d.id)
+						&& (d.type == ModelType.PROCESS
+						|| d.type == ModelType.PRODUCT_SYSTEM))
+				.map(d -> (CategorizedDescriptor) d)
+				.map(d -> {
+					system.processes.add(d.id);
+					var node = new ProcessNode(editor, d);
+					systemNode.add(node);
+					return node;
+				})
+				.forEach(node -> {
+					added.set(true);
+					node.maximize();
+					var rect = new Rectangle(
+							e.x, e.y,
+							Math.max(node.getMinimumWidth(), 250),
+							Math.max(node.getMinimumHeight(), 150));
+					node.setXyLayoutConstraints(rect);
+				});
+
+		// update the editor
+		if (!added.get())
 			return;
-		commandStack.execute(command);
+		editor.setDirty(true);
+		if (editor.getOutline() != null) {
+			editor.getOutline().refresh();
+		}
 	}
 }
