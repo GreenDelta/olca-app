@@ -51,8 +51,8 @@ public class DbActivateAction extends Action implements INavigationAction {
 	public boolean accept(INavigationElement<?> element) {
 		if (!(element instanceof DatabaseElement))
 			return false;
-		DatabaseElement e = (DatabaseElement) element;
-		IDatabaseConfiguration config = e.getContent();
+		var e = (DatabaseElement) element;
+		var config = e.getContent();
 		if (Database.isActive(config))
 			return false;
 		this.config = config;
@@ -72,7 +72,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 				return;
 		}
 
-		Activation activation = new Activation();
+		var activation = new Activation();
 		// App.run does not work as we have to show a modal dialog in the
 		// callback
 		try {
@@ -97,11 +97,12 @@ public class DbActivateAction extends Action implements INavigationAction {
 				log.trace("Close other database if open");
 				Database.close();
 				log.trace("Activate selected database");
-				IDatabase db = Database.activate(config);
+				var db = Database.activate(config);
 				log.trace("Get version state");
 				versionState = VersionState.get(db);
 				if (Database.isConnected()) {
-					indexVersion = DiffIndexUpgrades.getVersion(Database.getDiffIndex());
+					indexVersion = DiffIndexUpgrades.getVersion(
+							Database.getDiffIndex());
 				}
 				monitor.done();
 			} catch (Exception e) {
@@ -122,7 +123,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 		public void run() {
 			if (activation == null)
 				return;
-			VersionState state = activation.versionState;
+			var state = activation.versionState;
 			if (state == null || state == VersionState.ERROR) {
 				error(M.DatabaseVersionCheckFailed);
 				return;
@@ -156,9 +157,17 @@ public class DbActivateAction extends Action implements INavigationAction {
 			Navigator.refresh();
 			if (Database.get() == null)
 				return;
-			INavigationElement<?> dbElem = Navigator.findElement(config);
-			INavigationElement<?> firstModelType = dbElem.getChildren().get(0);
-			Navigator.getInstance().getCommonViewer().reveal(firstModelType);
+			var navElem = Navigator.findElement(config);
+			if (navElem != null && !navElem.getChildren().isEmpty()) {
+				var first = navElem.getChildren().get(0);
+				var navigator = Navigator.getInstance();
+				if (navigator != null) {
+					var viewer = navigator.getCommonViewer();
+					if (viewer != null) {
+						viewer.reveal(first);
+					}
+				}
+			}
 			log.trace("Refresh history view (if open)");
 			if (Database.isConnected()) {
 				Announcements.check(Database.getRepositoryClient());
@@ -173,7 +182,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 		}
 
 		private void askRunUpgrades() {
-			IDatabase db = Database.get();
+			var db = Database.get();
 			boolean doIt = Question.ask(M.UpdateDatabase, M.UpdateDatabaseQuestion);
 			if (!doIt) {
 				closeDatabase();
@@ -181,7 +190,8 @@ public class DbActivateAction extends Action implements INavigationAction {
 			}
 			log.trace("Run database updates");
 			AtomicBoolean failed = new AtomicBoolean(false);
-			App.run(M.UpdateDatabase,
+			App.runWithProgress(
+					M.UpdateDatabase,
 					() -> runUpgrades(db, failed),
 					() -> {
 						closeDatabase();

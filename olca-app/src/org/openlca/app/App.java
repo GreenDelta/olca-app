@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
 import org.openlca.app.cloud.ui.preferences.CloudPreference;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
@@ -197,7 +196,7 @@ public class App {
 	}
 
 	public static void runWithProgress(String name, Runnable runnable) {
-		IProgressService progress = PlatformUI.getWorkbench()
+		var progress = PlatformUI.getWorkbench()
 				.getProgressService();
 		try {
 			progress.run(true, false, (monitor) -> {
