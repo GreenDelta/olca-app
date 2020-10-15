@@ -45,6 +45,7 @@ import org.openlca.core.matrix.MatrixData;
 import org.openlca.core.matrix.ParameterTable;
 import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.matrix.TechIndex;
+import org.openlca.core.matrix.format.JavaMatrix;
 import org.openlca.core.matrix.format.MatrixBuilder;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -174,6 +175,8 @@ class ImpactPage extends ModelPage<Process> {
 		refProduct.flow.id = 42;
 		data.techIndex = new TechIndex(refProduct);
 		data.techIndex.setDemand(1.0);
+		data.techMatrix = JavaMatrix.of(
+				new double[][] { { 1.0 } });
 
 		// collect the elementary flow exchanges
 		var elemFlows = new ArrayList<Exchange>();
@@ -225,10 +228,9 @@ class ImpactPage extends ModelPage<Process> {
 		data.impactIndex.each((i, d) -> contexts.add(d.id));
 		var interpreter = ParameterTable.interpreter(
 				db, contexts, Collections.emptySet());
-		data.impactMatrix= new ImpactBuilder(db)
-				.build(data.flowIndex, data.impactIndex, interpreter)
-				.impactMatrix;
-		
+		data.impactMatrix = new ImpactBuilder(db)
+				.build(data.flowIndex, data.impactIndex, interpreter).impactMatrix;
+
 		// create the result
 		var provider = EagerResultProvider.create(data, App.getSolver());
 		var result = new ContributionResult(provider);
