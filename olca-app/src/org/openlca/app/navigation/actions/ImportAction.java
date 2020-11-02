@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 public class ImportAction extends Action implements INavigationAction {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public ImportAction() {
 		setText(M.Import);
@@ -56,8 +56,8 @@ public class ImportAction extends Action implements INavigationAction {
 			return;
 		}
 		try {
-			IHandlerService service = PlatformUI
-					.getWorkbench().getService(IHandlerService.class);
+			var service = PlatformUI.getWorkbench()
+					.getService(IHandlerService.class);
 			service.executeCommand(ActionFactory.IMPORT.getCommandId(), null);
 		} catch (Exception e) {
 			log.error("Failed to open import wizard", e);

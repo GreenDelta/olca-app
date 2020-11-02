@@ -616,7 +616,7 @@
          </possibleChildren>
       </navigatorContent>
       <actionProvider
-            class="org.openlca.app.navigation.actions.NavigationActionProvider"
+            class="org.openlca.app.navigation.actions.NavigationMenu"
             id="actionprovider.navigation"
             priority="normal">
             <enablement />

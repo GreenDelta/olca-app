@@ -7,9 +7,11 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionContext;
+import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
 import org.openlca.app.M;
@@ -38,11 +40,12 @@ import org.openlca.app.navigation.actions.db.DbRenameAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.viewers.Selections;
+import org.slf4j.LoggerFactory;
 
 /**
  * Adds the actions to the context menu of the navigation tree.
  */
-public class NavigationActionProvider extends CommonActionProvider {
+public class NavigationMenu extends CommonActionProvider {
 
 	private final INavigationAction[][] actions = new INavigationAction[][] {
 
@@ -131,21 +134,29 @@ public class NavigationActionProvider extends CommonActionProvider {
 	@Override
 	public void fillContextMenu(IMenuManager menu) {
 		ActionContext con = getContext();
-		var selection = (IStructuredSelection) con.getSelection();
-		List<INavigationElement<?>> elements = Selections.allOf(selection);
-		if (showDbCreate(elements)) {
+		List<INavigationElement<?>> selection = Selections.allOf(
+				con.getSelection());
+
+		// create / import database
+		if (showDbCreate(selection)) {
 			menu.add(new DbCreateAction());
 			menu.add(new DbImportAction());
+			// TODO: not a nice hack here; better to have these tools
+			// hooked somewhere else
 			if (App.runsInDevMode() && Database.get() == null) {
 				menu.add(new XNexusEcoinventIndexExportAction());
 			}
 		}
-		if (elements.size() == 1) {
-			registerSingleActions(elements.get(0), menu, actions);
-		} else if (elements.size() > 1) {
-			registerMultiActions(elements, menu, actions);
+
+		// add dynamic actions
+		if (selection.size() == 1) {
+			registerSingleActions(selection.get(0), menu, actions);
+		} else if (selection.size() > 1) {
+			registerMultiActions(selection, menu, actions);
 		}
-		addCloudMenu(elements, menu);
+
+		addImportMenu(selection, menu);
+		addCloudMenu(selection, menu);
 	}
 
 	private boolean showDbCreate(List<INavigationElement<?>> elements) {
@@ -238,4 +249,32 @@ public class NavigationActionProvider extends CommonActionProvider {
 		return count;
 	}
 
+	public void addImportMenu(
+			List<INavigationElement<?>> selection, IMenuManager menu) {
+		if (selection.size() > 1)
+			return;
+		menu.add(new Separator());
+		var icon = Icon.IMPORT.descriptor();
+		var subMenu = new MenuManager(M.Import, icon, "import.menu");
+		menu.add(subMenu);
+
+		// try to determine the import from a file
+		subMenu.add(Actions.create(M.File, Icon.FILE.descriptor(), () -> {
+
+		}));
+
+		// open the generic import dialog
+		subMenu.add(Actions.create(M.Other + "...", icon, () -> {
+			try {
+				PlatformUI.getWorkbench()
+						.getService(IHandlerService.class)
+						.executeCommand(
+								ActionFactory.IMPORT.getCommandId(),
+								null);
+			} catch (Exception e) {
+				var log = LoggerFactory.getLogger(getClass());
+				log.error("failed to open import dialog", e);
+			}
+		}));
+	}
 }

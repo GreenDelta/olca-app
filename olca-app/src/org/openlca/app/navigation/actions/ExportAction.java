@@ -53,8 +53,8 @@ public class ExportAction extends Action implements INavigationAction {
 			return;
 		}
 		try {
-			IHandlerService service = PlatformUI
-					.getWorkbench().getService(IHandlerService.class);
+			var service = PlatformUI.getWorkbench()
+					.getService(IHandlerService.class);
 			service.executeCommand(ActionFactory.EXPORT.getCommandId(), null);
 		} catch (Exception e) {
 			var log = LoggerFactory.getLogger(getClass());
