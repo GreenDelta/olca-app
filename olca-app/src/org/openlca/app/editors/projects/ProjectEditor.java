@@ -1,7 +1,5 @@
 package org.openlca.app.editors.projects;
 
-import java.util.Calendar;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -51,7 +49,6 @@ public class ProjectEditor extends ModelEditor<Project> {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		getModel().lastModificationDate = Calendar.getInstance().getTime();
 		Reports.save(getModel(), report, Database.get());
 		super.doSave(monitor);
 	}

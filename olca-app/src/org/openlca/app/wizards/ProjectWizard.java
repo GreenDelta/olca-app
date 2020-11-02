@@ -1,6 +1,5 @@
 package org.openlca.app.wizards;
 
-import java.util.Calendar;
 import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
@@ -44,8 +43,6 @@ public class ProjectWizard extends AbstractWizard<Project> {
 			p.refId = UUID.randomUUID().toString();
 			p.name = getModelName();
 			p.description = getModelDescription();
-			p.creationDate = Calendar.getInstance().getTime();
-			p.lastModificationDate = Calendar.getInstance().getTime();
 			return p;
 		}
 	}

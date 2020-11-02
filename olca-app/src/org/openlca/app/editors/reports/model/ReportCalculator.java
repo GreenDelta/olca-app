@@ -46,7 +46,7 @@ public class ReportCalculator implements Runnable {
 		report.results.clear();
 		report.addedValues.clear();
 		report.netCosts.clear();
-		if (project.impactMethodId == null)
+		if (project.impactMethod == null)
 			return;
 		ProjectResult result;
 		try {
@@ -68,7 +68,7 @@ public class ReportCalculator implements Runnable {
 		}
 		appendResults(result);
 		appendCostResults(result);
-		if (project.nwSetId != null) {
+		if (project.nwSet != null) {
 			appendNwFactors();
 		}
 	}
@@ -76,7 +76,7 @@ public class ReportCalculator implements Runnable {
 	private void appendNwFactors() {
 		try {
 			NwSetTable table = NwSetTable.build(
-					Database.get(), project.nwSetId);
+					Database.get(), project.nwSet.id);
 			report.withNormalisation = table.hasNormalisationFactors();
 			report.withWeighting = table.hasWeightingFactors();
 			for (ReportIndicator indicator : report.indicators) {

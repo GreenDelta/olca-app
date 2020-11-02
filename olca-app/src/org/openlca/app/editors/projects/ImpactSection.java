@@ -1,7 +1,6 @@
 package org.openlca.app.editors.projects;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -15,103 +14,102 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NwSetDao;
 import org.openlca.core.model.Project;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
 
 class ImpactSection {
 
-	private ProjectEditor editor;
+	private final ProjectEditor editor;
+	private final IDatabase db;
+
 	private ImpactMethodViewer methodViewer;
 	private NwSetComboViewer nwViewer;
 	private IndicatorTable indicatorTable;
 
 	public ImpactSection(ProjectEditor editor) {
 		this.editor = editor;
+		this.db = Database.get();
 	}
 
-	public void render(Composite body, FormToolkit toolkit) {
-		Composite composite = UI.formSection(body, toolkit, M.LCIAMethod, 1);
-		Composite form = UI.formComposite(composite, toolkit);
-		UI.gridLayout(form, 3);
-		UI.gridData(form, true, false);
-		createViewers(toolkit, form);
+	public void render(Composite body, FormToolkit tk) {
+		var rootComp = UI.formSection(body, tk, M.LCIAMethod, 1);
+		var formComp = UI.formComposite(rootComp, tk);
+		UI.gridLayout(formComp, 3);
+		UI.gridData(formComp, true, false);
+		createViewers(tk, formComp);
 		indicatorTable = new IndicatorTable(editor);
-		indicatorTable.render(composite);
+		indicatorTable.render(rootComp);
 		setInitialSelection();
 		addListeners(); // do this after the initial selection to not set the
-						// editor dirty
+		// editor dirty
 	}
 
-	private void createViewers(FormToolkit toolkit, Composite composite) {
-		UI.formLabel(composite, toolkit, M.LCIAMethod);
-		methodViewer = new ImpactMethodViewer(composite);
+	private void createViewers(FormToolkit tk, Composite comp) {
+		UI.formLabel(comp, tk, M.LCIAMethod);
+		methodViewer = new ImpactMethodViewer(comp);
 		methodViewer.setNullable(true);
 		methodViewer.setInput(Database.get());
-		new CommentControl(composite, toolkit, "impactMethod", editor.getComments());
-		UI.formLabel(composite, toolkit, M.NormalizationAndWeightingSet);
-		nwViewer = new NwSetComboViewer(composite);
+		new CommentControl(comp, tk, "impactMethod", editor.getComments());
+		UI.formLabel(comp, tk, M.NormalizationAndWeightingSet);
+		nwViewer = new NwSetComboViewer(comp, Database.get());
 		nwViewer.setNullable(true);
-		nwViewer.setDatabase(Database.get());
-		new CommentControl(composite, toolkit, "nwSet", editor.getComments());
+		new CommentControl(comp, tk, "nwSet", editor.getComments());
 	}
 
 	private void addListeners() {
-		methodViewer.addSelectionChangedListener(
-				m -> onMethodChange(m));
-		nwViewer.addSelectionChangedListener(nwset -> {
-			Project project = editor.getModel();
-			if (nwset == null) {
-				project.nwSetId = null;
-			} else {
-				project.nwSetId = nwset.id;
-			}
+		methodViewer.addSelectionChangedListener(this::onMethodChange);
+		nwViewer.addSelectionChangedListener(d -> {
+			var project = editor.getModel();
+			project.nwSet = d == null
+					? null
+					: new NwSetDao(db).getForId(d.id);
 			editor.setDirty(true);
 		});
 	}
 
 	private void onMethodChange(ImpactMethodDescriptor method) {
 		Project project = editor.getModel();
-		if (method == null && project.impactMethodId == null)
+
+		// first check if something changed
+		if (method == null && project.impactMethod == null)
 			return;
-		if (method != null && Objects.equals(
-				method.id, project.impactMethodId))
+		if (method != null
+				&& project.impactMethod != null
+				&& method.id == project.impactMethod.id)
 			return;
-		project.nwSetId = null;
-		project.impactMethodId = method == null
+
+		// handle change
+		project.impactMethod = method == null
 				? null
-				: method.id;
+				: new ImpactMethodDao(db).getForId(method.id);
+		project.nwSet = null;
 		nwViewer.select(null);
 		nwViewer.setInput(method);
-		if (indicatorTable != null)
+		if (indicatorTable != null) {
 			indicatorTable.methodChanged(method);
+		}
 		editor.setDirty(true);
 	}
 
 	private void setInitialSelection() {
 		Project project = editor.getModel();
-		if (project.impactMethodId == null)
+		if (project.impactMethod == null)
 			return;
-		IDatabase db = Database.get();
-		ImpactMethodDao methodDao = new ImpactMethodDao(db);
-		ImpactMethodDescriptor method = methodDao.getDescriptor(
-				project.impactMethodId);
-		if (method == null)
-			return;
-		methodViewer.select(method);
-		NwSetDao dao = new NwSetDao(db);
-		List<NwSetDescriptor> nwSets = dao.getDescriptorsForMethod(method.id);
-		nwViewer.setInput(nwSets);
-		nwViewer.select(getInitialNwSet(project, nwSets));
-	}
+		methodViewer.select(Descriptor.of(project.impactMethod));
 
-	private NwSetDescriptor getInitialNwSet(Project project,
-			List<NwSetDescriptor> nwSets) {
-		if (project.nwSetId == null)
-			return null;
-		for (NwSetDescriptor d : nwSets)
-			if (project.nwSetId == d.id)
-				return d;
-		return null;
+		// normalisation and weighting sets
+		var nws = new ArrayList<NwSetDescriptor>();
+		NwSetDescriptor selected = null;
+		for (var nwSet : project.impactMethod.nwSets) {
+			var d = Descriptor.of(nwSet);
+			nws.add(d);
+			if (project.nwSet != null
+				&& project.nwSet.id == nwSet.id) {
+				selected = d;
+			}
+		}
+		nwViewer.setInput(nws);
+		nwViewer.select(selected);
 	}
-
 }

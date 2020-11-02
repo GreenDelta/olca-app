@@ -222,8 +222,8 @@ class ProjectParameterTable {
 	private Set<Long> getParameterContexts() {
 		Project project = editor.getModel();
 		HashSet<Long> contexts = new HashSet<>();
-		if (project.impactMethodId != null)
-			contexts.add(project.impactMethodId);
+		if (project.impactMethod != null)
+			contexts.add(project.impactMethod.id);
 		for (ProjectVariant variant : project.variants) {
 			if (variant.productSystem == null)
 				continue;

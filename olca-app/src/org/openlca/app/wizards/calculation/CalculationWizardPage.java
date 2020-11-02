@@ -149,8 +149,7 @@ class CalculationWizardPage extends WizardPage {
 
 	private void createNWSetCombo(Composite parent) {
 		UI.formLabel(parent, M.NormalizationAndWeightingSet);
-		nwViewer = new NwSetComboViewer(parent);
-		nwViewer.setDatabase(Database.get());
+		nwViewer = new NwSetComboViewer(parent, Database.get());
 		if (setup.calcSetup.nwSet != null) {
 			nwViewer.select(setup.calcSetup.nwSet);
 		}

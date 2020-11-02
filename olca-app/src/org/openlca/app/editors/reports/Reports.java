@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -85,13 +84,12 @@ public final class Reports {
 		return parameter;
 	}
 
-	private static void createReportIndicators(Project project, Report report,
-											   IDatabase database) {
-		if (project.impactMethodId == null)
+	private static void createReportIndicators(
+			Project project, Report report, IDatabase db) {
+		if (project.impactMethod == null)
 			return;
-		ImpactMethodDao dao = new ImpactMethodDao(database);
-		List<ImpactDescriptor> descriptors = dao
-				.getCategoryDescriptors(project.impactMethodId);
+		var dao = new ImpactMethodDao(db);
+		var descriptors = dao.getCategoryDescriptors(project.impactMethod.id);
 		int id = 0;
 		for (ImpactDescriptor d : descriptors) {
 			ReportIndicator i = new ReportIndicator(id++);

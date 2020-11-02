@@ -10,15 +10,12 @@ import org.openlca.core.model.descriptors.NwSetDescriptor;
 
 public class NwSetComboViewer extends AbstractComboViewer<NwSetDescriptor> {
 
-	private IDatabase database;
+	private final IDatabase database;
 
-	public NwSetComboViewer(Composite parent) {
+	public NwSetComboViewer(Composite parent, IDatabase db) {
 		super(parent);
 		setInput(new NwSetDescriptor[0]);
-	}
-
-	public void setDatabase(IDatabase database) {
-		this.database = database;
+		this.database = db;
 	}
 
 	public void setInput(ImpactMethodDescriptor method) {
