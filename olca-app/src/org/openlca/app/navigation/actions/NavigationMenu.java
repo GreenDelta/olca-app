@@ -38,6 +38,7 @@ import org.openlca.app.navigation.actions.db.DbExportAction;
 import org.openlca.app.navigation.actions.db.DbImportAction;
 import org.openlca.app.navigation.actions.db.DbRenameAction;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.tools.FileImport;
 import org.openlca.app.util.Actions;
 import org.openlca.app.viewers.Selections;
 import org.slf4j.LoggerFactory;
@@ -215,8 +216,10 @@ public class NavigationMenu extends CommonActionProvider {
 		return actions;
 	}
 
-	private int registerSingleActions(INavigationElement<?> element,
-			IMenuManager menu, INavigationAction[][] actions) {
+	private int registerSingleActions(
+			INavigationElement<?> element,
+			IMenuManager menu,
+			INavigationAction[][] actions) {
 		int count = 0;
 		for (INavigationAction[] group : actions) {
 			boolean acceptedOne = false;
@@ -232,8 +235,10 @@ public class NavigationMenu extends CommonActionProvider {
 		return count;
 	}
 
-	private int registerMultiActions(List<INavigationElement<?>> elements,
-			IMenuManager menu, INavigationAction[][] actions) {
+	private int registerMultiActions(
+			List<INavigationElement<?>> elements,
+			IMenuManager menu,
+			INavigationAction[][] actions) {
 		int count = 0;
 		for (INavigationAction[] group : actions) {
 			boolean acceptedOne = false;
@@ -259,9 +264,10 @@ public class NavigationMenu extends CommonActionProvider {
 		menu.add(subMenu);
 
 		// try to determine the import from a file
-		subMenu.add(Actions.create(M.File, Icon.FILE.descriptor(), () -> {
-
-		}));
+		subMenu.add(Actions.create(
+				M.File,
+				Icon.FILE.descriptor(),
+				() -> new FileImport().run()));
 
 		// open the generic import dialog
 		subMenu.add(Actions.create(M.Other + "...", icon, () -> {

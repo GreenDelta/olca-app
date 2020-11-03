@@ -130,8 +130,6 @@ public class FileChooser {
 	private static File forExport(String extension, String defaultName,
 			String filterPath, int flag) {
 		Shell shell = UI.shell();
-		if (shell == null)
-			return null;
 		String path = openDialog(shell, extension, defaultName, filterPath,
 				flag, SWT.SAVE);
 		if (path == null)
@@ -141,8 +139,6 @@ public class FileChooser {
 
 	public static File openFolder() {
 		Shell shell = UI.shell();
-		if (shell == null)
-			return null;
 		String path = openDialog(
 				shell, null, null, null, DIRECTORY_DIALOG, SWT.OPEN);
 		if (path == null)
@@ -159,8 +155,6 @@ public class FileChooser {
 	 */
 	public static File open(String extension) {
 		Shell shell = UI.shell();
-		if (shell == null)
-			return null;
 		String path = openDialog(
 				shell, extension, null, null, FILE_DIALOG, SWT.OPEN);
 		if (path == null)
