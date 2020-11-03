@@ -130,7 +130,7 @@ public class SaveScriptDialog extends FormDialog {
 	private File file() {
 		var db = Database.get();
 		if (asGlobal || db == null) {
-			var dir = new File(Workspace.getDir(), "scripts");
+			var dir = new File(Workspace.getDir(), "Scripts");
 			if (!dir.exists() && !dir.mkdirs())
 				throw new RuntimeException(
 						"Could not create `scripts` folder: " + dir);
@@ -144,7 +144,7 @@ public class SaveScriptDialog extends FormDialog {
 			asGlobal = true;
 			return file();
 		}
-		var dir = new File(dbDir, "scripts");
+		var dir = new File(dbDir, "Scripts");
 		if (!dir.exists() && !dir.mkdirs()) {
 			asGlobal = true;
 			return file();

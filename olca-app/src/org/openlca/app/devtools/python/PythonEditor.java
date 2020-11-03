@@ -110,7 +110,7 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 		}
 
 		// check if the file already exists
-		var scriptDir = new File(Workspace.getDir(), "scripts");
+		var scriptDir = new File(Workspace.getDir(), "Scripts");
 		if (!scriptDir.exists()) {
 			var created = scriptDir.mkdirs();
 			if (!created) {

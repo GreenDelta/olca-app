@@ -58,6 +58,7 @@ public class NavigationMenu extends CommonActionProvider {
 					new CalculateSystemAction(),
 					new CreateModelAction(),
 					new OpenUsageAction(),
+					new ExportScriptAction(),
 					new DeleteModelAction(),
 					new DeleteScriptAction(),
 					new DeleteLibraryAction(),

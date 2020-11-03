@@ -77,7 +77,7 @@ public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
 		var dir = db.getFileStorageLocation();
 		if (dir == null || !dir.exists())
 			return;
-		var scriptDir = new File(dir, "scripts");
+		var scriptDir = new File(dir, "Scripts");
 		if (!scriptDir.exists() || Dirs.isEmpty(scriptDir))
 			return;
 		list.add(new ScriptElement(this, scriptDir));
