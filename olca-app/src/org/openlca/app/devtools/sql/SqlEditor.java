@@ -1,5 +1,8 @@
 package org.openlca.app.devtools.sql;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +18,9 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -23,6 +29,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.devtools.IScriptEditor;
+import org.openlca.app.devtools.SaveScriptDialog;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
@@ -35,11 +42,58 @@ import org.python.google.common.base.Strings;
 
 public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 
-	public static String TYPE = "SqlEditor";
+	public static final String TYPE = "SqlEditor";
+
+	private File file;
+	private String script = "";
+	private boolean _dirty;
 	private Page page;
 
 	public static void open() {
-		Editors.open(new SimpleEditorInput(TYPE, UUID.randomUUID().toString(), "SQL"), TYPE);
+		var id = UUID.randomUUID().toString() + "_new";
+		var input = new SimpleEditorInput(TYPE, id, "SQL");
+		Editors.open(input, TYPE);
+	}
+
+	public static void open(File file) {
+		if (file == null || !file.exists())
+			return;
+		var id = file.getAbsolutePath();
+		var input = new SimpleEditorInput(TYPE, id, "SQL");
+		Editors.open(input, TYPE);
+	}
+
+	@Override
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+		super.init(site, input);
+		if (!(input instanceof SimpleEditorInput))
+			return;
+		var id = ((SimpleEditorInput) input).id;
+		if (id.endsWith("_new"))
+			return;
+		var file = new File(id);
+		if (!file.exists())
+			return;
+		this.file = file;
+		try {
+			script = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+		} catch (Exception e) {
+			MsgBox.error("Failed to read script",
+					"Failed to read script " + file + ": " + e.getMessage());
+		}
+	}
+
+	private void setDirty() {
+		// can only set the editor dirty if there is a file
+		if (file == null)
+			return;
+		_dirty = true;
+		editorDirtyStateChanged();
+	}
+
+	@Override
+	public boolean isDirty() {
+		return _dirty;
 	}
 
 	@Override
@@ -58,15 +112,31 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		if (file == null)
+			return;
+		try {
+			Files.writeString(
+					file.toPath(),
+					script,
+					StandardCharsets.UTF_8);
+		} catch (Exception e) {
+			MsgBox.error(
+					"Failed to save script",
+					"Failed to save script " + file + ": " + e.getMessage());
+		}
 	}
 
 	@Override
 	public void doSaveAs() {
+		if (file != null) {
+
+		}
+		SaveScriptDialog.forScriptOf();
 	}
 
 	@Override
 	public boolean isSaveAsAllowed() {
-		return false;
+		return true;
 	}
 
 	private class Page extends FormPage {
@@ -80,12 +150,12 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm managedForm) {
-			ScrolledForm form = UI.formHeader(managedForm, "SQL Query Browser", Icon.SQL.get());
-			FormToolkit toolkit = managedForm.getToolkit();
-			Composite body = UI.formBody(form, toolkit);
-			createStatementSection(body, toolkit);
-			createResultSection(body, toolkit);
+		protected void createFormContent(IManagedForm mform) {
+			var form = UI.formHeader(mform, "SQL Query Browser", Icon.SQL.get());
+			var tk = mform.getToolkit();
+			var body = UI.formBody(form, tk);
+			createStatementSection(body, tk);
+			createResultSection(body, tk);
 		}
 
 		private void createStatementSection(Composite body, FormToolkit toolkit) {
@@ -94,7 +164,12 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 			queryText = new StyledText(composite, SWT.BORDER);
 			toolkit.adapt(queryText);
 			UI.gridData(queryText, true, false).heightHint = 150;
+			queryText.setText(script == null ? "" : script);
 			queryText.addModifyListener(new SyntaxStyler(queryText));
+			queryText.addModifyListener(e -> {
+				script = queryText.getText();
+
+			});
 			Actions.bind(section, runAction = new RunAction());
 		}
 
@@ -142,29 +217,40 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 			}
 
 			private List<String> getStatements() {
-				String statement = queryText.getText();
-				if (Strings.isNullOrEmpty(statement))
+				var text = queryText.getText();
+				if (Strings.isNullOrEmpty(text))
 					return Collections.emptyList();
-				List<String> statements = new ArrayList<>();
+				var statements = new ArrayList<String>();
 				boolean inQuote = false;
-				String next = "";
-				for (char c : statement.toCharArray()) {
+				var buff = new StringBuilder();
+				for (char c : text.toCharArray()) {
+
 					if (c == '\'') {
 						inQuote = !inQuote;
+						buff.append(c);
+						continue;
 					}
+
 					if (c == ';' && !inQuote) {
-						if (!next.trim().isEmpty()) {
-							statements.add(next.trim());
+						var next = buff.toString().trim();
+						if (!next.isEmpty()) {
+							statements.add(next);
 						}
-						next = "";
-					} else if (c != '\r' && c != '\n' && c != '\t') {
-						next += c;
+						buff.setLength(0);
+						continue;
+					}
+
+					if (Character.isWhitespace(c) && buff.length() > 0) {
+						buff.append(' ');
 					} else {
-						next += ' ';
+						buff.append(c);
 					}
 				}
-				if (!next.trim().isEmpty()) {
-					statements.add(next.trim());
+				if (buff.length() > 0) {
+					var next = buff.toString().trim();
+					if (!next.isEmpty()) {
+						statements.add(next);
+					}
 				}
 				return statements;
 			}
@@ -176,7 +262,7 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 
 			// complete SQL99 keywords, see
 			// http://www.sql.org/sql-database/postgresql/manual/sql-keywords-appendix.html
-			private final String[] keywords = { "absolute", "action", "add", "admin",
+			private final String[] keywords = {"absolute", "action", "add", "admin",
 					"after", "aggregate", "alias", "all", "allocate", "alter",
 					"and", "any", "are", "array", "as", "asc", "assertion", "at",
 					"authorization", "before", "begin", "binary", "bit", "blob",
@@ -228,7 +314,7 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 					"under", "union", "unique", "unknown", "unnest", "update",
 					"usage", "user", "using", "value", "values", "varchar",
 					"variable", "varying", "view", "when", "whenever", "where",
-					"with", "without", "work", "write", "year", "zone" };
+					"with", "without", "work", "write", "year", "zone"};
 
 			SyntaxStyler(StyledText text) {
 				this.text = text;
