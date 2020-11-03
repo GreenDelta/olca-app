@@ -172,11 +172,11 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 
 		private class SyntaxStyler implements ModifyListener {
 
-			private StyledText text;
+			private final StyledText text;
 
 			// complete SQL99 keywords, see
 			// http://www.sql.org/sql-database/postgresql/manual/sql-keywords-appendix.html
-			private String[] keywords = { "absolute", "action", "add", "admin",
+			private final String[] keywords = { "absolute", "action", "add", "admin",
 					"after", "aggregate", "alias", "all", "allocate", "alter",
 					"and", "any", "are", "array", "as", "asc", "assertion", "at",
 					"authorization", "before", "begin", "binary", "bit", "blob",
@@ -251,9 +251,7 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 						word.append(c);
 						continue;
 					}
-					if (word == null)
-						continue;
-					else {
+					if (word != null) {
 						setWordStyle(word, wordStart);
 						word = null;
 						wordStart = -1;

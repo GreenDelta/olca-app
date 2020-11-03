@@ -37,7 +37,7 @@ public class NavigationRoot extends PlatformObject implements
 		if (childs != null)
 			return childs;
 
-		childs = new ArrayList<INavigationElement<?>>();
+		childs = new ArrayList<>();
 
 		// add database elements
 		var dbs = Database.getConfigurations();

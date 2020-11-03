@@ -21,7 +21,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.swtchart.extensions,
  org.apache.felix.scr,
  org.eclipse.equinox.event,
- org.eclipse.nebula.widgets.opal.notifier
+ org.eclipse.nebula.widgets.opal.notifier,
+ com.ibm.icu
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  libs/commons-beanutils-1.9.4.jar,
