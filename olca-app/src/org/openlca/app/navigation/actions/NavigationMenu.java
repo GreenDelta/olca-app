@@ -58,11 +58,16 @@ public class NavigationMenu extends CommonActionProvider {
 					new CalculateSystemAction(),
 					new CreateModelAction(),
 					new OpenUsageAction(),
-					new ExportScriptAction(),
 					new DeleteModelAction(),
-					new DeleteScriptAction(),
 					new DeleteLibraryAction(),
 					ValidateAction.forModel()
+			},
+
+			// script actions
+			new INavigationAction[] {
+					new OpenScriptAction(),
+					new DeleteScriptAction(),
+					new ExportScriptAction(),
 			},
 
 			// transfer actions

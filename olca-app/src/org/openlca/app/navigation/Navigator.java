@@ -2,6 +2,7 @@ package org.openlca.app.navigation;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.devtools.python.PythonEditor;
+import org.openlca.app.navigation.actions.OpenScriptAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.tools.libraries.LibraryInfoPage;
 import org.openlca.app.util.Colors;
@@ -72,9 +74,7 @@ public class Navigator extends CommonNavigator {
 				var file = ((ScriptElement) elem).getContent();
 				if (file.isDirectory())
 					return;
-				if (file.getName().endsWith(".py")) {
-					PythonEditor.open(file);
-				}
+				OpenScriptAction.run(file);
 			} else if (elem instanceof LibraryElement) {
 				var library = ((LibraryElement) elem).getContent();
 				LibraryInfoPage.show(library);
@@ -133,14 +133,12 @@ public class Navigator extends CommonNavigator {
 	private static TreeItem findItem(CommonViewer viewer,
 			INavigationElement<?> element) {
 		Stack<TreeItem> items = new Stack<>();
-		for (TreeItem item : viewer.getTree().getItems())
-			items.add(item);
+		items.addAll(Arrays.asList(viewer.getTree().getItems()));
 		while (!items.empty()) {
 			TreeItem next = items.pop();
 			if (itemEqualsElement(next, element))
 				return next;
-			for (TreeItem item : next.getItems())
-				items.add(item);
+			items.addAll(Arrays.asList(next.getItems()));
 		}
 		return null;
 	}
