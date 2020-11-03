@@ -24,7 +24,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
@@ -128,10 +127,19 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 
 	@Override
 	public void doSaveAs() {
+		String name = "script.sql";
 		if (file != null) {
-
+			name = file.getName();
+			if (name.endsWith(".sql")) {
+				name = name.substring(0, name.length() - 4);
+			}
+			name += "_copy.sql";
 		}
-		SaveScriptDialog.forScriptOf();
+		var newFile = SaveScriptDialog.forScriptOf(name, script)
+				.orElse(null);
+		if (file == null) {
+			file = newFile;
+		}
 	}
 
 	@Override
@@ -168,7 +176,7 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 			queryText.addModifyListener(new SyntaxStyler(queryText));
 			queryText.addModifyListener(e -> {
 				script = queryText.getText();
-
+				setDirty();
 			});
 			Actions.bind(section, runAction = new RunAction());
 		}

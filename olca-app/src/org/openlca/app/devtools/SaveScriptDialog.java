@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Optional;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -25,9 +26,15 @@ public class SaveScriptDialog extends FormDialog {
 	private String name;
 	private boolean asGlobal = true;
 
-	public static void forImportOf(File file) {
+	/**
+	 * Holds the file that was written to the local workspace
+	 * if that was successful.
+	 */
+	private File file;
+
+	public static Optional<File> forImportOf(File file) {
 		if (file == null || !file.exists())
-			return;
+			return Optional.empty();
 		// for imported scripts we try to detect the
 		// encoding. in the openLCA workspace we save
 		// everything encoded in utf-8
@@ -38,17 +45,20 @@ public class SaveScriptDialog extends FormDialog {
 					? Charset.defaultCharset()
 					: Charset.forName(match.getName());
 			var script = new String(bytes, charset);
-			forScriptOf(file.getName(), script);
+			return forScriptOf(file.getName(), script);
 		} catch (Exception e) {
 			MsgBox.error("Failed to read file",
 					"Failed to read file " + file
 							+ ": " + e.getMessage());
+			return Optional.empty();
 		}
 	}
 
-	public static void forScriptOf(String name, String script) {
+	public static Optional<File> forScriptOf(String name, String script) {
 		var dialog = new SaveScriptDialog(name, script);
-		dialog.open();
+		return dialog.open() == OK
+				? Optional.ofNullable(dialog.file)
+				: Optional.empty();
 	}
 
 	private SaveScriptDialog(String name, String script) {
@@ -121,6 +131,7 @@ public class SaveScriptDialog extends FormDialog {
 					script, StandardCharsets.UTF_8);
 			Navigator.refresh();
 			super.okPressed();
+			this.file = file;
 		} catch (Exception e) {
 			MsgBox.error("Failed to save script "
 					+ name + ": " + e.getMessage());
