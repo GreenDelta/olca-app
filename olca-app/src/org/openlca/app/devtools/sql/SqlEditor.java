@@ -10,8 +10,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -96,8 +94,10 @@ public class SqlEditor extends ScriptingEditor {
 			toolkit.adapt(queryText);
 			UI.gridData(queryText, true, false).heightHint = 150;
 			queryText.setText(script == null ? "" : script);
-			queryText.addModifyListener(new SyntaxStyler(queryText));
+			var styler = new SyntaxStyler(queryText);
+			styler.styleIt();
 			queryText.addModifyListener(e -> {
+				styler.styleIt();
 				script = queryText.getText();
 				setDirty();
 			});
@@ -192,7 +192,7 @@ public class SqlEditor extends ScriptingEditor {
 			}
 		}
 
-		private class SyntaxStyler implements ModifyListener {
+		private class SyntaxStyler {
 
 			private final StyledText text;
 
@@ -256,8 +256,7 @@ public class SqlEditor extends ScriptingEditor {
 				this.text = text;
 			}
 
-			@Override
-			public void modifyText(ModifyEvent modifyEvent) {
+			void styleIt() {
 				String content = text.getText();
 				if (content == null)
 					return;
