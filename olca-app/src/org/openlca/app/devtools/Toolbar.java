@@ -12,9 +12,9 @@ public class Toolbar extends EditorActionBarContributor {
 	public void contributeToToolBar(IToolBarManager manager) {
 		manager.add(Actions.create("Run", Icon.RUN.descriptor(), () -> {
 			var active = Editors.getActive();
-			if (!(active instanceof IScriptEditor))
+			if (!(active instanceof ScriptingEditor))
 				return;
-			var editor = (IScriptEditor) active;
+			var editor = (ScriptingEditor) active;
 			editor.eval();
 		}));
 	}
