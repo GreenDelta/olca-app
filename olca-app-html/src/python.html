@@ -39,6 +39,12 @@
             lineNumbers: true
         });
 
+        codeMirror.on("change", function () {
+            if (window._onChange) {
+                window._onChange(codeMirror.getValue());
+            }
+        })
+
         function getContent() {
             return codeMirror.getValue();
         }
