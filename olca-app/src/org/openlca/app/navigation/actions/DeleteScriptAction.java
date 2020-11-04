@@ -1,8 +1,11 @@
 package org.openlca.app.navigation.actions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
@@ -12,7 +15,6 @@ import org.openlca.app.navigation.ScriptElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
-import org.openlca.util.Dirs;
 
 public class DeleteScriptAction extends Action implements INavigationAction {
 
@@ -50,33 +52,30 @@ public class DeleteScriptAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		for (var elem : elements) {
-			var file = elem.getContent();
-			if (!file.exists())
-				continue;
-
-			// delete script folders
-			if (file.isDirectory()) {
-				var b = Question.ask("Delete all files in folder",
+		if (elements.isEmpty())
+			return;
+		var deleted = new AtomicBoolean(false);
+		elements.stream()
+				.map(e -> e.getContent())
+				.filter(File::exists)
+				.filter(file -> file.isDirectory()
+						? Question.ask("Delete all files in folder",
 						"Do you want to delete all files in "
-								+ file.getName() + "?");
-				if (!b)
-					break;
-				Dirs.delete(file.getPath());
-				continue;
-			}
+								+ file.getName() + "?")
+						: Question.ask("Delete file",
+						"Do you want to delete the file "
+								+ file.getName() + "?"))
+				.forEach(file -> {
+					try {
+						FileUtils.forceDelete(file);
+						deleted.set(true);
+					} catch (Exception e) {
+						MsgBox.error("Failed to delete file: " + file.getName());
+					}
+				});
 
-			// delete script files
-			var b = Question.ask("Delete file",
-					"Do you want to delete the file "
-							+ file.getName() + "?");
-			if (!b)
-				break;
-			if (!file.delete()) {
-				MsgBox.info("Failed to delete file: " + file.getName());
-			}
+		if (deleted.get()) {
+			Navigator.refresh();
 		}
-
-		Navigator.refresh();
 	}
 }
