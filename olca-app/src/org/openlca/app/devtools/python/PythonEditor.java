@@ -1,12 +1,11 @@
 package org.openlca.app.devtools.python;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.UUID;
 
-import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.window.Window;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
@@ -16,17 +15,14 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
-import org.openlca.app.M;
 import org.openlca.app.devtools.IScriptEditor;
+import org.openlca.app.devtools.SaveScriptDialog;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
-import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.HtmlFolder;
-import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
-import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -34,18 +30,24 @@ import org.slf4j.LoggerFactory;
 
 public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 
-	public static String TYPE = "PythonEditor";
-	private Page page;
+	public static final String TYPE = "PythonEditor";
+
 	private File file;
+	private String script = "";
+	private boolean _dirty;
+	private Page page;
 
 	public static void open() {
-		Editors.open(new SimpleEditorInput(
-				TYPE, UUID.randomUUID().toString(), "Python"), TYPE);
+		var id = UUID.randomUUID().toString() + "_new";
+		var input = new SimpleEditorInput(TYPE, id, "Python");
+		Editors.open(input, TYPE);
 	}
 
 	public static void open(File file) {
-		var input = new SimpleEditorInput(
-				TYPE, file.getAbsolutePath(), file.getName());
+		if (file == null || !file.exists())
+			return;
+		var id = file.getAbsolutePath();
+		var input = new SimpleEditorInput(TYPE, id, "Python");
 		Editors.open(input, TYPE);
 	}
 
@@ -55,17 +57,39 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 		super.init(site, input);
 		if (!(input instanceof SimpleEditorInput))
 			return;
-		var inp = (SimpleEditorInput) input;
-
-		// if the ID ends with `py` we assume that this is
-		// a path to a script file
-		if (!inp.id.endsWith(".py"))
+		var id = ((SimpleEditorInput) input).id;
+		if (id.endsWith("_new"))
 			return;
-		setPartName(inp.getName());
-		var file = new File(inp.id);
-		if (file.exists()) {
-			this.file = file;
+		var file = new File(id);
+		if (!file.exists())
+			return;
+		this.file = file;
+		try {
+			script = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+			setPartName(file.getName());
+		} catch (Exception e) {
+			MsgBox.error("Failed to read script",
+					"Failed to read script " + file + ": " + e.getMessage());
 		}
+	}
+
+	private void setDirty() {
+		// can only set the editor dirty if there is a file
+		if (file == null)
+			return;
+		_dirty = true;
+		editorDirtyStateChanged();
+	}
+
+	@Override
+	public boolean isDirty() {
+		return _dirty;
+	}
+
+	@Override
+	public void eval() {
+		var script = page.getScript();
+		App.run("Eval script", () -> Python.exec(script));
 	}
 
 	@Override
@@ -74,9 +98,19 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 	}
 
 	@Override
-	public void eval() {
-		String script = page.getScript();
-		App.run("Eval script", () -> Python.exec(script));
+	public void doSave(IProgressMonitor monitor) {
+		if (file == null)
+			return;
+		try {
+			Files.writeString(
+					file.toPath(),
+					script,
+					StandardCharsets.UTF_8);
+		} catch (Exception e) {
+			MsgBox.error(
+					"Failed to save script",
+					"Failed to save script " + file + ": " + e.getMessage());
+		}
 	}
 
 	@Override
@@ -86,53 +120,19 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 
 	@Override
 	public void doSaveAs() {
-		var dialog = new InputDialog(
-				UI.shell(),
-				"Save script as file",
-				"Please enter a file name for the new script",
-				file != null ? file.getName() : "script.py",
-				name -> {
-					try {
-						if (Strings.nullOrEmpty(name))
-							return "The file name cannot be empty";
-						Paths.get(name);
-						return null;
-					} catch (Exception e) {
-						return name + " is not a valid file name";
-					}
-				});
-
-		if (dialog.open() != Window.OK)
-			return;
-		var name = dialog.getValue();
-		if (!name.endsWith(".py")) {
-			name += ".py";
-		}
-
-		// check if the file already exists
-		var scriptDir = new File(Workspace.getDir(), "Scripts");
-		if (!scriptDir.exists()) {
-			var created = scriptDir.mkdirs();
-			if (!created) {
-				MsgBox.error("Could not create `scripts`" +
-						" folder in workspace");
-				return;
+		String name = "script.py";
+		if (file != null) {
+			name = file.getName();
+			if (name.endsWith(".py")) {
+				name = name.substring(0, name.length() - 3);
 			}
+			name += "_copy.py";
 		}
-		var file = new File(scriptDir, name);
-		if (file.exists()) {
-			var b = Question.ask(M.FileAlreadyExists,
-					M.OverwriteFileQuestion);
-			if (!b)
-				return;
-		}
-
-		// finally, write the file
-		try {
-			Files.writeString(file.toPath(), page.getScript());
-			Navigator.refresh();
-		} catch (Exception e) {
-			MsgBox.error("Failed to save script: " + e.getMessage());
+		var newFile = SaveScriptDialog.forScriptOf(name, script)
+				.orElse(null);
+		if (file == null && newFile != null) {
+			file = newFile;
+			setPartName(file.getName());
 		}
 	}
 
@@ -153,8 +153,29 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 			try {
 				browser = new Browser(body, SWT.NONE);
 				browser.setJavascriptEnabled(true);
-				UI.onLoaded(browser,
-						HtmlFolder.getUrl("python.html"), this::initScript);
+
+				UI.bindFunction(browser, "_onChange", (args) -> {
+					if (args == null || args.length == 0)
+						return null;
+					var arg = args[0] == null
+							? null
+							: args[0].toString();
+					if (arg != null) {
+						script = arg;
+						setDirty();
+					}
+					return null;
+				});
+
+				// initialize the script
+				UI.onLoaded(browser, HtmlFolder.getUrl("python.html"), () -> {
+					if (Strings.nullOrEmpty(script))
+						return;
+					var js = script.replace("'", "\\'")
+							.replaceAll("\\r?\\n", "\\n");
+					browser.execute("setContent('" + js + "')");
+				});
+
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(getClass());
 				log.error("failed to create browser in Python editor", e);
@@ -171,19 +192,6 @@ public class PythonEditor extends SimpleFormEditor implements IScriptEditor {
 				Logger log = LoggerFactory.getLogger(getClass());
 				log.error("failed to get script content", e);
 				return "";
-			}
-		}
-
-		private void initScript() {
-			if (file == null)
-				return;
-			try {
-				var script = Files.readString(file.toPath())
-						.replace("'", "\\'")
-						.replaceAll("\\n", "\\\\n");
-				browser.execute("setContent('" + script + "')");
-			} catch (Exception e) {
-				MsgBox.error("Failed to set script from file: " + file.getName());
 			}
 		}
 	}

@@ -20,6 +20,7 @@ public class DeleteScriptAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(INavigationElement<?> elem) {
+		elements.clear();
 		if (!(elem instanceof ScriptElement))
 			return false;
 		elements.add((ScriptElement) elem);
@@ -28,14 +29,13 @@ public class DeleteScriptAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elems) {
-		var accept = false;
+		elements.clear();
 		for (var elem : elems) {
 			if (elem instanceof ScriptElement) {
 				this.elements.add((ScriptElement) elem);
-				accept = true;
 			}
 		}
-		return accept;
+		return !elements.isEmpty();
 	}
 
 	@Override

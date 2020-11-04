@@ -63,7 +63,8 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
 		super.init(site, input);
 		if (!(input instanceof SimpleEditorInput))
 			return;
@@ -76,6 +77,7 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 		this.file = file;
 		try {
 			script = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+			setPartName(file.getName());
 		} catch (Exception e) {
 			MsgBox.error("Failed to read script",
 					"Failed to read script " + file + ": " + e.getMessage());
@@ -126,6 +128,11 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 	}
 
 	@Override
+	public boolean isSaveAsAllowed() {
+		return true;
+	}
+
+	@Override
 	public void doSaveAs() {
 		String name = "script.sql";
 		if (file != null) {
@@ -137,14 +144,10 @@ public class SqlEditor extends SimpleFormEditor implements IScriptEditor {
 		}
 		var newFile = SaveScriptDialog.forScriptOf(name, script)
 				.orElse(null);
-		if (file == null) {
+		if (file == null && newFile != null) {
 			file = newFile;
+			setPartName(file.getName());
 		}
-	}
-
-	@Override
-	public boolean isSaveAsAllowed() {
-		return true;
 	}
 
 	private class Page extends FormPage {

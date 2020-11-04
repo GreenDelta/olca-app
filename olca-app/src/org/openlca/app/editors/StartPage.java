@@ -96,7 +96,7 @@ public class StartPage extends SimpleFormEditor {
 				case "i386":
 					v += " " + "32 bit";
 				}
-			return v += ")";
+			return v + ")";
 		}
 	}
 }
