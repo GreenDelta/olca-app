@@ -245,6 +245,13 @@
             name="%SearchResults">
       </editor>
       <editor
+            id="SearchView"
+            class="org.openlca.app.cloud.ui.search.SearchView"
+            icon="icons/search.png"
+            default="false"
+            name="CS Search results">
+      </editor>
+      <editor
             id="ParameterUsagePage"
             class="org.openlca.app.search.ParameterUsagePage"
             icon="icons/link.png"
@@ -488,7 +495,7 @@
          </property>
          <property
                name="aboutText"
-               value="openLCA 1.10&#x0A;&#x0A;Copyright (c) 2007 - 2019 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
+               value="openLCA 1.11.0&#x0A;&#x0A;Copyright (c) 2007 - 2020 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
          </property>
          <property
                name="aboutImage"

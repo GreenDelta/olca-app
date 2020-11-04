@@ -14,6 +14,7 @@ import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.RootEntity;
@@ -40,6 +41,8 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 			return Images.get((Group) element);
 		if (element instanceof GroupType)
 			return Images.get((GroupType) element);
+		if (element instanceof ModelType)
+			return Images.get((ModelType) element);
 		return null;
 	}
 
@@ -79,6 +82,8 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 			return Labels.processType((ProcessType) enumValue);
 		if (enumValue instanceof UncertaintyType)
 			return Labels.uncertaintyType((UncertaintyType) enumValue);
+		if (enumValue instanceof ModelType)
+			return Labels.modelType((ModelType) enumValue);
 		if (enumValue != null)
 			return enumValue.toString();
 		return null;

@@ -17,6 +17,8 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.cloud.ui.search.SearchQuery;
+import org.openlca.app.cloud.ui.search.SearchView;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -49,7 +51,11 @@ public class SearchText extends WorkbenchWindowControlContribution {
 		text = new Text(composite, SWT.BORDER | SWT.SEARCH);
 		text.addTraverseListener(e -> {
 			if (e.detail == SWT.TRAVERSE_RETURN) {
-				doSearch(action.typeFilter);
+				if (action.searchOnline) {
+					doSearchOnline();
+				} else {
+					doSearch(action.typeFilter);
+				}
 			}
 		});
 		UI.gridData(text, true, false).minimumWidth = 180;
@@ -76,10 +82,17 @@ public class SearchText extends WorkbenchWindowControlContribution {
 			ParameterUsagePage.show(term);
 			return;
 		}
-		Search search = new Search(Database.get(), text.getText());
+		Search search = new Search(Database.get(), term);
 		search.typeFilter = typeFilter;
 		App.run(M.Searching, search,
 				() -> SearchPage.show(term, search.getResult()));
+	}
+
+	private void doSearchOnline() {
+		SearchQuery query = new SearchQuery();
+		query.query = text.getText();
+		org.openlca.app.cloud.ui.search.Search search = new org.openlca.app.cloud.ui.search.Search(query);
+		App.run(M.Searching, search, () -> SearchView.show(query, search.result));
 	}
 
 	@SuppressWarnings("unused")
@@ -103,6 +116,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 		private Menu menu;
 		private ModelType typeFilter;
+		private boolean searchOnline;
 
 		public DropDownAction() {
 			setText(M.Search);
@@ -149,6 +163,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 				ModelType type = types[i];
 				createItem(menu, getSeachLabel(type), type);
 			}
+			createSearchOnlineItem(menu);
 			return menu;
 		}
 
@@ -189,8 +204,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 			}
 		}
 
-		private void createItem(Menu menu, final String text,
-				final ModelType type) {
+		private void createItem(Menu menu, String text, ModelType type) {
 			Image image = null;
 			if (type == null)
 				image = Icon.SEARCH.get();
@@ -211,11 +225,30 @@ public class SearchText extends WorkbenchWindowControlContribution {
 				imageDescriptor = Images.descriptor(type);
 			setImageDescriptor(imageDescriptor);
 			typeFilter = type;
+			searchOnline = false;
+		}
+
+		private void createSearchOnlineItem(Menu menu) {
+			MenuItem item = new MenuItem(menu, SWT.NONE);
+			item.setText("Search in Collaboration Server");
+			item.setImage(Icon.CLOUD_LOGO_SMALL.get());
+			Controls.onSelect(item, e -> onSearchOnlineSelection());
+		}
+
+		private void onSearchOnlineSelection() {
+			setText("Search in Collaboration Server");
+			setImageDescriptor(Icon.CLOUD_LOGO_SMALL.descriptor());
+			typeFilter = null;
+			searchOnline = true;
 		}
 
 		@Override
 		public void run() {
-			doSearch(typeFilter);
+			if (searchOnline) {
+				doSearchOnline();
+			} else {
+				doSearch(typeFilter);
+			}
 		}
 	}
 }
