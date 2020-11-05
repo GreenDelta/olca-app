@@ -19,8 +19,8 @@ import org.openlca.app.components.FileSelection;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Dialog;
 import org.openlca.app.util.FileType;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
@@ -145,7 +145,7 @@ class CsvExportShell extends Shell {
 		File enviFile = enviSelection.getFile();
 		File techFile = techSelection.getFile();
 		if (enviFile == null || techFile == null) {
-			Dialog.showError(this, M.NoExportFilesSelected);
+			MsgBox.error(M.NoExportFilesSelected);
 			return;
 		}
 		conf.interventionFile = enviFile;

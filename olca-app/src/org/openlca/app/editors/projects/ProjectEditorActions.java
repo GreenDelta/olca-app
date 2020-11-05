@@ -11,8 +11,7 @@ import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.editors.reports.model.ReportCalculator;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Dialog;
-import org.openlca.app.util.UI;
+import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,7 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 		}
 		Project project = editor.getModel();
 		if (project.variants.isEmpty()) {
-			Dialog.showError(UI.shell(), M.NoProjectVaraintsAreDefined);
+			MsgBox.error(M.NoProjectVaraintsAreDefined);
 			return null;
 		}
 		return editor;

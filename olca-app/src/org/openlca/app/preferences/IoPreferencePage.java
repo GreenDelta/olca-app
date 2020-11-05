@@ -23,7 +23,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.openlca.app.M;
 import org.openlca.app.rcp.RcpActivator;
-import org.openlca.app.util.Dialog;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.ilcd.descriptors.DataStock;
 import org.openlca.ilcd.io.AuthInfo;
@@ -142,20 +142,20 @@ public class IoPreferencePage extends PreferencePage implements
 			client.connect();
 			AuthInfo info = client.getAuthentication();
 			if (!info.isAuthenticated) {
-				Dialog.showInfo(getShell(), M.ConnectionWithAnonymousAccess);
+				MsgBox.info(M.ConnectionWithAnonymousAccess);
 				return;
 			}
 			DataStock stock = info.dataStocks.isEmpty() ? null
 					: info.dataStocks.get(0);
 			if (stock == null || !stock.isReadAllowed()
 					|| !stock.isExportAllowed()) {
-				Dialog.showWarning(getShell(), M.ILCD_NO_READ_OR_WRITE_ACCESS_MSG);
+				MsgBox.warning(M.ILCD_NO_READ_OR_WRITE_ACCESS_MSG);
 				return;
 			}
-			Dialog.showInfo(getShell(), M.ILCD_CONNECTION_WORKS_MSG
+			MsgBox.info(M.ILCD_CONNECTION_WORKS_MSG
 					+ " (Data stock = " + stock.shortName + ")");
 		} catch (Exception e) {
-			Dialog.showError(getShell(), M.ILCD_CONNECTION_FAILED_MSG
+			MsgBox.error(M.ILCD_CONNECTION_FAILED_MSG
 					+ " (" + e.getMessage() + ")");
 		}
 	}
