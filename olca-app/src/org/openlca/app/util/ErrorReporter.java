@@ -18,19 +18,26 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.openlca.app.App;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.julia.Julia;
+import org.slf4j.LoggerFactory;
 
-public class ErrorDialog extends FormDialog {
+public class ErrorReporter extends FormDialog {
 
 	private final String message;
 	private final Throwable error;
 
-	public static void open(String message, Throwable error) {
-		App.runInUI(
-				"Show error",
-				() -> new ErrorDialog(message, error).open());
+	/**
+	 * Opens the error reporter for the given message and error. It also writes the
+	 * error to the log. So no need to log an error when you later want to open it
+	 * in the reporter. It is save to call this method from non-UI threads.
+	 */
+	public static void on(String message, Throwable error) {
+		var log = LoggerFactory.getLogger(ErrorReporter.class);
+		log.error(message, error);
+		App.runInUI("Show error reporter",
+				() -> new ErrorReporter(message, error).open());
 	}
 
-	private ErrorDialog(String message, Throwable error) {
+	private ErrorReporter(String message, Throwable error) {
 		super(UI.shell());
 		this.message = message == null
 				? "No error message"
@@ -76,7 +83,7 @@ public class ErrorDialog extends FormDialog {
 		UI.gridData(text, true, true);
 		mform.reflow(true);
 		text.setText(template());
-		
+
 		formText.addHyperlinkListener(new HyperlinkAdapter() {
 			@Override
 			public void linkActivated(HyperlinkEvent e) {
@@ -86,7 +93,7 @@ public class ErrorDialog extends FormDialog {
 				var uri = href.toString();
 				if (uri.startsWith("mailto:")) {
 					uri += "?subject=openLCA%20error&body=";
-					uri +=URLEncoder.encode(
+					uri += URLEncoder.encode(
 							text.getText(), StandardCharsets.US_ASCII)
 							.replace("+", "%20");
 				}
@@ -127,6 +134,10 @@ public class ErrorDialog extends FormDialog {
 				"* screen shots ?\n" +
 				"* ...\n" +
 				"\n" +
+				"# openLCA error message\n" +
+				"\n" +
+				message +
+				"\n\n" +
 				"# Installation details\n" +
 				"\n" +
 				"* openLCA version: " + App.getVersion() + "\n" +

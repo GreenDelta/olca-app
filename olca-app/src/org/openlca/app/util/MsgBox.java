@@ -45,7 +45,7 @@ public class MsgBox {
 	public static void error(String title, String text) {
 		new BoxJob(title, text, Type.ERROR).schedule();
 	}
-
+	
 	private static class BoxJob extends UIJob {
 
 		private String title;

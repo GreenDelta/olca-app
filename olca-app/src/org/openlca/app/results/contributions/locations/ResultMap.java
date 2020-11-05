@@ -17,6 +17,7 @@ import org.openlca.app.components.mapview.MapView;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Popup;
@@ -160,8 +161,7 @@ class ResultMap {
 			Popup.info("Export done",
 					"Result map was written to " + file.getName());
 		} catch (Exception e) {
-			MsgBox.error("Export failed",
-					"Failed to write file " + file + ": " + e.getMessage());
+			ErrorReporter.on("Failed to export result map to: " + file, e);
 		}
 	}
 }

@@ -12,9 +12,9 @@ import org.eclipse.ui.PartInitException;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
-import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.ErrorReporter;
 
-public abstract class ScriptingEditor extends SimpleFormEditor  {
+public abstract class ScriptingEditor extends SimpleFormEditor {
 
 	protected File file;
 	protected String script = "";
@@ -41,8 +41,7 @@ public abstract class ScriptingEditor extends SimpleFormEditor  {
 			script = Files.readString(file.toPath(), StandardCharsets.UTF_8);
 			setPartName(file.getName());
 		} catch (Exception e) {
-			MsgBox.error("Failed to read script",
-					"Failed to read script " + file + ": " + e.getMessage());
+			ErrorReporter.on("Failed to read script " + file, e);
 		}
 	}
 
@@ -73,9 +72,8 @@ public abstract class ScriptingEditor extends SimpleFormEditor  {
 			_dirty = false;
 			editorDirtyStateChanged();
 		} catch (Exception e) {
-			MsgBox.error(
-					"Failed to save script",
-					"Failed to save script " + file + ": " + e.getMessage());
+			ErrorReporter.on("Failed to save script "
+					+ file + ": " + e.getMessage(), e);
 		}
 	}
 

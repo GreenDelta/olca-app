@@ -15,6 +15,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 
@@ -27,8 +28,8 @@ public class SaveScriptDialog extends FormDialog {
 	private boolean asGlobal = true;
 
 	/**
-	 * Holds the file that was written to the local workspace
-	 * if that was successful.
+	 * Holds the file that was written to the local workspace if that was
+	 * successful.
 	 */
 	private File file;
 
@@ -47,9 +48,7 @@ public class SaveScriptDialog extends FormDialog {
 			var script = new String(bytes, charset);
 			return forScriptOf(file.getName(), script);
 		} catch (Exception e) {
-			MsgBox.error("Failed to read file",
-					"Failed to read file " + file
-							+ ": " + e.getMessage());
+			ErrorReporter.on("Failed to read file " + file, e);
 			return Optional.empty();
 		}
 	}
@@ -133,8 +132,7 @@ public class SaveScriptDialog extends FormDialog {
 			super.okPressed();
 			this.file = file;
 		} catch (Exception e) {
-			MsgBox.error("Failed to save script "
-					+ name + ": " + e.getMessage());
+			ErrorReporter.on("Failed to save script " + name, e);
 		}
 	}
 
