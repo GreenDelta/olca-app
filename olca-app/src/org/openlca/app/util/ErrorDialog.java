@@ -59,15 +59,28 @@ public class ErrorDialog extends FormDialog {
 		body.setLayout(new FillLayout());
 		var comp = tk.createComposite(body);
 		UI.gridLayout(comp, 1);
-		var message = tk.createLabel(comp, this.message, SWT.WRAP);
-		UI.gridData(message, true, false).widthHint = 560;
 
 		var formText = tk.createFormText(comp, true);
-		formText.setText(this.message, true, true);
+		formText.setText(formMessage(), true, true);
 		UI.gridData(formText, true, false).widthHint = 560;
 
 		var text = tk.createText(comp, "", SWT.MULTI);
 		UI.gridData(text, true, true);
 		mform.reflow(true);
+	}
+
+	private String formMessage() {
+		return "<html>"
+				+"<p><b>"
+				+ message
+				+"</b></p>"
+				+ "<p> If you think this should not happen or if there is "
+				+ "something that we should improve please open an issue "
+				+ "on the <a href='https://github.com/GreenDelta/olca-app'>"
+				+ "openLCA Github repository</a> or send us an "
+				+ "<a href='mailto:error@openlca.org'>email</a>. For "
+				+ "reporting the issue, you can use the template below. "
+				+ "Thanks!</p>"
+				+ "</html>";
 	}
 }
