@@ -48,71 +48,6 @@ import org.slf4j.LoggerFactory;
  */
 public class NavigationMenu extends CommonActionProvider {
 
-	private final INavigationAction[][] actions = new INavigationAction[][] {
-
-			getDatabaseActions(),
-
-			// model actions
-			new INavigationAction[] {
-					new OpenModelAction(),
-					new CalculateSystemAction(),
-					new CreateModelAction(),
-					new OpenUsageAction(),
-					new DeleteModelAction(),
-					new DeleteLibraryAction(),
-					ValidateAction.forModel()
-			},
-
-			// script actions
-			new INavigationAction[] {
-					new OpenScriptAction(),
-					new DeleteScriptAction(),
-					new ExportScriptAction(),
-			},
-
-			// transfer actions
-			new INavigationAction[] {
-					new CutAction(),
-					new CopyAction(),
-					new PasteAction()
-			},
-
-			// IO actions
-			new INavigationAction[] {
-					new ImportAction(),
-					new ExportAction(),
-			},
-
-			// category actions
-			new INavigationAction[] {
-					new CreateCategoryAction(),
-					new RenameAction(),
-					new UseLibraryCategoryAction(),
-			}
-	};
-
-	private final INavigationAction[][] cloudActions = new INavigationAction[][] {
-			new INavigationAction[] {
-					new CommitAction(),
-					new FetchAction(),
-					ToggleTrackingAction.untrack(),
-					ToggleTrackingAction.track(),
-					new ShowCommentsAction(),
-					new ShowInHistoryAction()
-			},
-			new INavigationAction[] {
-					new RebuildIndexAction(),
-					new ConfigureRepositoriesAction()
-			}
-	};
-
-	private final INavigationAction[][] cloudCompareActions = new INavigationAction[][] {
-			new INavigationAction[] {
-					new OpenCompareViewAction(false),
-					new OpenCompareViewAction(true)
-			}
-	};
-
 	@Override
 	public void fillActionBars(IActionBars actionBars) {
 		super.fillActionBars(actionBars);
@@ -155,14 +90,36 @@ public class NavigationMenu extends CommonActionProvider {
 			}
 		}
 
-		// add dynamic actions
-		if (selection.size() == 1) {
-			registerSingleActions(selection.get(0), menu, actions);
-		} else if (selection.size() > 1) {
-			registerMultiActions(selection, menu, actions);
-		}
+		addActions(selection, menu, getDatabaseActions());
 
-		addImportMenu(selection, menu);
+		// model actions
+		addActions(selection, menu,
+				new OpenModelAction(),
+				new CalculateSystemAction(),
+				new CreateModelAction(),
+				new OpenUsageAction(),
+				new DeleteModelAction(),
+				new DeleteLibraryAction(),
+				ValidateAction.forModel());
+
+		// script actions
+		addActions(selection, menu,
+				new OpenScriptAction(),
+				new DeleteScriptAction());
+
+		// DnD actions
+		addActions(selection, menu,
+				new CutAction(),
+				new CopyAction(),
+				new PasteAction());
+
+		// category actions
+		addActions(selection, menu,
+				new CreateCategoryAction(),
+				new RenameAction(),
+				new UseLibraryCategoryAction());
+
+		addIOMenu(selection, menu);
 		addCloudMenu(selection, menu);
 	}
 
@@ -175,26 +132,35 @@ public class NavigationMenu extends CommonActionProvider {
 		return e instanceof DatabaseElement;
 	}
 
-	private void addCloudMenu(List<INavigationElement<?>> elements, IMenuManager menu) {
+	private void addCloudMenu(
+			List<INavigationElement<?>> selection, IMenuManager menu) {
 		if (!CloudPreference.doEnable())
 			return;
-		int registered = 0;
-		IMenuManager subMenu = new MenuManager(M.Repository);
-		if (elements.size() == 1)
-			registered += registerSingleActions(elements.get(0), subMenu, cloudActions);
-		else if (elements.size() > 1)
-			registered += registerMultiActions(elements, subMenu, cloudActions);
-		int subRegistered = 0;
-		IMenuManager compareMenu = new MenuManager(M.CompareWith);
-		if (elements.size() == 1)
-			subRegistered += registerSingleActions(elements.get(0), compareMenu, cloudCompareActions);
-		else if (elements.size() > 1)
-			subRegistered += registerMultiActions(elements, compareMenu, cloudCompareActions);
-		if (subRegistered > 0) {
+
+		// repo sub menu
+		var subMenu = new MenuManager(M.Repository);
+		int added = addActions(selection, menu,
+				new CommitAction(),
+				new FetchAction(),
+				ToggleTrackingAction.untrack(),
+				ToggleTrackingAction.track(),
+				new ShowCommentsAction(),
+				new ShowInHistoryAction());
+		added += addActions(selection, menu,
+				new RebuildIndexAction(),
+				new ConfigureRepositoriesAction());
+
+		// compare sub menuw
+		var compareMenu = new MenuManager(M.CompareWith);
+		int subAdded = addActions(selection, compareMenu,
+				new OpenCompareViewAction(false),
+				new OpenCompareViewAction(true));
+		if (subAdded > 0) {
 			subMenu.add(compareMenu);
-			registered++;
+			added++;
 		}
-		if (registered == 0)
+
+		if (added == 0)
 			return;
 		menu.add(subMenu);
 		menu.add(new Separator());
@@ -222,48 +188,33 @@ public class NavigationMenu extends CommonActionProvider {
 		return actions;
 	}
 
-	private int registerSingleActions(
-			INavigationElement<?> element,
+	private int addActions(
+			List<INavigationElement<?>> selection,
 			IMenuManager menu,
-			INavigationAction[][] actions) {
+			INavigationAction... actions) {
+		if (selection.isEmpty())
+			return 0;
+		var single = selection.size() == 1
+				? selection.get(0)
+				: null;
 		int count = 0;
-		for (INavigationAction[] group : actions) {
-			boolean acceptedOne = false;
-			for (INavigationAction action : group)
-				if (action.accept(element)) {
-					menu.add(action);
-					count++;
-					acceptedOne = true;
-				}
-			if (acceptedOne)
-				menu.add(new Separator());
+		for (var action : actions) {
+			var accept = single != null
+					? action.accept(single)
+					: action.accept(selection);
+			if (accept) {
+				menu.add(action);
+				count++;
+			}
+		}
+		if (count > 1) {
+			menu.add(new Separator());
 		}
 		return count;
 	}
 
-	private int registerMultiActions(
-			List<INavigationElement<?>> elements,
-			IMenuManager menu,
-			INavigationAction[][] actions) {
-		int count = 0;
-		for (INavigationAction[] group : actions) {
-			boolean acceptedOne = false;
-			for (INavigationAction action : group)
-				if (action.accept(elements)) {
-					menu.add(action);
-					count++;
-					acceptedOne = true;
-				}
-			if (acceptedOne)
-				menu.add(new Separator());
-		}
-		return count;
-	}
-
-	public void addImportMenu(
+	public void addIOMenu(
 			List<INavigationElement<?>> selection, IMenuManager menu) {
-		if (selection.size() > 1)
-			return;
 		menu.add(new Separator());
 		var icon = Icon.IMPORT.descriptor();
 		var subMenu = new MenuManager(M.Import, icon, "import.menu");
@@ -288,5 +239,10 @@ public class NavigationMenu extends CommonActionProvider {
 				log.error("failed to open import dialog", e);
 			}
 		}));
+
+		addActions(selection, menu,
+				new ExportAction(),
+				new ExportScriptAction());
+
 	}
 }
