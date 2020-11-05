@@ -1,6 +1,7 @@
 package org.openlca.app.navigation.actions.db;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,11 +16,12 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.MsgBox;
 import org.zeroturnaround.zip.ZipUtil;
 
-public class DbImportAction extends Action implements INavigationAction {
+public class DbRestoreAction extends Action implements INavigationAction {
 
-	public DbImportAction() {
+	public DbRestoreAction() {
 		setText(M.RestoreDatabase);
 		setImageDescriptor(Icon.DATABASE_IMPORT.descriptor());
 	}
@@ -36,19 +38,30 @@ public class DbImportAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		File file = FileChooser.open("*.zolca");
-		if (file == null || !file.exists())
+		File zolca = FileChooser.open("*.zolca");
+		if (zolca == null || !zolca.exists())
 			return;
-		File dbFolder = new File(App.getWorkspace(),
-				Config.DATABASE_FOLDER_NAME);
-		if (!dbFolder.exists())
-			dbFolder.mkdirs();
-		String dbName = getDatabaseName(file, dbFolder);
-		realImport(dbFolder, dbName, file);
+		run(zolca);
 	}
 
-	private String getDatabaseName(File file, File dbFolder) {
-		String proposal = file.getName()
+	public static void run(File zolca) {
+		if (zolca == null || !zolca.exists())
+			return;
+		try {
+			File dbFolder = new File(App.getWorkspace(),
+					Config.DATABASE_FOLDER_NAME);
+			Files.createDirectories(dbFolder.toPath());
+			String dbName = getDatabaseName(zolca, dbFolder);
+			realImport(dbFolder, dbName, zolca);
+		} catch (Exception e) {
+			MsgBox.error(
+					"Failed to restore database from file: " + zolca.getName());
+		}
+
+	}
+
+	private static String getDatabaseName(File zolca, File dbFolder) {
+		String proposal = zolca.getName()
 				.replace(".zolca", "")
 				.replaceAll("\\W+", "_")
 				.toLowerCase();
@@ -64,7 +77,7 @@ public class DbImportAction extends Action implements INavigationAction {
 		return name;
 	}
 
-	private void realImport(File dbFolder, String dbName, File zip) {
+	private static void realImport(File dbFolder, String dbName, File zip) {
 		App.run(M.ImportDatabase, () -> {
 			File folder = new File(dbFolder, dbName);
 			folder.mkdirs();

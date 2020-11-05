@@ -35,7 +35,7 @@ import org.openlca.app.navigation.actions.db.DbCopyAction;
 import org.openlca.app.navigation.actions.db.DbCreateAction;
 import org.openlca.app.navigation.actions.db.DbDeleteAction;
 import org.openlca.app.navigation.actions.db.DbExportAction;
-import org.openlca.app.navigation.actions.db.DbImportAction;
+import org.openlca.app.navigation.actions.db.DbRestoreAction;
 import org.openlca.app.navigation.actions.db.DbRenameAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.FileImport;
@@ -82,7 +82,7 @@ public class NavigationMenu extends CommonActionProvider {
 		// create / import database
 		if (showDbCreate(selection)) {
 			menu.add(new DbCreateAction());
-			menu.add(new DbImportAction());
+			menu.add(new DbRestoreAction());
 			// TODO: not a nice hack here; better to have these tools
 			// hooked somewhere else
 			if (App.runsInDevMode() && Database.get() == null) {

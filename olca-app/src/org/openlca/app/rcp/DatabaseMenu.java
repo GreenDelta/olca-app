@@ -15,7 +15,7 @@ import org.openlca.app.navigation.actions.db.DbCopyAction;
 import org.openlca.app.navigation.actions.db.DbCreateAction;
 import org.openlca.app.navigation.actions.db.DbDeleteAction;
 import org.openlca.app.navigation.actions.db.DbExportAction;
-import org.openlca.app.navigation.actions.db.DbImportAction;
+import org.openlca.app.navigation.actions.db.DbRestoreAction;
 import org.openlca.app.navigation.actions.db.DbPropertiesAction;
 import org.openlca.app.navigation.actions.db.DbRenameAction;
 import org.openlca.app.util.Actions;
@@ -36,7 +36,7 @@ class DatabaseMenu implements IMenuListener {
 	@Override
 	public void menuAboutToShow(IMenuManager menu) {
 		menu.add(new DbCreateAction());
-		menu.add(new DbImportAction());
+		menu.add(new DbRestoreAction());
 		if (Database.getActiveConfiguration() == null)
 			return;
 		Action checkLinksAction = Actions.create(
