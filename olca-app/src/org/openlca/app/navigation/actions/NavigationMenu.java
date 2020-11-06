@@ -77,12 +77,29 @@ public class NavigationMenu extends CommonActionProvider {
 		List<INavigationElement<?>> selection = Selections.allOf(
 				con.getSelection());
 
-		// create / import database
+		// database actions
 		addActions(selection, menu,
 				new DbCreateAction(),
-				new DbRestoreAction());
+				new DbRestoreAction(),
+				new DbExportAction(),
+				new DbActivateAction(),
+				ValidateAction.forDatabase(),
+				new DbCopyAction(),
+				new DbRenameAction(),
+				new DbDeleteAction(),
+				new DbCloseAction(),
+				new DbAddLibraryAction());
 
-		addActions(selection, menu, getDatabaseActions());
+		// dev. extensions
+		if (App.runsInDevMode()) {
+			addActions(selection, menu,
+					new XEI3MetaDataImportAction(),
+					new XEI3MarketProcessCleanUp(),
+					new XNexusIndexExportAction(),
+					new XNexusEcoinventIndexExportAction(),
+					new XRefDataExport(),
+					new XRefDataImport());
+		}
 
 		// model actions
 		addActions(selection, menu,
@@ -147,28 +164,6 @@ public class NavigationMenu extends CommonActionProvider {
 			return;
 		menu.add(subMenu);
 		menu.add(new Separator());
-	}
-
-	private INavigationAction[] getDatabaseActions() {
-		int count = App.runsInDevMode() ? 14 : 8;
-		var actions = new INavigationAction[count];
-		actions[0] = new DbExportAction();
-		actions[1] = new DbActivateAction();
-		actions[2] = ValidateAction.forDatabase();
-		actions[3] = new DbCopyAction();
-		actions[4] = new DbRenameAction();
-		actions[5] = new DbDeleteAction();
-		actions[6] = new DbCloseAction();
-		actions[7] = new DbAddLibraryAction();
-		if (App.runsInDevMode()) {
-			actions[8] = new XEI3MetaDataImportAction();
-			actions[9] = new XEI3MarketProcessCleanUp();
-			actions[10] = new XNexusIndexExportAction();
-			actions[11] = new XNexusEcoinventIndexExportAction();
-			actions[12] = new XRefDataExport();
-			actions[13] = new XRefDataImport();
-		}
-		return actions;
 	}
 
 	private int addActions(
