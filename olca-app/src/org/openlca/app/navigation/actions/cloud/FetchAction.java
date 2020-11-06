@@ -218,19 +218,17 @@ public class FetchAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
+			return false;
+		var first = selection.get(0);
+		if (!(first instanceof DatabaseElement))
 			return false;
 		client = Database.getRepositoryClient();
 		if (client == null)
 			return false;
 		index = Database.getDiffIndex();
 		return true;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
 	}
 
 }

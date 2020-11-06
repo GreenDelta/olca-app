@@ -71,17 +71,6 @@ public class CommitAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!Database.isConnected())
-			return false;
-		index = Database.getDiffIndex();
-		client = Database.getRepositoryClient();
-		database = Database.get();
-		selection = Collections.singletonList(element);
-		return true;
-	}
-
-	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
 		if (!Database.isConnected())
 			return false;

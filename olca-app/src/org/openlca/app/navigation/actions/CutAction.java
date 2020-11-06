@@ -1,6 +1,5 @@
 package org.openlca.app.navigation.actions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;

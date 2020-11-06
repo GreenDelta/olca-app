@@ -1,6 +1,5 @@
 package org.openlca.app.navigation.actions.cloud;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -42,18 +41,10 @@ public class OpenCompareViewAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
+	public boolean accept(List<INavigationElement<?>> selection) {
 		if (!Database.isConnected())
 			return false;
-		this.elements = Collections.singletonList(element);
-		return true;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		if (!Database.isConnected())
-			return false;
-		this.elements = elements;
+		this.elements = selection;
 		return true;
 	}
 

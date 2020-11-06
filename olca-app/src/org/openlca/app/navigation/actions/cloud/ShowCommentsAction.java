@@ -10,11 +10,8 @@ import org.openlca.app.editors.CommentsEditor;
 import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
-import org.openlca.cloud.api.RepositoryClient;
 
 public class ShowCommentsAction extends Action implements INavigationAction {
-
-	private RepositoryClient client;
 
 	@Override
 	public String getText() {
@@ -27,18 +24,13 @@ public class ShowCommentsAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		client = Database.getRepositoryClient();
-		if (client == null)
+		var first = selection.get(0);
+		if (!(first instanceof DatabaseElement))
 			return false;
-		return true;
+		var client = Database.getRepositoryClient();
+		return client != null;
 	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
-	}
-
 }

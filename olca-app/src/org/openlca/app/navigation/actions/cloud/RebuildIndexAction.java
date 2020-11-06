@@ -12,11 +12,8 @@ import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
-import org.openlca.cloud.api.RepositoryClient;
 
 public class RebuildIndexAction extends Action implements INavigationAction {
-
-	private RepositoryClient client;
 
 	@Override
 	public String getText() {
@@ -30,18 +27,14 @@ public class RebuildIndexAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		client = Database.getRepositoryClient();
-		if (client == null)
+		var first = selection.get(0);
+		if (!(first instanceof DatabaseElement))
 			return false;
-		return true;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
+		var client = Database.getRepositoryClient();
+		return client != null;
 	}
 
 }

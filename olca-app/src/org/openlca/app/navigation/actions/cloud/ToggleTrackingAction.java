@@ -1,7 +1,6 @@
 package org.openlca.app.navigation.actions.cloud;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -52,11 +51,6 @@ public class ToggleTrackingAction extends Action implements INavigationAction {
 		}
 		index.commit();
 		Navigator.refresh();
-	}
-
-	@Override
-	public boolean accept(INavigationElement<?> element) {
-		return accept(Arrays.asList(element));
 	}
 
 	@Override

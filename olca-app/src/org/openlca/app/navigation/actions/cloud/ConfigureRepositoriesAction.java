@@ -67,16 +67,14 @@ public class ConfigureRepositoriesAction extends Action implements INavigationAc
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		DatabaseElement elem = (DatabaseElement) element;
+		var first = selection.get(0);
+		if (!(first instanceof DatabaseElement))
+			return false;
+		var elem = (DatabaseElement) first;
 		return Database.isActive(elem.getContent());
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
 	}
 
 	// private class Runner {

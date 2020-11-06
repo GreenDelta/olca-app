@@ -11,12 +11,9 @@ import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openlca.app.util.ErrorReporter;
 
 public class ShowInHistoryAction extends Action implements INavigationAction {
-
-	private final static Logger log = LoggerFactory.getLogger(ShowInHistoryAction.class);
 
 	public ShowInHistoryAction() {
 		setText(M.ShowInHistory);
@@ -24,29 +21,22 @@ public class ShowInHistoryAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IWorkbenchPage page = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow()
+				.getActivePage();
 		if (page == null)
 			return;
 		try {
 			page.showView(HistoryView.ID);
 			HistoryView.refresh();
 		} catch (PartInitException e) {
-			log.error("Error opening sync view", e);
+			ErrorReporter.on("Error opening sync view", e);
 		}
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!Database.isConnected())
-			return false;
-		return true;
-	}
-
-	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
-		if (!Database.isConnected())
-			return false;
-		return true;
+		return Database.isConnected();
 	}
 
 }

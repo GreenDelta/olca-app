@@ -25,7 +25,6 @@ import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
-import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.navigation.actions.OpenScriptAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.tools.libraries.LibraryInfoPage;
