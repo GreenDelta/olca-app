@@ -11,7 +11,7 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ScriptElement;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.ErrorReporter;
 
 public class ExportScriptAction extends Action implements INavigationAction {
 
@@ -23,10 +23,13 @@ public class ExportScriptAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> elem) {
-		if (!(elem instanceof ScriptElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		var scriptElem = (ScriptElement) elem;
+		var first = selection.get(0);
+		if (!(first instanceof ScriptElement))
+			return false;
+		var scriptElem = (ScriptElement) first;
 		var file = scriptElem.getContent();
 		if (file == null
 				|| file.isDirectory()
@@ -34,11 +37,6 @@ public class ExportScriptAction extends Action implements INavigationAction {
 			return false;
 		this.file = file;
 		return true;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elems) {
-		return false;
 	}
 
 	@Override
@@ -59,8 +57,7 @@ public class ExportScriptAction extends Action implements INavigationAction {
 					StandardCopyOption.REPLACE_EXISTING,
 					StandardCopyOption.COPY_ATTRIBUTES);
 		} catch (Exception e) {
-			MsgBox.error("Failed to export script",
-					"The export failed with the following error: " + e.getMessage());
+			ErrorReporter.on("Failed to export script", e);
 		}
 	}
 }

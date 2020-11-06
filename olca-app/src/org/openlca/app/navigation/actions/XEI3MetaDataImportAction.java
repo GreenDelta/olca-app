@@ -30,16 +30,14 @@ class XEI3MetaDataImportAction extends Action implements
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		DatabaseElement e = (DatabaseElement) element;
+		var first = selection.get(0);
+		if (!(first instanceof DatabaseElement))
+			return false;
+		var e = (DatabaseElement) first;
 		return Database.isActive(e.getContent());
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
 	}
 
 	@Override
@@ -52,7 +50,7 @@ class XEI3MetaDataImportAction extends Action implements
 		if (path == null)
 			return;
 		File masterDataDir = new File(path);
-		if (masterDataDir == null || !masterDataDir.isDirectory())
+		if (!masterDataDir.isDirectory())
 			return;
 		File personFile = new File(masterDataDir, "Persons.xml");
 		if (personFile.exists())
@@ -68,11 +66,6 @@ class XEI3MetaDataImportAction extends Action implements
 				new IsicCategoryTreeSync(Database.get(), ModelType.FLOW));
 		App.run("Update process categories",
 				new IsicCategoryTreeSync(Database.get(), ModelType.PROCESS),
-				new Runnable() {
-					@Override
-					public void run() {
-						Navigator.refresh();
-					}
-				});
+				Navigator::refresh);
 	}
 }

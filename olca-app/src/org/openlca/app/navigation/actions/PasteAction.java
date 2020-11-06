@@ -14,18 +14,16 @@ class PasteAction extends Action implements INavigationAction {
 	private INavigationElement<?> category;
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
+			return false;
+		var first = selection.get(0);
 		if (CopyPaste.cacheIsEmpty())
 			return false;
-		if (!CopyPaste.canPasteTo(element))
+		if (!CopyPaste.canPasteTo(first))
 			return false;
-		category = element;
+		category = first;
 		return true;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
 	}
 
 	@Override

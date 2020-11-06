@@ -29,22 +29,20 @@ class OpenUsageAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> elem) {
-		if (!(elem instanceof ModelElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		ModelElement e = (ModelElement) elem;
-		CategorizedDescriptor d = e.getContent();
+		var first = selection.get(0);
+		if (!(first instanceof ModelElement))
+			return false;
+		var e = (ModelElement) first;
+		var d = e.getContent();
 		if (d == null || d.type == null)
 			return false;
 		if (!d.type.isCategorized())
 			return false;
 		descriptor = d;
 		return true;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
 	}
 
 	@Override
@@ -57,5 +55,4 @@ class OpenUsageAction extends Action implements INavigationAction {
 			SearchPage.forUsage(descriptor);
 		}
 	}
-
 }

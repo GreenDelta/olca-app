@@ -13,6 +13,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.CategorizedEntityDao;
@@ -23,12 +24,8 @@ import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class RenameAction extends Action implements INavigationAction {
-
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private INavigationElement<?> element;
 
@@ -38,19 +35,17 @@ class RenameAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof ModelElement
-				|| element instanceof CategoryElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		if (element.getLibrary().isPresent())
+		var first = selection.get(0);
+		if (!(first instanceof ModelElement
+				|| first instanceof CategoryElement))
 			return false;
-		this.element = element;
+		if (first.getLibrary().isPresent())
+			return false;
+		this.element = first;
 		return true;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
 	}
 
 	@Override
@@ -93,7 +88,7 @@ class RenameAction extends Action implements INavigationAction {
 			new CategoryDao(Database.get()).update(category);
 			Navigator.refresh(element);
 		} catch (final Exception e) {
-			log.error("Update category failed", e);
+			ErrorReporter.on("Failed to update category", e);
 		}
 	}
 

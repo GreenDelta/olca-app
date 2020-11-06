@@ -28,11 +28,6 @@ public class UseLibraryCategoryAction extends Action implements INavigationActio
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		return accept(List.of(element));
-	}
-
-	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
 		if (elements == null || elements.isEmpty())
 			return false;

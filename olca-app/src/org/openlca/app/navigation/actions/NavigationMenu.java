@@ -16,8 +16,6 @@ import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.ui.preferences.CloudPreference;
-import org.openlca.app.db.Database;
-import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.cloud.CommitAction;
@@ -80,15 +78,9 @@ public class NavigationMenu extends CommonActionProvider {
 				con.getSelection());
 
 		// create / import database
-		if (showDbCreate(selection)) {
-			menu.add(new DbCreateAction());
-			menu.add(new DbRestoreAction());
-			// TODO: not a nice hack here; better to have these tools
-			// hooked somewhere else
-			if (App.runsInDevMode() && Database.get() == null) {
-				menu.add(new XNexusEcoinventIndexExportAction());
-			}
-		}
+		addActions(selection, menu,
+				new DbCreateAction(),
+				new DbRestoreAction());
 
 		addActions(selection, menu, getDatabaseActions());
 
@@ -121,15 +113,6 @@ public class NavigationMenu extends CommonActionProvider {
 
 		addIOMenu(selection, menu);
 		addCloudMenu(selection, menu);
-	}
-
-	private boolean showDbCreate(List<INavigationElement<?>> elements) {
-		if (elements.isEmpty())
-			return true;
-		if (elements.size() > 1)
-			return false;
-		INavigationElement<?> e = elements.get(0);
-		return e instanceof DatabaseElement;
 	}
 
 	private void addCloudMenu(
@@ -192,17 +175,9 @@ public class NavigationMenu extends CommonActionProvider {
 			List<INavigationElement<?>> selection,
 			IMenuManager menu,
 			INavigationAction... actions) {
-		if (selection.isEmpty())
-			return 0;
-		var single = selection.size() == 1
-				? selection.get(0)
-				: null;
 		int count = 0;
 		for (var action : actions) {
-			var accept = single != null
-					? action.accept(single)
-					: action.accept(selection);
-			if (accept) {
+			if (action.accept(selection)) {
 				menu.add(action);
 				count++;
 			}

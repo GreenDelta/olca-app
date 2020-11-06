@@ -1,7 +1,6 @@
 package org.openlca.app.navigation.actions;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -17,14 +16,6 @@ class OpenModelAction extends Action implements INavigationAction {
 	private List<ModelElement> elements;
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof ModelElement))
-			return false;
-		elements = Collections.singletonList((ModelElement) element);
-		return true;
-	}
-
-	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
 		List<ModelElement> models = new ArrayList<>();
 		for (INavigationElement<?> element : elements)
@@ -33,7 +24,7 @@ class OpenModelAction extends Action implements INavigationAction {
 			else
 				models.add((ModelElement) element);
 		this.elements = models;
-		return true;
+		return !elements.isEmpty();
 	}
 
 	@Override
@@ -48,8 +39,9 @@ class OpenModelAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		for (ModelElement element : elements)
+		for (ModelElement element : elements) {
 			App.openEditor(element.getContent());
+		}
 	}
 
 }

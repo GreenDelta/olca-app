@@ -37,7 +37,7 @@ import com.google.gson.GsonBuilder;
  */
 class XNexusIndexExportAction extends Action implements INavigationAction {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public XNexusIndexExportAction() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());
@@ -45,16 +45,14 @@ class XNexusIndexExportAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		DatabaseElement e = (DatabaseElement) element;
+		var first = selection.get(0);
+		if (!(first instanceof DatabaseElement))
+			return false;
+		var e = (DatabaseElement) first;
 		return Database.isActive(e.getContent());
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
 	}
 
 	@Override
@@ -73,8 +71,8 @@ class XNexusIndexExportAction extends Action implements INavigationAction {
 
 	private class Runner implements Runnable {
 
-		private File file;
-		private IDatabase db;
+		private final File file;
+		private final IDatabase db;
 
 		public Runner(File file, IDatabase db) {
 			this.file = file;

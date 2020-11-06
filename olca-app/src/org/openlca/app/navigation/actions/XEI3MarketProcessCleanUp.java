@@ -19,16 +19,14 @@ class XEI3MarketProcessCleanUp extends Action implements
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		DatabaseElement e = (DatabaseElement) element;
+		var first = selection.get(0);
+		if (!(first instanceof DatabaseElement))
+			return false;
+		var e = (DatabaseElement) first;
 		return Database.isActive(e.getContent());
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
 	}
 
 	@Override
@@ -36,5 +34,4 @@ class XEI3MarketProcessCleanUp extends Action implements
 		App.run("Merge market processes",
 				new MarketProcessCleanUp(Database.get()));
 	}
-
 }

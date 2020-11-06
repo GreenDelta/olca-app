@@ -20,7 +20,7 @@ import org.openlca.app.validation.ValidationView;
 
 public class ValidateAction extends Action implements INavigationAction {
 
-	private final Set<INavigationElement<?>> selection = new HashSet<>();
+	private final Set<INavigationElement<?>> elements = new HashSet<>();
 
 	/**
 	 * This field is used to allow a different order for non database elements
@@ -48,56 +48,44 @@ public class ValidateAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> elem) {
-		selection.clear();
+	public boolean accept(List<INavigationElement<?>> selection) {
+		this.elements.clear();
+		if (selection.size() != 1)
+			return false;
+		var first = selection.get(0);
 
 		// database elements: only if forDB & isActive
-		if (elem instanceof DatabaseElement) {
+		if (first instanceof DatabaseElement) {
 			if (!forDB)
 				return false;
-			var config = ((DatabaseElement) elem).getContent();
+			var config = ((DatabaseElement) first).getContent();
 			if (!Database.isActive(config))
 				return false;
-			selection.add(elem);
+			elements.add(first);
 			return true;
 		}
 		if (forDB)
 			return false;
 
 		// skip scripting elements and libraries
-		if (elem instanceof ScriptElement)
+		if (first instanceof ScriptElement)
 			return false;
-		if (elem instanceof LibraryDirElement)
+		if (first instanceof LibraryDirElement)
 			return false;
-		if (elem instanceof LibraryElement)
+		if (first instanceof LibraryElement)
 			return false;
-		if (elem.getLibrary().isPresent())
+		if (first.getLibrary().isPresent())
 			return false;
 
 		// model elements, categories etc.
-		selection.add(elem);
+		elements.add(first);
 		return true;
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		selection.clear();
-		for (INavigationElement<?> element : elements) {
-			if (!(element instanceof DatabaseElement))
-				continue;
-			DatabaseElement e = (DatabaseElement) element;
-			IDatabaseConfiguration config = e.getContent();
-			if (!Database.isActive(config))
-				return false;
-		}
-		selection.addAll(elements);
-		return !selection.isEmpty();
-	}
-
-	@Override
 	public void run() {
-		if (!selection.isEmpty()) {
-			ValidationView.validate(selection);
+		if (!elements.isEmpty()) {
+			ValidationView.validate(elements);
 			return;
 		}
 		if (!forDB)
@@ -109,12 +97,12 @@ public class ValidateAction extends Action implements INavigationAction {
 			DatabaseElement elem = (DatabaseElement) e;
 			IDatabaseConfiguration config = elem.getContent();
 			if (Database.isActive(config)) {
-				selection.add(elem);
+				elements.add(elem);
 				break;
 			}
 		}
-		if (!selection.isEmpty()) {
-			ValidationView.validate(selection);
+		if (!elements.isEmpty()) {
+			ValidationView.validate(elements);
 		}
 	}
 

@@ -48,16 +48,16 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.isEmpty())
+			return true;
+		if (selection.size() != 1)
 			return false;
-		DatabaseElement e = (DatabaseElement) element;
+		var first = selection.get(0);
+		if (!(first instanceof DatabaseElement))
+			return false;
+		var e = (DatabaseElement) first;
 		return Database.isActive(e.getContent());
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 			try {
 				Map<String, IndexEntry> index = new HashMap<>();
 				for (Entry e : dialog.entries) {
-					IDatabase db = null;
+					IDatabase db;
 					if (Database.get() != null && Database.get().getName().equals(e.database.getName())) {
 						db = Database.get();
 					} else {
@@ -111,9 +111,9 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 		return process.name.substring(0, process.name.lastIndexOf('|')).trim();
 	}
 
-	private class DbSelectDialog extends FormDialog {
+	private static class DbSelectDialog extends FormDialog {
 
-		private List<Entry> entries = new ArrayList<>();
+		private final List<Entry> entries = new ArrayList<>();
 		private TableViewer viewer;
 
 		public DbSelectDialog() {
@@ -143,10 +143,10 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 		}
 
 		private void setInput() {
-			viewer.setInput(entries.toArray(new Entry[entries.size()]));
+			viewer.setInput(entries.toArray(new Entry[0]));
 		}
 
-		private class Label extends LabelProvider implements ITableLabelProvider {
+		private static class Label extends LabelProvider implements ITableLabelProvider {
 
 			@Override
 			public Image getColumnImage(Object element, int columnIndex) {
@@ -177,7 +177,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 
 		}
 
-		private class SystemModelCell extends TextCellModifier<Entry> {
+		private static class SystemModelCell extends TextCellModifier<Entry> {
 
 			@Override
 			protected String getText(Entry element) {
@@ -191,14 +191,14 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 
 		}
 
-		private class DatabaseCell extends ComboBoxCellModifier<Entry, IDatabaseConfiguration> {
+		private static class DatabaseCell extends ComboBoxCellModifier<Entry, IDatabaseConfiguration> {
 
 			@Override
 			protected IDatabaseConfiguration[] getItems(Entry element) {
 				List<IDatabaseConfiguration> databases = new ArrayList<>();
 				databases.addAll(Database.getConfigurations().getLocalDatabases());
 				databases.addAll(Database.getConfigurations().getRemoteDatabases());
-				return databases.toArray(new IDatabaseConfiguration[databases.size()]);
+				return databases.toArray(new IDatabaseConfiguration[0]);
 			}
 
 			@Override
@@ -235,7 +235,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 
 	}
 
-	private class Entry {
+	private static class Entry {
 
 		private String systemModel;
 		private IDatabaseConfiguration database;

@@ -21,20 +21,18 @@ public class OpenScriptAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> elem) {
-		if (!(elem instanceof ScriptElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		var scriptElem = (ScriptElement) elem;
+		var first = selection.get(0);
+		if (!(first instanceof ScriptElement))
+			return false;
+		var scriptElem = (ScriptElement) first;
 		var file = scriptElem.getContent();
 		if (file == null || file.isDirectory())
 			return false;
 		this.file = file;
 		return true;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elems) {
-		return false;
 	}
 
 	@Override
