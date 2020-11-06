@@ -30,6 +30,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.app.validation.ValidationView;
 import org.openlca.core.database.derby.DerbyDatabase;
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 public class DbCompressAction extends Action implements INavigationAction {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	private DerbyConfiguration config;
 
 	public DbCompressAction() {
@@ -47,22 +48,18 @@ public class DbCompressAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		DatabaseElement dbElement = (DatabaseElement) element;
-		IDatabaseConfiguration config = dbElement.getContent();
+		var first = selection.get(0);
+		if (!(first instanceof DatabaseElement))
+			return false;
+		var e = (DatabaseElement) first;
+		var config = e.getContent();
 		if (!(config instanceof DerbyConfiguration))
 			return false;
-		else {
-			this.config = (DerbyConfiguration) config;
-			return true;
-		}
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
+		this.config = (DerbyConfiguration) config;
+		return true;
 	}
 
 	@Override
@@ -103,7 +100,7 @@ public class DbCompressAction extends Action implements INavigationAction {
 		private long getSize() {
 			File dir = DatabaseDir.getRootFolder(Database.get().getName());
 			long byteSize = Dirs.size(dir.toPath());
-			return byteSize / 1024l / 1024l;
+			return byteSize / 1024L / 1024L;
 		}
 
 		@Override
@@ -118,7 +115,7 @@ public class DbCompressAction extends Action implements INavigationAction {
 		private void doIt() {
 			try {
 				boolean isActive = Database.isActive(config);
-				DerbyDatabase db = null;
+				DerbyDatabase db;
 				if (isActive) {
 					if (!Editors.closeAll())
 						return;
@@ -136,7 +133,7 @@ public class DbCompressAction extends Action implements INavigationAction {
 				HistoryView.refresh();
 				CompareView.clear();
 			} catch (Exception e) {
-				log.error("failed to compress database", e);
+				ErrorReporter.on("failed to compress database", e);
 			}
 		}
 
@@ -162,7 +159,7 @@ public class DbCompressAction extends Action implements INavigationAction {
 				rs.close();
 				con.close();
 			} catch (Exception e) {
-				log.error("failed to compress database", e);
+				ErrorReporter.on("failed to compress database", e);
 			}
 		}
 

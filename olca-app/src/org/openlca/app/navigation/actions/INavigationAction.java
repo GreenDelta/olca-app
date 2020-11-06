@@ -7,8 +7,11 @@ import org.openlca.app.navigation.INavigationElement;
 
 public interface INavigationAction extends IAction {
 
-	boolean accept(INavigationElement<?> element);
-
-	boolean accept(List<INavigationElement<?>> elements);
+	/**
+	 * Returns true, if this action accepts the given selection from the
+	 * navigation tree. The given selection can be empty or contain one or
+	 * multiple elements.
+	 */
+	boolean accept(List<INavigationElement<?>> selection);
 
 }

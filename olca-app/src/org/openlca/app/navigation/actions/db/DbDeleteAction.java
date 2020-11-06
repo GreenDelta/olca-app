@@ -2,7 +2,6 @@ package org.openlca.app.navigation.actions.db;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -24,10 +23,9 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.app.validation.ValidationView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Deletes a database. Works only for local Derby databases; remote databases
@@ -35,9 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DbDeleteAction extends Action implements INavigationAction {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
-
-	private List<IDatabaseConfiguration> configs;
+	private final List<IDatabaseConfiguration> configs = new ArrayList<>();
 
 	public DbDeleteAction() {
 		setImageDescriptor(Icon.DELETE.descriptor());
@@ -45,25 +41,20 @@ public class DbDeleteAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
-			return false;
-		DatabaseElement e = (DatabaseElement) element;
-		configs = Collections.singletonList(e.getContent());
-		return true;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		List<IDatabaseConfiguration> config = new ArrayList<>();
-		for (INavigationElement<?> element : elements) {
-			if (!(element instanceof DatabaseElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		configs.clear();
+		if (selection.isEmpty()) {
+			var config = Database.getActiveConfiguration();
+			if (config == null)
 				return false;
-			DatabaseElement e = (DatabaseElement) element;
-			config.add(e.getContent());
+			configs.add(config);
+		} else {
+			selection.stream()
+					.filter(e -> e instanceof DatabaseElement)
+					.map(e -> ((DatabaseElement) e).getContent())
+					.forEach(configs::add);
 		}
-		this.configs = config;
-		return true;
+		return !configs.isEmpty();
 	}
 
 	@Override
@@ -73,17 +64,13 @@ public class DbDeleteAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (configs == null || configs.isEmpty()) {
-			IDatabaseConfiguration config = Database.getActiveConfiguration();
-			if (config == null)
-				return;
-			configs = Collections.singletonList(config);
-		}
+		if (configs.isEmpty())
+			return;
 		if (createMessageDialog().open() != MessageDialog.OK)
 			return;
 		if (!checkCloseEditors())
 			return;
-		App.run(M.DeleteDatabase, () -> doDelete(), () -> {
+		App.run(M.DeleteDatabase, this::doDelete, () -> {
 			Navigator.refresh();
 			HistoryView.refresh();
 			CompareView.clear();
@@ -92,18 +79,18 @@ public class DbDeleteAction extends Action implements INavigationAction {
 	}
 
 	private boolean checkCloseEditors() {
-		for (IDatabaseConfiguration config : this.configs) 
-			if (Database.isActive(config)) 
+		for (IDatabaseConfiguration config : this.configs)
+			if (Database.isActive(config))
 				return Editors.closeAll();
 		return true;
 	}
 
 	private void doDelete() {
-		for (IDatabaseConfiguration config : this.configs) {
+		for (var config : this.configs) {
 			try {
 				tryDelete(config);
 			} catch (Exception e) {
-				log.error("failed to delete database", e);
+				ErrorReporter.on("failed to delete database", e);
 			}
 		}
 	}
@@ -125,8 +112,9 @@ public class DbDeleteAction extends Action implements INavigationAction {
 				: "the selected databases";
 		return new MessageDialog(UI.shell(), M.Delete, null, NLS.bind(
 				M.DoYouReallyWantToDelete, name),
-				MessageDialog.QUESTION, new String[] { M.Yes,
-						M.No, },
+				MessageDialog.QUESTION, new String[]{
+				M.Yes,
+				M.No,},
 				MessageDialog.CANCEL);
 	}
 

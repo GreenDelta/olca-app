@@ -28,6 +28,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Popup;
 import org.openlca.cloud.api.RepositoryConfig;
@@ -39,7 +40,7 @@ import org.zeroturnaround.zip.ZipUtil;
 
 public class DbExportAction extends Action implements INavigationAction {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	private DatabaseElement element;
 
 	public DbExportAction() {
@@ -48,27 +49,21 @@ public class DbExportAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		DatabaseElement e = (DatabaseElement) element;
-		this.element = e;
+		var first = selection.get(0);
+		if (!(first instanceof DatabaseElement))
+			return false;
+		this.element = (DatabaseElement) first;
 		return true;
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
-	}
-
-	@Override
 	public void run() {
-		IDatabaseConfiguration config = null;
-		if (element == null || element.getContent() == null) {
-			config = Database.getActiveConfiguration();
-		} else {
-			config = element.getContent();
-		}
+		var config = element == null || element.getContent() == null
+				? Database.getActiveConfiguration()
+				: element.getContent();
 		if (config == null)
 			return;
 		File file = FileChooser.forExport("*.zolca", config.getName() + ".zolca");
@@ -107,15 +102,15 @@ public class DbExportAction extends Action implements INavigationAction {
 				export.run();
 			}
 		} catch (Exception e) {
-			log.error("Export failed " + zip, e);
+			ErrorReporter.on("Export of database " + config.getName() + " failed", e);
 		}
 	}
 
 	private ZipEntrySource[] collectFileSources(File folder) throws IOException {
 		List<ZipEntrySource> fileSources = new ArrayList<>();
-		Files.walkFileTree(folder.toPath(), new SimpleFileVisitor<Path>() {
+		Files.walkFileTree(folder.toPath(), new SimpleFileVisitor<>() {
 			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
 				String relativePath = folder.toPath().relativize(file).toString();
 				if (exclude(relativePath))
 					return FileVisitResult.CONTINUE;
@@ -123,16 +118,15 @@ public class DbExportAction extends Action implements INavigationAction {
 				return FileVisitResult.CONTINUE;
 			}
 		});
-		return fileSources.toArray(new ZipEntrySource[fileSources.size()]);
+		return fileSources.toArray(new ZipEntrySource[0]);
 	}
 
 	private boolean exclude(String relativePath) {
-		if (relativePath.startsWith(DatabaseDir.FILE_STORAGE + File.separator + RepositoryConfig.DIR))
-			return true;
-		return false;
+		return relativePath.startsWith(
+				DatabaseDir.FILE_STORAGE + File.separator + RepositoryConfig.DIR);
 	}
 
-	private void updateUI(final File zip, final boolean active) {
+	private void updateUI(File zip, boolean active) {
 		if (active) {
 			Navigator.refresh();
 			CompareView.clear();

@@ -37,18 +37,16 @@ public class DbAddLibraryAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> elem) {
+	public boolean accept(List<INavigationElement<?>> selection) {
 		if (!FeatureFlag.LIBRARIES.isEnabled())
 			return false;
-		if (!(elem instanceof DatabaseElement))
+		if (selection.size() != 1)
 			return false;
-		var e = (DatabaseElement) elem;
+		var first = selection.get(0);
+		if (!(first instanceof DatabaseElement))
+			return false;
+		var e = (DatabaseElement) first;
 		return Database.isActive(e.getContent());
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
 	}
 
 	@Override

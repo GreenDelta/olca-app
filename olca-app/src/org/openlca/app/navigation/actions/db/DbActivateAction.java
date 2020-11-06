@@ -48,20 +48,18 @@ public class DbActivateAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		var e = (DatabaseElement) element;
+		var first = selection.get(0);
+		if (!(first instanceof DatabaseElement))
+			return false;
+		var e = (DatabaseElement) first;
 		var config = e.getContent();
 		if (Database.isActive(config))
 			return false;
 		this.config = config;
 		return true;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
 	}
 
 	@Override
@@ -138,17 +136,17 @@ public class DbActivateAction extends Action implements INavigationAction {
 		private void handleVersionState(VersionState state) {
 			log.trace("Check version state");
 			switch (state) {
-			case HIGHER_VERSION:
-				error(M.DatabaseNeedsUpdate);
-				break;
-			case NEEDS_UPGRADE:
-				askRunUpgrades();
-				break;
-			case UP_TO_DATE:
-				refresh();
-				break;
-			default:
-				break;
+				case HIGHER_VERSION:
+					error(M.DatabaseNeedsUpdate);
+					break;
+				case NEEDS_UPGRADE:
+					askRunUpgrades();
+					break;
+				case UP_TO_DATE:
+					refresh();
+					break;
+				default:
+					break;
 			}
 		}
 

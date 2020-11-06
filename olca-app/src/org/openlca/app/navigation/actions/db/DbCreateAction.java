@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.db.DatabaseWizard;
+import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Images;
@@ -20,13 +21,11 @@ public class DbCreateAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		return false;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.isEmpty())
+			return true;
+		var first = selection.get(0);
+		return first instanceof DatabaseElement;
 	}
 
 	@Override

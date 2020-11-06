@@ -21,16 +21,13 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.validation.ValidationView;
 import org.openlca.core.database.DbUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DbCopyAction extends Action implements INavigationAction {
-
-	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private DerbyConfiguration config;
 
@@ -40,22 +37,16 @@ public class DbCopyAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (!(element instanceof DatabaseElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		DatabaseElement dbElement = (DatabaseElement) element;
-		IDatabaseConfiguration config = dbElement.getContent();
+		var first = selection.get(0);
+		var dbElement = (DatabaseElement) first;
+		var config = dbElement.getContent();
 		if (!(config instanceof DerbyConfiguration))
 			return false;
-		else {
-			this.config = (DerbyConfiguration) config;
-			return true;
-		}
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
+		this.config = (DerbyConfiguration) config;
+		return true;
 	}
 
 	@Override
@@ -102,7 +93,7 @@ public class DbCopyAction extends Action implements INavigationAction {
 			HistoryView.refresh();
 			CompareView.clear();
 		} catch (Exception e) {
-			log.error("failed to copy database", e);
+			ErrorReporter.on("failed to copy database", e);
 		}
 	}
 
