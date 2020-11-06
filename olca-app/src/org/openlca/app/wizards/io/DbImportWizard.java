@@ -35,15 +35,13 @@ import org.zeroturnaround.zip.ZipUtil;
  */
 public class DbImportWizard extends Wizard implements IImportWizard {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private DbImportPage page;
 
 	@Override
-	public void init(IWorkbench iWorkbench,
-			IStructuredSelection iStructuredSelection) {
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setWindowTitle(M.DatabaseImport);
-		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
-				.descriptor());
+		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD.descriptor());
 		setNeedsProgressMonitor(true);
 	}
 
@@ -54,8 +52,8 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			return true;
 		}
 		try {
-			DbImportPage.ImportConfig config = page.getConfig();
-			ConnectionDispatch connectionDispatch = createConnection(config);
+			var config = page.getConfig();
+			var connectionDispatch = createConnection(config);
 			boolean canRun = canRun(config, connectionDispatch);
 			if (!canRun) {
 				connectionDispatch.close();

@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseList;
 import org.openlca.app.db.IDatabaseConfiguration;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
@@ -55,67 +54,65 @@ class DbImportPage extends WizardPage {
 	}
 
 	private void createExistingSection(Composite body) {
-		Button existingCheck = new Button(body, SWT.RADIO);
-		existingCheck.setText("Existing database");
-		existingCheck.setSelection(true);
-		Controls.onSelect(existingCheck, (e) -> {
-			setSelection(config.EXISTING_MODE);
-		});
-		Composite composite = new Composite(body, SWT.NONE);
-		UI.gridLayout(composite, 1);
-		UI.gridData(composite, true, false);
-		existingViewer = new ComboViewer(composite);
+		var check = new Button(body, SWT.RADIO);
+		check.setText("Existing database");
+		check.setSelection(true);
+		Controls.onSelect(check, e -> setSelection(config.EXISTING_MODE));
+		var comp = new Composite(body, SWT.NONE);
+		UI.gridLayout(comp, 1);
+		UI.gridData(comp, true, false);
+
+		existingViewer = new ComboViewer(comp);
 		UI.gridData(existingViewer.getControl(), true, false);
 		existingViewer.setLabelProvider(new DbLabel());
 		existingViewer.setContentProvider(ArrayContentProvider.getInstance());
-		existingViewer.addSelectionChangedListener(e -> selectDatabase());
-		fillExistingViewer();
+		existingViewer.addSelectionChangedListener(e -> {
+			IDatabaseConfiguration db = Viewers.getFirstSelected(existingViewer);
+			config.databaseConfiguration = db;
+			setPageComplete(db != null);
+		});
+		existingViewer.setInput(existing());
 	}
 
-	private void fillExistingViewer() {
-		DatabaseList dbList = Database.getConfigurations();
-		List<IDatabaseConfiguration> configs = new ArrayList<>();
-		for (IDatabaseConfiguration config : dbList.getLocalDatabases()) {
-			if (config != null && !Database.isActive(config)) {
-				configs.add(config);
-			}
-		}
-		for (IDatabaseConfiguration config : dbList.getRemoteDatabases()) {
-			if (config != null && !Database.isActive(config)) {
-				configs.add(config);
-			}
-		}
+	/**
+	 * Returns the existing databases of the openLCA workspace that could be
+	 * imported into the currently active database.
+	 */
+	private List<IDatabaseConfiguration> existing() {
+		var dbs = Database.getConfigurations();
+		var configs = new ArrayList<IDatabaseConfiguration>();
+		dbs.getLocalDatabases()
+				.stream()
+				.filter(c -> c != null && !Database.isActive(c))
+				.forEach(configs::add);
+		dbs.getRemoteDatabases()
+				.stream()
+				.filter(c -> c != null && !Database.isActive(c))
+				.forEach(configs::add);
 		configs.sort((c1, c2) -> Strings.compare(c1.getName(), c2.getName()));
-		existingViewer.setInput(configs);
-	}
-
-	private void selectDatabase() {
-		IDatabaseConfiguration db = Viewers.getFirstSelected(existingViewer);
-		config.databaseConfiguration = db;
-		setPageComplete(db != null);
+		return configs;
 	}
 
 	private void createFileSection(Composite body) {
-		Button fileCheck = new Button(body, SWT.RADIO);
-		fileCheck.setText("From exported zolca-File");
-		Controls.onSelect(fileCheck, (e) -> setSelection(config.FILE_MODE));
-		Composite composite = UI.formComposite(body);
-		UI.gridData(composite, true, false);
-		fileText = new Text(composite, SWT.READ_ONLY | SWT.BORDER);
+		var check = new Button(body, SWT.RADIO);
+		check.setText("From exported zolca-File");
+		Controls.onSelect(check, e -> setSelection(config.FILE_MODE));
+		var comp = UI.formComposite(body);
+		UI.gridData(comp, true, false);
+		fileText = new Text(comp, SWT.READ_ONLY | SWT.BORDER);
 		fileText.setBackground(Colors.white());
 		UI.gridData(fileText, true, false);
-		browseButton = new Button(composite, SWT.NONE);
-		browseButton.setText("Browse");
-		Controls.onSelect(browseButton, (e) -> selectFile());
-	}
 
-	private void selectFile() {
-		File zolcaFile = FileChooser.open("*.zolca");
-		if (zolcaFile == null)
-			return;
-		fileText.setText(zolcaFile.getAbsolutePath());
-		config.file = zolcaFile;
-		setPageComplete(true);
+		browseButton = new Button(comp, SWT.NONE);
+		browseButton.setText("Browse");
+		Controls.onSelect(browseButton, e -> {
+			var zolca = FileChooser.open("*.zolca");
+			if (zolca == null)
+				return;
+			fileText.setText(zolca.getAbsolutePath());
+			config.file = zolca;
+			setPageComplete(true);
+		});
 	}
 
 	private void setSelection(int mode) {
