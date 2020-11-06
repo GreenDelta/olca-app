@@ -14,8 +14,8 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
-import org.slf4j.LoggerFactory;
 
 public class ExportAction extends Action implements INavigationAction {
 
@@ -25,22 +25,17 @@ public class ExportAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (element instanceof DatabaseElement) {
-			DatabaseElement dbElement = (DatabaseElement) element;
-			return Database.isActive(dbElement.getContent());
-		} else {
-			return (element instanceof ModelTypeElement)
-					|| (element instanceof CategoryElement)
-					|| (element instanceof ModelElement);
-		}
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		for (INavigationElement<?> e : elements) {
-			if (accept(e))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		for (INavigationElement<?> e : selection) {
+			if (e instanceof ModelTypeElement
+					|| e instanceof CategoryElement
+					|| e instanceof ModelElement)
 				return true;
+			if (e instanceof DatabaseElement) {
+				var elem = (DatabaseElement) e;
+				if (Database.isActive(elem.getContent()))
+					return true;
+			}
 		}
 		return false;
 	}
@@ -57,8 +52,7 @@ public class ExportAction extends Action implements INavigationAction {
 					.getService(IHandlerService.class);
 			service.executeCommand(ActionFactory.EXPORT.getCommandId(), null);
 		} catch (Exception e) {
-			var log = LoggerFactory.getLogger(getClass());
-			log.error("Failed to open export wizard", e);
+			ErrorReporter.on("Failed to open export wizard", e);
 		}
 	}
 

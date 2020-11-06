@@ -21,15 +21,6 @@ public class DeleteScriptAction extends Action implements INavigationAction {
 	private final List<ScriptElement> elements = new ArrayList<>();
 
 	@Override
-	public boolean accept(INavigationElement<?> elem) {
-		elements.clear();
-		if (!(elem instanceof ScriptElement))
-			return false;
-		elements.add((ScriptElement) elem);
-		return true;
-	}
-
-	@Override
 	public boolean accept(List<INavigationElement<?>> elems) {
 		elements.clear();
 		for (var elem : elems) {

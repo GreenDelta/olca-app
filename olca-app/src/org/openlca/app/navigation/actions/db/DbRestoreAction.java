@@ -12,6 +12,7 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DerbyConfiguration;
+import org.openlca.app.navigation.DatabaseElement;
 import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -27,13 +28,11 @@ public class DbRestoreAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		return false;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.isEmpty())
+			return true;
+		var first = selection.get(0);
+		return first instanceof DatabaseElement;
 	}
 
 	@Override

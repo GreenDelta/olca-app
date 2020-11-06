@@ -14,11 +14,11 @@ import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.INewModelWizard;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.slf4j.LoggerFactory;
 
 /**
  * Opens the 'New'-wizard for a model type.
@@ -30,31 +30,30 @@ class CreateModelAction extends Action implements INavigationAction {
 	private INavigationElement<?> parent;
 
 	@Override
-	public boolean accept(INavigationElement<?> elem) {
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
+			return false;
+		var first = selection.get(0);
+
 		type = null;
 		category = null;
 
-		if (elem instanceof ModelTypeElement) {
-			var e = (ModelTypeElement) elem;
+		if (first instanceof ModelTypeElement) {
+			var e = (ModelTypeElement) first;
 			type = e.getContent();
 		}
-		if (elem instanceof CategoryElement) {
-			var e = (CategoryElement) elem;
+		if (first instanceof CategoryElement) {
+			var e = (CategoryElement) first;
 			category = e.getContent();
 			type = category.modelType;
 		}
 
-		if (type == null || elem.getLibrary().isPresent())
+		if (type == null || first.getLibrary().isPresent())
 			return false;
-		parent = elem;
+		parent = first;
 		setText(getText());
 		setImageDescriptor(getImageDescriptor());
 		return true;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
 	}
 
 	@Override
@@ -73,8 +72,7 @@ class CreateModelAction extends Action implements INavigationAction {
 			dialog.open();
 			Navigator.refresh(parent);
 		} catch (CoreException e) {
-			var log = LoggerFactory.getLogger(getClass());
-			log.error("Open model wizard failed", e);
+			ErrorReporter.on("Open model wizard failed", e);
 		}
 	}
 

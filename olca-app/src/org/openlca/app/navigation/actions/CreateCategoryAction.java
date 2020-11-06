@@ -13,11 +13,11 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelTypeElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.slf4j.LoggerFactory;
 
 /**
  * This action creates a new category and appends it to the specified parent
@@ -34,26 +34,24 @@ class CreateCategoryAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> e) {
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
+			return false;
+		var first = selection.get(0);
 		this.parent = null;
 		this.modelType = null;
 
-		if (e instanceof ModelTypeElement) {
-			this.modelType = (ModelType) e.getContent();
+		if (first instanceof ModelTypeElement) {
+			this.modelType = (ModelType) first.getContent();
 		}
-		if (e instanceof CategoryElement) {
-			var category = (Category) e.getContent();
+		if (first instanceof CategoryElement) {
+			var category = (Category) first.getContent();
 			parent = category;
 			modelType = category.modelType;
 		}
 
 		// also, do not allow creation of categories in libraries
-		return modelType != null && e.getLibrary().isEmpty();
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
+		return modelType != null && first.getLibrary().isEmpty();
 	}
 
 	@Override
@@ -71,8 +69,7 @@ class CreateCategoryAction extends Action implements INavigationAction {
 			Navigator.refresh(element);
 			Navigator.select(category);
 		} catch (Exception e) {
-			var log = LoggerFactory.getLogger(getClass());
-			log.error("failed to save category", e);
+			ErrorReporter.on("failed to save category", e);
 		}
 	}
 

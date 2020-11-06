@@ -18,6 +18,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -39,27 +40,6 @@ class DeleteModelAction extends Action implements INavigationAction {
 	private final List<ModelElement> models = new ArrayList<>();
 	private final List<CategoryElement> categories = new ArrayList<>();
 	private boolean showInUseMessage = true;
-
-	@Override
-	public boolean accept(INavigationElement<?> elem) {
-		models.clear();
-		categories.clear();
-		if (elem instanceof CategoryElement) {
-			if (elem.getLibrary().isPresent())
-				return false;
-			categories.add((CategoryElement) elem);
-			return true;
-		}
-		if (elem instanceof ModelElement) {
-			var e = (ModelElement) elem;
-			var model = e.getContent();
-			if (model == null || model.isFromLibrary())
-				return false;
-			models.add(e);
-			return true;
-		}
-		return false;
-	}
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
@@ -129,7 +109,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 			if (category == null)
 				continue;
 			boolean empty = element.getChildren().isEmpty();
-			int answer = IDialogConstants.CANCEL_ID;
+			int answer;
 			if (!empty) {
 				answer = dontAskEmpty ? IDialogConstants.YES_ID : askNotEmptyDelete(category.name);
 			} else {
@@ -172,19 +152,19 @@ class DeleteModelAction extends Action implements INavigationAction {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends RootEntity> void delete(Descriptor descriptor) {
+	private <T extends RootEntity> void delete(Descriptor d) {
 		try {
-			log.trace("delete model {}", descriptor);
+			log.trace("delete model {}", d);
 			IDatabase database = Database.get();
-			Class<T> clazz = (Class<T>) descriptor.type.getModelClass();
+			Class<T> clazz = (Class<T>) d.type.getModelClass();
 			BaseDao<T> dao = Daos.base(database, clazz);
-			T instance = dao.getForId(descriptor.id);
+			T instance = dao.getForId(d.id);
 			dao.delete(instance);
-			Cache.evict(descriptor);
-			DatabaseDir.deleteDir(descriptor);
+			Cache.evict(d);
+			DatabaseDir.deleteDir(d);
 			log.trace("element deleted");
 		} catch (Exception e) {
-			log.error("failed to delete element " + descriptor, e);
+			ErrorReporter.on("failed to delete " + d, e);
 		}
 	}
 
@@ -222,8 +202,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 			dao.delete(category);
 			return true;
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to delete category " + category, e);
+			ErrorReporter.on("failed to delete category " + category, e);
 			return false;
 		}
 	}

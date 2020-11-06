@@ -11,7 +11,6 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.ProductSystem;
 
 class CalculateSystemAction extends Action implements INavigationAction {
 
@@ -24,10 +23,13 @@ class CalculateSystemAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(INavigationElement<?> elem) {
-		if (!(elem instanceof ModelElement))
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
 			return false;
-		ModelElement element = (ModelElement) elem;
+		var first = selection.get(0);
+		if (!(first instanceof ModelElement))
+			return false;
+		var element = (ModelElement) first;
 		if (element.getContent().type != ModelType.PRODUCT_SYSTEM)
 			return false;
 		systemId = element.getContent().id;
@@ -35,13 +37,8 @@ class CalculateSystemAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return false;
-	}
-
-	@Override
 	public void run() {
-		ProductSystem system = new ProductSystemDao(Database.get()).getForId(systemId);
+		var system = new ProductSystemDao(Database.get()).getForId(systemId);
 		if (system == null)
 			return;
 		CalculationWizard.open(system);

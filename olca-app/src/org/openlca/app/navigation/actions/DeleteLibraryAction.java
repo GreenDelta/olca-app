@@ -18,16 +18,14 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 	private LibraryElement element;
 
 	@Override
-	public boolean accept(INavigationElement<?> element) {
-		if (element instanceof LibraryElement) {
-			this.element = (LibraryElement) element;
+	public boolean accept(List<INavigationElement<?>> selection) {
+		if (selection.size() != 1)
+			return false;
+		var first = selection.get(0);
+		if (first instanceof LibraryElement) {
+			this.element = (LibraryElement) first;
 			return true;
 		}
-		return false;
-	}
-
-	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
 		return false;
 	}
 
