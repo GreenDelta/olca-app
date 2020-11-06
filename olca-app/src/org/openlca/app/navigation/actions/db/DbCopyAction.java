@@ -41,8 +41,10 @@ public class DbCopyAction extends Action implements INavigationAction {
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		var dbElement = (DatabaseElement) first;
-		var config = dbElement.getContent();
+		if (!(first instanceof DatabaseElement))
+			return false;
+		var e = (DatabaseElement) first;
+		var config = e.getContent();
 		if (!(config instanceof DerbyConfiguration))
 			return false;
 		this.config = (DerbyConfiguration) config;

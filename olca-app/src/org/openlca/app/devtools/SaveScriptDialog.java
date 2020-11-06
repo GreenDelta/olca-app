@@ -118,14 +118,13 @@ public class SaveScriptDialog extends FormDialog {
 			return;
 		}
 
-		var file = file();
-		if (file.exists()) {
-			MsgBox.error("Script already exists",
-					"The script " + name + " already exists");
-			return;
-		}
-
 		try {
+			var file = new File(dir(), name);
+			if (file.exists()) {
+				MsgBox.error("Script already exists",
+						"The script " + name + " already exists");
+				return;
+			}
 			Files.writeString(file.toPath(),
 					script, StandardCharsets.UTF_8);
 			Navigator.refresh();
@@ -136,29 +135,23 @@ public class SaveScriptDialog extends FormDialog {
 		}
 	}
 
-	private File file() {
+	private File dir() throws Exception {
 		var db = Database.get();
 		if (asGlobal || db == null) {
 			var dir = new File(Workspace.getDir(), "Scripts");
-			if (!dir.exists() && !dir.mkdirs())
-				throw new RuntimeException(
-						"Could not create `scripts` folder: " + dir);
-			return new File(dir, name);
+			Files.createDirectories(dir.toPath());
+			return dir;
 		}
 
-		// jump to the global folder when no database
-		// local folder can be created
+		// jump to the global folder when there is
+		// no file storage location for the database
 		var dbDir = db.getFileStorageLocation();
 		if (dbDir == null) {
 			asGlobal = true;
-			return file();
+			return dir();
 		}
 		var dir = new File(dbDir, "Scripts");
-		if (!dir.exists() && !dir.mkdirs()) {
-			asGlobal = true;
-			return file();
-		}
-
-		return new File(dir, name);
+		Files.createDirectories(dir.toPath());
+		return dir;
 	}
 }
