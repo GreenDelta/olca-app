@@ -110,9 +110,9 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 
 	private class ImportDispatch implements IRunnableWithProgress {
 
-		private IDatabase sourceDb;
-		private VersionState sourceState;
-		private ConnectionDispatch connectionDispatch;
+		private final IDatabase sourceDb;
+		private final VersionState sourceState;
+		private final ConnectionDispatch connectionDispatch;
 
 		ImportDispatch(ConnectionDispatch connectionDispatch) {
 			this.sourceDb = connectionDispatch.getSource();
@@ -141,7 +141,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			}
 		}
 
-		private void checkAndExecuteUpdates(IProgressMonitor monitor) throws Exception {
+		private void checkAndExecuteUpdates(IProgressMonitor monitor){
 			switch (sourceState) {
 			case NEEDS_UPGRADE:
 				monitor.subTask(M.UpdateDatabase);
@@ -174,7 +174,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		}
 
 		@Override
-		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor) throws InvocationTargetException {
 			log.trace("connect to source database");
 			try {
 				if (config.mode == config.FILE_MODE)

@@ -2,8 +2,10 @@ package org.openlca.app.navigation.actions.db;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
@@ -17,7 +19,7 @@ import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.ErrorReporter;
 import org.zeroturnaround.zip.ZipUtil;
 
 public class DbRestoreAction extends Action implements INavigationAction {
@@ -53,8 +55,8 @@ public class DbRestoreAction extends Action implements INavigationAction {
 			String dbName = getDatabaseName(zolca, dbFolder);
 			realImport(dbFolder, dbName, zolca);
 		} catch (Exception e) {
-			MsgBox.error(
-					"Failed to restore database from file: " + zolca.getName());
+			ErrorReporter.on("Failed to restore database" +
+					" from file: " + zolca.getName(), e);
 		}
 
 	}
@@ -64,9 +66,12 @@ public class DbRestoreAction extends Action implements INavigationAction {
 				.replace(".zolca", "")
 				.replaceAll("\\W+", "_")
 				.toLowerCase();
-		List<String> names = new ArrayList<>();
-		for (String existing : dbFolder.list())
-			names.add(existing.toLowerCase());
+		var existing = dbFolder.list();
+		var names = existing == null
+				? Collections.emptySet()
+				: Arrays.stream(existing)
+				.map(String::toLowerCase)
+				.collect(Collectors.toSet());
 		String name = proposal;
 		int count = 0;
 		while (names.contains(name.toLowerCase())) {

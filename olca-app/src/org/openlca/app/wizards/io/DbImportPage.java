@@ -2,7 +2,6 @@ package org.openlca.app.wizards.io;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -86,8 +85,7 @@ class DbImportPage extends WizardPage {
 				configs.add(config);
 			}
 		}
-		Collections.sort(configs,
-				(c1, c2) -> Strings.compare(c1.getName(), c2.getName()));
+		configs.sort((c1, c2) -> Strings.compare(c1.getName(), c2.getName()));
 		existingViewer.setInput(configs);
 	}
 
@@ -145,12 +143,12 @@ class DbImportPage extends WizardPage {
 		int mode;
 	}
 
-	private class DbLabel extends LabelProvider {
+	private static class DbLabel extends LabelProvider {
 		@Override
 		public String getText(Object element) {
 			if (!(element instanceof IDatabaseConfiguration))
 				return null;
-			IDatabaseConfiguration config = (IDatabaseConfiguration) element;
+			var config = (IDatabaseConfiguration) element;
 			return config.getName();
 		}
 	}
