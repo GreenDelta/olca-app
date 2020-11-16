@@ -13,6 +13,7 @@ import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Callback.Message;
@@ -57,8 +58,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 			getContainer().run(true, true, export);
 			return true;
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to export data sets", e);
+			ErrorReporter.on("Failed to export data sets", e);
 			return false;
 		}
 	}

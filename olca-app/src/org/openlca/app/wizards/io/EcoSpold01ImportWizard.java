@@ -27,8 +27,6 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	private File initialFile;
 
 	public static void of(File file) {
-		if (file == null)
-			return;
 		Wizards.forImport(
 				"wizard.import.ecospold1",
 				(EcoSpold01ImportWizard w) -> w.initialFile = file);

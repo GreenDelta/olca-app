@@ -10,25 +10,40 @@ import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.geo.GeoJsonImport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 
 	private FileImportPage filePage;
 
-	@Override
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
+	private File initialFile;
+
+	public static void of(File file) {
+		Wizards.forImport(
+				"wizard.import.geojson",
+				(GeoJsonImportWizard w) -> w.initialFile = file);
+	}
+
+	public GeoJsonImportWizard() {
+		setWindowTitle("Import GeoJSON");
+		setDefaultPageImageDescriptor(Icon.IMPORT.descriptor());
 		setNeedsProgressMonitor(true);
 	}
 
 	@Override
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
+	}
+
+	@Override
 	public void addPages() {
-		filePage = new FileImportPage("json", "geojson");
+		filePage = initialFile != null
+			? new FileImportPage(initialFile)
+			: new FileImportPage("json", "geojson");
 		addPage(filePage);
 	}
 
@@ -59,8 +74,7 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 					Navigator.findElement(ModelType.LOCATION));
 			return true;
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("Failed to import GeoJSON file", e);
+			ErrorReporter.on("Failed to import GeoJSON file", e);
 			return true;
 		}
 

@@ -13,32 +13,41 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferences.IoPreference;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.io.ilcd.ILCDImport;
 import org.openlca.io.ilcd.input.ImportConfig;
 import org.openlca.io.maps.FlowMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ILCDImportWizard extends Wizard implements IImportWizard {
 
 	private FileImportPage importPage;
 
-	public ILCDImportWizard() {
-		setNeedsProgressMonitor(true);
+	private File initialFile;
+
+	public static void of(File file) {
+		Wizards.forImport(
+				"wizard.import.ilcd",
+				(ILCDImportWizard w) -> w.initialFile = file);
 	}
 
-	@Override
-	public void addPages() {
-		importPage = new FileImportPage(".zip");
-		importPage.withMappingFile = true;
-		addPage(importPage);
+	public ILCDImportWizard() {
+		setWindowTitle(M.ImportILCD);
+		setNeedsProgressMonitor(true);
+		setDefaultPageImageDescriptor(
+				Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(M.ImportILCD);
-		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
-				.descriptor());
+	}
+
+	@Override
+	public void addPages() {
+		importPage = initialFile != null
+				? new FileImportPage(initialFile)
+				: new FileImportPage(".zip");
+		importPage.withMappingFile = true;
+		addPage(importPage);
 	}
 
 	@Override
@@ -51,8 +60,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 			doRun(zip);
 			return true;
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("ILCD import failed", e);
+			ErrorReporter.on("ILCD import failed", e);
 			return false;
 		} finally {
 			Database.getIndexUpdater().endTransaction();
@@ -82,7 +90,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 		config.importFlows = true;
 		String lang = IoPreference.getIlcdLanguage();
 		if (!"en".equals(lang)) {
-			config.langs = new String[] { lang, "en" };
+			config.langs = new String[]{lang, "en"};
 		}
 		if (importPage.mappingFile != null) {
 			config.setFlowMap(FlowMap.fromCsv(importPage.mappingFile));

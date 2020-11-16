@@ -18,6 +18,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.io.EcoSpold01ImportWizard;
+import org.openlca.app.wizards.io.GeoJsonImportWizard;
 import org.openlca.app.wizards.io.JsonImportWizard;
 import org.openlca.core.database.IDatabase;
 import org.openlca.io.Format;
@@ -56,6 +57,9 @@ public class FileImport {
 			case ES1_XML:
 			case ES1_ZIP:
 				EcoSpold01ImportWizard.of(file);
+				break;
+			case GEO_JSON:
+				GeoJsonImportWizard.of(file);
 				break;
 			case JSON_LD_ZIP:
 				JsonImportWizard.of(file);

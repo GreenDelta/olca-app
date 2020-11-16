@@ -27,8 +27,6 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 	private File initialFile;
 
 	public static void of(File file) {
-		if (file == null)
-			return;
 		Wizards.forImport(
 				"wizard.import.json",
 				(JsonImportWizard w) -> w.initialFile = file);
