@@ -13,30 +13,46 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.IDatabase;
 import org.openlca.io.ecospold2.input.EcoSpold2Import;
 import org.openlca.io.ecospold2.input.ImportConfig;
 import org.openlca.io.maps.FlowMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Import wizard for files in the EcoSpold format version 2.
  */
 public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private FileImportPage filePage;
 
+	private File initialFile;
+
+	public static void of(File file) {
+		Wizards.forImport(
+				"wizard.import.ecospold2",
+				(EcoSpold2ImportWizard w) -> w.initialFile = file);
+	}
+
 	public EcoSpold2ImportWizard() {
+		setWindowTitle(M.ImportEcoSpold02DataSets);
 		setNeedsProgressMonitor(true);
+		setDefaultPageImageDescriptor(
+				Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(M.ImportEcoSpold02DataSets);
-		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
-				.descriptor());
+	}
+
+	@Override
+	public void addPages() {
+		filePage = initialFile != null
+				? new FileImportPage(initialFile)
+				: new FileImportPage(".zip", ".spold");
+		filePage.withMultiSelection = true;
+		filePage.withMappingFile = true;
+		addPage(filePage);
 	}
 
 	@Override
@@ -53,7 +69,7 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 			});
 			return true;
 		} catch (Exception e) {
-			log.error("EcoSpold 02 import failed", e);
+			ErrorReporter.on("EcoSpold 02 import failed", e);
 			return false;
 		} finally {
 			Database.getIndexUpdater().endTransaction();
@@ -81,13 +97,4 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 		pi.setFiles(files);
 		return pi;
 	}
-
-	@Override
-	public void addPages() {
-		filePage = new FileImportPage(".zip", ".spold");
-		filePage.withMultiSelection = true;
-		filePage.withMappingFile = true;
-		addPage(filePage);
-	}
-
 }

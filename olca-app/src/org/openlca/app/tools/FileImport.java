@@ -18,10 +18,12 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.io.EcoSpold01ImportWizard;
+import org.openlca.app.wizards.io.EcoSpold2ImportWizard;
 import org.openlca.app.wizards.io.ExcelImportWizard;
 import org.openlca.app.wizards.io.GeoJsonImportWizard;
 import org.openlca.app.wizards.io.ILCDImportWizard;
 import org.openlca.app.wizards.io.JsonImportWizard;
+import org.openlca.app.wizards.io.SimaProCsvImportWizard;
 import org.openlca.core.database.IDatabase;
 import org.openlca.io.Format;
 
@@ -60,6 +62,10 @@ public class FileImport {
 			case ES1_ZIP:
 				EcoSpold01ImportWizard.of(file);
 				break;
+			case ES2_XML:
+			case ES2_ZIP:
+				EcoSpold2ImportWizard.of(file);
+				break;
 			case EXCEL:
 				ExcelImportWizard.of(file);
 				break;
@@ -72,6 +78,8 @@ public class FileImport {
 			case JSON_LD_ZIP:
 				JsonImportWizard.of(file);
 				break;
+			case SIMAPRO_CSV:
+				SimaProCsvImportWizard.of(file);
 			case ZOLCA:
 				importZOLCA(file);
 				break;

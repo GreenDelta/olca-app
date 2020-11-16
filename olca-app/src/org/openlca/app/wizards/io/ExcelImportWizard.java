@@ -11,6 +11,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.io.xls.process.input.ExcelImport;
 
 public class ExcelImportWizard extends Wizard implements IImportWizard {
@@ -54,6 +55,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 			doRun(files);
 			return true;
 		} catch (Exception e) {
+			ErrorReporter.on("Failed to import Excel file(s)", e);
 			return false;
 		} finally {
 			Database.getIndexUpdater().endTransaction();

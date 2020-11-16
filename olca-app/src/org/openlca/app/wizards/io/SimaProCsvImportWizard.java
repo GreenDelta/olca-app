@@ -11,30 +11,38 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.IDatabase;
 import org.openlca.io.simapro.csv.input.SimaProCsvImport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private FileImportPage filePage;
+
+	private File initialFile;
+
+	public static void of(File file) {
+		Wizards.forImport(
+				"wizard.import.ecospold1",
+				(SimaProCsvImportWizard w) -> w.initialFile = file);
+	}
 
 	public SimaProCsvImportWizard() {
 		setNeedsProgressMonitor(true);
+		setWindowTitle(M.SimaProCSVImport);
+		setDefaultPageImageDescriptor(
+				Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(M.SimaProCSVImport);
-		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD
-				.descriptor());
 	}
 
 	@Override
 	public void addPages() {
-		filePage = new FileImportPage("csv");
+		filePage = initialFile != null
+				? new FileImportPage(initialFile)
+				: new FileImportPage("csv");
 		filePage.withMultiSelection = true;
 		addPage(filePage);
 	}
@@ -45,7 +53,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 		IDatabase db = Database.get();
 		if (files == null || files.length == 0 || db == null)
 			return false;
-		SimaProCsvImport importer = new SimaProCsvImport(db, files);
+		var importer = new SimaProCsvImport(db, files);
 		try {
 			Database.getIndexUpdater().beginTransaction();
 			getContainer().run(true, true, monitor -> {
@@ -55,7 +63,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			});
 			Navigator.refresh();
 		} catch (Exception e) {
-			log.error("SimaPro CSV import failed", e);
+			ErrorReporter.on("SimaPro CSV import failed", e);
 		} finally {
 			Database.getIndexUpdater().endTransaction();
 		}
