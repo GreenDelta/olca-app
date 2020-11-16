@@ -7,9 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -44,7 +46,7 @@ public class FileImportPage extends WizardPage {
 	File mappingFile;
 
 	private TreeViewer directoryViewer;
-	private String[] extensions;
+	private final String[] extensions;
 	private List<File> selectedFiles;
 	private TableViewer fileViewer;
 
@@ -58,6 +60,13 @@ public class FileImportPage extends WizardPage {
 		this.extensions = extensions;
 		setPageComplete(false);
 		folder = getLastDir();
+	}
+
+	public FileImportPage(File selected) {
+		this(FilenameUtils.getExtension(selected.getName()));
+		selectedFiles = List.of(selected);
+		folder = selected.getParentFile();
+		setPageComplete(true);
 	}
 
 	private File getLastDir() {
@@ -157,6 +166,10 @@ public class FileImportPage extends WizardPage {
 				if (folder != null) {
 					directoryViewer.setInput(folder);
 					fileViewer.setInput(getFiles(folder, extensions));
+					if (selectedFiles != null) {
+						fileViewer.setSelection(
+								new StructuredSelection(selectedFiles));
+					}
 				}
 				fileViewer.getTable().removePaintListener(this);
 			}
@@ -167,8 +180,7 @@ public class FileImportPage extends WizardPage {
 	public File[] getFiles() {
 		return selectedFiles == null
 				? new File[0]
-				: selectedFiles.toArray(
-						new File[selectedFiles.size()]);
+				: selectedFiles.toArray(new File[0]);
 	}
 
 	private void selectFolder() {
@@ -232,7 +244,7 @@ public class FileImportPage extends WizardPage {
 		return files;
 	}
 
-	private class DirectoryContentProvider implements ITreeContentProvider {
+	private static class DirectoryContentProvider implements ITreeContentProvider {
 
 		@Override
 		public void dispose() {
@@ -293,17 +305,16 @@ public class FileImportPage extends WizardPage {
 
 	}
 
-	private class FileLabel extends LabelProvider {
+	private static class FileLabel extends LabelProvider {
 
 		@Override
 		public Image getImage(Object obj) {
 			if (!(obj instanceof File))
 				return null;
-			File file = (File) obj;
-			if (file.isDirectory())
-				return Images.platformImage(
-						ISharedImages.IMG_OBJ_FOLDER);
-			return Images.get(FileType.of(file));
+			var file = (File) obj;
+			return file.isDirectory()
+					? Images.platformImage(ISharedImages.IMG_OBJ_FOLDER)
+					: Images.get(FileType.of(file));
 		}
 
 		@Override

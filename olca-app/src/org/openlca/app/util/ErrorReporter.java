@@ -25,6 +25,9 @@ public class ErrorReporter extends FormDialog {
 	private final String message;
 	private final Throwable error;
 
+	public static void on(String message) {
+		on(message, null);
+	}
 	/**
 	 * Opens the error reporter for the given message and error. It also writes the
 	 * error to the log. So no need to log an error when you later want to open it
