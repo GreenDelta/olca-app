@@ -32,14 +32,13 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	private UnitMappingPage mappingPage;
 
 	/**
-	 * Only set if this wizard dialog was opened with an initially selected
-	 * file.
+	 * Only set if this wizard dialog was opened with an initially selected file.
 	 */
 	private File initialFile;
 
 	/**
-	 * Opens the ES1 import wizard for the given *.xml or *.zip file that
-	 * contains EcoSpold 1 data sets.
+	 * Opens the ES1 import wizard for the given *.xml or *.zip file that contains
+	 * EcoSpold 1 data sets.
 	 */
 	public static void of(File file) {
 		if (file == null)
@@ -63,7 +62,13 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	}
 
 	public EcoSpold01ImportWizard() {
+		setWindowTitle(M.ImportEcoSpold);
+		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD.descriptor());
 		setNeedsProgressMonitor(true);
+	}
+
+	@Override
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
 	}
 
 	@Override
@@ -94,12 +99,6 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 			}
 		};
 		addPage(mappingPage);
-	}
-
-	@Override
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(M.ImportEcoSpold);
-		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}
 
 	@Override
@@ -140,6 +139,6 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 			config.setFlowMap(FlowMap.fromCsv(filePage.mappingFile));
 		}
 		return config;
-
 	}
+
 }
