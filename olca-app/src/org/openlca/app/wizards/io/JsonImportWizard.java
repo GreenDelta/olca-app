@@ -13,10 +13,10 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.input.JsonImport;
 import org.openlca.jsonld.input.UpdateMode;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JsonImportWizard extends Wizard implements IImportWizard {
@@ -24,19 +24,32 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 	private FileImportPage filePage;
 	private JsonImportPage settingsPage;
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private File initialFile;
 
-	@Override
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
+	public static void of(File file) {
+		if (file == null)
+			return;
+		Wizards.forImport(
+				"wizard.import.json",
+				(JsonImportWizard w) -> w.initialFile = file);
+	}
+
+	public JsonImportWizard() {
 		setNeedsProgressMonitor(true);
-		setWindowTitle("openLCA JSON-LD");
+		setWindowTitle("openLCA JSON-LD Import");
 		setDefaultPageImageDescriptor(
 				Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}
 
 	@Override
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
+	}
+
+	@Override
 	public void addPages() {
-		filePage = new FileImportPage("zip");
+		filePage = initialFile != null
+				? new FileImportPage(initialFile)
+				: new FileImportPage("zip");
 		addPage(filePage);
 		settingsPage = new JsonImportPage();
 		addPage(settingsPage);
@@ -52,8 +65,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			doRun(zip);
 			return true;
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("JSON import failed", e);
+			ErrorReporter.on("JSON import failed", e);
 			return false;
 		} finally {
 			Database.getIndexUpdater().endTransaction();
@@ -75,6 +87,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 
 	private void doRun(File zip) throws Exception {
 		UpdateMode mode = settingsPage.updateMode;
+		var log = LoggerFactory.getLogger(getClass());
 		log.info("Import JSON LD package {} with update mode = {}", zip, mode);
 		getContainer().run(true, true, (monitor) -> {
 			monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);

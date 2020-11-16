@@ -15,7 +15,6 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.AbstractEntity;
 import org.openlca.core.model.Callback.Message;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
@@ -27,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public class JsonExportWizard extends Wizard implements IExportWizard {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	private ModelSelectionPage page;
 
 	@Override
@@ -66,9 +65,9 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 
 	private class Export implements IRunnableWithProgress {
 
-		private File zipFile;
-		private List<Descriptor> models;
-		private IDatabase database;
+		private final File zipFile;
+		private final List<Descriptor> models;
+		private final IDatabase database;
 
 		public Export(File zipFile, List<Descriptor> models,
 				IDatabase database) {
@@ -79,7 +78,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 
 		@Override
 		public void run(IProgressMonitor monitor)
-				throws InvocationTargetException, InterruptedException {
+				throws InvocationTargetException {
 			monitor.beginTask(M.Export, models.size());
 			try (ZipStore store = ZipStore.open(zipFile)) {
 				doExport(monitor, store);
@@ -98,9 +97,11 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 					break;
 				monitor.subTask(model.name);
 				ModelType type = model.type;
-				AbstractEntity o = Daos.base(database, type.getModelClass()).getForId(model.id);
-				if (o instanceof RootEntity)
-					doExport(export, (RootEntity) o);
+				RootEntity o = Daos.base(database, type.getModelClass())
+						.getForId(model.id);
+				if (o != null) {
+					doExport(export, o);
+				}
 				monitor.worked(1);
 			}
 		}

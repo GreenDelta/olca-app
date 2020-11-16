@@ -5,60 +5,33 @@ import java.io.File;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.UI;
 import org.openlca.io.EcoSpoldUnitFetch;
 import org.openlca.io.UnitMappingSync;
 import org.openlca.io.ecospold1.input.EcoSpold01Import;
 import org.openlca.io.ecospold1.input.ImportConfig;
 import org.openlca.io.maps.FlowMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
-
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private FileImportPage filePage;
 	private UnitMappingPage mappingPage;
 
-	/**
-	 * Only set if this wizard dialog was opened with an initially selected file.
-	 */
 	private File initialFile;
 
-	/**
-	 * Opens the ES1 import wizard for the given *.xml or *.zip file that contains
-	 * EcoSpold 1 data sets.
-	 */
 	public static void of(File file) {
 		if (file == null)
 			return;
-		var wiz = PlatformUI.getWorkbench()
-				.getImportWizardRegistry()
-				.findWizard("wizard.import.ecospold1");
-		if (wiz == null) {
-			ErrorReporter.on("Failed to get EcoSpold 1 import wizard");
-			return;
-		}
-		try {
-			var wizard = (EcoSpold01ImportWizard) wiz.createWizard();
-			wizard.initialFile = file;
-			var dialog = new WizardDialog(UI.shell(), wizard);
-			dialog.setTitle(wizard.getWindowTitle());
-			dialog.open();
-		} catch (Exception e) {
-			ErrorReporter.on("Failed to open EcoSpold 1 import wizard");
-		}
+		Wizards.forImport(
+				"wizard.import.ecospold1",
+				(EcoSpold01ImportWizard w) -> w.initialFile = file);
 	}
 
 	public EcoSpold01ImportWizard() {
@@ -86,7 +59,8 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 				try {
 					return new EcoSpoldUnitFetch().getUnits(files);
 				} catch (Exception e) {
-					ErrorReporter.on("Failed to get the units from files.", e);
+					var m = "Failed to get the units from files.";
+					ErrorReporter.on(m, e);
 					return new String[0];
 				}
 			}
@@ -111,16 +85,12 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 				var imp = new EcoSpold01Import(config());
 				imp.setFiles(filePage.getFiles());
 				var handler = new ImportHandler(m);
-				try {
-					handler.run(imp);
-				} catch (Exception e) {
-					log.error("Data set import failed", e);
-				}
+				handler.run(imp);
 				m.done();
 			});
 			return true;
 		} catch (Exception e) {
-			log.error("import failed ", e);
+			ErrorReporter.on("EcoSpold 1 import failed", e);
 			return false;
 		} finally {
 			Database.getIndexUpdater().endTransaction();
@@ -140,5 +110,4 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		}
 		return config;
 	}
-
 }
