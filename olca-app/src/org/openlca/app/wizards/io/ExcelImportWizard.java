@@ -17,16 +17,29 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 	private FileImportPage importPage;
 
-	@Override
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
+	private File initialFile;
+
+	public static void of(File file) {
+		Wizards.forImport(
+				"wizard.import.excel",
+				(ExcelImportWizard w) -> w.initialFile = file);
+	}
+
+	public ExcelImportWizard() {
 		setWindowTitle(M.ProcessExcelImportDescription);
 		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD.descriptor());
 		setNeedsProgressMonitor(true);
 	}
 
 	@Override
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
+	}
+
+	@Override
 	public void addPages() {
-		importPage = new FileImportPage("xlsx", "xls");
+		importPage = initialFile != null
+				? new FileImportPage(initialFile)
+				: new FileImportPage("xlsx", "xls");
 		importPage.withMultiSelection = true;
 		addPage(importPage);
 	}
