@@ -251,11 +251,9 @@ public abstract class UnitMappingPage extends WizardPage {
 			if (property.equals(FLOW_PROPERTY)) {
 				String[] candidates = getFlowPropertyCandidates(entry.unitName);
 				flowPropertyCellEditor.setItems(candidates);
-				if (entry.flowProperty == null)
-					return new Integer(-1);
-				else
-					return getIndex(entry.flowProperty.name,
-							candidates);
+				return entry.flowProperty == null
+					? -1
+					: getIndex(entry.flowProperty.name, candidates);
 			}
 			return null;
 		}

@@ -80,6 +80,7 @@ public class FileImport {
 				break;
 			case SIMAPRO_CSV:
 				SimaProCsvImportWizard.of(file);
+				break;
 			case ZOLCA:
 				importZOLCA(file);
 				break;

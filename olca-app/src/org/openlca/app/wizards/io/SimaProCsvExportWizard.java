@@ -9,7 +9,7 @@ import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Popup;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -27,7 +27,7 @@ public class SimaProCsvExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void addPages() {
-		page = ModelSelectionPage.forFile("*.csv", ModelType.PROCESS);
+		page = ModelSelectionPage.forFile("csv", ModelType.PROCESS);
 		addPage(page);
 	}
 
@@ -58,7 +58,7 @@ public class SimaProCsvExportWizard extends Wizard implements IExportWizard {
 					+ models.size() + " data sets to " + file.getName());
 			return true;
 		} catch (Exception e) {
-			MsgBox.error("SimaPro CSV export failed: " + e.getMessage());
+			ErrorReporter.on("SimaPro CSV export failed", e);
 			return false;
 		}
 	}

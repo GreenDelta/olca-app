@@ -23,7 +23,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
 	public static void of(File file) {
 		Wizards.forImport(
-				"wizard.import.ecospold1",
+				"wizard.import.csv",
 				(SimaProCsvImportWizard w) -> w.initialFile = file);
 	}
 
