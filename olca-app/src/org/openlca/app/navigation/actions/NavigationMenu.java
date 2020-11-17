@@ -38,8 +38,8 @@ import org.openlca.app.navigation.actions.db.DbRenameAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.FileImport;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.viewers.Selections;
-import org.slf4j.LoggerFactory;
 
 /**
  * Adds the actions to the context menu of the navigation tree.
@@ -183,21 +183,29 @@ public class NavigationMenu extends CommonActionProvider {
 		return count;
 	}
 
-	public void addIOMenu(
+	private void addIOMenu(
 			List<INavigationElement<?>> selection, IMenuManager menu) {
 		menu.add(new Separator());
-		var icon = Icon.IMPORT.descriptor();
-		var subMenu = new MenuManager(M.Import, icon, "import.menu");
+		MenuManager subMenu = createImportMenu();
 		menu.add(subMenu);
+		addActions(selection, menu,
+				new ExportAction(),
+				new ExportScriptAction());
+	}
+
+	public static MenuManager createImportMenu() {
+		var icon = Icon.IMPORT.descriptor();
+		var menu = new MenuManager(
+				M.Import, icon, "import.menu");
 
 		// try to determine the import from a file
-		subMenu.add(Actions.create(
+		menu.add(Actions.create(
 				M.File,
 				Icon.FILE.descriptor(),
 				() -> new FileImport().run()));
 
 		// open the generic import dialog
-		subMenu.add(Actions.create(M.Other + "...", icon, () -> {
+		menu.add(Actions.create(M.Other + "...", icon, () -> {
 			try {
 				PlatformUI.getWorkbench()
 						.getService(IHandlerService.class)
@@ -205,14 +213,10 @@ public class NavigationMenu extends CommonActionProvider {
 								ActionFactory.IMPORT.getCommandId(),
 								null);
 			} catch (Exception e) {
-				var log = LoggerFactory.getLogger(getClass());
-				log.error("failed to open import dialog", e);
+				ErrorReporter.on("failed to open import dialog", e);
 			}
 		}));
-
-		addActions(selection, menu,
-				new ExportAction(),
-				new ExportScriptAction());
-
+		return menu;
 	}
+
 }

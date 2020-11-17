@@ -37,7 +37,7 @@ import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.ExportAction;
-import org.openlca.app.navigation.actions.ImportAction;
+import org.openlca.app.navigation.actions.NavigationMenu;
 import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -132,8 +132,11 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(closeAllAction);
 		menu.add(new Separator());
 		menu.add(preferencesAction);
+
+		// import and export
 		menu.add(new Separator());
-		menu.add(new ImportAction());
+		var impMenu = NavigationMenu.createImportMenu();
+		menu.add(impMenu);
 		menu.add(new ExportAction());
 		menu.add(new Separator());
 		menu.add(exitAction);
@@ -170,7 +173,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 				"New", MappingTool::createNew));
 		fmMenu.add(Actions.create(
 				"Open file", MappingTool::openFile));
-		
+
 		// library export
 		if (FeatureFlag.LIBRARIES.isEnabled()) {
 			menu.add(Actions.create(
@@ -188,9 +191,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			menu.add(new Separator());
 			MenuManager eiMenu = new MenuManager("ecoinvent 3.x");
 			menu.add(eiMenu);
-			eiMenu.add(Actions.create("Import processes", 
+			eiMenu.add(Actions.create("Import processes",
 					() -> runSpold2Import(ModelType.PROCESS)));
-			eiMenu.add(Actions.create("Import LCIA methods", 
+			eiMenu.add(Actions.create("Import LCIA methods",
 					() -> runSpold2Import(ModelType.IMPACT_METHOD)));
 		}
 		menuBar.add(menu);
@@ -206,8 +209,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		File file = FileChooser.open("*.zip");
 		if (file == null)
 			return;
-		File[] files = new File[] {file};
-		
+		File[] files = new File[]{file};
+
 		Runnable imp = null;
 		if (type == ModelType.IMPACT_METHOD) {
 			imp = new MethodImport(files, db);

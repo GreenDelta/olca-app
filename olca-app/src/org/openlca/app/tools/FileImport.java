@@ -13,10 +13,10 @@ import org.openlca.app.devtools.SaveScriptDialog;
 import org.openlca.app.navigation.actions.db.DbRestoreAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.app.wizards.io.DbImportWizard;
 import org.openlca.app.wizards.io.EcoSpold01ImportWizard;
 import org.openlca.app.wizards.io.EcoSpold2ImportWizard;
 import org.openlca.app.wizards.io.ExcelImportWizard;
@@ -157,19 +157,12 @@ public class FileImport {
 
 		@Override
 		protected void okPressed() {
-			if (!intoActiveDB) {
+			if (intoActiveDB) {
+				DbImportWizard.of(zolca);
+			} else {
 				DbRestoreAction.run(zolca);
-				super.okPressed();
-				return;
 			}
-			try {
-
-				// TODO: run zolca import
-
-			} catch (Exception e) {
-				ErrorReporter.on("Failed to import *.zolca " +
-						"file into active database", e);
-			}
+			super.okPressed();
 		}
 	}
 }

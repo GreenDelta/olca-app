@@ -30,7 +30,7 @@ class DbImportPage extends WizardPage {
 	private ComboViewer existingViewer;
 	private Text fileText;
 
-	public DbImportPage() {
+	DbImportPage() {
 		super("DbImportPage");
 		config = new ImportConfig();
 		config.mode = config.EXISTING_MODE;
@@ -39,7 +39,16 @@ class DbImportPage extends WizardPage {
 		setPageComplete(false);
 	}
 
-	public ImportConfig getConfig() {
+	DbImportPage(File file) {
+		this();
+		if (file != null) {
+			config.mode = config.FILE_MODE;
+			config.file = file;
+			setPageComplete(true);
+		}
+	}
+
+	ImportConfig getConfig() {
 		return config;
 	}
 
@@ -49,14 +58,13 @@ class DbImportPage extends WizardPage {
 		UI.gridLayout(body, 1);
 		createExistingSection(body);
 		createFileSection(body);
-		setSelection(config.EXISTING_MODE);
+		setSelection(config.mode);
 		setControl(body);
 	}
 
 	private void createExistingSection(Composite body) {
 		var check = new Button(body, SWT.RADIO);
 		check.setText("Existing database");
-		check.setSelection(true);
 		Controls.onSelect(check, e -> setSelection(config.EXISTING_MODE));
 		var comp = new Composite(body, SWT.NONE);
 		UI.gridLayout(comp, 1);
@@ -102,6 +110,9 @@ class DbImportPage extends WizardPage {
 		fileText = new Text(comp, SWT.READ_ONLY | SWT.BORDER);
 		fileText.setBackground(Colors.white());
 		UI.gridData(fileText, true, false);
+		if (config.file != null) {
+			fileText.setText(config.file.getAbsolutePath());
+		}
 
 		browseButton = new Button(comp, SWT.NONE);
 		browseButton.setText("Browse");

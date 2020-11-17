@@ -18,6 +18,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
@@ -38,11 +39,30 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private DbImportPage page;
 
-	@Override
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
+	private File initialFile;
+
+	public static void of(File file) {
+		Wizards.forImport(
+				"wizard.import.db",
+				(DbImportWizard w) -> w.initialFile = file);
+	}
+
+	public DbImportWizard() {
 		setWindowTitle(M.DatabaseImport);
 		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD.descriptor());
 		setNeedsProgressMonitor(true);
+	}
+
+	@Override
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
+	}
+
+	@Override
+	public void addPages() {
+		page = initialFile != null
+				? new DbImportPage(initialFile)
+				: new DbImportPage();
+		addPage(page);
 	}
 
 	@Override
@@ -63,7 +83,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			getContainer().run(true, true, importDispatch);
 			return true;
 		} catch (Exception e) {
-			log.error("database import failed", e);
+			ErrorReporter.on("Database import failed", e);
 			return false;
 		} finally {
 			Navigator.refresh();
@@ -72,7 +92,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private boolean canRun(DbImportPage.ImportConfig config,
-			ConnectionDispatch connectionDispatch) {
+						   ConnectionDispatch connectionDispatch) {
 		VersionState state = connectionDispatch.getSourceState();
 		if (state == VersionState.UP_TO_DATE)
 			return true;
@@ -100,12 +120,6 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		return connectionDispatch;
 	}
 
-	@Override
-	public void addPages() {
-		page = new DbImportPage();
-		addPage(page);
-	}
-
 	private class ImportDispatch implements IRunnableWithProgress {
 
 		private final IDatabase sourceDb;
@@ -124,7 +138,10 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			try {
 				Database.getIndexUpdater().beginTransaction();
 				monitor.beginTask(M.ImportDatabase, IProgressMonitor.UNKNOWN);
-				checkAndExecuteUpdates(monitor);
+				if (sourceState == VersionState.NEEDS_UPGRADE) {
+					monitor.subTask(M.UpdateDatabase);
+					Upgrades.on(sourceDb);
+				}
 				monitor.subTask(M.ImportData + "...");
 				DatabaseImport dbImport = new DatabaseImport(sourceDb, Database.get());
 				log.trace("run data import");
@@ -138,15 +155,6 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 				Database.getIndexUpdater().endTransaction();
 			}
 		}
-
-		private void checkAndExecuteUpdates(IProgressMonitor monitor){
-			switch (sourceState) {
-			case NEEDS_UPGRADE:
-				monitor.subTask(M.UpdateDatabase);
-				Upgrades.on(sourceDb);
-			default:
-			}
-		}
 	}
 
 	/**
@@ -155,7 +163,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 	 */
 	private class ConnectionDispatch implements IRunnableWithProgress {
 
-		private DbImportPage.ImportConfig config;
+		private final DbImportPage.ImportConfig config;
 		private File tempDbFolder;
 		private IDatabase source;
 
@@ -204,5 +212,4 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			}
 		}
 	}
-
 }
