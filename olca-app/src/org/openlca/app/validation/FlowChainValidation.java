@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.references.IReferenceSearch.Reference;
+import org.openlca.core.database.references.Reference;
 import org.openlca.core.model.AbstractEntity;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;

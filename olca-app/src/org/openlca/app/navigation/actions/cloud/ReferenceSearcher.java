@@ -16,8 +16,8 @@ import org.openlca.app.cloud.ui.diff.DiffResult;
 import org.openlca.cloud.model.data.FileReference;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.references.IReferenceSearch;
-import org.openlca.core.database.references.IReferenceSearch.Reference;
+import org.openlca.core.database.references.Reference;
+import org.openlca.core.database.references.References;
 import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.AbstractEntity;
 import org.openlca.core.model.ModelType;
@@ -91,8 +91,8 @@ class ReferenceSearcher {
 		}
 		if (toCheck.isEmpty())
 			return Collections.emptySet();
-		IReferenceSearch<?> refSearch = IReferenceSearch.FACTORY.createFor(type, database, true);
-		results.addAll(loadDescriptors(refSearch.findReferences(toCheck)));
+		var refs = References.of(database, type, toCheck);
+		results.addAll(loadDescriptors(refs));
 		return results;
 	}
 

@@ -17,8 +17,8 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.database.UnitGroupDao;
-import org.openlca.core.database.references.IReferenceSearch;
-import org.openlca.core.database.references.IReferenceSearch.Reference;
+import org.openlca.core.database.references.Reference;
+import org.openlca.core.database.references.References;
 import org.openlca.core.model.AbstractEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -61,7 +61,8 @@ public class DatabaseValidation {
 	private List<ModelStatus> evaluate(ModelType type, Set<Long> ids) {
 		if (monitor != null && monitor.isCanceled())
 			return new ArrayList<>();
-		List<Reference> references = findReferences(type, ids);
+		var db = Database.get();
+		var references = References.of(db, type, ids);
 		if (monitor != null && monitor.isCanceled())
 			return new ArrayList<>();
 		if (monitor != null)
@@ -71,7 +72,7 @@ public class DatabaseValidation {
 			return new ArrayList<>();
 		if (type == ModelType.PROCESS || type == ModelType.IMPACT_METHOD) {
 			if (flowChainValidation == null) {
-				flowChainValidation = new FlowChainValidation(Database.get());
+				flowChainValidation = new FlowChainValidation(db);
 			}
 			notExisting.addAll(flowChainValidation.run(type.getModelClass(), references));
 		}
@@ -160,10 +161,6 @@ public class DatabaseValidation {
 				if (reference.id != 0l)
 					ids.add(reference.id);
 		return ids;
-	}
-
-	private List<Reference> findReferences(ModelType type, Set<Long> ids) {
-		return IReferenceSearch.FACTORY.createFor(type, Database.get(), true).findReferences(ids);
 	}
 
 }

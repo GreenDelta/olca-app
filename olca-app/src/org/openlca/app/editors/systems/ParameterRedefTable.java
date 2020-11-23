@@ -12,7 +12,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
@@ -37,8 +36,11 @@ import org.openlca.app.viewers.tables.modify.field.DoubleModifier;
 import org.openlca.app.viewers.tables.modify.field.StringModifier;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.EntityCache;
+import org.openlca.core.database.ParameterDao;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
@@ -125,11 +127,33 @@ class ParameterRedefTable {
 		CommentAction.bindTo(section, "parameterRedefs",
 				editor.getComments(), add, remove);
 		Actions.bind(table, add, remove, copy, paste, usage);
-		Tables.onDeletePressed(table, (e) -> remove());
-		Tables.onDoubleClick(table, (event) -> {
-			TableItem item = Tables.getItem(table, event);
-			if (item == null)
-				add();
+		Tables.onDeletePressed(table, _e -> remove());
+
+		// open the original parameter in double click
+		Tables.onDoubleClick(table, e -> {
+			ParameterRedef redef = Viewers.getFirstSelected(table);
+			if (redef == null)
+				return;
+			var db = Database.get();
+			if (redef.contextId != null && redef.contextType != null) {
+				// process or LCIA parameter
+				var model = redef.contextType == ModelType.PROCESS
+						? db.get(Process.class, redef.contextId)
+						: db.get(ImpactCategory.class, redef.contextId);
+				if (model != null) {
+					App.openEditor(model);
+				}
+			} else {
+				// global parameter
+				var dao = new ParameterDao(db);
+				var global = dao.getGlobalDescriptors()
+						.stream()
+						.filter(g -> Strings.nullOrEqual(g.name, redef.name))
+						.findAny();
+				if (global.isPresent()) {
+					App.openEditor(global.get());
+				}
+			}
 		});
 	}
 

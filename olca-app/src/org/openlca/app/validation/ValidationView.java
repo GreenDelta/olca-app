@@ -36,7 +36,7 @@ import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
-import org.openlca.core.database.references.IReferenceSearch.Reference;
+import org.openlca.core.database.references.Reference;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterRedef;

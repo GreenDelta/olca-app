@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import org.openlca.core.database.references.IReferenceSearch.Reference;
+import org.openlca.core.database.references.Reference;
 import org.openlca.core.model.ModelType;
 
 public class ModelStatus implements Serializable {
