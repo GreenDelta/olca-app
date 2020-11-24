@@ -1,4 +1,4 @@
-package org.openlca.app.navigation;
+package org.openlca.app.navigation.elements;
 
 import java.util.Collections;
 import java.util.List;

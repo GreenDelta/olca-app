@@ -5,9 +5,9 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.db.DatabaseWizard;
-import org.openlca.app.navigation.DatabaseElement;
-import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
+import org.openlca.app.navigation.elements.DatabaseElement;
+import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Images;
 
 /**

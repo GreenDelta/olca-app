@@ -2,7 +2,7 @@ package org.openlca.app.navigation.filters;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.openlca.app.navigation.ModelTypeElement;
+import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.core.model.ModelType;
 
 /**

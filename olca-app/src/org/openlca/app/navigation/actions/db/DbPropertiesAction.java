@@ -7,9 +7,9 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabasePropertiesDialog;
 import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.navigation.DatabaseElement;
-import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
+import org.openlca.app.navigation.elements.DatabaseElement;
+import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 
 /**

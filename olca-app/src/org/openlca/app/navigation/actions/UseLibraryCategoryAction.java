@@ -5,9 +5,9 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.CategoryElement;
-import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.model.Category;

@@ -13,6 +13,10 @@ import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonDropAdapter;
 import org.eclipse.ui.navigator.CommonDropAdapterAssistant;
+import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.rcp.RcpActivator;
 
 import com.google.common.base.Objects;

@@ -2,10 +2,10 @@ package org.openlca.app.cloud.index;
 
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.CategoryElement;
-import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.ModelElement;
-import org.openlca.app.navigation.ModelTypeElement;
+import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.core.model.ModelType;
 

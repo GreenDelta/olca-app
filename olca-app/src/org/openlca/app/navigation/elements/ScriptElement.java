@@ -1,4 +1,4 @@
-package org.openlca.app.navigation;
+package org.openlca.app.navigation.elements;
 
 import java.io.File;
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import org.openlca.util.Dirs;
  */
 public class ScriptElement extends NavigationElement<File> {
 
-	ScriptElement(INavigationElement<?> parent, File file) {
+	public ScriptElement(INavigationElement<?> parent, File file) {
 		super(parent, file);
 	}
 

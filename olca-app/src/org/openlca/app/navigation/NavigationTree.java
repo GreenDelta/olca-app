@@ -9,6 +9,9 @@ import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.core.model.ModelType;
 
 /**

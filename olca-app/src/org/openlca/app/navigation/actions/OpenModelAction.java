@@ -7,8 +7,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.ModelElement;
+import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.rcp.images.Icon;
 
 class OpenModelAction extends Action implements INavigationAction {

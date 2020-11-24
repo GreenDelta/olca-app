@@ -594,7 +594,7 @@
             priority="normal">
          <triggerPoints>
             <instanceof
-                  value="org.openlca.app.navigation.INavigationElement">
+                  value="org.openlca.app.navigation.elements.INavigationElement">
             </instanceof>
          </triggerPoints>
          <commonSorter
@@ -605,13 +605,13 @@
                id="dropassistant.navigation">
             <possibleDropTargets>
                <instanceof
-                     value="org.openlca.app.navigation.INavigationElement">
+                     value="org.openlca.app.navigation.elements.INavigationElement">
                </instanceof>
             </possibleDropTargets>
          </dropAssistant>
          <possibleChildren>
             <instanceof
-                  value="org.openlca.app.navigation.INavigationElement">
+                  value="org.openlca.app.navigation.elements.INavigationElement">
             </instanceof>
          </possibleChildren>
       </navigatorContent>
@@ -652,7 +652,7 @@
 	            class="org.openlca.app.navigation.NavigationLinkHelper"
 	            id="navigator.linkHelper">
          <selectionEnablement>
-            <instanceof value="org.openlca.app.navigation.ModelElement"/>
+            <instanceof value="org.openlca.app.navigation.elements.ModelElement"/>
 	     </selectionEnablement>
 	     <editorInputEnablement>
 			<instanceof value="org.openlca.app.editors.ModelEditorInput"/>

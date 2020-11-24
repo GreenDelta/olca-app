@@ -12,11 +12,11 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.navigation.ModelElement;
 import org.openlca.app.navigation.NavigationComparator;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.Descriptor;
 

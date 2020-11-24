@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.LibraryElement;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;

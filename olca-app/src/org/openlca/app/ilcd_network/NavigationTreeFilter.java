@@ -2,9 +2,9 @@ package org.openlca.app.ilcd_network;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.openlca.app.navigation.CategoryElement;
-import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.ModelElement;
+import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 

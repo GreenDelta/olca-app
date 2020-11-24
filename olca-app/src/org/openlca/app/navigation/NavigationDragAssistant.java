@@ -9,6 +9,8 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.navigator.CommonDragAdapterAssistant;
 import org.openlca.app.components.ModelTransfer;
+import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.core.model.descriptors.Descriptor;
 
 public class NavigationDragAssistant extends CommonDragAdapterAssistant {

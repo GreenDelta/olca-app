@@ -9,8 +9,8 @@ import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.ui.commits.SelectCommitDialog;
 import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.INavigationElement;
 import org.openlca.app.navigation.actions.INavigationAction;
+import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.cloud.model.data.Commit;
 
 public class OpenCompareViewAction extends Action implements INavigationAction {

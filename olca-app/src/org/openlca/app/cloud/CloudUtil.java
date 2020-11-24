@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.CategoryElement;
-import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.ModelElement;
+import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.util.Labels;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Commit;

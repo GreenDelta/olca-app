@@ -6,6 +6,13 @@ import org.eclipse.jface.viewers.ContentViewer;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.DatabaseElement;
+import org.openlca.app.navigation.elements.GroupElement;
+import org.openlca.app.navigation.elements.LibraryDirElement;
+import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.navigation.elements.ModelTypeElement;
+import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
 
@@ -15,8 +22,10 @@ public class NavigationComparator extends ViewerComparator {
 	public int compare(Viewer viewer, Object e1, Object e2) {
 		if (e1 == null || e2 == null)
 			return 0;
+
 		if (!Objects.equals(e1.getClass(), e2.getClass()))
 			return compareByType(e1, e2);
+
 		if (e1 instanceof GroupElement && e2 instanceof GroupElement)
 			return 0;
 		if (e1 instanceof ModelTypeElement && e2 instanceof ModelTypeElement)
@@ -69,6 +78,21 @@ public class NavigationComparator extends ViewerComparator {
 		if (e2 instanceof CategoryElement && e1 instanceof ModelElement)
 			return 1;
 		return 0;
+	}
+
+	private int typeOrder(Object o) {
+		if (o instanceof ModelTypeElement)
+			return 1;
+		if (o instanceof GroupElement)
+			return 2;
+		if (o instanceof CategoryElement)
+			return 3;
+		if (o instanceof ModelElement)
+			return 4;
+		if (o instanceof LibraryDirElement)
+			return 5;
+		
+		return 10;
 	}
 
 	private String getLabel(Viewer viewer, Object e1) {

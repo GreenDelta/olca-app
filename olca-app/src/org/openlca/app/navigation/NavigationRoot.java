@@ -6,6 +6,10 @@ import java.util.List;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.elements.DatabaseElement;
+import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.LibraryDirElement;
+import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.util.Dirs;
 

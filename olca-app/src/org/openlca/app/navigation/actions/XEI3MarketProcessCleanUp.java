@@ -5,8 +5,8 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.DatabaseElement;
-import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.elements.DatabaseElement;
+import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.io.ecospold2.input.MarketProcessCleanUp;
 

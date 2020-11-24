@@ -8,13 +8,13 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.navigation.DatabaseElement;
-import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.LibraryDirElement;
-import org.openlca.app.navigation.LibraryElement;
 import org.openlca.app.navigation.NavigationRoot;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.navigation.ScriptElement;
+import org.openlca.app.navigation.elements.DatabaseElement;
+import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.LibraryDirElement;
+import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.validation.ValidationView;
 

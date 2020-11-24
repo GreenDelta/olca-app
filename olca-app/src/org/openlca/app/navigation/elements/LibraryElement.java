@@ -1,4 +1,4 @@
-package org.openlca.app.navigation;
+package org.openlca.app.navigation.elements;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +24,7 @@ public class LibraryElement extends NavigationElement<Library> {
 	 * Such elements are used in model selection dialogs and behave a bit different
 	 * than library elements in the normal navigation.
 	 */
-	static LibraryElement of(Library library, ModelType only) {
+	public static LibraryElement of(Library library, ModelType only) {
 		var elem = new LibraryElement(null, library);
 		elem.only = only;
 		return elem;

@@ -3,7 +3,7 @@ package org.openlca.app.navigation.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.IAction;
-import org.openlca.app.navigation.INavigationElement;
+import org.openlca.app.navigation.elements.INavigationElement;
 
 public interface INavigationAction extends IAction {
 

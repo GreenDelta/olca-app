@@ -14,6 +14,15 @@ import org.eclipse.ui.navigator.ICommonLabelProvider;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.DatabaseElement;
+import org.openlca.app.navigation.elements.Group;
+import org.openlca.app.navigation.elements.GroupElement;
+import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.LibraryDirElement;
+import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -48,7 +57,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 	@Override
 	public String getDescription(Object obj) {
 		// the description is shown in the status bar
-		if (!(obj instanceof NavigationElement))
+		if (!(obj instanceof INavigationElement))
 			return null;
 
 		// for local databases show the full path to the folder

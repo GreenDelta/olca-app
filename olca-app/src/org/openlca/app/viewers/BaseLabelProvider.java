@@ -2,8 +2,8 @@ package org.openlca.app.viewers;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.navigation.Group;
-import org.openlca.app.navigation.GroupType;
+import org.openlca.app.navigation.elements.Group;
+import org.openlca.app.navigation.elements.GroupType;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.AllocationMethod;

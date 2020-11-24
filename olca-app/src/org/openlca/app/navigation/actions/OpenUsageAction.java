@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
-import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.ModelElement;
+import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.search.SearchPage;

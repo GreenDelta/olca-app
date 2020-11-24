@@ -10,6 +10,7 @@ import org.eclipse.ui.navigator.ILinkHelper;
 import org.openlca.app.App;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
+import org.openlca.app.navigation.elements.ModelElement;
 import org.slf4j.LoggerFactory;
 
 public class NavigationLinkHelper implements ILinkHelper {

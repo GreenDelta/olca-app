@@ -1,4 +1,4 @@
-package org.openlca.app.navigation;
+package org.openlca.app.navigation.elements;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,11 +12,11 @@ public class LibraryDirElement extends NavigationElement<LibraryDir> {
 
 	private Set<String> only;
 
-	LibraryDirElement(INavigationElement<?> parent, LibraryDir dir) {
+	public LibraryDirElement(INavigationElement<?> parent, LibraryDir dir) {
 		super(parent, dir);
 	}
 
-	LibraryDirElement only(Set<String> ids) {
+	public LibraryDirElement only(Set<String> ids) {
 		this.only = ids;
 		return this;
 	}

@@ -7,8 +7,8 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
-import org.openlca.app.navigation.INavigationElement;
-import org.openlca.app.navigation.ScriptElement;
+import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.rcp.images.Icon;
 
 public class OpenScriptAction extends Action implements INavigationAction {

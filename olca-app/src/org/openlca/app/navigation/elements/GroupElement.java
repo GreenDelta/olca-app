@@ -1,11 +1,11 @@
-package org.openlca.app.navigation;
+package org.openlca.app.navigation.elements;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.core.model.ModelType;
 
-class GroupElement extends NavigationElement<Group> {
+public class GroupElement extends NavigationElement<Group> {
 
 	GroupElement(INavigationElement<?> parent, Group group) {
 		super(parent, group);
@@ -13,7 +13,7 @@ class GroupElement extends NavigationElement<Group> {
 
 	@Override
 	protected List<INavigationElement<?>> queryChilds() {
-		List<INavigationElement<?>> elements = new ArrayList<>();
+		var elements = new ArrayList<INavigationElement<?>>();
 		for (ModelType type : getContent().types) {
 			elements.add(new ModelTypeElement(this, type));
 		}
