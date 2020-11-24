@@ -10,10 +10,10 @@ import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.LibraryDirElement;
+import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.elements.ScriptElement;
-import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
 
 public class NavigationComparator extends ViewerComparator {
@@ -23,19 +23,21 @@ public class NavigationComparator extends ViewerComparator {
 		if (e1 == null || e2 == null)
 			return 0;
 
+		// for elements of different types we have a defined type order
 		if (!Objects.equals(e1.getClass(), e2.getClass()))
-			return compareByType(e1, e2);
-
-		if (e1 instanceof GroupElement && e2 instanceof GroupElement)
+			return typeOrderOf(e1) - typeOrderOf(e2);
+		
+		// group elements have a predefined order
+		if (e1 instanceof GroupElement)
 			return 0;
-		if (e1 instanceof ModelTypeElement && e2 instanceof ModelTypeElement)
-			return compare((ModelTypeElement) e1, (ModelTypeElement) e2);
+		
+		if (e1 instanceof ModelTypeElement && e2 instanceof ModelTypeElement) {
+			return ModelTypeComparison.compare(
+					((ModelTypeElement) e1).getContent(), 
+					((ModelTypeElement) e2).getContent());
+		}
 
-		// the scripting folder should be always the last element in the tree
-		if (!(e1 instanceof ScriptElement) && e2 instanceof ScriptElement)
-			return -1;
-		if (e1 instanceof ScriptElement && !(e2 instanceof ScriptElement))
-			return 1;
+		// for script elements folders come before files 
 		if (e1 instanceof ScriptElement) {
 			var f1 = ((ScriptElement) e1).getContent();
 			var f2 = ((ScriptElement) e2).getContent();
@@ -60,27 +62,9 @@ public class NavigationComparator extends ViewerComparator {
 		return getComparator().compare(name1, name2);
 	}
 
-	private int compare(ModelTypeElement e1, ModelTypeElement e2) {
-		ModelType type1 = e1.getContent();
-		ModelType type2 = e2.getContent();
-		return ModelTypeComparison.compare(type1, type2);
-	}
-
-	private int compareByType(Object e1, Object e2) {
-		// group elements after model type elements
-		if (e1 instanceof ModelTypeElement && e2 instanceof GroupElement)
-			return -1;
-		if (e1 instanceof GroupElement && e2 instanceof ModelTypeElement)
-			return 1;
-		// model elements after category elements
-		if (e1 instanceof CategoryElement && e2 instanceof ModelElement)
-			return -1;
-		if (e2 instanceof CategoryElement && e1 instanceof ModelElement)
-			return 1;
-		return 0;
-	}
-
-	private int typeOrder(Object o) {
+	private int typeOrderOf(Object o) {
+		if (o instanceof DatabaseElement)
+			return 0;
 		if (o instanceof ModelTypeElement)
 			return 1;
 		if (o instanceof GroupElement)
@@ -91,7 +75,10 @@ public class NavigationComparator extends ViewerComparator {
 			return 4;
 		if (o instanceof LibraryDirElement)
 			return 5;
-		
+		if (o instanceof LibraryElement)
+			return 6;
+		if (o instanceof ScriptElement)
+			return 7;
 		return 10;
 	}
 
