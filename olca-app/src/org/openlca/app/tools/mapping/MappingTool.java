@@ -16,6 +16,7 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.tools.mapping.model.ProviderType;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.io.maps.FlowMap;
 
@@ -65,7 +66,7 @@ public class MappingTool extends SimpleFormEditor {
 		AppCache cache = Cache.getAppCache();
 		cache.put(uid + " /mapping", mapping);
 		Editors.open(new SimpleEditorInput(
-				"FlowMappings", uid, "#Flow mapping"),
+				"FlowMappings", uid, "Flow mapping"),
 				"MappingTool");
 	}
 
@@ -78,14 +79,9 @@ public class MappingTool extends SimpleFormEditor {
 			String uid = sinp.id;
 			AppCache cache = Cache.getAppCache();
 			mapping = cache.remove(uid + " /mapping", FlowMap.class);
-			if (mapping.entries.isEmpty()) {
-				checked.set(true);
-			} else {
-				checked.set(false);
-			}
+			checked.set(mapping.entries.isEmpty());
 		} catch (Exception e) {
-			throw new PartInitException(
-					"Failed to load editor input", e);
+			ErrorReporter.on("Failed to initialize mapping tool", e);
 		}
 	}
 

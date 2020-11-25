@@ -1,6 +1,8 @@
 package org.openlca.app.tools.mapping;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.action.Action;
@@ -149,31 +151,30 @@ class MappingPage extends FormPage {
 	private void syncMappings() {
 		// run the sync functions in two separate threads and wait for
 		// them to finish
-		Thread st = null;
-		Thread tt = null;
+		Runnable st = null;
+		Runnable tt = null;
 		if (tool.sourceSystem != null) {
 			Stream<FlowRef> stream = tool.mapping.entries
 					.stream().map(e -> e.sourceFlow);
-			st = new Thread(
-					() -> tool.sourceSystem.sync(stream));
+			st = () -> tool.sourceSystem.sync(stream);
 		}
 		if (tool.targetSystem != null) {
 			Stream<FlowRef> stream = tool.mapping.entries
 					.stream().map(e -> e.targetFlow);
-			tt = new Thread(
-					() -> tool.targetSystem.sync(stream));
+			tt = () -> tool.targetSystem.sync(stream);
 		}
 		if (st == null && tt == null)
 			return;
 		try {
+			var exec = Executors.newFixedThreadPool(2);
 			if (st != null) {
-				st.run();
-				st.join();
+				exec.execute(st);
 			}
 			if (tt != null) {
-				tt.run();
-				tt.join();
+				exec.execute(tt);
 			}
+			exec.shutdown();
+			exec.awaitTermination(1, TimeUnit.DAYS);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("Failed to sync flow mappings", e);
