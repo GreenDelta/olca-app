@@ -21,6 +21,8 @@ import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryDirElement;
 import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.navigation.elements.MappingDirElement;
+import org.openlca.app.navigation.elements.MappingFileElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.rcp.Workspace;
@@ -161,6 +163,16 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 					: Images.get(FileType.of(file));
 		}
 
+		// mapping files
+		if (elem instanceof MappingDirElement)
+			return Icon.FOLDER.get();
+		if (elem instanceof MappingFileElement) {
+			var name = content instanceof String
+					? (String) content
+					: "?";
+			return Images.get(FileType.forName(name));
+		}
+
 		return null;
 	}
 
@@ -204,9 +216,15 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			var info = ((Library) content).getInfo();
 			return info.name + " " + info.version;
 		}
+		if (elem instanceof MappingDirElement)
+			return "Mapping files";
+
 		if (content instanceof File)
 			return ((File) content).getName();
-		return null;
+		if (content instanceof String)
+			return (String) content;
+
+		return content == null ? "?" : content.toString();
 	}
 
 	@Override

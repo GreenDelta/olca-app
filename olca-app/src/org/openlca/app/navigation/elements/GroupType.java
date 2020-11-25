@@ -6,6 +6,6 @@ public enum GroupType {
 
 	INDICATORS,
 
-	MODELS;
+	MODELS
 
 }

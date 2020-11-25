@@ -36,13 +36,13 @@ public enum FileType {
 	
 	public static FileType of(File file) {
 		if (file == null)
-			return null;
+			return DEFAULT;
 		return forName(file.getName());
 	}
 
 	public static FileType forName(String fileName) {
 		if (fileName == null)
-			return null;
+			return DEFAULT;
 		var n = fileName.trim().toLowerCase();
 		for (FileType type : values()) {
 			for (String ext : type.extensions) {
