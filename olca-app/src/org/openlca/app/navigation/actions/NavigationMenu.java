@@ -111,10 +111,12 @@ public class NavigationMenu extends CommonActionProvider {
 				new DeleteLibraryAction(),
 				ValidateAction.forModel());
 
-		// script actions
+		// script & mapping actions
 		addActions(selection, menu,
 				new OpenScriptAction(),
-				new DeleteScriptAction());
+				new OpenMappingAction(),
+				new DeleteScriptAction(),
+				new DeleteMappingAction());
 
 		// DnD actions
 		addActions(selection, menu,
@@ -184,7 +186,8 @@ public class NavigationMenu extends CommonActionProvider {
 	}
 
 	private void addIOMenu(
-			List<INavigationElement<?>> selection, IMenuManager menu) {
+			List<INavigationElement<?>> selection,
+			IMenuManager menu) {
 		menu.add(new Separator());
 		MenuManager subMenu = createImportMenu();
 		menu.add(subMenu);

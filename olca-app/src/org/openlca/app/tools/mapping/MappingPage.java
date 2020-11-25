@@ -22,6 +22,7 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
@@ -29,8 +30,6 @@ import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class MappingPage extends FormPage {
 
@@ -89,6 +88,7 @@ class MappingPage extends FormPage {
 				tool.checked.set(true);
 				table.setInput(tool.mapping.entries);
 				updateCheckState.run();
+				tool.setDirty();
 			});
 		});
 	}
@@ -123,6 +123,7 @@ class MappingPage extends FormPage {
 				return;
 			tool.mapping.entries.add(e);
 			table.refresh();
+			tool.setDirty();
 		});
 
 		Action edit = Actions.onEdit(() -> {
@@ -131,6 +132,7 @@ class MappingPage extends FormPage {
 				return;
 			if (Dialog.OK == MappingDialog.open(tool, e)) {
 				table.refresh();
+				tool.setDirty();
 			}
 		});
 		Tables.onDoubleClick(table, _e -> edit.run());
@@ -141,6 +143,7 @@ class MappingPage extends FormPage {
 				return;
 			tool.mapping.entries.removeAll(entries);
 			table.refresh();
+			tool.setDirty();
 		});
 		Action copy = TableClipboard.onCopy(table);
 
@@ -176,8 +179,7 @@ class MappingPage extends FormPage {
 			exec.shutdown();
 			exec.awaitTermination(1, TimeUnit.DAYS);
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("Failed to sync flow mappings", e);
+			ErrorReporter.on("Failed to sync flow mappings", e);
 		}
 	}
 }

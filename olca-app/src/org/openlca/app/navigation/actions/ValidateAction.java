@@ -14,6 +14,8 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryDirElement;
 import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.navigation.elements.MappingDirElement;
+import org.openlca.app.navigation.elements.MappingFileElement;
 import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.validation.ValidationView;
@@ -67,13 +69,17 @@ public class ValidateAction extends Action implements INavigationAction {
 		if (forDB)
 			return false;
 
-		// skip scripting elements and libraries
-		if (first instanceof ScriptElement)
-			return false;
-		if (first instanceof LibraryDirElement)
-			return false;
-		if (first instanceof LibraryElement)
-			return false;
+		// skip some types of elements
+		var excludes = List.of(
+				ScriptElement.class,
+				LibraryDirElement.class,
+				LibraryElement.class,
+				MappingDirElement.class,
+				MappingFileElement.class);
+		for (var exclude : excludes) {
+			if (exclude.isAssignableFrom(first.getClass()))
+				return false;
+		}
 		if (first.getLibrary().isPresent())
 			return false;
 
