@@ -22,7 +22,7 @@ public class OpenScriptAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
-		if (selection.size() != 1)
+		if (selection == null || selection.size() != 1)
 			return false;
 		var first = selection.get(0);
 		if (!(first instanceof ScriptElement))

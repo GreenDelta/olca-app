@@ -25,11 +25,13 @@ import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.actions.OpenMappingAction;
 import org.openlca.app.navigation.actions.OpenScriptAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.navigation.elements.MappingFileElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.tools.libraries.LibraryInfoPage;
@@ -82,6 +84,9 @@ public class Navigator extends CommonNavigator {
 			} else if (elem instanceof LibraryElement) {
 				var library = ((LibraryElement) elem).getContent();
 				LibraryInfoPage.show(library);
+			} else if (elem instanceof MappingFileElement) {
+				var mapping = ((MappingFileElement) elem).getContent();
+				OpenMappingAction.run(mapping);
 			}
 		});
 	}
