@@ -18,16 +18,23 @@ import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.tools.mapping.model.ProviderType;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.core.model.MappingFile;
 import org.openlca.io.maps.FlowMap;
 
 public class MappingTool extends SimpleFormEditor {
-
-	private MappingPage page;
 
 	FlowMap mapping;
 	IProvider sourceSystem;
 	IProvider targetSystem;
 	AtomicBoolean checked = new AtomicBoolean(true);
+
+	private MappingPage page;
+
+	/**
+	 * If the mapping is stored in the database, this field contains
+	 * the corresponding mapping file.
+	 */
+	private MappingFile mappingFile;
 
 	public static void createNew() {
 		FlowMap mapping = new FlowMap();
@@ -55,6 +62,20 @@ public class MappingTool extends SimpleFormEditor {
 		}
 	}
 
+	/**
+	 * Open an existing mapping from the database.
+	 */
+	public static void open(MappingFile mapping) {
+		if(mapping == null)
+			return;
+		var uid = "db:mapping/" + mapping.id;
+		Cache.getAppCache().put(uid, mapping);
+		Editors.open(
+				new SimpleEditorInput(
+						"FlowMappings", uid, mapping.name),
+				"MappingTool");
+	}
+
 	public static void open(FlowMap mapping) {
 		if (mapping == null)
 			return;
@@ -64,9 +85,11 @@ public class MappingTool extends SimpleFormEditor {
 			mapping.refId = uid;
 		}
 		AppCache cache = Cache.getAppCache();
-		cache.put(uid + " /mapping", mapping);
-		Editors.open(new SimpleEditorInput(
-				"FlowMappings", uid, "Flow mapping"),
+		var cacheID = uid + " /mapping";
+		cache.put(cacheID, mapping);
+		Editors.open(
+				new SimpleEditorInput(
+						"FlowMappings", cacheID, "Flow mapping"),
 				"MappingTool");
 	}
 
@@ -75,10 +98,16 @@ public class MappingTool extends SimpleFormEditor {
 			throws PartInitException {
 		super.init(site, input);
 		try {
-			SimpleEditorInput sinp = (SimpleEditorInput) input;
-			String uid = sinp.id;
-			AppCache cache = Cache.getAppCache();
-			mapping = cache.remove(uid + " /mapping", FlowMap.class);
+			var inp = (SimpleEditorInput) input;
+			var raw = Cache.getAppCache().remove(inp.id);
+			if (raw instanceof FlowMap) {
+				mapping = (FlowMap) raw;
+			} else if (raw instanceof MappingFile) {
+				mappingFile = (MappingFile) raw;
+				mapping = FlowMap.of(mappingFile);
+			} else {
+				mapping = FlowMap.empty();
+			}
 			checked.set(mapping.entries.isEmpty());
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to initialize mapping tool", e);

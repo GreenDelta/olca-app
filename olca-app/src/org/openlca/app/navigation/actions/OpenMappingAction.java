@@ -54,8 +54,7 @@ public class OpenMappingAction extends Action implements INavigationAction {
 			return;
 		}
 		try {
-			var flowMap = FlowMap.of(mapping);
-			MappingTool.open(flowMap);
+			MappingTool.open(mapping);
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to open " +
 					"mapping file: " + mappingFile,e );
