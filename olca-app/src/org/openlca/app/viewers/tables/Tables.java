@@ -75,7 +75,7 @@ public class Tables {
 		// workaround for this bug:
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997
 		Point p = parent.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		data.heightHint = p.y < 120 ? 120 : p.y;
+		data.heightHint = Math.max(p.y, 120);
 		return viewer;
 	}
 
@@ -101,7 +101,7 @@ public class Tables {
 		Transfer transfer = ModelTransfer.getInstance();
 		DropTarget target = new DropTarget(table.getTable(),
 				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
-		target.setTransfer(new Transfer[] { transfer });
+		target.setTransfer(transfer);
 		target.addDropListener(new DropTargetAdapter() {
 			@Override
 			public void drop(DropTargetEvent event) {
@@ -132,12 +132,13 @@ public class Tables {
 	public static void bindColumnWidths(Table table, int minimum, double... percents) {
 		if (table == null || percents == null)
 			return;
-		TableResizeListener tableListener = new TableResizeListener(table, percents, minimum);
+		var tabResizer = new TableResizeListener(table, percents, minimum);
 		// see resize listener declaration for comment on why this is done
-		ColumnResizeListener columnListener = new ColumnResizeListener(tableListener);
-		for (TableColumn column : table.getColumns())
-			column.addControlListener(columnListener);
-		table.addControlListener(tableListener);
+		var colResizer = new ColumnResizeListener(tabResizer);
+		for (var column : table.getColumns()) {
+			column.addControlListener(colResizer);
+		}
+		table.addControlListener(tabResizer);
 	}
 
 	/** Add an event handler for double clicks on the given table viewer. */
@@ -201,7 +202,7 @@ public class Tables {
 	// was resized before, and in those cases, don't resize the columns
 	// automatically.
 	private static class ColumnResizeListener extends ControlAdapter {
-		private TableResizeListener depending;
+		private final TableResizeListener depending;
 		private boolean enabled = true;
 		private boolean initialized;
 
@@ -231,9 +232,9 @@ public class Tables {
 	}
 
 	private static class TableResizeListener extends ControlAdapter {
-		private Table table;
-		private double[] percents;
-		private int minimum = 0;
+		private final Table table;
+		private final double[] percents;
+		private final int minimum;
 		private boolean enabled = true;
 
 		private TableResizeListener(Table table, double[] percents, int mininmum) {
