@@ -75,19 +75,19 @@ public class ReportCalculator implements Runnable {
 
 	private void appendNwFactors() {
 		try {
-			NwSetTable table = NwSetTable.build(
-					Database.get(), project.nwSet.id);
-			report.withNormalisation = table.hasNormalisationFactors();
-			report.withWeighting = table.hasWeightingFactors();
+			NwSetTable table = NwSetTable.of(
+					Database.get(), project.nwSet);
+			report.withNormalisation = table.hasNormalization();
+			report.withWeighting = table.hasWeighting();
 			for (ReportIndicator indicator : report.indicators) {
 				if (indicator.descriptor == null)
 					continue;
 				long categoryId = indicator.descriptor.id;
-				if (table.hasNormalisationFactors()) {
+				if (table.hasNormalization()) {
 					indicator.normalisationFactor =
-							table.getNormalisationFactor(categoryId);
+							table.getNormalizationFactor(categoryId);
 				}
-				if (table.hasWeightingFactors()) {
+				if (table.hasWeighting()) {
 					indicator.weightingFactor =
 							table.getWeightingFactor(categoryId);
 				}

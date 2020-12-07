@@ -2,17 +2,14 @@ package org.openlca.app.results;
 
 import java.util.List;
 
-import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Database;
@@ -29,19 +26,11 @@ import org.openlca.core.results.Contribution;
 import org.openlca.core.results.Contributions;
 import org.openlca.core.results.ImpactResult;
 import org.openlca.core.results.SimpleResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * Shows normalisation and weighting results.
- */
 public class NwResultPage extends FormPage {
-
-	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private SimpleResult result;
 	private CalculationSetup setup;
-	private NwSetTable nwSetTable;
 	private Composite body;
 	private FormToolkit toolkit;
 
@@ -53,73 +42,45 @@ public class NwResultPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform,
+		var form = UI.formHeader(mform,
 				Labels.name(setup.productSystem),
 				Images.get(result));
 		toolkit = mform.getToolkit();
 		body = UI.formBody(form, toolkit);
-		nwSetTable = loadNwSetTable();
-		if (nwSetTable == null)
+		if (setup.nwSet == null)
 			return;
-		if (nwSetTable.hasNormalisationFactors())
-			createNormalisationSection();
-		else if (nwSetTable.hasWeightingFactors())
-			createWeightingSection();
-		if (nwSetTable.hasNormalisationFactors()
-				&& nwSetTable.hasWeightingFactors())
-			createSingleScoreSection();
-	}
-
-	private void createNormalisationSection() {
-		List<ImpactResult> results = nwSetTable.applyNormalisation(result
-				.getTotalImpactResults());
-		createTable(M.Normalization, results, false);
-	}
-
-	private void createWeightingSection() {
-		List<ImpactResult> results = nwSetTable.applyWeighting(result
-				.getTotalImpactResults());
-		createTable(M.Weighting, results, true);
-	}
-
-	private void createSingleScoreSection() {
-		List<ImpactResult> results = nwSetTable.applyBoth(result
-				.getTotalImpactResults());
-		createTable(M.SingleScore, results, true);
+		var nwSet = NwSetTable.of(Database.get(), setup.nwSet);
+		if (nwSet.isEmpty())
+			return;
+		var impacts = result.getTotalImpactResults();
+		if (impacts.isEmpty())
+			return;
+		if (nwSet.hasNormalization()) {
+			createTable(M.Normalization, nwSet.normalize(impacts), false);
+		} else if (nwSet.hasWeighting()) {
+			createTable(M.Weighting, nwSet.weight(impacts), true);
+		}
+		if (nwSet.hasNormalization() && nwSet.hasWeighting()) {
+			createTable(M.SingleScore, nwSet.apply(impacts), true);
+		}
 	}
 
 	private void createTable(String title, List<ImpactResult> results,
 			boolean withUnit) {
-		String[] columns;
-		double[] colWidths;
-		if (withUnit) {
-			columns = new String[] { M.ImpactCategory, M.Amount,
-					M.Unit };
-			colWidths = new double[] { 0.5, 0.25, 0.25 };
-		} else {
-			columns = new String[] { M.ImpactCategory, M.Amount };
-			colWidths = new double[] { 0.5, 0.25 };
-		}
-		Composite composite = UI.formSection(body, toolkit, title);
-		TableViewer viewer = Tables.createViewer(composite, columns);
+		var columns = withUnit
+				? new String[] { M.ImpactCategory, M.Amount, M.Unit }
+				: new String[] { M.ImpactCategory, M.Amount };
+		var colWidths = withUnit
+				? new double[] { 0.5, 0.25, 0.25 }
+				: new double[] { 0.5, 0.25 };
+		var comp = UI.formSection(body, toolkit, title);
+		var viewer = Tables.createViewer(comp, columns);
 		viewer.setLabelProvider(new Label());
 		Tables.bindColumnWidths(viewer, colWidths);
-		List<Contribution<ImpactResult>> items = Contributions.calculate(
-				results, impactResult -> impactResult.value);
+		var items = Contributions.calculate(results, r -> r.value);
 		Contributions.sortDescending(items);
 		viewer.setInput(items);
 		Actions.bind(viewer, TableClipboard.onCopy(viewer));
-	}
-
-	private NwSetTable loadNwSetTable() {
-		if (setup.nwSet == null)
-			return null;
-		try {
-			return NwSetTable.build(Database.get(), setup.nwSet.id);
-		} catch (Exception e) {
-			log.error("failed to load NW set factors from database", e);
-			return null;
-		}
 	}
 
 	private class Label extends LabelProvider implements ITableLabelProvider {
@@ -129,7 +90,7 @@ public class NwResultPage extends FormPage {
 		@Override
 		@SuppressWarnings("unchecked")
 		public Image getColumnImage(Object o, int col) {
-			if (col != 0 || !(o instanceof ContributionItem))
+			if (col != 0 || !(o instanceof Contribution))
 				return null;
 			Contribution<ImpactResult> item = Contribution.class.cast(o);
 			return image.getForTable(item.share);
@@ -138,12 +99,12 @@ public class NwResultPage extends FormPage {
 		@Override
 		@SuppressWarnings("unchecked")
 		public String getColumnText(Object o, int col) {
-			if (!(o instanceof ContributionItem))
+			if (!(o instanceof Contribution))
 				return null;
 			Contribution<ImpactResult> item = Contribution.class.cast(o);
 			switch (col) {
 			case 0:
-				return Labels.name(item.item.impactCategory);
+				return Labels.name(item.item.impact);
 			case 1:
 				return Numbers.format(item.amount);
 			case 2:
