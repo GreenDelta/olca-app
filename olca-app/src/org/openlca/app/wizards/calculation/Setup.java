@@ -69,16 +69,16 @@ class Setup {
 		s.calcSetup.impactMethod = loadImpactMethodPref();
 		s.calcSetup.nwSet = loadNwSetPref(s.calcSetup.impactMethod);
 		s.calcSetup.numberOfRuns = Preferences.getInt("calc.numberOfRuns");
-		s.calcSetup.withRegionalization = loadBooleanPref("calc.regionalized");
-		s.calcSetup.withCosts = loadBooleanPref("calc.costCalculation");
+		s.calcSetup.withRegionalization = Preferences.getBool("calc.regionalized");
+		s.calcSetup.withCosts = Preferences.getBool("calc.costCalculation");
 
 		// data quality settings
-		s.withDataQuality = loadBooleanPref("calc.dqAssessment");
+		s.withDataQuality = Preferences.getBool("calc.dqAssessment");
 		s.dqSetup.aggregationType = loadEnumPref(
 				AggregationType.class, AggregationType.WEIGHTED_AVERAGE);
 		s.dqSetup.naHandling = loadEnumPref(
 				NAHandling.class, NAHandling.EXCLUDE);
-		s.dqSetup.ceiling = loadBooleanPref("calc.dqCeiling");
+		s.dqSetup.ceiling = Preferences.getBool("calc.dqCeiling");
 		// init the DQ systems from the ref. process
 		if (system.referenceProcess != null) {
 			var p = system.referenceProcess;
@@ -145,13 +145,6 @@ class Setup {
 		return null;
 	}
 
-	private static boolean loadBooleanPref(String option) {
-		String value = Preferences.get(option);
-		if (value == null)
-			return false;
-		return "true".equals(value.toLowerCase());
-	}
-
 	private static <T extends Enum<T>> T loadEnumPref(
 			Class<T> type, T defaultVal) {
 		String name = Preferences.get(
@@ -192,10 +185,10 @@ class Setup {
 
 		// data quality settings
 		if (!withDataQuality) {
-			Preferences.set("calc.dqAssessment", "false");
+			Preferences.set("calc.dqAssessment", false);
 			return;
 		}
-		Preferences.set("calc.dqAssessment", "true");
+		Preferences.set("calc.dqAssessment", true);
 		Preferences.set("calc.dqCeiling", dqSetup.ceiling);
 		savePreference(AggregationType.class, dqSetup.aggregationType);
 		savePreference(NAHandling.class, dqSetup.naHandling);
