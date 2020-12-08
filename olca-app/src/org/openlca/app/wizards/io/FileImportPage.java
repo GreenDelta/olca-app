@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -171,27 +172,35 @@ public class FileImportPage extends WizardPage {
 		combo.select(0);
 
 		// handle a combo selection event
-		Controls.onSelect(combo, _e -> {
-			var i = combo.getSelectionIndex();
-			var mapping = combo.getItem(i);
-			if (Strings.nullOrEmpty(mapping)) {
-				flowMap = null;
-				return;
-			}
+		IntConsumer onSelect = idx -> {
 			try {
+				// no mapping
+				var mapping = combo.getItem(idx);
+				if (Strings.nullOrEmpty(mapping)) {
+					flowMap = null;
+					return;
+				}
+
+				// db mapping
 				var dbMap = new MappingFileDao(db)
 						.getForName(mapping);
 				if (dbMap != null) {
 					flowMap = FlowMap.of(dbMap);
 					return;
 				}
+
+				// file mapping
 				var file = new File(mapping);
 				if (file.exists()) {
 					flowMap = FlowMap.fromCsv(file);
 				}
 			} catch (Exception e) {
-				ErrorReporter.on("Failed to open mapping: " + mapping, e);
+				ErrorReporter.on("Failed to open mapping", e);
 			}
+		};
+		Controls.onSelect(combo, _e -> {
+			var i = combo.getSelectionIndex();
+			onSelect.accept(i);
 		});
 
 		// add the file button
@@ -206,7 +215,8 @@ public class FileImportPage extends WizardPage {
 			var idx = nextItems.length - 1;
 			nextItems[idx] = file.getAbsolutePath();
 			combo.setItems(nextItems);
-			combo.select(idx); // fires the event above
+			combo.select(idx); // does not fire an event
+			onSelect.accept(idx);
 		});
 	}
 
