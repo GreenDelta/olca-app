@@ -60,8 +60,8 @@ public class HSCSimImportWizard extends Wizard implements IImportWizard {
 				m.beginTask(
 						"Import " + file.getName(),
 						IProgressMonitor.UNKNOWN);
-				var flowMap = page.mappingFile != null
-						? FlowMap.fromCsv(page.mappingFile)
+				var flowMap = page.flowMap != null
+						? page.flowMap
 						: FlowMap.empty();
 				HSCSim.importProcess(db, file, flowMap);
 				m.done();

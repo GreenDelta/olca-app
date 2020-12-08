@@ -17,7 +17,6 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.IDatabase;
 import org.openlca.io.ecospold2.input.EcoSpold2Import;
 import org.openlca.io.ecospold2.input.ImportConfig;
-import org.openlca.io.maps.FlowMap;
 
 /**
  * Import wizard for files in the EcoSpold format version 2.
@@ -90,8 +89,8 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 			conf.withParameterFormulas = false;
 			conf.withParameters = false;
 		}
-		if (filePage.mappingFile != null) {
-			conf.setFlowMap(FlowMap.fromCsv(filePage.mappingFile));
+		if (filePage.flowMap != null) {
+			conf.setFlowMap(filePage.flowMap);
 		}
 		EcoSpold2Import pi = new EcoSpold2Import(conf);
 		pi.setFiles(files);

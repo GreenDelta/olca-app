@@ -2,10 +2,12 @@ package org.openlca.app.wizards.io;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -21,6 +23,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
@@ -28,13 +31,18 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.db.Database;
 import org.openlca.app.preferences.Preferences;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
+import org.openlca.core.database.MappingFileDao;
+import org.openlca.io.maps.FlowMap;
+import org.openlca.util.Strings;
 
 /**
  * Wizard page for file import: the user can select files from directories.
@@ -43,7 +51,7 @@ public class FileImportPage extends WizardPage {
 
 	boolean withMultiSelection;
 	boolean withMappingFile;
-	File mappingFile;
+	FlowMap flowMap;
 
 	private TreeViewer directoryViewer;
 	private final String[] extensions;
@@ -129,31 +137,76 @@ public class FileImportPage extends WizardPage {
 			setPageComplete(!selectedFiles.isEmpty());
 		});
 
-		mappingFileRow(body);
+		mappingRow(body);
 		setInitialInput();
 		setControl(body);
 	}
 
-	private void mappingFileRow(Composite body) {
+	private void mappingRow(Composite body) {
 		if (!withMappingFile)
 			return;
-		Composite comp = new Composite(body, SWT.NONE);
+		var db = Database.get();
+		if (db == null)
+			return;
+
+		var comp = new Composite(body, SWT.NONE);
 		UI.gridLayout(comp, 3, 5, 0);
 		UI.gridData(comp, true, false);
-		new Label(comp, SWT.NONE).setText("Mapping file");
-		Text text = new Text(comp, SWT.BORDER);
-		UI.gridData(text, true, false);
-		text.setEditable(false);
-		text.setBackground(Colors.white());
-		Button button = new Button(comp, SWT.NONE);
-		button.setText(M.Browse);
-		Controls.onSelect(button, e -> {
-			mappingFile = FileChooser.open("*.csv");
-			if (mappingFile == null) {
-				text.setText("");
-			} else {
-				text.setText(mappingFile.getAbsolutePath());
+		new Label(comp, SWT.NONE).setText("Flow mapping");
+
+		// initialize the combo box
+		var combo = new Combo(comp, SWT.READ_ONLY);
+		UI.gridData(combo, true, false);
+		var dbFiles = new MappingFileDao(db)
+				.getNames()
+				.stream()
+				.sorted()
+				.collect(Collectors.toList());
+		var items = new String[dbFiles.size() + 1];
+		items[0] = "";
+		for (int i = 0; i < dbFiles.size(); i++) {
+			items[i + 1] = dbFiles.get(i);
+		}
+		combo.setItems(items);
+		combo.select(0);
+
+		// handle a combo selection event
+		Controls.onSelect(combo, _e -> {
+			var i = combo.getSelectionIndex();
+			var mapping = combo.getItem(i);
+			if (Strings.nullOrEmpty(mapping)) {
+				flowMap = null;
+				return;
 			}
+			try {
+				var dbMap = new MappingFileDao(db)
+						.getForName(mapping);
+				if (dbMap != null) {
+					flowMap = FlowMap.of(dbMap);
+					return;
+				}
+				var file = new File(mapping);
+				if (file.exists()) {
+					flowMap = FlowMap.fromCsv(file);
+				}
+			} catch (Exception e) {
+				ErrorReporter.on("Failed to open mapping: " + mapping, e);
+			}
+		});
+
+		// add the file button
+		var fileBtn = new Button(comp, SWT.NONE);
+		fileBtn.setText("From file");
+		Controls.onSelect(fileBtn, e -> {
+			var file = FileChooser.open("*.csv");
+			if (file == null) 
+				return;
+			var oldItems = combo.getItems();
+			var nextItems = Arrays.copyOf(oldItems, oldItems.length + 1);
+			var idx = nextItems.length - 1;
+			nextItems[idx] = file.getAbsolutePath();
+			combo.setItems(nextItems);
+			combo.select(idx); // fires the event above
 		});
 	}
 

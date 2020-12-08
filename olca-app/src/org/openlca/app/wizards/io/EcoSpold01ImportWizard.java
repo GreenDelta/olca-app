@@ -17,7 +17,6 @@ import org.openlca.io.EcoSpoldUnitFetch;
 import org.openlca.io.UnitMappingSync;
 import org.openlca.io.ecospold1.input.EcoSpold01Import;
 import org.openlca.io.ecospold1.input.ImportConfig;
-import org.openlca.io.maps.FlowMap;
 
 public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
@@ -103,8 +102,8 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		var units = mappingPage.getUnitMappings();
 		var umap = new UnitMappingSync(db).run(units);
 		config.setUnitMapping(umap);
-		if (filePage.mappingFile != null) {
-			config.setFlowMap(FlowMap.fromCsv(filePage.mappingFile));
+		if (filePage.flowMap != null) {
+			config.setFlowMap(filePage.flowMap);
 		}
 		return config;
 	}
