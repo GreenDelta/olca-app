@@ -73,7 +73,10 @@ public class NwResultPage extends FormPage {
 		var colWidths = withUnit
 				? new double[] { 0.5, 0.25, 0.25 }
 				: new double[] { 0.5, 0.25 };
-		var comp = UI.formSection(body, toolkit, title);
+		
+		var section = UI.section(body, toolkit, title);
+		UI.gridData(section, true, true);
+		var comp = UI.sectionClient(section, toolkit, 1);
 		var viewer = Tables.createViewer(comp, columns);
 		viewer.setLabelProvider(new Label());
 		Tables.bindColumnWidths(viewer, colWidths);
