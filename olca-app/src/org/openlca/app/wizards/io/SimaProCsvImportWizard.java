@@ -12,7 +12,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.core.database.IDatabase;
 import org.openlca.io.simapro.csv.input.SimaProCsvImport;
 
 public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
@@ -43,6 +42,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 		filePage = initialFile != null
 				? new FileImportPage(initialFile)
 				: new FileImportPage("csv");
+		filePage.withMappingFile = true;
 		filePage.withMultiSelection = true;
 		addPage(filePage);
 	}
@@ -50,15 +50,18 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public boolean performFinish() {
 		File[] files = filePage.getFiles();
-		IDatabase db = Database.get();
+		var db = Database.get();
 		if (files == null || files.length == 0 || db == null)
 			return false;
 		var importer = new SimaProCsvImport(db, files);
+		if (filePage.flowMap != null) {
+			importer.with(filePage.flowMap);
+		}
 		try {
 			Database.getIndexUpdater().beginTransaction();
 			getContainer().run(true, true, monitor -> {
 				monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
-				ImportHandler handler = new ImportHandler(monitor);
+				var handler = new ImportHandler(monitor);
 				handler.run(importer);
 			});
 			Navigator.refresh();
