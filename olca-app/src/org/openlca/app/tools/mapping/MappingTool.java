@@ -44,7 +44,7 @@ public class MappingTool extends SimpleFormEditor {
 	 * If the mapping is stored in the database, this field contains
 	 * the corresponding mapping file.
 	 */
-	private MappingFile mappingFile;
+	public MappingFile mappingFile;
 
 	public static void createNew() {
 		FlowMap mapping = new FlowMap();

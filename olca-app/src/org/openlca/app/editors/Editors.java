@@ -1,6 +1,11 @@
 package org.openlca.app.editors;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -116,12 +121,20 @@ public class Editors {
 		}
 	}
 
-	public static IEditorReference[] getReferences() {
+	public static List<IEditorReference> getReferences() {
 		try {
-			return getActivePage().getEditorReferences();
+			var page = getActivePage();
+			if (page == null)
+				return Collections.emptyList();
+			var refs = page.getEditorReferences();
+			if (refs == null)
+				return Collections.emptyList();
+			return Arrays.stream(refs)
+					.filter(Objects::nonNull)
+					.collect(Collectors.toList());
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to get editor references", e);
-			return new IEditorReference[0];
+			return Collections.emptyList();
 		}
 	}
 
