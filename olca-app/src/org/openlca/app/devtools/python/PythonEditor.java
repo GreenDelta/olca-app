@@ -21,27 +21,20 @@ import org.slf4j.LoggerFactory;
 
 public class PythonEditor extends ScriptingEditor {
 
-	public static final String TYPE = "PythonEditor";
-
 	private Page page;
 
 	public static void open() {
 		var id = UUID.randomUUID().toString() + "_new";
-		var input = new SimpleEditorInput(TYPE, id, "Python");
-		Editors.open(input, TYPE);
+		var input = new SimpleEditorInput(id, "Python");
+		Editors.open(input, "PythonEditor");
 	}
 
 	public static void open(File file) {
 		if (file == null || !file.exists())
 			return;
 		var id = file.getAbsolutePath();
-		var input = new SimpleEditorInput(TYPE, id, "Python");
-		Editors.open(input, TYPE);
-	}
-
-	@Override
-	protected String type() {
-		return TYPE;
+		var input = new SimpleEditorInput(id, "Python");
+		Editors.open(input, "PythonEditor");
 	}
 
 	@Override

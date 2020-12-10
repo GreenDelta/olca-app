@@ -1,13 +1,12 @@
 package org.openlca.app.editors;
 
-import org.openlca.app.M;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentsPage;
 import org.openlca.cloud.api.RepositoryClient;
@@ -20,9 +19,9 @@ public class CommentsEditor extends SimpleFormEditor {
 
 	private static final String TYPE = "CommentsEditor";
 	private static final Logger log = LoggerFactory.getLogger(CommentsEditor.class);
-	
+
 	public static void open() {
-		Editors.open(new SimpleEditorInput(TYPE, TYPE, M.Comments), TYPE);
+		Editors.open(new SimpleEditorInput(TYPE, M.Comments), TYPE);
 	}
 
 	public static void close() {
@@ -31,7 +30,7 @@ public class CommentsEditor extends SimpleFormEditor {
 				if (!(ref.getEditorInput() instanceof SimpleEditorInput))
 					continue;
 				SimpleEditorInput input = (SimpleEditorInput) ref.getEditorInput();
-				if (!TYPE.equals(input.type))
+				if (!TYPE.equals(input.id))
 					continue;
 				Editors.close(ref);
 			} catch (PartInitException e) {

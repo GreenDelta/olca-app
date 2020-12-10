@@ -1,7 +1,6 @@
 package org.openlca.app.editors;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -25,10 +24,9 @@ import com.google.gson.Gson;
 
 public class StartPage extends SimpleFormEditor {
 
-	public static String TYPE = "olca.StartPage";
-
 	public static void open() {
-		Editors.open(new SimpleEditorInput(TYPE, UUID.randomUUID().toString(), M.Welcome), TYPE);
+		var input = new SimpleEditorInput("olca.StartPage", M.Welcome);
+		Editors.open(input, "olca.StartPage");
 	}
 
 	@Override

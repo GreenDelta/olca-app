@@ -81,8 +81,7 @@ public class MappingTool extends SimpleFormEditor {
 		var uid = "db:mapping/" + mapping.id;
 		Cache.getAppCache().put(uid, mapping);
 		Editors.open(
-				new SimpleEditorInput(
-						"FlowMappings", uid, mapping.name),
+				new SimpleEditorInput(uid, mapping.name),
 				"MappingTool");
 	}
 
@@ -98,8 +97,7 @@ public class MappingTool extends SimpleFormEditor {
 		var cacheID = uid + " /mapping";
 		cache.put(cacheID, mapping);
 		Editors.open(
-				new SimpleEditorInput(
-						"FlowMappings", cacheID, "Flow mapping"),
+				new SimpleEditorInput(cacheID, "Flow mapping"),
 				"MappingTool");
 	}
 

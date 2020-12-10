@@ -56,8 +56,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 		if (props == null)
 			return;
 		String key = Cache.getAppCache().put(props);
-		IEditorInput input = new SimpleEditorInput(
-				"LinkingProperties", key, M.LinkingProperties);
+		var input = new SimpleEditorInput(key, M.LinkingProperties);
 		Editors.open(input, "editors.LinkingPropertiesPage");
 	}
 

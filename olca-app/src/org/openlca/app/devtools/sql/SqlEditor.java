@@ -31,27 +31,20 @@ import org.python.google.common.base.Strings;
 
 public class SqlEditor extends ScriptingEditor {
 
-	public static final String TYPE = "SqlEditor";
-
 	private Page page;
 
 	public static void open() {
 		var id = UUID.randomUUID().toString() + "_new";
-		var input = new SimpleEditorInput(TYPE, id, "SQL");
-		Editors.open(input, TYPE);
+		var input = new SimpleEditorInput(id, "SQL");
+		Editors.open(input, "SqlEditor");
 	}
 
 	public static void open(File file) {
 		if (file == null || !file.exists())
 			return;
 		var id = file.getAbsolutePath();
-		var input = new SimpleEditorInput(TYPE, id, "SQL");
-		Editors.open(input, TYPE);
-	}
-
-	@Override
-	protected String type() {
-		return TYPE;
+		var input = new SimpleEditorInput(id, "SQL");
+		Editors.open(input, "SqlEditor");
 	}
 
 	@Override

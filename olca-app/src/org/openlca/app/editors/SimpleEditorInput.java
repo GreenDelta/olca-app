@@ -7,12 +7,10 @@ import org.openlca.util.Strings;
 
 public class SimpleEditorInput implements IEditorInput {
 
-	public final String type;
 	public final String id;
 	private final String name;
 
-	public SimpleEditorInput(String type, String id, String name) {
-		this.type = type;
+	public SimpleEditorInput(String id, String name) {
 		this.id = id;
 		this.name = name;
 	}

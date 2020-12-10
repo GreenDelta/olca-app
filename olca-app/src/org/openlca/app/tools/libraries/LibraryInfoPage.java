@@ -32,9 +32,7 @@ public class LibraryInfoPage extends SimpleFormEditor {
 			return;
 		var info = library.getInfo();
 		var input = new SimpleEditorInput(
-				"LibraryInfo",
-				info.id(),
-				info.name + " " + info.name);
+				info.id(), info.name + " " + info.name);
 		Editors.open(input, "LibraryInfoPage");
 	}
 

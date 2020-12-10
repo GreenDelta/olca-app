@@ -3,7 +3,6 @@ package org.openlca.app.devtools;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -19,8 +18,6 @@ public abstract class ScriptingEditor extends SimpleFormEditor {
 	protected File file;
 	protected String script = "";
 	private boolean _dirty;
-
-	protected abstract String type();
 
 	public abstract void eval();
 
@@ -84,7 +81,7 @@ public abstract class ScriptingEditor extends SimpleFormEditor {
 
 	@Override
 	public void doSaveAs() {
-		var ext = Objects.equals(type(), SqlEditor.TYPE)
+		var ext = this instanceof SqlEditor
 				? ".sql"
 				: ".py";
 		String name = "script" + ext;

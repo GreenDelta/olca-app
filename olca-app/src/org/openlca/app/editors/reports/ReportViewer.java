@@ -33,8 +33,7 @@ public class ReportViewer extends SimpleFormEditor {
 		if (report == null)
 			return;
 		String reportID = Cache.getAppCache().put(report);
-		SimpleEditorInput input = new SimpleEditorInput(
-				ID, reportID, report.title);
+		var input = new SimpleEditorInput(reportID, report.title);
 		Editors.open(input, ID);
 	}
 

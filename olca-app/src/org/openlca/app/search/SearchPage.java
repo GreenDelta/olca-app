@@ -84,15 +84,13 @@ public class SearchPage extends SimpleFormEditor {
 		String resultKey;
 
 		public Input(String term, String resultKey) {
-			super("search", resultKey,
-					M.SearchResults + ": " + term);
+			super(resultKey, M.SearchResults + ": " + term);
 			forSearch = true;
 			this.resultKey = resultKey;
 		}
 
 		public Input(CategorizedDescriptor d, String resultKey) {
-			super("search", resultKey,
-					M.UsageOf + " " + Labels.name(d));
+			super(resultKey, M.UsageOf + " " + Labels.name(d));
 			forSearch = false;
 			this.resultKey = resultKey;
 		}

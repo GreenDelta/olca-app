@@ -23,12 +23,12 @@ import org.slf4j.LoggerFactory;
 
 public class LogFileEditor extends FormEditor {
 
-	public static final String TYPE = "editors.LogFileEditor";
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public static void open() {
-		Editors.open(new SimpleEditorInput(
-				TYPE, UUID.randomUUID().toString(), "Log file"), TYPE);
+		var input = new SimpleEditorInput(
+				UUID.randomUUID().toString(), "Log file");
+		Editors.open(input, "editors.LogFileEditor");
 	}
 
 	@Override

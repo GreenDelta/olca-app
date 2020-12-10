@@ -78,8 +78,7 @@ public class BigParameterTable extends SimpleFormEditor {
 			return;
 		}
 		String id = "BigParameterTable";
-		Editors.open(
-				new SimpleEditorInput(id, id, M.Parameters), id);
+		Editors.open(new SimpleEditorInput(id, M.Parameters), id);
 	}
 
 	@Override

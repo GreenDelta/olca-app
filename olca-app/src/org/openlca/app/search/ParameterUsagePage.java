@@ -43,7 +43,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 			Editors.open(input, "ParameterUsagePage");
 		});
 	}
-	
+
 	public static void show(String param) {
 		var ref = new AtomicReference<>();
 		App.runWithProgress("Search for usage of '" + param + "' ...", () -> {
@@ -79,8 +79,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 	private static class Input extends SimpleEditorInput {
 
 		Input(String param, String resultKey) {
-			super("parameter.usage", resultKey,
-					M.UsageOf + " " + param);
+			super(resultKey,M.UsageOf + " " + param);
 		}
 
 		@Override

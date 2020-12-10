@@ -1,8 +1,6 @@
 package org.openlca.app.editors;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -23,27 +21,18 @@ import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.model.CategorizedEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Editors {
-
-	private static String[] PREVENT_FROM_CLOSING = {
-			SqlEditor.TYPE,
-			PythonEditor.TYPE,
-			StartPage.TYPE,
-			LogFileEditor.TYPE };
-
-	private static Logger log = LoggerFactory.getLogger(Editors.class);
 
 	private Editors() {
 	}
 
 	/**
 	 * Adds a refresh function to the tool-bar of the given form (content of a
-	 * editor page). When this function is executed the given editor is closed
-	 * and opened again.
+	 * editor page). When this function is executed the given editor is closed and
+	 * opened again.
 	 */
 	public static void addRefresh(ScrolledForm form, ModelEditor<?> editor) {
 		if (form == null || editor == null)
@@ -63,23 +52,29 @@ public class Editors {
 	 */
 	public static boolean closeAll() {
 		try {
-			List<IEditorReference> rest = new ArrayList<>();
-			for (IEditorReference ref : getReferences()) {
-				if (ref.getEditorInput() instanceof SimpleEditorInput) {
-					SimpleEditorInput input = (SimpleEditorInput) ref.getEditorInput();
-					List<String> preventClosing = Arrays.asList(PREVENT_FROM_CLOSING);
-					if (preventClosing.contains(input.type))
-						continue;
-				}
-				rest.add(ref);
+			var refs = new ArrayList<IEditorReference>();
+			for (var ref : getReferences()) {
+				var editor = ref.getEditor(false);
+
+				// editors that we do not close when
+				// closing a database
+				if (editor instanceof SqlEditor)
+					continue;
+				if (editor instanceof PythonEditor)
+					continue;
+				if (editor instanceof StartPage)
+					continue;
+				if (editor instanceof LogFileEditor)
+					continue;
+
+				refs.add(ref);
 			}
-			if (rest.size() == 0)
+			if (refs.size() == 0)
 				return true;
-			IEditorReference[] restArray = rest.toArray(
-					new IEditorReference[rest.size()]);
+			var restArray = refs.toArray(new IEditorReference[0]);
 			return getActivePage().closeEditors(restArray, true);
 		} catch (Exception e) {
-			log.error("Failed to close editors", e);
+			ErrorReporter.on("Failed to close editors", e);
 			return false;
 		}
 	}
@@ -95,7 +90,7 @@ public class Editors {
 			IEditorPart editor = page.getActiveEditor();
 			page.saveEditor(editor, true /* confirm */);
 		} catch (Exception e) {
-			log.error("failed to call `save` on the active editor", e);
+			ErrorReporter.on("failed to call `save` on the active editor", e);
 		}
 	}
 
@@ -104,7 +99,7 @@ public class Editors {
 		try {
 			return (T) getActivePage().getActiveEditor();
 		} catch (ClassCastException e) {
-			log.error("Error getting active editor", e);
+			ErrorReporter.on("Failed to get active editor", e);
 			return null;
 		}
 	}
@@ -117,7 +112,7 @@ public class Editors {
 		try {
 			getActivePage().closeEditor(ref.getEditor(false), true);
 		} catch (Exception e) {
-			log.error("Failed to close an editor", e);
+			ErrorReporter.on("Failed to close an editor", e);
 		}
 	}
 
@@ -125,20 +120,35 @@ public class Editors {
 		try {
 			return getActivePage().getEditorReferences();
 		} catch (Exception e) {
-			log.error("Failed to get editor references", e);
+			ErrorReporter.on("Failed to get editor references", e);
 			return new IEditorReference[0];
 		}
 	}
 
 	public static IWorkbenchPage getActivePage() {
-		return PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage();
+		var workbench = PlatformUI.getWorkbench();
+		if (workbench == null)
+			return null;
+		var window = workbench.getActiveWorkbenchWindow();
+		if (window == null) {
+			var windows = workbench.getWorkbenchWindows();
+			if (windows == null || windows.length == 0)
+				return null;
+			window = windows[0];
+		}
+		var page = window.getActivePage();
+		if (page != null)
+			return page;
+		var pages = window.getPages();
+		return pages == null || pages.length == 0
+				? null
+				: pages[0];
 	}
 
 	private static class OpenInUIJob extends UIJob {
 
-		private IEditorInput input;
-		private String editorId;
+		private final IEditorInput input;
+		private final String editorId;
 
 		public OpenInUIJob(IEditorInput input, String editorId) {
 			super(M.OpenEditor);
@@ -152,7 +162,7 @@ public class Editors {
 				getActivePage().openEditor(input, editorId);
 				return Status.OK_STATUS;
 			} catch (Exception e) {
-				log.error("Open editor " + editorId + " failed.", e);
+				ErrorReporter.on("Open editor " + editorId + " failed.", e);
 				return Status.CANCEL_STATUS;
 			}
 		}
