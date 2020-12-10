@@ -193,7 +193,8 @@ public class NavigationMenu extends CommonActionProvider {
 		menu.add(subMenu);
 		addActions(selection, menu,
 				new ExportAction(),
-				new ExportScriptAction());
+				new ExportScriptAction(),
+				new ExportFlowMapAction());
 	}
 
 	public static MenuManager createImportMenu() {
