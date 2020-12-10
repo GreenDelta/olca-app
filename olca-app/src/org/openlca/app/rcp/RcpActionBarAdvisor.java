@@ -28,7 +28,7 @@ import org.openlca.app.components.replace.ReplaceFlowsDialog;
 import org.openlca.app.components.replace.ReplaceProvidersDialog;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.devtools.ipc.IpcDialog;
+import org.openlca.app.devtools.IpcDialog;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;

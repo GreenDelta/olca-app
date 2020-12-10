@@ -1,4 +1,4 @@
-package org.openlca.app.devtools.ipc;
+package org.openlca.app.devtools;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.window.Window;
@@ -83,7 +83,7 @@ public class IpcDialog extends FormDialog {
 		button = tk.createButton(comp, "", SWT.NONE);
 		button.setImage(Icon.RUN.get());
 		Controls.onSelect(button, e -> {
-			if (server == null) {
+			if (server == null && grpcServer == null) {
 				onStart();
 			} else {
 				onStop();
@@ -113,7 +113,7 @@ public class IpcDialog extends FormDialog {
 					() -> {
 						if (grpc) {
 							grpcServer = new org.openlca.proto.server.Server(db, port);
-							grpcServer.start();
+							new Thread(() -> grpcServer.start()).start();
 						} else {
 							server = new Server(port)
 									.withDefaultHandlers(db, App.getSolver());
