@@ -50,6 +50,12 @@
 			<artifactId>olca-ipc</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.openlca</groupId>
+			<artifactId>olca-proto</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>

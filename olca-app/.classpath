@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="libs/animal-sniffer-annotations-1.18.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/annotations-4.1.1.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/annotations-api-6.0.53.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/grpc-api-1.32.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/grpc-context-1.32.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/grpc-core-1.32.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/grpc-netty-shaded-1.32.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/grpc-protobuf-1.32.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/grpc-protobuf-lite-1.32.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/grpc-stub-1.32.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jsr305-3.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-proto-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/perfmark-api-0.19.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/proto-google-common-protos-1.17.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-collections4-4.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-compress-1.19.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/curvesapi-1.06.jar"/>

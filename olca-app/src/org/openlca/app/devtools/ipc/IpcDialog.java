@@ -31,7 +31,10 @@ public class IpcDialog extends FormDialog {
 	private Text portText;
 	private Button button;
 	private Label statusLabel;
+	private Button grpcCheck;
+
 	private Server server;
+	private org.openlca.proto.server.Server grpcServer;
 
 	public static int show() {
 		if (Database.get() == null) {
@@ -86,8 +89,12 @@ public class IpcDialog extends FormDialog {
 				onStop();
 			}
 		});
+		UI.filler(comp, tk);
+		grpcCheck = tk.createButton(comp,
+				"Start as gRPC service (experimental)",
+				SWT.CHECK);
 
-		// status text
+		// status text and grpc check
 		var statComp = tk.createComposite(body);
 		UI.gridData(statComp, true, true);
 		UI.gridLayout(statComp, 1);
@@ -100,11 +107,19 @@ public class IpcDialog extends FormDialog {
 		try {
 			int port = Integer.parseInt(portText.getText());
 			var db = Database.get();
-			server = new Server(port)
-					.withDefaultHandlers(db, App.getSolver());
+			var grpc = grpcCheck.getSelection();
 			App.run(
 					"Start server ...",
-					() -> server.start(),
+					() -> {
+						if (grpc) {
+							grpcServer = new org.openlca.proto.server.Server(db, port);
+							grpcServer.start();
+						} else {
+							server = new Server(port)
+									.withDefaultHandlers(db, App.getSolver());
+							server.start();
+						}
+					},
 					() -> {
 						log.info("Started IPC server @{}", port);
 						portText.setEnabled(false);
@@ -112,6 +127,7 @@ public class IpcDialog extends FormDialog {
 								.getSharedImages()
 								.getImage(ISharedImages.IMG_ELCL_STOP);
 						button.setImage(image);
+						grpcCheck.setEnabled(false);
 						statusLabel.setText(M.StopIPCInfo);
 						statusLabel.getParent().requestLayout();
 					});
@@ -137,12 +153,17 @@ public class IpcDialog extends FormDialog {
 						if (server != null) {
 							server.stop();
 						}
+						if (grpcServer != null) {
+							grpcServer.stop();
+						}
 						server = null;
+						grpcServer = null;
 					},
 					() -> {
 						log.info("Stopped IPC server");
 						portText.setEnabled(true);
 						button.setImage(Icon.RUN.get());
+						grpcCheck.setEnabled(true);
 						statusLabel.setText(M.StartIPCInfo);
 						statusLabel.getParent().requestLayout();
 					});
@@ -154,14 +175,18 @@ public class IpcDialog extends FormDialog {
 
 	@Override
 	public boolean close() {
-		if (server != null && server.isAlive()) {
-			try {
+		try {
+			if (server != null && server.isAlive()) {
 				server.stop();
-				log.info("stopped the IPC server");
-			} catch (Exception e) {
-				log.error("Failed to stop IPC server", e);
 			}
+			if (grpcServer != null) {
+				grpcServer.stop();
+			}
+			log.info("stopped the IPC server");
+		} catch (Exception e) {
+			log.error("Failed to stop IPC server", e);
 		}
+
 		return super.close();
 	}
 
