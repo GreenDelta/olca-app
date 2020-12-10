@@ -1,18 +1,24 @@
 package org.openlca.app.tools;
 
 import java.io.File;
+import java.util.stream.Collectors;
 
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.devtools.SaveScriptDialog;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.db.DbRestoreAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -25,7 +31,10 @@ import org.openlca.app.wizards.io.ILCDImportWizard;
 import org.openlca.app.wizards.io.JsonImportWizard;
 import org.openlca.app.wizards.io.SimaProCsvImportWizard;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.MappingFileDao;
 import org.openlca.io.Format;
+import org.openlca.io.maps.FlowMap;
+import org.openlca.util.Strings;
 
 public class FileImport {
 
@@ -78,6 +87,9 @@ public class FileImport {
 			case JSON_LD_ZIP:
 				JsonImportWizard.of(file);
 				break;
+			case MAPPING_CSV:
+				importMappingFile(file);
+				break;
 			case SIMAPRO_CSV:
 				SimaProCsvImportWizard.of(file);
 				break;
@@ -91,6 +103,56 @@ public class FileImport {
 								" try the generic import under `Import >" +
 								" Other...` for selecting a more specific" +
 								" option.");
+		}
+	}
+
+	private void importMappingFile(File file) {
+		var db = Database.get();
+		if (db == null) {
+			MsgBox.error(M.NoDatabaseOpened);
+			return;
+		}
+		try {
+			var flowMap = FlowMap.fromCsv(file);
+			var mapping = flowMap.toMappingFile();
+
+			// guess a new mapping name
+			var dao = new MappingFileDao(db);
+			var existing = dao.getNames()
+				.stream()
+				.map(String::toLowerCase)
+				.collect(Collectors.toSet());
+			var proposed = file.getName();
+			var i = 1;
+			while (existing.contains(proposed.toLowerCase())) {
+				i++;
+				proposed = file.getName() + i + ".csv";
+			}
+
+			// open a friendly dialog
+			var dialog = new InputDialog(
+				UI.shell(),
+				"Save mapping in database",
+				"Please provide a unique name for the new mapping file",
+				proposed,
+				name -> {
+					if (Strings.nullOrEmpty(name))
+						return "The name cannot be empty";
+					if (existing.contains(name.toLowerCase().trim()))
+						return "A flow mapping with this name already exists";
+					return null;
+				});
+			if (dialog.open() != Window.OK)
+				return;
+
+			// save it
+			mapping.name = dialog.getValue().trim();
+			dao.insert(mapping);
+			Navigator.refresh();
+
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to save as " +
+				"mapping file: " + file, e );
 		}
 	}
 
