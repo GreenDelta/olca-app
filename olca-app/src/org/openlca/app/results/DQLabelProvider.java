@@ -13,13 +13,14 @@ import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQSystem;
 
-abstract class DQLabelProvider extends ColumnLabelProvider implements ITableLabelProvider, ITableColorProvider {
+public abstract class DQLabelProvider extends ColumnLabelProvider
+		implements ITableLabelProvider, ITableColorProvider {
 
 	protected final DQResult dataQualityResult;
 	private final DQSystem dqSystem;
 	private final int startCol;
 
-	DQLabelProvider(DQResult result, DQSystem dqSystem, int startCol) {
+	public DQLabelProvider(DQResult result, DQSystem dqSystem, int startCol) {
 		this.dataQualityResult = result;
 		this.dqSystem = dqSystem;
 		this.startCol = startCol;

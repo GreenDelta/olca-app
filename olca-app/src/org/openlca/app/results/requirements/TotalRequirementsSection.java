@@ -1,4 +1,4 @@
-package org.openlca.app.results;
+package org.openlca.app.results.requirements;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,7 @@ import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.results.DQLabelProvider;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.DQUI;
 import org.openlca.app.util.Labels;
@@ -34,7 +35,7 @@ import org.openlca.core.results.ContributionResult;
 /**
  * The total requirements section that is shown on the TotalFlowResultPage.
  */
-class TotalRequirementsSection {
+public class TotalRequirementsSection {
 
 	private final ContributionResult result;
 	private final DQResult dqResult;
@@ -43,7 +44,7 @@ class TotalRequirementsSection {
 
 	private TreeViewer tree;
 
-	TotalRequirementsSection(ContributionResult result, DQResult dqResult) {
+	public TotalRequirementsSection(ContributionResult result, DQResult dqResult) {
 		this.result = result;
 		costs = !result.hasCostResults()
 			? Costs.NONE
@@ -53,7 +54,7 @@ class TotalRequirementsSection {
 		this.dqResult = dqResult;
 	}
 
-	void create(Composite body, FormToolkit tk) {
+	public void create(Composite body, FormToolkit tk) {
 		Section section = UI.section(body, tk, M.TotalRequirements);
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk);
@@ -102,7 +103,7 @@ class TotalRequirementsSection {
 			.setFont(UI.boldFont());
 	}
 
-	void fill() {
+	public void fill() {
 		if (tree == null)
 			return;
 		tree.setInput(result);
@@ -150,10 +151,6 @@ class TotalRequirementsSection {
 				: ref.name;
 		}
 		return Numbers.decimalFormat(value, 2) + " " + currencySymbol;
-	}
-
-	private enum Costs {
-		ADDED_VALUE, NET_COSTS, NONE
 	}
 
 	private class ContentProvider implements ITreeContentProvider {

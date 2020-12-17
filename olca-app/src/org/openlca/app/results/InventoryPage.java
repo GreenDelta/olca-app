@@ -21,6 +21,7 @@ import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ContributionCutoff.CutoffContentProvider;
+import org.openlca.app.results.requirements.TotalRequirementsSection;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.DQUI;
 import org.openlca.app.util.Labels;
