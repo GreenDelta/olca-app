@@ -2,9 +2,7 @@ package org.openlca.app.results;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TableViewer;
@@ -30,39 +28,29 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.ProcessProduct;
-import org.openlca.core.matrix.TechIndex;
-import org.openlca.core.model.Currency;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.SimpleResult;
 
 /**
  * The total requirements section that is shown on the TotalFlowResultPage.
  */
 class TotalRequirementsSection {
 
-	private SimpleResult result;
-	private DQResult dqResult;
-	private Costs costs;
+	private final ContributionResult result;
+	private final DQResult dqResult;
+	private final Costs costs;
 	private String currencySymbol;
-	private Map<Long, CategorizedDescriptor> processes = new HashMap<>();
 
 	private TableViewer table;
 
-	TotalRequirementsSection(SimpleResult result, DQResult dqResult) {
+	TotalRequirementsSection(ContributionResult result, DQResult dqResult) {
 		this.result = result;
-		for (CategorizedDescriptor desc : result.getProcesses())
-			processes.put(desc.id, desc);
-		if (!result.hasCostResults()) {
-			costs = Costs.NONE;
-		} else {
-			costs = result.totalCosts >= 0
-					? Costs.NET_COSTS
-					: Costs.ADDED_VALUE;
-		}
+		costs = !result.hasCostResults()
+			? Costs.NONE
+			: result.totalCosts >= 0
+			? Costs.NET_COSTS
+			: Costs.ADDED_VALUE;
 		this.dqResult = dqResult;
 	}
 
@@ -91,7 +79,7 @@ class TotalRequirementsSection {
 		Action onOpen = Actions.onOpen(() -> {
 			Item item = Viewers.getFirstSelected(table);
 			if (item != null) {
-				App.openEditor(item.process);
+				App.openEditor(item.product.process);
 			}
 		});
 		Actions.bind(table, onOpen, TableClipboard.onCopy(table));
@@ -107,10 +95,10 @@ class TotalRequirementsSection {
 		String c;
 		if (costs == Costs.NET_COSTS) {
 			s = M.TotalNetcosts;
-			c = asCosts(v);
+			c = formatCosts(v);
 		} else {
 			s = M.TotalAddedValue;
-			c = asCosts(v == 0 ? 0 : -v);
+			c = formatCosts(v == 0 ? 0 : -v);
 		}
 
 		Control label = tk.createLabel(comp, s + ": " + c);
@@ -133,7 +121,7 @@ class TotalRequirementsSection {
 			b.add(M.AddedValue);
 		else if (costs == Costs.NET_COSTS)
 			b.add(M.NetCosts);
-		String[] columnLabels = b.toArray(new String[b.size()]);
+		String[] columnLabels = b.toArray(new String[0]);
 		if (!DQUI.displayProcessQuality(dqResult))
 			return columnLabels;
 		return DQUI.appendTableHeaders(columnLabels, dqResult.setup.processSystem);
@@ -141,16 +129,14 @@ class TotalRequirementsSection {
 
 	private int[] numberColumns() {
 		if (costs == Costs.NONE || costs == null)
-			return new int[] { 2 };
-		return new int[] { 2, 4 };
+			return new int[]{2};
+		return new int[]{2, 4};
 	}
 
 	private double[] columnWidths() {
-		double[] widths = null;
-		if (costs == Costs.NONE)
-			widths = new double[] { .4, .2, .2, .2 };
-		else
-			widths = new double[] { .4, .2, .2, .1, .1 };
+		double[] widths = costs == Costs.NONE
+			? new double[]{.4, .2, .2, .2}
+			: new double[]{.4, .2, .2, .1, .1};
 		if (!DQUI.displayProcessQuality(dqResult))
 			return widths;
 		return DQUI.adjustTableWidths(widths, dqResult.setup.processSystem);
@@ -167,7 +153,7 @@ class TotalRequirementsSection {
 			items.add(new Item(i, tr[i]));
 		}
 		calculateCostChares(items);
-		Collections.sort(items, (a, b) -> -Double.compare(a.amount, b.amount));
+		items.sort((a, b) -> -Double.compare(a.amount, b.amount));
 		return items;
 	}
 
@@ -185,15 +171,15 @@ class TotalRequirementsSection {
 		}
 	}
 
-	private String asCosts(double value) {
+	private String formatCosts(double value) {
 		if (currencySymbol == null) {
-			try {
-				CurrencyDao dao = new CurrencyDao(Database.get());
-				Currency ref = dao.getReferenceCurrency();
-				currencySymbol = ref.code != null ? ref.code : ref.name;
-			} catch (Exception e) {
-				currencySymbol = "?";
-			}
+			var dao = new CurrencyDao(Database.get());
+			var ref = dao.getReferenceCurrency();
+			currencySymbol = ref == null
+				? "?"
+				: ref.code != null
+					? ref.code
+					: ref.name;
 		}
 		return Numbers.decimalFormat(value, 2) + " " + currencySymbol;
 	}
@@ -204,51 +190,38 @@ class TotalRequirementsSection {
 
 	private class Item {
 
-		CategorizedDescriptor process;
-		String product;
+		ProcessProduct product;
 		double amount;
-		String unit;
 		double costValue;
 		double costShare;
+
+		String flow;
+		String unit;
 		FlowType flowtype;
 
 		Item(int idx, double amount) {
 			this.amount = amount;
-			init(idx);
-		}
-
-		private void init(int idx) {
-			TechIndex index = result.techIndex;
-			if (index == null)
-				return;
-			setProcessProduct(index, idx);
-			setCostValue(idx);
-		}
-
-		private void setProcessProduct(TechIndex techIdx, int idx) {
-			ProcessProduct product = techIdx.getProviderAt(idx);
-			if (product == null)
-				return;
-			this.process = product.process;
-			FlowDescriptor flow = product.flow;
+			var techIdx = result.techIndex;
+			product = techIdx.getProviderAt(idx);
+			var flow = product.flow;
 			if (flow != null) {
-				this.product = Labels.name(flow);
+				this.flow = Labels.name(flow);
 				this.unit = Labels.refUnit(flow);
 				this.flowtype = flow.flowType;
 			}
+			initCostValue(idx);
 		}
 
-		private void setCostValue(int idx) {
+		private void initCostValue(int idx) {
 			if (costs == Costs.NONE)
 				return;
-			if (!(result instanceof ContributionResult))
+			if (result == null)
 				return;
-			var crp = (ContributionResult) result;
 			if (idx >= 0) {
-				double v = crp.provider.directCostsOf(idx);
+				double v = result.provider.directCostsOf(idx);
 				costValue = costs == Costs.NET_COSTS
-						? v
-						: v != 0 ? -v : 0;
+					? v
+					: v != 0 ? -v : 0;
 			}
 		}
 
@@ -256,12 +229,12 @@ class TotalRequirementsSection {
 
 	private class Label extends DQLabelProvider {
 
-		private ContributionImage costImage = new ContributionImage();
+		private final ContributionImage costImage = new ContributionImage();
 
 		public Label() {
 			super(dqResult, dqResult != null
-					? dqResult.setup.processSystem
-					: null, costs == Costs.NONE ? 4 : 5);
+				? dqResult.setup.processSystem
+				: null, costs == Costs.NONE ? 4 : 5);
 		}
 
 		@Override
@@ -276,16 +249,16 @@ class TotalRequirementsSection {
 				return null;
 			Item item = (Item) obj;
 			switch (col) {
-			case 0:
-				return Images.get(ModelType.PROCESS);
-			case 1:
-				return Images.get(item.flowtype);
-			case 4:
-				if (costs == Costs.NONE)
+				case 0:
+					return Images.get(ModelType.PROCESS);
+				case 1:
+					return Images.get(item.flowtype);
+				case 4:
+					if (costs == Costs.NONE)
+						return null;
+					return costImage.getForTable(item.costShare);
+				default:
 					return null;
-				return costImage.getForTable(item.costShare);
-			default:
-				return null;
 			}
 		}
 
@@ -295,21 +268,21 @@ class TotalRequirementsSection {
 				return null;
 			Item item = (Item) obj;
 			switch (col) {
-			case 0:
-				return Labels.name(item.process);
-			case 1:
-				return item.product;
-			case 2:
-				double val = item.flowtype == FlowType.WASTE_FLOW
+				case 0:
+					return Labels.of(item.product);
+				case 1:
+					return item.flow;
+				case 2:
+					double val = item.flowtype == FlowType.WASTE_FLOW
 						? -item.amount
 						: item.amount;
-				return Numbers.format(val);
-			case 3:
-				return item.unit;
-			case 4:
-				return asCosts(item.costValue);
-			default:
-				return null;
+					return Numbers.format(val);
+				case 3:
+					return item.unit;
+				case 4:
+					return formatCosts(item.costValue);
+				default:
+					return null;
 			}
 		}
 
@@ -318,7 +291,7 @@ class TotalRequirementsSection {
 			if (!(obj instanceof Item))
 				return null;
 			Item item = (Item) obj;
-			return dqResult.get(item.process);
+			return dqResult.get(item.product);
 		}
 	}
 }

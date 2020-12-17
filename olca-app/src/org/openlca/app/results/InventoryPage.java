@@ -64,8 +64,7 @@ public class InventoryPage extends FormPage {
 		Composite body = UI.formBody(form, toolkit);
 		TreeViewer inputTree = createTree(body, true);
 		TreeViewer outputTree = createTree(body, false);
-		TotalRequirementsSection reqSection = new TotalRequirementsSection(
-				result, dqResult);
+		var reqSection = new TotalRequirementsSection(result, dqResult);
 		reqSection.create(body, toolkit);
 		form.reflow(true);
 		fillTrees(inputTree, outputTree);

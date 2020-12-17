@@ -11,6 +11,7 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
@@ -82,6 +83,16 @@ public class Labels {
 				text = text + " - " + loc.code;
 		}
 		return text;
+	}
+
+	public static String of(ProcessProduct product) {
+		// currently we just return the process name but
+		// in future versions we could also return
+		// process-flow pairs here. though this could
+		// result in very long display names.
+		return product == null || product.process == null
+			? ""
+			: name(product.process);
 	}
 
 	public static String name(IndexFlow flow) {
