@@ -16,7 +16,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -66,7 +65,7 @@ public class Trees {
 		GridData data = UI.gridData(tree, true, true);
 		data.minimumHeight = 120;
 		Point p = parent.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		data.heightHint = p.y < 120 ? 120 : p.y;
+		data.heightHint = Math.max(p.y, 120);
 		return viewer;
 	}
 
@@ -90,10 +89,10 @@ public class Trees {
 
 	public static void addDropSupport(TreeViewer tree,
 			Consumer<List<Descriptor>> handler) {
-		Transfer transfer = ModelTransfer.getInstance();
-		DropTarget dropTarget = new DropTarget(tree.getTree(), DND.DROP_COPY
-				| DND.DROP_MOVE | DND.DROP_DEFAULT);
-		dropTarget.setTransfer(new Transfer[] { transfer });
+		var transfer = ModelTransfer.getInstance();
+		var dropTarget = new DropTarget(tree.getTree(),
+			DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
+		dropTarget.setTransfer(transfer);
 		dropTarget.addDropListener(new DropTargetAdapter() {
 			@Override
 			public void drop(DropTargetEvent event) {
@@ -109,17 +108,18 @@ public class Trees {
 	 * Binds the given percentage values (values between 0 and 1) to the column
 	 * widths of the given tree
 	 */
-	public static void bindColumnWidths(final Tree tree, final double... percents) {
+	public static void bindColumnWidths(Tree tree, double... percents) {
 		bindColumnWidths(tree, 0, percents);
 	}
 
-	public static void bindColumnWidths(final Tree tree, int minimum, final double... percents) {
+	public static void bindColumnWidths(Tree tree, int minimum, double... percents) {
 		if (tree == null || percents == null)
 			return;
-		TreeResizeListener treeListener = new TreeResizeListener(tree, minimum, percents);
-		ColumnResizeListener columnListener = new ColumnResizeListener(treeListener);
-		for (TreeColumn column : tree.getColumns())
+		var treeListener = new TreeResizeListener(tree, minimum, percents);
+		var columnListener = new ColumnResizeListener(treeListener);
+		for (var column : tree.getColumns()) {
 			column.addControlListener(columnListener);
+		}
 		tree.addControlListener(treeListener);
 	}
 
@@ -216,9 +216,9 @@ public class Trees {
 	}
 
 	private static class TreeResizeListener extends ControlAdapter {
-		private Tree tree;
-		private double[] percents;
-		private int minimum;
+		private final Tree tree;
+		private final double[] percents;
+		private final int minimum;
 		private boolean enabled = true;
 		private boolean initialized;
 

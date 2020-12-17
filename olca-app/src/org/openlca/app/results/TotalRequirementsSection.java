@@ -1,15 +1,14 @@
 package org.openlca.app.results;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
@@ -23,8 +22,8 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
-import org.openlca.app.viewers.tables.TableClipboard;
-import org.openlca.app.viewers.tables.Tables;
+import org.openlca.app.viewers.trees.TreeClipboard;
+import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.ProcessProduct;
@@ -42,7 +41,7 @@ class TotalRequirementsSection {
 	private final Costs costs;
 	private String currencySymbol;
 
-	private TableViewer table;
+	private TreeViewer tree;
 
 	TotalRequirementsSection(ContributionResult result, DQResult dqResult) {
 		this.result = result;
@@ -60,55 +59,53 @@ class TotalRequirementsSection {
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 		Label label = new Label();
-		table = Tables.createViewer(comp, columnLabels(), label);
-		Tables.bindColumnWidths(table, DQUI.MIN_COL_WIDTH, columnWidths());
-		Viewers.sortByLabels(table, label, 0, 1, 3);
-		Viewers.sortByDouble(table, (Item i) -> i.amount, 2);
+		tree = Trees.createViewer(comp, columnLabels(), label);
+		tree.getTree().setLinesVisible(true);
+		tree.setContentProvider(new ContentProvider());
+		Trees.bindColumnWidths(tree.getTree(), DQUI.MIN_COL_WIDTH, columnWidths());
+		Viewers.sortByLabels(tree, label, 0, 1, 3);
+		Viewers.sortByDouble(tree, (Item i) -> i.amount, 2);
 		if (costs != Costs.NONE)
-			Viewers.sortByDouble(table, (Item i) -> i.costValue, 4);
+			Viewers.sortByDouble(tree, (Item i) -> i.costValue, 4);
 		if (DQUI.displayProcessQuality(dqResult)) {
 			int startCol = costs == Costs.NONE ? 4 : 5;
 			for (int i = 0; i < dqResult.setup.processSystem.indicators.size(); i++) {
-				Viewers.sortByDouble(table, label, i + startCol);
+				Viewers.sortByDouble(tree, label, i + startCol);
 			}
 		}
 		for (int col : numberColumns()) {
-			table.getTable().getColumns()[col].setAlignment(SWT.RIGHT);
+			tree.getTree().getColumns()[col].setAlignment(SWT.RIGHT);
 		}
 
 		Action onOpen = Actions.onOpen(() -> {
-			Item item = Viewers.getFirstSelected(table);
+			Item item = Viewers.getFirstSelected(tree);
 			if (item != null) {
 				App.openEditor(item.product.process);
 			}
 		});
-		Actions.bind(table, onOpen, TableClipboard.onCopy(table));
-		Tables.onDoubleClick(table, e -> onOpen.run());
+		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree));
+		Trees.onDoubleClick(tree, e -> onOpen.run());
 		createCostSum(comp, tk);
 	}
 
 	private void createCostSum(Composite comp, FormToolkit tk) {
 		if (costs == Costs.NONE)
 			return;
+		String label = costs == Costs.NET_COSTS
+			? M.TotalNetcosts
+			: M.TotalAddedValue;
 		double v = result.totalCosts;
-		String s;
-		String c;
-		if (costs == Costs.NET_COSTS) {
-			s = M.TotalNetcosts;
-			c = formatCosts(v);
-		} else {
-			s = M.TotalAddedValue;
-			c = formatCosts(v == 0 ? 0 : -v);
-		}
-
-		Control label = tk.createLabel(comp, s + ": " + c);
-		label.setFont(UI.boldFont());
+		String value = costs == Costs.NET_COSTS
+			? formatCosts(v)
+			: formatCosts(v == 0 ? 0 : -v);
+		tk.createLabel(comp, label + ": " + value)
+			.setFont(UI.boldFont());
 	}
 
 	void fill() {
-		if (table == null)
+		if (tree == null)
 			return;
-		table.setInput(createItems());
+		tree.setInput(result);
 	}
 
 	private String[] columnLabels() {
@@ -142,35 +139,6 @@ class TotalRequirementsSection {
 		return DQUI.adjustTableWidths(widths, dqResult.setup.processSystem);
 	}
 
-	private List<Item> createItems() {
-		if (result == null)
-			return Collections.emptyList();
-		double[] tr = result.totalRequirements;
-		if (tr == null)
-			return Collections.emptyList();
-		List<Item> items = new ArrayList<>();
-		for (int i = 0; i < tr.length; i++) {
-			items.add(new Item(i, tr[i]));
-		}
-		calculateCostChares(items);
-		items.sort((a, b) -> -Double.compare(a.amount, b.amount));
-		return items;
-	}
-
-	private void calculateCostChares(List<Item> items) {
-		if (costs == Costs.NONE)
-			return;
-		double max = 0;
-		for (Item item : items) {
-			max = Math.max(max, item.costValue);
-		}
-		if (max == 0)
-			return;
-		for (Item item : items) {
-			item.costShare = item.costValue / max;
-		}
-	}
-
 	private String formatCosts(double value) {
 		if (currencySymbol == null) {
 			var dao = new CurrencyDao(Database.get());
@@ -178,8 +146,8 @@ class TotalRequirementsSection {
 			currencySymbol = ref == null
 				? "?"
 				: ref.code != null
-					? ref.code
-					: ref.name;
+				? ref.code
+				: ref.name;
 		}
 		return Numbers.decimalFormat(value, 2) + " " + currencySymbol;
 	}
@@ -188,9 +156,81 @@ class TotalRequirementsSection {
 		ADDED_VALUE, NET_COSTS, NONE
 	}
 
+	private class ContentProvider implements ITreeContentProvider {
+
+		@Override
+		public Object[] getElements(Object input) {
+			if (!(input instanceof ContributionResult))
+				return new Object[0];
+			double[] tr = result.totalRequirements;
+			if (tr == null)
+				return new Object[0];
+			var items = new ArrayList<Item>();
+			for (int i = 0; i < tr.length; i++) {
+				var item = new Item(i, tr[i]);
+				item.root = true;
+				items.add(item);
+			}
+			calculateCostChares(items);
+			items.sort((a, b) -> -Double.compare(a.amount, b.amount));
+			return items.toArray();
+		}
+
+		private void calculateCostChares(List<Item> items) {
+			if (costs == Costs.NONE)
+				return;
+			double max = 0;
+			for (Item item : items) {
+				max = Math.max(max, item.costValue);
+			}
+			if (max == 0)
+				return;
+			for (Item item : items) {
+				item.costShare = item.costValue / max;
+			}
+		}
+
+		@Override
+		public Object[] getChildren(Object elem) {
+			if (!(elem instanceof Item))
+				return new Object[0];
+			var item = (Item) elem;
+			if (!item.root)
+				return new Object[0];
+			int row = item.index;
+			var childs = new ArrayList<Item>();
+			for (int col = 0; col < result.techIndex.size(); col++) {
+				if (row == col)
+					continue;
+				var amount = result.provider.scaledTechValueOf(row, col);
+				if (amount == 0)
+					continue;
+				var child = new Item(col, amount);
+				childs.add(child);
+			}
+			return childs.toArray();
+		}
+
+		@Override
+		public boolean hasChildren(Object elem) {
+			if (!(elem instanceof Item))
+				return false;
+			var item = (Item) elem;
+			return item.root;
+		}
+
+		@Override
+		public Object getParent(Object elem) {
+			return null;
+		}
+	}
+
 	private class Item {
 
-		ProcessProduct product;
+		final ProcessProduct product;
+		final int index;
+		boolean root;
+
 		double amount;
 		double costValue;
 		double costShare;
@@ -200,6 +240,7 @@ class TotalRequirementsSection {
 		FlowType flowtype;
 
 		Item(int idx, double amount) {
+			this.index = idx;
 			this.amount = amount;
 			var techIdx = result.techIndex;
 			product = techIdx.getProviderAt(idx);
