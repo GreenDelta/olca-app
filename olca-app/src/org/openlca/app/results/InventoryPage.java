@@ -2,7 +2,6 @@ package org.openlca.app.results;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.action.Action;
@@ -10,12 +9,12 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
@@ -57,15 +56,18 @@ public class InventoryPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform,
-				Labels.name(setup.productSystem),
-				Images.get(result));
+		var form = UI.formHeader(mform,
+			Labels.name(setup.productSystem),
+			Images.get(result));
 		toolkit = mform.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
-		TreeViewer inputTree = createTree(body, true);
-		TreeViewer outputTree = createTree(body, false);
+		var body = UI.formBody(form, toolkit);
+		var sash = new SashForm(body, SWT.VERTICAL);
+		UI.gridData(sash, true, true);
+		toolkit.adapt(sash);
+		var inputTree = createTree(sash, true);
+		var outputTree = createTree(sash, false);
 		var reqSection = new TotalRequirementsSection(result, dqResult);
-		reqSection.create(body, toolkit);
+		reqSection.create(sash, toolkit);
 		form.reflow(true);
 		fillTrees(inputTree, outputTree);
 		reqSection.fill();
@@ -89,27 +91,27 @@ public class InventoryPage extends FormPage {
 
 		// create section and cutoff combo
 		Section section = UI.section(parent, toolkit,
-				forInputs ? M.Inputs : M.Outputs);
+			forInputs ? M.Inputs : M.Outputs);
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, toolkit);
 		UI.gridLayout(comp, 1);
 		ContributionCutoff spinner = ContributionCutoff.create(comp, toolkit);
 
 		// create the tree
-		String[] headers = new String[] {
-				M.Name, M.Category, M.SubCategory, M.Amount, M.Unit };
+		String[] headers = new String[]{
+			M.Name, M.Category, M.SubCategory, M.Amount, M.Unit};
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			headers = DQUI.appendTableHeaders(
-					headers, dqResult.setup.exchangeSystem);
+				headers, dqResult.setup.exchangeSystem);
 		}
 		Label label = new Label();
 		TreeViewer viewer = Trees.createViewer(comp, headers, label);
 		viewer.setContentProvider(new ContentProvider());
 		createColumnSorters(viewer, label);
-		double[] widths = { .4, .2, .2, .15, .05 };
+		double[] widths = {.4, .2, .2, .15, .05};
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			widths = DQUI.adjustTableWidths(
-					widths, dqResult.setup.exchangeSystem);
+				widths, dqResult.setup.exchangeSystem);
 		}
 		viewer.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(viewer.getTree(), DQUI.MIN_COL_WIDTH, widths);
@@ -142,7 +144,7 @@ public class InventoryPage extends FormPage {
 	}
 
 	private class ContentProvider extends ArrayContentProvider
-			implements ITreeContentProvider, CutoffContentProvider {
+		implements ITreeContentProvider, CutoffContentProvider {
 
 		private double cutoff;
 
@@ -153,12 +155,11 @@ public class InventoryPage extends FormPage {
 			IndexFlow flow = (IndexFlow) e;
 			double cutoffValue = Math.abs(getAmount(flow) * this.cutoff);
 			return result.getProcessContributions(flow).stream()
-					.filter(i -> i.amount != 0)
-					.filter(i -> Math.abs(i.amount) >= cutoffValue)
-					.sorted((i1, i2) -> -Double.compare(i1.amount, i2.amount))
-					.map(i -> new FlowContribution(i, flow))
-					.collect(Collectors.toList())
-					.toArray();
+				.filter(i -> i.amount != 0)
+				.filter(i -> Math.abs(i.amount) >= cutoffValue)
+				.sorted((i1, i2) -> -Double.compare(i1.amount, i2.amount))
+				.map(i -> new FlowContribution(i, flow))
+				.toArray();
 		}
 
 		@Override
@@ -181,12 +182,12 @@ public class InventoryPage extends FormPage {
 
 	private class Label extends DQLabelProvider {
 
-		private ContributionImage img = new ContributionImage();
+		private final ContributionImage img = new ContributionImage();
 
 		Label() {
 			super(dqResult, dqResult != null
-					? dqResult.setup.exchangeSystem
-					: null, 5);
+				? dqResult.setup.exchangeSystem
+				: null, 5);
 		}
 
 		@Override
@@ -223,18 +224,18 @@ public class InventoryPage extends FormPage {
 				return null;
 			Pair<String, String> category = Labels.getCategory(f.flow);
 			switch (col) {
-			case 0:
-				return Labels.name(f);
-			case 1:
-				return category.getLeft();
-			case 2:
-				return category.getRight();
-			case 3:
-				return Numbers.format(getAmount(f));
-			case 4:
-				return Labels.refUnit(f);
-			default:
-				return null;
+				case 0:
+					return Labels.name(f);
+				case 1:
+					return category.getLeft();
+				case 2:
+					return category.getRight();
+				case 3:
+					return Numbers.format(getAmount(f));
+				case 4:
+					return Labels.refUnit(f);
+				default:
+					return null;
 			}
 		}
 
@@ -242,19 +243,19 @@ public class InventoryPage extends FormPage {
 			CategorizedDescriptor process = item.item.item;
 			Pair<String, String> category = Labels.getCategory(process);
 			switch (col) {
-			case 0:
-				return Labels.name(process);
-			case 1:
-				return category.getLeft();
-			case 2:
-				return category.getRight();
-			case 3:
-				double v = getAmount(item);
-				return Numbers.format(v);
-			case 4:
-				return Labels.refUnit(item.flow);
-			default:
-				return null;
+				case 0:
+					return Labels.name(process);
+				case 1:
+					return category.getLeft();
+				case 2:
+					return category.getRight();
+				case 3:
+					double v = getAmount(item);
+					return Numbers.format(v);
+				case 4:
+					return Labels.refUnit(item.flow);
+				default:
+					return null;
 			}
 		}
 
@@ -282,14 +283,14 @@ public class InventoryPage extends FormPage {
 		return 0d;
 	}
 
-	private class FlowContribution {
+	private static class FlowContribution {
 
 		final Contribution<CategorizedDescriptor> item;
 		final IndexFlow flow;
 
 		private FlowContribution(
-				Contribution<CategorizedDescriptor> item,
-				IndexFlow flow) {
+			Contribution<CategorizedDescriptor> item,
+			IndexFlow flow) {
 			this.item = item;
 			this.flow = flow;
 		}

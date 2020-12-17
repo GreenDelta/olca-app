@@ -167,9 +167,7 @@ class TotalRequirementsSection {
 				return new Object[0];
 			var items = new ArrayList<Item>();
 			for (int i = 0; i < tr.length; i++) {
-				var item = new Item(i, tr[i]);
-				item.root = true;
-				items.add(item);
+				items.add(new Item(i, tr[i]));
 			}
 			calculateCostChares(items);
 			items.sort((a, b) -> -Double.compare(a.amount, b.amount));
@@ -195,7 +193,7 @@ class TotalRequirementsSection {
 			if (!(elem instanceof Item))
 				return new Object[0];
 			var item = (Item) elem;
-			if (!item.root)
+			if (item.parent != null)
 				return new Object[0];
 			int row = item.index;
 			var childs = new ArrayList<Item>();
@@ -206,6 +204,7 @@ class TotalRequirementsSection {
 				if (amount == 0)
 					continue;
 				var child = new Item(col, amount);
+				child.parent = item;
 				childs.add(child);
 			}
 			return childs.toArray();
@@ -216,7 +215,7 @@ class TotalRequirementsSection {
 			if (!(elem instanceof Item))
 				return false;
 			var item = (Item) elem;
-			return item.root;
+			return item.parent == null;
 		}
 
 		@Override
@@ -229,7 +228,7 @@ class TotalRequirementsSection {
 
 		final ProcessProduct product;
 		final int index;
-		boolean root;
+		Item parent;
 
 		double amount;
 		double costValue;
@@ -270,7 +269,7 @@ class TotalRequirementsSection {
 
 	private class Label extends DQLabelProvider {
 
-		private final ContributionImage costImage = new ContributionImage();
+		private final ContributionImage cimg = new ContributionImage();
 
 		public Label() {
 			super(dqResult, dqResult != null
@@ -280,7 +279,7 @@ class TotalRequirementsSection {
 
 		@Override
 		public void dispose() {
-			costImage.dispose();
+			cimg.dispose();
 			super.dispose();
 		}
 
@@ -294,10 +293,16 @@ class TotalRequirementsSection {
 					return Images.get(ModelType.PROCESS);
 				case 1:
 					return Images.get(item.flowtype);
+				case 2:
+					if (item.parent != null && item.parent.amount != 0) {
+						var share = -item.amount / item.parent.amount;
+						return cimg.getForTable(share);
+					}
+					return null;
 				case 4:
-					if (costs == Costs.NONE)
+					if (costs == Costs.NONE || item.parent != null)
 						return null;
-					return costImage.getForTable(item.costShare);
+					return cimg.getForTable(item.costShare);
 				default:
 					return null;
 			}
@@ -312,16 +317,22 @@ class TotalRequirementsSection {
 				case 0:
 					return Labels.of(item.product);
 				case 1:
-					return item.flow;
+					return item.parent != null
+						? item.parent.flow
+						: item.flow;
 				case 2:
 					double val = item.flowtype == FlowType.WASTE_FLOW
 						? -item.amount
 						: item.amount;
 					return Numbers.format(val);
 				case 3:
-					return item.unit;
+					return item.parent != null
+						? item.parent.unit
+						: item.unit;
 				case 4:
-					return formatCosts(item.costValue);
+					return item.parent == null
+						? formatCosts(item.costValue)
+						: null;
 				default:
 					return null;
 			}
