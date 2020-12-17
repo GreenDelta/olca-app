@@ -68,6 +68,8 @@ class ProviderItem implements Item {
 			}
 		}
 
+		items.sort((i1, i2) -> Double.compare(i2.amount, i1.amount));
+
 		return items;
 	}
 

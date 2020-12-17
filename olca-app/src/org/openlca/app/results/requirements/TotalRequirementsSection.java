@@ -7,19 +7,14 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.images.Images;
-import org.openlca.app.results.DQLabelProvider;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.DQUI;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
@@ -28,8 +23,6 @@ import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.ProcessProduct;
-import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.results.ContributionResult;
 
 /**
@@ -59,15 +52,27 @@ public class TotalRequirementsSection {
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
-		Label label = new Label();
+		var label = new LabelProvider(dqResult, costs);
 		tree = Trees.createViewer(comp, columnLabels(), label);
 		tree.getTree().setLinesVisible(true);
 		tree.setContentProvider(new ContentProvider());
 		Trees.bindColumnWidths(tree.getTree(), DQUI.MIN_COL_WIDTH, columnWidths());
 		Viewers.sortByLabels(tree, label, 0, 1, 3);
-		Viewers.sortByDouble(tree, (Item i) -> i.amount, 2);
-		if (costs != Costs.NONE)
-			Viewers.sortByDouble(tree, (Item i) -> i.costValue, 4);
+		Viewers.sortByDouble(tree, (Item i) -> {
+			if (i.isProvider())
+				return i.asProvider().amount;
+			if (i.isChild())
+				return i.asChild().amount;
+			return 0.0;
+		}, 2);
+
+		if (costs != Costs.NONE) {
+			Viewers.sortByDouble(tree, (Item i) -> i.isProvider()
+					? i.asProvider().costValue
+					: 0.0,
+				4);
+		}
+
 		if (DQUI.displayProcessQuality(dqResult)) {
 			int startCol = costs == Costs.NONE ? 4 : 5;
 			for (int i = 0; i < dqResult.setup.processSystem.indicators.size(); i++) {
@@ -80,10 +85,19 @@ public class TotalRequirementsSection {
 
 		Action onOpen = Actions.onOpen(() -> {
 			Item item = Viewers.getFirstSelected(tree);
-			if (item != null) {
-				App.openEditor(item.product.process);
+			if (item == null)
+				return;
+			ProcessProduct product = null;
+			if (item.isProvider()) {
+				product = item.asProvider().product;
+			} else if (item.isChild()) {
+				product = item.asChild().product;
+			}
+			if (product != null) {
+				App.openEditor(product.process);
 			}
 		});
+
 		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree));
 		Trees.onDoubleClick(tree, e -> onOpen.run());
 		createCostSum(comp, tk);
@@ -159,30 +173,7 @@ public class TotalRequirementsSection {
 		public Object[] getElements(Object input) {
 			if (!(input instanceof ContributionResult))
 				return new Object[0];
-			double[] tr = result.totalRequirements;
-			if (tr == null)
-				return new Object[0];
-			var items = new ArrayList<Item>();
-			for (int i = 0; i < tr.length; i++) {
-				items.add(new Item(i, tr[i]));
-			}
-			calculateCostChares(items);
-			items.sort((a, b) -> -Double.compare(a.amount, b.amount));
-			return items.toArray();
-		}
-
-		private void calculateCostChares(List<Item> items) {
-			if (costs == Costs.NONE)
-				return;
-			double max = 0;
-			for (Item item : items) {
-				max = Math.max(max, item.costValue);
-			}
-			if (max == 0)
-				return;
-			for (Item item : items) {
-				item.costShare = item.costValue / max;
-			}
+			return ProviderItem.allOf(result, costs).toArray();
 		}
 
 		@Override
@@ -190,21 +181,9 @@ public class TotalRequirementsSection {
 			if (!(elem instanceof Item))
 				return new Object[0];
 			var item = (Item) elem;
-			if (item.parent != null)
-				return new Object[0];
-			int row = item.index;
-			var childs = new ArrayList<Item>();
-			for (int col = 0; col < result.techIndex.size(); col++) {
-				if (row == col)
-					continue;
-				var amount = result.provider.scaledTechValueOf(row, col);
-				if (amount == 0)
-					continue;
-				var child = new Item(col, amount);
-				child.parent = item;
-				childs.add(child);
-			}
-			return childs.toArray();
+			return item.isProvider()
+				? ChildItem.allOf(item.asProvider(), result).toArray()
+				: new Object[0];
 		}
 
 		@Override
@@ -212,7 +191,7 @@ public class TotalRequirementsSection {
 			if (!(elem instanceof Item))
 				return false;
 			var item = (Item) elem;
-			return item.parent == null;
+			return item.isProvider();
 		}
 
 		@Override
@@ -221,126 +200,4 @@ public class TotalRequirementsSection {
 		}
 	}
 
-	private class Item {
-
-		final ProcessProduct product;
-		final int index;
-		Item parent;
-
-		double amount;
-		double costValue;
-		double costShare;
-
-		String flow;
-		String unit;
-		FlowType flowtype;
-
-		Item(int idx, double amount) {
-			this.index = idx;
-			this.amount = amount;
-			var techIdx = result.techIndex;
-			product = techIdx.getProviderAt(idx);
-			var flow = product.flow;
-			if (flow != null) {
-				this.flow = Labels.name(flow);
-				this.unit = Labels.refUnit(flow);
-				this.flowtype = flow.flowType;
-			}
-			initCostValue(idx);
-		}
-
-		private void initCostValue(int idx) {
-			if (costs == Costs.NONE)
-				return;
-			if (result == null)
-				return;
-			if (idx >= 0) {
-				double v = result.provider.directCostsOf(idx);
-				costValue = costs == Costs.NET_COSTS
-					? v
-					: v != 0 ? -v : 0;
-			}
-		}
-
-	}
-
-	private class Label extends DQLabelProvider {
-
-		private final ContributionImage cimg = new ContributionImage();
-
-		public Label() {
-			super(dqResult, dqResult != null
-				? dqResult.setup.processSystem
-				: null, costs == Costs.NONE ? 4 : 5);
-		}
-
-		@Override
-		public void dispose() {
-			cimg.dispose();
-			super.dispose();
-		}
-
-		@Override
-		public Image getImage(Object obj, int col) {
-			if (!(obj instanceof Item))
-				return null;
-			Item item = (Item) obj;
-			switch (col) {
-				case 0:
-					return Images.get(ModelType.PROCESS);
-				case 1:
-					return Images.get(item.flowtype);
-				case 2:
-					if (item.parent != null && item.parent.amount != 0) {
-						var share = -item.amount / item.parent.amount;
-						return cimg.getForTable(share);
-					}
-					return null;
-				case 4:
-					if (costs == Costs.NONE || item.parent != null)
-						return null;
-					return cimg.getForTable(item.costShare);
-				default:
-					return null;
-			}
-		}
-
-		@Override
-		public String getText(Object obj, int col) {
-			if (!(obj instanceof Item))
-				return null;
-			Item item = (Item) obj;
-			switch (col) {
-				case 0:
-					return Labels.of(item.product);
-				case 1:
-					return item.parent != null
-						? item.parent.flow
-						: item.flow;
-				case 2:
-					double val = item.flowtype == FlowType.WASTE_FLOW
-						? -item.amount
-						: item.amount;
-					return Numbers.format(val);
-				case 3:
-					return item.parent != null
-						? item.parent.unit
-						: item.unit;
-				case 4:
-					return item.parent == null
-						? formatCosts(item.costValue)
-						: null;
-				default:
-					return null;
-			}
-		}
-
-		@Override
-		protected int[] getQuality(Object obj) {
-			if (!(obj instanceof Item))
-				return null;
-			Item item = (Item) obj;
-			return dqResult.get(item.product);
-		}
-	}
 }
