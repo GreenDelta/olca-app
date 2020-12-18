@@ -166,8 +166,7 @@ public class ModelSelectionDialog extends FormDialog {
 		viewer = forMultiple
 				? NavigationTree.forMultiSelection(comp, modelType)
 				: NavigationTree.forSingleSelection(comp, modelType);
-		ModelTextFilter filter = new ModelTextFilter(filterText, viewer);
-		viewer.setFilters(filter);
+		viewer.setFilters(new ModelTextFilter(filterText, viewer));
 		UI.gridData(viewer.getTree(), true, true);
 		viewer.addSelectionChangedListener(new SelectionChangedListener());
 		viewer.addDoubleClickListener(new DoubleClickListener());

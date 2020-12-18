@@ -49,11 +49,13 @@ class LabelProvider extends DQLabelProvider {
 
 			case 0:
 				return item.isCategory()
-					? Images.get(ModelType.CATEGORY)
+					? Images.getForCategory(ModelType.CATEGORY)
 					: Images.get(ModelType.PROCESS);
 
 			// flow icon
 			case 1:
+				if (item.isCategory())
+					return null;
 				boolean isWaste = false;
 				if (item.isProvider()) {
 					isWaste = item.asProvider().hasWasteFlow();

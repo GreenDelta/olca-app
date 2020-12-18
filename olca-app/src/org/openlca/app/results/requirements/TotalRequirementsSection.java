@@ -8,7 +8,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
@@ -32,7 +31,6 @@ public class TotalRequirementsSection {
 	private final ContributionResult result;
 	private final DQResult dqResult;
 	private final Costs costs;
-	private String currencySymbol;
 
 	private TreeViewer tree;
 
@@ -47,41 +45,54 @@ public class TotalRequirementsSection {
 	}
 
 	public void create(Composite body, FormToolkit tk) {
-		Section section = UI.section(body, tk, M.TotalRequirements);
+		var section = UI.section(body, tk, M.TotalRequirements);
 		UI.gridData(section, true, true);
-		Composite comp = UI.sectionClient(section, tk);
+		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 		var label = new LabelProvider(dqResult, costs);
 		tree = Trees.createViewer(comp, columnLabels(), label);
 		tree.getTree().setLinesVisible(true);
 		tree.setContentProvider(new TreeModel(result, costs));
 		Trees.bindColumnWidths(tree.getTree(), DQUI.MIN_COL_WIDTH, columnWidths());
-		Viewers.sortByLabels(tree, label, 0, 1, 3);
-		Viewers.sortByDouble(tree, (Item i) -> {
-			if (i.isProvider())
-				return i.asProvider().amount;
-			if (i.isChild())
-				return i.asChild().amount;
-			return 0.0;
-		}, 2);
 
-		if (costs != Costs.NONE) {
-			Viewers.sortByDouble(tree, (Item i) -> i.isProvider()
-					? i.asProvider().costValue
-					: 0.0,
-				4);
-		}
-
-		if (DQUI.displayProcessQuality(dqResult)) {
-			int startCol = costs == Costs.NONE ? 4 : 5;
-			for (int i = 0; i < dqResult.setup.processSystem.indicators.size(); i++) {
-				Viewers.sortByDouble(tree, label, i + startCol);
-			}
-		}
-		for (int col : numberColumns()) {
+		var numericColumns = costs == Costs.NONE || costs == null
+			? new int[]{2}
+			: new int[]{2, 4};
+		for (int col : numericColumns) {
 			tree.getTree().getColumns()[col].setAlignment(SWT.RIGHT);
 		}
 
+		addSorters(tree, label);
+		addActions(tree);
+		renderTotalCosts(comp, tk);
+	}
+
+	public void fill() {
+		if (tree == null)
+			return;
+		tree.setInput(result);
+		expandFirst();
+	}
+
+	/**
+	 * Expand the first path in the tree.
+	 */
+	void expandFirst() {
+		if (tree == null)
+			return;
+		var items = tree.getTree().getItems();
+		while (items != null && items.length > 0) {
+			var first = items[0];
+			first.setExpanded(true);
+			for (int i = 1; i < items.length; i++) {
+				items[i].setExpanded(false);
+			}
+			items = first.getItems();
+			tree.refresh();
+		}
+	}
+
+	private void addActions(TreeViewer tree) {
 		Action onOpen = Actions.onOpen(() -> {
 			Item item = Viewers.getFirstSelected(tree);
 			if (item == null)
@@ -96,30 +107,52 @@ public class TotalRequirementsSection {
 				App.openEditor(product.process);
 			}
 		});
-
 		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree));
 		Trees.onDoubleClick(tree, e -> onOpen.run());
-		createCostSum(comp, tk);
 	}
 
-	private void createCostSum(Composite comp, FormToolkit tk) {
+	private void addSorters(TreeViewer tree, LabelProvider label) {
+		Viewers.sortByLabels(tree, label, 0, 1, 3);
+		Viewers.sortByDouble(tree, (Item i) -> {
+			if (i.isProvider())
+				return i.asProvider().amount;
+			if (i.isChild())
+				return i.asChild().amount;
+			return 0.0;
+		}, 2);
+		if (costs != Costs.NONE) {
+			Viewers.sortByDouble(tree, (Item i) -> i.isProvider()
+					? i.asProvider().costValue
+					: 0.0,
+				4);
+		}
+		if (DQUI.displayProcessQuality(dqResult)) {
+			int startCol = costs == Costs.NONE ? 4 : 5;
+			for (int i = 0; i < dqResult.setup.processSystem.indicators.size(); i++) {
+				Viewers.sortByDouble(tree, label, i + startCol);
+			}
+		}
+	}
+
+	private void renderTotalCosts(Composite comp, FormToolkit tk) {
 		if (costs == Costs.NONE)
 			return;
 		String label = costs == Costs.NET_COSTS
 			? M.TotalNetcosts
 			: M.TotalAddedValue;
-		double v = result.totalCosts;
-		String value = costs == Costs.NET_COSTS
-			? formatCosts(v)
-			: formatCosts(v == 0 ? 0 : -v);
+		double v = costs == Costs.NET_COSTS
+			? result.totalCosts
+			: result.totalCosts == 0
+			? 0
+			: -result.totalCosts;
+		var currency = new CurrencyDao(Database.get())
+			.getReferenceCurrency();
+		var symbol = currency != null && currency.code != null
+			? currency.code
+			: "?";
+		var value = Numbers.decimalFormat(v, 2) + " " + symbol;
 		tk.createLabel(comp, label + ": " + value)
 			.setFont(UI.boldFont());
-	}
-
-	public void fill() {
-		if (tree == null)
-			return;
-		tree.setInput(result);
 	}
 
 	private String[] columnLabels() {
@@ -128,20 +161,15 @@ public class TotalRequirementsSection {
 		b.add(M.Product);
 		b.add(M.Amount);
 		b.add(M.Unit);
-		if (costs == Costs.ADDED_VALUE)
+		if (costs == Costs.ADDED_VALUE) {
 			b.add(M.AddedValue);
-		else if (costs == Costs.NET_COSTS)
+		} else if (costs == Costs.NET_COSTS) {
 			b.add(M.NetCosts);
-		String[] columnLabels = b.toArray(new String[0]);
-		if (!DQUI.displayProcessQuality(dqResult))
-			return columnLabels;
-		return DQUI.appendTableHeaders(columnLabels, dqResult.setup.processSystem);
-	}
-
-	private int[] numberColumns() {
-		if (costs == Costs.NONE || costs == null)
-			return new int[]{2};
-		return new int[]{2, 4};
+		}
+		var labels = b.toArray(new String[0]);
+		return DQUI.displayProcessQuality(dqResult)
+			? DQUI.appendTableHeaders(labels, dqResult.setup.processSystem)
+			: labels;
 	}
 
 	private double[] columnWidths() {
@@ -151,19 +179,6 @@ public class TotalRequirementsSection {
 		if (!DQUI.displayProcessQuality(dqResult))
 			return widths;
 		return DQUI.adjustTableWidths(widths, dqResult.setup.processSystem);
-	}
-
-	private String formatCosts(double value) {
-		if (currencySymbol == null) {
-			var dao = new CurrencyDao(Database.get());
-			var ref = dao.getReferenceCurrency();
-			currencySymbol = ref == null
-				? "?"
-				: ref.code != null
-				? ref.code
-				: ref.name;
-		}
-		return Numbers.decimalFormat(value, 2) + " " + currencySymbol;
 	}
 
 }
