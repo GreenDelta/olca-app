@@ -48,7 +48,9 @@ class LabelProvider extends DQLabelProvider {
 		switch (col) {
 
 			case 0:
-				return Images.get(ModelType.PROCESS);
+				return item.isCategory()
+					? Images.get(ModelType.CATEGORY)
+					: Images.get(ModelType.PROCESS);
 
 			// flow icon
 			case 1:

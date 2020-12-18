@@ -78,6 +78,12 @@ class ProviderItem implements Item {
 		return Labels.of(product);
 	}
 
+	Long categoryID() {
+		return product == null || product.process == null
+			? null
+			: product.process.category;
+	}
+
 	boolean hasWasteFlow() {
 		return product != null
 			&& product.flow != null

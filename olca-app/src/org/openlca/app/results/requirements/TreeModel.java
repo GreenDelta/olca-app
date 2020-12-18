@@ -1,5 +1,8 @@
 package org.openlca.app.results.requirements;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.openlca.core.results.ContributionResult;
 
@@ -7,6 +10,8 @@ class TreeModel implements ITreeContentProvider {
 
 	private final ContributionResult result;
 	private final Costs costs;
+	private List<ProviderItem> providers;
+	private final Object[] empty = new Object[0];
 
 	TreeModel(ContributionResult result, Costs costs) {
 		this.result = result;
@@ -16,18 +21,33 @@ class TreeModel implements ITreeContentProvider {
 	@Override
 	public Object[] getElements(Object input) {
 		if (!(input instanceof ContributionResult))
-			return new Object[0];
-		return ProviderItem.allOf(result, costs).toArray();
+			return empty;
+		providers = ProviderItem.allOf(result, costs);
+		if (providers.size() < 20) {
+			return providers.toArray();
+		}
+		var categories = CategoryItem.allOf(providers);
+		var uncat = providers.stream().filter(
+			p -> p.categoryID() == null);
+		return Stream.concat(categories.stream(), uncat).toArray();
 	}
 
 	@Override
 	public Object[] getChildren(Object elem) {
 		if (!(elem instanceof Item))
-			return new Object[0];
+			return empty;
 		var item = (Item) elem;
-		return item.isProvider()
-			? ChildItem.allOf(item.asProvider(), result).toArray()
-			: new Object[0];
+		if (item.isProvider())
+			return ChildItem
+				.allOf(item.asProvider(), result)
+				.toArray();
+		if (!item.isCategory() || providers == null)
+			return empty;
+		var catItem = item.asCategory();
+		var providers = this.providers.stream()
+			.filter(p -> p.categoryID() != null
+				&& p.categoryID() == catItem.category.id);
+		return Stream.concat(catItem.childs.stream(), providers).toArray();
 	}
 
 	@Override
@@ -35,11 +55,14 @@ class TreeModel implements ITreeContentProvider {
 		if (!(elem instanceof Item))
 			return false;
 		var item = (Item) elem;
-		return item.isProvider();
+		return item.isProvider() || item.isCategory();
 	}
 
 	@Override
 	public Object getParent(Object elem) {
-		return null;
+		if (!(elem instanceof ChildItem))
+			return null;
+		var child = (ChildItem) elem;
+		return child.parent;
 	}
 }

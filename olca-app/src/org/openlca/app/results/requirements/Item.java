@@ -20,4 +20,12 @@ interface Item {
 		return (ChildItem) this;
 	}
 
+	default boolean isCategory() {
+		return this instanceof CategoryItem;
+	}
+
+	default CategoryItem asCategory() {
+		return (CategoryItem) this;
+	}
+
 }

@@ -32,7 +32,7 @@ class CategoryItem implements Item {
 
 		// collect the set of level-0 categories
 		var queue = providers.stream()
-			.map(p -> p.product.process.category)
+			.map(p -> p.categoryID())
 			.filter(Objects::nonNull)
 			.collect(Collectors.toSet())
 			.stream()
@@ -86,11 +86,11 @@ class CategoryItem implements Item {
 		// index with providers
 		var index = new HashMap<ProviderItem, CategoryItem>();
 		for (var provider : providers) {
-			if (provider.product.process.category == null)
+			if (provider.categoryID() == null)
 				continue;
 			index.put(
 				provider,
-				catIdx.get(provider.product.process.category));
+				catIdx.get(provider.categoryID()));
 		}
 		return index;
 	}
