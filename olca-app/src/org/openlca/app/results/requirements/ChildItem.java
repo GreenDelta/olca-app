@@ -38,10 +38,18 @@ class ChildItem implements Item {
 			child.amount = parent.hasWasteFlow()
 				? amount
 				: -amount;
-			child.amountShare = parent.amount == 0
-				? 0
-				: child.amount / parent.amount;
 		});
+
+		var maxAmount = childs.stream()
+			.mapToDouble(c -> c.amount)
+			.map(Math::abs)
+			.max()
+			.orElse(0);
+		for (var child : childs) {
+			child.amountShare = maxAmount == 0
+				? 0
+				: child.amount / maxAmount;
+		}
 
 		childs.sort((i1, i2) -> Double.compare(i2.amount, i1.amount));
 		return childs;

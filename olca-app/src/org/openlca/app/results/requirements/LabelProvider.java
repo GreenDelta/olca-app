@@ -49,20 +49,14 @@ class LabelProvider extends DQLabelProvider {
 
 			case 0:
 				return item.isCategory()
-					? Images.getForCategory(ModelType.CATEGORY)
+					? Images.getForCategory(ModelType.PROCESS)
 					: Images.get(ModelType.PROCESS);
 
 			// flow icon
 			case 1:
-				if (item.isCategory())
+				if (item.isCategory() || item.isChild())
 					return null;
-				boolean isWaste = false;
-				if (item.isProvider()) {
-					isWaste = item.asProvider().hasWasteFlow();
-				} else if (item.isChild()) {
-					isWaste = item.asChild().parent.hasWasteFlow();
-				}
-				return isWaste
+				return item.asProvider().hasWasteFlow()
 					? Images.get(FlowType.WASTE_FLOW)
 					: Images.get(FlowType.PRODUCT_FLOW);
 
@@ -96,7 +90,7 @@ class LabelProvider extends DQLabelProvider {
 
 			// flow name
 			case 1:
-				return flow == null
+				return !item.isProvider() || flow == null
 					? null
 					: Labels.name(flow);
 

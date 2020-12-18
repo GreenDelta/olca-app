@@ -49,6 +49,14 @@ public class TotalRequirementsSection {
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
+
+		var searchComp = tk.createComposite(comp);
+		UI.gridData(searchComp, true, false);
+		UI.gridLayout(searchComp, 2, 10, 0);
+		tk.createLabel(searchComp, M.Search);
+		var text = tk.createText(searchComp, "");
+		UI.gridData(text, true, false);
+
 		var label = new LabelProvider(dqResult, costs);
 		tree = Trees.createViewer(comp, columnLabels(), label);
 		tree.getTree().setLinesVisible(true);
@@ -83,12 +91,15 @@ public class TotalRequirementsSection {
 		var items = tree.getTree().getItems();
 		while (items != null && items.length > 0) {
 			var first = items[0];
+			var content = first.getData();
+			if (content instanceof ProviderItem)
+				break;
 			first.setExpanded(true);
 			for (int i = 1; i < items.length; i++) {
 				items[i].setExpanded(false);
 			}
-			items = first.getItems();
 			tree.refresh();
+			items = first.getItems();
 		}
 	}
 
