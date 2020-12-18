@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -55,7 +54,7 @@ public class TotalRequirementsSection {
 		var label = new LabelProvider(dqResult, costs);
 		tree = Trees.createViewer(comp, columnLabels(), label);
 		tree.getTree().setLinesVisible(true);
-		tree.setContentProvider(new ContentProvider());
+		tree.setContentProvider(new TreeModel(result, costs));
 		Trees.bindColumnWidths(tree.getTree(), DQUI.MIN_COL_WIDTH, columnWidths());
 		Viewers.sortByLabels(tree, label, 0, 1, 3);
 		Viewers.sortByDouble(tree, (Item i) -> {
@@ -165,39 +164,6 @@ public class TotalRequirementsSection {
 				: ref.name;
 		}
 		return Numbers.decimalFormat(value, 2) + " " + currencySymbol;
-	}
-
-	private class ContentProvider implements ITreeContentProvider {
-
-		@Override
-		public Object[] getElements(Object input) {
-			if (!(input instanceof ContributionResult))
-				return new Object[0];
-			return ProviderItem.allOf(result, costs).toArray();
-		}
-
-		@Override
-		public Object[] getChildren(Object elem) {
-			if (!(elem instanceof Item))
-				return new Object[0];
-			var item = (Item) elem;
-			return item.isProvider()
-				? ChildItem.allOf(item.asProvider(), result).toArray()
-				: new Object[0];
-		}
-
-		@Override
-		public boolean hasChildren(Object elem) {
-			if (!(elem instanceof Item))
-				return false;
-			var item = (Item) elem;
-			return item.isProvider();
-		}
-
-		@Override
-		public Object getParent(Object elem) {
-			return null;
-		}
 	}
 
 }

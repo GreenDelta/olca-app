@@ -84,4 +84,18 @@ class ProviderItem implements Item {
 			&& product.flow.flowType == FlowType.WASTE_FLOW;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		var other = (ProviderItem) o;
+		return index == other.index;
+	}
+
+	@Override
+	public int hashCode() {
+		return index;
+	}
 }
