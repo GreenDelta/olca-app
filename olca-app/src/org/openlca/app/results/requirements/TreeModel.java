@@ -8,9 +8,11 @@ import org.openlca.core.results.ContributionResult;
 
 class TreeModel implements ITreeContentProvider {
 
+	List<ProviderItem> providers;
+	List<CategoryItem> categories;
+
 	private final ContributionResult result;
 	private final Costs costs;
-	private List<ProviderItem> providers;
 	private final Object[] empty = new Object[0];
 
 	TreeModel(ContributionResult result, Costs costs) {
@@ -26,7 +28,7 @@ class TreeModel implements ITreeContentProvider {
 		if (providers.size() < 20) {
 			return providers.toArray();
 		}
-		var categories = CategoryItem.allOf(providers);
+		categories = CategoryItem.allOf(providers);
 		var uncat = providers.stream().filter(
 			p -> p.categoryID() == null);
 		return Stream.concat(categories.stream(), uncat).toArray();

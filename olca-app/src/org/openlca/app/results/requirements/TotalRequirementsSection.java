@@ -32,7 +32,7 @@ public class TotalRequirementsSection {
 	private final DQResult dqResult;
 	private final Costs costs;
 
-	private TreeViewer tree;
+	TreeViewer tree;
 
 	public TotalRequirementsSection(ContributionResult result, DQResult dqResult) {
 		this.result = result;
@@ -54,13 +54,15 @@ public class TotalRequirementsSection {
 		UI.gridData(searchComp, true, false);
 		UI.gridLayout(searchComp, 2, 10, 0);
 		tk.createLabel(searchComp, M.Search);
-		var text = tk.createText(searchComp, "");
-		UI.gridData(text, true, false);
+		var searchText = tk.createText(searchComp, "");
+		UI.gridData(searchText, true, false);
 
 		var label = new LabelProvider(dqResult, costs);
 		tree = Trees.createViewer(comp, columnLabels(), label);
 		tree.getTree().setLinesVisible(true);
-		tree.setContentProvider(new TreeModel(result, costs));
+		var model = new TreeModel(result, costs);
+		tree.setContentProvider(model);
+		tree.setFilters(new SearchFilter(this, model, searchText));
 		Trees.bindColumnWidths(tree.getTree(), DQUI.MIN_COL_WIDTH, columnWidths());
 
 		var numericColumns = costs == Costs.NONE || costs == null
