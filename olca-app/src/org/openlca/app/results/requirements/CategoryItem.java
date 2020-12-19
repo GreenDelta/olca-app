@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,7 @@ class CategoryItem implements Item {
 
 		// collect the set of level-0 categories
 		var queue = providers.stream()
-			.map(p -> p.categoryID())
+			.map(ProviderItem::categoryID)
 			.filter(Objects::nonNull)
 			.collect(Collectors.toSet())
 			.stream()
@@ -70,29 +69,6 @@ class CategoryItem implements Item {
 
 		sort(items);
 		return items;
-	}
-
-	static Map<ProviderItem, CategoryItem> indexOf(
-		List<ProviderItem> providers, List<CategoryItem> categories) {
-
-		// index the category items by category IDs
-		var catIdx = new HashMap<Long, CategoryItem>();
-		var queue = new ArrayDeque<>(categories);
-		while (!queue.isEmpty()) {
-			var item = queue.poll();
-			catIdx.put(item.category.id, item);
-		}
-
-		// index with providers
-		var index = new HashMap<ProviderItem, CategoryItem>();
-		for (var provider : providers) {
-			if (provider.categoryID() == null)
-				continue;
-			index.put(
-				provider,
-				catIdx.get(provider.categoryID()));
-		}
-		return index;
 	}
 
 	/**

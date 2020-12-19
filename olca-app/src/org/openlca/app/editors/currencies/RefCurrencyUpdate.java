@@ -43,7 +43,7 @@ class RefCurrencyUpdate implements Runnable {
 		closeEditors();
 		App.run(M.UpdateReferenceCurrency,
 				new RefCurrencyUpdate(c),
-				() -> App.openEditor(Descriptor.of(c)));
+				() -> App.open(Descriptor.of(c)));
 	}
 
 	private static void closeEditors() {

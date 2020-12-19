@@ -90,7 +90,7 @@ public class ContributionTreePage extends FormPage {
 			UpstreamNode n = Viewers.getFirstSelected(tree);
 			if (n == null || n.provider == null)
 				return;
-			App.openEditor(n.provider.process);
+			App.open(n.provider.process);
 		});
 
 		Action onExport = Actions.create(M.ExportToExcel,

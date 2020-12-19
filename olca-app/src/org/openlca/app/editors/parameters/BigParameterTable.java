@@ -159,9 +159,9 @@ public class BigParameterTable extends SimpleFormEditor {
 				if (p == null)
 					return;
 				if (p.scope() == ParameterScope.GLOBAL) {
-					App.openEditor(p.parameter);
+					App.open(p.parameter);
 				} else if (p.owner != null) {
-					App.openEditor(p.owner);
+					App.open(p.owner);
 				}
 			});
 			Action onUsage = Actions.create(
@@ -359,7 +359,7 @@ public class BigParameterTable extends SimpleFormEditor {
 			// user does not get confused with a state that
 			// is not in sync with the database
 			if (param.owner == null) {
-				App.closeEditor(p);
+				App.close(p);
 			} else {
 				if (param.owner.type == ModelType.PROCESS) {
 					ProcessDao pdao = new ProcessDao(db);
@@ -369,7 +369,7 @@ public class BigParameterTable extends SimpleFormEditor {
 						proc.lastChange = time;
 					}
 					proc = pdao.update(proc);
-					App.closeEditor(proc);
+					App.close(proc);
 				} else if (param.owner.type == ModelType.IMPACT_METHOD) {
 					ImpactMethodDao mdao = new ImpactMethodDao(db);
 					ImpactMethod method = mdao.getForId(param.owner.id);
@@ -378,7 +378,7 @@ public class BigParameterTable extends SimpleFormEditor {
 						method.lastChange = time;
 					}
 					method = mdao.update(method);
-					App.closeEditor(method);
+					App.close(method);
 				}
 			}
 

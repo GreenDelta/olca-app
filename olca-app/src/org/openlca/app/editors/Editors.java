@@ -45,8 +45,8 @@ public class Editors {
 		CategorizedEntity model = editor.getModel();
 		Action refresh = Actions.create(M.Reload, Icon.REFRESH.descriptor(),
 				() -> {
-					App.closeEditor(model);
-					App.openEditor(model);
+					App.close(model);
+					App.open(model);
 				});
 		IToolBarManager toolbar = form.getToolBarManager();
 		toolbar.add(refresh);

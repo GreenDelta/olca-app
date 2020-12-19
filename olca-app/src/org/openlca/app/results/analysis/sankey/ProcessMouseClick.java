@@ -34,7 +34,7 @@ public class ProcessMouseClick implements MouseListener {
 			firstClick = false;
 			scheduleTimer();
 		} else {
-			App.openEditor(processNode.product.process);
+			App.open(processNode.product.process);
 		}
 	}
 

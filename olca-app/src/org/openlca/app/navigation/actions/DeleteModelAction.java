@@ -94,7 +94,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 				dontAsk = true;
 			if (isUsed(descriptor))
 				continue;
-			App.closeEditor(descriptor);
+			App.close(descriptor);
 			delete(descriptor);
 			Navigator.refresh(element.getParent());
 		}
@@ -182,7 +182,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 					canBeDeleted = false;
 					continue;
 				}
-				App.closeEditor(descriptor);
+				App.close(descriptor);
 				delete(descriptor);
 			}
 		}

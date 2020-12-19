@@ -37,7 +37,7 @@ public class NavigationLinkHelper implements ILinkHelper {
 					continue;
 				ModelEditorInput input = (ModelEditorInput) ref.getEditorInput();
 				if (element.getContent().equals(input.getDescriptor())) {
-					App.openEditor(element.getContent());
+					App.open(element.getContent());
 				}
 			} catch (PartInitException e) {
 				var log = LoggerFactory.getLogger(getClass());

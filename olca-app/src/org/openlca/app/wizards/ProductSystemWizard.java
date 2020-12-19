@@ -54,7 +54,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			system.referenceProcess = refProcess;
 			system.processes.add(refProcess.id);
 			db.insert(system);
-			App.openEditor(system);
+			App.open(system);
 			return true;
 		}
 
@@ -65,14 +65,14 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			createDao().insert(system);
 			boolean autoComplete = page.addSupplyChain();
 			if (!autoComplete) {
-				App.openEditor(system);
+				App.open(system);
 				return true;
 			}
 			Runner runner = new Runner(system, config);
 			getContainer().run(true, true, runner);
 			system = runner.system;
 			Cache.registerNew(Descriptor.of(system));
-			App.openEditor(system);
+			App.open(system);
 			return true;
 		} catch (Exception e) {
 			log.error("Failed to create model", e);

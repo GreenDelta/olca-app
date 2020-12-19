@@ -56,7 +56,7 @@ class ImpactPage extends ModelPage<Flow> {
 		Action onOpen = Actions.onOpen(() -> {
 			Factor f = Viewers.getFirstSelected(table);
 			if (f != null) {
-				App.openEditor(f.impact);
+				App.open(f.impact);
 			}
 		});
 		Actions.bind(table, onOpen);

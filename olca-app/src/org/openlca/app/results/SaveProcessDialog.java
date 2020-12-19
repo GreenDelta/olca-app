@@ -63,7 +63,7 @@ public final class SaveProcessDialog extends Wizard {
 				}
 				ProcessDao dao = new ProcessDao(Database.get());
 				p = dao.insert(p);
-				App.openEditor(p);
+				App.open(p);
 				m.done();
 			});
 			Navigator.refresh();

@@ -57,7 +57,7 @@ public class ParameterUsageView {
 		var root = node.root();
 		if (root == null || root.model == null)
 			return;
-		App.openEditor(root.model);
+		App.open(root.model);
 	}
 
 	private static class ContentProvider implements ITreeContentProvider {

@@ -26,7 +26,7 @@ import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.actions.OpenMappingAction;
-import org.openlca.app.navigation.actions.OpenScriptAction;
+import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -55,8 +55,9 @@ public class Navigator extends CommonNavigator {
 
 	@Override
 	protected CommonViewer createCommonViewer(Composite aParent) {
-		CommonViewer viewer = super.createCommonViewer(aParent);
-		viewer.getTree().setBackground(Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
+		var viewer = super.createCommonViewer(aParent);
+		viewer.getTree().setBackground(
+			Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
 		return viewer;
 	}
 
@@ -70,7 +71,7 @@ public class Navigator extends CommonNavigator {
 			var elem = Selections.firstOf(evt);
 			if (elem instanceof ModelElement) {
 				var model = ((ModelElement) elem).getContent();
-				App.openEditor(model);
+				App.open(model);
 			} else if (elem instanceof DatabaseElement) {
 				var config = ((DatabaseElement) elem).getContent();
 				if (config != null && !Database.isActive(config)) {

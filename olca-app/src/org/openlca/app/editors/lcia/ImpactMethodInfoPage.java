@@ -82,7 +82,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		Action open = Actions.onOpen(() -> {
 			ImpactCategory i = Viewers.getFirstSelected(indicatorTable);
 			if (i != null) {
-				App.openEditor(i);
+				App.open(i);
 			}
 		});
 		Actions.bind(indicatorTable, add, remove, open, copy);

@@ -176,9 +176,9 @@ public class Widgets {
 		@Override
 		public void linkActivated(HyperlinkEvent e) {
 			if (model instanceof CategorizedEntity)
-				App.openEditor((CategorizedEntity) model);
+				App.open((CategorizedEntity) model);
 			else if (model instanceof CategorizedDescriptor)
-				App.openEditor((CategorizedDescriptor) model);
+				App.open((CategorizedDescriptor) model);
 		}
 
 	}

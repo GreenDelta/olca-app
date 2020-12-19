@@ -63,9 +63,9 @@ class ChartLegend {
 			link.setImage(getImage(colorIndex));
 			Controls.onClick(link, (e) -> {
 				if (model instanceof CategorizedDescriptor) {
-					App.openEditor((CategorizedDescriptor) model);
+					App.open((CategorizedDescriptor) model);
 				} else if (model instanceof CategorizedEntity) {
-					App.openEditor((CategorizedEntity) model);
+					App.open((CategorizedEntity) model);
 				}
 			});
 			createdLinks.push(link);

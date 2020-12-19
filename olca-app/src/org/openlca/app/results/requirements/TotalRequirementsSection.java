@@ -117,7 +117,7 @@ public class TotalRequirementsSection {
 				product = item.asChild().product;
 			}
 			if (product != null) {
-				App.openEditor(product.process);
+				App.open(product.process);
 			}
 		});
 		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree));

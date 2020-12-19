@@ -46,7 +46,7 @@ import org.openlca.util.Strings;
  * The table for the display and editing of inputs or outputs of process
  * exchanges. Avoided products are inputs that are shown on the output site in
  * this table.
- * 
+ *
  */
 class ExchangeTable {
 
@@ -182,7 +182,7 @@ class ExchangeTable {
 					Exchange e = Viewers.getFirstSelected(viewer);
 					if (e == null || e.flow == null)
 						return;
-					App.openEditor(e.flow);
+					App.open(e.flow);
 				});
 		Action openProvider = Actions.create(
 				M.OpenProvider, Images.descriptor(ModelType.PROCESS), () -> {
@@ -192,7 +192,7 @@ class ExchangeTable {
 					ProcessDao dao = new ProcessDao(Database.get());
 					ProcessDescriptor d = dao.getDescriptor(e.defaultProviderId);
 					if (d != null) {
-						App.openEditor(d);
+						App.open(d);
 					}
 				});
 		Actions.bind(viewer, add, remove, qRef,
@@ -208,7 +208,7 @@ class ExchangeTable {
 			}
 			Exchange exchange = Viewers.getFirstSelected(table);
 			if (exchange != null && exchange.flow != null)
-				App.openEditor(exchange.flow);
+				App.open(exchange.flow);
 		});
 	}
 

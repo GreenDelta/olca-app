@@ -147,7 +147,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Action onOpen = Actions.onOpen(() -> {
 			ProjectVariant v = Viewers.getFirstSelected(table);
 			if (v != null) {
-				App.openEditor(v.productSystem);
+				App.open(v.productSystem);
 			}
 		});
 		Action add = Actions.onAdd(() -> {

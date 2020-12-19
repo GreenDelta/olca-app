@@ -83,7 +83,7 @@ class PinBoard {
 			ProcessProduct pp = Viewers.getFirstSelected(table);
 			if (pp == null)
 				return;
-			App.openEditor(pp.process);
+			App.open(pp.process);
 		});
 		Tables.onDoubleClick(table, e -> open.run());
 

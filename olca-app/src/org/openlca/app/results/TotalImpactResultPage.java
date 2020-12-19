@@ -134,11 +134,11 @@ public class TotalImpactResultPage extends FormPage {
 		if (item == null)
 			return;
 		if (item.flow != null) {
-			App.openEditor(item.flow.flow);
+			App.open(item.flow.flow);
 		} else if (item.process != null) {
-			App.openEditor(item.process);
+			App.open(item.process);
 		} else if (item.impact != null) {
-			App.openEditor(item.impact);
+			App.open(item.impact);
 		}
 	}
 
@@ -220,7 +220,7 @@ public class TotalImpactResultPage extends FormPage {
 		private final ContributionImage img = new ContributionImage();
 
 		LabelProvider() {
-			super(dqResult, dqResult != null 
+			super(dqResult, dqResult != null
 					? dqResult.setup.exchangeSystem
 					: null, 6);
 		}

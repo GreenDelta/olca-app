@@ -121,10 +121,10 @@ public class InventoryPage extends FormPage {
 		Action onOpen = Actions.onOpen(() -> {
 			Object obj = Viewers.getFirstSelected(viewer);
 			if (obj instanceof CategorizedDescriptor) {
-				App.openEditor((CategorizedDescriptor) obj);
+				App.open((CategorizedDescriptor) obj);
 			}
 			if (obj instanceof FlowContribution) {
-				App.openEditor(((FlowContribution) obj).item.item);
+				App.open(((FlowContribution) obj).item.item);
 			}
 		});
 		Trees.onDoubleClick(viewer, e -> onOpen.run());

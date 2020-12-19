@@ -40,7 +40,7 @@ class CurrencyTable {
 		Tables.onDoubleClick(table, e -> {
 			Currency c = Viewers.getFirstSelected(table);
 			if (c != null)
-				App.openEditor(c);
+				App.open(c);
 		});
 	}
 

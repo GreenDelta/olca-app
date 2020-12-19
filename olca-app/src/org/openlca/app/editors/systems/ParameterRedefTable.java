@@ -141,7 +141,7 @@ class ParameterRedefTable {
 						? db.get(Process.class, redef.contextId)
 						: db.get(ImpactCategory.class, redef.contextId);
 				if (model != null) {
-					App.openEditor(model);
+					App.open(model);
 				}
 			} else {
 				// global parameter
@@ -151,7 +151,7 @@ class ParameterRedefTable {
 						.filter(g -> Strings.nullOrEqual(g.name, redef.name))
 						.findAny();
 				if (global.isPresent()) {
-					App.openEditor(global.get());
+					App.open(global.get());
 				}
 			}
 		});

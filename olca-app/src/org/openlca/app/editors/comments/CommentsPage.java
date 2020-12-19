@@ -78,7 +78,7 @@ public class CommentsPage extends FormPage {
 			Object refId = args[1];
 			if (type == null || refId == null)
 				return null;
-			App.openEditor(getDescriptor(
+			App.open(getDescriptor(
 					ModelType.valueOf(type.toString()),
 					refId.toString()));
 			return null;
@@ -127,7 +127,7 @@ public class CommentsPage extends FormPage {
 		}
 
 		public void openModel(String type, String refId) {
-			App.openEditor(getDescriptor(ModelType.valueOf(type), refId));
+			App.open(getDescriptor(ModelType.valueOf(type), refId));
 		}
 
 	}

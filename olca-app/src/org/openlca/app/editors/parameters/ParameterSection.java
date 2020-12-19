@@ -337,7 +337,7 @@ public class ParameterSection {
 				Editors.getActivePage().saveEditor(editor, false);
 				var entity = Parameters.rename(
 						param, entity(), Database.get(), name);
-				App.openEditor(entity);
+				App.open(entity);
 			} catch (Exception e) {
 				MsgBox.error("Renaming failed: " + e.getMessage());
 			}

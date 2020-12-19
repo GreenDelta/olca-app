@@ -33,6 +33,13 @@ import org.openlca.app.navigation.actions.db.DbCreateAction;
 import org.openlca.app.navigation.actions.db.DbDeleteAction;
 import org.openlca.app.navigation.actions.db.DbExportAction;
 import org.openlca.app.navigation.actions.db.DbRestoreAction;
+import org.openlca.app.navigation.actions.libraries.DeleteLibraryAction;
+import org.openlca.app.navigation.actions.libraries.ExportLibraryAction;
+import org.openlca.app.navigation.actions.libraries.OpenLibraryAction;
+import org.openlca.app.navigation.actions.libraries.UseLibraryCategoryAction;
+import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
+import org.openlca.app.navigation.actions.scripts.ExportScriptAction;
+import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.actions.db.DbRenameAction;
 import org.openlca.app.rcp.images.Icon;
@@ -108,15 +115,16 @@ public class NavigationMenu extends CommonActionProvider {
 				new CreateModelAction(),
 				new OpenUsageAction(),
 				new DeleteModelAction(),
-				new DeleteLibraryAction(),
 				ValidateAction.forModel());
 
 		// script & mapping actions
 		addActions(selection, menu,
 				new OpenScriptAction(),
 				new OpenMappingAction(),
+				new OpenLibraryAction(),
 				new DeleteScriptAction(),
-				new DeleteMappingAction());
+				new DeleteMappingAction(),
+				new DeleteLibraryAction());
 
 		// DnD actions
 		addActions(selection, menu,
@@ -194,7 +202,8 @@ public class NavigationMenu extends CommonActionProvider {
 		addActions(selection, menu,
 				new ExportAction(),
 				new ExportScriptAction(),
-				new ExportFlowMapAction());
+				new ExportFlowMapAction(),
+				new ExportLibraryAction());
 	}
 
 	public static MenuManager createImportMenu() {

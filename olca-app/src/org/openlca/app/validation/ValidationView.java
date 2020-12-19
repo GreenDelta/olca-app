@@ -75,7 +75,7 @@ public class ValidationView extends ViewPart {
 					: ((StatusEntry) el).status;
 			var d = Daos.categorized(Database.get(), status.modelType)
 					.getDescriptor(status.id);
-			App.openEditor(d);
+			App.open(d);
 		});
 		Action copy = TreeClipboard.onCopy(viewer.getTree());
 		Actions.bind(viewer, new Action(M.ExpandAll) {

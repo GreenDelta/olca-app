@@ -82,7 +82,7 @@ class ProcessContributionSection {
 			else {
 				ReportProcess process = Viewers.getFirstSelected(viewer);
 				if (process != null)
-					App.openEditor(process.descriptor);
+					App.open(process.descriptor);
 			}
 		});
 		Tables.onDeletePressed(viewer, (e) -> onRemove());

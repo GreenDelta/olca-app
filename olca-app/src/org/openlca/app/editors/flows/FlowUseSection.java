@@ -117,7 +117,7 @@ class FlowUseSection {
 		Controls.onClick(link, e -> {
 			ProcessDao dao = new ProcessDao(database);
 			Process p = dao.getForId(d.id);
-			App.openEditor(p);
+			App.open(p);
 		});
 	}
 

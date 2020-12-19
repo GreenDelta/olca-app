@@ -98,11 +98,11 @@ public class App {
 		return val.equals("true");
 	}
 
-	public static void openEditor(CategorizedEntity model) {
-		openEditor(Descriptor.of(model));
+	public static void open(CategorizedEntity model) {
+		open(Descriptor.of(model));
 	}
 
-	public static void openEditor(CategorizedDescriptor d) {
+	public static void open(CategorizedDescriptor d) {
 		// the model editor will try to load the thing from
 		// the database, thus the ID has to be >= 0 here
 		if (d == null || d.type == null || d.id <= 0) {
@@ -116,11 +116,11 @@ public class App {
 		Editors.open(input, editorId);
 	}
 
-	public static void closeEditor(CategorizedEntity entity) {
-		closeEditor(Descriptor.of(entity));
+	public static void close(CategorizedEntity entity) {
+		close(Descriptor.of(entity));
 	}
 
-	public static void closeEditor(Descriptor d) {
+	public static void close(Descriptor d) {
 		IEditorReference ref = findEditor(d);
 		if (ref == null)
 			return;

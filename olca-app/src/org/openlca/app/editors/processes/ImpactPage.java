@@ -115,10 +115,10 @@ class ImpactPage extends ModelPage<Process> {
 			if (c == null)
 				return;
 			if (c.item instanceof IndexFlow) {
-				App.openEditor(((IndexFlow) c.item).flow);
+				App.open(((IndexFlow) c.item).flow);
 			}
 			if (c.item instanceof ImpactDescriptor) {
-				App.openEditor((ImpactDescriptor) c.item);
+				App.open((ImpactDescriptor) c.item);
 			}
 		});
 		Actions.bind(tree, onOpen);

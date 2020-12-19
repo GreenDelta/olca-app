@@ -84,9 +84,9 @@ public class ImpactChecksPage extends FormPage {
 				return;
 			if (c.item instanceof IndexFlow) {
 				IndexFlow f = (IndexFlow) c.item;
-				App.openEditor(f.flow);
+				App.open(f.flow);
 			} else if (c.item instanceof ImpactDescriptor) {
-				App.openEditor((ImpactDescriptor) c.item);
+				App.open((ImpactDescriptor) c.item);
 			}
 		});
 		Actions.bind(tree, onOpen);

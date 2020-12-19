@@ -218,7 +218,7 @@ class ResultPage extends FormPage {
 				Category c = Cache.getEntityCache().get(Category.class, d.id);
 				Navigator.select(c);
 			} else if (data instanceof CategorizedDescriptor) {
-				App.openEditor((CategorizedDescriptor) data);
+				App.open((CategorizedDescriptor) data);
 			}
 		}
 	}

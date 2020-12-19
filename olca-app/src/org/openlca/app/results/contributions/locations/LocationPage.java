@@ -142,9 +142,9 @@ public class LocationPage extends FormPage {
 			if (obj instanceof Contribution) {
 				Contribution<?> c = (Contribution<?>) obj;
 				if (c.item instanceof CategorizedDescriptor) {
-					App.openEditor((CategorizedDescriptor) c.item);
+					App.open((CategorizedDescriptor) c.item);
 				} else if (c.item instanceof CategorizedEntity) {
-					App.openEditor((CategorizedEntity) c.item);
+					App.open((CategorizedEntity) c.item);
 				}
 			}
 		});

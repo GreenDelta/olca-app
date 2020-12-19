@@ -40,7 +40,7 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		Tables.onDoubleClick(getViewer(), e -> {
 			Source s = Viewers.getFirstSelected(getViewer());
 			if (s != null) {
-				App.openEditor(s);
+				App.open(s);
 			}
 		});
 	}

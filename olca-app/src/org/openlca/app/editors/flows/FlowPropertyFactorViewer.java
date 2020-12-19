@@ -69,7 +69,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 			}
 			FlowPropertyFactor factor = getSelected();
 			if (factor != null)
-				App.openEditor(factor.flowProperty);
+				App.open(factor.flowProperty);
 		});
 	}
 

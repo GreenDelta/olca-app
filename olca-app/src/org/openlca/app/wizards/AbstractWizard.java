@@ -56,7 +56,7 @@ abstract class AbstractWizard<T extends CategorizedEntity> extends
 			createDao().insert(model);
 			var descriptor = Descriptor.of(model);
 			Cache.registerNew(descriptor);
-			App.openEditor(model);
+			App.open(model);
 			return true;
 		} catch (Exception e) {
 			log.error("failed to create save " + model, e);

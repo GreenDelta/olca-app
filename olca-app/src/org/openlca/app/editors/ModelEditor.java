@@ -232,7 +232,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 			T clone = (T) model.clone();
 			clone.name = newName;
 			clone = dao.insert(clone);
-			App.openEditor(clone);
+			App.open(clone);
 			Navigator.refresh();
 		} catch (Exception e) {
 			log.error("failed to save " + model + " as " + newName, e);

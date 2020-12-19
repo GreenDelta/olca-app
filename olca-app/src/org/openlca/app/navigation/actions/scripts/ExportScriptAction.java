@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.scripts;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.rcp.images.Icon;

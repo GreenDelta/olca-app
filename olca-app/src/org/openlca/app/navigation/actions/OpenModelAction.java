@@ -40,7 +40,7 @@ class OpenModelAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		for (ModelElement element : elements) {
-			App.openEditor(element.getContent());
+			App.open(element.getContent());
 		}
 	}
 

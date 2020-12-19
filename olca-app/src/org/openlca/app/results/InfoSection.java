@@ -66,12 +66,12 @@ class InfoSection {
 			CategorizedDescriptor d = (CategorizedDescriptor) entity;
 			link.setText(Labels.name(d));
 			link.setImage(Images.get(d));
-			Controls.onClick(link, e -> App.openEditor(d));
+			Controls.onClick(link, e -> App.open(d));
 		} else if (entity instanceof CategorizedEntity) {
 			CategorizedEntity ce = (CategorizedEntity) entity;
 			link.setText(Labels.name(ce));
 			link.setImage(Images.get(ce));
-			Controls.onClick(link, e -> App.openEditor(ce));
+			Controls.onClick(link, e -> App.open(ce));
 		}
 	}
 

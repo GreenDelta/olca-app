@@ -94,7 +94,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 		link.setImage(Images.get(ModelType.PROCESS));
 		Controls.onClick(link, e -> {
 			if (stats != null) {
-				App.openEditor(stats.refProcess);
+				App.open(stats.refProcess);
 			}
 		});
 		bind(link, l -> {
@@ -146,7 +146,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 		Action onOpen = Actions.onOpen(() -> {
 			LinkDegree link = Viewers.getFirstSelected(table);
 			if (link != null) {
-				App.openEditor(link.process);
+				App.open(link.process);
 			}
 		});
 		Tables.onDoubleClick(table, e -> onOpen.run());

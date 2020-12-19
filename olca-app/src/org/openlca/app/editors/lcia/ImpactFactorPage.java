@@ -170,7 +170,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			}
 			ImpactFactor factor = Viewers.getFirstSelected(viewer);
 			if (factor != null && factor.flow != null) {
-				App.openEditor(factor.flow);
+				App.open(factor.flow);
 			}
 		});
 		Action formulaSwitch = new FormulaSwitchAction();

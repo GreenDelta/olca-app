@@ -73,7 +73,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 		super.doSave(monitor);
 		var param = new ParameterDao(Database.get())
 				.getForId(getModel().id);
-		App.closeEditor(param);
+		App.close(param);
 		RenameParameterDialog.open(param, newName);
 	}
 

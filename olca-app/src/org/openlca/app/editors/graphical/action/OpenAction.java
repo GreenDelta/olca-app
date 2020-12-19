@@ -22,7 +22,7 @@ class OpenAction extends EditorAction {
 
 	@Override
 	public void run() {
-		App.openEditor(node.process);
+		App.open(node.process);
 	}
 
 }
