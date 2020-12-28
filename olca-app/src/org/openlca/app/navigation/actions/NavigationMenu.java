@@ -26,7 +26,7 @@ import org.openlca.app.navigation.actions.cloud.ShowCommentsAction;
 import org.openlca.app.navigation.actions.cloud.ShowInHistoryAction;
 import org.openlca.app.navigation.actions.cloud.ToggleTrackingAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
-import org.openlca.app.navigation.actions.db.DbAddLibraryAction;
+import org.openlca.app.navigation.actions.libraries.MountLibraryAction;
 import org.openlca.app.navigation.actions.db.DbCloseAction;
 import org.openlca.app.navigation.actions.db.DbCopyAction;
 import org.openlca.app.navigation.actions.db.DbCreateAction;
@@ -95,7 +95,7 @@ public class NavigationMenu extends CommonActionProvider {
 				new DbRenameAction(),
 				new DbDeleteAction(),
 				new DbCloseAction(),
-				new DbAddLibraryAction());
+				new MountLibraryAction());
 
 		// dev. extensions
 		if (App.runsInDevMode()) {
