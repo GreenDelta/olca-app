@@ -71,7 +71,103 @@ public class MountLibraryAction extends Action implements INavigationAction {
 	}
 
 	public static void run(File file) {
+		if (file == null)
+			return;
+		new FileImportDialog(file).open();
+	}
 
+	private static LibraryInfo extract(File file) {
+		if (file == null)
+			return null;
+
+		// load the library meta data
+		var info = LibraryPackage.getInfo(file);
+		if (info == null) {
+			MsgBox.error(file.getName()
+				+ " is not a valid library package.");
+			return null;
+		}
+
+		// check if it already exists
+		var libDir = Workspace.getLibraryDir();
+		var existing = libDir.getLibraries()
+			.stream()
+			.map(Library::id)
+			.collect(Collectors.toSet());
+		if (existing.contains(info.id())) {
+			MsgBox.error("The library " + info.id() + " already exists.");
+			return null;
+		}
+
+		// extract the library
+		var extracted = App.exec("Extract library", () -> {
+			LibraryPackage.unzip(file, libDir);
+			return true;
+		});
+		if (extracted == null || !extracted || !libDir.exists(info))
+			return null;
+		Navigator.refresh();
+		return info;
+	}
+
+	private static boolean mount(LibraryInfo info, IDatabase db) {
+		if (info == null || db == null)
+			return false;
+		var libDir = Workspace.getLibraryDir();
+		var lib = libDir.get(info.id()).orElse(null);
+		var b = App.exec("Check library", () -> canMount(lib, db));
+		if (b == null || !b)
+			return false;
+		var imp = new LibraryImport(db, lib);
+		App.runWithProgress(
+			"Mounting library " + info.name + " "
+				+ info.version + " to " + db.getName(),
+			imp,
+			Navigator::refresh);
+		return true;
+	}
+
+	private static boolean canMount(Library lib, IDatabase db) {
+		if (lib == null) {
+			MsgBox.error("Library does not exist in workspace.");
+			return false;
+		}
+		if (db.getLibraries().contains(lib.id())) {
+			MsgBox.error("Library " + lib.id() + " is already mounted.");
+			return false;
+		}
+
+		// check that the library processes are not present
+		var processes = new ProcessDao(db).getDescriptors()
+			.stream()
+			.collect(Collectors.toMap(d -> d.refId, d -> d));
+		var techIdx = lib.getProductIndex();
+		for (int i = 0; i < techIdx.getProductCount(); i++) {
+			var product = techIdx.getProduct(i);
+			var refID = product.getProcess().getId();
+			var d = processes.get(refID);
+			if (d == null)
+				continue;
+			MsgBox.error("The library processes are already " +
+				"contained in this database.");
+			return false;
+		}
+
+		// check that the library impacts are not present
+		var impacts = new ImpactCategoryDao(db).getDescriptors()
+			.stream()
+			.collect(Collectors.toMap(d -> d.refId, d -> d));
+		var impactIdx = lib.getImpactIndex();
+		for (int i = 0; i < impactIdx.getImpactCount(); i++) {
+			var impact = impactIdx.getImpact(i);
+			var d = impacts.get(impact.getImpact().getId());
+			if (d == null)
+				continue;
+			MsgBox.error("The library impacts are already " +
+				"contained in this database.");
+			return false;
+		}
+		return true;
 	}
 
 	private static class Dialog extends FormDialog {
@@ -88,14 +184,6 @@ public class MountLibraryAction extends Action implements INavigationAction {
 		Dialog(IDatabase db) {
 			super(UI.shell());
 			this.db = db;
-		}
-
-		Dialog(IDatabase db, File file) {
-			this(db);
-			if (file != null) {
-				externalFile = file;
-				inWorkspaceMode = false;
-			}
 		}
 
 		@Override
@@ -137,7 +225,6 @@ public class MountLibraryAction extends Action implements INavigationAction {
 				onSelectionChanged();
 			});
 			onSelectionChanged(); // init
-
 		}
 
 		private void createCombo(Composite body) {
@@ -208,108 +295,72 @@ public class MountLibraryAction extends Action implements INavigationAction {
 
 		@Override
 		protected void okPressed() {
-			// mount a workspace library
-			if (inWorkspaceMode) {
-				if (workspaceLib == null)
-					return;
-				mount(workspaceLib);
-				return;
-			}
-
-			// import a library from a file
-			if (externalFile == null)
-				return;
-			var info = LibraryPackage.getInfo(externalFile);
-			if (info == null) {
-				MsgBox.error(externalFile.getName() +
-					" is not a valid library package.");
-				return;
-			}
-
-			// check if it already exists
-			var libDir = Workspace.getLibraryDir();
-			var existing = libDir.getLibraries()
-				.stream()
-				.map(Library::id)
-				.collect(Collectors.toSet());
-			if (existing.contains(info.id())) {
-				MsgBox.error("The library " + info.id() + " already exists.");
-				return;
-			}
-
-			// extract the library and mount it
-			var extracted = App.exec("Extract library", () -> {
-				LibraryPackage.unzip(externalFile, libDir);
-				return true;
-			});
-			if (extracted != null && extracted) {
-				// mounting could still fail but we need to
-				// refresh the navigation because the library
-				// was extracted
-				App.runInUI("Update navigation", Navigator::refresh);
-				mount(info);
-			}
-		}
-
-		private void mount(LibraryInfo info) {
+			var info = inWorkspaceMode
+				? workspaceLib
+				: extract(externalFile);
 			if (info == null)
 				return;
-			var libDir = Workspace.getLibraryDir();
-			var lib = libDir.get(info.id()).orElse(null);
-			var b = App.exec("Check library", () -> canMount(lib));
-			if (b == null || !b)
-				return;
-			var imp = new LibraryImport(db, lib);
-			super.okPressed();
-			App.runWithProgress(
-				"Mounting library " + info.name + " "
-					+ info.version + " to " + db.getName(),
-				imp,
-				Navigator::refresh);
+			if (mount(info, db)) {
+				super.okPressed();
+			}
+		}
+	}
+
+	private static class FileImportDialog extends FormDialog {
+
+		private final File file;
+		private boolean intoDB = false;
+
+		FileImportDialog(File file) {
+			super(UI.shell());
+			this.file = file;
 		}
 
-		private boolean canMount(Library lib) {
-			if (lib == null) {
-				MsgBox.error("Library does not exist in workspace.");
-				return false;
-			}
-			if (db.getLibraries().contains(lib.id())) {
-				MsgBox.error("Library " + lib.id() + " is already mounted.");
-				return false;
-			}
+		@Override
+		protected void configureShell(Shell newShell) {
+			super.configureShell(newShell);
+			newShell.setText("Import library from file");
+		}
 
-			// check that the library processes are not present
-			var processes = new ProcessDao(db).getDescriptors()
-				.stream()
-				.collect(Collectors.toMap(d -> d.refId, d -> d));
-			var techIdx = lib.getProductIndex();
-			for (int i = 0; i < techIdx.getProductCount(); i++) {
-				var product = techIdx.getProduct(i);
-				var refID = product.getProcess().getId();
-				var d = processes.get(refID);
-				if (d == null)
-					continue;
-				MsgBox.error("The library processes are already " +
-					"contained in this database.");
-				return false;
-			}
+		@Override
+		protected Point getInitialSize() {
+			return new Point(500, 350);
+		}
 
-			// check that the library impacts are not present
-			var impacts = new ImpactCategoryDao(db).getDescriptors()
-				.stream()
-				.collect(Collectors.toMap(d -> d.refId, d -> d));
-			var impactIdx = lib.getImpactIndex();
-			for (int i = 0; i < impactIdx.getImpactCount(); i++) {
-				var impact = impactIdx.getImpact(i);
-				var d = impacts.get(impact.getImpact().getId());
-				if (d == null)
-					continue;
-				MsgBox.error("The library impacts are already " +
-					"contained in this database.");
-				return false;
-			}
+		@Override
+		protected void createFormContent(IManagedForm mform) {
+			var tk = mform.getToolkit();
+			var body = UI.formBody(mform.getForm(), tk);
+			UI.gridLayout(body, 1);
 
-			return true;
+			var workspaceCheck = tk.createButton(
+				body, "Save in workspace only", SWT.RADIO);
+			workspaceCheck.setSelection(true);
+
+			var dbCheck = tk.createButton(
+				body, "Add library to active database", SWT.RADIO);
+			dbCheck.setSelection(false);
+			var db = Database.get();
+			dbCheck.setEnabled(db != null);
+
+			Controls.onSelect(workspaceCheck,
+				e -> intoDB = dbCheck.getSelection());
+			Controls.onSelect(dbCheck,
+				e -> intoDB = dbCheck.getSelection());
+		}
+
+		@Override
+		protected void okPressed() {
+			var info = extract(file);
+			if (info == null)
+				return;
+			if (!intoDB) {
+				super.okPressed();
+				return;
+			}
+			if (mount(info, Database.get())) {
+				super.okPressed();
+			}
 		}
 	}
 }
