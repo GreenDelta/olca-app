@@ -20,6 +20,7 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.matrix.solvers.IMatrixSolver;
 import org.openlca.core.matrix.solvers.JavaSolver;
 import org.openlca.core.model.CategorizedEntity;
@@ -80,7 +81,7 @@ public class App {
 	 */
 	public static String getVersion() {
 		return RcpActivator.getDefault()
-				.getBundle().getVersion().toString();
+			.getBundle().getVersion().toString();
 	}
 
 	public static boolean isCommentingEnabled() {
@@ -111,7 +112,7 @@ public class App {
 		}
 		log.trace("open editor for {} ", d);
 		String editorId = "editors." + d.type.getModelClass()
-				.getSimpleName().toLowerCase();
+			.getSimpleName().toLowerCase();
 		var input = new ModelEditorInput(d);
 		Editors.open(input, editorId);
 	}
@@ -197,7 +198,7 @@ public class App {
 
 	public static void runWithProgress(String name, Runnable runnable) {
 		var progress = PlatformUI.getWorkbench()
-				.getProgressService();
+			.getProgressService();
 		try {
 			progress.run(true, false, (monitor) -> {
 				monitor.beginTask(name, IProgressMonitor.UNKNOWN);
@@ -210,7 +211,7 @@ public class App {
 	}
 
 	public static void runWithProgress(String name, Runnable fn,
-			Runnable callback) {
+									   Runnable callback) {
 		var service = PlatformUI.getWorkbench().getProgressService();
 		try {
 			service.run(true, false, m -> {
@@ -228,23 +229,41 @@ public class App {
 	}
 
 	/**
-	 * Shows a progress indicator while running the given function and returns the
-	 * result of that function. Note that the result can be null when the function
-	 * call failed.
+	 * Shows a progress indicator while running the given function in a separate
+	 * thread. The calling thread is blocked while the given function is
+	 * executed. It returns the result of the given function or `null` when
+	 * calling that function failed.
 	 */
 	public static <T> T exec(String task, Supplier<T> fn) {
 		var ref = new AtomicReference<T>();
 		try {
 			PlatformUI.getWorkbench().getProgressService()
-					.busyCursorWhile((monitor) -> {
-						monitor.beginTask(task, IProgressMonitor.UNKNOWN);
-						ref.set(fn.get());
-						monitor.done();
-					});
+				.busyCursorWhile((monitor) -> {
+					monitor.beginTask(task, IProgressMonitor.UNKNOWN);
+					ref.set(fn.get());
+					monitor.done();
+				});
 		} catch (Exception e) {
-			log.error("exec " + task + " failed", e);
+			ErrorReporter.on("exec " + task + " failed", e);
 		}
 		return ref.get();
+	}
+
+	/**
+	 * Blocks the current thread while running the given function in a separate
+	 * non-UI thread.
+	 */
+	public static void exec(String task, Runnable fn) {
+		try {
+			PlatformUI.getWorkbench().getProgressService()
+				.busyCursorWhile(monitor -> {
+					monitor.beginTask(task, IProgressMonitor.UNKNOWN);
+					fn.run();
+					monitor.done();
+				});
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to execute task: " + task, e);
+		}
 	}
 
 	/**

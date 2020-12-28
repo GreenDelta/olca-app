@@ -37,6 +37,7 @@ import org.openlca.core.database.ProcessDao;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryImport;
 import org.openlca.core.library.LibraryInfo;
+import org.openlca.core.library.LibraryPackage;
 import org.openlca.util.Strings;
 
 public class MountLibraryAction extends Action implements INavigationAction {
@@ -192,14 +193,44 @@ public class MountLibraryAction extends Action implements INavigationAction {
 
 		@Override
 		protected void okPressed() {
+			// mount a workspace library
 			if (inWorkspaceMode) {
 				if (workspaceLib == null)
 					return;
 				mount(workspaceLib);
 				return;
 			}
-		}
 
+			// import a library from a file
+			if (externalFile == null)
+				return;
+			var info = LibraryPackage.getInfo(externalFile);
+			if (info == null) {
+				MsgBox.error(externalFile.getName() +
+					" is not a valid library package.");
+				return;
+			}
+
+			// check if it already exists
+			var libDir = Workspace.getLibraryDir();
+			var existing = libDir.getLibraries()
+				.stream()
+				.map(Library::id)
+				.collect(Collectors.toSet());
+			if (existing.contains(info.id())) {
+				MsgBox.error("The library " + info.id() + " already exists.");
+				return;
+			}
+
+			// extract the library and mount it
+			var extracted = App.exec("Extract library", () -> {
+				LibraryPackage.unzip(externalFile, libDir);
+				return true;
+			});
+			if (extracted != null && extracted) {
+				mount(info);
+			}
+		}
 
 		private void mount(LibraryInfo info) {
 			if (info == null)
@@ -207,7 +238,7 @@ public class MountLibraryAction extends Action implements INavigationAction {
 			var libDir = Workspace.getLibraryDir();
 			var lib = libDir.get(info.id()).orElse(null);
 			var b = App.exec("Check library", () -> canMount(lib));
-			if (!b)
+			if (b == null || !b)
 				return;
 			var imp = new LibraryImport(db, lib);
 			super.okPressed();
@@ -259,8 +290,7 @@ public class MountLibraryAction extends Action implements INavigationAction {
 				return false;
 			}
 
-			return false;
+			return true;
 		}
-
 	}
 }
