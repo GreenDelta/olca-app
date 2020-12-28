@@ -16,6 +16,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.devtools.SaveScriptDialog;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.db.DbRestoreAction;
+import org.openlca.app.navigation.actions.libraries.MountLibraryAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
@@ -86,6 +87,9 @@ public class FileImport {
 				break;
 			case JSON_LD_ZIP:
 				JsonImportWizard.of(file);
+				break;
+			case LIBRARY_PACKAGE:
+				MountLibraryAction.run(file);
 				break;
 			case MAPPING_CSV:
 				importMappingFile(file);

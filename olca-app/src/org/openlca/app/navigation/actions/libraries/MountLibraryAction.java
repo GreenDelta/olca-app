@@ -70,6 +70,10 @@ public class MountLibraryAction extends Action implements INavigationAction {
 		new Dialog(db).open();
 	}
 
+	public static void run(File file) {
+
+	}
+
 	private static class Dialog extends FormDialog {
 
 		private final IDatabase db;
@@ -84,6 +88,14 @@ public class MountLibraryAction extends Action implements INavigationAction {
 		Dialog(IDatabase db) {
 			super(UI.shell());
 			this.db = db;
+		}
+
+		Dialog(IDatabase db, File file) {
+			this(db);
+			if (file != null) {
+				externalFile = file;
+				inWorkspaceMode = false;
+			}
 		}
 
 		@Override
@@ -165,7 +177,10 @@ public class MountLibraryAction extends Action implements INavigationAction {
 			var fileComp = tk.createComposite(body);
 			UI.gridLayout(fileComp, 2, 10, 0);
 			UI.gridData(fileComp, true, false);
-			fileText = tk.createText(fileComp, "");
+			fileText = tk.createText(fileComp,
+				externalFile == null
+					? ""
+					: externalFile.getAbsolutePath());
 			fileText.setEditable(false);
 			UI.gridData(fileText, true, false);
 			fileBtn = tk.createButton(fileComp, "Browse", SWT.NONE);
@@ -228,6 +243,10 @@ public class MountLibraryAction extends Action implements INavigationAction {
 				return true;
 			});
 			if (extracted != null && extracted) {
+				// mounting could still fail but we need to
+				// refresh the navigation because the library
+				// was extracted
+				App.runInUI("Update navigation", Navigator::refresh);
 				mount(info);
 			}
 		}
