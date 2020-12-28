@@ -3,6 +3,7 @@ package org.openlca.app.navigation.actions.libraries;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -31,6 +32,8 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ImpactCategoryDao;
+import org.openlca.core.database.ProcessDao;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryImport;
 import org.openlca.core.library.LibraryInfo;
@@ -167,7 +170,7 @@ public class MountLibraryAction extends Action implements INavigationAction {
 			fileBtn = tk.createButton(fileComp, "Browse", SWT.NONE);
 			Controls.onSelect(fileBtn, _e -> {
 				var file = FileChooser.open("*.zip");
-				if (file == null )
+				if (file == null)
 					return;
 				externalFile = file;
 				fileText.setText(file.getAbsolutePath());
@@ -189,20 +192,75 @@ public class MountLibraryAction extends Action implements INavigationAction {
 
 		@Override
 		protected void okPressed() {
-			if (inWorkspaceMode && workspaceLib == null)
+			if (inWorkspaceMode) {
+				if (workspaceLib == null)
+					return;
+				mount(workspaceLib);
 				return;
-			var dir = Workspace.getLibraryDir()
-				.getFolder(workspaceLib);
-			if (!dir.exists())
+			}
+		}
+
+
+		private void mount(LibraryInfo info) {
+			if (info == null)
 				return;
-			var imp = new LibraryImport(db, new Library(dir));
+			var libDir = Workspace.getLibraryDir();
+			var lib = libDir.get(info.id()).orElse(null);
+			var b = App.exec("Check library", () -> canMount(lib));
+			if (!b)
+				return;
+			var imp = new LibraryImport(db, lib);
 			super.okPressed();
 			App.runWithProgress(
-				"Mount library " + workspaceLib.name
-					+ " " + workspaceLib.version
-					+ " to " + db.getName(),
+				"Mounting library " + info.name + " "
+					+ info.version + " to " + db.getName(),
 				imp,
 				Navigator::refresh);
 		}
+
+		private boolean canMount(Library lib) {
+			if (lib == null) {
+				MsgBox.error("Library does not exist in workspace.");
+				return false;
+			}
+			if (db.getLibraries().contains(lib.id())) {
+				MsgBox.error("Library " + lib.id() + " is already mounted.");
+				return false;
+			}
+
+			// check that the library processes are not present
+			var processes = new ProcessDao(db).getDescriptors()
+				.stream()
+				.collect(Collectors.toMap(d -> d.refId, d -> d));
+			var techIdx = lib.getProductIndex();
+			for (int i = 0; i < techIdx.getProductCount(); i++) {
+				var product = techIdx.getProduct(i);
+				var refID = product.getProcess().getId();
+				var d = processes.get(refID);
+				if (d == null)
+					continue;
+				MsgBox.error("The library processes are already " +
+					"contained in this database.");
+				return false;
+			}
+
+			// check that the library impacts are not present
+			var impacts = new ImpactCategoryDao(db).getDescriptors()
+				.stream()
+				.collect(Collectors.toMap(d -> d.refId, d -> d));
+			var impactIdx = lib.getImpactIndex();
+			for (int i = 0; i < impactIdx.getImpactCount(); i++) {
+				var impact = impactIdx.getImpact(i);
+				var d = impacts.get(impact.getImpact().getId());
+				if (d == null)
+					continue;
+				MsgBox.error("The library impacts are already " +
+					"contained in this database.");
+				return false;
+			}
+
+			return false;
+		}
+
 	}
 }

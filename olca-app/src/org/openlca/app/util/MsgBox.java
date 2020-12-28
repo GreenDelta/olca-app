@@ -45,12 +45,12 @@ public class MsgBox {
 	public static void error(String title, String text) {
 		new BoxJob(title, text, Type.ERROR).schedule();
 	}
-	
+
 	private static class BoxJob extends UIJob {
 
-		private String title;
-		private String message;
-		private Type type;
+		private final String title;
+		private final String message;
+		private final Type type;
 
 		public BoxJob(String title, String message, Type type) {
 			super("Open message box");
