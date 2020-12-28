@@ -95,7 +95,7 @@ class InfoPage extends ModelPage<Process> {
 
 	private void createTechnologySection(Composite body, FormToolkit tk) {
 		Composite comp = UI.formSection(body, tk, M.Technology, 3);
-		multiText(comp, M.Description, "documentation.technology", 40);
+		multiText(comp, M.Description, "documentation.technology");
 	}
 
 	private void createTimeSection(Composite body, FormToolkit tk) {
@@ -119,7 +119,7 @@ class InfoPage extends ModelPage<Process> {
 		DQSystemViewer dqViewer = new DQSystemViewer(comp);
 		dqViewer.setNullable(true);
 		dqViewer.setInput(Database.get());
-		getBinding().onModel(() -> getModel(), property, dqViewer);
+		getBinding().onModel(this::getModel, property, dqViewer);
 		dqViewer.setEnabled(isEditable());
 		new CommentControl(comp, getToolkit(), property, getComments());
 	}
@@ -169,7 +169,7 @@ class InfoPage extends ModelPage<Process> {
 		LocationViewer combo = new LocationViewer(comp);
 		combo.setNullable(true);
 		combo.setInput(Database.get());
-		getBinding().onModel(() -> getModel(), "location", combo);
+		getBinding().onModel(this::getModel, "location", combo);
 		combo.setEnabled(isEditable());
 		combo.addSelectionChangedListener(loc -> {
 			String linkText = loc != null && loc.geodata != null

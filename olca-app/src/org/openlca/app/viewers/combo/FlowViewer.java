@@ -82,9 +82,10 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 		public Image getColumnImage(Object obj, int col) {
 			if (!(obj instanceof FlowDescriptor))
 				return null;
+			var d = (FlowDescriptor) obj;
 			if (col == 0)
-				return Images.get((FlowDescriptor) obj);
-			if (col == 2)
+				return Images.get(d);
+			if (col == 2 && d.location != null)
 				return Images.get(ModelType.LOCATION);
 			return null;
 		}
@@ -93,14 +94,14 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 		public String getColumnText(Object obj, int col) {
 			if (!(obj instanceof FlowDescriptor))
 				return null;
-			FlowDescriptor flow = (FlowDescriptor) obj;
+			var flow = (FlowDescriptor) obj;
 			switch (col) {
 			case 0:
 				return flow.name;
 			case 1:
 				if (flow.category == null)
 					return null;
-				Category category = cache.get(Category.class, flow.category);
+				var category = cache.get(Category.class, flow.category);
 				return CategoryPath.getFull(category);
 			case 2:
 				if (flow.location == null)

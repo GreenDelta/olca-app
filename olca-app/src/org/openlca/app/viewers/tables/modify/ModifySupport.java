@@ -282,7 +282,7 @@ public class ModifySupport<T> {
 				return val;
 			int idx = (Integer) val;
 			if (idx > -1)
-				return new Integer(idx);
+				return idx;
 			String cellText = getCellText();
 			return getIndexForText(cellText);
 		}
@@ -297,14 +297,14 @@ public class ModifySupport<T> {
 
 		private Integer getIndexForText(String cellText) {
 			if (cellText == null)
-				return new Integer(-1);
+				return -1;
 			String term = cellText.trim();
 			String[] items = getItems();
 			for (int i = 0; i < items.length; i++) {
 				if (term.equals(items[i]))
-					return new Integer(i);
+					return i;
 			}
-			return new Integer(-1);
+			return -1;
 		}
 	}
 }

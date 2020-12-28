@@ -59,13 +59,11 @@ public class ProcessEditor extends ModelEditor<Process> {
 						ProcessProduct.of(p),
 						Database.get());
 				var qref = p.quantitativeReference;
-				var _qref = exchanges.stream()
-						.filter(e -> Objects.equals(qref.flow, e.flow)
-								& qref.isInput == e.isInput)
-						.findFirst().orElse(null);
-				if (_qref != null) {
-					p.quantitativeReference = _qref;
-				}
+				exchanges.stream()
+					.filter(e -> Objects.equals(qref.flow, e.flow)
+						& qref.isInput == e.isInput)
+					.findFirst()
+					.ifPresent(_qref -> p.quantitativeReference = _qref);
 				p.exchanges.clear();
 				p.exchanges.addAll(exchanges);
 			}
