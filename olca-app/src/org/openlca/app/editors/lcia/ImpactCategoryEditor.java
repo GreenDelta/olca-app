@@ -84,6 +84,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 			addPage(ParameterPage.create(this));
 			addPage(new GeoPage(this));
 			// addPage(new ShapeFilePage(this));
+			addPage(new ImpactSimilaritiesPage(this));
 			addCommentPage();
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
@@ -112,12 +113,15 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 		}
 
 		private void createUsedTable(FormToolkit tk, Composite body) {
-			var section = UI.section(body, tk, "Used in impact assessment methods");
+			var section = UI.section(body, tk,
+					"Used in impact assessment methods");
 			UI.gridData(section, true, true);
 			var comp = UI.sectionClient(section, tk, 1);
 			var table = Tables.createViewer(comp, M.Name, M.Category);
 			table.setLabelProvider(new MethodLabel());
 			Tables.bindColumnWidths(table, 0.5, 0.5);
+
+			// bind actions
 			var onCopy = TableClipboard.onCopy(table);
 			var onOpen = Actions.onOpen(() -> {
 				ImpactMethodDescriptor m = Viewers.getFirstSelected(table);
@@ -128,6 +132,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 			Actions.bind(table, onCopy, onOpen);
 			Tables.onDoubleClick(table, _e -> onOpen.run());
 
+			// set input
 			var d = Descriptor.of(getModel());
 			var methods = IUseSearch.FACTORY
 				.createFor(ModelType.IMPACT_CATEGORY, Database.get())
@@ -137,7 +142,6 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 				.sorted((m1, m2) -> Strings.compare(m1.name, m2.name))
 				.collect(Collectors.toList());
 			table.setInput(methods);
-
 		}
 
 		private static class MethodLabel extends LabelProvider

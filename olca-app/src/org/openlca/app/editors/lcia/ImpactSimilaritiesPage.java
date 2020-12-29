@@ -5,12 +5,22 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.NativeSql;
@@ -31,12 +41,31 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 		var tk = mform.getToolkit();
 		var body = UI.formBody(form, tk);
 		var section = UI.section(body, tk,
-			"Similarities to other impact categories");
+				"Similarity to other impact categories");
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk, 1);
 		var table = Tables.createViewer(
-			comp, M.Name, "Similarity");
+				comp, M.Name, "Similarity");
+		table.setLabelProvider(new Label());
+		Tables.bindColumnWidths(table, 0.5, 0.5);
 
+		// bind actions
+		var onCopy = TableClipboard.onCopy(table);
+		var onOpen = Actions.onOpen(() -> {
+			Item item = Viewers.getFirstSelected(table);
+			if (item != null) {
+				App.open(item.impact);
+			}
+		});
+		Actions.bind(table, onCopy, onOpen);
+		Tables.onDoubleClick(table, _e -> onOpen.run());
+
+		// set input
+		form.reflow(true);
+		App.runInUI("Calculate similarities", () -> {
+			var items = Item.listOf(getModel());
+			table.setInput(items);
+		});
 	}
 
 	private static class Item {
@@ -48,7 +77,7 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 			this.similarity = similarity;
 		}
 
-		List<Item> listOf(ImpactCategory impact) {
+		static List<Item> listOf(ImpactCategory impact) {
 			var db = Database.get();
 			if (impact == null || db == null)
 				return Collections.emptyList();
@@ -59,7 +88,7 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 			NativeSql.on(db).query(sql, r -> {
 				var flowID = r.getLong(1);
 				flowIndex.computeIfAbsent(
-					flowID, _key -> flowIndex.size());
+						flowID, _key -> flowIndex.size());
 				return true;
 			});
 
@@ -67,8 +96,8 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 			var conversions = ConversionTable.create(db);
 			var factors = new HashMap<Long, double[]>();
 			sql = "select f_impact_category, f_flow, " +
-				"value, f_unit, f_flow_property_factor " +
-				"from tbl_impact_factors";
+					"value, f_unit, f_flow_property_factor " +
+					"from tbl_impact_factors";
 			NativeSql.on(db).query(sql, r -> {
 				var impactID = r.getLong(1);
 				var flowID = r.getLong(2);
@@ -76,17 +105,17 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 				if (flowIdx == null)
 					return true;
 				var values = factors.computeIfAbsent(
-					impactID, _key -> new double[flowIndex.size()]);
+						impactID, _key -> new double[flowIndex.size()]);
 
 				var factor = r.getDouble(3);
 				var unitF = conversions.getUnitFactor(r.getLong(4));
 				factor = unitF == 0
-					? factor
-					: factor / unitF;
+						? factor
+						: factor / unitF;
 				var propF = conversions.getPropertyFactor(r.getLong(5));
 				factor = propF == 0
-					? factor
-					: factor * propF;
+						? factor
+						: factor * propF;
 				values[flowIdx] = factor;
 				return true;
 			});
@@ -135,14 +164,49 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 			items.sort((i1, i2) -> {
 				int c = -Double.compare(i1.similarity, i2.similarity);
 				return c != 0
-					? c
-					: Strings.compare(
-					Labels.name(i1.impact), Labels.name(i2.impact));
+						? c
+						: Strings.compare(
+								Labels.name(i1.impact), Labels.name(i2.impact));
 			});
 
 			return items;
 		}
 	}
 
+	private static class Label extends LabelProvider
+			implements ITableLabelProvider {
+
+		private final ContributionImage img = new ContributionImage();
+
+		@Override
+		public void dispose() {
+			img.dispose();
+			super.dispose();
+		}
+
+		@Override
+		public Image getColumnImage(Object obj, int col) {
+			if (!(obj instanceof Item))
+				return null;
+			var item = (Item) obj;
+			if (col == 0)
+				return Images.get(item.impact);
+			return col != 1
+					? null
+					: img.getForTable(-item.similarity);
+		}
+
+		@Override
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof Item))
+				return null;
+			var item = (Item) obj;
+			if (col == 0)
+				return Labels.name(item.impact);
+			return col != 1
+					? null
+					: Numbers.format(100 * item.similarity) + "%";
+		}
+	}
 
 }
