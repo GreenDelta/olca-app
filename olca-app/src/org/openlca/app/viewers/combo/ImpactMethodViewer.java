@@ -1,5 +1,7 @@
 package org.openlca.app.viewers.combo;
 
+import java.util.HashSet;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -7,11 +9,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -22,10 +26,38 @@ public class ImpactMethodViewer extends
 	AbstractComboViewer<ImpactMethodDescriptor> {
 
 	private LabelProvider _label;
+	private Boolean _withCategories;
 
 	public ImpactMethodViewer(Composite parent) {
 		super(parent);
 		setInput(new ImpactMethodDescriptor[0]);
+		var combo = getViewer().getTableCombo();
+		combo.setShowTableHeader(false);
+		// we only show the category column when there
+		// are impact methods in different categories
+		// in the database.
+		if (!withCategories()) {
+			combo.setShowTableLines(false);
+		}
+	}
+
+	private boolean withCategories() {
+		if (_withCategories != null)
+			return _withCategories;
+		var db = Database.get();
+		if (db == null) {
+			_withCategories = false;
+			return false;
+		}
+		String sql = "select f_category from tbl_impact_methods";
+		var ids = new HashSet<Long>();
+		NativeSql.on(db).query(sql, r -> {
+			var catID = r.getLong(1);
+			ids.add(r.wasNull() ? 0L : catID);
+			return true;
+		});
+		_withCategories = ids.size() > 1;
+		return _withCategories;
 	}
 
 	@Override
@@ -35,10 +67,9 @@ public class ImpactMethodViewer extends
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[]{
-			M.Name,
-			M.Category
-		};
+		return withCategories()
+			? new String[]{M.Name, M.Category}
+			: new String[]{M.Name};
 	}
 
 	public void setInput(IDatabase db) {
