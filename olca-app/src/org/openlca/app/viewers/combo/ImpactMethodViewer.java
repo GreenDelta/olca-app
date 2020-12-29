@@ -5,6 +5,9 @@ import java.util.HashSet;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
@@ -39,6 +42,32 @@ public class ImpactMethodViewer extends
 		if (!withCategories()) {
 			combo.setShowTableLines(false);
 		}
+
+		combo.addTextControlKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				var c = Character.toLowerCase(e.character);
+				if (!Character.isLetterOrDigit(c))
+					return;
+				var input = getViewer().getInput();
+				if (!(input instanceof Object[]))
+					return;
+				var objects = (Object[]) input;
+				for (var obj : objects) {
+					if (!(obj instanceof ImpactMethodDescriptor))
+						continue;
+					var d = (ImpactMethodDescriptor) obj;
+					var label = Labels.name(d);
+					if (label == null || label.isBlank())
+						continue;
+					var first = Character.toLowerCase(label.charAt(0));
+					if (first == c) {
+						getViewer().setSelection(new StructuredSelection(d));
+						break;
+					}
+				}
+			}
+		});
 	}
 
 	private boolean withCategories() {
