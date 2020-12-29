@@ -11,6 +11,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.components.TextDropComponent;
+import org.openlca.app.util.Labels;
 import org.openlca.cloud.model.Comments;
 import org.openlca.core.model.CategorizedEntity;
 
@@ -18,17 +19,16 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 
 	public ModelPage(ModelEditor<T> editor, String id, String title) {
 		super(editor, id, title);
-		editor.onSaved(this::updateFormTitle);
-	}
-
-	private void updateFormTitle() {
-		if (getManagedForm() == null || getManagedForm().getForm() == null)
-			return;
-		getManagedForm().getForm().setText(getFormTitle());
+		editor.onSaved(() -> {
+			var mform = getManagedForm();
+			if (mform == null || mform.getForm() == null)
+				return;
+			mform.getForm().setText(getFormTitle());
+		});
 	}
 
 	public String getFormTitle() {
-		return getTitle() + ": " + getModel().name;
+		return getTitle() + ": " + Labels.name(getModel());
 	}
 
 	@SuppressWarnings("unchecked")
