@@ -12,13 +12,11 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.UncertaintyType;
-import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
@@ -49,18 +47,10 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 			return getModelLabel((Descriptor) element);
 		if (element instanceof RootEntity)
 			return getModelLabel((RootEntity) element);
-		if (element instanceof ImpactCategory)
-			return ((ImpactCategory) element).name;
 		if (element instanceof Exchange)
 			return getModelLabel(((Exchange) element).flow);
 		if (element instanceof FlowPropertyFactor)
 			return getModelLabel(((FlowPropertyFactor) element).flowProperty);
-		if (element instanceof Unit)
-			return ((Unit) element).name;
-		if (element instanceof Location)
-			return ((Location) element).name;
-		if (element instanceof Descriptor)
-			return Labels.name((Descriptor) element);
 		if (element instanceof Enum<?>)
 			return getEnumText(element);
 		if (element != null)

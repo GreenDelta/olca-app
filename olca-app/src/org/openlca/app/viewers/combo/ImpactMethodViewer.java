@@ -5,9 +5,6 @@ import java.util.HashSet;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
@@ -26,7 +23,7 @@ import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
 public class ImpactMethodViewer extends
-	AbstractComboViewer<ImpactMethodDescriptor> {
+		AbstractComboViewer<ImpactMethodDescriptor> {
 
 	private LabelProvider _label;
 	private Boolean _withCategories;
@@ -42,32 +39,6 @@ public class ImpactMethodViewer extends
 		if (!withCategories()) {
 			combo.setShowTableLines(false);
 		}
-
-		combo.addTextControlKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				var c = Character.toLowerCase(e.character);
-				if (!Character.isLetterOrDigit(c))
-					return;
-				var input = getViewer().getInput();
-				if (!(input instanceof Object[]))
-					return;
-				var objects = (Object[]) input;
-				for (var obj : objects) {
-					if (!(obj instanceof ImpactMethodDescriptor))
-						continue;
-					var d = (ImpactMethodDescriptor) obj;
-					var label = Labels.name(d);
-					if (label == null || label.isBlank())
-						continue;
-					var first = Character.toLowerCase(label.charAt(0));
-					if (first == c) {
-						getViewer().setSelection(new StructuredSelection(d));
-						break;
-					}
-				}
-			}
-		});
 	}
 
 	private boolean withCategories() {
@@ -97,8 +68,8 @@ public class ImpactMethodViewer extends
 	@Override
 	protected String[] getColumnHeaders() {
 		return withCategories()
-			? new String[]{M.Name, M.Category}
-			: new String[]{M.Name};
+				? new String[] { M.Name, M.Category }
+				: new String[] { M.Name };
 	}
 
 	public void setInput(IDatabase db) {
@@ -126,7 +97,7 @@ public class ImpactMethodViewer extends
 	}
 
 	private static class LabelProvider extends BaseLabelProvider
-		implements ITableLabelProvider {
+			implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object o, int col) {
@@ -152,8 +123,8 @@ public class ImpactMethodViewer extends
 			var cache = Cache.getEntityCache();
 			var category = cache.get(Category.class, impact.category);
 			return category == null
-				? null
-				: CategoryPath.getFull(category);
+					? null
+					: CategoryPath.getFull(category);
 		}
 	}
 
