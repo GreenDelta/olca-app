@@ -1,15 +1,20 @@
 package org.openlca.app.editors.lcia;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
@@ -18,9 +23,22 @@ import org.openlca.app.editors.lcia.geo.GeoPage;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
 import org.openlca.app.editors.parameters.ParameterPage;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.TableClipboard;
+import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.database.usage.IUseSearch;
+import org.openlca.core.model.Category;
 import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.io.CategoryPath;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +58,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+		throws PartInitException {
 		super.init(site, input);
 		// evalFormulas() takes quite long; we skip this for LCIA methods
 		parameterSupport = new ParameterChangeSupport();
@@ -81,15 +99,77 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			ScrolledForm form = UI.formHeader(this);
-			FormToolkit toolkit = mform.getToolkit();
-			Composite body = UI.formBody(form, toolkit);
-			InfoSection info = new InfoSection(getEditor());
-			info.render(body, toolkit);
-			Composite comp = info.getContainer();
+			var form = UI.formHeader(this);
+			var tk = mform.getToolkit();
+			var body = UI.formBody(form, tk);
+			var info = new InfoSection(getEditor());
+			info.render(body, tk);
+			var comp = info.getContainer();
 			text(comp, M.ReferenceUnit, "referenceUnit");
+			createUsedTable(tk, body);
 			body.setFocus();
 			form.reflow(true);
+		}
+
+		private void createUsedTable(FormToolkit tk, Composite body) {
+			var section = UI.section(body, tk, "Used in impact assessment methods");
+			UI.gridData(section, true, true);
+			var comp = UI.sectionClient(section, tk, 1);
+			var table = Tables.createViewer(comp, M.Name, M.Category);
+			table.setLabelProvider(new MethodLabel());
+			Tables.bindColumnWidths(table, 0.5, 0.5);
+			var onCopy = TableClipboard.onCopy(table);
+			var onOpen = Actions.onOpen(() -> {
+				ImpactMethodDescriptor m = Viewers.getFirstSelected(table);
+				if (m != null) {
+					App.open(m);
+				}
+			});
+			Actions.bind(table, onCopy, onOpen);
+			Tables.onDoubleClick(table, _e -> onOpen.run());
+
+			var d = Descriptor.of(getModel());
+			var methods = IUseSearch.FACTORY
+				.createFor(ModelType.IMPACT_CATEGORY, Database.get())
+				.findUses(d)
+				.stream()
+				.filter(m -> m.type == ModelType.IMPACT_METHOD)
+				.sorted((m1, m2) -> Strings.compare(m1.name, m2.name))
+				.collect(Collectors.toList());
+			table.setInput(methods);
+
+		}
+
+		private static class MethodLabel extends LabelProvider
+			implements ITableLabelProvider {
+
+			@Override
+			public Image getColumnImage(Object obj, int col) {
+				if (!(obj instanceof ImpactMethodDescriptor))
+					return null;
+				var m = (ImpactMethodDescriptor) obj;
+				if (col == 0)
+					return Images.get(m);
+				if (col == 1 && m.category != null)
+					return Images.getForCategory(ModelType.IMPACT_METHOD);
+				return null;
+			}
+
+			@Override
+			public String getColumnText(Object obj, int col) {
+				if (!(obj instanceof ImpactMethodDescriptor))
+					return null;
+				var m = (ImpactMethodDescriptor) obj;
+				if (col == 0)
+					return Labels.name(m);
+				if (col != 1 || m.category == null)
+					return null;
+				var category = Cache.getEntityCache()
+					.get(Category.class, m.category);
+				return category == null
+					? null
+					: CategoryPath.getFull(category);
+			}
 		}
 	}
 

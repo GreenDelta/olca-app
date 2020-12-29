@@ -1,6 +1,5 @@
 package org.openlca.app.editors.lcia;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -39,7 +38,7 @@ import org.openlca.util.Strings;
 class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 	private TableViewer indicatorTable;
-	private ImpactMethodEditor editor;
+	private final ImpactMethodEditor editor;
 
 	ImpactMethodInfoPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactMethodInfoPage", M.GeneralInformation);
@@ -67,16 +66,15 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		indicatorTable.setLabelProvider(new CategoryLabelProvider());
 		ImpactMethod method = editor.getModel();
 		List<ImpactCategory> impacts = method.impactCategories;
-		Collections.sort(impacts,
-				(c1, c2) -> Strings.compare(c1.name, c2.name));
+		impacts.sort((c1, c2) -> Strings.compare(c1.name, c2.name));
 		indicatorTable.setInput(impacts);
 		Tables.bindColumnWidths(indicatorTable, 0.5, 0.25, 0.22);
 		bindActions(indicatorTable, section);
 	}
 
 	private void bindActions(TableViewer indicatorTable, Section section) {
-		Action add = Actions.onAdd(() -> onAdd());
-		Action remove = Actions.onRemove(() -> onRemove());
+		Action add = Actions.onAdd(this::onAdd);
+		Action remove = Actions.onRemove(this::onRemove);
 		Action copy = TableClipboard.onCopy(indicatorTable);
 
 		Action open = Actions.onOpen(() -> {
