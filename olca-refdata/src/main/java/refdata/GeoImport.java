@@ -7,7 +7,6 @@ import java.nio.file.StandardCopyOption;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.derby.DerbyDatabase;
 import org.openlca.geo.GeoJsonImport;
 
 /**
@@ -57,14 +56,4 @@ class GeoImport {
 			return null;
 		}
 	}
-
-	public static void main(String[] args) {
-		try {
-			var db = new DerbyDatabase(new File("build/flows"));
-			GeoImport.on(db);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 }
