@@ -3,9 +3,8 @@ package refdata;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.derby.DerbyDatabase;
@@ -36,11 +35,12 @@ public class Main {
 
 	private static void create(String name, String dataDir) throws Exception {
 		System.out.println("  Create " + name + " database ...");
-		DerbyDatabase db = new DerbyDatabase(F("build/" + name));
+		var db = new DerbyDatabase(F("build/" + name));
 		if (dataDir != null) {
 			new RefDataImport(F("data/" + dataDir), db).run();
 			if ("all".equals(dataDir)) {
 				importDQS(db);
+				GeoImport.on(db);
 			}
 		}
 		db.close();
@@ -52,21 +52,19 @@ public class Main {
 	}
 
 	private static void importDQS(IDatabase db) throws Exception {
-		MemStore store = new MemStore();
-		String[] dqs = { "ecoinvent_dqs.json", "ilcd_dqs.json" };
+		var store = new MemStore();
+		String[] dqs = {"ecoinvent_dqs.json", "ilcd_dqs.json"};
 		for (String dq : dqs) {
 			System.out.println("  ... import DQS " + dq);
 			File f = F("data/dqs/" + dq);
-			try (InputStream stream = new FileInputStream(f);
-					Reader reader = new InputStreamReader(stream, "utf-8");
-					BufferedReader buffer = new BufferedReader(reader)) {
-				Gson gson = new Gson();
-				JsonObject obj = gson.fromJson(buffer, JsonObject.class);
+			try (var stream = new FileInputStream(f);
+				 var reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
+				 var buffer = new BufferedReader(reader)) {
+				var obj = new Gson().fromJson(buffer, JsonObject.class);
 				store.put(ModelType.DQ_SYSTEM, obj);
 			}
 		}
-		JsonImport imp = new JsonImport(store, db);
-		imp.run();
+		new JsonImport(store, db).run();
 	}
 
 }

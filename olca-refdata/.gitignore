@@ -7,3 +7,5 @@
 .project
 derby.log
 /download/
+*.iml
+/.idea/
