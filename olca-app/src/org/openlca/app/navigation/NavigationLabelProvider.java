@@ -153,7 +153,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (content instanceof LibraryDir)
 			return Icon.FOLDER.get();
 		if (content instanceof Library)
-			return Icon.DATABASE.get();
+			return Icon.LIBRARY.get();
 
 		// files and folders
 		if (content instanceof File) {

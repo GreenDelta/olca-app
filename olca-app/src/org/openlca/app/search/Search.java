@@ -43,7 +43,8 @@ class Search implements Runnable {
 		if (rawTerm.isEmpty())
 			return;
 		log.trace("run search with term {}", rawTerm);
-		ModelType[] types = typeFilter == null ? getSearchTypes()
+		ModelType[] types = typeFilter == null
+				? ModelTypeComparison.getOrderedTypes()
 				: new ModelType[] { typeFilter };
 		for (ModelType type : types) {
 			List<?> descriptors = getDescriptors(type);
@@ -51,10 +52,6 @@ class Search implements Runnable {
 		}
 		Collections.sort(result, new ResultComparator());
 		log.trace("{} results fetched and ranked", result.size());
-	}
-
-	private ModelType[] getSearchTypes() {
-		return ModelTypeComparison.getOrderedTypes();
 	}
 
 	private List<?> getDescriptors(ModelType type) {

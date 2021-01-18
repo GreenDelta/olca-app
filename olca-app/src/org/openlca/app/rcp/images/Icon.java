@@ -65,6 +65,7 @@ public enum Icon {
 	JAVASCRIPT("javascript.png"),
 
 	LAYOUT("graphical/layout.png"),
+	LIBRARY("library.png"),
 	LINK("link.png"),
 	LOGO("plugin/logo_32_32bit.png"),
 
