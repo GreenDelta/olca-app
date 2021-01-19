@@ -26,8 +26,8 @@ import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.actions.OpenMappingAction;
-import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
+import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryElement;
@@ -131,7 +131,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static void updateLabels(CommonViewer viewer,
-			INavigationElement<?> element) {
+									 INavigationElement<?> element) {
 		TreeItem item = findItem(viewer, element);
 		if (item == null)
 			return;
@@ -142,7 +142,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static TreeItem findItem(CommonViewer viewer,
-			INavigationElement<?> element) {
+									 INavigationElement<?> element) {
 		Stack<TreeItem> items = new Stack<>();
 		items.addAll(Arrays.asList(viewer.getTree().getItems()));
 		while (!items.empty()) {
@@ -155,7 +155,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static boolean itemEqualsElement(TreeItem item,
-			INavigationElement<?> element) {
+											 INavigationElement<?> element) {
 		INavigationElement<?> data = (INavigationElement<?>) item.getData();
 		if (data == null)
 			return false;
@@ -167,7 +167,7 @@ public class Navigator extends CommonNavigator {
 	 * elements of the <code>oldExpansion</code> array.
 	 */
 	private static void setRefreshedExpansion(CommonViewer viewer,
-			Object[] oldExpansion) {
+											  Object[] oldExpansion) {
 		List<INavigationElement<?>> newExpanded = new ArrayList<>();
 		for (Object expandedElem : oldExpansion) {
 			if (!(expandedElem instanceof INavigationElement))
@@ -261,12 +261,12 @@ public class Navigator extends CommonNavigator {
 
 	public INavigationElement<?>[] getAllSelected() {
 		List<INavigationElement<?>> selection = Viewers
-				.getAllSelected(getNavigationViewer());
+			.getAllSelected(getNavigationViewer());
 		return selection.toArray(new INavigationElement[0]);
 	}
 
 	public static Set<CategorizedDescriptor> collectDescriptors(
-			Collection<INavigationElement<?>> elements) {
+		Collection<INavigationElement<?>> elements) {
 		return collect(elements, e -> {
 			if (!(e instanceof ModelElement))
 				return null;
@@ -279,7 +279,7 @@ public class Navigator extends CommonNavigator {
 	 * null in the unwrap function
 	 */
 	public static <T> Set<T> collect(Collection<INavigationElement<?>> elements,
-			Function<INavigationElement<?>, T> unwrap) {
+									 Function<INavigationElement<?>, T> unwrap) {
 		Set<T> set = new HashSet<>();
 		for (INavigationElement<?> element : elements) {
 			T content = unwrap.apply(element);
@@ -289,5 +289,51 @@ public class Navigator extends CommonNavigator {
 			set.addAll(collect(element.getChildren(), unwrap));
 		}
 		return set;
+	}
+
+	/**
+	 * Search for the navigation element with the given content in the given
+	 * tree. This assumes that the viewer has the `NavigationContentProvider`
+	 * assigned. You should use this function instead of the search function
+	 * of the full navigation tree if your viewer contains custom navigation
+	 * trees and you want to select elements etc.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> INavigationElement<T> find(TreeViewer viewer, T content) {
+		if (viewer == null || content == null)
+			return null;
+		var cp = viewer.getContentProvider();
+		if (!(cp instanceof NavigationContentProvider))
+			return null;
+		var provider = (NavigationContentProvider) cp;
+		var roots = provider.getElements(viewer.getInput());
+		if (roots == null)
+			return null;
+		var queue = new ArrayDeque<>();
+		for (var root : roots) {
+			if (root != null) {
+				queue.add(root);
+			}
+		}
+		while (!queue.isEmpty()) {
+			var obj = queue.poll();
+			if (obj instanceof INavigationElement) {
+				var elem = (INavigationElement<?>) obj;
+				if (Objects.equal(content, elem.getContent()))
+					return (INavigationElement<T>) elem;
+			}
+
+			if (!provider.hasChildren(obj))
+				continue;
+			var childs = provider.getChildren(obj);
+			if (childs == null)
+				continue;
+			for (var child : childs) {
+				if (child != null) {
+					queue.add(child);
+				}
+			}
+		}
+		return null;
 	}
 }

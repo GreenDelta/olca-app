@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
@@ -33,8 +34,23 @@ public class LibraryElement extends NavigationElement<Library> {
 	@Override
 	protected List<INavigationElement<?>> queryChilds() {
 		if (only != null) {
-			var typeElem = new ModelTypeElement(this, only);
-			return typeElem.getChildren();
+			// setting the correct parent is important here
+			// because otherwise tree selections etc. may
+			// do not work correctly.
+			return new ModelTypeElement(this, only)
+				.getChildren()
+				.stream()
+				.map(elem -> {
+					if (elem instanceof ModelElement) {
+						var me = (ModelElement) elem;
+						return new ModelElement(this, me.getContent());
+					} else if (elem instanceof CategoryElement) {
+						var ce = (CategoryElement) elem;
+						return new CategoryElement(this, ce.getContent());
+					}
+					return null;
+				})
+				.collect(Collectors.toList());
 		}
 
 		var db = getDatabase();
@@ -45,22 +61,22 @@ public class LibraryElement extends NavigationElement<Library> {
 		list.add(new ModelTypeElement(this, ModelType.PROCESS));
 		list.add(new ModelTypeElement(this, ModelType.FLOW));
 		list.add(new GroupElement(this,
-				new Group(M.IndicatorsAndParameters,
-						GroupType.INDICATORS,
-						ModelType.IMPACT_METHOD,
-						ModelType.IMPACT_CATEGORY,
-						ModelType.DQ_SYSTEM,
-						ModelType.SOCIAL_INDICATOR,
-						ModelType.PARAMETER)));
+			new Group(M.IndicatorsAndParameters,
+				GroupType.INDICATORS,
+				ModelType.IMPACT_METHOD,
+				ModelType.IMPACT_CATEGORY,
+				ModelType.DQ_SYSTEM,
+				ModelType.SOCIAL_INDICATOR,
+				ModelType.PARAMETER)));
 		list.add(new GroupElement(this,
-				new Group(M.BackgroundData,
-						GroupType.BACKGROUND_DATA,
-						ModelType.FLOW_PROPERTY,
-						ModelType.UNIT_GROUP,
-						ModelType.CURRENCY,
-						ModelType.ACTOR,
-						ModelType.SOURCE,
-						ModelType.LOCATION)));
+			new Group(M.BackgroundData,
+				GroupType.BACKGROUND_DATA,
+				ModelType.FLOW_PROPERTY,
+				ModelType.UNIT_GROUP,
+				ModelType.CURRENCY,
+				ModelType.ACTOR,
+				ModelType.SOURCE,
+				ModelType.LOCATION)));
 		return list;
 	}
 
@@ -75,8 +91,8 @@ public class LibraryElement extends NavigationElement<Library> {
 				var dbElem = (DatabaseElement) parent;
 				var config = dbElem.getContent();
 				return Database.isActive(config)
-						? Optional.of(Database.get())
-						: Optional.empty();
+					? Optional.of(Database.get())
+					: Optional.empty();
 			}
 			parent = parent.getParent();
 		}

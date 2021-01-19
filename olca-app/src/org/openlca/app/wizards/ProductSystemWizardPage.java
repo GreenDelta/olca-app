@@ -62,8 +62,8 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		createOptions(comp);
 		if (refProcess != null) {
 			nameText.setText(refProcess.name);
-			var descriptor = Descriptor.of(refProcess);
-			var elem = Navigator.findElement(descriptor);
+			var d = Descriptor.of(refProcess);
+			var elem = Navigator.find(processTree, d);
 			if (elem != null) {
 				processTree.setSelection(new StructuredSelection(elem));
 			}
