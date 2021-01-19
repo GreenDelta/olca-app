@@ -387,7 +387,7 @@ class MappingDialog extends FormDialog {
 				ref.providerCategory = "";
 			} else {
 				ref.providerCategory = new CategoryPathBuilder(
-						Database.get()).build(p.category);
+						Database.get()).path(p.category);
 			}
 			if (p.location == null) {
 				ref.providerLocation = "";

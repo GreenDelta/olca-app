@@ -81,7 +81,7 @@ class Matcher {
 		if (categories == null) {
 			categories = new CategoryPathBuilder(db);
 		}
-		targetFlow.providerCategory = categories.build(prov.category);
+		targetFlow.providerCategory = categories.path(prov.category);
 		if (locations == null) {
 			locations = new LocationDao(db).getCodes();
 		}

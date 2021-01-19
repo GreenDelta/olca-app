@@ -47,7 +47,7 @@ public class DBProvider implements IProvider {
 		new FlowDao(db).getDescriptors().stream().forEach(flow -> {
 			FlowRef ref = new FlowRef();
 			ref.flow = flow;
-			ref.flowCategory = categories.build(flow.category);
+			ref.flowCategory = categories.path(flow.category);
 			ref.flowLocation = locations.get(flow.location);
 			Fn.with(props.get(flow.refFlowPropertyId), prop -> {
 				if (prop == null)

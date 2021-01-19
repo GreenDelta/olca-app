@@ -2,6 +2,7 @@ package org.openlca.app.editors.processes;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.action.IToolBarManager;
@@ -40,19 +41,27 @@ import org.slf4j.LoggerFactory;
 
 public class ProcessToolbar extends EditorActionBarContributor {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolbar) {
 		toolbar.add(Actions.create(M.CreateProductSystem,
-				Images.descriptor(ModelType.PRODUCT_SYSTEM, Overlay.NEW),
-				() -> createSystem(getProcess())));
+			Images.descriptor(ModelType.PRODUCT_SYSTEM, Overlay.NEW),
+			() -> createSystem(getProcess())));
 		toolbar.add(Actions.create(M.ExportToExcel,
-				Images.descriptor(FileType.EXCEL),
-				() -> exportToExcel(getProcess())));
-		toolbar.add(Actions.create("Direct calculation",
+			Images.descriptor(FileType.EXCEL),
+			() -> exportToExcel(getProcess())));
+
+		// add direct calculation if the database is not connected
+		// to a library
+		boolean withDirect = Database.get()
+			.getLibraries()
+			.isEmpty();
+		if (withDirect) {
+			toolbar.add(Actions.create("Direct calculation",
 				Icon.RUN.descriptor(),
 				() -> directCalculation(getProcess())));
+		}
 	}
 
 	private Process getProcess() {
@@ -67,14 +76,14 @@ public class ProcessToolbar extends EditorActionBarContributor {
 	static void exportToExcel(Process p) {
 		if (p == null)
 			return;
-		String name = Labels.name(p);
+		var name = Labels.name(p);
 		name = name == null ? "process" : name;
 		name = name.replaceAll("[^a-zA-Z0-9]", "_") + ".xlsx";
 		File f = FileChooser.forExport("*.xlsx", name);
 		if (f == null)
 			return;
-		var list = Arrays.asList(Descriptor.of(p));
-		ExcelExport export = new ExcelExport(f, Database.get(), list);
+		var list = Collections.singletonList(Descriptor.of(p));
+		var export = new ExcelExport(f, Database.get(), list);
 		App.run(M.ExportProcess, export, () -> {
 			Popup.info(M.ExportDone);
 		});
@@ -86,7 +95,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 		try {
 			String wizardId = "wizards.new.productsystem";
 			IWorkbenchWizard wizard = PlatformUI.getWorkbench()
-					.getNewWizardRegistry().findWizard(wizardId).createWizard();
+				.getNewWizardRegistry().findWizard(wizardId).createWizard();
 			if (!(wizard instanceof ProductSystemWizard))
 				return;
 			ProductSystemWizard systemWizard = (ProductSystemWizard) wizard;
@@ -111,35 +120,35 @@ public class ProcessToolbar extends EditorActionBarContributor {
 
 		static void show(Process process) {
 			String hint = "The direct calculation creates an in-memory "
-					+ "product system of all processes in the database. This only "
-					+ "gives correct results when there are unambiguous links "
-					+ "between these processes (e.g. every product is only produced "
-					+ "by a single process or every product input has a default "
-					+ "provider set). You can also check the linking properties of "
-					+ "the databases under `Database > Check linking properties`.";
-			String[] buttons = { "Run calculation", "Check linking", "Cancel" };
+						  + "product system of all processes in the database. This only "
+						  + "gives correct results when there are unambiguous links "
+						  + "between these processes (e.g. every product is only produced "
+						  + "by a single process or every product input has a default "
+						  + "provider set). You can also check the linking properties of "
+						  + "the databases under `Database > Check linking properties`.";
+			String[] buttons = {"Run calculation", "Check linking", "Cancel"};
 
 			MessageDialog dialog = new MessageDialog(
-					UI.shell(),
-					"Direct calculation", // title
-					null, // image
-					hint,
-					MessageDialog.INFORMATION, // image type
-					0, // default button
-					buttons);
+				UI.shell(),
+				"Direct calculation", // title
+				null, // image
+				hint,
+				MessageDialog.INFORMATION, // image type
+				0, // default button
+				buttons);
 
 			switch (dialog.open()) {
-			case 0:
-				runCalculation(process);
-				break;
-			case 1:
-				checkLinking(process);
-				break;
-			default:
-				break;
+				case 0:
+					runCalculation(process);
+					break;
+				case 1:
+					checkLinking(process);
+					break;
+				default:
+					break;
 			}
 		}
-		
+
 		static void runCalculation(Process p) {
 			var system = ProductSystem.of(p);
 			system.withoutNetwork = true;
@@ -158,7 +167,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 				return;
 			}
 			if (props.multiProviderFlows.isEmpty()
-					|| props.processesWithoutProviders.isEmpty()) {
+				|| props.processesWithoutProviders.isEmpty()) {
 				handleUnambiguousLinks(process, props);
 			} else {
 				handleAmbiguousLinks(props);
@@ -167,44 +176,44 @@ public class ProcessToolbar extends EditorActionBarContributor {
 
 		private static void handleAmbiguousLinks(LinkingProperties props) {
 			String msg = "There are ambiguous links between processes "
-					+ "in the database. This can lead to different results "
-					+ "in the calculation depending on the process linking.";
-			String[] buttons = { "Show details", "Cancel" };
+						 + "in the database. This can lead to different results "
+						 + "in the calculation depending on the process linking.";
+			String[] buttons = {"Show details", "Cancel"};
 			var dialog = new MessageDialog(
-					UI.shell(),
-					"Direct calculation", // title
-					null, // image
-					msg,
-					MessageDialog.WARNING, // image type
-					0, // default button
-					buttons);
+				UI.shell(),
+				"Direct calculation", // title
+				null, // image
+				msg,
+				MessageDialog.WARNING, // image type
+				0, // default button
+				buttons);
 			if (dialog.open() == 0) {
 				LinkingPropertiesPage.show(props);
 			}
 		}
 
 		private static void handleUnambiguousLinks(
-				Process process, LinkingProperties props) {
+			Process process, LinkingProperties props) {
 			String msg = "The processes in the database can be"
-					+ " linked unambiguously";
-			String[] buttons = { "Run calculation", "Show details", "Cancel" };
+						 + " linked unambiguously";
+			String[] buttons = {"Run calculation", "Show details", "Cancel"};
 			var dialog = new MessageDialog(
-					UI.shell(),
-					"Direct calculation", // title
-					null, // image
-					msg,
-					MessageDialog.INFORMATION, // image type
-					0, // default button
-					buttons);
+				UI.shell(),
+				"Direct calculation", // title
+				null, // image
+				msg,
+				MessageDialog.INFORMATION, // image type
+				0, // default button
+				buttons);
 			switch (dialog.open()) {
-			case 0:
-				runCalculation(process);
-				break;
-			case 1:
-				LinkingPropertiesPage.show(props);
-				break;
-			default:
-				break;
+				case 0:
+					runCalculation(process);
+					break;
+				case 1:
+					LinkingPropertiesPage.show(props);
+					break;
+				default:
+					break;
 			}
 		}
 	}
