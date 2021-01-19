@@ -8,8 +8,8 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class ModelElement extends NavigationElement<CategorizedDescriptor> {
 
-	public ModelElement(INavigationElement<?> parent, CategorizedDescriptor descriptor) {
-		super(parent, descriptor);
+	public ModelElement(INavigationElement<?> parent, CategorizedDescriptor d) {
+		super(parent, d);
 	}
 
 	@Override
@@ -19,11 +19,10 @@ public class ModelElement extends NavigationElement<CategorizedDescriptor> {
 
 	@Override
 	public void update() {
-		CategorizedDescriptor content = getContent();
-		CategorizedDescriptor newContent = Cache.getEntityCache().get(content.getClass(),
-				content.id);
+		var content = getContent();
+		var newContent = Cache.getEntityCache().get(
+			content.getClass(), content.id);
 		setContent(newContent);
 		super.update();
-
 	}
 }

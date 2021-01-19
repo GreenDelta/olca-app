@@ -44,7 +44,7 @@ public class NavigationContentProvider implements ICommonContentProvider {
 	public boolean hasChildren(Object element) {
 		if (!(element instanceof INavigationElement))
 			return false;
-		INavigationElement<?> e = (INavigationElement<?>) element;
+		var e = (INavigationElement<?>) element;
 		return !e.getChildren().isEmpty();
 	}
 

@@ -64,6 +64,16 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 		return Objects.hashCode(content);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		var other = (NavigationElement<?>) o;
+		return Objects.equals(this.content, other.content);
+	}
+
 	static boolean matches(Descriptor d, Library lib) {
 		if (d == null)
 			return false;

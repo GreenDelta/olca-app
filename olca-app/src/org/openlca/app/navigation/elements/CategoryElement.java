@@ -52,8 +52,7 @@ public class CategoryElement extends NavigationElement<Category> {
 		var dao = Daos.categorized(Database.get(), category.modelType);
 		if (dao == null)
 			return list;
-		Optional<Category> optional = Optional.of(category);
-		for (var d : dao.getDescriptors(optional)) {
+		for (var d : dao.getDescriptors(Optional.of(category))) {
 			if (matches(d, lib)) {
 				list.add(new ModelElement(this, d));
 			}

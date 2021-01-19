@@ -16,7 +16,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.util.Controls;
@@ -30,7 +29,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
@@ -64,10 +62,11 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		createOptions(comp);
 		if (refProcess != null) {
 			nameText.setText(refProcess.name);
-			ProcessDescriptor descriptor = Descriptor.of(refProcess);
-			INavigationElement<?> elem = Navigator.findElement(descriptor);
-			if (elem != null)
+			var descriptor = Descriptor.of(refProcess);
+			var elem = Navigator.findElement(descriptor);
+			if (elem != null) {
 				processTree.setSelection(new StructuredSelection(elem));
+			}
 			checkInput();
 		}
 	}
