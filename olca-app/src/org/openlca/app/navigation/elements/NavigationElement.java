@@ -58,20 +58,33 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 	protected abstract List<INavigationElement<?>> queryChilds();
 
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
+		// include the contents and parents recursively along
+		// the path to calculate the hash
 		if (content == null)
 			return super.hashCode();
-		return Objects.hashCode(content);
+		var parent = getParent();
+		return parent == null
+			? content.hashCode()
+			: Objects.hash(content, getParent());
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public final boolean equals(Object o) {
 		if (this == o)
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
+
+		// two navigation elements are equal when their content
+		// along their path are equal because the same content
+		// can be shown in different elements of the navigation
+		// tree (e.g. model type elements in the database and
+		// libraries)
+
 		var other = (NavigationElement<?>) o;
-		return Objects.equals(this.content, other.content);
+		return Objects.equals(this.content, other.content)
+			&& Objects.equals(this.parent, other.parent);
 	}
 
 	static boolean matches(Descriptor d, Library lib) {
@@ -105,7 +118,7 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 		if (dao == null)
 			return false;
 		return dao.getDescriptors(Optional.of(category))
-				.stream()
-				.anyMatch(d -> Strings.nullOrEqual(d.library, library));
+			.stream()
+			.anyMatch(d -> Strings.nullOrEqual(d.library, library));
 	}
 }

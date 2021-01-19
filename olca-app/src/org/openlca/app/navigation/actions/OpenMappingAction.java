@@ -11,7 +11,6 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.mapping.MappingTool;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.MappingFileDao;
-import org.openlca.io.maps.FlowMap;
 
 public class OpenMappingAction extends Action implements INavigationAction {
 

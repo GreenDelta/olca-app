@@ -1,4 +1,4 @@
-package org.openlca.app.navigation;
+package org.openlca.app.navigation.elements;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -6,15 +6,12 @@ import java.util.List;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.elements.DatabaseElement;
-import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.LibraryDirElement;
-import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.util.Dirs;
 
 /**
- * Root element of the navigation tree: shows the database configurations.
+ * The root of the navigation tree. Contains the databases, libraries, scripts,
+ * etc.
  */
 public class NavigationRoot extends PlatformObject implements
 		INavigationElement<NavigationRoot> {
