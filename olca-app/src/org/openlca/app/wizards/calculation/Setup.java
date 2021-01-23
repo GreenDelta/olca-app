@@ -73,7 +73,7 @@ class Setup {
 		s.calcSetup.withCosts = Preferences.getBool("calc.costCalculation");
 
 		// data quality settings
-		s.withDataQuality = Preferences.getBool("calc.dqAssessment");
+		s.withDataQuality = false; // Preferences.getBool("calc.dqAssessment");
 		s.dqSetup.aggregationType = loadEnumPref(
 				AggregationType.class, AggregationType.WEIGHTED_AVERAGE);
 		s.dqSetup.naHandling = loadEnumPref(

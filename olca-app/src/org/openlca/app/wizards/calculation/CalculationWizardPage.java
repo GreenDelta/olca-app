@@ -79,7 +79,7 @@ class CalculationWizardPage extends WizardPage {
 
 		// options
 		optionStack = new Composite(body, SWT.NULL);
-		StackLayout optionsLayout = new StackLayout();
+		var optionsLayout = new StackLayout();
 		optionStack.setLayout(optionsLayout);
 		createMonteCarloOptions(optionStack);
 		createCommonOptions(optionStack);
