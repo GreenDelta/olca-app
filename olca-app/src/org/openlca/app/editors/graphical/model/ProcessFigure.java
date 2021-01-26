@@ -18,13 +18,13 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.layout.Animation;
 import org.openlca.app.editors.graphical.model.ProcessExpander.Side;
-import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.UI;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -36,7 +36,7 @@ class ProcessFigure extends Figure {
 	static final int MINIMUM_WIDTH = 175;
 	static final int MARGIN_HEIGHT = 2;
 	static final int MARGIN_WIDTH = 4;
-	
+
 	private static final int TEXT_HEIGHT = 16;
 	private static final Color LINE_COLOR = ColorConstants.gray;
 	private static final Color TEXT_COLOR = ColorConstants.black;
@@ -63,6 +63,7 @@ class ProcessFigure extends Figure {
 			tooltip = M.ProductSystem + ": " + node.getName();
 		}
 		setToolTip(new Label(tooltip));
+
 		setForegroundColor(TEXT_COLOR);
 		setBounds(new Rectangle(0, 0, 0, 0));
 		setSize(calculateSize());
@@ -83,13 +84,18 @@ class ProcessFigure extends Figure {
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
 
+		var background = Figures.colorOf(node);
 		var top = new Figure();
+		top.setBackgroundColor(Colors.gray());
 		top.setLayoutManager(layout);
 
 		leftExpander = new ProcessExpander(node, Side.INPUT);
 		top.add(leftExpander, new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
 		var label = new Label(node.getName());
+		label.setFont(UI.boldFont());
+		label.setBackgroundColor(Colors.gray());
+		label.setForegroundColor(Colors.white());
 		// label.setIcon(Images.get(node.process));
 		top.add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
 
@@ -133,7 +139,7 @@ class ProcessFigure extends Figure {
 	@Override
 	protected void paintFigure(Graphics g) {
 		g.pushState();
-		g.setBackgroundColor(ColorConstants.white);
+		g.setBackgroundColor(Colors.get(0, 0, 102));
 		g.fillRectangle(new Rectangle(getLocation(), getSize()));
 		paintTop(g);
 		if (!node.isMinimized() || Animation.isRunning()) {
@@ -157,7 +163,8 @@ class ProcessFigure extends Figure {
 		}
 	}
 
-	private void paintTop(Graphics graphics) {
+	private void paintTop(Graphics g) {
+		/*
 		Image file;
 		if (node.isMarked())
 			file = Icon.PROCESS_BG_MARKED.get();
@@ -169,14 +176,20 @@ class ProcessFigure extends Figure {
 			file = Icon.PROCESS_BG_LCI.get();
 		else
 			file = Icon.PROCESS_BG.get();
+		*/
 		int x = getLocation().x;
 		int y = getLocation().y;
 		int width = getSize().width;
-		for (int i = 0; i < width - 20; i++)
-			graphics.drawImage(file, new Point(x + i, y));
-		graphics.setForegroundColor(LINE_COLOR);
-		graphics.drawLine(new Point(x, y + MINIMUM_HEIGHT), new Point(x + width - 1, y + MINIMUM_HEIGHT));
-		graphics.setForegroundColor(TEXT_COLOR);
+
+		// for (int i = 0; i < width - 20; i++)
+		// 	g.drawImage(file, new Point(x + i, y));
+
+		g.setForegroundColor(LINE_COLOR);
+		g.drawLine(
+			new Point(x, y + MINIMUM_HEIGHT),
+			new Point(x + width - 1, y + MINIMUM_HEIGHT));
+		g.setBackgroundColor(Colors.get(0, 0, 102));
+		g.setForegroundColor(Colors.white());
 	}
 
 	private void paintTable(Graphics graphics) {

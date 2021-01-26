@@ -76,10 +76,7 @@ public class ProcessNode extends Node {
 		if (!minimized && getChildren().isEmpty()) {
 			add(new IONode(this));
 		}
-		if (layout.box != null) {
-			box = layout.box;
-			figure.setBounds(box);
-		}
+		figure.setBounds(layout.box);
 		figure().getLeftExpander().setExpanded(layout.expandedLeft);
 		figure().getRightExpander().setExpanded(layout.expandedRight);
 		figure().refresh();
