@@ -44,7 +44,7 @@ class ProcessFigure extends Figure {
 		}
 	}
 
-	static final int MINIMUM_WIDTH = 175;
+	static final int MINIMUM_WIDTH = 250;
 	static final int MARGIN_HEIGHT = 2;
 	static final int MARGIN_WIDTH = 4;
 	private static final int TEXT_HEIGHT = 16;
@@ -80,9 +80,6 @@ class ProcessFigure extends Figure {
 		layout.marginHeight = MARGIN_HEIGHT;
 		layout.marginWidth = MARGIN_WIDTH;
 		setLayoutManager(layout);
-
-		// var border = new LineBorder(LINE_COLOR, 1);
-		// setBorder(border);
 	}
 
 	private void createHeader() {
@@ -297,7 +294,6 @@ class ProcessFigure extends Figure {
 			layout.marginWidth = 10;
 			setLayoutManager(layout);
 			var label = new Label(node.getName());
-			label.setFont(UI.boldFont());
 			label.setForegroundColor(Figures.headerForegroundOf(node));
 			add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
 		}
