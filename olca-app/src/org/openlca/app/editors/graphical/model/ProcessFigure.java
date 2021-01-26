@@ -80,10 +80,10 @@ class ProcessFigure extends Figure {
 
 	private void createHeader() {
 
-		var layout = new GridLayout(3, false);
-		layout.horizontalSpacing = 0;
+		var layout = new GridLayout(4, false);
+		layout.horizontalSpacing = 5;
 		layout.verticalSpacing = 0;
-		layout.marginHeight = 5;
+		layout.marginHeight = 0;
 		layout.marginWidth = 0;
 
 		var top = new Figure();
@@ -92,12 +92,15 @@ class ProcessFigure extends Figure {
 		leftExpander = new ProcessExpander(node, Side.INPUT);
 		top.add(leftExpander, new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
+
+
 		var label = new Label(node.getName());
 		label.setFont(UI.boldFont());
 		label.setBackgroundColor(Colors.gray());
 		label.setForegroundColor(Colors.white());
 		label.setIcon(Figures.iconOf(node));
-		top.add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
+		// top.add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
+		top.add(new BoxHeader(node), new GridData(SWT.LEFT, SWT.TOP, true, false));
 
 		rightExpander = new ProcessExpander(node, Side.OUTPUT);
 		top.add(rightExpander, new GridData(SWT.RIGHT, SWT.CENTER, false, false));
@@ -307,6 +310,39 @@ class ProcessFigure extends Figure {
 		public void mouseReleased(MouseEvent me) {
 		}
 
+	}
+
+	private static class BoxHeader extends Figure {
+
+		BoxHeader(ProcessNode node) {
+			setToolTip(new Label(tooltipOf(node)));
+			var layout = new GridLayout(1, true);
+			layout.marginHeight = 5;
+			layout.marginWidth = 10;
+			setLayoutManager(layout);
+			var label = new Label(node.getName());
+			label.setFont(UI.boldFont());
+			label.setForegroundColor(Colors.white());
+			label.setIcon(Figures.iconOf(node));
+			add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
+		}
+
+		String tooltipOf(ProcessNode node) {
+			if (node.process instanceof ProcessDescriptor) {
+				var d = (ProcessDescriptor) node.process;
+				return Labels.of(d.processType) + ": " + node.getName();
+			}
+			return M.ProductSystem + ": " + node.getName();
+		}
+
+		@Override
+		protected void paintFigure(Graphics g) {
+			g.pushState();
+			g.setBackgroundColor(Colors.gray());
+			g.fillRectangle(new Rectangle(getLocation(), getSize()));
+			g.popState();
+			super.paintFigure(g);
+		}
 	}
 
 }
