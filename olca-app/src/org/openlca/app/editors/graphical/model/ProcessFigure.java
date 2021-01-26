@@ -8,8 +8,8 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.GridLayout;
+import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -28,7 +28,22 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class ProcessFigure extends Figure {
 
-	static final int MINIMUM_HEIGHT = 25;
+	static int MINIMUM_HEIGHT = 34;
+	static {
+		try {
+			var boldFont = UI.boldFont();
+			if (boldFont != null) {
+				var data = boldFont.getFontData();
+				int max = 0;
+				for (var datum : data) {
+					max = Math.max(datum.getHeight(), max);
+				}
+				MINIMUM_HEIGHT = Math.max(max + 4 + 10, MINIMUM_HEIGHT);
+			}
+		} catch (Exception ignored) {
+		}
+	}
+
 	static final int MINIMUM_WIDTH = 175;
 	static final int MARGIN_HEIGHT = 2;
 	static final int MARGIN_WIDTH = 4;
@@ -36,7 +51,6 @@ class ProcessFigure extends Figure {
 
 	private static final Color LINE_COLOR = ColorConstants.gray;
 	private static final Color TEXT_COLOR = ColorConstants.black;
-
 
 	final ProcessNode node;
 	private final Color color;
@@ -55,14 +69,7 @@ class ProcessFigure extends Figure {
 	}
 
 	private void initializeFigure() {
-		if (node.process instanceof ProcessDescriptor) {
-			var d = (ProcessDescriptor) node.process;
-			var tooltip = Labels.of(d.processType) + ": " + node.getName();
-			setToolTip(new Label(tooltip));
-		} else {
-			setToolTip(new Label(M.ProductSystem + ": " + node.getName()));
-		}
-
+		setToolTip(new Label(node.getName()));
 		setForegroundColor(Colors.white());
 		setBounds(new Rectangle(0, 0, 0, 0));
 		setSize(calculateSize());
@@ -74,8 +81,8 @@ class ProcessFigure extends Figure {
 		layout.marginWidth = MARGIN_WIDTH;
 		setLayoutManager(layout);
 
-		var border = new LineBorder(LINE_COLOR, 1);
-		setBorder(border);
+		// var border = new LineBorder(LINE_COLOR, 1);
+		// setBorder(border);
 	}
 
 	private void createHeader() {
@@ -83,33 +90,26 @@ class ProcessFigure extends Figure {
 		var layout = new GridLayout(4, false);
 		layout.horizontalSpacing = 5;
 		layout.verticalSpacing = 0;
-		layout.marginHeight = 0;
+		layout.marginHeight = 2;
 		layout.marginWidth = 0;
 
 		var top = new Figure();
 		top.setLayoutManager(layout);
 
+		// left expander
 		leftExpander = new ProcessExpander(node, Side.INPUT);
 		top.add(leftExpander, new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
+		// process icon and header
+		top.add(new ImageFigure(Figures.iconOf(node)),
+				new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		top.add(new BoxHeader(node), new GridData(SWT.FILL, SWT.TOP, true, false));
 
-
-		var label = new Label(node.getName());
-		label.setFont(UI.boldFont());
-		label.setBackgroundColor(Colors.gray());
-		label.setForegroundColor(Colors.white());
-		label.setIcon(Figures.iconOf(node));
-		// top.add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
-		top.add(new BoxHeader(node), new GridData(SWT.LEFT, SWT.TOP, true, false));
-
+		// right expander
 		rightExpander = new ProcessExpander(node, Side.OUTPUT);
 		top.add(rightExpander, new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 
 		add(top, new GridData(SWT.FILL, SWT.FILL, true, false));
-
-		// var dummyGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
-		// dummyGridData.heightHint = MINIMUM_HEIGHT;
-		// add(new Figure(), dummyGridData);
 	}
 
 	private IOFigure getIOFigure() {
@@ -136,10 +136,12 @@ class ProcessFigure extends Figure {
 		var calculated = calculateSize();
 		var current = getSize();
 		var bounds = new Rectangle(
-			location.x - 1,
-			location.y - 1,
-			Math.max(calculated.width, current.width),
-			Math.max(calculated.height, current.height));
+				location.x - 1,
+				location.y - 1,
+				Math.max(calculated.width, current.width),
+				node.isMinimized()
+					? MINIMUM_HEIGHT
+					: Math.max(calculated.height, current.height));
 		getParent().setConstraint(this, bounds);
 
 		// refresh the links of this node
@@ -155,7 +157,7 @@ class ProcessFigure extends Figure {
 	@Override
 	protected void paintFigure(Graphics g) {
 		g.pushState();
-		g.setBackgroundColor(Colors.get(0, 0, 102));
+		g.setBackgroundColor(color);
 		g.fillRectangle(new Rectangle(getLocation(), getSize()));
 		// paintTop(g);
 		if (!node.isMinimized() || Animation.isRunning()) {
@@ -163,35 +165,6 @@ class ProcessFigure extends Figure {
 		}
 		g.popState();
 		super.paintFigure(g);
-	}
-
-	private void paintTop(Graphics g) {
-		/*
-		Image file;
-		if (node.isMarked())
-			file = Icon.PROCESS_BG_MARKED.get();
-		else if (node.process instanceof ProductSystemDescriptor)
-			file = Icon.PROCESS_BG_SYS.get();
-		else if (node.process.isFromLibrary()) {
-			file = Icon.PROCESS_BG_LIB.get();
-		} else if (isLCI())
-			file = Icon.PROCESS_BG_LCI.get();
-		else
-			file = Icon.PROCESS_BG.get();
-		*/
-		int x = getLocation().x;
-		int y = getLocation().y;
-		int width = getSize().width;
-
-		// for (int i = 0; i < width - 20; i++)
-		// 	g.drawImage(file, new Point(x + i, y));
-
-		g.setForegroundColor(LINE_COLOR);
-		g.drawLine(
-			new Point(x, y + MINIMUM_HEIGHT),
-			new Point(x + width - 1, y + MINIMUM_HEIGHT));
-		g.setBackgroundColor(Colors.get(0, 0, 102));
-		g.setForegroundColor(Colors.white());
 	}
 
 	private void paintTable(Graphics g) {
@@ -202,11 +175,11 @@ class ProcessFigure extends Figure {
 		int x = getLocation().x;
 		int y = getLocation().y;
 		g.drawLine(new Point(x + margin, y + MINIMUM_HEIGHT
-												+ TEXT_HEIGHT + MARGIN_HEIGHT), new Point(x + width - margin,
-			y + MINIMUM_HEIGHT + TEXT_HEIGHT + MARGIN_HEIGHT));
+				+ TEXT_HEIGHT + MARGIN_HEIGHT), new Point(x + width - margin,
+						y + MINIMUM_HEIGHT + TEXT_HEIGHT + MARGIN_HEIGHT));
 		if (height - margin > MINIMUM_HEIGHT + margin)
 			g.drawLine(new Point(x + width / 2, y + MINIMUM_HEIGHT + margin), new Point(x + width / 2, y
-																											  + height - margin));
+					+ height - margin));
 		g.setForegroundColor(TEXT_COLOR);
 		g.drawText(M.Inputs, new Point(x + width / 6, y + MINIMUM_HEIGHT + MARGIN_HEIGHT));
 		g.drawText(M.Outputs, new Point(x + 2 * width / 3, y + MINIMUM_HEIGHT + MARGIN_HEIGHT));
@@ -235,11 +208,14 @@ class ProcessFigure extends Figure {
 	}
 
 	@Override
-	public Dimension getPreferredSize(int hint, int hint2) {
-		final Dimension cSize = calculateSize();
-		if (cSize.height > getSize().height || cSize.width > getSize().width || node.isMinimized())
-			return cSize;
-		return getSize();
+	public Dimension getPreferredSize(int wHint, int hHint) {
+		var current = getSize();
+		if (node.isMinimized())
+			return current;
+		var calculated = calculateSize();
+		return new Dimension(
+				Math.max(calculated.width, current.width),
+				Math.max(calculated.height, current.height));
 	}
 
 	Dimension calculateSize() {
@@ -257,12 +233,8 @@ class ProcessFigure extends Figure {
 	}
 
 	int getMinimumHeight() {
-		if (minimumHeight == 0)
-			initializeMinimumHeight();
-		return minimumHeight;
-	}
-
-	private void initializeMinimumHeight() {
+		if (minimumHeight != 0)
+			return minimumHeight;
 		int inputs = 0;
 		int outputs = 0;
 		for (ExchangeNode e : node.getChildren().get(0).getChildren())
@@ -274,6 +246,7 @@ class ProcessFigure extends Figure {
 		int length = Math.max(inputs, outputs);
 		int startExchanges = MINIMUM_HEIGHT + 4 * MARGIN_HEIGHT + TEXT_HEIGHT;
 		minimumHeight = startExchanges + length * (TEXT_HEIGHT + 1);
+		return minimumHeight;
 	}
 
 	private class DoubleClickListener implements MouseListener {
@@ -314,16 +287,18 @@ class ProcessFigure extends Figure {
 
 	private static class BoxHeader extends Figure {
 
+		private final Color background;
+
 		BoxHeader(ProcessNode node) {
+			background = Figures.headerBackgroundOf(node);
 			setToolTip(new Label(tooltipOf(node)));
 			var layout = new GridLayout(1, true);
-			layout.marginHeight = 5;
+			layout.marginHeight = 2;
 			layout.marginWidth = 10;
 			setLayoutManager(layout);
 			var label = new Label(node.getName());
 			label.setFont(UI.boldFont());
-			label.setForegroundColor(Colors.white());
-			label.setIcon(Figures.iconOf(node));
+			label.setForegroundColor(Figures.headerForegroundOf(node));
 			add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
 		}
 
@@ -338,7 +313,7 @@ class ProcessFigure extends Figure {
 		@Override
 		protected void paintFigure(Graphics g) {
 			g.pushState();
-			g.setBackgroundColor(Colors.gray());
+			g.setBackgroundColor(background);
 			g.fillRectangle(new Rectangle(getLocation(), getSize()));
 			g.popState();
 			super.paintFigure(g);

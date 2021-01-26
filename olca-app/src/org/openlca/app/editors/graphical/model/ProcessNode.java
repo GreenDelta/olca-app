@@ -16,7 +16,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
@@ -239,19 +238,9 @@ public class ProcessNode extends Node {
 	}
 
 	public int getMinimumHeight() {
-		if (isMinimized()) {
-			// LCI results and product systems have an outer
-			// border and this are a bit larger
-			if (process instanceof ProductSystemDescriptor)
-				return ProcessFigure.MINIMUM_HEIGHT + 3;
-			if (process instanceof ProcessDescriptor) {
-				var p = (ProcessDescriptor) process;
-				return p.processType == ProcessType.LCI_RESULT
-						? ProcessFigure.MINIMUM_HEIGHT + 3
-						: ProcessFigure.MINIMUM_HEIGHT;
-			}
-		}
-		return figure().getMinimumHeight();
+		return isMinimized()
+				? ProcessFigure.MINIMUM_HEIGHT
+				: figure().getMinimumHeight();
 	}
 
 	public int getMinimumWidth() {

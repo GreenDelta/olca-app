@@ -133,7 +133,10 @@ class ProcessExpander extends ImageFigure {
 		if (isCollapsing)
 			return;
 		isCollapsing = true;
-		for (var link : node.links) {
+		// need to copy the links otherwise we ge a
+		// concurrent modification exception
+		var links = node.links.toArray(new Link[0]);
+		for (var link : links) {
 			var thisNode = side == Side.INPUT
 				? link.inputNode
 				: link.outputNode;

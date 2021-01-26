@@ -4,16 +4,19 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
-import org.openlca.core.model.ModelType;
+import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class Figures {
 
 	private static final Color COLOR_DEFAULT = Colors.get(64, 64, 64);
+	private static final Color COLOR_WHITE = Colors.white();
+
 	private static final Color COLOR_PROCESS = Colors.get(0, 0, 102);
 	private static final Color COLOR_WASTE_PROCESS = Colors.get(158, 72, 14);
 	private static final Color COLOR_LIBRARY_PROCESS = Colors.get(0, 176, 240);
 	private static final Color COLOR_PRODUCT_SYSTEM = Colors.get(0, 111, 54);
+	private static final Color COLOR_HEADER_GREY = Colors.get(242, 242, 242);
 
 	static Color colorOf(ProcessNode node) {
 		if (node == null || node.process == null)
@@ -29,6 +32,30 @@ class Figures {
 
 	static Image iconOf(ProcessNode node) {
 		return Icon.GRAPH_PROCESS_PRODUCTION.get();
+	}
+
+	static Color headerBackgroundOf(ProcessNode node) {
+		return isUnitProcess(node)
+			? COLOR_HEADER_GREY
+			: colorOf(node);
+	}
+
+	static Color headerForegroundOf(ProcessNode node) {
+		return isUnitProcess(node)
+			? colorOf(node)
+			: COLOR_WHITE;
+	}
+
+	private static boolean isUnitProcess(ProcessNode node) {
+		if (node == null)
+			return false;
+		var d = node.process;
+		if (d.isFromLibrary())
+			return false;
+		if (!(d instanceof ProcessDescriptor))
+			return false;
+		var p = (ProcessDescriptor) d;
+		return p.processType == ProcessType.UNIT_PROCESS;
 	}
 
 }
