@@ -1,6 +1,8 @@
 package org.openlca.app.editors.graphical.model;
 
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -23,6 +25,10 @@ class Figures {
 			return COLOR_PRODUCT_SYSTEM;
 		// TODO: determine if a process is a waste or production process
 		return COLOR_PROCESS;
+	}
+
+	static Image iconOf(ProcessNode node) {
+		return Icon.GRAPH_PROCESS_PRODUCTION.get();
 	}
 
 }

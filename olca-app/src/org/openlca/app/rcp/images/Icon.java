@@ -54,6 +54,8 @@ public enum Icon {
 	FOLDER_OPEN("folder_open.png"),
 	FORMULA("formula.png"),
 
+	GRAPH_PROCESS_PRODUCTION("graphical/process_production.png"),
+
 	HELP("help.png"),
 	HOME("home.png"),
 

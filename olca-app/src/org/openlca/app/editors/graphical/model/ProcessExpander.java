@@ -15,8 +15,8 @@ import org.openlca.core.model.ProcessLink;
 
 class ProcessExpander extends ImageFigure {
 
-	private ProcessNode node;
-	private Side side;
+	private final ProcessNode node;
+	private final Side side;
 	private boolean expanded;
 	// isCollapsing is used to prevent endless recursion in collapse()
 	private boolean isCollapsing;
@@ -87,10 +87,10 @@ class ProcessExpander extends ImageFigure {
 			long otherID = isProvider ? pLink.processId : pLink.providerId;
 			ProcessNode outNode;
 			ProcessNode inNode;
-			if (isInputNode(type, pLink, isProvider)) {
+			if (isInputNode(type, isProvider)) {
 				inNode = this.node;
 				outNode = node(otherID, sysNode);
-			} else if (isOutputNode(type, pLink, isProvider)) {
+			} else if (isOutputNode(type, isProvider)) {
 				outNode = this.node;
 				inNode = node(otherID, sysNode);
 			} else {
@@ -104,26 +104,20 @@ class ProcessExpander extends ImageFigure {
 		}
 	}
 
-	private boolean isInputNode(FlowType type, ProcessLink link,
-			boolean isProvider) {
+	private boolean isInputNode(FlowType type, boolean isProvider) {
 		if (side != Side.INPUT)
 			return false;
 		if (isProvider && type == FlowType.WASTE_FLOW)
 			return true; // waste input
-		if (!isProvider && type == FlowType.PRODUCT_FLOW)
-			return true; // product input
-		return false;
+		return !isProvider && type == FlowType.PRODUCT_FLOW; // product input
 	}
 
-	private boolean isOutputNode(FlowType type, ProcessLink link,
-			boolean isProvider) {
+	private boolean isOutputNode(FlowType type, boolean isProvider) {
 		if (side != Side.OUTPUT)
 			return false;
 		if (isProvider && type == FlowType.PRODUCT_FLOW)
 			return true; // product output
-		if (!isProvider && type == FlowType.WASTE_FLOW)
-			return true; // waste output
-		return false;
+		return !isProvider && type == FlowType.WASTE_FLOW; // waste output
 	}
 
 	private ProcessNode node(long processID, ProductSystemNode sysNode) {
@@ -139,11 +133,13 @@ class ProcessExpander extends ImageFigure {
 		if (isCollapsing)
 			return;
 		isCollapsing = true;
-		Link[] links = node.links.toArray(
-				new Link[node.links.size()]);
-		for (Link link : links) {
-			ProcessNode thisNode = side == Side.INPUT ? link.inputNode : link.outputNode;
-			ProcessNode otherNode = side == Side.INPUT ? link.outputNode : link.inputNode;
+		for (var link : node.links) {
+			var thisNode = side == Side.INPUT
+				? link.inputNode
+				: link.outputNode;
+			var otherNode = side == Side.INPUT
+				? link.outputNode
+				: link.inputNode;
 			if (!thisNode.equals(node))
 				continue;
 			link.unlink();
@@ -191,7 +187,7 @@ class ProcessExpander extends ImageFigure {
 	}
 
 	enum Side {
-		INPUT, OUTPUT;
+		INPUT, OUTPUT
 	}
 
 	private class ExpansionListener implements MouseListener {
@@ -209,12 +205,12 @@ class ProcessExpander extends ImageFigure {
 		private Command getCommand() {
 			if (side == Side.INPUT) {
 				return expanded
-						? ExpansionCommand.collapseLeft(node)
-						: ExpansionCommand.expandLeft(node);
+					? ExpansionCommand.collapseLeft(node)
+					: ExpansionCommand.expandLeft(node);
 			} else {
 				return expanded
-						? ExpansionCommand.collapseRight(node)
-						: ExpansionCommand.expandRight(node);
+					? ExpansionCommand.collapseRight(node)
+					: ExpansionCommand.expandRight(node);
 			}
 		}
 
