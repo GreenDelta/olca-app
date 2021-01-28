@@ -41,7 +41,7 @@ class LinkAnchor extends AbstractConnectionAnchor {
 	public Point getLocation(Point reference) {
 		int hTrans = 0;
 		if (!node.isMinimized()) {
-			hTrans = ProcessFigure.MARGIN_WIDTH + 1;
+			hTrans = 3;
 			if (forInput) {
 				hTrans *= -1;
 			}

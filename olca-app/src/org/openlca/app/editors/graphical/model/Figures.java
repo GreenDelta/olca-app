@@ -16,7 +16,8 @@ class Figures {
 	private static final Color COLOR_WASTE_PROCESS = Colors.get(158, 72, 14);
 	private static final Color COLOR_LIBRARY_PROCESS = Colors.get(0, 176, 240);
 	private static final Color COLOR_PRODUCT_SYSTEM = Colors.get(0, 111, 54);
-	private static final Color COLOR_HEADER_GREY = Colors.get(242, 242, 242);
+
+	static final Color COLOR_LIGHT_GREY = Colors.get(242, 242, 242);
 
 	static Color colorOf(ProcessNode node) {
 		if (node == null || node.process == null)
@@ -36,7 +37,7 @@ class Figures {
 
 	static Color headerBackgroundOf(ProcessNode node) {
 		return isUnitProcess(node)
-			? COLOR_HEADER_GREY
+			? COLOR_LIGHT_GREY
 			: colorOf(node);
 	}
 

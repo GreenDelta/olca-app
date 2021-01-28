@@ -22,7 +22,7 @@ class ExchangeFigure extends Label {
 	private static final Color TEXT_COLOR = Colors.get(33, 33, 33);
 	private static final Color TEXT_HIGHLIGHTED_COLOR = Colors.get(232, 234, 246);
 
-	private final ExchangeNode node;
+	final ExchangeNode node;
 
 	ExchangeFigure(ExchangeNode node) {
 		this.node = node;
