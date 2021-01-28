@@ -2,7 +2,6 @@ package org.openlca.app.editors.graphical.model;
 
 import org.eclipse.draw2d.AbstractConnectionAnchor;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 
 class LinkAnchor extends AbstractConnectionAnchor {
 
@@ -38,24 +37,48 @@ class LinkAnchor extends AbstractConnectionAnchor {
 	}
 
 	@Override
-	public Point getLocation(Point reference) {
-		int hTrans = 0;
-		if (!node.isMinimized()) {
-			hTrans = 3;
-			if (forInput) {
-				hTrans *= -1;
-			}
+	public Point getLocation(Point ref) {
+		var owner = getOwner();
+		if (owner == null)
+			return ref;
+
+		// for processes it is just the middle
+		// of the left or right side
+		var bounds = owner.getBounds();
+		var point = forInput
+				? bounds.getLeft()
+				: bounds.getRight();
+		owner.translateToAbsolute(point);
+		if ((owner instanceof ProcessFigure)
+				|| node.isMinimized()
+				|| !(owner instanceof ExchangeFigure))
+			return point;
+
+		// for exchanges we move the anchor to the
+		// left or right side of the surrounding
+		// process box
+
+		// find the surrounding process figure
+		var process = owner.getParent();
+		int depth = 0; // just in case of cycles
+		while (process != null && depth < 100) {
+			if (process instanceof ProcessFigure)
+				break;
+			process = process.getParent();
+			depth++;
 		}
-		Rectangle r = getOwner().getBounds().getCopy();
-		r.translate(hTrans, 0);
-		getOwner().translateToAbsolute(r);
-		Point location = null;
-		if (forInput) {
-			location = r.getLeft();
-		} else {
-			location = r.getRight();
-		}
-		return location;
+		if (process == null)
+			return point;
+
+		// set x to the right or left side of
+		// the surrounding box
+		var outerBounds = process.getBounds();
+		var outer = forInput
+			? outerBounds.getLeft()
+			: outerBounds.getRight();
+		process.translateToAbsolute(outer);
+		point.x = outer.x;
+		return point;
 	}
 
 }

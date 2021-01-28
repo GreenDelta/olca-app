@@ -28,8 +28,10 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 	}
 
 	private ConnectionAnchor sourceAnchor(CreateConnectionRequest req) {
-		CreateLinkCommand cmd = (CreateLinkCommand) ((CreateConnectionRequest) req)
-				.getStartCommand();
+		var command = req.getStartCommand();
+		if (!(command instanceof CreateLinkCommand))
+			return null;
+		var cmd = (CreateLinkCommand) req.getStartCommand();
 		if (cmd.output != null)
 			return LinkAnchor.forOutput(cmd.output.parent(), cmd.output);
 		if (cmd.input != null)
