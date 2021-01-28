@@ -72,7 +72,7 @@ class ProcessFigure extends Figure {
 		setToolTip(new Label(node.getName()));
 		setForegroundColor(Colors.white());
 		setBounds(new Rectangle(0, 0, 0, 0));
-		setSize(calculateSize());
+		setSize(MINIMUM_WIDTH, MINIMUM_HEIGHT);
 
 		GridLayout layout = new GridLayout(1, true);
 		layout.horizontalSpacing = 10;
@@ -127,6 +127,7 @@ class ProcessFigure extends Figure {
 		}
 
 		// update size
+		/*
 		if (getParent() == null)
 			return;
 		var location = getLocation();
@@ -140,6 +141,7 @@ class ProcessFigure extends Figure {
 					? MINIMUM_HEIGHT
 					: Math.max(calculated.height, current.height));
 		getParent().setConstraint(this, bounds);
+		*/
 
 		// refresh the links of this node
 		for (Link link : node.links) {
@@ -158,7 +160,7 @@ class ProcessFigure extends Figure {
 		g.fillRectangle(new Rectangle(getLocation(), getSize()));
 		// paintTop(g);
 		if (!node.isMinimized() || Animation.isRunning()) {
-			paintTable(g);
+			// paintTable(g);
 		}
 		g.popState();
 		super.paintFigure(g);
@@ -206,6 +208,12 @@ class ProcessFigure extends Figure {
 
 	@Override
 	public Dimension getPreferredSize(int wHint, int hHint) {
+		var dim = super.getPreferredSize(wHint, hHint);
+		if (dim.width < MINIMUM_WIDTH) {
+			return new Dimension(MINIMUM_WIDTH, dim.height);
+		}
+		return dim;
+		/*
 		var current = getSize();
 		if (node.isMinimized())
 			return current;
@@ -213,9 +221,11 @@ class ProcessFigure extends Figure {
 		return new Dimension(
 				Math.max(calculated.width, current.width),
 				Math.max(calculated.height, current.height));
+		*/
 	}
 
-	Dimension calculateSize() {
+	/*
+	private Dimension calculateSize() {
 
 		int x = MINIMUM_WIDTH;
 		if (getSize() != null && getSize().width > x)
@@ -228,8 +238,11 @@ class ProcessFigure extends Figure {
 
 		return new Dimension(x, y);
 	}
+	*/
 
 	int getMinimumHeight() {
+		return getSize().height;
+		/*
 		if (minimumHeight != 0)
 			return minimumHeight;
 		int inputs = 0;
@@ -244,6 +257,7 @@ class ProcessFigure extends Figure {
 		int startExchanges = MINIMUM_HEIGHT + 4 * MARGIN_HEIGHT + TEXT_HEIGHT;
 		minimumHeight = startExchanges + length * (TEXT_HEIGHT + 1);
 		return minimumHeight;
+		*/
 	}
 
 	private class DoubleClickListener implements MouseListener {

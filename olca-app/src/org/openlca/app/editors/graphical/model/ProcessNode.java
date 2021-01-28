@@ -125,6 +125,11 @@ public class ProcessNode extends Node {
 
 	public void minimize() {
 		this.minimized = true;
+		var childs = getChildren();
+		if (!childs.isEmpty()) {
+			var node = childs.get(0);
+			remove(node);
+		}
 		refresh();
 	}
 
