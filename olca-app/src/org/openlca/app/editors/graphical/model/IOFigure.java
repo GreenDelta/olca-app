@@ -17,9 +17,9 @@ class IOFigure extends Figure {
 	IOFigure() {
 		var layout = new GridLayout(2, true);
 		layout.horizontalSpacing = 4;
-		layout.verticalSpacing = 0;
-		layout.marginHeight = 4;
-		layout.marginWidth = 0;
+		layout.verticalSpacing = 4;
+		layout.marginHeight = 2;
+		layout.marginWidth = 2;
 		setLayoutManager(layout);
 		add(new Header("Input flows"),
 			new GridData(SWT.FILL, SWT.TOP, true, false));
