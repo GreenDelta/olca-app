@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical.model;
 import org.eclipse.draw2d.BendpointConnectionRouter;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionAnchor;
-import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 
@@ -14,26 +13,22 @@ public class TreeConnectionRouter extends BendpointConnectionRouter {
 	private TreeConnectionRouter() {
 	}
 
-	private ProcessFigure getProcessFigure(ConnectionAnchor anchor) {
-		if (anchor.getOwner() instanceof ProcessFigure)
-			return (ProcessFigure) anchor.getOwner();
-		else
-			return (ProcessFigure) anchor.getOwner().getParent().getParent();
-	}
-
 	@Override
 	public void route(Connection conn) {
 		super.route(conn);
-		if (conn.getSourceAnchor().getOwner() == null || conn.getTargetAnchor().getOwner() == null)
+
+		var source = processOf(conn.getSourceAnchor());
+		var target = processOf(conn.getTargetAnchor());
+		if (source == null || target == null)
 			return;
-		PointList points = new PointList();
+		var points = new PointList();
 		points.addPoint(conn.getPoints().getFirstPoint());
-		ProcessFigure source = getProcessFigure(conn.getSourceAnchor());
-		ProcessFigure target = getProcessFigure(conn.getTargetAnchor());
-		Point sourceLoc = source.getLocation();
-		Point targetLoc = target.getLocation();
-		Point firstPoint = conn.getPoints().getFirstPoint();
-		Point lastPoint = conn.getPoints().getLastPoint();
+
+		var sourceLoc = source.getLocation();
+		var targetLoc = target.getLocation();
+		var firstPoint = conn.getPoints().getFirstPoint();
+		var lastPoint = conn.getPoints().getLastPoint();
+
 		if (targetLoc.x < sourceLoc.x + source.getSize().width
 				|| targetLoc.x > sourceLoc.x + source.getSize().width + LayoutManager.H_SPACE + target.getSize().width
 				|| target == source) {
@@ -49,5 +44,19 @@ public class TreeConnectionRouter extends BendpointConnectionRouter {
 		}
 		points.addPoint(lastPoint);
 		conn.setPoints(points);
+	}
+
+	private ProcessFigure processOf(ConnectionAnchor anchor) {
+		if (anchor == null)
+			return null;
+		var figure = anchor.getOwner();
+		int depth = 0;  // just in case there are cycles
+		while (figure != null && depth < 100) {
+			if (figure instanceof ProcessFigure)
+				return (ProcessFigure) figure;
+			figure = figure.getParent();
+			depth++;
+		}
+		return null;
 	}
 }
