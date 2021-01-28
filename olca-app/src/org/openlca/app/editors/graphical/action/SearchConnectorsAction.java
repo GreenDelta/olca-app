@@ -78,8 +78,6 @@ class SearchConnectorsAction extends EditorAction {
 				item.dispose();
 			boolean providers = type == PROVIDER;
 			for (ExchangeNode n : node.loadExchangeNodes()) {
-				if (n.isDummy())
-					continue;
 				if (n.exchange.isInput != providers)
 					continue;
 

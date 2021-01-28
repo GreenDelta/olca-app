@@ -12,17 +12,9 @@ public class ExchangeNode extends Node {
 
 	public final Exchange exchange;
 
-	public ExchangeNode(GraphEditor editor, Exchange exchange) {
+	ExchangeNode(GraphEditor editor, Exchange exchange) {
 		super(editor);
 		this.exchange = exchange;
-	}
-
-	/**
-	 * Dummy nodes are created to have the same size of inputs and outputs in a
-	 * process figure. The exchange is null in this case.
-	 */
-	public boolean isDummy() {
-		return exchange == null;
 	}
 
 	public boolean isWaste() {
@@ -58,8 +50,6 @@ public class ExchangeNode extends Node {
 	}
 
 	public void setHighlighted(boolean value) {
-		if (isDummy())
-			return;
 		((ExchangeFigure) figure).setHighlighted(value);
 	}
 

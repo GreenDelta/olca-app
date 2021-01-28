@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical.model;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -26,10 +25,7 @@ class ExchangeFigure extends Label {
 
 	ExchangeFigure(ExchangeNode node) {
 		this.node = node;
-		if (node.isDummy())
-			return;
 		var exchange = node.exchange;
-		setBorder(new LineBorder(ColorConstants.white, 1));
 		setForegroundColor(exchange.isAvoided
 				? BACKGROUND_COLOR
 				: TEXT_COLOR);
@@ -79,7 +75,7 @@ class ExchangeFigure extends Label {
 		if (node.parent().isMinimized() && !Animation.isRunning())
 			return;
 
-		if (node.isDummy() || !node.exchange.isAvoided) {
+		if (!node.exchange.isAvoided) {
 			super.paintFigure(g);
 			return;
 		}

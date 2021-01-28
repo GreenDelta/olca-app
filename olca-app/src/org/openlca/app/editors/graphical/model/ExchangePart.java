@@ -45,9 +45,6 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 	@Override
 	protected void refreshVisuals() {
 		var node = getModel();
-		if (node.isDummy())
-			return;
-
 		if (!(node.figure instanceof ExchangeFigure))
 			return;
 		var figure = (ExchangeFigure) node.figure;
