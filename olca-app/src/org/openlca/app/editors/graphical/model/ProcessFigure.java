@@ -71,8 +71,8 @@ class ProcessFigure extends Figure {
 	private void initializeFigure() {
 		setToolTip(new Label(node.getName()));
 		setForegroundColor(Colors.white());
-		setBounds(new Rectangle(0, 0, 0, 0));
-		setSize(MINIMUM_WIDTH, MINIMUM_HEIGHT);
+		// setBounds(new Rectangle(0, 0, 0, 0));
+		// setSize(MINIMUM_WIDTH, MINIMUM_HEIGHT);
 
 		GridLayout layout = new GridLayout(1, true);
 		layout.horizontalSpacing = 10;
@@ -209,8 +209,12 @@ class ProcessFigure extends Figure {
 	@Override
 	public Dimension getPreferredSize(int wHint, int hHint) {
 		var dim = super.getPreferredSize(wHint, hHint);
-		if (dim.width < MINIMUM_WIDTH) {
-			return new Dimension(MINIMUM_WIDTH, dim.height);
+		if (wHint < 0) {
+			dim = new Dimension(MINIMUM_WIDTH, dim.height);
+		}
+		var size = getSize();
+		if (size.width == 0 || size.height == 0) {
+			setSize(dim);
 		}
 		return dim;
 		/*
