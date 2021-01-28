@@ -102,7 +102,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 				try {
 					var setup = new CalculationSetup(system);
 					var data = DataStructures.matrixData(Database.get(), setup);
-					var matrix = data.techMatrix;
+					var matrix = data.techMatrix.asMutable();
 					matrix = new MatrixRowSorter(matrix, App.getSolver()).run();
 					new MatrixImageExport(matrix, file).run();
 				} catch (Exception e) {
