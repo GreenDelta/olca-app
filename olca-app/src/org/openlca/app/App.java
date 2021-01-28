@@ -21,8 +21,8 @@ import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.core.matrix.solvers.IMatrixSolver;
 import org.openlca.core.matrix.solvers.JavaSolver;
+import org.openlca.core.matrix.solvers.MatrixSolver;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -36,7 +36,7 @@ public class App {
 
 	static Logger log = LoggerFactory.getLogger(App.class);
 
-	private static IMatrixSolver solver;
+	private static MatrixSolver solver;
 
 	private App() {
 	}
@@ -60,7 +60,7 @@ public class App {
 		}
 	}
 
-	public static IMatrixSolver getSolver() {
+	public static MatrixSolver getSolver() {
 		if (solver != null)
 			return solver;
 		try {
