@@ -7,7 +7,6 @@ import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.swt.SWT;
-import org.openlca.app.util.Colors;
 
 class IOFigure extends Figure {
 
@@ -58,7 +57,7 @@ class IOFigure extends Figure {
 			layout.marginWidth =  5;
 			setLayoutManager(layout);
 			var label = new Label(text);
-			label.setForegroundColor(Colors.white());
+			label.setForegroundColor(Figures.COLOR_WHITE);
 			add(label, new GridData(SWT.CENTER, SWT.TOP, true, false));
 		}
 

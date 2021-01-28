@@ -18,7 +18,6 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 		var node = getModel();
 		var figure = new ExchangeFigure(node);
 		node.figure = figure;
-		figure.setText(node.getName());
 		return figure;
 	}
 
@@ -53,8 +52,8 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 		var icon = node.config().showFlowIcons
 				? Images.get(node.flowType())
 				: null;
-		figure.setIcon(icon);
-		figure.setText(node.getName());
+		figure.label.setIcon(icon);
+		figure.label.setText(node.getName());
 
 		var layout = new GridData(
 				SWT.LEFT, SWT.TOP, true, false);

@@ -9,27 +9,45 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class Figures {
 
-	private static final Color COLOR_DEFAULT = Colors.get(64, 64, 64);
-	private static final Color COLOR_WHITE = Colors.white();
-
-	private static final Color COLOR_PROCESS = Colors.get(0, 0, 102);
-	private static final Color COLOR_WASTE_PROCESS = Colors.get(158, 72, 14);
-	private static final Color COLOR_LIBRARY_PROCESS = Colors.get(0, 176, 240);
-	private static final Color COLOR_PRODUCT_SYSTEM = Colors.get(0, 111, 54);
-
 	static final Color COLOR_LIGHT_GREY = Colors.get(242, 242, 242);
+	static final Color COLOR_WHITE = Colors.white();
+
+	private static final Color COLOR_DARK_GREY = Colors.get(64, 64, 64);
+
+	private static final Color COLOR_PRODUCT = Colors.get(0, 0, 102);
+	private static final Color COLOR_WASTE = Colors.get(158, 72, 14);
+	private static final Color COLOR_LIBRARY = Colors.get(0, 176, 240);
+	private static final Color COLOR_SYSTEM = Colors.get(0, 111, 54);
+
 
 	static Color colorOf(ProcessNode node) {
 		if (node == null || node.process == null)
-			return COLOR_DEFAULT;
+			return COLOR_DARK_GREY;
 		var d = node.process;
 		if (d.isFromLibrary())
-			return COLOR_LIBRARY_PROCESS;
+			return COLOR_LIBRARY;
 		if (!(d instanceof ProcessDescriptor))
-			return COLOR_PRODUCT_SYSTEM;
+			return COLOR_SYSTEM;
 		// TODO: determine if a process is a waste or production process
-		return COLOR_PROCESS;
+		return COLOR_PRODUCT;
 	}
+
+	static Color colorOf(ExchangeNode node) {
+		if (node == null)
+			return COLOR_DARK_GREY;
+		var flowType = node.flowType();
+		if (flowType == null)
+			return COLOR_DARK_GREY;
+		switch (flowType) {
+			case PRODUCT_FLOW:
+				return COLOR_PRODUCT;
+			case WASTE_FLOW:
+				return COLOR_WASTE;
+			default:
+				return COLOR_DARK_GREY;
+		}
+	}
+
 
 	static Image iconOf(ProcessNode node) {
 		return Icon.GRAPH_PROCESS_PRODUCTION.get();
