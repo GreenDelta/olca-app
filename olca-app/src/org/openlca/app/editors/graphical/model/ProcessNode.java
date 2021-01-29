@@ -69,16 +69,18 @@ public class ProcessNode extends Node {
 		this.figure = figure;
 	}
 
-	public void apply(NodeLayoutInfo layout) {
-		minimized = layout.minimized;
-		marked = layout.marked;
+	public void apply(NodeLayoutInfo info) {
+		minimized = info.minimized;
+		marked = info.marked;
 		if (!minimized && getChildren().isEmpty()) {
 			add(new IONode(this));
 		}
-		figure.setBounds(layout.box);
-		figure().getLeftExpander().setExpanded(layout.expandedLeft);
-		figure().getRightExpander().setExpanded(layout.expandedRight);
+		box = info.box;
+		figure.setBounds(info.box);
+		figure().getLeftExpander().setExpanded(info.expandedLeft);
+		figure().getRightExpander().setExpanded(info.expandedRight);
 		figure().refresh();
+		figure.getParent().setConstraint(figure, info.box);
 	}
 
 	public void add(Link link) {

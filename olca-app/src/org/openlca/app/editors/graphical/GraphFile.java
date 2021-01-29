@@ -66,7 +66,7 @@ public final class GraphFile {
 			json.addProperty("width",  box.width);
 			json.addProperty("height",  box.height);
 		}
-		
+
 		json.addProperty("minimized", node.isMinimized());
 		json.addProperty("expandedLeft", node.isExpandedLeft());
 		json.addProperty("expandedRight", node.isExpandedLeft());
