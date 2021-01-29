@@ -1,13 +1,11 @@
 package org.openlca.app.editors.graphical.model;
 
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
-import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-class Figures {
+public class ColorfulTheme implements Theme {
 
 	static final Color COLOR_LIGHT_GREY = Colors.get(242, 242, 242);
 	static final Color COLOR_WHITE = Colors.white();
@@ -20,7 +18,8 @@ class Figures {
 	private static final Color COLOR_SYSTEM = Colors.get(0, 111, 54);
 
 
-	static Color colorOf(ProcessNode node) {
+	@Override
+	public Color boxColorOf(ProcessNode node) {
 		if (node == null || node.process == null)
 			return COLOR_DARK_GREY;
 		var d = node.process;
@@ -32,7 +31,32 @@ class Figures {
 		return COLOR_PRODUCT;
 	}
 
-	static Color colorOf(ExchangeNode node) {
+	@Override
+	public Color boxHeaderForegroundOf(ProcessNode node) {
+		return isUnitProcess(node)
+			? boxColorOf(node)
+			: COLOR_WHITE;
+	}
+
+	@Override
+	public Color boxHeaderBackgroundOf(ProcessNode node) {
+		return isUnitProcess(node)
+			? COLOR_LIGHT_GREY
+			: boxColorOf(node);
+	}
+
+	@Override
+	public Color ioHeaderForegroundOf(ProcessNode node) {
+		return COLOR_WHITE;
+	}
+
+	@Override
+	public Color ioInnerBackgroundOf(ProcessNode node) {
+		return COLOR_LIGHT_GREY;
+	}
+
+	@Override
+	public Color ioForegroundOf(ExchangeNode node) {
 		if (node == null)
 			return COLOR_DARK_GREY;
 		var flowType = node.flowType();
@@ -48,22 +72,6 @@ class Figures {
 		}
 	}
 
-	static Image iconOf(ProcessNode node) {
-		return Icon.GRAPH_PROCESS_PRODUCTION.get();
-	}
-
-	static Color headerBackgroundOf(ProcessNode node) {
-		return isUnitProcess(node)
-			? COLOR_LIGHT_GREY
-			: colorOf(node);
-	}
-
-	static Color headerForegroundOf(ProcessNode node) {
-		return isUnitProcess(node)
-			? colorOf(node)
-			: COLOR_WHITE;
-	}
-
 	private static boolean isUnitProcess(ProcessNode node) {
 		if (node == null)
 			return false;
@@ -75,5 +83,4 @@ class Figures {
 		var p = (ProcessDescriptor) d;
 		return p.processType == ProcessType.UNIT_PROCESS;
 	}
-
 }

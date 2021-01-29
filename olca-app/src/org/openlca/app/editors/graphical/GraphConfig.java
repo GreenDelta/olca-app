@@ -1,6 +1,8 @@
 package org.openlca.app.editors.graphical;
 
 import com.google.gson.JsonObject;
+import org.openlca.app.editors.graphical.model.ColorfulTheme;
+import org.openlca.app.editors.graphical.model.Theme;
 import org.openlca.jsonld.Json;
 
 public class GraphConfig {
@@ -8,6 +10,7 @@ public class GraphConfig {
 	public boolean showFlowIcons;
 	public boolean showFlowAmounts;
 	public boolean showElementaryFlows;
+	private Theme theme = new ColorfulTheme();
 
 	/**
 	 * Creates a copy from the given configuration.
@@ -16,6 +19,10 @@ public class GraphConfig {
 		return other == null
 				? new GraphConfig()
 				: other.clone();
+	}
+
+	public Theme theme() {
+		return theme;
 	}
 
 	/**

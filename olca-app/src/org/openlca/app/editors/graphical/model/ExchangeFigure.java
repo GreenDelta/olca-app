@@ -23,8 +23,11 @@ class ExchangeFigure extends Figure {
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		setLayoutManager(layout);
+
+		var theme = node.config().theme();
 		label = new Label(node.getName());
-		label.setForegroundColor(Figures.colorOf(node));
+		label.setForegroundColor(
+			theme.ioForegroundOf(node));
 		setToolTip(new Label(tooltip()));
 		label.setIcon(Images.get(node.flowType()));
 		add(label, new GridData(SWT.FILL, SWT.TOP, true, false));

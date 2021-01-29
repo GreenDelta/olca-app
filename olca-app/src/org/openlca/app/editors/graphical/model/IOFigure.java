@@ -10,10 +10,12 @@ import org.eclipse.swt.SWT;
 
 class IOFigure extends Figure {
 
+	private final ProcessNode node;
 	private final ExchangePanel inputPanel;
 	private final ExchangePanel outputPanel;
 
-	IOFigure() {
+	IOFigure(ProcessNode node) {
+		this.node = node;
 		var layout = new GridLayout(2, true);
 		layout.horizontalSpacing = 4;
 		layout.verticalSpacing = 4;
@@ -49,7 +51,7 @@ class IOFigure extends Figure {
 		}
 	}
 
-	private static class Header extends Figure {
+	private class Header extends Figure {
 
 		Header(String text) {
 			var layout = new GridLayout(1, true);
@@ -57,13 +59,14 @@ class IOFigure extends Figure {
 			layout.marginWidth =  5;
 			setLayoutManager(layout);
 			var label = new Label(text);
-			label.setForegroundColor(Figures.COLOR_WHITE);
+			var theme = node.config().theme();
+			label.setForegroundColor(
+				theme.ioHeaderForegroundOf(node));
 			add(label, new GridData(SWT.CENTER, SWT.TOP, true, false));
 		}
-
 	}
 
-	private static class ExchangePanel extends Figure {
+	private class ExchangePanel extends Figure {
 
 		ExchangePanel() {
 			var layout = new GridLayout(1, true);
@@ -74,8 +77,10 @@ class IOFigure extends Figure {
 
 		@Override
 		protected void paintFigure(Graphics g) {
+			var theme = node.config().theme();
 			g.pushState();
-			g.setBackgroundColor(Figures.COLOR_LIGHT_GREY);
+			g.setBackgroundColor(
+				theme.ioInnerBackgroundOf(node));
 			var location = getLocation();
 			var size = getSize();
 			g.fillRectangle(

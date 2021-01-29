@@ -44,14 +44,12 @@ class ProcessFigure extends Figure {
 	static final int MINIMUM_WIDTH = 250;
 
 	final ProcessNode node;
-	private final Color color;
 
 	private ProcessExpander leftExpander;
 	private ProcessExpander rightExpander;
 
 	ProcessFigure(ProcessNode node) {
 		this.node = node;
-		this.color = Figures.colorOf(node);
 		initializeFigure();
 		createHeader();
 		addMouseListener(new DoubleClickListener());
@@ -141,8 +139,9 @@ class ProcessFigure extends Figure {
 
 	@Override
 	protected void paintFigure(Graphics g) {
+		var theme = node.config().theme();
 		g.pushState();
-		g.setBackgroundColor(color);
+		g.setBackgroundColor(theme.boxColorOf(node));
 		g.fillRectangle(new Rectangle(getLocation(), getSize()));
 		g.popState();
 		super.paintFigure(g);

@@ -10,12 +10,12 @@ class IOPart extends AppAbstractEditPart<IONode> {
 
 	@Override
 	protected IFigure createFigure() {
-		return new IOFigure();
+		var process = getModel().parent();
+		return new IOFigure(process);
 	}
 
 	@Override
 	protected void createEditPolicies() {
-
 	}
 
 	@Override
@@ -36,7 +36,8 @@ class IOPart extends AppAbstractEditPart<IONode> {
 
 	@Override
 	protected void refreshVisuals() {
-		getFigure().getParent().setConstraint(getFigure(), new GridData(SWT.FILL, SWT.FILL, true, true));
+		getFigure().getParent().setConstraint(
+				getFigure(), new GridData(SWT.FILL, SWT.FILL, true, true));
 	}
 
 }

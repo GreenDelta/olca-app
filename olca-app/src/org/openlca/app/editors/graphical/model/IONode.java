@@ -21,11 +21,18 @@ public class IONode extends Node {
 	 * refresh.
 	 */
 	final boolean isWithElementaryFlows;
+	private final ProcessNode parent;
 
 	public IONode(ProcessNode parent) {
 		super(parent.editor);
+		this.parent = parent;
 		isWithElementaryFlows = config().showElementaryFlows;
 		addExchanges(parent);
+	}
+
+	@Override
+	public ProcessNode parent() {
+		return parent;
 	}
 
 	private void addExchanges(ProcessNode node) {

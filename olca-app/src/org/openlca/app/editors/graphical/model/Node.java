@@ -13,7 +13,7 @@ abstract class Node {
 	public final GraphEditor editor;
 
 	private Node parent;
-	private List<Node> children = new ArrayList<>();
+	private final List<Node> children = new ArrayList<>();
 	public IFigure figure;
 	AppAbstractEditPart<?> editPart;
 
@@ -59,7 +59,7 @@ abstract class Node {
 	public abstract String getName();
 
 	public boolean isVisible() {
-		return figure != null ? figure.isVisible() : false;
+		return figure != null && figure.isVisible();
 	}
 
 	public void setVisible(boolean value) {

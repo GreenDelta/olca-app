@@ -171,20 +171,25 @@ public class UI {
 		return formHeader(mform, title, null);
 	}
 
-	public static ScrolledForm formHeader(IManagedForm mform, String title, Image image) {
-		ScrolledForm form = mform.getForm();
-		FormToolkit tk = mform.getToolkit();
+	public static ScrolledForm formHeader(
+			IManagedForm mform, String title, Image image) {
+		var form = mform.getForm();
+		var tk = mform.getToolkit();
 		tk.getHyperlinkGroup().setHyperlinkUnderlineMode(
 				HyperlinkSettings.UNDERLINE_HOVER);
-		if (title != null)
+		if (title != null) {
 			form.setText(title);
-		if (image != null)
+		}
+		if (image != null) {
 			form.setImage(image);
-		tk.decorateFormHeading(form.getForm());
+		}
+		form.setForeground(Colors.get(38, 38, 38));
+		// tk.decorateFormHeading(form.getForm());
 		return form;
 	}
 
-	public static Composite formSection(Composite parent, FormToolkit tk, String label) {
+	public static Composite formSection(
+			Composite parent, FormToolkit tk, String label) {
 		return formSection(parent, tk, label, 2);
 	}
 
@@ -195,27 +200,32 @@ public class UI {
 		return client;
 	}
 
-	public static Section section(Composite parent, FormToolkit toolkit, String label) {
-		Section section = toolkit.createSection(parent,
-				ExpandableComposite.TITLE_BAR | ExpandableComposite.FOCUS_TITLE
-						| ExpandableComposite.EXPANDED
-						| ExpandableComposite.TWISTIE);
-		gridData(section, true, false);
-		section.setText(label);
-		return section;
+	public static Section section(Composite comp, FormToolkit tk, String title) {
+		var s = tk.createSection(comp, ExpandableComposite.TITLE_BAR
+				| ExpandableComposite.FOCUS_TITLE
+				| ExpandableComposite.EXPANDED
+				| ExpandableComposite.TWISTIE);
+		gridData(s, true, false);
+		s.setText(title);
+		// s.setTitleBarBackground(Colors.get(214, 214, 255));
+		s.setTitleBarBackground(Colors.white());
+		s.setTitleBarBorderColor(Colors.get(122, 122, 122));
+		s.setTitleBarForeground(Colors.get(38, 38, 38));
+		s.setToggleColor(Colors.get(38, 38, 38));
+		return s;
 	}
 
 	/**
-	 * Creates a composite and sets it as section client of the given section.
-	 * The created composite gets a 2-column grid-layout.
+	 * Creates a composite and sets it as section client of the given section. The
+	 * created composite gets a 2-column grid-layout.
 	 */
 	public static Composite sectionClient(Section section, FormToolkit toolkit) {
 		return sectionClient(section, toolkit, 2);
 	}
 
 	/**
-	 * Creates a composite and sets it as section client of the given section.
-	 * The created composite gets a n-column grid-layout.
+	 * Creates a composite and sets it as section client of the given section. The
+	 * created composite gets a n-column grid-layout.
 	 */
 	public static Composite sectionClient(Section section, FormToolkit toolkit, int columns) {
 		Composite composite = toolkit.createComposite(section);
