@@ -18,6 +18,7 @@ import org.eclipse.swt.graphics.Color;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.model.ProcessExpander.Side;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -82,7 +83,7 @@ class ProcessFigure extends Figure {
 		top.add(leftExpander, new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
 		// process icon and header
-		top.add(new ImageFigure(Figures.iconOf(node)),
+		top.add(new ImageFigure(Icon.GRAPH_PROCESS_PRODUCTION.get()),
 				new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		top.add(new BoxHeader(node), new GridData(SWT.FILL, SWT.TOP, true, false));
 
@@ -226,14 +227,15 @@ class ProcessFigure extends Figure {
 		private final Color background;
 
 		BoxHeader(ProcessNode node) {
-			background = Figures.headerBackgroundOf(node);
+			var theme = node.config().theme();
+			background = theme.boxHeaderBackgroundOf(node);
 			setToolTip(new Label(tooltipOf(node)));
 			var layout = new GridLayout(1, true);
 			layout.marginHeight = 2;
 			layout.marginWidth = 10;
 			setLayoutManager(layout);
 			var label = new Label(node.getName());
-			label.setForegroundColor(Figures.headerForegroundOf(node));
+			label.setForegroundColor(theme.boxHeaderForegroundOf(node));
 			add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
 		}
 
