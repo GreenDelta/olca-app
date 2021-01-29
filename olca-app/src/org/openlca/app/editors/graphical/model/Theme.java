@@ -6,6 +6,10 @@ public interface Theme {
 
 	Color boxColorOf(ProcessNode node);
 
+	default Color boxBorderOf(ProcessNode node) {
+		return boxColorOf(node);
+	}
+
 	Color boxHeaderForegroundOf(ProcessNode node);
 
 	Color boxHeaderBackgroundOf(ProcessNode node);

@@ -9,6 +9,7 @@ import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -92,6 +93,9 @@ class ProcessFigure extends Figure {
 		top.add(rightExpander, new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 
 		add(top, new GridData(SWT.FILL, SWT.FILL, true, false));
+
+		var theme = node.config().theme();
+		setBorder(new LineBorder(theme.boxBorderOf(node), 1));
 	}
 
 	private IOFigure getIOFigure() {

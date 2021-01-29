@@ -14,6 +14,11 @@ public class WhiteTheme implements Theme {
 	}
 
 	@Override
+	public Color boxBorderOf(ProcessNode node) {
+		return COLOR_BLACK;
+	}
+
+	@Override
 	public Color boxHeaderForegroundOf(ProcessNode node) {
 		return COLOR_BLACK;
 	}

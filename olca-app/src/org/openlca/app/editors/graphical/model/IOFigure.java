@@ -6,6 +6,7 @@ import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.LineBorder;
 import org.eclipse.swt.SWT;
 
 class IOFigure extends Figure {
@@ -73,6 +74,8 @@ class IOFigure extends Figure {
 			layout.marginHeight = 2;
 			layout.marginWidth =  5;
 			setLayoutManager(layout);
+			var theme = node.config().theme();
+			setBorder(new LineBorder(theme.boxBorderOf(node), 1));
 		}
 
 		@Override

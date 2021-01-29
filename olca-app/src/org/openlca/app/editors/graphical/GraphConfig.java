@@ -1,17 +1,18 @@
 package org.openlca.app.editors.graphical;
 
-import com.google.gson.JsonObject;
 import org.openlca.app.editors.graphical.model.ColorfulTheme;
 import org.openlca.app.editors.graphical.model.Theme;
-import org.openlca.app.editors.graphical.model.WhiteTheme;
 import org.openlca.jsonld.Json;
+
+import com.google.gson.JsonObject;
 
 public class GraphConfig {
 
 	public boolean showFlowIcons;
 	public boolean showFlowAmounts;
 	public boolean showElementaryFlows;
-	private Theme theme = new WhiteTheme();
+	// private Theme theme = new WhiteTheme();
+	private Theme theme = new ColorfulTheme();
 
 	/**
 	 * Creates a copy from the given configuration.
