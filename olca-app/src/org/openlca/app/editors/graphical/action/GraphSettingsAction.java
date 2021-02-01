@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.action;
 
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -10,9 +12,12 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.model.ColorfulTheme;
+import org.openlca.app.editors.graphical.model.WhiteTheme;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.util.Pair;
 
 public class GraphSettingsAction extends Action {
 
@@ -34,6 +39,7 @@ public class GraphSettingsAction extends Action {
 			config.applyOn(editor.config);
 			editor.refresh();
 			editor.setDirty();
+			editor.getModel().figure.repaint();
 		}
 	}
 
@@ -67,6 +73,28 @@ public class GraphSettingsAction extends Action {
 			amounts.setSelection(config.showFlowAmounts);
 			Controls.onSelect(amounts,
 					e -> config.showFlowAmounts = amounts.getSelection());
+
+			// theme combo
+			var comp = tk.createComposite(body);
+			UI.gridLayout(comp, 2, 10, 0);
+			var themeCombo = UI.formCombo(comp, tk, "Theme");
+			var themes = List.of(
+				Pair.of("Colorful", new ColorfulTheme()),
+				Pair.of("White", new WhiteTheme())
+			);
+			int idx = 0;
+			for (int i = 0; i < themes.size(); i++) {
+				var pair = themes.get(i);
+				themeCombo.add(pair.first);
+				if (pair.second.getClass().equals(config.theme().getClass())) {
+					idx = i;
+				}
+			}
+			themeCombo.select(idx);
+			Controls.onSelect(themeCombo, _e -> {
+				var pair = themes.get(themeCombo.getSelectionIndex());
+				config.theme(pair.second);
+			});
 		}
 
 		@Override

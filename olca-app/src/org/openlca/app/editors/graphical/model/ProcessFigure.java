@@ -15,7 +15,6 @@ import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.model.ProcessExpander.Side;
@@ -228,17 +227,18 @@ class ProcessFigure extends Figure {
 
 	private static class BoxHeader extends Figure {
 
-		private final Color background;
+		private final ProcessNode node;
+		private final Label label;
 
 		BoxHeader(ProcessNode node) {
+			this.node = node;
 			var theme = node.config().theme();
-			background = theme.boxHeaderBackgroundOf(node);
 			setToolTip(new Label(tooltipOf(node)));
 			var layout = new GridLayout(1, true);
 			layout.marginHeight = 2;
 			layout.marginWidth = 10;
 			setLayoutManager(layout);
-			var label = new Label(node.getName());
+			label = new Label(node.getName());
 			label.setForegroundColor(theme.boxHeaderForegroundOf(node));
 			add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
 		}
@@ -253,8 +253,10 @@ class ProcessFigure extends Figure {
 
 		@Override
 		protected void paintFigure(Graphics g) {
+			var theme = node.config().theme();
+			label.setForegroundColor(theme.boxHeaderForegroundOf(node));
 			g.pushState();
-			g.setBackgroundColor(background);
+			g.setBackgroundColor(theme.boxHeaderBackgroundOf(node));
 			g.fillRectangle(new Rectangle(getLocation(), getSize()));
 			g.popState();
 			super.paintFigure(g);

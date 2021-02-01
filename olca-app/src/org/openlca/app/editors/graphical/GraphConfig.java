@@ -11,7 +11,6 @@ public class GraphConfig {
 	public boolean showFlowIcons;
 	public boolean showFlowAmounts;
 	public boolean showElementaryFlows;
-	// private Theme theme = new WhiteTheme();
 	private Theme theme = new ColorfulTheme();
 
 	/**
@@ -27,6 +26,12 @@ public class GraphConfig {
 		return theme;
 	}
 
+	public void theme(Theme theme) {
+		if (theme != null) {
+			this.theme = theme;
+		}
+	}
+
 	/**
 	 * Copies the settings of this configuration to the
 	 * given configuration.
@@ -37,6 +42,7 @@ public class GraphConfig {
 		other.showFlowIcons = showFlowIcons;
 		other.showFlowAmounts = showFlowAmounts;
 		other.showElementaryFlows = showElementaryFlows;
+		other.theme = theme;
 	}
 
 	@Override
@@ -45,6 +51,7 @@ public class GraphConfig {
 		clone.showFlowIcons = showFlowIcons;
 		clone.showFlowAmounts = showFlowAmounts;
 		clone.showElementaryFlows = showElementaryFlows;
+		clone.theme = theme;
 		return clone;
 	}
 
