@@ -35,12 +35,16 @@ public class GraphSettingsAction extends Action {
 		if (editor == null)
 			return;
 		var config = GraphConfig.from(editor.config);
-		if (new Dialog(config).open() == Window.OK) {
-			config.applyOn(editor.config);
-			editor.refresh();
-			editor.setDirty();
-			editor.getModel().figure.repaint();
+		if (new Dialog(config).open() != Window.OK)
+			return;
+		var route = config.isRouted != editor.config.isRouted;
+		config.copyTo(editor.config);
+		if (route) {
+			editor.route();
 		}
+		editor.refresh();
+		editor.setDirty();
+		editor.getModel().figure.repaint();
 	}
 
 	private static class Dialog extends FormDialog {
@@ -59,6 +63,13 @@ public class GraphSettingsAction extends Action {
 			var body = UI.formBody(mform.getForm(), tk);
 			UI.gridLayout(body, 2);
 			themeCombo(tk, body);
+
+			// routed check
+			UI.filler(body, tk);
+			var routed = tk.createButton(body, "Routed connections", SWT.CHECK);
+			routed.setSelection(config.isRouted);
+			Controls.onSelect(routed,
+					e -> config.isRouted = routed.getSelection());
 
 			// show icons
 			UI.filler(body, tk);

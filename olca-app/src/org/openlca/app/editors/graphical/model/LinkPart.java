@@ -79,7 +79,7 @@ class LinkPart extends AbstractConnectionEditPart {
 	}
 
 	private ConnectionRouter getConnectionRouter() {
-		return getEditor().isRouted()
+		return getEditor().config.isRouted
 				? TreeConnectionRouter.instance
 				: ConnectionRouter.NULL;
 	}

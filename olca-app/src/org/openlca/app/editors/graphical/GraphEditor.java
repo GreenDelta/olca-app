@@ -74,7 +74,6 @@ public class GraphEditor extends GraphicalEditor {
 
 	private ProductSystemNode model;
 	private OutlinePage outline;
-	private boolean routed;
 	private ISelection selection;
 
 	// TODO: we may do not need this later when we build our
@@ -84,9 +83,6 @@ public class GraphEditor extends GraphicalEditor {
 	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
 		editor.onSaved(() -> GraphFile.save(this));
-		// draw nice routes when there are less then 100 processes
-		// in the system
-		routed = editor.getModel().processes.size() <= 100;
 	}
 
 	public ProductSystem getProductSystem() {
@@ -417,13 +413,8 @@ public class GraphEditor extends GraphicalEditor {
 		super.setFocus();
 	}
 
-	public boolean isRouted() {
-		return routed;
-	}
-
-	public void setRouted(boolean routed) {
-		this.routed = routed;
-		var router = routed
+	public void route() {
+		var router = config.isRouted
 				? TreeConnectionRouter.instance
 				: ConnectionRouter.NULL;
 		for (var node : model.getChildren()) {

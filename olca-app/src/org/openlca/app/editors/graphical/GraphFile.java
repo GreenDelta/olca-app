@@ -94,7 +94,7 @@ public final class GraphFile {
 			// apply graph config
 			var config = GraphConfig.fromJson(
 					Json.getObject(rootObj, "config"));
-			config.applyOn(editor.config);
+			config.copyTo(editor.config);
 
 			// apply node infos
 			var nodeArray = Json.getArray(rootObj, "nodes");

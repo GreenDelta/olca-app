@@ -12,6 +12,7 @@ public class GraphConfig {
 	public boolean showFlowIcons;
 	public boolean showFlowAmounts;
 	public boolean showElementaryFlows;
+	public boolean isRouted = true;
 	private Theme theme = new ColorfulTheme();
 
 	/**
@@ -37,13 +38,14 @@ public class GraphConfig {
 	 * Copies the settings of this configuration to the
 	 * given configuration.
 	 */
-	public void applyOn(GraphConfig other) {
+	public void copyTo(GraphConfig other) {
 		if (other == null)
 			return;
 		other.showFlowIcons = showFlowIcons;
 		other.showFlowAmounts = showFlowAmounts;
 		other.showElementaryFlows = showElementaryFlows;
 		other.theme = theme;
+		other.isRouted = isRouted;
 	}
 
 	@Override
@@ -53,6 +55,7 @@ public class GraphConfig {
 		clone.showFlowAmounts = showFlowAmounts;
 		clone.showElementaryFlows = showElementaryFlows;
 		clone.theme = theme;
+		clone.isRouted = isRouted;
 		return clone;
 	}
 
@@ -66,6 +69,8 @@ public class GraphConfig {
 			obj, "showFlowAmounts", false);
 		config.showElementaryFlows = Json.getBool(
 			obj, "showElementaryFlows", false);
+		config.isRouted = Json.getBool(
+				obj, "isRouted", true);
 		var themeID = Json.getString(obj, "theme");
 		config.theme(Themes.get(themeID));
 		return config;
@@ -76,6 +81,7 @@ public class GraphConfig {
 		obj.addProperty("showFlowIcons", showFlowIcons);
 		obj.addProperty("showFlowAmounts", showFlowAmounts);
 		obj.addProperty("showElementaryFlows", showElementaryFlows);
+		obj.addProperty("isRouted", isRouted);
 		obj.addProperty("theme", theme().id());
 		return obj;
 	}

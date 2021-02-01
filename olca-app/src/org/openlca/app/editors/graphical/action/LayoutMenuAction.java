@@ -14,14 +14,12 @@ import org.openlca.app.util.Controls;
 
 public class LayoutMenuAction extends Action {
 
-	private final GraphEditor editor;
 	private final LayoutAction minimalLayoutAction = new LayoutAction(
 			LayoutType.MINIMAL_TREE_LAYOUT);
 	private final LayoutAction treeLayoutAction = new LayoutAction(
 			LayoutType.TREE_LAYOUT);
 
 	public LayoutMenuAction(GraphEditor editor) {
-		this.editor = editor;
 		minimalLayoutAction.setModel(editor.getModel());
 		treeLayoutAction.setModel(editor.getModel());
 		setId(ActionIds.LAYOUT_MENU);
@@ -41,14 +39,6 @@ public class LayoutMenuAction extends Action {
 			var minimalItem = new MenuItem(menu, SWT.RADIO);
 			minimalItem.setText(minimalLayoutAction.getText());
 			Controls.onSelect(treeItem, (e) -> minimalLayoutAction.run());
-
-			new MenuItem(menu, SWT.SEPARATOR);
-
-			var routedCheck = new MenuItem(menu, SWT.CHECK);
-			routedCheck.setText(M.Route);
-			routedCheck.setSelection(editor.isRouted());
-			Controls.onSelect(routedCheck, e -> editor.setRouted(
-					routedCheck.getSelection()));
 		}
 
 		@Override
@@ -69,7 +59,5 @@ public class LayoutMenuAction extends Action {
 			createMenu(menu);
 			return menu;
 		}
-
 	}
-
 }
