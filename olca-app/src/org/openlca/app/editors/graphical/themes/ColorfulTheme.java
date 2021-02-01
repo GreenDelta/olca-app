@@ -59,8 +59,9 @@ public class ColorfulTheme implements Theme {
 			return COLOR_LIBRARY;
 		if (!(d instanceof ProcessDescriptor))
 			return COLOR_SYSTEM;
-		// TODO: determine if a process is a waste or production process
-		return COLOR_PRODUCT;
+		return node.isWasteProcess()
+			? COLOR_WASTE
+			: COLOR_PRODUCT;
 	}
 
 	@Override

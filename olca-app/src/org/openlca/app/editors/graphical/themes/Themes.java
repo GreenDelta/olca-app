@@ -15,6 +15,7 @@ public final class Themes {
 			return themes;
 		themes = new Theme[]{
 			getDefault(),
+			new GreyTheme(),
 			new WhiteTheme(),
 			new DarkTheme(),
 		};
