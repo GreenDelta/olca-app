@@ -82,11 +82,11 @@ class GeoParamSection {
 	private void bindModifiers() {
 		ModifySupport<GeoParam> ms = new ModifySupport<>(table);
 		ms.bind("Aggregation type", new AggTypeCell());
-		ms.bind("Default value", new TextCellModifier<GeoParam>() {
+		ms.bind("Default value", new TextCellModifier<>() {
 			@Override
 			protected String getText(GeoParam param) {
 				return param == null ? ""
-						: Double.toString(param.defaultValue);
+					: Double.toString(param.defaultValue);
 			}
 
 			@Override
@@ -98,7 +98,7 @@ class GeoParamSection {
 					table.refresh();
 				} catch (Exception e) {
 					MsgBox.error("Not a number",
-							"The string " + s + " is not a valid number");
+						"The string " + s + " is not a valid number");
 				}
 			}
 		});
@@ -110,7 +110,7 @@ class GeoParamSection {
 		table.setInput(page.setup.params);
 	}
 
-	private class AggTypeCell
+	private static class AggTypeCell
 			extends ComboBoxCellModifier<GeoParam, GeoAggType> {
 
 		@Override
@@ -140,7 +140,7 @@ class GeoParamSection {
 		}
 	}
 
-	private class Label extends LabelProvider
+	private static class Label extends LabelProvider
 			implements ITableLabelProvider {
 
 		@Override
@@ -176,5 +176,4 @@ class GeoParamSection {
 			}
 		}
 	}
-
 }

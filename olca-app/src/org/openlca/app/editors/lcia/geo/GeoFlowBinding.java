@@ -5,7 +5,6 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.jsonld.Json;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -13,8 +12,10 @@ import com.google.gson.JsonObject;
  * a formula with parameters of geographic features.
  */
 class GeoFlowBinding {
+
 	final Flow flow;
 	String formula;
+	double defaultValue;
 
 	GeoFlowBinding(Flow flow) {
 		this.flow = flow;
@@ -24,32 +25,33 @@ class GeoFlowBinding {
 	static GeoFlowBinding fromJson(JsonObject obj, IDatabase db) {
 		if (obj == null || db == null)
 			return null;
-		JsonElement flowObj = obj.get("flow");
+		var flowObj = obj.get("flow");
 		if (flowObj == null || !flowObj.isJsonObject())
 			return null;
-		String flowID = Json.getString(flowObj.getAsJsonObject(), "@id");
+		var flowID = Json.getString(flowObj.getAsJsonObject(), "@id");
 		if (flowID == null)
 			return null;
-		FlowDao dao = new FlowDao(db);
-		Flow flow = dao.getForRefId(flowID);
+		var dao = new FlowDao(db);
+		var flow = dao.getForRefId(flowID);
 		if (flow == null)
 			return null;
-		GeoFlowBinding b = new GeoFlowBinding(flow);
+		var b = new GeoFlowBinding(flow);
 		b.formula = Json.getString(obj, "formula");
+		b.defaultValue = Json.getDouble(obj, "defaultValue", 1.0);
 		return b;
 	}
 
 	JsonObject toJson() {
-		JsonObject obj = new JsonObject();
+		var obj = new JsonObject();
 		if (flow != null) {
-			JsonObject flowObj = new JsonObject();
+			var flowObj = new JsonObject();
 			flowObj.addProperty("@type", "Flow");
 			flowObj.addProperty("@id", flow.refId);
 			flowObj.addProperty("name", flow.name);
 			obj.add("flow", flowObj);
 		}
 		obj.addProperty("formula", formula);
+		obj.addProperty("defaultValue", defaultValue);
 		return obj;
 	}
-
 }
