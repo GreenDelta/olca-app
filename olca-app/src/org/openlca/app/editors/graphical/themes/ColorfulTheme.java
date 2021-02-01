@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical.themes;
 
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
+import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.Colors;
 import org.openlca.core.model.ProcessType;
@@ -34,6 +35,20 @@ public class ColorfulTheme implements Theme {
 		return COLOR_LIGHT_GREY;
 	}
 
+	@Override
+	public Color colorOf(Link link) {
+		if (link == null)
+			return COLOR_DARK_GREY;
+		var provider = link.provider();
+		if (provider == null)
+			return COLOR_DARK_GREY;
+		return boxColorOf(provider);
+	}
+
+	@Override
+	public Color defaultLinkColor() {
+		return COLOR_PRODUCT;
+	}
 
 	@Override
 	public Color boxColorOf(ProcessNode node) {

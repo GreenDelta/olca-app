@@ -2,8 +2,10 @@ package org.openlca.app.editors.graphical.themes;
 
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
+import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.Colors;
+import org.openlca.core.model.ModelType;
 
 /**
  * A Monokai color theme, see: https://monokai.pro/
@@ -35,13 +37,38 @@ public class DarkTheme implements Theme {
 	}
 
 	@Override
+	public Color colorOf(Link link) {
+		if (link == null)
+			return defaultLinkColor();
+		var provider = link.provider();
+		if (provider == null)
+			return defaultLinkColor();
+		return boxBorderOf(provider);
+	}
+
+	@Override
+	public Color defaultLinkColor() {
+		return WHITE;
+	}
+
+	@Override
 	public Color boxColorOf(ProcessNode node) {
 		return BLACK;
 	}
 
 	@Override
 	public Color boxBorderOf(ProcessNode node) {
-		return YELLOW;
+		if (node == null || node.process == null)
+			return WHITE;
+		var isSystem = node.process.isFromLibrary()
+				|| node.process.type == ModelType.PRODUCT_SYSTEM;
+		if (isSystem)
+			return node.isWasteProcess()
+					? PINK
+					: LILA;
+		return node.isWasteProcess()
+				? ORANGE
+				: BLUE;
 	}
 
 	@Override
@@ -66,7 +93,20 @@ public class DarkTheme implements Theme {
 
 	@Override
 	public Color ioForegroundOf(ExchangeNode node) {
-		return BLUE;
+		if (node == null)
+			return WHITE;
+		var type = node.flowType();
+		if (type == null)
+			return WHITE;
+		switch (type) {
+		case PRODUCT_FLOW:
+			return BLUE;
+		case WASTE_FLOW:
+			return ORANGE;
+		case ELEMENTARY_FLOW:
+			return GREEN;
+		default:
+			return WHITE;
+		}
 	}
-
 }

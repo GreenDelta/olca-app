@@ -62,7 +62,7 @@ public class DeleteLinkCommand extends Command {
 			sysNode.getProductSystem().processLinks.add(link.processLink);
 			sysNode.linkSearch.put(link.processLink);
 			link.link();
-			link.updateVisibilty();
+			link.updateVisibility();
 		}
 		sysNode.editor.setDirty();
 	}

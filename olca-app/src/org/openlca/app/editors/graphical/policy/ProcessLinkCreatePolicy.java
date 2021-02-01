@@ -9,6 +9,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.command.CreateLinkCommand;
 import org.openlca.app.editors.graphical.command.ReconnectLinkCommand;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
@@ -17,10 +18,16 @@ import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
 public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 
+	private final GraphEditor editor;
+
+	public ProcessLinkCreatePolicy(GraphEditor editor) {
+		this.editor = editor;
+	}
+
 	@Override
 	protected Connection createDummyConnection(Request req) {
 		var con = (PolylineConnection) super.createDummyConnection(req);
-		con.setForegroundColor(Link.COLOR);
+		con.setForegroundColor(editor.config.theme().defaultLinkColor());
 		if (!(req instanceof CreateConnectionRequest)) {
 			con.setTargetDecoration(new PolygonDecoration());
 			return con;

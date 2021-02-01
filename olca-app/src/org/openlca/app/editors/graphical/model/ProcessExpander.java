@@ -70,7 +70,7 @@ class ProcessExpander extends ImageFigure {
 		// visibility of the nodes
 		for (ProcessNode n : nodes) {
 			for (Link link : n.links) {
-				link.updateVisibilty();
+				link.updateVisibility();
 			}
 		}
 	}

@@ -44,7 +44,7 @@ public class HideShowCommand extends Command {
 		}
 		node.setVisible(type == SHOW);
 		for (Link link : node.links) {
-			link.updateVisibilty();
+			link.updateVisibility();
 		}
 		node.layout();
 		node.parent().editor.setDirty();

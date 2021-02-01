@@ -157,7 +157,7 @@ class RemoveSupplyChainAction extends EditorAction {
 				systemNode.getProductSystem().processLinks.add(link.processLink);
 				systemNode.linkSearch.put(link.processLink);
 				link.link();
-				link.updateVisibilty();
+				link.updateVisibility();
 			}
 			refresh();
 		}

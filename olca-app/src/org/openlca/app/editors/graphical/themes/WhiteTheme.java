@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical.themes;
 
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
+import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.Colors;
 
@@ -23,6 +24,16 @@ public class WhiteTheme implements Theme {
 	@Override
 	public Color graphBackground() {
 		return COLOR_WHITE;
+	}
+
+	@Override
+	public Color colorOf(Link link) {
+		return COLOR_BLACK;
+	}
+
+	@Override
+	public Color defaultLinkColor() {
+		return COLOR_BLACK;
 	}
 
 	@Override

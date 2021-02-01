@@ -1,6 +1,8 @@
 package org.openlca.app.editors.graphical.model;
 
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.ConnectionRouter;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
@@ -26,8 +28,22 @@ class LinkPart extends AbstractConnectionEditPart {
 
 	@Override
 	protected IFigure createFigure() {
-		PolylineConnection figure = new PolylineConnection();
-		figure.setForegroundColor(Link.COLOR);
+		var figure = new PolylineConnection() {
+			@Override
+			public void paint(Graphics g) {
+				var link = getModel();
+				var provider = link.provider();
+				var theme = provider != null
+						? provider.config().theme()
+						: null;
+				if (theme != null) {
+					setForegroundColor(theme.colorOf(link));
+				} else {
+					setForegroundColor(ColorConstants.black);
+				}
+				super.paint(g);
+			}
+		};
 		figure.setConnectionRouter(getConnectionRouter());
 		figure.setTargetDecoration(new PolygonDecoration());
 		figure.setVisible(isVisible());
@@ -36,12 +52,18 @@ class LinkPart extends AbstractConnectionEditPart {
 		return figure;
 	}
 
+
+
 	@Override
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE, new ConnectionEndpointEditPolicy());
-		installEditPolicy(EditPolicy.CONNECTION_ROLE, new ConnectionEditPolicy() {
+		installEditPolicy(
+			EditPolicy.CONNECTION_ENDPOINTS_ROLE,
+			new ConnectionEndpointEditPolicy());
+		installEditPolicy(
+			EditPolicy.CONNECTION_ROLE,
+			new ConnectionEditPolicy() {
 			@Override
-			protected Command getDeleteCommand(GroupRequest arg0) {
+			protected Command getDeleteCommand(GroupRequest _req) {
 				return new DeleteLinkCommand(getModel());
 			}
 		});
@@ -65,14 +87,12 @@ class LinkPart extends AbstractConnectionEditPart {
 	private boolean isVisible() {
 		if (!getModel().outputNode.isVisible())
 			return false;
-		if (!getModel().inputNode.isVisible())
-			return false;
-		return true;
+		return getModel().inputNode.isVisible();
 	}
 
 	@Override
 	public void showSourceFeedback(Request req) {
-		ReconnectRequest request = ((ReconnectRequest) req);
+		var request = ((ReconnectRequest) req);
 		Link link = (Link) request.getConnectionEditPart().getModel();
 		ExchangeNode target = link.inputNode.getInput(link.processLink);
 		ExchangeNode source = link.outputNode.getOutput(link.processLink);
@@ -90,7 +110,7 @@ class LinkPart extends AbstractConnectionEditPart {
 
 	@Override
 	public void eraseSourceFeedback(Request req) {
-		ProcessPart source = (ProcessPart) getSource();
+		var source = (ProcessPart) getSource();
 		ProductSystemNode node = source.getModel().parent();
 		node.removeHighlighting();
 		super.eraseSourceFeedback(req);
@@ -105,13 +125,11 @@ class LinkPart extends AbstractConnectionEditPart {
 	public void setSelected(int value) {
 		if (!getFigure().isVisible())
 			return;
-		PolylineConnection figure = (PolylineConnection) getFigure();
+		var figure = (PolylineConnection) getFigure();
 		if (value != EditPart.SELECTED_NONE) {
 			figure.setLineWidth(2);
-			figure.setForegroundColor(Link.HIGHLIGHT_COLOR);
 		} else {
 			figure.setLineWidth(1);
-			figure.setForegroundColor(Link.COLOR);
 		}
 		super.setSelected(value);
 	}

@@ -51,6 +51,10 @@ public class ProcessNode extends Node {
 				: null;
 	}
 
+	public boolean isWasteProcess() {
+		return parent().isWasteProcess(this);
+	}
+
 	@Override
 	public ProductSystemNode parent() {
 		return (ProductSystemNode) super.parent();

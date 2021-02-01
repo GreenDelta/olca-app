@@ -23,7 +23,9 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 
 	@Override
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.NODE_ROLE, new ProcessLinkCreatePolicy());
+		installEditPolicy(
+				EditPolicy.NODE_ROLE,
+				new ProcessLinkCreatePolicy(getModel().editor));
 	}
 
 	@Override

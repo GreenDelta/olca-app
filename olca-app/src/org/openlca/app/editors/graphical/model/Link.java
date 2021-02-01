@@ -2,15 +2,10 @@ package org.openlca.app.editors.graphical.model;
 
 import java.util.Objects;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Connection;
-import org.eclipse.swt.graphics.Color;
 import org.openlca.core.model.ProcessLink;
 
 public class Link {
-
-	public static Color COLOR = ColorConstants.gray;
-	public static Color HIGHLIGHT_COLOR = ColorConstants.blue;
 
 	public ProcessLink processLink;
 	public ProcessNode outputNode;
@@ -18,6 +13,25 @@ public class Link {
 
 	public Connection figure;
 	LinkPart editPart;
+
+	/**
+	 * Returns the provider node of the link which is the output node in case
+	 * of a production process and the input link in case of a waste treatment
+	 * process.
+	 */
+	public ProcessNode provider() {
+		if (processLink == null)
+			return null;
+		if (outputNode != null
+				&& outputNode.process != null
+				&& outputNode.process.id == processLink.providerId)
+			return outputNode;
+		if (inputNode != null
+				&& inputNode.process != null
+				&& inputNode.process.id == processLink.providerId)
+			return inputNode;
+		return null;
+	}
 
 	void refreshSourceAnchor() {
 		editPart.refreshSourceAnchor();
@@ -56,8 +70,8 @@ public class Link {
 			return false;
 		var other = (Link) obj;
 		return Objects.equals(processLink, other.processLink)
-				&& Objects.equals(outputNode, other.outputNode)
-				&& Objects.equals(inputNode, other.inputNode);
+					 && Objects.equals(outputNode, other.outputNode)
+					 && Objects.equals(inputNode, other.inputNode);
 	}
 
 	public boolean isVisible() {
@@ -68,7 +82,7 @@ public class Link {
 	 * A link is visible when the respective processes are visible and at least
 	 * one of the processes is expanded on the respective site.
 	 */
-	public void updateVisibilty() {
+	public void updateVisibility() {
 		if (figure == null)
 			return;
 		if (!inputNode.isVisible() || !outputNode.isVisible()) {
