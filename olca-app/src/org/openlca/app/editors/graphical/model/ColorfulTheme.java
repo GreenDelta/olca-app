@@ -17,6 +17,11 @@ public class ColorfulTheme implements Theme {
 	private static final Color COLOR_LIBRARY = Colors.get(0, 176, 240);
 	private static final Color COLOR_SYSTEM = Colors.get(0, 111, 54);
 
+	@Override
+	public Color graphBackground() {
+		return COLOR_LIGHT_GREY;
+	}
+
 
 	@Override
 	public Color boxColorOf(ProcessNode node) {

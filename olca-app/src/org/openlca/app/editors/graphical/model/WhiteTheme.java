@@ -9,6 +9,11 @@ public class WhiteTheme implements Theme {
 	static final Color COLOR_BLACK = Colors.get(38, 38, 38);
 
 	@Override
+	public Color graphBackground() {
+		return COLOR_WHITE;
+	}
+
+	@Override
 	public Color boxColorOf(ProcessNode node) {
 		return COLOR_WHITE;
 	}

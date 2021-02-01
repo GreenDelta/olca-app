@@ -20,4 +20,5 @@ public interface Theme {
 
 	Color ioForegroundOf(ExchangeNode node);
 
+	Color graphBackground();
 }
