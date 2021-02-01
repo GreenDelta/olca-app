@@ -12,8 +12,9 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.model.ColorfulTheme;
-import org.openlca.app.editors.graphical.model.WhiteTheme;
+import org.openlca.app.editors.graphical.themes.ColorfulTheme;
+import org.openlca.app.editors.graphical.themes.DarkTheme;
+import org.openlca.app.editors.graphical.themes.WhiteTheme;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -80,7 +81,8 @@ public class GraphSettingsAction extends Action {
 			var themeCombo = UI.formCombo(comp, tk, "Theme");
 			var themes = List.of(
 				Pair.of("Colorful", new ColorfulTheme()),
-				Pair.of("White", new WhiteTheme())
+				Pair.of("White", new WhiteTheme()),
+				Pair.of("Dark", new DarkTheme())
 			);
 			int idx = 0;
 			for (int i = 0; i < themes.size(); i++) {

@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical;
 
-import org.openlca.app.editors.graphical.model.ColorfulTheme;
-import org.openlca.app.editors.graphical.model.Theme;
+import org.openlca.app.editors.graphical.themes.ColorfulTheme;
+import org.openlca.app.editors.graphical.themes.Theme;
 import org.openlca.jsonld.Json;
 
 import com.google.gson.JsonObject;

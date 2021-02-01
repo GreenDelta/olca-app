@@ -1,6 +1,8 @@
-package org.openlca.app.editors.graphical.model;
+package org.openlca.app.editors.graphical.themes;
 
 import org.eclipse.swt.graphics.Color;
+import org.openlca.app.editors.graphical.model.ExchangeNode;
+import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public interface Theme {
 

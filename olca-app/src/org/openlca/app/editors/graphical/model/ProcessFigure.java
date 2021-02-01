@@ -48,6 +48,7 @@ class ProcessFigure extends Figure {
 
 	private ProcessExpander leftExpander;
 	private ProcessExpander rightExpander;
+	private LineBorder border;
 
 	ProcessFigure(ProcessNode node) {
 		this.node = node;
@@ -93,8 +94,8 @@ class ProcessFigure extends Figure {
 
 		add(top, new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		var theme = node.config().theme();
-		setBorder(new LineBorder(theme.boxBorderOf(node), 1));
+		border = new LineBorder(1);
+		setBorder(border);
 	}
 
 	private IOFigure getIOFigure() {
@@ -144,6 +145,7 @@ class ProcessFigure extends Figure {
 	@Override
 	protected void paintFigure(Graphics g) {
 		var theme = node.config().theme();
+		border.setColor(theme.boxBorderOf(node));
 		g.pushState();
 		g.setBackgroundColor(theme.boxColorOf(node));
 		g.fillRectangle(new Rectangle(getLocation(), getSize()));
