@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.action;
 
-import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.window.Window;
@@ -12,13 +12,10 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.themes.ColorfulTheme;
-import org.openlca.app.editors.graphical.themes.DarkTheme;
-import org.openlca.app.editors.graphical.themes.WhiteTheme;
+import org.openlca.app.editors.graphical.themes.Themes;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.util.Pair;
 
 public class GraphSettingsAction extends Action {
 
@@ -79,23 +76,20 @@ public class GraphSettingsAction extends Action {
 			var comp = tk.createComposite(body);
 			UI.gridLayout(comp, 2, 10, 0);
 			var themeCombo = UI.formCombo(comp, tk, "Theme");
-			var themes = List.of(
-				Pair.of("Colorful", new ColorfulTheme()),
-				Pair.of("White", new WhiteTheme()),
-				Pair.of("Dark", new DarkTheme())
-			);
-			int idx = 0;
-			for (int i = 0; i < themes.size(); i++) {
-				var pair = themes.get(i);
-				themeCombo.add(pair.first);
-				if (pair.second.getClass().equals(config.theme().getClass())) {
-					idx = i;
+			var themes = Themes.all();
+			var current = config.theme();
+			int currentIdx = 0;
+			for (int i = 0; i < themes.length; i++) {
+				var theme = themes[i];
+				themeCombo.add(theme.label());
+				if (Objects.equals(theme.id(), current.id())) {
+					currentIdx = i;
 				}
 			}
-			themeCombo.select(idx);
+			themeCombo.select(currentIdx);
 			Controls.onSelect(themeCombo, _e -> {
-				var pair = themes.get(themeCombo.getSelectionIndex());
-				config.theme(pair.second);
+				var next = themes[themeCombo.getSelectionIndex()];
+				config.theme(next);
 			});
 		}
 

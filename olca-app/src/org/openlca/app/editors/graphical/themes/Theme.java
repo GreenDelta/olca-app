@@ -6,6 +6,10 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 
 public interface Theme {
 
+	String label();
+
+	String id();
+
 	Color boxColorOf(ProcessNode node);
 
 	default Color boxBorderOf(ProcessNode node) {
@@ -23,4 +27,6 @@ public interface Theme {
 	Color ioForegroundOf(ExchangeNode node);
 
 	Color graphBackground();
+
+
 }

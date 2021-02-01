@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical;
 
 import org.openlca.app.editors.graphical.themes.ColorfulTheme;
 import org.openlca.app.editors.graphical.themes.Theme;
+import org.openlca.app.editors.graphical.themes.Themes;
 import org.openlca.jsonld.Json;
 
 import com.google.gson.JsonObject;
@@ -18,8 +19,8 @@ public class GraphConfig {
 	 */
 	public static GraphConfig from(GraphConfig other) {
 		return other == null
-				? new GraphConfig()
-				: other.clone();
+			? new GraphConfig()
+			: other.clone();
 	}
 
 	public Theme theme() {
@@ -60,11 +61,13 @@ public class GraphConfig {
 		if (obj == null)
 			return config;
 		config.showFlowIcons = Json.getBool(
-				obj, "showFlowIcons", false);
+			obj, "showFlowIcons", false);
 		config.showFlowAmounts = Json.getBool(
-				obj, "showFlowAmounts", false);
+			obj, "showFlowAmounts", false);
 		config.showElementaryFlows = Json.getBool(
-				obj, "showElementaryFlows", false);
+			obj, "showElementaryFlows", false);
+		var themeID = Json.getString(obj, "theme");
+		config.theme(Themes.get(themeID));
 		return config;
 	}
 
@@ -73,6 +76,7 @@ public class GraphConfig {
 		obj.addProperty("showFlowIcons", showFlowIcons);
 		obj.addProperty("showFlowAmounts", showFlowAmounts);
 		obj.addProperty("showElementaryFlows", showElementaryFlows);
+		obj.addProperty("theme", theme().id());
 		return obj;
 	}
 }

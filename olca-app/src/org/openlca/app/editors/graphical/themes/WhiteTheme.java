@@ -11,6 +11,16 @@ public class WhiteTheme implements Theme {
 	static final Color COLOR_BLACK = Colors.get(38, 38, 38);
 
 	@Override
+	public String label() {
+		return "White";
+	}
+
+	@Override
+	public String id() {
+		return "white";
+	}
+
+	@Override
 	public Color graphBackground() {
 		return COLOR_WHITE;
 	}

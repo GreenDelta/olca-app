@@ -20,6 +20,16 @@ public class ColorfulTheme implements Theme {
 	private static final Color COLOR_SYSTEM = Colors.get(0, 111, 54);
 
 	@Override
+	public String label() {
+		return "Colorful";
+	}
+
+	@Override
+	public String id() {
+		return "colorful";
+	}
+
+	@Override
 	public Color graphBackground() {
 		return COLOR_LIGHT_GREY;
 	}

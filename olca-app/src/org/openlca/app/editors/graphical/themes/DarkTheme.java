@@ -20,6 +20,16 @@ public class DarkTheme implements Theme {
 	private static final Color LILA = Colors.get(171, 157, 242);
 
 	@Override
+	public String label() {
+		return "Dark";
+	}
+
+	@Override
+	public String id() {
+		return "dark";
+	}
+
+	@Override
 	public Color graphBackground() {
 		return BLACK;
 	}
