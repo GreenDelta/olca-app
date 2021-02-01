@@ -6,9 +6,11 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
@@ -55,40 +57,47 @@ public class GraphSettingsAction extends Action {
 		protected void createFormContent(IManagedForm mform) {
 			var tk = mform.getToolkit();
 			var body = UI.formBody(mform.getForm(), tk);
-			UI.gridLayout(body, 1);
+			UI.gridLayout(body, 2);
+			themeCombo(tk, body);
 
+			// show icons
+			UI.filler(body, tk);
 			var icons = tk.createButton(body, "Show flow icons", SWT.CHECK);
 			icons.setSelection(config.showFlowIcons);
 			Controls.onSelect(icons,
 					e -> config.showFlowIcons = icons.getSelection());
 
+			// show elementary flows
+			UI.filler(body, tk);
 			var elems = tk.createButton(body, "Show elementary flows", SWT.CHECK);
 			elems.setSelection(config.showElementaryFlows);
 			Controls.onSelect(elems,
 					e -> config.showElementaryFlows = elems.getSelection());
 
+			// show amounts
+			UI.filler(body, tk);
 			var amounts = tk.createButton(body, "Show flow amounts", SWT.CHECK);
 			amounts.setSelection(config.showFlowAmounts);
 			Controls.onSelect(amounts,
 					e -> config.showFlowAmounts = amounts.getSelection());
+		}
 
-			// theme combo
-			var comp = tk.createComposite(body);
-			UI.gridLayout(comp, 2, 10, 0);
-			var themeCombo = UI.formCombo(comp, tk, "Theme");
+		private void themeCombo(FormToolkit tk, Composite comp) {
+			var combo = UI.formCombo(comp, tk, "Theme");
+			UI.gridData(combo, true, false);
 			var themes = Themes.all();
 			var current = config.theme();
 			int currentIdx = 0;
 			for (int i = 0; i < themes.length; i++) {
 				var theme = themes[i];
-				themeCombo.add(theme.label());
+				combo.add(theme.label());
 				if (Objects.equals(theme.id(), current.id())) {
 					currentIdx = i;
 				}
 			}
-			themeCombo.select(currentIdx);
-			Controls.onSelect(themeCombo, _e -> {
-				var next = themes[themeCombo.getSelectionIndex()];
+			combo.select(currentIdx);
+			Controls.onSelect(combo, _e -> {
+				var next = themes[combo.getSelectionIndex()];
 				config.theme(next);
 			});
 		}
