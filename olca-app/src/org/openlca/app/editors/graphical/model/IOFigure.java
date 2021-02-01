@@ -54,33 +54,43 @@ class IOFigure extends Figure {
 
 	private class Header extends Figure {
 
+		private final Label label;
+
 		Header(String text) {
 			var layout = new GridLayout(1, true);
 			layout.marginHeight = 2;
 			layout.marginWidth =  5;
 			setLayoutManager(layout);
-			var label = new Label(text);
+			label = new Label(text);
+			add(label, new GridData(SWT.CENTER, SWT.TOP, true, false));
+		}
+
+		@Override
+		public void paint(Graphics g) {
 			var theme = node.config().theme();
 			label.setForegroundColor(
 				theme.ioHeaderForegroundOf(node));
-			add(label, new GridData(SWT.CENTER, SWT.TOP, true, false));
+			super.paint(g);
 		}
 	}
 
 	private class ExchangePanel extends Figure {
+
+		private final LineBorder border;
 
 		ExchangePanel() {
 			var layout = new GridLayout(1, true);
 			layout.marginHeight = 2;
 			layout.marginWidth =  5;
 			setLayoutManager(layout);
-			var theme = node.config().theme();
-			setBorder(new LineBorder(theme.boxBorderOf(node), 1));
+			border = new LineBorder(1);
+			setBorder(border);
 		}
 
 		@Override
 		protected void paintFigure(Graphics g) {
 			var theme = node.config().theme();
+			border.setColor(theme.boxBorderOf(node));
 			g.pushState();
 			g.setBackgroundColor(
 				theme.ioInnerBackgroundOf(node));

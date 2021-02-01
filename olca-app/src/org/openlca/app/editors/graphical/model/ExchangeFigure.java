@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical.model;
 
 import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.Label;
@@ -23,11 +24,7 @@ class ExchangeFigure extends Figure {
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		setLayoutManager(layout);
-
-		var theme = node.config().theme();
 		label = new Label(node.getName());
-		label.setForegroundColor(
-			theme.ioForegroundOf(node));
 		setToolTip(new Label(tooltip()));
 		label.setIcon(Images.get(node.flowType()));
 		add(label, new GridData(SWT.FILL, SWT.TOP, true, false));
@@ -61,5 +58,13 @@ class ExchangeFigure extends Figure {
 		} else {
 			label.setFont(null);
 		}
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		var theme = node.config().theme();
+		label.setForegroundColor(
+				theme.ioForegroundOf(node));
+		super.paint(g);
 	}
 }
