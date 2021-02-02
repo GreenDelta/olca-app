@@ -77,7 +77,10 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 	}
 
 	private void onOpenFile() {
-		var file = FileChooser.open("*.geojson | *.json");
+		var file = FileChooser.openFile()
+			.withExtensions("*.geojson;*.json")
+			.select()
+			.orElse(null);
 		if (file == null)
 			return;
 		var nextSetup = App.exec(
