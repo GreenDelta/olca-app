@@ -20,16 +20,24 @@ import org.openlca.util.Strings;
  */
 class GeoParam {
 
-	/** The name of the parameter in the GeoJSON file. */
+	/**
+	 * The name of the parameter in the GeoJSON file.
+	 */
 	String name;
 
-	/** The identifier of the parameter for usage in formulas */
+	/**
+	 * The identifier of the parameter for usage in formulas
+	 */
 	String identifier;
 
-	/** The minimum value of the parameter in the features of the GeoJSON file. */
+	/**
+	 * The minimum value of the parameter in the features of the GeoJSON file.
+	 */
 	double min;
 
-	/** The maximum value of the parameter in the features of the GeoJSON file. */
+	/**
+	 * The maximum value of the parameter in the features of the GeoJSON file.
+	 */
 	double max;
 
 	/**
@@ -45,21 +53,22 @@ class GeoParam {
 	GeoAggType aggType;
 
 	static GeoParam fromJson(JsonObject obj) {
-		if (obj == null)
-			return null;
-		return new Gson().fromJson(obj, GeoParam.class);
+		return obj == null
+			? null
+			: new Gson().fromJson(obj, GeoParam.class);
 	}
 
 	JsonObject toJson() {
-		JsonElement elem = new Gson().toJsonTree(this);
-		return elem.getAsJsonObject();
+		return new Gson()
+			.toJsonTree(this)
+			.getAsJsonObject();
 	}
 
 	/**
 	 * Collects the parameters / attributes from the given features.
 	 */
 	static List<GeoParam> collectFrom(FeatureCollection coll) {
-		if (coll == null ||coll.isEmpty())
+		if (coll == null || coll.isEmpty())
 			return Collections.emptyList();
 
 		Map<String, GeoParam> map = new HashMap<>();

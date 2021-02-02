@@ -13,6 +13,7 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.lcia.ImpactCategoryEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactCategory;
 
@@ -55,14 +56,18 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		UI.gridData(fileText, false, false).widthHint = 350;
 		var fileBtn = tk.createButton(comp, "Open file", SWT.NONE);
 		fileBtn.setImage(Icon.FOLDER_OPEN.get());
+
 		Controls.onSelect(fileBtn, _e -> {
 			File file = FileChooser.open("*.geojson");
 			if (file == null)
 				return;
-			Setup s = App.exec("Parse GeoJSON ...",
-					() -> Setup.read(file));
-			if (s == null || s.file == null)
+			Setup s = App.exec("Parse setup ...",
+				() -> Setup.read(file));
+			if (s == null) {
+				ErrorReporter.on("Failed to read setup or" +
+												 " GeoJSON file from " + file);
 				return;
+			}
 
 			// copy possible elementary flow bindings
 			// into the new setup (note that the parameters
@@ -79,11 +84,9 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		UI.filler(comp, tk);
 		Composite btnComp = tk.createComposite(comp);
 		UI.gridLayout(btnComp, 2, 10, 0);
-		Button openBtn = tk.createButton(
-				btnComp, "Open setup", SWT.NONE);
+		var openBtn = tk.createButton(btnComp, "Open setup", SWT.NONE);
 		openBtn.setImage(Icon.FOLDER_OPEN.get());
-		Button saveBtn = tk.createButton(
-				btnComp, "Save setup", SWT.NONE);
+		Button saveBtn = tk.createButton(btnComp, "Save setup", SWT.NONE);
 		saveBtn.setImage(Icon.SAVE.get());
 	}
 }
