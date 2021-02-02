@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -24,6 +23,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
@@ -31,7 +31,6 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -59,17 +58,18 @@ class GeoFlowSection {
 				M.Flow,
 				M.Category,
 				M.Formula,
+				"Default value",
 				M.Unit);
 		table.setLabelProvider(new Label());
 		Tables.bindColumnWidths(
-				table, 0.25, 0.25, 0.25, 0.25);
-		ModifySupport<GeoFlowBinding> ms = new ModifySupport<>(table);
-		ms.bind(M.Formula, getFormulaEditor());
+				table, 0.2, 0.2, 0.2, 0.2, 0.2);
+		new ModifySupport<GeoFlowBinding>(table)
+				.bind(M.Formula, getFormulaEditor());
 
 		// bind actions
-		Action add = Actions.onAdd(this::onAdd);
-		Action remove = Actions.onRemove(this::onRemove);
-		Action calc = Actions.onCalculate(this::onCalculate);
+		var add = Actions.onAdd(this::onAdd);
+		var remove = Actions.onRemove(this::onRemove);
+		var calc = Actions.onCalculate(this::onCalculate);
 		Actions.bind(table, add, remove, calc);
 		Actions.bind(section, add, remove, calc);
 	}
@@ -87,11 +87,10 @@ class GeoFlowSection {
 	private void onAdd() {
 		if (page.setup == null)
 			return;
-		CategorizedDescriptor[] flows = ModelSelectionDialog
-				.multiSelect(ModelType.FLOW);
+		var flows = ModelSelectionDialog.multiSelect(ModelType.FLOW);
 		if (flows == null || flows.length == 0)
 			return;
-		FlowDao dao = new FlowDao(Database.get());
+		var dao = new FlowDao(Database.get());
 		for (CategorizedDescriptor d : flows) {
 			boolean isPresent = false;
 			for (GeoFlowBinding b : page.setup.bindings) {
@@ -132,17 +131,16 @@ class GeoFlowSection {
 		}
 
 		// select the locations
-		CategorizedDescriptor[] locs = ModelSelectionDialog
-				.multiSelect(ModelType.LOCATION);
+		var locs = ModelSelectionDialog.multiSelect(ModelType.LOCATION);
 		if (locs == null || locs.length == 0)
 			return;
-		LocationDao locDao = new LocationDao(Database.get());
-		List<Location> locations = Arrays.stream(locs)
+		var locDao = new LocationDao(Database.get());
+		var locations = Arrays.stream(locs)
 				.map(d -> locDao.getForId(d.id))
 				.filter(loc -> loc != null)
 				.collect(Collectors.toList());
 
-		GeoFactorCalculator calc = new GeoFactorCalculator(
+		var calc = new GeoFactorCalculator(
 				page.setup, page.editor.getModel(), locations);
 		App.runWithProgress("Calculate regionalized factors", calc, () -> {
 			page.editor.setDirty(true);
@@ -164,12 +162,12 @@ class GeoFlowSection {
 		// parameters from the auto-completion here
 		// or, allow all parameters (also from the
 		// indicator) here
-		FormulaCellEditor editor = new FormulaCellEditor(table, () -> {
+		var editor = new FormulaCellEditor(table, () -> {
 			if (page.setup == null)
 				return Collections.emptyList();
-			return page.setup.params.stream()
+			return page.setup.properties.stream()
 					.map(gp -> {
-						Parameter p = new Parameter();
+						var p = new Parameter();
 						p.name = gp.identifier;
 						return p;
 					})
@@ -179,7 +177,7 @@ class GeoFlowSection {
 		editor.onEdited((obj, formula) -> {
 			if (!(obj instanceof GeoFlowBinding))
 				return;
-			GeoFlowBinding binding = (GeoFlowBinding) obj;
+			var binding = (GeoFlowBinding) obj;
 			binding.formula = formula;
 			table.refresh();
 		});
@@ -226,6 +224,11 @@ class GeoFlowSection {
 			case 2:
 				return b.formula;
 			case 3:
+				var defVal = b.defaultValueOf(page.setup.properties);
+				return defVal != null
+						? Numbers.format(defVal)
+						: "FORMULA ERROR";
+			case 4:
 				return Labels.name(b.flow.getReferenceUnit());
 			default:
 				return null;

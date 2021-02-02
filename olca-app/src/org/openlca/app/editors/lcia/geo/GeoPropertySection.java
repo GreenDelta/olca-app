@@ -21,12 +21,12 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.openlca.util.Strings;
 
-class GeoParamSection {
+class GeoPropertySection {
 
 	private final GeoPage page;
 	private TableViewer table;
 
-	GeoParamSection(GeoPage page) {
+	GeoPropertySection(GeoPage page) {
 		this.page = page;
 	}
 
@@ -104,36 +104,36 @@ class GeoParamSection {
 	void update() {
 		if (page.setup == null)
 			return;
-		table.setInput(page.setup.params);
+		table.setInput(page.setup.properties);
 	}
 
 	private static class AggTypeCell
-			extends ComboBoxCellModifier<GeoProperty, GeoAggType> {
+			extends ComboBoxCellModifier<GeoProperty, GeoAggregation> {
 
 		@Override
-		protected GeoAggType[] getItems(GeoProperty param) {
-			return GeoAggType.values();
+		protected GeoAggregation[] getItems(GeoProperty param) {
+			return GeoAggregation.values();
 		}
 
 		@Override
-		protected GeoAggType getItem(GeoProperty param) {
-			return param == null || param.aggType == null
-					? GeoAggType.WEIGHTED_AVERAGE
-					: param.aggType;
+		protected GeoAggregation getItem(GeoProperty param) {
+			return param == null || param.aggregation == null
+					? GeoAggregation.WEIGHTED_AVERAGE
+					: param.aggregation;
 		}
 
 		@Override
-		protected String getText(GeoAggType aggType) {
+		protected String getText(GeoAggregation aggType) {
 			return aggType == null
-					? GeoAggType.WEIGHTED_AVERAGE.toString()
+					? GeoAggregation.WEIGHTED_AVERAGE.toString()
 					: aggType.toString();
 		}
 
 		@Override
-		protected void setItem(GeoProperty param, GeoAggType aggType) {
+		protected void setItem(GeoProperty param, GeoAggregation aggType) {
 			if (param == null)
 				return;
-			param.aggType = aggType;
+			param.aggregation = aggType;
 		}
 	}
 
@@ -165,9 +165,9 @@ class GeoParamSection {
 				return "[" + Numbers.format(p.min)
 						+ ", " + Numbers.format(p.max) + "]";
 			case 4:
-				return p.aggType == null
-						? GeoAggType.WEIGHTED_AVERAGE.toString()
-						: p.aggType.toString();
+				return p.aggregation == null
+						? GeoAggregation.WEIGHTED_AVERAGE.toString()
+						: p.aggregation.toString();
 			default:
 				return null;
 			}

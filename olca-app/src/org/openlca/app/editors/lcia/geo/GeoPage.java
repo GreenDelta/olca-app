@@ -21,7 +21,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 	final ImpactCategoryEditor editor;
 	Setup setup;
 
-	private GeoParamSection paramSection;
+	private GeoPropertySection paramSection;
 	private GeoFlowSection flowSection;
 
 	public GeoPage(ImpactCategoryEditor editor) {
@@ -35,7 +35,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		var tk = mform.getToolkit();
 		var body = UI.formBody(form, tk);
 		setupSection(body, tk);
-		paramSection = new GeoParamSection(this);
+		paramSection = new GeoPropertySection(this);
 		paramSection.drawOn(body, tk);
 		flowSection = new GeoFlowSection(this);
 		flowSection.drawOn(body, tk);

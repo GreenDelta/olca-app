@@ -3,11 +3,10 @@ package org.openlca.app.editors.lcia.geo;
 import org.openlca.app.M;
 
 /**
- * 
- * Defines how multiple values of a parameter in different geographic features
+ * Defines how the values of a numeric property of set of geometric features
  * are aggregated.
  */
-enum GeoAggType {
+enum GeoAggregation {
 
 	WEIGHTED_AVERAGE,
 

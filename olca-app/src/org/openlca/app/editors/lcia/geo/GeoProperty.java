@@ -49,7 +49,7 @@ class GeoProperty {
 	 * Defines how multiple values of this parameter in different geographic
 	 * features are aggregated.
 	 */
-	GeoAggType aggType;
+	GeoAggregation aggregation;
 
 	static GeoProperty fromJson(JsonObject obj) {
 		return obj == null

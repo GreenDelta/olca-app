@@ -85,7 +85,7 @@ class GeoFactorCalculator implements Runnable {
 		map.forEach((loc, pairs) -> {
 			List<Pair<GeoProperty, Double>> paramVals = new ArrayList<>();
 			locParams.put(loc, paramVals);
-			for (GeoProperty param : setup.params) {
+			for (GeoProperty param : setup.properties) {
 				if (pairs.isEmpty()) {
 					paramVals.add(Pair.of(param, null));
 					continue;
@@ -160,10 +160,10 @@ class GeoFactorCalculator implements Runnable {
 		}
 
 		// take the minimum or maximum value
-		if (param.aggType == GeoAggType.MINIMUM
-				|| param.aggType == GeoAggType.MAXIMUM) {
+		if (param.aggregation == GeoAggregation.MINIMUM
+				|| param.aggregation == GeoAggregation.MAXIMUM) {
 
-			DoubleBinaryOperator fn = param.aggType == GeoAggType.MINIMUM
+			DoubleBinaryOperator fn = param.aggregation == GeoAggregation.MINIMUM
 					? Math::min
 					: Math::max;
 
@@ -178,7 +178,7 @@ class GeoFactorCalculator implements Runnable {
 		}
 
 		// calculate the average value
-		if (param.aggType == GeoAggType.AVERAGE) {
+		if (param.aggregation == GeoAggregation.AVERAGE) {
 
 			double sum = 0;
 			int count = 0;
@@ -247,7 +247,7 @@ class GeoFactorCalculator implements Runnable {
 		// generate the non-regionalized default factors
 		// for setup flows that are not yet present
 		FormulaInterpreter fi = new FormulaInterpreter();
-		for (GeoProperty param : setup.params) {
+		for (GeoProperty param : setup.properties) {
 			fi.bind(param.identifier,
 					Double.toString(param.defaultValue));
 		}
