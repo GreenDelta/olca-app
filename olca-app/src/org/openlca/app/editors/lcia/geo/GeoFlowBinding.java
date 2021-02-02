@@ -3,19 +3,20 @@ package org.openlca.app.editors.lcia.geo;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
+import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.jsonld.Json;
 
 import com.google.gson.JsonObject;
 
 /**
- * Describes the binding of regionalized characterization factors of a flow via
- * a formula with parameters of geographic features.
+ * Describes a binding of numeric properties of geometric features to the
+ * regionalized characterization factor of a flow. This binding is basically
+ * just a formula with references to numeric properties of geometric features.
  */
 class GeoFlowBinding {
 
 	final Flow flow;
 	String formula;
-	double defaultValue;
 
 	GeoFlowBinding(Flow flow) {
 		this.flow = flow;
@@ -37,7 +38,6 @@ class GeoFlowBinding {
 			return null;
 		var b = new GeoFlowBinding(flow);
 		b.formula = Json.getString(obj, "formula");
-		b.defaultValue = Json.getDouble(obj, "defaultValue", 1.0);
 		return b;
 	}
 
@@ -51,7 +51,22 @@ class GeoFlowBinding {
 			obj.add("flow", flowObj);
 		}
 		obj.addProperty("formula", formula);
-		obj.addProperty("defaultValue", defaultValue);
 		return obj;
+	}
+
+	/**
+	 * Calculates the default value of this formula using the default values of
+	 * the given properties. Returns null if the evaluation of the formula failed.
+	 */
+	Double defaultValueOf(Iterable<GeoProperty> properties) {
+		var interpreter = new FormulaInterpreter();
+		for (var p : properties) {
+			interpreter.bind(p.identifier, p.defaultValue);
+		}
+		try {
+			return interpreter.eval(formula);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }

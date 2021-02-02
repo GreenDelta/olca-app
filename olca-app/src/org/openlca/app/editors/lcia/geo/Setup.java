@@ -16,7 +16,7 @@ class Setup {
 	/**
 	 * The parameters / attributes of the geographic features.
 	 */
-	final List<GeoParam> params = new ArrayList<>();
+	final List<GeoProperty> params = new ArrayList<>();
 
 	/**
 	 * The elementary flows that are bound to parameters / attributes of the
@@ -48,7 +48,7 @@ class Setup {
 
 		var features = FeatureCollection.fromJson(json);
 		var setup = new Setup(features);
-		setup.params.addAll(GeoParam.collectFrom(features));
+		setup.params.addAll(GeoProperty.collectFrom(features));
 		return setup;
 	}
 
@@ -67,7 +67,7 @@ class Setup {
 			Json.stream(properties)
 				.filter(JsonElement::isJsonObject)
 				.map(JsonElement::getAsJsonObject)
-				.map(GeoParam::fromJson)
+				.map(GeoProperty::fromJson)
 				.filter(Objects::nonNull)
 				.forEach(setup.params::add);
 		}

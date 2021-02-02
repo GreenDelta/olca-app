@@ -19,7 +19,6 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
-import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.util.Strings;
 
 class GeoParamSection {
@@ -61,18 +60,16 @@ class GeoParamSection {
 
 	private void showMap() {
 		Setup setup = page.setup;
-		if (setup == null || setup.file == null)
+		if (setup == null || setup.features.isEmpty())
 			return;
-		FeatureCollection coll = setup.getFeatures();
-		if (coll == null)
-			return;
-		GeoParam gp = Viewers.getFirstSelected(table);
-		String param = gp != null ? gp.name : null;
-		MapDialog.show(setup.file, map -> {
+		GeoProperty gp = Viewers.getFirstSelected(table);
+		var param = gp != null ? gp.name : null;
+		var title = param != null ? param : "Features";
+		MapDialog.show(title, map -> {
 			if (param == null) {
-				map.addLayer(coll).center();
+				map.addLayer(setup.features).center();
 			} else {
-				map.addLayer(coll)
+				map.addLayer(setup.features)
 						.fillScale(param)
 						.center();
 			}
@@ -80,17 +77,17 @@ class GeoParamSection {
 	}
 
 	private void bindModifiers() {
-		ModifySupport<GeoParam> ms = new ModifySupport<>(table);
+		ModifySupport<GeoProperty> ms = new ModifySupport<>(table);
 		ms.bind("Aggregation type", new AggTypeCell());
 		ms.bind("Default value", new TextCellModifier<>() {
 			@Override
-			protected String getText(GeoParam param) {
+			protected String getText(GeoProperty param) {
 				return param == null ? ""
 					: Double.toString(param.defaultValue);
 			}
 
 			@Override
-			protected void setText(GeoParam param, String s) {
+			protected void setText(GeoProperty param, String s) {
 				if (param == null || Strings.nullOrEmpty(s))
 					return;
 				try {
@@ -111,15 +108,15 @@ class GeoParamSection {
 	}
 
 	private static class AggTypeCell
-			extends ComboBoxCellModifier<GeoParam, GeoAggType> {
+			extends ComboBoxCellModifier<GeoProperty, GeoAggType> {
 
 		@Override
-		protected GeoAggType[] getItems(GeoParam param) {
+		protected GeoAggType[] getItems(GeoProperty param) {
 			return GeoAggType.values();
 		}
 
 		@Override
-		protected GeoAggType getItem(GeoParam param) {
+		protected GeoAggType getItem(GeoProperty param) {
 			return param == null || param.aggType == null
 					? GeoAggType.WEIGHTED_AVERAGE
 					: param.aggType;
@@ -133,7 +130,7 @@ class GeoParamSection {
 		}
 
 		@Override
-		protected void setItem(GeoParam param, GeoAggType aggType) {
+		protected void setItem(GeoProperty param, GeoAggType aggType) {
 			if (param == null)
 				return;
 			param.aggType = aggType;
@@ -154,9 +151,9 @@ class GeoParamSection {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof GeoParam))
+			if (!(obj instanceof GeoProperty))
 				return null;
-			GeoParam p = (GeoParam) obj;
+			GeoProperty p = (GeoProperty) obj;
 			switch (col) {
 			case 0:
 				return p.name;

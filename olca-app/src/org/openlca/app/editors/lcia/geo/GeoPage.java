@@ -1,7 +1,5 @@
 package org.openlca.app.editors.lcia.geo;
 
-import java.io.File;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -9,6 +7,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.lcia.ImpactCategoryEditor;
 import org.openlca.app.rcp.images.Icon;
@@ -58,25 +57,19 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		fileBtn.setImage(Icon.FOLDER_OPEN.get());
 
 		Controls.onSelect(fileBtn, _e -> {
-			File file = FileChooser.open("*.geojson");
+			var file = FileChooser.open("*.geojson");
 			if (file == null)
 				return;
-			Setup s = App.exec("Parse setup ...",
-				() -> Setup.read(file));
-			if (s == null) {
+			var nextSetup = App.exec(
+					"Parse setup ...",
+					() -> Setup.read(file, Database.get()));
+			if (nextSetup == null) {
 				ErrorReporter.on("Failed to read setup or" +
-												 " GeoJSON file from " + file);
+						" GeoJSON file from " + file);
 				return;
 			}
-
-			// copy possible elementary flow bindings
-			// into the new setup (note that the parameters
-			// are already initialized in the new setup)
-			if (setup != null) {
-				s.bindings.addAll(setup.bindings);
-			}
-			setup = s;
-			fileText.setText(s.file);
+			setup = nextSetup;
+			fileText.setText(file.getAbsolutePath());
 			paramSection.update();
 			flowSection.update();
 		});

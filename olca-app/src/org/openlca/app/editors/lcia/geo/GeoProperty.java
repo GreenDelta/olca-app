@@ -6,19 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.util.Strings;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 /**
- * Describes a parameter / attribute of a set of geographic features in a
- * GeoJSON file. Such parameters can be then used to calculate regionalized
- * characterization factors.
+ * Describes a numeric property of a set of geometric features. Such properties
+ * can be then used to calculate regionalized characterization factors.
  */
-class GeoParam {
+class GeoProperty {
 
 	/**
 	 * The name of the parameter in the GeoJSON file.
@@ -52,26 +51,26 @@ class GeoParam {
 	 */
 	GeoAggType aggType;
 
-	static GeoParam fromJson(JsonObject obj) {
+	static GeoProperty fromJson(JsonObject obj) {
 		return obj == null
-			? null
-			: new Gson().fromJson(obj, GeoParam.class);
+				? null
+				: new Gson().fromJson(obj, GeoProperty.class);
 	}
 
 	JsonObject toJson() {
 		return new Gson()
-			.toJsonTree(this)
-			.getAsJsonObject();
+				.toJsonTree(this)
+				.getAsJsonObject();
 	}
 
 	/**
 	 * Collects the parameters / attributes from the given features.
 	 */
-	static List<GeoParam> collectFrom(FeatureCollection coll) {
+	static List<GeoProperty> collectFrom(FeatureCollection coll) {
 		if (coll == null || coll.isEmpty())
 			return Collections.emptyList();
 
-		Map<String, GeoParam> map = new HashMap<>();
+		Map<String, GeoProperty> map = new HashMap<>();
 		Map<String, Double> sums = new HashMap<>();
 		Map<String, Integer> counts = new HashMap<>();
 
@@ -90,19 +89,19 @@ class GeoParam {
 
 				// update the values for computing the average
 				sums.compute(id, (key, oldVal) -> oldVal == null
-					? val
-					: oldVal + val);
+						? val
+						: oldVal + val);
 				counts.compute(id, (key, oldVal) -> oldVal == null
-					? 1
-					: oldVal + 1);
+						? 1
+						: oldVal + 1);
 
-				GeoParam param = map.get(id);
+				GeoProperty param = map.get(id);
 				if (param != null) {
 					param.min = Math.min(param.min, val);
 					param.max = Math.max(param.max, val);
 					continue;
 				}
-				param = new GeoParam();
+				param = new GeoProperty();
 				param.name = e.getKey();
 				param.identifier = id;
 				param.min = val;
@@ -112,13 +111,13 @@ class GeoParam {
 		}
 
 		// set the average values as default values
-		var params = new ArrayList<GeoParam>();
-		for (GeoParam param : map.values()) {
+		var params = new ArrayList<GeoProperty>();
+		for (GeoProperty param : map.values()) {
 			Double sum = sums.get(param.identifier);
 			Integer count = counts.get(param.identifier);
 			param.defaultValue = sum != null && count != null
-				? sum / count
-				: 1;
+					? sum / count
+					: 1;
 			params.add(param);
 		}
 		params.sort((p1, p2) -> Strings.compare(p1.name, p2.name));

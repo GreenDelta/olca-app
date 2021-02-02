@@ -35,7 +35,6 @@ import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.io.CategoryPath;
 
 class GeoFlowSection {
@@ -126,8 +125,7 @@ class GeoFlowSection {
 					"No flow bindings are defined.");
 			return;
 		}
-		FeatureCollection coll = setup.getFeatures();
-		if (coll == null || coll.features.isEmpty()) {
+		if (setup.features.isEmpty()) {
 			MsgBox.error("Invalid calculation setup",
 					"Could not find geographic features.");
 			return;

@@ -59,13 +59,12 @@ class GeoFactorCalculator implements Runnable {
 
 		// calculate the intersections, parameter values,
 		// and finally generate the LCIA factors
-		FeatureCollection coll = setup.getFeatures();
-		if (coll == null || coll.features.isEmpty()) {
+		if (setup.features.isEmpty()) {
 			log.error("no features available for the "
 					+ "intersection calculation");
 			return;
 		}
-		Map<Location, List<Pair<GeoParam, Double>>> params = calcParamVals(coll);
+		var params = calcParamVals(setup.features);
 		createFactors(params);
 	}
 
@@ -74,7 +73,7 @@ class GeoFactorCalculator implements Runnable {
 	 * intersections with the given feature collection and the aggregation function
 	 * that is defined in the respective parameter.
 	 */
-	private Map<Location, List<Pair<GeoParam, Double>>> calcParamVals(
+	private Map<Location, List<Pair<GeoProperty, Double>>> calcParamVals(
 			FeatureCollection coll) {
 		IntersectionCalculator calc = IntersectionCalculator.on(coll);
 		Map<Location, List<Pair<Feature, Double>>> map = locations
@@ -82,11 +81,11 @@ class GeoFactorCalculator implements Runnable {
 				.map(loc -> Pair.of(loc, calcIntersections(loc, calc)))
 				.collect(Collectors.toMap(p -> p.first, p -> p.second));
 
-		Map<Location, List<Pair<GeoParam, Double>>> locParams = new HashMap<>();
+		Map<Location, List<Pair<GeoProperty, Double>>> locParams = new HashMap<>();
 		map.forEach((loc, pairs) -> {
-			List<Pair<GeoParam, Double>> paramVals = new ArrayList<>();
+			List<Pair<GeoProperty, Double>> paramVals = new ArrayList<>();
 			locParams.put(loc, paramVals);
-			for (GeoParam param : setup.params) {
+			for (GeoProperty param : setup.params) {
 				if (pairs.isEmpty()) {
 					paramVals.add(Pair.of(param, null));
 					continue;
@@ -153,7 +152,7 @@ class GeoFactorCalculator implements Runnable {
 	 * aggregation function. Note that the shares must have the same length as the
 	 * corresponding parameter values.
 	 */
-	private Double aggregate(GeoParam param,
+	private Double aggregate(GeoProperty param,
 			List<Double> vals, List<Double> shares) {
 
 		if (param == null || vals.isEmpty()) {
@@ -215,7 +214,7 @@ class GeoFactorCalculator implements Runnable {
 	}
 
 	private void createFactors(
-			Map<Location, List<Pair<GeoParam, Double>>> locParams) {
+			Map<Location, List<Pair<GeoProperty, Double>>> locParams) {
 
 		// remove all LCIA factors with a flow and location
 		// that will be calculated
@@ -248,7 +247,7 @@ class GeoFactorCalculator implements Runnable {
 		// generate the non-regionalized default factors
 		// for setup flows that are not yet present
 		FormulaInterpreter fi = new FormulaInterpreter();
-		for (GeoParam param : setup.params) {
+		for (GeoProperty param : setup.params) {
 			fi.bind(param.identifier,
 					Double.toString(param.defaultValue));
 		}
@@ -273,11 +272,11 @@ class GeoFactorCalculator implements Runnable {
 			// bind the location specific parameter values
 			// to a formula interpreter
 			fi = new FormulaInterpreter();
-			List<Pair<GeoParam, Double>> pairs = locParams.get(loc);
+			List<Pair<GeoProperty, Double>> pairs = locParams.get(loc);
 			if (pairs == null)
 				continue;
-			for (Pair<GeoParam, Double> pair : pairs) {
-				GeoParam param = pair.first;
+			for (Pair<GeoProperty, Double> pair : pairs) {
+				GeoProperty param = pair.first;
 				double val = pair.second == null
 						? param.defaultValue
 						: pair.second;
