@@ -1,8 +1,11 @@
 package org.openlca.app.editors.lcia.geo;
 
+import java.io.File;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
@@ -13,8 +16,11 @@ import org.openlca.app.editors.lcia.ImpactCategoryEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactCategory;
+import org.openlca.util.Strings;
 
 public class GeoPage extends ModelPage<ImpactCategory> {
 
@@ -23,6 +29,8 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 
 	private GeoPropertySection paramSection;
 	private GeoFlowSection flowSection;
+	private Text fileText;
+	private Button saveBtn;
 
 	public GeoPage(ImpactCategoryEditor editor) {
 		super(editor, "GeoPage", "Regionalized calculation");
@@ -44,42 +52,76 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 
 	private void setupSection(Composite body, FormToolkit tk) {
 		var comp = UI.formSection(body, tk, "Setup");
-		UI.gridLayout(comp, 3);
+		UI.gridLayout(comp, 2);
 
-		// GeoJSON file
-		UI.gridLayout(comp, 3);
+		// file text
 		UI.gridData(comp, true, false);
-		UI.formLabel(comp, tk, "GeoJSON File");
-		var fileText = tk.createText(comp, "");
+		UI.formLabel(comp, tk, "GeoJSON or setup file:");
+		fileText = tk.createText(comp, "");
 		fileText.setEditable(false);
-		UI.gridData(fileText, false, false).widthHint = 350;
-		var fileBtn = tk.createButton(comp, "Open file", SWT.NONE);
-		fileBtn.setImage(Icon.FOLDER_OPEN.get());
+		UI.gridData(fileText, true, false);
 
-		Controls.onSelect(fileBtn, _e -> {
-			var file = FileChooser.open("*.geojson");
-			if (file == null)
-				return;
-			var nextSetup = App.exec(
-					"Parse setup ...",
-					() -> Setup.read(file, Database.get()));
-			if (nextSetup == null) {
-				ErrorReporter.on("Failed to read setup or" +
-						" GeoJSON file from " + file);
-				return;
-			}
-			setup = nextSetup;
-			fileText.setText(file.getAbsolutePath());
-			paramSection.update();
-			flowSection.update();
-		});
-
+		// buttons
 		UI.filler(comp, tk);
-		Composite btnComp = tk.createComposite(comp);
+		var btnComp = tk.createComposite(comp);
 		UI.gridLayout(btnComp, 2, 10, 0);
-		var openBtn = tk.createButton(btnComp, "Open setup", SWT.NONE);
+		var openBtn = tk.createButton(btnComp, "Open", SWT.NONE);
 		openBtn.setImage(Icon.FOLDER_OPEN.get());
-		Button saveBtn = tk.createButton(btnComp, "Save setup", SWT.NONE);
+		UI.gridData(openBtn, false, false).widthHint = 80;
+		Controls.onSelect(openBtn, _e -> onOpenFile());
+		saveBtn = tk.createButton(btnComp, "Save", SWT.NONE);
 		saveBtn.setImage(Icon.SAVE.get());
+		UI.gridData(saveBtn, false, false).widthHint = 80;
+		saveBtn.setEnabled(false);
+		Controls.onSelect(saveBtn, _e -> onSaveFile());
+	}
+
+	private void onOpenFile() {
+		var file = FileChooser.open("*.geojson | *.json");
+		if (file == null)
+			return;
+		var nextSetup = App.exec(
+			"Parse setup ...",
+			() -> Setup.read(file, Database.get()));
+		if (nextSetup == null) {
+			ErrorReporter.on("Failed to read setup or" +
+											 " GeoJSON file from " + file);
+			return;
+		}
+		setup = nextSetup;
+		fileText.setText(file.getAbsolutePath());
+		saveBtn.setEnabled(true);
+		paramSection.update();
+		flowSection.update();
+	}
+
+	private void onSaveFile() {
+		if (setup == null) {
+			MsgBox.error("No setup loaded", "Nothing to save.");
+			return;
+		}
+		File file;
+		var path = fileText.getText();
+		if (Strings.notEmpty(path) && path.endsWith(".json")) {
+			var temp = new File(path);
+			file = FileChooser.forExport(
+				"*.json",
+				temp.getName(),
+				temp.getParentFile().getAbsolutePath());
+		} else {
+			file = FileChooser.forExport("*.json", "setup.json");
+		}
+
+		if (file == null)
+			return;
+		try {
+			setup.writeTo(file);
+			fileText.setText(file.getAbsolutePath());
+			Popup.info("Saved setup to file " + file.getName());
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to save setup for calculation " +
+											 "of regionalized characterization factors " +
+											 "to file " + file);
+		}
 	}
 }

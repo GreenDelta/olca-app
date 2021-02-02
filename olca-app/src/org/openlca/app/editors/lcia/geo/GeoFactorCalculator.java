@@ -152,8 +152,8 @@ class GeoFactorCalculator implements Runnable {
 	 * aggregation function. Note that the shares must have the same length as the
 	 * corresponding parameter values.
 	 */
-	private Double aggregate(GeoProperty param,
-			List<Double> vals, List<Double> shares) {
+	private Double aggregate(
+		GeoProperty param, List<Double> vals, List<Double> shares) {
 
 		if (param == null || vals.isEmpty()) {
 			return null;
@@ -200,7 +200,7 @@ class GeoFactorCalculator implements Runnable {
 		double wsum = 0;
 		for (int i = 0; i < vals.size(); i++) {
 			Double next = vals.get(i);
-			Double share = vals.get(i);
+			Double share = shares.get(i);
 			if (next == null || share == null)
 				continue;
 			sum += next * share;

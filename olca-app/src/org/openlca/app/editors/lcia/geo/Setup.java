@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.openlca.core.database.IDatabase;
@@ -43,7 +44,7 @@ class Setup {
 		var json = Json.readObject(file).orElse(null);
 		if (json == null)
 			return null;
-		if(json.has("setup") && json.has("features"))
+		if (json.has("setup") && json.has("features"))
 			return fromSerialized(json, db);
 
 		var features = FeatureCollection.fromJson(json);
@@ -82,6 +83,30 @@ class Setup {
 				.forEach(setup.bindings::add);
 		}
 
-		return  setup;
+		return setup;
+	}
+
+	void writeTo(File file) {
+		if (file == null)
+			return;
+
+		var properties = new JsonArray();
+		this.properties.stream()
+			.map(GeoProperty::toJson)
+			.forEach(properties::add);
+
+		var bindings = new JsonArray();
+		this.bindings.stream()
+			.map(GeoFlowBinding::toJson)
+			.forEach(bindings::add);
+
+		var setup = new JsonObject();
+		setup.add("properties", properties);
+		setup.add("bindings", bindings);
+
+		var json = new JsonObject();
+		json.add("setup", setup);
+		json.add("features", features.toJson());
+		Json.write(json, file);
 	}
 }
