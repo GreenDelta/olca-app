@@ -17,16 +17,22 @@ class IOFigure extends Figure {
 
 	IOFigure(ProcessNode node) {
 		this.node = node;
+
+		// layout
 		var layout = new GridLayout(2, true);
 		layout.horizontalSpacing = 4;
 		layout.verticalSpacing = 4;
 		layout.marginHeight = 2;
 		layout.marginWidth = 2;
 		setLayoutManager(layout);
+
+		// headers
 		add(new Header("Input flows"),
 			new GridData(SWT.FILL, SWT.TOP, true, false));
 		add(new Header("Output flows"),
 			new GridData(SWT.FILL, SWT.TOP, true, false));
+
+		// panels
 		inputPanel = new ExchangePanel();
 		add(inputPanel,
 			new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -37,10 +43,14 @@ class IOFigure extends Figure {
 
 	@Override
 	public void add(IFigure figure, Object constraint, int index) {
+
 		if (!(figure instanceof ExchangeFigure)) {
 			super.add(figure, constraint, index);
 			return;
 		}
+
+		// delegate exchange figures to the respective input or
+		// output panel
 		var ef = (ExchangeFigure) figure;
 		if (ef.node == null || ef.node.exchange == null)
 			return;

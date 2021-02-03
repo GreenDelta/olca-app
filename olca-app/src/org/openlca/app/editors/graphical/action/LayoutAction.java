@@ -11,7 +11,7 @@ import org.openlca.app.editors.graphical.model.ProductSystemNode;
 class LayoutAction extends Action {
 
 	private ProductSystemNode model;
-	private LayoutType layoutType;
+	private final LayoutType layoutType;
 
 	LayoutAction(LayoutType layoutType) {
 		setText(NLS.bind(M.LayoutAs, layoutType.getDisplayName()));

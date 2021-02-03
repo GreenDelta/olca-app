@@ -37,7 +37,7 @@ public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new LayoutPolicy());
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ComponentEditPolicy() {
 			@Override
-			protected Command createDeleteCommand(GroupRequest deleteRequest) {
+			protected Command createDeleteCommand(GroupRequest req) {
 				return new DeleteProcessCommand(getModel());
 			}
 		});

@@ -16,11 +16,11 @@ import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
-public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
+public class CreateLinkPolicy extends GraphicalNodeEditPolicy {
 
 	private final GraphEditor editor;
 
-	public ProcessLinkCreatePolicy(GraphEditor editor) {
+	public CreateLinkPolicy(GraphEditor editor) {
 		this.editor = editor;
 	}
 
@@ -41,7 +41,7 @@ public class ProcessLinkCreatePolicy extends GraphicalNodeEditPolicy {
 	}
 
 	@Override
-	protected ConnectionRouter getDummyConnectionRouter(CreateConnectionRequest request) {
+	protected ConnectionRouter getDummyConnectionRouter(CreateConnectionRequest req) {
 		return ConnectionRouter.NULL;
 	}
 

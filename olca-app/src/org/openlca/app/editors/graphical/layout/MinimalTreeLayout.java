@@ -93,8 +93,8 @@ public class MinimalTreeLayout {
 
 	class Edge {
 
-		private Node start;
-		private Node end;
+		private final Node start;
+		private final Node end;
 
 		public Edge(Node start, Node end) {
 			this.start = start;

@@ -9,9 +9,9 @@ public enum LayoutType {
 
 	TREE_LAYOUT(M.Tree);
 
-	private String displayName;
+	private final String displayName;
 
-	private LayoutType(final String displayName) {
+	LayoutType(String displayName) {
 		this.displayName = displayName;
 	}
 
