@@ -16,13 +16,15 @@ public class MySQLConfiguration implements IDatabaseConfiguration {
 	private String user;
 	private String password;
 
-	public IDatabase createInstance() throws Exception {
-		String url = "jdbc:mysql://" + host + ":" + port + "/" + name;
-		MySQLDatabase db = new MySQLDatabase(url, user, password);
+	@Override
+	public IDatabase connect() {
+		var url = "jdbc:mysql://" + host + ":" + port + "/" + name;
+		var db = new MySQLDatabase(url, user, password);
 		db.setFileStorageLocation(DatabaseDir.getFileStorageLocation(db));
 		return db;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

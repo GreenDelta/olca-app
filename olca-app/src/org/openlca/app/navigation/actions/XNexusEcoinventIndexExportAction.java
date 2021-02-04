@@ -76,7 +76,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 					if (Database.get() != null && Database.get().getName().equals(e.database.getName())) {
 						db = Database.get();
 					} else {
-						db = e.database.createInstance();
+						db = e.database.connect();
 					}
 					ProcessDao dao = new ProcessDao(db);
 					for (ProcessDescriptor descriptor : dao.getDescriptors()) {

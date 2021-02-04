@@ -20,11 +20,10 @@ public class DerbyConfiguration implements IDatabaseConfiguration {
 	private String folder;
 
 	@Override
-	public DerbyDatabase createInstance() throws Exception {
-		if (folder != null) {
-			return new DerbyDatabase(new File(folder));
-		}
-		return new DerbyDatabase(DatabaseDir.getRootFolder(name));
+	public DerbyDatabase connect() {
+		return folder != null
+				? new DerbyDatabase(new File(folder))
+				: new DerbyDatabase(DatabaseDir.getRootFolder(name));
 	}
 
 	@Override

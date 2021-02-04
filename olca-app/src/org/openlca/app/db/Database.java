@@ -38,7 +38,7 @@ public class Database {
 	public static IDatabase activate(IDatabaseConfiguration config)
 			throws Exception {
 		try {
-			database = config.createInstance();
+			database = config.connect();
 			listener = new DatabaseListener(Database.database);
 			database.addListener(listener);
 			Cache.create(database);
@@ -61,7 +61,7 @@ public class Database {
 			if (RepositoryConfigConversion.needsConversion(database)) {
 				RepositoryConfigConversion.applyTo(database);
 			}
-			RepositoryConfig repoConfig = RepositoryConfig.loadActive(Database.get());
+			var repoConfig = RepositoryConfig.loadActive(Database.get());
 			if (repoConfig != null) {
 				repoConfig.credentials.setTokenSupplier(TokenDialog::prompt);
 				connect(new RepositoryClient(repoConfig));
@@ -141,10 +141,10 @@ public class Database {
 	}
 
 	public static IDatabaseConfiguration getActiveConfiguration() {
-		for (IDatabaseConfiguration conf : configurations.getLocalDatabases())
+		for (var conf : configurations.getLocalDatabases())
 			if (isActive(conf))
 				return conf;
-		for (IDatabaseConfiguration conf : configurations.getRemoteDatabases())
+		for (var conf : configurations.getRemoteDatabases())
 			if (isActive(conf))
 				return conf;
 		return null;

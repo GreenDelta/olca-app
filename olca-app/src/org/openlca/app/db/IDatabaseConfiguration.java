@@ -4,10 +4,10 @@ import org.openlca.core.database.IDatabase;
 
 public interface IDatabaseConfiguration {
 
-	public IDatabase createInstance() throws Exception;
+	IDatabase connect();
 
-	public String getName();
+	String getName();
 
-	public boolean isLocal();
+	boolean isLocal();
 
 }

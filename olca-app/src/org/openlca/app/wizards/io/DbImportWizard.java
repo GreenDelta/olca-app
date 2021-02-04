@@ -186,7 +186,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 				if (config.mode == config.FILE_MODE)
 					source = connectToFolder();
 				else
-					source = config.databaseConfiguration.createInstance();
+					source = config.databaseConfiguration.connect();
 			} catch (Exception e) {
 				log.error("Failed to connect to source database", e);
 				throw new InvocationTargetException(e);
