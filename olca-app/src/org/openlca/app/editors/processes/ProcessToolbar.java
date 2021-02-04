@@ -1,7 +1,6 @@
 package org.openlca.app.editors.processes;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 

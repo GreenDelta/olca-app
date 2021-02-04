@@ -38,7 +38,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+		throws PartInitException {
 		super.init(site, input);
 		Process p = getModel();
 		if (p.documentation == null) {
@@ -52,16 +52,16 @@ public class ProcessEditor extends ModelEditor<Process> {
 		// if this is a library process
 		if (p.isFromLibrary()) {
 			var library = Workspace.getLibraryDir()
-					.get(p.library)
-					.orElse(null);
+				.get(p.library)
+				.orElse(null);
 			if (library != null) {
 				var exchanges = library.getExchanges(
-						ProcessProduct.of(p),
-						Database.get());
+					ProcessProduct.of(p),
+					Database.get());
 				var qref = p.quantitativeReference;
 				exchanges.stream()
 					.filter(e -> Objects.equals(qref.flow, e.flow)
-						& qref.isInput == e.isInput)
+											 & qref.isInput == e.isInput)
 					.findFirst()
 					.ifPresent(_qref -> p.quantitativeReference = _qref);
 				p.exchanges.clear();
