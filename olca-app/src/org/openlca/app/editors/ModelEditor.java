@@ -257,14 +257,13 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 			return null;
 		if (category.library == null)
 			return category;
-		category.library = null;
-		var root = category;
-		while (root.category != null) {
-			root = root.category;
-			root.library = null;
-		}
 		var dao = new CategoryDao(Database.get());
-		dao.update(root);
+		var c = category;
+		while (c != null && c.library != null) {
+			c.library = null;
+			c = dao.update(c);
+			c = c.category;
+		}
 		return dao.getForId(category.id);
 	}
 
