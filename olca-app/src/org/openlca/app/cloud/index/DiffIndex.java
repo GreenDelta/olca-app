@@ -164,7 +164,9 @@ public class DiffIndex {
 	}
 
 	public Diff get(FileReference ref) {
-		return index.get(ref.toId());
+		return ref == null
+				? null
+				: index.get(ref.toId());
 	}
 
 	public List<Diff> getChanged() {

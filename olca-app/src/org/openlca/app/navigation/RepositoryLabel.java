@@ -21,8 +21,6 @@ import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
-import org.openlca.core.model.Category;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class RepositoryLabel {
 
@@ -31,20 +29,16 @@ class RepositoryLabel {
 	static Image getWithOverlay(INavigationElement<?> e) {
 		if (!Database.isConnected())
 			return null;
-		if (e instanceof DatabaseElement)
+		if (!(e instanceof ModelElement) && !(e instanceof CategoryElement))
 			return null;
-		if (e instanceof GroupElement)
-			return null;
-		if (e instanceof ModelTypeElement)
-			return null;
-		Diff diff = DiffUtil.getDiff(CloudUtil.toDataset(e));
+		var diff = DiffUtil.getDiff(CloudUtil.toDataset(e));
 		if (diff == null || !diff.tracked || diff.type != DiffType.NEW)
 			return null;
 		if (e instanceof CategoryElement) {
-			Category category = ((CategoryElement) e).getContent();
+			var category = ((CategoryElement) e).getContent();
 			return Images.getForCategory(category.modelType, Overlay.ADDED);
 		} else if (e instanceof ModelElement) {
-			CategorizedDescriptor model = ((ModelElement) e).getContent();
+			var model = ((ModelElement) e).getContent();
 			return Images.get(model.type, Overlay.ADDED);
 		}
 		return null;
