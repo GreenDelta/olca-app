@@ -44,13 +44,12 @@ public class UseLibraryCategoryAction extends Action implements INavigationActio
 	public void run() {
 		var dao = new CategoryDao(Database.get());
 		for (var category : categories) {
-			category.library = null;
-			var root = category;
-			while (root.category != null) {
-				root = root.category;
-				root.library = null;
+			var c = category;
+			while (c != null && c.library != null) {
+				c.library = null;
+				c = dao.update(c);
+				c = c.category;
 			}
-			dao.update(root);
 		}
 		Navigator.refresh();
 	}
