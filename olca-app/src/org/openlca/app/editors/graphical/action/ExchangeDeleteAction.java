@@ -41,6 +41,7 @@ public class ExchangeDeleteAction extends Action implements GraphAction {
 				|| exchangeNode.exchange.flow == null
 				|| processNode == null
 				|| processNode.process == null
+				|| processNode.process.isFromLibrary()
 				|| processNode.process.type != ModelType.PROCESS)
 			return false;
 		this.processNode = processNode;

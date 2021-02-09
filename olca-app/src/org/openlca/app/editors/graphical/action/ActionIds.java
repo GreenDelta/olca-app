@@ -17,10 +17,8 @@ public interface ActionIds {
 	String OPEN_MINIATURE_VIEW = "graphical.actions.OpenMiniatureViewAction";
 	String REMOVE_ALL_CONNECTIONS = "graphical.actions.RemoveAllConnectionsAction";
 	String REMOVE_SUPPLY_CHAIN = "graphical.actions.RemoveSupplyChainAction";
-	String SAVE_IMAGE = "graphical.actions.SaveImageAction";
 	String SEARCH_PROVIDERS = "graphical.actions.SearchConnectorsAction.PROVIDERS";
 	String SEARCH_RECIPIENTS = "graphical.actions.SearchConnectorsAction.RECIPIENTS";
-	String OPEN = "graphical.actions.OpenAction";
 	String SHOW_OUTLINE = "graphical.actions.ShowOutlineAction";
 
 }

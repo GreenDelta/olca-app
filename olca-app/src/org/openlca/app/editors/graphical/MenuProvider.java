@@ -15,6 +15,8 @@ import org.openlca.app.editors.graphical.action.ExchangeEditAction;
 import org.openlca.app.editors.graphical.action.GraphAction;
 import org.openlca.app.editors.graphical.action.GraphSettingsAction;
 import org.openlca.app.editors.graphical.action.MarkingAction;
+import org.openlca.app.editors.graphical.action.OpenAction;
+import org.openlca.app.editors.graphical.action.SaveImageAction;
 import org.openlca.app.rcp.images.Icon;
 
 class MenuProvider extends ContextMenuProvider {
@@ -57,16 +59,16 @@ class MenuProvider extends ContextMenuProvider {
 		addShowViewActions(menu);
 	}
 
-	/**
-	 * Undo, Redo, and Delete
-	 */
 	private void addEditActions(IMenuManager menu) {
 		GEFActionConstants.addStandardActionGroups(menu);
+
+		// undo
 		var undo = registry.getAction(ActionFactory.UNDO.getId());
 		undo.setImageDescriptor(Icon.UNDO.descriptor());
 		undo.setDisabledImageDescriptor(Icon.UNDO_DISABLED.descriptor());
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, undo);
 
+		// redo
 		var redo = registry.getAction(ActionFactory.REDO.getId());
 		redo.setImageDescriptor(Icon.REDO.descriptor());
 		redo.setDisabledImageDescriptor(Icon.REDO_DISABLED.descriptor());
@@ -82,9 +84,11 @@ class MenuProvider extends ContextMenuProvider {
 	}
 
 	private void addSupplyChainActions(IMenuManager menu) {
+
 		menu.add(registry.getAction(ActionIds.BUILD_SUPPLY_CHAIN_MENU));
 		menu.add(registry.getAction(ActionIds.REMOVE_SUPPLY_CHAIN));
 		menu.add(registry.getAction(ActionIds.REMOVE_ALL_CONNECTIONS));
+		
 	}
 
 	private void addSearchActions(IMenuManager menu) {
@@ -93,9 +97,9 @@ class MenuProvider extends ContextMenuProvider {
 	}
 
 	private void addSpecialActions(IMenuManager menu) {
-		menu.add(registry.getAction(ActionIds.SAVE_IMAGE));
-		menu.add(registry.getAction(ActionIds.OPEN));
 		var actions = new GraphAction[]{
+			new OpenAction(),
+			new SaveImageAction(),
 			MarkingAction.forMarking(),
 			MarkingAction.forUnmarking(),
 		};

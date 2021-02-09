@@ -193,7 +193,6 @@ public class GraphEditor extends GraphicalEditor {
 				new BuildSupplyChainMenuAction(this),
 				GraphActions.removeSupplyChain(this),
 				GraphActions.removeAllConnections(this),
-				GraphActions.saveImage(this),
 				GraphActions.expandAll(this),
 				GraphActions.collapseAll(this),
 				GraphActions.maximizeAll(this),
@@ -201,7 +200,6 @@ public class GraphEditor extends GraphicalEditor {
 				new LayoutMenuAction(this),
 				GraphActions.searchProviders(this),
 				GraphActions.searchRecipients(this),
-				GraphActions.open(this),
 				GraphActions.openMiniatureView(this),
 				GraphActions.showOutline(),
 				new ZoomInAction(getZoomManager()),
@@ -300,7 +298,9 @@ public class GraphEditor extends GraphicalEditor {
 	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class type) {
 		if (type == ZoomManager.class)
-			return ((ScalableRootEditPart) getGraphicalViewer().getRootEditPart()).getZoomManager();
+			return ((ScalableRootEditPart) getGraphicalViewer()
+				.getRootEditPart())
+				.getZoomManager();
 		if (type == IContentOutlinePage.class) {
 			outline = new OutlinePage(model);
 			outline.setEditDomain(getEditDomain());

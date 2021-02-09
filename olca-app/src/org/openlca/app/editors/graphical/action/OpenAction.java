@@ -1,28 +1,33 @@
 package org.openlca.app.editors.graphical.action;
 
-import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
-class OpenAction extends EditorAction {
+public class OpenAction extends Action implements GraphAction {
 
 	private ProcessNode node;
 
-	OpenAction() {
-		setId(ActionIds.OPEN);
+	public OpenAction() {
 		setText(M.OpenInEditor);
 	}
 
 	@Override
-	protected boolean accept(ISelection s) {
-		node = GraphActions.firstSelectedOf(s, ProcessNode.class);
-		return node != null;
+	public boolean accepts(GraphEditor editor) {
+		var list = GraphActions.allSelectedOf(editor, ProcessNode.class);
+		if (list.size() != 1)
+			return false;
+		node = list.get(0);
+		return true;
 	}
 
 	@Override
 	public void run() {
-		App.open(node.process);
+		if (node != null && node.process != null) {
+			App.open(node.process);
+		}
 	}
 
 }

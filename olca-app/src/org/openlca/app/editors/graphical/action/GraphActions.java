@@ -114,12 +114,6 @@ public class GraphActions {
 		return action;
 	}
 
-	public static IAction saveImage(GraphEditor editor) {
-		SaveImageAction action = new SaveImageAction();
-		action.editor = editor;
-		return action;
-	}
-
 	public static IAction searchProviders(GraphEditor editor) {
 		SearchConnectorsAction action = new SearchConnectorsAction(PROVIDER);
 		action.editor = editor;
@@ -128,12 +122,6 @@ public class GraphActions {
 
 	public static IAction searchRecipients(GraphEditor editor) {
 		SearchConnectorsAction action = new SearchConnectorsAction(RECIPIENTS);
-		action.editor = editor;
-		return action;
-	}
-
-	public static IAction open(GraphEditor editor) {
-		OpenAction action = new OpenAction();
 		action.editor = editor;
 		return action;
 	}
