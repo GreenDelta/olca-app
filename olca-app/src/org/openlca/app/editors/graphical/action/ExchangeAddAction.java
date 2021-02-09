@@ -36,28 +36,39 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.util.Strings;
 
-public class ExchangeAddAction extends Action {
+public class ExchangeAddAction extends Action implements GraphAction {
 
 	private final IDatabase db = Database.get();
-	private final GraphEditor editor;
 	private final boolean forInput;
-	private final ProcessNode node;
+	private ProcessNode node;
 
-	public static ExchangeAddAction forInput(ProcessNode node) {
-		return new ExchangeAddAction(node, true);
+	public static ExchangeAddAction forInput() {
+		return new ExchangeAddAction(true);
 	}
 
-	public static ExchangeAddAction forOutput(ProcessNode node) {
-		return new ExchangeAddAction(node, false);
+	public static ExchangeAddAction forOutput() {
+		return new ExchangeAddAction(false);
 	}
 
-	private ExchangeAddAction(ProcessNode node, boolean forInput) {
-		this.editor = node.editor;
-		this.node = node;
+	private ExchangeAddAction(boolean forInput) {
 		this.forInput = forInput;
 		setId("AddFlowAction");
 		setText(forInput ? "Add input" : "Add output");
 		setImageDescriptor(Images.descriptor(ModelType.FLOW));
+	}
+
+	@Override
+	public boolean accepts(GraphEditor editor) {
+		var processes = GraphActions.allSelectedOf(editor, ProcessNode.class);
+		if (processes.size() != 1)
+			return false;
+		var node = processes.get(0);
+		if (node.process == null
+			|| node.process.isFromLibrary()
+			|| node.process.type != ModelType.PROCESS)
+			return false;
+		this.node = node;
+		return true;
 	}
 
 	@Override
@@ -79,8 +90,8 @@ public class ExchangeAddAction extends Action {
 
 		// set the flow amount and update the process
 		var exchange = forInput
-				? process.input(flow, 1.0)
-				: process.output(flow, 1.0);
+			? process.input(flow, 1.0)
+			: process.output(flow, 1.0);
 		ExchangeEditDialog.open(exchange);
 		db.update(process);
 
@@ -89,6 +100,7 @@ public class ExchangeAddAction extends Action {
 		// note that we need to do this, before we
 		// create the IONode in order to avoid recreation
 		// of that node later
+		var editor = node.editor;
 		if (flow.flowType == FlowType.ELEMENTARY_FLOW) {
 			editor.config.showElementaryFlows = true;
 			editor.config.showFlowIcons = true;
@@ -135,10 +147,10 @@ public class ExchangeAddAction extends Action {
 			var typeComp = tk.createComposite(body);
 			UI.gridData(typeComp, true, false);
 			UI.gridLayout(typeComp, 3, 5, 0).makeColumnsEqualWidth = true;
-			var types = new FlowType[] {
-					FlowType.PRODUCT_FLOW,
-					FlowType.WASTE_FLOW,
-					FlowType.ELEMENTARY_FLOW,
+			var types = new FlowType[]{
+				FlowType.PRODUCT_FLOW,
+				FlowType.WASTE_FLOW,
+				FlowType.ELEMENTARY_FLOW,
 			};
 			for (var type : types) {
 				var btn = tk.createButton(typeComp, Labels.of(type), SWT.RADIO);
@@ -157,7 +169,7 @@ public class ExchangeAddAction extends Action {
 			propViewer.selectFirst();
 			this.quantity = propViewer.getSelected();
 			propViewer.addSelectionChangedListener(
-					prop -> this.quantity = prop);
+				prop -> this.quantity = prop);
 
 			// tree
 			var selectLabel = UI.formLabel(body, tk, "Or select an existing");
@@ -202,20 +214,20 @@ public class ExchangeAddAction extends Action {
 		protected Point getInitialSize() {
 			var shell = getShell().getDisplay().getBounds();
 			int width = shell.x > 0 && shell.x < 600
-					? shell.x
-					: 600;
+				? shell.x
+				: 600;
 			int height = shell.y > 0 && shell.y < 600
-					? shell.y
-					: 600;
+				? shell.y
+				: 600;
 			return new Point(width, height);
 		}
 
 		@Override
 		protected void createButtonsForButtonBar(Composite comp) {
 			createButton(comp, _CREATE, "Create new", false)
-					.setEnabled(false);
+				.setEnabled(false);
 			createButton(comp, _SELECT, "Select extisting", false)
-					.setEnabled(false);
+				.setEnabled(false);
 			createButton(comp, _CANCEL, M.Cancel, true);
 		}
 
@@ -253,8 +265,8 @@ public class ExchangeAddAction extends Action {
 
 		private Flow createFlow() {
 			var prop = quantity != null
-					? db.get(FlowProperty.class, quantity.id)
-					: null;
+				? db.get(FlowProperty.class, quantity.id)
+				: null;
 			if (prop == null) {
 				MsgBox.error("Cannot create a flow without a quantity");
 				return null;
@@ -265,10 +277,10 @@ public class ExchangeAddAction extends Action {
 				return null;
 			}
 			var type = this.type == null
-					? FlowType.PRODUCT_FLOW
-					: this.type;
-			var flow =  db.insert(Flow.of(name, type, prop));
-			editor.getModel().flows.reload(db);
+				? FlowType.PRODUCT_FLOW
+				: this.type;
+			var flow = db.insert(Flow.of(name, type, prop));
+			node.editor.getModel().flows.reload(db);
 			Navigator.refresh();
 			return flow;
 		}

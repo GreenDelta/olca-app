@@ -13,12 +13,9 @@ import org.openlca.app.editors.graphical.action.AddProcessAction;
 import org.openlca.app.editors.graphical.action.ExchangeDeleteAction;
 import org.openlca.app.editors.graphical.action.ExchangeEditAction;
 import org.openlca.app.editors.graphical.action.GraphAction;
-import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.GraphSettingsAction;
 import org.openlca.app.editors.graphical.action.MarkingAction;
-import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.core.model.ModelType;
 
 class MenuProvider extends ContextMenuProvider {
 
@@ -31,31 +28,23 @@ class MenuProvider extends ContextMenuProvider {
 		this.editor = editor;
 		editor.getGraphicalViewer().setContextMenu(this);
 	}
-	
+
 	@Override
 	public void buildContextMenu(IMenuManager menu) {
 
-		var actions = new GraphAction[] {
-				new ExchangeEditAction(),
-				new ExchangeDeleteAction(),
-				new AddProcessAction(),
+		var actions = new GraphAction[]{
+			new ExchangeEditAction(),
+			new ExchangeDeleteAction(),
+			new AddProcessAction(),
+			ExchangeAddAction.forInput(),
+			ExchangeAddAction.forOutput(),
 		};
 		for (var action : actions) {
 			if (action.accepts(editor)) {
 				menu.add(action);
 			}
 		}
-		
-		var processes = GraphActions.allSelectedOf(editor, ProcessNode.class);
-		if (processes.size() == 1) {
-			var node = processes.get(0);
-			if (node.process != null && node.process.type == ModelType.PROCESS) {
-				menu.add(ExchangeAddAction.forInput(node));
-				menu.add(ExchangeAddAction.forOutput(node));
-				menu.add(new Separator());
-			}
-		}
-		
+
 		addEditActions(menu);
 		addSupplyChainActions(menu);
 		menu.add(new Separator());
@@ -68,7 +57,9 @@ class MenuProvider extends ContextMenuProvider {
 		addShowViewActions(menu);
 	}
 
-	/** Undo, Redo, and Delete */
+	/**
+	 * Undo, Redo, and Delete
+	 */
 	private void addEditActions(IMenuManager menu) {
 		GEFActionConstants.addStandardActionGroups(menu);
 		var undo = registry.getAction(ActionFactory.UNDO.getId());
@@ -104,9 +95,9 @@ class MenuProvider extends ContextMenuProvider {
 	private void addSpecialActions(IMenuManager menu) {
 		menu.add(registry.getAction(ActionIds.SAVE_IMAGE));
 		menu.add(registry.getAction(ActionIds.OPEN));
-		var actions = new GraphAction[] {
-				MarkingAction.forMarking(),
-				MarkingAction.forUnmarking(),
+		var actions = new GraphAction[]{
+			MarkingAction.forMarking(),
+			MarkingAction.forUnmarking(),
 		};
 		for (var action : actions) {
 			if (action.accepts(editor)) {
@@ -128,5 +119,5 @@ class MenuProvider extends ContextMenuProvider {
 		menu.add(registry.getAction(ActionIds.OPEN_MINIATURE_VIEW));
 		menu.add(new GraphSettingsAction(editor));
 	}
-	
+
 }
