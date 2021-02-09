@@ -1,6 +1,5 @@
 package org.openlca.app.editors.lcia;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -23,8 +22,10 @@ import org.openlca.app.editors.lcia.geo.GeoPage;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
 import org.openlca.app.editors.parameters.ParameterPage;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -39,8 +40,6 @@ import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 
@@ -60,16 +59,28 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 	public void init(IEditorSite site, IEditorInput input)
 		throws PartInitException {
 		super.init(site, input);
-		// evalFormulas() takes quite long; we skip this for LCIA methods
+		// evalFormulas() takes quite long; we skip this here
 		parameterSupport = new ParameterChangeSupport();
 		parameterSupport.onEvaluation(this::evalFormulas);
+
+		var impact = getModel();
+		if (impact.isFromLibrary()) {
+			var lib = Workspace.getLibraryDir()
+				.get(impact.library)
+				.orElse(null);
+			if (lib != null) {
+				var factors = lib.getImpactFactors(
+					Descriptor.of(impact),
+					Database.get());
+				impact.impactFactors.addAll(factors);
+			}
+		}
 	}
 
 	private void evalFormulas() {
-		ImpactCategory impact = getModel();
-		List<String> errors = Formulas.eval(Database.get(), impact);
+		var errors = Formulas.eval(Database.get(), getModel());
 		if (!errors.isEmpty()) {
-			String message = errors.get(0);
+			var message = errors.get(0);
 			if (errors.size() > 1)
 				message += " (" + (errors.size() - 1) + " more)";
 			MsgBox.error(M.FormulaEvaluationFailed, message);
@@ -81,14 +92,14 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 		try {
 			addPage(new InfoPage(this));
 			addPage(new ImpactFactorPage(this));
-			addPage(ParameterPage.create(this));
-			addPage(new GeoPage(this));
-			// addPage(new ShapeFilePage(this));
-			addPage(new ImpactSimilaritiesPage(this));
-			addCommentPage();
+			if (!getModel().isFromLibrary()) {
+				addPage(ParameterPage.create(this));
+				addPage(new GeoPage(this));
+				addPage(new ImpactSimilaritiesPage(this));
+				addCommentPage();
+			}
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to init pages", e);
+			ErrorReporter.on("failed to init pages", e);
 		}
 	}
 

@@ -1,7 +1,6 @@
 package org.openlca.app.editors.lcia;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -13,10 +12,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
@@ -55,7 +51,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	private final ImpactCategoryEditor editor;
 
 	private boolean showFormulas = true;
-	private IDatabase database = Database.get();
+	private final IDatabase database = Database.get();
 	private TableViewer viewer;
 
 	ImpactFactorPage(ImpactCategoryEditor editor) {
@@ -79,54 +75,62 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(this);
-		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.formBody(form, tk);
-		Section section = UI.section(body, tk, M.ImpactFactors);
+		var form = UI.formHeader(this);
+		var tk = mform.getToolkit();
+		var body = UI.formBody(form, tk);
+		var section = UI.section(body, tk, M.ImpactFactors);
 		UI.gridData(section, true, true);
-		Composite client = tk.createComposite(section);
+		var client = tk.createComposite(section);
 		section.setClient(client);
 		UI.gridLayout(client, 1);
 		render(client, section);
-		List<ImpactFactor> factors = impact().impactFactors;
+		var factors = impact().impactFactors;
 		sortFactors(factors);
 		viewer.setInput(factors);
 		form.reflow(true);
 	}
 
 	public void render(Composite parent, Section section) {
-		viewer = Tables.createViewer(parent, new String[] {
-				M.Flow, M.Category, M.Factor, M.Unit,
-				M.Uncertainty, M.Location, "" /* comment */ });
-		FactorLabel label = new FactorLabel();
+		viewer = Tables.createViewer(parent,
+			M.Flow,
+			M.Category,
+			M.Factor,
+			M.Unit,
+			M.Uncertainty,
+			M.Location,
+			"" /* comment */);
+		var label = new FactorLabel();
 		Viewers.sortByLabels(viewer, label, 0, 1, 3, 4, 5);
 		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.value, 2);
 		viewer.setLabelProvider(label);
-		ModifySupport<ImpactFactor> support = new ModifySupport<>(viewer);
-		support.bind(M.Unit, new UnitCell(editor))
-				.bind(M.Uncertainty, new UncertaintyCellEditor(
-						viewer.getTable(), editor))
-				.bind(M.Location, new LocationModifier(
-						viewer.getTable(), editor))
-				.bind("", new CommentDialogModifier<ImpactFactor>(
-						editor.getComments(),
-						f -> CommentPaths.get(impact(), f)));
-		bindValue(support);
 
+		if (!getModel().isFromLibrary()) {
+			bindModifySupport(viewer);
+		}
 		Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.125, 0.125, 0.125, 0.125);
 		bindActions(viewer, section);
 		viewer.getTable().getColumns()[3].setAlignment(SWT.RIGHT);
 	}
 
-	private void bindValue(ModifySupport<ImpactFactor> ms) {
+	private void bindModifySupport(TableViewer viewer) {
+		var support = new ModifySupport<ImpactFactor>(viewer);
+		support.bind(M.Unit, new UnitCell(editor))
+			.bind(M.Uncertainty, new UncertaintyCellEditor(
+				viewer.getTable(), editor))
+			.bind(M.Location, new LocationModifier(
+				viewer.getTable(), editor))
+			.bind("", new CommentDialogModifier<>(
+				editor.getComments(),
+				f -> CommentPaths.get(impact(), f)));
+
 		// factor editor with auto-completion support for parameter names
-		FormulaCellEditor factorEditor = new FormulaCellEditor(viewer,
-				() -> editor.getModel().parameters);
-		ms.bind(M.Factor, factorEditor);
+		var factorEditor = new FormulaCellEditor(
+			viewer, () -> editor.getModel().parameters);
+		support.bind(M.Factor, factorEditor);
 		factorEditor.onEdited((obj, factor) -> {
 			if (!(obj instanceof ImpactFactor))
 				return;
-			ImpactFactor f = (ImpactFactor) obj;
+			var f = (ImpactFactor) obj;
 			try {
 				double value = Double.parseDouble(factor);
 				f.formula = null;
@@ -141,7 +145,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	}
 
 	private void sortFactors(List<ImpactFactor> factors) {
-		Collections.sort(factors, (o1, o2) -> {
+		factors.sort((o1, o2) -> {
 			Flow f1 = o1.flow;
 			Flow f2 = o2.flow;
 			int c = Strings.compare(f1.name, f2.name);
@@ -154,26 +158,28 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	}
 
 	void bindActions(TableViewer viewer, Section section) {
-		Action add = Actions.onAdd(this::onAdd);
-		Action remove = Actions.onRemove(this::onRemove);
-		Action copy = TableClipboard.onCopy(viewer);
-		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
-
-		Actions.bind(viewer, add, remove, copy, paste);
-		Tables.onDeletePressed(viewer, _e -> onRemove());
-		Tables.onDrop(viewer, this::createFactors);
 		Tables.onDoubleClick(viewer, (event) -> {
-			TableItem item = Tables.getItem(viewer, event);
-			if (item == null) {
-				onAdd();
-				return;
-			}
 			ImpactFactor factor = Viewers.getFirstSelected(viewer);
 			if (factor != null && factor.flow != null) {
 				App.open(factor.flow);
 			}
 		});
-		Action formulaSwitch = new FormulaSwitchAction();
+
+		// only copy for library models
+		if (getModel().isFromLibrary()) {
+			Actions.bind(viewer, TableClipboard.onCopy(viewer));
+			return;
+		}
+
+		var add = Actions.onAdd(this::onAdd);
+		var remove = Actions.onRemove(this::onRemove);
+		var copy = TableClipboard.onCopy(viewer);
+		var paste = TableClipboard.onPaste(viewer, this::onPaste);
+		var formulaSwitch = new FormulaSwitchAction();
+
+		Actions.bind(viewer, add, remove, copy, paste);
+		Tables.onDeletePressed(viewer, _e -> onRemove());
+		Tables.onDrop(viewer, this::createFactors);
 		Actions.bind(section, add, remove, formulaSwitch);
 	}
 
@@ -210,7 +216,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 	private void onPaste(String text) {
 		List<ImpactFactor> factors = App.exec(
-				"Parse factors", () -> FactorClipboard.read(text));
+			"Parse factors", () -> FactorClipboard.read(text));
 		if (factors.isEmpty())
 			return;
 		impact().impactFactors.addAll(factors);
@@ -219,7 +225,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	}
 
 	private class FactorLabel extends LabelProvider
-			implements ITableLabelProvider {
+		implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object o, int col) {
@@ -230,7 +236,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				return Images.get(f.flow);
 			if (col == 6)
 				return Images.get(editor.getComments(),
-						CommentPaths.get(impact(), f));
+					CommentPaths.get(impact(), f));
 			return null;
 		}
 
@@ -240,26 +246,26 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				return null;
 			ImpactFactor f = (ImpactFactor) o;
 			switch (col) {
-			case 0:
-				return Labels.name(f.flow);
-			case 1:
-				return Labels.category(f.flow);
-			case 2:
-				if (f.formula == null || !showFormulas)
-					return Double.toString(f.value);
-				else
-					return f.formula;
-			case 3:
-				return getFactorUnit(f);
-			case 4:
-				return Uncertainty.string(f.uncertainty);
-			case 5:
-				return f.location == null ? ""
+				case 0:
+					return Labels.name(f.flow);
+				case 1:
+					return Labels.category(f.flow);
+				case 2:
+					if (f.formula == null || !showFormulas)
+						return Double.toString(f.value);
+					else
+						return f.formula;
+				case 3:
+					return getFactorUnit(f);
+				case 4:
+					return Uncertainty.string(f.uncertainty);
+				case 5:
+					return f.location == null ? ""
 						: f.location.code != null
-								? f.location.code
-								: Labels.name(f.location);
-			default:
-				return null;
+						? f.location.code
+						: Labels.name(f.location);
+				default:
+					return null;
 			}
 		}
 
@@ -302,7 +308,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			if (factor == null)
 				return null;
 			ModelSelectionDialog dialog = new ModelSelectionDialog(
-					ModelType.LOCATION);
+				ModelType.LOCATION);
 			dialog.isEmptyOk = true;
 			if (dialog.open() != Window.OK)
 				return null;
@@ -351,5 +357,4 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			viewer.refresh();
 		}
 	}
-
 }
