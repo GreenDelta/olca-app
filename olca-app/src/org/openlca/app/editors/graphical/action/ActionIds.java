@@ -5,6 +5,7 @@ public interface ActionIds {
 	String BUILD_NEXT_TIER = "graphical.actions.BuildNextTierAction";
 	String BUILD_SUPPLY_CHAIN = "graphical.actions.BuildSupplyChainAction";
 	String BUILD_SUPPLY_CHAIN_MENU = "graphical.actions.BuildSupplyChainMenuAction";
+
 	String MINIMIZE_ALL = "graphical.actions.ChangeAllStateAction.MINIMIZE";
 	String MAXIMIZE_ALL = "graphical.actions.ChangeAllStateAction.MAXIMIZE";
 	String EXPAND_ALL = "graphical.actions.ExpansionAction.EXPAND";

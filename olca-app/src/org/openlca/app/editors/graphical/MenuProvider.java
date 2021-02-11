@@ -88,7 +88,7 @@ class MenuProvider extends ContextMenuProvider {
 		menu.add(registry.getAction(ActionIds.BUILD_SUPPLY_CHAIN_MENU));
 		menu.add(registry.getAction(ActionIds.REMOVE_SUPPLY_CHAIN));
 		menu.add(registry.getAction(ActionIds.REMOVE_ALL_CONNECTIONS));
-		
+
 	}
 
 	private void addSearchActions(IMenuManager menu) {

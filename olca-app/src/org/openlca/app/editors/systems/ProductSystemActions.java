@@ -18,8 +18,8 @@ import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.math.DataStructures;
 import org.openlca.core.math.MatrixRowSorter;
+import org.openlca.core.matrix.MatrixData;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.io.MatrixImageExport;
 import org.slf4j.Logger;
@@ -101,7 +101,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 			App.run(M.ImageExport, () -> {
 				try {
 					var setup = new CalculationSetup(system);
-					var data = DataStructures.matrixData(Database.get(), setup);
+					var data = MatrixData.of(Database.get(), setup);
 					var matrix = data.techMatrix.asMutable();
 					matrix = new MatrixRowSorter(matrix, App.getSolver()).run();
 					new MatrixImageExport(matrix, file).run();
