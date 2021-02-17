@@ -17,17 +17,6 @@ import org.openlca.util.Strings;
  */
 public class FileChooser {
 
-	private static String getDialogText(int swtFlag) {
-		switch (swtFlag) {
-		case SWT.OPEN:
-			return M.Import;
-		case SWT.SAVE:
-			return M.SelectTheExportFile;
-		default:
-			return "";
-		}
-	}
-
 	/**
 	 * Opens a directory dialog for selecting a folder. Returns null when the user
 	 * cancelled the action.
@@ -46,8 +35,11 @@ public class FileChooser {
 
 	private static String openFileDialog(String extension,
 			String defaultName, String filterPath, int swtFlag) {
-		FileDialog dialog = new FileDialog(UI.shell(), swtFlag);
-		dialog.setText(getDialogText(swtFlag));
+		var dialog = new FileDialog(UI.shell(), swtFlag);
+		var text = swtFlag == SWT.SAVE
+			? M.SelectTheExportFile
+			: M.Import;
+		dialog.setText(text);
 		String ext = null;
 		if (extension != null) {
 			ext = extension.trim();
@@ -68,17 +60,6 @@ public class FileChooser {
 		return dialog.open();
 	}
 
-	private static File selectForPath(String path) {
-		File file = new File(path);
-		if (!file.exists() || file.isDirectory())
-			return file;
-		boolean write = MessageDialog.openQuestion(UI.shell(),
-				M.FileAlreadyExists, M.OverwriteFileQuestion);
-		if (write)
-			return file;
-		return null;
-	}
-
 	/**
 	 * Selects a file for an export. Returns null if the user cancelled the dialog.
 	 */
@@ -93,10 +74,17 @@ public class FileChooser {
 	 */
 	public static File forExport(String extension, String defaultName,
 			String filterPath) {
-		String path = openFileDialog(extension, defaultName, filterPath, SWT.SAVE);
+		var path = openFileDialog(extension, defaultName, filterPath, SWT.SAVE);
 		if (path == null)
 			return null;
-		return selectForPath(path);
+		var file = new File(path);
+		if (file.exists()) {
+			boolean write = MessageDialog.openQuestion(
+				UI.shell(), M.FileAlreadyExists, M.OverwriteFileQuestion);
+			if (!write)
+				return null;
+		}
+		return file;
 	}
 
 	/**
@@ -145,6 +133,5 @@ public class FileChooser {
 					? Optional.of(file)
 					: Optional.empty();
 		}
-
 	}
 }

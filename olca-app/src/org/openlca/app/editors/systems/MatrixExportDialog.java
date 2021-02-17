@@ -65,12 +65,24 @@ public class MatrixExportDialog extends FormDialog {
 	}
 
 	@Override
+	protected Control createButtonBar(Composite parent) {
+		var control = super.createButtonBar(parent);
+		// we disable the OK button until a folder is selected
+		var ok = getButton(IDialogConstants.OK_ID);
+		if (ok != null) {
+			ok.setEnabled(false);
+		}
+		return control;
+	}
+
+	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
 		var body = UI.formBody(mform.getForm(), tk);
 		UI.gridLayout(body, 2);
 
-		// combos
+		fileSelection(body, tk);
+		formatSelection(body, tk);
 		parametersCombo(body, tk);
 		allocationCombo(body, tk);
 		methodCombo(body, tk);
@@ -84,9 +96,10 @@ public class MatrixExportDialog extends FormDialog {
 		check.accept("Regionalized", b -> config.regionalized = b);
 		check.accept("With costs", b -> config.withCosts = b);
 		check.accept("With uncertainty distributions",
-				b -> config.withUncertainties = b);
+			b -> config.withUncertainties = b);
+	}
 
-		// file selection
+	private void fileSelection(Composite body, FormToolkit tk) {
 		UI.formLabel(body, tk, M.Folder);
 		var inner = tk.createComposite(body);
 		UI.gridData(inner, true, false);
@@ -108,15 +121,24 @@ public class MatrixExportDialog extends FormDialog {
 		});
 	}
 
-	@Override
-	protected Control createButtonBar(Composite parent) {
-		var control = super.createButtonBar(parent);
-		// we disable the OK button until a folder is selected
-		var ok = getButton(IDialogConstants.OK_ID);
-		if (ok != null) {
-			ok.setEnabled(false);
+	private void formatSelection(Composite body, FormToolkit tk) {
+		UI.formLabel(body, tk, "Format");
+		var inner = tk.createComposite(body);
+		UI.gridData(inner, true, false);
+		var formats = Format.values();
+		UI.gridLayout(inner, formats.length, 10, 0);
+		for (var format : formats) {
+			var radio = tk.createButton(
+				inner, format.toString(), SWT.RADIO);
+			if (format == config.format) {
+				radio.setSelection(true);
+			}
+			Controls.onSelect(radio, _e -> {
+				if (radio.getSelection()) {
+					config.format = format;
+				}
+			});
 		}
-		return control;
 	}
 
 	private void parametersCombo(Composite comp, FormToolkit tk) {
@@ -136,12 +158,12 @@ public class MatrixExportDialog extends FormDialog {
 
 		UI.formLabel(comp, tk, "Parameter set");
 		var combo = new TableCombo(comp,
-				SWT.READ_ONLY | SWT.BORDER);
+			SWT.READ_ONLY | SWT.BORDER);
 		tk.adapt(combo);
 		UI.gridData(combo, true, false);
 		for (var paramSet : paramSets) {
 			var item = new TableItem(
-					combo.getTable(), SWT.NONE);
+				combo.getTable(), SWT.NONE);
 			item.setText(paramSet.name);
 		}
 
@@ -156,11 +178,11 @@ public class MatrixExportDialog extends FormDialog {
 	private void allocationCombo(Composite comp, FormToolkit tk) {
 		UI.formLabel(comp, tk, M.AllocationMethod);
 		var combo = new AllocationCombo(
-				comp, AllocationMethod.values());
+			comp, AllocationMethod.values());
 		combo.setNullable(false);
 		combo.select(AllocationMethod.USE_DEFAULT);
 		combo.addSelectionChangedListener(
-				method -> config.allocation = method);
+			method -> config.allocation = method);
 	}
 
 	private void methodCombo(Composite comp, FormToolkit tk) {
@@ -169,10 +191,11 @@ public class MatrixExportDialog extends FormDialog {
 		combo.setNullable(true);
 		combo.setInput(Database.get());
 		combo.addSelectionChangedListener(
-				_e -> config.impactMethod = combo.getSelected());
+			_e -> config.impactMethod = combo.getSelected());
 	}
 
 	private static class Config {
+		Format format = Format.CSV;
 		AllocationMethod allocation;
 		ImpactMethodDescriptor impactMethod;
 		ParameterRedefSet parameters;
@@ -180,5 +203,22 @@ public class MatrixExportDialog extends FormDialog {
 		boolean withCosts;
 		boolean withUncertainties;
 		File folder;
+	}
+
+	private enum Format {
+		CSV, EXCEL, PYTHON;
+
+		@Override
+		public String toString() {
+			switch (this) {
+				case CSV:
+					return "CSV";
+				case EXCEL:
+					return "Excel";
+				case PYTHON:
+					return "Python (NumPy, SciPy)";
+			}
+			return super.toString();
+		}
 	}
 }
