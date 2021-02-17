@@ -106,7 +106,7 @@ public class FileSelection implements SelectionListener {
 	private void selected() {
 		File file = null;
 		if (selectDirectory) {
-			file = FileChooser.forExport(FileChooser.DIRECTORY_DIALOG);
+			file = FileChooser.selectFolder();
 		} else {
 			file = FileChooser.forExport(filter, defaultFileName);
 		}

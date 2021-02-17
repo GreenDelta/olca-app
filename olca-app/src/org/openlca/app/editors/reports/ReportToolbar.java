@@ -59,7 +59,7 @@ public class ReportToolbar extends EditorActionBarContributor {
 			Report report = getReport();
 			if (report == null)
 				return;
-			File dir = FileChooser.forExport(FileChooser.DIRECTORY_DIALOG);
+			File dir = FileChooser.selectFolder();
 			if (dir == null)
 				return;
 			File htmlDir = HtmlFolder.getDir(RcpActivator.getDefault()

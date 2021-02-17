@@ -11,13 +11,13 @@ import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -37,16 +37,14 @@ public class MatrixExportDialog extends FormDialog {
 	private final Config config = new Config();
 
 	/**
-	 * Opens a dialog for exporting the complete database in to
-	 * a matrix format.
+	 * Opens a dialog for exporting the complete database in to a matrix format.
 	 */
 	public static void open(IDatabase db) {
 		open(db, null);
 	}
 
 	/**
-	 * Opens a dialog for exporting the given product system into
-	 * a matrix format.
+	 * Opens a dialog for exporting the given product system into a matrix format.
 	 */
 	public static void open(IDatabase db, ProductSystem system) {
 		if (db == null)
@@ -86,7 +84,7 @@ public class MatrixExportDialog extends FormDialog {
 		check.accept("Regionalized", b -> config.regionalized = b);
 		check.accept("With costs", b -> config.withCosts = b);
 		check.accept("With uncertainty distributions",
-			b -> config.withUncertainties = b);
+				b -> config.withUncertainties = b);
 
 		// file selection
 		UI.formLabel(body, tk, M.Folder);
@@ -98,13 +96,8 @@ public class MatrixExportDialog extends FormDialog {
 		fileText.setEditable(false);
 		var browseBtn = tk.createButton(inner, M.Browse, SWT.NONE);
 		Controls.onSelect(browseBtn, _e -> {
-			var dialog = new DirectoryDialog(UI.shell());
-			dialog.setText(M.SelectADirectory);
-			var path = dialog.open();
-			if (path == null)
-				return;
-			var folder = new File(path);
-			if (!folder.isDirectory())
+			var folder = FileChooser.selectFolder();
+			if (folder == null)
 				return;
 			config.folder = folder;
 			fileText.setText(folder.getAbsolutePath());
@@ -143,12 +136,12 @@ public class MatrixExportDialog extends FormDialog {
 
 		UI.formLabel(comp, tk, "Parameter set");
 		var combo = new TableCombo(comp,
-			SWT.READ_ONLY | SWT.BORDER);
+				SWT.READ_ONLY | SWT.BORDER);
 		tk.adapt(combo);
 		UI.gridData(combo, true, false);
 		for (var paramSet : paramSets) {
 			var item = new TableItem(
-				combo.getTable(), SWT.NONE);
+					combo.getTable(), SWT.NONE);
 			item.setText(paramSet.name);
 		}
 
@@ -163,11 +156,11 @@ public class MatrixExportDialog extends FormDialog {
 	private void allocationCombo(Composite comp, FormToolkit tk) {
 		UI.formLabel(comp, tk, M.AllocationMethod);
 		var combo = new AllocationCombo(
-			comp, AllocationMethod.values());
+				comp, AllocationMethod.values());
 		combo.setNullable(false);
 		combo.select(AllocationMethod.USE_DEFAULT);
 		combo.addSelectionChangedListener(
-			method -> config.allocation = method);
+				method -> config.allocation = method);
 	}
 
 	private void methodCombo(Composite comp, FormToolkit tk) {
@@ -176,7 +169,7 @@ public class MatrixExportDialog extends FormDialog {
 		combo.setNullable(true);
 		combo.setInput(Database.get());
 		combo.addSelectionChangedListener(
-			_e -> config.impactMethod = combo.getSelected());
+				_e -> config.impactMethod = combo.getSelected());
 	}
 
 	private static class Config {

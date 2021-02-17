@@ -34,7 +34,7 @@ class XRefDataImport extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		File dir = FileChooser.openFolder();
+		File dir = FileChooser.selectFolder();
 		if (dir == null)
 			return;
 		Cache.evictAll();

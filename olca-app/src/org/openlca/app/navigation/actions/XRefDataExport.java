@@ -32,7 +32,7 @@ class XRefDataExport extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		File dir = FileChooser.forExport(FileChooser.DIRECTORY_DIALOG);
+		File dir = FileChooser.selectFolder();
 		if (dir == null)
 			return;
 		RefDataExport export = new RefDataExport(dir, Database.get());
