@@ -3,7 +3,6 @@ package org.openlca.app.editors.systems;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -17,8 +16,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -34,7 +33,7 @@ import org.openlca.util.Strings;
 public class MatrixExportDialog extends FormDialog {
 
 	private final IDatabase db;
-	private final Optional<ProductSystem> system;
+	private final ProductSystem system;
 	private final Config config = new Config();
 
 	/**
@@ -58,7 +57,7 @@ public class MatrixExportDialog extends FormDialog {
 	private MatrixExportDialog(IDatabase db, ProductSystem system) {
 		super(UI.shell());
 		this.db = Objects.requireNonNull(db);
-		this.system = Optional.ofNullable(system);
+		this.system = system;
 	}
 
 	@Override
@@ -74,9 +73,9 @@ public class MatrixExportDialog extends FormDialog {
 		UI.gridLayout(body, 2);
 
 		// combos
-		parametersCombo(body);
-		allocationCombo(body);
-		methodCombo(body);
+		parametersCombo(body, tk);
+		allocationCombo(body, tk);
+		methodCombo(body, tk);
 
 		// check boxes
 		BiConsumer<String, Consumer<Boolean>> check = (label, fn) -> {
@@ -92,6 +91,7 @@ public class MatrixExportDialog extends FormDialog {
 		// file selection
 		UI.formLabel(body, tk, M.Folder);
 		var inner = tk.createComposite(body);
+		UI.gridData(inner, true, false);
 		UI.gridLayout(inner, 2, 5, 0);
 		var fileText = tk.createText(inner, "");
 		UI.gridData(fileText, true, false);
@@ -126,11 +126,12 @@ public class MatrixExportDialog extends FormDialog {
 		return control;
 	}
 
-	private void parametersCombo(Composite comp) {
-		if (this.system.isEmpty())
+	private void parametersCombo(Composite comp, FormToolkit tk) {
+		if (system == null)
 			return;
-		var system = this.system.get();
 		var paramSets = new ArrayList<>(system.parameterSets);
+		if (paramSets.size() < 2)
+			return;
 
 		paramSets.sort((s1, s2) -> {
 			if (s1.isBaseline)
@@ -140,9 +141,10 @@ public class MatrixExportDialog extends FormDialog {
 			return Strings.compare(s1.name, s2.name);
 		});
 
-		UI.formLabel(comp, "Parameter set");
+		UI.formLabel(comp, tk, "Parameter set");
 		var combo = new TableCombo(comp,
 			SWT.READ_ONLY | SWT.BORDER);
+		tk.adapt(combo);
 		UI.gridData(combo, true, false);
 		for (var paramSet : paramSets) {
 			var item = new TableItem(
@@ -158,8 +160,8 @@ public class MatrixExportDialog extends FormDialog {
 		});
 	}
 
-	private void allocationCombo(Composite comp) {
-		UI.formLabel(comp, M.AllocationMethod);
+	private void allocationCombo(Composite comp, FormToolkit tk) {
+		UI.formLabel(comp, tk, M.AllocationMethod);
 		var combo = new AllocationCombo(
 			comp, AllocationMethod.values());
 		combo.setNullable(false);
@@ -168,8 +170,8 @@ public class MatrixExportDialog extends FormDialog {
 			method -> config.allocation = method);
 	}
 
-	private void methodCombo(Composite comp) {
-		UI.formLabel(comp, M.ImpactAssessmentMethod);
+	private void methodCombo(Composite comp, FormToolkit tk) {
+		UI.formLabel(comp, tk, M.ImpactAssessmentMethod);
 		var combo = new ImpactMethodViewer(comp);
 		combo.setNullable(true);
 		combo.setInput(Database.get());
