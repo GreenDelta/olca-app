@@ -32,7 +32,7 @@ public class SystemExportDialog extends WizardDialog {
 
 	private static class SystemExportWizard extends Wizard {
 
-		private Logger log = LoggerFactory.getLogger(getClass());
+		private final Logger log = LoggerFactory.getLogger(getClass());
 
 		private class SystemExportWizardPage extends WizardPage {
 
@@ -48,9 +48,9 @@ public class SystemExportDialog extends WizardDialog {
 				setPageComplete(false);
 			}
 
-			private Group createGroup(String label, Composite parent, int cols) {
+			private Group createGroup(String label, Composite parent) {
 				Group group = new Group(parent, SWT.NONE);
-				UI.gridLayout(group, cols);
+				UI.gridLayout(group, 1);
 				UI.gridData(group, true, false);
 				group.setText(label);
 				return group;
@@ -61,7 +61,7 @@ public class SystemExportDialog extends WizardDialog {
 				Composite comp = new Composite(parent, SWT.NONE);
 				UI.gridLayout(comp, 1);
 
-				Group mgroup = createGroup(M.Methods, comp, 1);
+				Group mgroup = createGroup(M.Methods, comp);
 				UI.formLabel(mgroup, M.AllocationMethod);
 				allocationCombo = new AllocationCombo(
 						mgroup, AllocationMethod.values());
@@ -70,7 +70,7 @@ public class SystemExportDialog extends WizardDialog {
 				impactCombo.setInput(db);
 
 				Group fgroup = createGroup(
-						M.ExportDirectory, comp, 1);
+						M.ExportDirectory, comp);
 				fileChooser = new FileSelection(fgroup);
 				fileChooser.setSelectDirectory(true);
 				fileChooser.addSelectionListener(new SelectionListener() {
