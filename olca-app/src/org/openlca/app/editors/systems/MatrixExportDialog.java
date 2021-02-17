@@ -16,14 +16,20 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.matrix.MatrixData;
+import org.openlca.core.matrix.TechIndex;
+import org.openlca.core.matrix.io.MatrixExport;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
@@ -194,15 +200,91 @@ public class MatrixExportDialog extends FormDialog {
 			_e -> config.impactMethod = combo.getSelected());
 	}
 
-	private static class Config {
-		Format format = Format.CSV;
+	@Override
+	protected void okPressed() {
+		if (config.folder == null)
+			return;
+
+		// check if there are already files in that folder and
+		// warn the user when this is the case
+		var content = config.folder.listFiles();
+		var hasContent = content != null && content.length > 0;
+		if (hasContent) {
+			var b = Question.ask(
+				"Export folder not empty",
+				"The export folder is not empty. Existing files " +
+				"may are overwritten during the export. Do you " +
+				"want to continue?");
+			if (!b)
+				return;
+		}
+
+		super.okPressed();
+		App.runWithProgress("Export matrices", () -> {
+			try {
+				config.exec();
+			} catch (Exception e) {
+				ErrorReporter.on(
+					"Failed to export product system matrices", e);
+			}
+		});
+	}
+
+	private class Config {
+
+		File folder;
+		Format format = Format.PYTHON;
 		AllocationMethod allocation;
 		ImpactMethodDescriptor impactMethod;
 		ParameterRedefSet parameters;
 		boolean regionalized;
 		boolean withCosts;
 		boolean withUncertainties;
-		File folder;
+
+		void exec() {
+			var techIndex = system == null
+				? TechIndex.unlinkedOf(db)
+				: TechIndex.linkedOf(system, db);
+			var config = MatrixData.of(db, techIndex)
+				.withAllocation(allocation)
+				.withCosts(withCosts)
+				.withRegionalization(regionalized)
+				.withUncertainties(withUncertainties);
+
+			if (impactMethod != null) {
+				config.withImpacts(impactMethod);
+			}
+
+			// set the parameter redefinitions
+			if (parameters != null) {
+				config.withParameterRedefs(parameters.parameters);
+			} else if (system != null) {
+				// if there is exactly one parameter set in
+				// the product system we do not show this in
+				// the UI but we add it by default here
+				if (system.parameterSets.size() == 1) {
+					var ps = system.parameterSets.get(0);
+					config.withParameterRedefs(ps.parameters);
+				}
+			}
+			var data = config.build();
+
+			switch (format) {
+				case CSV:
+					MatrixExport.toCsv(db, folder, data)
+						.writeAll();
+					break;
+
+				case PYTHON:
+					MatrixExport.toCsv(db, folder, data)
+						.writeIndices();
+					MatrixExport.toNpy(db, folder, data)
+						.writeMatrices();
+
+					// TODO: excel
+			}
+
+		}
 	}
 
 	private enum Format {
