@@ -2,14 +2,14 @@ package org.openlca.app.editors.graphical.model;
 
 import java.util.List;
 
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.hash.TLongHashSet;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.matrix.cache.FlowTable;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProductSystem;
+
+import gnu.trove.set.hash.TLongHashSet;
 
 public class ProductSystemNode extends Node {
 

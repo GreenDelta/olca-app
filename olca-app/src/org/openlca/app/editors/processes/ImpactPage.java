@@ -34,7 +34,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.trees.Trees;
-import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.ReferenceAmount;
 import org.openlca.core.matrix.FlowIndex;
@@ -218,18 +217,17 @@ class ImpactPage extends ModelPage<Process> {
 		data.flowMatrix = enviBuilder.finish();
 
 		// build the impact index and matrix
-		data.impactIndex = new ImpactIndex();
 		var db = Database.get();
-		new ImpactCategoryDao(db)
-				.getDescriptors()
-				.forEach(d -> data.impactIndex.put(d));
+		data.impactIndex = ImpactIndex.of(db);
 		var contexts = new HashSet<Long>();
 		contexts.add(getModel().id);
 		data.impactIndex.each((i, d) -> contexts.add(d.id));
 		var interpreter = ParameterTable.interpreter(
 				db, contexts, Collections.emptySet());
-		data.impactMatrix = new ImpactBuilder(db)
-				.build(data.flowIndex, data.impactIndex, interpreter).impactMatrix;
+		data.impactMatrix = ImpactBuilder.of(db, data.flowIndex)
+				.withImpacts(data.impactIndex)
+				.withInterpreter(interpreter)
+				.build().impactMatrix;
 
 		// create the result
 		var provider = EagerResultProvider.create(data, App.getSolver());

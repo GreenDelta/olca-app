@@ -1,7 +1,5 @@
 package org.openlca.app.editors.systems;
 
-import java.io.File;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
@@ -14,6 +12,7 @@ import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.calculation.CalculationWizard;
@@ -22,43 +21,50 @@ import org.openlca.core.math.MatrixRowSorter;
 import org.openlca.core.matrix.MatrixData;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.io.MatrixImageExport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ProductSystemActions extends EditorActionBarContributor {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
-
 	@Override
 	public void contributeToToolBar(IToolBarManager toolbar) {
-		toolbar.add(new CsvExportAction());
+		// toolbar.add(new CsvExportAction());
+
+		// open the matrix export dialog
+		toolbar.add(Actions.create(
+			M.ExportAsMatrix,
+			Images.descriptor(FileType.CSV),
+			() -> {
+				var system = getProductSystem();
+				if (system != null) {
+					MatrixExportDialog.open(Database.get(), system);
+				}
+			}));
+
 		toolbar.add(new ExcelExportAction());
+
+		// add the experimental matrix image export
 		if (FeatureFlag.MATRIX_IMAGE_EXPORT.isEnabled())
 			toolbar.add(new MatrixImageExportAction());
-		toolbar.add(Actions.onCalculate(new Runnable() {
-			@Override
-			public void run() {
-				log.trace("action -> calculate product system");
-				ProductSystem productSystem = getProductSystem();
-				if (productSystem == null)
-					return;
-				CalculationWizard.open(productSystem);
-			}
+		toolbar.add(Actions.onCalculate(() -> {
+			var system = getProductSystem();
+			if (system == null)
+				return;
+			CalculationWizard.open(system);
 		}));
 	}
 
 	private ProductSystem getProductSystem() {
-		ProductSystemEditor editor = Editors.getActive();
-		if (editor == null) {
-			log.error("unexpected error: the product system editor is not active");
+		try {
+			ProductSystemEditor editor = Editors.getActive();
+			return editor == null
+				? null
+				: editor.getModel();
+		} catch (Exception e) {
+			ErrorReporter.on("failed to get product system", e);
 			return null;
 		}
-		ProductSystem system = editor.getModel();
-		if (system == null)
-			log.error("The product system is null");
-		return editor.getModel();
 	}
 
+	@Deprecated
 	private class CsvExportAction extends Action {
 		public CsvExportAction() {
 			setImageDescriptor(Images.descriptor(FileType.CSV));
@@ -67,12 +73,13 @@ public class ProductSystemActions extends EditorActionBarContributor {
 
 		@Override
 		public void run() {
-			ProductSystem system = getProductSystem();
-			CsvExportShell shell = new CsvExportShell(UI.shell(), system);
+			var system = getProductSystem();
+			var shell = new CsvExportShell(UI.shell(), system);
 			shell.open();
 		}
 	}
 
+	@Deprecated
 	private class ExcelExportAction extends Action {
 		public ExcelExportAction() {
 			setImageDescriptor(Images.descriptor(FileType.EXCEL));
@@ -94,8 +101,8 @@ public class ProductSystemActions extends EditorActionBarContributor {
 
 		@Override
 		public void run() {
-			final ProductSystem system = getProductSystem();
-			final File file = FileChooser.forExport("*.png", "matrix.png");
+			var system = getProductSystem();
+			var file = FileChooser.forExport("*.png", "matrix.png");
 			if (system == null || file == null)
 				return;
 			App.run(M.ImageExport, () -> {
@@ -106,7 +113,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 					matrix = new MatrixRowSorter(matrix, App.getSolver()).run();
 					new MatrixImageExport(matrix, file).run();
 				} catch (Exception e) {
-					log.error("Matrix image export failed", e);
+					ErrorReporter.on("failed to export system as image", e);
 				}
 			});
 		}
