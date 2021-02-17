@@ -1,7 +1,6 @@
 package org.openlca.app.wizards.calculation;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jface.wizard.WizardPage;
@@ -24,7 +23,6 @@ import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
 import org.openlca.core.math.CalculationType;
 import org.openlca.core.model.AllocationMethod;
-import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.util.Strings;
 
 /**
@@ -90,7 +88,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createParamSetCombo(Composite comp) {
-		List<ParameterRedefSet> paramSets = new ArrayList<>(
+		var paramSets = new ArrayList<>(
 				setup.calcSetup.productSystem.parameterSets);
 		if (paramSets.size() < 2)
 			return;
@@ -104,14 +102,13 @@ class CalculationWizardPage extends WizardPage {
 		});
 
 		UI.formLabel(comp, "Parameter set");
-		TableCombo combo = new TableCombo(comp,
+		var combo = new TableCombo(comp,
 				SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
-		for (int i = 0; i < paramSets.size(); i++) {
-			String text = paramSets.get(i).name;
-			TableItem item = new TableItem(
-					combo.getTable(), SWT.NONE);
-			item.setText(text);
+		for (var paramSet : paramSets) {
+			var item = new TableItem(
+				combo.getTable(), SWT.NONE);
+			item.setText(paramSet.name);
 		}
 
 		combo.select(0);
@@ -124,7 +121,7 @@ class CalculationWizardPage extends WizardPage {
 
 	private void createAllocationCombo(Composite comp) {
 		UI.formLabel(comp, M.AllocationMethod);
-		AllocationCombo combo = new AllocationCombo(
+		var combo = new AllocationCombo(
 				comp, AllocationMethod.values());
 		combo.setNullable(false);
 		combo.select(Objects.requireNonNullElse(
@@ -229,9 +226,8 @@ class CalculationWizardPage extends WizardPage {
 			var inventoryCheck = new Button(commonOptions, SWT.CHECK);
 			inventoryCheck.setSelection(setup.storeInventory);
 			inventoryCheck.setText(M.StoreInventoryResult);
-			Controls.onSelect(inventoryCheck, _e -> {
-				setup.storeInventory = inventoryCheck.getSelection();
-			});
+			Controls.onSelect(inventoryCheck,
+				_e -> setup.storeInventory = inventoryCheck.getSelection());
 		}
 	}
 
@@ -269,16 +265,14 @@ class CalculationWizardPage extends WizardPage {
 		var regioCheck = new Button(comp, SWT.CHECK);
 		regioCheck.setText("Regionalized calculation");
 		regioCheck.setSelection(setup.calcSetup.withRegionalization);
-		Controls.onSelect(regioCheck, _e -> {
-			setup.calcSetup.withRegionalization = regioCheck.getSelection();
-		});
+		Controls.onSelect(regioCheck,
+			_e -> setup.calcSetup.withRegionalization = regioCheck.getSelection());
 
 		var costCheck = new Button(comp, SWT.CHECK);
 		costCheck.setText(M.IncludeCostCalculation);
 		costCheck.setSelection(setup.calcSetup.withCosts);
-		Controls.onSelect(costCheck, _e -> {
-			setup.calcSetup.withCosts = costCheck.getSelection();
-		});
+		Controls.onSelect(costCheck,
+			_e -> setup.calcSetup.withCosts = costCheck.getSelection());
 		if (setup.hasLibraries) {
 			costCheck.setEnabled(false);
 		}
