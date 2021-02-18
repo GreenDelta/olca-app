@@ -1,6 +1,8 @@
 package org.openlca.app.editors.systems;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -34,6 +36,7 @@ import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.io.xls.MatrixExcelExport;
 import org.openlca.util.Strings;
 
 public class MatrixExportDialog extends FormDialog {
@@ -280,10 +283,24 @@ public class MatrixExportDialog extends FormDialog {
 						.writeIndices();
 					MatrixExport.toNpy(db, folder, data)
 						.writeMatrices();
+					copyResource("MatrixExport_main.py", "main.py");
+					break;
 
-					// TODO: excel
+				case EXCEL:
+					new MatrixExcelExport(db, folder, data)
+						.writeAll();
+					break;
 			}
+			copyResource("MatrixExport_README.md", "README.md");
+		}
 
+		private void copyResource(String source, String target) {
+			try (var in = getClass().getResourceAsStream(source)) {
+				var out = new File(folder, target).toPath();
+				Files.copy(in, out, StandardCopyOption.REPLACE_EXISTING);
+			} catch (Exception e) {
+				ErrorReporter.on("failed to write " + target, e);
+			}
 		}
 	}
 
