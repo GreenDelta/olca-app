@@ -284,6 +284,7 @@ public class MatrixExportDialog extends FormDialog {
 					MatrixExport.toNpy(db, folder, data)
 						.writeMatrices();
 					copyResource("MatrixExport_main.py", "main.py");
+					copyResource("MatrixExport_lib.py", "lib.py");
 					break;
 
 				case EXCEL:
