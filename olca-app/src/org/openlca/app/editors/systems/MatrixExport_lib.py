@@ -101,7 +101,7 @@ class ImpactEntry:
         self.index = -1
         self.impact_id = ''
         self.impact_name = ''
-        self.impact_ref._unit = ''
+        self.impact_unit = ''
 
     @staticmethod
     def _from_csv(index: int, row: List[str]) -> ImpactEntry:
@@ -109,7 +109,7 @@ class ImpactEntry:
         e.index = index
         e.impact_id = row[0]
         e.impact_name = row[1]
-        e.impact_ref._unit = row[2]
+        e.impact_unit = row[2]
 
     @staticmethod
     def index_of(file_path: str) -> List[ImpactEntry]:
