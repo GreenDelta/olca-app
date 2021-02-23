@@ -39,7 +39,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 				}
 			}));
 
-		toolbar.add(new ExcelExportAction());
+		// toolbar.add(new ExcelExportAction());
 
 		// add the experimental matrix image export
 		if (FeatureFlag.MATRIX_IMAGE_EXPORT.isEnabled())
