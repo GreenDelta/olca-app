@@ -1,5 +1,10 @@
 package org.openlca.app.tools.libraries;
 
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -86,39 +91,42 @@ public class LibraryExportDialog extends FormDialog {
 		allocCombo.addSelectionChangedListener(
 			m -> config.allocation = m);
 
-		// impacts
+		BiFunction<String, Consumer<Boolean>, Button> check =
+			(label, onClick) -> {
+				UI.filler(body, tk);
+				var button = tk.createButton(body, label, SWT.CHECK);
+				Controls.onSelect(button,
+					_e -> onClick.accept(button.getSelection()));
+				return button;
+			};
+
 		if (config.dbHasImpacts) {
-			var impactCheck = UI.formCheckBox(
-				body, tk, "With LCIA data");
-			impactCheck.setSelection(config.withImpacts);
-			Controls.onSelect(impactCheck, _e ->
-				config.withImpacts = impactCheck.getSelection());
+			check.apply(
+				"With LCIA data",
+				b -> config.withImpacts = b)
+				.setSelection(config.withImpacts);
 		}
 
-		// uncertainties
 		if (config.dbHasUncertainties) {
-			var uncCheck = UI.formCheckBox(
-				body, tk, "With uncertainty distributions");
-			uncCheck.setSelection(config.withUncertainties);
-			Controls.onSelect(uncCheck, _e ->
-				config.withUncertainties = uncCheck.getSelection());
+			check.apply(
+				"With uncertainty distributions",
+				b -> config.withUncertainties = b)
+				.setSelection(config.withUncertainties);
 		}
 
-		// regionalization
-		var regioCheck = UI.formCheckBox(body, tk, "Regionalized");
-		regioCheck.setSelection(config.regionalized);
-		Controls.onSelect(regioCheck, _e ->
-			config.regionalized = regioCheck.getSelection());
+		check.apply(
+			"Regionalized",
+			b -> config.regionalized = b)
+			.setSelection(config.regionalized);
 
 		// data quality values
 		if (config.dbDQSystem != null) {
-			var dqCheck = UI.formCheckBox(body, tk,
-				"With data quality values (" + config.dbDQSystem.name + ")");
-			dqCheck.setSelection(config.dqSystem != null);
-			Controls.onSelect(dqCheck, _e ->
-				config.dqSystem = dqCheck.getSelection()
+			var dqCheck = check.apply(
+				"With data quality values (" + config.dbDQSystem.name + ")",
+				b -> config.dqSystem = b
 					? config.dbDQSystem
 					: null);
+			dqCheck.setSelection(config.dqSystem != null);
 			dqCheck.setEnabled(false); // disabled for now
 		}
 	}
