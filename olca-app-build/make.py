@@ -1,12 +1,14 @@
-# This script creates the openLCA distribution packages. It currently only
-# works on Windows as it calls native binaries to create the Windows installers
-# (e.g. NSIS).
+# This script creates the openLCA distribution packages. It currently only works
+# on Windows as it calls native binaries to create the packages (e.g. NSIS,
+# 7zip). A Windows installer is only created when you pass the `--winstaller`
+# flag into the script.
 
 import datetime
 import glob
 import os
 import shutil
 import subprocess
+import sys
 import tarfile
 
 from os.path import exists
@@ -76,7 +78,9 @@ def pack_win(version, version_date):
     shutil.make_archive(zip_file, 'zip', 'build/win32.win32.x86_64')
     print('done')
 
-    # create installer
+    # create installer when the `--winstaller` flag is set
+    if '--winstaller' not in sys.argv:
+        return
     pack_dir = 'build/win32.win32.x86_64'
     inst_files = glob.glob('resources/installer_static_win/*')
     for res in inst_files:

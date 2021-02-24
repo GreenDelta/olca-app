@@ -3,5 +3,8 @@ linux.*/
 macosx.*/
 win32.*/
 
+# potential error logs
+logs.zip
+
 # the distribution packages
 dist/
