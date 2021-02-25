@@ -72,7 +72,7 @@ let generate = (folders, target) => {
   }
   let text = Object.keys(bindings)
     .sort()
-    .map(clazz => `${clazz} = ${bindings[clazz]}\n`)
+    .map(clazz => `import ${bindings[clazz]} as ${clazz}\n`)
     .reduce((t, s) => t.concat(s))
   let out = `olca-app/src/org/openlca/app/devtools/python/${target}`
   let header = '# auto-generated bindings; do not edit them\n'
@@ -96,7 +96,7 @@ let main = () => {
     // `${modPath}/olca-ecospold-2/src/main/java`,
 	  // 'olca-app/src',
   ]
-  generate(modFolders, 'mod-bindings.properties')
+  generate(modFolders, 'mod_bindings.py')
 }
 
 main()

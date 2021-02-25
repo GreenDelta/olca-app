@@ -1,12 +1,14 @@
 package org.openlca.app.devtools.python;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.RcpActivator;
@@ -38,8 +40,8 @@ class Jython {
 				py.set("db", Database.get());
 
 				// first try to execute the imports
-				if (!execImports(py, "mod-bindings.properties")
-						|| !execImports(py, "app-bindings.properties"))
+				if (!execImports(py, "mod_bindings.py")
+						|| !execImports(py, "app_bindings.py"))
 					return;
 
 				py.exec(script);
@@ -52,21 +54,13 @@ class Jython {
 	}
 
 	private static boolean execImports(PythonInterpreter py, String bindings) {
-		var imports = new StringBuilder();
+		String script = null;
 		try (var stream = Jython.class.getResourceAsStream(bindings)) {
-			var props = new Properties();
-			props.load(stream);
-			props.forEach((name, fullName) -> {
-				imports.append("import ")
-						.append(fullName)
-						.append(" as ")
-						.append(name)
-						.append("\n");
-			});
-			py.exec(imports.toString());
+			script = IOUtils.toString(stream, StandardCharsets.UTF_8);
+			py.exec(script);
 			return true;
 		} catch (Exception e) {
-			ErrorReporter.on("Failed to execute imports", imports.toString(), e);
+			ErrorReporter.on("Failed to execute imports", script, e);
 			return false;
 		}
 	}
