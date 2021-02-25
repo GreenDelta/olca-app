@@ -75,7 +75,8 @@ let generate = (folders, target) => {
     .map(clazz => `${clazz} = ${bindings[clazz]}\n`)
     .reduce((t, s) => t.concat(s))
   let out = `olca-app/src/org/openlca/app/devtools/python/${target}`
-  fs.writeFileSync(out, text)
+  let header = '# auto-generated bindings; do not edit them\n'
+  fs.writeFileSync(out, header + text)
 }
 
 let main = () => {
@@ -93,9 +94,9 @@ let main = () => {
     // `${modPath}/olca-simapro-csv/src/main/java`,
     // `${modPath}/olca-ecospold-1/src/main/java`,
     // `${modPath}/olca-ecospold-2/src/main/java`,
-	'olca-app/src',
+	  // 'olca-app/src',
   ]
-  generate(modFolders, 'bindings.properties')
+  generate(modFolders, 'mod-bindings.properties')
 }
 
 main()

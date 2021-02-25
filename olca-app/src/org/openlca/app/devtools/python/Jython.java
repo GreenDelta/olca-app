@@ -32,33 +32,15 @@ class Jython {
 		}
 		try {
 
-			// add class bindings from `bindings.properties`
-			var imports = new StringBuilder();
-			var props = new Properties();
-			props.load(Jython.class.getResourceAsStream(
-					"bindings.properties"));
-			props.forEach((name, fullName) -> {
-				imports.append("import ")
-						.append(fullName)
-						.append(" as ")
-						.append(name)
-						.append("\n");
-			});
-
 			// create the interpreter and execute the script
 			try (var py = new PythonInterpreter()) {
 				py.set("log", LoggerFactory.getLogger(Jython.class));
 				py.set("db", Database.get());
 
 				// first try to execute the imports
-				try {
-					py.exec(imports.toString());
-				} catch (Exception e) {
-					ErrorReporter.on(
-							"Failed to execute imports",
-							"Python imports:\n" + imports.toString(), e);
+				if (!execImports(py, "mod-bindings.properties")
+						|| !execImports(py, "app-bindings.properties"))
 					return;
-				}
 
 				py.exec(script);
 			}
@@ -67,10 +49,31 @@ class Jython {
 			var log = LoggerFactory.getLogger(Jython.class);
 			log.error("failed execute script", e);
 		}
-
 	}
 
-	/** Extract the Python library in the workspace folder. */
+	private static boolean execImports(PythonInterpreter py, String bindings) {
+		var imports = new StringBuilder();
+		try (var stream = Jython.class.getResourceAsStream(bindings)) {
+			var props = new Properties();
+			props.load(stream);
+			props.forEach((name, fullName) -> {
+				imports.append("import ")
+						.append(fullName)
+						.append(" as ")
+						.append(name)
+						.append("\n");
+			});
+			py.exec(imports.toString());
+			return true;
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to execute imports", imports.toString(), e);
+			return false;
+		}
+	}
+
+	/**
+	 * Extract the Python library in the workspace folder.
+	 */
 	private static synchronized void initFolder(File pyDir) {
 		if (folderInitialized.get())
 			return;
