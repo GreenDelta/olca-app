@@ -40,7 +40,7 @@ public class PythonEditor extends ScriptingEditor {
 	@Override
 	public void eval() {
 		var script = page.getScript();
-		App.run("Eval script", () -> Python.exec(script));
+		App.run("Eval script", () -> Jython.exec(script));
 	}
 
 	@Override

@@ -23,28 +23,39 @@ import org.slf4j.LoggerFactory;
 public class ErrorReporter extends FormDialog {
 
 	private final String message;
+	private final String details;
 	private final Throwable error;
 
 	public static void on(String message) {
-		on(message, null);
+		on(message, null, null);
 	}
+
+	public static void on(String message, String details) {
+		on(message, details, null);
+	}
+
 	/**
 	 * Opens the error reporter for the given message and error. It also writes the
 	 * error to the log. So no need to log an error when you later want to open it
 	 * in the reporter. It is save to call this method from non-UI threads.
 	 */
 	public static void on(String message, Throwable error) {
+		on(message, null, error);
+	}
+
+	public static void on(String message, String details, Throwable error) {
 		var log = LoggerFactory.getLogger(ErrorReporter.class);
 		log.error(message, error);
 		App.runInUI("Show error reporter",
-				() -> new ErrorReporter(message, error).open());
+				() -> new ErrorReporter(message, details, error).open());
 	}
 
-	private ErrorReporter(String message, Throwable error) {
+	private ErrorReporter(String message, String details, Throwable error) {
 		super(UI.shell());
 		this.message = message == null
 				? "No error message"
 				: message;
+		this.details = details;
 		this.error = error;
 		setBlockOnOpen(true);
 	}
@@ -85,7 +96,10 @@ public class ErrorReporter extends FormDialog {
 		var text = tk.createText(comp, "", SWT.MULTI | SWT.V_SCROLL);
 		UI.gridData(text, true, true);
 		mform.reflow(true);
-		text.setText(template());
+		var message = details != null
+				? "# Error details: \n" + details + "\n\n" + reportTemplate()
+				: reportTemplate();
+		text.setText(message);
 
 		formText.addHyperlinkListener(new HyperlinkAdapter() {
 			@Override
@@ -120,8 +134,11 @@ public class ErrorReporter extends FormDialog {
 				+ "</html>";
 	}
 
-	private String template() {
-		return "# Error description\n" +
+	private String reportTemplate() {
+		return "If you want to report this error to us, please replace the\n" +
+				"question marks in the template below (if possible).\n" +
+				"Thanks a lot!\n\n" +
+				"# Error description\n" +
 				"\n" +
 				"I tried to ??? but openLCA threw an error.\n" +
 				"\n" +

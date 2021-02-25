@@ -1,7 +1,6 @@
 package org.openlca.app.devtools.python;
 
 import java.io.File;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Objects;
 import java.util.Properties;
@@ -11,21 +10,20 @@ import org.apache.commons.io.FileUtils;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.RcpActivator;
-import org.openlca.core.database.IDatabase;
+import org.openlca.app.util.ErrorReporter;
 import org.python.util.PythonInterpreter;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
 
-class Python {
+class Jython {
 
 	static AtomicBoolean folderInitialized = new AtomicBoolean(false);
 
-	private Python() {
+	private Jython() {
 	}
 
 	static void exec(String script) {
-		File pyDir = new File(App.getWorkspace(), "python");
+		var pyDir = new File(App.getWorkspace(), "python");
 		if (!folderInitialized.get()) {
 			initFolder(pyDir);
 			System.setProperty("python.path", pyDir.getAbsolutePath());
@@ -35,34 +33,38 @@ class Python {
 		try {
 
 			// add class bindings from `bindings.properties`
-			StringBuilder builder = new StringBuilder();
-			Properties properties = new Properties();
-			properties.load(Python.class.getResourceAsStream(
+			var imports = new StringBuilder();
+			var props = new Properties();
+			props.load(Jython.class.getResourceAsStream(
 					"bindings.properties"));
-			properties.forEach((name, fullName) -> {
-				builder.append("import ")
+			props.forEach((name, fullName) -> {
+				imports.append("import ")
 						.append(fullName)
 						.append(" as ")
 						.append(name)
 						.append("\n");
 			});
-			builder.append(script);
 
 			// create the interpreter and execute the script
-			String fullScript = builder.toString();
-			try (PythonInterpreter py = new PythonInterpreter()) {
-				py.set("log", LoggerFactory.getLogger(Python.class));
-				IDatabase db = Database.get();
-				py.set("db", db);
-				py.set("olca", new ScriptApi(db));
-				py.set("app", App.class);
-				py.set("__datadir__", new File(
-						App.getWorkspace(), "script_data").getAbsolutePath());
-				py.exec(fullScript);
+			try (var py = new PythonInterpreter()) {
+				py.set("log", LoggerFactory.getLogger(Jython.class));
+				py.set("db", Database.get());
+
+				// first try to execute the imports
+				try {
+					py.exec(imports.toString());
+				} catch (Exception e) {
+					ErrorReporter.on(
+							"Failed to execute imports",
+							"Python imports:\n" + imports.toString(), e);
+					return;
+				}
+
+				py.exec(script);
 			}
 
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(Python.class);
+			var log = LoggerFactory.getLogger(Jython.class);
 			log.error("failed execute script", e);
 		}
 
@@ -70,15 +72,16 @@ class Python {
 
 	/** Extract the Python library in the workspace folder. */
 	private static synchronized void initFolder(File pyDir) {
+		if (folderInitialized.get())
+			return;
 		try {
 
 			// check if the Python folder is tagged with the
 			// current application version
-			File versionFile = new File(pyDir, ".version");
+			var versionFile = new File(pyDir, ".version");
 			if (versionFile.exists()) {
-				byte[] bytes = Files.readAllBytes(versionFile.toPath());
-				String v = new String(bytes, "utf-8");
-				if (Objects.equals(v, App.getVersion()))
+				var version = Files.readString(versionFile.toPath());
+				if (Objects.equals(version, App.getVersion()))
 					return;
 			}
 
@@ -87,9 +90,9 @@ class Python {
 			if (pyDir.exists()) {
 				FileUtils.deleteDirectory(pyDir);
 			}
-			pyDir.mkdirs();
-			String pyJar = "libs/jython-standalone-2.7.2.jar";
-			try (InputStream is = RcpActivator.getStream(pyJar)) {
+			Files.createDirectories(pyDir.toPath());
+			var pyJar = "libs/jython-standalone-2.7.2.jar";
+			try (var is = RcpActivator.getStream(pyJar)) {
 				ZipUtil.unpack(is, pyDir, (entry) -> {
 					if (entry.startsWith("Lib/") && entry.length() > 4) {
 						return entry.substring(4);
@@ -98,10 +101,9 @@ class Python {
 					}
 				});
 			}
-			File file = new File(pyDir, ".version");
-			Files.write(file.toPath(), App.getVersion().getBytes("utf-8"));
+			Files.writeString(versionFile.toPath(), App.getVersion());
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(Python.class);
+			var log = LoggerFactory.getLogger(Jython.class);
 			log.error("failed to initialize Python folder " + pyDir, e);
 		}
 	}
