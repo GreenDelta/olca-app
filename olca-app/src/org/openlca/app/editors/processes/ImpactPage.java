@@ -191,8 +191,7 @@ class ImpactPage extends ModelPage<Process> {
 		}
 		if (elemFlows.isEmpty()) {
 			// return an empty result if there are no elementary flows
-			return new ContributionResult(
-					EagerResultProvider.create(data, App.getSolver()));
+			return new ContributionResult(EagerResultProvider.create(data));
 		}
 
 		// create the flow index and B matrix / vector
@@ -230,7 +229,7 @@ class ImpactPage extends ModelPage<Process> {
 				.build().impactMatrix;
 
 		// create the result
-		var provider = EagerResultProvider.create(data, App.getSolver());
+		var provider = EagerResultProvider.create(data);
 		var result = new ContributionResult(provider);
 		result.techIndex = provider.techIndex();
 		result.flowIndex = provider.flowIndex();

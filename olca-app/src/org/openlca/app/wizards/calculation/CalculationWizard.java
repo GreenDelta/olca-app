@@ -13,12 +13,10 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IEditorPart;
-import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
-import org.openlca.app.rcp.Workspace;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.Sort;
 import org.openlca.app.results.simulation.SimulationEditor;
@@ -138,11 +136,7 @@ public class CalculationWizard extends Wizard {
 
 				// run the calculation
 				log.trace("run calculation");
-				var calc = new SystemCalculator(
-						Database.get(), App.getSolver());
-				if (setup.hasLibraries) {
-					calc.withLibraries(Workspace.getLibraryDir());
-				}
+				var calc = new SystemCalculator(Database.get());
 				var result = upstream
 						? calc.calculateFull(setup.calcSetup)
 						: calc.calculateContributions(setup.calcSetup);

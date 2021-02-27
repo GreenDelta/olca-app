@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.model.ReportIndicatorResult.VariantResult;
@@ -50,8 +49,7 @@ public class ReportCalculator implements Runnable {
 			return;
 		ProjectResult result;
 		try {
-			SystemCalculator calculator = new SystemCalculator(
-					Database.get(), App.getSolver());
+			var calculator = new SystemCalculator(Database.get());
 			result = calculator.calculate(project);
 			hadError = false;
 		} catch (OutOfMemoryError e) {
