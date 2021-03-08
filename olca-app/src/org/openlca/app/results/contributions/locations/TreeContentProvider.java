@@ -106,7 +106,7 @@ class TreeContentProvider implements ITreeContentProvider {
 
 		// get the matrix row => IndexFlow
 		FlowIndex flowIndex = result.flowIndex;
-		int idx = flowIndex.isRegionalized
+		int idx = flowIndex.isRegionalized()
 				? flowIndex.of(flow.id, loc.id)
 				: flowIndex.of(flow.id);
 		if (idx < 0)
@@ -122,7 +122,7 @@ class TreeContentProvider implements ITreeContentProvider {
 		// given location can occur in processes that
 		// have another location which is not the case
 		// in a non-regionalized result
-		if (flowIndex.isRegionalized) {
+		if (flowIndex.isRegionalized()) {
 			return result.techIndex.content().stream().map(p -> {
 				Contribution<?> c = Contribution.of(p.process);
 				c.amount = result.getDirectFlowResult(p, iFlow);
@@ -158,7 +158,7 @@ class TreeContentProvider implements ITreeContentProvider {
 			Location loc, ImpactDescriptor impact) {
 
 		double total = result.getTotalImpactResult(impact);
-		if (!result.flowIndex.isRegionalized) {
+		if (!result.flowIndex.isRegionalized()) {
 			return processes(loc).stream().map(p -> {
 				Contribution<?> c = Contribution.of(p);
 				c.amount = result.getDirectImpactResult(p, impact);
