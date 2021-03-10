@@ -111,7 +111,7 @@ public class ProcessResultPage extends FormPage {
 	private void setInputs() {
 		fillFlows(inputTable);
 		fillFlows(outputTable);
-		long refProcessId = result.techIndex.getRefFlow().id();
+		long refProcessId = result.techIndex.getRefFlow().processId();
 		ProcessDescriptor p = processes.get(refProcessId);
 		flowProcessViewer.select(p);
 		if (result.hasImpactResults()) {

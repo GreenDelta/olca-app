@@ -51,7 +51,6 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.results.Contribution;
@@ -168,10 +167,7 @@ class ImpactPage extends ModelPage<Process> {
 		var data = new MatrixData();
 
 		// create a virtual demand of 1.0
-		var refProduct = new ProcessProduct();
-		refProduct.process = Descriptor.of(getModel());
-		refProduct.flow = new FlowDescriptor();
-		refProduct.flow.id = 42;
+		var refProduct = ProcessProduct.of(getModel());
 		data.techIndex = new TechIndex(refProduct);
 		data.techIndex.setDemand(1.0);
 		data.techMatrix = JavaMatrix.of(

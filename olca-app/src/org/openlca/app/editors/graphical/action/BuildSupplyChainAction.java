@@ -17,8 +17,6 @@ import org.openlca.core.matrix.LinkingConfig;
 import org.openlca.core.matrix.LinkingConfig.DefaultProviders;
 import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.matrix.ProductSystemBuilder;
-import org.openlca.core.model.Exchange;
-import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
@@ -90,15 +88,9 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 			monitor.beginTask(M.CreatingProductSystem, IProgressMonitor.UNKNOWN);
 			var builder = new ProductSystemBuilder(Cache.getMatrixCache(), config);
 			for (ProcessNode node : nodes) {
-				var provider = new ProcessProduct();
-				provider.process = node.process;
-				ProcessDao dao = new ProcessDao(Database.get());
-				Process p = dao.getForId(node.process.id);
-				Exchange qRef = p.quantitativeReference;
-				if (qRef != null && qRef.flow != null) {
-					provider.flow = Descriptor.of(qRef.flow);
-				}
-				builder.autoComplete(system, provider);
+				var dao = new ProcessDao(Database.get());
+				var p = dao.getForId(node.process.id);
+				builder.autoComplete(system, ProcessProduct.of(p));
 				system = builder.saveUpdates(system);
 			}
 			GraphEditor editor = nodes.get(0).parent().editor;

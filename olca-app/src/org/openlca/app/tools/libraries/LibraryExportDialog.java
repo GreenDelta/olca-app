@@ -144,11 +144,10 @@ public class LibraryExportDialog extends FormDialog {
 		}
 		super.okPressed();
 		var export = new LibraryExport(config.db, exportDir)
-			.as(info)
+			.withConfig(info)
 			.withImpacts(config.withImpacts)
 			.withAllocation(config.allocation)
-			.withUncertainties(config.withUncertainties)
-			.solver(App.getSolver());
+			.withUncertainties(config.withUncertainties);
 		App.runWithProgress(
 			"Creating library " + name,
 			export,
@@ -192,7 +191,6 @@ public class LibraryExportDialog extends FormDialog {
 			info.name = name;
 			info.version = Version.format(version);
 			info.isRegionalized = regionalized;
-			info.hasUncertaintyData = withUncertainties;
 			return info;
 		}
 	}
