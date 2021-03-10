@@ -201,8 +201,8 @@ class ImpactPage extends ModelPage<Process> {
 					? Descriptor.of(e.location)
 					: null;
 			int i = e.isInput
-					? data.flowIndex.putInput(flow, loc)
-					: data.flowIndex.putOutput(flow, loc);
+					? data.flowIndex.add(IndexFlow.inputOf(flow, loc))
+					: data.flowIndex.add(IndexFlow.outputOf(flow, loc));
 			double amount = ReferenceAmount.get(e);
 			if (e.isInput && amount != 0) {
 				amount = -amount;

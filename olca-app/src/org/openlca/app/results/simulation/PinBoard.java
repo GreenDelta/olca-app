@@ -166,7 +166,7 @@ class PinBoard {
 		List<ProcessProduct> input = new ArrayList<>();
 		TechIndex idx = simulator.getResult().techIndex;
 		for (int i = 0; i < idx.size(); i++) {
-			ProcessProduct pp = idx.getProviderAt(i);
+			ProcessProduct pp = idx.at(i);
 
 			// pinned products are never filtered
 			if (simulator.pinnedProducts.contains(pp)) {
