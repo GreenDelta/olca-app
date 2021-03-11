@@ -3,7 +3,7 @@ package org.openlca.app.db;
 import java.util.Objects;
 
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.mysql.MySQLDatabase;
+import org.openlca.core.database.MySQL;
 
 /**
  * Configuration of a MySQL database.
@@ -18,8 +18,12 @@ public class MySQLConfiguration implements IDatabaseConfiguration {
 
 	@Override
 	public IDatabase connect() {
-		var url = "jdbc:mysql://" + host + ":" + port + "/" + name;
-		var db = new MySQLDatabase(url, user, password);
+		var db = MySQL.database(name)
+			.host(host)
+			.port(port)
+			.user(user)
+			.password(password)
+			.connect();
 		db.setFileStorageLocation(DatabaseDir.getFileStorageLocation(db));
 		return db;
 	}

@@ -1,7 +1,5 @@
 package org.openlca.app.navigation.actions.db;
 
-import org.openlca.app.M;
-
 import java.io.File;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -18,6 +16,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
@@ -33,7 +32,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.app.validation.ValidationView;
-import org.openlca.core.database.derby.DerbyDatabase;
+import org.openlca.core.database.Derby;
 import org.openlca.util.Dirs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,16 +114,16 @@ public class DbCompressAction extends Action implements INavigationAction {
 		private void doIt() {
 			try {
 				boolean isActive = Database.isActive(config);
-				DerbyDatabase db;
+				Derby db;
 				if (isActive) {
 					if (!Editors.closeAll())
 						return;
 					ValidationView.clear();
-					db = (DerbyDatabase) Database.get();
+					db = (Derby) Database.get();
 				} else {
-					db = (DerbyDatabase) Database.activate(config);
+					db = (Derby) Database.activate(config);
 				}
-				final DerbyDatabase _db = db;
+				final Derby _db = db;
 				App.runWithProgress(M.CompressingDatabase, () -> compressTables(_db));
 				db.close();
 				if (isActive)
@@ -137,7 +136,7 @@ public class DbCompressAction extends Action implements INavigationAction {
 			}
 		}
 
-		private void compressTables(DerbyDatabase db) {
+		private void compressTables(Derby db) {
 			try {
 				Connection con = db.createConnection();
 				Statement s = con.createStatement();

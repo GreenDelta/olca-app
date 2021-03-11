@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.core.database.Derby;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.derby.DerbyDatabase;
 import org.openlca.io.olca.DatabaseImport;
 import org.zeroturnaround.zip.ZipUtil;
 
@@ -29,7 +29,7 @@ public class MySQLDatabaseExport implements Runnable {
 	public void run() {
 		try {
 			IDatabase sourceDb = config.connect();
-			DerbyDatabase targetDb = createTemporaryDb();
+			var targetDb = createTemporaryDb();
 			DatabaseImport io = new DatabaseImport(sourceDb, targetDb);
 			io.run();
 			sourceDb.close();
@@ -43,12 +43,12 @@ public class MySQLDatabaseExport implements Runnable {
 		}
 	}
 
-	private DerbyDatabase createTemporaryDb() {
+	private Derby createTemporaryDb() {
 		File tempDir = new File(System.getProperty("java.io.tmpdir"));
 		String dbName = "olca_tempdb_"
 				+ UUID.randomUUID().toString().replace("-", "");
 		File dbDir = new File(tempDir, dbName);
-		return new DerbyDatabase(dbDir);
+		return new Derby(dbDir);
 	}
 
 }

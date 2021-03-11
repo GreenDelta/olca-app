@@ -3,7 +3,7 @@ package org.openlca.app.db;
 import java.io.File;
 import java.util.Objects;
 
-import org.openlca.core.database.derby.DerbyDatabase;
+import org.openlca.core.database.Derby;
 
 /**
  * Configuration of a local derby database. Derby databases are stored directly
@@ -20,10 +20,10 @@ public class DerbyConfiguration implements IDatabaseConfiguration {
 	private String folder;
 
 	@Override
-	public DerbyDatabase connect() {
+	public Derby connect() {
 		return folder != null
-				? new DerbyDatabase(new File(folder))
-				: new DerbyDatabase(DatabaseDir.getRootFolder(name));
+				? new Derby(new File(folder))
+				: new Derby(DatabaseDir.getRootFolder(name));
 	}
 
 	@Override

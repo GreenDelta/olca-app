@@ -21,8 +21,8 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
+import org.openlca.core.database.Derby;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.derby.DerbyDatabase;
 import org.openlca.core.database.upgrades.Upgrades;
 import org.openlca.core.database.upgrades.VersionState;
 import org.openlca.io.olca.DatabaseImport;
@@ -200,7 +200,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			tempDbFolder.mkdirs();
 			log.trace("unpack zolca file to {}", tempDbFolder);
 			ZipUtil.unpack(zipFile, tempDbFolder);
-			return new DerbyDatabase(tempDbFolder);
+			return new Derby(tempDbFolder);
 		}
 
 		void close() throws Exception {
