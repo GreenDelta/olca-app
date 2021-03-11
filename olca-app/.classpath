@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="libs/HikariCP-4.0.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/mariadb-java-client-2.7.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/animal-sniffer-annotations-1.18.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-4.1.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-api-6.0.53.jar"/>
@@ -36,7 +38,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/FastInfoset-1.2.16.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gson-2.8.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/guava-21.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/HikariCP-3.2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/istack-commons-runtime-3.0.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.activation-api-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.persistence-2.2.3.jar"/>
@@ -51,7 +52,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/log4j-1.2.17.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mapdb-2.0-beta7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/mysql-connector-java-8.0.16.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/nanohttpd-2.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-cloud-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-core-2.0.0.jar" sourcepath="/olca-core"/>
