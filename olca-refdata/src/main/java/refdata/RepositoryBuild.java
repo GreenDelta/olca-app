@@ -18,8 +18,8 @@ import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.cloud.model.data.FileReference;
+import org.openlca.core.database.Derby;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.derby.DerbyDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.input.JsonImport;
@@ -42,7 +42,7 @@ public class RepositoryBuild {
 
 	private static void buildDb(String name, ModelType... modelTypes) throws Exception {
 		System.out.println("  building " + name + " database");
-		DerbyDatabase db = new DerbyDatabase(F("build/" + name));
+		var db = new Derby(F("build/" + name));
 		if (modelTypes != null && modelTypes.length > 0) {
 			RepositoryClient client = createClient(db);
 			Set<FileReference> descriptors = loadDescriptors(client, modelTypes);

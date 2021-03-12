@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: olca-app
 Automatic-Module-Name: olca-app
-Bundle-RequiredExecutionEnvironment: JavaSE-13
+Bundle-RequiredExecutionEnvironment: JavaSE-14
 Bundle-SymbolicName: olca-app;singleton:=true
 Bundle-Version: 2.0.0.alpha2
 Bundle-Activator: org.openlca.app.rcp.RcpActivator
@@ -39,7 +39,6 @@ Bundle-ClassPath: .,
  libs/guava-21.0.jar,
  libs/istack-commons-runtime-3.0.8.jar,
  libs/jakarta.activation-api-1.2.2.jar,
- libs/jakarta.persistence-2.2.3.jar,
  libs/jakarta.xml.bind-api-2.3.3.jar,
  libs/jaxb-runtime-2.3.2.jar,
  libs/jcl-over-slf4j-1.7.2.jar,
@@ -62,11 +61,6 @@ Bundle-ClassPath: .,
  libs/olca-io-2.0.0.jar,
  libs/olca-ipc-2.0.0.jar,
  libs/olca-simapro-csv-2.0.0.jar,
- libs/org.eclipse.persistence.antlr-2.7.6.jar,
- libs/org.eclipse.persistence.asm-2.7.6.jar,
- libs/org.eclipse.persistence.core-2.7.6.jar,
- libs/org.eclipse.persistence.jpa.jpql-2.7.6.jar,
- libs/org.eclipse.persistence.jpa-2.7.6.jar,
  libs/protobuf-java-3.12.2.jar,
  libs/protobuf-java-util-3.12.2.jar,
  libs/slf4j-api-1.7.25.jar,
@@ -99,4 +93,9 @@ Bundle-ClassPath: .,
  libs/perfmark-api-0.19.0.jar,
  libs/proto-google-common-protos-1.17.0.jar,
  libs/mariadb-java-client-2.7.2.jar,
- libs/HikariCP-4.0.3.jar
+ libs/HikariCP-4.0.3.jar,
+ libs/jakarta.persistence-api-3.0.0.jar,
+ libs/org.eclipse.persistence.asm-3.0.0.jar,
+ libs/org.eclipse.persistence.core-3.0.0.jar,
+ libs/org.eclipse.persistence.jpa.jpql-3.0.0.jar,
+ libs/org.eclipse.persistence.jpa-3.0.0.jar

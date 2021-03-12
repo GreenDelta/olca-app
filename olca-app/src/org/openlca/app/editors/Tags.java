@@ -3,12 +3,12 @@ package org.openlca.app.editors;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import javax.persistence.Table;
-
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.util.Strings;
+
+import jakarta.persistence.Table;
 
 final class Tags {
 

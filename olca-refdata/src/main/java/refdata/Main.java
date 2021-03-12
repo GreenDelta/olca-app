@@ -6,8 +6,8 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+import org.openlca.core.database.Derby;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.derby.DerbyDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.refdata.RefDataImport;
 import org.openlca.jsonld.MemStore;
@@ -35,7 +35,7 @@ public class Main {
 
 	private static void create(String name, String dataDir) throws Exception {
 		System.out.println("  Create " + name + " database ...");
-		var db = new DerbyDatabase(F("build/" + name));
+		var db = new Derby(F("build/" + name));
 		if (dataDir != null) {
 			new RefDataImport(F("data/" + dataDir), db).run();
 			if ("all".equals(dataDir)) {
