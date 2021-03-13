@@ -58,6 +58,7 @@ import org.openlca.core.results.Contribution as Contribution
 import org.openlca.core.results.ContributionResult as ContributionResult
 import org.openlca.core.results.Contributions as Contributions
 import org.openlca.core.matrix.cache.ConversionTable as ConversionTable
+import org.openlca.util.Copy as Copy
 import org.openlca.ipc.handlers.CostHandler as CostHandler
 import org.openlca.cloud.api.CredentialSupplier as CredentialSupplier
 import org.openlca.core.matrix.io.Csv as Csv
@@ -84,7 +85,6 @@ import org.openlca.proto.output.DQSystemWriter as DQSystemWriter
 import org.openlca.util.DQSystems as DQSystems
 import org.openlca.core.database.Daos as Daos
 import org.openlca.core.DataDir as DataDir
-import org.openlca.core.database.mysql.DatabaseDescriptor as DatabaseDescriptor
 import org.openlca.core.database.DatabaseException as DatabaseException
 import org.openlca.io.olca.DatabaseImport as DatabaseImport
 import org.openlca.util.Databases as Databases
@@ -94,8 +94,7 @@ import org.openlca.core.database.DbUtils as DbUtils
 import org.openlca.core.matrix.format.DenseByteMatrix as DenseByteMatrix
 import org.openlca.julia.DenseFactorization as DenseFactorization
 import org.openlca.core.matrix.format.DenseMatrix as DenseMatrix
-import org.openlca.core.database.derby.Derby as Derby
-import org.openlca.core.database.derby.DerbyDatabase as DerbyDatabase
+import org.openlca.core.database.Derby as Derby
 import org.openlca.core.model.descriptors.Descriptor as Descriptor
 import org.openlca.cloud.util.Directories as Directories
 import org.openlca.util.Dirs as Dirs
@@ -271,7 +270,7 @@ import org.openlca.geo.calc.Mollweide as Mollweide
 import org.openlca.geo.geojson.MultiLineString as MultiLineString
 import org.openlca.geo.geojson.MultiPoint as MultiPoint
 import org.openlca.geo.geojson.MultiPolygon as MultiPolygon
-import org.openlca.core.database.mysql.MySQLDatabase as MySQLDatabase
+import org.openlca.core.database.MySQL as MySQL
 import org.openlca.core.database.NativeSql as NativeSql
 import org.openlca.core.database.Notifiable as Notifiable
 import org.openlca.core.matrix.io.npy.Npy as Npy
