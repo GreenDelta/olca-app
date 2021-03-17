@@ -4,7 +4,6 @@ import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -97,12 +96,6 @@ public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
 		var text = Widgets.multiText(parent, label, property, getEditor(), getToolkit(), heightHint);
 		text.setEditable(isEditable());
 		return text;
-	}
-
-	protected DateTime date(Composite parent, String label, String property) {
-		var dt = Widgets.date(parent, label, property, getEditor(), getToolkit());
-		dt.setEnabled(isEditable());
-		return dt;
 	}
 
 	protected Button checkBox(Composite parent, String label, String property) {

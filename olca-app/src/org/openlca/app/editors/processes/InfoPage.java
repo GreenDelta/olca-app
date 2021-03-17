@@ -1,11 +1,15 @@
 package org.openlca.app.editors.processes;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
@@ -99,9 +103,54 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	private void createTimeSection(Composite body, FormToolkit tk) {
-		Composite comp = UI.formSection(body, tk, M.Time, 3);
-		date(comp, M.StartDate, "documentation.validFrom");
-		date(comp, M.EndDate, "documentation.validUntil");
+		var comp = UI.formSection(body, tk, M.Time, 3);
+
+		// the handler for setting the start or end time
+		BiConsumer<DateTime, Boolean> setTime = (widget, isStart) -> {
+			var current = isStart
+					? getModel().documentation.validFrom
+					: getModel().documentation.validUntil;
+			if (current != null) {
+				var cal = new GregorianCalendar();
+				cal.setTime(current);
+				widget.setDate(
+						cal.get(Calendar.YEAR),
+						cal.get(Calendar.MONTH),
+						cal.get(Calendar.DAY_OF_MONTH));
+			}
+
+			widget.addSelectionListener(Controls.onSelect(_e -> {
+				var process = getModel();
+				var date = new GregorianCalendar(
+						widget.getYear(),
+						widget.getMonth(),
+						widget.getDay()).getTime();
+				if (isStart) {
+					process.documentation.validFrom = date;
+				} else {
+					process.documentation.validUntil = date;
+				}
+				getEditor().setDirty(true);
+			}));
+		};
+
+		// start date
+		tk.createLabel(comp, M.StartDate, SWT.NONE);
+		var startBox = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);
+		startBox.setEnabled(isEditable());
+		UI.gridData(startBox, false, false).widthHint = 150;
+		new CommentControl(comp, tk, "documentation.validFrom", getComments());
+		setTime.accept(startBox, true);
+
+		// end date
+		tk.createLabel(comp, M.EndDate, SWT.NONE);
+		var endBox = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);
+		endBox.setEnabled(isEditable());
+		UI.gridData(endBox, false, false).widthHint = 150;
+		new CommentControl(comp, tk, "documentation.validUntil", getComments());
+		setTime.accept(endBox, false);
+
+		// the description text
 		multiText(comp, M.Description, "documentation.time", 40);
 	}
 

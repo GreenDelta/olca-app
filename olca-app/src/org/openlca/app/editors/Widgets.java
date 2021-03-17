@@ -6,7 +6,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
@@ -121,18 +120,6 @@ public class Widgets {
 		editor.getBinding().onString(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
 		return text;
-	}
-
-	public static DateTime date(Composite parent, String label, String property, ModelEditor<?> editor,
-			FormToolkit toolkit) {
-		toolkit.createLabel(parent, label, SWT.NONE);
-		DateTime dateTime = new DateTime(parent, SWT.DATE | SWT.DROP_DOWN);
-		GridData data = new GridData();
-		data.widthHint = 150;
-		dateTime.setLayoutData(data);
-		editor.getBinding().onDate(editor::getModel, property, dateTime);
-		new CommentControl(parent, toolkit, property, editor.getComments());
-		return dateTime;
 	}
 
 	public static Button checkBox(Composite parent, String label, String property, ModelEditor<?> editor,

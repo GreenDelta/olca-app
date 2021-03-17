@@ -33,38 +33,38 @@ public class Controls {
 	}
 
 	public static void onSelect(Combo combo, Consumer<SelectionEvent> consumer) {
-		combo.addSelectionListener(handle(consumer));
+		combo.addSelectionListener(onSelect(consumer));
 	}
 
 	public static void onSelect(Button button, Consumer<SelectionEvent> consumer) {
-		button.addSelectionListener(handle(consumer));
+		button.addSelectionListener(onSelect(consumer));
 	}
 
 	public static void onSelect(MenuItem item, Consumer<SelectionEvent> consumer) {
-		item.addSelectionListener(handle(consumer));
+		item.addSelectionListener(onSelect(consumer));
 	}
 
 	public static void onSelect(Scale scale, Consumer<SelectionEvent> consumer) {
-		scale.addSelectionListener(handle(consumer));
+		scale.addSelectionListener(onSelect(consumer));
 	}
 
 	public static void onSelect(Link link, Consumer<SelectionEvent> consumer) {
-		link.addSelectionListener(handle(consumer));
+		link.addSelectionListener(onSelect(consumer));
 	}
 
 	public static void onSelect(Spinner spinner, Consumer<SelectionEvent> consumer) {
-		spinner.addSelectionListener(handle(consumer));
+		spinner.addSelectionListener(onSelect(consumer));
 	}
 
 	public static void onSelect(TableCombo combo, Consumer<SelectionEvent> fn) {
-		combo.addSelectionListener(handle(fn));
+		combo.addSelectionListener(onSelect(fn));
 	}
 
 	public static void onSelect(List list, Consumer<SelectionEvent> fn) {
-		list.addSelectionListener(handle(fn));
+		list.addSelectionListener(onSelect(fn));
 	}
 
-	private static SelectionListener handle(Consumer<SelectionEvent> fn) {
+	public static SelectionListener onSelect(Consumer<SelectionEvent> fn) {
 		return new SelectionListener() {
 
 			@Override

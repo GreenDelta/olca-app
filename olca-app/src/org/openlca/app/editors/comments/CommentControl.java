@@ -17,15 +17,15 @@ public class CommentControl {
 	private String path;
 	private Comments comments;
 
-	public CommentControl(Composite parent, FormToolkit toolkit, String path, Comments comments) {
+	public CommentControl(Composite parent, FormToolkit tk, String path, Comments comments) {
 		this.path = path;
 		this.comments = comments;
-		initControl(parent, toolkit);
+		initControl(parent, tk);
 	}
 
-	private void initControl(Composite parent, FormToolkit toolkit) {
+	private void initControl(Composite parent, FormToolkit tk) {
 		if (!App.isCommentingEnabled() || comments == null || !comments.hasPath(path)) {
-			UI.filler(parent, toolkit);
+			UI.filler(parent, tk);
 			return;
 		}
 		ImageHyperlink control = new ImageHyperlink(parent, SWT.NONE);

@@ -1,17 +1,13 @@
 package org.openlca.app.editors;
 
 import java.text.DateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.components.TextDropComponent;
@@ -113,26 +109,6 @@ public class DataBinding {
 		});
 	}
 
-	public void onDate(final Supplier<?> supplier, final String property,
-			final DateTime dateTime) {
-		log.trace("Register data binding - date - {}", property);
-		if (supplier == null || property == null || dateTime == null)
-			return;
-		initValue(supplier.get(), property, dateTime);
-		dateTime.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				setDateValue(supplier.get(), property, dateTime);
-				editorChange();
-			}
-		});
-	}
-
 	public void readOnly(final Object bean, final String property,
 			final Label label) {
 		log.trace("Register data binding - string - {} - {}", bean, property);
@@ -195,27 +171,6 @@ public class DataBinding {
 			setDoubleValue(supplier.get(), property, text);
 			editorChange();
 		});
-	}
-
-	private void initValue(Object bean, String property, DateTime dateTime) {
-		try {
-			Object val = Bean.getValue(bean, property);
-			if (val == null)
-				return;
-			GregorianCalendar calendar = null;
-			if (val instanceof Date) {
-				calendar = new GregorianCalendar();
-				calendar.setTime((Date) val);
-			} else if (val instanceof GregorianCalendar)
-				calendar = (GregorianCalendar) val;
-			if (calendar != null) {
-				dateTime.setDay(calendar.get(Calendar.DAY_OF_MONTH));
-				dateTime.setMonth(calendar.get(Calendar.MONTH));
-				dateTime.setYear(calendar.get(Calendar.YEAR));
-			}
-		} catch (Exception e) {
-			error("Cannot set text value", e);
-		}
 	}
 
 	private void initValue(Object bean, String property, Text text) {
@@ -307,24 +262,6 @@ public class DataBinding {
 			}
 		} catch (Exception e) {
 			error("Cannot set text value", e);
-		}
-	}
-
-	private void setDateValue(Object bean, String property, DateTime dateTime) {
-		log.trace("Change value {} @ {}", property, bean);
-		GregorianCalendar calendar = new GregorianCalendar();
-		calendar.set(Calendar.DAY_OF_MONTH, dateTime.getDay());
-		calendar.set(Calendar.YEAR, dateTime.getYear());
-		calendar.set(Calendar.MONTH, dateTime.getMonth());
-		try {
-			if (Bean.getType(bean, property) == Date.class)
-				Bean.setValue(bean, property, calendar.getTime());
-			else if (Bean.getType(bean, property) == GregorianCalendar.class)
-				Bean.setValue(bean, property, calendar);
-			else
-				log.error("Cannot set bean value");
-		} catch (Exception e) {
-			error("Cannot set bean value", e);
 		}
 	}
 
