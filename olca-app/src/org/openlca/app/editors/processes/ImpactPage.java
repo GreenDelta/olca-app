@@ -55,7 +55,7 @@ import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.solutions.EagerResultProvider;
+import org.openlca.core.results.providers.EagerResultProvider;
 import org.openlca.util.Strings;
 
 class ImpactPage extends ModelPage<Process> {
@@ -227,13 +227,6 @@ class ImpactPage extends ModelPage<Process> {
 		// create the result
 		var provider = EagerResultProvider.create(data);
 		var result = new ContributionResult(provider);
-		result.techIndex = provider.techIndex();
-		result.flowIndex = provider.flowIndex();
-		result.impactIndex = provider.impactIndex();
-		result.scalingVector = provider.scalingVector();
-		result.totalRequirements = provider.totalRequirements();
-		result.totalFlowResults = provider.totalFlows();
-		result.totalImpactResults = provider.totalImpacts();
 		return result;
 	}
 
