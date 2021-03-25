@@ -32,7 +32,6 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.math.Simulator;
 import org.openlca.core.matrix.ProcessProduct;
-import org.openlca.core.matrix.TechIndex;
 import org.openlca.util.Strings;
 
 /**
@@ -163,8 +162,8 @@ class PinBoard {
 		}
 
 		// apply possible text filter
-		List<ProcessProduct> input = new ArrayList<>();
-		TechIndex idx = simulator.getResult().techIndex;
+		var input = new ArrayList<ProcessProduct>();
+		var idx = simulator.getResult().techIndex();
 		for (int i = 0; i < idx.size(); i++) {
 			ProcessProduct pp = idx.at(i);
 

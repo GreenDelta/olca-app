@@ -31,8 +31,8 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
-import org.openlca.app.viewers.trees.Trees;
 import org.openlca.app.viewers.trees.TreeClipboard.ClipboardLabelProvider;
+import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.IndexFlow;
@@ -315,7 +315,7 @@ public class TotalImpactResultPage extends FormPage {
 
 			} else {
 				double cutoffValue = Math.abs(parent.result() * cutoff);
-				result.flowIndex.each((i, f) -> {
+				result.flowIndex().each((i, f) -> {
 					Item child = new Item(parent.impact, parent.process, f);
 					double result = child.result();
 					if (result == 0)

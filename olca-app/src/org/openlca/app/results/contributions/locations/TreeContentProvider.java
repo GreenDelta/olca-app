@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.openlca.app.util.CostResultDescriptor;
-import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -105,7 +104,7 @@ class TreeContentProvider implements ITreeContentProvider {
 			Location loc, FlowDescriptor flow) {
 
 		// get the matrix row => IndexFlow
-		FlowIndex flowIndex = result.flowIndex;
+		var flowIndex = result.flowIndex();
 		int idx = flowIndex.isRegionalized()
 				? flowIndex.of(flow.id, loc.id)
 				: flowIndex.of(flow.id);
@@ -123,7 +122,7 @@ class TreeContentProvider implements ITreeContentProvider {
 		// have another location which is not the case
 		// in a non-regionalized result
 		if (flowIndex.isRegionalized()) {
-			return result.techIndex.content().stream().map(p -> {
+			return result.techIndex().content().stream().map(p -> {
 				Contribution<?> c = Contribution.of(p.process);
 				c.amount = result.getDirectFlowResult(p, iFlow);
 				c.computeShare(total);
@@ -158,7 +157,7 @@ class TreeContentProvider implements ITreeContentProvider {
 			Location loc, ImpactDescriptor impact) {
 
 		double total = result.getTotalImpactResult(impact);
-		if (!result.flowIndex.isRegionalized()) {
+		if (!result.flowIndex().isRegionalized()) {
 			return processes(loc).stream().map(p -> {
 				Contribution<?> c = Contribution.of(p);
 				c.amount = result.getDirectImpactResult(p, impact);
@@ -169,7 +168,7 @@ class TreeContentProvider implements ITreeContentProvider {
 
 		// first collect all flows in that location
 		List<IndexFlow> flows = new ArrayList<>();
-		result.flowIndex.each((i, iFlow) -> {
+		result.flowIndex().each((i, iFlow) -> {
 			if (loc == null && iFlow.location == null) {
 				flows.add(iFlow);
 				return;
@@ -191,7 +190,7 @@ class TreeContentProvider implements ITreeContentProvider {
 
 	private List<ProcessDescriptor> processes(Location loc) {
 		List<ProcessDescriptor> list = new ArrayList<>();
-		result.techIndex.each((i, product) -> {
+		result.techIndex().each((i, product) -> {
 			if (!(product.process instanceof ProcessDescriptor))
 				return;
 			ProcessDescriptor process = (ProcessDescriptor) product.process;
