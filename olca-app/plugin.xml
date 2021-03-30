@@ -267,7 +267,7 @@
       </editor>
 
       <editor
-            class="org.openlca.app.editors.parameters.BigParameterTable"
+            class="org.openlca.app.editors.parameters.bigtable.BigParameterTable"
             default="false"
             icon="icons/model/parameter.png"
             id="BigParameterTable"
