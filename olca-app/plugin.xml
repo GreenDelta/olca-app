@@ -206,7 +206,7 @@
             default="false"
             icon="icons/quick_calculation.png"
             id="ComparisonResultEditor"
-            name="Quick results"
+            name="Comparison results"
             contributorClass="org.openlca.app.results.ResultEditorActions">
       </editor>
       <editor
