@@ -1,14 +1,11 @@
 package org.openlca.app.editors.parameters.bigtable;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
@@ -21,21 +18,10 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Labels;
-import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ImpactMethodDao;
-import org.openlca.core.database.ParameterDao;
-import org.openlca.core.database.ProcessDao;
-import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
-import org.openlca.core.model.Process;
-import org.openlca.core.model.Version;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.expressions.Scope;
 import org.openlca.util.Strings;
@@ -48,7 +34,7 @@ class EditorPage extends FormPage {
 	private FilterCombo filterCombo;
 
 	public EditorPage(BigParameterTable table) {
-		super(table,"BigParameterTable", M.Parameters);
+		super(table, "BigParameterTable", M.Parameters);
 	}
 
 	@Override
@@ -70,8 +56,8 @@ class EditorPage extends FormPage {
 				table.setInput(params);
 			} else {
 				List<Param> filtered = params.stream()
-						.filter(p -> p.matches(t, filterCombo.type))
-						.collect(Collectors.toList());
+					.filter(p -> p.matches(t, filterCombo.type))
+					.collect(Collectors.toList());
 				table.setInput(filtered);
 			}
 		};
@@ -79,12 +65,12 @@ class EditorPage extends FormPage {
 		filterCombo.onChange = doFilter;
 
 		table = Tables.createViewer(body,
-				M.Name,
-				M.ParameterScope,
-				M.Value,
-				M.Formula,
-				M.Uncertainty,
-				M.Description);
+			M.Name,
+			M.ParameterScope,
+			M.Value,
+			M.Formula,
+			M.Uncertainty,
+			M.Description);
 		double w = 1.0 / 6.0;
 		Tables.bindColumnWidths(table, w, w, w, w, w, w);
 		Label label = new Label();
@@ -95,9 +81,9 @@ class EditorPage extends FormPage {
 		bindActions();
 		mform.reflow(true);
 		App.runWithProgress(
-				"Loading parameters ...",
-				() -> Param.fetchAll(Database.get(), params),
-				() -> table.setInput(params));
+			"Loading parameters ...",
+			() -> Param.fetchAll(Database.get(), params),
+			() -> table.setInput(params));
 	}
 
 	private void bindActions() {
@@ -112,22 +98,22 @@ class EditorPage extends FormPage {
 			}
 		});
 		Action onUsage = Actions.create(
-				M.Usage, Icon.LINK.descriptor(), () -> {
-					Param p = Viewers.getFirstSelected(table);
-					if (p == null)
-						return;
-					ParameterUsagePage.show(p.parameter, p.owner);
-				});
+			M.Usage, Icon.LINK.descriptor(), () -> {
+				Param p = Viewers.getFirstSelected(table);
+				if (p == null)
+					return;
+				ParameterUsagePage.show(p.parameter, p.owner);
+			});
 		Action onEvaluate = Actions.create(
-				M.EvaluateAllFormulas, Icon.RUN.descriptor(), () -> {
-					App.runWithProgress(M.EvaluateAllFormulas,
-							this::evaluateFormulas, () -> {
-								table.setInput(params);
-								filter.setText("");
-							});
-				});
+			M.EvaluateAllFormulas, Icon.RUN.descriptor(), () -> {
+				App.runWithProgress(M.EvaluateAllFormulas,
+					this::evaluateFormulas, () -> {
+						table.setInput(params);
+						filter.setText("");
+					});
+			});
 		Action onEdit = Actions.create(M.Edit,
-				Icon.EDIT.descriptor(), this::onEdit);
+			Icon.EDIT.descriptor(), this::onEdit);
 
 		Actions.bind(table, onOpen, onUsage, onEvaluate, onEdit);
 		Tables.onDoubleClick(table, e -> onOpen.run());
@@ -142,8 +128,8 @@ class EditorPage extends FormPage {
 				continue;
 			}
 			var scope = param.isGlobal()
-					? fi.getGlobalScope()
-					: fi.getScopeOrGlobal(param.ownerId());
+				? fi.getGlobalScope()
+				: fi.getScopeOrGlobal(param.ownerId());
 			try {
 				p.value = scope.eval(p.formula);
 				param.evalError = false;
@@ -157,12 +143,12 @@ class EditorPage extends FormPage {
 	 * Bind the parameter values and formulas to the respective scopes of a
 	 * formula interpreter.
 	 */
-	private FormulaInterpreter buildInterpreter() {
+	FormulaInterpreter buildInterpreter() {
 		var fi = new FormulaInterpreter();
 		for (var param : params) {
 			Scope scope = param.isGlobal()
-					? fi.getGlobalScope()
-					: fi.getOrCreate(param.ownerId());
+				? fi.getGlobalScope()
+				: fi.getOrCreate(param.ownerId());
 			var p = param.parameter;
 			if (p.isInputParameter) {
 				scope.bind(p.name, p.value);
@@ -177,119 +163,8 @@ class EditorPage extends FormPage {
 		Param param = Viewers.getFirstSelected(table);
 		if (param == null || param.parameter == null)
 			return;
-		Parameter p = param.parameter;
-
-		// first check that the parameter or the owner
-		// is currently not edited in another editor
-		if (param.owner == null && App.hasDirtyEditor(p)) {
-			MsgBox.info("Cannot edit " + p.name,
-					"The parameter is currently "
-							+ "modified in another editor.");
-			return;
+		if (ValueEditor.edit(this, param)) {
+			table.refresh();
 		}
-		if (param.owner != null
-				&& App.hasDirtyEditor(param.owner)) {
-			String label = Strings.cut(
-					Labels.name(param.owner), 50);
-			MsgBox.info("Cannot edit " + p.name, label +
-					" is currently modified in another editor.");
-			return;
-		}
-
-		// build dialog with validation
-		InputDialog dialog;
-		FormulaInterpreter fi = null;
-		if (p.isInputParameter) {
-			dialog = new InputDialog(UI.shell(),
-					"Edit value", "Set a new parameter value",
-					Double.toString(p.value), s -> {
-						try {
-							Double.parseDouble(s);
-							return null;
-						} catch (Exception e) {
-							return s + " " + M.IsNotValidNumber;
-						}
-					});
-		} else {
-			fi = buildInterpreter();
-			var scope = param.isGlobal()
-					? fi.getGlobalScope()
-					: fi.getScopeOrGlobal(param.ownerId());
-			dialog = new InputDialog(UI.shell(),
-					"Edit formula", "Set a new parameter formula",
-					p.formula, s -> {
-						try {
-							scope.eval(s);
-							return null;
-						} catch (Exception e) {
-							return s + " " + M.IsInvalidFormula;
-						}
-					});
-		}
-
-		// sync the parameter
-		if (dialog.open() != Window.OK)
-			return;
-		IDatabase db = Database.get();
-		ParameterDao dao = new ParameterDao(db);
-		p = dao.getForId(p.id);
-
-		String val = dialog.getValue();
-		if (p.isInputParameter) {
-			try {
-				p.value = Double.parseDouble(val);
-				param.evalError = false;
-			} catch (Exception e) {
-				param.evalError = true;
-			}
-		} else if (fi != null) {
-			try {
-				p.formula = val;
-				var scope = param.isGlobal()
-						? fi.getGlobalScope()
-						: fi.getScopeOrGlobal(param.ownerId());
-				p.value = scope.eval(val);
-				param.evalError = false;
-			} catch (Exception e) {
-				param.evalError = true;
-			}
-		}
-
-		// update the parameter in the database
-		long time = Calendar.getInstance()
-				.getTimeInMillis();
-		p.lastChange = time;
-		Version.incUpdate(p);
-		param.parameter = dao.update(p);
-
-		// update the owner; we also close a possible
-		// opened editor just to make sure that the
-		// user does not get confused with a state that
-		// is not in sync with the database
-		if (param.owner == null) {
-			App.close(p);
-		} else {
-			if (param.owner.type == ModelType.PROCESS) {
-				ProcessDao pdao = new ProcessDao(db);
-				Process proc = pdao.getForId(param.owner.id);
-				if (proc != null) {
-					Version.incUpdate(proc);
-					proc.lastChange = time;
-				}
-				proc = pdao.update(proc);
-				App.close(proc);
-			} else if (param.owner.type == ModelType.IMPACT_METHOD) {
-				ImpactMethodDao mdao = new ImpactMethodDao(db);
-				ImpactMethod method = mdao.getForId(param.owner.id);
-				if (method != null) {
-					Version.incUpdate(method);
-					method.lastChange = time;
-				}
-				method = mdao.update(method);
-				App.close(method);
-			}
-		}
-
-		table.refresh();
 	}
 }
