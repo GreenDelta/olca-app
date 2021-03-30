@@ -2,10 +2,7 @@ package org.openlca.app.editors.parameters.bigtable;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
@@ -30,9 +27,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.ImpactMethodDao;
-import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.ImpactMethod;
@@ -44,8 +39,6 @@ import org.openlca.core.model.Version;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.expressions.Scope;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class EditorPage extends FormPage {
 
@@ -103,7 +96,7 @@ class EditorPage extends FormPage {
 		mform.reflow(true);
 		App.runWithProgress(
 				"Loading parameters ...",
-				this::initParams,
+				() -> Param.fetchAll(Database.get(), params),
 				() -> table.setInput(params));
 	}
 
@@ -140,45 +133,6 @@ class EditorPage extends FormPage {
 		Tables.onDoubleClick(table, e -> onOpen.run());
 	}
 
-	private void initParams() {
-		IDatabase db = Database.get();
-		var processes = new ProcessDao(db)
-				.getDescriptors().stream()
-				.collect(Collectors.toMap(d -> d.id, d -> d));
-		var impacts = new ImpactCategoryDao(db)
-				.getDescriptors().stream()
-				.collect(Collectors.toMap(d -> d.id, d -> d));
-		Map<Long, Long> owners = new HashMap<>();
-		try {
-			String sql = "select id, f_owner from tbl_parameters";
-			NativeSql.on(db).query(sql, r -> {
-				owners.put(r.getLong(1), r.getLong(2));
-				return true;
-			});
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("Failed to query parameter onwers", e);
-		}
-
-		new ParameterDao(db).getAll().forEach(pr -> {
-			Param p = new Param();
-			p.parameter = pr;
-			params.add(p);
-			if (pr.scope == ParameterScope.GLOBAL)
-				return;
-			p.ownerID = owners.get(pr.id);
-			if (p.ownerID == null)
-				return;
-			if (pr.scope == ParameterScope.PROCESS) {
-				p.owner = processes.get(p.ownerID);
-			} else if (pr.scope == ParameterScope.IMPACT) {
-				p.owner = impacts.get(p.ownerID);
-			}
-		});
-
-		Collections.sort(params);
-	}
-
 	private void evaluateFormulas() {
 		var fi = buildInterpreter();
 		for (var param : params) {
@@ -187,9 +141,9 @@ class EditorPage extends FormPage {
 				param.evalError = false;
 				continue;
 			}
-			var scope = param.ownerID == null
+			var scope = param.isGlobal()
 					? fi.getGlobalScope()
-					: fi.getScopeOrGlobal(param.ownerID);
+					: fi.getScopeOrGlobal(param.ownerId());
 			try {
 				p.value = scope.eval(p.formula);
 				param.evalError = false;
@@ -206,9 +160,9 @@ class EditorPage extends FormPage {
 	private FormulaInterpreter buildInterpreter() {
 		var fi = new FormulaInterpreter();
 		for (var param : params) {
-			Scope scope = param.ownerID == null
+			Scope scope = param.isGlobal()
 					? fi.getGlobalScope()
-					: fi.getOrCreate(param.ownerID);
+					: fi.getOrCreate(param.ownerId());
 			var p = param.parameter;
 			if (p.isInputParameter) {
 				scope.bind(p.name, p.value);
@@ -258,9 +212,9 @@ class EditorPage extends FormPage {
 					});
 		} else {
 			fi = buildInterpreter();
-			var scope = param.ownerID == null
+			var scope = param.isGlobal()
 					? fi.getGlobalScope()
-					: fi.getScopeOrGlobal(param.ownerID);
+					: fi.getScopeOrGlobal(param.ownerId());
 			dialog = new InputDialog(UI.shell(),
 					"Edit formula", "Set a new parameter formula",
 					p.formula, s -> {
@@ -291,9 +245,9 @@ class EditorPage extends FormPage {
 		} else if (fi != null) {
 			try {
 				p.formula = val;
-				var scope = param.ownerID == null
+				var scope = param.isGlobal()
 						? fi.getGlobalScope()
-						: fi.getScopeOrGlobal(param.ownerID);
+						: fi.getScopeOrGlobal(param.ownerId());
 				p.value = scope.eval(val);
 				param.evalError = false;
 			} catch (Exception e) {

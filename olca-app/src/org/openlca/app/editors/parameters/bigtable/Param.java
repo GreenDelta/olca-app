@@ -1,34 +1,100 @@
 package org.openlca.app.editors.parameters.bigtable;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.openlca.app.M;
 import org.openlca.app.util.Labels;
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ImpactCategoryDao;
+import org.openlca.core.database.NativeSql;
+import org.openlca.core.database.ParameterDao;
+import org.openlca.core.database.ProcessDao;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.util.Strings;
+import org.slf4j.LoggerFactory;
 
-/** Stores a parameter object and its owner. */
+import gnu.trove.map.hash.TLongLongHashMap;
+
+/**
+ * Stores a parameter object and its owner.
+ */
 class Param implements Comparable<Param> {
 
 	/**
-	 * We have the owner ID as a separate field because a parameter could
-	 * have a link to an owner that does not exist anymore in the database
-	 * (it is an error but such things seem to happen).
+	 * If null, it is a global parameter.
 	 */
-	Long ownerID;
-
-	/** If null, it is a global parameter. */
-	CategorizedDescriptor owner;
+	final CategorizedDescriptor owner;
 
 	Parameter parameter;
 
 	boolean evalError;
 
+	private Param(Parameter p) {
+		this(p, null);
+	}
+
+	private Param(Parameter p, CategorizedDescriptor owner) {
+		this.parameter = p;
+		this.owner = owner;
+	}
+
+	static void fetchAll(IDatabase db, List<Param> params) {
+		if (db == null || params == null)
+			return;
+
+		// collect the owner relations
+		var processes = new ProcessDao(db).descriptorMap();
+		var impacts = new ImpactCategoryDao(db).descriptorMap();
+		var owners = new TLongLongHashMap();
+		try {
+			var sql = "select id, f_owner from tbl_parameters";
+			NativeSql.on(db).query(sql, r -> {
+				var ownerId = r.getLong(2);
+				if (r.wasNull() || ownerId == 0)
+					return true;
+				owners.put(r.getLong(1), ownerId);
+				return true;
+			});
+		} catch (Exception e) {
+			var log = LoggerFactory.getLogger(Param.class);
+			log.error("Failed to query parameter onwers", e);
+		}
+
+		new ParameterDao(db).getAll().forEach(p -> {
+
+			var ownerId = owners.get(p.id);
+
+			// global parameters
+			if (p.scope == ParameterScope.GLOBAL
+					|| ownerId == 0) {
+				params.add(new Param(p));
+				return;
+			}
+
+			// local parameters
+			var owner = p.scope == ParameterScope.IMPACT
+				? impacts.get(ownerId)
+				: processes.get(ownerId);
+			if (owner == null) {
+				var log = LoggerFactory.getLogger(Param.class);
+				log.error("invalid owner in parameter {}", p);
+				return;
+			}
+			params.add(new Param(p, owner));
+		});
+
+		Collections.sort(params);
+	}
+
 	@Override
 	public int compareTo(Param other) {
 		int c = Strings.compare(
-				this.parameter.name,
-				other.parameter.name);
+			this.parameter.name,
+			other.parameter.name);
 		if (c != 0)
 			return c;
 
@@ -40,8 +106,8 @@ class Param implements Comparable<Param> {
 			return 1;
 
 		return Strings.compare(
-				Labels.name(this.owner),
-				Labels.name(other.owner));
+			Labels.name(this.owner),
+			Labels.name(other.owner));
 	}
 
 	boolean matches(String filter, int type) {
@@ -65,8 +131,8 @@ class Param implements Comparable<Param> {
 
 		if (type == FilterCombo.ALL || type == FilterCombo.SCOPES) {
 			String scope = owner != null
-					? Labels.name(owner)
-					: M.GlobalParameter;
+				? Labels.name(owner)
+				: M.GlobalParameter;
 			scope = scope == null ? "" : scope.toLowerCase();
 			if (scope.contains(f))
 				return true;
@@ -91,10 +157,24 @@ class Param implements Comparable<Param> {
 		return false;
 	}
 
+	long ownerId() {
+		return owner == null ? 0 : owner.id;
+	}
+
+	boolean isGlobal() {
+		return scope() == ParameterScope.GLOBAL;
+	}
+
 	ParameterScope scope() {
-		return parameter.scope == null
-				? ParameterScope.GLOBAL
-				: parameter.scope;
+		if (owner == null)
+			return ParameterScope.GLOBAL;
+		if (owner.type == ModelType.PROCESS)
+			return ParameterScope.PROCESS;
+		if (owner.type == ModelType.IMPACT_CATEGORY)
+			return ParameterScope.IMPACT;
+		return parameter == null || parameter.scope == null
+			? ParameterScope.GLOBAL
+			: parameter.scope;
 	}
 
 }
