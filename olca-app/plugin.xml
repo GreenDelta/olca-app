@@ -201,6 +201,14 @@
             name="Quick results"
             contributorClass="org.openlca.app.results.ResultEditorActions">
       </editor>
+       <editor
+            class="org.openlca.app.results.comparison.ComparisonResultEditor"
+            default="false"
+            icon="icons/quick_calculation.png"
+            id="ComparisonResultEditor"
+            name="Quick results"
+            contributorClass="org.openlca.app.results.ResultEditorActions">
+      </editor>
       <editor
             class="org.openlca.app.results.AnalyzeEditor"
             contributorClass="org.openlca.app.results.ResultEditorActions"

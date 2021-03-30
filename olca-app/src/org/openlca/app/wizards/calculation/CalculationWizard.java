@@ -44,6 +44,7 @@ public class CalculationWizard extends Wizard {
 
 	private final Setup setup;
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private static boolean isComparisonWizard = false; // True, if we clicked on the comparison button
 
 	public CalculationWizard(ProductSystem system) {
 		this.setup = Setup.init(system);
@@ -59,6 +60,19 @@ public class CalculationWizard extends Wizard {
 			return;
 		var wizard = new CalculationWizard(system);
 		var dialog = new WizardDialog(UI.shell(), wizard);
+		isComparisonWizard = false;
+		dialog.open();
+	}
+
+	public static void openComparison(ProductSystem system) {
+		if (system == null)
+			return;
+		boolean doContinue = checkForUnsavedContent(system);
+		if (!doContinue)
+			return;
+		var wizard = new CalculationWizard(system);
+		var dialog = new WizardDialog(UI.shell(), wizard);
+		isComparisonWizard = true;
 		dialog.open();
 	}
 
@@ -93,8 +107,12 @@ public class CalculationWizard extends Wizard {
 
 	@Override
 	public void addPages() {
-		addPage(new CalculationWizardPage(setup));
-		addPage(new DQSettingsPage(setup));
+		if (isComparisonWizard) {
+			addPage(new ComparisonWizardPage(setup));
+		} else {
+			addPage(new CalculationWizardPage(setup));
+			addPage(new DQSettingsPage(setup));
+		}
 	}
 
 	@Override
@@ -137,8 +155,7 @@ public class CalculationWizard extends Wizard {
 				// run the calculation
 				log.trace("run calculation");
 				var calc = new SystemCalculator(Database.get());
-				var result = upstream
-						? calc.calculateFull(setup.calcSetup)
+				var result = upstream ? calc.calculateFull(setup.calcSetup)
 						: calc.calculateContributions(setup.calcSetup);
 
 				// check storage and DQ calculation
@@ -149,15 +166,18 @@ public class CalculationWizard extends Wizard {
 				DQResult dqResult = null;
 				if (setup.withDataQuality) {
 					log.trace("calculate data quality result");
-					dqResult = DQResult.of(
-							Database.get(), setup.dqSetup, result);
+					dqResult = DQResult.of(Database.get(), setup.dqSetup, result);
 				}
 
 				// sort and open the editor
 				log.trace("sort result items");
 				Sort.sort(result);
 				log.trace("calculation done; open editor");
-				ResultEditor.open(setup.calcSetup, result, dqResult);
+				if (isComparisonWizard) {
+					ResultEditor.openComparison(setup.calcSetup, result, dqResult);
+				} else {
+					ResultEditor.open(setup.calcSetup, result, dqResult);
+				}
 			} catch (OutOfMemoryError e) {
 				outOfMemory = true;
 			}
@@ -182,8 +202,7 @@ public class CalculationWizard extends Wizard {
 					return;
 				flowIDs.add(f.flow.id);
 			});
-			Map<Long, Flow> flows = new FlowDao(db)
-					.getForIds(flowIDs).stream()
+			Map<Long, Flow> flows = new FlowDao(db).getForIds(flowIDs).stream()
 					.collect(Collectors.toMap(f -> f.id, f -> f));
 
 			// create the exchanges

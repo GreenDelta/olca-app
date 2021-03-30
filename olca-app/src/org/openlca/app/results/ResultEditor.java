@@ -9,6 +9,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.results.comparison.ComparisonResultEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
@@ -17,29 +18,25 @@ import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.FullResult;
 
-public abstract class ResultEditor<T extends ContributionResult>
-		extends FormEditor {
+public abstract class ResultEditor<T extends ContributionResult> extends FormEditor {
 
 	public T result;
 	public CalculationSetup setup;
 	public DQResult dqResult;
 
-	public static void open(
-			CalculationSetup setup,
-			ContributionResult result) {
+	public static void open(CalculationSetup setup, ContributionResult result) {
 		open(setup, result, null);
 	}
 
-	public static void open(
-			CalculationSetup setup,
-			ContributionResult result,
-			DQResult dqResult) {
-		var input = ResultEditorInput.create(
-				setup, result).with(dqResult);
-		var id = result instanceof FullResult
-				? AnalyzeEditor.ID
-				: QuickResultEditor.ID;
+	public static void open(CalculationSetup setup, ContributionResult result, DQResult dqResult) {
+		var input = ResultEditorInput.create(setup, result).with(dqResult);
+		var id = result instanceof FullResult ? AnalyzeEditor.ID : QuickResultEditor.ID;
 		Editors.open(input, id);
+	}
+
+	public static void openComparison(CalculationSetup setup, ContributionResult result, DQResult dqResult) {
+		var input = ResultEditorInput.create(setup, result).with(dqResult);
+		Editors.open(input, ComparisonResultEditor.ID);
 	}
 
 	@Override
@@ -65,25 +62,20 @@ public abstract class ResultEditor<T extends ContributionResult>
 	public void setFocus() {
 	}
 
-	static class ResultEditorInput implements IEditorInput {
+	public static class ResultEditorInput implements IEditorInput {
 
 		public final long productSystemId;
 		public final String resultKey;
 		public final String setupKey;
 		public String dqResultKey;
 
-		private ResultEditorInput(
-				long productSystemId,
-				String resultKey,
-				String setupKey) {
+		private ResultEditorInput(long productSystemId, String resultKey, String setupKey) {
 			this.productSystemId = productSystemId;
 			this.resultKey = resultKey;
 			this.setupKey = setupKey;
 		}
 
-		static ResultEditorInput create(
-				CalculationSetup setup,
-				ContributionResult result) {
+		static ResultEditorInput create(CalculationSetup setup, ContributionResult result) {
 			if (setup == null)
 				return null;
 			String resultKey = Cache.getAppCache().put(result);
@@ -124,8 +116,7 @@ public abstract class ResultEditor<T extends ContributionResult>
 			EntityCache cache = Cache.getEntityCache();
 			if (cache == null)
 				return "";
-			ProductSystemDescriptor d = cache.get(ProductSystemDescriptor.class,
-					productSystemId);
+			ProductSystemDescriptor d = cache.get(ProductSystemDescriptor.class, productSystemId);
 			return M.Results + ": " + Labels.name(d);
 		}
 
@@ -139,4 +130,5 @@ public abstract class ResultEditor<T extends ContributionResult>
 			return getName();
 		}
 	}
+
 }

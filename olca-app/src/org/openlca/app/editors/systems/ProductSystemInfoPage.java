@@ -54,6 +54,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, tk);
 		addCalculationButton(infoSection.getContainer(), tk);
+		addComparisonButton(infoSection.getContainer(), tk);
 		addInventoryInfo(infoSection.getContainer(), tk);
 		createReferenceSection(body, tk);
 		body.setFocus();
@@ -104,9 +105,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 			else if (!e.isInput && type == FlowType.PRODUCT_FLOW)
 				candidates.add(e);
 		}
-		Collections.sort(candidates, (e1, e2) -> Strings.compare(
-				Labels.name(e1.flow),
-				Labels.name(e2.flow)));
+		Collections.sort(candidates, (e1, e2) -> Strings.compare(Labels.name(e1.flow), Labels.name(e2.flow)));
 		return candidates;
 	}
 
@@ -116,6 +115,17 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		button.setImage(Icon.RUN.get());
 		Controls.onSelect(button, e -> {
 			CalculationWizard.open(getModel());
+			inventoryInfo.setVisible(!getModel().inventory.isEmpty());
+		});
+		tk.createLabel(comp, "");
+	}
+
+	private void addComparisonButton(Composite comp, FormToolkit tk) {
+		tk.createLabel(comp, "");
+		Button button = tk.createButton(comp, "Comparison", SWT.NONE);
+		button.setImage(Icon.RUN.get());
+		Controls.onSelect(button, e -> {
+			CalculationWizard.openComparison(getModel());
 			inventoryInfo.setVisible(!getModel().inventory.isEmpty());
 		});
 		tk.createLabel(comp, "");
