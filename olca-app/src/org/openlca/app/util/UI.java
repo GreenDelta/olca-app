@@ -106,7 +106,7 @@ public class UI {
 			}
 			if (shell != null)
 				return shell;
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
 
 		// then, try to get it from the display
@@ -196,8 +196,7 @@ public class UI {
 	public static Composite formSection(Composite parent, FormToolkit tk,
 			String label, int columns) {
 		Section section = section(parent, tk, label);
-		Composite client = sectionClient(section, tk, columns);
-		return client;
+		return sectionClient(section, tk, columns);
 	}
 
 	public static Section section(Composite comp, FormToolkit tk, String title) {
@@ -298,12 +297,10 @@ public class UI {
 	}
 
 	public static Button formCheckbox(Composite parent, FormToolkit toolkit) {
-		Button button = null;
-		if (toolkit != null)
-			button = toolkit.createButton(parent, null, SWT.CHECK);
-		else
-			button = new Button(parent, SWT.CHECK);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+		var button = toolkit != null
+			? toolkit.createButton(parent, null, SWT.CHECK)
+			: new Button(parent, SWT.CHECK);
+		var gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		button.setLayoutData(gd);
 		return button;
 	}
@@ -337,11 +334,9 @@ public class UI {
 			String label, int flags) {
 		if (label != null)
 			formLabel(parent, toolkit, label);
-		Text text = null;
-		if (toolkit != null)
-			text = toolkit.createText(parent, null, flags);
-		else
-			text = new Text(parent, flags);
+		Text text = toolkit != null
+			? toolkit.createText(parent, null, flags)
+			: new Text(parent, flags);
 		gridData(text, true, false);
 		return text;
 	}
@@ -359,21 +354,13 @@ public class UI {
 		return formMultiText(comp, tk, heightHint);
 	}
 
-	public static Text formMultiText(Composite comp, FormToolkit tk) {
-		return formMultiText(comp, tk, 100);
-	}
-
 	public static Text formMultiText(Composite comp, FormToolkit tk, int heightHint) {
-		Text text = null;
-		if (tk != null) {
-			text = tk.createText(comp, null, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
-		} else {
-			text = new Text(comp, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
-		}
+		Text text = tk != null
+			? tk.createText(comp, null, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI)
+			: new Text(comp, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
 		GridData gd = gridData(text, true, false);
 		gd.minimumHeight = heightHint;
 		gd.heightHint = heightHint;
-		gd.widthHint = heightHint;
 		return text;
 	}
 
@@ -393,7 +380,7 @@ public class UI {
 	}
 
 	public static Label formLabel(Composite comp, FormToolkit tk, String text) {
-		Label label = null;
+		Label label;
 		if (tk != null) {
 			label = tk.createLabel(comp, text, SWT.NONE);
 		} else {
@@ -420,12 +407,8 @@ public class UI {
 		return formLabel(comp, null, "");
 	}
 
-	public static Hyperlink formLink(Composite parent, String label) {
-		return formLink(parent, null, label);
-	}
-
 	public static Hyperlink formLink(Composite comp, FormToolkit tk, String text) {
-		Hyperlink link = null;
+		Hyperlink link;
 		if (tk != null)
 			link = tk.createHyperlink(comp, text, SWT.NONE);
 		else {

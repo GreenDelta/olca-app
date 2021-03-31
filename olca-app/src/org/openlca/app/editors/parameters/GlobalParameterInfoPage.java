@@ -46,7 +46,7 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 
 	private void evalFormulas() {
 		form.getMessageManager().removeAllMessages();
-		var params = new ArrayList<Parameter>(otherGlobals);
+		var params = new ArrayList<>(otherGlobals);
 		params.add(getModel());
 		var errors = Formulas.eval(params);
 		hasErrors = errors.size() > 0;
@@ -101,6 +101,7 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 					|| u.distributionType == UncertaintyType.NONE;
 			param.uncertainty = isNone ? null : u;
 			link.setText(Uncertainty.string(param.uncertainty));
+			link.getParent().layout();
 			getEditor().setDirty(true);
 		});
 		UI.filler(comp, toolkit);

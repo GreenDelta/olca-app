@@ -4,7 +4,6 @@ import java.util.Calendar;
 import java.util.function.Consumer;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -135,42 +134,6 @@ class ValueEditor {
 		return false;
 	}
 
-	private String getDialogValue(FormulaInterpreter interpreter) {
-		var p = param.parameter;
-		InputDialog dialog;
-		if (p.isInputParameter) {
-			dialog = new InputDialog(UI.shell(),
-				"Edit value", "Set a new parameter value",
-				Double.toString(p.value), s -> {
-				try {
-					Double.parseDouble(s);
-					return null;
-				} catch (Exception e) {
-					return s + " " + M.IsNotValidNumber;
-				}
-			});
-		} else {
-			var scope = param.isGlobal()
-				? interpreter.getGlobalScope()
-				: interpreter.getScopeOrGlobal(param.ownerId());
-			dialog = new InputDialog(UI.shell(),
-				"Edit formula", "Set a new parameter formula",
-				p.formula, s -> {
-				try {
-					scope.eval(s);
-					return null;
-				} catch (Exception e) {
-					return s + " " + M.IsInvalidFormula;
-				}
-			});
-		}
-
-		return dialog.open() != Window.OK
-			? null
-			: dialog.getValue();
-	}
-
-
 	private static class Dialog extends FormDialog {
 
 		private final Param param;
@@ -184,10 +147,12 @@ class ValueEditor {
 			super(UI.shell());
 			this.param = param;
 			this.interpreter = interpreter;
-			if (param.parameter.isInputParameter) {
-				value = param.parameter.value;
+			var p = param.parameter;
+			if (p.isInputParameter) {
+				value = p.value;
+				uncertainty = p.uncertainty;
 			} else {
-				formula = param.parameter.formula;
+				formula = p.formula;
 			}
 		}
 
@@ -210,7 +175,7 @@ class ValueEditor {
 			var comp = tk.createComposite(body);
 
 			UI.gridData(comp, true, false);
-			UI.gridLayout(comp, 3);
+			UI.gridLayout(comp, 2);
 
 			var p = param.parameter;
 
@@ -221,27 +186,27 @@ class ValueEditor {
 			var text = tk.createText(comp, p.isInputParameter
 				? Double.toString(value)
 				: formula == null ? "" : formula);
-			UI.filler(comp, tk);
+			UI.gridData(text, true, false);
 
 			// uncertainty panel for input parameters
 			if (p.isInputParameter) {
 				tk.createLabel(comp, M.Uncertainty);
-				var uLabel = tk.createLabel(comp, p.uncertainty == null
-					? M.None
-					: p.uncertainty.toString());
-				UI.gridData(uLabel, true, false);
-				var uButton = tk.createButton(comp, M.Edit, SWT.NONE);
-				Controls.onSelect(uButton, $ -> {
+				var link = tk.createHyperlink(
+					comp, Uncertainty.string(p.uncertainty), SWT.NONE);
+				UI.gridData(link, true, false);
+
+				Controls.onClick(link, $ -> {
 					var u = UncertaintyDialog.open(uncertainty).orElse(null);
 					if (u == null)
 						return;
 					uncertainty = u;
-					uLabel.setText(u.toString());
-					uLabel.getParent().layout();
+					link.setText(Uncertainty.string(u));
+					link.getParent().layout();
 				});
 			}
 
 			// error message
+			UI.filler(comp, tk);
 			var errorLabel = tk.createLabel(comp, "");
 			errorLabel.setForeground(Colors.systemColor(SWT.COLOR_RED));
 			Consumer<String> onError = err -> {
