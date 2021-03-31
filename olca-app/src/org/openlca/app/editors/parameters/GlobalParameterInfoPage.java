@@ -1,15 +1,16 @@
 package org.openlca.app.editors.parameters;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.IMessage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.components.ParameterProposals;
@@ -22,11 +23,12 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.Uncertainty;
+import org.openlca.core.model.UncertaintyType;
 
 class GlobalParameterInfoPage extends ModelPage<Parameter> {
 
-	private ParameterChangeSupport support = new ParameterChangeSupport();
-	private List<Parameter> parameters;
+	private final ParameterChangeSupport support = new ParameterChangeSupport();
+	private final List<Parameter> otherGlobals;
 	private FormToolkit toolkit;
 	private ScrolledForm form;
 	private boolean hasErrors;
@@ -34,20 +36,24 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 	GlobalParameterInfoPage(GlobalParameterEditor editor) {
 		super(editor, "GlobalParameterInfoPage", M.GeneralInformation);
 		support.onEvaluation(this::evalFormulas);
-		parameters = new ParameterDao(Database.get()).getGlobalParameters();
-		for (int i = 0; i < parameters.size(); i++)
-			if (parameters.get(i).name.equals(getModel().name))
-				parameters.remove(i);
-		parameters.add(getModel());
+		// collect the other global parameters for fast formula evaluation
+		otherGlobals = new ParameterDao(Database.get())
+				.getGlobalParameters()
+				.stream()
+				.filter(p -> !Objects.equals(p, getModel()))
+				.collect(Collectors.toList());
 	}
 
 	private void evalFormulas() {
 		form.getMessageManager().removeAllMessages();
-		List<String> errors = Formulas.eval(parameters);
+		var params = new ArrayList<Parameter>(otherGlobals);
+		params.add(getModel());
+		var errors = Formulas.eval(params);
 		hasErrors = errors.size() > 0;
 		for (String error : errors)
 			form.getMessageManager()
-					.addMessage("invalidFormula", M.InvalidFormula + ": " + error, null, IMessage.ERROR);
+					.addMessage("invalidFormula",
+							M.InvalidFormula + ": " + error, null, IMessage.ERROR);
 	}
 
 	boolean hasErrors() {
@@ -83,13 +89,18 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 	private void forInputParameter(Composite comp) {
 		doubleText(comp, M.Value, "value");
 		UI.formLabel(comp, toolkit, M.Uncertainty);
-		Hyperlink link = UI.formLink(comp, toolkit, Uncertainty.string(getModel().uncertainty));
+		var link = UI.formLink(
+				comp, toolkit, Uncertainty.string(getModel().uncertainty));
 		Controls.onClick(link, e -> {
-			UncertaintyDialog dialog = new UncertaintyDialog(UI.shell(), getModel().uncertainty);
-			if (dialog.open() != IDialogConstants.OK_ID)
+			var param = getModel();
+			var u = UncertaintyDialog.open(param.uncertainty)
+					.orElse(null);
+			if (u == null)
 				return;
-			getModel().uncertainty = dialog.getUncertainty();
-			link.setText(Uncertainty.string(getModel().uncertainty));
+			var isNone = u.distributionType == null
+					|| u.distributionType == UncertaintyType.NONE;
+			param.uncertainty = isNone ? null : u;
+			link.setText(Uncertainty.string(param.uncertainty));
 			getEditor().setDirty(true);
 		});
 		UI.filler(comp, toolkit);

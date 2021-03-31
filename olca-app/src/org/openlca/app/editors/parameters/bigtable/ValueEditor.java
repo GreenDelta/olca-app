@@ -1,12 +1,22 @@
 package org.openlca.app.editors.parameters.bigtable;
 
 import java.util.Calendar;
+import java.util.function.Consumer;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.forms.FormDialog;
+import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.components.UncertaintyDialog;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -15,6 +25,8 @@ import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.Uncertainty;
+import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Version;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.util.Strings;
@@ -49,30 +61,25 @@ class ValueEditor {
 		if (hasOpenEditor())
 			return false;
 
-		var fi = page.buildInterpreter();
-		var val = getDialogValue(fi);
-		if (val == null)
+		// open the dialog and set new parameter values
+		var interpreter = page.buildInterpreter();
+		var dialog = new Dialog(param, interpreter);
+		if (dialog.open() != Window.OK)
 			return false;
 
 		var p = param.parameter;
 		if (p.isInputParameter) {
-			try {
-				p.value = Double.parseDouble(val);
-				param.evalError = false;
-			} catch (Exception e) {
-				param.evalError = true;
+			p.value = dialog.value;
+			var u = dialog.uncertainty;
+			if (u != null) {
+				p.uncertainty = u.distributionType == UncertaintyType.NONE
+					? null
+					: u;
 			}
-		} else if (fi != null) {
-			try {
-				p.formula = val;
-				var scope = param.isGlobal()
-					? fi.getGlobalScope()
-					: fi.getScopeOrGlobal(param.ownerId());
-				p.value = scope.eval(val);
-				param.evalError = false;
-			} catch (Exception e) {
-				param.evalError = true;
-			}
+		} else {
+			p.formula = dialog.formula == null
+				? ""
+				: dialog.formula;
 		}
 
 		// update the parameter and the owner
@@ -101,7 +108,7 @@ class ValueEditor {
 		return null;
 	}
 
-	private <T extends CategorizedEntity> T update(T e) {
+	private <T extends CategorizedEntity > T update(T e) {
 		if (e == null)
 			return null;
 		e.lastChange = Calendar.getInstance().getTimeInMillis();
@@ -161,6 +168,115 @@ class ValueEditor {
 		return dialog.open() != Window.OK
 			? null
 			: dialog.getValue();
+	}
+
+
+	private static class Dialog extends FormDialog {
+
+		private final Param param;
+		private final FormulaInterpreter interpreter;
+
+		private double value;
+		private String formula;
+		private Uncertainty uncertainty;
+
+		Dialog(Param param, FormulaInterpreter interpreter) {
+			super(UI.shell());
+			this.param = param;
+			this.interpreter = interpreter;
+			if (param.parameter.isInputParameter) {
+				value = param.parameter.value;
+			} else {
+				formula = param.parameter.formula;
+			}
+		}
+
+		@Override
+		protected void configureShell(Shell newShell) {
+			super.configureShell(newShell);
+			newShell.setText(
+				"Set a new value for " + param.parameter.name);
+		}
+
+		@Override
+		protected Point getInitialSize() {
+			return new Point(500, 300);
+		}
+
+		@Override
+		protected void createFormContent(IManagedForm mform) {
+			var tk = mform.getToolkit();
+			var body = UI.formBody(mform.getForm(), tk);
+			var comp = tk.createComposite(body);
+
+			UI.gridData(comp, true, false);
+			UI.gridLayout(comp, 3);
+
+			var p = param.parameter;
+
+			// label & text
+			tk.createLabel(comp, p.isInputParameter
+					? M.Value
+					: M.Formula);
+			var text = tk.createText(comp, p.isInputParameter
+				? Double.toString(value)
+				: formula == null ? "" : formula);
+			UI.filler(comp, tk);
+
+			// uncertainty panel for input parameters
+			if (p.isInputParameter) {
+				tk.createLabel(comp, M.Uncertainty);
+				var uLabel = tk.createLabel(comp, p.uncertainty == null
+					? M.None
+					: p.uncertainty.toString());
+				UI.gridData(uLabel, true, false);
+				var uButton = tk.createButton(comp, M.Edit, SWT.NONE);
+				Controls.onSelect(uButton, $ -> {
+					var u = UncertaintyDialog.open(uncertainty).orElse(null);
+					if (u == null)
+						return;
+					uncertainty = u;
+					uLabel.setText(u.toString());
+					uLabel.getParent().layout();
+				});
+			}
+
+			// error message
+			var errorLabel = tk.createLabel(comp, "");
+			errorLabel.setForeground(Colors.systemColor(SWT.COLOR_RED));
+			Consumer<String> onError = err -> {
+				errorLabel.setText(err == null ? "" : err);
+				errorLabel.getParent().layout();
+				var ok = getButton(IDialogConstants.OK_ID);
+				ok.setEnabled(err == null);
+			};
+
+			// handle text editing
+			text.addModifyListener($ -> {
+				var textVal = text.getText();
+
+				if (p.isInputParameter) {
+					try {
+						value = Double.parseDouble(textVal);
+						onError.accept(null);
+					} catch (Exception e) {
+						onError.accept(textVal + " " + M.IsNotValidNumber);
+					}
+				} else {
+
+					var scope = param.isGlobal()
+						? interpreter.getGlobalScope()
+						: interpreter.getScopeOrGlobal(param.ownerId());
+					try {
+						scope.eval(textVal);
+						formula = textVal;
+						onError.accept(null);
+					} catch (Exception e) {
+						onError.accept(textVal + " " + M.IsInvalidFormula);
+					}
+				}
+			});
+		}
 	}
 
 
