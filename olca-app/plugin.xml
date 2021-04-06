@@ -202,11 +202,11 @@
             contributorClass="org.openlca.app.results.ResultEditorActions">
       </editor>
        <editor
-            class="org.openlca.app.results.comparison.ComparisonResultEditor"
+            class="org.openlca.app.results.ProjectResultEditor"
             default="false"
             icon="icons/quick_calculation.png"
-            id="ComparisonResultEditor"
-            name="Comparison results"
+            id="ProjectResultEditor"
+            name="Project results"
             contributorClass="org.openlca.app.results.ResultEditorActions">
       </editor>
       <editor

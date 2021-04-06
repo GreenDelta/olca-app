@@ -15,12 +15,12 @@ import org.openlca.app.util.UI;
 /**
  * Overall information page of the analysis editor.
  */
-public class ComparisonPage extends FormPage {
+public class ProjectComparisonPage extends FormPage {
 
 	private final ResultEditor<?> editor;
 
-	public ComparisonPage(ResultEditor<?> editor) {
-		super(editor, "ContributionComparison", "Contribution comparison");
+	public ProjectComparisonPage(ResultEditor<?> editor) {
+		super(editor, "ProjectContributionComparison", "Project Contribution comparison");
 		this.editor = editor;
 	}
 

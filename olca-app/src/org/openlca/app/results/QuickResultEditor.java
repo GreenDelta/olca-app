@@ -5,6 +5,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.db.Cache;
+import org.openlca.app.results.comparison.ComparisonPage;
 import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.CalculationSetup;
@@ -19,24 +20,19 @@ public class QuickResultEditor extends ResultEditor<ContributionResult> {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public void init(IEditorSite site, IEditorInput iInput)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput iInput) throws PartInitException {
 		super.init(site, iInput);
 		try {
 			ResultEditorInput input = (ResultEditorInput) iInput;
-			setup = Cache.getAppCache().remove(input.setupKey,
-					CalculationSetup.class);
-			result = Cache.getAppCache().remove(
-					input.resultKey, ContributionResult.class);
+			setup = Cache.getAppCache().remove(input.setupKey, CalculationSetup.class);
+			result = Cache.getAppCache().remove(input.resultKey, ContributionResult.class);
 			String dqkey = input.dqResultKey;
 			if (dqkey != null) {
-				dqResult = Cache.getAppCache().remove(
-						dqkey, DQResult.class);
+				dqResult = Cache.getAppCache().remove(dqkey, DQResult.class);
 			}
 		} catch (Exception e) {
 			log.error("failed to load inventory result", e);
-			throw new PartInitException(
-					"failed to load inventory result", e);
+			throw new PartInitException("failed to load inventory result", e);
 		}
 	}
 
@@ -56,6 +52,7 @@ public class QuickResultEditor extends ResultEditor<ContributionResult> {
 			if (result.hasImpactResults()) {
 				addPage(new ImpactChecksPage(this));
 			}
+			addPage(new ComparisonPage(this));
 		} catch (Exception e) {
 			log.error("failed to add pages", e);
 		}

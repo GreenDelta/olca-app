@@ -1,4 +1,4 @@
-package org.openlca.app.wizards.calculation;
+package org.openlca.app.wizards.projectCalculation;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -29,7 +29,7 @@ import org.openlca.util.Strings;
  * Page for setting the calculation properties of a product system. Class must
  * be public in order to allow data-binding.
  */
-class ComparisonWizardPage extends WizardPage {
+class CalculationWizardPage extends WizardPage {
 
 	private final Setup setup;
 
@@ -38,11 +38,11 @@ class ComparisonWizardPage extends WizardPage {
 	private Composite monteCarloOptions;
 	private Composite commonOptions;
 
-	ComparisonWizardPage(Setup setup) {
-		super("ComparisonWizardPage");
+	CalculationWizardPage(Setup setup) {
+		super("CalculationWizardPage");
 		this.setup = setup;
-		setTitle("Comparison");
-		setDescription("Comparison description");
+		setTitle(M.CalculationProperties);
+		setDescription(M.CalculationWizardDescription);
 		setImageDescriptor(Icon.CALCULATION_WIZARD.descriptor());
 		setPageComplete(true);
 	}
@@ -51,7 +51,8 @@ class ComparisonWizardPage extends WizardPage {
 	public boolean canFlipToNextPage() {
 		if (!isPageComplete())
 			return false;
-		return setup.withDataQuality && setup.calcType != CalculationType.MONTE_CARLO_SIMULATION;
+		return setup.withDataQuality &&
+				setup.calcType != CalculationType.MONTE_CARLO_SIMULATION;
 	}
 
 	@Override
@@ -64,18 +65,22 @@ class ComparisonWizardPage extends WizardPage {
 		createParamSetCombo(body);
 		createAllocationCombo(body);
 		createMethodCombo(body);
+		createNWSetCombo(body);
 		createTypeRadios(body);
 
 		// separator
 		new Label(body, SWT.NONE);
-		UI.gridData(new Label(body, SWT.SEPARATOR | SWT.HORIZONTAL), true, false);
+		UI.gridData(new Label(
+				body, SWT.SEPARATOR | SWT.HORIZONTAL),
+				true, false);
 		new Label(body, SWT.NONE);
 
 		// options
 		optionStack = new Composite(body, SWT.NULL);
 		var optionsLayout = new StackLayout();
 		optionStack.setLayout(optionsLayout);
-
+		createMonteCarloOptions(optionStack);
+		createCommonOptions(optionStack);
 		optionsLayout.topControl = commonOptions;
 		new Label(body, SWT.NONE);
 
@@ -83,7 +88,8 @@ class ComparisonWizardPage extends WizardPage {
 	}
 
 	private void createParamSetCombo(Composite comp) {
-		var paramSets = new ArrayList<>(setup.calcSetup.productSystem.parameterSets);
+		var paramSets = new ArrayList<>(
+				setup.calcSetup.productSystem.parameterSets);
 		if (paramSets.size() < 2)
 			return;
 
@@ -96,10 +102,12 @@ class ComparisonWizardPage extends WizardPage {
 		});
 
 		UI.formLabel(comp, "Parameter set");
-		var combo = new TableCombo(comp, SWT.READ_ONLY | SWT.BORDER);
+		var combo = new TableCombo(comp,
+				SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
 		for (var paramSet : paramSets) {
-			var item = new TableItem(combo.getTable(), SWT.NONE);
+			var item = new TableItem(
+				combo.getTable(), SWT.NONE);
 			item.setText(paramSet.name);
 		}
 
@@ -113,10 +121,14 @@ class ComparisonWizardPage extends WizardPage {
 
 	private void createAllocationCombo(Composite comp) {
 		UI.formLabel(comp, M.AllocationMethod);
-		var combo = new AllocationCombo(comp, AllocationMethod.values());
+		var combo = new AllocationCombo(
+				comp, AllocationMethod.values());
 		combo.setNullable(false);
-		combo.select(Objects.requireNonNullElse(setup.calcSetup.allocationMethod, AllocationMethod.NONE));
-		combo.addSelectionChangedListener(m -> setup.calcSetup.allocationMethod = m);
+		combo.select(Objects.requireNonNullElse(
+				setup.calcSetup.allocationMethod,
+				AllocationMethod.NONE));
+		combo.addSelectionChangedListener(
+				m -> setup.calcSetup.allocationMethod = m);
 	}
 
 	private void createMethodCombo(Composite comp) {
@@ -140,12 +152,21 @@ class ComparisonWizardPage extends WizardPage {
 		if (setup.calcSetup.nwSet != null) {
 			nwViewer.select(setup.calcSetup.nwSet);
 		}
-		nwViewer.addSelectionChangedListener(nwSet -> setup.calcSetup.nwSet = nwSet);
+		nwViewer.addSelectionChangedListener(
+				nwSet -> setup.calcSetup.nwSet = nwSet);
 	}
 
 	private void createTypeRadios(Composite parent) {
-		CalculationType[] types = { CalculationType.CONTRIBUTION_ANALYSIS };
-		boolean[] enabled = { true };
+		CalculationType[] types = {
+				CalculationType.CONTRIBUTION_ANALYSIS,
+				CalculationType.UPSTREAM_ANALYSIS,
+				CalculationType.MONTE_CARLO_SIMULATION,
+		};
+		boolean[] enabled = {
+				true,
+				true,
+				!setup.hasLibraries,
+		};
 
 		UI.formLabel(parent, M.CalculationType);
 		Composite comp = new Composite(parent, SWT.NO_RADIO_GROUP);
@@ -205,7 +226,8 @@ class ComparisonWizardPage extends WizardPage {
 			var inventoryCheck = new Button(commonOptions, SWT.CHECK);
 			inventoryCheck.setSelection(setup.storeInventory);
 			inventoryCheck.setText(M.StoreInventoryResult);
-			Controls.onSelect(inventoryCheck, _e -> setup.storeInventory = inventoryCheck.getSelection());
+			Controls.onSelect(inventoryCheck,
+				_e -> setup.storeInventory = inventoryCheck.getSelection());
 		}
 	}
 
@@ -243,12 +265,14 @@ class ComparisonWizardPage extends WizardPage {
 		var regioCheck = new Button(comp, SWT.CHECK);
 		regioCheck.setText("Regionalized calculation");
 		regioCheck.setSelection(setup.calcSetup.withRegionalization);
-		Controls.onSelect(regioCheck, _e -> setup.calcSetup.withRegionalization = regioCheck.getSelection());
+		Controls.onSelect(regioCheck,
+			_e -> setup.calcSetup.withRegionalization = regioCheck.getSelection());
 
 		var costCheck = new Button(comp, SWT.CHECK);
 		costCheck.setText(M.IncludeCostCalculation);
 		costCheck.setSelection(setup.calcSetup.withCosts);
-		Controls.onSelect(costCheck, _e -> setup.calcSetup.withCosts = costCheck.getSelection());
+		Controls.onSelect(costCheck,
+			_e -> setup.calcSetup.withCosts = costCheck.getSelection());
 		if (setup.hasLibraries) {
 			costCheck.setEnabled(false);
 		}

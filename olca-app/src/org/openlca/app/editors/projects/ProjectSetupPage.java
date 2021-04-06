@@ -41,6 +41,7 @@ import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.openlca.app.viewers.tables.modify.field.DoubleModifier;
+import org.openlca.app.wizards.projectCalculation.CalculationWizard;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.AllocationMethod;
@@ -93,6 +94,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
 		createButton(infoSection.getContainer());
+		addCalculationButton(infoSection.getContainer(), toolkit);
 		new ImpactSection(editor).render(body, toolkit);
 		createVariantsSection(body);
 		Section section = UI.section(body, toolkit, M.Parameters);
@@ -117,17 +119,24 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Button b = toolkit.createButton(c, M.Report, SWT.NONE);
 		UI.gridData(b, false, false).widthHint = 100;
 		b.setImage(Images.get(ModelType.PROJECT));
-		Controls.onSelect(b, e -> ProjectEditorActions.calculate(
-				project, editor.getReport()));
+		Controls.onSelect(b, e -> ProjectEditorActions.calculate(project, editor.getReport()));
+	}
+	
+	private void addCalculationButton(Composite comp, FormToolkit tk) {
+		tk.createLabel(comp, "");
+		Button button = tk.createButton(comp, M.Calculate, SWT.NONE);
+		button.setImage(Icon.RUN.get());
+		Controls.onSelect(button, e -> {
+			CalculationWizard.open(getModel(), project.variants);
+		});
+		tk.createLabel(comp, "");
 	}
 
 	private void createVariantsSection(Composite body) {
 		Section section = UI.section(body, toolkit, M.Variants);
 		Composite comp = UI.sectionClient(section, toolkit, 1);
-		variantViewer = Tables.createViewer(comp,
-				M.Name, M.ProductSystem, M.Display,
-				M.AllocationMethod, M.Flow, M.Amount,
-				M.Unit, M.Description, "");
+		variantViewer = Tables.createViewer(comp, M.Name, M.ProductSystem, M.Display, M.AllocationMethod, M.Flow,
+				M.Amount, M.Unit, M.Description, "");
 		variantViewer.setLabelProvider(new VariantLabelProvider());
 		ModifySupport<ProjectVariant> ms = new ModifySupport<>(variantViewer);
 		ms.bind(M.Name, new VariantNameEditor());
@@ -136,8 +145,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		ms.bind(M.Amount, new DoubleModifier<>(editor, "amount"));
 		ms.bind(M.Unit, new VariantUnitEditor());
 		ms.bind(M.Description, new VariantDescriptionEditor());
-		ms.bind("", new CommentDialogModifier<ProjectVariant>(
-				editor.getComments(), v -> CommentPaths.get(v)));
+		ms.bind("", new CommentDialogModifier<ProjectVariant>(editor.getComments(), v -> CommentPaths.get(v)));
 		double w = 1.0 / 8.0;
 		Tables.bindColumnWidths(variantViewer, w, w, w, w, w, w, w, w);
 		addVariantActions(variantViewer, section);
@@ -156,8 +164,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		});
 		Action remove = Actions.onRemove(this::removeVariant);
 		Action copy = TableClipboard.onCopy(table);
-		CommentAction.bindTo(section, "variants",
-				editor.getComments(), add, remove);
+		CommentAction.bindTo(section, "variants", editor.getComments(), add, remove);
 		Actions.bind(table, onOpen, add, remove, copy);
 		Tables.onDoubleClick(table, (event) -> {
 			TableItem item = Tables.getItem(table, event);
@@ -187,8 +194,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 				continue;
 			}
 			List<ProjectVariant> variants = project.variants;
-			ProjectVariant variant = createVariant(
-					system, variants.size() + 1);
+			ProjectVariant variant = createVariant(system, variants.size() + 1);
 			variants.add(variant);
 			variantViewer.setInput(variants);
 			parameterTable.addVariant(variant);
@@ -243,8 +249,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		}
 	}
 
-	private class VariantDescriptionEditor extends
-			TextCellModifier<ProjectVariant> {
+	private class VariantDescriptionEditor extends TextCellModifier<ProjectVariant> {
 		@Override
 		protected String getText(ProjectVariant variant) {
 			return variantSync.getDescription(variant);
@@ -260,13 +265,10 @@ class ProjectSetupPage extends ModelPage<Project> {
 		}
 	}
 
-	private class VariantAllocationEditor extends
-			ComboBoxCellModifier<ProjectVariant, AllocationMethod> {
+	private class VariantAllocationEditor extends ComboBoxCellModifier<ProjectVariant, AllocationMethod> {
 		@Override
 		protected AllocationMethod getItem(ProjectVariant var) {
-			return var.allocationMethod != null
-					? var.allocationMethod
-					: AllocationMethod.NONE;
+			return var.allocationMethod != null ? var.allocationMethod : AllocationMethod.NONE;
 		}
 
 		@Override
@@ -286,8 +288,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		}
 	}
 
-	private class VariantUnitEditor extends
-			ComboBoxCellModifier<ProjectVariant, Unit> {
+	private class VariantUnitEditor extends ComboBoxCellModifier<ProjectVariant, Unit> {
 		@Override
 		protected Unit getItem(ProjectVariant var) {
 			return var.unit;
@@ -296,12 +297,10 @@ class ProjectSetupPage extends ModelPage<Project> {
 		@Override
 		protected Unit[] getItems(ProjectVariant var) {
 			FlowPropertyFactor fac = var.flowPropertyFactor;
-			if (fac == null || fac.flowProperty == null
-					|| fac.flowProperty.unitGroup == null)
+			if (fac == null || fac.flowProperty == null || fac.flowProperty.unitGroup == null)
 				return new Unit[0];
 			UnitGroup unitGroup = fac.flowProperty.unitGroup;
-			Unit[] units = unitGroup.units.toArray(
-					new Unit[unitGroup.units.size()]);
+			Unit[] units = unitGroup.units.toArray(new Unit[unitGroup.units.size()]);
 			Arrays.sort(units, (u1, u2) -> {
 				if (u1 == null || u2 == null)
 					return 0;
@@ -340,8 +339,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		}
 	}
 
-	private class VariantLabelProvider extends LabelProvider
-			implements ITableLabelProvider {
+	private class VariantLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
@@ -352,9 +350,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			case 1:
 				return Images.get(ModelType.PRODUCT_SYSTEM);
 			case 2:
-				return v.isDisabled
-						? Icon.CHECK_FALSE.get()
-						: Icon.CHECK_TRUE.get();
+				return v.isDisabled ? Icon.CHECK_FALSE.get() : Icon.CHECK_TRUE.get();
 			case 4:
 				return Images.get(FlowType.PRODUCT_FLOW);
 			case 6:

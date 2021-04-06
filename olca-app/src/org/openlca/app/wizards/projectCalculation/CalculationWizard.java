@@ -1,4 +1,4 @@
-package org.openlca.app.wizards.calculation;
+package org.openlca.app.wizards.projectCalculation;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,6 +32,9 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.Project;
+import org.openlca.core.model.ProjectVariant;
+import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.SimpleResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,28 +44,31 @@ import org.slf4j.LoggerFactory;
  * product system
  */
 public class CalculationWizard extends Wizard {
-
-	private final Setup setup;
+	Project project;
+	List<ProjectVariant> variants;
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private Setup setup;
 
-	public CalculationWizard(ProductSystem system) {
-		this.setup = Setup.init(system);
+	public CalculationWizard(Project project, List<ProjectVariant> variants) {
+		this.setup = Setup.init(variants.get(0).productSystem);
+		this.project = project;
+		this.variants = variants;
 		setNeedsProgressMonitor(true);
 		setWindowTitle(M.CalculationProperties);
 	}
 
-	public static void open(ProductSystem system) {
-		if (system == null)
+	public static void open(Project project, List<ProjectVariant> variants) {
+		if (project == null)
 			return;
-		boolean doContinue = checkForUnsavedContent(system);
-		if (!doContinue)
-			return;
-		var wizard = new CalculationWizard(system);
+//		boolean doContinue = checkForUnsavedContent(project);
+//		if (!doContinue)
+//			return;
+		var wizard = new CalculationWizard(project, variants);
 		var dialog = new WizardDialog(UI.shell(), wizard);
 		dialog.open();
 	}
 
-	private static boolean checkForUnsavedContent(ProductSystem system) {
+	private static boolean checkForUnsavedContent(Project project) {
 		IEditorPart[] dirty = Editors.getActivePage().getDirtyEditors();
 		if (dirty.length == 0)
 			return true;
@@ -74,7 +80,7 @@ public class CalculationWizard extends Wizard {
 			ModelType type = input.getDescriptor().type;
 			if (type == ModelType.PROJECT || type == ModelType.ACTOR || type == ModelType.SOURCE)
 				continue;
-			if (type == ModelType.PRODUCT_SYSTEM && input.getDescriptor().id != system.id)
+			if (type == ModelType.PRODUCT_SYSTEM && input.getDescriptor().id != project.id)
 				continue;
 			relevant.add(part);
 		}
@@ -121,41 +127,47 @@ public class CalculationWizard extends Wizard {
 
 			outOfMemory = false;
 			monitor.beginTask(M.RunCalculation, IProgressMonitor.UNKNOWN);
-
-			// for MC simulations, just open the simulation editor
-			if (setup.calcType == CalculationType.MONTE_CARLO_SIMULATION) {
-				setup.calcSetup.withUncertainties = true;
-				SimulationEditor.open(setup.calcSetup);
-				return;
-			}
-
-			setup.calcSetup.withUncertainties = false;
-			boolean upstream = setup.calcType == CalculationType.UPSTREAM_ANALYSIS;
-
+			var results = new ArrayList<ContributionResult>();
 			try {
 
 				// run the calculation
 				log.trace("run calculation");
-				var calc = new SystemCalculator(Database.get());
-				var result = upstream ? calc.calculateFull(setup.calcSetup)
-						: calc.calculateContributions(setup.calcSetup);
-
-				// check storage and DQ calculation
-				if (setup.storeInventory) {
-					log.trace("store inventory");
-					saveInventory(result);
-				}
+				var productSystems = project.variants;
 				DQResult dqResult = null;
-				if (setup.withDataQuality) {
-					log.trace("calculate data quality result");
-					dqResult = DQResult.of(Database.get(), setup.dqSetup, result);
+				for (ProjectVariant projectVariant : productSystems) {
+					setup = Setup.init(projectVariant.productSystem);
+
+					// for MC simulations, just open the simulation editor
+					if (setup.calcType == CalculationType.MONTE_CARLO_SIMULATION) {
+						setup.calcSetup.withUncertainties = true;
+						SimulationEditor.open(setup.calcSetup);
+						return;
+					}
+
+					setup.calcSetup.withUncertainties = false;
+					boolean upstream = setup.calcType == CalculationType.UPSTREAM_ANALYSIS;
+					var calc = new SystemCalculator(Database.get());
+					var result = upstream ? calc.calculateFull(setup.calcSetup)
+							: calc.calculateContributions(setup.calcSetup);
+
+					// check storage and DQ calculation
+					if (setup.storeInventory) {
+						log.trace("store inventory");
+						saveInventory(result);
+					}
+
+					if (setup.withDataQuality) {
+						log.trace("calculate data quality result");
+						dqResult = DQResult.of(Database.get(), setup.dqSetup, result);
+					}
+					// sort and open the editor
+					log.trace("sort result items");
+					Sort.sort(result);
+					results.add(result);
 				}
 
-				// sort and open the editor
-				log.trace("sort result items");
-				Sort.sort(result);
 				log.trace("calculation done; open editor");
-				ResultEditor.open(setup.calcSetup, result, dqResult);
+				ResultEditor.open(setup.calcSetup, results, dqResult,variants);
 			} catch (OutOfMemoryError e) {
 				outOfMemory = true;
 			}

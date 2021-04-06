@@ -1,5 +1,8 @@
 package org.openlca.app.results;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -9,11 +12,11 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.results.comparison.ComparisonResultEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
+import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.FullResult;
@@ -34,9 +37,9 @@ public abstract class ResultEditor<T extends ContributionResult> extends FormEdi
 		Editors.open(input, id);
 	}
 
-	public static void openComparison(CalculationSetup setup, ContributionResult result, DQResult dqResult) {
-		var input = ResultEditorInput.create(setup, result).with(dqResult);
-		Editors.open(input, ComparisonResultEditor.ID);
+	public static void open(CalculationSetup setup, ArrayList<ContributionResult> results, DQResult dqResult, List<ProjectVariant> variants) {
+		var input = ResultEditorInput.create(setup, results, variants).with(dqResult);
+		Editors.open(input, ProjectResultEditor.ID);
 	}
 
 	@Override
@@ -68,11 +71,25 @@ public abstract class ResultEditor<T extends ContributionResult> extends FormEdi
 		public final String resultKey;
 		public final String setupKey;
 		public String dqResultKey;
+		public final String variantKey;
 
-		private ResultEditorInput(long productSystemId, String resultKey, String setupKey) {
+		private ResultEditorInput(long productSystemId, String resultKey, String setupKey, String variantKey) {
 			this.productSystemId = productSystemId;
 			this.resultKey = resultKey;
 			this.setupKey = setupKey;
+			this.variantKey = variantKey;
+		}
+
+		public static ResultEditorInput create(CalculationSetup setup, ArrayList<ContributionResult> results, List<ProjectVariant> variants) {
+			if (setup == null)
+				return null;
+			String resultKey = Cache.getAppCache().put(results);
+			String setupKey = Cache.getAppCache().put(setup);
+			String variantKey = Cache.getAppCache().put(variants);
+			long systemId = 0;
+			if (setup.productSystem != null)
+				systemId = setup.productSystem.id;
+			return new ResultEditorInput(systemId, resultKey, setupKey, variantKey);
 		}
 
 		static ResultEditorInput create(CalculationSetup setup, ContributionResult result) {
@@ -83,7 +100,7 @@ public abstract class ResultEditor<T extends ContributionResult> extends FormEdi
 			long systemId = 0;
 			if (setup.productSystem != null)
 				systemId = setup.productSystem.id;
-			return new ResultEditorInput(systemId, resultKey, setupKey);
+			return new ResultEditorInput(systemId, resultKey, setupKey, null);
 		}
 
 		/**
