@@ -9,6 +9,7 @@ import org.eclipse.ui.PartInitException;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
+import org.openlca.app.results.comparison.ComparisonPage;
 import org.openlca.app.results.contributions.ContributionTreePage;
 import org.openlca.app.results.contributions.ProcessResultPage;
 import org.openlca.app.results.contributions.locations.LocationPage;
@@ -30,14 +31,12 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 	private int diagramIndex;
 
 	@Override
-	public void init(IEditorSite site, IEditorInput iInput)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput iInput) throws PartInitException {
 		super.init(site, iInput);
 		ResultEditorInput inp = (ResultEditorInput) iInput;
 		result = Cache.getAppCache().remove(inp.resultKey, FullResult.class);
 		if (inp.dqResultKey != null) {
-			dqResult = Cache.getAppCache().remove(
-					inp.dqResultKey, DQResult.class);
+			dqResult = Cache.getAppCache().remove(inp.dqResultKey, DQResult.class);
 		}
 		setup = Cache.getAppCache().remove(inp.setupKey, CalculationSetup.class);
 		ProductSystem system = setup.productSystem;
@@ -58,13 +57,14 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 			addPage(new ContributionTreePage(this, result, setup));
 			addPage(new GroupPage(this, result, setup));
 			addPage(new LocationPage(this, result, setup));
+			addPage(new ComparisonPage(this));
 			diagram = new SankeyDiagram(result, dqResult, setup);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, M.SankeyDiagram);
 			if (result.hasImpactResults()) {
 				addPage(new ImpactChecksPage(this));
 			}
-			
+
 			// add a page listener to initialize the Sankey diagram
 			// lazily when it is activated the first time
 			var sankeyInit = new AtomicReference<IPageChangedListener>();
@@ -80,7 +80,7 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 			};
 			sankeyInit.set(fn);
 			addPageChangedListener(fn);
-			
+
 		} catch (final PartInitException e) {
 			var log = LoggerFactory.getLogger(getClass());
 			log.error("Add pages failed", e);

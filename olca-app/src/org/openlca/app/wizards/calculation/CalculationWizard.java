@@ -44,7 +44,6 @@ public class CalculationWizard extends Wizard {
 
 	private final Setup setup;
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	private static boolean isComparisonWizard = false; // True, if we clicked on the comparison button
 
 	public CalculationWizard(ProductSystem system) {
 		this.setup = Setup.init(system);
@@ -60,19 +59,6 @@ public class CalculationWizard extends Wizard {
 			return;
 		var wizard = new CalculationWizard(system);
 		var dialog = new WizardDialog(UI.shell(), wizard);
-		isComparisonWizard = false;
-		dialog.open();
-	}
-
-	public static void openComparison(ProductSystem system) {
-		if (system == null)
-			return;
-		boolean doContinue = checkForUnsavedContent(system);
-		if (!doContinue)
-			return;
-		var wizard = new CalculationWizard(system);
-		var dialog = new WizardDialog(UI.shell(), wizard);
-		isComparisonWizard = true;
 		dialog.open();
 	}
 
@@ -107,12 +93,8 @@ public class CalculationWizard extends Wizard {
 
 	@Override
 	public void addPages() {
-		if (isComparisonWizard) {
-			addPage(new ComparisonWizardPage(setup));
-		} else {
-			addPage(new CalculationWizardPage(setup));
-			addPage(new DQSettingsPage(setup));
-		}
+		addPage(new CalculationWizardPage(setup));
+		addPage(new DQSettingsPage(setup));
 	}
 
 	@Override
@@ -173,11 +155,7 @@ public class CalculationWizard extends Wizard {
 				log.trace("sort result items");
 				Sort.sort(result);
 				log.trace("calculation done; open editor");
-				if (isComparisonWizard) {
-					ResultEditor.openComparison(setup.calcSetup, result, dqResult);
-				} else {
-					ResultEditor.open(setup.calcSetup, result, dqResult);
-				}
+				ResultEditor.open(setup.calcSetup, result, dqResult);
 			} catch (OutOfMemoryError e) {
 				outOfMemory = true;
 			}
