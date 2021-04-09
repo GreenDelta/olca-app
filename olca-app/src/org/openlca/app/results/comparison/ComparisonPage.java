@@ -29,9 +29,8 @@ public class ComparisonPage extends FormPage {
 		ScrolledForm form = UI.formHeader(mform, Labels.name(editor.setup.productSystem), Images.get(editor.result));
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
-		var config = new Config(); // Comparison config
 		InfoSection.create(body, tk, editor.setup);
-		new ProductComparison(body, config, editor, tk).display();
+		new ProductComparison(body, editor, tk).display();
 		form.reflow(true);
 	}
 }

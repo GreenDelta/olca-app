@@ -9,7 +9,6 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.results.comparison.ComparisonResultEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.CalculationSetup;
@@ -32,11 +31,6 @@ public abstract class ResultEditor<T extends ContributionResult> extends FormEdi
 		var input = ResultEditorInput.create(setup, result).with(dqResult);
 		var id = result instanceof FullResult ? AnalyzeEditor.ID : QuickResultEditor.ID;
 		Editors.open(input, id);
-	}
-
-	public static void openComparison(CalculationSetup setup, ContributionResult result, DQResult dqResult) {
-		var input = ResultEditorInput.create(setup, result).with(dqResult);
-		Editors.open(input, ComparisonResultEditor.ID);
 	}
 
 	@Override

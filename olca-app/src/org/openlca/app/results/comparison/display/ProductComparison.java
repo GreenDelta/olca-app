@@ -46,12 +46,9 @@ import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 
 public class ProductComparison {
@@ -72,7 +69,6 @@ public class ProductComparison {
 	private int nonCutoffAmount;
 	private int cutOffSize;
 	private IDatabase db;
-	private ProductSystem productSystem;
 	private ImpactMethodDescriptor impactMethod;
 	private Map<String, ImpactDescriptor> impactCategoryMap;
 	private List<String> impactCategoriesName;
@@ -80,23 +76,20 @@ public class ProductComparison {
 	private Composite composite;
 	private boolean isCalculationStarted;
 	private long chosenProcessCategoryId;
-	private Map<Integer, Map<Integer, List<Contribution<CategorizedDescriptor>>>> contributionResultMap;
-	private Button runCalculation;
 	private FormToolkit tk;
+	private int screenWidth;
 
-	public ProductComparison(Composite shell, Config config, ResultEditor<?> editor, FormToolkit tk) {
+	public ProductComparison(Composite shell, ResultEditor<?> editor, FormToolkit tk) {
 		this.tk = tk;
 		db = Database.get();
-		productSystem = editor.setup.productSystem;
 		impactMethod = editor.setup.impactMethod;
 		contributionResult = editor.result;
 		this.shell = shell;
-		this.config = config;
+		this.config = new Config(); // Comparison config
 		colorCellCriteria = config.colorCellCriteria;
 		targetCalculation = config.targetCalculationCriteria;
 		contributionsList = new ArrayList<>();
 		cacheMap = new HashMap<>();
-		contributionResultMap = new HashMap<>();
 		impactCategoriesName = new ArrayList<>();
 		chosenProcessCategoryId = -1;
 		margin = new Point(200, 65);
@@ -135,7 +128,7 @@ public class ProductComparison {
 		/**
 		 * Canvas component
 		 */
-		var canvas = new Canvas(row2, SWT.V_SCROLL);
+		var canvas = new Canvas(row2, SWT.V_SCROLL | SWT.H_SCROLL);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		/**
@@ -151,11 +144,8 @@ public class ProductComparison {
 
 //		chooseTargetMenu(row1, row2);
 //		chooseImpactCategoriesMenu(row1, row2);
-		impactCategoryMap = contributionResult.getImpacts().stream().sorted((c1, c2) -> c1.name.compareTo(c2.name))
-				.map(impactCategory -> {
-					impactCategoriesName.add(impactCategory.name);
-					return impactCategory;
-				}).collect(Collectors.toMap(impactCategory -> impactCategory.name, impactCategory -> impactCategory));
+
+		initCategoryMap();
 
 		UI.gridLayout(row1, 10);
 
@@ -164,11 +154,20 @@ public class ProductComparison {
 		selectCategoryMenu(row1, row2, canvas);
 		selectCutoffSizeMenu(row1, row2, canvas);
 		selectAmountVisibleProcessMenu(row1, row2, canvas);
-		runCalculationButton(row1, row2, canvas);
-		runCalculation.notifyListeners(SWT.Selection, new Event());
-
+		initContributionsList(canvas);
 		addPaintListener(canvas); // Once finished, we really paint the cache, so it avoids flickering
+	}
 
+	// Initialize a map of impact categories
+	private void initCategoryMap() {
+		if (TargetCalculationEnum.IMPACT.equals(targetCalculation)) {
+			impactCategoryMap = contributionResult.getImpacts().stream().sorted((c1, c2) -> c1.name.compareTo(c2.name))
+					.map(impactCategory -> {
+						impactCategoriesName.add(impactCategory.name);
+						return impactCategory;
+					})
+					.collect(Collectors.toMap(impactCategory -> impactCategory.name, impactCategory -> impactCategory));
+		}
 	}
 
 	/**
@@ -480,62 +479,32 @@ public class ProductComparison {
 	 * @param row2   The second part of the display
 	 * @param canvas The canvas
 	 */
-	private void runCalculationButton(Composite row1, Composite row2, Canvas canvas) {
+	private void initContributionsList(Canvas canvas) {
 		var vBar = canvas.getVerticalBar();
-		runCalculation = new Button(row1, SWT.None);
-		runCalculation.setVisible(false);
-		runCalculation.setText("Run calculation");
-		runCalculation.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				contributionsList = new ArrayList<>();
-				if (TargetCalculationEnum.IMPACT.equals(targetCalculation)) {
-					var productSystemResults = contributionResultMap.get(productSystem.hashCode());
-					if (productSystemResults == null) {
-						productSystemResults = new HashMap<>();
-						contributionResultMap.put(productSystem.hashCode(), productSystemResults);
-					}
-					impactCategoriesName.stream().forEach(item -> {
-						var psResults = contributionResultMap.get(productSystem.hashCode());
-						var impactDescriptor = impactCategoryMap.get(item);
-						var contributionList = psResults.get(impactDescriptor.hashCode());
-						if (contributionList == null) {
-							contributionList = contributionResult.getProcessContributions(impactDescriptor);
-							psResults.put(impactDescriptor.hashCode(), contributionList); // We cache the process
-																							// contributions
-						}
-						var p = new Contributions(contributionList, item, null);
-						contributionsList.add(p);
-					});
-				} else {
-					new ProductSystemDao(db).getAll().stream().forEach(ps -> {
-						var psResults = contributionResultMap.get(ps.hashCode());
-						if (psResults == null) {
-							psResults = new HashMap<>();
-							contributionResultMap.put(ps.hashCode(), psResults);
-						}
-						var impactDescriptor = impactCategoryMap.get(impactCategoriesName.get(0));
-						var contributionList = psResults.get(impactDescriptor.hashCode());
-						if (contributionList == null) {
-							var setup = new CalculationSetup(ps);
-							setup.impactMethod = impactMethod;
-							var calc = new SystemCalculator(db);
-							var fullResult = calc.calculateFull(setup);
-							contributionList = fullResult.getProcessContributions(impactDescriptor);
-							psResults.put(impactDescriptor.hashCode(), contributionList); // We cache the process
-																							// contribution
-						}
-						var p = new Contributions(contributionList, impactDescriptor.name, ps.id + ": " + ps.name);
-						contributionsList.add(p);
-					});
-				}
-				isCalculationStarted = true;
-				theoreticalScreenHeight = margin.y * 2 + gapBetweenProduct * (contributionsList.size() - 1);
-				vBar.setMaximum(theoreticalScreenHeight);
-				sortProducts();
-				triggerComboSelection(selectCategory, true);
-				redraw(row2, canvas);
-			}
-		});
+		contributionsList = new ArrayList<>();
+		if (TargetCalculationEnum.IMPACT.equals(targetCalculation)) {
+			impactCategoriesName.stream().forEach(item -> {
+				var impactDescriptor = impactCategoryMap.get(item);
+				var contributionList = contributionResult.getProcessContributions(impactDescriptor);
+				var p = new Contributions(contributionList, item, null);
+				contributionsList.add(p);
+			});
+		} else {
+			new ProductSystemDao(db).getAll().stream().forEach(ps -> {
+				var impactDescriptor = impactCategoryMap.get(impactCategoriesName.get(0));
+				var setup = new CalculationSetup(ps);
+				setup.impactMethod = impactMethod;
+				var calc = new SystemCalculator(db);
+				var fullResult = calc.calculateFull(setup);
+				var contributionList = fullResult.getProcessContributions(impactDescriptor);
+				var p = new Contributions(contributionList, impactDescriptor.name, ps.id + ": " + ps.name);
+				contributionsList.add(p);
+			});
+		}
+		isCalculationStarted = true;
+		theoreticalScreenHeight = margin.y * 2 + gapBetweenProduct * (contributionsList.size() - 1);
+		vBar.setMaximum(theoreticalScreenHeight);
+		sortProducts();
 	}
 
 	/**
@@ -568,6 +537,7 @@ public class ProductComparison {
 			var newHash = computeConfigurationHash();
 			cacheMap.put(newHash, cache);
 		}
+		screenWidth = cache.getBounds().width;
 		Rectangle client = canvas.getClientArea();
 		vBar.setThumb(Math.min(theoreticalScreenHeight, client.height));
 		vBar.setPageIncrement(Math.min(theoreticalScreenHeight, client.height));
@@ -583,7 +553,7 @@ public class ProductComparison {
 	 */
 	private int computeConfigurationHash() {
 		var hash = Objects.hash(targetCalculation, impactCategoriesName, chosenCategoryColor, colorCellCriteria,
-				cutOffSize, nonCutoffAmount, shell.getSize(), isCalculationStarted, chosenProcessCategoryId);
+				cutOffSize, nonCutoffAmount, isCalculationStarted, chosenProcessCategoryId);
 		return hash;
 	}
 
@@ -1015,6 +985,15 @@ public class ProductComparison {
 				origin.y = -vSelection;
 			}
 		});
+		var hBar = canvas.getHorizontalBar();
+		hBar.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event e) {
+				int hSelection = hBar.getSelection();
+				int destX = -hSelection - origin.x;
+				canvas.scroll(destX, 0, 0, 0, canvas.getSize().x, canvas.getSize().y, false);
+				origin.x = -hSelection;
+			}
+		});
 	}
 
 	/**
@@ -1025,21 +1004,39 @@ public class ProductComparison {
 	 */
 	private void addResizeEvent(Composite composite, Canvas canvas) {
 		var vBar = canvas.getVerticalBar();
+		var hBar = canvas.getHorizontalBar();
 		canvas.addListener(SWT.Resize, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
+				screenSize = shell.getSize();
+
 				Rectangle client = canvas.getClientArea();
 				vBar.setThumb(Math.min(theoreticalScreenHeight, client.height));
 				vBar.setPageIncrement(Math.min(theoreticalScreenHeight, client.height));
 				vBar.setIncrement(20);
+
 				int vPage = canvas.getSize().y - client.height;
+				int hPage = canvas.getSize().x - client.width;
 				int vSelection = vBar.getSelection();
+				int hSelection = hBar.getSelection();
 				if (vSelection >= vPage) {
 					if (vPage <= 0)
 						vSelection = 0;
 					origin.y = -vSelection;
 				}
-				redraw(composite, canvas);
+				if (hSelection >= hPage) {
+					if (hPage <= 0)
+						hSelection = 0;
+					origin.x = -hSelection;
+				}
+				if (cacheMap.isEmpty()) {
+					redraw(composite, canvas);
+				}
+				hBar.setMinimum(0);
+				hBar.setThumb(Math.min(screenWidth, client.width));
+				hBar.setPageIncrement(Math.min(screenWidth, client.width));
+				hBar.setIncrement(20);
+				hBar.setMaximum(screenWidth);
 			}
 		});
 	}
