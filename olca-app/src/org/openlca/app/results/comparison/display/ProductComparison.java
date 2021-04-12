@@ -41,17 +41,19 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.db.Database;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
-import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.results.ContributionResult;
 
-public class ProductComparison {
+import com.google.common.base.Stopwatch;
+
+public class ProductComparison implements Runnable {
 	private Composite shell;
 	private List<Contributions> contributionsList;
 	private Point screenSize;
@@ -81,6 +83,8 @@ public class ProductComparison {
 	private Canvas canvas;
 
 	public ProductComparison(Composite shell, ResultEditor<?> editor, FormToolkit tk) {
+		var timer = Stopwatch.createStarted();
+
 		this.tk = tk;
 		db = Database.get();
 		impactMethod = editor.setup.impactMethod;
@@ -101,13 +105,27 @@ public class ProductComparison {
 		cutOffSize = 25;
 		origin = new Point(0, 0);
 		isCalculationStarted = false;
+		System.out.println("time in construct :" + timer.stop());
 	}
 
 	/**
-	 * Entry point of the program. Display the contributions, and draw links between
-	 * each matching results
+	 * Entry point of the program
 	 */
-	public void display() {
+	@Override
+	public void run() {
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				display();
+			}
+		});
+
+	}
+
+	/**
+	 * Display the contributions, and draw links between each matching results
+	 */
+	private void display() {
+		var timer = Stopwatch.createStarted();
 		Contributions.config = config;
 		Contributions.updateComparisonCriteria(colorCellCriteria);
 		Cell.config = config;
@@ -160,10 +178,13 @@ public class ProductComparison {
 		selectCutoffSizeMenu(row1, row2, canvas);
 		selectAmountVisibleProcessMenu(row1, row2, canvas);
 		addPaintListener(canvas); // Once finished, we really paint the cache, so it avoids flickering
+		System.out.println("time in display :" + timer.stop());
 	}
 
 	// Initialize a map of impact categories
 	private void initCategoryMap() {
+		var timer = Stopwatch.createStarted();
+
 		if (TargetCalculationEnum.IMPACT.equals(targetCalculation)) {
 			impactCategoryMap = contributionResult.getImpacts().stream().sorted((c1, c2) -> c1.name.compareTo(c2.name))
 					.map(impactCategory -> {
@@ -172,6 +193,8 @@ public class ProductComparison {
 					})
 					.collect(Collectors.toMap(impactCategory -> impactCategory.name, impactCategory -> impactCategory));
 		}
+		System.out.println("time in initCategoryMap :" + timer.stop());
+
 	}
 
 	/**
@@ -322,20 +345,26 @@ public class ProductComparison {
 	 * @param canvas The canvas
 	 */
 	private void selectCategoryMenu(Composite row1, Composite row2, Canvas canvas) {
+		var timer = Stopwatch.createStarted();
+
 		selectCategory = UI.formCombo(row1, "Select Product Category : ");
-		var<String, Descriptor> categoryMap = new HashMap<String, Descriptor>();
-		var<String> list = contributionsList.stream().flatMap(p -> p.getList().stream().flatMap(
-				results -> results.getResult().stream().filter(r -> r.getContribution().item != null).map(r -> {
-					var categoryId = r.getContribution().item.category;
-					var cat = db.getDescriptor(Category.class, categoryId);
-					if (categoryMap.get(cat.name) == null) {
-						categoryMap.put(cat.name, cat);
-					}
-					return cat.name;
-				}))).distinct().sorted().collect(Collectors.toList());
-		list.add(0, "");
-		selectCategory.setItems(list.toArray(String[]::new));
+		var categoryMap = new HashMap<String, Descriptor>();
+		var categoriesRefId = contributionsList.stream()
+				.flatMap(p -> p.getList().stream().flatMap(results -> results.getResult().stream()
+						.filter(r -> r.getContribution().item != null).map(r -> r.getContribution().item.category)))
+				.distinct().collect(Collectors.toSet());
+		var categoriesDescriptors = new CategoryDao(db).getDescriptors(categoriesRefId);
+		var categoriesNameList = categoriesDescriptors.stream().sorted((c1, c2) -> c1.name.compareTo(c2.name))
+				.map(c -> {
+					categoryMap.put(c.name, c);
+					return c.name;
+				}).collect(Collectors.toList());
+
+		categoriesNameList.add(0, "");
+		selectCategory.setItems(categoriesNameList.toArray(String[]::new));
 		selectCategory.setSize(200, 65);
+		System.out.println("time in selectCategryMenu :" + timer.stop());
+
 		selectCategory.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				resetDefaultColorCells();
@@ -481,6 +510,8 @@ public class ProductComparison {
 	 * @param canvas The canvas
 	 */
 	private void initContributionsList(Canvas canvas) {
+		var timer = Stopwatch.createStarted();
+
 		var vBar = canvas.getVerticalBar();
 		contributionsList = new ArrayList<>();
 		if (TargetCalculationEnum.IMPACT.equals(targetCalculation)) {
@@ -506,14 +537,20 @@ public class ProductComparison {
 		theoreticalScreenHeight = margin.y * 2 + gapBetweenRect * (contributionsList.size() - 1);
 		vBar.setMaximum(theoreticalScreenHeight);
 		sortContributions();
+		System.out.println("time in initContributionsList :" + timer.stop());
+
 	}
 
 	/**
 	 * Sort contributions by ascending amount, according to the comparison criteria
 	 */
 	private void sortContributions() {
+		var timer = Stopwatch.createStarted();
+
 		Contributions.updateComparisonCriteria(colorCellCriteria);
 		contributionsList.stream().forEach(c -> c.sort());
+		System.out.println("time in sortContributions :" + timer.stop());
+
 	}
 
 	/**
@@ -523,6 +560,8 @@ public class ProductComparison {
 	 * @param canvas    The canvas
 	 */
 	private void redraw(Composite composite, Canvas canvas) {
+		var timer = Stopwatch.createStarted();
+
 		screenSize = composite.getSize();
 		if (screenSize.y == 0) {
 			return;
@@ -538,6 +577,8 @@ public class ProductComparison {
 			cacheMap.put(newHash, cache);
 		}
 		screenWidth = cache.getBounds().width;
+		System.out.println("time in redraw :" + timer.stop());
+
 		canvas.redraw();
 	}
 
@@ -562,6 +603,8 @@ public class ProductComparison {
 	 * @param cache     The cached image in which we are drawing
 	 */
 	private void cachedPaint(Composite composite, Image cache) {
+		var timer = Stopwatch.createStarted();
+
 		GC gc = new GC(cache);
 		screenSize = composite.getSize(); // Responsive behavior
 		double maxRectWidth = screenSize.x * 0.85; // 85% of the screen width
@@ -577,6 +620,8 @@ public class ProductComparison {
 			handleContributions(gc, maxRectWidth, rectEdge, contributionsIndex, maxSumAmount);
 			rectEdge = new Point(rectEdge.x, rectEdge.y + 300);
 		}
+		System.out.println("time in cachedPaint :" + timer.stop());
+
 		drawLinks(gc);
 	}
 
@@ -617,6 +662,7 @@ public class ProductComparison {
 		}
 		// Draw a rectangle for each impact categories
 		gc.drawRectangle(rectEdge.x, rectEdge.y, rectWidth, rectHeight);
+
 	}
 
 	/**
@@ -921,6 +967,8 @@ public class ProductComparison {
 	 * @param gc The GC component
 	 */
 	private void drawLinks(GC gc) {
+		var timer = Stopwatch.createStarted();
+
 		for (int contributionsIndex = 0; contributionsIndex < contributionsList.size() - 1; contributionsIndex++) {
 			var cells = contributionsList.get(contributionsIndex);
 			for (Cell cell : cells.getList()) {
@@ -944,6 +992,8 @@ public class ProductComparison {
 				}
 			}
 		}
+		System.out.println("time in drawLinks :" + timer.stop());
+
 	}
 
 	/**
@@ -1004,6 +1054,8 @@ public class ProductComparison {
 		canvas.addListener(SWT.Resize, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
+				var timer = Stopwatch.createStarted();
+
 				if (cacheMap.isEmpty()) {
 					triggerComboSelection(selectCategory, true);
 					redraw(composite, canvas);
@@ -1034,6 +1086,8 @@ public class ProductComparison {
 						hSelection = 0;
 					origin.x = -hSelection;
 				}
+				System.out.println("time in resize :" + timer.stop());
+
 			}
 		});
 	}
@@ -1047,9 +1101,13 @@ public class ProductComparison {
 	private void addPaintListener(Canvas canvas) {
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
+				var timer = Stopwatch.createStarted();
+
 				var hash = computeConfigurationHash();
 				var cache = cacheMap.get(hash);
 				e.gc.drawImage(cache, origin.x, origin.y);
+				System.out.println("time in paint :" + timer.stop());
+
 			}
 		});
 	}
