@@ -58,8 +58,8 @@ public class ProductComparison {
 	private Config config;
 	private Point origin;
 	private final Point margin;
-	private final int productHeight;
-	private final int gapBetweenProduct;
+	private final int rectHeight;
+	private final int gapBetweenRect;
 	private int theoreticalScreenHeight;
 	private ColorCellCriteria colorCellCriteria;
 	private Map<Integer, Image> cacheMap;
@@ -78,6 +78,7 @@ public class ProductComparison {
 	private long chosenProcessCategoryId;
 	private FormToolkit tk;
 	private int screenWidth;
+	private Canvas canvas;
 
 	public ProductComparison(Composite shell, ResultEditor<?> editor, FormToolkit tk) {
 		this.tk = tk;
@@ -85,7 +86,7 @@ public class ProductComparison {
 		impactMethod = editor.setup.impactMethod;
 		contributionResult = editor.result;
 		this.shell = shell;
-		this.config = new Config(); // Comparison config
+		config = new Config(); // Comparison config
 		colorCellCriteria = config.colorCellCriteria;
 		targetCalculation = config.targetCalculationCriteria;
 		contributionsList = new ArrayList<>();
@@ -93,9 +94,9 @@ public class ProductComparison {
 		impactCategoriesName = new ArrayList<>();
 		chosenProcessCategoryId = -1;
 		margin = new Point(200, 65);
-		productHeight = 30;
-		gapBetweenProduct = 300;
-		theoreticalScreenHeight = margin.y * 2 + gapBetweenProduct * 2;
+		rectHeight = 30;
+		gapBetweenRect = 300;
+		theoreticalScreenHeight = margin.y * 2 + gapBetweenRect * 2;
 		nonCutoffAmount = 100;
 		cutOffSize = 25;
 		origin = new Point(0, 0);
@@ -103,14 +104,17 @@ public class ProductComparison {
 	}
 
 	/**
-	 * Entry point of the program. Display the products, and draw links between each
-	 * matching results
+	 * Entry point of the program. Display the contributions, and draw links between
+	 * each matching results
 	 */
 	public void display() {
 		Contributions.config = config;
 		Contributions.updateComparisonCriteria(colorCellCriteria);
 		Cell.config = config;
 
+		/**
+		 * Section component
+		 */
 		Section settingsSection = UI.section(shell, tk, "Settings");
 		Composite comp = UI.sectionClient(settingsSection, tk);
 		UI.gridLayout(comp, 1);
@@ -128,7 +132,7 @@ public class ProductComparison {
 		/**
 		 * Canvas component
 		 */
-		var canvas = new Canvas(row2, SWT.V_SCROLL | SWT.H_SCROLL);
+		canvas = new Canvas(row2, SWT.V_SCROLL | SWT.H_SCROLL);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		/**
@@ -146,6 +150,7 @@ public class ProductComparison {
 //		chooseImpactCategoriesMenu(row1, row2);
 
 		initCategoryMap();
+		initContributionsList(canvas);
 
 		UI.gridLayout(row1, 10);
 
@@ -154,7 +159,6 @@ public class ProductComparison {
 		selectCategoryMenu(row1, row2, canvas);
 		selectCutoffSizeMenu(row1, row2, canvas);
 		selectAmountVisibleProcessMenu(row1, row2, canvas);
-		initContributionsList(canvas);
 		addPaintListener(canvas); // Once finished, we really paint the cache, so it avoids flickering
 	}
 
@@ -291,7 +295,8 @@ public class ProductComparison {
 	 */
 	private void colorByCriteriaMenu(Composite row1, Composite row2, Canvas canvas) {
 		final Combo c = UI.formCombo(row1, "Color cells by : ");
-		c.setBounds(50, 50, 150, 65);
+		c.setSize(new Point(150, 65));
+//		c.setBounds(50, 50, 150, 65);
 		String values[] = ColorCellCriteria.valuesToString();
 		c.setItems(values);
 		c.addSelectionListener(new SelectionAdapter() {
@@ -301,7 +306,7 @@ public class ProductComparison {
 				if (!colorCellCriteria.equals(criteria)) {
 					colorCellCriteria = criteria;
 					Contributions.updateComparisonCriteria(criteria);
-					contributionsList.stream().forEach(p -> p.updateCellsColor());
+					contributionsList.stream().forEach(c -> c.updateCellsColor());
 					triggerComboSelection(selectCategory, true);
 					redraw(row2, canvas);
 				}
@@ -318,37 +323,33 @@ public class ProductComparison {
 	 */
 	private void selectCategoryMenu(Composite row1, Composite row2, Canvas canvas) {
 		selectCategory = UI.formCombo(row1, "Select Product Category : ");
-//		selectCategory.setBounds(50, 50, 550, 65);
 		var<String, Descriptor> categoryMap = new HashMap<String, Descriptor>();
+		var<String> list = contributionsList.stream().flatMap(p -> p.getList().stream().flatMap(
+				results -> results.getResult().stream().filter(r -> r.getContribution().item != null).map(r -> {
+					var categoryId = r.getContribution().item.category;
+					var cat = db.getDescriptor(Category.class, categoryId);
+					if (categoryMap.get(cat.name) == null) {
+						categoryMap.put(cat.name, cat);
+					}
+					return cat.name;
+				}))).distinct().sorted().collect(Collectors.toList());
+		list.add(0, "");
+		selectCategory.setItems(list.toArray(String[]::new));
+		selectCategory.setSize(200, 65);
 		selectCategory.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+				resetDefaultColorCells();
 				if (selectCategory.getSelectionIndex() == -1) { // Nothing is selected : initialisation
 					chosenProcessCategoryId = -1;
-					resetDefaultColorCells();
-					var<String> list = contributionsList.stream()
-							.flatMap(p -> p.getList().stream().flatMap(results -> results.getResult().stream()
-									.filter(r -> r.getContribution().item != null).map(r -> {
-										var categoryId = r.getContribution().item.category;
-										var cat = db.getDescriptor(Category.class, categoryId);
-										if (categoryMap.get(cat.name) == null) {
-											categoryMap.put(cat.name, cat);
-										}
-										return cat.name;
-									})))
-							.distinct().sorted().collect(Collectors.toList());
-					list.add(0, "");
-					selectCategory.setItems(list.toArray(String[]::new));
 				} else if (selectCategory.getSelectionIndex() == 0) { // Empty value is selected : reset
 					chosenProcessCategoryId = 0;
-					resetDefaultColorCells();
 					redraw(row2, canvas);
 				} else { // A category is selected : update color
-					resetDefaultColorCells();
 					chosenProcessCategoryId = categoryMap
 							.get(selectCategory.getItem(selectCategory.getSelectionIndex())).id;
-					contributionsList.stream().forEach(p -> p.getList().stream().forEach(c -> {
-						if (c.getResult().get(0).getContribution().item.category == chosenProcessCategoryId) {
-							c.setRgb(chosenCategoryColor.getRGB());
+					contributionsList.stream().forEach(c -> c.getList().stream().forEach(cell -> {
+						if (cell.getResult().get(0).getContribution().item.category == chosenProcessCategoryId) {
+							cell.setRgb(chosenCategoryColor.getRGB());
 						}
 					}));
 					redraw(row2, canvas);
@@ -379,7 +380,7 @@ public class ProductComparison {
 	public void resetDefaultColorCells() {
 		RGB rgb = chosenCategoryColor.getRGB();
 		// Reset categories colors to default (just for the one which where changed)
-		contributionsList.stream().forEach(p -> p.getList().stream().filter(cell -> cell.getRgb().equals(rgb))
+		contributionsList.stream().forEach(c -> c.getList().stream().filter(cell -> cell.getRgb().equals(rgb))
 				.forEach(cell -> cell.resetDefaultRGB()));
 	}
 
@@ -486,8 +487,8 @@ public class ProductComparison {
 			impactCategoriesName.stream().forEach(item -> {
 				var impactDescriptor = impactCategoryMap.get(item);
 				var contributionList = contributionResult.getProcessContributions(impactDescriptor);
-				var p = new Contributions(contributionList, item, null);
-				contributionsList.add(p);
+				var c = new Contributions(contributionList, item, null);
+				contributionsList.add(c);
 			});
 		} else {
 			new ProductSystemDao(db).getAll().stream().forEach(ps -> {
@@ -497,22 +498,22 @@ public class ProductComparison {
 				var calc = new SystemCalculator(db);
 				var fullResult = calc.calculateFull(setup);
 				var contributionList = fullResult.getProcessContributions(impactDescriptor);
-				var p = new Contributions(contributionList, impactDescriptor.name, ps.id + ": " + ps.name);
-				contributionsList.add(p);
+				var c = new Contributions(contributionList, impactDescriptor.name, ps.id + ": " + ps.name);
+				contributionsList.add(c);
 			});
 		}
 		isCalculationStarted = true;
-		theoreticalScreenHeight = margin.y * 2 + gapBetweenProduct * (contributionsList.size() - 1);
+		theoreticalScreenHeight = margin.y * 2 + gapBetweenRect * (contributionsList.size() - 1);
 		vBar.setMaximum(theoreticalScreenHeight);
-		sortProducts();
+		sortContributions();
 	}
 
 	/**
-	 * Sort products by ascending amount, according to the comparison criteria
+	 * Sort contributions by ascending amount, according to the comparison criteria
 	 */
-	private void sortProducts() {
+	private void sortContributions() {
 		Contributions.updateComparisonCriteria(colorCellCriteria);
-		contributionsList.stream().forEach(p -> p.sort());
+		contributionsList.stream().forEach(c -> c.sort());
 	}
 
 	/**
@@ -522,7 +523,6 @@ public class ProductComparison {
 	 * @param canvas    The canvas
 	 */
 	private void redraw(Composite composite, Canvas canvas) {
-		var vBar = canvas.getVerticalBar();
 		screenSize = composite.getSize();
 		if (screenSize.y == 0) {
 			return;
@@ -538,10 +538,6 @@ public class ProductComparison {
 			cacheMap.put(newHash, cache);
 		}
 		screenWidth = cache.getBounds().width;
-		Rectangle client = canvas.getClientArea();
-		vBar.setThumb(Math.min(theoreticalScreenHeight, client.height));
-		vBar.setPageIncrement(Math.min(theoreticalScreenHeight, client.height));
-		vBar.setIncrement(20);
 		canvas.redraw();
 	}
 
@@ -568,81 +564,81 @@ public class ProductComparison {
 	private void cachedPaint(Composite composite, Image cache) {
 		GC gc = new GC(cache);
 		screenSize = composite.getSize(); // Responsive behavior
-		double maxProductWidth = screenSize.x * 0.85; // 85% of the screen width
-		// Starting point of the first product rectangle
+		double maxRectWidth = screenSize.x * 0.85; // 85% of the screen width
+		// Starting point of the first contributions rectangle
 		Point rectEdge = new Point(0 + margin.x, 0 + margin.y);
 		var optional = contributionsList.stream()
-				.mapToDouble(p -> p.getList().stream().mapToDouble(c -> c.getNormalizedAmount()).sum()).max();
+				.mapToDouble(c -> c.getList().stream().mapToDouble(cell -> cell.getNormalizedAmount()).sum()).max();
 		double maxSumAmount = 0.0;
 		if (optional.isPresent()) {
 			maxSumAmount = optional.getAsDouble();
 		}
-		for (int productIndex = 0; productIndex < contributionsList.size(); productIndex++) {
-			handleProduct(gc, maxProductWidth, rectEdge, productIndex, maxSumAmount);
+		for (int contributionsIndex = 0; contributionsIndex < contributionsList.size(); contributionsIndex++) {
+			handleContributions(gc, maxRectWidth, rectEdge, contributionsIndex, maxSumAmount);
 			rectEdge = new Point(rectEdge.x, rectEdge.y + 300);
 		}
 		drawLinks(gc);
 	}
 
 	/**
-	 * Handle the current product. Draw a rectangle, write the product name in it,
-	 * and handle the product results
+	 * Handle the contribution for a given impact category. Draw a rectangle, write
+	 * the impact category name in it, and handle the results
 	 * 
-	 * @param gc              The GC component
-	 * @param maxProductWidth The maximal width for a product
-	 * @param rectEdge        The coordinate of the product rectangle
-	 * @param productIndex    The index of the current product
-	 * @param maxSumAmount    The max amounts sum of the products
+	 * @param gc                 The GC component
+	 * @param maxRectWidth       The maximal width for a rectangle
+	 * @param rectEdge           The coordinate of the rectangle
+	 * @param contributionsIndex The index of the current contributions
+	 * @param maxSumAmount       The max amounts sum of the contributions
 	 */
-	private void handleProduct(GC gc, double maxProductWidth, Point rectEdge, int productIndex, double maxSumAmount) {
-		var p = contributionsList.get(productIndex);
-		int productWidth = (int) maxProductWidth;
-		// Draw the product name
+	private void handleContributions(GC gc, double maxRectWidth, Point rectEdge, int contributionsIndex,
+			double maxSumAmount) {
+		var p = contributionsList.get(contributionsIndex);
+		int rectWidth = (int) maxRectWidth;
 		Point textPos = new Point(rectEdge.x - margin.x, rectEdge.y + 8);
-		gc.drawText("Contribution result " + (productIndex + 1), textPos.x, textPos.y);
+		gc.drawText("Contribution result " + (contributionsIndex + 1), textPos.x, textPos.y);
 		textPos.y += 25;
 		if (TargetCalculationEnum.PRODUCT.equals(targetCalculation)) {
 			gc.drawText("Product System : " + p.getProductSystemName(), textPos.x, textPos.y);
 			textPos.y += 25;
 		}
 		gc.drawText("Impact : " + p.getImpactCategoryName(), textPos.x, textPos.y);
-		productWidth = handleCells(gc, rectEdge, productIndex, p, productWidth, maxSumAmount);
+		rectWidth = handleCells(gc, rectEdge, contributionsIndex, p, rectWidth, maxSumAmount);
 
-		// Draw an arrow above the first product contributions to show the way the
+		// Draw an arrow above the first rectangle contributions to show the way the
 		// results are ordered
-		if (productIndex == 0) {
+		if (contributionsIndex == 0) {
 			Point startPoint = new Point(rectEdge.x, rectEdge.y - 50);
-			Point endPoint = new Point((int) (startPoint.x + maxProductWidth), startPoint.y);
+			Point endPoint = new Point((int) (startPoint.x + maxRectWidth), startPoint.y);
 			drawLine(gc, startPoint, endPoint, null, null);
 			startPoint = new Point(endPoint.x - 15, endPoint.y + 15);
 			drawLine(gc, startPoint, endPoint, null, null);
 			startPoint = new Point(endPoint.x - 15, endPoint.y - 15);
 			drawLine(gc, startPoint, endPoint, null, null);
 		}
-		// Draw a rectangle for each product
-		gc.drawRectangle(rectEdge.x, rectEdge.y, productWidth, productHeight);
+		// Draw a rectangle for each impact categories
+		gc.drawRectangle(rectEdge.x, rectEdge.y, rectWidth, rectHeight);
 	}
 
 	/**
 	 * Handle the cells, and display a rectangle for each of them (and merge the
 	 * cutoff one in one visual cell)
 	 * 
-	 * @param gc           The GC component
-	 * @param rectEdge     The coordinate of the product rectangle
-	 * @param productIndex The index of the current product
-	 * @param p            The current product
-	 * @param productWidth The product width
-	 * @param maxAmount    The max amounts sum of the products
-	 * @return The new product width
+	 * @param gc                 The GC component
+	 * @param rectEdge           The coordinate of the rectangle
+	 * @param contributionsIndex The index of the current contributions
+	 * @param contributions      The current contributions
+	 * @param rectWidth          The rect width
+	 * @param maxAmount          The max amounts sum of the contributions
+	 * @return The new rect width
 	 */
-	private int handleCells(GC gc, Point rectEdge, int productIndex, Contributions p, int productWidth,
+	private int handleCells(GC gc, Point rectEdge, int contributionsIndex, Contributions contributions, int rectWidth,
 			double maxSumAmount) {
-		var cells = p.getList();
+		var cells = contributions.getList();
 		long amountCutOff = cells.size() - nonCutoffAmount;
 		long cutOffProcessAmount = cells.stream().skip(amountCutOff).filter(c -> c.getAmount() == 0.0).count();
 		cutOffProcessAmount += amountCutOff;
-		int newProductWidth = handleCutOff(cells, productWidth, rectEdge, gc, cutOffProcessAmount);
-		return newProductWidth;
+		int newRectWidth = handleCutOff(cells, rectWidth, rectEdge, gc, cutOffProcessAmount);
+		return newRectWidth;
 	}
 
 	/**
@@ -650,30 +646,30 @@ public class ProductComparison {
 	 * them to be display (by choosing an amount of process to be display), or if
 	 * they are null contributions
 	 * 
-	 * @param cells                 The list of cells
-	 * @param remainingProductWidth The remaining width where we can draw
-	 * @param rectEdge              The corner of the product rectangle
-	 * @param gc                    The GC component
-	 * @param cutOffProcessAmount   The amount of process in the cutoff area
-	 * @return The total width of the product
+	 * @param cells               The list of cells
+	 * @param remainingRectWidth  The remaining width where we can draw
+	 * @param rectEdge            The corner of the rectangle
+	 * @param gc                  The GC component
+	 * @param cutOffProcessAmount The amount of process in the cutoff area
+	 * @return The total width of the rect
 	 */
-	private int handleCutOff(List<Cell> cells, int remainingProductWidth, Point rectEdge, GC gc,
+	private int handleCutOff(List<Cell> cells, int remainingRectWidth, Point rectEdge, GC gc,
 			long cutOffProcessAmount) {
 		Point start = new Point(rectEdge.x + 1, rectEdge.y + 1);
 		if (cutOffSize == 0) {
-			return handleNotBigEnoughProcess(cells, remainingProductWidth, rectEdge, gc, cutOffProcessAmount, start, 0);
+			return handleNotBigEnoughProcess(cells, remainingRectWidth, rectEdge, gc, cutOffProcessAmount, start, 0);
 		}
 		RGB rgbCutOff = new RGB(192, 192, 192); // Color for cutoff area
 		double cutoffRectangleSizeRatio = cutOffSize / 100.0;
-		int productCutOffWidth = 0;
+		int cutOffWidth = 0;
 		if (cutOffProcessAmount == cells.size()) {
-			productCutOffWidth = remainingProductWidth;
+			cutOffWidth = remainingRectWidth;
 		} else {
-			productCutOffWidth = (int) (remainingProductWidth * cutoffRectangleSizeRatio);
+			cutOffWidth = (int) (remainingRectWidth * cutoffRectangleSizeRatio);
 		}
 		double normalizedCutOffAmountSum = cells.stream().limit(cutOffProcessAmount)
 				.mapToDouble(cell -> Math.abs(cell.getNormalizedAmount())).sum();
-		double minimumGapBetweenCells = ((double) productCutOffWidth / cutOffProcessAmount);
+		double minimumGapBetweenCells = ((double) cutOffWidth / cutOffProcessAmount);
 		int chunk = -1, chunkSize = 0, newChunk = 0;
 		boolean gapBigEnough = true;
 		if (minimumGapBetweenCells < 1.0) {
@@ -683,7 +679,7 @@ public class ProductComparison {
 			gapBigEnough = false;
 		}
 		Point end = null;
-		var newProductWidth = 0;
+		var newRectWidth = 0;
 		for (var cellIndex = 0; cellIndex < cutOffProcessAmount; cellIndex++) {
 			if (!gapBigEnough) {
 				newChunk = computeChunk(chunk, chunkSize, cellIndex);
@@ -699,9 +695,9 @@ public class ProductComparison {
 			} else {
 				var value = cell.getNormalizedAmount();
 				var percentage = value / normalizedCutOffAmountSum;
-				cellWidth = (int) (productCutOffWidth * percentage);
+				cellWidth = (int) (cutOffWidth * percentage);
 			}
-			newProductWidth += cellWidth;
+			newRectWidth += cellWidth;
 			end = computeEndCell(start, cell, (int) cellWidth, true);
 			if (gapBigEnough || !gapBigEnough && chunk != newChunk) {
 				// We end the current chunk / cell
@@ -710,50 +706,50 @@ public class ProductComparison {
 			}
 		}
 		if (cutOffProcessAmount == cells.size()) {
-			newProductWidth = productCutOffWidth;
+			newRectWidth = cutOffWidth;
 		}
-		fillRectangle(gc, new Point(rectEdge.x + 1, rectEdge.y + 1), newProductWidth, productHeight - 1, rgbCutOff,
+		fillRectangle(gc, new Point(rectEdge.x + 1, rectEdge.y + 1), newRectWidth, rectHeight - 1, rgbCutOff,
 				SWT.COLOR_WHITE);
-		return handleNotBigEnoughProcess(cells, (int) (remainingProductWidth - newProductWidth), rectEdge, gc,
-				cutOffProcessAmount, (end != null) ? end : start, (int) newProductWidth);
+		return handleNotBigEnoughProcess(cells, (int) (remainingRectWidth - newRectWidth), rectEdge, gc,
+				cutOffProcessAmount, (end != null) ? end : start, (int) newRectWidth);
 	}
 
 	/**
 	 * Handle non cutoff area, but too small values, so we display them with a
 	 * minimum width
 	 * 
-	 * @param cells                 The list of cells
-	 * @param remainingProductWidth The remaining product width where we can draw
-	 * @param rectEdge              The corner of the product rectangle
-	 * @param gc                    The GC component
-	 * @param cutOffProcessAmount   The amount of cutoff Process
-	 * @param start                 The starting point
-	 * @param currentProductWidth   The current product width
-	 * @return The new product total width
+	 * @param cells               The list of cells
+	 * @param remainingRectWidth  The remaining rectangle width where we can draw
+	 * @param rectEdge            The corner of the contributions rectangle
+	 * @param gc                  The GC component
+	 * @param cutOffProcessAmount The amount of cutoff Process
+	 * @param start               The starting point
+	 * @param currentRectWidth    The current rectangle width
+	 * @return The new rectangle total width
 	 */
-	private int handleNotBigEnoughProcess(List<Cell> cells, int remainingProductWidth, Point rectEdge, GC gc,
-			long cutOffProcessAmount, Point start, int currentProductWidth) {
+	private int handleNotBigEnoughProcess(List<Cell> cells, int remainingRectWidth, Point rectEdge, GC gc,
+			long cutOffProcessAmount, Point start, int currentRectWidth) {
 		int minCellWidth = 3;
 		double nonCutOffSum = cells.stream().skip(cutOffProcessAmount).mapToDouble(c -> c.getNormalizedAmount()).sum();
 		long notBigEnoughContributionAmount = cells.stream().skip(cutOffProcessAmount).filter(
-				cell -> Math.abs(cell.getNormalizedAmount()) / nonCutOffSum * remainingProductWidth <= minCellWidth)
+				cell -> Math.abs(cell.getNormalizedAmount()) / nonCutOffSum * remainingRectWidth <= minCellWidth)
 				.count();
 		if (notBigEnoughContributionAmount == 0) {
 			// If there is no too small values, we skip this part
-			return handleBigEnoughProcess(cells, (int) (remainingProductWidth), rectEdge, gc, cutOffProcessAmount,
-					start, currentProductWidth);
+			return handleBigEnoughProcess(cells, (int) (remainingRectWidth), rectEdge, gc, cutOffProcessAmount, start,
+					currentRectWidth);
 		}
 		int chunk = -1, chunkSize = 0, newChunk = 0;
 		boolean gapEnoughBig = true;
 		Point end = null;
 		double length = minCellWidth * notBigEnoughContributionAmount;
-		if (length > remainingProductWidth) {
+		if (length > remainingRectWidth) {
 			// if the length is to big, we put a certain amount of results in the same
 			// chunk
-			chunkSize = (int) Math.ceil(((double) length) / remainingProductWidth);
+			chunkSize = (int) Math.ceil(((double) length) / remainingRectWidth);
 			gapEnoughBig = false;
 		}
-		var newProductWidth = 0;
+		var newRectangleWidth = 0;
 		for (var cellIndex = cutOffProcessAmount; cellIndex < cutOffProcessAmount
 				+ notBigEnoughContributionAmount; cellIndex++) {
 			if (!gapEnoughBig) {
@@ -764,12 +760,12 @@ public class ProductComparison {
 			if (!gapEnoughBig && chunk != newChunk || gapEnoughBig) {
 				// We are on a new chunk, so we draw a cell with a minimum width
 				cellWidth = minCellWidth;
-				fillRectangle(gc, start, cellWidth, productHeight - 1, cell.getRgb(), SWT.COLOR_WHITE);
+				fillRectangle(gc, start, cellWidth, rectHeight - 1, cell.getRgb(), SWT.COLOR_WHITE);
 			} else if (!gapEnoughBig && chunk == newChunk) {
 				// We stay on the same chunk, so we don't draw the cell
 				cellWidth = 0;
 			}
-			newProductWidth += cellWidth;
+			newRectangleWidth += cellWidth;
 			end = computeEndCell(start, cell, (int) cellWidth, false);
 			if (gapEnoughBig || !gapEnoughBig && chunk != newChunk) {
 				// We end the current chunk / cell
@@ -777,31 +773,32 @@ public class ProductComparison {
 				chunk = newChunk;
 			}
 		}
-		return handleBigEnoughProcess(cells, (int) (remainingProductWidth - newProductWidth), rectEdge, gc,
+		return handleBigEnoughProcess(cells, (int) (remainingRectWidth - newRectangleWidth), rectEdge, gc,
 				cutOffProcessAmount + notBigEnoughContributionAmount, (end != null) ? end : start,
-				(int) (currentProductWidth + newProductWidth));
+				(int) (currentRectWidth + newRectangleWidth));
 	}
 
 	/**
 	 * Handle the bigger values, by drawing cells with proportional width to the
 	 * value
 	 * 
-	 * @param cells                 The cells list
-	 * @param remainingProductWidth The remaining product width where we can draw
-	 * @param rectEdge              The corner of the product rectangle
-	 * @param gc                    The GC component
-	 * @param currentCellIndex      The current cell index
-	 * @param start                 The starting point
-	 * @param currentProductWidth   The current product width
-	 * @return The new product width
+	 * @param cells                   The cells list
+	 * @param remainingRectangleWidth The remaining rectangle width where we can
+	 *                                draw
+	 * @param rectEdge                The corner of the rectangle
+	 * @param gc                      The GC component
+	 * @param currentCellIndex        The current cell index
+	 * @param start                   The starting point
+	 * @param currentRectangleWidth   The current rectangle width
+	 * @return The new rectangle width
 	 */
-	private int handleBigEnoughProcess(List<Cell> cells, int remainingProductWidth, Point rectEdge, GC gc,
-			long currentCellIndex, Point start, int currentProductWidth) {
+	private int handleBigEnoughProcess(List<Cell> cells, int remainingRectangleWidth, Point rectEdge, GC gc,
+			long currentCellIndex, Point start, int currentRectangleWidth) {
 		if (currentCellIndex == cells.size()) {
-			return (int) currentProductWidth + remainingProductWidth;
+			return (int) currentRectangleWidth + remainingRectangleWidth;
 		}
 		double amountSum = cells.stream().skip(currentCellIndex).mapToDouble(c -> c.getNormalizedAmount()).sum();
-		double minimumGapBetweenCells = (remainingProductWidth / (cells.size() - currentCellIndex));
+		double minimumGapBetweenCells = (remainingRectangleWidth / (cells.size() - currentCellIndex));
 		int chunk = -1, chunkSize = 0, newChunk = 0;
 		boolean gapBigEnough = true;
 		if (minimumGapBetweenCells < 1.0) {
@@ -810,7 +807,7 @@ public class ProductComparison {
 			chunkSize = (int) Math.ceil(1 / minimumGapBetweenCells);
 			gapBigEnough = false;
 		}
-		var newProductWidth = 0;
+		var newRectangleWidth = 0;
 		for (var cellIndex = currentCellIndex; cellIndex < cells.size(); cellIndex++) {
 			if (!gapBigEnough) {
 				newChunk = computeChunk(chunk, chunkSize, (int) cellIndex);
@@ -820,13 +817,13 @@ public class ProductComparison {
 
 			if (cellIndex != cells.size() - 1) {
 				var percentage = cell.getNormalizedAmount() / amountSum;
-				cellWidth = (int) (remainingProductWidth * percentage);
+				cellWidth = (int) (remainingRectangleWidth * percentage);
 			} else {
 				// For the last cell, we fill it with the remaining empty width
-				cellWidth = (int) (remainingProductWidth - newProductWidth);
+				cellWidth = (int) (remainingRectangleWidth - newRectangleWidth);
 			}
-			newProductWidth += cellWidth;
-			fillRectangle(gc, start, cellWidth, productHeight - 1, cell.getRgb(), SWT.COLOR_WHITE);
+			newRectangleWidth += cellWidth;
+			fillRectangle(gc, start, cellWidth, rectHeight - 1, cell.getRgb(), SWT.COLOR_WHITE);
 			var end = computeEndCell(start, cell, (int) cellWidth, false);
 			if (gapBigEnough || !gapBigEnough && chunk != newChunk) {
 				// We end the current chunk / cell
@@ -834,7 +831,7 @@ public class ProductComparison {
 				chunk = newChunk;
 			}
 		}
-		return (int) currentProductWidth + remainingProductWidth;
+		return (int) currentRectangleWidth + remainingRectangleWidth;
 	}
 
 	/**
@@ -865,7 +862,7 @@ public class ProductComparison {
 	 */
 	private Point computeEndCell(Point start, Cell cell, int cellWidth, boolean isCutoff) {
 		var end = new Point(start.x + cellWidth, start.y);
-		var startingPoint = new Point((end.x + start.x) / 2, start.y + productHeight);
+		var startingPoint = new Point((end.x + start.x) / 2, start.y + rectHeight);
 		var endingPoint = new Point(startingPoint.x, start.y - 2);
 		cell.setData(startingPoint, endingPoint, start.x, end.x, isCutoff);
 		return end;
@@ -924,26 +921,26 @@ public class ProductComparison {
 	 * @param gc The GC component
 	 */
 	private void drawLinks(GC gc) {
-		for (int productIndex = 0; productIndex < contributionsList.size() - 1; productIndex++) {
-			var cells = contributionsList.get(productIndex);
+		for (int contributionsIndex = 0; contributionsIndex < contributionsList.size() - 1; contributionsIndex++) {
+			var cells = contributionsList.get(contributionsIndex);
 			for (Cell cell : cells.getList()) {
-				if (cell.isLinkDrawable()) {
-					var nextCells = contributionsList.get(productIndex + 1);
-					// We search for a cell that has the same process
-					var optional = nextCells.getList().stream()
-							.filter(next -> next.getResult().get(0).getContribution().item
-									.equals(cell.getResult().get(0).getContribution().item))
-							.findFirst();
-					if (optional.isPresent()) {
-						var linkedCell = optional.get();
-						var startPoint = cell.getStartingLinkPoint();
-						var endPoint = linkedCell.getEndingLinkPoint();
-						if (config.useBezierCurve) {
-							drawBezierCurve(gc, startPoint, endPoint, cell.getRgb());
-						} else {
-							drawLine(gc, startPoint, endPoint, cell.getRgb(), null);
-						}
-					}
+				if (!cell.isLinkDrawable())
+					continue;
+				var nextCells = contributionsList.get(contributionsIndex + 1);
+				// We search for a cell that has the same process
+				var optional = nextCells.getList().stream()
+						.filter(next -> next.getResult().get(0).getContribution().item
+								.equals(cell.getResult().get(0).getContribution().item))
+						.findFirst();
+				if (!optional.isPresent())
+					continue;
+				var linkedCell = optional.get();
+				var startPoint = cell.getStartingLinkPoint();
+				var endPoint = linkedCell.getEndingLinkPoint();
+				if (config.useBezierCurve) {
+					drawBezierCurve(gc, startPoint, endPoint, cell.getRgb());
+				} else {
+					drawLine(gc, startPoint, endPoint, cell.getRgb(), null);
 				}
 			}
 		}
@@ -1003,17 +1000,25 @@ public class ProductComparison {
 	 * @param canvas    The Canvas component
 	 */
 	private void addResizeEvent(Composite composite, Canvas canvas) {
-		var vBar = canvas.getVerticalBar();
-		var hBar = canvas.getHorizontalBar();
+
 		canvas.addListener(SWT.Resize, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
-				screenSize = shell.getSize();
-
+				if (cacheMap.isEmpty()) {
+					triggerComboSelection(selectCategory, true);
+					redraw(composite, canvas);
+				}
 				Rectangle client = canvas.getClientArea();
+				var vBar = canvas.getVerticalBar();
 				vBar.setThumb(Math.min(theoreticalScreenHeight, client.height));
 				vBar.setPageIncrement(Math.min(theoreticalScreenHeight, client.height));
 				vBar.setIncrement(20);
+				var hBar = canvas.getHorizontalBar();
+				hBar.setMinimum(0);
+				hBar.setThumb(Math.min(screenWidth, client.width));
+				hBar.setPageIncrement(Math.min(screenWidth, client.width));
+				hBar.setIncrement(20);
+				hBar.setMaximum(screenWidth);
 
 				int vPage = canvas.getSize().y - client.height;
 				int hPage = canvas.getSize().x - client.width;
@@ -1029,14 +1034,6 @@ public class ProductComparison {
 						hSelection = 0;
 					origin.x = -hSelection;
 				}
-				if (cacheMap.isEmpty()) {
-					redraw(composite, canvas);
-				}
-				hBar.setMinimum(0);
-				hBar.setThumb(Math.min(screenWidth, client.width));
-				hBar.setPageIncrement(Math.min(screenWidth, client.width));
-				hBar.setIncrement(20);
-				hBar.setMaximum(screenWidth);
 			}
 		});
 	}
