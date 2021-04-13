@@ -51,7 +51,7 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 			if (calculator.hadError)
 				return;
 			Reports.save(project, report, Database.get());
-			ReportViewer.open(report);
+			ReportViewer.open(report, project);
 		});
 	}
 }

@@ -1,14 +1,12 @@
 package org.openlca.app.results.comparison.display;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -34,22 +32,25 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.reports.ReportViewer;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ProductSystemDao;
+import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
+import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.results.ContributionResult;
+
+import com.google.common.base.Stopwatch;
 
 public class ProductComparison {
 	private Composite shell;
@@ -73,22 +74,29 @@ public class ProductComparison {
 	private Map<String, ImpactDescriptor> impactCategoryMap;
 	private List<String> impactCategoriesName;
 	private TargetCalculationEnum targetCalculation;
-	private Composite composite;
 	private boolean isCalculationStarted;
 	private long chosenProcessCategoryId;
 	private FormToolkit tk;
 	private int screenWidth;
 	private Canvas canvas;
+	private Project project;
 
-	public ProductComparison(Composite shell, ResultEditor<?> editor, FormToolkit tk) {
+	public ProductComparison(Composite shell, FormEditor editor, TargetCalculationEnum target, FormToolkit tk) {
 		this.tk = tk;
 		db = Database.get();
-		impactMethod = editor.setup.impactMethod;
-		contributionResult = editor.result;
 		this.shell = shell;
 		config = new Config(); // Comparison config
 		colorCellCriteria = config.colorCellCriteria;
-		targetCalculation = config.targetCalculationCriteria;
+		targetCalculation = target;
+		if (target.equals(TargetCalculationEnum.IMPACT)) {
+			var e = (ResultEditor<?>) editor;
+			impactMethod = e.setup.impactMethod;
+			contributionResult = e.result;
+		} else if (target.equals(TargetCalculationEnum.PRODUCT)) {
+			var e = (ReportViewer) editor;
+			project = e.project;
+			impactMethod = new ImpactMethodDao(db).getDescriptor(project.impactMethod.id);
+		}
 		contributionsList = new ArrayList<>();
 		cacheMap = new HashMap<>();
 		impactCategoriesName = new ArrayList<>();
@@ -146,11 +154,10 @@ public class ProductComparison {
 
 		row1.setLayout(new RowLayout());
 
-//		chooseTargetMenu(row1, row2);
-//		chooseImpactCategoriesMenu(row1, row2);
-
 		initCategoryMap();
 		initContributionsList(canvas);
+
+		chooseImpactCategoriesMenu(row1, row2);
 
 		UI.gridLayout(row1, 10);
 
@@ -164,46 +171,12 @@ public class ProductComparison {
 
 	// Initialize a map of impact categories
 	private void initCategoryMap() {
-		if (TargetCalculationEnum.IMPACT.equals(targetCalculation)) {
-			impactCategoryMap = contributionResult.getImpacts().stream().sorted((c1, c2) -> c1.name.compareTo(c2.name))
-					.map(impactCategory -> {
-						impactCategoriesName.add(impactCategory.name);
-						return impactCategory;
-					})
-					.collect(Collectors.toMap(impactCategory -> impactCategory.name, impactCategory -> impactCategory));
-		}
-	}
-
-	/**
-	 * Allow to choose a target : either display contributions results for each
-	 * impact category, or for each product system
-	 * 
-	 * @param row1 The menu bar
-	 * @param row2 The canvas
-	 */
-	private void chooseTargetMenu(Composite row1, Composite row2) {
-		final Label l = new Label(row1, SWT.NONE);
-		l.setBounds(0, 0, 0, 0);
-		l.setVisible(false);
-		l.setText("Target : ");
-		final Combo c = new Combo(row1, SWT.READ_ONLY);
-		c.setVisible(false);
-		c.setBounds(0, 0, 0, 0);
-//		c.setBounds(50, 50, 150, 65);
-		String values[] = TargetCalculationEnum.valuesToString();
-		c.setItems(values);
-		var index = ArrayUtils.indexOf(values, targetCalculation.toString());
-		c.select(index);
-		c.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				var choice = c.getItem(c.getSelectionIndex());
-				TargetCalculationEnum criteria = TargetCalculationEnum.getTarget(choice);
-				if (!targetCalculation.equals(criteria)) {
-					targetCalculation = criteria;
-					impactCategoryTable(composite);
-				}
-			}
-		});
+		var impactCategories = new ImpactMethodDao(db).getCategoryDescriptors(impactMethod.id);
+		impactCategoryMap = impactCategories.stream().sorted((c1, c2) -> c1.name.compareTo(c2.name))
+				.map(impactCategory -> {
+					impactCategoriesName.add(impactCategory.name);
+					return impactCategory;
+				}).collect(Collectors.toMap(impactCategory -> impactCategory.name, impactCategory -> impactCategory));
 	}
 
 	/**
@@ -213,76 +186,25 @@ public class ProductComparison {
 	 * @param row2 The canvas
 	 */
 	private void chooseImpactCategoriesMenu(Composite row1, Composite row2) {
-		var b = new Button(row1, SWT.NONE);
-		b.setVisible(false);
-		composite = new Composite(row1, SWT.BORDER);
-		composite.setVisible(false);
-		var impactCategoryTable = impactCategoryTable(composite);
-		impactCategoryMap = contributionResult.getImpacts().stream().sorted((c1, c2) -> c1.name.compareTo(c2.name))
-				.map(impactCategory -> {
-					TableItem item = new TableItem(impactCategoryTable, SWT.BORDER);
-					item.setText(impactCategory.id + ": " + impactCategory.name);
-					item.setChecked(true);
-					impactCategoriesName.add(item.getText());
-					return impactCategory;
-				}).collect(Collectors.toMap(impactCategory -> impactCategory.id + ": " + impactCategory.name,
-						impactCategory -> impactCategory));
-		b.setText("Toggle");
-		b.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				Arrays.stream(impactCategoryTable.getItems()).forEach(item -> {
-					item.setChecked(!item.getChecked());
-					if (item.getChecked()) {
-						impactCategoriesName.add(item.getText());
-					} else {
-						impactCategoriesName.remove(item.getText());
-					}
-				});
-			}
-		});
-		b.pack();
-		impactCategoryTable.setBounds(0, 0, 0, 0);
-//		impactCategoryTable.setSize(300, 100);
-//		row1.setSize(300, 100);
-	}
+		if (targetCalculation.equals(TargetCalculationEnum.PRODUCT)) {
+			var selectImpactCategory = UI.formCombo(row1, "Select Impact Category : ");
 
-	/**
-	 * Table containing the whole impact categories, that allow us to check them or
-	 * not
-	 * 
-	 * @param composite The parent component
-	 * @return This table
-	 */
-	private Table impactCategoryTable(Composite composite) {
-		int typeButton;
-		if (TargetCalculationEnum.IMPACT.equals(targetCalculation)) {
-			typeButton = SWT.CHECK;
-		} else {
-			typeButton = SWT.RADIO;
-		}
-		var impactCategoryTable = new Table(composite, typeButton | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		impactCategoryTable.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				if (event.detail == SWT.CHECK) {
-					// We keep tracking of check/select event, to have in impactCategoriesName the
-					// checked impact categories
-					if (((TableItem) event.item).getChecked()) {
-						impactCategoriesName.add(((TableItem) event.item).getText());
-					} else {
-						impactCategoriesName.remove(((TableItem) event.item).getText());
-					}
-				} else { // Select event
-					var checked = ((TableItem) event.item).getChecked();
-					((TableItem) event.item).setChecked(!checked);
-					if (!checked) {
-						impactCategoriesName.add(((TableItem) event.item).getText());
-					} else {
-						impactCategoriesName.remove(((TableItem) event.item).getText());
+			selectImpactCategory.setItems(impactCategoriesName.toArray(String[]::new));
+//			selectImpactCategory.setSize(200, 65);
+			selectImpactCategory.select(0);
+
+			selectImpactCategory.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					String selected = selectImpactCategory.getItem(selectImpactCategory.getSelectionIndex());
+					if (!impactCategoriesName.get(0).equals(selected)) {
+						impactCategoriesName.remove(0);
+						impactCategoriesName.add(0, selected);
+						initContributionsList(canvas);
+						redraw(row2, canvas);
 					}
 				}
-			}
-		});
-		return impactCategoryTable;
+			});
+		}
 	}
 
 	/**
@@ -484,31 +406,34 @@ public class ProductComparison {
 	 * @param canvas The canvas
 	 */
 	private void initContributionsList(Canvas canvas) {
+		var stopwatch = Stopwatch.createStarted();
 		var vBar = canvas.getVerticalBar();
 		contributionsList = new ArrayList<>();
 		if (TargetCalculationEnum.IMPACT.equals(targetCalculation)) {
-			impactCategoriesName.stream().forEach(item -> {
-				var impactDescriptor = impactCategoryMap.get(item);
-				var contributionList = contributionResult.getProcessContributions(impactDescriptor);
-				var c = new Contributions(contributionList, item, null);
+			impactCategoriesName.stream().forEach(categoryName -> {
+				var impactCategory = impactCategoryMap.get(categoryName);
+				var contributionList = contributionResult.getProcessContributions(impactCategory);
+				var c = new Contributions(contributionList, categoryName, null);
 				contributionsList.add(c);
 			});
 		} else {
-			new ProductSystemDao(db).getAll().stream().forEach(ps -> {
-				var impactDescriptor = impactCategoryMap.get(impactCategoriesName.get(0));
+			project.variants.stream().forEach(v -> {
+				var ps = v.productSystem;
 				var setup = new CalculationSetup(ps);
 				setup.impactMethod = impactMethod;
 				var calc = new SystemCalculator(db);
 				var fullResult = calc.calculateFull(setup);
-				var contributionList = fullResult.getProcessContributions(impactDescriptor);
-				var c = new Contributions(contributionList, impactDescriptor.name, ps.id + ": " + ps.name);
+				var impactCategory = impactCategoryMap.get(impactCategoriesName.get(0));
+				var contributionList = fullResult.getProcessContributions(impactCategory);
+				var c = new Contributions(contributionList, impactCategory.name, ps.name);
 				contributionsList.add(c);
 			});
 		}
 		isCalculationStarted = true;
-		theoreticalScreenHeight = margin.y * 2 + gapBetweenRect * (contributionsList.size() - 1);
+		theoreticalScreenHeight = margin.y * 2 + gapBetweenRect * (contributionsList.size());
 		vBar.setMaximum(theoreticalScreenHeight);
 		sortContributions();
+		System.out.println("Time in initContibution : " + stopwatch.stop());
 	}
 
 	/**
