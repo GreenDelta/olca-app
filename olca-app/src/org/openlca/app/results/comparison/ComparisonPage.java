@@ -5,8 +5,6 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.App;
-import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.comparison.display.ProductComparison;
@@ -31,12 +29,7 @@ public class ComparisonPage extends FormPage {
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		InfoSection.create(body, tk, editor.setup);
-		var comparison = new ProductComparison(body, editor, tk);
-		comparison.run();
-//		App.runWithProgress(M.Calculate, comparison, () -> {
-//			form.reflow(true);
-//		});
+		new ProductComparison(body, editor, tk).display();
 		form.reflow(true);
-
 	}
 }
