@@ -3,8 +3,10 @@ package org.openlca.app.results.comparison.display;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.Contribution;
@@ -12,8 +14,6 @@ import org.openlca.util.Pair;
 
 public class Cell {
 
-	private int startPixel;
-	private int endPixel;
 	private RGB rgb;
 	private Point startingLinksPoint;
 	private Point endingLinkPoint;
@@ -24,13 +24,16 @@ public class Cell {
 	static ColorCellCriteria criteria;
 	private boolean isCutoff;
 	private Contributions product;
+	private boolean isDisplayed;
+	private Rectangle rectCell;
+	private String tooltip;
 
-	public void setData(Point startingLinksPoint, Point endingLinkPoint, int startX, int endx, boolean isCutoff) {
+	public void setData(Point startingLinksPoint, Point endingLinkPoint, Rectangle rectCell, boolean isCutoff) {
 		this.startingLinksPoint = startingLinksPoint;
 		this.endingLinkPoint = endingLinkPoint;
-		startPixel = startX;
-		endPixel = endx;
+		this.rectCell = rectCell;
 		this.isCutoff = isCutoff;
+		isDisplayed = true;
 	}
 
 	public Point getStartingLinkPoint() {
@@ -56,6 +59,15 @@ public class Cell {
 		isDrawable = true;
 		isCutoff = false;
 		rgb = computeRGB();
+		isDisplayed = true;
+		var contribution = result.get(0).getContribution();
+		tooltip = "Process name : " + contribution.item.name + "\n" + "Amount : " + contribution.amount + " "
+				+ StringUtils.defaultIfEmpty(contribution.unit, "");
+
+	}
+
+	public String getTooltip() {
+		return tooltip;
 	}
 
 	public List<Result> getResult() {
@@ -136,28 +148,25 @@ public class Cell {
 	}
 
 	public boolean isLinkDrawable() {
-		return isDrawable && !isCutoff;
+		return isDrawable && !isCutoff && isDisplayed;
 	}
 
-	public int getStartPixel() {
-		return startPixel;
+	public void setIsDisplayed(boolean isDisplayed) {
+		this.isDisplayed = isDisplayed;
 	}
 
-	public void setStartPixel(int startIndex) {
-		this.startPixel = startIndex;
+	public boolean getIsDisplayed() {
+		return isDisplayed;
 	}
 
-	public int getEndPixel() {
-		return endPixel;
-	}
-
-	public void setEndPixel(int startIndex) {
-		this.endPixel = startIndex;
+	public boolean contains(Point p) {
+		return rectCell.contains(p);
 	}
 
 	public String toString() {
 		var results = result.stream().map(r -> Double.toString(r.getValue())).collect(Collectors.toList());
-		return rgb + " / " + String.join(", ", results) + " / [ " + startPixel + "; " + endPixel + " ]";
+		return rgb + " / " + String.join(", ", results) + " / [ " + rectCell.x + "; " + (rectCell.x + rectCell.width)
+				+ " ]";
 	}
 
 }

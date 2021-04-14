@@ -57,7 +57,7 @@ public class ProductComparison {
 	private List<Contributions> contributionsList;
 	private Point screenSize;
 	private Config config;
-	private Point origin;
+	private Point scrollPoint;
 	private final Point margin;
 	private final int rectHeight;
 	private final int gapBetweenRect;
@@ -107,7 +107,7 @@ public class ProductComparison {
 		theoreticalScreenHeight = margin.y * 2 + gapBetweenRect * 2;
 		nonCutoffAmount = 100;
 		cutOffSize = 25;
-		origin = new Point(0, 0);
+		scrollPoint = new Point(0, 0);
 		isCalculationStarted = false;
 	}
 
@@ -167,6 +167,7 @@ public class ProductComparison {
 		selectCutoffSizeMenu(row1, row2, canvas);
 		selectAmountVisibleProcessMenu(row1, row2, canvas);
 		addPaintListener(canvas); // Once finished, we really paint the cache, so it avoids flickering
+		addToolTipListener(canvas);
 	}
 
 	// Initialize a map of impact categories
@@ -585,9 +586,17 @@ public class ProductComparison {
 	private int handleCutOff(List<Cell> cells, int remainingRectWidth, Point rectEdge, GC gc,
 			long cutOffProcessAmount) {
 		Point start = new Point(rectEdge.x + 1, rectEdge.y + 1);
+		var minCellWidth = 3;
+		double nonCutOffSum = cells.stream().skip(cutOffProcessAmount).mapToDouble(c -> c.getNormalizedAmount()).sum();
+		long notBigEnoughContributionAmount = cells.stream().skip(cutOffProcessAmount).filter(
+				cell -> Math.abs(cell.getNormalizedAmount()) / nonCutOffSum * remainingRectWidth <= minCellWidth)
+				.count();
+		cutOffProcessAmount += notBigEnoughContributionAmount;
+		cells.stream().limit(cutOffProcessAmount).forEach(c -> c.setIsDisplayed(false));
 		if (cutOffSize == 0) {
-			return handleNotBigEnoughProcess(cells, remainingRectWidth, rectEdge, gc, cutOffProcessAmount, start, 0);
+			return handleBigEnoughProcess(cells, remainingRectWidth, rectEdge, gc, cutOffProcessAmount, start, 0);
 		}
+
 		RGB rgbCutOff = new RGB(192, 192, 192); // Color for cutoff area
 		double cutoffRectangleSizeRatio = cutOffSize / 100.0;
 		int cutOffWidth = 0;
@@ -639,7 +648,7 @@ public class ProductComparison {
 		}
 		fillRectangle(gc, new Point(rectEdge.x + 1, rectEdge.y + 1), newRectWidth, rectHeight - 1, rgbCutOff,
 				SWT.COLOR_WHITE);
-		return handleNotBigEnoughProcess(cells, (int) (remainingRectWidth - newRectWidth), rectEdge, gc,
+		return handleBigEnoughProcess(cells, (int) (remainingRectWidth - newRectWidth), rectEdge, gc,
 				cutOffProcessAmount, (end != null) ? end : start, (int) newRectWidth);
 	}
 
@@ -678,6 +687,7 @@ public class ProductComparison {
 			chunkSize = (int) Math.ceil(((double) length) / remainingRectWidth);
 			gapEnoughBig = false;
 		}
+		RGB rgbCutOff = new RGB(192, 192, 192); // Color for cutoff area
 		var newRectangleWidth = 0;
 		for (var cellIndex = cutOffProcessAmount; cellIndex < cutOffProcessAmount
 				+ notBigEnoughContributionAmount; cellIndex++) {
@@ -689,13 +699,13 @@ public class ProductComparison {
 			if (!gapEnoughBig && chunk != newChunk || gapEnoughBig) {
 				// We are on a new chunk, so we draw a cell with a minimum width
 				cellWidth = minCellWidth;
-				fillRectangle(gc, start, cellWidth, rectHeight - 1, cell.getRgb(), SWT.COLOR_WHITE);
+				fillRectangle(gc, start, cellWidth, rectHeight - 1, rgbCutOff, SWT.COLOR_WHITE);
 			} else if (!gapEnoughBig && chunk == newChunk) {
 				// We stay on the same chunk, so we don't draw the cell
 				cellWidth = 0;
 			}
 			newRectangleWidth += cellWidth;
-			end = computeEndCell(start, cell, (int) cellWidth, false);
+			end = computeEndCell(start, cell, (int) cellWidth, true);
 			if (gapEnoughBig || !gapEnoughBig && chunk != newChunk) {
 				// We end the current chunk / cell
 				start = end;
@@ -793,7 +803,8 @@ public class ProductComparison {
 		var end = new Point(start.x + cellWidth, start.y);
 		var startingPoint = new Point((end.x + start.x) / 2, start.y + rectHeight);
 		var endingPoint = new Point(startingPoint.x, start.y - 2);
-		cell.setData(startingPoint, endingPoint, start.x, end.x, isCutoff);
+		var cellRect = new Rectangle(start.x, start.y, cellWidth, rectHeight);
+		cell.setData(startingPoint, endingPoint, cellRect, isCutoff);
 		return end;
 	}
 
@@ -853,7 +864,7 @@ public class ProductComparison {
 		for (int contributionsIndex = 0; contributionsIndex < contributionsList.size() - 1; contributionsIndex++) {
 			var cells = contributionsList.get(contributionsIndex);
 			for (Cell cell : cells.getList()) {
-				if (!cell.isLinkDrawable())
+				if (!cell.isLinkDrawable()) // Sould be not in cutoff
 					continue;
 				var nextCells = contributionsList.get(contributionsIndex + 1);
 				// We search for a cell that has the same process
@@ -864,6 +875,8 @@ public class ProductComparison {
 				if (!optional.isPresent())
 					continue;
 				var linkedCell = optional.get();
+				if (!linkedCell.getIsDisplayed())
+					continue;
 				var startPoint = cell.getStartingLinkPoint();
 				var endPoint = linkedCell.getEndingLinkPoint();
 				if (config.useBezierCurve) {
@@ -906,20 +919,56 @@ public class ProductComparison {
 			@Override
 			public void handleEvent(Event event) {
 				int vSelection = vBar.getSelection();
-				int destY = -vSelection - origin.y;
+				int destY = -vSelection - scrollPoint.y;
 				canvas.scroll(0, destY, 0, 0, canvas.getSize().x, canvas.getSize().y, false);
-				origin.y = -vSelection;
+				scrollPoint.y = -vSelection;
 			}
 		});
 		var hBar = canvas.getHorizontalBar();
 		hBar.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				int hSelection = hBar.getSelection();
-				int destX = -hSelection - origin.x;
+				int destX = -hSelection - scrollPoint.x;
 				canvas.scroll(destX, 0, 0, 0, canvas.getSize().x, canvas.getSize().y, false);
-				origin.x = -hSelection;
+				scrollPoint.x = -hSelection;
 			}
 		});
+	}
+
+	/**
+	 * Add a tooltip on hover over a cell It will display the process name, and the
+	 * contribution amount
+	 * 
+	 * @param canvas The canvas
+	 */
+	private void addToolTipListener(Canvas canvas) {
+		Listener mouseListener = new Listener() {
+			public void handleEvent(Event event) {
+				switch (event.type) {
+				case SWT.MouseEnter:
+				case SWT.MouseMove:
+					for (Contributions contributions : contributionsList) {
+						for (Cell cell : contributions.getList()) {
+							// event contains the coordinate of the cursor, but we also have to take in
+							// count if we scrolled
+							var cursor = new Point(event.x - scrollPoint.x, event.y - scrollPoint.y);
+							// If the cursor is contained in the cell
+							if (cell.contains(cursor)) {
+								String text = cell.getTooltip();
+								if (!(text.equals(canvas.getToolTipText()))) {
+									canvas.setToolTipText(text);
+								}
+								return;
+							}
+						}
+					}
+					canvas.setToolTipText(null);
+					break;
+				}
+			}
+		};
+		canvas.addListener(SWT.MouseMove, mouseListener);
+		canvas.addListener(SWT.MouseEnter, mouseListener);
 	}
 
 	/**
@@ -956,12 +1005,12 @@ public class ProductComparison {
 				if (vSelection >= vPage) {
 					if (vPage <= 0)
 						vSelection = 0;
-					origin.y = -vSelection;
+					scrollPoint.y = -vSelection;
 				}
 				if (hSelection >= hPage) {
 					if (hPage <= 0)
 						hSelection = 0;
-					origin.x = -hSelection;
+					scrollPoint.x = -hSelection;
 				}
 			}
 		});
@@ -978,7 +1027,7 @@ public class ProductComparison {
 			public void paintControl(PaintEvent e) {
 				var hash = computeConfigurationHash();
 				var cache = cacheMap.get(hash);
-				e.gc.drawImage(cache, origin.x, origin.y);
+				e.gc.drawImage(cache, scrollPoint.x, scrollPoint.y);
 			}
 		});
 	}
