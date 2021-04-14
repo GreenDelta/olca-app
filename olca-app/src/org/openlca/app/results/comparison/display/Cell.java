@@ -1,12 +1,11 @@
 package org.openlca.app.results.comparison.display;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.Contribution;
@@ -19,14 +18,15 @@ public class Cell {
 	private Point endingLinkPoint;
 	private boolean isDrawable;
 	static Config config;
-	private List<Result> result;
+	private Result result;
 	private double minAmount;
 	static ColorCellCriteria criteria;
 	private boolean isCutoff;
-	private Contributions product;
+	private Contributions contributions;
 	private boolean isDisplayed;
 	private Rectangle rectCell;
 	private String tooltip;
+	static IDatabase db;
 
 	public void setData(Point startingLinksPoint, Point endingLinkPoint, Rectangle rectCell, boolean isCutoff) {
 		this.startingLinksPoint = startingLinksPoint;
@@ -52,42 +52,50 @@ public class Cell {
 		this.endingLinkPoint = endingLinkPoint;
 	}
 
-	public Cell(List<Contribution<CategorizedDescriptor>> contributions, double minAmount, Contributions p) {
+	public Cell(Contribution<CategorizedDescriptor> contributionsList, double minAmount, Contributions c) {
 		this.minAmount = minAmount;
-		product = p;
-		result = contributions.stream().map(c -> new Result(c)).collect(Collectors.toList());
+		contributions = c;
+		result = new Result(contributionsList);
 		isDrawable = true;
 		isCutoff = false;
 		rgb = computeRGB();
 		isDisplayed = true;
-		var contribution = result.get(0).getContribution();
-		tooltip = "Process name : " + contribution.item.name + "\n" + "Amount : " + contribution.amount + " "
-				+ StringUtils.defaultIfEmpty(contribution.unit, "");
+		setTooltip();
 
+	}
+
+	private void setTooltip() {
+		var contribution = result.getContribution();
+		var locationId = ((ProcessDescriptor) contribution.item).location;
+		var locationName = new LocationDao(db).getDescriptor(locationId).code;
+		var processName = contribution.item.name + " - " + locationName;
+
+		tooltip = "Process name : " + processName + "\n" + "Amount : " + contribution.amount + " "
+				+ StringUtils.defaultIfEmpty(contribution.unit, "");
 	}
 
 	public String getTooltip() {
 		return tooltip;
 	}
 
-	public List<Result> getResult() {
+	public Result getResult() {
 		return result;
 	}
 
 	public double getTargetValue() {
-		return result.stream().mapToDouble(r -> r.getValue()).sum();
+		return result.getValue();
 	}
 
 	public double getNormalizedValue() {
-		return result.stream().mapToDouble(r -> r.getValue() + Math.abs(minAmount)).sum();
+		return result.getValue() + Math.abs(minAmount);
 	}
 
 	public double getAmount() {
-		return result.stream().mapToDouble(r -> r.getAmount()).sum();
+		return result.getAmount();
 	}
 
 	public double getNormalizedAmount() {
-		return result.stream().mapToDouble(r -> r.getAmount() + Math.abs(minAmount)).sum();
+		return result.getAmount() + Math.abs(minAmount);
 	}
 
 	public RGB computeRGB() {
@@ -97,20 +105,20 @@ public class Cell {
 		Pair<Long, Long> pair = null;
 		switch (criteria) {
 		case LOCATION:
-			value = ((ProcessDescriptor) result.get(0).getContribution().item).location;
-			pair = product.getMinMaxLocation();
+			value = ((ProcessDescriptor) result.getContribution().item).location;
+			pair = contributions.getMinMaxLocation();
 			min = pair.first;
 			max = pair.second;
 			break;
 		case CATEGORY:
-			value = result.get(0).getContribution().item.category;
-			pair = product.getMinMaxCategory();
+			value = result.getContribution().item.category;
+			pair = contributions.getMinMaxCategory();
 			min = pair.first;
 			max = pair.second;
 			break;
 		default:
-			value = result.get(0).getContribution().item.id;
-			pair = product.getMinMaxProcessId();
+			value = result.getContribution().item.id;
+			pair = contributions.getMinMaxProcessId();
 			min = pair.first;
 			max = pair.second;
 			break;
@@ -122,7 +130,7 @@ public class Cell {
 		}
 		if (percentage > 100.0) { // It happens because of uncertainty of division
 			percentage = 100.0;
-		} else if (percentage == -1 || result.get(0).getContribution().amount == 0.0) {
+		} else if (percentage == -1 || result.getContribution().amount == 0.0) {
 			isDrawable = false;
 			return new RGB(192, 192, 192); // Grey color for unfocused values (0 or null)
 		}
@@ -155,7 +163,7 @@ public class Cell {
 		this.isDisplayed = isDisplayed;
 	}
 
-	public boolean getIsDisplayed() {
+	public boolean isDisplayed() {
 		return isDisplayed;
 	}
 
@@ -164,9 +172,7 @@ public class Cell {
 	}
 
 	public String toString() {
-		var results = result.stream().map(r -> Double.toString(r.getValue())).collect(Collectors.toList());
-		return rgb + " / " + String.join(", ", results) + " / [ " + rectCell.x + "; " + (rectCell.x + rectCell.width)
-				+ " ]";
+		return rgb + " / " + result + " / [ " + rectCell.x + "; " + (rectCell.x + rectCell.width) + " ]";
 	}
 
 }

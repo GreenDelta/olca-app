@@ -84,6 +84,7 @@ public class ProductComparison {
 	public ProductComparison(Composite shell, FormEditor editor, TargetCalculationEnum target, FormToolkit tk) {
 		this.tk = tk;
 		db = Database.get();
+		Cell.db = db;
 		this.shell = shell;
 		config = new Config(); // Comparison config
 		colorCellCriteria = config.colorCellCriteria;
@@ -248,8 +249,8 @@ public class ProductComparison {
 		selectCategory = UI.formCombo(row1, "Select Product Category : ");
 		var categoryMap = new HashMap<String, Descriptor>();
 		var categoriesRefId = contributionsList.stream()
-				.flatMap(p -> p.getList().stream().flatMap(results -> results.getResult().stream()
-						.filter(r -> r.getContribution().item != null).map(r -> r.getContribution().item.category)))
+				.flatMap(c -> c.getList().stream().filter(cell -> cell.getResult().getContribution().item != null)
+						.map(cell -> cell.getResult().getContribution().item.category))
 				.distinct().collect(Collectors.toSet());
 		var categoriesDescriptors = new CategoryDao(db).getDescriptors(categoriesRefId);
 		var categoriesNameList = categoriesDescriptors.stream().sorted((c1, c2) -> c1.name.compareTo(c2.name))
@@ -274,7 +275,7 @@ public class ProductComparison {
 					chosenProcessCategoryId = categoryMap
 							.get(selectCategory.getItem(selectCategory.getSelectionIndex())).id;
 					contributionsList.stream().forEach(c -> c.getList().stream().forEach(cell -> {
-						if (cell.getResult().get(0).getContribution().item.category == chosenProcessCategoryId) {
+						if (cell.getResult().getContribution().item.category == chosenProcessCategoryId) {
 							cell.setRgb(chosenCategoryColor.getRGB());
 						}
 					}));
@@ -869,13 +870,13 @@ public class ProductComparison {
 				var nextCells = contributionsList.get(contributionsIndex + 1);
 				// We search for a cell that has the same process
 				var optional = nextCells.getList().stream()
-						.filter(next -> next.getResult().get(0).getContribution().item
-								.equals(cell.getResult().get(0).getContribution().item))
+						.filter(next -> next.getResult().getContribution().item
+								.equals(cell.getResult().getContribution().item))
 						.findFirst();
 				if (!optional.isPresent())
 					continue;
 				var linkedCell = optional.get();
-				if (!linkedCell.getIsDisplayed())
+				if (!linkedCell.isDisplayed())
 					continue;
 				var startPoint = cell.getStartingLinkPoint();
 				var endPoint = linkedCell.getEndingLinkPoint();
@@ -953,7 +954,7 @@ public class ProductComparison {
 							// count if we scrolled
 							var cursor = new Point(event.x - scrollPoint.x, event.y - scrollPoint.y);
 							// If the cursor is contained in the cell
-							if (cell.contains(cursor)) {
+							if (cell.contains(cursor) && cell.isDisplayed()) {
 								String text = cell.getTooltip();
 								if (!(text.equals(canvas.getToolTipText()))) {
 									canvas.setToolTipText(text);
