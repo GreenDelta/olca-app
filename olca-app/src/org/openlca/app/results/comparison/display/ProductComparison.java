@@ -171,7 +171,9 @@ public class ProductComparison {
 		addToolTipListener(canvas);
 	}
 
-	// Initialize a map of impact categories
+	/**
+	 * Initialize an impact Category Map, from the Impact Method
+	 */
 	private void initCategoryMap() {
 		var impactCategories = new ImpactMethodDao(db).getCategoryDescriptors(impactMethod.id);
 		impactCategoryMap = impactCategories.stream().sorted((c1, c2) -> c1.name.compareTo(c2.name))
@@ -383,7 +385,7 @@ public class ProductComparison {
 	 */
 	private void selectAmountVisibleProcessMenu(Composite row1, Composite row2, Canvas canvas) {
 		final Label l = new Label(row1, SWT.NONE);
-		l.setText("Select amount non cutoff process: ");
+		l.setText("Select number of biggest process: ");
 		var selectCutoff = new Spinner(row1, SWT.BORDER);
 		selectCutoff.setBounds(50, 50, 500, 65);
 		selectCutoff.setMinimum(0);
@@ -869,9 +871,8 @@ public class ProductComparison {
 					continue;
 				var nextCells = contributionsList.get(contributionsIndex + 1);
 				// We search for a cell that has the same process
-				var optional = nextCells.getList().stream()
-						.filter(next -> next.getResult().getContribution().item
-								.equals(cell.getResult().getContribution().item))
+				var optional = nextCells.getList().stream().filter(
+						next -> next.getResult().getContribution().item.equals(cell.getResult().getContribution().item))
 						.findFirst();
 				if (!optional.isPresent())
 					continue;
@@ -937,7 +938,7 @@ public class ProductComparison {
 	}
 
 	/**
-	 * Add a tooltip on hover over a cell It will display the process name, and the
+	 * Add a tooltip on hover over a cell. It will display the process name, and the
 	 * contribution amount
 	 * 
 	 * @param canvas The canvas

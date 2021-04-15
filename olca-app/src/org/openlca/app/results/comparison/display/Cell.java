@@ -60,8 +60,6 @@ public class Cell {
 		isCutoff = false;
 		rgb = computeRGB();
 		isDisplayed = true;
-		setTooltip();
-
 	}
 
 	private void setTooltip() {
@@ -75,6 +73,9 @@ public class Cell {
 	}
 
 	public String getTooltip() {
+		if (tooltip != null)
+			return tooltip;
+		setTooltip();
 		return tooltip;
 	}
 
