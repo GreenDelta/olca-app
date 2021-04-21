@@ -36,7 +36,7 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.io.maps.Status;
-import org.openlca.util.CategoryPathBuilder;
+import org.openlca.util.Categories;
 import org.openlca.util.Strings;
 
 class MappingDialog extends FormDialog {
@@ -386,8 +386,8 @@ class MappingDialog extends FormDialog {
 			if (p.category == null) {
 				ref.providerCategory = "";
 			} else {
-				ref.providerCategory = new CategoryPathBuilder(
-						Database.get()).path(p.category);
+				ref.providerCategory = Categories.pathsOf(
+						Database.get()).pathOf(p.category);
 			}
 			if (p.location == null) {
 				ref.providerLocation = "";
