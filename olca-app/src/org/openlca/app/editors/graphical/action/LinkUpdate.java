@@ -4,14 +4,11 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
@@ -19,6 +16,11 @@ import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 
 public class LinkUpdate {
 
@@ -87,7 +89,7 @@ public class LinkUpdate {
 			var exchangeIds = exchangeIndex.get(processId);
 			if (exchangeIds == null)
 				continue;
-			for (var it = exchangeIds.iterator(); it.hasNext(); ) {
+			for (var it = exchangeIds.iterator(); it.hasNext();) {
 				var link = linkOf(process, it.next());
 				if (link == null)
 					continue;
@@ -109,7 +111,7 @@ public class LinkUpdate {
 			system.processes.add(link.providerId);
 		}
 
-		return db.update(system);
+		return ProductSystemBuilder.update(db, system);
 	}
 
 	private ProcessLink linkOf(ProcessDescriptor process, long exchangeId) {
@@ -128,7 +130,7 @@ public class LinkUpdate {
 
 		long providerId = 0;
 		ProcessDescriptor provider = null;
-		for (var it = providers.iterator(); it.hasNext(); ) {
+		for (var it = providers.iterator(); it.hasNext();) {
 			long candidateId = it.next();
 
 			// only link default providers
@@ -162,14 +164,14 @@ public class LinkUpdate {
 	}
 
 	/**
-	 * Returns true when the given candidate is a better provider then
-	 * the currently selected provider
+	 * Returns true when the given candidate is a better provider then the currently
+	 * selected provider
 	 */
 	private boolean isBetterProvider(
-		ProcessDescriptor process,
-		ProcessDescriptor current,
-		ProcessDescriptor candidate,
-		TExchange exchange) {
+			ProcessDescriptor process,
+			ProcessDescriptor current,
+			ProcessDescriptor candidate,
+			TExchange exchange) {
 		if (current == null)
 			return true;
 
@@ -178,9 +180,9 @@ public class LinkUpdate {
 			// TODO: we could filter out 'GLO' and 'RoW' here
 			long locationId = process.location;
 			boolean matchesCurrent = current.location != null
-															 && locationId == current.location;
+					&& locationId == current.location;
 			boolean matchesCandidate = candidate.location != null
-																 && locationId == candidate.location;
+					&& locationId == candidate.location;
 			if (!matchesCurrent && matchesCandidate
 					&& candidate.id != process.id)
 				return true;
@@ -196,9 +198,8 @@ public class LinkUpdate {
 
 		// check the preferred process type
 		return candidate.processType == preferredType
-					 && current.processType != preferredType;
+				&& current.processType != preferredType;
 	}
-
 
 	private void fillIndices() {
 		// index the current links if needed
@@ -210,11 +211,11 @@ public class LinkUpdate {
 
 		// collect providers and exchange data
 		var sql = "select " +
-			/* 1 */ "id, " +
-			/* 2 */ "f_owner, " +
-			/* 3 */ "f_flow, " +
-			/* 4 */ "is_input, " +
-			/* 5 */ "f_default_provider from tbl_exchanges";
+		/* 1 */ "id, " +
+		/* 2 */ "f_owner, " +
+		/* 3 */ "f_flow, " +
+		/* 4 */ "is_input, " +
+		/* 5 */ "f_default_provider from tbl_exchanges";
 
 		NativeSql.on(db).query(sql, r -> {
 
@@ -239,9 +240,8 @@ public class LinkUpdate {
 
 			// add as linkable exchange
 			long exchangeId = r.getLong(1);
-			long defaultProviderId = r.getLong(6);
-			var exchange = new TExchange(
-				exchangeId, flowId, defaultProviderId);
+			long defaultProviderId = r.getLong(5);
+			var exchange = new TExchange(flowId, defaultProviderId);
 			add(exchangeIndex, ownerId, exchangeId);
 			exchanges.put(exchangeId, exchange);
 			return true;
@@ -259,12 +259,10 @@ public class LinkUpdate {
 
 	private static class TExchange {
 
-		final long exchangeId;
 		final long flowId;
 		final long defaultProviderId;
 
-		TExchange(long exchangeId, long flowId, long defaultProviderId) {
-			this.exchangeId = exchangeId;
+		TExchange(long flowId, long defaultProviderId) {
 			this.flowId = flowId;
 			this.defaultProviderId = defaultProviderId;
 		}

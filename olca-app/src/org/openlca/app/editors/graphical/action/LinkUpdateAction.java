@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -13,11 +14,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.ProcessType;
@@ -44,7 +48,25 @@ public class LinkUpdateAction extends Action implements GraphAction {
 		var dialog = new Dialog(editor);
 		if (dialog.open() != Window.OK)
 			return;
-		// TODO: run the LinkUpdate
+		boolean doIt = Question.ask(
+			"Execute update?",
+			"Do you want to execute the update? " +
+			"This will save reload the updated product system.");
+		if (!doIt)
+			return;
+		editor.collapse();
+		var system = editor.getProductSystem();
+		editor.systemEditor().doSave(
+			new ProgressMonitorDialog(UI.shell()).getProgressMonitor());
+		App.close(system);
+		App.runWithProgress("Update links", () -> {
+			try {
+				var updated = dialog.config.execute();
+				App.open(updated);
+			} catch (Exception e) {
+				ErrorReporter.on("Update failed", e);
+			}
+		});
 	}
 
 	private static class Dialog extends FormDialog {

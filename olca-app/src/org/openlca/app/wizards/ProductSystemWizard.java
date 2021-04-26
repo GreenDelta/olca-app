@@ -136,7 +136,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 				ProductSystemBuilder builder = new ProductSystemBuilder(
 						Cache.getMatrixCache(), config);
 				builder.autoComplete(system);
-				system = builder.saveUpdates(system);
+				system = ProductSystemBuilder.update(Database.get(), system);
 				monitor.done();
 			} catch (Exception e) {
 				log.error("Failed to auto-complete product system", e);

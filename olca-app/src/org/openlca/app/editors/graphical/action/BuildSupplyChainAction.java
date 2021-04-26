@@ -91,7 +91,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 				var dao = new ProcessDao(Database.get());
 				var p = dao.getForId(node.process.id);
 				builder.autoComplete(system, ProcessProduct.of(p));
-				system = builder.saveUpdates(system);
+				system = ProductSystemBuilder.update(Database.get(), system);
 			}
 			GraphEditor editor = nodes.get(0).parent().editor;
 			editor.updateModel(monitor);
