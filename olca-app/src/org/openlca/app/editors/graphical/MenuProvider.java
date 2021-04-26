@@ -14,6 +14,7 @@ import org.openlca.app.editors.graphical.action.ExchangeDeleteAction;
 import org.openlca.app.editors.graphical.action.ExchangeEditAction;
 import org.openlca.app.editors.graphical.action.GraphAction;
 import org.openlca.app.editors.graphical.action.GraphSettingsAction;
+import org.openlca.app.editors.graphical.action.LinkUpdateAction;
 import org.openlca.app.editors.graphical.action.MarkingAction;
 import org.openlca.app.editors.graphical.action.OpenAction;
 import org.openlca.app.editors.graphical.action.SaveImageAction;
@@ -89,6 +90,10 @@ class MenuProvider extends ContextMenuProvider {
 		menu.add(registry.getAction(ActionIds.REMOVE_SUPPLY_CHAIN));
 		menu.add(registry.getAction(ActionIds.REMOVE_ALL_CONNECTIONS));
 
+		var linkUpdate = new LinkUpdateAction();
+		if (linkUpdate.accepts(editor)) {
+			menu.add(linkUpdate);
+		}
 	}
 
 	private void addSearchActions(IMenuManager menu) {
