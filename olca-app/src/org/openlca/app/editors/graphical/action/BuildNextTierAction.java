@@ -17,7 +17,7 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
-import org.openlca.core.matrix.LinkingConfig.DefaultProviders;
+import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProcessLink;
@@ -31,7 +31,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 	private final ProcessDao processDao;
 	private List<ProcessNode> nodes;
 	private ProcessType preferredType = ProcessType.UNIT_PROCESS;
-	private DefaultProviders providers = DefaultProviders.ONLY;
+	private ProviderLinking providers = ProviderLinking.ONLY_DEFAULTS;
 
 	BuildNextTierAction() {
 		setId(ActionIds.BUILD_NEXT_TIER);
@@ -51,7 +51,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 	}
 
 	@Override
-	public void setProviderMethod(DefaultProviders providers) {
+	public void setProviderMethod(ProviderLinking providers) {
 		this.providers = providers;
 	}
 
@@ -112,12 +112,12 @@ class BuildNextTierAction extends Action implements IBuildAction {
 	private CategorizedDescriptor findProvider(Exchange e) {
 		if (e.flow == null)
 			return null;
-		if (providers == DefaultProviders.ONLY) {
+		if (providers == ProviderLinking.ONLY_DEFAULTS) {
 			if (e.defaultProviderId == 0L)
 				return null;
 			return processDao.getDescriptor(e.defaultProviderId);
 		}
-		if (providers == DefaultProviders.PREFER
+		if (providers == ProviderLinking.PREFER_DEFAULTS
 				&& e.defaultProviderId != 0L)
 			return processDao.getDescriptor(e.defaultProviderId);
 

@@ -11,8 +11,8 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.matrix.IndexFlow;
-import org.openlca.core.matrix.LinkingConfig;
 import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
@@ -363,13 +363,13 @@ public class Labels {
 		};
 	}
 
-	public static String of(LinkingConfig.DefaultProviders providerLinking) {
+	public static String of(ProviderLinking providerLinking) {
 		if (providerLinking == null)
 			return M.Unknown;
 		return switch (providerLinking) {
-			case IGNORE -> M.IgnoreDefaultProviders;
-			case ONLY -> M.OnlyLinkDefaultProviders;
-			case PREFER -> M.PreferDefaultProviders;
+			case IGNORE_DEFAULTS -> M.IgnoreDefaultProviders;
+			case ONLY_DEFAULTS -> M.OnlyLinkDefaultProviders;
+			case PREFER_DEFAULTS -> M.PreferDefaultProviders;
 		};
 	}
 

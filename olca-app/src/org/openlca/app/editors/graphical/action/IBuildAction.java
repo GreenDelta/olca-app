@@ -3,7 +3,7 @@ package org.openlca.app.editors.graphical.action;
 import java.util.List;
 
 import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.core.matrix.LinkingConfig.DefaultProviders;
+import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.ProcessType;
 
 interface IBuildAction {
@@ -12,7 +12,7 @@ interface IBuildAction {
 
 	void setPreferredType(ProcessType preferredType);
 
-	void setProviderMethod(DefaultProviders providers);
+	void setProviderMethod(ProviderLinking providerLinking);
 
 	String getText();
 

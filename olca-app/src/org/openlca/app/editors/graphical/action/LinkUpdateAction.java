@@ -9,7 +9,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.matrix.LinkingConfig;
+import org.openlca.core.matrix.linking.ProviderLinking;
 
 public class LinkUpdateAction extends Action implements GraphAction {
 
@@ -32,6 +32,8 @@ public class LinkUpdateAction extends Action implements GraphAction {
 	}
 
 	private class Dialog extends FormDialog {
+
+
 
 		Dialog() {
 			super(UI.shell());
@@ -56,13 +58,19 @@ public class LinkUpdateAction extends Action implements GraphAction {
 			var body = UI.formBody(mform.getForm(), tk);
 			UI.gridLayout(body, 2);
 
-			var providerCombo = UI.formCombo(body, tk, "Update method");
-			var providerOptions = LinkingConfig.DefaultProviders.values();
+			var providerOptions = ProviderLinking.values();
 			var items = new String[providerOptions.length];
+			int selected = -1;
 			for (int i = 0; i <items.length; i++) {
 				var option = providerOptions[i];
 				items[i] = Labels.of(option);
+				if (option == ProviderLinking.PREFER_DEFAULTS) {
+					selected = i;
+				}
 			}
+			var providerCombo = UI.formCombo(body, tk, "Update method");
+			providerCombo.setItems(items);
+			providerCombo.select(selected);
 
 
 

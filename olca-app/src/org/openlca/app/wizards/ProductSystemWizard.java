@@ -9,8 +9,9 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.core.matrix.LinkingConfig;
+import org.openlca.app.util.Labels;
 import org.openlca.core.matrix.ProductSystemBuilder;
+import org.openlca.core.matrix.linking.LinkingConfig;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
@@ -107,18 +108,9 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		if (config.cutoff != null) {
 			suffix += "; cutoff = " + config.cutoff.toString();
 		}
-		if (config.providerLinking == null)
-			return suffix;
-		switch (config.providerLinking) {
-		case IGNORE:
-			return M.IgnoreDefaultProviders + suffix;
-		case ONLY:
-			return M.OnlyLinkDefaultProviders + suffix;
-		case PREFER:
-			return M.PreferDefaultProviders + suffix;
-		default:
-			return "???" + suffix;
-		}
+		return config.providerLinking == null
+				? suffix
+				: Labels.of(config.providerLinking) + suffix;
 	}
 
 	@Override

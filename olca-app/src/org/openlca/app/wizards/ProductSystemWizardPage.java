@@ -23,7 +23,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.core.database.ProcessDao;
-import org.openlca.core.matrix.LinkingConfig;
+import org.openlca.core.matrix.linking.LinkingConfig;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
