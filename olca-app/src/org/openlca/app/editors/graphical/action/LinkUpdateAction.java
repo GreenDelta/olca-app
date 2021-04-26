@@ -49,15 +49,24 @@ public class LinkUpdateAction extends Action implements GraphAction {
 		if (dialog.open() != Window.OK)
 			return;
 		boolean doIt = Question.ask(
-			"Execute update?",
-			"Do you want to execute the update? " +
-			"This will save reload the updated product system.");
+				"Execute update?",
+				"Do you want to execute the update? " +
+						"This will save reload the updated product system.");
 		if (!doIt)
 			return;
-		editor.collapse();
+
 		var system = editor.getProductSystem();
-		editor.systemEditor().doSave(
-			new ProgressMonitorDialog(UI.shell()).getProgressMonitor());
+		editor.collapse();
+		var progress = new ProgressMonitorDialog(UI.shell());
+		try {
+			progress.run(false, false, monitor -> {
+				editor.systemEditor().doSave(monitor);
+			});
+		} catch (Exception e) {
+			ErrorReporter.on("failed to save product system in link update", e);
+			return;
+		}
+
 		App.close(system);
 		App.runWithProgress("Update links", () -> {
 			try {
@@ -79,7 +88,7 @@ public class LinkUpdateAction extends Action implements GraphAction {
 			onLinkingChanged = new ArrayList<>();
 			setBlockOnOpen(true);
 			config = LinkUpdate.of(
-				Database.get(), editor.getProductSystem());
+					Database.get(), editor.getProductSystem());
 		}
 
 		@Override
@@ -133,40 +142,37 @@ public class LinkUpdateAction extends Action implements GraphAction {
 
 		private void createTypeCombo(FormToolkit tk, Composite body) {
 			String[] items = {
-				Labels.of(ProcessType.UNIT_PROCESS),
-				Labels.of(ProcessType.LCI_RESULT)};
+					Labels.of(ProcessType.UNIT_PROCESS),
+					Labels.of(ProcessType.LCI_RESULT) };
 			var combo = UI.formCombo(body, tk, M.PreferredProcessType);
 			combo.setItems(items);
 			combo.select(1);
 			config.withPreferredType(ProcessType.LCI_RESULT);
-			Controls.onSelect(combo, $ ->
-				config.withPreferredType(combo.getSelectionIndex() == 0
+			Controls.onSelect(combo, $ -> config.withPreferredType(combo.getSelectionIndex() == 0
 					? ProcessType.UNIT_PROCESS
 					: ProcessType.LCI_RESULT));
-			onLinkingChanged.add(linking ->
-				combo.setEnabled(linking != ProviderLinking.ONLY_DEFAULTS));
+			onLinkingChanged.add(linking -> combo.setEnabled(linking != ProviderLinking.ONLY_DEFAULTS));
 		}
 
 		private void createKeepExistingCheck(FormToolkit tk, Composite body) {
 			UI.filler(body, tk);
 			var check = tk.createButton(
-				body, "Keep all existing links", SWT.CHECK);
+					body, "Keep all existing links", SWT.CHECK);
 			config.keepExistingLinks(true);
 			check.setSelection(true);
 			Controls.onSelect(
-				check, $ -> config.keepExistingLinks(check.getSelection()));
+					check, $ -> config.keepExistingLinks(check.getSelection()));
 		}
 
 		private void createLocationCheck(FormToolkit tk, Composite body) {
 			UI.filler(body, tk);
 			var check = tk.createButton(
-				body, "Prefer links within same locations", SWT.CHECK);
+					body, "Prefer links within same locations", SWT.CHECK);
 			config.preferLinksInSameLocation(false);
 			check.setSelection(false);
 			Controls.onSelect(
-				check, $ -> config.preferLinksInSameLocation(check.getSelection()));
-			onLinkingChanged.add(linking ->
-				check.setEnabled(linking != ProviderLinking.ONLY_DEFAULTS));
+					check, $ -> config.preferLinksInSameLocation(check.getSelection()));
+			onLinkingChanged.add(linking -> check.setEnabled(linking != ProviderLinking.ONLY_DEFAULTS));
 		}
 	}
 }
