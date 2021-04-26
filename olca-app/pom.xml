@@ -84,7 +84,7 @@
 		<dependency>
 			<groupId>com.greendelta.search</groupId>
 			<artifactId>search-wrapper</artifactId>
-			<version>1.0.0</version>
+			<version>1.1.0</version>
 		</dependency>
 
 		<dependency>

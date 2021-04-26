@@ -211,7 +211,7 @@ class SearchPage extends FormPage {
 			}
 			categoryLabel.setForeground(Colors.get(0, 128, 42));
 			ImageHyperlink repositoryLink = tk.createImageHyperlink(header, SWT.TOP);
-			repositoryLink.setText(d.name);
+			repositoryLink.setText(d.repositoryId);
 			repositoryLink.setForeground(Colors.get(119, 0, 119));
 			repositoryLink.setData(getRepositoryLink(d));
 			repositoryLink.addHyperlinkListener(click);
