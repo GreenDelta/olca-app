@@ -3,6 +3,7 @@ package org.openlca.app.util;
 import java.util.function.Function;
 
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
@@ -122,6 +123,20 @@ public class UI {
 		return display != null
 				? new Shell(display)
 				: new Shell();
+	}
+
+	public static Point initialSizeOf(
+		IShellProvider dialog, int maxWidth, int maxHeight) {
+		if (dialog == null)
+			return new Point(maxWidth, maxHeight);
+		var displaySize = dialog.getShell().getDisplay().getBounds();
+		int width = displaySize.x > 0 && displaySize.x < maxWidth
+			? displaySize.x
+			: maxWidth;
+		int height = displaySize.y > 0 && displaySize.y < maxHeight
+			? displaySize.y
+			: maxHeight;
+		return new Point(width, height);
 	}
 
 	public static Font boldFont() {

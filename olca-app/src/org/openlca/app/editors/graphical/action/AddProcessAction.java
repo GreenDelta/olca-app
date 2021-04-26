@@ -51,7 +51,7 @@ public class AddProcessAction extends Action implements GraphAction {
 	public boolean accepts(GraphEditor editor) {
 		systemNode = GraphActions.firstSelectedOf(
 				editor, ProductSystemNode.class);
-		if (systemNode == null 
+		if (systemNode == null
 				|| systemNode.getProductSystem() == null)
 			return false;
 		var displayLoc = Display.getCurrent()
@@ -136,14 +136,7 @@ public class AddProcessAction extends Action implements GraphAction {
 
 		@Override
 		protected Point getInitialSize() {
-			var shell = getShell().getDisplay().getBounds();
-			int width = shell.x > 0 && shell.x < 600
-					? shell.x
-					: 600;
-			int height = shell.y > 0 && shell.y < 600
-					? shell.y
-					: 600;
-			return new Point(width, height);
+			return UI.initialSizeOf(this, 600, 600);
 		}
 
 		@Override
@@ -197,7 +190,7 @@ public class AddProcessAction extends Action implements GraphAction {
 					&& d.type != ModelType.PRODUCT_SYSTEM) {
 				return;
 			}
-			
+
 			// add the process to the product system
 			var system = systemNode.getProductSystem();
 			if (system.processes.contains(d.id)) {
@@ -208,7 +201,7 @@ public class AddProcessAction extends Action implements GraphAction {
 				return;
 			}
 			system.processes.add(d.id);
-			
+
 			// create the process node
 			var editor = systemNode.editor;
 			var processNode = new ProcessNode(editor, d);
@@ -216,7 +209,7 @@ public class AddProcessAction extends Action implements GraphAction {
 			if (editor.getOutline() != null) {
 				editor.getOutline().refresh();
 			}
-			
+
 			// set the node position
 			processNode.maximize();
 			if (location != null) {
@@ -227,7 +220,7 @@ public class AddProcessAction extends Action implements GraphAction {
 						Math.max(processNode.getMinimumHeight(), 150));
 				processNode.setBox(rect);
 			}
-			
+
 			editor.setDirty();
 			super.okPressed();
 		}

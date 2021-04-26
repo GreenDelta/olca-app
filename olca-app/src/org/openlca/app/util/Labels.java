@@ -11,6 +11,7 @@ import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.LinkingConfig;
 import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.CategorizedEntity;
@@ -174,7 +175,7 @@ public class Labels {
 	}
 
 	/**
-	 * Same as {@link #getCategory(CategorizedDescriptor, EntityCache)} but top-
+	 * Same as {@link #getCategory(CategorizedDescriptor)} but top-
 	 * and sub-category concatenated as a short string.
 	 */
 	public static String getShortCategory(CategorizedDescriptor entity) {
@@ -215,236 +216,161 @@ public class Labels {
 	public static String of(UncertaintyType type) {
 		if (type == null)
 			return M.NoDistribution;
-		switch (type) {
-		case LOG_NORMAL:
-			return M.LogNormalDistribution;
-		case NONE:
-			return M.NoDistribution;
-		case NORMAL:
-			return M.NormalDistribution;
-		case TRIANGLE:
-			return M.TriangleDistribution;
-		case UNIFORM:
-			return M.UniformDistribution;
-		default:
-			return M.NoDistribution;
-		}
+		return switch (type) {
+			case LOG_NORMAL -> M.LogNormalDistribution;
+			case NORMAL -> M.NormalDistribution;
+			case TRIANGLE -> M.TriangleDistribution;
+			case UNIFORM -> M.UniformDistribution;
+			default -> M.NoDistribution;
+		};
 	}
 
 	public static String of(FlowType type) {
 		if (type == null)
 			return null;
-		switch (type) {
-		case ELEMENTARY_FLOW:
-			return M.ElementaryFlow;
-		case PRODUCT_FLOW:
-			return M.Product;
-		case WASTE_FLOW:
-			return M.Waste;
-		default:
-			return null;
-		}
+		return switch (type) {
+			case ELEMENTARY_FLOW -> M.ElementaryFlow;
+			case PRODUCT_FLOW -> M.Product;
+			case WASTE_FLOW -> M.Waste;
+		};
 	}
 
 	public static String of(ProcessType t) {
 		if (t == null)
 			return null;
-		switch (t) {
-		case LCI_RESULT:
-			return M.SystemProcess;
-		case UNIT_PROCESS:
-			return M.UnitProcess;
-		default:
-			return null;
-		}
+		return switch (t) {
+			case LCI_RESULT -> M.SystemProcess;
+			case UNIT_PROCESS -> M.UnitProcess;
+		};
 	}
 
 	public static String of(AllocationMethod m) {
 		if (m == null)
 			return null;
-		switch (m) {
-		case CAUSAL:
-			return M.Causal;
-		case ECONOMIC:
-			return M.Economic;
-		case NONE:
-			return M.None;
-		case PHYSICAL:
-			return M.Physical;
-		case USE_DEFAULT:
-			return M.AsDefinedInProcesses;
-		default:
-			return M.None;
-		}
+		return switch (m) {
+			case CAUSAL -> M.Causal;
+			case ECONOMIC -> M.Economic;
+			case PHYSICAL -> M.Physical;
+			case USE_DEFAULT -> M.AsDefinedInProcesses;
+			default -> M.None;
+		};
 	}
 
 	public static String of(FlowPropertyType t) {
 		if (t == null)
 			return null;
-		switch (t) {
-		case ECONOMIC:
-			return M.Economic;
-		case PHYSICAL:
-			return M.Physical;
-		default:
-			return null;
-		}
+		return switch (t) {
+			case ECONOMIC -> M.Economic;
+			case PHYSICAL -> M.Physical;
+		};
 	}
 
 	public static String of(RiskLevel rl) {
 		if (rl == null)
 			return M.Unknown;
-		switch (rl) {
-		case HIGH_OPPORTUNITY:
-			return M.HighOpportunity;
-		case MEDIUM_OPPORTUNITY:
-			return M.MediumOpportunity;
-		case LOW_OPPORTUNITY:
-			return M.LowOpportunity;
-		case NO_RISK:
-			return M.NoRisk;
-		case VERY_LOW_RISK:
-			return M.VeryLowRisk;
-		case LOW_RISK:
-			return M.LowRisk;
-		case MEDIUM_RISK:
-			return M.MediumRisk;
-		case HIGH_RISK:
-			return M.HighRisk;
-		case VERY_HIGH_RISK:
-			return M.VeryHighRisk;
-		case NO_DATA:
-			return M.NoData;
-		case NOT_APPLICABLE:
-			return M.NotApplicable;
-		case NO_OPPORTUNITY:
-			return M.NoOpportunity;
-		default:
-			return M.Unknown;
-		}
+		return switch (rl) {
+			case HIGH_OPPORTUNITY -> M.HighOpportunity;
+			case MEDIUM_OPPORTUNITY -> M.MediumOpportunity;
+			case LOW_OPPORTUNITY -> M.LowOpportunity;
+			case NO_RISK -> M.NoRisk;
+			case VERY_LOW_RISK -> M.VeryLowRisk;
+			case LOW_RISK -> M.LowRisk;
+			case MEDIUM_RISK -> M.MediumRisk;
+			case HIGH_RISK -> M.HighRisk;
+			case VERY_HIGH_RISK -> M.VeryHighRisk;
+			case NO_DATA -> M.NoData;
+			case NOT_APPLICABLE -> M.NotApplicable;
+			case NO_OPPORTUNITY -> M.NoOpportunity;
+		};
 	}
 
 	public static String plural(ModelType o) {
 		if (o == null)
 			return null;
-		switch (o) {
-		case ACTOR:
-			return M.Actors;
-		case CURRENCY:
-			return M.Currencies;
-		case FLOW:
-			return M.Flows;
-		case FLOW_PROPERTY:
-			return M.FlowProperties;
-		case IMPACT_METHOD:
-			return M.ImpactAssessmentMethods;
-		case IMPACT_CATEGORY:
-			return M.ImpactCategories;
-		case PROCESS:
-			return M.Processes;
-		case PRODUCT_SYSTEM:
-			return M.ProductSystems;
-		case PROJECT:
-			return M.Projects;
-		case SOCIAL_INDICATOR:
-			return M.SocialIndicators;
-		case SOURCE:
-			return M.Sources;
-		case UNIT_GROUP:
-			return M.UnitGroups;
-		case LOCATION:
-			return M.Locations;
-		case PARAMETER:
-			return M.GlobalParameters;
-		case CATEGORY:
-			return M.Category;
-		case DQ_SYSTEM:
-			return M.DataQualitySystems;
-		default:
-			return M.Unknown;
-		}
+		return switch (o) {
+			case ACTOR -> M.Actors;
+			case CURRENCY -> M.Currencies;
+			case FLOW -> M.Flows;
+			case FLOW_PROPERTY -> M.FlowProperties;
+			case IMPACT_METHOD -> M.ImpactAssessmentMethods;
+			case IMPACT_CATEGORY -> M.ImpactCategories;
+			case PROCESS -> M.Processes;
+			case PRODUCT_SYSTEM -> M.ProductSystems;
+			case PROJECT -> M.Projects;
+			case SOCIAL_INDICATOR -> M.SocialIndicators;
+			case SOURCE -> M.Sources;
+			case UNIT_GROUP -> M.UnitGroups;
+			case LOCATION -> M.Locations;
+			case PARAMETER -> M.GlobalParameters;
+			case CATEGORY -> M.Category;
+			case DQ_SYSTEM -> M.DataQualitySystems;
+			default -> M.Unknown;
+		};
 	}
 
 	public static String of(ModelType o) {
 		if (o == null)
 			return null;
-		switch (o) {
-		case ACTOR:
-			return M.Actor;
-		case CURRENCY:
-			return M.Currency;
-		case FLOW:
-			return M.Flow;
-		case FLOW_PROPERTY:
-			return M.FlowProperty;
-		case IMPACT_METHOD:
-			return M.ImpactAssessmentMethod;
-		case IMPACT_CATEGORY:
-			return M.ImpactCategory;
-		case PROCESS:
-			return M.Process;
-		case PRODUCT_SYSTEM:
-			return M.ProductSystem;
-		case PROJECT:
-			return M.Project;
-		case SOCIAL_INDICATOR:
-			return M.SocialIndicator;
-		case SOURCE:
-			return M.Source;
-		case UNIT_GROUP:
-			return M.UnitGroup;
-		case LOCATION:
-			return M.Location;
-		case PARAMETER:
-			return M.GlobalParameter;
-		case CATEGORY:
-			return M.Category;
-		default:
-			return M.Unknown;
-		}
+		return switch (o) {
+			case ACTOR -> M.Actor;
+			case CURRENCY -> M.Currency;
+			case FLOW -> M.Flow;
+			case FLOW_PROPERTY -> M.FlowProperty;
+			case IMPACT_METHOD -> M.ImpactAssessmentMethod;
+			case IMPACT_CATEGORY -> M.ImpactCategory;
+			case PROCESS -> M.Process;
+			case PRODUCT_SYSTEM -> M.ProductSystem;
+			case PROJECT -> M.Project;
+			case SOCIAL_INDICATOR -> M.SocialIndicator;
+			case SOURCE -> M.Source;
+			case UNIT_GROUP -> M.UnitGroup;
+			case LOCATION -> M.Location;
+			case PARAMETER -> M.GlobalParameter;
+			case CATEGORY -> M.Category;
+			default -> M.Unknown;
+		};
 	}
 
 	public static String of(AggregationType type) {
 		if (type == null)
 			return null;
-		switch (type) {
-		case WEIGHTED_AVERAGE:
-			return M.WeightedAverage;
-		case WEIGHTED_SQUARED_AVERAGE:
-			return M.WeightedSquaredAverage;
-		case MAXIMUM:
-			return M.Maximum;
-		case NONE:
-			return M.None;
-		default:
-			return null;
-		}
+		return switch (type) {
+			case WEIGHTED_AVERAGE -> M.WeightedAverage;
+			case WEIGHTED_SQUARED_AVERAGE -> M.WeightedSquaredAverage;
+			case MAXIMUM -> M.Maximum;
+			case NONE -> M.None;
+		};
 	}
 
 	public static String of(NAHandling type) {
 		if (type == null)
 			return null;
-		switch (type) {
-		case EXCLUDE:
-			return M.ExcludeZeroValues;
-		case USE_MAX:
-			return M.UseMaximumScoreForZeroValues;
-		default:
-			return null;
-		}
+		return switch (type) {
+			case EXCLUDE -> M.ExcludeZeroValues;
+			case USE_MAX -> M.UseMaximumScoreForZeroValues;
+		};
 	}
 
 	public static String of(RoundingMode mode) {
 		if (mode == null)
-			return null;
-		switch (mode) {
-		case HALF_UP:
-			return M.HalfUp;
-		case CEILING:
-			return M.Up;
-		default:
-			return null;
-		}
+			return "?";
+		return switch (mode) {
+			case HALF_UP -> M.HalfUp;
+			case CEILING -> M.Up;
+			// TODO: we may should add labels for the other modes too, but these are
+			// currently the only modes that we use in the DQI aggregation
+			default -> "?";
+		};
+	}
+
+	public static String of(LinkingConfig.DefaultProviders providerLinking) {
+		if (providerLinking == null)
+			return M.Unknown;
+		return switch (providerLinking) {
+			case IGNORE -> M.IgnoreDefaultProviders;
+			case ONLY -> M.OnlyLinkDefaultProviders;
+			case PREFER -> M.PreferDefaultProviders;
+		};
 	}
 
 	public static String getReferenceCurrencyCode() {
