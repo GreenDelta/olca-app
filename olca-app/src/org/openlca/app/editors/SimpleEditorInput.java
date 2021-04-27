@@ -50,7 +50,7 @@ public class SimpleEditorInput implements IEditorInput {
 	public boolean equals(Object obj) {
 		if (!(obj instanceof SimpleEditorInput))
 			return false;
-		SimpleEditorInput input = (SimpleEditorInput) obj;
+		var input = (SimpleEditorInput) obj;
 		return Strings.nullOrEqual(id, input.id);
 	}
 }

@@ -1,7 +1,6 @@
 package org.openlca.app.editors.projects;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,7 +47,6 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
@@ -56,21 +54,17 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class ProjectSetupPage extends ModelPage<Project> {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
-	private ProjectEditor editor;
-	private IDatabase database = Database.get();
+	private final ProjectEditor editor;
+	private final IDatabase database = Database.get();
 
 	private Project project;
 	private TableViewer variantViewer;
 	private ProjectParameterTable parameterTable;
-	private ReportVariantSync variantSync;
-	private ScrolledForm form;
+	private final ReportVariantSync variantSync;
 
 	ProjectSetupPage(ProjectEditor editor) {
 		super(editor, "ProjectSetupPage", M.ProjectSetup);
@@ -87,7 +81,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(this);
+		ScrolledForm form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -106,7 +100,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private void initialInput() {
 		List<ProjectVariant> variants = project.variants;
-		Collections.sort(variants, (v1, v2) -> Strings.compare(v1.name, v2.name));
+		variants.sort((v1, v2) -> Strings.compare(v1.name, v2.name));
 		variantViewer.setInput(variants);
 	}
 
@@ -136,8 +130,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 		ms.bind(M.Amount, new DoubleModifier<>(editor, "amount"));
 		ms.bind(M.Unit, new VariantUnitEditor());
 		ms.bind(M.Description, new VariantDescriptionEditor());
-		ms.bind("", new CommentDialogModifier<ProjectVariant>(
-				editor.getComments(), v -> CommentPaths.get(v)));
+		ms.bind("", new CommentDialogModifier<>(
+			editor.getComments(), CommentPaths::get));
 		double w = 1.0 / 8.0;
 		Tables.bindColumnWidths(variantViewer, w, w, w, w, w, w, w, w);
 		addVariantActions(variantViewer, section);
@@ -183,7 +177,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 			ProductSystemDao dao = new ProductSystemDao(database);
 			ProductSystem system = dao.getForId(d.id);
 			if (system == null) {
-				log.error("failed to load product system " + d);
 				continue;
 			}
 			List<ProjectVariant> variants = project.variants;
@@ -205,16 +198,20 @@ class ProjectSetupPage extends ModelPage<Project> {
 		v.amount = system.targetAmount;
 		v.flowPropertyFactor = system.targetFlowPropertyFactor;
 		v.unit = system.targetUnit;
-		for (ParameterRedef redef : system.parameterRedefs) {
-			v.parameterRedefs.add(redef.clone());
+		var redefSet = system.parameterSets.stream()
+			.filter(s -> s.isBaseline)
+			.findAny();
+		if (redefSet.isPresent()) {
+			for (var redef : redefSet.get().parameters) {
+				v.parameterRedefs.add(redef.clone());
+			}
 		}
 		return v;
 	}
 
 	private void removeVariant() {
-		log.trace("remove variant");
 		List<ProjectVariant> selection = Viewers.getAllSelected(variantViewer);
-		if (selection == null || selection.isEmpty())
+		if (selection.isEmpty())
 			return;
 		List<ProjectVariant> variants = project.variants;
 		for (ProjectVariant var : selection) {
@@ -300,8 +297,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 					|| fac.flowProperty.unitGroup == null)
 				return new Unit[0];
 			UnitGroup unitGroup = fac.flowProperty.unitGroup;
-			Unit[] units = unitGroup.units.toArray(
-					new Unit[unitGroup.units.size()]);
+			Unit[] units = unitGroup.units.toArray(new Unit[0]);
 			Arrays.sort(units, (u1, u2) -> {
 				if (u1 == null || u2 == null)
 					return 0;
@@ -347,23 +343,17 @@ class ProjectSetupPage extends ModelPage<Project> {
 		public Image getColumnImage(Object obj, int col) {
 			if (!(obj instanceof ProjectVariant))
 				return null;
-			ProjectVariant v = (ProjectVariant) obj;
-			switch (col) {
-			case 1:
-				return Images.get(ModelType.PRODUCT_SYSTEM);
-			case 2:
-				return v.isDisabled
-						? Icon.CHECK_FALSE.get()
-						: Icon.CHECK_TRUE.get();
-			case 4:
-				return Images.get(FlowType.PRODUCT_FLOW);
-			case 6:
-				return Images.get(ModelType.UNIT);
-			case 8:
-				return Images.get(editor.getComments(), CommentPaths.get(v));
-			default:
-				return null;
-			}
+			var v = (ProjectVariant) obj;
+			return switch (col) {
+				case 1 -> Images.get(ModelType.PRODUCT_SYSTEM);
+				case 2 -> v.isDisabled
+					? Icon.CHECK_FALSE.get()
+					: Icon.CHECK_TRUE.get();
+				case 4 -> Images.get(FlowType.PRODUCT_FLOW);
+				case 6 -> Images.get(ModelType.UNIT);
+				case 8 -> Images.get(editor.getComments(), CommentPaths.get(v));
+				default -> null;
+			};
 		}
 
 		@Override

@@ -33,6 +33,9 @@ public class ReportCalculator implements Runnable {
 	private final Report report;
 	public boolean hadError = false;
 
+	// TODO: just for now, to get the result; we will inject this later
+	public ProjectResult result;
+
 	public ReportCalculator(Project project, Report report) {
 		this.project = project;
 		this.report = report;
@@ -47,7 +50,6 @@ public class ReportCalculator implements Runnable {
 		report.netCosts.clear();
 		if (project.impactMethod == null)
 			return;
-		ProjectResult result;
 		try {
 			var calculator = new SystemCalculator(Database.get());
 			result = calculator.calculate(project);

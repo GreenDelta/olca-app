@@ -3,13 +3,10 @@ package org.openlca.app.editors;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openlca.app.util.ErrorReporter;
 
 public abstract class SimpleFormEditor extends FormEditor {
 
-	private static final Logger log = LoggerFactory.getLogger(SimpleFormEditor.class);
-	
 	protected abstract FormPage getPage();
 
 	@Override
@@ -17,18 +14,16 @@ public abstract class SimpleFormEditor extends FormEditor {
 		try {
 			addPage(getPage());
 		} catch (Exception e) {
-			log.error("Error adding page to " + getClass().getSimpleName(), e);
+			ErrorReporter.on("Failed to add editor page", e);
 		}
 	}
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-
 	}
 
 	@Override
 	public void doSaveAs() {
-
 	}
 
 	@Override

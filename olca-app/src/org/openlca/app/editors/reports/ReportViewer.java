@@ -25,8 +25,8 @@ import com.google.gson.Gson;
 
 public class ReportViewer extends SimpleFormEditor {
 
-	public static String ID = "ReportViewer";
-	private Logger log = LoggerFactory.getLogger(getClass());
+	public static final String ID = "ReportViewer";
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	private Report report;
 
 	public static void open(Report report) {

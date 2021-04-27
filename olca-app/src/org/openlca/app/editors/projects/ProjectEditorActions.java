@@ -6,6 +6,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.editors.projects.results.ProjectResultEditor;
 import org.openlca.app.editors.reports.ReportViewer;
 import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.editors.reports.model.Report;
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class ProjectEditorActions extends EditorActionBarContributor {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBar) {
@@ -46,12 +47,13 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 	}
 
 	static void calculate(Project project, Report report) {
-		ReportCalculator calculator = new ReportCalculator(project, report);
+		var calculator = new ReportCalculator(project, report);
 		App.runWithProgress(M.Calculate, calculator, () -> {
 			if (calculator.hadError)
 				return;
 			Reports.save(project, report, Database.get());
 			ReportViewer.open(report);
+			ProjectResultEditor.open(project, calculator.result);
 		});
 	}
 }
