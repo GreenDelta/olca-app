@@ -1,5 +1,6 @@
 package org.openlca.app.editors.projects;
 
+import org.apache.commons.math3.exception.MathIllegalArgumentException;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.App;
@@ -10,10 +11,13 @@ import org.openlca.app.editors.projects.results.ProjectResultEditor;
 import org.openlca.app.editors.reports.ReportViewer;
 import org.openlca.app.editors.reports.Reports;
 import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.editors.reports.model.ReportCalculator;
+import org.openlca.app.editors.reports.model.ReportBuilder;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.Project;
+import org.openlca.core.results.ProjectResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,13 +51,31 @@ public class ProjectEditorActions extends EditorActionBarContributor {
 	}
 
 	static void calculate(Project project, Report report) {
-		var calculator = new ReportCalculator(project, report);
-		App.runWithProgress(M.Calculate, calculator, () -> {
-			if (calculator.hadError)
+		var db = Database.get();
+		if (db == null || project == null)
+			return;
+
+		var ref = new Object() { ProjectResult result; };
+		Runnable calculation = () -> {
+			try {
+				var calculator = new SystemCalculator(db);
+				ref.result = calculator.calculate(project);
+				ReportBuilder.of(db, project, ref.result).fill(report);
+				Reports.save(project, report, db);
+			} catch (OutOfMemoryError e) {
+				MsgBox.error(M.OutOfMemory, M.CouldNotAllocateMemoryError);
+			} catch (MathIllegalArgumentException e) {
+				MsgBox.error("Matrix error", e.getMessage());
+			} catch (Exception e) {
+				ErrorReporter.on("Calculation failed", e);
+			}
+		};
+
+		App.runWithProgress(M.Calculate, calculation, () -> {
+			if (ref.result == null)
 				return;
-			Reports.save(project, report, Database.get());
 			ReportViewer.open(report);
-			ProjectResultEditor.open(project, calculator.result);
+			ProjectResultEditor.open(project, ref.result);
 		});
 	}
 }

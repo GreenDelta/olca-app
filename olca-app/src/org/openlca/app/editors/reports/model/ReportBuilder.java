@@ -6,13 +6,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.openlca.app.M;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.reports.model.ReportIndicatorResult.VariantResult;
-import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.database.CurrencyDao;
-import org.openlca.core.math.SystemCalculator;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Project;
@@ -25,58 +22,41 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReportCalculator implements Runnable {
+public class ReportBuilder {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
+	private final IDatabase db;
 	private final Project project;
-	private final Report report;
-	public boolean hadError = false;
+	private final ProjectResult result;
 
-	// TODO: just for now, to get the result; we will inject this later
-	public ProjectResult result;
-
-	public ReportCalculator(Project project, Report report) {
-		this.project = project;
-		this.report = report;
+	private ReportBuilder(IDatabase db, Project project, ProjectResult result) {
+		this.db = Objects.requireNonNull(db);
+		this.project = Objects.requireNonNull(project);
+		this.result = Objects.requireNonNull(result);
 	}
 
-	@Override
-	public void run() {
-		if (project == null || report == null)
-			return;
+	public static ReportBuilder of(
+		IDatabase db, Project project, ProjectResult result) {
+		return new ReportBuilder(db, project, result);
+	}
+
+	public void fill(Report report) {
 		report.results.clear();
 		report.addedValues.clear();
 		report.netCosts.clear();
 		if (project.impactMethod == null)
 			return;
-		try {
-			var calculator = new SystemCalculator(Database.get());
-			result = calculator.calculate(project);
-			hadError = false;
-		} catch (OutOfMemoryError e) {
-			MsgBox.error(M.OutOfMemory, M.CouldNotAllocateMemoryError);
-			hadError = true;
-			return;
-		} catch (Exception e) {
-			MsgBox.error("The calculation of the project failed "
-					+ "with an unexpected error: " + e.getMessage()
-					+ ". See the log file for further information.");
-			log.error("Calculation of project failed", e);
-			hadError = true;
-			return;
-		}
-		appendResults(result);
-		appendCostResults(result);
+		appendResults(report);
+		appendCostResults(report);
 		if (project.nwSet != null) {
-			appendNwFactors();
+			appendNwFactors(report);
 		}
 	}
 
-	private void appendNwFactors() {
+	private void appendNwFactors(Report report) {
 		try {
-			NwSetTable table = NwSetTable.of(
-					Database.get(), project.nwSet);
+			var table = NwSetTable.of(db, project.nwSet);
 			report.withNormalisation = table.hasNormalization();
 			report.withWeighting = table.hasWeighting();
 			for (ReportIndicator indicator : report.indicators) {
@@ -97,14 +77,14 @@ public class ReportCalculator implements Runnable {
 		}
 	}
 
-	private void appendResults(ProjectResult result) {
-		for (ImpactDescriptor impact : result.getImpacts()) {
-			ReportIndicatorResult repResult = initReportResult(impact);
+	private void appendResults(Report report) {
+		for (var impact : result.getImpacts()) {
+			var repResult = initReportResult(report, impact);
 			if (repResult == null)
 				continue; // should not add this indicator
 			report.results.add(repResult);
-			for (ProjectVariant variant : result.getVariants()) {
-				VariantResult varResult = new VariantResult();
+			for (var variant : result.getVariants()) {
+				var varResult = new VariantResult();
 				repResult.variantResults.add(varResult);
 				varResult.variant = variant.name;
 				varResult.totalAmount = result.getTotalImpactResult(
@@ -112,13 +92,14 @@ public class ReportCalculator implements Runnable {
 				List<Contribution<CategorizedDescriptor>> set = result
 						.getResult(variant)
 						.getProcessContributions(impact);
-				appendProcessContributions(set, varResult);
+				appendProcessContributions(report, set, varResult);
 			}
 		}
 	}
 
-	private ReportIndicatorResult initReportResult(ImpactDescriptor impact) {
-		for (ReportIndicator indicator : report.indicators) {
+	private ReportIndicatorResult initReportResult(
+		Report report, ImpactDescriptor impact) {
+		for (var indicator : report.indicators) {
 			if (!indicator.displayed)
 				continue;
 			if (Objects.equals(impact, indicator.descriptor))
@@ -128,6 +109,7 @@ public class ReportCalculator implements Runnable {
 	}
 
 	private void appendProcessContributions(
+			Report report,
 			List<Contribution<CategorizedDescriptor>> contributions,
 			VariantResult varResult) {
 		Contribution<Long> rest = new Contribution<>();
@@ -135,7 +117,7 @@ public class ReportCalculator implements Runnable {
 		rest.item = -1L;
 		rest.isRest = true;
 		rest.amount = 0;
-		Set<Long> ids = getContributionProcessIds();
+		Set<Long> ids = getContributionProcessIds(report);
 		Set<Long> foundIds = new TreeSet<>();
 		for (Contribution<CategorizedDescriptor> item : contributions) {
 			if (item.item == null)
@@ -159,9 +141,9 @@ public class ReportCalculator implements Runnable {
 		con.item = item.item.id;
 	}
 
-	private Set<Long> getContributionProcessIds() {
+	private Set<Long> getContributionProcessIds(Report report) {
 		Set<Long> ids = new TreeSet<>();
-		for (ReportProcess process : report.processes) {
+		for (var process : report.processes) {
 			ids.add(process.descriptor.id);
 		}
 		return ids;
@@ -183,9 +165,7 @@ public class ReportCalculator implements Runnable {
 		}
 	}
 
-	private void appendCostResults(ProjectResult result) {
-		if (result == null)
-			return;
+	private void appendCostResults(Report report) {
 		String currency = getCurrency();
 		for (ProjectVariant var : result.getVariants()) {
 			double costs = result.getResult(var).totalCosts;
@@ -208,7 +188,7 @@ public class ReportCalculator implements Runnable {
 
 	private String getCurrency() {
 		try {
-			CurrencyDao dao = new CurrencyDao(Database.get());
+			CurrencyDao dao = new CurrencyDao(db);
 			Currency c = dao.getReferenceCurrency();
 			if (c == null)
 				return "?";
