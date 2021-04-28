@@ -9,7 +9,6 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
-import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Project;
@@ -69,10 +68,12 @@ public class ProjectResultEditor extends SimpleFormEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.formHeader(
-				mform, Labels.name(project), Icon.QUICK_RESULT.get());
+			var form = UI.formHeader(mform,
+				"Results of: " + Labels.name(project));
 			var tk = mform.getToolkit();
 			var body = UI.formBody(form, tk);
+			TotalImpactSection.of(result)
+				.renderOn(body, tk);
 		}
 	}
 

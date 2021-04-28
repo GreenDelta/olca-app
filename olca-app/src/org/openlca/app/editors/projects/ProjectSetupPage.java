@@ -111,7 +111,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Button b = toolkit.createButton(c, M.Report, SWT.NONE);
 		UI.gridData(b, false, false).widthHint = 100;
 		b.setImage(Images.get(ModelType.PROJECT));
-		Controls.onSelect(b, e -> ProjectEditorActions.calculate(
+		Controls.onSelect(b, e -> ProjectEditorToolBar.calculate(
 				project, editor.getReport()));
 	}
 

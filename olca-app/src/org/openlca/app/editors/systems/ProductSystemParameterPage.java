@@ -14,13 +14,13 @@ import org.openlca.core.model.ProductSystem;
  * @deprecated this is replaced by the new parameter page.
  */
 @Deprecated
-public class ProductSystemParameterPage extends ModelPage<ProductSystem> {
+class ProductSystemParameterPage extends ModelPage<ProductSystem> {
 
 	private ProductSystemEditor editor;
 	private ParameterRedefTable table;
 	private ScrolledForm form;
 
-	public ProductSystemParameterPage(ProductSystemEditor editor) {
+	ProductSystemParameterPage(ProductSystemEditor editor) {
 		super(editor, "ProductSystemParameterPage", M.Parameters);
 		this.editor = editor;
 		editor.onSaved(() -> {
