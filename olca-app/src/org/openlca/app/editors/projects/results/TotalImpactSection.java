@@ -1,5 +1,6 @@
 package org.openlca.app.editors.projects.results;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -10,7 +11,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -40,6 +43,8 @@ class TotalImpactSection {
 
 	void renderOn(Composite parent, FormToolkit tk) {
 		var section = UI.section(parent, tk, M.ImpactAssessmentResults);
+		Actions.bind(section, Actions.create(
+			"Copy to clipboard", Icon.COPY.descriptor(), () -> {}));
 		var comp = UI.sectionClient(section, tk, 1);
 		var columnHeaders = new String[variants.length + 2];
 		columnHeaders[0] = M.ImpactCategories;
@@ -49,10 +54,22 @@ class TotalImpactSection {
 		}
 		var table = Tables.createViewer(comp, columnHeaders);
 		table.setLabelProvider(new TableLabel());
+		Tables.bindColumnWidths(table, columnWidths());
 		table.setInput(result.getImpacts()
 			.stream()
 			.map(Row::new)
 			.collect(Collectors.toList()));
+	}
+
+	private double[] columnWidths() {
+		var widths = new double[2 + variants.length];
+		widths[0] = 0.2;
+		widths[1] = 0.2;
+		double other = variants.length < 4
+			? 0.2
+			: 0.6 / variants.length;
+		Arrays.fill(widths, 2, widths.length, other);
+		return widths;
 	}
 
 	private class Row {
@@ -100,7 +117,7 @@ class TotalImpactSection {
 
 	}
 
-	private class TableLabel extends LabelProvider
+	private static class TableLabel extends LabelProvider
 		implements ITableLabelProvider {
 
 		private final ContributionImage image = new ContributionImage();
