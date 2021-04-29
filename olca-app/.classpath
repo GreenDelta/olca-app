@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="libs/jakarta.persistence-api-3.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.asm-3.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.core-3.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa.jpql-3.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa-3.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/HikariCP-4.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/mariadb-java-client-2.7.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/animal-sniffer-annotations-1.18.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-4.1.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-api-6.0.53.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-beanutils-1.9.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-codec-1.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-collections-3.2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-collections4-4.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-compress-1.19.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-io-2.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-lang3-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-logging-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-math3-3.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/curvesapi-1.06.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/derby-10.14.2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/error_prone_annotations-2.3.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/grpc-api-1.32.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/grpc-context-1.32.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/grpc-core-1.32.2.jar"/>
@@ -18,62 +23,54 @@
 	<classpathentry exported="true" kind="lib" path="libs/grpc-protobuf-1.32.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/grpc-protobuf-lite-1.32.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/grpc-stub-1.32.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jsr305-3.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-proto-2.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/perfmark-api-0.19.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/proto-google-common-protos-1.17.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-collections4-4.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-compress-1.19.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/curvesapi-1.06.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/poi-4.1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-4.1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-schemas-4.1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/SparseBitSet-1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/xmlbeans-3.1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jython-standalone-2.7.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-beanutils-1.9.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-codec-1.9.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-collections-3.2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-io-2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-lang3-3.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-logging-1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/commons-math3-3.6.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/derby-10.14.2.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/error_prone_annotations-2.3.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/FastInfoset-1.2.16.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gson-2.8.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/guava-21.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/istack-commons-runtime-3.0.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jakarta.activation-api-1.2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jakarta.xml.bind-api-2.3.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jaxb-runtime-2.3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/HikariCP-4.0.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jakarta.activation-2.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jakarta.persistence-api-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jakarta.xml.bind-api-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jaxb-core-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jaxb-impl-3.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jcl-over-slf4j-1.7.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-client-1.19.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-core-1.19.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-multipart-1.19.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jsr305-3.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jsr311-api-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jts-core-1.16.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jython-standalone-2.7.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/log4j-1.2.17.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mapdb-2.0-beta7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/mariadb-java-client-2.7.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/nanohttpd-2.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-cloud-2.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-core-2.0.0.jar" sourcepath="/olca-core"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-core-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-io-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-proto-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.asm-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.core-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa.jpql-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/perfmark-api-0.19.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/poi-4.1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-4.1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-schemas-4.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/protobuf-java-3.12.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/protobuf-java-util-3.12.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/proto-google-common-protos-1.17.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/slf4j-api-1.7.25.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/slf4j-log4j12-1.7.25.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/stax-ex-1.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/SparseBitSet-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/super-csv-2.4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/trove4j-3.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/txw2-2.3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/xmlbeans-3.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/zt-zip-1.8.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
