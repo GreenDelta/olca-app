@@ -160,7 +160,7 @@
             icon="icons/model/project.png"
             id="editors.project"
             name="%ProjectEditor"
-            contributorClass="org.openlca.app.editors.projects.ProjectEditorActions">
+            contributorClass="org.openlca.app.editors.projects.ProjectEditorToolBar">
       </editor>
       <editor
             class="org.openlca.app.editors.systems.ProductSystemEditor"

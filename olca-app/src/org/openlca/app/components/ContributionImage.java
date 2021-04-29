@@ -13,8 +13,8 @@ import org.openlca.app.util.Colors;
  */
 public class ContributionImage {
 
-	private ImageRegistry imageRegistry = new ImageRegistry();
-	private Display display;
+	private final ImageRegistry imageRegistry = new ImageRegistry();
+	private final Display display;
 	private Color color;
 
 	public ContributionImage() {
@@ -33,7 +33,7 @@ public class ContributionImage {
 	/**
 	 * Get an contribution image for table label providers. Returns the maximum
 	 * image (for +1 or -1) if the contribution is lower than -1 or greater than 1.
-	 * 
+	 *
 	 * @param contribution
 	 *            the contribution value between -1 and 1
 	 */

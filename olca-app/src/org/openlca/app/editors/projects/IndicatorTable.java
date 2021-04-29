@@ -23,7 +23,6 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.field.StringModifier;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.util.Strings;
 
@@ -41,8 +40,7 @@ class IndicatorTable {
 				M.Display, M.ReportName, M.Description);
 		Tables.bindColumnWidths(viewer, 0.3, 0.1, 0.2, 0.4);
 		UI.gridData(viewer.getTable(), true, false).heightHint = 150;
-		Label label = new Label();
-		viewer.setLabelProvider(label);
+		viewer.setLabelProvider(new Label());
 		ModifySupport<ReportIndicator> ms = new ModifySupport<>(viewer);
 		ms.bind(M.Display, new DisplayModifier());
 		ms.bind(M.ReportName, new StringModifier<>(editor, "reportName"));
@@ -69,13 +67,13 @@ class IndicatorTable {
 
 	private List<ReportIndicator> createReportIndicators(
 			ImpactMethodDescriptor method) {
-		ImpactMethodDao dao = new ImpactMethodDao(Database.get());
+		var dao = new ImpactMethodDao(Database.get());
 		var descriptors = dao
 				.getCategoryDescriptors(method.id);
 		List<ReportIndicator> indicators = new ArrayList<>();
 		int id = 0;
 		for (var descriptor : descriptors) {
-			ReportIndicator reportIndicator = new ReportIndicator(id++);
+			var reportIndicator = new ReportIndicator(id++);
 			indicators.add(reportIndicator);
 			reportIndicator.descriptor = descriptor;
 			reportIndicator.reportName = descriptor.name;
@@ -86,35 +84,32 @@ class IndicatorTable {
 		return indicators;
 	}
 
-	private class Label extends LabelProvider implements ITableLabelProvider {
+	private static class Label extends LabelProvider
+		implements ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int col) {
+		public Image getColumnImage(Object obj, int col) {
 			if (col == 0)
 				return Images.get(ModelType.IMPACT_CATEGORY);
 			if (col != 1)
 				return null;
-			if (!(element instanceof ReportIndicator))
+			if (!(obj instanceof ReportIndicator))
 				return null;
-			ReportIndicator indicator = (ReportIndicator) element;
+			var indicator = (ReportIndicator) obj;
 			return Images.get(indicator.displayed);
 		}
 
 		@Override
-		public String getColumnText(Object element, int col) {
-			if (!(element instanceof ReportIndicator))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof ReportIndicator))
 				return null;
-			ReportIndicator indicator = (ReportIndicator) element;
-			switch (col) {
-			case 0:
-				return Labels.name(indicator.descriptor);
-			case 2:
-				return indicator.reportName;
-			case 3:
-				return indicator.reportDescription;
-			default:
-				return null;
-			}
+			var indicator = (ReportIndicator) obj;
+			return switch (col) {
+				case 0 -> Labels.name(indicator.descriptor);
+				case 2 -> indicator.reportName;
+				case 3 -> indicator.reportDescription;
+				default -> null;
+			};
 		}
 	}
 

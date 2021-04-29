@@ -1,17 +1,21 @@
 package org.openlca.app.editors.projects.results;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
-import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Project;
 import org.openlca.core.results.ProjectResult;
 import org.openlca.util.Pair;
@@ -69,12 +73,22 @@ public class ProjectResultEditor extends SimpleFormEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.formHeader(
-				mform, Labels.name(project), Icon.QUICK_RESULT.get());
+			var form = UI.formHeader(mform,
+				"Results of: " + Labels.name(project));
 			var tk = mform.getToolkit();
 			var body = UI.formBody(form, tk);
+
+			var buttonComp = tk.createComposite(body);
+			UI.gridLayout(buttonComp, 2);
+			var excelBtn = tk.createButton(buttonComp, M.ExcelExport, SWT.NONE);
+			excelBtn.setImage(Images.get(FileType.EXCEL));
+			UI.gridData(excelBtn, false, false).widthHint = 120;
+			var reportBtn = tk.createButton(buttonComp, "Create Report", SWT.NONE);
+			reportBtn.setImage(Images.get(ModelType.PROJECT));
+			UI.gridData(reportBtn, false, false).widthHint = 120;
+
+			ProjectVariantSection.of(result).renderOn(body, tk);
+			TotalImpactSection.of(result).renderOn(body, tk);
 		}
 	}
-
-
 }
