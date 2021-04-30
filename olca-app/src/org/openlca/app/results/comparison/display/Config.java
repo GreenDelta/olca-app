@@ -7,6 +7,6 @@ public class Config {
 	public final boolean useFakeResults = false;
 	public final boolean useGradientColor = true;
 	public final boolean useBezierCurve = false;
-	public final ColorCellCriteria colorCellCriteria = ColorCellCriteria.NONE;
+	public final ColorCellCriteria colorCellCriteria = ColorCellCriteria.PRODUCT;
 	public final TargetCalculationEnum targetCalculationCriteria = TargetCalculationEnum.IMPACT;
 }

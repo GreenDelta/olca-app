@@ -26,6 +26,7 @@ public class Cell {
 	private boolean isDisplayed;
 	private Rectangle rectCell;
 	private String tooltip;
+	private boolean isSelected;
 	static IDatabase db;
 
 	public void setData(Point startingLinksPoint, Point endingLinkPoint, Rectangle rectCell, boolean isCutoff) {
@@ -60,6 +61,15 @@ public class Cell {
 		isCutoff = false;
 		rgb = computeRGB();
 		isDisplayed = true;
+		isSelected = false;
+	}
+
+	public boolean isSelected() {
+		return isSelected;
+	}
+
+	public void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
 	}
 
 	private void setTooltip() {
@@ -169,7 +179,13 @@ public class Cell {
 	}
 
 	public boolean contains(Point p) {
+		if (rectCell == null)
+			return false;
 		return rectCell.contains(p);
+	}
+
+	public boolean hasSameProduct(ProcessDescriptor o) {
+		return result.getContribution().item.equals(o);
 	}
 
 	public String toString() {

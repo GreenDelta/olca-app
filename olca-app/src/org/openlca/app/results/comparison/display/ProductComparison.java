@@ -1,6 +1,7 @@
 package org.openlca.app.results.comparison.display;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
@@ -48,9 +51,8 @@ import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionResult;
-
-import com.google.common.base.Stopwatch;
 
 public class ProductComparison {
 	private Composite shell;
@@ -80,6 +82,7 @@ public class ProductComparison {
 	private int screenWidth;
 	private Canvas canvas;
 	private Project project;
+	private ProcessDescriptor selectedProduct;
 
 	public ProductComparison(Composite shell, FormEditor editor, TargetCalculationEnum target, FormToolkit tk) {
 		this.tk = tk;
@@ -104,7 +107,7 @@ public class ProductComparison {
 		chosenProcessCategoryId = -1;
 		margin = new Point(200, 65);
 		rectHeight = 30;
-		gapBetweenRect = 300;
+		gapBetweenRect = 150;
 		theoreticalScreenHeight = margin.y * 2 + gapBetweenRect * 2;
 		nonCutoffAmount = 100;
 		cutOffSize = 25;
@@ -156,19 +159,18 @@ public class ProductComparison {
 		row1.setLayout(new RowLayout());
 
 		initCategoryMap();
-		initContributionsList(canvas);
+		initContributionsList();
 
+		UI.gridLayout(row1, 13);
 		chooseImpactCategoriesMenu(row1, row2);
-
-		UI.gridLayout(row1, 10);
-
 		colorByCriteriaMenu(row1, row2, canvas);
-		colorPickerMenu(row1);
 		selectCategoryMenu(row1, row2, canvas);
+		colorPickerMenu(row1);
 		selectCutoffSizeMenu(row1, row2, canvas);
 		selectAmountVisibleProcessMenu(row1, row2, canvas);
+		runCalculationButton(row1, row2, canvas);
 		addPaintListener(canvas); // Once finished, we really paint the cache, so it avoids flickering
-		addToolTipListener(canvas);
+		addToolTipListener(row2, canvas);
 	}
 
 	/**
@@ -190,26 +192,100 @@ public class ProductComparison {
 	 * @param row2 The canvas
 	 */
 	private void chooseImpactCategoriesMenu(Composite row1, Composite row2) {
-		if (targetCalculation.equals(TargetCalculationEnum.PRODUCT)) {
-			var selectImpactCategory = UI.formCombo(row1, "Select Impact Category : ");
+		var b = new Button(row1, SWT.NONE);
+		var composite = new Composite(row1, SWT.BORDER);
+		var impactCategoryTable = impactCategoryTable(composite);
 
-			selectImpactCategory.setItems(impactCategoriesName.toArray(String[]::new));
-//			selectImpactCategory.setSize(200, 65);
-			selectImpactCategory.select(0);
+		b.setText("Toggle");
+		b.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event e) {
+				Arrays.stream(impactCategoryTable.getItems()).forEach(item -> {
+					item.setChecked(!item.getChecked());
+					if (item.getChecked()) {
+						impactCategoriesName.add(item.getText());
+					} else {
+						impactCategoriesName.remove(item.getText());
+					}
+				});
+			}
+		});
+		b.pack();
+//		impactCategoryTable.setBounds(0, 0, 0, 0);
+		impactCategoryTable.setSize(300, 100);
+//		row1.setSize(300, 100);
+	}
 
-			selectImpactCategory.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					String selected = selectImpactCategory.getItem(selectImpactCategory.getSelectionIndex());
-					if (!impactCategoriesName.get(0).equals(selected)) {
-						impactCategoriesName.remove(0);
-						impactCategoriesName.add(0, selected);
-						initContributionsList(canvas);
-						redraw(row2, canvas);
+	/**
+	 * Table containing the whole impact categories, that allow us to check them or
+	 * not
+	 * 
+	 * @param composite The parent component
+	 * @return This table
+	 */
+	private Table impactCategoryTable(Composite composite) {
+		int typeButton;
+		if (TargetCalculationEnum.IMPACT.equals(targetCalculation)) {
+			typeButton = SWT.CHECK;
+		} else {
+			typeButton = SWT.RADIO;
+		}
+		var impactCategoryTable = new Table(composite, typeButton | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+		impactCategoriesName.stream().forEach(impactCategory -> {
+			TableItem item = new TableItem(impactCategoryTable, SWT.BORDER);
+			item.setText(impactCategory);
+			item.setChecked(true);
+		});
+		impactCategoryTable.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				if (event.detail == SWT.CHECK) {
+					// We keep tracking of check/select event, to have in impactCategoriesName the
+					// checked impact categories
+					if (((TableItem) event.item).getChecked()) {
+						impactCategoriesName.add(((TableItem) event.item).getText());
+					} else {
+						impactCategoriesName.remove(((TableItem) event.item).getText());
+					}
+				} else { // Select event
+					var checked = ((TableItem) event.item).getChecked();
+					((TableItem) event.item).setChecked(!checked);
+					if (!checked) {
+						impactCategoriesName.add(((TableItem) event.item).getText());
+					} else {
+						impactCategoriesName.remove(((TableItem) event.item).getText());
 					}
 				}
-			});
-		}
+			}
+		});
+		return impactCategoryTable;
 	}
+
+	/**
+	 * Dropdown menu, allow us to chose different Impact Categories
+	 * 
+	 * @param row1 The menu bar
+	 * @param row2 The canvas
+	 */
+//	private void chooseImpactCategoriesMenu(Composite row1, Composite row2) {
+//		if (targetCalculation.equals(TargetCalculationEnum.PRODUCT)) {
+//			var selectImpactCategory = UI.formCombo(row1, "Select Impact Category : ");
+//
+//			selectImpactCategory.setItems(impactCategoriesName.toArray(String[]::new));
+////			selectImpactCategory.setSize(200, 65);
+//			selectImpactCategory.select(0);
+//
+//			selectImpactCategory.addSelectionListener(new SelectionAdapter() {
+//				public void widgetSelected(SelectionEvent e) {
+//					String selected = selectImpactCategory.getItem(selectImpactCategory.getSelectionIndex());
+//					if (!impactCategoriesName.get(0).equals(selected)) {
+//						impactCategoriesName.remove(0);
+//						impactCategoriesName.add(0, selected);
+//						initContributionsList(canvas);
+//						redraw(row2, canvas);
+//					}
+//				}
+//			});
+//		}
+//	}
 
 	/**
 	 * Dropdown menu, allow us to chose by what criteria we want to color the cells
@@ -225,6 +301,7 @@ public class ProductComparison {
 //		c.setBounds(50, 50, 150, 65);
 		String values[] = ColorCellCriteria.valuesToString();
 		c.setItems(values);
+		c.select(0);
 		c.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				var choice = c.getItem(c.getSelectionIndex());
@@ -234,7 +311,7 @@ public class ProductComparison {
 					Contributions.updateComparisonCriteria(criteria);
 					contributionsList.stream().forEach(c -> c.updateCellsColor());
 					triggerComboSelection(selectCategory, true);
-					redraw(row2, canvas);
+//					redraw(row2, canvas);
 				}
 			}
 		});
@@ -248,7 +325,7 @@ public class ProductComparison {
 	 * @param canvas The canvas
 	 */
 	private void selectCategoryMenu(Composite row1, Composite row2, Canvas canvas) {
-		selectCategory = UI.formCombo(row1, "Select Product Category : ");
+		selectCategory = UI.formCombo(row1, "Highlight Category : ");
 		var categoryMap = new HashMap<String, Descriptor>();
 		var categoriesRefId = contributionsList.stream()
 				.flatMap(c -> c.getList().stream().filter(cell -> cell.getResult().getContribution().item != null)
@@ -272,16 +349,11 @@ public class ProductComparison {
 					chosenProcessCategoryId = -1;
 				} else if (selectCategory.getSelectionIndex() == 0) { // Empty value is selected : reset
 					chosenProcessCategoryId = 0;
-					redraw(row2, canvas);
+//					redraw(row2, canvas);
 				} else { // A category is selected : update color
 					chosenProcessCategoryId = categoryMap
 							.get(selectCategory.getItem(selectCategory.getSelectionIndex())).id;
-					contributionsList.stream().forEach(c -> c.getList().stream().forEach(cell -> {
-						if (cell.getResult().getContribution().item.category == chosenProcessCategoryId) {
-							cell.setRgb(chosenCategoryColor.getRGB());
-						}
-					}));
-					redraw(row2, canvas);
+//					redraw(row2, canvas);
 				}
 			}
 		});
@@ -365,12 +437,13 @@ public class ProductComparison {
 		selectCutoff.setMinimum(0);
 		selectCutoff.setMaximum(100);
 		selectCutoff.setSelection(cutOffSize);
-		selectCutoff.addListener(SWT.KeyDown, new Listener() {
+		selectCutoff.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void handleEvent(Event e) {
-				if (e.keyCode == 13) { // If we press Enter
+			public void widgetSelected(SelectionEvent e) {
+				var newCutoffSize = selectCutoff.getSelection();
+				if (newCutoffSize != cutOffSize) {
 					cutOffSize = selectCutoff.getSelection();
-					redraw(row2, canvas);
+//						redraw(row2, canvas);
 				}
 			}
 		});
@@ -391,12 +464,13 @@ public class ProductComparison {
 		selectCutoff.setMinimum(0);
 		selectCutoff.setMaximum(10000);
 		selectCutoff.setSelection(nonCutoffAmount);
-		selectCutoff.addListener(SWT.KeyDown, new Listener() {
+		selectCutoff.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void handleEvent(Event arg0) {
-				if (arg0.keyCode == 13) { // If we press Enter
+			public void widgetSelected(SelectionEvent e) {
+				var newNonCutoffAmount = selectCutoff.getSelection();
+				if (newNonCutoffAmount != nonCutoffAmount) {
 					nonCutoffAmount = selectCutoff.getSelection();
-					redraw(row2, canvas);
+//					redraw(row2, canvas);
 				}
 			}
 		});
@@ -409,8 +483,7 @@ public class ProductComparison {
 	 * @param row2   The second part of the display
 	 * @param canvas The canvas
 	 */
-	private void initContributionsList(Canvas canvas) {
-		var stopwatch = Stopwatch.createStarted();
+	private void initContributionsList() {
 		var vBar = canvas.getVerticalBar();
 		contributionsList = new ArrayList<>();
 		if (TargetCalculationEnum.IMPACT.equals(targetCalculation)) {
@@ -437,7 +510,6 @@ public class ProductComparison {
 		theoreticalScreenHeight = margin.y * 2 + gapBetweenRect * (contributionsList.size());
 		vBar.setMaximum(theoreticalScreenHeight);
 		sortContributions();
-		System.out.println("Time in initContibution : " + stopwatch.stop());
 	}
 
 	/**
@@ -446,6 +518,41 @@ public class ProductComparison {
 	private void sortContributions() {
 		Contributions.updateComparisonCriteria(colorCellCriteria);
 		contributionsList.stream().forEach(c -> c.sort());
+	}
+
+	/**
+	 * Run the calculation, according to the selected values
+	 * 
+	 * @param row1   The menu bar
+	 * @param row2   The second part of the display
+	 * @param canvas The canvas
+	 */
+	private void runCalculationButton(Composite row1, Composite row2, Canvas canvas) {
+		var vBar = canvas.getVerticalBar();
+		var runCalculation = new Button(row1, SWT.None);
+		runCalculation.setText("Run calculation");
+		runCalculation.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event e) {
+				var hash = computeConfigurationHash();
+				// Cached image, in which we draw the things, and then display it once it is
+				// finished
+				Image cache = cacheMap.get(hash);
+				if (cache == null) {
+					System.out.println("recompute");
+					initContributionsList();
+					contributionsList.stream().forEach(c -> c.getList().stream().forEach(cell -> {
+						if (cell.getResult().getContribution().item.category == chosenProcessCategoryId) {
+							cell.setRgb(chosenCategoryColor.getRGB());
+						}
+					}));
+					isCalculationStarted = true;
+					theoreticalScreenHeight = margin.y * 2 + gapBetweenRect * (contributionsList.size());
+					vBar.setMaximum(theoreticalScreenHeight);
+				}
+				System.out.println("redraw");
+				redraw(row2, canvas);
+			}
+		});
 	}
 
 	/**
@@ -481,7 +588,7 @@ public class ProductComparison {
 	 */
 	private int computeConfigurationHash() {
 		var hash = Objects.hash(targetCalculation, impactCategoriesName, chosenCategoryColor, colorCellCriteria,
-				cutOffSize, nonCutoffAmount, isCalculationStarted, chosenProcessCategoryId);
+				cutOffSize, nonCutoffAmount, isCalculationStarted, chosenProcessCategoryId, selectedProduct);
 		return hash;
 	}
 
@@ -494,7 +601,7 @@ public class ProductComparison {
 	 * @param cache     The cached image in which we are drawing
 	 */
 	private void cachedPaint(Composite composite, Image cache) {
-		GC gc = new GC(cache);
+		var gc = new GC(cache);
 		screenSize = composite.getSize(); // Responsive behavior
 		double maxRectWidth = screenSize.x * 0.85; // 85% of the screen width
 		// Starting point of the first contributions rectangle
@@ -507,7 +614,7 @@ public class ProductComparison {
 		}
 		for (int contributionsIndex = 0; contributionsIndex < contributionsList.size(); contributionsIndex++) {
 			handleContributions(gc, maxRectWidth, rectEdge, contributionsIndex, maxSumAmount);
-			rectEdge = new Point(rectEdge.x, rectEdge.y + 300);
+			rectEdge = new Point(rectEdge.x, rectEdge.y + gapBetweenRect);
 		}
 		drawLinks(gc);
 	}
@@ -527,13 +634,11 @@ public class ProductComparison {
 		var p = contributionsList.get(contributionsIndex);
 		int rectWidth = (int) maxRectWidth;
 		Point textPos = new Point(rectEdge.x - margin.x, rectEdge.y + 8);
-		gc.drawText("Contribution result " + (contributionsIndex + 1), textPos.x, textPos.y);
-		textPos.y += 25;
 		if (TargetCalculationEnum.PRODUCT.equals(targetCalculation)) {
 			gc.drawText("Product System : " + p.getProductSystemName(), textPos.x, textPos.y);
 			textPos.y += 25;
 		}
-		gc.drawText("Impact : " + p.getImpactCategoryName(), textPos.x, textPos.y);
+		gc.drawText(p.getImpactCategoryName(), textPos.x, textPos.y);
 		rectWidth = handleCells(gc, rectEdge, contributionsIndex, p, rectWidth, maxSumAmount);
 
 		// Draw an arrow above the first rectangle contributions to show the way the
@@ -881,13 +986,41 @@ public class ProductComparison {
 					continue;
 				var startPoint = cell.getStartingLinkPoint();
 				var endPoint = linkedCell.getEndingLinkPoint();
-				if (config.useBezierCurve) {
-					drawBezierCurve(gc, startPoint, endPoint, cell.getRgb());
+				if (cell.hasSameProduct(selectedProduct)) {
+					cell.setSelected(true);
+					var polygon = getPolygon(startPoint, endPoint, 5);
+					gc.setBackground(new Color(gc.getDevice(), cell.getRgb()));
+					gc.fillPolygon(polygon);
+					gc.setBackground(gc.getDevice().getSystemColor(SWT.COLOR_WHITE));
 				} else {
-					drawLine(gc, startPoint, endPoint, cell.getRgb(), null);
+					cell.setSelected(false);
+					if (config.useBezierCurve) {
+						drawBezierCurve(gc, startPoint, endPoint, cell.getRgb());
+					} else {
+						drawLine(gc, startPoint, endPoint, cell.getRgb(), null);
+					}
 				}
 			}
 		}
+		return;
+	}
+
+	private int[] getPolygon(Point start, Point end, int width) {
+		// Calculate a vector between start and end points
+		var V = new Point(end.x - start.x, end.y - start.y);
+		// Then calculate a perpendicular to it
+		var P = new Point(V.y, -V.x);
+		// Thats length of perpendicular
+		var length = Math.sqrt(P.x * P.x + P.y * P.y);
+		// Normalize that perpendicular
+		var N = new org.openlca.geo.geojson.Point((P.x / length), (P.y / length));
+		var r1 = new Point((int) (start.x + N.x * width / 2), (int) (start.y + N.y * width / 2));
+		var r2 = new Point((int) (start.x - N.x * width / 2), (int) (start.y - N.y * width / 2));
+		var r3 = new Point((int) (end.x + N.x * width / 2), (int) (end.y + N.y * width / 2));
+		var r4 = new Point((int) (end.x - N.x * width / 2), (int) (end.y - N.y * width / 2));
+		int array[] = { r1.x, r1.y, r2.x, r2.y, r4.x, r4.y, r3.x, r3.y };
+		return array;
+
 	}
 
 	/**
@@ -943,7 +1076,7 @@ public class ProductComparison {
 	 * 
 	 * @param canvas The canvas
 	 */
-	private void addToolTipListener(Canvas canvas) {
+	private void addToolTipListener(Composite parent, Canvas canvas) {
 		Listener mouseListener = new Listener() {
 			public void handleEvent(Event event) {
 				switch (event.type) {
@@ -966,11 +1099,34 @@ public class ProductComparison {
 					}
 					canvas.setToolTipText(null);
 					break;
+				case SWT.MouseDown:
+					for (Contributions contributions : contributionsList) {
+						for (Cell cell : contributions.getList()) {
+							// event contains the coordinate of the cursor, but we also have to take in
+							// count if we scrolled
+							var cursor = new Point(event.x - scrollPoint.x, event.y - scrollPoint.y);
+							// If the cursor is contained in the cell
+							if (cell.contains(cursor) && cell.isDisplayed()) {
+								if (selectedProduct != null) {
+									var same = cell.hasSameProduct(selectedProduct);
+									if (same) {
+										selectedProduct = null;
+									} else {
+										selectedProduct = (ProcessDescriptor) cell.getResult().getContribution().item;
+									}
+								} else {
+									selectedProduct = (ProcessDescriptor) cell.getResult().getContribution().item;
+								}
+								redraw(parent, canvas);
+							}
+						}
+					}
 				}
 			}
 		};
 		canvas.addListener(SWT.MouseMove, mouseListener);
 		canvas.addListener(SWT.MouseEnter, mouseListener);
+		canvas.addListener(SWT.MouseDown, mouseListener);
 	}
 
 	/**
@@ -987,7 +1143,12 @@ public class ProductComparison {
 				if (cacheMap.isEmpty()) {
 					triggerComboSelection(selectCategory, true);
 					redraw(composite, canvas);
+					// This is done to fix a bug on horizontal scrollbar
+					var customEvent = new Event();
+					customEvent.type = SWT.Resize;
+					canvas.notifyListeners(SWT.Resize, e);
 				}
+
 				Rectangle client = canvas.getClientArea();
 				var vBar = canvas.getVerticalBar();
 				vBar.setThumb(Math.min(theoreticalScreenHeight, client.height));

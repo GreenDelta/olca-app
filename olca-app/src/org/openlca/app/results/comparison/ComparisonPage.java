@@ -23,13 +23,13 @@ public class ComparisonPage extends FormPage {
 	private TargetCalculationEnum target;
 
 	public ComparisonPage(ResultEditor<?> editor) {
-		super(editor, "ComparisonPage", "Comparison Page");
+		super(editor, "ComparisonDiagram", "Comparison Diagram");
 		this.editor = editor;
 		target = TargetCalculationEnum.IMPACT;
 	}
 
 	public ComparisonPage(ReportViewer editor) {
-		super(editor, "ComparisonPage", "Comparison Page");
+		super(editor, "ComparisonDiagram", "Comparison Diagram");
 		this.editor = editor;
 		target = TargetCalculationEnum.PRODUCT;
 	}
