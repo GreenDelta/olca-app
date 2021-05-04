@@ -8,10 +8,6 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.projects.results.ProjectResultEditor;
-import org.openlca.app.editors.reports.ReportViewer;
-import org.openlca.app.editors.reports.Reports;
-import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.editors.reports.model.ReportBuilder;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -29,11 +25,11 @@ public class ProjectEditorToolBar extends EditorActionBarContributor {
 				MsgBox.error("Could not get project from editor");
 				return;
 			}
-			calculate(e.getModel(), e.getReport());
+			calculate(e.getModel());
 		}));
 	}
 
-	static void calculate(Project project, Report report) {
+	static void calculate(Project project) {
 		var db = Database.get();
 		if (db == null || project == null)
 			return;
@@ -57,8 +53,6 @@ public class ProjectEditorToolBar extends EditorActionBarContributor {
 			try {
 				var calculator = new SystemCalculator(db);
 				ref.result = calculator.calculate(project);
-				ReportBuilder.of(db, project, ref.result).fill(report);
-				Reports.save(project, report, db);
 			} catch (OutOfMemoryError e) {
 				MsgBox.error(M.OutOfMemory, M.CouldNotAllocateMemoryError);
 			} catch (MathIllegalArgumentException e) {
@@ -71,7 +65,6 @@ public class ProjectEditorToolBar extends EditorActionBarContributor {
 		App.runWithProgress(M.Calculate, calculation, () -> {
 			if (ref.result == null)
 				return;
-			ReportViewer.open(report);
 			ProjectResultEditor.open(project, ref.result);
 		});
 	}

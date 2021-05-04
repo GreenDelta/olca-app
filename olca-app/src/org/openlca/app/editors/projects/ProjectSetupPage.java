@@ -10,7 +10,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.IManagedForm;
@@ -104,34 +103,34 @@ class ProjectSetupPage extends ModelPage<Project> {
 		variantViewer.setInput(variants);
 	}
 
-	private void createButton(Composite comp) {
-		toolkit.createLabel(comp, "");
-		Composite c = toolkit.createComposite(comp);
-		UI.gridLayout(c, 2).marginHeight = 5;
-		Button b = toolkit.createButton(c, M.Report, SWT.NONE);
-		UI.gridData(b, false, false).widthHint = 100;
-		b.setImage(Images.get(ModelType.PROJECT));
-		Controls.onSelect(b, e -> ProjectEditorToolBar.calculate(
-				project, editor.getReport()));
+	private void createButton(Composite parent) {
+		UI.filler(parent, toolkit);
+		var comp = toolkit.createComposite(parent);
+		UI.gridLayout(comp, 1, 0, 0).marginHeight = 5;
+		var button = toolkit.createButton(comp, M.Calculate, SWT.NONE);
+		UI.gridData(button, false, false).widthHint = 100;
+		button.setImage(Images.get(ModelType.PROJECT));
+		Controls.onSelect(button,
+			e -> ProjectEditorToolBar.calculate(project));
 	}
 
 	private void createVariantsSection(Composite body) {
-		Section section = UI.section(body, toolkit, M.Variants);
-		Composite comp = UI.sectionClient(section, toolkit, 1);
+		var section = UI.section(body, toolkit, M.Variants);
+		var comp = UI.sectionClient(section, toolkit, 1);
 		variantViewer = Tables.createViewer(comp,
 				M.Name, M.ProductSystem, M.Display,
 				M.AllocationMethod, M.Flow, M.Amount,
 				M.Unit, M.Description, "");
 		variantViewer.setLabelProvider(new VariantLabelProvider());
-		ModifySupport<ProjectVariant> ms = new ModifySupport<>(variantViewer);
-		ms.bind(M.Name, new VariantNameEditor());
-		ms.bind(M.Display, new DisplayModifier());
-		ms.bind(M.AllocationMethod, new VariantAllocationEditor());
-		ms.bind(M.Amount, new DoubleModifier<>(editor, "amount"));
-		ms.bind(M.Unit, new VariantUnitEditor());
-		ms.bind(M.Description, new VariantDescriptionEditor());
-		ms.bind("", new CommentDialogModifier<>(
-			editor.getComments(), CommentPaths::get));
+		new ModifySupport<ProjectVariant>(variantViewer)
+			.bind(M.Name, new VariantNameEditor())
+			.bind(M.Display, new DisplayModifier())
+			.bind(M.AllocationMethod, new VariantAllocationEditor())
+			.bind(M.Amount, new DoubleModifier<>(editor, "amount"))
+			.bind(M.Unit, new VariantUnitEditor())
+			.bind(M.Description, new VariantDescriptionEditor())
+			.bind("", new CommentDialogModifier<>(
+				editor.getComments(), CommentPaths::get));
 		double w = 1.0 / 8.0;
 		Tables.bindColumnWidths(variantViewer, w, w, w, w, w, w, w, w);
 		addVariantActions(variantViewer, section);
@@ -233,8 +232,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 		protected void setText(ProjectVariant variant, String text) {
 			if (Objects.equals(text, variant.name))
 				return;
-			variantSync.updateName(variant, text);
 			variant.name = text;
+			variantSync.updateName(variant, text);
 			parameterTable.updateVariant(variant);
 			editor.setDirty(true);
 		}
@@ -242,16 +241,17 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private class VariantDescriptionEditor extends
 			TextCellModifier<ProjectVariant> {
+
 		@Override
 		protected String getText(ProjectVariant variant) {
-			return variantSync.getDescription(variant);
+			return variant.description;
 		}
 
 		@Override
 		protected void setText(ProjectVariant variant, String text) {
-			String oldText = variantSync.getDescription(variant);
-			if (Objects.equals(text, oldText))
+			if (Objects.equals(text, variant.description))
 				return;
+			variant.description = text;
 			variantSync.updateDescription(variant, text);
 			editor.setDirty(true);
 		}
@@ -259,6 +259,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private class VariantAllocationEditor extends
 			ComboBoxCellModifier<ProjectVariant, AllocationMethod> {
+
 		@Override
 		protected AllocationMethod getItem(ProjectVariant var) {
 			return var.allocationMethod != null
