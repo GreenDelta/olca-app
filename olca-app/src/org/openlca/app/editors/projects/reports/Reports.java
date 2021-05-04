@@ -34,7 +34,7 @@ public final class Reports {
 	}
 
 	public static Report createOrOpen(Project project, IDatabase db) {
-		Report report = openReport(project, db);
+		Report report = openReport(project);
 		return report != null ? report : createNew(project, db);
 	}
 
@@ -100,7 +100,7 @@ public final class Reports {
 		}
 	}
 
-	private static Report openReport(Project project, IDatabase db) {
+	private static Report openReport(Project project) {
 		if (project == null)
 			return null;
 		File file = getReportFile(project);
@@ -147,7 +147,7 @@ public final class Reports {
 	}
 
 	private static void createDefaultSections(Report report) {
-		report.sections.add(createIntroSection(0));
+		report.sections.add(createIntroSection());
 		ReportComponent[] components = {
 				ReportComponent.VARIANT_DESCRIPTION_TABLE,
 				ReportComponent.INDICATOR_DESCRIPTION_TABLE,
@@ -171,25 +171,24 @@ public final class Reports {
 		}
 	}
 
-	private static ReportSection createIntroSection(int idx) {
+	private static ReportSection createIntroSection() {
 		ReportSection section = new ReportSection();
-		section.index = idx;
+		section.index = 0;
 		section.title = "Introduction";
-		String text = "In the following the results of the project are shown. "
-				+ "This is a default template for the report of the project results. "
-				+ "You can configure this template via the project editor by \n"
-				+ "\n"
-				+ "<p><ul>\n"
-				+ "<li>changing the text of the sections, \n"
-				+ "<li>adding or removing sections, \n"
-				+ "<li>moving sections around, \n"
-				+ "<li>and selecting visual components that should be shown. \n"
-				+ "</ul></p>\n"
-				+ "\n"
-				+ "Note that you can also use HTML elements to format the section texts. "
-				+ "Additionally, you can export this report as an HTML page using "
-				+ "the export button in the toolbar of the report view.";
-		section.text = text;
+		section.text = "In the following the results of the project are shown. "
+									 + "This is a default template for the report of the project results. "
+									 + "You can configure this template via the project editor by \n"
+									 + "\n"
+									 + "<p><ul>\n"
+									 + "<li>changing the text of the sections, \n"
+									 + "<li>adding or removing sections, \n"
+									 + "<li>moving sections around, \n"
+									 + "<li>and selecting visual components that should be shown. \n"
+									 + "</ul></p>\n"
+									 + "\n"
+									 + "Note that you can also use HTML elements to format the section texts. "
+									 + "Additionally, you can export this report as an HTML page using "
+									 + "the export button in the toolbar of the report view.";
 		return section;
 	}
 

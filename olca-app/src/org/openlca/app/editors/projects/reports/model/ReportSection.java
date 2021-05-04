@@ -1,6 +1,8 @@
 package org.openlca.app.editors.projects.reports.model;
 
-public class ReportSection {
+import org.openlca.core.model.Copyable;
+
+public class ReportSection implements Copyable<ReportSection> {
 
 	public int index;
 	public String title;
@@ -8,11 +10,12 @@ public class ReportSection {
 	public String componentId;
 
 	@Override
-	protected ReportSection clone() {
-		ReportSection clone = new ReportSection();
-		clone.index = index;
-		clone.text = text;
-		clone.title = title;
-		return clone;
+	public ReportSection copy() {
+		var copy = new ReportSection();
+		copy.index = index;
+		copy.text = text;
+		copy.title = title;
+		copy.componentId = componentId;
+		return copy;
 	}
 }

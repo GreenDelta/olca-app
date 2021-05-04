@@ -230,6 +230,12 @@
             name="Project results">
       </editor>
       <editor
+            id="ReportEditor"
+            class="org.openlca.app.editors.projects.reports.ReportEditor"
+            icon="icons/model/project.png"
+            name="Report">
+      </editor>
+      <editor
             id="editors.LogFileEditor"
             class="org.openlca.app.logging.LogFileEditor"
             icon="icons/file.png"

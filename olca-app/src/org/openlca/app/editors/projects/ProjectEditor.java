@@ -6,7 +6,6 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.app.editors.projects.reports.ReportEditorPage;
 import org.openlca.app.editors.projects.reports.Reports;
 import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.core.model.Project;
@@ -40,7 +39,6 @@ public class ProjectEditor extends ModelEditor<Project> {
 	protected void addPages() {
 		try {
 			addPage(new ProjectSetupPage(this));
-			addPage(new ReportEditorPage(this, report));
 			addCommentPage();
 		} catch (Exception e) {
 			log.error("failed to add page", e);

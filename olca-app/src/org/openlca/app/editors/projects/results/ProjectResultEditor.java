@@ -11,7 +11,9 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
+import org.openlca.app.editors.projects.reports.ReportEditor;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -80,12 +82,18 @@ public class ProjectResultEditor extends SimpleFormEditor {
 
 			var buttonComp = tk.createComposite(body);
 			UI.gridLayout(buttonComp, 2);
-			var excelBtn = tk.createButton(buttonComp, M.ExcelExport, SWT.NONE);
+			var excelBtn = tk.createButton(
+					buttonComp, M.ExcelExport, SWT.NONE);
 			excelBtn.setImage(Images.get(FileType.EXCEL));
 			UI.gridData(excelBtn, false, false).widthHint = 120;
-			var reportBtn = tk.createButton(buttonComp, "Create Report", SWT.NONE);
+
+			// report button
+			var reportBtn = tk.createButton(
+					buttonComp, "Create Report", SWT.NONE);
 			reportBtn.setImage(Images.get(ModelType.PROJECT));
 			UI.gridData(reportBtn, false, false).widthHint = 120;
+			Controls.onSelect(
+					reportBtn, $ -> ReportEditor.open(project, result));
 
 			ProjectVariantSection.of(result).renderOn(body, tk);
 			TotalImpactSection.of(result).renderOn(body, tk);

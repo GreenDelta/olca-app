@@ -48,7 +48,7 @@ public enum ReportComponent {
 
 	private final String id;
 
-	private ReportComponent(String id) {
+	ReportComponent(String id) {
 		this.id = id;
 	}
 

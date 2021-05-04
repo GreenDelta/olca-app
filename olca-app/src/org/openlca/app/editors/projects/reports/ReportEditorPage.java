@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
@@ -16,25 +17,25 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Project;
 
-public class ReportEditorPage extends ModelPage<Project> {
+class ReportEditorPage extends FormPage {
 
-	private Report report;
-	private ProjectEditor editor;
+	private final Report report;
+	private final ReportEditor editor;
 
 	private FormToolkit tk;
 	private SectionList sectionList;
 
-	public ReportEditorPage(ProjectEditor editor, Report report) {
-		super(editor, "ReportInfoPage", M.ReportSections);
+	public ReportEditorPage(ReportEditor editor) {
+		super(editor, "ReportInfoPage", M.Report);
 		this.editor = editor;
-		this.report = report;
+		this.report = new Report();
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(this);
-		tk = managedForm.getToolkit();
-		Composite body = UI.formBody(form, tk);
+	protected void createFormContent(IManagedForm mform) {
+		var form = UI.formHeader(mform, "Report");
+		tk = mform.getToolkit();
+		var body = UI.formBody(form, tk);
 		createInfoSection(body);
 		createAddButton(body);
 		sectionList = new SectionList(editor, body, form, tk);
@@ -51,8 +52,13 @@ public class ReportEditorPage extends ModelPage<Project> {
 
 	private void createInfoSection(Composite body) {
 		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
-		Text titleText = UI.formText(comp, tk, M.Title);
-		editor.getBinding().onString(() -> report, "title", titleText);
+		var titleText = UI.formText(comp, tk, M.Title);
+		if (report.title != null) {
+			titleText.setText(report.title);
+		}
+		titleText.addModifyListener($ -> {
+			report.title = titleText.getText();
+		});
 	}
 
 }
