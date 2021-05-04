@@ -74,6 +74,7 @@ public class JsonLoader {
 			}
 			return json;
 		} catch (WebRequestException e) {
+			WebRequestExceptions.handle(e);
 			return null;
 		}
 	}

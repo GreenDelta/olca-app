@@ -469,6 +469,11 @@
             id="preferencepages.cloud"
             name="Collaboration">
       </page>
+      <page
+            class="org.openlca.app.preferences.SslCertificatePage"
+            id="preferencepages.ssl"
+            name="SSL certificates">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.menus">

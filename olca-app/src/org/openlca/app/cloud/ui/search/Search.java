@@ -1,5 +1,6 @@
 package org.openlca.app.cloud.ui.search;
 
+import org.openlca.app.cloud.WebRequestExceptions;
 import org.openlca.cloud.model.data.DatasetEntry;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 
@@ -19,7 +20,7 @@ public class Search implements Runnable {
 			result = query.getClient().search(query.query, query.page, query.pageSize, query.type);
 		} catch (WebRequestException e) {
 			result = new SearchResult<>();
-			e.printStackTrace();
+			WebRequestExceptions.handle(e);
 		}
 	}
 

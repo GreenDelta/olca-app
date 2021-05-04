@@ -8,19 +8,17 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.cloud.WebRequestExceptions;
 import org.openlca.app.db.Database;
-import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.util.viewers.Viewers;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Commit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openlca.cloud.util.WebRequests.WebRequestException;
 
 public class SelectCommitDialog extends FormDialog {
 
-	private final static Logger log = LoggerFactory.getLogger(SelectCommitDialog.class);
 	private HistoryViewer viewer;
 	private Commit selection;
 
@@ -54,9 +52,8 @@ public class SelectCommitDialog extends FormDialog {
 		RepositoryClient client = Database.getRepositoryClient();
 		try {
 			viewer.setInput(client.fetchCommitHistory());
-		} catch (Exception e) {
-			log.warn("Error loading commit history", e);
-			MsgBox.error(e.getMessage());
+		} catch (WebRequestException e) {
+			WebRequestExceptions.handle(e);
 		}
 		return;
 	}

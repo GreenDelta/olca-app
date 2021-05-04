@@ -8,13 +8,12 @@ import java.util.List;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.openlca.app.cloud.CloudUtil;
+import org.openlca.app.cloud.WebRequestExceptions;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Commit;
 import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class ContentProvider implements ITreeContentProvider {
 
@@ -56,8 +55,7 @@ class ContentProvider implements ITreeContentProvider {
 			});
 			return filterNonCategorized(references).toArray();
 		} catch (WebRequestException e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("calling `getChildren` failed", e);
+			WebRequestExceptions.handle(e);
 		}
 		return null;
 	}

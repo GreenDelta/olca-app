@@ -22,6 +22,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
+import org.openlca.app.cloud.WebRequestExceptions;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
@@ -131,8 +132,8 @@ public class CompareView extends ViewPart {
 			Set<FetchRequestData> descriptors = client.sync(commit != null ? commit.id : null);
 			List<DiffResult> differences = createDifferences(descriptors, elements);
 			input = new DiffNodeBuilder(client.getConfig().database, index, ActionType.COMPARE_AHEAD).build(differences);
-		} catch (Exception e) {
-			log.error("Error loading remote data", e);
+		} catch (WebRequestException e) {
+			WebRequestExceptions.handle(e);
 			input = null;
 		}
 	}
@@ -252,6 +253,7 @@ public class CompareView extends ViewPart {
 							FetchNotifierMonitor monitor = new FetchNotifierMonitor(m, M.DownloadingData);
 							client.download(remotes, commitId, monitor);
 						} catch (WebRequestException e) {
+							WebRequestExceptions.handle(e);
 							throw new InvocationTargetException(e, e.getMessage());
 						}
 					}

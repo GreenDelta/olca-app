@@ -22,6 +22,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.cloud.WebRequestExceptions;
 import org.openlca.app.cloud.ui.preferences.CloudConfiguration;
 import org.openlca.app.cloud.ui.preferences.CloudConfigurations;
 import org.openlca.app.db.Database;
@@ -118,14 +119,14 @@ class SearchPage extends FormPage {
 				try {
 					query.getClient().logout();
 				} catch (WebRequestException e) {
-					log.error("Error closing cs client", e);
+					WebRequestExceptions.handle(e);
 				}
 			}
 			query.setConfiguration(c);
 			try {
 				repositoryViewer.setInput(query.getClient().listRepositories());
 			} catch (WebRequestException e) {
-				log.error("Error loading repositories", e);
+				WebRequestExceptions.handle(e);
 			}
 			runSearch(1);
 		});
@@ -143,7 +144,7 @@ class SearchPage extends FormPage {
 		try {
 			repositoryViewer.setInput(query.getClient().listRepositories());
 		} catch (WebRequestException e) {
-			log.error("Error loading repositories", e);
+			WebRequestExceptions.handle(e);
 		}
 		repositoryViewer.select(query.getClient().getConfig().repositoryId);
 		repositoryViewer.addSelectionChangedListener(repoId -> {
@@ -272,6 +273,8 @@ class SearchPage extends FormPage {
 				jsonImport.run();
 				store.close();
 				tmp.delete();
+			} catch (WebRequestException e1) {
+				WebRequestExceptions.handle(e1);
 			} catch (Exception e1) {
 				log.error("Error during json import", e1);
 			}

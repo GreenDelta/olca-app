@@ -15,6 +15,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
+import org.openlca.app.cloud.WebRequestExceptions;
 import org.openlca.app.cloud.ui.compare.ModelLabelProvider;
 import org.openlca.app.cloud.ui.compare.ModelNodeBuilder;
 import org.openlca.app.cloud.ui.compare.ModelUtil;
@@ -24,7 +25,6 @@ import org.openlca.app.cloud.ui.diff.ActionType;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
-import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.util.tables.Tables;
 import org.openlca.app.viewers.BaseLabelProvider;
@@ -84,7 +84,8 @@ public class HistoryView extends ViewPart {
 		diffViewer = DiffEditor.forViewing(parent);
 		diffViewer.setLabels(M.SelectedCommit, M.PreviousCommit);
 		boolean commitIsAhead = CloudUtil.commitIsAhead(current, null);
-		diffViewer.initialize(null, new ModelLabelProvider(), ModelUtil.getDependencyResolver(), commitIsAhead ? ActionType.COMPARE_AHEAD : ActionType.COMPARE_BEHIND);
+		diffViewer.initialize(null, new ModelLabelProvider(), ModelUtil.getDependencyResolver(),
+				commitIsAhead ? ActionType.COMPARE_AHEAD : ActionType.COMPARE_BEHIND);
 	}
 
 	private void createReferencesViewer(Composite parent) {
@@ -124,7 +125,7 @@ public class HistoryView extends ViewPart {
 			if (e.getErrorCode() == Status.NOT_FOUND.getStatusCode())
 				return null;
 			log.warn("Error loading previous commit", e);
-			MsgBox.error(e.getMessage());
+			WebRequestExceptions.handle(e);
 			return null;
 		}
 	}
@@ -133,9 +134,8 @@ public class HistoryView extends ViewPart {
 		RepositoryClient client = Database.getRepositoryClient();
 		try {
 			historyViewer.setInput(client.fetchCommitHistory());
-		} catch (Exception e) {
-			log.warn("Error loading commit history", e);
-			MsgBox.error(e.getMessage());
+		} catch (WebRequestException e) {
+			WebRequestExceptions.handle(e);
 		}
 	}
 
@@ -165,9 +165,8 @@ public class HistoryView extends ViewPart {
 		App.runWithProgress("Loading references", () -> {
 			try {
 				references.addAll(client.getReferences(commit.id));
-			} catch (Exception e) {
-				log.warn("Error loading commit history", e);
-				MsgBox.error(e.getMessage());
+			} catch (WebRequestException e) {
+				WebRequestExceptions.handle(e);
 			}
 		});
 		for (FetchRequestData data : new ArrayList<>(references))

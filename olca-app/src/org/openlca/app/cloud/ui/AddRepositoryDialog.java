@@ -18,6 +18,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.TokenDialog;
+import org.openlca.app.cloud.WebRequestExceptions;
 import org.openlca.app.cloud.ui.preferences.CloudConfiguration;
 import org.openlca.app.cloud.ui.preferences.CloudConfigurations;
 import org.openlca.app.cloud.ui.preferences.CloudPreferencePage;
@@ -28,6 +29,7 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.cloud.api.CredentialSupplier;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
+import org.openlca.cloud.util.WebRequests.WebRequestException;
 
 import com.google.common.base.Strings;
 
@@ -112,8 +114,9 @@ class AddRepositoryDialog extends FormDialog {
 			RepositoryClient client = new RepositoryClient(config);
 			try {
 				repositories = client.listRepositories();
-			} catch (Exception e) {
+			} catch (WebRequestException e) {
 				repositories = new ArrayList<>();
+				WebRequestExceptions.handle(e);
 			}
 		}, () -> {
 			repositoryViewer.setInput(repositories);

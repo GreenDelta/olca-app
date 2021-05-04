@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openlca.app.cloud.WebRequestExceptions;
 import org.openlca.app.db.Database;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.model.data.Dataset;
@@ -80,6 +81,7 @@ public class Reindexing {
 		try {
 			return initDataMap();
 		} catch (WebRequestException e) {
+			WebRequestExceptions.handle(e);
 			return null;
 		}
 	}

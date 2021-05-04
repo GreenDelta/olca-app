@@ -1,5 +1,7 @@
 package org.openlca.app.util;
 
+import java.util.function.Consumer;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -16,7 +18,7 @@ import org.openlca.app.M;
 public class MsgBox {
 
 	enum Type {
-		ERROR, WARNING, INFO
+		ERROR, WARNING, INFO, QUESTION;
 	}
 
 	private MsgBox() {
@@ -46,17 +48,27 @@ public class MsgBox {
 		new BoxJob(title, text, Type.ERROR).schedule();
 	}
 
+	public static void question(String title, String text, Consumer<Boolean> callback) {
+		new BoxJob(title, text, Type.QUESTION, callback).schedule();
+	}
+
 	private static class BoxJob extends UIJob {
 
 		private String title;
 		private String message;
 		private Type type;
+		private Consumer<Boolean> callback;
 
 		public BoxJob(String title, String message, Type type) {
+			this(title, message, type, null);
+		}
+
+		public BoxJob(String title, String message, Type type, Consumer<Boolean> callback) {
 			super("Open message box");
 			this.title = title == null ? "?" : title;
 			this.message = message == null ? "?" : message;
 			this.type = type;
+			this.callback = callback;
 		}
 
 		@Override
@@ -67,23 +79,28 @@ public class MsgBox {
 			Shell shell = display.getActiveShell();
 			if (shell == null)
 				shell = new Shell(display);
-			openBox(shell);
+			boolean result = openBox(shell);
+			if (callback != null) {
+				callback.accept(result);
+			}
 			return Status.OK_STATUS;
 		}
 
-		private void openBox(Shell shell) {
+		private boolean openBox(Shell shell) {
 			switch (type) {
 			case ERROR:
 				MessageDialog.openError(shell, title, message);
-				break;
+				return false;
 			case WARNING:
 				MessageDialog.openWarning(shell, title, message);
-				break;
+				return false;
 			case INFO:
 				MessageDialog.openInformation(shell, title, message);
-				break;
+				return false;
+			case QUESTION:
+				return MessageDialog.openQuestion(shell, title, message);
 			default:
-				break;
+				return false;
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package org.openlca.app.editors;
 
 import org.openlca.app.M;
+import org.openlca.app.cloud.WebRequestExceptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class CommentsEditor extends SimpleFormEditor {
 		try {
 			comments = client.getAllComments();
 		} catch (WebRequestException e) {
-			log.error("Error loading comments" , e);
+			WebRequestExceptions.handle(e);
 		}
 		return new CommentsPage(this, comments);
 	}

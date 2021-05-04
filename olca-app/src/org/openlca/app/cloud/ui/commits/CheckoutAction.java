@@ -8,6 +8,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.cloud.WebRequestExceptions;
 import org.openlca.app.cloud.index.Reindexing;
 import org.openlca.app.cloud.ui.FetchNotifierMonitor;
 import org.openlca.app.cloud.ui.diff.CompareView;
@@ -67,6 +68,7 @@ class CheckoutAction extends Action {
 					RepositoryClient client = Database.getRepositoryClient();
 					client.checkout(commit.id, monitor);
 				} catch (WebRequestException e) {
+					WebRequestExceptions.handle(e);
 					throw new InvocationTargetException(e, e.getMessage());
 				}
 			}

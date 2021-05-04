@@ -22,7 +22,7 @@ public class Announcements {
 		} catch (WebRequestException e) {
 			if (e.getErrorCode() == Status.NOT_FOUND.getStatusCode())
 				return; // ignore, older servers don't provide announcement resource
-			MsgBox.error(e.getMessage());
+			WebRequestExceptions.handle(e);
 		}
 	}
 	

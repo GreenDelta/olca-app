@@ -31,6 +31,7 @@ import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
+import org.openlca.app.cloud.WebRequestExceptions;
 import org.openlca.app.cloud.ui.FetchNotifierMonitor;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.ModelTypeComparison;
@@ -103,6 +104,11 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			}
 		});
 		if (e != null) {
+			if (e instanceof WebRequestException) {
+				WebRequestExceptions.handle((WebRequestException) e);
+			} else if (e.getCause() != null && e.getCause() instanceof WebRequestException) {
+				WebRequestExceptions.handle((WebRequestException) e.getCause());
+			}
 			currentPage.setErrorMessage(e.getMessage());
 			return false;
 		}
@@ -149,7 +155,8 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			String baseUrl = url.substring(0, url.lastIndexOf('/')) + "/ws";
 			String repoId = groupName + "/" + repoName;
 			RepositoryConfig config = new RepositoryConfig(Database.get(), baseUrl, repoId);
-			config.credentials = getCredentials();;
+			config.credentials = getCredentials();
+			;
 			client = new RepositoryClient(config);
 			return true;
 		} catch (Exception e) {
@@ -259,7 +266,11 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 			setErrorMessage(null);
 			Exception e = run(this::scanRepository);
 			if (e != null) {
-				setErrorMessage(e.getMessage());
+				if (e instanceof WebRequestException) {
+					WebRequestExceptions.handle((WebRequestException) e);
+				} else {
+					setErrorMessage(e.getMessage());
+				}
 			} else {
 				viewer.setInput(root);
 			}
@@ -301,7 +312,7 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 				}
 				m.done();
 				return null;
-			} catch (Exception ex) {
+			} catch (WebRequestException ex) {
 				return ex;
 			}
 		}

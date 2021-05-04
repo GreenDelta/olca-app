@@ -14,6 +14,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
+import org.openlca.app.cloud.WebRequestExceptions;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.index.DiffType;
@@ -39,6 +40,7 @@ import org.openlca.cloud.model.LibraryRestriction;
 import org.openlca.cloud.model.data.Dataset;
 import org.openlca.cloud.model.data.FetchRequestData;
 import org.openlca.cloud.model.data.FileReference;
+import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.database.IDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,8 +64,14 @@ public class CommitAction extends Action implements INavigationAction {
 		if (!runner.upToDate && runner.error == null)
 			MsgBox.error(M.RejectMessage);
 		else if (runner.error != null) {
-			log.error("Error during commit action", runner.error);
-			MsgBox.error(runner.error.getMessage());
+			if (runner.error instanceof WebRequestException) {
+				WebRequestExceptions.handle((WebRequestException) runner.error);
+			} else if (runner.error.getCause() != null && runner.error.getCause() instanceof WebRequestException) {
+				WebRequestExceptions.handle((WebRequestException) runner.error.getCause());
+			} else {
+				log.error("Error during commit action", runner.error);
+				MsgBox.error(runner.error.getMessage());
+			}
 		} else if (runner.noChanges)
 			MsgBox.info(M.NoChangesInLocalDb);
 		HistoryView.refresh();
@@ -196,7 +204,7 @@ public class CommitAction extends Action implements INavigationAction {
 		private void checkUpToDate(RepositoryClient client) {
 			try {
 				upToDate = client.requestCommit();
-			} catch (Exception e) {
+			} catch (WebRequestException e) {
 				error = e;
 				upToDate = false;
 			}
@@ -256,7 +264,7 @@ public class CommitAction extends Action implements INavigationAction {
 				datasets.add(result.getDataset());
 			try {
 				checkResult = client.performLibraryCheck(datasets);
-			} catch (Exception e) {
+			} catch (WebRequestException e) {
 				error = e;
 			}
 		}

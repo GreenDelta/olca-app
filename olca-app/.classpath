@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="libs/jython-standalone-2.7.2b2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/super-csv-2.4.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-cloud-1.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-cloud-1.11.0.jar" sourcepath="/olca-cloud"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-core-1.11.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-1.11.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-1.11.0.jar"/>

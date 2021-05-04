@@ -22,7 +22,6 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptors;
 import org.openlca.util.Strings;
-import org.slf4j.LoggerFactory;
 
 public class CloudUtil {
 
@@ -126,7 +125,7 @@ public class CloudUtil {
 			try {
 				commits = client.fetchCommitHistory();
 			} catch (WebRequestException e) {
-				LoggerFactory.getLogger(CloudUtil.class).error("Error during fetch commit history", e);
+				WebRequestExceptions.handle(e);
 				return false;
 			}
 		}

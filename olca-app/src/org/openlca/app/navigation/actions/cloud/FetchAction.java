@@ -17,6 +17,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.JsonLoader;
+import org.openlca.app.cloud.WebRequestExceptions;
 import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.cloud.ui.DiffDialog;
@@ -65,8 +66,14 @@ public class FetchAction extends Action implements INavigationAction {
 		Runner runner = new Runner();
 		runner.run();
 		if (runner.error != null) {
-			log.error("Error during fetch action", runner.error);
-			MsgBox.error(runner.error.getMessage());
+			if (runner.error instanceof WebRequestException) {
+				WebRequestExceptions.handle((WebRequestException) runner.error);
+			} else if (runner.error.getCause() != null && runner.error.getCause() instanceof WebRequestException) {
+				WebRequestExceptions.handle((WebRequestException) runner.error.getCause());
+			} else {
+				log.error("Error during fetch action", runner.error);
+				MsgBox.error(runner.error.getMessage());
+			}
 		}
 		Navigator.refresh();
 		HistoryView.refresh();
@@ -97,7 +104,7 @@ public class FetchAction extends Action implements INavigationAction {
 		private void fetchCommits() {
 			try {
 				commits = client.fetchNewCommitHistory();
-			} catch (Exception e) {
+			} catch (WebRequestException e) {
 				error = e;
 			}
 		}
@@ -120,7 +127,7 @@ public class FetchAction extends Action implements INavigationAction {
 				Set<FetchRequestData> descriptors = client.requestFetch();
 				differences = createDifferences(descriptors);
 				root = new DiffNodeBuilder(client.getConfig().database, index, ActionType.FETCH).build(differences);
-			} catch (Exception e) {
+			} catch (WebRequestException e) {
 				error = e;
 			}
 		}
