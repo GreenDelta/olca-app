@@ -8,7 +8,7 @@
       <text>
          openLCA 1.11.0
 
-Copyright (c) 2007 - 2020 GreenDelta. All rights reserved.
+Copyright (c) 2007 - 2021 GreenDelta. All rights reserved.
 Visit http://openlca.org and http://greendelta.com
 
 This product includes software developed in the openLCA 
@@ -34,7 +34,7 @@ project and other open source software.
 
    <splash
       location="olca-app"
-      startupProgressRect="0,412,594,5"
+      startupProgressRect="0,429,586,5"
       startupMessageRect="7,525,445,20"
       startupForegroundColor="000000" />
    <launcher name="openLCA">
