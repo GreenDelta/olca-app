@@ -26,7 +26,7 @@ class ReportParameterSync {
 		Project project = editor.getModel();
 		if (report == null || project == null)
 			return;
-		List<ParameterRedef> unSynced = getUnSyncedRedefs(project, report);
+		List<ParameterRedef> unSynced = getUnSyncedRedefs(project);
 		for (ParameterRedef redef : unSynced) {
 			ReportParameter param = initParam(redef, report);
 			for (ProjectVariant projectVariant : project.variants) {
@@ -40,8 +40,7 @@ class ReportParameterSync {
 		}
 	}
 
-	private List<ParameterRedef> getUnSyncedRedefs(Project project,
-			Report report) {
+	private List<ParameterRedef> getUnSyncedRedefs(Project project) {
 		if (project.variants.isEmpty())
 			return Collections.emptyList();
 		ProjectVariant firstVar = project.variants.get(0);

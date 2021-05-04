@@ -8,6 +8,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.projects.reports.Reports;
 import org.openlca.app.editors.projects.reports.model.Report;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.model.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +17,6 @@ import org.slf4j.LoggerFactory;
 public class ProjectEditor extends ModelEditor<Project> {
 
 	public static String ID = "editors.project";
-	private Logger log = LoggerFactory.getLogger(getClass());
-
 	private Report report;
 
 	public ProjectEditor() {
@@ -41,7 +40,7 @@ public class ProjectEditor extends ModelEditor<Project> {
 			addPage(new ProjectSetupPage(this));
 			addCommentPage();
 		} catch (Exception e) {
-			log.error("failed to add page", e);
+			ErrorReporter.on("Failed to add project pages", e);
 		}
 	}
 

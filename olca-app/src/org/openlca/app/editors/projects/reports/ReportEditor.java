@@ -1,14 +1,20 @@
 package org.openlca.app.editors.projects.reports;
 
+import java.io.IOException;
+
+import com.google.gson.GsonBuilder;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.editors.projects.reports.model.Report;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Project;
 import org.openlca.core.results.ProjectResult;
@@ -54,5 +60,27 @@ public class ReportEditor extends SimpleFormEditor {
 	@Override
 	protected FormPage getPage() {
 		return new ReportEditorPage(this);
+	}
+
+	@Override
+	public boolean isSaveAsAllowed() {
+		return true;
+	}
+
+	@Override
+	public void doSaveAs() {
+		var file = FileChooser.forSavingFile(
+			"Save report template as file", "openLCA report template.json");
+		if (file == null)
+			return;
+		try {
+			var json = new GsonBuilder()
+				.setPrettyPrinting()
+				.create()
+				.toJson(report);
+			FileUtils.write(file, json, "utf-8");
+		} catch (IOException e) {
+			ErrorReporter.on("Failed to save report template", e);
+		}
 	}
 }
