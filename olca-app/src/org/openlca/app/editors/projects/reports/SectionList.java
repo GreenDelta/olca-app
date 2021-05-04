@@ -1,4 +1,4 @@
-package org.openlca.app.editors.reports;
+package org.openlca.app.editors.projects.reports;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +15,9 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.editors.projects.ProjectEditor;
-import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.editors.reports.model.ReportComponent;
-import org.openlca.app.editors.reports.model.ReportSection;
+import org.openlca.app.editors.projects.reports.model.Report;
+import org.openlca.app.editors.projects.reports.model.ReportComponent;
+import org.openlca.app.editors.projects.reports.model.ReportSection;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Question;

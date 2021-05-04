@@ -1,4 +1,4 @@
-package org.openlca.app.editors.reports.model;
+package org.openlca.app.editors.projects.reports.model;
 
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 

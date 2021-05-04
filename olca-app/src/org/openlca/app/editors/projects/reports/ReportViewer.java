@@ -1,4 +1,4 @@
-package org.openlca.app.editors.reports;
+package org.openlca.app.editors.projects.reports;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -15,7 +15,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
-import org.openlca.app.editors.reports.model.Report;
+import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.util.UI;
 import org.slf4j.Logger;

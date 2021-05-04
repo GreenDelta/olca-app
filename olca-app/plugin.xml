@@ -218,10 +218,10 @@
       </editor>
       <editor
             id="ReportViewer"
-            class="org.openlca.app.editors.reports.ReportViewer"
+            class="org.openlca.app.editors.projects.reports.ReportViewer"
             icon="icons/model/project.png"
             name="%ReportViewer"
-            contributorClass="org.openlca.app.editors.reports.ReportToolbar">
+            contributorClass="org.openlca.app.editors.projects.reports.ReportToolbar">
       </editor>
       <editor
             id="ProjectResultEditor"

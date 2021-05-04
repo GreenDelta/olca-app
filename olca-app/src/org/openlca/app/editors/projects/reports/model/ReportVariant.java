@@ -1,4 +1,4 @@
-package org.openlca.app.editors.reports.model;
+package org.openlca.app.editors.projects.reports.model;
 
 /**
  * The information of a project variant for a report. The name of the report

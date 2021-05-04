@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.editors.reports.model.ReportParameter;
-import org.openlca.app.editors.reports.model.ReportVariant;
+import org.openlca.app.editors.projects.reports.model.Report;
+import org.openlca.app.editors.projects.reports.model.ReportParameter;
+import org.openlca.app.editors.projects.reports.model.ReportVariant;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;

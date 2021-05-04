@@ -1,4 +1,4 @@
-package org.openlca.app.editors.reports.model;
+package org.openlca.app.editors.projects.reports.model;
 
 import java.util.Comparator;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.openlca.app.editors.reports.model.ReportIndicatorResult.VariantResult;
+import org.openlca.app.editors.projects.reports.model.ReportIndicatorResult.VariantResult;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.IDatabase;

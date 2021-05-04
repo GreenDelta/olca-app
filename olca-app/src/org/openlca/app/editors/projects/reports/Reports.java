@@ -1,4 +1,4 @@
-package org.openlca.app.editors.reports;
+package org.openlca.app.editors.projects.reports;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,12 +11,12 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.openlca.app.M;
 import org.openlca.app.db.DatabaseDir;
-import org.openlca.app.editors.reports.model.Report;
-import org.openlca.app.editors.reports.model.ReportComponent;
-import org.openlca.app.editors.reports.model.ReportIndicator;
-import org.openlca.app.editors.reports.model.ReportParameter;
-import org.openlca.app.editors.reports.model.ReportSection;
-import org.openlca.app.editors.reports.model.ReportVariant;
+import org.openlca.app.editors.projects.reports.model.Report;
+import org.openlca.app.editors.projects.reports.model.ReportComponent;
+import org.openlca.app.editors.projects.reports.model.ReportIndicator;
+import org.openlca.app.editors.projects.reports.model.ReportParameter;
+import org.openlca.app.editors.projects.reports.model.ReportSection;
+import org.openlca.app.editors.projects.reports.model.ReportVariant;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.ParameterRedef;

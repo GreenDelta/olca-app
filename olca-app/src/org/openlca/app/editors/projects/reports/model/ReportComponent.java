@@ -1,4 +1,4 @@
-package org.openlca.app.editors.reports.model;
+package org.openlca.app.editors.projects.reports.model;
 
 import java.util.Objects;
 

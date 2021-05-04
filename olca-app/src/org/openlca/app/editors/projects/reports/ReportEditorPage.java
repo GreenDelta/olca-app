@@ -1,4 +1,4 @@
-package org.openlca.app.editors.reports;
+package org.openlca.app.editors.projects.reports;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -10,7 +10,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.projects.ProjectEditor;
-import org.openlca.app.editors.reports.model.Report;
+import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
