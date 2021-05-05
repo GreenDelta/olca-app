@@ -134,8 +134,7 @@ class ProjectParameterTable {
 		var keys = new String[LABEL_OFFSET + columnCount];
 		keys[0] = M.Parameter;
 		keys[1] = M.Context;
-		keys[2] = M.Name;
-		keys[3] = M.Description;
+		keys[2] = M.Description;
 		for (int i = 0; i < columns.length; i++) {
 			int index = showComments ? 2 * i : i;
 			keys[LABEL_OFFSET + index] = columns[i].key;

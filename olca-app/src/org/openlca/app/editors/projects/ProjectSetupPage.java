@@ -127,7 +127,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			.bind(M.Description, new VariantDescriptionEditor())
 			.bind("", new CommentDialogModifier<>(
 				editor.getComments(), CommentPaths::get));
-		double w = 1.0 / 8.0;
+		double w = 1.0 / 8.1;
 		Tables.bindColumnWidths(variantViewer, w, w, w, w, w, w, w, w);
 		addVariantActions(variantViewer, section);
 	}
