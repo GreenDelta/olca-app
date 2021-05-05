@@ -68,8 +68,10 @@ public class SslCertificatePage extends PreferencePage implements IWorkbenchPref
 
 	private Input[] getInput() {
 		List<Input> inputs = new ArrayList<>();
-		for (File file : certificateDir.listFiles()) {
-			inputs.add(new Input(file, readCertificate(file)));
+		if (certificateDir.exists()) {
+			for (File file : certificateDir.listFiles()) {
+				inputs.add(new Input(file, readCertificate(file)));
+			}
 		}
 		return inputs.toArray(new Input[inputs.size()]);
 	}
@@ -108,6 +110,9 @@ public class SslCertificatePage extends PreferencePage implements IWorkbenchPref
 			return;
 		File from = new File(filename);
 		String name = from.getName().substring(0, from.getName().lastIndexOf("."));
+		if (!certificateDir.exists()) {
+			certificateDir.mkdirs();
+		}
 		File to = new File(certificateDir, name + ".pem");
 		try (FileInputStream in = new FileInputStream(to)) {
 			Files.copy(from.toPath(), to.toPath());

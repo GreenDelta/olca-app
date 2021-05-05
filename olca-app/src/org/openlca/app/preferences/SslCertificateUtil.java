@@ -57,6 +57,9 @@ public class SslCertificateUtil {
 	public static void importCertificate(X509Certificate cert, String host) {
 		try {
 			File certDir = new File(Workspace.getDir(), "ssl-certificates");
+			if (!certDir.exists()) {
+				certDir.mkdirs();
+			}
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			BASE64Encoder encoder = new BASE64Encoder();
 			out.write((X509Factory.BEGIN_CERT + "\r\n").getBytes("utf-8"));

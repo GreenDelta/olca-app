@@ -15,7 +15,7 @@ public class WebRequestExceptions {
 			MsgBox.question("SSL Certificate unknown",
 					"The site " + e.getHost() + " you are trying to connect to uses an unknown SSL certificate. "
 							+ "Do you want to add the certificate to the list of trusted certificates? "
-							+ "You will need to rerun the current action to continue after adding the certificate",
+							+ "You will need to rerun the current action to continue after adding it",
 					trust -> {
 						if (trust) {
 							X509Certificate cert = SslCertificateUtil.downloadCertificate(e.getHost(), e.getPort());
