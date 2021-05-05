@@ -1,10 +1,11 @@
 package org.openlca.app.editors.projects;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import org.eclipse.jface.action.Action;
@@ -20,7 +21,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ParameterRedefDialog;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentDialogModifier;
@@ -36,84 +36,53 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.openlca.core.database.Daos;
-import org.openlca.core.database.EntityCache;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
 
 class ProjectParameterTable {
-
-	private final ProjectEditor editor;
-	private final EntityCache cache = Cache.getEntityCache();
 
 	/**
 	 * The number of label columns before the value columns start.
 	 */
 	private final int LABEL_OFFSET = 3;
 
-	private final List<ParameterRedef> redefs = new ArrayList<>();
+	private final ProjectEditor editor;
+	private final SortedSet<ParameterRedef> redefs;
 	private Column[] columns;
 	private TableViewer viewer;
 
 	ProjectParameterTable(ProjectEditor editor) {
 		this.editor = editor;
 		Project project = editor.getModel();
-		initColumns(project);
-		initParameterRedefs(project);
-		editor.onSaved(() -> updateOnSave(editor));
-	}
+		columns = Column.createAllOf(project);
+		editor.onSaved(
+			() -> Column.updateAll(columns, editor.getModel()));
 
-	private void updateOnSave(ProjectEditor editor) {
-		Project newProject = editor.getModel();
-		for (ProjectVariant newVar : newProject.variants) {
-			for (Column col : columns) {
-				if (equal(col.variant, newVar)) {
-					col.variant = newVar;
-					break;
-				}
-			}
-		}
-	}
-
-	private void initColumns(Project project) {
-		if (project == null) {
-			columns = new Column[0];
-			return;
-		}
-		columns = new Column[project.variants.size()];
-		for (int i = 0; i < columns.length; i++)
-			columns[i] = new Column(project.variants.get(i));
-		Arrays.sort(columns);
-	}
-
-	private void initParameterRedefs(Project project) {
-		for (ProjectVariant variant : project.variants) {
-			for (ParameterRedef redef : variant.parameterRedefs) {
-				if (!contains(redef))
-					redefs.add(redef);
-			}
-		}
-		redefs.sort((o1, o2) -> Strings.compare(o1.name, o2.name));
-	}
-
-	/**
-	 * true if a parameter redefinition with the given name and process ID (can
-	 * be null) exists.
-	 */
-	private boolean contains(ParameterRedef redef) {
-		for (ParameterRedef contained : redefs) {
-			if (Objects.equals(redef.name, contained.name)
-				&& Objects.equals(redef.contextId,
-				contained.contextId))
-				return true;
-		}
-		return false;
+		// collect the parameter redefinitions from
+		// the project variants. A redefinition is
+		// identified by name and context
+		redefs = new TreeSet<>((redef1, redef2) -> {
+			int c = Strings.compare(redef1.name, redef2.name);
+			if (c != 0)
+				return c;
+			long c1 = redef1.contextId != null
+				? redef1.contextId
+				: 0;
+			long c2 = redef2.contextId != null
+				? redef2.contextId
+				: 0;
+			return Long.compare(c1, c2);
+		});
+		project.variants.stream()
+			.flatMap(v -> v.parameterRedefs.stream())
+			.forEach(redefs::add);
 	}
 
 	public void render(Section section, FormToolkit toolkit) {
@@ -148,7 +117,7 @@ class ProjectParameterTable {
 		titles[2] = M.Description;
 		for (int i = 0; i < columns.length; i++) {
 			int index = showComments ? 2 * i : i;
-			titles[LABEL_OFFSET + index] = columns[i].getTitle();
+			titles[LABEL_OFFSET + index] = columns[i].variant.name;
 			if (showComments) {
 				titles[LABEL_OFFSET + index + 1] = "";
 			}
@@ -169,9 +138,9 @@ class ProjectParameterTable {
 		keys[3] = M.Description;
 		for (int i = 0; i < columns.length; i++) {
 			int index = showComments ? 2 * i : i;
-			keys[LABEL_OFFSET + index] = columns[i].getKey();
+			keys[LABEL_OFFSET + index] = columns[i].key;
 			if (showComments) {
-				keys[LABEL_OFFSET + index + 1] = columns[i].getKey() + "_COMMENT";
+				keys[LABEL_OFFSET + index + 1] = columns[i].key + "_COMMENT";
 			}
 		}
 		viewer.setColumnProperties(keys);
@@ -208,11 +177,10 @@ class ProjectParameterTable {
 			.filter(v -> v.productSystem != null)
 			.forEach(v -> contexts.addAll(v.productSystem.processes));
 
-		var redefs = ParameterRedefDialog.select(contexts);
-		for (ParameterRedef redef : redefs) {
-			if (contains(redef))
+		var newRedefs = ParameterRedefDialog.select(contexts);
+		for (var redef : newRedefs) {
+			if (!this.redefs.add(redef))
 				continue;
-			this.redefs.add(redef);
 			for (Column column : columns) {
 				if (findVariantRedef(column.variant, redef) == null)
 					column.variant.parameterRedefs.add(redef.clone());
@@ -238,21 +206,18 @@ class ProjectParameterTable {
 	}
 
 	public void addVariant(ProjectVariant variant) {
-		Column newColumn = new Column(variant);
+		columns = Column.add(columns, variant);
 		Table table = viewer.getTable();
 		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
 		tableColumn.setWidth(150);
-		tableColumn.setText(newColumn.getTitle());
-		Column[] newColumns = new Column[columns.length + 1];
-		System.arraycopy(columns, 0, newColumns, 0, columns.length);
-		newColumns[columns.length] = newColumn;
-		columns = newColumns;
+		tableColumn.setText(variant.name);
 		createModifySupport();
 		viewer.refresh();
 	}
 
 	public void removeVariant(ProjectVariant variant) {
-		int idx = getIndex(variant);
+
+		int idx = Column.indexOf(columns, variant);
 		if (idx == -1)
 			return;
 		Column[] newColumns = new Column[columns.length - 1];
@@ -261,6 +226,7 @@ class ProjectParameterTable {
 			System.arraycopy(columns, idx + 1, newColumns, idx,
 				newColumns.length - idx);
 		columns = newColumns;
+
 		Table table = viewer.getTable();
 		table.getColumn(idx + LABEL_OFFSET).dispose();
 		createModifySupport();
@@ -268,13 +234,12 @@ class ProjectParameterTable {
 	}
 
 	public void updateVariant(ProjectVariant variant) {
-		int idx = getIndex(variant);
+		int idx = Column.indexOf(columns, variant);
 		if (idx == -1)
 			return;
 		Column column = columns[idx];
 		Table table = viewer.getTable();
-		String title = column.getTitle() == null ? "" : column.getTitle();
-		table.getColumn(idx + LABEL_OFFSET).setText(title);
+		table.getColumn(idx + LABEL_OFFSET).setText(column.title());
 		viewer.refresh();
 	}
 
@@ -290,23 +255,7 @@ class ProjectParameterTable {
 		return null;
 	}
 
-	private ProjectVariant findVariant(String key) {
-		for (Column column : columns) {
-			if (Objects.equals(key, column.getKey()))
-				return column.getVariant();
-		}
-		return null;
-	}
-
-	private int getIndex(ProjectVariant variant) {
-		for (int i = 0; i < columns.length; i++) {
-			if (equal(variant, columns[i].getVariant()))
-				return i;
-		}
-		return -1;
-	}
-
-	private boolean equal(ProjectVariant var1, ProjectVariant var2) {
+	private static boolean equal(ProjectVariant var1, ProjectVariant var2) {
 		// saving the project changes the ID of an unsaved variant and thus the
 		// equal function of the ProjectVariant class will fail -> thus, we
 		// check the name in this case.
@@ -314,10 +263,9 @@ class ProjectParameterTable {
 			return true;
 		if (var1 == null || var2 == null)
 			return false;
-		if (var1.id != 0 && var2.id != 0)
-			return var1.id == var2.id;
-		else
-			return Objects.equals(var1.name, var2.name);
+		return var1.id != 0 && var2.id != 0
+			? var1.id == var2.id
+			: Objects.equals(var1.name, var2.name);
 	}
 
 	private class LabelProvider extends org.eclipse.jface.viewers.LabelProvider
@@ -354,7 +302,7 @@ class ProjectParameterTable {
 				return redef.name;
 			if (col == 1)
 				return getModelColumnText(redef);
-			if (col == 3)
+			if (col == 2)
 				return redef.description;
 			boolean showComments = editor.hasAnyComment("variants.parameterRedefs");
 			if (!showComments || col % 2 == 0)
@@ -369,7 +317,7 @@ class ProjectParameterTable {
 				idx /= 2;
 			if (idx < 0 || idx >= columns.length)
 				return null;
-			var variant = columns[idx].getVariant();
+			var variant = columns[idx].variant;
 			var variantRedef = findVariantRedef(variant, redef);
 			if (variantRedef == null)
 				return null;
@@ -388,13 +336,12 @@ class ProjectParameterTable {
 			if (redef == null || redef.contextId == null)
 				return null;
 			long modelId = redef.contextId;
-			var model = cache.get(ImpactMethodDescriptor.class, modelId);
-			if (model != null)
-				return model;
-			else
-				return cache.get(ProcessDescriptor.class, modelId);
+			var db = Database.get();
+			var model = db.getDescriptor(Process.class, modelId);
+			return model != null
+				? model
+				: db.getDescriptor(ImpactCategory.class, modelId);
 		}
-
 	}
 
 	private class ValueModifier extends TextCellModifier<ParameterRedef> {
@@ -407,8 +354,8 @@ class ProjectParameterTable {
 
 		@Override
 		protected String getText(ParameterRedef redef) {
-			ProjectVariant variant = findVariant(key);
-			ParameterRedef variantRedef = findVariantRedef(variant, redef);
+			var variant = Column.variantOf(columns, key);
+			var variantRedef = findVariantRedef(variant, redef);
 			if (variantRedef == null)
 				return "";
 			return Double.toString(variantRedef.value);
@@ -418,7 +365,7 @@ class ProjectParameterTable {
 		protected void setText(ParameterRedef redef, String text) {
 			if (redef == null || text == null)
 				return;
-			ProjectVariant variant = findVariant(key);
+			ProjectVariant variant = Column.variantOf(columns, key);
 			if (variant == null)
 				return;
 			var variantRedef = findVariantRedef(variant, redef);
@@ -452,36 +399,91 @@ class ProjectParameterTable {
 		}
 	}
 
+
+	/**
+	 * Column maps a variant to a column of the parameter table.
+	 */
 	private static class Column implements Comparable<Column> {
 
-		private ProjectVariant variant;
-		private final String key;
+		final int index;
+		final ProjectVariant variant;
+		final String key;
 
-		public Column(ProjectVariant variant) {
+		Column(int index, ProjectVariant variant) {
+			this(index, variant, UUID.randomUUID().toString());
+		}
+
+		Column(int index, ProjectVariant variant, String key) {
+			this.index = index;
 			this.variant = variant;
-			key = UUID.randomUUID().toString();
+			this.key = key;
 		}
 
-		public ProjectVariant getVariant() {
-			return variant;
+		String title() {
+			return variant == null || variant.name == null
+				? ""
+				: variant.name;
 		}
 
-		public String getKey() {
-			return key;
+		static Column[] createAllOf(Project project) {
+			if (project == null)
+				return new Column[0];
+			var variants = new ArrayList<>(project.variants);
+			variants.sort((v1, v2) -> Strings.compare(v1.name, v2.name));
+			var columns = new Column[variants.size()];
+			for (int i = 0; i < variants.size(); i++) {
+				columns[i] = new Column(i, variants.get(i));
+			}
+			return columns;
 		}
 
-		public String getTitle() {
-			if (variant == null)
-				return "";
-			return variant.name;
+		/**
+		 * Updates the column array with the matching fresh instances of the
+		 * given project. We need to do this when the project is saved in
+		 * the database because otherwise the project variants of the
+		 * columns are out of sync with the JPA store.
+		 */
+		static void updateAll(Column[] columns, Project project) {
+			for (int i = 0; i < columns.length; i++) {
+				var oldCol = columns[i];
+				for (var freshVar : project.variants) {
+					if (!equal(oldCol.variant, freshVar))
+						continue;
+					columns[i] = new Column(i, freshVar, oldCol.key);
+					break;
+				}
+			}
+		}
+
+		static Column[] add(Column[] columns, ProjectVariant variant) {
+			var newColumn = new Column(columns.length, variant);
+			var newColumns = new Column[columns.length + 1];
+			System.arraycopy(columns, 0, newColumns, 0, columns.length);
+			newColumns[columns.length] = newColumn;
+			return newColumns;
+		}
+
+		static ProjectVariant variantOf(Column[] columns, String key) {
+			for (Column column : columns) {
+				if (Objects.equals(key, column.key))
+					return column.variant;
+			}
+			return null;
+		}
+
+		static int indexOf(Column[] columns, ProjectVariant variant) {
+			for (int i = 0; i < columns.length; i++) {
+				if (equal(variant, columns[i].variant))
+					return i;
+			}
+			return -1;
 		}
 
 		@Override
 		public int compareTo(Column other) {
-			if (this.variant == null || other.variant == null)
-				return 0;
-			return Strings.compare(
-				this.variant.name, other.variant.name);
+			return this.variant != null && other.variant != null
+				? Strings.compare(this.variant.name, other.variant.name)
+				: 0;
 		}
 	}
 }

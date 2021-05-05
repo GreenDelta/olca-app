@@ -42,7 +42,6 @@ import org.openlca.app.viewers.tables.modify.field.DoubleModifier;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.AllocationMethod;
-import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
@@ -115,9 +114,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 		var section = UI.section(body, toolkit, M.Variants);
 		var comp = UI.sectionClient(section, toolkit, 1);
 		variantViewer = Tables.createViewer(comp,
-				M.Name, M.ProductSystem, M.Display,
-				M.AllocationMethod, M.Flow, M.Amount,
-				M.Unit, M.Description, "");
+			M.Name, M.ProductSystem, M.Display,
+			M.AllocationMethod, M.Flow, M.Amount,
+			M.Unit, M.Description, "");
 		variantViewer.setLabelProvider(new VariantLabelProvider());
 		new ModifySupport<ProjectVariant>(variantViewer)
 			.bind(M.Name, new VariantNameEditor())
@@ -147,7 +146,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Action remove = Actions.onRemove(this::removeVariant);
 		Action copy = TableClipboard.onCopy(table);
 		CommentAction.bindTo(section, "variants",
-				editor.getComments(), add, remove);
+			editor.getComments(), add, remove);
 		Actions.bind(table, onOpen, add, remove, copy);
 		Tables.onDoubleClick(table, (event) -> {
 			TableItem item = Tables.getItem(table, event);
@@ -177,7 +176,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			}
 			List<ProjectVariant> variants = project.variants;
 			ProjectVariant variant = createVariant(
-					system, variants.size() + 1);
+				system, variants.size() + 1);
 			variants.add(variant);
 			variantViewer.setInput(variants);
 			parameterTable.addVariant(variant);
@@ -234,7 +233,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private class VariantDescriptionEditor extends
-			TextCellModifier<ProjectVariant> {
+		TextCellModifier<ProjectVariant> {
 
 		@Override
 		protected String getText(ProjectVariant variant) {
@@ -251,13 +250,13 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private class VariantAllocationEditor extends
-			ComboBoxCellModifier<ProjectVariant, AllocationMethod> {
+		ComboBoxCellModifier<ProjectVariant, AllocationMethod> {
 
 		@Override
 		protected AllocationMethod getItem(ProjectVariant var) {
 			return var.allocationMethod != null
-					? var.allocationMethod
-					: AllocationMethod.NONE;
+				? var.allocationMethod
+				: AllocationMethod.NONE;
 		}
 
 		@Override
@@ -278,7 +277,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private class VariantUnitEditor extends
-			ComboBoxCellModifier<ProjectVariant, Unit> {
+		ComboBoxCellModifier<ProjectVariant, Unit> {
 		@Override
 		protected Unit getItem(ProjectVariant var) {
 			return var.unit;
@@ -288,7 +287,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		protected Unit[] getItems(ProjectVariant var) {
 			FlowPropertyFactor fac = var.flowPropertyFactor;
 			if (fac == null || fac.flowProperty == null
-					|| fac.flowProperty.unitGroup == null)
+				|| fac.flowProperty.unitGroup == null)
 				return new Unit[0];
 			UnitGroup unitGroup = fac.flowProperty.unitGroup;
 			Unit[] units = unitGroup.units.toArray(new Unit[0]);
@@ -330,7 +329,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private class VariantLabelProvider extends LabelProvider
-			implements ITableLabelProvider {
+		implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
@@ -353,36 +352,20 @@ class ProjectSetupPage extends ModelPage<Project> {
 		public String getColumnText(Object obj, int col) {
 			if (!(obj instanceof ProjectVariant))
 				return null;
-			ProjectVariant variant = (ProjectVariant) obj;
-			ProductSystem system = variant.productSystem;
-			if (system == null)
-				return null;
-			switch (col) {
-			case 0:
-				return variant.name;
-			case 1:
-				return system.name;
-			case 3:
-				return Labels.of(variant.allocationMethod);
-			case 4:
-				return getFlowText(system);
-			case 5:
-				return Double.toString(variant.amount);
-			case 6:
-				Unit unit = variant.unit;
-				return unit == null ? null : unit.name;
-			case 7:
-				return variant.description;
-			default:
-				return null;
-			}
-		}
-
-		private String getFlowText(ProductSystem system) {
-			if (system == null || system.referenceExchange == null)
-				return null;
-			Exchange refExchange = system.referenceExchange;
-			return Labels.name(refExchange.flow);
+			var variant = (ProjectVariant) obj;
+			var system = variant.productSystem;
+			return switch (col) {
+				case 0 -> variant.name;
+				case 1 -> system != null ? system.name : null;
+				case 3 -> Labels.of(variant.allocationMethod);
+				case 4 -> system != null && system.referenceExchange != null
+					? Labels.name(system.referenceExchange.flow)
+					: null;
+				case 5 -> Double.toString(variant.amount);
+				case 6 -> variant.unit == null ? null : variant.unit.name;
+				case 7 -> variant.description;
+				default -> null;
+			};
 		}
 	}
 }
