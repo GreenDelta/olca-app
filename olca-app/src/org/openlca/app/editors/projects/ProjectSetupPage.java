@@ -63,13 +63,11 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private Project project;
 	private TableViewer variantViewer;
 	private ProjectParameterTable parameterTable;
-	private final ReportVariantSync variantSync;
 
 	ProjectSetupPage(ProjectEditor editor) {
 		super(editor, "ProjectSetupPage", M.ProjectSetup);
 		this.editor = editor;
 		project = editor.getModel();
-		variantSync = new ReportVariantSync(editor);
 		editor.onSaved(() -> {
 			project = editor.getModel();
 			if (variantViewer != null) {
@@ -92,7 +90,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 		parameterTable = new ProjectParameterTable(editor);
 		parameterTable.render(section, toolkit);
 		initialInput();
-		new ProcessContributionSection(editor).create(body, toolkit);
 		body.setFocus();
 		form.reflow(true);
 	}
@@ -184,7 +181,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 			variants.add(variant);
 			variantViewer.setInput(variants);
 			parameterTable.addVariant(variant);
-			variantSync.variantAdded(variant);
 		}
 		editor.setDirty(true);
 	}
@@ -218,7 +214,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 			parameterTable.removeVariant(var);
 		}
 		variantViewer.setInput(variants);
-		variantSync.variantsRemoved(selection);
 		editor.setDirty(true);
 	}
 
@@ -233,7 +228,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 			if (Objects.equals(text, variant.name))
 				return;
 			variant.name = text;
-			variantSync.updateName(variant, text);
 			parameterTable.updateVariant(variant);
 			editor.setDirty(true);
 		}
@@ -252,7 +246,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 			if (Objects.equals(text, variant.description))
 				return;
 			variant.description = text;
-			variantSync.updateDescription(variant, text);
 			editor.setDirty(true);
 		}
 	}
@@ -332,7 +325,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 			if (v.isDisabled != b)
 				return;
 			v.isDisabled = !b;
-			variantSync.updateDisabled(v);
 			editor.setDirty(true);
 		}
 	}
@@ -380,7 +372,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 				Unit unit = variant.unit;
 				return unit == null ? null : unit.name;
 			case 7:
-				return variantSync.getDescription(variant);
+				return variant.description;
 			default:
 				return null;
 			}

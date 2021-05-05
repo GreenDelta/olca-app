@@ -10,9 +10,6 @@ import org.openlca.app.editors.projects.reports.Reports;
 import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.model.Project;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 public class ProjectEditor extends ModelEditor<Project> {
 

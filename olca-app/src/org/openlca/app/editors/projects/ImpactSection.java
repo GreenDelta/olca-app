@@ -23,9 +23,8 @@ class ImpactSection {
 	private final ProjectEditor editor;
 	private final IDatabase db;
 
-	private ImpactMethodViewer methodViewer;
-	private NwSetComboViewer nwViewer;
-	private IndicatorTable indicatorTable;
+	private ImpactMethodViewer methodCombo;
+	private NwSetComboViewer nwSetCombo;
 
 	public ImpactSection(ProjectEditor editor) {
 		this.editor = editor;
@@ -38,28 +37,25 @@ class ImpactSection {
 		UI.gridLayout(formComp, 3);
 		UI.gridData(formComp, true, false);
 		createViewers(tk, formComp);
-		indicatorTable = new IndicatorTable(editor);
-		indicatorTable.render(rootComp);
 		setInitialSelection();
-		addListeners(); // do this after the initial selection to not set the
-		// editor dirty
+		addListeners();
 	}
 
 	private void createViewers(FormToolkit tk, Composite comp) {
 		UI.formLabel(comp, tk, M.LCIAMethod);
-		methodViewer = new ImpactMethodViewer(comp);
-		methodViewer.setNullable(true);
-		methodViewer.setInput(Database.get());
+		methodCombo = new ImpactMethodViewer(comp);
+		methodCombo.setNullable(true);
+		methodCombo.setInput(Database.get());
 		new CommentControl(comp, tk, "impactMethod", editor.getComments());
 		UI.formLabel(comp, tk, M.NormalizationAndWeightingSet);
-		nwViewer = new NwSetComboViewer(comp, Database.get());
-		nwViewer.setNullable(true);
+		nwSetCombo = new NwSetComboViewer(comp, Database.get());
+		nwSetCombo.setNullable(true);
 		new CommentControl(comp, tk, "nwSet", editor.getComments());
 	}
 
 	private void addListeners() {
-		methodViewer.addSelectionChangedListener(this::onMethodChange);
-		nwViewer.addSelectionChangedListener(d -> {
+		methodCombo.addSelectionChangedListener(this::onMethodChange);
+		nwSetCombo.addSelectionChangedListener(d -> {
 			var project = editor.getModel();
 			project.nwSet = d == null
 					? null
@@ -84,11 +80,8 @@ class ImpactSection {
 				? null
 				: new ImpactMethodDao(db).getForId(method.id);
 		project.nwSet = null;
-		nwViewer.select(null);
-		nwViewer.setInput(method);
-		if (indicatorTable != null) {
-			indicatorTable.methodChanged(method);
-		}
+		nwSetCombo.select(null);
+		nwSetCombo.setInput(method);
 		editor.setDirty(true);
 	}
 
@@ -96,7 +89,7 @@ class ImpactSection {
 		Project project = editor.getModel();
 		if (project.impactMethod == null)
 			return;
-		methodViewer.select(Descriptor.of(project.impactMethod));
+		methodCombo.select(Descriptor.of(project.impactMethod));
 
 		// normalisation and weighting sets
 		var nws = new ArrayList<NwSetDescriptor>();
@@ -109,7 +102,7 @@ class ImpactSection {
 				selected = d;
 			}
 		}
-		nwViewer.setInput(nws);
-		nwViewer.select(selected);
+		nwSetCombo.setInput(nws);
+		nwSetCombo.select(selected);
 	}
 }

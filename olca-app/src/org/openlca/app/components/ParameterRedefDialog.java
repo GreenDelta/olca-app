@@ -140,8 +140,7 @@ public class ParameterRedefDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		// TODO: calculate from screen size
-		return new Point(600, 600);
+		return UI.initialSizeOf(this, 600, 600);
 	}
 
 	private List<ParameterRedef> getSelection() {
