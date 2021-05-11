@@ -15,8 +15,8 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
@@ -56,7 +56,7 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 	protected ViewerComparator getComparator() {
 		return new ViewerComparator() {
 
-			private LabelProvider label = new LabelProvider();
+			private final LabelProvider label = new LabelProvider();
 
 			@Override
 			public int compare(Viewer viewer, Object e1, Object e2) {
@@ -72,7 +72,7 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 		};
 	}
 
-	private class LabelProvider extends BaseLabelProvider
+	private static class LabelProvider extends BaseLabelProvider
 			implements ITableLabelProvider {
 
 		@Override
@@ -113,9 +113,7 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 				// location
 				if (f.location == null)
 					return null;
-				// TODO: probably it would be good to add the
-				// location code to the location descriptor
-				Location loc = cache.get(Location.class, f.location.id);
+				var loc = cache.get(LocationDescriptor.class, f.location.id);
 				return loc != null ? loc.code : null;
 
 			case 3:
@@ -128,7 +126,7 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 					}
 				}
 				if (f.location != null) {
-					loc = cache.get(Location.class, f.location.id);
+					loc = cache.get(LocationDescriptor.class, f.location.id);
 					if (loc != null) {
 						s += " - " + loc.code;
 					}
