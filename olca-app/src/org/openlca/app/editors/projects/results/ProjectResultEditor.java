@@ -8,6 +8,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
@@ -17,6 +18,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Project;
 import org.openlca.core.results.ProjectResult;
@@ -97,6 +99,17 @@ public class ProjectResultEditor extends SimpleFormEditor {
 
 			ProjectVariantSection.of(result).renderOn(body, tk);
 			TotalImpactSection.of(result).renderOn(body, tk);
+
+			if (project.nwSet != null) {
+				var nwFactors = NwSetTable.of(Database.get(), project.nwSet);
+				if (nwFactors.hasNormalization()) {
+					NwSection.forNormalization(nwFactors, result).renderOn(body, tk);
+				}
+				if (nwFactors.hasWeighting()) {
+					NwSection.forWeighting(nwFactors, result).renderOn(body, tk);
+					// TODO: single score results
+				}
+			}
 		}
 	}
 }

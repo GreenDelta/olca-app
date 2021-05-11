@@ -33,8 +33,8 @@ class ProjectVariantSection {
 		return new ProjectVariantSection(result);
 	}
 
-	void renderOn(Composite parent, FormToolkit tk) {
-		var section = UI.section(parent, tk, M.Variants);
+	void renderOn(Composite body, FormToolkit tk) {
+		var section = UI.section(body, tk, M.Variants);
 		Actions.bind(section, Actions.create(
 			"Copy to clipboard", Icon.COPY.descriptor(), () -> {}));
 		var comp = UI.sectionClient(section, tk, 1);
