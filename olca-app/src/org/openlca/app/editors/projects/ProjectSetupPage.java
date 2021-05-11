@@ -144,7 +144,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			addVariants(ds);
 		});
 		Action remove = Actions.onRemove(this::removeVariant);
-		Action copy = TableClipboard.onCopy(table);
+		Action copy = TableClipboard.onCopySelected(table);
 		CommentAction.bindTo(section, "variants",
 			editor.getComments(), add, remove);
 		Actions.bind(table, onOpen, add, remove, copy);

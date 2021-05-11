@@ -75,7 +75,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	private void bindActions(TableViewer indicatorTable, Section section) {
 		Action add = Actions.onAdd(this::onAdd);
 		Action remove = Actions.onRemove(this::onRemove);
-		Action copy = TableClipboard.onCopy(indicatorTable);
+		Action copy = TableClipboard.onCopySelected(indicatorTable);
 
 		Action open = Actions.onOpen(() -> {
 			ImpactCategory i = Viewers.getFirstSelected(indicatorTable);

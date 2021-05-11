@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
@@ -45,8 +44,6 @@ class TotalImpactSection {
 
 	void renderOn(Composite parent, FormToolkit tk) {
 		var section = UI.section(parent, tk, M.ImpactAssessmentResults);
-		Actions.bind(section, Actions.create(
-			"Copy to clipboard", Icon.COPY.descriptor(), () -> {}));
 		var comp = UI.sectionClient(section, tk, 1);
 
 		// create the column headers
@@ -66,6 +63,8 @@ class TotalImpactSection {
 		Viewers.sortByLabels(table, label, 0, 2);
 		Viewers.sortByDouble(table, label, sortIndices);
 		Tables.bindColumnWidths(table, columnWidths());
+		Actions.bind(section, TableClipboard.onCopyAll(table));
+		Actions.bind(table, TableClipboard.onCopySelected(table));
 
 		// set the table input
 		table.setInput(result.getImpacts()

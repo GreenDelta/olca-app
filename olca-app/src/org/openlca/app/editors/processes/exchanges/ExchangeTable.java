@@ -172,7 +172,7 @@ class ExchangeTable {
 			editor.setDirty(true);
 		});
 		Action formulaSwitch = new FormulaSwitchAction();
-		Action copy = TableClipboard.onCopy(viewer, this::toClipboard);
+		Action copy = TableClipboard.onCopySelected(viewer, this::toClipboard);
 		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
 		CommentAction.bindTo(section, "exchanges",
 				editor.getComments(), add, remove, formulaSwitch);

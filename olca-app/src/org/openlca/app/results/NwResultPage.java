@@ -83,7 +83,7 @@ public class NwResultPage extends FormPage {
 		var items = Contributions.calculate(results, r -> r.value);
 		Contributions.sortDescending(items);
 		viewer.setInput(items);
-		Actions.bind(viewer, TableClipboard.onCopy(viewer));
+		Actions.bind(viewer, TableClipboard.onCopySelected(viewer));
 	}
 
 	private class Label extends LabelProvider implements ITableLabelProvider {

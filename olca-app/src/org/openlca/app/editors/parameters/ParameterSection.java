@@ -133,7 +133,7 @@ public class ParameterSection {
 			return;
 		var add = Actions.onAdd(this::onAdd);
 		var remove = Actions.onRemove(this::onRemove);
-		var copy = TableClipboard.onCopy(table);
+		var copy = TableClipboard.onCopySelected(table);
 		var paste = TableClipboard.onPaste(table, this::onPaste);
 		var usage = Actions.create(M.Usage, Icon.LINK.descriptor(), () -> {
 			Parameter p = Viewers.getFirstSelected(table);

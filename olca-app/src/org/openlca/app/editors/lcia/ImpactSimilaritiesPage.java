@@ -50,7 +50,7 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 		Tables.bindColumnWidths(table, 0.5, 0.5);
 
 		// bind actions
-		var onCopy = TableClipboard.onCopy(table);
+		var onCopy = TableClipboard.onCopySelected(table);
 		var onOpen = Actions.onOpen(() -> {
 			Item item = Viewers.getFirstSelected(table);
 			if (item != null) {

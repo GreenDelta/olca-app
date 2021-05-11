@@ -169,7 +169,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 				CategorizedDescriptor d = Viewers.getFirstSelected(table);
 				App.open(d);
 			});
-			Action copy = TableClipboard.onCopy(table);
+			Action copy = TableClipboard.onCopySelected(table);
 			Actions.bind(table, copy);
 		}
 

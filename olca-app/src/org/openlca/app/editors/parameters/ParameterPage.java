@@ -99,7 +99,7 @@ public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 	}
 
 	private void bindGlobalParamActions(Section section, TableViewer table) {
-		var copy = TableClipboard.onCopy(table);
+		var copy = TableClipboard.onCopySelected(table);
 		var refresh = Actions.create(M.Reload, Icon.REFRESH.descriptor(), () -> {
 			setGlobalTableInput();
 			support.evaluate();

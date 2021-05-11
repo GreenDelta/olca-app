@@ -8,10 +8,12 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.model.ModelType;
@@ -94,6 +96,8 @@ class NwSection extends LabelProvider implements ITableLabelProvider {
 		section.setExpanded(false);
 		Viewers.sortByLabels(table, this, 0);
 		Viewers.sortByDouble(table, this, sortIndices);
+		Actions.bind(section, TableClipboard.onCopyAll(table));
+		Actions.bind(table, TableClipboard.onCopySelected(table));
 	}
 
 	private double resultOf(ImpactDescriptor impact, ProjectVariant variant) {

@@ -95,7 +95,7 @@ class ProjectParameterTable {
 		createModifySupport();
 		Action add = Actions.onAdd(this::onAdd);
 		Action remove = Actions.onRemove(this::onRemove);
-		Action copy = TableClipboard.onCopy(viewer);
+		Action copy = TableClipboard.onCopySelected(viewer);
 		CommentAction.bindTo(
 			section, "parameters", editor.getComments(), add, remove);
 		Actions.bind(viewer, add, remove, copy);
