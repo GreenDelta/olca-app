@@ -1,6 +1,5 @@
 package org.openlca.app.editors.projects.results;
 
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -20,9 +19,8 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.ProjectResult;
-import org.openlca.util.Strings;
 
-class NwSection extends LabelProvider implements ITableLabelProvider {
+class NwSection extends LabelProvider implements TableSection {
 
 	private enum Type {
 		NORMALIZATION,
@@ -42,10 +40,7 @@ class NwSection extends LabelProvider implements ITableLabelProvider {
 		this.type = type;
 		this.factors = factors;
 		this.result = result;
-		this.variants = result.getVariants()
-			.stream()
-			.sorted((v1, v2) -> Strings.compare(v1.name, v2.name))
-			.toArray(ProjectVariant[]::new);
+		this.variants = variantsOf(result);
 		double _absMax = 0;
 		for (var variant : variants) {
 			for (var impact : result.getImpacts()) {
@@ -68,7 +63,8 @@ class NwSection extends LabelProvider implements ITableLabelProvider {
 		return this;
 	}
 
-	void renderOn(Composite body, FormToolkit tk) {
+	@Override
+	public void renderOn(Composite body, FormToolkit tk) {
 		var title = type == Type.NORMALIZATION
 			? "Normalized results"
 			: "Weighted results";
@@ -88,7 +84,7 @@ class NwSection extends LabelProvider implements ITableLabelProvider {
 		}
 
 		var table = Tables.createViewer(comp, columnTitles);
-		image = new ContributionImage();
+		image = contributionImage(table);
 		table.getControl().addDisposeListener($ -> image.dispose());
 		Tables.bindColumnWidths(table, columnWidths);
 		table.setLabelProvider(this);

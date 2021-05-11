@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -25,24 +24,23 @@ import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.ProjectResult;
 import org.openlca.util.Strings;
 
-class TotalImpactSection {
+class TotalImpactSection extends LabelProvider implements TableSection {
 
 	private final ProjectResult result;
 	private final ProjectVariant[] variants;
+	private ContributionImage image;
 
 	private TotalImpactSection(ProjectResult result) {
 		this.result = Objects.requireNonNull(result);
-		variants = result.getVariants()
-			.stream()
-			.sorted((v1, v2) -> Strings.compare(v1.name, v2.name))
-			.toArray(ProjectVariant[]::new);
+		this.variants = variantsOf(result);
 	}
 
 	static TotalImpactSection of(ProjectResult result) {
 		return new TotalImpactSection(result);
 	}
 
-	void renderOn(Composite parent, FormToolkit tk) {
+	@Override
+	public void renderOn(Composite parent, FormToolkit tk) {
 		var section = UI.section(parent, tk, M.ImpactAssessmentResults);
 		var comp = UI.sectionClient(section, tk, 1);
 
@@ -58,10 +56,10 @@ class TotalImpactSection {
 
 		// configure the table
 		var table = Tables.createViewer(comp, columnHeaders);
-		var label = new TableLabel();
-		table.setLabelProvider(label);
-		Viewers.sortByLabels(table, label, 0, 2);
-		Viewers.sortByDouble(table, label, sortIndices);
+		image = contributionImage(table);
+		table.setLabelProvider(this);
+		Viewers.sortByLabels(table, this, 0, 2);
+		Viewers.sortByDouble(table, this, sortIndices);
 		Tables.bindColumnWidths(table, columnWidths());
 		Actions.bind(section, TableClipboard.onCopyAll(table));
 		Actions.bind(table, TableClipboard.onCopySelected(table));
@@ -83,6 +81,30 @@ class TotalImpactSection {
 			: 0.6 / variants.length;
 		Arrays.fill(widths, 2, widths.length, other);
 		return widths;
+	}
+
+	@Override
+	public Image getColumnImage(Object obj, int col) {
+		if (!(obj instanceof Row))
+			return null;
+		var row = (Row) obj;
+		return switch (col) {
+			case 0 -> Images.get(ModelType.IMPACT_CATEGORY);
+			case 1 -> Images.get(ModelType.UNIT);
+			default -> image.getForTable(row.shareOf(col));
+		};
+	}
+
+	@Override
+	public String getColumnText(Object obj, int col) {
+		if (!(obj instanceof Row))
+			return null;
+		var row = (Row) obj;
+		return switch (col) {
+			case 0 -> row.impact;
+			case 1 -> row.unit;
+			default -> Numbers.format(row.resultOf(col));
+		};
 	}
 
 	private class Row {
@@ -127,43 +149,5 @@ class TotalImpactSection {
 				? 0
 				: shares[idx];
 		}
-
 	}
-
-	private static class TableLabel extends LabelProvider
-		implements ITableLabelProvider {
-
-		private final ContributionImage image = new ContributionImage();
-
-		@Override
-		public void dispose() {
-			image.dispose();
-			super.dispose();
-		}
-
-		@Override
-		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof Row))
-				return null;
-			var row = (Row) obj;
-			return switch (col) {
-				case 0 -> Images.get(ModelType.IMPACT_CATEGORY);
-				case 1 -> Images.get(ModelType.UNIT);
-				default -> image.getForTable(row.shareOf(col));
-			};
-		}
-
-		@Override
-		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Row))
-				return null;
-			var row = (Row) obj;
-			return switch (col) {
-				case 0 -> row.impact;
-				case 1 -> row.unit;
-				default -> Numbers.format(row.resultOf(col));
-			};
-		}
-	}
-
 }
