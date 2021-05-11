@@ -31,7 +31,7 @@ public class ComparisonPage extends FormPage {
 		Composite body = UI.formBody(form, tk);
 		var config = new Config(); // Comparison config
 		InfoSection.create(body, tk, editor.setup);
-		new ProductComparison(body, config, editor, tk).display();
+		new ProductComparison(body, config, editor, null, tk).display();
 		form.reflow(true);
 	}
 }

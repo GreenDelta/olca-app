@@ -39,16 +39,15 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.db.Database;
-import org.openlca.app.results.ProjectResultEditor;
+import org.openlca.app.editors.reports.model.Report;
+import org.openlca.app.editors.reports.model.ReportIndicatorResult;
+import org.openlca.app.editors.reports.model.ReportVariant;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
-import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -72,6 +71,7 @@ public class ProductComparison {
 	private Color chosenCategoryColor;
 	private ContributionResult contributionResult;
 	private List<ContributionResult> contributionResults;
+	private List<ReportIndicatorResult> projectContributionResults;
 	private int nonCutoffAmount;
 	private int cutOffSize;
 	private IDatabase db;
@@ -86,26 +86,24 @@ public class ProductComparison {
 	private Map<Integer, Map<Integer, List<Contribution<CategorizedDescriptor>>>> contributionResultMap;
 	private Button runCalculation;
 	private FormToolkit tk;
-	private List<ProjectVariant> variants;
+	private List<ReportVariant> variants;
 
-	public ProductComparison(Composite shell, Config config, ResultEditor<?> editor, FormToolkit tk) {
+	public ProductComparison(Composite shell, Config config, ResultEditor<?> editor,Report report, FormToolkit tk) {
 		this.tk = tk;
 		db = Database.get();
-		if (editor.result == null) {
+		if (report != null) {
 			targetCalculation = TargetCalculationEnum.PRODUCT;
-			contributionResults = ((ProjectResultEditor) editor).results;
-			variants = ((ProjectResultEditor) editor).variants;
-
+			projectContributionResults = report.results;
+			variants = report.variants;
 		} else {
 			targetCalculation = TargetCalculationEnum.IMPACT;
+			productSystem = editor.setup.productSystem;
+			impactMethod = editor.setup.impactMethod;
+			contributionResult = editor.result;
 		}
-		productSystem = editor.setup.productSystem;
-		impactMethod = editor.setup.impactMethod;
-		contributionResult = editor.result;
 		this.shell = shell;
 		this.config = config;
 		colorCellCriteria = config.colorCellCriteria;
-		targetCalculation = config.targetCalculationCriteria;
 		contributionsList = new ArrayList<>();
 		cacheMap = new HashMap<>();
 		contributionResultMap = new HashMap<>();
@@ -171,12 +169,12 @@ public class ProductComparison {
 					})
 					.collect(Collectors.toMap(impactCategory -> impactCategory.name, impactCategory -> impactCategory));
 		}else {
-			impactCategoryMap = contributionResults.stream().map(result -> {
-				result.getImpacts().stream().sorted((c1, c2) -> c1.name.compareTo(c2.name)).map(impactCategory -> {
-					impactCategoriesName.add(impactCategory.name);
-					return impactCategory;
-				}).collect(Collectors.toList());
-			}).collect(Collectors.toMap(impactCategory -> impactCategory.name, impactCategory -> impactCategory));
+//			impactCategoryMap = contributionResults.stream().map(result -> {
+//				result.getImpacts().stream().sorted((c1, c2) -> c1.name.compareTo(c2.name)).map(impactCategory -> {
+//					impactCategoriesName.add(impactCategory.name);
+//					return impactCategory;
+//				}).collect(Collectors.toList());
+//			}).collect(Collectors.toMap(impactCategory -> impactCategory.name, impactCategory -> impactCategory));
 		}
 		UI.gridLayout(row1, 10);
 
@@ -532,10 +530,12 @@ public class ProductComparison {
 					var wrapper = new Object() {
 						int count = 0;
 					};
+					var psDao = new ProductSystemDao(db);
 					contributionResults.forEach(result -> {
 						var impactDescriptor = impactCategoryMap.get(impactCategoriesName.get(0));
 						var contributionList = result.getProcessContributions(impactDescriptor);
-						var ps = variants.get(wrapper.count).productSystem;
+						
+						var ps = psDao.getForId(variants.get(wrapper.count).id);
 						var p = new Contributions(contributionList, impactDescriptor.name, ps.id + ": " + ps.name);
 						contributionsList.add(p);
 						wrapper.count++;

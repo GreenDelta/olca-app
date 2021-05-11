@@ -41,7 +41,6 @@ import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.openlca.app.viewers.tables.modify.field.DoubleModifier;
-import org.openlca.app.wizards.projectCalculation.CalculationWizard;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.AllocationMethod;
@@ -94,7 +93,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
 		createButton(infoSection.getContainer());
-		addCalculationButton(infoSection.getContainer(), toolkit);
 		new ImpactSection(editor).render(body, toolkit);
 		createVariantsSection(body);
 		Section section = UI.section(body, toolkit, M.Parameters);
@@ -120,16 +118,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 		UI.gridData(b, false, false).widthHint = 100;
 		b.setImage(Images.get(ModelType.PROJECT));
 		Controls.onSelect(b, e -> ProjectEditorActions.calculate(project, editor.getReport()));
-	}
-	
-	private void addCalculationButton(Composite comp, FormToolkit tk) {
-		tk.createLabel(comp, "");
-		Button button = tk.createButton(comp, M.Calculate, SWT.NONE);
-		button.setImage(Icon.RUN.get());
-		Controls.onSelect(button, e -> {
-			CalculationWizard.open(getModel(), project.variants);
-		});
-		tk.createLabel(comp, "");
 	}
 
 	private void createVariantsSection(Composite body) {

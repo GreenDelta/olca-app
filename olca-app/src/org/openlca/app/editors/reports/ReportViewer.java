@@ -17,7 +17,9 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.rcp.HtmlFolder;
+import org.openlca.app.results.comparison.ProjectComparisonPage;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +30,9 @@ public class ReportViewer extends SimpleFormEditor {
 	public static String ID = "ReportViewer";
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private Report report;
+	public Project project;
 
-	public static void open(Report report) {
+	public static void open(Report report, Project project) {
 		if (report == null)
 			return;
 		String reportID = Cache.getAppCache().put(report);
@@ -52,6 +55,16 @@ public class ReportViewer extends SimpleFormEditor {
 			String message = "failed to init report viewer";
 			log.error(message, e);
 			throw new PartInitException(message, e);
+		}
+	}
+	
+	@Override
+	protected final void addPages() {
+		try {
+			addPage(getPage());
+			addPage(new ProjectComparisonPage(this));
+		} catch (Exception e) {
+			log.error("Error adding page to " + getClass().getSimpleName(), e);
 		}
 	}
 

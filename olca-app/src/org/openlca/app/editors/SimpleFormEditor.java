@@ -13,7 +13,7 @@ public abstract class SimpleFormEditor extends FormEditor {
 	protected abstract FormPage getPage();
 
 	@Override
-	protected final void addPages() {
+	protected void addPages() {
 		try {
 			addPage(getPage());
 		} catch (Exception e) {

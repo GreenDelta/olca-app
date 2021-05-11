@@ -5,11 +5,9 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.rcp.images.Images;
-import org.openlca.app.results.ResultEditor;
+import org.openlca.app.editors.reports.ReportViewer;
 import org.openlca.app.results.comparison.display.Config;
 import org.openlca.app.results.comparison.display.ProductComparison;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 
 /**
@@ -17,21 +15,21 @@ import org.openlca.app.util.UI;
  */
 public class ProjectComparisonPage extends FormPage {
 
-	private final ResultEditor<?> editor;
+	private final ReportViewer report;
 
-	public ProjectComparisonPage(ResultEditor<?> editor) {
-		super(editor, "ProjectContributionComparison", "Project Contribution comparison");
-		this.editor = editor;
+	public ProjectComparisonPage(ReportViewer report) {
+		super(report, "ProjectContributionComparison", "Project Contribution comparison");
+		this.report = report;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, Labels.name(editor.setup.productSystem), Images.get(editor.result));
+		ScrolledForm form = UI.formHeader(mform, report.getReport().title, null);
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		var config = new Config(); // Comparison config
-		InfoSection.create(body, tk, editor.setup);
-		new ProductComparison(body, config, editor, tk).display();
+//		InfoSection.create(body, tk, editor.getReport());
+		new ProductComparison(body, config, null,report.getReport(), tk).display();
 		form.reflow(true);
 	}
 }
