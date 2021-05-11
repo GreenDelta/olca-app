@@ -85,17 +85,17 @@ public class ProjectResultEditor extends SimpleFormEditor {
 			var buttonComp = tk.createComposite(body);
 			UI.gridLayout(buttonComp, 2);
 			var excelBtn = tk.createButton(
-					buttonComp, M.ExcelExport, SWT.NONE);
+				buttonComp, M.ExcelExport, SWT.NONE);
 			excelBtn.setImage(Images.get(FileType.EXCEL));
 			UI.gridData(excelBtn, false, false).widthHint = 120;
 
 			// report button
 			var reportBtn = tk.createButton(
-					buttonComp, "Create Report", SWT.NONE);
+				buttonComp, "Create Report", SWT.NONE);
 			reportBtn.setImage(Images.get(ModelType.PROJECT));
 			UI.gridData(reportBtn, false, false).widthHint = 120;
 			Controls.onSelect(
-					reportBtn, $ -> ReportEditor.open(project, result));
+				reportBtn, $ -> ReportEditor.open(project, result));
 
 			ProjectVariantSection.of(result).renderOn(body, tk);
 			TotalImpactSection.of(result).renderOn(body, tk);
@@ -103,13 +103,15 @@ public class ProjectResultEditor extends SimpleFormEditor {
 			if (project.nwSet != null) {
 				var nwFactors = NwSetTable.of(Database.get(), project.nwSet);
 				if (nwFactors.hasNormalization()) {
-					NwSection.forNormalization(nwFactors, result).renderOn(body, tk);
+					NwSection.forNormalization(result, nwFactors).renderOn(body, tk);
 				}
 				if (nwFactors.hasWeighting()) {
-					NwSection.forWeighting(nwFactors, result)
+					NwSection.forWeighting(result, nwFactors)
 						.withUnit(project.nwSet.weightedScoreUnit)
 						.renderOn(body, tk);
-					// TODO: single score results
+					SingleScoreSection.of(result, nwFactors)
+						.withUnit(project.nwSet.weightedScoreUnit)
+						.renderOn(body, tk);
 				}
 			}
 		}

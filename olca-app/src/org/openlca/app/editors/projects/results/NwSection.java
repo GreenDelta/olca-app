@@ -36,7 +36,7 @@ class NwSection extends LabelProvider implements TableSection {
 	private String unit;
 	private ContributionImage image;
 
-	private NwSection(Type type, NwSetTable factors, ProjectResult result) {
+	private NwSection(Type type, ProjectResult result, NwSetTable factors) {
 		this.type = type;
 		this.factors = factors;
 		this.result = result;
@@ -50,12 +50,12 @@ class NwSection extends LabelProvider implements TableSection {
 		this.absMax = _absMax;
 	}
 
-	static NwSection forNormalization(NwSetTable factors, ProjectResult result) {
-		return new NwSection(Type.NORMALIZATION, factors, result);
+	static NwSection forNormalization(ProjectResult result, NwSetTable factors) {
+		return new NwSection(Type.NORMALIZATION, result, factors);
 	}
 
-	static NwSection forWeighting(NwSetTable factors, ProjectResult result) {
-		return new NwSection(Type.WEIGHTING, factors, result);
+	static NwSection forWeighting(ProjectResult result, NwSetTable factors) {
+		return new NwSection(Type.WEIGHTING, result, factors);
 	}
 
 	NwSection withUnit(String unit) {
@@ -85,7 +85,6 @@ class NwSection extends LabelProvider implements TableSection {
 
 		var table = Tables.createViewer(comp, columnTitles);
 		image = contributionImage(table);
-		table.getControl().addDisposeListener($ -> image.dispose());
 		Tables.bindColumnWidths(table, columnWidths);
 		table.setLabelProvider(this);
 		table.setInput(result.getImpacts());
