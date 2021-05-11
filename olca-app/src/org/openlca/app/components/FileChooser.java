@@ -61,33 +61,6 @@ public class FileChooser {
 	}
 
 	/**
-	 * Selects a file for an export. Returns null if the user cancelled the dialog.
-	 */
-	public static File forExport(String extension, String defaultName) {
-		return forExport(extension, defaultName, null);
-	}
-
-	/**
-	 * Selects a file for an export. Returns null if the user cancelled the dialog.
-	 * Optional defaultName sets the default file name for save dialogs. Flag
-	 * indicates if a file or a directory dialog should be used.
-	 */
-	public static File forExport(String extension, String defaultName,
-															 String filterPath) {
-		var path = openFileDialog(extension, defaultName, filterPath, SWT.SAVE);
-		if (path == null)
-			return null;
-		var file = new File(path);
-		if (file.exists()) {
-			boolean write = MessageDialog.openQuestion(
-				UI.shell(), M.FileAlreadyExists, M.OverwriteFileQuestion);
-			if (!write)
-				return null;
-		}
-		return file;
-	}
-
-	/**
 	 * Opens a file dialog to save a file for saving. We ask the user if the file
 	 * should be overwritten if it already exists. The file extension is
 	 * determined from the given default name.
@@ -105,7 +78,7 @@ public class FileChooser {
 			var parts = defaultName.split("\\.");
 			if (parts.length > 1) {
 				dialog.setFilterExtensions(
-					new String[]{parts[parts.length - 1]});
+					new String[]{"*." + parts[parts.length - 1]});
 			}
 		}
 		var path = dialog.open();

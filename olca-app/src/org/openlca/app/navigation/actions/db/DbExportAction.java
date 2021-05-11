@@ -66,7 +66,8 @@ public class DbExportAction extends Action implements INavigationAction {
 				: element.getContent();
 		if (config == null)
 			return;
-		File file = FileChooser.forExport("*.zolca", config.getName() + ".zolca");
+		var file = FileChooser.forSavingFile(
+				M.Export, config.getName() + ".zolca");
 		if (file == null)
 			return;
 		run(config, file, Database.isActive(config));

@@ -46,7 +46,7 @@ public class ExportFlowMapAction extends Action implements INavigationAction {
 		var proposal = name.endsWith(".csv")
 			? name
 			: name + ".csv";
-		var target = FileChooser.forExport("*.csv", proposal);
+		var target = FileChooser.forSavingFile(M.Export, proposal);
 		if (target == null)
 			return;
 

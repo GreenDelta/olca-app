@@ -23,7 +23,6 @@ public class FileSelection implements SelectionListener {
 	private FormToolkit toolkit;
 	private Text text;
 	private String defaultFileName;
-	private String filter;
 	private File file;
 	private boolean selectDirectory;
 
@@ -51,10 +50,6 @@ public class FileSelection implements SelectionListener {
 
 	public void setDefaultFileName(String defaultFileName) {
 		this.defaultFileName = defaultFileName;
-	}
-
-	public void setFilter(String filter) {
-		this.filter = filter;
 	}
 
 	public File getFile() {
@@ -108,7 +103,7 @@ public class FileSelection implements SelectionListener {
 		if (selectDirectory) {
 			file = FileChooser.selectFolder();
 		} else {
-			file = FileChooser.forExport(filter, defaultFileName);
+			file = FileChooser.forSavingFile(M.Export, defaultFileName);
 		}
 		if (file != null)
 			text.setText(file.getAbsolutePath());

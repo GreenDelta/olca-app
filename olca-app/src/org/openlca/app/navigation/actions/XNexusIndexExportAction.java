@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.elements.DatabaseElement;
@@ -63,7 +64,7 @@ class XNexusIndexExportAction extends Action implements INavigationAction {
 			return;
 		}
 		String defaultName = db.getName() + "_nexus_index.json";
-		File file = FileChooser.forExport("*.json", defaultName);
+		File file = FileChooser.forSavingFile(M.Export, defaultName);
 		if (file == null)
 			return;
 		App.run("Export Nexus index", new Runner(file, db));

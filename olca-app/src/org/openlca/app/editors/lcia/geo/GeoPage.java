@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
@@ -107,12 +108,9 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		var path = fileText.getText();
 		if (Strings.notEmpty(path) && path.endsWith(".json")) {
 			var temp = new File(path);
-			file = FileChooser.forExport(
-				"*.json",
-				temp.getName(),
-				temp.getParentFile().getAbsolutePath());
+			file = FileChooser.forSavingFile(M.Export, temp.getName());
 		} else {
-			file = FileChooser.forExport("*.json", "setup.json");
+			file = FileChooser.forSavingFile(M.Export, "setup.json");
 		}
 
 		if (file == null)

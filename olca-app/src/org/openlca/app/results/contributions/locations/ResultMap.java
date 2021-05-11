@@ -1,6 +1,5 @@
 package org.openlca.app.results.contributions.locations;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -152,8 +151,7 @@ class ResultMap {
 					"The map does not contain result data.");
 			return;
 		}
-		File file = FileChooser.forExport(
-				"*.geojson", "result.geojson");
+		var file = FileChooser.forSavingFile(M.Export, "result.geojson");
 		if (file == null)
 			return;
 		try {

@@ -166,12 +166,9 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	private void selectTarget(Text text) {
-		String dir = Preferences.get(Preferences.LAST_EXPORT_FOLDER);
-		if (targetIsDir)
-			exportDestination = FileChooser.selectFolder();
-		else
-			exportDestination = FileChooser.forExport("*." + fileExtension,
-					defaultName(), dir);
+		exportDestination = targetIsDir
+				? FileChooser.selectFolder()
+				: FileChooser.forSavingFile(M.Export, defaultName());
 		if (exportDestination == null)
 			return;
 		String path = exportDestination.getAbsolutePath();

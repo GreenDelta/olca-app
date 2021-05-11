@@ -1,7 +1,5 @@
 package org.openlca.app.results.simulation;
 
-import java.io.File;
-
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.M;
@@ -32,12 +30,12 @@ class SimulationExportAction extends Action {
 
 	@Override
 	public void run() {
-		File file = FileChooser.forExport("*.xlsx", "simulation_result.xlsx");
+		var file = FileChooser.forSavingFile(M.Export, "simulation_result.xlsx");
 		if (file == null)
 			return;
 		App.run(M.ExportResultsToExcel, () -> {
 			try {
-				SimulationResultExport export = new SimulationResultExport(
+				var export = new SimulationResultExport(
 						setup, result, Cache.getEntityCache());
 				export.run(file);
 			} catch (Exception e) {

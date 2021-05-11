@@ -30,6 +30,7 @@ import org.openlca.io.xls.CsvMatrixExportConfig;
 /**
  * The dialog for exporting product systems as matrices.
  */
+@Deprecated
 class CsvExportShell extends Shell {
 
 	private final FormToolkit toolkit = new FormToolkit(Display.getDefault());
@@ -75,11 +76,9 @@ class CsvExportShell extends Shell {
 		techSelection = new FileSelection(fileGroup, toolkit,
 				M.TexchnologyMatrix);
 		techSelection.setDefaultFileName("technology_matrix.csv");
-		techSelection.setFilter("*.csv");
 		enviSelection = new FileSelection(fileGroup, toolkit,
 				M.InterventionMatrix);
 		enviSelection.setDefaultFileName("intervention_matrix.csv");
-		enviSelection.setFilter("*.csv");
 		createButtons(composite);
 	}
 

@@ -39,8 +39,8 @@ public class ExportLibraryAction extends Action implements INavigationAction {
 	public void run() {
 		if (library == null)
 			return;
-		var target = FileChooser.forExport(
-			"zip", library.id() + ".zip");
+		var target = FileChooser.forSavingFile(
+				M.Export, library.id() + ".zip");
 		if (target == null)
 			return;
 		try {
