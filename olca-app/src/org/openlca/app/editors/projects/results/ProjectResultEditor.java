@@ -106,7 +106,9 @@ public class ProjectResultEditor extends SimpleFormEditor {
 					NwSection.forNormalization(nwFactors, result).renderOn(body, tk);
 				}
 				if (nwFactors.hasWeighting()) {
-					NwSection.forWeighting(nwFactors, result).renderOn(body, tk);
+					NwSection.forWeighting(nwFactors, result)
+						.withUnit(project.nwSet.weightedScoreUnit)
+						.renderOn(body, tk);
 					// TODO: single score results
 				}
 			}

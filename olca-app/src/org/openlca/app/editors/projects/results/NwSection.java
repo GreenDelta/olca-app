@@ -11,6 +11,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.model.ModelType;
@@ -32,6 +33,7 @@ class NwSection extends LabelProvider implements ITableLabelProvider {
 	private final ProjectVariant[] variants;
 
 	private final double absMax;
+	private String unit;
 	private ContributionImage image;
 
 	private NwSection(Type type, NwSetTable factors, ProjectResult result) {
@@ -59,21 +61,30 @@ class NwSection extends LabelProvider implements ITableLabelProvider {
 		return new NwSection(Type.WEIGHTING, factors, result);
 	}
 
+	NwSection withUnit(String unit) {
+		this.unit = unit;
+		return this;
+	}
+
 	void renderOn(Composite body, FormToolkit tk) {
 		var title = type == Type.NORMALIZATION
 			? "Normalized results"
 			: "Weighted results";
-		var section = UI.section(body, tk, title);
+		var section = UI.section(body, tk,
+			title + (unit != null ? " [" + unit + "]" : ""));
 		var comp = UI.sectionClient(section, tk, 1);
 
 		var columnTitles = new String[variants.length + 1];
 		var columnWidths = new double[variants.length + 1];
+		var sortIndices = new int[variants.length];
 		columnTitles[0] = M.ImpactCategory;
 		columnWidths[0] = 0.25;
 		for (int i = 0; i < variants.length; i++) {
 			columnTitles[i + 1] = variants[i].name;
-			columnWidths[i + 1] = 0.7 / variants.length;
+			columnWidths[i + 1] = 0.745 / variants.length;
+			sortIndices[i] = i + 1;
 		}
+
 		var table = Tables.createViewer(comp, columnTitles);
 		image = new ContributionImage();
 		table.getControl().addDisposeListener($ -> image.dispose());
@@ -81,6 +92,8 @@ class NwSection extends LabelProvider implements ITableLabelProvider {
 		table.setLabelProvider(this);
 		table.setInput(result.getImpacts());
 		section.setExpanded(false);
+		Viewers.sortByLabels(table, this, 0);
+		Viewers.sortByDouble(table, this, sortIndices);
 	}
 
 	private double resultOf(ImpactDescriptor impact, ProjectVariant variant) {

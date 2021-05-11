@@ -17,6 +17,8 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProjectVariant;
@@ -46,17 +48,29 @@ class TotalImpactSection {
 		Actions.bind(section, Actions.create(
 			"Copy to clipboard", Icon.COPY.descriptor(), () -> {}));
 		var comp = UI.sectionClient(section, tk, 1);
+
+		// create the column headers
 		var columnHeaders = new String[variants.length + 2];
 		columnHeaders[0] = M.ImpactCategories;
 		columnHeaders[1] = M.Unit;
+		int[] sortIndices = new int[variants.length];
 		for (int i = 0; i < variants.length; i++) {
 			columnHeaders[i + 2] = variants[i].name;
+			sortIndices[i] = i + 2;
 		}
+
+		// configure the table
 		var table = Tables.createViewer(comp, columnHeaders);
-		table.setLabelProvider(new TableLabel());
+		var label = new TableLabel();
+		table.setLabelProvider(label);
+		Viewers.sortByLabels(table, label, 0, 2);
+		Viewers.sortByDouble(table, label, sortIndices);
 		Tables.bindColumnWidths(table, columnWidths());
+
+		// set the table input
 		table.setInput(result.getImpacts()
 			.stream()
+			.sorted((i1, i2) -> Strings.compare(i1.name, i2.name))
 			.map(Row::new)
 			.collect(Collectors.toList()));
 	}

@@ -12,6 +12,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProjectVariant;
@@ -44,7 +45,10 @@ class ProjectVariantSection {
 			M.AllocationMethod,
 			M.Amount,
 			M.Unit);
-		table.setLabelProvider(new TableLabel());
+		var label = new TableLabel();
+		table.setLabelProvider(label);
+		Viewers.sortByLabels(table, label, 0, 1, 2, 4);
+		Viewers.sortByDouble(table, label, 3);
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 		table.setInput(variants);
 	}

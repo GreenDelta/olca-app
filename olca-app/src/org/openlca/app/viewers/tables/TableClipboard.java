@@ -3,7 +3,6 @@ package org.openlca.app.viewers.tables;
 import java.util.function.Consumer;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -55,7 +54,7 @@ public final class TableClipboard {
 				copy(table, converter);
 			}
 		});
-		ImageDescriptor image = Icon.COPY.descriptor();
+		var image = Icon.COPY.descriptor();
 		return Actions.create(M.Copy, image, () -> copy(table, converter));
 	}
 
@@ -66,7 +65,7 @@ public final class TableClipboard {
 				paste(table, fn);
 			}
 		});
-		ImageDescriptor image = Icon.PASTE.descriptor();
+		var image = Icon.PASTE.descriptor();
 		return Actions.create(M.Paste, image, () -> paste(table, fn));
 	}
 
