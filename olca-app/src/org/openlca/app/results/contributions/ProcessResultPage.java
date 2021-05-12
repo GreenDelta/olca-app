@@ -34,7 +34,7 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.index.IndexFlow;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -124,7 +124,7 @@ public class ProcessResultPage extends FormPage {
 		boolean input = table == inputTable;
 		List<IndexFlow> list = new ArrayList<>();
 		for (IndexFlow f : result.getFlows()) {
-			if (f.isInput == input)
+			if (f.isInput() == input)
 				list.add(f);
 		}
 		table.setInput(list);
@@ -270,7 +270,7 @@ public class ProcessResultPage extends FormPage {
 				return Numbers.percent(
 						flowResult.getUpstreamContribution(flow));
 			case 1:
-				return getFlowLabel(flow.flow);
+				return getFlowLabel(flow.flow());
 			case 2:
 				return Numbers.format(flowResult.getUpstreamTotal(flow));
 			case 3:
@@ -353,7 +353,7 @@ public class ProcessResultPage extends FormPage {
 		private CategorizedDescriptor process;
 
 		public ResultProvider(FullResult result) {
-			this.process = result.techIndex().getRefFlow().process;
+			this.process = result.techIndex().getRefFlow().process();
 			this.result = result;
 		}
 

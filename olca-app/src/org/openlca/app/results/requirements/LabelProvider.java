@@ -126,9 +126,9 @@ class LabelProvider extends DQLabelProvider {
 		if (item == null)
 			return null;
 		if (item.isProvider())
-			return item.asProvider().product.flow;
+			return item.asProvider().product.flow();
 		if (item.isChild())
-			return item.asChild().parent.product.flow;
+			return item.asChild().parent.product.flow();
 		return null;
 	}
 

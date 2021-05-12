@@ -13,7 +13,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.EntityCache;
-import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.index.IndexFlow;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.LocationDescriptor;
@@ -81,7 +81,7 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 				return null;
 			IndexFlow f = (IndexFlow) obj;
 			if (col == 0)
-				return Images.get(f.flow);
+				return Images.get(f.flow());
 			if (col == 2)
 				return Images.get(ModelType.LOCATION);
 			return null;
@@ -92,7 +92,7 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 			if (!(obj instanceof IndexFlow))
 				return null;
 			IndexFlow f = (IndexFlow) obj;
-			if (f.flow == null)
+			if (f.flow() == null)
 				return null;
 
 			EntityCache cache = Cache.getEntityCache();
@@ -100,33 +100,33 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 
 			case 0:
 				// name
-				return Labels.name(f.flow);
+				return Labels.name(f.flow());
 
 			case 1:
 				// category
-				if (f.flow.category == null)
+				if (f.flow().category == null)
 					return null;
-				Category c = cache.get(Category.class, f.flow.category);
+				Category c = cache.get(Category.class, f.flow().category);
 				return CategoryPath.getFull(c);
 
 			case 2:
 				// location
-				if (f.location == null)
+				if (f.location() == null)
 					return null;
-				var loc = cache.get(LocationDescriptor.class, f.location.id);
+				var loc = cache.get(LocationDescriptor.class, f.location().id);
 				return loc != null ? loc.code : null;
 
 			case 3:
 				// full display label
-				String s = f.flow.name;
-				if (f.flow.category != null) {
-					c = cache.get(Category.class, f.flow.category);
+				String s = f.flow().name;
+				if (f.flow().category != null) {
+					c = cache.get(Category.class, f.flow().category);
 					if (c != null) {
 						s += " - " + CategoryPath.getShort(c);
 					}
 				}
-				if (f.location != null) {
-					loc = cache.get(LocationDescriptor.class, f.location.id);
+				if (f.location() != null) {
+					loc = cache.get(LocationDescriptor.class, f.location().id);
 					if (loc != null) {
 						s += " - " + loc.code;
 					}

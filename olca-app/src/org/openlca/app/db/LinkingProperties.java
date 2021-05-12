@@ -6,9 +6,9 @@ import java.util.Set;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
-import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.matrix.cache.FlowTable;
 import org.openlca.core.matrix.cache.ProcessTable;
+import org.openlca.core.matrix.index.ProcessProduct;
 import org.openlca.core.model.FlowType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

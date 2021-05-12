@@ -20,7 +20,7 @@ import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.index.ProcessProduct;
 import org.openlca.core.results.ContributionResult;
 
 /**
@@ -117,7 +117,7 @@ public class TotalRequirementsSection {
 				product = item.asChild().product;
 			}
 			if (product != null) {
-				App.open(product.process);
+				App.open(product.process());
 			}
 		});
 		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree));

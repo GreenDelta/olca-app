@@ -36,16 +36,16 @@ import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.ReferenceAmount;
-import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.matrix.ImpactBuilder;
-import org.openlca.core.matrix.ImpactIndex;
-import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.matrix.MatrixData;
 import org.openlca.core.matrix.ParameterTable;
-import org.openlca.core.matrix.ProcessProduct;
-import org.openlca.core.matrix.TechIndex;
 import org.openlca.core.matrix.format.JavaMatrix;
 import org.openlca.core.matrix.format.MatrixBuilder;
+import org.openlca.core.matrix.index.FlowIndex;
+import org.openlca.core.matrix.index.ImpactIndex;
+import org.openlca.core.matrix.index.IndexFlow;
+import org.openlca.core.matrix.index.ProcessProduct;
+import org.openlca.core.matrix.index.TechIndex;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
@@ -113,7 +113,7 @@ class ImpactPage extends ModelPage<Process> {
 			if (c == null)
 				return;
 			if (c.item instanceof IndexFlow) {
-				App.open(((IndexFlow) c.item).flow);
+				App.open(((IndexFlow) c.item).flow());
 			}
 			if (c.item instanceof ImpactDescriptor) {
 				App.open((ImpactDescriptor) c.item);

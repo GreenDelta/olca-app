@@ -73,10 +73,10 @@ class SearchFilter extends ViewerFilter {
 		Predicate<ProviderItem> match = item -> {
 			if (item.product == null)
 				return false;
-			var processName = Labels.name(item.product.process);
+			var processName = Labels.name(item.product.process());
 			if (matches(processName, query))
 				return true;
-			var flowName = Labels.name(item.product.flow);
+			var flowName = Labels.name(item.product.flow());
 			return matches(flowName, query);
 		};
 

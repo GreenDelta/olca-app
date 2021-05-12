@@ -32,7 +32,7 @@ import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
 import org.openlca.app.results.analysis.sankey.model.SankeyEditPartFactory;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.index.ProcessProduct;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.Sankey;
@@ -149,14 +149,14 @@ public class SankeyDiagram extends GraphicalEditor {
 			initial = result.getFlows()
 					.stream()
 					.min((f1, f2) -> {
-						if (f1.flow == null || f2.flow == null)
+						if (f1.flow() == null || f2.flow() == null)
 							return 0;
-						return Strings.compare(f1.flow.name, f2.flow.name);
+						return Strings.compare(f1.flow().name, f2.flow().name);
 					})
 					.orElse(null);
 		}
 		// TODO costs...
-		if (initial == null) 
+		if (initial == null)
 			return;
 		update(initial, cutoff, maxCount);
 	}
@@ -191,7 +191,7 @@ public class SankeyDiagram extends GraphicalEditor {
 						.withMaximumNodeCount(maxCount)
 						.build(),
 				() -> {
-					
+
 					node = new ProductSystemNode(productSystem, this);
 					updateModel();
 					getGraphicalViewer().deselectAll();

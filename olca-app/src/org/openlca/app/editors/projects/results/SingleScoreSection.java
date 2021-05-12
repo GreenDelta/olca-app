@@ -71,7 +71,11 @@ class SingleScoreSection extends LabelProvider implements TableSection {
 
 	@Override
 	public void renderOn(Composite body, FormToolkit tk) {
-		var section = UI.section(body, tk, "Single score results");
+		var title = "Single score results";
+		if (unit != null) {
+			title += " [" + unit + "]";
+		}
+		var section = UI.section(body, tk, title);
 		var comp = UI.sectionClient(section, tk, 1);
 		var table = Tables.createViewer(comp, M.Variant, "");
 		image = contributionImage(table);

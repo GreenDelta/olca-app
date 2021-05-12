@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.app.util.Labels;
-import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.index.ProcessProduct;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.results.ContributionResult;
 
@@ -79,15 +79,15 @@ class ProviderItem implements Item {
 	}
 
 	Long categoryID() {
-		return product == null || product.process == null
+		return product == null || product.process() == null
 			? null
-			: product.process.category;
+			: product.process().category;
 	}
 
 	boolean hasWasteFlow() {
 		return product != null
-			&& product.flow != null
-			&& product.flow.flowType == FlowType.WASTE_FLOW;
+			&& product.flow() != null
+			&& product.flow().flowType == FlowType.WASTE_FLOW;
 	}
 
 	@Override

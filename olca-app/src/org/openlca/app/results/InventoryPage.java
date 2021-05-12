@@ -32,7 +32,7 @@ import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.index.IndexFlow;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
@@ -78,7 +78,7 @@ public class InventoryPage extends FormPage {
 		List<IndexFlow> inFlows = new ArrayList<>();
 		List<IndexFlow> outFlows = new ArrayList<>();
 		result.getFlows().forEach(f -> {
-			if (f.isInput) {
+			if (f.isInput()) {
 				inFlows.add(f);
 			} else {
 				outFlows.add(f);
@@ -200,7 +200,7 @@ public class InventoryPage extends FormPage {
 		@Override
 		public Image getImage(Object obj, int col) {
 			if (col == 0 && obj instanceof IndexFlow)
-				return Images.get(((IndexFlow) obj).flow);
+				return Images.get(((IndexFlow) obj).flow());
 			if (!(obj instanceof FlowContribution))
 				return null;
 			FlowContribution c = (FlowContribution) obj;
@@ -221,9 +221,9 @@ public class InventoryPage extends FormPage {
 		}
 
 		private String getFlowColumnText(IndexFlow f, int col) {
-			if (f.flow == null)
+			if (f.flow() == null)
 				return null;
-			Pair<String, String> category = Labels.getCategory(f.flow);
+			Pair<String, String> category = Labels.getCategory(f.flow());
 			switch (col) {
 				case 0:
 					return Labels.name(f);

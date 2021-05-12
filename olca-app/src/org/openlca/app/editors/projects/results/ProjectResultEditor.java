@@ -114,6 +114,8 @@ public class ProjectResultEditor extends SimpleFormEditor {
 						.renderOn(body, tk);
 				}
 			}
+
+			ContributionSection.of(result).renderOn(body, tk);
 		}
 	}
 }

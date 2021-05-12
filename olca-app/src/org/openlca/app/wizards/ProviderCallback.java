@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.openlca.app.wizards.ProviderDialog.Options;
 import org.openlca.core.matrix.CalcExchange;
-import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.index.ProcessProduct;
 import org.openlca.core.matrix.linking.LinkingCallback;
 
 import gnu.trove.map.hash.TLongObjectHashMap;

@@ -19,7 +19,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.CalcExchange;
-import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.index.ProcessProduct;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -86,8 +86,7 @@ class ProviderDialog extends Dialog {
 		UI.gridData(combo, true, false).widthHint = 80;
 		String[] labels = new String[providers.size()];
 		for (int i = 0; i < labels.length; i++) {
-			labels[i] = Labels.name(
-					providers.get(i).process);
+			labels[i] = Labels.name(providers.get(i).process());
 		}
 		combo.setItems(labels);
 		combo.select(0);

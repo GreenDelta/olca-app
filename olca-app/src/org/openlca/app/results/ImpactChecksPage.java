@@ -28,7 +28,7 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.Trees;
-import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.index.IndexFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
@@ -84,7 +84,7 @@ public class ImpactChecksPage extends FormPage {
 				return;
 			if (c.item instanceof IndexFlow) {
 				IndexFlow f = (IndexFlow) c.item;
-				App.open(f.flow);
+				App.open(f.flow());
 			} else if (c.item instanceof ImpactDescriptor) {
 				App.open((ImpactDescriptor) c.item);
 			}
@@ -196,7 +196,7 @@ public class ImpactChecksPage extends FormPage {
 				case 0:
 					return Labels.name(flow);
 				case 1:
-					return Labels.category(flow.flow);
+					return Labels.category(flow.flow());
 				case 2:
 					String unit = Labels.refUnit(flow);
 					return Numbers.format(c.amount) + " " + unit;

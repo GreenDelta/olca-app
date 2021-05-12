@@ -30,7 +30,7 @@ public class ProcessFigure extends Figure {
 	Font boldFont;
 
 	public ProcessFigure(ProcessNode node) {
-		setToolTip(new Label(Labels.name(node.product.process)));
+		setToolTip(new Label(Labels.name(node.product.process())));
 		node.figure = this;
 		this.node = node;
 		setSize(WIDTH, HEIGHT);
@@ -69,7 +69,7 @@ public class ProcessFigure extends Figure {
 		g.setFont(boldFont);
 		Color black = g.getForegroundColor();
 		g.setForegroundColor(Colors.white());
-		String name = Strings.cut(Labels.name(node.product.process), 30);
+		String name = Strings.cut(Labels.name(node.product.process()), 30);
 		g.drawText(name, loc.x + 5, loc.y + 5);
 		g.setFont(normalFont);
 		g.drawText(M.DirectContribution + ":", loc.x + 5, loc.y + 35);

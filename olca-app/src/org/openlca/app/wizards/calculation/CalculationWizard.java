@@ -177,9 +177,9 @@ public class CalculationWizard extends Wizard {
 		// load the used flows
 		Set<Long> flowIDs = new HashSet<>();
 		flowIndex.each((i, f) -> {
-			if (f.flow == null)
+			if (f.flow() == null)
 				return;
-			flowIDs.add(f.flow.id);
+			flowIDs.add(f.flow().id);
 		});
 		Map<Long, Flow> flows = new FlowDao(db)
 			.getForIds(flowIDs).stream()
@@ -187,14 +187,14 @@ public class CalculationWizard extends Wizard {
 
 		// create the exchanges
 		flowIndex.each((i, f) -> {
-			if (f.flow == null)
+			if (f.flow() == null)
 				return;
-			Flow flow = flows.get(f.flow.id);
+			Flow flow = flows.get(f.flow().id);
 			if (flow == null)
 				return;
 			var e = Exchange.of(flow);
 			e.amount = r.getTotalFlowResult(f);
-			e.isInput = f.isInput;
+			e.isInput = f.isInput();
 			system.inventory.add(e);
 		});
 

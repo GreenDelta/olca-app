@@ -9,7 +9,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
-import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.index.IndexFlow;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.RootEntity;
@@ -56,7 +56,7 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 		if (c.item instanceof CategorizedEntity)
 			return Images.get((CategorizedEntity) c.item);
 		if (c.item instanceof IndexFlow)
-			return Images.get(((IndexFlow) c.item).flow);
+			return Images.get(((IndexFlow) c.item).flow());
 		return null;
 	}
 

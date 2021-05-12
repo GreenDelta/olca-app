@@ -9,8 +9,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
-import org.openlca.core.matrix.IndexFlow;
-import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.index.IndexFlow;
+import org.openlca.core.matrix.index.ProcessProduct;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -119,14 +119,14 @@ class UpstreamTreeExport implements Runnable {
 
 		if (ref instanceof IndexFlow) {
 			var iflow = (IndexFlow) ref;
-			if (iflow.flow == null
-					|| iflow.flow.name == null)
+			if (iflow.flow() == null
+					|| iflow.flow().name == null)
 				return "";
-			if (iflow.location == null
-					|| iflow.location.code == null)
-				return iflow.flow.name;
-			return iflow.flow.name + " - "
-					+ iflow.location.code;
+			if (iflow.location() == null
+					|| iflow.location().code == null)
+				return iflow.flow().name;
+			return iflow.flow().name + " - "
+					+ iflow.location().code;
 		}
 
 		return ref instanceof Descriptor
@@ -196,9 +196,9 @@ class UpstreamTreeExport implements Runnable {
 		maxColumn = Math.max(col, maxColumn);
 		var node = path.node;
 		if (node.provider == null
-				|| node.provider.process == null)
+				|| node.provider.process() == null)
 			return;
-		var label = Labels.name(node.provider.process);
+		var label = Labels.name(node.provider.process());
 		Excel.cell(sheet, row, col, label);
 	}
 

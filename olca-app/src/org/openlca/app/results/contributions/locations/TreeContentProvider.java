@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.openlca.app.util.CostResultDescriptor;
-import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.index.IndexFlow;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -123,7 +123,7 @@ class TreeContentProvider implements ITreeContentProvider {
 		// in a non-regionalized result
 		if (flowIndex.isRegionalized()) {
 			return result.techIndex().content().stream().map(p -> {
-				Contribution<?> c = Contribution.of(p.process);
+				Contribution<?> c = Contribution.of(p.process());
 				c.amount = result.getDirectFlowResult(p, iFlow);
 				c.computeShare(total);
 				return c;
@@ -169,13 +169,13 @@ class TreeContentProvider implements ITreeContentProvider {
 		// first collect all flows in that location
 		List<IndexFlow> flows = new ArrayList<>();
 		result.flowIndex().each((i, iFlow) -> {
-			if (loc == null && iFlow.location == null) {
+			if (loc == null && iFlow.location() == null) {
 				flows.add(iFlow);
 				return;
 			}
-			if (loc == null || iFlow.location == null)
+			if (loc == null || iFlow.location() == null)
 				return;
-			if (loc.id == iFlow.location.id) {
+			if (loc.id == iFlow.location().id) {
 				flows.add(iFlow);
 			}
 		});
@@ -191,9 +191,9 @@ class TreeContentProvider implements ITreeContentProvider {
 	private List<ProcessDescriptor> processes(Location loc) {
 		List<ProcessDescriptor> list = new ArrayList<>();
 		result.techIndex().each((i, product) -> {
-			if (!(product.process instanceof ProcessDescriptor))
+			if (!(product.process() instanceof ProcessDescriptor))
 				return;
-			ProcessDescriptor process = (ProcessDescriptor) product.process;
+			var process = (ProcessDescriptor) product.process();
 			if (loc == null && process.location == null) {
 				list.add(process);
 				return;

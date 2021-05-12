@@ -31,7 +31,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.math.Simulator;
-import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.index.ProcessProduct;
 import org.openlca.util.Strings;
 
 /**
@@ -82,7 +82,7 @@ class PinBoard {
 			ProcessProduct pp = Viewers.getFirstSelected(table);
 			if (pp == null)
 				return;
-			App.open(pp.process);
+			App.open(pp.process());
 		});
 		Tables.onDoubleClick(table, e -> open.run());
 
@@ -180,16 +180,14 @@ class PinBoard {
 			}
 
 			// process name matches
-			String s = Labels.name(
-					pp.process).toLowerCase(Locale.US);
+			var s = Labels.name(pp.process()).toLowerCase(Locale.US);
 			if (s.contains(f)) {
 				input.add(pp);
 				continue;
 			}
 
 			// product name matches
-			s = Labels.name(
-					pp.flow).toLowerCase(Locale.US);
+			s = Labels.name(pp.flow()).toLowerCase(Locale.US);
 			if (s.contains(f)) {
 				input.add(pp);
 				continue;
@@ -205,8 +203,8 @@ class PinBoard {
 				return -1;
 			if (!pinned1 && pinned2)
 				return 1;
-			String s1 = Labels.name(pp1.process);
-			String s2 = Labels.name(pp2.process);
+			String s1 = Labels.name(pp1.process());
+			String s2 = Labels.name(pp2.process());
 			return Strings.compare(s1, s2);
 		});
 
@@ -238,9 +236,9 @@ class PinBoard {
 						? Icon.CHECK_TRUE.get()
 						: Icon.CHECK_FALSE.get();
 			case 1:
-				return Images.get(pp.process);
+				return Images.get(pp.process());
 			case 2:
-				return Images.get(pp.flow);
+				return Images.get(pp.flow());
 			case 3:
 				boolean isResult = Objects.equals(pp, resultPin);
 				return isResult
@@ -255,11 +253,11 @@ class PinBoard {
 		public String getColumnText(Object obj, int col) {
 			if (!(obj instanceof ProcessProduct))
 				return null;
-			ProcessProduct pp = (ProcessProduct) obj;
+			var pp = (ProcessProduct) obj;
 			if (col == 1)
-				return Labels.name(pp.process);
+				return Labels.name(pp.process());
 			else if (col == 2)
-				return Labels.name(pp.flow);
+				return Labels.name(pp.flow());
 			return null;
 		}
 	}

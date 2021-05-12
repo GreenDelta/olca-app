@@ -14,6 +14,10 @@ class ContributionSection extends LabelProvider implements TableSection {
 		this.result = result;
 	}
 
+	static ContributionSection of(ProjectResult result) {
+		return new ContributionSection(result);
+	}
+
 	@Override
 	public void renderOn(Composite body, FormToolkit tk) {
 	}

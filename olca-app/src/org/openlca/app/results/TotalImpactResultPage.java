@@ -35,7 +35,7 @@ import org.openlca.app.viewers.trees.TreeClipboard.ClipboardLabelProvider;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.index.IndexFlow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -134,7 +134,7 @@ public class TotalImpactResultPage extends FormPage {
 		if (item == null)
 			return;
 		if (item.flow != null) {
-			App.open(item.flow.flow);
+			App.open(item.flow.flow());
 		} else if (item.process != null) {
 			App.open(item.process);
 		} else if (item.impact != null) {

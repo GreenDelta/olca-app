@@ -10,8 +10,8 @@ import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.NAHandling;
-import org.openlca.core.matrix.IndexFlow;
-import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.index.IndexFlow;
+import org.openlca.core.matrix.index.ProcessProduct;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.CategorizedEntity;
@@ -91,19 +91,19 @@ public class Labels {
 		// in future versions we could also return
 		// process-flow pairs here. though this could
 		// result in very long display names.
-		return product == null || product.process == null
+		return product == null
 			? ""
-			: name(product.process);
+			: name(product.process());
 	}
 
 	public static String name(IndexFlow flow) {
-		if (flow == null || flow.flow == null)
+		if (flow == null || flow.flow() == null)
 			return "";
-		if (flow.flow.flowType != FlowType.ELEMENTARY_FLOW)
-			return Labels.name(flow.flow);
-		String name = flow.flow.name;
-		if (flow.location != null) {
-			name += " - " + flow.location.code;
+		if (flow.flow().flowType != FlowType.ELEMENTARY_FLOW)
+			return Labels.name(flow.flow());
+		String name = flow.flow().name;
+		if (flow.location() != null) {
+			name += " - " + flow.location().code;
 		}
 		return name;
 	}
@@ -111,7 +111,7 @@ public class Labels {
 	public static String refUnit(IndexFlow flow) {
 		if (flow == null)
 			return "";
-		return refUnit(flow.flow);
+		return refUnit(flow.flow());
 	}
 
 	public static String refUnit(FlowDescriptor flow) {
@@ -132,9 +132,9 @@ public class Labels {
 	}
 
 	public static String category(IndexFlow flow) {
-		if (flow == null || flow.flow == null)
+		if (flow == null || flow.flow() == null)
 			return "";
-		return category(flow.flow);
+		return category(flow.flow());
 	}
 
 	public static String category(CategorizedEntity e) {
