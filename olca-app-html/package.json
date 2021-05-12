@@ -24,7 +24,7 @@
   "dependencies": {
     "@types/ol": "^5.3.5",
     "chart.js": "^2.9.4",
-    "codemirror": "^5.48.4",
+    "codemirror": "^5.58.2",
     "heatmap.js": "^2.0.5",
     "jquery": "^3.5.0",
     "leaflet": "^1.5.1",
