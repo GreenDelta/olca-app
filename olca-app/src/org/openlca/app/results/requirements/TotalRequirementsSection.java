@@ -20,7 +20,7 @@ import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.index.ProcessProduct;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.results.ContributionResult;
 
 /**
@@ -110,7 +110,7 @@ public class TotalRequirementsSection {
 			Item item = Viewers.getFirstSelected(tree);
 			if (item == null)
 				return;
-			ProcessProduct product = null;
+			TechFlow product = null;
 			if (item.isProvider()) {
 				product = item.asProvider().product;
 			} else if (item.isChild()) {

@@ -12,7 +12,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.results.analysis.sankey.model.ProcessFigure;
 import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
-import org.openlca.core.matrix.index.ProcessProduct;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.results.Sankey;
 
 public class TreeLayout {
@@ -20,7 +20,7 @@ public class TreeLayout {
 	/**
 	 * XY location in grid -> process key
 	 */
-	private final Map<Point, ProcessProduct> locations = new HashMap<>();
+	private final Map<Point, TechFlow> locations = new HashMap<>();
 
 	public void layout(ProductSystemNode systemNode) {
 		prepare(systemNode);
@@ -29,7 +29,7 @@ public class TreeLayout {
 		if (sankey.root == null)
 			return;
 
-		var nodeMap = new HashMap<ProcessProduct, TreeNode>();
+		var nodeMap = new HashMap<TechFlow, TreeNode>();
 		Function<Sankey.Node, TreeNode> mapFn = sankeyNode -> {
 			return nodeMap.computeIfAbsent(sankeyNode.product, product -> {
 				var processNode = editor.createdNodes.get(product);
@@ -42,8 +42,8 @@ public class TreeLayout {
 		if (root == null)
 			return;
 
-		var expanded = new HashSet<ProcessProduct>();
-		var added = new HashSet<ProcessProduct>();
+		var expanded = new HashSet<TechFlow>();
+		var added = new HashSet<TechFlow>();
 		sankey.traverse(n -> {
 			if (expanded.contains(n.product))
 				return;
@@ -83,7 +83,7 @@ public class TreeLayout {
 				maximumY = Math.max(maximumY, p.y);
 			}
 
-			Map<ProcessProduct, ProcessFigure> figures = new HashMap<>();
+			Map<TechFlow, ProcessFigure> figures = new HashMap<>();
 			for (var n : systemNode.processNodes) {
 				ProcessFigure figure = n.figure;
 				figures.put(figure.node.product, figure);

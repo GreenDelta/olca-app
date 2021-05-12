@@ -32,7 +32,7 @@ import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.index.IndexFlow;
+import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
@@ -75,8 +75,8 @@ public class InventoryPage extends FormPage {
 	}
 
 	private void fillTrees(TreeViewer inputTree, TreeViewer outputTree) {
-		List<IndexFlow> inFlows = new ArrayList<>();
-		List<IndexFlow> outFlows = new ArrayList<>();
+		List<EnviFlow> inFlows = new ArrayList<>();
+		List<EnviFlow> outFlows = new ArrayList<>();
 		result.getFlows().forEach(f -> {
 			if (f.isInput()) {
 				inFlows.add(f);
@@ -151,9 +151,9 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public Object[] getChildren(Object e) {
-			if (!(e instanceof IndexFlow))
+			if (!(e instanceof EnviFlow))
 				return null;
-			IndexFlow flow = (IndexFlow) e;
+			var flow = (EnviFlow) e;
 			double cutoffValue = Math.abs(getAmount(flow) * this.cutoff);
 			return result.getProcessContributions(flow).stream()
 				.filter(i -> i.amount != 0)
@@ -172,7 +172,7 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public boolean hasChildren(Object e) {
-			return e instanceof IndexFlow;
+			return e instanceof EnviFlow;
 		}
 
 		@Override
@@ -199,8 +199,8 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public Image getImage(Object obj, int col) {
-			if (col == 0 && obj instanceof IndexFlow)
-				return Images.get(((IndexFlow) obj).flow());
+			if (col == 0 && obj instanceof EnviFlow)
+				return Images.get(((EnviFlow) obj).flow());
 			if (!(obj instanceof FlowContribution))
 				return null;
 			FlowContribution c = (FlowContribution) obj;
@@ -213,14 +213,14 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public String getText(Object obj, int col) {
-			if (obj instanceof IndexFlow)
-				return getFlowColumnText((IndexFlow) obj, col);
+			if (obj instanceof EnviFlow)
+				return getFlowColumnText((EnviFlow) obj, col);
 			if (obj instanceof FlowContribution)
 				return getProcessColumnText((FlowContribution) obj, col);
 			return null;
 		}
 
-		private String getFlowColumnText(IndexFlow f, int col) {
+		private String getFlowColumnText(EnviFlow f, int col) {
 			if (f.flow() == null)
 				return null;
 			Pair<String, String> category = Labels.getCategory(f.flow());
@@ -262,8 +262,8 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		protected int[] getQuality(Object obj) {
-			if (obj instanceof IndexFlow) {
-				IndexFlow f = (IndexFlow) obj;
+			if (obj instanceof EnviFlow) {
+				var f = (EnviFlow) obj;
 				return dqResult.get(f);
 			}
 			if (obj instanceof FlowContribution) {
@@ -275,8 +275,8 @@ public class InventoryPage extends FormPage {
 	}
 
 	private double getAmount(Object o) {
-		if (o instanceof IndexFlow) {
-			return result.getTotalFlowResult((IndexFlow) o);
+		if (o instanceof EnviFlow) {
+			return result.getTotalFlowResult((EnviFlow) o);
 		} else if (o instanceof FlowContribution) {
 			FlowContribution item = (FlowContribution) o;
 			return item.item.amount;
@@ -287,11 +287,11 @@ public class InventoryPage extends FormPage {
 	private static class FlowContribution {
 
 		final Contribution<CategorizedDescriptor> item;
-		final IndexFlow flow;
+		final EnviFlow flow;
 
 		private FlowContribution(
 			Contribution<CategorizedDescriptor> item,
-			IndexFlow flow) {
+			EnviFlow flow) {
 			this.item = item;
 			this.flow = flow;
 		}

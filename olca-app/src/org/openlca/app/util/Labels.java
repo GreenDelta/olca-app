@@ -10,8 +10,8 @@ import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.NAHandling;
-import org.openlca.core.matrix.index.IndexFlow;
-import org.openlca.core.matrix.index.ProcessProduct;
+import org.openlca.core.matrix.index.EnviFlow;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.CategorizedEntity;
@@ -86,7 +86,7 @@ public class Labels {
 		return text;
 	}
 
-	public static String of(ProcessProduct product) {
+	public static String of(TechFlow product) {
 		// currently we just return the process name but
 		// in future versions we could also return
 		// process-flow pairs here. though this could
@@ -96,7 +96,7 @@ public class Labels {
 			: name(product.process());
 	}
 
-	public static String name(IndexFlow flow) {
+	public static String name(EnviFlow flow) {
 		if (flow == null || flow.flow() == null)
 			return "";
 		if (flow.flow().flowType != FlowType.ELEMENTARY_FLOW)
@@ -108,7 +108,7 @@ public class Labels {
 		return name;
 	}
 
-	public static String refUnit(IndexFlow flow) {
+	public static String refUnit(EnviFlow flow) {
 		if (flow == null)
 			return "";
 		return refUnit(flow.flow());
@@ -131,7 +131,7 @@ public class Labels {
 		return unit.name;
 	}
 
-	public static String category(IndexFlow flow) {
+	public static String category(EnviFlow flow) {
 		if (flow == null || flow.flow() == null)
 			return "";
 		return category(flow.flow());

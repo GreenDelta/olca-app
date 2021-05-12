@@ -23,8 +23,7 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.Simulator;
-import org.openlca.core.matrix.index.IndexFlow;
-import org.openlca.core.matrix.index.ProcessProduct;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ProductSystem;
@@ -52,7 +51,7 @@ class SimulationPage extends FormPage {
 	private ImpactCategoryViewer impactViewer;
 
 	/** A pinned product which results should be displayed. */
-	private ProcessProduct resultPin;
+	private TechFlow resultPin;
 
 	public SimulationPage(SimulationEditor editor) {
 		super(editor, "SimulationPage", M.MonteCarloSimulation);
@@ -173,7 +172,7 @@ class SimulationPage extends FormPage {
 		if (result == null || statisticsCanvas == null)
 			return;
 		if (resultType == FLOW) {
-			IndexFlow flow = flowViewer.getSelected();
+			var flow = flowViewer.getSelected();
 			if (flow == null)
 				return;
 			double[] vals = resultPin != null

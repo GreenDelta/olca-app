@@ -16,7 +16,6 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.CostResultViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.matrix.index.IndexFlow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -48,7 +47,7 @@ class Combo {
 		Combo c = new Combo();
 		c.flows = new ArrayList<>();
 		TLongHashSet flowIDs = new TLongHashSet();
-		for (IndexFlow f : r.getFlows()) {
+		for (var f : r.getFlows()) {
 			if (f.flow() == null || flowIDs.contains(f.flow().id))
 				continue;
 			flowIDs.add(f.flow().id);

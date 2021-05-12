@@ -12,7 +12,7 @@ import org.openlca.app.components.ResultTypeCombo;
 import org.openlca.app.components.ResultTypeCombo.EventHandler;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.UI;
-import org.openlca.core.matrix.index.IndexFlow;
+import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.FullResult;
 
@@ -80,7 +80,7 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 	}
 
 	@Override
-	public void flowSelected(IndexFlow flow) {
+	public void flowSelected(EnviFlow flow) {
 		this.selection = flow;
 	}
 

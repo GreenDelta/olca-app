@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.openlca.app.wizards.ProviderDialog.Options;
 import org.openlca.core.matrix.CalcExchange;
-import org.openlca.core.matrix.index.ProcessProduct;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.matrix.linking.LinkingCallback;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -14,7 +14,7 @@ public class ProviderCallback implements LinkingCallback {
 
 	private boolean autoSelect = false;
 	private boolean cancel = false;
-	private final TLongObjectHashMap<ProcessProduct> savedSelections = new TLongObjectHashMap<>();
+	private final TLongObjectHashMap<TechFlow> savedSelections = new TLongObjectHashMap<>();
 
 	@Override
 	public boolean cancel() {
@@ -22,12 +22,12 @@ public class ProviderCallback implements LinkingCallback {
 	}
 
 	@Override
-	public List<ProcessProduct> select(CalcExchange e, List<ProcessProduct> candidates) {
+	public List<TechFlow> select(CalcExchange e, List<TechFlow> candidates) {
 		if (e == null || candidates == null)
 			return null;
 		if (autoSelect)
 			return candidates;
-		ProcessProduct saved = savedSelections.get(e.flowId);
+		var saved = savedSelections.get(e.flowId);
 		if (saved != null)
 			return Collections.singletonList(saved);
 		Options opts = ProviderDialog.select(e, candidates);

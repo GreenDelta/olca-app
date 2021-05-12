@@ -5,20 +5,20 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.app.util.Labels;
-import org.openlca.core.matrix.index.ProcessProduct;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.results.ContributionResult;
 
 class ProviderItem implements Item {
 
 	final int index;
-	final ProcessProduct product;
+	final TechFlow product;
 
 	double amount;
 	double costValue;
 	double costShare;
 
-	private ProviderItem(int index, ProcessProduct product) {
+	private ProviderItem(int index, TechFlow product) {
 		this.index = index;
 		this.product = product;
 

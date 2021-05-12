@@ -29,7 +29,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.matrix.index.IndexFlow;
+import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.UpstreamNode;
@@ -108,7 +108,7 @@ public class ContributionTreePage extends FormPage {
 	private class SelectionHandler implements EventHandler {
 
 		@Override
-		public void flowSelected(IndexFlow flow) {
+		public void flowSelected(EnviFlow flow) {
 			selection = flow;
 			UpstreamTree model = result.getTree(flow);
 			tree.setInput(model);
@@ -225,8 +225,8 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		private String getUnit() {
-			if (selection instanceof IndexFlow) {
-				var flow = (IndexFlow) selection;
+			if (selection instanceof EnviFlow) {
+				var flow = (EnviFlow) selection;
 				return Labels.refUnit(flow);
 			} else if (selection instanceof ImpactDescriptor) {
 				var impact = (ImpactDescriptor) selection;

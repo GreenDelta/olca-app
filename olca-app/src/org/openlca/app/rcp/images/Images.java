@@ -7,7 +7,7 @@ import org.openlca.app.navigation.elements.Group;
 import org.openlca.app.navigation.elements.GroupType;
 import org.openlca.app.util.FileType;
 import org.openlca.cloud.model.Comments;
-import org.openlca.core.matrix.index.IndexFlow;
+import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
@@ -25,7 +25,7 @@ import org.openlca.core.results.IResult;
 
 public class Images {
 
-	public static Image get(IndexFlow iflow) {
+	public static Image get(EnviFlow iflow) {
 		if (iflow == null)
 			return null;
 		return get(iflow.flow());

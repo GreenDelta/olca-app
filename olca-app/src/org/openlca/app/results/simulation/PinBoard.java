@@ -31,7 +31,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.math.Simulator;
-import org.openlca.core.matrix.index.ProcessProduct;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.util.Strings;
 
 /**
@@ -45,8 +45,8 @@ class PinBoard {
 
 	private Text filter;
 	private TableViewer table;
-	private ProcessProduct resultPin;
-	Consumer<ProcessProduct> onResultPinChange;
+	private TechFlow resultPin;
+	Consumer<TechFlow> onResultPinChange;
 
 	PinBoard(Simulator simulator) {
 		this.simulator = simulator;
@@ -79,7 +79,7 @@ class PinBoard {
 
 	private void bindActions() {
 		Action open = Actions.onOpen(() -> {
-			ProcessProduct pp = Viewers.getFirstSelected(table);
+			TechFlow pp = Viewers.getFirstSelected(table);
 			if (pp == null)
 				return;
 			App.open(pp.process());
@@ -88,7 +88,7 @@ class PinBoard {
 
 		Action pin = Actions.create(
 				"Pin / Unpin", Icon.CHECK_TRUE.descriptor(), () -> {
-					ProcessProduct pp = Viewers.getFirstSelected(table);
+					TechFlow pp = Viewers.getFirstSelected(table);
 					onPin(pp);
 				});
 
@@ -102,9 +102,9 @@ class PinBoard {
 				if (cell == null)
 					return;
 				Object data = cell.getItem().getData();
-				if (!(data instanceof ProcessProduct))
+				if (!(data instanceof TechFlow))
 					return;
-				ProcessProduct pp = (ProcessProduct) data;
+				var pp = (TechFlow) data;
 				if (cell.getColumnIndex() == 0) {
 					onPin(pp);
 				} else if (cell.getColumnIndex() == 3) {
@@ -116,7 +116,7 @@ class PinBoard {
 		Actions.bind(table, pin, open);
 	}
 
-	private void onPin(ProcessProduct pp) {
+	private void onPin(TechFlow pp) {
 		if (pp == null)
 			return;
 		boolean pinned = simulator.pinnedProducts.contains(pp);
@@ -134,7 +134,7 @@ class PinBoard {
 		table.setInput(selectInput());
 	}
 
-	private void onResultPin(ProcessProduct pp) {
+	private void onResultPin(TechFlow pp) {
 		if (pp == null)
 			return;
 		if (Objects.equals(pp, resultPin)) {
@@ -151,7 +151,7 @@ class PinBoard {
 		table.refresh();
 	}
 
-	private List<ProcessProduct> selectInput() {
+	private List<TechFlow> selectInput() {
 		// f is a possible text filter
 		String f = null;
 		if (filter != null) {
@@ -162,10 +162,10 @@ class PinBoard {
 		}
 
 		// apply possible text filter
-		var input = new ArrayList<ProcessProduct>();
+		var input = new ArrayList<TechFlow>();
 		var idx = simulator.getResult().techIndex();
 		for (int i = 0; i < idx.size(); i++) {
-			ProcessProduct pp = idx.at(i);
+			TechFlow pp = idx.at(i);
 
 			// pinned products are never filtered
 			if (simulator.pinnedProducts.contains(pp)) {
@@ -216,9 +216,9 @@ class PinBoard {
 
 		@Override
 		public Font getFont(Object obj) {
-			if (!(obj instanceof ProcessProduct))
+			if (!(obj instanceof TechFlow))
 				return null;
-			ProcessProduct pp = (ProcessProduct) obj;
+			var pp = (TechFlow) obj;
 			if (simulator.pinnedProducts.contains(pp))
 				return UI.boldFont();
 			return null;
@@ -226,21 +226,21 @@ class PinBoard {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof ProcessProduct))
+			if (!(obj instanceof TechFlow))
 				return null;
-			ProcessProduct pp = (ProcessProduct) obj;
+			var techFlow = (TechFlow) obj;
 			switch (col) {
 			case 0:
-				boolean pinned = simulator.pinnedProducts.contains(pp);
+				boolean pinned = simulator.pinnedProducts.contains(techFlow);
 				return pinned
 						? Icon.CHECK_TRUE.get()
 						: Icon.CHECK_FALSE.get();
 			case 1:
-				return Images.get(pp.process());
+				return Images.get(techFlow.process());
 			case 2:
-				return Images.get(pp.flow());
+				return Images.get(techFlow.flow());
 			case 3:
-				boolean isResult = Objects.equals(pp, resultPin);
+				boolean isResult = Objects.equals(techFlow, resultPin);
 				return isResult
 						? Icon.CHECK_TRUE.get()
 						: Icon.CHECK_FALSE.get();
@@ -251,13 +251,13 @@ class PinBoard {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ProcessProduct))
+			if (!(obj instanceof TechFlow))
 				return null;
-			var pp = (ProcessProduct) obj;
+			var techFlow = (TechFlow) obj;
 			if (col == 1)
-				return Labels.name(pp.process());
+				return Labels.name(techFlow.process());
 			else if (col == 2)
-				return Labels.name(pp.flow());
+				return Labels.name(techFlow.flow());
 			return null;
 		}
 	}

@@ -12,7 +12,7 @@ import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.CostResultViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.matrix.index.IndexFlow;
+import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.IResult;
@@ -25,7 +25,7 @@ import org.openlca.core.results.SimpleResult;
  */
 public class ResultTypeCombo {
 
-	private final Collection<IndexFlow> flows;
+	private final Collection<EnviFlow> flows;
 	private final Collection<ImpactDescriptor> impacts;
 	private final Collection<CostResultDescriptor> costs;
 	private final Object initialSelection;
@@ -75,9 +75,9 @@ public class ResultTypeCombo {
 		if (o == null)
 			return;
 		boolean[] selection = null;
-		if (o instanceof IndexFlow) {
+		if (o instanceof EnviFlow) {
 			selectedType = ModelType.FLOW;
-			flowCombo.select((IndexFlow) o);
+			flowCombo.select((EnviFlow) o);
 			selection = new boolean[]{true, false, false};
 		} else if (o instanceof ImpactDescriptor) {
 			selectedType = ModelType.IMPACT_CATEGORY;
@@ -159,7 +159,7 @@ public class ResultTypeCombo {
 		flowCombo.selectFirst();
 		flowCombo.addSelectionChangedListener(_e -> fireSelection());
 		if (enabled) {
-			flowCombo.select((IndexFlow) initialSelection);
+			flowCombo.select((EnviFlow) initialSelection);
 		}
 	}
 
@@ -230,7 +230,7 @@ public class ResultTypeCombo {
 	}
 
 	private ModelType getType(Object o) {
-		if (o instanceof IndexFlow)
+		if (o instanceof EnviFlow)
 			return ModelType.FLOW;
 		else if (o instanceof ImpactDescriptor)
 			return ModelType.IMPACT_CATEGORY;
@@ -242,7 +242,7 @@ public class ResultTypeCombo {
 
 	public interface EventHandler {
 
-		void flowSelected(IndexFlow flow);
+		void flowSelected(EnviFlow flow);
 
 		void impactCategorySelected(ImpactDescriptor impact);
 

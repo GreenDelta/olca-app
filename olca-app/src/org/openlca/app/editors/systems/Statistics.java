@@ -14,7 +14,6 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.matrix.cache.ProcessTable;
 import org.openlca.core.matrix.index.LongPair;
-import org.openlca.core.matrix.index.ProcessProduct;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
@@ -175,7 +174,7 @@ class Statistics {
 			if (defaultP == link.providerId) {
 				defaultProviderLinkCount++;
 			}
-			List<ProcessProduct> products = ptable.getProviders(link.flowId);
+			var products = ptable.getProviders(link.flowId);
 			if (products == null || products.isEmpty())
 				continue;
 			if (products.size() == 1) {

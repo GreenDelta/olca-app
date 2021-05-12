@@ -5,18 +5,18 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.app.util.Labels;
-import org.openlca.core.matrix.index.ProcessProduct;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.results.ContributionResult;
 
 class ChildItem implements Item {
 
 	final ProviderItem parent;
-	final ProcessProduct product;
+	final TechFlow product;
 
 	double amount;
 	double amountShare;
 
-	private ChildItem(ProviderItem parent, ProcessProduct product) {
+	private ChildItem(ProviderItem parent, TechFlow product) {
 		this.parent = parent;
 		this.product = product;
 	}

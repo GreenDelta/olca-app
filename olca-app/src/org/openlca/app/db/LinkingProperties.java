@@ -1,14 +1,12 @@
 package org.openlca.app.db;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.matrix.cache.FlowTable;
 import org.openlca.core.matrix.cache.ProcessTable;
-import org.openlca.core.matrix.index.ProcessProduct;
 import org.openlca.core.model.FlowType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,9 +74,9 @@ public class LinkingProperties {
 		}
 
 		void checkMultiProviders(LinkingProperties props) {
-			for (ProcessProduct products : processes.getProviders()) {
+			for (var products : processes.getProviders()) {
 				long flowID = products.flowId();
-				List<ProcessProduct> providers = processes.getProviders(flowID);
+				var providers = processes.getProviders(flowID);
 				if (providers != null && providers.size() > 1) {
 					props.multiProviderFlows.add(flowID);
 				}

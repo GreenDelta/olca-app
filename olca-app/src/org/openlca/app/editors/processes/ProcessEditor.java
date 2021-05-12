@@ -17,7 +17,7 @@ import org.openlca.app.editors.processes.exchanges.ProcessExchangePage;
 import org.openlca.app.editors.processes.social.SocialAspectsPage;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.MsgBox;
-import org.openlca.core.matrix.index.ProcessProduct;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.util.AllocationCleanup;
@@ -56,7 +56,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 				.orElse(null);
 			if (library != null) {
 				var exchanges = library.getExchanges(
-					ProcessProduct.of(p),
+					TechFlow.of(p),
 					Database.get());
 				var qref = p.quantitativeReference;
 				exchanges.stream()

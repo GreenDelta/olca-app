@@ -18,7 +18,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.matrix.index.IndexFlow;
+import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
@@ -39,7 +39,8 @@ class GroupResultSection {
 	private ImpactCategoryViewer impactViewer;
 	private GroupResultTable table;
 
-	public GroupResultSection(List<ProcessGrouping> groups, ContributionResult result) {
+	public GroupResultSection(
+			List<ProcessGrouping> groups, ContributionResult result) {
 		this.groups = groups;
 		this.result = result;
 	}
@@ -48,7 +49,7 @@ class GroupResultSection {
 		Object selection;
 		String unit;
 		if (resultType == FLOW) {
-			IndexFlow flow = flowViewer.getSelected();
+			EnviFlow flow = flowViewer.getSelected();
 			unit = Labels.refUnit(flow);
 			selection = flow;
 		} else {
@@ -69,8 +70,8 @@ class GroupResultSection {
 
 	private List<Contribution<ProcessGrouping>> calculate(Object o) {
 		GroupingContribution calc = new GroupingContribution(result, groups);
-		if (o instanceof IndexFlow)
-			return calc.calculate((IndexFlow) o);
+		if (o instanceof EnviFlow)
+			return calc.calculate((EnviFlow) o);
 		if (o instanceof ImpactDescriptor)
 			return calc.calculate((ImpactDescriptor) o);
 		return Collections.emptyList();
@@ -106,7 +107,7 @@ class GroupResultSection {
 		Button flowsCheck = toolkit.createButton(parent, M.Flows, SWT.RADIO);
 		flowsCheck.setSelection(true);
 		flowViewer = new ResultFlowCombo(parent);
-		List<IndexFlow> flows = result.getFlows();
+		var flows = result.getFlows();
 		flowViewer.setInput(flows);
 		flowViewer.addSelectionChangedListener(e -> update());
 		if (flows.size() > 0) {

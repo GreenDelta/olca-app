@@ -9,10 +9,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.swt.widgets.Tree;
 import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
-import org.openlca.core.matrix.index.ProcessProduct;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.results.Sankey;
 
 public class BlockLevelLayout {
@@ -22,7 +21,7 @@ public class BlockLevelLayout {
 		var sankey = systemNode.editor.sankey;
 		if (sankey.root == null)
 			return;
-		var nodeMap = new HashMap<ProcessProduct, Tree>();
+		var nodeMap = new HashMap<TechFlow, Tree>();
 		Function<Sankey.Node, Tree> mapFn = sankeyNode -> {
 			return nodeMap.computeIfAbsent(sankeyNode.product, product -> {
 				var processNode = editor.createdNodes.get(product);
@@ -35,8 +34,8 @@ public class BlockLevelLayout {
 		var root = mapFn.apply(sankey.root);
 		if (root == null)
 			return;
-		var expanded = new HashSet<ProcessProduct>();
-		var added = new HashSet<ProcessProduct>();
+		var expanded = new HashSet<TechFlow>();
+		var added = new HashSet<TechFlow>();
 		sankey.traverse(n -> {
 			if (expanded.contains(n.product))
 				return;

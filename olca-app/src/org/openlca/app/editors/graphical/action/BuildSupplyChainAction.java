@@ -14,7 +14,7 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.ProductSystemBuilder;
-import org.openlca.core.matrix.index.ProcessProduct;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.matrix.linking.LinkingConfig;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.ProcessType;
@@ -90,7 +90,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 			for (ProcessNode node : nodes) {
 				var dao = new ProcessDao(Database.get());
 				var p = dao.getForId(node.process.id);
-				builder.autoComplete(system, ProcessProduct.of(p));
+				builder.autoComplete(system, TechFlow.of(p));
 				system = ProductSystemBuilder.update(Database.get(), system);
 			}
 			GraphEditor editor = nodes.get(0).parent().editor;
