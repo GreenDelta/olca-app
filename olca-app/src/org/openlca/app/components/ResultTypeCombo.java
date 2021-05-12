@@ -42,15 +42,15 @@ public class ResultTypeCombo {
 		eventHandler = builder.eventHandler;
 
 		var result = builder.result;
-		this.flows = result.hasFlowResults()
+		this.flows = result.hasEnviFlows()
 			? result.getFlows()
 			: null;
-		this.impacts = result.hasImpactResults()
+		this.impacts = result.hasImpacts()
 			? result.getImpacts()
 			: null;
 
 		// cost results
-		if (!result.hasCostResults()) {
+		if (!result.hasCosts()) {
 			this.costs = null;
 		} else {
 			var sr = (SimpleResult) result;

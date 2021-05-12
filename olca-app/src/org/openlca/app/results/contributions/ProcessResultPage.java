@@ -101,7 +101,7 @@ public class ProcessResultPage extends FormPage {
 				Images.get(result));
 		Composite body = UI.formBody(form, toolkit);
 		createFlowSection(body);
-		if (result.hasImpactResults())
+		if (result.hasImpacts())
 			createImpactSection(body);
 		form.reflow(true);
 		setInputs();
@@ -110,10 +110,10 @@ public class ProcessResultPage extends FormPage {
 	private void setInputs() {
 		fillFlows(inputTable);
 		fillFlows(outputTable);
-		long refProcessId = result.techIndex().getRefFlow().processId();
+		long refProcessId = result.techFlowIndex().getRefFlow().processId();
 		ProcessDescriptor p = processes.get(refProcessId);
 		flowProcessViewer.select(p);
-		if (result.hasImpactResults()) {
+		if (result.hasImpacts()) {
 			impactProcessCombo.select(p);
 			impactTable.setInput(result.getImpacts());
 		}
@@ -352,7 +352,7 @@ public class ProcessResultPage extends FormPage {
 		private CategorizedDescriptor process;
 
 		public ResultProvider(FullResult result) {
-			this.process = result.techIndex().getRefFlow().process();
+			this.process = result.techFlowIndex().getRefFlow().process();
 			this.result = result;
 		}
 

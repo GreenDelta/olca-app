@@ -69,7 +69,7 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 		var spinner = new Spinner(inner, SWT.BORDER);
 		spinner.setIncrement(10);
 		spinner.setMinimum(1);
-		spinner.setMaximum(result.techIndex().size());
+		spinner.setMaximum(result.techFlowIndex().size());
 		spinner.setDigits(0);
 		spinner.setSelection(maxCount);
 		spinner.addModifyListener(e -> {

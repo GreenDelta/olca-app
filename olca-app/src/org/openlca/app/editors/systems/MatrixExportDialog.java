@@ -30,7 +30,7 @@ import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.MatrixData;
-import org.openlca.core.matrix.index.TechIndex;
+import org.openlca.core.matrix.index.TechFlowIndex;
 import org.openlca.core.matrix.io.MatrixExport;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ParameterRedefSet;
@@ -246,8 +246,8 @@ public class MatrixExportDialog extends FormDialog {
 
 		void exec() {
 			var techIndex = system == null
-				? TechIndex.of(db)
-				: TechIndex.of(system, db);
+				? TechFlowIndex.of(db)
+				: TechFlowIndex.of(system, db);
 			var config = MatrixData.of(db, techIndex)
 				.withAllocation(allocation)
 				.withCosts(withCosts)

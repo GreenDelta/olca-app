@@ -99,7 +99,7 @@ class GroupResultSection {
 		UI.gridData(composite, true, false);
 		UI.gridLayout(composite, 2);
 		createFlowViewer(toolkit, composite);
-		if (result.hasImpactResults())
+		if (result.hasImpacts())
 			createImpact(toolkit, composite);
 	}
 

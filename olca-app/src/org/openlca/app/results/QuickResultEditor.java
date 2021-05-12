@@ -45,15 +45,15 @@ public class QuickResultEditor extends ResultEditor<ContributionResult> {
 		try {
 			addPage(new InfoPage(this));
 			addPage(new InventoryPage(this));
-			if (result.hasImpactResults()) {
+			if (result.hasImpacts()) {
 				addPage(new TotalImpactResultPage(this));
 			}
-			if (result.hasImpactResults() && setup.nwSet != null) {
+			if (result.hasImpacts() && setup.nwSet != null) {
 				addPage(new NwResultPage(this, result, setup));
 			}
 			addPage(new LocationPage(this, result, setup));
 			addPage(new GroupPage(this, result, setup));
-			if (result.hasImpactResults()) {
+			if (result.hasImpacts()) {
 				addPage(new ImpactChecksPage(this));
 			}
 		} catch (Exception e) {

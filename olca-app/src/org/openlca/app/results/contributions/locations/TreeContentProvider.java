@@ -104,7 +104,7 @@ class TreeContentProvider implements ITreeContentProvider {
 			Location loc, FlowDescriptor flow) {
 
 		// get the matrix row => IndexFlow
-		var enviIndex = result.flowIndex();
+		var enviIndex = result.enviFlowIndex();
 		int idx = enviIndex.isRegionalized()
 				? enviIndex.of(flow.id, loc.id)
 				: enviIndex.of(flow.id);
@@ -122,15 +122,15 @@ class TreeContentProvider implements ITreeContentProvider {
 		// have another location which is not the case
 		// in a non-regionalized result
 		if (enviIndex.isRegionalized()) {
-			return result.techIndex().content().stream().map(p -> {
-				Contribution<?> c = Contribution.of(p.process());
+			return result.techFlowIndex().content().stream().map(p -> {
+				var c = Contribution.of(p.process());
 				c.amount = result.getDirectFlowResult(p, enviFlow);
 				c.computeShare(total);
 				return c;
 			});
 		} else {
 			return processes(loc).stream().map(p -> {
-				Contribution<?> c = Contribution.of(p);
+				var c = Contribution.of(p);
 				c.amount = result.getDirectFlowResult(p, enviFlow);
 				c.computeShare(total);
 				return c;
@@ -157,7 +157,7 @@ class TreeContentProvider implements ITreeContentProvider {
 			Location loc, ImpactDescriptor impact) {
 
 		double total = result.getTotalImpactResult(impact);
-		if (!result.flowIndex().isRegionalized()) {
+		if (!result.enviFlowIndex().isRegionalized()) {
 			return processes(loc).stream().map(p -> {
 				Contribution<?> c = Contribution.of(p);
 				c.amount = result.getDirectImpactResult(p, impact);
@@ -168,7 +168,7 @@ class TreeContentProvider implements ITreeContentProvider {
 
 		// first collect all flows in that location
 		var flows = new ArrayList<EnviFlow>();
-		for(var enviFlow : result.flowIndex()) {
+		for(var enviFlow : result.enviFlowIndex()) {
 			if (loc == null && enviFlow.location() == null) {
 				flows.add(enviFlow);
 				continue;
@@ -190,7 +190,7 @@ class TreeContentProvider implements ITreeContentProvider {
 
 	private List<ProcessDescriptor> processes(Location loc) {
 		List<ProcessDescriptor> list = new ArrayList<>();
-		result.techIndex().each((i, product) -> {
+		result.techFlowIndex().each((i, product) -> {
 			if (!(product.process() instanceof ProcessDescriptor))
 				return;
 			var process = (ProcessDescriptor) product.process();

@@ -20,7 +20,7 @@ public final class Sort {
 			return Strings.compare(name1, name2);
 		});
 
-		if (result.hasFlowResults()) {
+		if (result.hasEnviFlows()) {
 			result.getFlows().sort((f1, f2) -> {
 				String name1 = Labels.name(f1);
 				String name2 = Labels.name(f2);
@@ -28,7 +28,7 @@ public final class Sort {
 			});
 		}
 
-		if (result.hasImpactResults()) {
+		if (result.hasImpacts()) {
 			result.getImpacts().sort(
 					(i1, i2) -> Strings.compare(i1.name, i2.name));
 		}

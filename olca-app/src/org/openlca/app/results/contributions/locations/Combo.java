@@ -55,12 +55,12 @@ class Combo {
 		}
 
 		// add LCIA categories
-		if (r.hasImpactResults()) {
+		if (r.hasImpacts()) {
 			c.impacts = r.getImpacts();
 		}
 
 		// add cost / added value selection
-		if (r.hasCostResults() && (r instanceof SimpleResult)) {
+		if (r.hasCosts() && (r instanceof SimpleResult)) {
 			SimpleResult sr = (SimpleResult) r;
 			CostResultDescriptor d1 = new CostResultDescriptor();
 			d1.forAddedValue = false;

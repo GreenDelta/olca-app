@@ -315,7 +315,7 @@ public class TotalImpactResultPage extends FormPage {
 
 			} else {
 				double cutoffValue = Math.abs(parent.result() * cutoff);
-				result.flowIndex().each((i, f) -> {
+				result.enviFlowIndex().each((i, f) -> {
 					Item child = new Item(parent.impact, parent.process, f);
 					double result = child.result();
 					if (result == 0)

@@ -42,10 +42,10 @@ import org.openlca.core.matrix.ParameterTable;
 import org.openlca.core.matrix.format.JavaMatrix;
 import org.openlca.core.matrix.format.MatrixBuilder;
 import org.openlca.core.matrix.index.EnviFlow;
-import org.openlca.core.matrix.index.EnviIndex;
+import org.openlca.core.matrix.index.EnviFlowIndex;
 import org.openlca.core.matrix.index.ImpactIndex;
 import org.openlca.core.matrix.index.TechFlow;
-import org.openlca.core.matrix.index.TechIndex;
+import org.openlca.core.matrix.index.TechFlowIndex;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
@@ -144,8 +144,7 @@ class ImpactPage extends ModelPage<Process> {
 			});
 			return;
 		}
-		if (!result.hasFlowResults()
-				|| !result.hasImpactResults()) {
+		if (!result.hasEnviFlows() || !result.hasImpacts()) {
 			tree.setInput(Collections.emptyList());
 			return;
 		}
@@ -168,7 +167,7 @@ class ImpactPage extends ModelPage<Process> {
 
 		// create a virtual demand of 1.0
 		var refProduct = TechFlow.of(getModel());
-		data.techIndex = new TechIndex(refProduct);
+		data.techIndex = new TechFlowIndex(refProduct);
 		data.techIndex.setDemand(1.0);
 		data.techMatrix = JavaMatrix.of(
 				new double[][] { { 1.0 } });
@@ -192,8 +191,8 @@ class ImpactPage extends ModelPage<Process> {
 
 		// create the flow index and B matrix / vector
 		data.enviIndex = regionalized
-				? EnviIndex.createRegionalized()
-				: EnviIndex.create();
+				? EnviFlowIndex.createRegionalized()
+				: EnviFlowIndex.create();
 		var enviBuilder = new MatrixBuilder();
 		for (var e : elemFlows) {
 			var flow = Descriptor.of(e.flow);
@@ -300,7 +299,7 @@ class ImpactPage extends ModelPage<Process> {
 						? Images.get(ModelType.IMPACT_CATEGORY)
 						: Images.get(FlowType.ELEMENTARY_FLOW);
 			}
-			if (col == 3 && c.item instanceof EnviIndex)
+			if (col == 3 && c.item instanceof EnviFlow)
 				return img.getForTable(c.share);
 			return null;
 		}

@@ -25,16 +25,16 @@ class ProviderItem implements Item {
 	}
 
 	static List<ProviderItem> allOf(ContributionResult result, Costs costs) {
-		if (result == null || result.techIndex() == null)
+		if (result == null || result.techFlowIndex() == null)
 			return Collections.emptyList();
 
 		boolean withCosts = costs != null
 			&& costs != Costs.NONE
-			&& result.hasCostResults();
+			&& result.hasCosts();
 
 		// create the items
 		var items = new ArrayList<ProviderItem>();
-		result.techIndex().each((index, product) -> {
+		result.techFlowIndex().each((index, product) -> {
 
 			var item = new ProviderItem(index, product);
 			items.add(item);

@@ -168,15 +168,15 @@ public class CalculationWizard extends Wizard {
 		system.inventory.clear();
 		var db = Database.get();
 		var sysDao = new ProductSystemDao(db);
-		var flowIndex = r.flowIndex();
-		if (flowIndex == null || flowIndex.isEmpty()) {
+		var enviIndex = r.enviFlowIndex();
+		if (enviIndex == null || enviIndex.isEmpty()) {
 			sysDao.update(system);
 			return;
 		}
 
 		// load the used flows
 		Set<Long> flowIDs = new HashSet<>();
-		flowIndex.each((i, f) -> {
+		enviIndex.each((i, f) -> {
 			if (f.flow() == null)
 				return;
 			flowIDs.add(f.flow().id);
@@ -186,7 +186,7 @@ public class CalculationWizard extends Wizard {
 			.collect(Collectors.toMap(f -> f.id, f -> f));
 
 		// create the exchanges
-		flowIndex.each((i, f) -> {
+		enviIndex.each((i, f) -> {
 			if (f.flow() == null)
 				return;
 			Flow flow = flows.get(f.flow().id);

@@ -50,9 +50,9 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 		try {
 			addPage(new InfoPage(this));
 			addPage(new InventoryPage(this));
-			if (result.hasImpactResults())
+			if (result.hasImpacts())
 				addPage(new TotalImpactResultPage(this));
-			if (result.hasImpactResults() && setup.nwSet != null)
+			if (result.hasImpacts() && setup.nwSet != null)
 				addPage(new NwResultPage(this, result, setup));
 			addPage(new ProcessResultPage(this, result, setup));
 			addPage(new ContributionTreePage(this, result, setup));
@@ -61,10 +61,10 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 			diagram = new SankeyDiagram(result, dqResult, setup);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, M.SankeyDiagram);
-			if (result.hasImpactResults()) {
+			if (result.hasImpacts()) {
 				addPage(new ImpactChecksPage(this));
 			}
-			
+
 			// add a page listener to initialize the Sankey diagram
 			// lazily when it is activated the first time
 			var sankeyInit = new AtomicReference<IPageChangedListener>();
@@ -80,7 +80,7 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 			};
 			sankeyInit.set(fn);
 			addPageChangedListener(fn);
-			
+
 		} catch (final PartInitException e) {
 			var log = LoggerFactory.getLogger(getClass());
 			log.error("Add pages failed", e);

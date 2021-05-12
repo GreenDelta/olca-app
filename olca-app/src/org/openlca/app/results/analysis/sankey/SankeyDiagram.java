@@ -139,7 +139,7 @@ public class SankeyDiagram extends GraphicalEditor {
 		if (result == null)
 			return;
 		Object initial = null;
-		if (result.hasImpactResults()) {
+		if (result.hasImpacts()) {
 			initial = result.getImpacts()
 					.stream()
 					.min((i1, i2) -> Strings.compare(i1.name, i2.name))

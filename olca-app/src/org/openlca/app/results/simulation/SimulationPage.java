@@ -138,7 +138,7 @@ class SimulationPage extends FormPage {
 		Actions.bind(section, exportAction);
 		Composite comp = UI.sectionClient(section, tk);
 		initFlowCheckViewer(tk, comp);
-		if (result.hasImpactResults()) {
+		if (result.hasImpacts()) {
 			initImpactCheckViewer(tk, comp);
 		}
 		statisticsCanvas = new StatisticsCanvas(body);

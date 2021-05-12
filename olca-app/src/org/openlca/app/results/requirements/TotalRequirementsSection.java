@@ -36,7 +36,7 @@ public class TotalRequirementsSection {
 
 	public TotalRequirementsSection(ContributionResult result, DQResult dqResult) {
 		this.result = result;
-		costs = !result.hasCostResults()
+		costs = !result.hasCosts()
 			? Costs.NONE
 			: result.totalCosts >= 0
 			? Costs.NET_COSTS
