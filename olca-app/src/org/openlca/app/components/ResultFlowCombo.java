@@ -80,7 +80,7 @@ public class ResultFlowCombo extends AbstractComboViewer<EnviFlow> {
 			if (!(obj instanceof EnviFlow))
 				return null;
 			var enviFlow = (EnviFlow) obj;
-			if (col == 0)
+			if (col == 0 || col == 3)
 				return Images.get(enviFlow.flow());
 			if (col == 2)
 				return Images.get(ModelType.LOCATION);

@@ -29,7 +29,7 @@ public class ResultItemSelector {
 	private final Collection<ImpactDescriptor> impacts;
 	private final Collection<CostResultDescriptor> costs;
 	private final Object initialSelection;
-	private final EventHandler eventHandler;
+	private final SelectionHandler eventHandler;
 
 	private ModelType selectedType = ModelType.FLOW;
 
@@ -225,13 +225,13 @@ public class ResultItemSelector {
 			return;
 		switch (selectedType) {
 			case FLOW:
-				eventHandler.flowSelected(flowCombo.getSelected());
+				eventHandler.onFlowSelected(flowCombo.getSelected());
 				break;
 			case IMPACT_CATEGORY:
-				eventHandler.impactCategorySelected(impactCombo.getSelected());
+				eventHandler.onImpactSelected(impactCombo.getSelected());
 				break;
 			case CURRENCY:
-				eventHandler.costResultSelected(costCombo.getSelected());
+				eventHandler.onCostsSelected(costCombo.getSelected());
 				break;
 			default:
 				break;
@@ -249,13 +249,13 @@ public class ResultItemSelector {
 			return ModelType.UNKNOWN;
 	}
 
-	public interface EventHandler {
+	public interface SelectionHandler {
 
-		void flowSelected(EnviFlow flow);
+		void onFlowSelected(EnviFlow flow);
 
-		void impactCategorySelected(ImpactDescriptor impact);
+		void onImpactSelected(ImpactDescriptor impact);
 
-		void costResultSelected(CostResultDescriptor cost);
+		void onCostsSelected(CostResultDescriptor cost);
 
 	}
 
@@ -263,7 +263,7 @@ public class ResultItemSelector {
 
 		private final ResultItemView resultItems;
 		private Object initialSelection;
-		private EventHandler eventHandler;
+		private SelectionHandler eventHandler;
 
 		private Builder(ResultItemView indexView) {
 			this.resultItems = indexView;
@@ -274,7 +274,7 @@ public class ResultItemSelector {
 			return this;
 		}
 
-		public Builder withEventHandler(EventHandler handler) {
+		public Builder withSelectionHandler(SelectionHandler handler) {
 			this.eventHandler = handler;
 			return this;
 		}

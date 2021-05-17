@@ -8,14 +8,14 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.ResultItemSelector;
-import org.openlca.app.components.ResultItemSelector.EventHandler;
+import org.openlca.app.components.ResultItemSelector.SelectionHandler;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.ResultItemView;
 
-public class SankeySelectionDialog extends FormDialog implements EventHandler {
+public class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 
 	private final ResultItemView resultItems;
 	public double cutoff;
@@ -37,7 +37,7 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 		var body = UI.formBody(form, tk);
 		UI.gridLayout(body, 2);
 		ResultItemSelector.on(resultItems)
-				.withEventHandler(this)
+				.withSelectionHandler(this)
 				.withSelection(selection)
 				.create(body, tk);
 		createCutoffSpinner(tk, body);
@@ -79,17 +79,17 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 	}
 
 	@Override
-	public void flowSelected(EnviFlow flow) {
+	public void onFlowSelected(EnviFlow flow) {
 		this.selection = flow;
 	}
 
 	@Override
-	public void impactCategorySelected(ImpactDescriptor impact) {
+	public void onImpactSelected(ImpactDescriptor impact) {
 		this.selection = impact;
 	}
 
 	@Override
-	public void costResultSelected(CostResultDescriptor cost) {
+	public void onCostsSelected(CostResultDescriptor cost) {
 		this.selection = cost;
 	}
 

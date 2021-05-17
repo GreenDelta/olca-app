@@ -41,7 +41,7 @@ public final class Sort {
 		}
 	}
 
-	static void sort(ResultItemView items) {
+	public static void sort(ResultItemView items) {
 		if (items == null)
 			return;
 

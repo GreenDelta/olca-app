@@ -17,7 +17,6 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
-import org.openlca.app.components.ResultItemSelector.EventHandler;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.AnalyzeEditor;
 import org.openlca.app.util.Actions;
@@ -66,7 +65,7 @@ public class ContributionTreePage extends FormPage {
 		UI.gridLayout(comp, 2);
 		ResultItemSelector selector = ResultItemSelector
 				.on(resultItems)
-				.withEventHandler(new SelectionHandler())
+				.withSelectionHandler(new SelectionHandler())
 				.create(comp, tk);
 		Composite treeComp = tk.createComposite(body);
 		UI.gridLayout(treeComp, 1);
@@ -108,24 +107,24 @@ public class ContributionTreePage extends FormPage {
 		Trees.onDoubleClick(tree, e -> onOpen.run());
 	}
 
-	private class SelectionHandler implements EventHandler {
+	private class SelectionHandler implements ResultItemSelector.SelectionHandler {
 
 		@Override
-		public void flowSelected(EnviFlow flow) {
+		public void onFlowSelected(EnviFlow flow) {
 			selection = flow;
 			UpstreamTree model = result.getTree(flow);
 			tree.setInput(model);
 		}
 
 		@Override
-		public void impactCategorySelected(ImpactDescriptor impact) {
+		public void onImpactSelected(ImpactDescriptor impact) {
 			selection = impact;
 			UpstreamTree model = result.getTree(impact);
 			tree.setInput(model);
 		}
 
 		@Override
-		public void costResultSelected(CostResultDescriptor cost) {
+		public void onCostsSelected(CostResultDescriptor cost) {
 			selection = cost;
 			UpstreamTree model = cost.forAddedValue
 					? result.getAddedValueTree()
