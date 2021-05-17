@@ -17,7 +17,7 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.FullResult;
-import org.openlca.core.results.ResultIndexView;
+import org.openlca.core.results.ResultItemView;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -41,7 +41,7 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 					inp.dqResultKey, DQResult.class);
 		}
 		setup = Cache.getAppCache().remove(inp.setupKey, CalculationSetup.class);
-		resultItems = ResultIndexView.of(result);
+		resultItems = ResultItemView.of(result);
 		Sort.sort(resultItems);
 		ProductSystem system = setup.productSystem;
 		String name = M.AnalysisResultOf + " " + system.name;

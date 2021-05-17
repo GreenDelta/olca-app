@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
@@ -15,7 +16,7 @@ import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.ResultIndexView;
+import org.openlca.core.results.ResultItemView;
 
 /**
  * Multiple combo boxes that allow to switch between different result types
@@ -32,25 +33,30 @@ public class ResultItemSelector {
 
 	private ModelType selectedType = ModelType.FLOW;
 
+	private Button flowCheck;
 	private ResultFlowCombo flowCombo;
+
+	private Button impactCheck;
 	private ImpactCategoryViewer impactCombo;
+
+	private Button costCheck;
 	private CostResultViewer costCombo;
 
 	private ResultItemSelector(Builder builder) {
 		initialSelection = builder.initialSelection;
 		eventHandler = builder.eventHandler;
-		var indexView = builder.indexView;
+		var resultItems = builder.resultItems;
 
-		var result = builder.indexView;
-		this.flows = indexView.hasEnviFlows()
+		var result = builder.resultItems;
+		this.flows = resultItems.hasEnviFlows()
 			? result.enviFlows()
 			: null;
-		this.impacts = indexView.hasImpacts()
+		this.impacts = resultItems.hasImpacts()
 			? result.impacts()
 			: null;
 
 		// cost results
-		if (!indexView.hasCosts()) {
+		if (!resultItems.hasCosts()) {
 			this.costs = null;
 		} else {
 			var costs = new CostResultDescriptor();
@@ -63,8 +69,8 @@ public class ResultItemSelector {
 		}
 	}
 
-	public static Builder on(ResultIndexView indexView) {
-		return new Builder(indexView);
+	public static Builder on(ResultItemView resultItems) {
+		return new Builder(resultItems);
 	}
 
 	public void selectWithEvent(Object o) {
@@ -90,9 +96,16 @@ public class ResultItemSelector {
 		AbstractComboViewer<?>[] combos = {
 			flowCombo, impactCombo, costCombo,
 		};
+		Button[] checks = {
+			flowCheck, impactCheck, costCheck,
+		};
 		for (int i = 0; i < selection.length; i++) {
 			if (combos[i] != null) {
 				combos[i].setEnabled(selection[i]);
+			}
+			var check = checks[i];
+			if (check != null && !check.getSelection()) {
+				check.setSelection(selection[i]);
 			}
 		}
 	}
@@ -137,10 +150,10 @@ public class ResultItemSelector {
 
 	private void initFlowCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.FLOW;
-		var check = tk.createButton(comp, M.Flow, SWT.RADIO);
-		check.setSelection(enabled);
-		Controls.onSelect(check, _e -> {
-			if (check.getSelection()) {
+		flowCheck = tk.createButton(comp, M.Flow, SWT.RADIO);
+		flowCheck.setSelection(enabled);
+		Controls.onSelect(flowCheck, _e -> {
+			if (flowCheck.getSelection()) {
 				flowCombo.setEnabled(true);
 				selectedType = ModelType.FLOW;
 				fireSelection();
@@ -161,10 +174,10 @@ public class ResultItemSelector {
 
 	private void initImpactCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.IMPACT_CATEGORY;
-		var check = tk.createButton(comp, M.ImpactCategory, SWT.RADIO);
-		check.setSelection(enabled);
-		Controls.onSelect(check, _e -> {
-			if (check.getSelection()) {
+		impactCheck = tk.createButton(comp, M.ImpactCategory, SWT.RADIO);
+		impactCheck.setSelection(enabled);
+		Controls.onSelect(impactCheck, _e -> {
+			if (impactCheck.getSelection()) {
 				impactCombo.setEnabled(true);
 				selectedType = ModelType.IMPACT_CATEGORY;
 				fireSelection();
@@ -185,10 +198,10 @@ public class ResultItemSelector {
 
 	private void initCostCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.CURRENCY;
-		var check = tk.createButton(comp, M.CostCategory, SWT.RADIO);
-		check.setSelection(enabled);
-		Controls.onSelect(check, _e -> {
-			if (check.getSelection()) {
+		costCheck = tk.createButton(comp, M.CostCategory, SWT.RADIO);
+		costCheck.setSelection(enabled);
+		Controls.onSelect(costCheck, _e -> {
+			if (costCheck.getSelection()) {
 				costCombo.setEnabled(true);
 				selectedType = ModelType.CURRENCY;
 				fireSelection();
@@ -248,12 +261,12 @@ public class ResultItemSelector {
 
 	public static class Builder {
 
-		private final ResultIndexView indexView;
+		private final ResultItemView resultItems;
 		private Object initialSelection;
 		private EventHandler eventHandler;
 
-		private Builder(ResultIndexView indexView) {
-			this.indexView = indexView;
+		private Builder(ResultItemView indexView) {
+			this.resultItems = indexView;
 		}
 
 		public Builder withSelection(Object object) {

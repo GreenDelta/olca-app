@@ -168,7 +168,7 @@ public class CalculationWizard extends Wizard {
 		system.inventory.clear();
 		var db = Database.get();
 		var sysDao = new ProductSystemDao(db);
-		var enviIndex = r.enviFlowIndex();
+		var enviIndex = r.enviIndex();
 		if (enviIndex == null || enviIndex.isEmpty()) {
 			sysDao.update(system);
 			return;

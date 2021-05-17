@@ -13,11 +13,11 @@ import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.ResultIndexView;
+import org.openlca.core.results.ResultItemView;
 
 public class SankeySelectionDialog extends FormDialog implements EventHandler {
 
-	private final ResultIndexView resultItems;
+	private final ResultItemView resultItems;
 	public double cutoff;
 	public int maxCount;
 	public Object selection;

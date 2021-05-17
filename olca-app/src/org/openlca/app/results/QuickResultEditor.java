@@ -10,14 +10,14 @@ import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.ResultIndexView;
+import org.openlca.core.results.ResultItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class QuickResultEditor extends ResultEditor<ContributionResult> {
 
 	public static String ID = "QuickResultEditor";
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public void init(IEditorSite site, IEditorInput iInput)
@@ -29,7 +29,7 @@ public class QuickResultEditor extends ResultEditor<ContributionResult> {
 					CalculationSetup.class);
 			result = Cache.getAppCache().remove(
 					input.resultKey, ContributionResult.class);
-			resultItems = ResultIndexView.of(result);
+			resultItems = ResultItemView.of(result);
 			Sort.sort(resultItems);
 			if (input.dqResultKey != null) {
 				dqResult = Cache.getAppCache().remove(

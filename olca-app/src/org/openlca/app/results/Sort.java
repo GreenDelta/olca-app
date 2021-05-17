@@ -3,7 +3,7 @@ package org.openlca.app.results;
 import org.openlca.app.util.Labels;
 import org.openlca.core.results.IResult;
 import org.openlca.core.results.ProjectResult;
-import org.openlca.core.results.ResultIndexView;
+import org.openlca.core.results.ResultItemView;
 import org.openlca.util.Strings;
 
 public final class Sort {
@@ -41,11 +41,11 @@ public final class Sort {
 		}
 	}
 
-	static void sort(ResultIndexView indexView) {
-		if (indexView == null)
+	static void sort(ResultItemView items) {
+		if (items == null)
 			return;
 
-		indexView.techFlows().sort((tf1, tf2) -> {
+		items.techFlows().sort((tf1, tf2) -> {
 			int c = Strings.compare(
 				Labels.name(tf1.process()), Labels.name(tf2.process()));
 			if (c != 0)
@@ -54,13 +54,13 @@ public final class Sort {
 				Labels.name(tf1.flow()), Labels.name(tf2.flow()));
 		});
 
-		if (indexView.hasEnviFlows()) {
-			indexView.enviFlows().sort((ef1, ef2) -> Strings.compare(
+		if (items.hasEnviFlows()) {
+			items.enviFlows().sort((ef1, ef2) -> Strings.compare(
 				Labels.name(ef1), Labels.name(ef2)));
 		}
 
-		if (indexView.hasImpacts()) {
-			indexView.impacts().sort(
+		if (items.hasImpacts()) {
+			items.impacts().sort(
 				(i1, i2) -> Strings.compare(i1.name, i2.name));
 		}
 	}

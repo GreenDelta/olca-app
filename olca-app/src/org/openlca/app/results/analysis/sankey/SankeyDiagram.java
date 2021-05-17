@@ -35,7 +35,7 @@ import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.FullResult;
-import org.openlca.core.results.ResultIndexView;
+import org.openlca.core.results.ResultItemView;
 import org.openlca.core.results.Sankey;
 import org.openlca.util.Strings;
 
@@ -44,7 +44,7 @@ public class SankeyDiagram extends GraphicalEditor {
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 	public final DQResult dqResult;
 	public final FullResult result;
-	public final ResultIndexView resultItems;
+	public final ResultItemView resultItems;
 
 	public Sankey<?> sankey;
 	public ProductSystemNode node;

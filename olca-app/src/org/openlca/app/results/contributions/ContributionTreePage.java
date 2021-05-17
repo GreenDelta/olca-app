@@ -32,7 +32,7 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.FullResult;
-import org.openlca.core.results.ResultIndexView;
+import org.openlca.core.results.ResultItemView;
 import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
 
@@ -40,7 +40,7 @@ public class ContributionTreePage extends FormPage {
 
 	private final FullResult result;
 	private final CalculationSetup setup;
-	private final ResultIndexView resultItems;
+	private final ResultItemView resultItems;
 
 	private TreeViewer tree;
 	private Object selection;

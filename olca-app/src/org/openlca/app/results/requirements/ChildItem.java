@@ -27,7 +27,7 @@ class ChildItem implements Item {
 
 		int row = parent.index;
 		var childs = new ArrayList<ChildItem>();
-		result.techFlowIndex().each((col, product) -> {
+		result.techIndex().each((col, product) -> {
 			if (row == col)
 				return;
 			var amount = result.provider.scaledTechValueOf(row, col);

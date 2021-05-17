@@ -42,10 +42,10 @@ import org.openlca.core.matrix.ParameterTable;
 import org.openlca.core.matrix.format.JavaMatrix;
 import org.openlca.core.matrix.format.MatrixBuilder;
 import org.openlca.core.matrix.index.EnviFlow;
-import org.openlca.core.matrix.index.EnviFlowIndex;
+import org.openlca.core.matrix.index.EnviIndex;
 import org.openlca.core.matrix.index.ImpactIndex;
 import org.openlca.core.matrix.index.TechFlow;
-import org.openlca.core.matrix.index.TechFlowIndex;
+import org.openlca.core.matrix.index.TechIndex;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
@@ -167,7 +167,7 @@ class ImpactPage extends ModelPage<Process> {
 
 		// create a virtual demand of 1.0
 		var refProduct = TechFlow.of(getModel());
-		data.techIndex = new TechFlowIndex(refProduct);
+		data.techIndex = new TechIndex(refProduct);
 		data.techIndex.setDemand(1.0);
 		data.techMatrix = JavaMatrix.of(
 				new double[][] { { 1.0 } });
@@ -191,8 +191,8 @@ class ImpactPage extends ModelPage<Process> {
 
 		// create the flow index and B matrix / vector
 		data.enviIndex = regionalized
-				? EnviFlowIndex.createRegionalized()
-				: EnviFlowIndex.create();
+				? EnviIndex.createRegionalized()
+				: EnviIndex.create();
 		var enviBuilder = new MatrixBuilder();
 		for (var e : elemFlows) {
 			var flow = Descriptor.of(e.flow);

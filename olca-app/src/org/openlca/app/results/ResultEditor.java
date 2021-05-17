@@ -16,7 +16,7 @@ import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.FullResult;
-import org.openlca.core.results.ResultIndexView;
+import org.openlca.core.results.ResultItemView;
 
 public abstract class ResultEditor<T extends ContributionResult>
 		extends FormEditor {
@@ -24,7 +24,7 @@ public abstract class ResultEditor<T extends ContributionResult>
 	public T result;
 	public CalculationSetup setup;
 	public DQResult dqResult;
-	public ResultIndexView resultItems;
+	public ResultItemView resultItems;
 
 	public static void open(CalculationSetup setup, ContributionResult result) {
 		open(setup, result, null);

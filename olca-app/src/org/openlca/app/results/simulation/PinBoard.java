@@ -163,7 +163,7 @@ class PinBoard {
 
 		// apply possible text filter
 		var input = new ArrayList<TechFlow>();
-		var idx = simulator.getResult().techFlowIndex();
+		var idx = simulator.getResult().techIndex();
 		for (int i = 0; i < idx.size(); i++) {
 			TechFlow pp = idx.at(i);
 

@@ -104,7 +104,7 @@ class TreeContentProvider implements ITreeContentProvider {
 			Location loc, FlowDescriptor flow) {
 
 		// get the matrix row => IndexFlow
-		var enviIndex = result.enviFlowIndex();
+		var enviIndex = result.enviIndex();
 		int idx = enviIndex.isRegionalized()
 				? enviIndex.of(flow.id, loc.id)
 				: enviIndex.of(flow.id);
@@ -122,7 +122,7 @@ class TreeContentProvider implements ITreeContentProvider {
 		// have another location which is not the case
 		// in a non-regionalized result
 		if (enviIndex.isRegionalized()) {
-			return result.techFlowIndex().content().stream().map(p -> {
+			return result.techIndex().content().stream().map(p -> {
 				var c = Contribution.of(p.process());
 				c.amount = result.getDirectFlowResult(p, enviFlow);
 				c.computeShare(total);
@@ -157,7 +157,7 @@ class TreeContentProvider implements ITreeContentProvider {
 			Location loc, ImpactDescriptor impact) {
 
 		double total = result.getTotalImpactResult(impact);
-		if (!result.enviFlowIndex().isRegionalized()) {
+		if (!result.enviIndex().isRegionalized()) {
 			return processes(loc).stream().map(p -> {
 				Contribution<?> c = Contribution.of(p);
 				c.amount = result.getDirectImpactResult(p, impact);
@@ -168,7 +168,7 @@ class TreeContentProvider implements ITreeContentProvider {
 
 		// first collect all flows in that location
 		var flows = new ArrayList<EnviFlow>();
-		for(var enviFlow : result.enviFlowIndex()) {
+		for(var enviFlow : result.enviIndex()) {
 			if (loc == null && enviFlow.location() == null) {
 				flows.add(enviFlow);
 				continue;
@@ -190,7 +190,7 @@ class TreeContentProvider implements ITreeContentProvider {
 
 	private List<ProcessDescriptor> processes(Location loc) {
 		List<ProcessDescriptor> list = new ArrayList<>();
-		result.techFlowIndex().each((i, product) -> {
+		result.techIndex().each((i, product) -> {
 			if (!(product.process() instanceof ProcessDescriptor))
 				return;
 			var process = (ProcessDescriptor) product.process();
