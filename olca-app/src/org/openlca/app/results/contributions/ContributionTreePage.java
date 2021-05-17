@@ -10,16 +10,16 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.components.ResultTypeCombo;
-import org.openlca.app.components.ResultTypeCombo.EventHandler;
+import org.openlca.app.components.ResultItemSelector;
+import org.openlca.app.components.ResultItemSelector.EventHandler;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.results.AnalyzeEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.FileType;
@@ -32,6 +32,7 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.FullResult;
+import org.openlca.core.results.ResultIndexView;
 import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
 
@@ -39,17 +40,19 @@ public class ContributionTreePage extends FormPage {
 
 	private final FullResult result;
 	private final CalculationSetup setup;
+	private final ResultIndexView resultItems;
+
 	private TreeViewer tree;
 	private Object selection;
 
 	private static final String[] HEADERS = { M.Contribution,
 			M.Process, M.Amount, M.Unit };
 
-	public ContributionTreePage(FormEditor editor,
-			FullResult result, CalculationSetup setup) {
+	public ContributionTreePage(AnalyzeEditor editor) {
 		super(editor, "analysis.ContributionTreePage", M.ContributionTree);
-		this.result = result;
-		this.setup = setup;
+		this.result = editor.result;
+		this.setup = editor.setup;
+		this.resultItems = editor.resultItems;
 	}
 
 	@Override
@@ -61,8 +64,8 @@ public class ContributionTreePage extends FormPage {
 		Composite body = UI.formBody(form, tk);
 		Composite comp = tk.createComposite(body);
 		UI.gridLayout(comp, 2);
-		ResultTypeCombo selector = ResultTypeCombo
-				.on(result)
+		ResultItemSelector selector = ResultItemSelector
+				.on(resultItems)
 				.withEventHandler(new SelectionHandler())
 				.create(comp, tk);
 		Composite treeComp = tk.createComposite(body);

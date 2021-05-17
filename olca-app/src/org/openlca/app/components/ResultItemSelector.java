@@ -15,15 +15,14 @@ import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.IResult;
-import org.openlca.core.results.SimpleResult;
+import org.openlca.core.results.ResultIndexView;
 
 /**
  * Multiple combo boxes that allow to switch between different result types
  * (flows, LCIA categories, costs). The respective items are only shown if the
  * corresponding result is available.
  */
-public class ResultTypeCombo {
+public class ResultItemSelector {
 
 	private final Collection<EnviFlow> flows;
 	private final Collection<ImpactDescriptor> impacts;
@@ -37,38 +36,35 @@ public class ResultTypeCombo {
 	private ImpactCategoryViewer impactCombo;
 	private CostResultViewer costCombo;
 
-	private ResultTypeCombo(Builder builder) {
+	private ResultItemSelector(Builder builder) {
 		initialSelection = builder.initialSelection;
 		eventHandler = builder.eventHandler;
+		var indexView = builder.indexView;
 
-		var result = builder.result;
-		this.flows = result.hasEnviFlows()
-			? result.getFlows()
+		var result = builder.indexView;
+		this.flows = indexView.hasEnviFlows()
+			? result.enviFlows()
 			: null;
-		this.impacts = result.hasImpacts()
-			? result.getImpacts()
+		this.impacts = indexView.hasImpacts()
+			? result.impacts()
 			: null;
 
 		// cost results
-		if (!result.hasCosts()) {
+		if (!indexView.hasCosts()) {
 			this.costs = null;
 		} else {
-			var sr = (SimpleResult) result;
 			var costs = new CostResultDescriptor();
 			costs.forAddedValue = false;
 			costs.name = M.Netcosts;
 			var addedValue = new CostResultDescriptor();
 			addedValue.forAddedValue = true;
 			addedValue.name = M.AddedValue;
-
-			this.costs = sr.totalCosts >= 0
-				? Arrays.asList(costs, addedValue)
-				: Arrays.asList(addedValue, costs);
+			this.costs = Arrays.asList(costs, addedValue);
 		}
 	}
 
-	public static Builder on(IResult result) {
-		return new Builder(result);
+	public static Builder on(ResultIndexView indexView) {
+		return new Builder(indexView);
 	}
 
 	public void selectWithEvent(Object o) {
@@ -252,12 +248,12 @@ public class ResultTypeCombo {
 
 	public static class Builder {
 
-		private final IResult result;
+		private final ResultIndexView indexView;
 		private Object initialSelection;
 		private EventHandler eventHandler;
 
-		private Builder(IResult result) {
-			this.result = result;
+		private Builder(ResultIndexView indexView) {
+			this.indexView = indexView;
 		}
 
 		public Builder withSelection(Object object) {
@@ -270,8 +266,8 @@ public class ResultTypeCombo {
 			return this;
 		}
 
-		public ResultTypeCombo create(Composite comp, FormToolkit tk) {
-			var combo = new ResultTypeCombo(this);
+		public ResultItemSelector create(Composite comp, FormToolkit tk) {
+			var combo = new ResultItemSelector(this);
 			combo.render(comp, tk);
 			return combo;
 		}

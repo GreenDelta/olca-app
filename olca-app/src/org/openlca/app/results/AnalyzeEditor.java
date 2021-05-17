@@ -17,6 +17,7 @@ import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.FullResult;
+import org.openlca.core.results.ResultIndexView;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -40,6 +41,8 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 					inp.dqResultKey, DQResult.class);
 		}
 		setup = Cache.getAppCache().remove(inp.setupKey, CalculationSetup.class);
+		resultItems = ResultIndexView.of(result);
+		Sort.sort(resultItems);
 		ProductSystem system = setup.productSystem;
 		String name = M.AnalysisResultOf + " " + system.name;
 		setPartName(name);
@@ -55,10 +58,10 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 			if (result.hasImpacts() && setup.nwSet != null)
 				addPage(new NwResultPage(this, result, setup));
 			addPage(new ProcessResultPage(this, result, setup));
-			addPage(new ContributionTreePage(this, result, setup));
+			addPage(new ContributionTreePage(this));
 			addPage(new GroupPage(this, result, setup));
 			addPage(new LocationPage(this, result, setup));
-			diagram = new SankeyDiagram(result, dqResult, setup);
+			diagram = new SankeyDiagram(this);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, M.SankeyDiagram);
 			if (result.hasImpacts()) {

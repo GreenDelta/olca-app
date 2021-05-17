@@ -25,16 +25,17 @@ import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.swt.SWT;
 import org.openlca.app.App;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.analysis.sankey.actions.SankeyMenu;
 import org.openlca.app.results.analysis.sankey.model.Link;
 import org.openlca.app.results.analysis.sankey.model.ProcessNode;
 import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
 import org.openlca.app.results.analysis.sankey.model.SankeyEditPartFactory;
-import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.FullResult;
+import org.openlca.core.results.ResultIndexView;
 import org.openlca.core.results.Sankey;
 import org.openlca.util.Strings;
 
@@ -43,6 +44,7 @@ public class SankeyDiagram extends GraphicalEditor {
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 	public final DQResult dqResult;
 	public final FullResult result;
+	public final ResultIndexView resultItems;
 
 	public Sankey<?> sankey;
 	public ProductSystemNode node;
@@ -55,11 +57,12 @@ public class SankeyDiagram extends GraphicalEditor {
 	public final Map<TechFlow, ProcessNode> createdNodes = new HashMap<>();
 	private final ProductSystem productSystem;
 
-	public SankeyDiagram(FullResult result, DQResult dqResult, CalculationSetup setup) {
-		this.dqResult = dqResult;
+	public SankeyDiagram(ResultEditor<FullResult> parent) {
+		this.dqResult = parent.dqResult;
+		this.result = parent.result;
+		this.resultItems = parent.resultItems;
+		productSystem = parent.setup.productSystem;
 		setEditDomain(new DefaultEditDomain(this));
-		this.result = result;
-		productSystem = setup.productSystem;
 		if (productSystem != null) {
 			setPartName(productSystem.name);
 		}

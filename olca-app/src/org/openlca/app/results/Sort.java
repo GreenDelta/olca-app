@@ -3,6 +3,7 @@ package org.openlca.app.results;
 import org.openlca.app.util.Labels;
 import org.openlca.core.results.IResult;
 import org.openlca.core.results.ProjectResult;
+import org.openlca.core.results.ResultIndexView;
 import org.openlca.util.Strings;
 
 public final class Sort {
@@ -30,13 +31,38 @@ public final class Sort {
 
 		if (result.hasImpacts()) {
 			result.getImpacts().sort(
-					(i1, i2) -> Strings.compare(i1.name, i2.name));
+				(i1, i2) -> Strings.compare(i1.name, i2.name));
 		}
 
 		if (result instanceof ProjectResult) {
 			ProjectResult p = (ProjectResult) result;
 			p.getVariants().sort(
-					(v1, v2) -> Strings.compare(v1.name, v2.name));
+				(v1, v2) -> Strings.compare(v1.name, v2.name));
 		}
 	}
+
+	static void sort(ResultIndexView indexView) {
+		if (indexView == null)
+			return;
+
+		indexView.techFlows().sort((tf1, tf2) -> {
+			int c = Strings.compare(
+				Labels.name(tf1.process()), Labels.name(tf2.process()));
+			if (c != 0)
+				return c;
+			return Strings.compare(
+				Labels.name(tf1.flow()), Labels.name(tf2.flow()));
+		});
+
+		if (indexView.hasEnviFlows()) {
+			indexView.enviFlows().sort((ef1, ef2) -> Strings.compare(
+				Labels.name(ef1), Labels.name(ef2)));
+		}
+
+		if (indexView.hasImpacts()) {
+			indexView.impacts().sort(
+				(i1, i2) -> Strings.compare(i1.name, i2.name));
+		}
+	}
+
 }

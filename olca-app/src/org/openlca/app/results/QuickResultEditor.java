@@ -10,6 +10,7 @@ import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.ResultIndexView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,15 +24,16 @@ public class QuickResultEditor extends ResultEditor<ContributionResult> {
 			throws PartInitException {
 		super.init(site, iInput);
 		try {
-			ResultEditorInput input = (ResultEditorInput) iInput;
+			var input = (ResultEditorInput) iInput;
 			setup = Cache.getAppCache().remove(input.setupKey,
 					CalculationSetup.class);
 			result = Cache.getAppCache().remove(
 					input.resultKey, ContributionResult.class);
-			String dqkey = input.dqResultKey;
-			if (dqkey != null) {
+			resultItems = ResultIndexView.of(result);
+			Sort.sort(resultItems);
+			if (input.dqResultKey != null) {
 				dqResult = Cache.getAppCache().remove(
-						dqkey, DQResult.class);
+					input.dqResultKey, DQResult.class);
 			}
 		} catch (Exception e) {
 			log.error("failed to load inventory result", e);

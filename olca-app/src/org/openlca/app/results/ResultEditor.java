@@ -16,6 +16,7 @@ import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.FullResult;
+import org.openlca.core.results.ResultIndexView;
 
 public abstract class ResultEditor<T extends ContributionResult>
 		extends FormEditor {
@@ -23,19 +24,17 @@ public abstract class ResultEditor<T extends ContributionResult>
 	public T result;
 	public CalculationSetup setup;
 	public DQResult dqResult;
+	public ResultIndexView resultItems;
 
-	public static void open(
-			CalculationSetup setup,
-			ContributionResult result) {
+	public static void open(CalculationSetup setup, ContributionResult result) {
 		open(setup, result, null);
 	}
 
 	public static void open(
-			CalculationSetup setup,
-			ContributionResult result,
-			DQResult dqResult) {
-		var input = ResultEditorInput.create(
-				setup, result).with(dqResult);
+			CalculationSetup setup, ContributionResult result,DQResult dqResult) {
+		var input = ResultEditorInput
+			.create(setup, result)
+			.with(dqResult);
 		var id = result instanceof FullResult
 				? AnalyzeEditor.ID
 				: QuickResultEditor.ID;
