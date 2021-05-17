@@ -300,7 +300,7 @@ class ImpactPage extends ModelPage<Process> {
 						: Images.get(FlowType.ELEMENTARY_FLOW);
 			}
 			if (col == 3 && c.item instanceof EnviFlow)
-				return img.getForTable(c.share);
+				return img.get(c.share);
 			return null;
 		}
 

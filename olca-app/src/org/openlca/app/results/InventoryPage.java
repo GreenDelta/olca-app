@@ -207,7 +207,7 @@ public class InventoryPage extends FormPage {
 			if (col == 0)
 				return Images.get(c.item.item);
 			if (col == 3)
-				return img.getForTable(c.item.share);
+				return img.get(c.item.share);
 			return null;
 		}
 

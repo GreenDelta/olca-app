@@ -123,8 +123,8 @@ class NwSection extends LabelProvider implements TableSection {
 		var variant = variants[col - 1];
 		double result = resultOf(impact, variant);
 		return absMax == 0
-			? image.getForTable(0)
-			: image.getForTable(result / absMax);
+			? image.get(0)
+			: image.get(result / absMax);
 	}
 
 	@Override

@@ -91,7 +91,7 @@ class TotalImpactSection extends LabelProvider implements TableSection {
 		return switch (col) {
 			case 0 -> Images.get(ModelType.IMPACT_CATEGORY);
 			case 1 -> Images.get(ModelType.UNIT);
-			default -> image.getForTable(row.shareOf(col));
+			default -> image.get(row.shareOf(col));
 		};
 	}
 

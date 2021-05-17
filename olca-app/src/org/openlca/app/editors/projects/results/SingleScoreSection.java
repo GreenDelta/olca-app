@@ -99,7 +99,7 @@ class SingleScoreSection extends LabelProvider implements TableSection {
 			return null;
 		var variant = (ProjectVariant) obj;
 		var score = singleScoreOf(variant);
-		return image.getForTable(score / absMax);
+		return image.get(score / absMax);
 	}
 
 	@Override

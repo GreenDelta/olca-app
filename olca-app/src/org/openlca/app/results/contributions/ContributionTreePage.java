@@ -202,7 +202,7 @@ public class ContributionTreePage extends FormPage {
 				return Images.get(n.provider.process());
 			}
 			if (col == 2) {
-				return image.getForTable(getContribution(n));
+				return image.get(getContribution(n));
 			}
 			return null;
 		}

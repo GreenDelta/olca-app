@@ -63,7 +63,7 @@ class GroupResultTable {
 			if (!(element instanceof ContributionItem) || column != 0)
 				return null;
 			Contribution<?> item = (Contribution) element;
-			return image.getForTable(item.share);
+			return image.get(item.share);
 		}
 
 		@Override

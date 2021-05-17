@@ -193,7 +193,7 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 				return Images.get(item.impact);
 			return col != 1
 					? null
-					: img.getForTable(-item.similarity);
+					: img.get(-item.similarity);
 		}
 
 		@Override

@@ -256,7 +256,7 @@ public class ProcessResultPage extends FormPage {
 				return null;
 			var flow = (EnviFlow) o;
 			double c = flowResult.getUpstreamContribution(flow);
-			return image.getForTable(c);
+			return image.get(c);
 		}
 
 		@Override
@@ -301,7 +301,7 @@ public class ProcessResultPage extends FormPage {
 			if (col != 0)
 				return null;
 			var d = (ImpactDescriptor) o;
-			return image.getForTable(impactResult.getUpstreamContribution(d));
+			return image.get(impactResult.getUpstreamContribution(d));
 		}
 
 		@Override

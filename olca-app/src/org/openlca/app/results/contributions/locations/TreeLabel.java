@@ -48,7 +48,7 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 			return null;
 		Contribution<?> c = (Contribution<?>) obj;
 		if (col == 1)
-			return image.getForTable(c.share);
+			return image.get(c.share);
 		if (col != 0)
 			return null;
 		if (c.item instanceof Descriptor)

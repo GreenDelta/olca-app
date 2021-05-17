@@ -3,14 +3,18 @@ package org.openlca.app.editors.projects.results;
 import java.util.ArrayList;
 import java.util.List;
 
+import gnu.trove.map.hash.TLongObjectHashMap;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.results.Sort;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -34,6 +38,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 	private final ProjectVariant[] variants;
 
 	private TableViewer table;
+	private ContributionImage image;
 	private String unit;
 
 	private ContributionSection(ProjectResult result) {
@@ -49,13 +54,15 @@ class ContributionSection extends LabelProvider implements TableSection,
 	public void renderOn(Composite body, FormToolkit tk) {
 		var section = UI.section(body, tk, "Result contributions");
 		var comp = UI.sectionClient(section, tk, 1);
-		UI.gridLayout(comp, 2);
+		UI.gridLayout(comp, 1);
+
+		var selectorComp = tk.createComposite(comp);
+		UI.gridLayout(selectorComp, 2, 5, 0);
 		var items = ResultItemView.of(result);
 		Sort.sort(items);
-		ResultItemSelector.on(items)
+		var selector = ResultItemSelector.on(items)
 			.withSelectionHandler(this)
-			.create(comp, tk)
-			.initWithEvent();
+			.create(selectorComp, tk);
 
 		var headers = new String[variants.length];
 		var widths = new double[variants.length];
@@ -65,15 +72,24 @@ class ContributionSection extends LabelProvider implements TableSection,
 			widths[i] = 0.98 / n;
 		}
 		table = Tables.createViewer(comp, headers);
+		image = contributionImage(table).withFullWidth(25);
 		table.setLabelProvider(this);
 		Tables.bindColumnWidths(table, widths);
 		Actions.bind(section, TableClipboard.onCopyAll(table));
 		Actions.bind(table, TableClipboard.onCopySelected(table));
+
+		selector.initWithEvent();
 	}
 
 	@Override
 	public Image getColumnImage(Object obj, int col) {
-		return null;
+		if (!(obj instanceof Cell[]))
+			return null;
+		var row = (Cell[]) obj;
+		if (row.length <= col || row[col] == null)
+			return null;
+		var cell = row[col];
+		return image.get(cell.share, cell.color);
 	}
 
 	@Override
@@ -143,6 +159,9 @@ class ContributionSection extends LabelProvider implements TableSection,
 		final CategorizedDescriptor process;
 		final double result;
 
+		double share;
+		Color color;
+
 		Cell(CategorizedDescriptor process, double result) {
 			this.process = process;
 			this.result = result;
@@ -161,23 +180,47 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 		private final List<Cell[]> rows;
 		private final int variantCount;
+		private final TLongObjectHashMap<Color> colors;
 
 		private RowBuilder(int variantCount) {
 			this.variantCount = variantCount;
 			this.rows = new ArrayList<>();
+			this.colors = new TLongObjectHashMap<>();
 		}
 
 		void add(int variant, int row, Cell cell) {
 			while (rows.size() <= row) {
 				rows.add(new Cell[variantCount]);
 			}
+			if (cell.process == null) {
+				cell.color = Colors.gray();
+			} else {
+				var color = colors.get(cell.process.id);
+				if (color == null) {
+					color = Colors.getForChart(colors.size() + 2);
+					colors.put(cell.process.id, color);
+				}
+				cell.color = color;
+			}
 			var rowCells = rows.get(row);
 			rowCells[variant] = cell;
 		}
 
 		List<Cell[]> get() {
+			double absMax = 0;
+			for (var row : rows) {
+				for (var cell : row) {
+					absMax = Math.max(absMax, Math.abs(cell.result));
+				}
+			}
+			if (absMax == 0)
+				return rows;
+			for (var row : rows) {
+				for (var cell : row) {
+					cell.share = 0.1 + 0.9 * cell.result / absMax;
+				}
+			}
 			return rows;
 		}
 	}
-
 }

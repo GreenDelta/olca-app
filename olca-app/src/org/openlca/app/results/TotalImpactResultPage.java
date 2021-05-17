@@ -239,7 +239,7 @@ public class TotalImpactResultPage extends FormPage {
 			if (col == 0)
 				return Images.get(item.type());
 			if (col == 4 && item.type() != ModelType.IMPACT_CATEGORY)
-				return img.getForTable(item.contribution());
+				return img.get(item.contribution());
 			return null;
 		}
 

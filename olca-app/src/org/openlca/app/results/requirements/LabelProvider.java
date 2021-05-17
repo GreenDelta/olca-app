@@ -63,14 +63,14 @@ class LabelProvider extends DQLabelProvider {
 			// amount share
 			case 2:
 				return item.isChild()
-					? cimg.getForTable(item.asChild().amountShare)
+					? cimg.get(item.asChild().amountShare)
 					: null;
 
 			// costs share
 			case 4:
 				return costs == Costs.NONE || !item.isProvider()
 					? null
-					: cimg.getForTable(item.asProvider().costShare);
+					: cimg.get(item.asProvider().costShare);
 
 			default:
 				return null;
