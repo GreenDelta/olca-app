@@ -50,7 +50,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 	private ContributionImage image;
 
 	private String unit;
-	private int count;
+	private int count = 10;
 	private String query;
 	private double absMax;
 	private List<List<Cell>> cells;
@@ -97,13 +97,14 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 	@Override
 	public Image getColumnImage(Object obj, int col) {
-		if (!(obj instanceof Cell[]))
+		if (!(obj instanceof Cell[]) || absMax == 0)
 			return null;
 		var row = (Cell[]) obj;
 		if (row.length <= col || row[col] == null)
 			return null;
 		var cell = row[col];
-		return image.get(cell.share, cell.color);
+		double share = cell.result / absMax;
+		return image.get(share, cell.color);
 	}
 
 	@Override
@@ -126,46 +127,23 @@ class ContributionSection extends LabelProvider implements TableSection,
 	@Override
 	public void onFlowSelected(EnviFlow flow) {
 		unit = Labels.refUnit(flow);
-		var builder = new RowBuilder(variants.length);
-		for (int i = 0; i < variants.length; i++) {
-			var variantResult = result.getResult(variants[i]);
-			var contributions = Contributions.topWithRest(
-				variantResult.getProcessContributions(flow), 9);
-			for (int row = 0; row < contributions.size(); row++) {
-				builder.add(i, row, Cell.of(contributions.get(row)));
-			}
-		}
-		table.setInput(builder.get());
+		updateCells((result, techFlow)
+			-> result.getDirectFlowResult(techFlow, flow));
 	}
 
 	@Override
 	public void onImpactSelected(ImpactDescriptor impact) {
 		unit = impact.referenceUnit;
-		var builder = new RowBuilder(variants.length);
-		for (int i = 0; i < variants.length; i++) {
-			var variantResult = result.getResult(variants[i]);
-			var contributions = Contributions.topWithRest(
-				variantResult.getProcessContributions(impact), 9);
-			for (int row = 0; row < contributions.size(); row++) {
-				builder.add(i, row, Cell.of(contributions.get(row)));
-			}
-		}
-		table.setInput(builder.get());
+		updateCells((result, techFlow)
+			-> result.getDirectImpactResult(techFlow, impact));
 	}
 
 	@Override
 	public void onCostsSelected(CostResultDescriptor cost) {
 		unit = Labels.getReferenceCurrencyCode();
-		var builder = new RowBuilder(variants.length);
-		for (int i = 0; i < variants.length; i++) {
-			var variantResult = result.getResult(variants[i]);
-			var contributions = Contributions.topWithRest(
-				variantResult.getProcessCostContributions(), 9);
-			for (int row = 0; row < contributions.size(); row++) {
-				builder.add(i, row, Cell.of(contributions.get(row)));
-			}
-		}
-		table.setInput(builder.get());
+		updateCells((result, techFlow) -> cost.forAddedValue
+			? -result.getDirectCostResult(techFlow)
+			: result.getDirectCostResult(techFlow));
 	}
 
 	/**
@@ -278,16 +256,11 @@ class ContributionSection extends LabelProvider implements TableSection,
 		final CategorizedDescriptor process;
 		private final double result;
 
-		double share;
 		Color color;
 
 		Cell(CategorizedDescriptor process, double result) {
 			this.process = process;
 			this.result = result;
-		}
-
-		static Cell of(Contribution<CategorizedDescriptor> contribution) {
-			return new Cell(contribution.item, contribution.amount);
 		}
 
 		static Cell restOf(double result) {
@@ -300,54 +273,6 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 		double result() {
 			return result;
-		}
-	}
-
-	private static class RowBuilder {
-
-		private final List<Cell[]> rows;
-		private final int variantCount;
-		private final TLongObjectHashMap<Color> colors;
-
-		private RowBuilder(int variantCount) {
-			this.variantCount = variantCount;
-			this.rows = new ArrayList<>();
-			this.colors = new TLongObjectHashMap<>();
-		}
-
-		void add(int variant, int row, Cell cell) {
-			while (rows.size() <= row) {
-				rows.add(new Cell[variantCount]);
-			}
-			if (cell.process == null) {
-				cell.color = Colors.gray();
-			} else {
-				var color = colors.get(cell.process.id);
-				if (color == null) {
-					color = Colors.getForChart(colors.size() + 2);
-					colors.put(cell.process.id, color);
-				}
-				cell.color = color;
-			}
-			var rowCells = rows.get(row);
-			rowCells[variant] = cell;
-		}
-
-		List<Cell[]> get() {
-			double absMax = 0;
-			for (var row : rows) {
-				for (var cell : row) {
-					absMax = Math.max(absMax, Math.abs(cell.result));
-				}
-			}
-			if (absMax == 0)
-				return rows;
-			for (var row : rows) {
-				for (var cell : row) {
-					cell.share = 0.1 + 0.9 * cell.result / absMax;
-				}
-			}
-			return rows;
 		}
 	}
 }
