@@ -278,16 +278,25 @@ class ContributionSection extends LabelProvider implements TableSection,
 			for (var term : terms) {
 				double idx = f.indexOf(term);
 				if (idx >= 0) {
-					i -= term.length() / (f.length() - term.length() + idx + 1.0);
+					i -= term.length() / (idx + 1.0);
 				}
 			}
 			return i;
 		};
 
-		return Comparator.comparingDouble(
-			cell -> cell.isRest
+		// first compare by string matching, and then by result values
+		return (cell1, cell2) -> {
+			double d1 = cell1.isRest
 				? 1
-				: matcher.applyAsDouble(Labels.name(cell.process)));
+				: matcher.applyAsDouble(Labels.name(cell1.process));
+			double d2 = cell2.isRest
+				? 1
+				: matcher.applyAsDouble(Labels.name(cell2.process));
+			int c = Double.compare(d1, d2);
+			return c != 0
+				? c
+				: Double.compare(cell2.result, cell1.result);
+		};
 	}
 
 
