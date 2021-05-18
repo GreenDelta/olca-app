@@ -2,10 +2,13 @@ package org.openlca.app.editors.projects.results;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.ToDoubleBiFunction;
+import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -189,9 +192,13 @@ class ContributionSection extends LabelProvider implements TableSection,
 			cells.add(column);
 		}
 		this.cells = cells;
+		updateRows();
 	}
 
 	private void updateRows() {
+		if (cells == null)
+			return;
+
 		var comparator = comparator();
 
 		double absMax = 0;
@@ -232,9 +239,37 @@ class ContributionSection extends LabelProvider implements TableSection,
 	}
 
 	private Comparator<Cell> comparator() {
+		// compare by result values by default
 		if (Strings.nullOrEmpty(query))
 			return Comparator.comparingDouble(Cell::result);
 
+		// compare by a match factor if there is a search query
+		var terms = Arrays.stream(query.split(" "))
+			.map(s -> s.trim().toLowerCase())
+			.filter(t -> !Strings.nullOrEmpty(t))
+			.collect(Collectors.toSet());
+
+		// the smaller the match value the higher a cell will
+		// be ranked. 0 means no match so that we can give 1
+		// to the rest so that it is always at the bottom
+		ToDoubleFunction<String> matcher = s -> {
+			if (s == null)
+				return 0;
+			var f = s.toLowerCase();
+			double i = 0;
+			for (var term : terms) {
+				double idx = f.indexOf(term);
+				if (idx >= 0) {
+					i -= term.length() / (f.length() - term.length() + idx + 1.0);
+				}
+			}
+			return i;
+		};
+
+		return Comparator.comparingDouble(
+			cell -> cell.isRest()
+				? 1
+				: matcher.applyAsDouble(Labels.name(cell.process)));
 	}
 
 
