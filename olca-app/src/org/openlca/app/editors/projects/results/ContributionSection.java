@@ -1,7 +1,12 @@
 package org.openlca.app.editors.projects.results;
 
+import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.function.ToDoubleBiFunction;
+import java.util.stream.Collectors;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -22,10 +27,12 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.matrix.index.EnviFlow;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
+import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.Contributions;
 import org.openlca.core.results.ProjectResult;
 import org.openlca.core.results.ResultItemView;
@@ -36,10 +43,14 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 	private final ProjectResult result;
 	private final ProjectVariant[] variants;
-
 	private TableViewer table;
 	private ContributionImage image;
+
 	private String unit;
+	private int count;
+	private String query;
+	private double absMax;
+	private List<List<Cell>> cells;
 
 	private ContributionSection(ProjectResult result) {
 		this.result = result;
@@ -154,10 +165,83 @@ class ContributionSection extends LabelProvider implements TableSection,
 		table.setInput(builder.get());
 	}
 
+	/**
+	 * Creates for each variant a column of cells with the contribution values
+	 * of that variant.
+	 */
+	private void updateCells(ToDoubleBiFunction<ContributionResult, TechFlow> fn) {
+		var cells = new ArrayList<List<Cell>>();
+		for (var variant : variants) {
+			var map = new HashMap<CategorizedDescriptor, Double>();
+			var result = this.result.getResult(variant);
+			for (var techFlow : result.techIndex()) {
+				map.compute(techFlow.process(), (process, value) -> {
+					var v = fn.applyAsDouble(result, techFlow);
+					return value != null
+						? value + v
+						: v;
+				});
+			}
+			var column = map.entrySet()
+				.stream()
+				.map(e -> new Cell(e.getKey(), e.getValue()))
+				.collect(Collectors.toList());
+			cells.add(column);
+		}
+		this.cells = cells;
+	}
+
+	private void updateRows() {
+		var comparator = comparator();
+
+		double absMax = 0;
+		var rows = new ArrayList<Cell[]>();
+		for (int i = 0; i < variants.length; i++) {
+
+			// select the top contributions of variant i
+			var column = cells.get(i);
+			column.sort(comparator);
+			var selected = new ArrayList<>(
+				column.subList(0, Math.min(column.size(), count)));
+
+			// calculate a rest if necessary
+			if (column.size() > count) {
+				var rest = column.subList(count, column.size())
+					.stream()
+					.mapToDouble(cell -> cell.result)
+					.sum();
+				if (rest != 0) {
+					selected.add(Cell.restOf(rest));
+				}
+			}
+
+			// fill column i in the rows with the respective contributions
+			for (int j = 0; j < selected.size(); j++) {
+				while (rows.size() <= j) {
+					rows.add(new Cell[variants.length]);
+				}
+				var cell = selected.get(j);
+				rows.get(j)[i] = cell;
+				absMax = Math.max(absMax, Math.abs(cell.result));
+			}
+		}
+
+		this.absMax = absMax;
+		table.setInput(rows);
+
+	}
+
+	private Comparator<Cell> comparator() {
+		if (Strings.nullOrEmpty(query))
+			return Comparator.comparingDouble(Cell::result);
+
+	}
+
+
 	private static class Cell {
 
 		final CategorizedDescriptor process;
-		final double result;
+		private final double result;
 
 		double share;
 		Color color;
@@ -171,8 +255,16 @@ class ContributionSection extends LabelProvider implements TableSection,
 			return new Cell(contribution.item, contribution.amount);
 		}
 
+		static Cell restOf(double result) {
+			return new Cell(null, result);
+		}
+
 		boolean isRest() {
 			return process == null;
+		}
+
+		double result() {
+			return result;
 		}
 	}
 
