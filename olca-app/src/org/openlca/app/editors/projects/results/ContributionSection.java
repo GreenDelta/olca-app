@@ -1,12 +1,10 @@
 package org.openlca.app.editors.projects.results;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.ToDoubleBiFunction;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
@@ -34,9 +32,7 @@ import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.Contributions;
 import org.openlca.core.results.ProjectResult;
 import org.openlca.core.results.ResultItemView;
 import org.openlca.util.Strings;
@@ -48,6 +44,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 	private final ProjectVariant[] variants;
 	private TableViewer table;
 	private ContributionImage image;
+	private final TLongObjectHashMap<Color> colors;
 
 	private String unit;
 	private int count = 10;
@@ -58,6 +55,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 	private ContributionSection(ProjectResult result) {
 		this.result = result;
 		this.variants = variantsOf(result);
+		this.colors = new TLongObjectHashMap<>();
 	}
 
 	static ContributionSection of(ProjectResult result) {
@@ -86,7 +84,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 			widths[i] = 0.98 / n;
 		}
 		table = Tables.createViewer(comp, headers);
-		image = contributionImage(table).withFullWidth(25);
+		image = contributionImage(table).withFullWidth(40);
 		table.setLabelProvider(this);
 		Tables.bindColumnWidths(table, widths);
 		Actions.bind(section, TableClipboard.onCopyAll(table));
@@ -104,7 +102,19 @@ class ContributionSection extends LabelProvider implements TableSection,
 			return null;
 		var cell = row[col];
 		double share = cell.result / absMax;
-		return image.get(share, cell.color);
+		Color color;
+		if (cell.isRest) {
+			color = Colors.gray();
+		} else {
+			color = colors.get(cell.process.id);
+			if (color == null) {
+				// +2 to avoid red and blue currently as these
+				// look very similar to the contribution colors
+				color = Colors.getForChart(colors.size() + 2);
+				colors.put(cell.process.id, color);
+			}
+		}
+		return image.get(share, color);
 	}
 
 	@Override
@@ -119,7 +129,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 		if (unit != null) {
 			result += " " + unit;
 		}
-		return result + " " + (cell.isRest()
+		return result + " " + (cell.isRest
 			? "Others"
 			: Labels.name(cell.process));
 	}
@@ -212,6 +222,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 		}
 
 		this.absMax = absMax;
+		this.colors.clear();
 		table.setInput(rows);
 
 	}
@@ -219,7 +230,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 	private Comparator<Cell> comparator() {
 		// compare by result values by default
 		if (Strings.nullOrEmpty(query))
-			return Comparator.comparingDouble(Cell::result);
+			return Comparator.comparingDouble(cell -> cell.result);
 
 		// compare by a match factor if there is a search query
 		var terms = Arrays.stream(query.split(" "))
@@ -245,7 +256,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 		};
 
 		return Comparator.comparingDouble(
-			cell -> cell.isRest()
+			cell -> cell.isRest
 				? 1
 				: matcher.applyAsDouble(Labels.name(cell.process)));
 	}
@@ -253,26 +264,18 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 	private static class Cell {
 
-		final CategorizedDescriptor process;
+		private final CategorizedDescriptor process;
 		private final double result;
-
-		Color color;
+		private final boolean isRest;
 
 		Cell(CategorizedDescriptor process, double result) {
 			this.process = process;
 			this.result = result;
+			this.isRest = process == null;
 		}
 
 		static Cell restOf(double result) {
 			return new Cell(null, result);
-		}
-
-		boolean isRest() {
-			return process == null;
-		}
-
-		double result() {
-			return result;
 		}
 	}
 }
