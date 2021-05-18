@@ -9,18 +9,20 @@ import java.util.function.ToDoubleBiFunction;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 
-import gnu.trove.map.hash.TLongObjectHashMap;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.results.Sort;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -36,6 +38,8 @@ import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.ProjectResult;
 import org.openlca.core.results.ResultItemView;
 import org.openlca.util.Strings;
+
+import gnu.trove.map.hash.TLongObjectHashMap;
 
 class ContributionSection extends LabelProvider implements TableSection,
 	ResultItemSelector.SelectionHandler {
@@ -68,6 +72,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 		var comp = UI.sectionClient(section, tk, 1);
 		UI.gridLayout(comp, 1);
 
+		// create the result selector
 		var selectorComp = tk.createComposite(comp);
 		UI.gridLayout(selectorComp, 2, 5, 0);
 		var items = ResultItemView.of(result);
@@ -76,6 +81,29 @@ class ContributionSection extends LabelProvider implements TableSection,
 			.withSelectionHandler(this)
 			.create(selectorComp, tk);
 
+		// add the search text and count selector
+		var queryComp = tk.createComposite(comp);
+		UI.gridData(queryComp, true, false);
+		UI.gridLayout(queryComp, 2, 5, 0);
+		var searchText = tk.createText(queryComp, "");
+		searchText.setMessage("Search a process ...");
+		UI.gridData(searchText, true, false);
+		searchText.addModifyListener($ -> {
+			query = searchText.getText();
+			updateRows();
+		});
+
+		var spinner = new Spinner(queryComp, SWT.BORDER);
+		spinner.setIncrement(1);
+		spinner.setMinimum(1);
+		spinner.setSelection(count);
+		tk.adapt(spinner);
+		Controls.onSelect(spinner, $ -> {
+			count = Math.max(1, spinner.getSelection());
+			updateRows();
+		});
+
+		// create the table
 		var headers = new String[variants.length];
 		var widths = new double[variants.length];
 		var n = variants.length == 0 ? 1 : variants.length;
@@ -90,6 +118,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 		Actions.bind(section, TableClipboard.onCopyAll(table));
 		Actions.bind(table, TableClipboard.onCopySelected(table));
 
+		// fire the initial selection
 		selector.initWithEvent();
 	}
 
@@ -101,7 +130,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 		if (row.length <= col || row[col] == null)
 			return null;
 		var cell = row[col];
-		double share = cell.result / absMax;
+		double share = 0.1 + 0.9 * cell.result / absMax;
 		Color color;
 		if (cell.isRest) {
 			color = Colors.gray();
@@ -129,7 +158,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 		if (unit != null) {
 			result += " " + unit;
 		}
-		return result + " " + (cell.isRest
+		return result + " | " + (cell.isRest
 			? "Others"
 			: Labels.name(cell.process));
 	}
@@ -230,7 +259,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 	private Comparator<Cell> comparator() {
 		// compare by result values by default
 		if (Strings.nullOrEmpty(query))
-			return Comparator.comparingDouble(cell -> cell.result);
+			return Comparator.comparingDouble(cell -> -cell.result);
 
 		// compare by a match factor if there is a search query
 		var terms = Arrays.stream(query.split(" "))
