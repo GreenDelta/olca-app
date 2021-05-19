@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
-import org.openlca.app.results.Sort;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
@@ -35,8 +34,6 @@ import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.ProjectResult;
-import org.openlca.core.results.ResultItemView;
 import org.openlca.util.Strings;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -44,7 +41,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 class ContributionSection extends LabelProvider implements TableSection,
 	ResultItemSelector.SelectionHandler {
 
-	private final ProjectResult result;
+	private final ResultData data;
 	private final ProjectVariant[] variants;
 	private TableViewer table;
 	private ContributionImage image;
@@ -56,14 +53,14 @@ class ContributionSection extends LabelProvider implements TableSection,
 	private double absMax;
 	private List<List<Cell>> cells;
 
-	private ContributionSection(ProjectResult result) {
-		this.result = result;
-		this.variants = variantsOf(result);
+	private ContributionSection(ResultData data) {
+		this.data = data;
+		this.variants = data.variants();
 		this.colors = new TLongObjectHashMap<>();
 	}
 
-	static ContributionSection of(ProjectResult result) {
-		return new ContributionSection(result);
+	static ContributionSection of(ResultData data) {
+		return new ContributionSection(data);
 	}
 
 	@Override
@@ -75,9 +72,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 		// create the result selector
 		var selectorComp = tk.createComposite(comp);
 		UI.gridLayout(selectorComp, 2, 5, 0);
-		var items = ResultItemView.of(result);
-		Sort.sort(items);
-		var selector = ResultItemSelector.on(items)
+		var selector = ResultItemSelector.on(data.items())
 			.withSelectionHandler(this)
 			.create(selectorComp, tk);
 
@@ -193,7 +188,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 		var cells = new ArrayList<List<Cell>>();
 		for (var variant : variants) {
 			var map = new HashMap<CategorizedDescriptor, Double>();
-			var result = this.result.getResult(variant);
+			var result = data.result().getResult(variant);
 			for (var techFlow : result.techIndex()) {
 				map.compute(techFlow.process(), (process, value) -> {
 					var v = fn.applyAsDouble(result, techFlow);

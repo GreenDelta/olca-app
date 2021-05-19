@@ -20,22 +20,17 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Project;
-import org.openlca.core.results.ProjectResult;
-import org.openlca.util.Pair;
 
 public class ProjectResultEditor extends SimpleFormEditor {
 
-	private Project project;
-	private ProjectResult result;
+	private ResultData data;
 
-	public static void open(Project project, ProjectResult result) {
-		if (project == null || result == null)
+	public static void open(ResultData data) {
+		if (data == null)
 			return;
-		var pair = Pair.of(project, result);
-		var id = Cache.getAppCache().put(pair);
+		var id = Cache.getAppCache().put(data);
 		var input = new SimpleEditorInput(
-			id, "Result of: " + Labels.name(project));
+			id, "Result of: " + Labels.name(data.project()));
 		Editors.open(input, "ProjectResultEditor");
 	}
 
@@ -45,18 +40,10 @@ public class ProjectResultEditor extends SimpleFormEditor {
 		super.init(site, input);
 		var simpleInput = (SimpleEditorInput) input;
 		var obj = Cache.getAppCache().remove(simpleInput.id);
-		var err = "editor input must be a pair of project and result";
-		if (!(obj instanceof Pair))
-			throw new PartInitException(err);
-		var pair = (Pair<?, ?>) obj;
-		var first = pair.first;
-		var second = pair.second;
-		if (!(first instanceof Project)
-				|| !(second instanceof ProjectResult))
-			throw new PartInitException(err);
-		this.project = (Project) first;
-		this.result = (ProjectResult) second;
-		setPartName("Result of: " + Labels.name(project));
+		if (!(obj instanceof ResultData))
+			throw new PartInitException("editor input must be a project result");
+		data = (ResultData) obj;
+		setPartName("Result of: " + Labels.name(data.project()));
 	}
 
 	@Override
@@ -66,19 +53,17 @@ public class ProjectResultEditor extends SimpleFormEditor {
 
 	private static class Page extends FormPage {
 
-		private final Project project;
-		private final ProjectResult result;
+		private final ResultData data;
 
 		Page(ProjectResultEditor editor) {
 			super(editor, "ProjectResultEditor.Page", "Results");
-			this.project = editor.project;
-			this.result = editor.result;
+			this.data = editor.data;
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			var form = UI.formHeader(mform,
-				"Results of: " + Labels.name(project));
+				"Results of: " + Labels.name(data.project()));
 			var tk = mform.getToolkit();
 			var body = UI.formBody(form, tk);
 
@@ -97,25 +82,17 @@ public class ProjectResultEditor extends SimpleFormEditor {
 			Controls.onSelect(
 				reportBtn, $ -> ReportEditor.open(project, result));
 
-			ProjectVariantSection.of(result).renderOn(body, tk);
-			TotalImpactSection.of(result).renderOn(body, tk);
-
-			if (project.nwSet != null) {
-				var nwFactors = NwSetTable.of(Database.get(), project.nwSet);
-				if (nwFactors.hasNormalization()) {
-					NwSection.forNormalization(result, nwFactors).renderOn(body, tk);
-				}
-				if (nwFactors.hasWeighting()) {
-					NwSection.forWeighting(result, nwFactors)
-						.withUnit(project.nwSet.weightedScoreUnit)
-						.renderOn(body, tk);
-					SingleScoreSection.of(result, nwFactors)
-						.withUnit(project.nwSet.weightedScoreUnit)
-						.renderOn(body, tk);
-				}
+			// create the sections
+			ProjectVariantSection.of(data).renderOn(body, tk);
+			TotalImpactSection.of(data).renderOn(body, tk);
+			if (data.hasNormalization()) {
+				NwSection.forNormalization(data).renderOn(body, tk);
 			}
-
-			ContributionSection.of(result).renderOn(body, tk);
+			if (data.hasWeighting()) {
+				NwSection.forWeighting(data).renderOn(body, tk);
+				SingleScoreSection.of(data).renderOn(body, tk);
+			}
+			ContributionSection.of(data).renderOn(body, tk);
 		}
 	}
 }

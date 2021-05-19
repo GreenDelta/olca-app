@@ -21,18 +21,19 @@ import org.openlca.core.results.ProjectResult;
 
 class SingleScoreSection extends LabelProvider implements TableSection {
 
+	private final ResultData data;
 	private final ProjectResult result;
 	private final NwSetTable factors;
-	private final ProjectVariant[] variants;
+	private final String unit;
 	private final double absMax;
 
 	private ContributionImage image;
-	private String unit;
 
-	private SingleScoreSection(ProjectResult result, NwSetTable factors) {
-		this.result = result;
-		this.factors = factors;
-		this.variants = variantsOf(result);
+	private SingleScoreSection(ResultData data) {
+		this.data = data;
+		this.result = data.result();
+		this.factors = data.nwFactors();
+		this.unit = data.weightedScoreUnit();
 		absMax = result.getVariants().stream()
 			.mapToDouble(this::singleScoreOf)
 			.map(Math::abs)
@@ -40,13 +41,8 @@ class SingleScoreSection extends LabelProvider implements TableSection {
 			.orElse(0);
 	}
 
-	static SingleScoreSection of(ProjectResult result, NwSetTable factors) {
-		return new SingleScoreSection(result, factors);
-	}
-
-	SingleScoreSection withUnit(String unit) {
-		this.unit = unit;
-		return this;
+	static SingleScoreSection of(ResultData data) {
+		return new SingleScoreSection(data);
 	}
 
 	private double factorOf(ImpactDescriptor impact) {
@@ -62,7 +58,8 @@ class SingleScoreSection extends LabelProvider implements TableSection {
 	}
 
 	private double singleScoreOf(ProjectVariant variant) {
-		return result.getImpacts()
+		return data.items()
+			.impacts()
 			.stream()
 			.mapToDouble(i ->
 				factorOf(i) * result.getTotalImpactResult(variant, i))
@@ -81,7 +78,7 @@ class SingleScoreSection extends LabelProvider implements TableSection {
 		image = contributionImage(table);
 		Tables.bindColumnWidths(table, 0.6, 0.3);
 		table.setLabelProvider(this);
-		table.setInput(variants);
+		table.setInput(data.variants());
 		section.setExpanded(false);
 		Viewers.sortByLabels(table, this, 0);
 		Viewers.sortByDouble(table, this, 1);

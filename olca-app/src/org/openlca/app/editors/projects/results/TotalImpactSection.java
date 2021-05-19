@@ -26,17 +26,19 @@ import org.openlca.util.Strings;
 
 class TotalImpactSection extends LabelProvider implements TableSection {
 
-	private final ProjectResult result;
+	private final ResultData data;
 	private final ProjectVariant[] variants;
+	private final ProjectResult result;
 	private ContributionImage image;
 
-	private TotalImpactSection(ProjectResult result) {
-		this.result = Objects.requireNonNull(result);
-		this.variants = variantsOf(result);
+	private TotalImpactSection(ResultData data) {
+		this.data = data;
+		this.variants = data.variants();
+		this.result = data.result();
 	}
 
-	static TotalImpactSection of(ProjectResult result) {
-		return new TotalImpactSection(result);
+	static TotalImpactSection of(ResultData data) {
+		return new TotalImpactSection(data);
 	}
 
 	@Override
@@ -65,7 +67,8 @@ class TotalImpactSection extends LabelProvider implements TableSection {
 		Actions.bind(table, TableClipboard.onCopySelected(table));
 
 		// set the table input
-		table.setInput(result.getImpacts()
+		table.setInput(data.items()
+			.impacts()
 			.stream()
 			.sorted((i1, i2) -> Strings.compare(i1.name, i2.name))
 			.map(Row::new)

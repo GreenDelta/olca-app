@@ -15,18 +15,17 @@ import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProjectVariant;
-import org.openlca.core.results.ProjectResult;
 
 class ProjectVariantSection extends LabelProvider implements TableSection {
 
-	private final ProjectVariant[] variants;
+	private final ResultData data;
 
-	private ProjectVariantSection(ProjectResult result) {
-		variants = variantsOf(result);
+	private ProjectVariantSection(ResultData data) {
+		this.data = data;
 	}
 
-	static ProjectVariantSection of(ProjectResult result) {
-		return new ProjectVariantSection(result);
+	static ProjectVariantSection of(ResultData data) {
+		return new ProjectVariantSection(data);
 	}
 
 	@Override
@@ -46,7 +45,7 @@ class ProjectVariantSection extends LabelProvider implements TableSection {
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 		Actions.bind(section, TableClipboard.onCopyAll(table));
 		Actions.bind(table, TableClipboard.onCopySelected(table));
-		table.setInput(variants);
+		table.setInput(data.variants());
 	}
 
 	@Override

@@ -14,11 +14,9 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.ProjectResult;
 
 class NwSection extends LabelProvider implements TableSection {
 
@@ -28,39 +26,31 @@ class NwSection extends LabelProvider implements TableSection {
 	}
 
 	private final Type type;
-	private final NwSetTable factors;
-	private final ProjectResult result;
-	private final ProjectVariant[] variants;
-
+	private final ResultData data;
+	private final String unit;
 	private final double absMax;
-	private String unit;
+
 	private ContributionImage image;
 
-	private NwSection(Type type, ProjectResult result, NwSetTable factors) {
+	private NwSection(Type type, ResultData data) {
 		this.type = type;
-		this.factors = factors;
-		this.result = result;
-		this.variants = variantsOf(result);
+		this.data = data;
+		this.unit = data.weightedScoreUnit();
 		double _absMax = 0;
-		for (var variant : variants) {
-			for (var impact : result.getImpacts()) {
+		for (var variant : data.variants()) {
+			for (var impact : data.items().impacts()) {
 				_absMax = Math.max(_absMax, Math.abs(resultOf(impact, variant)));
 			}
 		}
 		this.absMax = _absMax;
 	}
 
-	static NwSection forNormalization(ProjectResult result, NwSetTable factors) {
-		return new NwSection(Type.NORMALIZATION, result, factors);
+	static NwSection forNormalization(ResultData data) {
+		return new NwSection(Type.NORMALIZATION, data);
 	}
 
-	static NwSection forWeighting(ProjectResult result, NwSetTable factors) {
-		return new NwSection(Type.WEIGHTING, result, factors);
-	}
-
-	NwSection withUnit(String unit) {
-		this.unit = unit;
-		return this;
+	static NwSection forWeighting(ResultData data) {
+		return new NwSection(Type.WEIGHTING, data);
 	}
 
 	@Override
@@ -72,6 +62,7 @@ class NwSection extends LabelProvider implements TableSection {
 			title + (unit != null ? " [" + unit + "]" : ""));
 		var comp = UI.sectionClient(section, tk, 1);
 
+		var variants = data.variants();
 		var columnTitles = new String[variants.length + 1];
 		var columnWidths = new double[variants.length + 1];
 		var sortIndices = new int[variants.length];
@@ -87,7 +78,7 @@ class NwSection extends LabelProvider implements TableSection {
 		image = contributionImage(table);
 		Tables.bindColumnWidths(table, columnWidths);
 		table.setLabelProvider(this);
-		table.setInput(result.getImpacts());
+		table.setInput(data.items().impacts());
 		section.setExpanded(false);
 		Viewers.sortByLabels(table, this, 0);
 		Viewers.sortByDouble(table, this, sortIndices);
@@ -96,6 +87,7 @@ class NwSection extends LabelProvider implements TableSection {
 	}
 
 	private double resultOf(ImpactDescriptor impact, ProjectVariant variant) {
+		var factors = data.nwFactors();
 		double factor;
 		if (type == Type.NORMALIZATION) {
 			var nf = factors.getNormalizationFactor(impact);
@@ -108,7 +100,7 @@ class NwSection extends LabelProvider implements TableSection {
 		} else {
 			factor = factors.getWeightingFactor(impact);
 		}
-		return factor * result.getTotalImpactResult(variant, impact);
+		return factor * data.result().getTotalImpactResult(variant, impact);
 	}
 
 	@Override
@@ -116,11 +108,11 @@ class NwSection extends LabelProvider implements TableSection {
 		if (col == 0)
 			return Images.get(ModelType.IMPACT_CATEGORY);
 		if (!(obj instanceof ImpactDescriptor)
-				|| col > variants.length
+				|| col > data.variants().length
 				|| col < 0)
 			return null;
 		var impact = (ImpactDescriptor) obj;
-		var variant = variants[col - 1];
+		var variant = data.variants()[col - 1];
 		double result = resultOf(impact, variant);
 		return absMax == 0
 			? image.get(0)
@@ -134,9 +126,9 @@ class NwSection extends LabelProvider implements TableSection {
 		var impact = (ImpactDescriptor) obj;
 		if (col == 0)
 			return Labels.name(impact);
-		if (col > variants.length || col < 0)
+		if (col > data.variants().length || col < 0)
 			return null;
-		var variant = variants[col - 1];
+		var variant = data.variants()[col - 1];
 		double result = resultOf(impact, variant);
 		return Numbers.format(result);
 	}
