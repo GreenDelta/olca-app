@@ -2,11 +2,13 @@ package org.openlca.app.editors.projects;
 
 import java.util.ArrayList;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentControl;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
@@ -32,7 +34,7 @@ class ImpactSection {
 	}
 
 	public void render(Composite body, FormToolkit tk) {
-		var rootComp = UI.formSection(body, tk, M.LCIAMethod, 1);
+		var rootComp = UI.formSection(body, tk, "Calculation setup", 1);
 		var formComp = UI.formComposite(rootComp, tk);
 		UI.gridLayout(formComp, 3);
 		UI.gridData(formComp, true, false);
@@ -42,15 +44,40 @@ class ImpactSection {
 	}
 
 	private void createViewers(FormToolkit tk, Composite comp) {
-		UI.formLabel(comp, tk, M.LCIAMethod);
+		UI.formLabel(comp, tk, M.ImpactAssessmentMethod);
+
+		// impact method
 		methodCombo = new ImpactMethodViewer(comp);
 		methodCombo.setNullable(true);
 		methodCombo.setInput(Database.get());
 		new CommentControl(comp, tk, "impactMethod", editor.getComments());
+
+		// NW set
 		UI.formLabel(comp, tk, M.NormalizationAndWeightingSet);
 		nwSetCombo = new NwSetComboViewer(comp, Database.get());
 		nwSetCombo.setNullable(true);
 		new CommentControl(comp, tk, "nwSet", editor.getComments());
+
+		// regionalized calculation
+		UI.filler(comp, tk);
+		var regioCheck = tk.createButton(comp, M.RegionalizedLCIA, SWT.CHECK);
+		regioCheck.setSelection(editor.getModel().isWithRegionalization);
+		Controls.onSelect(regioCheck, $ -> {
+			var project = editor.getModel();
+			project.isWithRegionalization = !project.isWithRegionalization;
+			editor.setDirty(true);
+		});
+		UI.filler(comp, tk);
+
+		// LCC calculation
+		UI.filler(comp, tk);
+		var costsCheck = tk.createButton(comp, M.IncludeCostCalculation, SWT.CHECK);
+		costsCheck.setSelection(editor.getModel().isWithCosts);
+		Controls.onSelect(costsCheck, $ -> {
+			var project = editor.getModel();
+			project.isWithCosts = !project.isWithCosts;
+			editor.setDirty(true);
+		});
 	}
 
 	private void addListeners() {

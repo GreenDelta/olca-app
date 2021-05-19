@@ -7,6 +7,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
@@ -14,10 +15,12 @@ import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.editors.projects.reports.ReportEditor;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
+import org.openlca.io.xls.results.ProjectResultExport;
 
 public class ProjectResultEditor extends SimpleFormEditor {
 
@@ -67,15 +70,29 @@ public class ProjectResultEditor extends SimpleFormEditor {
 
 			var buttonComp = tk.createComposite(body);
 			UI.gridLayout(buttonComp, 2);
+
+			// Excel export button
 			var excelBtn = tk.createButton(
 				buttonComp, M.ExcelExport, SWT.NONE);
 			excelBtn.setImage(Images.get(FileType.EXCEL));
 			UI.gridData(excelBtn, false, false).widthHint = 120;
+			Controls.onSelect(excelBtn, $ -> {
+				var file = FileChooser.forSavingFile(
+					"Export project result", "project result.xlsx");
+				var export = new ProjectResultExport(
+					data.project(), data.result(), data.db());
+				try {
+					export.writeTo(file);
+				} catch (Exception e) {
+					ErrorReporter.on("Export of project result failed", e);
+				}
+			});
 
 			// report button
 			var reportBtn = tk.createButton(
 				buttonComp, "Create Report", SWT.NONE);
 			reportBtn.setImage(Images.get(ModelType.PROJECT));
+			reportBtn.setEnabled(false);
 			UI.gridData(reportBtn, false, false).widthHint = 120;
 			Controls.onSelect(
 				reportBtn, $ -> ReportEditor.open(data));

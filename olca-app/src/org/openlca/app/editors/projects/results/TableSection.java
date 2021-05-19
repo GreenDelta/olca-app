@@ -5,9 +5,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.core.model.ProjectVariant;
-import org.openlca.core.results.ProjectResult;
-import org.openlca.util.Strings;
 
 interface TableSection extends ITableLabelProvider {
 
