@@ -12,7 +12,6 @@ import org.openlca.app.editors.projects.results.ProjectResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
-import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.Project;
 import org.openlca.core.results.ProjectResult;
 
@@ -52,8 +51,7 @@ public class ProjectEditorToolBar extends EditorActionBarContributor {
 		};
 		Runnable calculation = () -> {
 			try {
-				var calculator = new SystemCalculator(db);
-				ref.result = calculator.calculate(project);
+				ref.result = ProjectResult.calculate(project, db);
 			} catch (OutOfMemoryError e) {
 				MsgBox.error(M.OutOfMemory, M.CouldNotAllocateMemoryError);
 			} catch (MathIllegalArgumentException e) {

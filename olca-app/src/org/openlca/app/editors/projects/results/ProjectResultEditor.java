@@ -18,6 +18,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.xls.results.ProjectResultExport;
@@ -83,6 +84,7 @@ public class ProjectResultEditor extends SimpleFormEditor {
 					data.project(), data.result(), data.db());
 				try {
 					export.writeTo(file);
+					Popup.info("Exported results to " + file.getName());
 				} catch (Exception e) {
 					ErrorReporter.on("Export of project result failed", e);
 				}

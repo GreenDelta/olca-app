@@ -108,6 +108,8 @@ import org.openlca.io.ecospold2.input.EcoSpold2Import as EcoSpold2Import
 import org.openlca.io.EcoSpoldUnitFetch as EcoSpoldUnitFetch
 import org.openlca.core.database.EntityCache as EntityCache
 import org.openlca.jsonld.Enums as Enums
+import org.openlca.core.matrix.index.EnviFlow as EnviFlow
+import org.openlca.core.matrix.index.EnviIndex as EnviIndex
 import org.openlca.io.xls.Excel as Excel
 import org.openlca.io.xls.process.output.ExcelExport as ExcelExport
 import org.openlca.io.xls.process.input.ExcelImport as ExcelImport
@@ -130,7 +132,6 @@ import org.openlca.core.database.FlowDao as FlowDao
 import org.openlca.core.model.descriptors.FlowDescriptor as FlowDescriptor
 import org.openlca.io.ilcd.output.FlowExport as FlowExport
 import org.openlca.io.ilcd.input.FlowImport as FlowImport
-import org.openlca.core.matrix.FlowIndex as FlowIndex
 import org.openlca.io.maps.FlowMap as FlowMap
 import org.openlca.io.maps.FlowMapEntry as FlowMapEntry
 import org.openlca.core.model.FlowProperty as FlowProperty
@@ -181,7 +182,7 @@ import org.openlca.proto.output.ImpactCategoryWriter as ImpactCategoryWriter
 import org.openlca.core.model.descriptors.ImpactDescriptor as ImpactDescriptor
 import org.openlca.core.model.ImpactFactor as ImpactFactor
 import org.openlca.ipc.handlers.ImpactHandler as ImpactHandler
-import org.openlca.core.matrix.ImpactIndex as ImpactIndex
+import org.openlca.core.matrix.index.ImpactIndex as ImpactIndex
 import org.openlca.core.model.ImpactMethod as ImpactMethod
 import org.openlca.core.database.ImpactMethodDao as ImpactMethodDao
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor as ImpactMethodDescriptor
@@ -197,7 +198,6 @@ import org.openlca.io.ImportInfo as ImportInfo
 import org.openlca.proto.input.ImportStatus as ImportStatus
 import org.openlca.proto.input.In as In
 import org.openlca.proto.InMemoryProtoStore as InMemoryProtoStore
-import org.openlca.core.matrix.IndexFlow as IndexFlow
 import org.openlca.core.matrix.IndexedMatrix as IndexedMatrix
 import org.openlca.io.xls.results.InfoSheet as InfoSheet
 import org.openlca.expressions.InterpreterException as InterpreterException
@@ -235,8 +235,7 @@ import org.openlca.core.results.LocationResult as LocationResult
 import org.openlca.core.database.usage.LocationUseSearch as LocationUseSearch
 import org.openlca.proto.output.LocationWriter as LocationWriter
 import org.openlca.cloud.util.Logs as Logs
-import org.openlca.core.matrix.LongIndex as LongIndex
-import org.openlca.core.matrix.LongPair as LongPair
+import org.openlca.core.matrix.index.LongPair as LongPair
 import org.openlca.ipc.Main as Main
 import org.openlca.io.maps.MapFactor as MapFactor
 import org.openlca.core.model.MappingFile as MappingFile
@@ -311,7 +310,6 @@ import org.openlca.core.results.ProcessGrouping as ProcessGrouping
 import org.openlca.io.ilcd.input.ProcessImport as ProcessImport
 import org.openlca.core.model.ProcessLink as ProcessLink
 import org.openlca.core.matrix.ProcessLinkSearchMap as ProcessLinkSearchMap
-import org.openlca.core.matrix.ProcessProduct as ProcessProduct
 import org.openlca.core.database.references.ProcessReferenceSearch as ProcessReferenceSearch
 import org.openlca.core.matrix.cache.ProcessTable as ProcessTable
 import org.openlca.core.database.usage.ProcessUseSearch as ProcessUseSearch
@@ -333,7 +331,6 @@ import org.openlca.core.database.references.ProjectReferenceSearch as ProjectRef
 import org.openlca.core.results.ProjectResult as ProjectResult
 import org.openlca.io.xls.results.ProjectResultExport as ProjectResultExport
 import org.openlca.core.model.ProjectVariant as ProjectVariant
-import org.openlca.core.database.ProjectVariantDao as ProjectVariantDao
 import org.openlca.proto.output.ProjectWriter as ProjectWriter
 import org.openlca.geo.calc.Projection as Projection
 import org.openlca.core.library.Proto as Proto
@@ -355,6 +352,7 @@ import org.openlca.cloud.api.update.RepositoryConfigConversion as RepositoryConf
 import org.openlca.cloud.error.RepositoryNotFoundException as RepositoryNotFoundException
 import org.openlca.ipc.Responses as Responses
 import org.openlca.io.xls.results.system.ResultExport as ResultExport
+import org.openlca.core.results.ResultItemView as ResultItemView
 import org.openlca.core.results.providers.ResultProviders as ResultProviders
 import org.openlca.core.model.RootEntity as RootEntity
 import org.openlca.core.database.RootEntityDao as RootEntityDao
@@ -405,7 +403,8 @@ import org.openlca.core.math.SystemCalculator as SystemCalculator
 import org.openlca.io.ilcd.output.SystemExport as SystemExport
 import org.openlca.io.xls.systems.SystemExportConfig as SystemExportConfig
 import org.openlca.core.results.SystemProcess as SystemProcess
-import org.openlca.core.matrix.TechIndex as TechIndex
+import org.openlca.core.matrix.index.TechFlow as TechFlow
+import org.openlca.core.matrix.index.TechIndex as TechIndex
 import org.openlca.core.matrix.linking.TechIndexBuilder as TechIndexBuilder
 import org.openlca.core.matrix.linking.TechIndexCutoffBuilder as TechIndexCutoffBuilder
 import org.openlca.expressions.Token as Token
