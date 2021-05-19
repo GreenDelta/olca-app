@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.openlca.app.editors.projects.reports.model.ReportIndicatorResult.VariantResult;
+import org.openlca.app.editors.projects.results.ProjectResultData;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.IDatabase;
@@ -18,6 +19,7 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ProjectResult;
+import org.openlca.core.results.ResultItemView;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +31,17 @@ public class ReportBuilder {
 	private final IDatabase db;
 	private final Project project;
 	private final ProjectResult result;
+	private final ResultItemView items;
 
-	private ReportBuilder(IDatabase db, Project project, ProjectResult result) {
-		this.db = Objects.requireNonNull(db);
-		this.project = Objects.requireNonNull(project);
-		this.result = Objects.requireNonNull(result);
+	private ReportBuilder(ProjectResultData data) {
+		this.db = data.db();
+		this.project = data.project();
+		this.result = data.result();
+		this.items = data.items();
 	}
 
-	public static ReportBuilder of(
-		IDatabase db, Project project, ProjectResult result) {
-		return new ReportBuilder(db, project, result);
+	public static ReportBuilder of(ProjectResultData data) {
+		return new ReportBuilder(data);
 	}
 
 	public void fill(Report report) {
@@ -78,7 +81,7 @@ public class ReportBuilder {
 	}
 
 	private void appendResults(Report report) {
-		for (var impact : result.getImpacts()) {
+		for (var impact : items.impacts()) {
 			var repResult = initReportResult(report, impact);
 			if (repResult == null)
 				continue; // should not add this indicator

@@ -21,7 +21,7 @@ import org.openlca.core.results.ProjectResult;
 
 class SingleScoreSection extends LabelProvider implements TableSection {
 
-	private final ResultData data;
+	private final ProjectResultData data;
 	private final ProjectResult result;
 	private final NwSetTable factors;
 	private final String unit;
@@ -29,7 +29,7 @@ class SingleScoreSection extends LabelProvider implements TableSection {
 
 	private ContributionImage image;
 
-	private SingleScoreSection(ResultData data) {
+	private SingleScoreSection(ProjectResultData data) {
 		this.data = data;
 		this.result = data.result();
 		this.factors = data.nwFactors();
@@ -41,7 +41,7 @@ class SingleScoreSection extends LabelProvider implements TableSection {
 			.orElse(0);
 	}
 
-	static SingleScoreSection of(ResultData data) {
+	static SingleScoreSection of(ProjectResultData data) {
 		return new SingleScoreSection(data);
 	}
 

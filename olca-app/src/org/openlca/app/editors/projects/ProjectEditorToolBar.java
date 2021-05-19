@@ -7,6 +7,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.editors.projects.results.ProjectResultData;
 import org.openlca.app.editors.projects.results.ProjectResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
@@ -65,7 +66,8 @@ public class ProjectEditorToolBar extends EditorActionBarContributor {
 		App.runWithProgress(M.Calculate, calculation, () -> {
 			if (ref.result == null)
 				return;
-			ProjectResultEditor.open(project, ref.result);
+			var data = ProjectResultData.of(project, ref.result, db);
+			ProjectResultEditor.open(data);
 		});
 	}
 }

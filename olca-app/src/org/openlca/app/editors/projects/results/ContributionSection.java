@@ -41,7 +41,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 class ContributionSection extends LabelProvider implements TableSection,
 	ResultItemSelector.SelectionHandler {
 
-	private final ResultData data;
+	private final ProjectResultData data;
 	private final ProjectVariant[] variants;
 	private TableViewer table;
 	private ContributionImage image;
@@ -53,13 +53,13 @@ class ContributionSection extends LabelProvider implements TableSection,
 	private double absMax;
 	private List<List<Cell>> cells;
 
-	private ContributionSection(ResultData data) {
+	private ContributionSection(ProjectResultData data) {
 		this.data = data;
 		this.variants = data.variants();
 		this.colors = new TLongObjectHashMap<>();
 	}
 
-	static ContributionSection of(ResultData data) {
+	static ContributionSection of(ProjectResultData data) {
 		return new ContributionSection(data);
 	}
 

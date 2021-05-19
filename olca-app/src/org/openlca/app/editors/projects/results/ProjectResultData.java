@@ -9,17 +9,19 @@ import org.openlca.core.results.ProjectResult;
 import org.openlca.core.results.ResultItemView;
 import org.openlca.util.Strings;
 
-class ResultData {
+public class ProjectResultData {
 
+	private final IDatabase db;
 	private final Project project;
 	private final ProjectResult result;
 	private final ProjectVariant[] variants;
 	private final ResultItemView items;
 	private final NwSetTable nwFactors;
 
-	private ResultData(Project project, ProjectResult result, IDatabase db) {
+	private ProjectResultData(Project project, ProjectResult result, IDatabase db) {
 		this.project = project;
 		this.result = result;
+		this.db = db;
 		this.variants = result.getVariants()
 			.stream()
 			.sorted((v1, v2) -> Strings.compare(v1.name, v2.name))
@@ -34,42 +36,45 @@ class ResultData {
 			: null;
 	}
 
-	static ResultData of(Project project, ProjectResult result, IDatabase db) {
-		return new ResultData(project, result, db);
+	public static ProjectResultData of(Project project, ProjectResult result, IDatabase db) {
+		return new ProjectResultData(project, result, db);
 	}
 
-	ProjectResult result() {
+	public IDatabase db() {
+		return db;
+	}
+	
+	public ProjectResult result() {
 		return result;
 	}
 
-	Project project() {
+	public Project project() {
 		return project;
 	}
 
-	ProjectVariant[] variants() {
+	public ProjectVariant[] variants() {
 		return variants;
 	}
 
-	ResultItemView items() {
+	public ResultItemView items() {
 		return items;
 	}
 
-	NwSetTable nwFactors() {
+	public NwSetTable nwFactors() {
 		return nwFactors;
 	}
 
-	boolean hasNormalization() {
+	public boolean hasNormalization() {
 		return nwFactors != null && nwFactors.hasNormalization();
 	}
 
-	boolean hasWeighting() {
+	public boolean hasWeighting() {
 		return nwFactors != null && nwFactors.hasWeighting();
 	}
 
-	String weightedScoreUnit() {
+	public String weightedScoreUnit() {
 		return project != null && project.nwSet != null
 			? project.nwSet.weightedScoreUnit
 			: null;
 	}
-
 }

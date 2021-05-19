@@ -2,7 +2,6 @@ package org.openlca.app.results;
 
 import org.openlca.app.util.Labels;
 import org.openlca.core.results.IResult;
-import org.openlca.core.results.ProjectResult;
 import org.openlca.core.results.ResultItemView;
 import org.openlca.util.Strings;
 
@@ -32,12 +31,6 @@ public final class Sort {
 		if (result.hasImpacts()) {
 			result.getImpacts().sort(
 				(i1, i2) -> Strings.compare(i1.name, i2.name));
-		}
-
-		if (result instanceof ProjectResult) {
-			ProjectResult p = (ProjectResult) result;
-			p.getVariants().sort(
-				(v1, v2) -> Strings.compare(v1.name, v2.name));
 		}
 	}
 

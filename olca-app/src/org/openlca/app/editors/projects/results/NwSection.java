@@ -26,13 +26,13 @@ class NwSection extends LabelProvider implements TableSection {
 	}
 
 	private final Type type;
-	private final ResultData data;
+	private final ProjectResultData data;
 	private final String unit;
 	private final double absMax;
 
 	private ContributionImage image;
 
-	private NwSection(Type type, ResultData data) {
+	private NwSection(Type type, ProjectResultData data) {
 		this.type = type;
 		this.data = data;
 		this.unit = data.weightedScoreUnit();
@@ -45,11 +45,11 @@ class NwSection extends LabelProvider implements TableSection {
 		this.absMax = _absMax;
 	}
 
-	static NwSection forNormalization(ResultData data) {
+	static NwSection forNormalization(ProjectResultData data) {
 		return new NwSection(Type.NORMALIZATION, data);
 	}
 
-	static NwSection forWeighting(ResultData data) {
+	static NwSection forWeighting(ProjectResultData data) {
 		return new NwSection(Type.WEIGHTING, data);
 	}
 

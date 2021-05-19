@@ -18,13 +18,13 @@ import org.openlca.core.model.ProjectVariant;
 
 class ProjectVariantSection extends LabelProvider implements TableSection {
 
-	private final ResultData data;
+	private final ProjectResultData data;
 
-	private ProjectVariantSection(ResultData data) {
+	private ProjectVariantSection(ProjectResultData data) {
 		this.data = data;
 	}
 
-	static ProjectVariantSection of(ResultData data) {
+	static ProjectVariantSection of(ProjectResultData data) {
 		return new ProjectVariantSection(data);
 	}
 

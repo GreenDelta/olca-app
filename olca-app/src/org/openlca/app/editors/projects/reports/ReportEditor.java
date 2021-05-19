@@ -2,7 +2,6 @@ package org.openlca.app.editors.projects.reports;
 
 import java.io.IOException;
 
-import com.google.gson.GsonBuilder;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -14,11 +13,13 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.editors.projects.reports.model.Report;
+import org.openlca.app.editors.projects.results.ProjectResultData;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Project;
 import org.openlca.core.results.ProjectResult;
-import org.openlca.util.Pair;
+
+import com.google.gson.GsonBuilder;
 
 public class ReportEditor extends SimpleFormEditor {
 
@@ -26,13 +27,12 @@ public class ReportEditor extends SimpleFormEditor {
 	ProjectResult result;
 	Report report;
 
-	public static void open(Project project, ProjectResult result) {
-		if (project == null || result == null)
+	public static void open(ProjectResultData data) {
+		if (data == null)
 			return;
-		var pair = Pair.of(project, result);
-		var id = Cache.getAppCache().put(pair);
+		var id = Cache.getAppCache().put(data);
 		var input = new SimpleEditorInput(
-			id, "Report of: " + Labels.name(project));
+			id, "Report of: " + Labels.name(data.project()));
 		Editors.open(input, "ReportEditor");
 	}
 
@@ -42,17 +42,11 @@ public class ReportEditor extends SimpleFormEditor {
 		super.init(site, input);
 		var simpleInput = (SimpleEditorInput) input;
 		var obj = Cache.getAppCache().remove(simpleInput.id);
-		var err = "editor input must be a pair of project and result";
-		if (!(obj instanceof Pair))
-			throw new PartInitException(err);
-		var pair = (Pair<?, ?>) obj;
-		var first = pair.first;
-		var second = pair.second;
-		if (!(first instanceof Project)
-				|| !(second instanceof ProjectResult))
-			throw new PartInitException(err);
-		this.project = (Project) first;
-		this.result = (ProjectResult) second;
+		if (!(obj instanceof ProjectResultData))
+			throw new PartInitException("editor input must be a project result");
+		var data = (ProjectResultData) obj;
+		this.project = data.project();
+		this.result = data.result();
 		this.report = new Report();
 		setPartName("Report of: " + Labels.name(project));
 	}

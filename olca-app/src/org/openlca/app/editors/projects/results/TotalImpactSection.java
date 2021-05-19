@@ -1,7 +1,6 @@
 package org.openlca.app.editors.projects.results;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.viewers.LabelProvider;
@@ -26,18 +25,18 @@ import org.openlca.util.Strings;
 
 class TotalImpactSection extends LabelProvider implements TableSection {
 
-	private final ResultData data;
+	private final ProjectResultData data;
 	private final ProjectVariant[] variants;
 	private final ProjectResult result;
 	private ContributionImage image;
 
-	private TotalImpactSection(ResultData data) {
+	private TotalImpactSection(ProjectResultData data) {
 		this.data = data;
 		this.variants = data.variants();
 		this.result = data.result();
 	}
 
-	static TotalImpactSection of(ResultData data) {
+	static TotalImpactSection of(ProjectResultData data) {
 		return new TotalImpactSection(data);
 	}
 

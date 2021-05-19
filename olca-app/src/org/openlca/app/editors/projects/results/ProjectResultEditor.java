@@ -8,7 +8,6 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
@@ -18,14 +17,13 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.model.ModelType;
 
 public class ProjectResultEditor extends SimpleFormEditor {
 
-	private ResultData data;
+	private ProjectResultData data;
 
-	public static void open(ResultData data) {
+	public static void open(ProjectResultData data) {
 		if (data == null)
 			return;
 		var id = Cache.getAppCache().put(data);
@@ -40,9 +38,9 @@ public class ProjectResultEditor extends SimpleFormEditor {
 		super.init(site, input);
 		var simpleInput = (SimpleEditorInput) input;
 		var obj = Cache.getAppCache().remove(simpleInput.id);
-		if (!(obj instanceof ResultData))
+		if (!(obj instanceof ProjectResultData))
 			throw new PartInitException("editor input must be a project result");
-		data = (ResultData) obj;
+		data = (ProjectResultData) obj;
 		setPartName("Result of: " + Labels.name(data.project()));
 	}
 
@@ -53,7 +51,7 @@ public class ProjectResultEditor extends SimpleFormEditor {
 
 	private static class Page extends FormPage {
 
-		private final ResultData data;
+		private final ProjectResultData data;
 
 		Page(ProjectResultEditor editor) {
 			super(editor, "ProjectResultEditor.Page", "Results");
@@ -80,7 +78,7 @@ public class ProjectResultEditor extends SimpleFormEditor {
 			reportBtn.setImage(Images.get(ModelType.PROJECT));
 			UI.gridData(reportBtn, false, false).widthHint = 120;
 			Controls.onSelect(
-				reportBtn, $ -> ReportEditor.open(project, result));
+				reportBtn, $ -> ReportEditor.open(data));
 
 			// create the sections
 			ProjectVariantSection.of(data).renderOn(body, tk);

@@ -11,13 +11,6 @@ import org.openlca.util.Strings;
 
 interface TableSection extends ITableLabelProvider {
 
-	default ProjectVariant[] variantsOf(ProjectResult result) {
-		return result.getVariants()
-			.stream()
-			.sorted((v1, v2) -> Strings.compare(v1.name, v2.name))
-			.toArray(ProjectVariant[]::new);
-	}
-
 	default ContributionImage contributionImage(TableViewer table) {
 		var image = new ContributionImage();
 		table.getControl().addDisposeListener($ -> image.dispose());
