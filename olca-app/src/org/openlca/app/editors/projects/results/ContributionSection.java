@@ -1,12 +1,9 @@
 package org.openlca.app.editors.projects.results;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.ToDoubleBiFunction;
-import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.viewers.LabelProvider;
@@ -212,28 +209,11 @@ class ContributionSection extends LabelProvider implements TableSection,
 		if (cells == null)
 			return;
 
-		var comparator = comparator();
-
 		double absMax = 0;
 		var rows = new ArrayList<Contribution[]>();
 		for (int i = 0; i < variants.length; i++) {
-
 			// select the top contributions of variant i
-			var column = cells.get(i);
-			column.sort(comparator);
-			var selected = new ArrayList<>(
-				column.subList(0, Math.min(column.size(), count)));
-
-			// calculate a rest if necessary
-			if (column.size() > count) {
-				var rest = column.subList(count, column.size())
-					.stream()
-					.mapToDouble(cell -> cell.amount)
-					.sum();
-				if (rest != 0) {
-					selected.add(Contribution.restOf(rest));
-				}
-			}
+			var selected = Contribution.select(cells.get(i), count, query);
 
 			// fill column i in the rows with the respective contributions
 			for (int j = 0; j < selected.size(); j++) {
@@ -251,48 +231,4 @@ class ContributionSection extends LabelProvider implements TableSection,
 		table.setInput(rows);
 
 	}
-
-	private Comparator<Contribution> comparator() {
-		// compare by result values by default
-		if (Strings.nullOrEmpty(query))
-			return Comparator.comparingDouble(cell -> -cell.amount);
-
-		// compare by a match factor if there is a search query
-		var terms = Arrays.stream(query.split(" "))
-			.map(s -> s.trim().toLowerCase())
-			.filter(t -> !Strings.nullOrEmpty(t))
-			.collect(Collectors.toSet());
-
-		// the smaller the match value the higher a cell will
-		// be ranked. 0 means no match so that we can give 1
-		// to the rest so that it is always at the bottom
-		ToDoubleFunction<String> matcher = s -> {
-			if (s == null)
-				return 0;
-			var f = s.toLowerCase();
-			double i = 0;
-			for (var term : terms) {
-				double idx = f.indexOf(term);
-				if (idx >= 0) {
-					i -= term.length() / (idx + 1.0);
-				}
-			}
-			return i;
-		};
-
-		// first compare by string matching, and then by result values
-		return (cell1, cell2) -> {
-			double d1 = cell1.isRest
-				? 1
-				: matcher.applyAsDouble(Labels.name(cell1.process));
-			double d2 = cell2.isRest
-				? 1
-				: matcher.applyAsDouble(Labels.name(cell2.process));
-			int c = Double.compare(d1, d2);
-			return c != 0
-				? c
-				: Double.compare(cell2.amount, cell1.amount);
-		};
-	}
-
 }
