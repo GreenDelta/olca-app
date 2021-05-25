@@ -145,9 +145,9 @@ class ProcessFigure extends Figure {
 	@Override
 	protected void paintFigure(Graphics g) {
 		var theme = node.config().theme();
-		border.setColor(theme.boxBorderColorOf(node));
+		border.setColor(theme.borderColorOf(node));
 		g.pushState();
-		g.setBackgroundColor(theme.boxBackgroundOf(node));
+		g.setBackgroundColor(theme.backgroundColorOf(node));
 		g.fillRectangle(new Rectangle(getLocation(), getSize()));
 		g.popState();
 		super.paintFigure(g);
@@ -241,7 +241,7 @@ class ProcessFigure extends Figure {
 			layout.marginWidth = 10;
 			setLayoutManager(layout);
 			label = new Label(node.getName());
-			label.setForegroundColor(theme.boxForegroundOf(node));
+			label.setForegroundColor(theme.fontColorOf(node));
 			add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
 		}
 
@@ -256,9 +256,9 @@ class ProcessFigure extends Figure {
 		@Override
 		protected void paintFigure(Graphics g) {
 			var theme = node.config().theme();
-			label.setForegroundColor(theme.boxForegroundOf(node));
+			label.setForegroundColor(theme.fontColorOf(node));
 			g.pushState();
-			g.setBackgroundColor(theme.boxBackgroundOf(node));
+			g.setBackgroundColor(theme.backgroundColorOf(node));
 			g.fillRectangle(new Rectangle(getLocation(), getSize()));
 			g.popState();
 			super.paintFigure(g);

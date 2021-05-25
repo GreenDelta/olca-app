@@ -22,12 +22,17 @@ public class WhiteTheme implements Theme {
 	}
 
 	@Override
-	public Color graphBackground() {
+	public Color defaultFontColor() {
+		return COLOR_BLACK;
+	}
+
+	@Override
+	public Color defaultBackgroundColor() {
 		return COLOR_WHITE;
 	}
 
 	@Override
-	public Color colorOf(Link link) {
+	public Color defaultBorderColor() {
 		return COLOR_BLACK;
 	}
 
@@ -35,24 +40,9 @@ public class WhiteTheme implements Theme {
 	public Color defaultLinkColor() {
 		return COLOR_BLACK;
 	}
-	
-	@Override
-	public Color graphBorderColor() {
-		return COLOR_BLACK;
-	}
 
 	@Override
-	public Color graphForeground() {
-		return COLOR_BLACK;
-	}
-	
-	@Override
-	public Color ioHeaderForegroundOf(ProcessNode node) {
-		return COLOR_BLACK;
-	}
-
-	@Override
-	public Color ioForegroundOf(ExchangeNode node) {
+	public Color infoFontColor() {
 		return COLOR_BLACK;
 	}
 }

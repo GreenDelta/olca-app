@@ -37,7 +37,7 @@ class LinkPart extends AbstractConnectionEditPart {
 						? provider.config().theme()
 						: null;
 				if (theme != null) {
-					setForegroundColor(theme.colorOf(link));
+					setForegroundColor(theme.linkColorOf(link));
 				} else {
 					setForegroundColor(ColorConstants.black);
 				}

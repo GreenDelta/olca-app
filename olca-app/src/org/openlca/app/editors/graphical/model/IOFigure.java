@@ -81,8 +81,7 @@ class IOFigure extends Figure {
 		@Override
 		public void paint(Graphics g) {
 			var theme = node.config().theme();
-			label.setForegroundColor(
-				theme.ioHeaderForegroundOf(node));
+			label.setForegroundColor(theme.infoFontColor());
 			super.paint(g);
 		}
 	}
@@ -103,9 +102,9 @@ class IOFigure extends Figure {
 		@Override
 		protected void paintFigure(Graphics g) {
 			var theme = node.config().theme();
-			border.setColor(theme.boxBorderColorOf(node));
+			border.setColor(theme.borderColorOf(node));
 			g.pushState();
-			g.setBackgroundColor(theme.boxBackgroundOf(node));
+			g.setBackgroundColor(theme.backgroundColorOf(node));
 			var location = getLocation();
 			var size = getSize();
 			g.fillRectangle(

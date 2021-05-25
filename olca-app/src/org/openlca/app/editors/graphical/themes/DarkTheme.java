@@ -32,18 +32,18 @@ public class DarkTheme implements Theme {
 	}
 
 	@Override
-	public Color graphBackground() {
+	public Color defaultFontColor() {
+		return WHITE;
+	}
+
+	@Override
+	public Color defaultBackgroundColor() {
 		return BLACK;
 	}
 
 	@Override
-	public Color colorOf(Link link) {
-		if (link == null)
-			return defaultLinkColor();
-		var provider = link.provider();
-		if (provider == null)
-			return defaultLinkColor();
-		return boxBorderColorOf(provider);
+	public Color defaultBorderColor() {
+		return WHITE;
 	}
 
 	@Override
@@ -52,12 +52,12 @@ public class DarkTheme implements Theme {
 	}
 
 	@Override
-	public Color graphBorderColor() {
-		return WHITE;
+	public Color infoFontColor() {
+		return YELLOW;
 	}
 
 	@Override
-	public Color boxBorderColorOf(ProcessNode node) {
+	public Color borderColorOf(ProcessNode node) {
 		if (node == null || node.process == null)
 			return WHITE;
 		var isSystem = node.process.isFromLibrary()
@@ -72,31 +72,17 @@ public class DarkTheme implements Theme {
 	}
 
 	@Override
-	public Color graphForeground() {
-		return WHITE;
-	}
-
-	@Override
-	public Color ioHeaderForegroundOf(ProcessNode node) {
-		return YELLOW;
-	}
-
-	@Override
-	public Color ioForegroundOf(ExchangeNode node) {
+	public Color fontColorOf(ExchangeNode node) {
 		if (node == null)
 			return WHITE;
 		var type = node.flowType();
 		if (type == null)
 			return WHITE;
-		switch (type) {
-		case PRODUCT_FLOW:
-			return BLUE;
-		case WASTE_FLOW:
-			return ORANGE;
-		case ELEMENTARY_FLOW:
-			return GREEN;
-		default:
-			return WHITE;
-		}
+		return switch (type) {
+			case PRODUCT_FLOW -> BLUE;
+			case WASTE_FLOW -> ORANGE;
+			case ELEMENTARY_FLOW -> GREEN;
+			default -> WHITE;
+		};
 	}
 }

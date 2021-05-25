@@ -23,64 +23,49 @@ public class ColorfulTheme implements Theme {
 
 	@Override
 	public String label() {
-		return "Colorful";
+		return "Default";
 	}
 
 	@Override
 	public String id() {
-		return "colorful";
+		return "default";
 	}
-	
+
+
 	@Override
-	public Color graphBorderColor() {
-		return DEFAULT_BORDER;
+	public Color defaultFontColor() {
+		return Colors.black();
 	}
 
 	@Override
-	public Color graphBackground() {
+	public Color defaultBackgroundColor() {
+		return COLOR_WHITE;
+	}
+
+	@Override
+	public Color defaultBorderColor() {
+		return DEFAULT_BORDER;
+	}
+
+
+	@Override
+	public Color defaultLinkColor() {
+		return COLOR_DARK_GREY;
+	}
+
+	@Override
+	public Color infoFontColor() {
 		return COLOR_LIGHT_GREY;
 	}
 
 	@Override
-	public Color colorOf(Link link) {
+	public Color linkColorOf(Link link) {
 		if (link == null)
 			return COLOR_DARK_GREY;
 		var provider = link.provider();
 		if (provider == null)
 			return COLOR_DARK_GREY;
 		return COLOR_DARK_GREY;
-	}
-
-	@Override
-	public Color defaultLinkColor() {
-		return COLOR_PRODUCT;
-	}
-
-	@Override
-	public Color graphForeground() {
-		return COLOR_DARK_GREY;
-	}
-
-	@Override
-	public Color ioHeaderForegroundOf(ProcessNode node) {
-		return COLOR_WHITE;
-	}
-
-	@Override
-	public Color ioForegroundOf(ExchangeNode node) {
-		if (node == null)
-			return COLOR_DARK_GREY;
-		var flowType = node.flowType();
-		if (flowType == null)
-			return COLOR_DARK_GREY;
-		switch (flowType) {
-			case PRODUCT_FLOW:
-				return COLOR_PRODUCT;
-			case WASTE_FLOW:
-				return COLOR_WASTE;
-			default:
-				return COLOR_DARK_GREY;
-		}
 	}
 
 	private static boolean isUnitProcess(ProcessNode node) {
