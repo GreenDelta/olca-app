@@ -19,23 +19,21 @@ class IOFigure extends Figure {
 		this.node = node;
 
 		// layout
-		var layout = new GridLayout(2, true);
+		var layout = new GridLayout(1, true);
 		layout.horizontalSpacing = 4;
 		layout.verticalSpacing = 4;
 		layout.marginHeight = 2;
 		layout.marginWidth = 2;
 		setLayoutManager(layout);
 
-		// headers
-		add(new Header("Input flows"),
+		add(new Header(true),
 			new GridData(SWT.FILL, SWT.TOP, true, false));
-		add(new Header("Output flows"),
-			new GridData(SWT.FILL, SWT.TOP, true, false));
-
-		// panels
 		inputPanel = new ExchangePanel();
 		add(inputPanel,
 			new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		add(new Header(false),
+			new GridData(SWT.FILL, SWT.TOP, true, false));
 		outputPanel = new ExchangePanel();
 		add(outputPanel,
 			new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -66,13 +64,18 @@ class IOFigure extends Figure {
 
 		private final Label label;
 
-		Header(String text) {
+		Header(boolean forInputs) {
 			var layout = new GridLayout(1, true);
 			layout.marginHeight = 2;
 			layout.marginWidth =  5;
 			setLayoutManager(layout);
-			label = new Label(text);
-			add(label, new GridData(SWT.CENTER, SWT.TOP, true, false));
+			label = new Label(forInputs
+				? ">> Input flows"
+				: "Output flows >>");
+			var alignment = forInputs
+				? SWT.LEFT
+				: SWT.RIGHT;
+			add(label, new GridData(alignment, SWT.TOP, true, false));
 		}
 
 		@Override
