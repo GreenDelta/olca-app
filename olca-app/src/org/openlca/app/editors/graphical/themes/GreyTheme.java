@@ -26,32 +26,18 @@ public class GreyTheme implements Theme{
 	}
 
 	@Override
-	public Color boxColorOf(ProcessNode node) {
-		return DARK_GREY;
-	}
-
-	@Override
-	public Color boxHeaderForegroundOf(ProcessNode node) {
-		return isUnitProcess(node)
-			? boxColorOf(node)
-			: WHITE;
-	}
-
-	@Override
-	public Color boxHeaderBackgroundOf(ProcessNode node) {
-		return isUnitProcess(node)
-			? LIGHT_GREY
-			: boxColorOf(node);
-	}
-
-	@Override
 	public Color ioHeaderForegroundOf(ProcessNode node) {
 		return WHITE;
 	}
-
+	
 	@Override
-	public Color ioInnerBackgroundOf(ProcessNode node) {
-		return LIGHT_GREY;
+	public Color graphForeground() {
+		return DARK_GREY;
+	}
+	
+	@Override
+	public Color graphBorderColor() {
+		return DARK_GREY;
 	}
 
 	@Override

@@ -35,35 +35,20 @@ public class WhiteTheme implements Theme {
 	public Color defaultLinkColor() {
 		return COLOR_BLACK;
 	}
-
+	
 	@Override
-	public Color boxColorOf(ProcessNode node) {
-		return COLOR_WHITE;
-	}
-
-	@Override
-	public Color boxBorderOf(ProcessNode node) {
+	public Color graphBorderColor() {
 		return COLOR_BLACK;
 	}
 
 	@Override
-	public Color boxHeaderForegroundOf(ProcessNode node) {
+	public Color graphForeground() {
 		return COLOR_BLACK;
 	}
-
-	@Override
-	public Color boxHeaderBackgroundOf(ProcessNode node) {
-		return COLOR_WHITE;
-	}
-
+	
 	@Override
 	public Color ioHeaderForegroundOf(ProcessNode node) {
 		return COLOR_BLACK;
-	}
-
-	@Override
-	public Color ioInnerBackgroundOf(ProcessNode node) {
-		return COLOR_WHITE;
 	}
 
 	@Override

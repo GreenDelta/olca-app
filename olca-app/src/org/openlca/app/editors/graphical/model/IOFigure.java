@@ -103,10 +103,9 @@ class IOFigure extends Figure {
 		@Override
 		protected void paintFigure(Graphics g) {
 			var theme = node.config().theme();
-			border.setColor(theme.boxBorderOf(node));
+			border.setColor(theme.boxBorderColorOf(node));
 			g.pushState();
-			g.setBackgroundColor(
-				theme.ioInnerBackgroundOf(node));
+			g.setBackgroundColor(theme.boxBackgroundOf(node));
 			var location = getLocation();
 			var size = getSize();
 			g.fillRectangle(

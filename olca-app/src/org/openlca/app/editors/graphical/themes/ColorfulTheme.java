@@ -19,6 +19,7 @@ public class ColorfulTheme implements Theme {
 	private static final Color COLOR_WASTE = Colors.get(158, 72, 14);
 	private static final Color COLOR_LIBRARY = Colors.get(0, 176, 240);
 	private static final Color COLOR_SYSTEM = Colors.get(0, 111, 54);
+	private static final Color DEFAULT_BORDER = Colors.get(128, 0, 128);
 
 	@Override
 	public String label() {
@@ -28,6 +29,11 @@ public class ColorfulTheme implements Theme {
 	@Override
 	public String id() {
 		return "colorful";
+	}
+	
+	@Override
+	public Color graphBorderColor() {
+		return DEFAULT_BORDER;
 	}
 
 	@Override
@@ -42,7 +48,7 @@ public class ColorfulTheme implements Theme {
 		var provider = link.provider();
 		if (provider == null)
 			return COLOR_DARK_GREY;
-		return boxColorOf(provider);
+		return COLOR_DARK_GREY;
 	}
 
 	@Override
@@ -51,41 +57,13 @@ public class ColorfulTheme implements Theme {
 	}
 
 	@Override
-	public Color boxColorOf(ProcessNode node) {
-		if (node == null || node.process == null)
-			return COLOR_DARK_GREY;
-		var d = node.process;
-		if (d.isFromLibrary())
-			return COLOR_LIBRARY;
-		if (!(d instanceof ProcessDescriptor))
-			return COLOR_SYSTEM;
-		return node.isWasteProcess()
-			? COLOR_WASTE
-			: COLOR_PRODUCT;
-	}
-
-	@Override
-	public Color boxHeaderForegroundOf(ProcessNode node) {
-		return isUnitProcess(node)
-			? boxColorOf(node)
-			: COLOR_WHITE;
-	}
-
-	@Override
-	public Color boxHeaderBackgroundOf(ProcessNode node) {
-		return isUnitProcess(node)
-			? COLOR_LIGHT_GREY
-			: boxColorOf(node);
+	public Color graphForeground() {
+		return COLOR_DARK_GREY;
 	}
 
 	@Override
 	public Color ioHeaderForegroundOf(ProcessNode node) {
 		return COLOR_WHITE;
-	}
-
-	@Override
-	public Color ioInnerBackgroundOf(ProcessNode node) {
-		return COLOR_LIGHT_GREY;
 	}
 
 	@Override

@@ -11,23 +11,27 @@ public interface Theme {
 
 	String id();
 
-	Color boxColorOf(ProcessNode node);
-
-	default Color boxBorderOf(ProcessNode node) {
-		return boxColorOf(node);
+	Color graphBorderColor();
+	
+	default Color boxBorderColorOf(ProcessNode node) {
+		return graphBorderColor();
 	}
 
-	Color boxHeaderForegroundOf(ProcessNode node);
-
-	Color boxHeaderBackgroundOf(ProcessNode node);
-
 	Color ioHeaderForegroundOf(ProcessNode node);
-
-	Color ioInnerBackgroundOf(ProcessNode node);
 
 	Color ioForegroundOf(ExchangeNode node);
 
 	Color graphBackground();
+	
+	default Color boxBackgroundOf(ProcessNode node) {
+		return graphBackground();
+	}
+	
+	Color graphForeground();
+	
+	default Color boxForegroundOf(ProcessNode node) {
+		return graphForeground();
+	}
 
 	Color colorOf(Link link);
 

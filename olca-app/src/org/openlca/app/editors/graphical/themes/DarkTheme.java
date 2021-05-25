@@ -43,7 +43,7 @@ public class DarkTheme implements Theme {
 		var provider = link.provider();
 		if (provider == null)
 			return defaultLinkColor();
-		return boxBorderOf(provider);
+		return boxBorderColorOf(provider);
 	}
 
 	@Override
@@ -52,12 +52,12 @@ public class DarkTheme implements Theme {
 	}
 
 	@Override
-	public Color boxColorOf(ProcessNode node) {
-		return BLACK;
+	public Color graphBorderColor() {
+		return WHITE;
 	}
 
 	@Override
-	public Color boxBorderOf(ProcessNode node) {
+	public Color boxBorderColorOf(ProcessNode node) {
 		if (node == null || node.process == null)
 			return WHITE;
 		var isSystem = node.process.isFromLibrary()
@@ -72,23 +72,13 @@ public class DarkTheme implements Theme {
 	}
 
 	@Override
-	public Color boxHeaderBackgroundOf(ProcessNode node) {
-		return BLACK;
-	}
-
-	@Override
-	public Color boxHeaderForegroundOf(ProcessNode node) {
-		return BLUE;
+	public Color graphForeground() {
+		return WHITE;
 	}
 
 	@Override
 	public Color ioHeaderForegroundOf(ProcessNode node) {
 		return YELLOW;
-	}
-
-	@Override
-	public Color ioInnerBackgroundOf(ProcessNode node) {
-		return BLACK;
 	}
 
 	@Override
