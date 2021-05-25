@@ -1,7 +1,6 @@
 package org.openlca.app.editors.graphical.themes;
 
 import org.eclipse.swt.graphics.Color;
-import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.Colors;
@@ -55,7 +54,7 @@ public class ColorfulTheme implements Theme {
 
 	@Override
 	public Color infoFontColor() {
-		return COLOR_LIGHT_GREY;
+		return COLOR_DARK_GREY;
 	}
 
 	@Override

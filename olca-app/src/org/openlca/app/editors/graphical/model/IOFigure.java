@@ -22,8 +22,8 @@ class IOFigure extends Figure {
 		var layout = new GridLayout(1, true);
 		layout.horizontalSpacing = 4;
 		layout.verticalSpacing = 4;
-		layout.marginHeight = 2;
-		layout.marginWidth = 2;
+		layout.marginHeight = 0;
+		layout.marginWidth = 0;
 		setLayoutManager(layout);
 
 		add(new Header(true),
@@ -70,8 +70,8 @@ class IOFigure extends Figure {
 			layout.marginWidth =  5;
 			setLayoutManager(layout);
 			label = new Label(forInputs
-				? ">> Input flows"
-				: "Output flows >>");
+				? ">> input flows"
+				: "output flows >>");
 			var alignment = forInputs
 				? SWT.LEFT
 				: SWT.RIGHT;
@@ -81,6 +81,11 @@ class IOFigure extends Figure {
 		@Override
 		public void paint(Graphics g) {
 			var theme = node.config().theme();
+			var location = getLocation();
+			var size = getSize();
+			g.setForegroundColor(theme.borderColorOf(node));
+			g.drawLine(location.x, location.y, location.x + size.width, location.y);
+			g.restoreState();
 			label.setForegroundColor(theme.infoFontColor());
 			super.paint(g);
 		}
@@ -96,7 +101,8 @@ class IOFigure extends Figure {
 			layout.marginWidth =  5;
 			setLayoutManager(layout);
 			border = new LineBorder(1);
-			setBorder(border);
+			//setBorder(border);
+			
 		}
 
 		@Override

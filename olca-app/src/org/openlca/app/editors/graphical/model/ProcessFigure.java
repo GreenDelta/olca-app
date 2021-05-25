@@ -63,8 +63,8 @@ class ProcessFigure extends Figure {
 		var layout = new GridLayout(1, true);
 		layout.horizontalSpacing = 10;
 		layout.verticalSpacing = 0;
-		layout.marginHeight = 2;
-		layout.marginWidth = 2;
+		layout.marginHeight = 0;
+		layout.marginWidth = 0;
 		setLayoutManager(layout);
 	}
 
