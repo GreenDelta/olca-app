@@ -101,9 +101,13 @@ class Contribution {
 				var factor = matcher.applyAsDouble(name);
 				return Pair.of(c, factor);
 			})
-			.sorted(Comparator.comparingDouble(p -> p.second))
+			.sorted((p1, p2) -> {
+				var c = Double.compare(p1.second, p2.second);
+				if (c != 0)
+					return c;
+				return Double.compare(p2.first.amount, p1.first.amount);
+			})
 			.collect(Collectors.toList());
-
 
 		double rest = 0;
 		var selected = new ArrayList<Contribution>(
