@@ -51,7 +51,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 	private int count = 10;
 	private String query;
 	private double absMax;
-	private List<List<Cell>> cells;
+	private List<List<Contribution>> cells;
 
 	private ContributionSection(ProjectResultData data) {
 		this.data = data;
@@ -120,13 +120,13 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 	@Override
 	public Image getColumnImage(Object obj, int col) {
-		if (!(obj instanceof Cell[]) || absMax == 0)
+		if (!(obj instanceof Contribution[]) || absMax == 0)
 			return null;
-		var row = (Cell[]) obj;
+		var row = (Contribution[]) obj;
 		if (row.length <= col || row[col] == null)
 			return null;
 		var cell = row[col];
-		double share = 0.1 + 0.9 * cell.result / absMax;
+		double share = 0.1 + 0.9 * cell.amount / absMax;
 		Color color;
 		if (cell.isRest) {
 			color = Colors.gray();
@@ -144,13 +144,13 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 	@Override
 	public String getColumnText(Object obj, int col) {
-		if (!(obj instanceof Cell[]))
+		if (!(obj instanceof Contribution[]))
 			return null;
-		var row = (Cell[]) obj;
+		var row = (Contribution[]) obj;
 		if (row.length <= col || row[col] == null)
 			return null;
 		var cell = row[col];
-		var result = Numbers.format(cell.result, 2);
+		var result = Numbers.format(cell.amount, 2);
 		if (unit != null) {
 			result += " " + unit;
 		}
@@ -186,7 +186,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 	 * of that variant.
 	 */
 	private void updateCells(ToDoubleBiFunction<ContributionResult, TechFlow> fn) {
-		var cells = new ArrayList<List<Cell>>();
+		var cells = new ArrayList<List<Contribution>>();
 		for (var variant : variants) {
 			var map = new HashMap<CategorizedDescriptor, Double>();
 			var result = data.result().getResult(variant);
@@ -200,7 +200,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 			}
 			var column = map.entrySet()
 				.stream()
-				.map(e -> new Cell(e.getKey(), e.getValue()))
+				.map(e -> new Contribution(e.getKey(), e.getValue()))
 				.collect(Collectors.toList());
 			cells.add(column);
 		}
@@ -215,7 +215,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 		var comparator = comparator();
 
 		double absMax = 0;
-		var rows = new ArrayList<Cell[]>();
+		var rows = new ArrayList<Contribution[]>();
 		for (int i = 0; i < variants.length; i++) {
 
 			// select the top contributions of variant i
@@ -228,21 +228,21 @@ class ContributionSection extends LabelProvider implements TableSection,
 			if (column.size() > count) {
 				var rest = column.subList(count, column.size())
 					.stream()
-					.mapToDouble(cell -> cell.result)
+					.mapToDouble(cell -> cell.amount)
 					.sum();
 				if (rest != 0) {
-					selected.add(Cell.restOf(rest));
+					selected.add(Contribution.restOf(rest));
 				}
 			}
 
 			// fill column i in the rows with the respective contributions
 			for (int j = 0; j < selected.size(); j++) {
 				while (rows.size() <= j) {
-					rows.add(new Cell[variants.length]);
+					rows.add(new Contribution[variants.length]);
 				}
 				var cell = selected.get(j);
 				rows.get(j)[i] = cell;
-				absMax = Math.max(absMax, Math.abs(cell.result));
+				absMax = Math.max(absMax, Math.abs(cell.amount));
 			}
 		}
 
@@ -252,10 +252,10 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 	}
 
-	private Comparator<Cell> comparator() {
+	private Comparator<Contribution> comparator() {
 		// compare by result values by default
 		if (Strings.nullOrEmpty(query))
-			return Comparator.comparingDouble(cell -> -cell.result);
+			return Comparator.comparingDouble(cell -> -cell.amount);
 
 		// compare by a match factor if there is a search query
 		var terms = Arrays.stream(query.split(" "))
@@ -291,25 +291,8 @@ class ContributionSection extends LabelProvider implements TableSection,
 			int c = Double.compare(d1, d2);
 			return c != 0
 				? c
-				: Double.compare(cell2.result, cell1.result);
+				: Double.compare(cell2.amount, cell1.amount);
 		};
 	}
 
-
-	private static class Cell {
-
-		private final CategorizedDescriptor process;
-		private final double result;
-		private final boolean isRest;
-
-		Cell(CategorizedDescriptor process, double result) {
-			this.process = process;
-			this.result = result;
-			this.isRest = process == null;
-		}
-
-		static Cell restOf(double result) {
-			return new Cell(null, result);
-		}
-	}
 }
