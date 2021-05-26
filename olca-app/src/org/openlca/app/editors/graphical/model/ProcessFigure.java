@@ -18,7 +18,7 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.model.ProcessExpander.Side;
-import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -84,7 +84,7 @@ class ProcessFigure extends Figure {
 		top.add(leftExpander, new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
 		// process icon and header
-		top.add(new ImageFigure(Icon.GRAPH_PROCESS_PRODUCTION.get()),
+		top.add(new ImageFigure(Images.get(node.process)),
 				new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		top.add(new BoxHeader(node), new GridData(SWT.FILL, SWT.TOP, true, false));
 

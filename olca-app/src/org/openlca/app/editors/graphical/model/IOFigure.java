@@ -22,7 +22,7 @@ class IOFigure extends Figure {
 		var layout = new GridLayout(1, true);
 		layout.horizontalSpacing = 4;
 		layout.verticalSpacing = 4;
-		layout.marginHeight = 0;
+		layout.marginHeight = 5;
 		layout.marginWidth = 0;
 		setLayoutManager(layout);
 
@@ -66,7 +66,7 @@ class IOFigure extends Figure {
 
 		Header(boolean forInputs) {
 			var layout = new GridLayout(1, true);
-			layout.marginHeight = 2;
+			layout.marginHeight = 3;
 			layout.marginWidth =  5;
 			setLayoutManager(layout);
 			label = new Label(forInputs
@@ -97,12 +97,12 @@ class IOFigure extends Figure {
 
 		ExchangePanel() {
 			var layout = new GridLayout(1, true);
-			layout.marginHeight = 2;
+			layout.marginHeight = 4;
 			layout.marginWidth =  5;
 			setLayoutManager(layout);
 			border = new LineBorder(1);
 			//setBorder(border);
-			
+
 		}
 
 		@Override

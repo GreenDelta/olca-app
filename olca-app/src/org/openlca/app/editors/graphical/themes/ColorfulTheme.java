@@ -20,6 +20,8 @@ public class ColorfulTheme implements Theme {
 	private static final Color COLOR_SYSTEM = Colors.get(0, 111, 54);
 	private static final Color DEFAULT_BORDER = Colors.get(128, 0, 128);
 
+	private static final Color INFO_COLOR = Colors.get(175, 175, 175);
+
 	@Override
 	public String label() {
 		return "Default";
@@ -54,7 +56,7 @@ public class ColorfulTheme implements Theme {
 
 	@Override
 	public Color infoFontColor() {
-		return COLOR_DARK_GREY;
+		return Colors.get(175, 175, 175);
 	}
 
 	@Override
