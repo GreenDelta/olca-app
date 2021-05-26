@@ -9,7 +9,6 @@ import org.eclipse.gef.requests.SelectionRequest;
 import org.eclipse.gef.tools.ConnectionDragCreationTool;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.policy.CreateLinkPolicy;
-import org.openlca.app.rcp.images.Images;
 
 class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 
@@ -51,11 +50,12 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 		var figure = (ExchangeFigure) node.figure;
 
 		// force an update of the icon and text
-		var icon = node.config().showFlowIcons
-				? Images.get(node.flowType())
-				: null;
-		figure.label.setIcon(icon);
-		figure.label.setText(node.getName());
+		// TODO: remove this
+//		var icon = node.config().showFlowIcons
+//				? Images.get(node.flowType())
+//				: null;
+//		// figure.label.setIcon(icon);
+		// figure.label.setText(node.getName());
 
 		var layout = new GridData(
 				SWT.LEFT, SWT.TOP, true, false);
