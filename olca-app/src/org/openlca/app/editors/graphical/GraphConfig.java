@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical;
 
-import org.openlca.app.editors.graphical.themes.ColorfulTheme;
+import org.openlca.app.editors.graphical.themes.DefaultTheme;
 import org.openlca.app.editors.graphical.themes.Theme;
 import org.openlca.app.editors.graphical.themes.Themes;
 import org.openlca.jsonld.Json;
@@ -13,7 +13,7 @@ public class GraphConfig {
 	public boolean showFlowAmounts;
 	public boolean showElementaryFlows;
 	public boolean isRouted = true;
-	private Theme theme = new ColorfulTheme();
+	private Theme theme = new DefaultTheme();
 
 	/**
 	 * Creates a copy from the given configuration.

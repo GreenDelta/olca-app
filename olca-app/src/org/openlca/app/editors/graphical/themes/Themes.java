@@ -18,6 +18,7 @@ public final class Themes {
 			new GreyTheme(),
 			new WhiteTheme(),
 			new DarkTheme(),
+			new DraculaTheme(),
 		};
 		return themes;
 	}
@@ -25,7 +26,7 @@ public final class Themes {
 	public static Theme getDefault() {
 		if (colorful != null)
 			return colorful;
-		colorful = new ColorfulTheme();
+		colorful = new DefaultTheme();
 		return colorful;
 	}
 

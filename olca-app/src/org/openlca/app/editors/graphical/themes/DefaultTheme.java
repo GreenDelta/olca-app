@@ -7,7 +7,7 @@ import org.openlca.app.util.Colors;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-public class ColorfulTheme implements Theme {
+public class DefaultTheme implements Theme {
 
 	static final Color COLOR_LIGHT_GREY = Colors.get(242, 242, 242);
 	static final Color COLOR_WHITE = Colors.white();
