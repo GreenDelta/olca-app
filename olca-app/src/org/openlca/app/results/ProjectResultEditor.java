@@ -7,7 +7,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.db.Cache;
-import org.openlca.app.results.comparison.ProjectComparisonPage;
+import org.openlca.app.results.comparison.ComparisonPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.ProjectVariant;
@@ -44,7 +44,7 @@ public class ProjectResultEditor extends ResultEditor<ContributionResult> {
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new ProjectComparisonPage(this));
+			addPage(new ComparisonPage(this));
 		} catch (Exception e) {
 			log.error("failed to add pages", e);
 		}

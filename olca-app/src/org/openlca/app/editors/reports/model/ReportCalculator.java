@@ -8,7 +8,11 @@ import java.util.TreeSet;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.reports.model.ReportIndicatorResult.VariantResult;
+import org.openlca.app.editors.projects.reports.model.Report;
+import org.openlca.app.editors.projects.reports.model.ReportIndicator;
+import org.openlca.app.editors.projects.reports.model.ReportIndicatorResult;
+import org.openlca.app.editors.projects.reports.model.ReportIndicatorResult.VariantResult;
+import org.openlca.app.editors.projects.reports.model.ReportProcess;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.database.CurrencyDao;
