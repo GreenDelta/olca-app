@@ -2,7 +2,6 @@ package org.openlca.app.results.comparison.display;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -31,9 +30,7 @@ public class Contributions {
 
 		minAmount = l.stream().mapToDouble(c -> c.amount).min().getAsDouble();
 		for (Contribution<CategorizedDescriptor> contribution : l) {
-			List<Contribution<CategorizedDescriptor>> contributions = new ArrayList<>();
-			contributions.add(contribution);
-			list.add(new Cell(contributions, minAmount, this));
+			list.add(new Cell(contribution, minAmount, this));
 		}
 	}
 
@@ -97,8 +94,8 @@ public class Contributions {
 	public String toString() {
 		String s = "[ ";
 		for (Cell c : list) {
-			var l = c.getResult().stream().map(r -> r.getContribution().item.toString()).collect(Collectors.toList());
-			s += String.join(", ", l);
+			var item = c.getResult().getContribution().item.toString();
+			s += String.join(", ", item);
 		}
 		s += " ]";
 		return s;
@@ -111,8 +108,8 @@ public class Contributions {
 		switch (criteria) {
 		case CATEGORY:
 			list.sort((r1, r2) -> {
-				Double c1 = r1.getResult().stream().mapToDouble(r -> r.getContribution().item.category).sum();
-				Double c2 = r2.getResult().stream().mapToDouble(r -> r.getContribution().item.category).sum();
+				Long c1 = r1.getResult().getContribution().item.category;
+				Long c2 = r2.getResult().getContribution().item.category;
 				long result = c1.longValue() - c2.longValue();
 				if (result < 0) {
 					return -1;
@@ -126,10 +123,9 @@ public class Contributions {
 		case LOCATION:
 			list.sort((r1, r2) -> {
 				try {
-					Long l1 = r1.getResult().stream()
-							.mapToLong(r -> ((ProcessDescriptor) r.getContribution().item).location).sum();
-					Long l2 = r2.getResult().stream()
-							.mapToLong(r -> ((ProcessDescriptor) r.getContribution().item).location).sum();
+					Long l1 = ((ProcessDescriptor) r1.getResult().getContribution().item).location;
+					Long l2 = ((ProcessDescriptor) r2.getResult().getContribution().item).location;
+
 					long result = l1.longValue() - l2.longValue();
 					if (result < 0) {
 						return -1;
@@ -147,8 +143,8 @@ public class Contributions {
 			break;
 		default:
 			list.sort((r1, r2) -> {
-				double a1 = r1.getResult().stream().mapToDouble(r -> r.getContribution().amount).sum();
-				double a2 = r2.getResult().stream().mapToDouble(r -> r.getContribution().amount).sum();
+				double a1 = r1.getResult().getContribution().amount;
+				double a2 = r2.getResult().getContribution().amount;
 				if (a1 == 0.0 && a2 != 0.0) {
 					return -1;
 				} else if (a1 != 0.0 && a2 == 0.0) {

@@ -1,4 +1,5 @@
 package org.openlca.app.results.comparison;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -21,6 +22,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class InfoSection {
@@ -30,8 +32,7 @@ class InfoSection {
 			return;
 		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
 		if (setup.productSystem.withoutNetwork) {
-			link(comp, tk, M.ReferenceProcess,
-					setup.productSystem.referenceProcess);
+			link(comp, tk, M.ReferenceProcess, setup.productSystem.referenceProcess);
 		} else {
 			link(comp, tk, M.ProductSystem, setup.productSystem);
 		}
@@ -45,10 +46,24 @@ class InfoSection {
 //		buttons(comp, tk);
 	}
 
+	static void create(Composite body, FormToolkit tk, Project project) {
+		if (project == null)
+			return;
+		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
+		project.variants.stream().forEach(v -> link(comp, tk, M.ProductSystem, v.productSystem));
+
+		if (project.impactMethod != null) {
+			link(comp, tk, M.ImpactAssessmentMethod, project.impactMethod);
+		}
+		if (project.nwSet != null) {
+			text(comp, tk, M.NormalizationAndWeightingSet, project.nwSet.name);
+		}
+//		buttons(comp, tk);
+	}
+
 	private static String targetAmountText(CalculationSetup setup) {
 		String refFlowName = setup.productSystem.referenceExchange.flow.name;
-		return Math.abs(setup.getAmount()) + " "
-				+ setup.getUnit().name + " " + refFlowName;
+		return Math.abs(setup.getAmount()) + " " + setup.getUnit().name + " " + refFlowName;
 	}
 
 	static void text(Composite comp, FormToolkit tk, String label, String val) {
@@ -80,13 +95,10 @@ class InfoSection {
 		tk.createLabel(comp, "");
 		Composite inner = tk.createComposite(comp);
 		UI.gridLayout(inner, 2, 5, 0);
-		Button excel = tk.createButton(inner,
-				M.ExportToExcel, SWT.NONE);
+		Button excel = tk.createButton(inner, M.ExportToExcel, SWT.NONE);
 		excel.setImage(Images.get(FileType.EXCEL));
-		Controls.onSelect(excel,
-				e -> new ExcelExportAction().run());
-		Button lci = tk.createButton(inner,
-				M.SaveAsLCIResult, SWT.NONE);
+		Controls.onSelect(excel, e -> new ExcelExportAction().run());
+		Button lci = tk.createButton(inner, M.SaveAsLCIResult, SWT.NONE);
 		lci.setImage(Images.get(ProcessType.LCI_RESULT));
 		Controls.onSelect(lci, e -> {
 			ResultEditor<?> editor = Editors.getActive();

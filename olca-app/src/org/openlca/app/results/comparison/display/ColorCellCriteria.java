@@ -1,7 +1,7 @@
 package org.openlca.app.results.comparison.display;
 
 public enum ColorCellCriteria {
-	NONE(""), CATEGORY("Category"), LOCATION("Location");
+	PRODUCT("Product"), CATEGORY("Category"), LOCATION("Location");
 
 	private String criteria;
 

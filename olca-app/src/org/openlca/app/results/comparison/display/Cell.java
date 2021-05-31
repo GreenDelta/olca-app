@@ -1,10 +1,11 @@
 package org.openlca.app.results.comparison.display;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.Contribution;
@@ -12,25 +13,28 @@ import org.openlca.util.Pair;
 
 public class Cell {
 
-	private int startPixel;
-	private int endPixel;
 	private RGB rgb;
 	private Point startingLinksPoint;
 	private Point endingLinkPoint;
 	private boolean isDrawable;
 	static Config config;
-	private List<Result> result;
+	private Result result;
 	private double minAmount;
 	static ColorCellCriteria criteria;
 	private boolean isCutoff;
-	private Contributions product;
+	private Contributions contributions;
+	private boolean isDisplayed;
+	private Rectangle rectCell;
+	private String tooltip;
+	private boolean isSelected;
+	static IDatabase db;
 
-	public void setData(Point startingLinksPoint, Point endingLinkPoint, int startX, int endx, boolean isCutoff) {
+	public void setData(Point startingLinksPoint, Point endingLinkPoint, Rectangle rectCell, boolean isCutoff) {
 		this.startingLinksPoint = startingLinksPoint;
 		this.endingLinkPoint = endingLinkPoint;
-		startPixel = startX;
-		endPixel = endx;
+		this.rectCell = rectCell;
 		this.isCutoff = isCutoff;
+		isDisplayed = true;
 	}
 
 	public Point getStartingLinkPoint() {
@@ -49,33 +53,60 @@ public class Cell {
 		this.endingLinkPoint = endingLinkPoint;
 	}
 
-	public Cell(List<Contribution<CategorizedDescriptor>> contributions, double minAmount, Contributions p) {
+	public Cell(Contribution<CategorizedDescriptor> contributionsList, double minAmount, Contributions c) {
 		this.minAmount = minAmount;
-		product = p;
-		result = contributions.stream().map(c -> new Result(c)).collect(Collectors.toList());
+		contributions = c;
+		result = new Result(contributionsList);
 		isDrawable = true;
 		isCutoff = false;
 		rgb = computeRGB();
+		isDisplayed = true;
+		isSelected = false;
 	}
 
-	public List<Result> getResult() {
+	public boolean isSelected() {
+		return isSelected;
+	}
+
+	public void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
+	}
+
+	private void setTooltip() {
+		var contribution = result.getContribution();
+		var locationId = ((ProcessDescriptor) contribution.item).location;
+		var locationName = new LocationDao(db).getDescriptor(locationId).code;
+		var processName = contribution.item.name + " - " + locationName;
+
+		tooltip = "Process name : " + processName + "\n" + "Amount : " + contribution.amount + " "
+				+ StringUtils.defaultIfEmpty(contribution.unit, "");
+	}
+
+	public String getTooltip() {
+		if (tooltip != null)
+			return tooltip;
+		setTooltip();
+		return tooltip;
+	}
+
+	public Result getResult() {
 		return result;
 	}
 
 	public double getTargetValue() {
-		return result.stream().mapToDouble(r -> r.getValue()).sum();
+		return result.getValue();
 	}
 
 	public double getNormalizedValue() {
-		return result.stream().mapToDouble(r -> r.getValue() + Math.abs(minAmount)).sum();
+		return result.getValue() + Math.abs(minAmount);
 	}
 
 	public double getAmount() {
-		return result.stream().mapToDouble(r -> r.getAmount()).sum();
+		return result.getAmount();
 	}
 
 	public double getNormalizedAmount() {
-		return result.stream().mapToDouble(r -> r.getAmount() + Math.abs(minAmount)).sum();
+		return result.getAmount() + Math.abs(minAmount);
 	}
 
 	public RGB computeRGB() {
@@ -85,20 +116,20 @@ public class Cell {
 		Pair<Long, Long> pair = null;
 		switch (criteria) {
 		case LOCATION:
-			value = ((ProcessDescriptor) result.get(0).getContribution().item).location;
-			pair = product.getMinMaxLocation();
+			value = ((ProcessDescriptor) result.getContribution().item).location;
+			pair = contributions.getMinMaxLocation();
 			min = pair.first;
 			max = pair.second;
 			break;
 		case CATEGORY:
-			value = result.get(0).getContribution().item.category;
-			pair = product.getMinMaxCategory();
+			value = result.getContribution().item.category;
+			pair = contributions.getMinMaxCategory();
 			min = pair.first;
 			max = pair.second;
 			break;
 		default:
-			value = result.get(0).getContribution().item.id;
-			pair = product.getMinMaxProcessId();
+			value = result.getContribution().item.id;
+			pair = contributions.getMinMaxProcessId();
 			min = pair.first;
 			max = pair.second;
 			break;
@@ -110,7 +141,7 @@ public class Cell {
 		}
 		if (percentage > 100.0) { // It happens because of uncertainty of division
 			percentage = 100.0;
-		} else if (percentage == -1 || result.get(0).getContribution().amount == 0.0) {
+		} else if (percentage == -1 || result.getContribution().amount == 0.0) {
 			isDrawable = false;
 			return new RGB(192, 192, 192); // Grey color for unfocused values (0 or null)
 		}
@@ -136,28 +167,29 @@ public class Cell {
 	}
 
 	public boolean isLinkDrawable() {
-		return isDrawable && !isCutoff;
+		return isDrawable && !isCutoff && isDisplayed;
 	}
 
-	public int getStartPixel() {
-		return startPixel;
+	public void setIsDisplayed(boolean isDisplayed) {
+		this.isDisplayed = isDisplayed;
 	}
 
-	public void setStartPixel(int startIndex) {
-		this.startPixel = startIndex;
+	public boolean isDisplayed() {
+		return isDisplayed;
 	}
 
-	public int getEndPixel() {
-		return endPixel;
+	public boolean contains(Point p) {
+		if (rectCell == null)
+			return false;
+		return rectCell.contains(p);
 	}
 
-	public void setEndPixel(int startIndex) {
-		this.endPixel = startIndex;
+	public boolean hasSameProduct(ProcessDescriptor o) {
+		return result.getContribution().item.equals(o);
 	}
 
 	public String toString() {
-		var results = result.stream().map(r -> Double.toString(r.getValue())).collect(Collectors.toList());
-		return rgb + " / " + String.join(", ", results) + " / [ " + startPixel + "; " + endPixel + " ]";
+		return rgb + " / " + result + " / [ " + rectCell.x + "; " + (rectCell.x + rectCell.width) + " ]";
 	}
 
 }

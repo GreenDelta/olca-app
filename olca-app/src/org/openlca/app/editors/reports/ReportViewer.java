@@ -13,11 +13,11 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
-import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.editors.reports.model.Report;
 import org.openlca.app.rcp.HtmlFolder;
-import org.openlca.app.results.comparison.ProjectComparisonPage;
+import org.openlca.app.results.comparison.ComparisonPage;
+import org.openlca.app.results.comparison.ProjectEditorInput;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Project;
 import org.slf4j.Logger;
@@ -36,7 +36,8 @@ public class ReportViewer extends SimpleFormEditor {
 		if (report == null)
 			return;
 		String reportID = Cache.getAppCache().put(report);
-		var input = new SimpleEditorInput(reportID, report.title);
+		String projectId = Cache.getAppCache().put(project);
+		var input = new ProjectEditorInput(reportID, projectId, report.title);
 		Editors.open(input, ID);
 	}
 
@@ -45,12 +46,12 @@ public class ReportViewer extends SimpleFormEditor {
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 		try {
-			SimpleEditorInput sei = (SimpleEditorInput) input;
+			ProjectEditorInput sei = (ProjectEditorInput) input;
 			this.report = Cache.getAppCache().remove(sei.id);
+			project = Cache.getAppCache().remove(sei.projectId);
 		} catch (Exception e) {
 			String message = "failed to init report viewer";
 			log.error(message, e);
@@ -62,7 +63,7 @@ public class ReportViewer extends SimpleFormEditor {
 	protected final void addPages() {
 		try {
 			addPage(getPage());
-			addPage(new ProjectComparisonPage(this));
+			addPage(new ComparisonPage(this));
 		} catch (Exception e) {
 			log.error("Error adding page to " + getClass().getSimpleName(), e);
 		}
