@@ -16,7 +16,6 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.CostResultViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -48,20 +47,20 @@ class Combo {
 		Combo c = new Combo();
 		c.flows = new ArrayList<>();
 		TLongHashSet flowIDs = new TLongHashSet();
-		for (IndexFlow f : r.getFlows()) {
-			if (f.flow == null || flowIDs.contains(f.flow.id))
+		for (var f : r.getFlows()) {
+			if (f.flow() == null || flowIDs.contains(f.flow().id))
 				continue;
-			flowIDs.add(f.flow.id);
-			c.flows.add(f.flow);
+			flowIDs.add(f.flow().id);
+			c.flows.add(f.flow());
 		}
 
 		// add LCIA categories
-		if (r.hasImpactResults()) {
+		if (r.hasImpacts()) {
 			c.impacts = r.getImpacts();
 		}
 
 		// add cost / added value selection
-		if (r.hasCostResults() && (r instanceof SimpleResult)) {
+		if (r.hasCosts() && (r instanceof SimpleResult)) {
 			SimpleResult sr = (SimpleResult) r;
 			CostResultDescriptor d1 = new CostResultDescriptor();
 			d1.forAddedValue = false;

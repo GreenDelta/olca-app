@@ -36,7 +36,7 @@ class GroupResultTable {
 		viewer = Tables.createViewer(parent, colLabels, new GroupResultLabel());
 		Tables.bindColumnWidths(viewer.getTable(), 0.5, 0.25, 0.25);
 		UI.gridData(viewer.getControl(), true, false).heightHint = 200;
-		Actions.bind(viewer, TableClipboard.onCopy(viewer));
+		Actions.bind(viewer, TableClipboard.onCopySelected(viewer));
 		viewer.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 	}
 
@@ -63,7 +63,7 @@ class GroupResultTable {
 			if (!(element instanceof ContributionItem) || column != 0)
 				return null;
 			Contribution<?> item = (Contribution) element;
-			return image.getForTable(item.share);
+			return image.get(item.share);
 		}
 
 		@Override

@@ -16,7 +16,7 @@ import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.maps.FlowRef;
-import org.openlca.util.CategoryPathBuilder;
+import org.openlca.util.Categories;
 
 class Matcher {
 
@@ -25,7 +25,7 @@ class Matcher {
 	private final WordMatcher words;
 
 	// helper structures for collecting provider information
-	private CategoryPathBuilder categories;
+	private Categories.PathBuilder categories;
 	private Map<Long, String> locations;
 
 	Matcher(IProvider targetSystem) {
@@ -79,9 +79,9 @@ class Matcher {
 			return;
 		targetFlow.provider = prov;
 		if (categories == null) {
-			categories = new CategoryPathBuilder(db);
+			categories = Categories.pathsOf(db);
 		}
-		targetFlow.providerCategory = categories.path(prov.category);
+		targetFlow.providerCategory = categories.pathOf(prov.category);
 		if (locations == null) {
 			locations = new LocationDao(db).getCodes();
 		}

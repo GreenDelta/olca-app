@@ -35,6 +35,7 @@ import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Comparator;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.util.Strings;
 
 /**
  * A helper class for creating tables, table viewers and related resources.
@@ -53,7 +54,7 @@ public class Tables {
 	 * <li>content provider = {@link ArrayContentProvider}
 	 * <li>lines and header are visible
 	 * <li>grid data with horizontal and vertical fill
-	 * 
+	 *
 	 */
 	public static TableViewer createViewer(Composite parent, String[] properties,
 			IBaseLabelProvider labelProvider) {
@@ -85,9 +86,9 @@ public class Tables {
 			ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
 		}
 		viewer.setColumnProperties(labels);
-		for (String label : labels) {
-			TableViewerColumn c = new TableViewerColumn(viewer, SWT.NULL);
-			c.getColumn().setText(label);
+		for (var label : labels) {
+			var c = new TableViewerColumn(viewer, SWT.NULL);
+			c.getColumn().setText(Strings.orEmpty(label));
 			if (labelProvider instanceof CellLabelProvider) {
 				c.setLabelProvider((CellLabelProvider) labelProvider);
 			}

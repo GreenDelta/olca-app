@@ -2,80 +2,80 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-	<extension
-		point="org.eclipse.ui.commandImages">
-		<image
-			commandId="org.eclipse.ui.file.save"
-			icon="icons/save.png"
-			disabledIcon="icons/save_disabled.png">
-		</image>
-		<image
-			commandId="org.eclipse.ui.file.saveAs"
-			icon="icons/save_as.png"
-			disabledIcon="icons/save_as_disabled.png">
-		</image>
-		<image
-			commandId="org.eclipse.ui.file.saveAll"
-			icon="icons/save_all.png"
-			disabledIcon="icons/save_all_disabled.png">
-		</image>
-		<image
-			commandId="org.eclipse.ui.edit.undo"
-			icon="icons/save_all.png"
-			disabledIcon="icons/save_all_disabled.png">
-		</image>
-		<image
-			commandId="org.eclipse.ui.edit.redo"
-			icon="icons/save_all.png"
-			disabledIcon="icons/save_all_disabled.png">
-		</image>
-		<image
-			commandId="org.eclipse.ui.edit.delete"
-			icon="icons/delete.png"
-			disabledIcon="icons/delete_disabled.png">
-		</image>
-		<image
-			commandId="org.eclipse.ui.edit.copy"
-			icon="icons/copy.png">
-		</image>
-		<image
-			commandId="org.eclipse.ui.edit.cut"
-			icon="icons/cut.png">
-		</image>
-		<image
-			commandId="org.eclipse.ui.edit.paste"
-			icon="icons/paste.png">
-		</image>
-		<image
-			commandId="org.eclipse.ui.window.preferences"
-			icon="icons/preferences.png">
-		</image>
-		<image
-			commandId="org.eclipse.ui.file.import"
-			icon="icons/import.png">
-		</image>
-		<image
-			commandId="org.eclipse.ui.file.export"
-			icon="icons/export.png">
-		</image>
-	</extension>
-	<extension
+  <extension
+    point="org.eclipse.ui.commandImages">
+    <image
+      commandId="org.eclipse.ui.file.save"
+      icon="icons/save.png"
+      disabledIcon="icons/save_disabled.png">
+    </image>
+    <image
+      commandId="org.eclipse.ui.file.saveAs"
+      icon="icons/save_as.png"
+      disabledIcon="icons/save_as_disabled.png">
+    </image>
+    <image
+      commandId="org.eclipse.ui.file.saveAll"
+      icon="icons/save_all.png"
+      disabledIcon="icons/save_all_disabled.png">
+    </image>
+    <image
+      commandId="org.eclipse.ui.edit.undo"
+      icon="icons/save_all.png"
+      disabledIcon="icons/save_all_disabled.png">
+    </image>
+    <image
+      commandId="org.eclipse.ui.edit.redo"
+      icon="icons/save_all.png"
+      disabledIcon="icons/save_all_disabled.png">
+    </image>
+    <image
+      commandId="org.eclipse.ui.edit.delete"
+      icon="icons/delete.png"
+      disabledIcon="icons/delete_disabled.png">
+    </image>
+    <image
+      commandId="org.eclipse.ui.edit.copy"
+      icon="icons/copy.png">
+    </image>
+    <image
+      commandId="org.eclipse.ui.edit.cut"
+      icon="icons/cut.png">
+    </image>
+    <image
+      commandId="org.eclipse.ui.edit.paste"
+      icon="icons/paste.png">
+    </image>
+    <image
+      commandId="org.eclipse.ui.window.preferences"
+      icon="icons/preferences.png">
+    </image>
+    <image
+      commandId="org.eclipse.ui.file.import"
+      icon="icons/import.png">
+    </image>
+    <image
+      commandId="org.eclipse.ui.file.export"
+      icon="icons/export.png">
+    </image>
+  </extension>
+  <extension
          point="org.eclipse.ui.editors">
 
       <editor
-			class="org.openlca.app.editors.StartPage"
-			default="false"
-			id="olca.StartPage"
-			name="%Welcome"
-			icon="icons/home.png">
+      class="org.openlca.app.editors.StartPage"
+      default="false"
+      id="olca.StartPage"
+      name="%Welcome"
+      icon="icons/home.png">
       </editor>
 
       <editor
-			class="org.openlca.app.editors.CommentsEditor"
-			default="false"
-			id="CommentsEditor"
-			name="%Comments"
-			icon="icons/cloud/show_comments.png">
+      class="org.openlca.app.editors.CommentsEditor"
+      default="false"
+      id="CommentsEditor"
+      name="%Comments"
+      icon="icons/cloud/show_comments.png">
       </editor>
 
       <!-- developer tools -->
@@ -88,12 +88,12 @@
             name="SQL">
       </editor>
       <editor
-      		class="org.openlca.app.devtools.python.PythonEditor"
-      		default="false"
-      		id="PythonEditor"
-      		name="Python"
-      		icon="icons/python.png"
-      		contributorClass="org.openlca.app.devtools.Toolbar">
+          class="org.openlca.app.devtools.python.PythonEditor"
+          default="false"
+          id="PythonEditor"
+          name="Python"
+          icon="icons/python.png"
+          contributorClass="org.openlca.app.devtools.Toolbar">
       </editor>
 
       <!-- model editors -->
@@ -160,7 +160,7 @@
             icon="icons/model/project.png"
             id="editors.project"
             name="%ProjectEditor"
-            contributorClass="org.openlca.app.editors.projects.ProjectEditorActions">
+            contributorClass="org.openlca.app.editors.projects.ProjectEditorToolBar">
       </editor>
       <editor
             class="org.openlca.app.editors.systems.ProductSystemEditor"
@@ -226,10 +226,22 @@
       </editor>
       <editor
             id="ReportViewer"
-            class="org.openlca.app.editors.reports.ReportViewer"
+            class="org.openlca.app.editors.projects.reports.ReportViewer"
             icon="icons/model/project.png"
             name="%ReportViewer"
-            contributorClass="org.openlca.app.editors.reports.ReportToolbar">
+            contributorClass="org.openlca.app.editors.projects.reports.ReportToolbar">
+      </editor>
+      <editor
+            id="ProjectResultEditor"
+            class="org.openlca.app.editors.projects.results.ProjectResultEditor"
+            icon="icons/model/project.png"
+            name="Project results">
+      </editor>
+      <editor
+            id="ReportEditor"
+            class="org.openlca.app.editors.projects.reports.ReportEditor"
+            icon="icons/model/project.png"
+            name="Report">
       </editor>
       <editor
             id="editors.LogFileEditor"
@@ -258,7 +270,7 @@
             default="false"
             name="Parameter usage">
       </editor>
-	  <editor
+    <editor
             class="org.openlca.app.editors.locations.LocationEditor"
             default="false"
             icon="icons/model/location.png"
@@ -266,7 +278,7 @@
             name="Location editor">
       </editor>
 
-	  <editor
+    <editor
             class="org.openlca.app.editors.parameters.GlobalParameterEditor"
             default="false"
             icon="icons/model/parameter.png"
@@ -275,7 +287,7 @@
       </editor>
 
       <editor
-            class="org.openlca.app.editors.parameters.BigParameterTable"
+            class="org.openlca.app.editors.parameters.bigtable.BigParameterTable"
             default="false"
             icon="icons/model/parameter.png"
             id="BigParameterTable"
@@ -298,13 +310,13 @@
             name="Flow mapping"
             contributorClass="org.openlca.app.tools.mapping.MappingMenu">
       </editor>
-      
+
       <editor
             class="org.openlca.app.tools.libraries.LibraryInfoPage"
-      	    default="false"
-      	    icon="icons/model/flow.png"
-      	    id="LibraryInfoPage"
-      	    name="Library">
+            default="false"
+            icon="icons/model/flow.png"
+            id="LibraryInfoPage"
+            name="Library">
       </editor>
 
    </extension>
@@ -453,15 +465,15 @@
 
    <extension
          point="org.eclipse.ui.preferencePages">
-	  <page
+    <page
             class="org.openlca.app.logging.LoggerConfigPage"
             id="preferencepages.logging"
             name="%Logging">
       </page>
       <page
-      		class="org.openlca.app.preferences.NumberFormatPage"
-      		id="preferencepages.numberformat"
-      		name="%NumberFormat">
+          class="org.openlca.app.preferences.NumberFormatPage"
+          id="preferencepages.numberformat"
+          name="%NumberFormat">
       </page>
       <page
             class="org.openlca.app.preferences.FeatureFlagPage"
@@ -491,9 +503,9 @@
                <toolbar
                      id="olca-app.search.toolbar">
                      <control
-                     	class="org.openlca.app.search.SearchText"
-                     	id="org.openlca.app.SearchText">
-               		 </control>
+                       class="org.openlca.app.search.SearchText"
+                       id="org.openlca.app.SearchText">
+                    </control>
                </toolbar>
          </menuContribution>
    </extension>
@@ -537,10 +549,6 @@
                name="startupMessageRect"
                value="7,525,445,20">
          </property>
-         <property
-               name="preferenceCustomization"
-               value="plugin_customization.ini">
-         </property>
       </product>
    </extension>
    <extension
@@ -548,15 +556,15 @@
       <viewer
             viewerId="views.navigation">
             <options>
-		         <property
-		            name="org.eclipse.ui.navigator.hideCollapseAllAction"
-		            value="true">
-		         </property>
-		         <property
-		            name="org.eclipse.ui.navigator.hideAvailableCustomizationsDialog"
-		            value="true">
-		         </property>
-			</options>
+             <property
+                name="org.eclipse.ui.navigator.hideCollapseAllAction"
+                value="true">
+             </property>
+             <property
+                name="org.eclipse.ui.navigator.hideAvailableCustomizationsDialog"
+                value="true">
+             </property>
+      </options>
       </viewer>
       <viewerContentBinding
             viewerId="views.navigation">
@@ -577,9 +585,9 @@
             <contentExtension
                   pattern="viewer.filter.wasteflow">
             </contentExtension>
-			<contentExtension
-				  pattern="navigator.linkHelper">
-			</contentExtension>
+      <contentExtension
+          pattern="navigator.linkHelper">
+      </contentExtension>
          </includes>
       </viewerContentBinding>
       <viewerActionBinding
@@ -661,14 +669,14 @@
    <extension
          point="org.eclipse.ui.navigator.linkHelper">
       <linkHelper
-	            class="org.openlca.app.navigation.NavigationLinkHelper"
-	            id="navigator.linkHelper">
+              class="org.openlca.app.navigation.NavigationLinkHelper"
+              id="navigator.linkHelper">
          <selectionEnablement>
             <instanceof value="org.openlca.app.navigation.elements.ModelElement"/>
-	     </selectionEnablement>
-	     <editorInputEnablement>
-			<instanceof value="org.openlca.app.editors.ModelEditorInput"/>
-	     </editorInputEnablement>
+       </selectionEnablement>
+       <editorInputEnablement>
+      <instanceof value="org.openlca.app.editors.ModelEditorInput"/>
+       </editorInputEnablement>
       </linkHelper>
    </extension>
    <extension
@@ -752,20 +760,20 @@
            <description>%ImportEntireDatabase_Info</description>
       </wizard>
       <wizard
-      		class="org.openlca.app.wizards.io.JsonImportWizard"
-      		icon="icons/logo/16_32bit.png"
+          class="org.openlca.app.wizards.io.JsonImportWizard"
+          icon="icons/logo/16_32bit.png"
             id="wizard.import.json"
             name="Linked Data (JSON-LD)">
       </wizard>
-  	  <wizard
-	       category="import.category.file"
-		   class="org.openlca.app.wizards.io.SimaProCsvImportWizard"
-		   icon="icons/simapro.png"
-		   id="wizard.import.csv"
-		   name="SimaPro CSV">
-		   <description>Import SimaPro CSV files.</description>
-	   </wizard>
-	   <wizard
+      <wizard
+         category="import.category.file"
+       class="org.openlca.app.wizards.io.SimaProCsvImportWizard"
+       icon="icons/simapro.png"
+       id="wizard.import.csv"
+       name="SimaPro CSV">
+       <description>Import SimaPro CSV files.</description>
+     </wizard>
+     <wizard
           class="org.openlca.app.wizards.io.GeoJsonImportWizard"
           icon="icons/model/location.png"
           id="wizard.import.geojson"
@@ -796,8 +804,8 @@
             name="ILCD">
       </category>
       <category
-      		id="openlca.export.category"
-      		name="openLCA">
+          id="openlca.export.category"
+          name="openLCA">
       </category>
       <wizard
             category="export.category.ecospold"
@@ -847,21 +855,21 @@
             name="%ILCDNetworkExport">
       </wizard>
       <wizard
-      		category="openlca.export.category"
-      		class="org.openlca.app.wizards.io.JsonExportWizard"
-      		icon="icons/logo/16_32bit.png"
-      		id="org.openlca.app.wizards.io.JsonExportWizard"
-      		name="JSON-LD">
+          category="openlca.export.category"
+          class="org.openlca.app.wizards.io.JsonExportWizard"
+          icon="icons/logo/16_32bit.png"
+          id="org.openlca.app.wizards.io.JsonExportWizard"
+          name="JSON-LD">
       </wizard>
-      
+
       <wizard
-      	id="org.openlca.app.wizards.io.SimaProCsvExportWizard"
-      	class="org.openlca.app.wizards.io.SimaProCsvExportWizard"
-      	name="SimaPro CSV"
-      	icon="icons/simapro.png">
-      	<description>
+        id="org.openlca.app.wizards.io.SimaProCsvExportWizard"
+        class="org.openlca.app.wizards.io.SimaProCsvExportWizard"
+        name="SimaPro CSV"
+        icon="icons/simapro.png">
+        <description>
           Export processes into a SimaPro CSV file
-      	</description>
+        </description>
       </wizard>
    </extension>
 

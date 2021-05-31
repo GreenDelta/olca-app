@@ -11,24 +11,29 @@ import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.ResultItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class QuickResultEditor extends ResultEditor<ContributionResult> {
 
 	public static String ID = "QuickResultEditor";
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public void init(IEditorSite site, IEditorInput iInput) throws PartInitException {
 		super.init(site, iInput);
 		try {
-			ResultEditorInput input = (ResultEditorInput) iInput;
-			setup = Cache.getAppCache().remove(input.setupKey, CalculationSetup.class);
-			result = Cache.getAppCache().remove(input.resultKey, ContributionResult.class);
-			String dqkey = input.dqResultKey;
-			if (dqkey != null) {
-				dqResult = Cache.getAppCache().remove(dqkey, DQResult.class);
+			var input = (ResultEditorInput) iInput;
+			setup = Cache.getAppCache().remove(input.setupKey,
+					CalculationSetup.class);
+			result = Cache.getAppCache().remove(
+					input.resultKey, ContributionResult.class);
+			resultItems = ResultItemView.of(result);
+			Sort.sort(resultItems);
+			if (input.dqResultKey != null) {
+				dqResult = Cache.getAppCache().remove(
+					input.dqResultKey, DQResult.class);
 			}
 		} catch (Exception e) {
 			log.error("failed to load inventory result", e);
@@ -41,15 +46,15 @@ public class QuickResultEditor extends ResultEditor<ContributionResult> {
 		try {
 			addPage(new InfoPage(this));
 			addPage(new InventoryPage(this));
-			if (result.hasImpactResults()) {
+			if (result.hasImpacts()) {
 				addPage(new TotalImpactResultPage(this));
 			}
-			if (result.hasImpactResults() && setup.nwSet != null) {
+			if (result.hasImpacts() && setup.nwSet != null) {
 				addPage(new NwResultPage(this, result, setup));
 			}
 			addPage(new LocationPage(this, result, setup));
 			addPage(new GroupPage(this, result, setup));
-			if (result.hasImpactResults()) {
+			if (result.hasImpacts()) {
 				addPage(new ImpactChecksPage(this));
 			}
 			addPage(new ComparisonPage(this));

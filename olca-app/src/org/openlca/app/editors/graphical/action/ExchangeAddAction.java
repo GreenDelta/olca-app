@@ -212,14 +212,7 @@ public class ExchangeAddAction extends Action implements GraphAction {
 
 		@Override
 		protected Point getInitialSize() {
-			var shell = getShell().getDisplay().getBounds();
-			int width = shell.x > 0 && shell.x < 600
-				? shell.x
-				: 600;
-			int height = shell.y > 0 && shell.y < 600
-				? shell.y
-				: 600;
-			return new Point(width, height);
+			return UI.initialSizeOf(this, 600, 600);
 		}
 
 		@Override

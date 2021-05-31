@@ -36,7 +36,7 @@ public class InfoPage extends FormPage {
 		if (editor.dqResult != null) {
 			new DQInfoSection(body, tk, result, editor.dqResult);
 		}
-		if (result.hasImpactResults()) {
+		if (result.hasImpacts()) {
 			ContributionChartSection.forImpacts(editor).render(body, tk);
 		}
 		ContributionChartSection.forFlows(editor).render(body, tk);

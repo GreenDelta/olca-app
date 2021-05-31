@@ -179,8 +179,8 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 			implements ITableLabelProvider {
 
 		private Supplier<List<LinkDegree>> links;
-		private ContributionImage img = new ContributionImage(
-				Colors.fromHex("#607d8b"));
+		private ContributionImage img = new ContributionImage()
+				.withColor(Colors.fromHex("#607d8b"));
 
 		LinkDegreeLabel(Supplier<List<LinkDegree>> links) {
 			this.links = links;
@@ -203,7 +203,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 					.orElse(0);
 			double share = (double) ((LinkDegree) obj).degree
 					/ (double) maxDegree;
-			return img.getForTable(share);
+			return img.get(share);
 		}
 
 		@Override

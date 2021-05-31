@@ -133,7 +133,7 @@ public class ParameterSection {
 			return;
 		var add = Actions.onAdd(this::onAdd);
 		var remove = Actions.onRemove(this::onRemove);
-		var copy = TableClipboard.onCopy(table);
+		var copy = TableClipboard.onCopySelected(table);
 		var paste = TableClipboard.onPaste(table, this::onPaste);
 		var usage = Actions.create(M.Usage, Icon.LINK.descriptor(), () -> {
 			Parameter p = Viewers.getFirstSelected(table);
@@ -332,9 +332,16 @@ public class ParameterSection {
 			if (!b)
 				return;
 
-			// save the entity, rename it, and reopen it
+			// save & close the entity, rename it, and reopen it
 			try {
-				Editors.getActivePage().saveEditor(editor, false);
+				editor.setDirty(true);
+				var page = Editors.getActivePage();
+				if (page == null) {
+					editor.doSave(null);
+				} else {
+					page.saveEditor(editor, false);
+					page.closeEditor(editor, false);
+				}
 				var entity = Parameters.rename(
 						param, entity(), Database.get(), name);
 				App.open(entity);

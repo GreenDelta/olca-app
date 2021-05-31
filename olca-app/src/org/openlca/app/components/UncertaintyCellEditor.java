@@ -1,6 +1,7 @@
 package org.openlca.app.components;
 
-import org.eclipse.jface.window.Window;
+import javax.annotation.Nullable;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.openlca.app.editors.ModelEditor;
@@ -51,17 +52,20 @@ public class UncertaintyCellEditor extends DialogCellEditor {
 
 	@Override
 	protected Object openDialogBox(Control control) {
-		var dialog = new UncertaintyDialog(
-				control.getShell(), getInitial());
-		if (dialog.open() != Window.OK)
-			return null;
-		setUncertainty(dialog.getUncertainty());
+		var option = UncertaintyDialog.open(getInitial());
+		if (option.isPresent()) {
+			var u = option.get();
+			if (u.distributionType == null
+					|| u.distributionType == UncertaintyType.NONE) {
+				setUncertainty(null);
+			} else {
+				setUncertainty(u);
+			}
+		}
 		return exchange != null ? exchange : factor;
 	}
 
-	private void setUncertainty(Uncertainty u) {
-		if (u.distributionType == UncertaintyType.NONE)
-			u = null;
+	private void setUncertainty(@Nullable Uncertainty u) {
 		if (exchange != null)
 			exchange.uncertainty = u;
 		else if (factor != null)

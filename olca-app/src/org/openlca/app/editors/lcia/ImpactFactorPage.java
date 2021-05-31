@@ -167,13 +167,13 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 		// only copy for library models
 		if (getModel().isFromLibrary()) {
-			Actions.bind(viewer, TableClipboard.onCopy(viewer));
+			Actions.bind(viewer, TableClipboard.onCopySelected(viewer));
 			return;
 		}
 
 		var add = Actions.onAdd(this::onAdd);
 		var remove = Actions.onRemove(this::onRemove);
-		var copy = TableClipboard.onCopy(viewer);
+		var copy = TableClipboard.onCopySelected(viewer);
 		var paste = TableClipboard.onPaste(viewer, this::onPaste);
 		var formulaSwitch = new FormulaSwitchAction();
 

@@ -19,7 +19,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.CalcExchange;
-import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -29,7 +29,15 @@ import org.slf4j.LoggerFactory;
 
 class ProviderDialog extends Dialog {
 
-	public static Options select(CalcExchange e, List<ProcessProduct> providers) {
+	private final Options options;
+	private final CalcExchange exchange;
+	private final List<TechFlow> providers;
+
+	private Button saveCheck;
+	private Button autoContinueCheck;
+	private Button cancelCheck;
+
+	public static Options select(CalcExchange e, List<TechFlow> providers) {
 		Options opts = new Options();
 		if (providers == null || providers.isEmpty())
 			return opts;
@@ -38,9 +46,8 @@ class ProviderDialog extends Dialog {
 			return opts;
 		try {
 			App.runInUI("Select a provider", () -> {
-				ProviderDialog d = new ProviderDialog(
-						opts, e, providers);
-				d.open();
+				var dialog = new ProviderDialog(opts, e, providers);
+				dialog.open();
 			}).join();
 		} catch (Exception ex) {
 			Logger log = LoggerFactory.getLogger(ProviderDialog.class);
@@ -49,16 +56,8 @@ class ProviderDialog extends Dialog {
 		return opts;
 	}
 
-	private final Options options;
-	private final CalcExchange exchange;
-	private final List<ProcessProduct> providers;
-
-	private Button saveCheck;
-	private Button autoContinueCheck;
-	private Button cancelCheck;
-
 	public ProviderDialog(Options options,
-			CalcExchange e, List<ProcessProduct> providers) {
+			CalcExchange e, List<TechFlow> providers) {
 		super(UI.shell());
 		this.options = options;
 		this.exchange = e;
@@ -86,8 +85,7 @@ class ProviderDialog extends Dialog {
 		UI.gridData(combo, true, false).widthHint = 80;
 		String[] labels = new String[providers.size()];
 		for (int i = 0; i < labels.length; i++) {
-			labels[i] = Labels.name(
-					providers.get(i).process);
+			labels[i] = Labels.name(providers.get(i).process());
 		}
 		combo.setItems(labels);
 		combo.select(0);
@@ -165,7 +163,7 @@ class ProviderDialog extends Dialog {
 	}
 
 	static class Options {
-		ProcessProduct selected;
+		TechFlow selected;
 		boolean saveSelected;
 		boolean autoContinue;
 		boolean cancel;

@@ -1,7 +1,5 @@
 package org.openlca.app.results;
 
-import java.io.File;
-
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.M;
@@ -38,7 +36,7 @@ public class ExcelExportAction extends Action {
 	private void runExport(ResultEditor<?> editor) {
 		String fileName = editor.setup.productSystem.name;
 		fileName = fileName.replaceAll("[^A-Za-z0-9]", "_") + ".xlsx";
-		File file = FileChooser.forExport("*.xlsx", fileName);
+		var file = FileChooser.forSavingFile(M.Export, fileName);
 		if (file == null)
 			return;
 		ResultExport export = new ResultExport(editor.setup,

@@ -15,7 +15,7 @@ import org.openlca.util.Strings;
  */
 public final class ModelEditorInput implements IEditorInput {
 
-	private Descriptor descriptor;
+	private final Descriptor descriptor;
 
 	public ModelEditorInput(Descriptor descriptor) {
 		this.descriptor = descriptor;
@@ -24,7 +24,7 @@ public final class ModelEditorInput implements IEditorInput {
 	@Override
 	public boolean equals(final Object obj) {
 		if (obj instanceof ModelEditorInput) {
-			ModelEditorInput other = (ModelEditorInput) obj;
+			var other = (ModelEditorInput) obj;
 			return Objects.equals(this.descriptor, other.descriptor);
 		}
 		return false;

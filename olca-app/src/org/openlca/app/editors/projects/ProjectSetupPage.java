@@ -1,7 +1,6 @@
 package org.openlca.app.editors.projects;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,7 +10,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.IManagedForm;
@@ -44,11 +42,9 @@ import org.openlca.app.viewers.tables.modify.field.DoubleModifier;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.AllocationMethod;
-import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
@@ -56,27 +52,21 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class ProjectSetupPage extends ModelPage<Project> {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private FormToolkit toolkit;
-	private ProjectEditor editor;
-	private IDatabase database = Database.get();
+	private final ProjectEditor editor;
+	private final IDatabase database = Database.get();
 
 	private Project project;
 	private TableViewer variantViewer;
 	private ProjectParameterTable parameterTable;
-	private ReportVariantSync variantSync;
-	private ScrolledForm form;
 
 	ProjectSetupPage(ProjectEditor editor) {
 		super(editor, "ProjectSetupPage", M.ProjectSetup);
 		this.editor = editor;
 		project = editor.getModel();
-		variantSync = new ReportVariantSync(editor);
 		editor.onSaved(() -> {
 			project = editor.getModel();
 			if (variantViewer != null) {
@@ -87,7 +77,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(this);
+		ScrolledForm form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
@@ -99,42 +89,45 @@ class ProjectSetupPage extends ModelPage<Project> {
 		parameterTable = new ProjectParameterTable(editor);
 		parameterTable.render(section, toolkit);
 		initialInput();
-		new ProcessContributionSection(editor).create(body, toolkit);
 		body.setFocus();
 		form.reflow(true);
 	}
 
 	private void initialInput() {
 		List<ProjectVariant> variants = project.variants;
-		Collections.sort(variants, (v1, v2) -> Strings.compare(v1.name, v2.name));
+		variants.sort((v1, v2) -> Strings.compare(v1.name, v2.name));
 		variantViewer.setInput(variants);
 	}
 
-	private void createButton(Composite comp) {
-		toolkit.createLabel(comp, "");
-		Composite c = toolkit.createComposite(comp);
-		UI.gridLayout(c, 2).marginHeight = 5;
-		Button b = toolkit.createButton(c, M.Report, SWT.NONE);
-		UI.gridData(b, false, false).widthHint = 100;
-		b.setImage(Images.get(ModelType.PROJECT));
-		Controls.onSelect(b, e -> ProjectEditorActions.calculate(project, editor.getReport()));
+	private void createButton(Composite parent) {
+		UI.filler(parent, toolkit);
+		var comp = toolkit.createComposite(parent);
+		UI.gridLayout(comp, 1, 0, 0).marginHeight = 5;
+		var button = toolkit.createButton(comp, M.Calculate, SWT.NONE);
+		UI.gridData(button, false, false).widthHint = 100;
+		button.setImage(Images.get(ModelType.PROJECT));
+		Controls.onSelect(button,
+			e -> ProjectEditorToolBar.calculate(project));
 	}
 
 	private void createVariantsSection(Composite body) {
-		Section section = UI.section(body, toolkit, M.Variants);
-		Composite comp = UI.sectionClient(section, toolkit, 1);
-		variantViewer = Tables.createViewer(comp, M.Name, M.ProductSystem, M.Display, M.AllocationMethod, M.Flow,
-				M.Amount, M.Unit, M.Description, "");
+		var section = UI.section(body, toolkit, M.Variants);
+		var comp = UI.sectionClient(section, toolkit, 1);
+		variantViewer = Tables.createViewer(comp,
+			M.Name, M.ProductSystem, M.Display,
+			M.AllocationMethod, M.Flow, M.Amount,
+			M.Unit, M.Description, "");
 		variantViewer.setLabelProvider(new VariantLabelProvider());
-		ModifySupport<ProjectVariant> ms = new ModifySupport<>(variantViewer);
-		ms.bind(M.Name, new VariantNameEditor());
-		ms.bind(M.Display, new DisplayModifier());
-		ms.bind(M.AllocationMethod, new VariantAllocationEditor());
-		ms.bind(M.Amount, new DoubleModifier<>(editor, "amount"));
-		ms.bind(M.Unit, new VariantUnitEditor());
-		ms.bind(M.Description, new VariantDescriptionEditor());
-		ms.bind("", new CommentDialogModifier<ProjectVariant>(editor.getComments(), v -> CommentPaths.get(v)));
-		double w = 1.0 / 8.0;
+		new ModifySupport<ProjectVariant>(variantViewer)
+			.bind(M.Name, new VariantNameEditor())
+			.bind(M.Display, new DisplayModifier())
+			.bind(M.AllocationMethod, new VariantAllocationEditor())
+			.bind(M.Amount, new DoubleModifier<>(editor, "amount"))
+			.bind(M.Unit, new VariantUnitEditor())
+			.bind(M.Description, new VariantDescriptionEditor())
+			.bind("", new CommentDialogModifier<>(
+				editor.getComments(), CommentPaths::get));
+		double w = 1.0 / 8.1;
 		Tables.bindColumnWidths(variantViewer, w, w, w, w, w, w, w, w);
 		addVariantActions(variantViewer, section);
 	}
@@ -151,8 +144,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 			addVariants(ds);
 		});
 		Action remove = Actions.onRemove(this::removeVariant);
-		Action copy = TableClipboard.onCopy(table);
-		CommentAction.bindTo(section, "variants", editor.getComments(), add, remove);
+		Action copy = TableClipboard.onCopySelected(table);
+		CommentAction.bindTo(section, "variants",
+			editor.getComments(), add, remove);
 		Actions.bind(table, onOpen, add, remove, copy);
 		Tables.onDoubleClick(table, (event) -> {
 			TableItem item = Tables.getItem(table, event);
@@ -178,15 +172,14 @@ class ProjectSetupPage extends ModelPage<Project> {
 			ProductSystemDao dao = new ProductSystemDao(database);
 			ProductSystem system = dao.getForId(d.id);
 			if (system == null) {
-				log.error("failed to load product system " + d);
 				continue;
 			}
 			List<ProjectVariant> variants = project.variants;
-			ProjectVariant variant = createVariant(system, variants.size() + 1);
+			ProjectVariant variant = createVariant(
+				system, variants.size() + 1);
 			variants.add(variant);
 			variantViewer.setInput(variants);
 			parameterTable.addVariant(variant);
-			variantSync.variantAdded(variant);
 		}
 		editor.setDirty(true);
 	}
@@ -199,16 +192,20 @@ class ProjectSetupPage extends ModelPage<Project> {
 		v.amount = system.targetAmount;
 		v.flowPropertyFactor = system.targetFlowPropertyFactor;
 		v.unit = system.targetUnit;
-		for (ParameterRedef redef : system.parameterRedefs) {
-			v.parameterRedefs.add(redef.clone());
+		var redefSet = system.parameterSets.stream()
+			.filter(s -> s.isBaseline)
+			.findAny();
+		if (redefSet.isPresent()) {
+			for (var redef : redefSet.get().parameters) {
+				v.parameterRedefs.add(redef.clone());
+			}
 		}
 		return v;
 	}
 
 	private void removeVariant() {
-		log.trace("remove variant");
 		List<ProjectVariant> selection = Viewers.getAllSelected(variantViewer);
-		if (selection == null || selection.isEmpty())
+		if (selection.isEmpty())
 			return;
 		List<ProjectVariant> variants = project.variants;
 		for (ProjectVariant var : selection) {
@@ -216,7 +213,6 @@ class ProjectSetupPage extends ModelPage<Project> {
 			parameterTable.removeVariant(var);
 		}
 		variantViewer.setInput(variants);
-		variantSync.variantsRemoved(selection);
 		editor.setDirty(true);
 	}
 
@@ -230,33 +226,37 @@ class ProjectSetupPage extends ModelPage<Project> {
 		protected void setText(ProjectVariant variant, String text) {
 			if (Objects.equals(text, variant.name))
 				return;
-			variantSync.updateName(variant, text);
 			variant.name = text;
 			parameterTable.updateVariant(variant);
 			editor.setDirty(true);
 		}
 	}
 
-	private class VariantDescriptionEditor extends TextCellModifier<ProjectVariant> {
+	private class VariantDescriptionEditor extends
+		TextCellModifier<ProjectVariant> {
+
 		@Override
 		protected String getText(ProjectVariant variant) {
-			return variantSync.getDescription(variant);
+			return variant.description;
 		}
 
 		@Override
 		protected void setText(ProjectVariant variant, String text) {
-			String oldText = variantSync.getDescription(variant);
-			if (Objects.equals(text, oldText))
+			if (Objects.equals(text, variant.description))
 				return;
-			variantSync.updateDescription(variant, text);
+			variant.description = text;
 			editor.setDirty(true);
 		}
 	}
 
-	private class VariantAllocationEditor extends ComboBoxCellModifier<ProjectVariant, AllocationMethod> {
+	private class VariantAllocationEditor extends
+		ComboBoxCellModifier<ProjectVariant, AllocationMethod> {
+
 		@Override
 		protected AllocationMethod getItem(ProjectVariant var) {
-			return var.allocationMethod != null ? var.allocationMethod : AllocationMethod.NONE;
+			return var.allocationMethod != null
+				? var.allocationMethod
+				: AllocationMethod.NONE;
 		}
 
 		@Override
@@ -276,7 +276,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 		}
 	}
 
-	private class VariantUnitEditor extends ComboBoxCellModifier<ProjectVariant, Unit> {
+	private class VariantUnitEditor extends
+		ComboBoxCellModifier<ProjectVariant, Unit> {
 		@Override
 		protected Unit getItem(ProjectVariant var) {
 			return var.unit;
@@ -285,10 +286,11 @@ class ProjectSetupPage extends ModelPage<Project> {
 		@Override
 		protected Unit[] getItems(ProjectVariant var) {
 			FlowPropertyFactor fac = var.flowPropertyFactor;
-			if (fac == null || fac.flowProperty == null || fac.flowProperty.unitGroup == null)
+			if (fac == null || fac.flowProperty == null
+				|| fac.flowProperty.unitGroup == null)
 				return new Unit[0];
 			UnitGroup unitGroup = fac.flowProperty.unitGroup;
-			Unit[] units = unitGroup.units.toArray(new Unit[unitGroup.units.size()]);
+			Unit[] units = unitGroup.units.toArray(new Unit[0]);
 			Arrays.sort(units, (u1, u2) -> {
 				if (u1 == null || u2 == null)
 					return 0;
@@ -322,68 +324,48 @@ class ProjectSetupPage extends ModelPage<Project> {
 			if (v.isDisabled != b)
 				return;
 			v.isDisabled = !b;
-			variantSync.updateDisabled(v);
 			editor.setDirty(true);
 		}
 	}
 
-	private class VariantLabelProvider extends LabelProvider implements ITableLabelProvider {
+	private class VariantLabelProvider extends LabelProvider
+		implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
 			if (!(obj instanceof ProjectVariant))
 				return null;
-			ProjectVariant v = (ProjectVariant) obj;
-			switch (col) {
-			case 1:
-				return Images.get(ModelType.PRODUCT_SYSTEM);
-			case 2:
-				return v.isDisabled ? Icon.CHECK_FALSE.get() : Icon.CHECK_TRUE.get();
-			case 4:
-				return Images.get(FlowType.PRODUCT_FLOW);
-			case 6:
-				return Images.get(ModelType.UNIT);
-			case 8:
-				return Images.get(editor.getComments(), CommentPaths.get(v));
-			default:
-				return null;
-			}
+			var v = (ProjectVariant) obj;
+			return switch (col) {
+				case 1 -> Images.get(ModelType.PRODUCT_SYSTEM);
+				case 2 -> v.isDisabled
+					? Icon.CHECK_FALSE.get()
+					: Icon.CHECK_TRUE.get();
+				case 4 -> Images.get(FlowType.PRODUCT_FLOW);
+				case 6 -> Images.get(ModelType.UNIT);
+				case 8 -> Images.get(editor.getComments(), CommentPaths.get(v));
+				default -> null;
+			};
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
 			if (!(obj instanceof ProjectVariant))
 				return null;
-			ProjectVariant variant = (ProjectVariant) obj;
-			ProductSystem system = variant.productSystem;
-			if (system == null)
-				return null;
-			switch (col) {
-			case 0:
-				return variant.name;
-			case 1:
-				return system.name;
-			case 3:
-				return Labels.of(variant.allocationMethod);
-			case 4:
-				return getFlowText(system);
-			case 5:
-				return Double.toString(variant.amount);
-			case 6:
-				Unit unit = variant.unit;
-				return unit == null ? null : unit.name;
-			case 7:
-				return variantSync.getDescription(variant);
-			default:
-				return null;
-			}
-		}
-
-		private String getFlowText(ProductSystem system) {
-			if (system == null || system.referenceExchange == null)
-				return null;
-			Exchange refExchange = system.referenceExchange;
-			return Labels.name(refExchange.flow);
+			var variant = (ProjectVariant) obj;
+			var system = variant.productSystem;
+			return switch (col) {
+				case 0 -> variant.name;
+				case 1 -> system != null ? system.name : null;
+				case 3 -> Labels.of(variant.allocationMethod);
+				case 4 -> system != null && system.referenceExchange != null
+					? Labels.name(system.referenceExchange.flow)
+					: null;
+				case 5 -> Double.toString(variant.amount);
+				case 6 -> variant.unit == null ? null : variant.unit.name;
+				case 7 -> variant.description;
+				default -> null;
+			};
 		}
 	}
 }

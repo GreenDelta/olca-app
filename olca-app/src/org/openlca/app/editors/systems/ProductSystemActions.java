@@ -102,7 +102,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 		@Override
 		public void run() {
 			var system = getProductSystem();
-			var file = FileChooser.forExport("*.png", "matrix.png");
+			var file = FileChooser.forSavingFile(M.Export, "matrix.png");
 			if (system == null || file == null)
 				return;
 			App.run(M.ImageExport, () -> {

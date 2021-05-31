@@ -64,8 +64,8 @@ class TreeExportDialog extends FormDialog {
 		var fileBtn = tk.createButton(comp, M.Browse, SWT.NONE);
 		UI.gridData(fileBtn, false, false).horizontalAlignment = SWT.FILL;
 		Controls.onSelect(fileBtn, e -> {
-			File f = FileChooser.forExport(
-					"*.xlsx", "contribution_tree.xlsx");
+			var f = FileChooser.forSavingFile(
+					M.Export, "contribution_tree.xlsx");
 			if (f != null) {
 				file = f;
 				fileText.setText(file.getAbsolutePath());

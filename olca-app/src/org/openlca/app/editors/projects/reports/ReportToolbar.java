@@ -1,4 +1,4 @@
-package org.openlca.app.editors.reports;
+package org.openlca.app.editors.projects.reports;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.Editors;
-import org.openlca.app.editors.reports.model.Report;
+import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.images.Icon;

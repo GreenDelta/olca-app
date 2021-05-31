@@ -23,7 +23,6 @@ import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.io.maps.Status;
 import org.openlca.util.Categories;
-import org.openlca.util.CategoryPathBuilder;
 
 public class DBProvider implements IProvider {
 
@@ -37,7 +36,7 @@ public class DBProvider implements IProvider {
 	public List<FlowRef> getFlowRefs() {
 
 		// collect categories, properties, locations
-		CategoryPathBuilder categories = new CategoryPathBuilder(db);
+		var categories = Categories.pathsOf(db);
 		Map<Long, FlowProperty> props = new FlowPropertyDao(db)
 				.getAll().stream()
 				.collect(Collectors.toMap(fp -> fp.id, fp -> fp));
@@ -47,7 +46,7 @@ public class DBProvider implements IProvider {
 		new FlowDao(db).getDescriptors().stream().forEach(flow -> {
 			FlowRef ref = new FlowRef();
 			ref.flow = flow;
-			ref.flowCategory = categories.path(flow.category);
+			ref.flowCategory = categories.pathOf(flow.category);
 			ref.flowLocation = locations.get(flow.location);
 			Fn.with(props.get(flow.refFlowPropertyId), prop -> {
 				if (prop == null)

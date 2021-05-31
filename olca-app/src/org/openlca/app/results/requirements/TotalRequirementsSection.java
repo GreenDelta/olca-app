@@ -20,7 +20,7 @@ import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.results.ContributionResult;
 
 /**
@@ -36,7 +36,7 @@ public class TotalRequirementsSection {
 
 	public TotalRequirementsSection(ContributionResult result, DQResult dqResult) {
 		this.result = result;
-		costs = !result.hasCostResults()
+		costs = !result.hasCosts()
 			? Costs.NONE
 			: result.totalCosts >= 0
 			? Costs.NET_COSTS
@@ -110,14 +110,14 @@ public class TotalRequirementsSection {
 			Item item = Viewers.getFirstSelected(tree);
 			if (item == null)
 				return;
-			ProcessProduct product = null;
+			TechFlow product = null;
 			if (item.isProvider()) {
 				product = item.asProvider().product;
 			} else if (item.isChild()) {
 				product = item.asChild().product;
 			}
 			if (product != null) {
-				App.open(product.process);
+				App.open(product.process());
 			}
 		});
 		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree));

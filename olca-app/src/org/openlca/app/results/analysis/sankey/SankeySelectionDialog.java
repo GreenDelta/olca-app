@@ -6,26 +6,25 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
-import org.openlca.app.components.ResultTypeCombo;
-import org.openlca.app.components.ResultTypeCombo.EventHandler;
+import org.openlca.app.components.ResultItemSelector;
+import org.openlca.app.components.ResultItemSelector.SelectionHandler;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.UI;
-import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.ResultItemView;
 
-public class SankeySelectionDialog extends FormDialog implements EventHandler {
+public class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 
+	private final ResultItemView resultItems;
 	public double cutoff;
 	public int maxCount;
 	public Object selection;
-	private final FullResult result;
 
 	public SankeySelectionDialog(SankeyDiagram editor) {
 		super(UI.shell());
-		this.result = editor.result;
+		this.resultItems = editor.resultItems;
 		this.selection = editor.selection;
 		this.cutoff = editor.cutoff;
 		this.maxCount = editor.maxCount;
@@ -33,13 +32,13 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		FormToolkit tk = mform.getToolkit();
-		ScrolledForm form = UI.formHeader(mform,
-				M.SettingsForTheSankeyDiagram);
-		Composite body = UI.formBody(form, tk);
+		var tk = mform.getToolkit();
+		var form = UI.formHeader(mform, M.SettingsForTheSankeyDiagram);
+		var body = UI.formBody(form, tk);
 		UI.gridLayout(body, 2);
-		ResultTypeCombo.on(result)
-				.withEventHandler(this).withSelection(selection)
+		ResultItemSelector.on(resultItems)
+				.withSelectionHandler(this)
+				.withSelection(selection)
 				.create(body, tk);
 		createCutoffSpinner(tk, body);
 		createCountSpinner(tk, body);
@@ -69,7 +68,7 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 		var spinner = new Spinner(inner, SWT.BORDER);
 		spinner.setIncrement(10);
 		spinner.setMinimum(1);
-		spinner.setMaximum(result.techIndex().size());
+		spinner.setMaximum(resultItems.techFlows().size());
 		spinner.setDigits(0);
 		spinner.setSelection(maxCount);
 		spinner.addModifyListener(e -> {
@@ -80,17 +79,17 @@ public class SankeySelectionDialog extends FormDialog implements EventHandler {
 	}
 
 	@Override
-	public void flowSelected(IndexFlow flow) {
+	public void onFlowSelected(EnviFlow flow) {
 		this.selection = flow;
 	}
 
 	@Override
-	public void impactCategorySelected(ImpactDescriptor impact) {
+	public void onImpactSelected(ImpactDescriptor impact) {
 		this.selection = impact;
 	}
 
 	@Override
-	public void costResultSelected(CostResultDescriptor cost) {
+	public void onCostsSelected(CostResultDescriptor cost) {
 		this.selection = cost;
 	}
 

@@ -133,7 +133,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 			Tables.bindColumnWidths(table, 0.5, 0.5);
 
 			// bind actions
-			var onCopy = TableClipboard.onCopy(table);
+			var onCopy = TableClipboard.onCopySelected(table);
 			var onOpen = Actions.onOpen(() -> {
 				ImpactMethodDescriptor m = Viewers.getFirstSelected(table);
 				if (m != null) {

@@ -191,7 +191,7 @@ public class AllocationPage extends ModelPage<Process> {
 			return;
 
 		// modifiers and actions
-		Action copy = TableClipboard.onCopy(table);
+		Action copy = TableClipboard.onCopySelected(table);
 		var modifier = new ModifySupport<Exchange>(table)
 				.bind(M.Physical, new ValueModifier(AllocationMethod.PHYSICAL))
 				.bind(M.Economic, new ValueModifier(AllocationMethod.ECONOMIC));

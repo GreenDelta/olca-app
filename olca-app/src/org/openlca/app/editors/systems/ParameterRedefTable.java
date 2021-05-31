@@ -116,7 +116,7 @@ class ParameterRedefTable {
 	public void bindActions(Section section) {
 		Action add = Actions.onAdd(this::add);
 		Action remove = Actions.onRemove(this::remove);
-		Action copy = TableClipboard.onCopy(table);
+		Action copy = TableClipboard.onCopySelected(table);
 		Action paste = TableClipboard.onPaste(table, this::onPaste);
 		Action usage = Actions.create(M.Usage, Icon.LINK.descriptor(), () -> {
 			ParameterRedef redef = Viewers.getFirstSelected(table);

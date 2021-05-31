@@ -18,6 +18,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DerbyConfiguration;
@@ -65,7 +66,8 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 		DbSelectDialog dialog = new DbSelectDialog();
 		if (dialog.open() != IDialogConstants.OK_ID)
 			return;
-		File file = FileChooser.forExport("*.json", "ecoinvent_nexus_index.json");
+		File file = FileChooser.forSavingFile(
+				M.Export, "ecoinvent_nexus_index.json");
 		if (file == null)
 			return;
 		App.runWithProgress("Creating Ecoinvent Nexus Index", () -> {

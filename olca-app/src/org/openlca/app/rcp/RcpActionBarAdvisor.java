@@ -32,7 +32,7 @@ import org.openlca.app.devtools.IpcDialog;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
-import org.openlca.app.editors.parameters.BigParameterTable;
+import org.openlca.app.editors.parameters.bigtable.BigParameterTable;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.navigation.Navigator;

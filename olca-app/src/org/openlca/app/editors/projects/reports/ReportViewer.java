@@ -1,4 +1,4 @@
-package org.openlca.app.editors.reports;
+package org.openlca.app.editors.projects.reports;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -14,7 +14,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleFormEditor;
-import org.openlca.app.editors.reports.model.Report;
+import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.results.comparison.ComparisonPage;
 import org.openlca.app.results.comparison.ProjectEditorInput;
@@ -27,8 +27,8 @@ import com.google.gson.Gson;
 
 public class ReportViewer extends SimpleFormEditor {
 
-	public static String ID = "ReportViewer";
-	private Logger log = LoggerFactory.getLogger(getClass());
+	public static final String ID = "ReportViewer";
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	private Report report;
 	public Project project;
 

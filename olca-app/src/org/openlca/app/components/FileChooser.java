@@ -29,12 +29,12 @@ public class FileChooser {
 			return null;
 		var folder = new File(path);
 		return folder.isDirectory()
-				? folder
-				: null;
+			? folder
+			: null;
 	}
 
-	private static String openFileDialog(String extension,
-			String defaultName, String filterPath, int swtFlag) {
+	private static String openFileDialog(
+		String extension, String defaultName, String filterPath, int swtFlag) {
 		var dialog = new FileDialog(UI.shell(), swtFlag);
 		var text = swtFlag == SWT.SAVE
 			? M.SelectTheExportFile
@@ -45,7 +45,7 @@ public class FileChooser {
 			ext = extension.trim();
 			if (ext.contains("|"))
 				ext = ext.substring(0, ext.indexOf("|")).trim();
-			dialog.setFilterExtensions(new String[] { ext });
+			dialog.setFilterExtensions(new String[]{ext});
 		}
 		dialog.setFileName(defaultName);
 		if (filterPath != null)
@@ -54,27 +54,34 @@ public class FileChooser {
 			if (extension.contains("|")) {
 				String label = extension.substring(extension.indexOf("|") + 1);
 				label += " (" + ext + ")";
-				dialog.setFilterNames(new String[] { label });
+				dialog.setFilterNames(new String[]{label});
 			}
 		}
 		return dialog.open();
 	}
 
 	/**
-	 * Selects a file for an export. Returns null if the user cancelled the dialog.
+	 * Opens a file dialog to save a file for saving. We ask the user if the file
+	 * should be overwritten if it already exists. The file extension is
+	 * determined from the given default name.
+	 *
+	 * @param title       the text that we display in the title bar of the dialog
+	 * @param defaultName the default name of the file
+	 * @return the file which the user selected or {@code null} if the user
+	 * cancelled the selection of a file.
 	 */
-	public static File forExport(String extension, String defaultName) {
-		return forExport(extension, defaultName, null);
-	}
-
-	/**
-	 * Selects a file for an export. Returns null if the user cancelled the dialog.
-	 * Optional defaultName sets the default file name for save dialogs. Flag
-	 * indicates if a file or a directory dialog should be used.
-	 */
-	public static File forExport(String extension, String defaultName,
-			String filterPath) {
-		var path = openFileDialog(extension, defaultName, filterPath, SWT.SAVE);
+	public static File forSavingFile(String title, String defaultName) {
+		var dialog = new FileDialog(UI.shell(), SWT.SAVE);
+		dialog.setText(title == null ? M.Save : title);
+		if (defaultName != null) {
+			dialog.setFileName(defaultName);
+			var parts = defaultName.split("\\.");
+			if (parts.length > 1) {
+				dialog.setFilterExtensions(
+					new String[]{"*." + parts[parts.length - 1]});
+			}
+		}
+		var path = dialog.open();
 		if (path == null)
 			return null;
 		var file = new File(path);
@@ -130,8 +137,8 @@ public class FileChooser {
 				return Optional.empty();
 			var file = new File(path);
 			return file.exists()
-					? Optional.of(file)
-					: Optional.empty();
+				? Optional.of(file)
+				: Optional.empty();
 		}
 	}
 }

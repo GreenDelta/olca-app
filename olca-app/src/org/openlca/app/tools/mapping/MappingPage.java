@@ -145,7 +145,7 @@ class MappingPage extends FormPage {
 			table.refresh();
 			tool.setDirty();
 		});
-		Action copy = TableClipboard.onCopy(table);
+		Action copy = TableClipboard.onCopySelected(table);
 
 		Actions.bind(section, add, edit, delete);
 		Actions.bind(table, add, edit, copy, delete);

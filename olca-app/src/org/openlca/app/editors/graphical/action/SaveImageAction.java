@@ -36,7 +36,7 @@ public class SaveImageAction extends Action implements GraphAction {
 	public void run() {
 		if (editor == null)
 			return;
-		var file = FileChooser.forExport("*.png", "graph.png");
+		var file = FileChooser.forSavingFile(M.Export, "graph.png");
 		if (file == null)
 			return;
 		App.run(M.SaveAsImage, new Runner(file));

@@ -1,6 +1,5 @@
 package org.openlca.app.tools.mapping;
 
-import java.io.File;
 import java.util.Optional;
 
 import org.eclipse.jface.action.IMenuManager;
@@ -47,7 +46,7 @@ public class MappingMenu extends EditorActionBarContributor {
 				name += ".csv";
 			}
 		}
-		File file = FileChooser.forExport("*.csv", name);
+		var file = FileChooser.forSavingFile(M.Export, name);
 		if (file == null)
 			return;
 		App.runWithProgress("Save flow mapping ...", () -> {

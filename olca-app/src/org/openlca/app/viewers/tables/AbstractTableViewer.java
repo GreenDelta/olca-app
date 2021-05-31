@@ -74,7 +74,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 			tableActions[i] = actions.get(i);
 		for (int i = 0; i < additionalActions.size(); i++)
 			tableActions[i + actions.size()] = additionalActions.get(i);
-		tableActions[tableActions.length - 1] = TableClipboard.onCopy(viewer);
+		tableActions[tableActions.length - 1] = TableClipboard.onCopySelected(viewer);
 		Actions.bind(viewer, tableActions);
 	}
 

@@ -36,16 +36,16 @@ import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.ReferenceAmount;
-import org.openlca.core.matrix.FlowIndex;
 import org.openlca.core.matrix.ImpactBuilder;
-import org.openlca.core.matrix.ImpactIndex;
-import org.openlca.core.matrix.IndexFlow;
 import org.openlca.core.matrix.MatrixData;
 import org.openlca.core.matrix.ParameterTable;
-import org.openlca.core.matrix.ProcessProduct;
-import org.openlca.core.matrix.TechIndex;
 import org.openlca.core.matrix.format.JavaMatrix;
 import org.openlca.core.matrix.format.MatrixBuilder;
+import org.openlca.core.matrix.index.EnviFlow;
+import org.openlca.core.matrix.index.EnviIndex;
+import org.openlca.core.matrix.index.ImpactIndex;
+import org.openlca.core.matrix.index.TechFlow;
+import org.openlca.core.matrix.index.TechIndex;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
@@ -112,8 +112,8 @@ class ImpactPage extends ModelPage<Process> {
 			Contribution<?> c = Viewers.getFirstSelected(tree);
 			if (c == null)
 				return;
-			if (c.item instanceof IndexFlow) {
-				App.open(((IndexFlow) c.item).flow);
+			if (c.item instanceof EnviFlow) {
+				App.open(((EnviFlow) c.item).flow());
 			}
 			if (c.item instanceof ImpactDescriptor) {
 				App.open((ImpactDescriptor) c.item);
@@ -144,8 +144,7 @@ class ImpactPage extends ModelPage<Process> {
 			});
 			return;
 		}
-		if (!result.hasFlowResults()
-				|| !result.hasImpactResults()) {
+		if (!result.hasEnviFlows() || !result.hasImpacts()) {
 			tree.setInput(Collections.emptyList());
 			return;
 		}
@@ -167,7 +166,7 @@ class ImpactPage extends ModelPage<Process> {
 		var data = new MatrixData();
 
 		// create a virtual demand of 1.0
-		var refProduct = ProcessProduct.of(getModel());
+		var refProduct = TechFlow.of(getModel());
 		data.techIndex = new TechIndex(refProduct);
 		data.techIndex.setDemand(1.0);
 		data.techMatrix = JavaMatrix.of(
@@ -191,9 +190,9 @@ class ImpactPage extends ModelPage<Process> {
 		}
 
 		// create the flow index and B matrix / vector
-		data.flowIndex = regionalized
-				? FlowIndex.createRegionalized()
-				: FlowIndex.create();
+		data.enviIndex = regionalized
+				? EnviIndex.createRegionalized()
+				: EnviIndex.create();
 		var enviBuilder = new MatrixBuilder();
 		for (var e : elemFlows) {
 			var flow = Descriptor.of(e.flow);
@@ -201,15 +200,15 @@ class ImpactPage extends ModelPage<Process> {
 					? Descriptor.of(e.location)
 					: null;
 			int i = e.isInput
-					? data.flowIndex.add(IndexFlow.inputOf(flow, loc))
-					: data.flowIndex.add(IndexFlow.outputOf(flow, loc));
+					? data.enviIndex.add(EnviFlow.inputOf(flow, loc))
+					: data.enviIndex.add(EnviFlow.outputOf(flow, loc));
 			double amount = ReferenceAmount.get(e);
 			if (e.isInput && amount != 0) {
 				amount = -amount;
 			}
 			enviBuilder.add(i, 0, amount);
 		}
-		data.flowMatrix = enviBuilder.finish();
+		data.enviMatrix = enviBuilder.finish();
 
 		// build the impact index and matrix
 		var db = Database.get();
@@ -219,7 +218,7 @@ class ImpactPage extends ModelPage<Process> {
 		data.impactIndex.each((i, d) -> contexts.add(d.id));
 		var interpreter = ParameterTable.interpreter(
 				db, contexts, Collections.emptySet());
-		data.impactMatrix = ImpactBuilder.of(db, data.flowIndex)
+		data.impactMatrix = ImpactBuilder.of(db, data.enviIndex)
 				.withImpacts(data.impactIndex)
 				.withInterpreter(interpreter)
 				.build().impactMatrix;
@@ -247,7 +246,7 @@ class ImpactPage extends ModelPage<Process> {
 			double total = result.getTotalImpactResult(impact);
 			boolean withoutZeros = zeroCheck.getSelection();
 			List<Contribution<?>> childs = new ArrayList<>();
-			for (IndexFlow flow : result.getFlows()) {
+			for (var flow : result.getFlows()) {
 				double value = result.getDirectFlowImpact(flow, impact);
 				if (value == 0 && withoutZeros)
 					continue;
@@ -300,8 +299,8 @@ class ImpactPage extends ModelPage<Process> {
 						? Images.get(ModelType.IMPACT_CATEGORY)
 						: Images.get(FlowType.ELEMENTARY_FLOW);
 			}
-			if (col == 3 && c.item instanceof IndexFlow)
-				return img.getForTable(c.share);
+			if (col == 3 && c.item instanceof EnviFlow)
+				return img.get(c.share);
 			return null;
 		}
 
@@ -312,19 +311,19 @@ class ImpactPage extends ModelPage<Process> {
 			Contribution<?> c = (Contribution<?>) obj;
 			switch (col) {
 			case 0:
-				if (c.item instanceof IndexFlow)
-					return Labels.name((IndexFlow) c.item);
+				if (c.item instanceof EnviFlow)
+					return Labels.name((EnviFlow) c.item);
 				if (c.item instanceof ImpactDescriptor)
 					return Labels.name((ImpactDescriptor) c.item);
 				return null;
 			case 1:
-				if (c.item instanceof IndexFlow)
-					return Labels.category((IndexFlow) c.item);
+				if (c.item instanceof EnviFlow)
+					return Labels.category((EnviFlow) c.item);
 				return null;
 			case 2:
-				if (!(c.item instanceof IndexFlow))
+				if (!(c.item instanceof EnviFlow))
 					return null;
-				IndexFlow iFlow = (IndexFlow) c.item;
+				EnviFlow iFlow = (EnviFlow) c.item;
 				double a = result.getTotalFlowResult(iFlow);
 				return Numbers.format(a) + " " + Labels.refUnit(iFlow);
 			case 3:

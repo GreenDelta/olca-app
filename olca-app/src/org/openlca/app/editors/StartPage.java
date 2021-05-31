@@ -80,20 +80,14 @@ public class StartPage extends SimpleFormEditor {
 		private String getVersion() {
 			String v = App.getVersion();
 			String build = AppArg.BUILD_NUMBER.getValue();
-			if (!Strings.nullOrEmpty(build)) {
+			if (Strings.notEmpty(build)) {
 				v += " " + build;
 			}
 			v += " (" + OS.get();
 			String osarch = System.getProperty("os.arch");
-			if (osarch != null)
-				switch (osarch) {
-				case "amd64":
-					v += " " + "64 bit";
-					break;
-				case "x86":
-				case "i386":
-					v += " " + "32 bit";
-				}
+			if (Strings.notEmpty(osarch)) {
+				v += " " + osarch;
+			}
 			return v + ")";
 		}
 	}

@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.results.Sankey;
 
 public class ProcessNode {
 
 	public static String CONNECTION = "Connection";
 
-	public final ProcessProduct product;
+	public final TechFlow product;
 	public final ProductSystemNode parent;
 
 	public ProcessFigure figure;

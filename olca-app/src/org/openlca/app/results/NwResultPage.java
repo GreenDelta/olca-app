@@ -73,7 +73,7 @@ public class NwResultPage extends FormPage {
 		var colWidths = withUnit
 				? new double[] { 0.5, 0.25, 0.25 }
 				: new double[] { 0.5, 0.25 };
-		
+
 		var section = UI.section(body, toolkit, title);
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, toolkit, 1);
@@ -83,7 +83,7 @@ public class NwResultPage extends FormPage {
 		var items = Contributions.calculate(results, r -> r.value);
 		Contributions.sortDescending(items);
 		viewer.setInput(items);
-		Actions.bind(viewer, TableClipboard.onCopy(viewer));
+		Actions.bind(viewer, TableClipboard.onCopySelected(viewer));
 	}
 
 	private class Label extends LabelProvider implements ITableLabelProvider {
@@ -96,7 +96,7 @@ public class NwResultPage extends FormPage {
 			if (col != 0 || !(o instanceof Contribution))
 				return null;
 			Contribution<ImpactResult> item = Contribution.class.cast(o);
-			return image.getForTable(item.share);
+			return image.get(item.share);
 		}
 
 		@Override

@@ -13,10 +13,10 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.ProcessDao;
-import org.openlca.core.matrix.LinkingConfig;
-import org.openlca.core.matrix.LinkingConfig.DefaultProviders;
-import org.openlca.core.matrix.ProcessProduct;
 import org.openlca.core.matrix.ProductSystemBuilder;
+import org.openlca.core.matrix.index.TechFlow;
+import org.openlca.core.matrix.linking.LinkingConfig;
+import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
@@ -35,7 +35,7 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 		setText(M.Complete);
 		config = new LinkingConfig();
 		config.preferredType = ProcessType.UNIT_PROCESS;
-		config.providerLinking = DefaultProviders.PREFER;
+		config.providerLinking = ProviderLinking.PREFER_DEFAULTS;
 	}
 
 	@Override
@@ -49,8 +49,8 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 	}
 
 	@Override
-	public void setProviderMethod(DefaultProviders providers) {
-		config.providerLinking = providers;
+	public void setProviderMethod(ProviderLinking providerLinking) {
+		config.providerLinking = providerLinking;
 	}
 
 	@Override
@@ -90,8 +90,8 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 			for (ProcessNode node : nodes) {
 				var dao = new ProcessDao(Database.get());
 				var p = dao.getForId(node.process.id);
-				builder.autoComplete(system, ProcessProduct.of(p));
-				system = builder.saveUpdates(system);
+				builder.autoComplete(system, TechFlow.of(p));
+				system = ProductSystemBuilder.update(Database.get(), system);
 			}
 			GraphEditor editor = nodes.get(0).parent().editor;
 			editor.updateModel(monitor);

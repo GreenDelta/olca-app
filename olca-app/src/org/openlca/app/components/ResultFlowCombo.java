@@ -13,18 +13,18 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.EntityCache;
-import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
-public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
+public class ResultFlowCombo extends AbstractComboViewer<EnviFlow> {
 
 	public ResultFlowCombo(Composite parent) {
 		super(parent);
-		setInput(new IndexFlow[0]);
+		setInput(new EnviFlow[0]);
 	}
 
 	@Override
@@ -48,15 +48,15 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 	}
 
 	@Override
-	public Class<IndexFlow> getType() {
-		return IndexFlow.class;
+	public Class<EnviFlow> getType() {
+		return EnviFlow.class;
 	}
 
 	@Override
 	protected ViewerComparator getComparator() {
 		return new ViewerComparator() {
 
-			private LabelProvider label = new LabelProvider();
+			private final LabelProvider label = new LabelProvider();
 
 			@Override
 			public int compare(Viewer viewer, Object e1, Object e2) {
@@ -72,16 +72,16 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 		};
 	}
 
-	private class LabelProvider extends BaseLabelProvider
+	private static class LabelProvider extends BaseLabelProvider
 			implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof IndexFlow))
+			if (!(obj instanceof EnviFlow))
 				return null;
-			IndexFlow f = (IndexFlow) obj;
-			if (col == 0)
-				return Images.get(f.flow);
+			var enviFlow = (EnviFlow) obj;
+			if (col == 0 || col == 3)
+				return Images.get(enviFlow.flow());
 			if (col == 2)
 				return Images.get(ModelType.LOCATION);
 			return null;
@@ -89,10 +89,10 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof IndexFlow))
+			if (!(obj instanceof EnviFlow))
 				return null;
-			IndexFlow f = (IndexFlow) obj;
-			if (f.flow == null)
+			var enviFlow = (EnviFlow) obj;
+			if (enviFlow.flow() == null)
 				return null;
 
 			EntityCache cache = Cache.getEntityCache();
@@ -100,35 +100,33 @@ public class ResultFlowCombo extends AbstractComboViewer<IndexFlow> {
 
 			case 0:
 				// name
-				return Labels.name(f.flow);
+				return Labels.name(enviFlow.flow());
 
 			case 1:
 				// category
-				if (f.flow.category == null)
+				if (enviFlow.flow().category == null)
 					return null;
-				Category c = cache.get(Category.class, f.flow.category);
+				Category c = cache.get(Category.class, enviFlow.flow().category);
 				return CategoryPath.getFull(c);
 
 			case 2:
 				// location
-				if (f.location == null)
+				if (enviFlow.location() == null)
 					return null;
-				// TODO: probably it would be good to add the
-				// location code to the location descriptor
-				Location loc = cache.get(Location.class, f.location.id);
+				var loc = cache.get(LocationDescriptor.class, enviFlow.location().id);
 				return loc != null ? loc.code : null;
 
 			case 3:
 				// full display label
-				String s = f.flow.name;
-				if (f.flow.category != null) {
-					c = cache.get(Category.class, f.flow.category);
+				String s = enviFlow.flow().name;
+				if (enviFlow.flow().category != null) {
+					c = cache.get(Category.class, enviFlow.flow().category);
 					if (c != null) {
 						s += " - " + CategoryPath.getShort(c);
 					}
 				}
-				if (f.location != null) {
-					loc = cache.get(Location.class, f.location.id);
+				if (enviFlow.location() != null) {
+					loc = cache.get(LocationDescriptor.class, enviFlow.location().id);
 					if (loc != null) {
 						s += " - " + loc.code;
 					}

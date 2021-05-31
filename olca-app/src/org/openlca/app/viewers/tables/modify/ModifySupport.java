@@ -217,17 +217,22 @@ public class ModifySupport<T> {
 
 		@Override
 		public void modify(Object element, String property, Object value) {
-			if (element instanceof Item)
-				element = ((Item) element).getData();
-			ICellModifier<T> modifier = cellModifiers.get(property);
+			var widget = element instanceof Item
+				? ((Item) element).getData()
+				: element;
+			var modifier = cellModifiers.get(property);
 			if (modifier != null) {
-				T elem = setModifierValue(element, value, modifier);
+				T elem = setModifierValue(widget, value, modifier);
 				refresh(elem);
 			}
-			if (modifier != null && modifier.affectsOtherElements())
+			// update the viewer
+			if (viewer == null || viewer.getControl().isDisposed()) 
+				return;
+			if (modifier != null && modifier.affectsOtherElements()) {
 				viewer.refresh(true);
-			else
-				viewer.refresh(element, true);
+			} else {
+				viewer.refresh(widget, true);
+			}
 		}
 
 		@SuppressWarnings("unchecked")

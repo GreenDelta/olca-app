@@ -1,4 +1,4 @@
-package org.openlca.app.editors.reports.model;
+package org.openlca.app.editors.projects.reports.model;
 
 import java.util.Objects;
 
@@ -48,7 +48,7 @@ public enum ReportComponent {
 
 	private final String id;
 
-	private ReportComponent(String id) {
+	ReportComponent(String id) {
 		this.id = id;
 	}
 

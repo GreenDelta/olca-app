@@ -1,6 +1,5 @@
 package org.openlca.app.editors.processes;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -78,11 +77,11 @@ public class ProcessToolbar extends EditorActionBarContributor {
 		var name = Labels.name(p);
 		name = name == null ? "process" : name;
 		name = name.replaceAll("[^a-zA-Z0-9]", "_") + ".xlsx";
-		File f = FileChooser.forExport("*.xlsx", name);
-		if (f == null)
+		var file = FileChooser.forSavingFile(M.Export, name);
+		if (file == null)
 			return;
 		var list = Collections.singletonList(Descriptor.of(p));
-		var export = new ExcelExport(f, Database.get(), list);
+		var export = new ExcelExport(file, Database.get(), list);
 		App.run(M.ExportProcess, export, () -> {
 			Popup.info(M.ExportDone);
 		});

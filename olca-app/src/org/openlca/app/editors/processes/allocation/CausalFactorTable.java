@@ -121,7 +121,7 @@ class CausalFactorTable {
 		String[] columnTitles = getColumnTitles();
 		viewer = Tables.createViewer(composite, columnTitles);
 		viewer.setLabelProvider(new FactorLabel());
-		Action copy = TableClipboard.onCopy(viewer);
+		Action copy = TableClipboard.onCopySelected(viewer);
 		Actions.bind(viewer, copy);
 		Tables.bindColumnWidths(viewer, 0.2, 0.1, 0.1, 0.1);
 		createModifySupport();

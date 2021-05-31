@@ -28,7 +28,7 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.Trees;
-import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
@@ -82,9 +82,9 @@ public class ImpactChecksPage extends FormPage {
 			Contribution<?> c = Viewers.getFirstSelected(tree);
 			if (c == null)
 				return;
-			if (c.item instanceof IndexFlow) {
-				IndexFlow f = (IndexFlow) c.item;
-				App.open(f.flow);
+			if (c.item instanceof EnviFlow) {
+				var f = (EnviFlow) c.item;
+				App.open(f.flow());
 			} else if (c.item instanceof ImpactDescriptor) {
 				App.open((ImpactDescriptor) c.item);
 			}
@@ -110,7 +110,7 @@ public class ImpactChecksPage extends FormPage {
 	 */
 	private List<Contribution<?>> flatNodes() {
 		List<Contribution<?>> nodes = new ArrayList<>();
-		for (IndexFlow flow : result.getFlows()) {
+		for (var flow : result.getFlows()) {
 			boolean allZero = true;
 			for (ImpactDescriptor impact : result.getImpacts()) {
 				double f = result.getImpactFactor(impact, flow);
@@ -142,7 +142,7 @@ public class ImpactChecksPage extends FormPage {
 				return null;
 			ImpactDescriptor impact = (ImpactDescriptor) c.item;
 			c.childs = new ArrayList<>();
-			for (IndexFlow flow : result.getFlows()) {
+			for (var flow : result.getFlows()) {
 				double f = result.getImpactFactor(impact, flow);
 				if (f != 0)
 					continue;
@@ -177,8 +177,8 @@ public class ImpactChecksPage extends FormPage {
 			if (col != 0 || !(obj instanceof Contribution))
 				return null;
 			Contribution<?> c = (Contribution<?>) obj;
-			if (c.item instanceof IndexFlow)
-				return Images.get((IndexFlow) c.item);
+			if (c.item instanceof EnviFlow)
+				return Images.get((EnviFlow) c.item);
 			if (c.item instanceof ImpactDescriptor)
 				return Images.get((ImpactDescriptor) c.item);
 			return null;
@@ -190,13 +190,13 @@ public class ImpactChecksPage extends FormPage {
 				return null;
 			Contribution<?> c = (Contribution<?>) o;
 
-			if (c.item instanceof IndexFlow) {
-				IndexFlow flow = (IndexFlow) c.item;
+			if (c.item instanceof EnviFlow) {
+				var flow = (EnviFlow) c.item;
 				switch (col) {
 				case 0:
 					return Labels.name(flow);
 				case 1:
-					return Labels.category(flow.flow);
+					return Labels.category(flow.flow());
 				case 2:
 					String unit = Labels.refUnit(flow);
 					return Numbers.format(c.amount) + " " + unit;

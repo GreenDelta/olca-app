@@ -9,8 +9,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
-import org.openlca.core.matrix.IndexFlow;
-import org.openlca.core.matrix.ProcessProduct;
+import org.openlca.core.matrix.index.EnviFlow;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -117,16 +117,15 @@ class UpstreamTreeExport implements Runnable {
 		if (ref == null)
 			return "";
 
-		if (ref instanceof IndexFlow) {
-			var iflow = (IndexFlow) ref;
-			if (iflow.flow == null
-					|| iflow.flow.name == null)
+		if (ref instanceof EnviFlow) {
+			var enviFlow = (EnviFlow) ref;
+			if (enviFlow.flow() == null
+					|| enviFlow.flow().name == null)
 				return "";
-			if (iflow.location == null
-					|| iflow.location.code == null)
-				return iflow.flow.name;
-			return iflow.flow.name + " - "
-					+ iflow.location.code;
+			if (enviFlow.location() == null
+					|| enviFlow.location().code == null)
+				return enviFlow.flow().name;
+			return enviFlow.flow().name + " - " + enviFlow.location().code;
 		}
 
 		return ref instanceof Descriptor
@@ -139,8 +138,8 @@ class UpstreamTreeExport implements Runnable {
 		if (ref == null)
 			return "";
 
-		if (ref instanceof IndexFlow)
-			return Labels.refUnit((IndexFlow) ref);
+		if (ref instanceof EnviFlow)
+			return Labels.refUnit((EnviFlow) ref);
 
 		if (ref instanceof FlowDescriptor)
 			return Labels.refUnit((FlowDescriptor) ref);
@@ -196,9 +195,9 @@ class UpstreamTreeExport implements Runnable {
 		maxColumn = Math.max(col, maxColumn);
 		var node = path.node;
 		if (node.provider == null
-				|| node.provider.process == null)
+				|| node.provider.process() == null)
 			return;
-		var label = Labels.name(node.provider.process);
+		var label = Labels.name(node.provider.process());
 		Excel.cell(sheet, row, col, label);
 	}
 
@@ -223,9 +222,9 @@ class UpstreamTreeExport implements Runnable {
 			return new Path(node, this);
 		}
 
-		int count(ProcessProduct product) {
-			int c = Objects.equals(product, node.provider) ? 1 : 0;
-			return prefix != null ? c + prefix.count(product) : c;
+		int count(TechFlow techFlow) {
+			int c = Objects.equals(techFlow, node.provider) ? 1 : 0;
+			return prefix != null ? c + prefix.count(techFlow) : c;
 		}
 	}
 

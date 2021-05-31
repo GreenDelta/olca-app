@@ -44,11 +44,7 @@ public class ExportScriptAction extends Action implements INavigationAction {
 	public void run() {
 		if (file == null)
 			return;
-		var parts = file.getName().split("\\.");
-		var ext = parts.length > 1
-				? parts[parts.length - 1]
-				: "";
-		var target = FileChooser.forExport(ext, file.getName());
+		var target = FileChooser.forSavingFile(M.Export, file.getName());
 		if (target == null)
 			return;
 		try {

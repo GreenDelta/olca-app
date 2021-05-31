@@ -115,7 +115,10 @@ public class Editors {
 
 	public static void close(IEditorReference ref) {
 		try {
-			getActivePage().closeEditor(ref.getEditor(false), true);
+			var page = getActivePage();
+			if (page == null)
+				return;
+			page.closeEditor(ref.getEditor(false), true);
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to close an editor", e);
 		}

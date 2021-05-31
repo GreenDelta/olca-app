@@ -85,6 +85,10 @@ public class GraphEditor extends GraphicalEditor {
 		editor.onSaved(() -> GraphFile.save(this));
 	}
 
+	public ProductSystemEditor systemEditor() {
+		return systemEditor;
+	}
+
 	public ProductSystem getProductSystem() {
 		return systemEditor.getModel();
 	}

@@ -1,7 +1,5 @@
 package org.openlca.app.results;
 
-import java.io.File;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
@@ -54,7 +52,7 @@ public class ImageExportAction extends Action {
 	}
 
 	private void writeToFile(Image image) {
-		File file = FileChooser.forExport("*.png", "openlca_chart.png");
+		var file = FileChooser.forSavingFile(M.Export, "openlca_chart.png");
 		if (file == null)
 			return;
 		log.trace("Export image to {}", file);

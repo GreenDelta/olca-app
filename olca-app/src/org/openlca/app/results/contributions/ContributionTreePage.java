@@ -10,16 +10,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.components.ResultTypeCombo;
-import org.openlca.app.components.ResultTypeCombo.EventHandler;
+import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.results.AnalyzeEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.FileType;
@@ -29,9 +28,10 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.matrix.IndexFlow;
+import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.FullResult;
+import org.openlca.core.results.ResultItemView;
 import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
 
@@ -39,17 +39,19 @@ public class ContributionTreePage extends FormPage {
 
 	private final FullResult result;
 	private final CalculationSetup setup;
+	private final ResultItemView resultItems;
+
 	private TreeViewer tree;
 	private Object selection;
 
 	private static final String[] HEADERS = { M.Contribution,
 			M.Process, M.Amount, M.Unit };
 
-	public ContributionTreePage(FormEditor editor,
-			FullResult result, CalculationSetup setup) {
+	public ContributionTreePage(AnalyzeEditor editor) {
 		super(editor, "analysis.ContributionTreePage", M.ContributionTree);
-		this.result = result;
-		this.setup = setup;
+		this.result = editor.result;
+		this.setup = editor.setup;
+		this.resultItems = editor.resultItems;
 	}
 
 	@Override
@@ -61,9 +63,9 @@ public class ContributionTreePage extends FormPage {
 		Composite body = UI.formBody(form, tk);
 		Composite comp = tk.createComposite(body);
 		UI.gridLayout(comp, 2);
-		ResultTypeCombo selector = ResultTypeCombo
-				.on(result)
-				.withEventHandler(new SelectionHandler())
+		ResultItemSelector selector = ResultItemSelector
+				.on(resultItems)
+				.withSelectionHandler(new SelectionHandler())
 				.create(comp, tk);
 		Composite treeComp = tk.createComposite(body);
 		UI.gridLayout(treeComp, 1);
@@ -90,7 +92,7 @@ public class ContributionTreePage extends FormPage {
 			UpstreamNode n = Viewers.getFirstSelected(tree);
 			if (n == null || n.provider == null)
 				return;
-			App.open(n.provider.process);
+			App.open(n.provider.process());
 		});
 
 		Action onExport = Actions.create(M.ExportToExcel,
@@ -105,24 +107,24 @@ public class ContributionTreePage extends FormPage {
 		Trees.onDoubleClick(tree, e -> onOpen.run());
 	}
 
-	private class SelectionHandler implements EventHandler {
+	private class SelectionHandler implements ResultItemSelector.SelectionHandler {
 
 		@Override
-		public void flowSelected(IndexFlow flow) {
+		public void onFlowSelected(EnviFlow flow) {
 			selection = flow;
 			UpstreamTree model = result.getTree(flow);
 			tree.setInput(model);
 		}
 
 		@Override
-		public void impactCategorySelected(ImpactDescriptor impact) {
+		public void onImpactSelected(ImpactDescriptor impact) {
 			selection = impact;
 			UpstreamTree model = result.getTree(impact);
 			tree.setInput(model);
 		}
 
 		@Override
-		public void costResultSelected(CostResultDescriptor cost) {
+		public void onCostsSelected(CostResultDescriptor cost) {
 			selection = cost;
 			UpstreamTree model = cost.forAddedValue
 					? result.getAddedValueTree()
@@ -197,10 +199,10 @@ public class ContributionTreePage extends FormPage {
 				return null;
 			UpstreamNode n = (UpstreamNode) obj;
 			if (col == 1 && n.provider != null) {
-				return Images.get(n.provider.process);
+				return Images.get(n.provider.process());
 			}
 			if (col == 2) {
-				return image.getForTable(getContribution(n));
+				return image.get(getContribution(n));
 			}
 			return null;
 		}
@@ -214,7 +216,7 @@ public class ContributionTreePage extends FormPage {
 			case 0:
 				return Numbers.percent(getContribution(node));
 			case 1:
-				return Labels.name(node.provider.process);
+				return Labels.name(node.provider.process());
 			case 2:
 				return Numbers.format(node.result);
 			case 3:
@@ -225,8 +227,8 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		private String getUnit() {
-			if (selection instanceof IndexFlow) {
-				var flow = (IndexFlow) selection;
+			if (selection instanceof EnviFlow) {
+				var flow = (EnviFlow) selection;
 				return Labels.refUnit(flow);
 			} else if (selection instanceof ImpactDescriptor) {
 				var impact = (ImpactDescriptor) selection;
