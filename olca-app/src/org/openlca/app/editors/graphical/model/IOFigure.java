@@ -67,10 +67,10 @@ class IOFigure extends Figure {
 		panel.add(ef, new GridData(SWT.FILL, SWT.TOP, true, false));
 		if (config.showFlowAmounts) {
 			var amount = new Label(Numbers.format(exchange.amount, 2));
-			amount.setForegroundColor(config.theme().fontColorOf(node));
+			amount.setForegroundColor(config.theme().fontColorOf(ef.node));
 			panel.add(amount, new GridData(SWT.RIGHT, SWT.TOP, false, false));
 			var unit = new Label(Labels.name(exchange.unit));
-			unit.setForegroundColor(config.theme().fontColorOf(node));
+			unit.setForegroundColor(config.theme().fontColorOf(ef.node));
 			panel.add(unit, new GridData(SWT.LEFT, SWT.TOP, false, false));
 		}
 	}

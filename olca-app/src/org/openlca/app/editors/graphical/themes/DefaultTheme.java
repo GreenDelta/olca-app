@@ -9,18 +9,14 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class DefaultTheme implements Theme {
 
-	static final Color COLOR_LIGHT_GREY = Colors.get(242, 242, 242);
-	static final Color COLOR_WHITE = Colors.white();
-
-	private static final Color COLOR_DARK_GREY = Colors.get(64, 64, 64);
-
-	private static final Color COLOR_PRODUCT = Colors.get(0, 0, 102);
-	private static final Color COLOR_WASTE = Colors.get(158, 72, 14);
-	private static final Color COLOR_LIBRARY = Colors.get(0, 176, 240);
-	private static final Color COLOR_SYSTEM = Colors.get(0, 111, 54);
-	private static final Color DEFAULT_BORDER = Colors.get(128, 0, 128);
-
+	private final Color SUB_SYSTEM_COLOR = Colors.get(18, 89, 133);
+	private final Color PROCESS_COLOR = Colors.get(128, 0, 128);
+	private final Color LIBRARY_COLOR = Colors.get(255, 151, 0);
 	private static final Color INFO_COLOR = Colors.get(175, 175, 175);
+
+	static final Color WHITE = Colors.white();
+	private static final Color DARK_GREY = Colors.get(64, 64, 64);
+
 
 	@Override
 	public String label() {
@@ -40,44 +36,43 @@ public class DefaultTheme implements Theme {
 
 	@Override
 	public Color defaultBackgroundColor() {
-		return COLOR_WHITE;
+		return WHITE;
 	}
 
 	@Override
 	public Color defaultBorderColor() {
-		return DEFAULT_BORDER;
+		return PROCESS_COLOR;
 	}
 
 
 	@Override
 	public Color defaultLinkColor() {
-		return COLOR_DARK_GREY;
+		return DARK_GREY;
 	}
 
 	@Override
 	public Color infoFontColor() {
-		return Colors.get(175, 175, 175);
+		return INFO_COLOR;
 	}
 
 	@Override
 	public Color linkColorOf(Link link) {
 		if (link == null)
-			return COLOR_DARK_GREY;
+			return DARK_GREY;
 		var provider = link.provider();
 		if (provider == null)
-			return COLOR_DARK_GREY;
-		return COLOR_DARK_GREY;
+			return DARK_GREY;
+		return DARK_GREY;
 	}
 
-	private static boolean isUnitProcess(ProcessNode node) {
-		if (node == null)
-			return false;
-		var d = node.process;
-		if (d.isFromLibrary())
-			return false;
-		if (!(d instanceof ProcessDescriptor))
-			return false;
-		var p = (ProcessDescriptor) d;
-		return p.processType == ProcessType.UNIT_PROCESS;
+	@Override
+	public Color borderColorOf(ProcessNode node) {
+		if (node == null || node.process == null)
+			return defaultBorderColor();
+		if (node.process.isFromLibrary())
+			return LIBRARY_COLOR;
+		if (!(node.process instanceof ProcessDescriptor))
+			return SUB_SYSTEM_COLOR;
+		return PROCESS_COLOR;
 	}
 }

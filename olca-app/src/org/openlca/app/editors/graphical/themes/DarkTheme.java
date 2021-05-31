@@ -2,24 +2,26 @@ package org.openlca.app.editors.graphical.themes;
 
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
-import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.Colors;
-import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-/**
- * A Monokai color theme, see: https://monokai.pro/
- */
 public class DarkTheme implements Theme {
 
-	private static final Color WHITE = Colors.white();
-	private static final Color BLACK = Colors.get(44, 41, 45);
-	private static final Color PINK = Colors.get(255, 91, 136);
-	private static final Color ORANGE = Colors.get(252, 152, 103);
-	private static final Color YELLOW = Colors.get(255, 216, 102);
-	private static final Color GREEN = Colors.get(169, 220, 118);
-	private static final Color BLUE = Colors.get(120, 220, 232);
-	private static final Color LILA = Colors.get(171, 157, 242);
+	// default colors
+	private static final Color BLACK = Colors.get(40, 42, 54);
+	private static final Color WHITE = Colors.get(242, 242, 242);
+	private static final Color GRAY = Colors.get(40, 42, 54);
+	private static final Color PINK = Colors.get(255, 121, 198);
+
+	// border colors
+	private static final Color PURPLE = Colors.get(142, 94, 188);
+	private static final Color YELLOW = Colors.get(249, 211, 104);
+
+	// flow colors
+	private static final Color BLUE = Colors.get(139, 233, 253);
+	private static final Color ORANGE = Colors.get(255, 184, 108);
+	private static final Color GREEN = Colors.get(80, 250, 123);
 
 	@Override
 	public String label() {
@@ -43,7 +45,7 @@ public class DarkTheme implements Theme {
 
 	@Override
 	public Color defaultBorderColor() {
-		return WHITE;
+		return PINK;
 	}
 
 	@Override
@@ -53,36 +55,31 @@ public class DarkTheme implements Theme {
 
 	@Override
 	public Color infoFontColor() {
-		return YELLOW;
+		return GRAY;
 	}
 
 	@Override
 	public Color borderColorOf(ProcessNode node) {
 		if (node == null || node.process == null)
-			return WHITE;
-		var isSystem = node.process.isFromLibrary()
-				|| node.process.type == ModelType.PRODUCT_SYSTEM;
-		if (isSystem)
-			return node.isWasteProcess()
-					? PINK
-					: LILA;
-		return node.isWasteProcess()
-				? ORANGE
-				: BLUE;
+			return defaultBorderColor();
+		if (node.process.isFromLibrary())
+			return YELLOW;
+		if (!(node.process instanceof ProcessDescriptor))
+			return PURPLE;
+		return PINK;
 	}
 
 	@Override
 	public Color fontColorOf(ExchangeNode node) {
 		if (node == null)
-			return WHITE;
+			return defaultFontColor();
 		var type = node.flowType();
 		if (type == null)
-			return WHITE;
+			return defaultFontColor();
 		return switch (type) {
 			case PRODUCT_FLOW -> BLUE;
 			case WASTE_FLOW -> ORANGE;
 			case ELEMENTARY_FLOW -> GREEN;
-			default -> WHITE;
 		};
 	}
 }

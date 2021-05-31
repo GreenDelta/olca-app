@@ -14,17 +14,17 @@ public interface Theme {
 	Color defaultFontColor();
 
 	Color defaultBackgroundColor();
-	
+
 	Color defaultBorderColor();
-	
+
 	Color defaultLinkColor();
-	
+
 	Color infoFontColor();
-	
+
 	default Color fontColorOf(ProcessNode node) {
 		return defaultFontColor();
 	}
-	
+
 	default Color borderColorOf(ProcessNode node) {
 		return defaultBorderColor();
 	}
@@ -32,14 +32,12 @@ public interface Theme {
 	default Color backgroundColorOf(ProcessNode node) {
 		return defaultBackgroundColor();
 	}
-	
+
 	default Color fontColorOf(ExchangeNode node) {
 		return defaultFontColor();
 	}
 
 	default Color linkColorOf(Link link) {
 		return defaultLinkColor();
-	};
-
-
+	}
 }
