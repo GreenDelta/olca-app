@@ -105,59 +105,21 @@ public class Contributions {
 	 * Ascending sort of the products results
 	 */
 	public void sort() {
-		switch (criteria) {
-		case CATEGORY:
-			list.sort((r1, r2) -> {
-				Long c1 = r1.getResult().getContribution().item.category;
-				Long c2 = r2.getResult().getContribution().item.category;
-				long result = c1.longValue() - c2.longValue();
-				if (result < 0) {
-					return -1;
-				}
-				if (result > 0) {
-					return 1;
-				}
-				return 0;
-			});
-			break;
-		case LOCATION:
-			list.sort((r1, r2) -> {
-				try {
-					Long l1 = ((ProcessDescriptor) r1.getResult().getContribution().item).location;
-					Long l2 = ((ProcessDescriptor) r2.getResult().getContribution().item).location;
-
-					long result = l1.longValue() - l2.longValue();
-					if (result < 0) {
-						return -1;
-					}
-					if (result > 0) {
-						return 1;
-					}
-					return 0;
-				} catch (ClassCastException e) {
-					// If the item is not a ProcessDescriptor, there is no location field. Hence, we
-					// can not sort on this item
-					return 0;
-				}
-			});
-			break;
-		default:
-			list.sort((r1, r2) -> {
-				double a1 = r1.getResult().getContribution().amount;
-				double a2 = r2.getResult().getContribution().amount;
-				if (a1 == 0.0 && a2 != 0.0) {
-					return -1;
-				} else if (a1 != 0.0 && a2 == 0.0) {
-					return 1;
-				}
-				if (a2 > a1) {
-					return -1;
-				}
-				if (a1 > a2) {
-					return 1;
-				}
-				return 0;
-			});
-		}
+		list.sort((r1, r2) -> {
+			double a1 = r1.getResult().getContribution().amount;
+			double a2 = r2.getResult().getContribution().amount;
+			if (a1 == 0.0 && a2 != 0.0) {
+				return -1;
+			} else if (a1 != 0.0 && a2 == 0.0) {
+				return 1;
+			}
+			if (a2 > a1) {
+				return -1;
+			}
+			if (a1 > a2) {
+				return 1;
+			}
+			return 0;
+		});
 	}
 }

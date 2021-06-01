@@ -1,7 +1,6 @@
 package org.openlca.app.results.comparison.display;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,8 +10,6 @@ import java.util.stream.Collectors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -22,7 +19,6 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.ColorDialog;
@@ -30,7 +26,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
@@ -40,7 +35,12 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.projects.reports.ReportViewer;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.ResultEditor;
+import org.openlca.app.results.comparison.component.ColorationCombo;
+import org.openlca.app.results.comparison.component.HighlightCategoryCombo;
+import org.openlca.app.results.comparison.component.ImpactCategoryCombo;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
@@ -48,7 +48,7 @@ import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.Project;
-import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -76,12 +76,13 @@ public class ProductComparison {
 	private List<String> impactCategoriesName;
 	private TargetCalculationEnum targetCalculation;
 	private boolean isCalculationStarted;
-	private long chosenProcessCategoryId;
+	private long chosenProcessCategory;
 	private FormToolkit tk;
 	private int screenWidth;
 	private Canvas canvas;
 	private Project project;
 	private ProcessDescriptor selectedProduct;
+	private List<ImpactDescriptor> impactCategories;
 
 	public ProductComparison(Composite shell, FormEditor editor, TargetCalculationEnum target, FormToolkit tk) {
 		this.tk = tk;
@@ -103,7 +104,7 @@ public class ProductComparison {
 		contributionsList = new ArrayList<>();
 		cacheMap = new HashMap<>();
 		impactCategoriesName = new ArrayList<>();
-		chosenProcessCategoryId = -1;
+		chosenProcessCategory = -1;
 		margin = new Point(200, 65);
 		rectHeight = 30;
 		gapBetweenRect = 150;
@@ -128,11 +129,12 @@ public class ProductComparison {
 		Section settingsSection = UI.section(shell, tk, "Settings");
 		Composite comp = UI.sectionClient(settingsSection, tk);
 		UI.gridLayout(comp, 1);
+		var settingsBody = tk.createComposite(comp, SWT.NULL);
+		UI.gridLayout(settingsBody, 2, 10, 10);
 
 		/**
 		 * Composite component
 		 */
-		var row1 = tk.createComposite(comp);
 
 		var row2 = tk.createComposite(shell);
 		// UI.gridLayout(row2, 1);
@@ -154,18 +156,15 @@ public class ProductComparison {
 		addScrollListener(canvas);
 		addResizeEvent(row2, canvas);
 
-		row1.setLayout(new RowLayout());
-
 		initCategoryMap();
 		initContributionsList();
 
-		UI.gridLayout(row1, 13);
-		chooseImpactCategoriesMenu(row1, row2);
-		colorByCriteriaMenu(row1, row2, canvas);
-		selectCategoryMenu(row1, row2, canvas);
-		colorPickerMenu(row1);
-		selectCutoffSizeMenu(row1, row2, canvas);
-		runCalculationButton(row1, row2, canvas);
+		chooseImpactCategoriesMenu(settingsBody, row2);
+		colorByCriteriaMenu(settingsBody);
+		selectCategoryMenu(settingsBody, row2, canvas);
+		colorPickerMenu(settingsBody);
+		selectCutoffSizeMenu(settingsBody, row2, canvas);
+		runCalculationButton(settingsBody, row2, canvas);
 		addPaintListener(canvas); // Once finished, we really paint the cache,
 		// so it avoids flickering
 		addToolTipListener(row2, canvas);
@@ -175,7 +174,7 @@ public class ProductComparison {
 	 * Initialize an impact Category Map, from the Impact Method
 	 */
 	private void initCategoryMap() {
-		var impactCategories = new ImpactMethodDao(db).getCategoryDescriptors(impactMethod.id);
+		impactCategories = new ImpactMethodDao(db).getCategoryDescriptors(impactMethod.id);
 		impactCategoryMap = impactCategories.stream().sorted((c1, c2) -> c1.name.compareTo(c2.name))
 				.map(impactCategory -> {
 					impactCategoriesName.add(impactCategory.name);
@@ -190,26 +189,31 @@ public class ProductComparison {
 	 * @param row2 The canvas
 	 */
 	private void chooseImpactCategoriesMenu(Composite row1, Composite row2) {
-		var b = new Button(row1, SWT.NONE);
-		var composite = new Composite(row1, SWT.BORDER);
-		var impactCategoryTable = impactCategoryTable(composite);
-
-		b.setText("Toggle");
-		b.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				Arrays.stream(impactCategoryTable.getItems()).forEach(item -> {
-					item.setChecked(!item.getChecked());
-					if (item.getChecked()) {
-						impactCategoriesName.add(item.getText());
-					} else {
-						impactCategoriesName.remove(item.getText());
-					}
-				});
-			}
+		UI.formLabel(row1, "Impact Categories");
+		var combo = new ImpactCategoryCombo(row1, impactCategories.toArray(ImpactDescriptor[]::new));
+		combo.addSelectionChangedListener(c -> {
+			System.out.println(c);
 		});
-		b.pack();
+//		var composite = tk.createComposite(row1, SWT.BORDER);
+//		var impactCategoryTable = impactCategoryTable(composite);
+//		var b = new Button(row1, SWT.NONE);
+
+//		b.setText("Toggle");
+//		b.addListener(SWT.Selection, new Listener() {
+//			public void handleEvent(Event e) {
+//				Arrays.stream(impactCategoryTable.getItems()).forEach(item -> {
+//					item.setChecked(!item.getChecked());
+//					if (item.getChecked()) {
+//						impactCategoriesName.add(item.getText());
+//					} else {
+//						impactCategoriesName.remove(item.getText());
+//					}
+//				});
+//			}
+//		});
+//		b.pack();
 		// impactCategoryTable.setBounds(0, 0, 0, 0);
-		impactCategoryTable.setSize(300, 100);
+//		impactCategoryTable.setSize(300, 100);
 		// row1.setSize(300, 100);
 	}
 
@@ -266,24 +270,17 @@ public class ProductComparison {
 	 * @param row2   The second part of the display
 	 * @param canvas The canvas
 	 */
-	private void colorByCriteriaMenu(Composite row1, Composite row2, Canvas canvas) {
-		final Combo c = UI.formCombo(row1, "Color cells by : ");
-		c.setSize(new Point(150, 65));
-		// c.setBounds(50, 50, 150, 65);
-		String values[] = ColorCellCriteria.valuesToString();
-		c.setItems(values);
-		c.select(0);
-		c.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				var choice = c.getItem(c.getSelectionIndex());
-				ColorCellCriteria criteria = ColorCellCriteria.getCriteria(choice);
-				if (!colorCellCriteria.equals(criteria)) {
-					colorCellCriteria = criteria;
-					Contributions.updateComparisonCriteria(criteria);
-					contributionsList.stream().forEach(c -> c.updateCellsColor());
-					triggerComboSelection(selectCategory, true);
-					// redraw(row2, canvas);
-				}
+	private void colorByCriteriaMenu(Composite row1) {
+		UI.formLabel(row1, "Color cells by");
+		var combo = new ColorationCombo(row1, ColorCellCriteria.values());
+		combo.setNullable(false);
+		combo.select(ColorCellCriteria.PRODUCT);
+		combo.addSelectionChangedListener(v -> {
+			if (!colorCellCriteria.equals(v)) {
+				colorCellCriteria = v;
+				Contributions.updateComparisonCriteria(v);
+				contributionsList.stream().forEach(c -> c.updateCellsColor());
+//				triggerComboSelection(selectCategory, true);
 			}
 		});
 	}
@@ -296,40 +293,21 @@ public class ProductComparison {
 	 * @param canvas The canvas
 	 */
 	private void selectCategoryMenu(Composite row1, Composite row2, Canvas canvas) {
-		selectCategory = UI.formCombo(row1, "Highlight Category : ");
-		var categoryMap = new HashMap<String, Descriptor>();
 		var categoriesRefId = contributionsList.stream()
 				.flatMap(c -> c.getList().stream().filter(cell -> cell.getResult().getContribution().item != null)
 						.map(cell -> cell.getResult().getContribution().item.category))
 				.distinct().collect(Collectors.toSet());
 		var categoriesDescriptors = new CategoryDao(db).getDescriptors(categoriesRefId);
-		var categoriesNameList = categoriesDescriptors.stream().sorted((c1, c2) -> c1.name.compareTo(c2.name))
-				.map(c -> {
-					categoryMap.put(c.name, c);
-					return c.name;
-				}).collect(Collectors.toList());
-
-		categoriesNameList.add(0, "");
-		selectCategory.setItems(categoriesNameList.toArray(String[]::new));
-		selectCategory.setSize(200, 65);
-
-		selectCategory.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				resetDefaultColorCells();
-				if (selectCategory.getSelectionIndex() == -1) { // Nothing is
-					// selected :
-					// initialisation
-					chosenProcessCategoryId = -1;
-				} else if (selectCategory.getSelectionIndex() == 0) {
-					// Empty value is selected : reset
-					chosenProcessCategoryId = 0;
-					// redraw(row2, canvas);
-				} else { // A category is selected : update color
-					chosenProcessCategoryId = categoryMap
-							.get(selectCategory.getItem(selectCategory.getSelectionIndex())).id;
-					// redraw(row2, canvas);
-				}
-			}
+		categoriesDescriptors.sort((c1, c2) -> c1.name.compareTo(c2.name));
+		UI.formLabel(row1, "Highlight Category");
+		var combo = new HighlightCategoryCombo(row1, categoriesDescriptors.toArray(CategoryDescriptor[]::new));
+		combo.setNullable(true);
+		combo.select(null);
+		combo.addSelectionChangedListener(v -> {
+			if (v == null)
+				chosenProcessCategory = 0;
+			else
+				chosenProcessCategory = v.id;
 		});
 	}
 
@@ -368,31 +346,29 @@ public class ProductComparison {
 	private void colorPickerMenu(Composite composite) {
 		// Default color (pink)
 		chosenCategoryColor = new Color(shell.getDisplay(), new RGB(255, 0, 255));
-		// Use a label full of spaces to show the color
-		final Label colorLabel = new Label(composite, SWT.NONE);
-		colorLabel.setText("    ");
-		colorLabel.setBackground(chosenCategoryColor);
-		Button button = new Button(composite, SWT.PUSH);
-		button.setText("Color...");
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				// Create the color-change dialog
-				ColorDialog dlg = new ColorDialog(shell.getShell());
-				// Set the selected color in the dialog from
-				// user's selected color
-				dlg.setRGB(colorLabel.getBackground().getRGB());
-				// Change the title bar text
-				dlg.setText("Choose a Color");
-				// Open the dialog and retrieve the selected color
-				RGB rgb = dlg.open();
-				if (rgb != null) {
-					// Dispose the old color, create the
-					// new one, and set into the label
-					chosenCategoryColor.dispose();
-					chosenCategoryColor = new Color(composite.getDisplay(), rgb);
-					colorLabel.setBackground(chosenCategoryColor);
-					triggerComboSelection(selectCategory, false);
-				}
+		UI.formLabel(composite, "Highlight color");
+		Button button = tk.createButton(composite, "    ", SWT.NONE);
+		button.setSize(50, 50);
+		button.setBackground(chosenCategoryColor);
+
+		Controls.onSelect(button, e -> {
+			System.out.println("selected");
+			// Create the color-change dialog
+			ColorDialog dlg = new ColorDialog(shell.getShell());
+			// Set the selected color in the dialog from
+			// user's selected color
+			dlg.setRGB(button.getBackground().getRGB());
+			// Change the title bar text
+			dlg.setText("Choose a Color");
+			// Open the dialog and retrieve the selected color
+			RGB rgb = dlg.open();
+			if (rgb != null) {
+				// Dispose the old color, create the
+				// new one, and set into the label
+				chosenCategoryColor.dispose();
+				chosenCategoryColor = new Color(composite.getDisplay(), rgb);
+				button.setBackground(chosenCategoryColor);
+//				triggerComboSelection(selectCategory, false);
 			}
 		});
 	}
@@ -405,23 +381,16 @@ public class ProductComparison {
 	 * @param canvas The canvas
 	 */
 	private void selectCutoffSizeMenu(Composite row1, Composite row2, Canvas canvas) {
-		final Label l = new Label(row1, SWT.NONE);
-		l.setText("Don't show < ");
-		var selectCutoff = new Spinner(row1, SWT.BORDER);
-		selectCutoff.setBounds(50, 50, 500, 65);
-		selectCutoff.setMinimum(0);
-		selectCutoff.setMaximum(100);
-		final Label l2 = new Label(row1, SWT.NONE);
-		l2.setText(" %");
-		selectCutoff.setSelection(cutOffSize);
-		selectCutoff.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				var newCutoffSize = selectCutoff.getSelection();
-				if (newCutoffSize != cutOffSize) {
-					cutOffSize = selectCutoff.getSelection();
-					// redraw(row2, canvas);
-				}
+		UI.formLabel(row1, tk, "Don't show < ");
+		var comp = UI.formComposite(row1, tk);
+		UI.gridLayout(comp, 2, 10, 0);
+		var selectCutoff = new Spinner(comp, SWT.BORDER);
+		UI.formLabel(comp, tk, "%");
+		selectCutoff.setValues(cutOffSize, 0, 100, 0, 1, 10);
+		selectCutoff.addModifyListener((e) -> {
+			var newCutoffSize = selectCutoff.getSelection();
+			if (newCutoffSize != cutOffSize) {
+				cutOffSize = selectCutoff.getSelection();
 			}
 		});
 	}
@@ -479,29 +448,28 @@ public class ProductComparison {
 	 */
 	private void runCalculationButton(Composite row1, Composite row2, Canvas canvas) {
 		var vBar = canvas.getVerticalBar();
-		var runCalculation = new Button(row1, SWT.None);
-		runCalculation.setText("Run calculation");
-		runCalculation.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				var hash = computeConfigurationHash();
-				// Cached image, in which we draw the things, and then display
-				// it once it is
-				// finished
-				Image cache = cacheMap.get(hash);
-				if (cache == null) {
-					initContributionsList();
-					contributionsList.stream().forEach(c -> c.getList().stream().forEach(cell -> {
-						if (cell.getResult().getContribution().item.category == chosenProcessCategoryId) {
-							cell.setRgb(chosenCategoryColor.getRGB());
-						}
-					}));
-					isCalculationStarted = true;
-					theoreticalScreenHeight = margin.y * 2 + gapBetweenRect * (contributionsList.size());
-					vBar.setMaximum(theoreticalScreenHeight);
-				}
-				redraw(row2, canvas);
+		Button button = tk.createButton(row1, "Update Diagram", SWT.NONE);
+		button.setImage(Icon.RUN.get());
+		Controls.onSelect(button, e -> {
+			var hash = computeConfigurationHash();
+			// Cached image, in which we draw the things, and then display
+			// it once it is
+			// finished
+			Image cache = cacheMap.get(hash);
+			if (cache == null) {
+				initContributionsList();
+				contributionsList.stream().forEach(c -> c.getList().stream().forEach(cell -> {
+					if (cell.getResult().getContribution().item.category == chosenProcessCategory) {
+						cell.setRgb(chosenCategoryColor.getRGB());
+					}
+				}));
+				isCalculationStarted = true;
+				theoreticalScreenHeight = margin.y * 2 + gapBetweenRect * (contributionsList.size());
+				vBar.setMaximum(theoreticalScreenHeight);
 			}
+			redraw(row2, canvas);
 		});
+		tk.createLabel(row1, "");
 	}
 
 	/**
@@ -538,7 +506,7 @@ public class ProductComparison {
 	 */
 	private int computeConfigurationHash() {
 		var hash = Objects.hash(targetCalculation, impactCategoriesName, chosenCategoryColor, colorCellCriteria,
-				cutOffSize, isCalculationStarted, chosenProcessCategoryId, selectedProduct);
+				cutOffSize, isCalculationStarted, chosenProcessCategory, selectedProduct);
 		return hash;
 	}
 
@@ -1096,7 +1064,7 @@ public class ProductComparison {
 			@Override
 			public void handleEvent(Event e) {
 				if (cacheMap.isEmpty()) {
-					triggerComboSelection(selectCategory, true);
+//					triggerComboSelection(selectCategory, true);
 					redraw(composite, canvas);
 					// This is done to fix a bug on horizontal scrollbar
 					var customEvent = new Event();
