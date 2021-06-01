@@ -7,7 +7,6 @@ import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.Label;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -16,7 +15,7 @@ import org.openlca.core.model.descriptors.Descriptor;
 class ExchangeFigure extends Figure {
 
 	final ExchangeNode node;
-	final Label label;
+	private final Label label;
 
 	ExchangeFigure(ExchangeNode node) {
 		this.node = node;
@@ -26,7 +25,6 @@ class ExchangeFigure extends Figure {
 		setLayoutManager(layout);
 		label = new Label(node.getName());
 		setToolTip(new Label(tooltip()));
-		label.setIcon(Images.get(node.flowType()));
 		add(label, new GridData(SWT.FILL, SWT.TOP, true, false));
 	}
 
@@ -63,8 +61,7 @@ class ExchangeFigure extends Figure {
 	@Override
 	public void paint(Graphics g) {
 		var theme = node.config().theme();
-		label.setForegroundColor(
-				theme.ioForegroundOf(node));
+		label.setForegroundColor(theme.fontColorOf(node));
 		super.paint(g);
 	}
 }

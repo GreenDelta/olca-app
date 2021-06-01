@@ -22,12 +22,17 @@ public class WhiteTheme implements Theme {
 	}
 
 	@Override
-	public Color graphBackground() {
+	public Color defaultFontColor() {
+		return COLOR_BLACK;
+	}
+
+	@Override
+	public Color defaultBackgroundColor() {
 		return COLOR_WHITE;
 	}
 
 	@Override
-	public Color colorOf(Link link) {
+	public Color defaultBorderColor() {
 		return COLOR_BLACK;
 	}
 
@@ -37,37 +42,7 @@ public class WhiteTheme implements Theme {
 	}
 
 	@Override
-	public Color boxColorOf(ProcessNode node) {
-		return COLOR_WHITE;
-	}
-
-	@Override
-	public Color boxBorderOf(ProcessNode node) {
-		return COLOR_BLACK;
-	}
-
-	@Override
-	public Color boxHeaderForegroundOf(ProcessNode node) {
-		return COLOR_BLACK;
-	}
-
-	@Override
-	public Color boxHeaderBackgroundOf(ProcessNode node) {
-		return COLOR_WHITE;
-	}
-
-	@Override
-	public Color ioHeaderForegroundOf(ProcessNode node) {
-		return COLOR_BLACK;
-	}
-
-	@Override
-	public Color ioInnerBackgroundOf(ProcessNode node) {
-		return COLOR_WHITE;
-	}
-
-	@Override
-	public Color ioForegroundOf(ExchangeNode node) {
+	public Color infoFontColor() {
 		return COLOR_BLACK;
 	}
 }

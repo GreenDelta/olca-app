@@ -5,7 +5,7 @@ import java.util.Objects;
 public final class Themes {
 
 	private static Theme[] themes;
-	private static Theme colorful;
+	private static final Theme defaultTheme = new DefaultTheme();
 
 	private Themes() {
 	}
@@ -23,10 +23,7 @@ public final class Themes {
 	}
 
 	public static Theme getDefault() {
-		if (colorful != null)
-			return colorful;
-		colorful = new ColorfulTheme();
-		return colorful;
+		return defaultTheme;
 	}
 
 	public static Theme get(String id) {

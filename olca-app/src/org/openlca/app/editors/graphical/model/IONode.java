@@ -21,6 +21,7 @@ public class IONode extends Node {
 	 * refresh.
 	 */
 	final boolean isWithElementaryFlows;
+
 	private final ProcessNode parent;
 
 	public IONode(ProcessNode parent) {
@@ -85,14 +86,11 @@ public class IONode extends Node {
 				|| e.flow == null
 				|| e.flow.flowType == null)
 			return -1;
-		switch (e.flow.flowType) {
-			case PRODUCT_FLOW:
-				return 0;
-			case WASTE_FLOW:
-				return 1;
-			default:
-				return 2;
-		}
+		return switch (e.flow.flowType) {
+			case PRODUCT_FLOW -> 0;
+			case WASTE_FLOW -> 1;
+			default -> 2;
+		};
 	}
 
 	@Override

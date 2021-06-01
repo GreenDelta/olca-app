@@ -34,11 +34,11 @@ abstract class Node {
 	public boolean add(Node child) {
 		if (child == null)
 			return false;
-		if (!children.add(child))
-			return false;
+		children.add(child);
 		child.parent = this;
-		if (editPart != null)
+		if (editPart != null) {
 			editPart.refreshChildren();
+		}
 		return true;
 	}
 

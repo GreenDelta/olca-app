@@ -1,13 +1,18 @@
 package org.openlca.app.editors.graphical.model;
 
+import java.util.Objects;
+
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.LineBorder;
 import org.eclipse.swt.SWT;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
 
 class IOFigure extends Figure {
 
@@ -17,28 +22,23 @@ class IOFigure extends Figure {
 
 	IOFigure(ProcessNode node) {
 		this.node = node;
-
-		// layout
-		var layout = new GridLayout(2, true);
+		var layout = new GridLayout(1, true);
 		layout.horizontalSpacing = 4;
 		layout.verticalSpacing = 4;
-		layout.marginHeight = 2;
-		layout.marginWidth = 2;
+		layout.marginHeight = 5;
+		layout.marginWidth = 0;
 		setLayoutManager(layout);
+		inputPanel = initPanel(true);
+		outputPanel = initPanel(false);
+	}
 
-		// headers
-		add(new Header("Input flows"),
-			new GridData(SWT.FILL, SWT.TOP, true, false));
-		add(new Header("Output flows"),
-			new GridData(SWT.FILL, SWT.TOP, true, false));
-
-		// panels
-		inputPanel = new ExchangePanel();
-		add(inputPanel,
-			new GridData(SWT.FILL, SWT.FILL, true, true));
-		outputPanel = new ExchangePanel();
-		add(outputPanel,
-			new GridData(SWT.FILL, SWT.FILL, true, true));
+	private ExchangePanel initPanel(boolean forInputs) {
+		add(new Header(forInputs), new GridData(
+			SWT.FILL, SWT.TOP, true, false));
+		var panel = new ExchangePanel(node);
+		add(panel, new GridData(
+			SWT.FILL, SWT.FILL, true, true));
+		return panel;
 	}
 
 	@Override
@@ -54,63 +54,93 @@ class IOFigure extends Figure {
 		var ef = (ExchangeFigure) figure;
 		if (ef.node == null || ef.node.exchange == null)
 			return;
-		var layout = new GridData(SWT.FILL, SWT.TOP, true, false);
-		if (ef.node.exchange.isInput) {
-			inputPanel.add(ef, layout);
-		} else {
-			outputPanel.add(ef, layout);
+		var exchange = ef.node.exchange;
+		var panel = exchange.isInput
+			? inputPanel
+			: outputPanel;
+		var config = node.config();
+		if (config.showFlowIcons) {
+			panel.add(
+				new ImageFigure(Images.get(ef.node.flowType())),
+				new GridData(SWT.LEFT, SWT.TOP, false, false));
+		}
+		panel.add(ef, new GridData(SWT.FILL, SWT.TOP, true, false));
+		if (config.showFlowAmounts) {
+			var amount = new Label(Numbers.format(exchange.amount, 2));
+			amount.setForegroundColor(config.theme().fontColorOf(ef.node));
+			panel.add(amount, new GridData(SWT.RIGHT, SWT.TOP, false, false));
+			var unit = new Label(Labels.name(exchange.unit));
+			unit.setForegroundColor(config.theme().fontColorOf(ef.node));
+			panel.add(unit, new GridData(SWT.LEFT, SWT.TOP, false, false));
 		}
 	}
+
 
 	private class Header extends Figure {
 
 		private final Label label;
 
-		Header(String text) {
+		Header(boolean forInputs) {
 			var layout = new GridLayout(1, true);
-			layout.marginHeight = 2;
-			layout.marginWidth =  5;
+			layout.marginHeight = 3;
+			layout.marginWidth = 5;
 			setLayoutManager(layout);
-			label = new Label(text);
-			add(label, new GridData(SWT.CENTER, SWT.TOP, true, false));
+			label = new Label(forInputs
+				? ">> input flows"
+				: "output flows >>");
+			var alignment = forInputs
+				? SWT.LEFT
+				: SWT.RIGHT;
+			add(label, new GridData(alignment, SWT.TOP, true, false));
 		}
 
 		@Override
 		public void paint(Graphics g) {
 			var theme = node.config().theme();
-			label.setForegroundColor(
-				theme.ioHeaderForegroundOf(node));
+			var location = getLocation();
+			var size = getSize();
+			g.setForegroundColor(theme.borderColorOf(node));
+			g.drawLine(location.x, location.y, location.x + size.width, location.y);
+			g.restoreState();
+			label.setForegroundColor(theme.infoFontColor());
 			super.paint(g);
 		}
 	}
 
-	private class ExchangePanel extends Figure {
+	private static class ExchangePanel extends Figure {
 
-		private final LineBorder border;
+		private final ProcessNode node;
 
-		ExchangePanel() {
-			var layout = new GridLayout(1, true);
-			layout.marginHeight = 2;
-			layout.marginWidth =  5;
+		ExchangePanel(ProcessNode node) {
+			this.node = node;
+			var config = node.config();
+			int columns = 1;
+			if (config.showFlowAmounts) {
+				columns += 1;
+			}
+			if (config.showFlowIcons) {
+				columns += 2;
+			}
+			var layout = new GridLayout(columns, false);
+			layout.marginHeight = 4;
+			layout.marginWidth = 5;
 			setLayoutManager(layout);
-			border = new LineBorder(1);
-			setBorder(border);
 		}
 
 		@Override
 		protected void paintFigure(Graphics g) {
+			// set a specific background if this is required
 			var theme = node.config().theme();
-			border.setColor(theme.boxBorderOf(node));
+			var background = theme.backgroundColorOf(node);
+			if (Objects.equals(background, theme.defaultBackgroundColor())) {
+				super.paintFigure(g);
+				return;
+			}
 			g.pushState();
-			g.setBackgroundColor(
-				theme.ioInnerBackgroundOf(node));
-			var location = getLocation();
+			g.setBackgroundColor(theme.backgroundColorOf(node));
+			var loc = getLocation();
 			var size = getSize();
-			g.fillRectangle(
-				location.x,
-				location.y,
-				size.width,
-				size.height);
+			g.fillRectangle(loc.x, loc.y, size.width, size.height);
 			g.popState();
 			super.paintFigure(g);
 		}

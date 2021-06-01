@@ -18,7 +18,7 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.model.ProcessExpander.Side;
-import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -63,8 +63,8 @@ class ProcessFigure extends Figure {
 		var layout = new GridLayout(1, true);
 		layout.horizontalSpacing = 10;
 		layout.verticalSpacing = 0;
-		layout.marginHeight = 2;
-		layout.marginWidth = 2;
+		layout.marginHeight = 0;
+		layout.marginWidth = 0;
 		setLayoutManager(layout);
 	}
 
@@ -84,7 +84,7 @@ class ProcessFigure extends Figure {
 		top.add(leftExpander, new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
 		// process icon and header
-		top.add(new ImageFigure(Icon.GRAPH_PROCESS_PRODUCTION.get()),
+		top.add(new ImageFigure(Images.get(node.process)),
 				new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		top.add(new BoxHeader(node), new GridData(SWT.FILL, SWT.TOP, true, false));
 
@@ -145,9 +145,9 @@ class ProcessFigure extends Figure {
 	@Override
 	protected void paintFigure(Graphics g) {
 		var theme = node.config().theme();
-		border.setColor(theme.boxBorderOf(node));
+		border.setColor(theme.borderColorOf(node));
 		g.pushState();
-		g.setBackgroundColor(theme.boxColorOf(node));
+		g.setBackgroundColor(theme.backgroundColorOf(node));
 		g.fillRectangle(new Rectangle(getLocation(), getSize()));
 		g.popState();
 		super.paintFigure(g);
@@ -241,7 +241,7 @@ class ProcessFigure extends Figure {
 			layout.marginWidth = 10;
 			setLayoutManager(layout);
 			label = new Label(node.getName());
-			label.setForegroundColor(theme.boxHeaderForegroundOf(node));
+			label.setForegroundColor(theme.fontColorOf(node));
 			add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
 		}
 
@@ -256,9 +256,9 @@ class ProcessFigure extends Figure {
 		@Override
 		protected void paintFigure(Graphics g) {
 			var theme = node.config().theme();
-			label.setForegroundColor(theme.boxHeaderForegroundOf(node));
+			label.setForegroundColor(theme.fontColorOf(node));
 			g.pushState();
-			g.setBackgroundColor(theme.boxHeaderBackgroundOf(node));
+			g.setBackgroundColor(theme.backgroundColorOf(node));
 			g.fillRectangle(new Rectangle(getLocation(), getSize()));
 			g.popState();
 			super.paintFigure(g);

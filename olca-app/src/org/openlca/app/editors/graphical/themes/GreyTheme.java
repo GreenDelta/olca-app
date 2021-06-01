@@ -26,46 +26,17 @@ public class GreyTheme implements Theme{
 	}
 
 	@Override
-	public Color boxColorOf(ProcessNode node) {
+	public Color defaultFontColor() {
 		return DARK_GREY;
 	}
 
 	@Override
-	public Color boxHeaderForegroundOf(ProcessNode node) {
-		return isUnitProcess(node)
-			? boxColorOf(node)
-			: WHITE;
-	}
-
-	@Override
-	public Color boxHeaderBackgroundOf(ProcessNode node) {
-		return isUnitProcess(node)
-			? LIGHT_GREY
-			: boxColorOf(node);
-	}
-
-	@Override
-	public Color ioHeaderForegroundOf(ProcessNode node) {
-		return WHITE;
-	}
-
-	@Override
-	public Color ioInnerBackgroundOf(ProcessNode node) {
+	public Color defaultBackgroundColor() {
 		return LIGHT_GREY;
 	}
 
 	@Override
-	public Color ioForegroundOf(ExchangeNode node) {
-		return DARK_GREY;
-	}
-
-	@Override
-	public Color graphBackground() {
-		return LIGHT_GREY;
-	}
-
-	@Override
-	public Color colorOf(Link link) {
+	public Color defaultBorderColor() {
 		return DARK_GREY;
 	}
 
@@ -74,15 +45,8 @@ public class GreyTheme implements Theme{
 		return DARK_GREY;
 	}
 
-	private static boolean isUnitProcess(ProcessNode node) {
-		if (node == null || node.process == null)
-			return false;
-		var d = node.process;
-		if (d.isFromLibrary())
-			return false;
-		if (!(d instanceof ProcessDescriptor))
-			return false;
-		var p = (ProcessDescriptor) d;
-		return p.processType == ProcessType.UNIT_PROCESS;
+	@Override
+	public Color infoFontColor() {
+		return LIGHT_GREY;
 	}
 }
