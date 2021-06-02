@@ -19,12 +19,12 @@ public class ColorationCombo extends AbstractComboViewer<ColorCellCriteria> {
 
 	@Override
 	public void select(ColorCellCriteria value) {
-		if (value == null)
+		if (value == null) {
 			if (isNullable())
 				((TableCombo) getViewer().getControl()).select(0);
 			else
 				super.select(ColorCellCriteria.PRODUCT);
-		else
+		} else
 			super.select(value);
 	}
 

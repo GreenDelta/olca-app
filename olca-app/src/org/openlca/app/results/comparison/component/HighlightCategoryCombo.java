@@ -20,10 +20,10 @@ public class HighlightCategoryCombo extends AbstractComboViewer<CategoryDescript
 
 	@Override
 	public void select(CategoryDescriptor value) {
-		if (value == null)
+		if (value == null) {
 			if (isNullable())
 				((TableCombo) getViewer().getControl()).select(0);
-		else
+		} else
 			super.select(value);
 	}
 

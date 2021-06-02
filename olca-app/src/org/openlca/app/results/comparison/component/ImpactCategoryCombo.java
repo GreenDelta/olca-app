@@ -20,10 +20,10 @@ public class ImpactCategoryCombo extends AbstractComboViewer<ImpactDescriptor> {
 
 	@Override
 	public void select(ImpactDescriptor value) {
-		if (value == null)
+		if (value == null) {
 			if (isNullable())
 				((TableCombo) getViewer().getControl()).select(0);
-		else
+		} else
 			super.select(value);
 	}
 

@@ -28,8 +28,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
@@ -39,7 +37,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.comparison.component.ColorationCombo;
 import org.openlca.app.results.comparison.component.HighlightCategoryCombo;
-import org.openlca.app.results.comparison.component.ImpactCategoryCombo;
+import org.openlca.app.results.comparison.component.ImpactCategoryTable;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.CategoryDao;
@@ -66,7 +64,6 @@ public class ProductComparison {
 	private int theoreticalScreenHeight;
 	private ColorCellCriteria colorCellCriteria;
 	private Map<Integer, Image> cacheMap;
-	private Combo selectCategory;
 	private Color chosenCategoryColor;
 	private ContributionResult contributionResult;
 	private int cutOffSize;
@@ -83,6 +80,7 @@ public class ProductComparison {
 	private Project project;
 	private ProcessDescriptor selectedProduct;
 	private List<ImpactDescriptor> impactCategories;
+	ImpactCategoryTable impactCategoryTable;
 
 	public ProductComparison(Composite shell, FormEditor editor, TargetCalculationEnum target, FormToolkit tk) {
 		this.tk = tk;
@@ -156,10 +154,11 @@ public class ProductComparison {
 		addScrollListener(canvas);
 		addResizeEvent(row2, canvas);
 
-		initCategoryMap();
-		initContributionsList();
+		initImpactCategories();
 
 		chooseImpactCategoriesMenu(settingsBody, row2);
+		initContributionsList();
+
 		colorByCriteriaMenu(settingsBody);
 		selectCategoryMenu(settingsBody, row2, canvas);
 		colorPickerMenu(settingsBody);
@@ -173,13 +172,8 @@ public class ProductComparison {
 	/**
 	 * Initialize an impact Category Map, from the Impact Method
 	 */
-	private void initCategoryMap() {
+	private void initImpactCategories() {
 		impactCategories = new ImpactMethodDao(db).getCategoryDescriptors(impactMethod.id);
-		impactCategoryMap = impactCategories.stream().sorted((c1, c2) -> c1.name.compareTo(c2.name))
-				.map(impactCategory -> {
-					impactCategoriesName.add(impactCategory.name);
-					return impactCategory;
-				}).collect(Collectors.toMap(impactCategory -> impactCategory.name, impactCategory -> impactCategory));
 	}
 
 	/**
@@ -190,76 +184,9 @@ public class ProductComparison {
 	 */
 	private void chooseImpactCategoriesMenu(Composite row1, Composite row2) {
 		UI.formLabel(row1, "Impact Categories");
-		var combo = new ImpactCategoryCombo(row1, impactCategories.toArray(ImpactDescriptor[]::new));
-		combo.addSelectionChangedListener(c -> {
-			System.out.println(c);
-		});
-//		var composite = tk.createComposite(row1, SWT.BORDER);
-//		var impactCategoryTable = impactCategoryTable(composite);
-//		var b = new Button(row1, SWT.NONE);
 
-//		b.setText("Toggle");
-//		b.addListener(SWT.Selection, new Listener() {
-//			public void handleEvent(Event e) {
-//				Arrays.stream(impactCategoryTable.getItems()).forEach(item -> {
-//					item.setChecked(!item.getChecked());
-//					if (item.getChecked()) {
-//						impactCategoriesName.add(item.getText());
-//					} else {
-//						impactCategoriesName.remove(item.getText());
-//					}
-//				});
-//			}
-//		});
-//		b.pack();
-		// impactCategoryTable.setBounds(0, 0, 0, 0);
-//		impactCategoryTable.setSize(300, 100);
-		// row1.setSize(300, 100);
-	}
+		impactCategoryTable = new ImpactCategoryTable(row1, impactCategories);
 
-	/**
-	 * Table containing the whole impact categories, that allow us to check them or
-	 * not
-	 * 
-	 * @param composite The parent component
-	 * @return This table
-	 */
-	private Table impactCategoryTable(Composite composite) {
-		int typeButton;
-		if (TargetCalculationEnum.IMPACT.equals(targetCalculation)) {
-			typeButton = SWT.CHECK;
-		} else {
-			typeButton = SWT.RADIO;
-		}
-		var impactCategoryTable = new Table(composite, typeButton | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		impactCategoriesName.stream().forEach(impactCategory -> {
-			TableItem item = new TableItem(impactCategoryTable, SWT.BORDER);
-			item.setText(impactCategory);
-			item.setChecked(true);
-		});
-		impactCategoryTable.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				if (event.detail == SWT.CHECK) {
-					// We keep tracking of check/select event, to have in
-					// impactCategoriesName the
-					// checked impact categories
-					if (((TableItem) event.item).getChecked()) {
-						impactCategoriesName.add(((TableItem) event.item).getText());
-					} else {
-						impactCategoriesName.remove(((TableItem) event.item).getText());
-					}
-				} else { // Select event
-					var checked = ((TableItem) event.item).getChecked();
-					((TableItem) event.item).setChecked(!checked);
-					if (!checked) {
-						impactCategoriesName.add(((TableItem) event.item).getText());
-					} else {
-						impactCategoriesName.remove(((TableItem) event.item).getText());
-					}
-				}
-			}
-		});
-		return impactCategoryTable;
 	}
 
 	/**
@@ -406,10 +333,10 @@ public class ProductComparison {
 		var vBar = canvas.getVerticalBar();
 		contributionsList = new ArrayList<>();
 		if (TargetCalculationEnum.IMPACT.equals(targetCalculation)) {
-			impactCategoriesName.stream().forEach(categoryName -> {
-				var impactCategory = impactCategoryMap.get(categoryName);
-				var contributionList = contributionResult.getProcessContributions(impactCategory);
-				var c = new Contributions(contributionList, categoryName, null);
+			var impactCategories = impactCategoryTable.getImpactDescriptors();
+			impactCategories.stream().forEach(category -> {
+				var contributionList = contributionResult.getProcessContributions(category);
+				var c = new Contributions(contributionList, category.name, null);
 				contributionsList.add(c);
 			});
 		} else {
@@ -505,8 +432,8 @@ public class ProductComparison {
 	 * @return A hash
 	 */
 	private int computeConfigurationHash() {
-		var hash = Objects.hash(targetCalculation, impactCategoriesName, chosenCategoryColor, colorCellCriteria,
-				cutOffSize, isCalculationStarted, chosenProcessCategory, selectedProduct);
+		var hash = Objects.hash(targetCalculation, impactCategoryTable.getImpactDescriptors(), chosenCategoryColor,
+				colorCellCriteria, cutOffSize, isCalculationStarted, chosenProcessCategory, selectedProduct);
 		return hash;
 	}
 
