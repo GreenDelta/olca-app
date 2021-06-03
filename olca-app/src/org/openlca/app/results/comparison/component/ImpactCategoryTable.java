@@ -16,6 +16,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.results.comparison.display.TargetCalculationEnum;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
@@ -26,17 +27,25 @@ public class ImpactCategoryTable {
 	private TableViewer viewer;
 	List<ImpactDescriptor> categories;
 	List<ImpactDescriptor> categoriesFullList;
+	TargetCalculationEnum target;
 
-	public ImpactCategoryTable(Composite body, List<ImpactDescriptor> categories) {
+	public ImpactCategoryTable(Composite body, List<ImpactDescriptor> categories, TargetCalculationEnum t) {
+		target = t;
 		var comp = new Composite(body, SWT.NONE);
 		comp.setLayout(new GridLayout(1, false));
 		var gridData = new GridData(SWT.NONE, SWT.FILL, true, true);
 		gridData.widthHint = 500;
 		comp.setLayoutData(gridData);
 		categories.sort((c1, c2) -> c1.name.compareTo(c2.name));
-		this.categories = categories;
+		if (target.equals(TargetCalculationEnum.IMPACT)) {
+			this.categories = categories;
+		} else {
+			this.categories = new ArrayList<ImpactDescriptor>();
+			this.categories.add(categories.get(0));
+		}
 		categoriesFullList = categories;
 		List<CategoryVariant> l = categories.stream().map(c -> new CategoryVariant(c)).collect(Collectors.toList());
+		l.get(0).isDisabled = false;
 		viewer = Tables.createViewer(comp, "Impact Category", "Display"); // Create columns
 		viewer.setLabelProvider(new CategoryLabelProvider());
 		new ModifySupport<CategoryVariant>(viewer).bind("Display", new DisplayModifier());
@@ -50,29 +59,32 @@ public class ImpactCategoryTable {
 	 */
 	private void tableHeaderAction() {
 		var column = viewer.getTable().getColumns()[1];
-		column.setImage(Icon.CHECK_TRUE.get());
+		if (target.equals(TargetCalculationEnum.IMPACT))
+			column.setImage(Icon.CHECK_TRUE.get());
 		var wrapper = new Object() {
 			boolean isCheckAll = true;
 		};
 		column.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				wrapper.isCheckAll = !wrapper.isCheckAll;
-				if (!wrapper.isCheckAll) {
-					column.setImage(Icon.CHECK_FALSE.get());
-					categories = new ArrayList<ImpactDescriptor>();
-				} else {
-					column.setImage(Icon.CHECK_TRUE.get());
-					categories = categoriesFullList;
+				if (target.equals(TargetCalculationEnum.IMPACT)) {
+					wrapper.isCheckAll = !wrapper.isCheckAll;
+					if (!wrapper.isCheckAll) {
+						column.setImage(Icon.CHECK_FALSE.get());
+						categories = new ArrayList<ImpactDescriptor>();
+					} else {
+						column.setImage(Icon.CHECK_TRUE.get());
+						categories = categoriesFullList;
+					}
+					// Update every row of the table
+					for (var tableItem : viewer.getTable().getItems()) {
+						var data = (CategoryVariant) tableItem.getData();
+						if (data == null)
+							continue;
+						data.isDisabled = !wrapper.isCheckAll;
+						tableItem.setData(data);
+					}
+					viewer.refresh();
 				}
-				// Update every row of the table
-				for (var tableItem : viewer.getTable().getItems()) {
-					var data = (CategoryVariant) tableItem.getData();
-					if (data == null)
-						continue;
-					data.isDisabled = !wrapper.isCheckAll;
-					tableItem.setData(data);
-				}
-				viewer.refresh();
 			}
 		});
 	}
@@ -119,10 +131,20 @@ public class ImpactCategoryTable {
 		protected void setChecked(CategoryVariant v, boolean b) {
 			if (v.isDisabled != b)
 				return;
-			if (b)
+			if (b) {
+				for (var tableItem : viewer.getTable().getItems()) {
+					var data = (CategoryVariant) tableItem.getData();
+					if (data == null)
+						continue;
+					data.isDisabled = true;
+					tableItem.setData(data);
+				}
+				categories = new ArrayList<ImpactDescriptor>();
 				categories.add(v.category);
-			else
+				viewer.refresh();
+			} else {
 				categories.remove(v.category);
+			}
 			v.isDisabled = !b;
 		}
 	}
@@ -133,7 +155,7 @@ public class ImpactCategoryTable {
 
 		public CategoryVariant(ImpactDescriptor c) {
 			category = c;
-			isDisabled = false;
+			isDisabled = target.equals(TargetCalculationEnum.IMPACT) ? false : true;
 		}
 	}
 }

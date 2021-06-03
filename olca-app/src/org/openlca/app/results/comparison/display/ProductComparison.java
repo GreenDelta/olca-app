@@ -32,7 +32,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.projects.reports.ReportViewer;
+import org.openlca.app.editors.projects.results.ProjectResultEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.comparison.component.ColorationCombo;
@@ -69,8 +69,6 @@ public class ProductComparison {
 	private int cutOffSize;
 	private IDatabase db;
 	private ImpactMethodDescriptor impactMethod;
-	private Map<String, ImpactDescriptor> impactCategoryMap;
-	private List<String> impactCategoriesName;
 	private TargetCalculationEnum targetCalculation;
 	private boolean isCalculationStarted;
 	private long chosenProcessCategory;
@@ -95,13 +93,12 @@ public class ProductComparison {
 			impactMethod = e.setup.impactMethod;
 			contributionResult = e.result;
 		} else if (target.equals(TargetCalculationEnum.PRODUCT)) {
-//			var e = (ReportViewer) editor;
-//			project = e.project;
-//			impactMethod = new ImpactMethodDao(db).getDescriptor(project.impactMethod.id);
+			var e = (ProjectResultEditor) editor;
+			project = e.data.project();
+			impactMethod = new ImpactMethodDao(db).getDescriptor(project.impactMethod.id);
 		}
 		contributionsList = new ArrayList<>();
 		cacheMap = new HashMap<>();
-		impactCategoriesName = new ArrayList<>();
 		chosenProcessCategory = -1;
 		margin = new Point(200, 65);
 		rectHeight = 30;
@@ -176,7 +173,7 @@ public class ProductComparison {
 	 */
 	private void chooseImpactCategoriesMenu(Composite row1) {
 //		UI.formLabel(row1, "Chosen Categories");
-		impactCategoryTable = new ImpactCategoryTable(row1, impactCategories);
+		impactCategoryTable = new ImpactCategoryTable(row1, impactCategories, targetCalculation);
 	}
 
 	/**
@@ -335,7 +332,7 @@ public class ProductComparison {
 				setup.impactMethod = impactMethod;
 				var calc = new SystemCalculator(db);
 				var fullResult = calc.calculateFull(setup);
-				var impactCategory = impactCategoryMap.get(impactCategoriesName.get(0));
+				var impactCategory = impactCategoryTable.getImpactDescriptors().get(0);
 				var contributionList = fullResult.getProcessContributions(impactCategory);
 				var c = new Contributions(contributionList, impactCategory.name, ps.name);
 				contributionsList.add(c);

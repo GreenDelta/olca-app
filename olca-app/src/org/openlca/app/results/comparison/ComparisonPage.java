@@ -6,7 +6,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.openlca.app.editors.projects.reports.ReportViewer;
+import org.openlca.app.editors.projects.results.ProjectResultEditor;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.comparison.display.ProductComparison;
@@ -28,7 +28,7 @@ public class ComparisonPage extends FormPage {
 		target = TargetCalculationEnum.IMPACT;
 	}
 
-	public ComparisonPage(ReportViewer editor) {
+	public ComparisonPage(ProjectResultEditor editor) {
 		super(editor, "ComparisonDiagram", "Comparison Diagram");
 		this.editor = editor;
 		target = TargetCalculationEnum.PRODUCT;
@@ -45,13 +45,13 @@ public class ComparisonPage extends FormPage {
 			new ProductComparison(body, editor, target, tk).display();
 			form.reflow(true);
 		} else {
-//			var e = (ReportViewer) editor;
-//			ScrolledForm form = UI.formHeader(mform, "Project : " + e.project.name);
-//			FormToolkit tk = mform.getToolkit();
-//			Composite body = UI.formBody(form, tk);
-//			InfoSection.create(body, tk, e.project);
-//			new ProductComparison(body, editor, target, tk).display();
-//			form.reflow(true);
+			var e = (ProjectResultEditor) editor;
+			ScrolledForm form = UI.formHeader(mform, "Project : " + e.getTitle());
+			FormToolkit tk = mform.getToolkit();
+			Composite body = UI.formBody(form, tk);
+			InfoSection.create(body, tk, e.data.project());
+			new ProductComparison(body, editor, target, tk).display();
+			form.reflow(true);
 		}
 	}
 }

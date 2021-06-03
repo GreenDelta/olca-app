@@ -14,6 +14,7 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.editors.projects.reports.ReportEditor;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.results.comparison.ComparisonPage;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
@@ -25,7 +26,7 @@ import org.openlca.io.xls.results.ProjectResultExport;
 
 public class ProjectResultEditor extends SimpleFormEditor {
 
-	private ProjectResultData data;
+	public ProjectResultData data;
 
 	public static void open(ProjectResultData data) {
 		if (data == null)
@@ -46,6 +47,16 @@ public class ProjectResultEditor extends SimpleFormEditor {
 			throw new PartInitException("editor input must be a project result");
 		data = (ProjectResultData) obj;
 		setPartName("Result of: " + Labels.name(data.project()));
+	}
+	
+	@Override
+	protected final void addPages() {
+		try {
+			addPage(getPage());
+			addPage(new ComparisonPage(this));
+		} catch (Exception e) {
+			ErrorReporter.on("Error adding page to " + getClass().getSimpleName(), e);
+		}
 	}
 
 	@Override
