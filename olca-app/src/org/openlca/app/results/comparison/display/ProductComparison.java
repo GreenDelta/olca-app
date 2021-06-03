@@ -134,7 +134,13 @@ public class ProductComparison {
 		 * Composite component
 		 */
 
-		var row2 = tk.createComposite(shell);
+		Section canvasSection = UI.section(shell, tk, "Comparison");
+		canvasSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		var comp2 = UI.sectionClient(canvasSection, tk);
+		comp2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		var row2 = tk.createComposite(comp2);
 		// UI.gridLayout(row2, 1);
 		row2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		row2.setLayout(new GridLayout(1, false));
@@ -1029,9 +1035,8 @@ public class ProductComparison {
 				if (cacheMap.isEmpty()) {
 //					triggerComboSelection(selectCategory, true);
 					redraw(composite, canvas);
+					// FIXME
 					// This is done to fix a bug on horizontal scrollbar
-					var customEvent = new Event();
-					customEvent.type = SWT.Resize;
 					canvas.notifyListeners(SWT.Resize, e);
 				}
 

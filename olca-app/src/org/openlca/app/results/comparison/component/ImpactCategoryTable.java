@@ -38,7 +38,7 @@ public class ImpactCategoryTable {
 	}
 
 	/**
-	 * Handle click on Display column, to swith between check all, or check none
+	 * Handle click on Display column, to switch between check all, or check none
 	 */
 	private void tableHeaderAction() {
 		var column = viewer.getTable().getColumns()[1];
