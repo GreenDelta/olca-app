@@ -47,7 +47,6 @@ class ProcessFigure extends Figure {
 	static final int MINIMUM_WIDTH = 250;
 
 	final ProcessNode node;
-
 	private ProcessExpander leftExpander;
 	private ProcessExpander rightExpander;
 	private LineBorder border;
@@ -96,7 +95,9 @@ class ProcessFigure extends Figure {
 
 		add(top, new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		border = new LineBorder(1);
+		// box border
+		var theme = node.config().theme();
+		border = new LineBorder(theme.boxBorderWidth(Box.of(node)));
 		setBorder(border);
 	}
 
