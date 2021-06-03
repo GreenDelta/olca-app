@@ -50,7 +50,7 @@
 			<artifactId>olca-ipc</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-proto</artifactId>
@@ -101,9 +101,9 @@
 		</dependency>
 
 		<dependency>
-  		<groupId>org.mariadb.jdbc</groupId>
-  		<artifactId>mariadb-java-client</artifactId>
-  		<version>2.7.2</version>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>2.7.2</version>
 		</dependency>
 
 		<dependency>
@@ -122,6 +122,12 @@
 			<groupId>org.mapdb</groupId>
 			<artifactId>mapdb</artifactId>
 			<version>2.0-beta7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.helger</groupId>
+			<artifactId>ph-css</artifactId>
+			<version>6.3.2</version>
 		</dependency>
 
 	</dependencies>

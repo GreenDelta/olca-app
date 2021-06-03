@@ -1,43 +1,206 @@
 package org.openlca.app.editors.graphical.themes;
 
+import java.io.File;
+import java.util.EnumMap;
+import java.util.Optional;
+
+import com.helger.css.decl.CSSStyleRule;
+import com.helger.css.reader.CSSReader;
+import com.helger.css.reader.CSSReaderSettings;
+
 import org.eclipse.swt.graphics.Color;
-import org.openlca.app.editors.graphical.model.ExchangeNode;
-import org.openlca.app.editors.graphical.model.Link;
-import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.util.Colors;
+import org.openlca.core.model.FlowType;
 
-public interface Theme {
+public class Theme {
 
-	String label();
+  private final String file;
+  private final String name;
 
-	String id();
+  private boolean isDark;
+  private Color graphBackgroundColor;
+  private Color defaultLinkColor;
+  private Color infoLabelColor;
 
-	Color defaultFontColor();
+  private final EnumMap<FlowType, Color> flowLabelColors;
+  private final EnumMap<FlowType, Color> linkColors;
+  private final EnumMap<Box, BoxConfig> boxConfigs;
 
-	Color defaultBackgroundColor();
+  private Theme(String file, String name) {
+    this.file = file;
+    this.name = name;
+    this.flowLabelColors = new EnumMap<>(FlowType.class);
+    this.linkColors = new EnumMap<>(FlowType.class);
+    this.boxConfigs = new EnumMap<>(Box.class);
+  }
 
-	Color defaultBorderColor();
+  public static Theme defaults(String file, String name) {
+    return new Theme(file, name);
+  }
 
-	Color defaultLinkColor();
+  /**
+   * Returns the file name of a theme. All themes are located in a single
+   * folder. Thus, the file name can be used as the ID of the theme.
+   *
+   * @return the file name of the theme
+   */
+  public String file() {
+    return file;
+  }
 
-	Color infoFontColor();
+  public String name() {
+    return name;
+  }
 
-	default Color fontColorOf(ProcessNode node) {
-		return defaultFontColor();
-	}
+  public boolean isDark() {
+    return isDark;
+  }
 
-	default Color borderColorOf(ProcessNode node) {
-		return defaultBorderColor();
-	}
+  public Color graphBackgroundColor() {
+    return graphBackgroundColor == null
+      ? Colors.white()
+      : graphBackgroundColor;
+  }
 
-	default Color backgroundColorOf(ProcessNode node) {
-		return defaultBackgroundColor();
-	}
+  public Color boxFontColor(Box box) {
+    var config = boxConfigs.get(box);
+    return config != null && config.fontColor != null
+      ? config.fontColor
+      : Colors.black();
+  }
 
-	default Color fontColorOf(ExchangeNode node) {
-		return defaultFontColor();
-	}
+  public Color boxBackgroundColor(Box box) {
+    var config = boxConfigs.get(box);
+    return config != null && config.backgroundColor != null
+      ? config.backgroundColor
+      : graphBackgroundColor();
+  }
 
-	default Color linkColorOf(Link link) {
-		return defaultLinkColor();
-	}
+  public Color boxBorderColor(Box box) {
+    var config = boxConfigs.get(box);
+    return config != null && config.borderColor != null
+      ? config.borderColor
+      : Colors.black();
+  }
+
+  public int boxBorderWidth(Box box) {
+    var config = boxConfigs.get(box);
+    return config != null
+      ? Math.max(1, config.borderWidth)
+      : 1;
+  }
+
+  public Color linkColor() {
+    return defaultLinkColor == null
+      ? Colors.black()
+      : defaultLinkColor;
+  }
+
+  public Color linkColor(FlowType flowType) {
+    var color = linkColors.get(flowType);
+    return color != null
+      ? color
+      : linkColor();
+  }
+
+  public Color infoLabelColor() {
+    return infoLabelColor == null
+      ? Colors.black()
+      : infoLabelColor;
+  }
+
+  public Color labelColor(FlowType flowType) {
+    var color = flowLabelColors.get(flowType);
+    return color != null
+      ? color
+      : boxFontColor(Box.DEFAULT);
+  }
+
+  public static Optional<Theme> loadFrom(File file) {
+    if (file == null)
+      return Optional.empty();
+
+    var settings = new CSSReaderSettings();
+    var css = CSSReader.readFromFile(file, settings);
+    if (css == null)
+      return Optional.empty();
+
+    // select the theme name
+    var name = Css.themeNameOf(css).orElse(null);
+    if (name == null || name.isBlank()) {
+      name = file.getName();
+      if (name.endsWith(".css")) {
+        name = name.substring(0, name.length() - 4);
+      }
+    }
+    var theme = defaults(file.getName(), name);
+
+    theme.isDark = Css.hasDarkMode(css);
+
+    for (int i = 0; i < css.getStyleRuleCount(); i++) {
+      var rule = css.getStyleRuleAtIndex(i);
+
+      // box config
+      Css.boxOf(rule)
+        .ifPresent(box -> theme.styleBox(box, rule));
+
+      // root config
+      if (Css.isRoot(rule)) {
+        Css.getBackgroundColor(rule)
+          .ifPresent(color -> theme.graphBackgroundColor = color);
+      }
+
+      // links
+      if (Css.isLink(rule)) {
+        var flowType = Css.flowTypeOf(rule);
+        Css.getColor(rule).ifPresent(color -> {
+          if (flowType.isPresent()) {
+            theme.linkColors.put(flowType.get(), color);
+          } else {
+            theme.defaultLinkColor = color;
+          }
+        });
+      }
+
+      // labels
+      if (Css.isLabel(rule)) {
+        Css.getColor(rule).ifPresent(color -> {
+          if (Css.isInfo(rule)) {
+            theme.infoLabelColor = color;
+          }
+          Css.flowTypeOf(rule).ifPresent(flowType ->
+            theme.flowLabelColors.put(flowType, color));
+        });
+      }
+    }
+    return Optional.of(theme);
+  }
+
+  private void styleBox(Box box, CSSStyleRule rule) {
+    var config = boxConfigs.computeIfAbsent(box, $ -> new BoxConfig());
+    Css.getColor(rule)
+      .ifPresent(color -> config.fontColor = color);
+    Css.getBackgroundColor(rule)
+      .ifPresent(color -> config.backgroundColor = color);
+    Css.getBorderColor(rule)
+      .ifPresent(color -> config.borderColor = color);
+    Css.getBorderWidth(rule)
+      .ifPresent(width -> config.borderWidth = width);
+  }
+
+  enum Box {
+    DEFAULT,
+    UNIT_PROCESS,
+    SYSTEM_PROCESS,
+    SUB_SYSTEM,
+    LIBRARY_PROCESS,
+  }
+
+  private static class BoxConfig {
+    Color fontColor;
+    Color backgroundColor;
+    Color borderColor;
+    int borderWidth;
+  }
+
 }
