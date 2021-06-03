@@ -18,7 +18,6 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.model.ProcessExpander.Side;
-import org.openlca.app.editors.graphical.themes.Theme;
 import org.openlca.app.editors.graphical.themes.Theme.Box;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
@@ -117,24 +116,6 @@ class ProcessFigure extends Figure {
 		if (rightExpander != null) {
 			rightExpander.refresh();
 		}
-
-		// update size
-		/*
-		if (getParent() == null)
-			return;
-		var location = getLocation();
-		var calculated = calculateSize();
-		var current = getSize();
-		var bounds = new Rectangle(
-				location.x - 1,
-				location.y - 1,
-				Math.max(calculated.width, current.width),
-				node.isMinimized()
-					? MINIMUM_HEIGHT
-					: Math.max(calculated.height, current.height));
-		getParent().setConstraint(this, bounds);
-		*/
-
 		// refresh the links of this node
 		for (Link link : node.links) {
 			if (node.equals(link.inputNode)) {
@@ -233,19 +214,20 @@ class ProcessFigure extends Figure {
 
 	private static class BoxHeader extends Figure {
 
-		private final Theme theme;
+		private final ProcessNode node;
 		private final Box box;
 		private final Label label;
 
 		BoxHeader(ProcessNode node) {
+			this.node = node;
 			this.box = Box.of(node);
-			this.theme = node.config().theme();
 			setToolTip(new Label(tooltipOf(node)));
 			var layout = new GridLayout(1, true);
 			layout.marginHeight = 2;
 			layout.marginWidth = 10;
 			setLayoutManager(layout);
 			label = new Label(node.getName());
+			var theme = node.config().theme();
 			label.setForegroundColor(theme.boxFontColor(box));
 			add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
 		}
@@ -260,6 +242,7 @@ class ProcessFigure extends Figure {
 
 		@Override
 		protected void paintFigure(Graphics g) {
+			var theme = node.config().theme();
 			label.setForegroundColor(theme.boxFontColor(box));
 			g.pushState();
 			g.setBackgroundColor(theme.boxBackgroundColor(box));
