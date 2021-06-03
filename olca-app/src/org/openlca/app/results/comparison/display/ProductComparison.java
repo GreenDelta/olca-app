@@ -183,10 +183,8 @@ public class ProductComparison {
 	 * @param row2 The canvas
 	 */
 	private void chooseImpactCategoriesMenu(Composite row1, Composite row2) {
-		UI.formLabel(row1, "Impact Categories");
-
+		UI.formLabel(row1, "Chosen Categories");
 		impactCategoryTable = new ImpactCategoryTable(row1, impactCategories);
-
 	}
 
 	/**
@@ -490,16 +488,54 @@ public class ProductComparison {
 		// the
 		// results are ordered
 		if (contributionsIndex == 0) {
-			Point startPoint = new Point(rectEdge.x, rectEdge.y - 50);
-			Point endPoint = new Point((int) (startPoint.x + maxRectWidth), startPoint.y);
-			drawLine(gc, startPoint, endPoint, null, null);
-			startPoint = new Point(endPoint.x - 15, endPoint.y + 15);
-			drawLine(gc, startPoint, endPoint, null, null);
-			startPoint = new Point(endPoint.x - 15, endPoint.y - 15);
-			drawLine(gc, startPoint, endPoint, null, null);
+			drawScale(gc, maxRectWidth, rectEdge);
 		}
 		// Draw a rectangle for each impact categories
 		gc.drawRectangle(rectEdge.x, rectEdge.y, rectWidth, rectHeight);
+
+	}
+
+	private void drawScale(GC gc, double maxRectWidth, Point rectEdge) {
+		Point startPoint = new Point(rectEdge.x, rectEdge.y - 40);
+		Point origin = startPoint;
+		Point endPoint = new Point((int) (startPoint.x + maxRectWidth), startPoint.y);
+		drawLine(gc, startPoint, endPoint, null, null);
+		startPoint = new Point(endPoint.x - 15, endPoint.y + 15);
+		drawLine(gc, startPoint, endPoint, null, null);
+		startPoint = new Point(endPoint.x - 15, endPoint.y - 15);
+		drawLine(gc, startPoint, endPoint, null, null);
+
+		var offset = 5;
+
+		startPoint = new Point(origin.x, origin.y + offset);
+		endPoint = new Point(origin.x, origin.y - offset);
+		drawLine(gc, startPoint, endPoint, null, null);
+
+		gc.drawText("0%", endPoint.x - 7, endPoint.y - 20);
+
+		startPoint = new Point((int) (origin.x + maxRectWidth * 0.25), origin.y + offset);
+		endPoint = new Point((int) (origin.x + maxRectWidth * 0.25), origin.y - offset);
+		drawLine(gc, startPoint, endPoint, null, null);
+
+		gc.drawText("25%", endPoint.x - 7, endPoint.y - 20);
+
+		startPoint = new Point((int) (origin.x + maxRectWidth * 0.5), origin.y + offset);
+		endPoint = new Point((int) (origin.x + maxRectWidth * 0.5), origin.y - offset);
+		drawLine(gc, startPoint, endPoint, null, null);
+
+		gc.drawText("50%", endPoint.x - 7, endPoint.y - 20);
+
+		startPoint = new Point((int) (origin.x + maxRectWidth * 0.75), origin.y + offset);
+		endPoint = new Point((int) (origin.x + maxRectWidth * 0.75), origin.y - offset);
+		drawLine(gc, startPoint, endPoint, null, null);
+
+		gc.drawText("75%", endPoint.x - 7, endPoint.y - 20);
+
+		startPoint = new Point((int) (origin.x + maxRectWidth), origin.y + offset);
+		endPoint = new Point((int) (origin.x + maxRectWidth), origin.y - offset);
+		drawLine(gc, startPoint, endPoint, null, null);
+
+		gc.drawText("100%", endPoint.x - 7, endPoint.y - 20);
 
 	}
 

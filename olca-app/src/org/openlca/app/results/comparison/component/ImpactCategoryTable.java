@@ -1,11 +1,14 @@
 package org.openlca.app.results.comparison.component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.rcp.images.Icon;
@@ -19,17 +22,58 @@ import org.openlca.core.model.descriptors.ImpactDescriptor;
 public class ImpactCategoryTable {
 	private TableViewer viewer;
 	List<ImpactDescriptor> categories;
+	List<ImpactDescriptor> categoriesFullList;
 
 	public ImpactCategoryTable(Composite body, List<ImpactDescriptor> categories) {
+		categories.sort((c1, c2) -> c1.name.compareTo(c2.name));
 		this.categories = categories;
+		categoriesFullList = categories;
 		List<CategoryVariant> l = categories.stream().map(c -> new CategoryVariant(c)).collect(Collectors.toList());
-		viewer = Tables.createViewer(body, "Impact Category", "Display");
+		viewer = Tables.createViewer(body, "Impact Category", "Display"); // Create columns
 		viewer.setLabelProvider(new CategoryLabelProvider());
 		new ModifySupport<CategoryVariant>(viewer).bind("Display", new DisplayModifier());
 		viewer.setInput(l);
-		Tables.bindColumnWidths(viewer, 0.85, 0.16);
+		Tables.bindColumnWidths(viewer, 0.75, 0.26);
+		tableHeaderAction();
 	}
 
+	/**
+	 * Handle click on Display column, to swith between check all, or check none
+	 */
+	private void tableHeaderAction() {
+		var column = viewer.getTable().getColumns()[1];
+		column.setImage(Icon.CHECK_TRUE.get());
+		var wrapper = new Object() {
+			boolean isCheckAll = true;
+		};
+		column.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				wrapper.isCheckAll = !wrapper.isCheckAll;
+				if (!wrapper.isCheckAll) {
+					column.setImage(Icon.CHECK_FALSE.get());
+					categories = new ArrayList<ImpactDescriptor>();
+				} else {
+					column.setImage(Icon.CHECK_TRUE.get());
+					categories = categoriesFullList;
+				}
+				// Update every row of the table
+				for (var tableItem : viewer.getTable().getItems()) {
+					var data = (CategoryVariant) tableItem.getData();
+					if (data == null)
+						continue;
+					data.isDisabled = !wrapper.isCheckAll;
+					tableItem.setData(data);
+				}
+				viewer.refresh();
+			}
+		});
+	}
+
+	/**
+	 * Get the selected impact categories
+	 * 
+	 * @return The list of selected impact categories
+	 */
 	public List<ImpactDescriptor> getImpactDescriptors() {
 		return categories;
 	}
@@ -57,6 +101,7 @@ public class ImpactCategoryTable {
 	}
 
 	private class DisplayModifier extends CheckBoxCellModifier<CategoryVariant> {
+
 		@Override
 		protected boolean isChecked(CategoryVariant v) {
 			return !v.isDisabled;
