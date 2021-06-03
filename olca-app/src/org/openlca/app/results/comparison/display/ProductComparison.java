@@ -864,7 +864,7 @@ public class ProductComparison {
 				var endPoint = linkedCell.getEndingLinkPoint();
 				if (cell.hasSameProduct(selectedProduct)) {
 					cell.setSelected(true);
-					var polygon = getPolygon(startPoint, endPoint, 5);
+					var polygon = getPolygon(startPoint, endPoint, 7);
 					gc.setBackground(new Color(gc.getDevice(), cell.getRgb()));
 					gc.fillPolygon(polygon);
 					gc.setBackground(gc.getDevice().getSystemColor(SWT.COLOR_WHITE));
@@ -873,7 +873,11 @@ public class ProductComparison {
 					if (config.useBezierCurve) {
 						drawBezierCurve(gc, startPoint, endPoint, cell.getRgb());
 					} else {
-						drawLine(gc, startPoint, endPoint, cell.getRgb(), null);
+//						drawLine(gc, startPoint, endPoint, cell.getRgb(), null);
+						var polygon = getPolygon(startPoint, endPoint, 3);
+						gc.setBackground(new Color(gc.getDevice(), cell.getRgb()));
+						gc.fillPolygon(polygon);
+						gc.setBackground(gc.getDevice().getSystemColor(SWT.COLOR_WHITE));
 					}
 				}
 			}
