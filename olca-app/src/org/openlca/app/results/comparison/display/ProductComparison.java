@@ -121,33 +121,26 @@ public class ProductComparison {
 		Contributions.updateComparisonCriteria(colorCellCriteria);
 		Cell.config = config;
 
-		/**
-		 * Section component
-		 */
 		Section settingsSection = UI.section(shell, tk, "Settings");
 		Composite comp = UI.sectionClient(settingsSection, tk);
 		UI.gridLayout(comp, 1);
 		var settingsBody = tk.createComposite(comp, SWT.NULL);
 		UI.gridLayout(settingsBody, 2, 10, 10);
 
-		/**
-		 * Composite component
-		 */
+		Section canvasSection = UI.section(shell, tk, "Diagram");
+		canvasSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		var row2 = tk.createComposite(shell);
+		var comp2 = UI.sectionClient(canvasSection, tk);
+		comp2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		var row2 = tk.createComposite(comp2);
 		// UI.gridLayout(row2, 1);
 		row2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		row2.setLayout(new GridLayout(1, false));
 
-		/**
-		 * Canvas component
-		 */
 		canvas = new Canvas(row2, SWT.V_SCROLL | SWT.H_SCROLL);
 		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		/**
-		 * VBar component
-		 */
 		var vBar = canvas.getVerticalBar();
 		vBar.setMinimum(0);
 
@@ -164,8 +157,7 @@ public class ProductComparison {
 		colorPickerMenu(settingsBody);
 		selectCutoffSizeMenu(settingsBody, row2, canvas);
 		runCalculationButton(settingsBody, row2, canvas);
-		addPaintListener(canvas); // Once finished, we really paint the cache,
-		// so it avoids flickering
+		addPaintListener(canvas);
 		addToolTipListener(row2, canvas);
 	}
 
@@ -1029,9 +1021,8 @@ public class ProductComparison {
 				if (cacheMap.isEmpty()) {
 //					triggerComboSelection(selectCategory, true);
 					redraw(composite, canvas);
+					// FIXME
 					// This is done to fix a bug on horizontal scrollbar
-					var customEvent = new Event();
-					customEvent.type = SWT.Resize;
 					canvas.notifyListeners(SWT.Resize, e);
 				}
 
