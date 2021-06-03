@@ -130,9 +130,6 @@ public class ProductComparison {
 		Section canvasSection = UI.section(shell, tk, "Diagram");
 		canvasSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		Section canvasSection = UI.section(shell, tk, "Comparison");
-		canvasSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
 		var comp2 = UI.sectionClient(canvasSection, tk);
 		comp2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
