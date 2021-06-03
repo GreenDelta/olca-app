@@ -210,10 +210,9 @@ public class ProductComparison {
 	 * @param canvas The canvas
 	 */
 	private void selectCategoryMenu(Composite row1) {
-		var categoriesRefId = contributionsList.stream()
-				.flatMap(c -> c.getList().stream().filter(cell -> cell.getResult().getContribution().item != null)
-						.map(cell -> cell.getResult().getContribution().item.category))
-				.distinct().collect(Collectors.toSet());
+		var categoriesRefId = contributionsList.stream().flatMap(c -> c.getList().stream()
+				.filter(cell -> cell.getProcess() != null).map(cell -> cell.getProcess().category)).distinct()
+				.collect(Collectors.toSet());
 		var categoriesDescriptors = new CategoryDao(db).getDescriptors(categoriesRefId);
 		categoriesDescriptors.sort((c1, c2) -> c1.name.compareTo(c2.name));
 		UI.formLabel(row1, "Highlight Category");
@@ -271,7 +270,7 @@ public class ProductComparison {
 		Controls.onSelect(button, e -> {
 			System.out.println("selected");
 			// Create the color-change dialog
-			ColorDialog dlg = new ColorDialog(shell.getShell());
+			ColorDialog dlg = new ColorDialog(composite.getShell());
 			// Set the selected color in the dialog from
 			// user's selected color
 			dlg.setRGB(button.getBackground().getRGB());
@@ -376,7 +375,7 @@ public class ProductComparison {
 			if (cache == null) {
 				initContributionsList();
 				contributionsList.stream().forEach(c -> c.getList().stream().forEach(cell -> {
-					if (cell.getResult().getContribution().item.category == chosenProcessCategory) {
+					if (cell.getProcess().category == chosenProcessCategory) {
 						cell.setRgb(chosenCategoryColor.getRGB());
 					}
 				}));
@@ -437,6 +436,8 @@ public class ProductComparison {
 	 */
 	private void cachedPaint(Composite composite, Image cache) {
 		var gc = new GC(cache);
+		gc.setAntialias(SWT.ON);
+		gc.setTextAntialias(SWT.ON);
 		screenSize = composite.getSize(); // Responsive behavior
 		double maxRectWidth = screenSize.x * 0.85; // 85% of the screen width
 		// Starting point of the first contributions rectangle
@@ -852,8 +853,7 @@ public class ProductComparison {
 					continue;
 				var nextCells = contributionsList.get(contributionsIndex + 1);
 				// We search for a cell that has the same process
-				var optional = nextCells.getList().stream().filter(
-						next -> next.getResult().getContribution().item.equals(cell.getResult().getContribution().item))
+				var optional = nextCells.getList().stream().filter(next -> next.getProcess().equals(cell.getProcess()))
 						.findFirst();
 				if (!optional.isPresent())
 					continue;
@@ -873,11 +873,7 @@ public class ProductComparison {
 					if (config.useBezierCurve) {
 						drawBezierCurve(gc, startPoint, endPoint, cell.getRgb());
 					} else {
-//						drawLine(gc, startPoint, endPoint, cell.getRgb(), null);
-						var polygon = getPolygon(startPoint, endPoint, 3);
-						gc.setBackground(new Color(gc.getDevice(), cell.getRgb()));
-						gc.fillPolygon(polygon);
-						gc.setBackground(gc.getDevice().getSystemColor(SWT.COLOR_WHITE));
+						drawLine(gc, startPoint, endPoint, cell.getRgb(), null);
 					}
 				}
 			}

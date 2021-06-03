@@ -81,7 +81,15 @@ public class Cell {
 		tooltip = "Process name : " + processName + "\n" + "Amount : " + contribution.amount + " "
 				+ StringUtils.defaultIfEmpty(contribution.unit, "");
 	}
+	
+	public CategorizedDescriptor getProcess() {
+		return result.getContribution().item;
+	}
 
+	/**
+	 * Lazy load of tooltip
+	 * @return The Process tooltip
+	 */
 	public String getTooltip() {
 		if (tooltip != null)
 			return tooltip;
