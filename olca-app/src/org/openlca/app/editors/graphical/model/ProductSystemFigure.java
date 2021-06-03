@@ -34,9 +34,9 @@ class ProductSystemFigure extends Figure {
 	@Override
 	public void paint(Graphics g) {
 		var theme = node.config().theme();
-		border.setColor(theme.defaultBackgroundColor());
+		border.setColor(theme.graphBackgroundColor());
 		g.pushState();
-		g.setBackgroundColor(theme.defaultBackgroundColor());
+		g.setBackgroundColor(theme.graphBackgroundColor());
 		g.fillRectangle(new Rectangle(getLocation(), getSize()));
 		g.popState();
 		super.paint(g);

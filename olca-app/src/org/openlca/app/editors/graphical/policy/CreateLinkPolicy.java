@@ -27,7 +27,7 @@ public class CreateLinkPolicy extends GraphicalNodeEditPolicy {
 	@Override
 	protected Connection createDummyConnection(Request req) {
 		var con = (PolylineConnection) super.createDummyConnection(req);
-		con.setForegroundColor(editor.config.theme().defaultLinkColor());
+		con.setForegroundColor(editor.config.theme().linkColor());
 		if (!(req instanceof CreateConnectionRequest)) {
 			con.setTargetDecoration(new PolygonDecoration());
 			return con;

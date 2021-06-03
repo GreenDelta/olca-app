@@ -18,6 +18,8 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.model.ProcessExpander.Side;
+import org.openlca.app.editors.graphical.themes.Theme;
+import org.openlca.app.editors.graphical.themes.Theme.Box;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
@@ -145,9 +147,10 @@ class ProcessFigure extends Figure {
 	@Override
 	protected void paintFigure(Graphics g) {
 		var theme = node.config().theme();
-		border.setColor(theme.borderColorOf(node));
+		var box = Box.of(node);
+		border.setColor(theme.boxBorderColor(box));
 		g.pushState();
-		g.setBackgroundColor(theme.backgroundColorOf(node));
+		g.setBackgroundColor(theme.boxBackgroundColor(box));
 		g.fillRectangle(new Rectangle(getLocation(), getSize()));
 		g.popState();
 		super.paintFigure(g);
@@ -229,19 +232,20 @@ class ProcessFigure extends Figure {
 
 	private static class BoxHeader extends Figure {
 
-		private final ProcessNode node;
+		private final Theme theme;
+		private final Box box;
 		private final Label label;
 
 		BoxHeader(ProcessNode node) {
-			this.node = node;
-			var theme = node.config().theme();
+			this.box = Box.of(node);
+			this.theme = node.config().theme();
 			setToolTip(new Label(tooltipOf(node)));
 			var layout = new GridLayout(1, true);
 			layout.marginHeight = 2;
 			layout.marginWidth = 10;
 			setLayoutManager(layout);
 			label = new Label(node.getName());
-			label.setForegroundColor(theme.fontColorOf(node));
+			label.setForegroundColor(theme.boxFontColor(box));
 			add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
 		}
 
@@ -255,10 +259,9 @@ class ProcessFigure extends Figure {
 
 		@Override
 		protected void paintFigure(Graphics g) {
-			var theme = node.config().theme();
-			label.setForegroundColor(theme.fontColorOf(node));
+			label.setForegroundColor(theme.boxFontColor(box));
 			g.pushState();
-			g.setBackgroundColor(theme.backgroundColorOf(node));
+			g.setBackgroundColor(theme.boxBackgroundColor(box));
 			g.fillRectangle(new Rectangle(getLocation(), getSize()));
 			g.popState();
 			super.paintFigure(g);

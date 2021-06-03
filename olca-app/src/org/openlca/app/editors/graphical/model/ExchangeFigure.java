@@ -61,7 +61,7 @@ class ExchangeFigure extends Figure {
 	@Override
 	public void paint(Graphics g) {
 		var theme = node.config().theme();
-		label.setForegroundColor(theme.fontColorOf(node));
+		label.setForegroundColor(theme.labelColor(node.flowType()));
 		super.paint(g);
 	}
 }

@@ -1,7 +1,5 @@
 package org.openlca.app.editors.graphical.model;
 
-import java.util.Objects;
-
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.GridData;
@@ -10,6 +8,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.swt.SWT;
+import org.openlca.app.editors.graphical.themes.Theme.Box;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -34,10 +33,10 @@ class IOFigure extends Figure {
 
 	private ExchangePanel initPanel(boolean forInputs) {
 		add(new Header(forInputs), new GridData(
-			SWT.FILL, SWT.TOP, true, false));
+				SWT.FILL, SWT.TOP, true, false));
 		var panel = new ExchangePanel(node);
 		add(panel, new GridData(
-			SWT.FILL, SWT.FILL, true, true));
+				SWT.FILL, SWT.FILL, true, true));
 		return panel;
 	}
 
@@ -56,25 +55,25 @@ class IOFigure extends Figure {
 			return;
 		var exchange = ef.node.exchange;
 		var panel = exchange.isInput
-			? inputPanel
-			: outputPanel;
+				? inputPanel
+				: outputPanel;
 		var config = node.config();
 		if (config.showFlowIcons) {
 			panel.add(
-				new ImageFigure(Images.get(ef.node.flowType())),
-				new GridData(SWT.LEFT, SWT.TOP, false, false));
+					new ImageFigure(Images.get(ef.node.flowType())),
+					new GridData(SWT.LEFT, SWT.TOP, false, false));
 		}
 		panel.add(ef, new GridData(SWT.FILL, SWT.TOP, true, false));
 		if (config.showFlowAmounts) {
+			var theme = config.theme();
 			var amount = new Label(Numbers.format(exchange.amount, 2));
-			amount.setForegroundColor(config.theme().fontColorOf(ef.node));
+			amount.setForegroundColor(theme.labelColor(ef.node.flowType()));
 			panel.add(amount, new GridData(SWT.RIGHT, SWT.TOP, false, false));
 			var unit = new Label(Labels.name(exchange.unit));
-			unit.setForegroundColor(config.theme().fontColorOf(ef.node));
+			unit.setForegroundColor(theme.labelColor(ef.node.flowType()));
 			panel.add(unit, new GridData(SWT.LEFT, SWT.TOP, false, false));
 		}
 	}
-
 
 	private class Header extends Figure {
 
@@ -86,11 +85,11 @@ class IOFigure extends Figure {
 			layout.marginWidth = 5;
 			setLayoutManager(layout);
 			label = new Label(forInputs
-				? ">> input flows"
-				: "output flows >>");
+					? ">> input flows"
+					: "output flows >>");
 			var alignment = forInputs
-				? SWT.LEFT
-				: SWT.RIGHT;
+					? SWT.LEFT
+					: SWT.RIGHT;
 			add(label, new GridData(alignment, SWT.TOP, true, false));
 		}
 
@@ -99,10 +98,10 @@ class IOFigure extends Figure {
 			var theme = node.config().theme();
 			var location = getLocation();
 			var size = getSize();
-			g.setForegroundColor(theme.borderColorOf(node));
+			g.setForegroundColor(theme.boxBorderColor(Box.of(node)));
 			g.drawLine(location.x, location.y, location.x + size.width, location.y);
 			g.restoreState();
-			label.setForegroundColor(theme.infoFontColor());
+			label.setForegroundColor(theme.infoLabelColor());
 			super.paint(g);
 		}
 	}
@@ -131,13 +130,9 @@ class IOFigure extends Figure {
 		protected void paintFigure(Graphics g) {
 			// set a specific background if this is required
 			var theme = node.config().theme();
-			var background = theme.backgroundColorOf(node);
-			if (Objects.equals(background, theme.defaultBackgroundColor())) {
-				super.paintFigure(g);
-				return;
-			}
 			g.pushState();
-			g.setBackgroundColor(theme.backgroundColorOf(node));
+			var background = theme.boxBackgroundColor(Box.of(node));
+			g.setBackgroundColor(background);
 			var loc = getLocation();
 			var size = getSize();
 			g.fillRectangle(loc.x, loc.y, size.width, size.height);

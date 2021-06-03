@@ -1,6 +1,5 @@
 package org.openlca.app.editors.graphical;
 
-import org.openlca.app.editors.graphical.themes.DefaultTheme;
 import org.openlca.app.editors.graphical.themes.Theme;
 import org.openlca.app.editors.graphical.themes.Themes;
 import org.openlca.jsonld.Json;
@@ -13,7 +12,7 @@ public class GraphConfig {
 	public boolean showFlowAmounts;
 	public boolean showElementaryFlows;
 	public boolean isRouted = true;
-	private Theme theme = new DefaultTheme();
+	private Theme theme = Themes.getDefault();
 
 	/**
 	 * Creates a copy from the given configuration.
@@ -82,7 +81,7 @@ public class GraphConfig {
 		obj.addProperty("showFlowAmounts", showFlowAmounts);
 		obj.addProperty("showElementaryFlows", showElementaryFlows);
 		obj.addProperty("isRouted", isRouted);
-		obj.addProperty("theme", theme().id());
+		obj.addProperty("theme", theme().file());
 		return obj;
 	}
 }

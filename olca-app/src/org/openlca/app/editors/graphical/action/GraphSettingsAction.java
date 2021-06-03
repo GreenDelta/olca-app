@@ -96,19 +96,19 @@ public class GraphSettingsAction extends Action {
 		private void themeCombo(FormToolkit tk, Composite comp) {
 			var combo = UI.formCombo(comp, tk, "Theme");
 			UI.gridData(combo, true, false);
-			var themes = Themes.all();
+			var themes = Themes.loadFromWorkspace();
 			var current = config.theme();
 			int currentIdx = 0;
-			for (int i = 0; i < themes.length; i++) {
-				var theme = themes[i];
-				combo.add(theme.label());
-				if (Objects.equals(theme.id(), current.id())) {
+			for (int i = 0; i < themes.size(); i++) {
+				var theme = themes.get(i);
+				combo.add(theme.name());
+				if (Objects.equals(theme.file(), current.file())) {
 					currentIdx = i;
 				}
 			}
 			combo.select(currentIdx);
 			Controls.onSelect(combo, _e -> {
-				var next = themes[combo.getSelectionIndex()];
+				var next = themes.get(combo.getSelectionIndex());
 				config.theme(next);
 			});
 		}

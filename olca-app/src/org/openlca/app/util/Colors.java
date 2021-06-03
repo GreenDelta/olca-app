@@ -108,6 +108,17 @@ public class Colors {
 		if (s.startsWith("#")) {
 			s = s.substring(1);
 		}
+
+		// support 3 character CSS colors
+	    if (s.length() == 3) {
+	      s = String.valueOf(s.charAt(0))
+	          + s.charAt(0)
+	          + s.charAt(1)
+	          + s.charAt(1)
+	          + s.charAt(2)
+	          + s.charAt(2);
+	    }
+
 		if (s.length() < 6)
 			return white();
 
