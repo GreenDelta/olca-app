@@ -201,14 +201,6 @@
             name="Quick results"
             contributorClass="org.openlca.app.results.ResultEditorActions">
       </editor>
-       <editor
-            class="org.openlca.app.results.ProjectResultEditor"
-            default="false"
-            icon="icons/quick_calculation.png"
-            id="ProjectResultEditor"
-            name="Project results"
-            contributorClass="org.openlca.app.results.ResultEditorActions">
-      </editor>
       <editor
             class="org.openlca.app.results.AnalyzeEditor"
             contributorClass="org.openlca.app.results.ResultEditorActions"
@@ -548,6 +540,10 @@
          <property
                name="startupMessageRect"
                value="7,525,445,20">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
          </property>
       </product>
    </extension>

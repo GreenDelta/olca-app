@@ -45,13 +45,13 @@ public class ComparisonPage extends FormPage {
 			new ProductComparison(body, editor, target, tk).display();
 			form.reflow(true);
 		} else {
-			var e = (ReportViewer) editor;
-			ScrolledForm form = UI.formHeader(mform, "Project : " + e.project.name);
-			FormToolkit tk = mform.getToolkit();
-			Composite body = UI.formBody(form, tk);
-			InfoSection.create(body, tk, e.project);
-			new ProductComparison(body, editor, target, tk).display();
-			form.reflow(true);
+//			var e = (ReportViewer) editor;
+//			ScrolledForm form = UI.formHeader(mform, "Project : " + e.project.name);
+//			FormToolkit tk = mform.getToolkit();
+//			Composite body = UI.formBody(form, tk);
+//			InfoSection.create(body, tk, e.project);
+//			new ProductComparison(body, editor, target, tk).display();
+//			form.reflow(true);
 		}
 	}
 }

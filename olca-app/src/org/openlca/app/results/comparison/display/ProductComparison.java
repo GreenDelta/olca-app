@@ -95,9 +95,9 @@ public class ProductComparison {
 			impactMethod = e.setup.impactMethod;
 			contributionResult = e.result;
 		} else if (target.equals(TargetCalculationEnum.PRODUCT)) {
-			var e = (ReportViewer) editor;
-			project = e.project;
-			impactMethod = new ImpactMethodDao(db).getDescriptor(project.impactMethod.id);
+//			var e = (ReportViewer) editor;
+//			project = e.project;
+//			impactMethod = new ImpactMethodDao(db).getDescriptor(project.impactMethod.id);
 		}
 		contributionsList = new ArrayList<>();
 		cacheMap = new HashMap<>();

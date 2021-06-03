@@ -13,13 +13,11 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.rcp.HtmlFolder;
-import org.openlca.app.results.comparison.ComparisonPage;
-import org.openlca.app.results.comparison.ProjectEditorInput;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,14 +28,12 @@ public class ReportViewer extends SimpleFormEditor {
 	public static final String ID = "ReportViewer";
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private Report report;
-	public Project project;
 
-	public static void open(Report report, Project project) {
+	public static void open(Report report) {
 		if (report == null)
 			return;
 		String reportID = Cache.getAppCache().put(report);
-		String projectId = Cache.getAppCache().put(project);
-		var input = new ProjectEditorInput(reportID, projectId, report.title);
+		var input = new SimpleEditorInput(reportID, report.title);
 		Editors.open(input, ID);
 	}
 
@@ -46,26 +42,16 @@ public class ReportViewer extends SimpleFormEditor {
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
 		super.init(site, input);
 		try {
-			ProjectEditorInput sei = (ProjectEditorInput) input;
+			SimpleEditorInput sei = (SimpleEditorInput) input;
 			this.report = Cache.getAppCache().remove(sei.id);
-			project = Cache.getAppCache().remove(sei.projectId);
 		} catch (Exception e) {
 			String message = "failed to init report viewer";
 			log.error(message, e);
 			throw new PartInitException(message, e);
-		}
-	}
-	
-	@Override
-	protected final void addPages() {
-		try {
-			addPage(getPage());
-			addPage(new ComparisonPage(this));
-		} catch (Exception e) {
-			log.error("Error adding page to " + getClass().getSimpleName(), e);
 		}
 	}
 
