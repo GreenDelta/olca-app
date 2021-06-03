@@ -124,8 +124,6 @@ public class ProductComparison {
 		Section settingsSection = UI.section(shell, tk, "Settings");
 		Composite comp = UI.sectionClient(settingsSection, tk);
 		UI.gridLayout(comp, 1);
-		var settingsBody = tk.createComposite(comp, SWT.NULL);
-		UI.gridLayout(settingsBody, 2, 10, 10);
 
 		Section canvasSection = UI.section(shell, tk, "Diagram");
 		canvasSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -148,14 +146,16 @@ public class ProductComparison {
 		addResizeEvent(row2, canvas);
 
 		initImpactCategories();
-
-		chooseImpactCategoriesMenu(settingsBody, row2);
+		chooseImpactCategoriesMenu(comp);
 		initContributionsList();
 
+		var settingsBody = tk.createComposite(comp, SWT.NULL);
+		UI.gridLayout(settingsBody, 2, 10, 10);
+
 		colorByCriteriaMenu(settingsBody);
-		selectCategoryMenu(settingsBody, row2, canvas);
+		selectCategoryMenu(settingsBody);
 		colorPickerMenu(settingsBody);
-		selectCutoffSizeMenu(settingsBody, row2, canvas);
+		selectCutoffSizeMenu(settingsBody);
 		runCalculationButton(settingsBody, row2, canvas);
 		addPaintListener(canvas);
 		addToolTipListener(row2, canvas);
@@ -174,8 +174,8 @@ public class ProductComparison {
 	 * @param row1 The menu bar
 	 * @param row2 The canvas
 	 */
-	private void chooseImpactCategoriesMenu(Composite row1, Composite row2) {
-		UI.formLabel(row1, "Chosen Categories");
+	private void chooseImpactCategoriesMenu(Composite row1) {
+//		UI.formLabel(row1, "Chosen Categories");
 		impactCategoryTable = new ImpactCategoryTable(row1, impactCategories);
 	}
 
@@ -209,7 +209,7 @@ public class ProductComparison {
 	 * @param row2   The second part of the display
 	 * @param canvas The canvas
 	 */
-	private void selectCategoryMenu(Composite row1, Composite row2, Canvas canvas) {
+	private void selectCategoryMenu(Composite row1) {
 		var categoriesRefId = contributionsList.stream()
 				.flatMap(c -> c.getList().stream().filter(cell -> cell.getResult().getContribution().item != null)
 						.map(cell -> cell.getResult().getContribution().item.category))
@@ -297,7 +297,7 @@ public class ProductComparison {
 	 * @param row2   The second part of the display
 	 * @param canvas The canvas
 	 */
-	private void selectCutoffSizeMenu(Composite row1, Composite row2, Canvas canvas) {
+	private void selectCutoffSizeMenu(Composite row1) {
 		UI.formLabel(row1, tk, "Don't show < ");
 		var comp = UI.formComposite(row1, tk);
 		UI.gridLayout(comp, 2, 10, 0);

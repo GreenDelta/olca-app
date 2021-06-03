@@ -7,9 +7,12 @@ import java.util.stream.Collectors;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -25,15 +28,20 @@ public class ImpactCategoryTable {
 	List<ImpactDescriptor> categoriesFullList;
 
 	public ImpactCategoryTable(Composite body, List<ImpactDescriptor> categories) {
+		var comp = new Composite(body, SWT.NONE);
+		comp.setLayout(new GridLayout(1, false));
+		var gridData = new GridData(SWT.NONE, SWT.FILL, true, true);
+		gridData.widthHint = 500;
+		comp.setLayoutData(gridData);
 		categories.sort((c1, c2) -> c1.name.compareTo(c2.name));
 		this.categories = categories;
 		categoriesFullList = categories;
 		List<CategoryVariant> l = categories.stream().map(c -> new CategoryVariant(c)).collect(Collectors.toList());
-		viewer = Tables.createViewer(body, "Impact Category", "Display"); // Create columns
+		viewer = Tables.createViewer(comp, "Impact Category", "Display"); // Create columns
 		viewer.setLabelProvider(new CategoryLabelProvider());
 		new ModifySupport<CategoryVariant>(viewer).bind("Display", new DisplayModifier());
 		viewer.setInput(l);
-		Tables.bindColumnWidths(viewer, 0.75, 0.26);
+		Tables.bindColumnWidths(viewer, 0.80, 0.21);
 		tableHeaderAction();
 	}
 
