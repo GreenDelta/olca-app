@@ -31,7 +31,9 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.projects.results.ProjectResultData;
 import org.openlca.app.editors.projects.results.ProjectResultEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.ResultEditor;
@@ -45,13 +47,11 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
-import org.openlca.core.model.Project;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 
 public class ProductComparison {
@@ -77,7 +77,7 @@ public class ProductComparison {
 	private FormToolkit tk;
 	private int screenWidth;
 	private Canvas canvas;
-	private Project project;
+	private ProjectResultData projectResultData;
 	private ProcessDescriptor selectedProduct;
 	private List<ImpactDescriptor> impactCategories;
 	ImpactCategoryTable impactCategoryTable;
@@ -97,8 +97,9 @@ public class ProductComparison {
 			contributionResult = e.result;
 		} else if (target.equals(TargetCalculationEnum.PRODUCT)) {
 			var e = (ProjectResultEditor) editor;
-			project = e.getData().project();
-			impactMethod = new ImpactMethodDao(db).getDescriptor(project.impactMethod.id);
+			projectResultData = e.getData();
+			e.getData().result().getContributions(new ImpactDescriptor());
+			impactMethod = new ImpactMethodDao(db).getDescriptor(projectResultData.project().impactMethod.id);
 		}
 		contributionsList = new ArrayList<>();
 		cacheMap = new HashMap<>();
@@ -331,17 +332,12 @@ public class ProductComparison {
 			});
 		} else {
 			var impactCategory = impactCategoryTable.getImpactDescriptors().get(0);
-
 			var resultsList = impactCategoryResultsMap.get(impactCategory);
 			if (resultsList == null) {
-				project.variants.stream().forEach(v -> {
-					var ps = v.productSystem;
-					var setup = new CalculationSetup(ps);
-					setup.impactMethod = impactMethod;
-					var calc = new SystemCalculator(db);
-					var fullResult = calc.calculateFull(setup);
-					var contributionList = fullResult.getProcessContributions(impactCategory);
-					var c = new Contributions(contributionList, impactCategory.name, ps.name);
+				projectResultData.project().variants.stream().forEach(v -> {
+					var contributionResult = projectResultData.result().getResult(v);
+					var contributionList = contributionResult.getProcessContributions(impactCategory);
+					var c = new Contributions(contributionList, impactCategory.name, v.productSystem.name);
 					contributionsList.add(c);
 				});
 				impactCategoryResultsMap.put(impactCategory, contributionsList);
@@ -374,6 +370,7 @@ public class ProductComparison {
 		var vBar = canvas.getVerticalBar();
 		Button button = tk.createButton(row1, "Update Diagram", SWT.NONE);
 		button.setImage(Icon.RUN.get());
+
 		Controls.onSelect(button, e -> {
 			var hash = computeConfigurationHash();
 			// Cached image, in which we draw the things, and then display
@@ -759,8 +756,8 @@ public class ProductComparison {
 			fillRectangle(gc, start, cellWidth, rectHeight - 1, cell.getRgb(), SWT.COLOR_WHITE);
 			var end = computeEndCell(start, cell, (int) cellWidth, false);
 //			if (gapBigEnough || !gapBigEnough && chunk != newChunk) {
-				// We end the current chunk / cell
-				start = end;
+			// We end the current chunk / cell
+			start = end;
 //				chunk = newChunk;
 //			}
 		}
