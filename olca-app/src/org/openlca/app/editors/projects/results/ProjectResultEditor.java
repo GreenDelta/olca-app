@@ -26,8 +26,11 @@ import org.openlca.io.xls.results.ProjectResultExport;
 
 public class ProjectResultEditor extends SimpleFormEditor {
 
-	public ProjectResultData data;
+	private ProjectResultData data;
 
+	public ProjectResultData getData() {
+		return data;
+	}
 	public static void open(ProjectResultData data) {
 		if (data == null)
 			return;

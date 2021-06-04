@@ -132,20 +132,23 @@ public class ImpactCategoryTable {
 			if (v.isDisabled != b)
 				return;
 			if (b) {
-				for (var tableItem : viewer.getTable().getItems()) {
-					var data = (CategoryVariant) tableItem.getData();
-					if (data == null)
-						continue;
-					data.isDisabled = true;
-					tableItem.setData(data);
+				if (target.equals(TargetCalculationEnum.PRODUCT)) {
+					for (var tableItem : viewer.getTable().getItems()) {
+						var data = (CategoryVariant) tableItem.getData();
+						if (data == null)
+							continue;
+						data.isDisabled = true;
+						tableItem.setData(data);
+					}
+					categories = new ArrayList<ImpactDescriptor>();
 				}
-				categories = new ArrayList<ImpactDescriptor>();
 				categories.add(v.category);
-				viewer.refresh();
+
 			} else {
 				categories.remove(v.category);
 			}
 			v.isDisabled = !b;
+			viewer.refresh();
 		}
 	}
 

@@ -49,7 +49,7 @@ public class ComparisonPage extends FormPage {
 			ScrolledForm form = UI.formHeader(mform, "Project : " + e.getTitle());
 			FormToolkit tk = mform.getToolkit();
 			Composite body = UI.formBody(form, tk);
-			InfoSection.create(body, tk, e.data.project());
+			InfoSection.create(body, tk, e.getData().project());
 			new ProductComparison(body, editor, target, tk).display();
 			form.reflow(true);
 		}

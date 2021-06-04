@@ -46,10 +46,12 @@ import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.Project;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 
 public class ProductComparison {
@@ -79,6 +81,7 @@ public class ProductComparison {
 	private ProcessDescriptor selectedProduct;
 	private List<ImpactDescriptor> impactCategories;
 	ImpactCategoryTable impactCategoryTable;
+	private Map<ImpactDescriptor, List<Contributions>> impactCategoryResultsMap;
 
 	public ProductComparison(Composite shell, FormEditor editor, TargetCalculationEnum target, FormToolkit tk) {
 		this.tk = tk;
@@ -94,7 +97,7 @@ public class ProductComparison {
 			contributionResult = e.result;
 		} else if (target.equals(TargetCalculationEnum.PRODUCT)) {
 			var e = (ProjectResultEditor) editor;
-			project = e.data.project();
+			project = e.getData().project();
 			impactMethod = new ImpactMethodDao(db).getDescriptor(project.impactMethod.id);
 		}
 		contributionsList = new ArrayList<>();
@@ -107,6 +110,7 @@ public class ProductComparison {
 		cutOffSize = 75;
 		scrollPoint = new Point(0, 0);
 		isCalculationStarted = false;
+		impactCategoryResultsMap = new HashMap<ImpactDescriptor, List<Contributions>>();
 	}
 
 	/**
@@ -326,17 +330,24 @@ public class ProductComparison {
 				contributionsList.add(c);
 			});
 		} else {
-			project.variants.stream().forEach(v -> {
-				var ps = v.productSystem;
-				var setup = new CalculationSetup(ps);
-				setup.impactMethod = impactMethod;
-				var calc = new SystemCalculator(db);
-				var fullResult = calc.calculateFull(setup);
-				var impactCategory = impactCategoryTable.getImpactDescriptors().get(0);
-				var contributionList = fullResult.getProcessContributions(impactCategory);
-				var c = new Contributions(contributionList, impactCategory.name, ps.name);
-				contributionsList.add(c);
-			});
+			var impactCategory = impactCategoryTable.getImpactDescriptors().get(0);
+
+			var resultsList = impactCategoryResultsMap.get(impactCategory);
+			if (resultsList == null) {
+				project.variants.stream().forEach(v -> {
+					var ps = v.productSystem;
+					var setup = new CalculationSetup(ps);
+					setup.impactMethod = impactMethod;
+					var calc = new SystemCalculator(db);
+					var fullResult = calc.calculateFull(setup);
+					var contributionList = fullResult.getProcessContributions(impactCategory);
+					var c = new Contributions(contributionList, impactCategory.name, ps.name);
+					contributionsList.add(c);
+				});
+				impactCategoryResultsMap.put(impactCategory, contributionsList);
+			} else {
+				contributionsList = resultsList;
+			}
 		}
 		isCalculationStarted = true;
 		theoreticalScreenHeight = margin.y * 2 + gapBetweenRect * (contributionsList.size());
@@ -677,6 +688,7 @@ public class ProductComparison {
 			int cellWidth = 0;
 			if (cellIndex == cells.size() - 1) {
 				cellWidth = (int) (remainingRectWidth - newRectangleWidth);
+				fillRectangle(gc, start, cellWidth, rectHeight - 1, cell.getRgb(), SWT.COLOR_WHITE);
 			} else if (!gapEnoughBig && chunk != newChunk || gapEnoughBig) {
 				// We are on a new chunk, so we draw a cell with a minimum width
 				cellWidth = minCellWidth;
@@ -721,13 +733,13 @@ public class ProductComparison {
 		double minimumGapBetweenCells = ((double) remainingRectangleWidth / (cells.size() - currentCellIndex));
 		int chunk = -1, chunkSize = 0, newChunk = 0;
 		boolean gapBigEnough = true;
-		if (minimumGapBetweenCells < 1.0) {
-			// If the gap is to small, we put a certain amount of results in the
-			// same
-			// chunk
-			chunkSize = (int) Math.ceil(1 / minimumGapBetweenCells);
-			gapBigEnough = false;
-		}
+//		if (minimumGapBetweenCells < 1.0) {
+//			// If the gap is to small, we put a certain amount of results in the
+//			// same
+//			// chunk
+//			chunkSize = (int) Math.ceil(1 / minimumGapBetweenCells);
+//			gapBigEnough = false;
+//		}
 		var newRectangleWidth = 0;
 		for (var cellIndex = currentCellIndex; cellIndex < cells.size(); cellIndex++) {
 			if (!gapBigEnough) {
@@ -746,11 +758,11 @@ public class ProductComparison {
 			newRectangleWidth += cellWidth;
 			fillRectangle(gc, start, cellWidth, rectHeight - 1, cell.getRgb(), SWT.COLOR_WHITE);
 			var end = computeEndCell(start, cell, (int) cellWidth, false);
-			if (gapBigEnough || !gapBigEnough && chunk != newChunk) {
+//			if (gapBigEnough || !gapBigEnough && chunk != newChunk) {
 				// We end the current chunk / cell
 				start = end;
-				chunk = newChunk;
-			}
+//				chunk = newChunk;
+//			}
 		}
 		return;
 	}
