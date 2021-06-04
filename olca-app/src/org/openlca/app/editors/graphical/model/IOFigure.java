@@ -1,5 +1,8 @@
 package org.openlca.app.editors.graphical.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.GridData;
@@ -33,10 +36,10 @@ class IOFigure extends Figure {
 
 	private ExchangePanel initPanel(boolean forInputs) {
 		add(new Header(forInputs), new GridData(
-				SWT.FILL, SWT.TOP, true, false));
+			SWT.FILL, SWT.TOP, true, false));
 		var panel = new ExchangePanel(node);
 		add(panel, new GridData(
-				SWT.FILL, SWT.FILL, true, true));
+			SWT.FILL, SWT.FILL, true, true));
 		return panel;
 	}
 
@@ -55,24 +58,9 @@ class IOFigure extends Figure {
 			return;
 		var exchange = ef.node.exchange;
 		var panel = exchange.isInput
-				? inputPanel
-				: outputPanel;
-		var config = node.config();
-		if (config.showFlowIcons) {
-			panel.add(
-					new ImageFigure(Images.get(ef.node.flowType())),
-					new GridData(SWT.LEFT, SWT.TOP, false, false));
-		}
-		panel.add(ef, new GridData(SWT.FILL, SWT.TOP, true, false));
-		if (config.showFlowAmounts) {
-			var theme = config.theme();
-			var amount = new Label(Numbers.format(exchange.amount, 2));
-			amount.setForegroundColor(theme.labelColor(ef.node.flowType()));
-			panel.add(amount, new GridData(SWT.RIGHT, SWT.TOP, false, false));
-			var unit = new Label(Labels.name(exchange.unit));
-			unit.setForegroundColor(theme.labelColor(ef.node.flowType()));
-			panel.add(unit, new GridData(SWT.LEFT, SWT.TOP, false, false));
-		}
+			? inputPanel
+			: outputPanel;
+		ExchangeRow.create(ef, panel);
 	}
 
 	private class Header extends Figure {
@@ -85,11 +73,11 @@ class IOFigure extends Figure {
 			layout.marginWidth = 5;
 			setLayoutManager(layout);
 			label = new Label(forInputs
-					? ">> input flows"
-					: "output flows >>");
+				? ">> input flows"
+				: "output flows >>");
 			var alignment = forInputs
-					? SWT.LEFT
-					: SWT.RIGHT;
+				? SWT.LEFT
+				: SWT.RIGHT;
 			add(label, new GridData(alignment, SWT.TOP, true, false));
 		}
 
@@ -109,15 +97,13 @@ class IOFigure extends Figure {
 	private static class ExchangePanel extends Figure {
 
 		private final ProcessNode node;
+		private final List<ExchangeRow> rows = new ArrayList<>();
 
 		ExchangePanel(ProcessNode node) {
 			this.node = node;
 			var config = node.config();
-			int columns = 1;
+			int columns = config.showFlowIcons ? 2 : 1;
 			if (config.showFlowAmounts) {
-				columns += 1;
-			}
-			if (config.showFlowIcons) {
 				columns += 2;
 			}
 			var layout = new GridLayout(columns, false);
@@ -129,6 +115,7 @@ class IOFigure extends Figure {
 		@Override
 		protected void paintFigure(Graphics g) {
 			// set a specific background if this is required
+			rows.forEach(ExchangeRow::updateStyle);
 			var theme = node.config().theme();
 			g.pushState();
 			var background = theme.boxBackgroundColor(Box.of(node));
@@ -139,6 +126,70 @@ class IOFigure extends Figure {
 			g.popState();
 			super.paintFigure(g);
 		}
+	}
+
+	private static class ExchangeRow {
+
+		private final ImageFigure icon;
+		private final ExchangeFigure figure;
+		private final Label amountLabel;
+		private final Label unitLabel;
+
+		private ExchangeRow(
+			ImageFigure icon,
+			ExchangeFigure figure,
+			Label amountLabel,
+			Label unitLabel) {
+			this.icon = icon;
+			this.figure = figure;
+			this.amountLabel = amountLabel;
+			this.unitLabel = unitLabel;
+		}
+
+		static void create(ExchangeFigure figure, ExchangePanel panel) {
+			if (figure == null
+					|| panel == null
+					|| figure.node == null
+					|| figure.node.exchange == null)
+				return;
+
+			var config = figure.node.config();
+			var flowType = figure.node.flowType();
+			var exchange = figure.node.exchange;
+
+			var icon = config.showFlowIcons
+				? add(panel, SWT.LEFT, new ImageFigure(Images.get(flowType)))
+				: null;
+			add(panel, SWT.FILL, figure);
+			var amount = config.showFlowAmounts
+				? add(panel, SWT.RIGHT, new Label(Numbers.format(exchange.amount, 2)))
+				: null;
+			var unit = config.showFlowAmounts
+				? add(panel, SWT.LEFT, new Label(Labels.name(exchange.unit)))
+				: null;
+
+			var row = new ExchangeRow(icon, figure, amount, unit);
+			panel.rows.add(row);
+		}
+
+		private static <T extends Figure> T add(
+			ExchangePanel panel, int hAlign, T figure) {
+			panel.add(
+				figure,
+				new GridData(hAlign, SWT.TOP, hAlign == SWT.FILL, false));
+			return figure;
+		}
+
+		void updateStyle() {
+			var theme = figure.node.config().theme();
+			var flowType = figure.node.flowType();
+			if (amountLabel != null) {
+				var color = theme.labelColor(flowType);
+				amountLabel.setForegroundColor(color);
+				unitLabel.setForegroundColor(color);
+			}
+		}
+
 	}
 
 }
