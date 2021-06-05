@@ -13,10 +13,9 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.util.Categories;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.ProcessDao;
-import org.openlca.core.model.Process;
 import org.openlca.core.results.SystemProcess;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -53,17 +52,15 @@ public final class SaveProcessDialog extends Wizard {
 		try {
 			getContainer().run(true, false, m -> {
 				m.beginTask(M.CreateProcess, IProgressMonitor.UNKNOWN);
-				Process p = null;
-				if (createMeta) {
-					p = SystemProcess.createWithMetaData(
-							Database.get(), editor.setup, editor.result, name);
-				} else {
-					p = SystemProcess.create(
-							Database.get(), editor.setup, editor.result, name);
-				}
-				ProcessDao dao = new ProcessDao(Database.get());
-				p = dao.insert(p);
-				App.open(p);
+				var db = Database.get();
+				var process = createMeta
+					? SystemProcess.createWithMetaData(
+					db, editor.setup, editor.result, name)
+					: SystemProcess.create(
+					db, editor.setup, editor.result, name);
+				process.category = Categories.removeLibraryFrom(process.category);
+				process = db.insert(process);
+				App.open(process);
 				m.done();
 			});
 			Navigator.refresh();

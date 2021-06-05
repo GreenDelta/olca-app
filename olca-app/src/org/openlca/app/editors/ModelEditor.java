@@ -20,17 +20,16 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentsPage;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Categories;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.model.Comments;
 import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.database.BaseDao;
-import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.CategorizedEntity;
-import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Version;
 import org.openlca.util.Strings;
@@ -236,7 +235,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 			T clone = (T) model.clone();
 			if (clone.isFromLibrary()) {
 				clone.library = null;
-				clone.category = removeLibraryFrom(clone.category);
+				clone.category = Categories.removeLibraryFrom(clone.category);
 			}
 			clone.name = newName;
 			clone = dao.insert(clone);
@@ -245,27 +244,6 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 		} catch (Exception e) {
 			ErrorReporter.on("failed to save " + model + " as " + newName, e);
 		}
-	}
-
-	/**
-	 * Removes the library tag from the category and recursively of all its
-	 * parent categories so that the path to this category appears in the
-	 * foreground system of the navigation tree. It refreshes the navigation
-	 * tree and returns the updated category.
-	 */
-	public static Category removeLibraryFrom(Category category) {
-		if (category == null)
-			return null;
-		if (category.library == null)
-			return category;
-		var dao = new CategoryDao(Database.get());
-		var c = category;
-		while (c != null && c.library != null) {
-			c.library = null;
-			c = dao.update(c);
-			c = c.category;
-		}
-		return dao.getForId(category.id);
 	}
 
 	@Override
