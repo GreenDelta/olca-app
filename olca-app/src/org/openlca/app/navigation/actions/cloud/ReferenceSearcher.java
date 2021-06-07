@@ -61,9 +61,11 @@ class ReferenceSearcher {
 			allFound.addAll(refs);
 			List<Diff> diffs = getChanged(refs);
 			for (Diff diff : diffs) {
-				DiffResult diffResult = new DiffResult(diff, CloudUtil.toFetchRequestData(diff.getDataset()));
-				if (diffResult.local.localId == 0)
+				if (diff.localId == 0 || diff.type == DiffType.DELETED)
 					continue;
+				DiffResult diffResult = new DiffResult(diff, diff.type != DiffType.NEW
+						? CloudUtil.toFetchRequestData(diff.dataset)
+						: null);
 				allChanged.add(diffResult.local.localId);
 				results.add(diffResult);
 			}
