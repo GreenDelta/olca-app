@@ -6,7 +6,6 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.ComponentEditPolicy;
@@ -126,10 +125,6 @@ public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 	@Override
 	public void refresh() {
 		super.refresh();
-	}
-
-	void revalidate() {
-		((GraphicalEditPart) getViewer().getContents()).getFigure().revalidate();
 	}
 
 	@Override

@@ -230,7 +230,10 @@ public class ProcessNode extends Node {
 
 	public void setBox(Rectangle box) {
 		this.box = box;
-		editPart().revalidate();
+		var sysNode = parent();
+		if (sysNode.figure != null) {
+			sysNode.figure.revalidate();
+		}
 	}
 
 	/**

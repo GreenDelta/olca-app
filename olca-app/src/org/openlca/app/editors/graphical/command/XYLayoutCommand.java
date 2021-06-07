@@ -1,7 +1,5 @@
 package org.openlca.app.editors.graphical.command;
 
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
@@ -13,32 +11,33 @@ public class XYLayoutCommand extends Command {
 	private static final int RESIZE = 2;
 
 	private final ProcessNode node;
-	private final Rectangle newLayout;
+	private final Rectangle target;
 	private final int type;
-	private Rectangle previousLayout;
+	private Rectangle oldBox;
 
-	public static XYLayoutCommand move(ProcessNode node, Rectangle newLayout) {
-		return new XYLayoutCommand(node, newLayout, MOVE);
+	public static XYLayoutCommand move(ProcessNode node, Rectangle target) {
+		return new XYLayoutCommand(node, target, MOVE);
 	}
 
-	public static XYLayoutCommand resize(ProcessNode node, Rectangle newLayout) {
-		return new XYLayoutCommand(node, newLayout, RESIZE);
+	public static XYLayoutCommand resize(ProcessNode node, Rectangle target) {
+		return new XYLayoutCommand(node, target, RESIZE);
 	}
 
-	private XYLayoutCommand(ProcessNode node, Rectangle newLayout, int type) {
+	private XYLayoutCommand(ProcessNode node, Rectangle target, int type) {
 		this.node = node;
-		this.newLayout = newLayout;
+		this.target = target;
 		this.type = type;
+		this.oldBox = node.getBox();
 	}
 
 	@Override
 	public boolean canExecute() {
-		return true;
+		return target != null && oldBox != null;
 	}
 
 	@Override
 	public boolean canUndo() {
-		return true;
+		return oldBox != null;
 	}
 
 	@Override
@@ -48,35 +47,32 @@ public class XYLayoutCommand extends Command {
 
 	@Override
 	public void execute() {
-		previousLayout = node.getBox();
-		Rectangle newConstraints = newContraints();
-		if (node.isMinimized() && newConstraints.height > node.getMinimumHeight()) {
+		oldBox = node.getBox();
+		var newBox = newBox();
+		if (node.isMinimized() && newBox.height > node.getMinimumHeight()) {
 			node.maximize();
 		}
 		// minimum height/width is different if node is maximized
-		if (newConstraints.height < node.getMinimumHeight())  {
-			newConstraints.height = node.getMinimumHeight();
+		if (newBox.height < node.getMinimumHeight())  {
+			newBox.height = node.getMinimumHeight();
 		}
-		if (newConstraints.width < node.getMinimumWidth())  {
-			newConstraints.width = node.getMinimumWidth();
+		if (newBox.width < node.getMinimumWidth())  {
+			newBox.width = node.getMinimumWidth();
 		}
-		node.setBox(newConstraints);
+		node.setBox(newBox);
 		node.parent().editor.setDirty();
 	}
 
-	private Rectangle newContraints() {
-		Point position = null;
-		Dimension size = null;
+	private Rectangle newBox() {
 		if (type == MOVE) {
-			position = new Point(Math.max(newLayout.x, 0), Math.max(newLayout.y, 0));
-			size = new Dimension(previousLayout.width, previousLayout.height);
-		} else if (type == RESIZE) {
-			position = new Point(previousLayout.x, previousLayout.y);
-			int width = Math.max(newLayout.width, node.getMinimumWidth());
-			int height = Math.max(newLayout.height, node.getMinimumHeight());
-			size = new Dimension(width, height);
+			int x = Math.max(target.x, 0);
+			int y = Math.max(target.y, 0);
+			return new Rectangle(x, y, oldBox.width, oldBox.height);
+		} else {
+			int width = Math.max(target.width, node.getMinimumWidth());
+			int height = Math.max(target.height, node.getMinimumHeight());
+			return new Rectangle(oldBox.x, oldBox.y, width, height);
 		}
-		return new Rectangle(position, size);
 	}
 
 	@Override
@@ -90,7 +86,9 @@ public class XYLayoutCommand extends Command {
 
 	@Override
 	public void undo() {
-		node.setBox(previousLayout);
+		if (oldBox == null)
+			return;
+		node.setBox(oldBox);
 		node.parent().editor.setDirty();
 	}
 
