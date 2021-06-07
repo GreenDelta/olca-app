@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ConnectionLayer;
@@ -353,11 +352,24 @@ public class GraphEditor extends GraphicalEditor {
 	 */
 	public void expand() {
 		model = new ProductSystemNode(this);
-		getProductSystem().processes.stream()
-				.filter(Objects::nonNull)
-				.map(id -> ProcessNode.create(this, id))
-				.filter(Objects::nonNull)
-				.forEach(node -> model.add(node));
+		var system = getProductSystem();
+
+		// create the process nodes
+		var ref = system.referenceProcess;
+		for (var id : system.processes) {
+			if (id == null)
+				continue;
+			// skip the reference process as this
+			// was already added
+			if (ref != null && ref.id == id)
+				continue;
+			var node = ProcessNode.create(this, id);
+			if (node != null) {
+				model.add(node);
+			}
+		}
+
+		// set the viewer content and expand the nodes
 		var viewer = getGraphicalViewer();
 		if (viewer == null)
 			return;

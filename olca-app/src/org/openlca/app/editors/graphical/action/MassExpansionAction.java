@@ -26,21 +26,26 @@ class MassExpansionAction extends EditorAction {
 
 	@Override
 	public void run() {
-		if (type == EXPAND) {
-			if (areYouSure())
-				editor.expand();
-		} else if (type == COLLAPSE)
-			editor.collapse();
-	}
+		if (editor == null || editor.getModel() == null)
+			return;
 
-	private boolean areYouSure() {
-		int amount = editor.getModel().getProductSystem().processes.size();
-		if (amount < 500)
-			return true;
-		String title = M.ExpandAll;
-		String text = M.ExpandAll + ": " + amount + " "
-				+ M.Processes;
-		return Question.ask(title, text);
+		// collapse all
+		if (type == COLLAPSE) {
+			editor.collapse();
+			return;
+		}
+
+		// expand all; ask if the model is large
+		var system = editor.getModel().getProductSystem();
+		int count = system.processes.size();
+		boolean doIt = count < 500
+				? true
+				: Question.ask(
+						M.ExpandAll,
+						M.ExpandAll + ": " + count + " " + M.Processes);
+		if (doIt) {
+			editor.expand();
+		}
 	}
 
 	@Override
