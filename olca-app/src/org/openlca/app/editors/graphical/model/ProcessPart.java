@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical.model;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
@@ -11,7 +10,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.ComponentEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.GroupRequest;
-import org.openlca.app.editors.graphical.command.CommandUtil;
+import org.openlca.app.editors.graphical.command.Commands;
 import org.openlca.app.editors.graphical.command.DeleteProcessCommand;
 import org.openlca.app.editors.graphical.command.XYLayoutCommand;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
@@ -58,28 +57,33 @@ public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 		if (!(req instanceof ChangeBoundsRequest))
 			return super.getCommand(req);
 		ChangeBoundsRequest request = (ChangeBoundsRequest) req;
-		Command commandChain = null;
+		Command chain = null;
 		for (Object part : request.getEditParts()) {
 			if (!(part instanceof ProcessPart))
 				continue;
-			Command command = getCommand((ProcessPart) part, request);
-			commandChain = CommandUtil.chain(command, commandChain);
+			var command = moveOrResize((ProcessPart) part, request);
+			if (command != null) {
+				chain = Commands.chain(command, chain);
+			}
 		}
-		return commandChain;
+		return chain;
 	}
 
-	private Command getCommand(ProcessPart part, ChangeBoundsRequest request) {
-		IFigure figure = part.getModel().figure;
-		Rectangle bounds = figure.getBounds().getCopy();
+	private Command moveOrResize(ProcessPart part, ChangeBoundsRequest req) {
+		var node = part.getModel();
+		var figure = part.getModel().figure;
+
+		var bounds = figure.getBounds().getCopy();
 		figure.translateToAbsolute(bounds);
-		Rectangle moveResize = new Rectangle(request.getMoveDelta(), request.getSizeDelta());
-		bounds.resize(moveResize.getSize());
-		bounds.translate(moveResize.getLocation());
+		var sizeDelta = req.getSizeDelta();
+		var moveDelta = req.getMoveDelta();
+		bounds.resize(sizeDelta).translate(moveDelta);
 		figure.translateToRelative(bounds);
-		if (request.getSizeDelta().height != 0 || request.getSizeDelta().width != 0)
-			return XYLayoutCommand.resize(part.getModel(), bounds);
-		if (request.getMoveDelta().x != 0 || request.getMoveDelta().y != 0)
-			return XYLayoutCommand.move(part.getModel(), bounds);
+
+		if (sizeDelta.height != 0 || sizeDelta.width != 0)
+			return XYLayoutCommand.resize(node, bounds);
+		if (moveDelta.x != 0 || moveDelta.y != 0)
+			return XYLayoutCommand.move(node, bounds);
 		return null;
 	}
 

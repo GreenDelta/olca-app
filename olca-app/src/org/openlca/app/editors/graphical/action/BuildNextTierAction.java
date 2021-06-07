@@ -9,7 +9,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.graphical.command.CommandUtil;
+import org.openlca.app.editors.graphical.command.Commands;
 import org.openlca.app.editors.graphical.command.ExpansionCommand;
 import org.openlca.app.editors.graphical.command.MassCreationCommand;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
@@ -67,7 +67,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		Command command = MassCreationCommand.nextTier(providers, newConnections, systemNode);
 		for (ProcessNode node : nodes)
 			command = command.chain(ExpansionCommand.expandLeft(node));
-		CommandUtil.executeCommand(command, systemNode.editor);
+		Commands.executeCommand(command, systemNode.editor);
 		systemNode.editor.setDirty();
 	}
 

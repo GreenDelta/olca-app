@@ -4,7 +4,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
-import org.openlca.app.editors.graphical.command.CommandUtil;
+import org.openlca.app.editors.graphical.command.Commands;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.rcp.images.Icon;
 
@@ -35,7 +35,7 @@ class ChangeAllStateAction extends EditorAction {
 			if (node.isMinimized() == minimize)
 				continue;
 			ChangeStateCommand newCommand = new ChangeStateCommand(node);
-			actualCommand = CommandUtil.chain(newCommand, actualCommand);
+			actualCommand = Commands.chain(newCommand, actualCommand);
 		}
 		if (actualCommand == null)
 			return;

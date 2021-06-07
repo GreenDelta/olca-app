@@ -3,7 +3,7 @@ package org.openlca.app.editors.graphical.command;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.editors.graphical.GraphEditor;
 
-public class CommandUtil {
+public class Commands {
 
 	public static Command chain(Command command, Command toChain) {
 		if (command == null)

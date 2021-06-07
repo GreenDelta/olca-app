@@ -6,7 +6,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.command.CommandUtil;
+import org.openlca.app.editors.graphical.command.Commands;
 import org.openlca.app.editors.graphical.command.HideShowCommand;
 import org.openlca.app.editors.graphical.outline.ProcessTreeEditPart;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -42,7 +42,7 @@ class HideShowAction extends Action {
 			if (!(o instanceof ProcessTreeEditPart))
 				continue;
 			ProcessTreeEditPart part = (ProcessTreeEditPart) o;
-			command = CommandUtil.chain(createCommand(part.getModel()), command);
+			command = Commands.chain(createCommand(part.getModel()), command);
 		}
 		if (command == null)
 			return;

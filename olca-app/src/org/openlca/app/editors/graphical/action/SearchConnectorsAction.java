@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.command.CommandUtil;
+import org.openlca.app.editors.graphical.command.Commands;
 import org.openlca.app.editors.graphical.command.MassCreationCommand;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -60,7 +60,7 @@ class SearchConnectorsAction extends EditorAction {
 		Command command = type == PROVIDER
 				? MassCreationCommand.providers(newProcesses, newLinks, sysNode)
 				: MassCreationCommand.recipients(newProcesses, newLinks, sysNode);
-		CommandUtil.executeCommand(command, sysNode.editor);
+		Commands.executeCommand(command, sysNode.editor);
 	}
 
 	@Override
