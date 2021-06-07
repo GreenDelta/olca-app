@@ -30,8 +30,7 @@ class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 	@Override
 	protected IFigure createFigure() {
 		ProductSystemNode node = getModel();
-		ProductSystemFigure figure = new ProductSystemFigure(node);
-		return figure;
+		return new ProductSystemFigure(node);
 	}
 
 	@Override

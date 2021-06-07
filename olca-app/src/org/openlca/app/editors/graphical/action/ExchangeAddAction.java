@@ -108,6 +108,7 @@ public class ExchangeAddAction extends Action implements GraphAction {
 
 		node.getChildren().clear();
 		node.add(new IONode(node));
+		node.refresh();
 		editor.refresh();
 	}
 
