@@ -14,14 +14,12 @@ import org.openlca.app.util.Controls;
 
 public class LayoutMenuAction extends Action {
 
-	private final LayoutAction minimalLayoutAction = new LayoutAction(
-			LayoutType.MINIMAL_TREE_LAYOUT);
-	private final LayoutAction treeLayoutAction = new LayoutAction(
-			LayoutType.TREE_LAYOUT);
+	private final LayoutAction minimalAction;
+	private final LayoutAction treeAction;
 
 	public LayoutMenuAction(GraphEditor editor) {
-		minimalLayoutAction.setModel(editor.getModel());
-		treeLayoutAction.setModel(editor.getModel());
+		minimalAction = new LayoutAction(editor, LayoutType.MINIMAL_TREE_LAYOUT);
+		treeAction = new LayoutAction(editor, LayoutType.TREE_LAYOUT);
 		setId(ActionIds.LAYOUT_MENU);
 		setText(M.Layout);
 		setImageDescriptor(Icon.LAYOUT.descriptor());
@@ -32,13 +30,13 @@ public class LayoutMenuAction extends Action {
 
 		private void createMenu(Menu menu) {
 			var treeItem = new MenuItem(menu, SWT.RADIO);
-			treeItem.setText(treeLayoutAction.getText());
-			Controls.onSelect(treeItem, (e) -> treeLayoutAction.run());
+			treeItem.setText(treeAction.getText());
+			Controls.onSelect(treeItem, (e) -> treeAction.run());
 			treeItem.setSelection(true);
 
 			var minimalItem = new MenuItem(menu, SWT.RADIO);
-			minimalItem.setText(minimalLayoutAction.getText());
-			Controls.onSelect(treeItem, (e) -> minimalLayoutAction.run());
+			minimalItem.setText(minimalAction.getText());
+			Controls.onSelect(treeItem, (e) -> minimalAction.run());
 		}
 
 		@Override

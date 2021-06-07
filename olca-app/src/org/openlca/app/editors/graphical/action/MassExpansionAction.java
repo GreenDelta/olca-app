@@ -38,11 +38,8 @@ class MassExpansionAction extends EditorAction {
 		// expand all; ask if the model is large
 		var system = editor.getModel().getProductSystem();
 		int count = system.processes.size();
-		boolean doIt = count < 500
-				? true
-				: Question.ask(
-						M.ExpandAll,
-						M.ExpandAll + ": " + count + " " + M.Processes);
+		boolean doIt = count < 500 || Question.ask(
+			M.ExpandAll, M.ExpandAll + ": " + count + " " + M.Processes);
 		if (doIt) {
 			editor.expand();
 		}

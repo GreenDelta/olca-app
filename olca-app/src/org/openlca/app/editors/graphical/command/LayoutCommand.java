@@ -7,6 +7,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.LayoutType;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -19,9 +20,9 @@ public class LayoutCommand extends Command {
 	private final LayoutType type;
 	private final Map<IFigure, Rectangle> oldConstraints = new HashMap<>();
 
-	public LayoutCommand(ProductSystemNode model, LayoutManager layoutManager, LayoutType type) {
-		this.model = model;
-		this.layoutManager = layoutManager;
+	public LayoutCommand(GraphEditor editor, LayoutType type) {
+		this.model = editor.getModel();
+		this.layoutManager = (LayoutManager) model.figure.getLayoutManager();
 		this.type = type;
 	}
 
