@@ -18,7 +18,7 @@ import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
-import org.openlca.app.db.DerbyConfiguration;
+import org.openlca.app.db.DerbyConfig;
 import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.db.MySqlConfig;
 import org.openlca.app.db.MySQLDatabaseExport;
@@ -94,7 +94,7 @@ public class DbExportAction extends Action implements INavigationAction {
 		try {
 			if (active)
 				Database.close();
-			if (config instanceof DerbyConfiguration) {
+			if (config instanceof DerbyConfig) {
 				File folder = DatabaseDir.getRootFolder(config.name());
 				ZipEntrySource[] toPack = collectFileSources(folder);
 				ZipUtil.pack(toPack, zip);

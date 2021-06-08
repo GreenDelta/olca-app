@@ -7,6 +7,7 @@ import java.net.URL;
 import org.eclipse.core.runtime.Platform;
 import org.openlca.app.AppArg;
 import org.openlca.app.Config;
+import org.openlca.core.DataDir;
 import org.openlca.core.library.LibraryDir;
 
 /**
@@ -41,11 +42,12 @@ public class Workspace {
 		try {
 			Platform.getInstanceLocation().release();
 			File dir = getDirFromCommandLine();
-			if (dir == null)
-				if (Config.WORK_SPACE_IN_USER_DIR)
-					dir = getFromUserHome();
-				else
-					dir = getFromInstallLocation();
+			if (dir == null) {
+				dir = Config.WORK_SPACE_IN_USER_DIR
+					? getFromUserHome()
+					: getFromInstallLocation();
+			}
+			DataDir.setRoot(dir);
 			URL workspaceUrl = new URL("file", null, dir.getAbsolutePath());
 			Platform.getInstanceLocation().set(workspaceUrl, true);
 			Workspace.dir = dir;

@@ -11,7 +11,7 @@ import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
-import org.openlca.app.db.DerbyConfiguration;
+import org.openlca.app.db.DerbyConfig;
 import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
@@ -31,7 +31,7 @@ public class DbRenameAction extends Action implements INavigationAction {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	private DerbyConfiguration config;
+	private DerbyConfig config;
 
 	public DbRenameAction() {
 		setText(M.Rename);
@@ -47,9 +47,9 @@ public class DbRenameAction extends Action implements INavigationAction {
 			return false;
 		var e = (DatabaseElement) first;
 		var config = e.getContent();
-		if (!(config instanceof DerbyConfiguration))
+		if (!(config instanceof DerbyConfig))
 			return false;
-		this.config = (DerbyConfiguration) config;
+		this.config = (DerbyConfig) config;
 		return true;
 	}
 
@@ -57,9 +57,9 @@ public class DbRenameAction extends Action implements INavigationAction {
 	public void run() {
 		if (config == null) {
 			DatabaseConfig conf = Database.getActiveConfiguration();
-			if (!(conf instanceof DerbyConfiguration))
+			if (!(conf instanceof DerbyConfig))
 				return;
-			config = (DerbyConfiguration) conf;
+			config = (DerbyConfig) conf;
 		}
 		InputDialog dialog = new InputDialog(UI.shell(),
 				M.Rename,
@@ -93,7 +93,7 @@ public class DbRenameAction extends Action implements INavigationAction {
 				return;
 			}
 			Database.remove(config);
-			config.setName(newName);
+			config.name(newName);
 			Database.register(config);
 			if (isActive)
 				Database.activate(config);

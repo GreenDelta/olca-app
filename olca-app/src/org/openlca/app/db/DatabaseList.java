@@ -23,10 +23,10 @@ import com.google.gson.GsonBuilder;
  */
 public class DatabaseList {
 
-	private List<DerbyConfiguration> localDatabases = new ArrayList<>();
+	private List<DerbyConfig> localDatabases = new ArrayList<>();
 	private List<MySqlConfig> remoteDatabases = new ArrayList<>();
 
-	public List<DerbyConfiguration> getLocalDatabases() {
+	public List<DerbyConfig> getLocalDatabases() {
 		return localDatabases;
 	}
 
@@ -60,7 +60,7 @@ public class DatabaseList {
 		}
 	}
 
-	public boolean contains(DerbyConfiguration config) {
+	public boolean contains(DerbyConfig config) {
 		return localDatabases.contains(config);
 	}
 

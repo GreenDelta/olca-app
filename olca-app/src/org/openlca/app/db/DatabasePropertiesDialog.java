@@ -32,8 +32,8 @@ public class DatabasePropertiesDialog extends FormDialog {
 		ScrolledForm form = UI.formHeader(managedForm, M.Properties);
 		Composite body = UI.formBody(form, toolkit);
 		Composite content = UI.formComposite(body, toolkit);
-		if (config instanceof DerbyConfiguration) {
-			DerbyConfiguration derbyConfig = (DerbyConfiguration) config;
+		if (config instanceof DerbyConfig) {
+			DerbyConfig derbyConfig = (DerbyConfig) config;
 			renderDerbyConfig(derbyConfig, content, toolkit);
 		} else if (config instanceof MySqlConfig) {
 			MySqlConfig mysqlConfig = (MySqlConfig) config;
@@ -48,18 +48,18 @@ public class DatabasePropertiesDialog extends FormDialog {
 		UI.formText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
 				conf.name());
 		UI.formText(parent, toolkit, M.Host, SWT.READ_ONLY).setText(
-				conf.getHost());
+				conf.host());
 		UI.formText(parent, toolkit, M.Port, SWT.READ_ONLY).setText(
-				Integer.toString(conf.getPort()));
+				Integer.toString(conf.port()));
 		UI.formText(parent, toolkit, M.User, SWT.READ_ONLY).setText(
-				conf.getUser());
-		boolean withPassword = Strings.notEmpty(conf.getPassword());
+				conf.user());
+		boolean withPassword = Strings.notEmpty(conf.password());
 		UI.formText(parent, toolkit, M.WithPassword, SWT.READ_ONLY)
 				.setText(Boolean.toString(withPassword));
 	}
 
-	private void renderDerbyConfig(DerbyConfiguration conf, Composite parent,
-			FormToolkit toolkit) {
+	private void renderDerbyConfig(DerbyConfig conf, Composite parent,
+																 FormToolkit toolkit) {
 		UI.formText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
 				M.LocalDatabase);
 		UI.formText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
@@ -68,8 +68,8 @@ public class DatabasePropertiesDialog extends FormDialog {
 		renderFolderLink(conf, parent, toolkit);
 	}
 
-	private void renderFolderLink(DerbyConfiguration conf, Composite parent,
-			FormToolkit toolkit) {
+	private void renderFolderLink(DerbyConfig conf, Composite parent,
+																FormToolkit toolkit) {
 		File folder = DatabaseDir.getRootFolder(conf.name());
 		String path = folder.toURI().toString();
 		Hyperlink link = new Hyperlink(parent, SWT.NONE);

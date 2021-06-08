@@ -18,6 +18,7 @@ import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
+import org.openlca.core.DataDir;
 import org.openlca.core.library.Library;
 import org.openlca.util.Dirs;
 import org.slf4j.LoggerFactory;
@@ -110,7 +111,7 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 				var db = Database.get();
 				return db.getLibraries().contains(libID);
 			}
-			try (var db = config.connect()) {
+			try (var db = config.connect(DataDir.databases())) {
 				return db.getVersion() >= 9
 							 && db.getLibraries().contains(libID);
 			} catch (Exception e) {

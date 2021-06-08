@@ -10,6 +10,7 @@ import org.openlca.app.navigation.CopyPaste;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.api.update.RepositoryConfigConversion;
+import org.openlca.core.DataDir;
 import org.openlca.core.database.IDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class Database {
 	public static IDatabase activate(DatabaseConfig config)
 			throws Exception {
 		try {
-			database = config.connect();
+			database = config.connect(DataDir.databases());
 			listener = new DatabaseListener(Database.database);
 			database.addListener(listener);
 			Cache.create(database);
@@ -150,14 +151,14 @@ public class Database {
 		return null;
 	}
 
-	public static void register(DerbyConfiguration config) {
+	public static void register(DerbyConfig config) {
 		if (configurations.contains(config))
 			return;
 		configurations.getLocalDatabases().add(config);
 		saveConfig();
 	}
 
-	public static void remove(DerbyConfiguration config) {
+	public static void remove(DerbyConfig config) {
 		if (!configurations.contains(config))
 			return;
 		configurations.getLocalDatabases().remove(config);

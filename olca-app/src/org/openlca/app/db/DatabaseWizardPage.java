@@ -194,16 +194,16 @@ class DatabaseWizardPage extends WizardPage {
 
 	DatabaseConfig getPageData() {
 		if (buttonLocal.getSelection()) {
-			DerbyConfiguration derbyConfig = new DerbyConfiguration();
-			derbyConfig.setName(getText(nameText));
+			DerbyConfig derbyConfig = new DerbyConfig();
+			derbyConfig.name(getText(nameText));
 			return derbyConfig;
 		} else {
 			MySqlConfig config = new MySqlConfig();
-			config.setName(getText(nameText));
-			config.setHost(getText(hostText));
-			config.setPort(Integer.parseInt(getText(portText)));
-			config.setPassword(getText(passwordText));
-			config.setUser(getText(userText));
+			config.name(getText(nameText));
+			config.host(getText(hostText));
+			config.port(Integer.parseInt(getText(portText)));
+			config.password(getText(passwordText));
+			config.user(getText(userText));
 			return config;
 		}
 	}

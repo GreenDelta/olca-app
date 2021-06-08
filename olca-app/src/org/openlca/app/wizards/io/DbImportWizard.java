@@ -21,6 +21,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
+import org.openlca.core.DataDir;
 import org.openlca.core.database.Derby;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.upgrades.Upgrades;
@@ -183,10 +184,9 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		public void run(IProgressMonitor monitor) throws InvocationTargetException {
 			log.trace("connect to source database");
 			try {
-				if (config.mode == config.FILE_MODE)
-					source = connectToFolder();
-				else
-					source = config.databaseConfiguration.connect();
+				source = config.mode == config.FILE_MODE
+					? connectToFolder()
+					: config.databaseConfiguration.connect(DataDir.databases());
 			} catch (Exception e) {
 				log.error("Failed to connect to source database", e);
 				throw new InvocationTargetException(e);

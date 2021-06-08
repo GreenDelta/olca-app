@@ -1,30 +1,31 @@
 package org.openlca.app.db;
 
+import java.io.File;
 import java.util.Objects;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.MySQL;
 
 /**
- * Configuration of a MySQL database.
+ * Stores the connection configuration of a MySQL database.
  */
 public final class MySqlConfig implements DatabaseConfig {
 
-	private String name;
-	private String host;
-	private int port;
-	private String user;
+	private String name = "openlca";
+	private String host = "localhost";
+	private int port = 3306;
+	private String user = "root";
 	private String password;
 
 	@Override
-	public IDatabase connect() {
+	public IDatabase connect(File databasesDir) {
 		var db = MySQL.database(name)
 			.host(host)
 			.port(port)
 			.user(user)
 			.password(password)
 			.connect();
-		db.setFileStorageLocation(DatabaseDir.getFileStorageLocation(db));
+		db.setFileStorageLocation(new File(databasesDir, name));
 		return db;
 	}
 
@@ -33,40 +34,45 @@ public final class MySqlConfig implements DatabaseConfig {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public MySqlConfig name(String name) {
+		this.name = Objects.requireNonNull(name);
+		return this;
 	}
 
-	public String getHost() {
+	public String host() {
 		return host;
 	}
 
-	public void setHost(String host) {
-		this.host = host;
+	public MySqlConfig host(String host) {
+		this.host = Objects.requireNonNull(host);
+		return this;
 	}
 
-	public int getPort() {
+	public int port() {
 		return port;
 	}
 
-	public void setPort(int port) {
+	public MySqlConfig port(int port) {
 		this.port = port;
+		return this;
 	}
 
-	public String getUser() {
+	public String user() {
 		return user;
 	}
 
-	public void setUser(String user) {
-		this.user = user;
+	public MySqlConfig user(String user) {
+		this.user = Objects.requireNonNull(user);
+		return this;
 	}
 
-	public String getPassword() {
+	public String password() {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	public MySqlConfig password(String password) {
 		this.password = password;
+		return this;
 	}
 
 	@Override

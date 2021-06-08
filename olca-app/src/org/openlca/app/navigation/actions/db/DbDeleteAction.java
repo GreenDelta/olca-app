@@ -14,7 +14,7 @@ import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
-import org.openlca.app.db.DerbyConfiguration;
+import org.openlca.app.db.DerbyConfig;
 import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.db.MySqlConfig;
 import org.openlca.app.editors.Editors;
@@ -101,8 +101,8 @@ public class DbDeleteAction extends Action implements INavigationAction {
 		File dbFolder = DatabaseDir.getRootFolder(config.name());
 		if (dbFolder.isDirectory())
 			FileUtils.deleteDirectory(dbFolder);
-		if (config instanceof DerbyConfiguration)
-			Database.remove((DerbyConfiguration) config);
+		if (config instanceof DerbyConfig)
+			Database.remove((DerbyConfig) config);
 		else if (config instanceof MySqlConfig)
 			Database.remove((MySqlConfig) config);
 	}

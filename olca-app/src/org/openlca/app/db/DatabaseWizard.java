@@ -42,7 +42,7 @@ public class DatabaseWizard extends Wizard {
 			if (!Editors.closeAll())
 				return false;
 			DatabaseConfig config = page.getPageData();
-			Runner runner = (config instanceof DerbyConfiguration) ? new Runner(
+			Runner runner = (config instanceof DerbyConfig) ? new Runner(
 					config, page.getSelectedContent()) : new Runner(config);
 			getContainer().run(true, false, runner);
 			Navigator.refresh();
@@ -85,8 +85,8 @@ public class DatabaseWizard extends Wizard {
 				Database.close();
 				if (config instanceof MySqlConfig)
 					Database.register((MySqlConfig) config);
-				else if (config instanceof DerbyConfiguration) {
-					Database.register((DerbyConfiguration) config);
+				else if (config instanceof DerbyConfig) {
+					Database.register((DerbyConfig) config);
 					extractDerbyTemplate();
 				}
 				Database.activate(config);

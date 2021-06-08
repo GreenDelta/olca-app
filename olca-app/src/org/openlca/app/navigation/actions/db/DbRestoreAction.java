@@ -13,7 +13,7 @@ import org.openlca.app.Config;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DerbyConfiguration;
+import org.openlca.app.db.DerbyConfig;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
@@ -87,8 +87,8 @@ public class DbRestoreAction extends Action implements INavigationAction {
 			folder.mkdirs();
 			ZipUtil.unpack(zip, folder);
 		}, () -> {
-			DerbyConfiguration conf = new DerbyConfiguration();
-			conf.setName(dbName);
+			DerbyConfig conf = new DerbyConfig();
+			conf.name(dbName);
 			Database.register(conf);
 			Navigator.refresh();
 		});

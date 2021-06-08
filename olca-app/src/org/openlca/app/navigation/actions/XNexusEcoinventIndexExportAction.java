@@ -21,8 +21,8 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DerbyConfiguration;
 import org.openlca.app.db.DatabaseConfig;
+import org.openlca.app.db.DerbyConfig;
 import org.openlca.app.db.MySqlConfig;
 import org.openlca.app.navigation.actions.XNexusIndexExportAction.IndexEntry;
 import org.openlca.app.navigation.elements.DatabaseElement;
@@ -34,6 +34,7 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.core.DataDir;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Process;
@@ -78,7 +79,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 					if (Database.get() != null && Database.get().getName().equals(e.database.name())) {
 						db = Database.get();
 					} else {
-						db = e.database.connect();
+						db = e.database.connect(DataDir.databases());
 					}
 					ProcessDao dao = new ProcessDao(db);
 					for (ProcessDescriptor descriptor : dao.getDescriptors()) {
@@ -155,7 +156,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 				Entry entry = (Entry) element;
 				if (columnIndex == 0)
 					return null;
-				if (entry.database instanceof DerbyConfiguration)
+				if (entry.database instanceof DerbyConfig)
 					return Icon.DATABASE.get();
 				if (entry.database instanceof MySqlConfig)
 					return Icon.SQL.get();
