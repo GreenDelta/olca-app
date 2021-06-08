@@ -13,7 +13,7 @@ import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.Group;
@@ -65,16 +65,16 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		// for local databases show the full path to the folder
 		if (obj instanceof DatabaseElement) {
 			DatabaseElement elem = (DatabaseElement) obj;
-			IDatabaseConfiguration config = elem.getContent();
+			DatabaseConfig config = elem.getContent();
 			if (config == null)
 				return null;
-			if (config.isLocal()) {
+			if (config.isEmbedded()) {
 				File dbDir = new File(Workspace.getDir(), "databases");
-				File db = new File(dbDir, config.getName());
+				File db = new File(dbDir, config.name());
 				if (db.isDirectory())
 					return db.getAbsolutePath();
 			}
-			return config.getName();
+			return config.name();
 		}
 
 		// for models show the category path + name
@@ -132,8 +132,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		}
 
 		var content = (elem).getContent();
-		if (content instanceof IDatabaseConfiguration) {
-			var config = (IDatabaseConfiguration) content;
+		if (content instanceof DatabaseConfig) {
+			var config = (DatabaseConfig) content;
 			return Database.isActive(config)
 					? Icon.DATABASE.get()
 					: Icon.DATABASE_DISABLED.get();
@@ -202,8 +202,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (elem instanceof GroupElement)
 			return ((GroupElement) elem).getContent().label;
 		var content = elem.getContent();
-		if (content instanceof IDatabaseConfiguration)
-			return ((IDatabaseConfiguration) content).getName();
+		if (content instanceof DatabaseConfig)
+			return ((DatabaseConfig) content).name();
 		if (content instanceof Category)
 			return ((Category) content).name;
 		if (content instanceof ModelType)

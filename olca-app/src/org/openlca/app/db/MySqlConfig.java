@@ -8,7 +8,7 @@ import org.openlca.core.database.MySQL;
 /**
  * Configuration of a MySQL database.
  */
-public class MySQLConfiguration implements IDatabaseConfiguration {
+public final class MySqlConfig implements DatabaseConfig {
 
 	private String name;
 	private String host;
@@ -29,7 +29,7 @@ public class MySQLConfiguration implements IDatabaseConfiguration {
 	}
 
 	@Override
-	public String getName() {
+	public String name() {
 		return name;
 	}
 
@@ -77,7 +77,7 @@ public class MySQLConfiguration implements IDatabaseConfiguration {
 			return true;
 		if (!getClass().equals(obj.getClass()))
 			return false;
-		MySQLConfiguration other = (MySQLConfiguration) obj;
+		MySqlConfig other = (MySqlConfig) obj;
 		return Objects.equals(this.host, other.host)
 				&& Objects.equals(this.port, other.port)
 				&& Objects.equals(this.name, other.name);
@@ -89,7 +89,7 @@ public class MySQLConfiguration implements IDatabaseConfiguration {
 	}
 
 	@Override
-	public boolean isLocal() {
+	public boolean isEmbedded() {
 		return false;
 	}
 

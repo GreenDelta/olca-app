@@ -41,7 +41,7 @@ public class DatabaseWizard extends Wizard {
 		try {
 			if (!Editors.closeAll())
 				return false;
-			IDatabaseConfiguration config = page.getPageData();
+			DatabaseConfig config = page.getPageData();
 			Runner runner = (config instanceof DerbyConfiguration) ? new Runner(
 					config, page.getSelectedContent()) : new Runner(config);
 			getContainer().run(true, false, runner);
@@ -64,14 +64,14 @@ public class DatabaseWizard extends Wizard {
 
 	private class Runner implements IRunnableWithProgress {
 
-		private IDatabaseConfiguration config;
+		private DatabaseConfig config;
 		private DbTemplate content;
 
-		Runner(IDatabaseConfiguration config) {
+		Runner(DatabaseConfig config) {
 			this.config = config;
 		}
 
-		Runner(IDatabaseConfiguration config, DbTemplate content) {
+		Runner(DatabaseConfig config, DbTemplate content) {
 			this(config);
 			this.content = content;
 		}
@@ -83,8 +83,8 @@ public class DatabaseWizard extends Wizard {
 					IProgressMonitor.UNKNOWN);
 			try {
 				Database.close();
-				if (config instanceof MySQLConfiguration)
-					Database.register((MySQLConfiguration) config);
+				if (config instanceof MySqlConfig)
+					Database.register((MySqlConfig) config);
 				else if (config instanceof DerbyConfiguration) {
 					Database.register((DerbyConfiguration) config);
 					extractDerbyTemplate();
@@ -97,7 +97,7 @@ public class DatabaseWizard extends Wizard {
 		}
 
 		private void extractDerbyTemplate() {
-			File dir = DatabaseDir.getRootFolder(config.getName());
+			File dir = DatabaseDir.getRootFolder(config.name());
 			if (dir.exists()) {
 				log.error("could not create database {}; folder with name "
 						+ "already exists", config);

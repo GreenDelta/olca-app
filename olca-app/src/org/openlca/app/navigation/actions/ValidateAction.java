@@ -7,7 +7,7 @@ import java.util.Set;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -101,7 +101,7 @@ public class ValidateAction extends Action implements INavigationAction {
 			if (!(e instanceof DatabaseElement))
 				continue;
 			DatabaseElement elem = (DatabaseElement) e;
-			IDatabaseConfiguration config = elem.getContent();
+			DatabaseConfig config = elem.getContent();
 			if (Database.isActive(config)) {
 				elements.add(elem);
 				break;

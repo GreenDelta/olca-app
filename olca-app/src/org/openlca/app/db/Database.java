@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public class Database {
 
 	private static IDatabase database;
-	private static IDatabaseConfiguration config;
+	private static DatabaseConfig config;
 	private static DatabaseListener listener;
 	private static final DatabaseList configurations = loadConfigs();
 	private static DiffIndex diffIndex;
@@ -35,7 +35,7 @@ public class Database {
 		return listener.getIndexUpdater();
 	}
 
-	public static IDatabase activate(IDatabaseConfiguration config)
+	public static IDatabase activate(DatabaseConfig config)
 			throws Exception {
 		try {
 			database = config.connect();
@@ -98,7 +98,7 @@ public class Database {
 		return diffIndex;
 	}
 
-	public static boolean isActive(IDatabaseConfiguration config) {
+	public static boolean isActive(DatabaseConfig config) {
 		if (config == null)
 			return false;
 		return Objects.equals(config, Database.config);
@@ -140,7 +140,7 @@ public class Database {
 		return configurations;
 	}
 
-	public static IDatabaseConfiguration getActiveConfiguration() {
+	public static DatabaseConfig getActiveConfiguration() {
 		for (var conf : configurations.getLocalDatabases())
 			if (isActive(conf))
 				return conf;
@@ -164,14 +164,14 @@ public class Database {
 		saveConfig();
 	}
 
-	public static void register(MySQLConfiguration config) {
+	public static void register(MySqlConfig config) {
 		if (configurations.contains(config))
 			return;
 		configurations.getRemoteDatabases().add(config);
 		saveConfig();
 	}
 
-	public static void remove(MySQLConfiguration config) {
+	public static void remove(MySqlConfig config) {
 		if (!configurations.contains(config))
 			return;
 		configurations.getRemoteDatabases().remove(config);

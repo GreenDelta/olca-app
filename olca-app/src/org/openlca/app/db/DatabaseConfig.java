@@ -2,12 +2,12 @@ package org.openlca.app.db;
 
 import org.openlca.core.database.IDatabase;
 
-public interface IDatabaseConfiguration {
+public interface DatabaseConfig {
 
 	IDatabase connect();
 
-	String getName();
+	String name();
 
-	boolean isLocal();
+	boolean isEmbedded();
 
 }

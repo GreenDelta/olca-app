@@ -6,7 +6,7 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabasePropertiesDialog;
-import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -18,7 +18,7 @@ import org.openlca.app.rcp.images.Icon;
 public class DbPropertiesAction extends Action implements
 		INavigationAction {
 
-	private IDatabaseConfiguration config;
+	private DatabaseConfig config;
 
 	public DbPropertiesAction() {
 		setText(M.Properties);

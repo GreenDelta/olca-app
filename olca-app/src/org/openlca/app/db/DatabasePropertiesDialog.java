@@ -19,9 +19,9 @@ import org.slf4j.LoggerFactory;
 
 public class DatabasePropertiesDialog extends FormDialog {
 
-	private IDatabaseConfiguration config;
+	private DatabaseConfig config;
 
-	public DatabasePropertiesDialog(IDatabaseConfiguration config) {
+	public DatabasePropertiesDialog(DatabaseConfig config) {
 		super(UI.shell());
 		this.config = config;
 	}
@@ -35,18 +35,18 @@ public class DatabasePropertiesDialog extends FormDialog {
 		if (config instanceof DerbyConfiguration) {
 			DerbyConfiguration derbyConfig = (DerbyConfiguration) config;
 			renderDerbyConfig(derbyConfig, content, toolkit);
-		} else if (config instanceof MySQLConfiguration) {
-			MySQLConfiguration mysqlConfig = (MySQLConfiguration) config;
+		} else if (config instanceof MySqlConfig) {
+			MySqlConfig mysqlConfig = (MySqlConfig) config;
 			renderMysqlConfiguration(mysqlConfig, content, toolkit);
 		}
 	}
 
-	private void renderMysqlConfiguration(MySQLConfiguration conf,
+	private void renderMysqlConfiguration(MySqlConfig conf,
 			Composite parent, FormToolkit toolkit) {
 		UI.formText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
 				M.RemoteDatabase);
 		UI.formText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
-				conf.getName());
+				conf.name());
 		UI.formText(parent, toolkit, M.Host, SWT.READ_ONLY).setText(
 				conf.getHost());
 		UI.formText(parent, toolkit, M.Port, SWT.READ_ONLY).setText(
@@ -63,14 +63,14 @@ public class DatabasePropertiesDialog extends FormDialog {
 		UI.formText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
 				M.LocalDatabase);
 		UI.formText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
-				conf.getName());
+				conf.name());
 		UI.formLabel(parent, toolkit, M.Folder);
 		renderFolderLink(conf, parent, toolkit);
 	}
 
 	private void renderFolderLink(DerbyConfiguration conf, Composite parent,
 			FormToolkit toolkit) {
-		File folder = DatabaseDir.getRootFolder(conf.getName());
+		File folder = DatabaseDir.getRootFolder(conf.name());
 		String path = folder.toURI().toString();
 		Hyperlink link = new Hyperlink(parent, SWT.NONE);
 		toolkit.adapt(link);

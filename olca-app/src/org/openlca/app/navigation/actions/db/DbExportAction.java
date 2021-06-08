@@ -19,8 +19,8 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
-import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.db.MySQLConfiguration;
+import org.openlca.app.db.DatabaseConfig;
+import org.openlca.app.db.MySqlConfig;
 import org.openlca.app.db.MySQLDatabaseExport;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
@@ -67,13 +67,13 @@ public class DbExportAction extends Action implements INavigationAction {
 		if (config == null)
 			return;
 		var file = FileChooser.forSavingFile(
-				M.Export, config.getName() + ".zolca");
+				M.Export, config.name() + ".zolca");
 		if (file == null)
 			return;
 		run(config, file, Database.isActive(config));
 	}
 
-	private void run(IDatabaseConfiguration config, final File zip, final boolean active) {
+	private void run(DatabaseConfig config, final File zip, final boolean active) {
 		if (zip.exists()) {
 			log.trace("delete existing file {}", zip);
 			boolean deleted = zip.delete();
@@ -90,20 +90,20 @@ public class DbExportAction extends Action implements INavigationAction {
 		updateUI(zip, active);
 	}
 
-	private void realExport(IDatabaseConfiguration config, File zip, boolean active) {
+	private void realExport(DatabaseConfig config, File zip, boolean active) {
 		try {
 			if (active)
 				Database.close();
 			if (config instanceof DerbyConfiguration) {
-				File folder = DatabaseDir.getRootFolder(config.getName());
+				File folder = DatabaseDir.getRootFolder(config.name());
 				ZipEntrySource[] toPack = collectFileSources(folder);
 				ZipUtil.pack(toPack, zip);
-			} else if (config instanceof MySQLConfiguration) {
-				MySQLDatabaseExport export = new MySQLDatabaseExport((MySQLConfiguration) config, zip);
+			} else if (config instanceof MySqlConfig) {
+				MySQLDatabaseExport export = new MySQLDatabaseExport((MySqlConfig) config, zip);
 				export.run();
 			}
 		} catch (Exception e) {
-			ErrorReporter.on("Export of database " + config.getName() + " failed", e);
+			ErrorReporter.on("Export of database " + config.name() + " failed", e);
 		}
 	}
 

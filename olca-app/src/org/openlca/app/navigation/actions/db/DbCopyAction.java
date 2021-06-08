@@ -14,7 +14,7 @@ import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
-import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -54,7 +54,7 @@ public class DbCopyAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		if (config == null) {
-			IDatabaseConfiguration conf = Database.getActiveConfiguration();
+			DatabaseConfig conf = Database.getActiveConfiguration();
 			if (!(conf instanceof DerbyConfiguration))
 				return;
 			config = (DerbyConfiguration) conf;
@@ -62,7 +62,7 @@ public class DbCopyAction extends Action implements INavigationAction {
 		InputDialog dialog = new InputDialog(UI.shell(),
 				M.Copy,
 				M.PleaseEnterAName,
-				config.getName(), null);
+				config.name(), null);
 		if (dialog.open() != Window.OK)
 			return;
 		String newName = dialog.getValue();
@@ -83,7 +83,7 @@ public class DbCopyAction extends Action implements INavigationAction {
 				Database.close();
 				ValidationView.clear();
 			}
-			File fromFolder = DatabaseDir.getRootFolder(config.getName());
+			File fromFolder = DatabaseDir.getRootFolder(config.name());
 			File toFolder = DatabaseDir.getRootFolder(newName);
 			FileUtils.copyDirectory(fromFolder, toFolder);
 			DerbyConfiguration newConf = new DerbyConfiguration();

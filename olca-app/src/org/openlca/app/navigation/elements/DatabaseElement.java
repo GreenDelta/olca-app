@@ -7,16 +7,16 @@ import java.util.List;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Dirs;
 
 /** Navigation element for databases. */
-public class DatabaseElement extends NavigationElement<IDatabaseConfiguration> {
+public class DatabaseElement extends NavigationElement<DatabaseConfig> {
 
 	public DatabaseElement(INavigationElement<?> parent,
-			IDatabaseConfiguration config) {
+			DatabaseConfig config) {
 		super(parent, config);
 	}
 

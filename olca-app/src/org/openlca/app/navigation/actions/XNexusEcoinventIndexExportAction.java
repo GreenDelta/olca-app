@@ -22,8 +22,8 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DerbyConfiguration;
-import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.db.MySQLConfiguration;
+import org.openlca.app.db.DatabaseConfig;
+import org.openlca.app.db.MySqlConfig;
 import org.openlca.app.navigation.actions.XNexusIndexExportAction.IndexEntry;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -75,7 +75,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 				Map<String, IndexEntry> index = new HashMap<>();
 				for (Entry e : dialog.entries) {
 					IDatabase db;
-					if (Database.get() != null && Database.get().getName().equals(e.database.getName())) {
+					if (Database.get() != null && Database.get().getName().equals(e.database.name())) {
 						db = Database.get();
 					} else {
 						db = e.database.connect();
@@ -157,7 +157,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 					return null;
 				if (entry.database instanceof DerbyConfiguration)
 					return Icon.DATABASE.get();
-				if (entry.database instanceof MySQLConfiguration)
+				if (entry.database instanceof MySqlConfig)
 					return Icon.SQL.get();
 				return null;
 			}
@@ -171,7 +171,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 				case 1:
 					if (entry.database == null)
 						return "";
-					return entry.database.getName();
+					return entry.database.name();
 				default:
 					return "";
 				}
@@ -193,28 +193,28 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 
 		}
 
-		private static class DatabaseCell extends ComboBoxCellModifier<Entry, IDatabaseConfiguration> {
+		private static class DatabaseCell extends ComboBoxCellModifier<Entry, DatabaseConfig> {
 
 			@Override
-			protected IDatabaseConfiguration[] getItems(Entry element) {
-				List<IDatabaseConfiguration> databases = new ArrayList<>();
+			protected DatabaseConfig[] getItems(Entry element) {
+				List<DatabaseConfig> databases = new ArrayList<>();
 				databases.addAll(Database.getConfigurations().getLocalDatabases());
 				databases.addAll(Database.getConfigurations().getRemoteDatabases());
-				return databases.toArray(new IDatabaseConfiguration[0]);
+				return databases.toArray(new DatabaseConfig[0]);
 			}
 
 			@Override
-			protected IDatabaseConfiguration getItem(Entry element) {
+			protected DatabaseConfig getItem(Entry element) {
 				return element.database;
 			}
 
 			@Override
-			protected String getText(IDatabaseConfiguration value) {
-				return value.getName();
+			protected String getText(DatabaseConfig value) {
+				return value.name();
 			}
 
 			@Override
-			protected void setItem(Entry element, IDatabaseConfiguration item) {
+			protected void setItem(Entry element, DatabaseConfig item) {
 				element.database = item;
 			}
 
@@ -240,7 +240,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 	private static class Entry {
 
 		private String systemModel;
-		private IDatabaseConfiguration database;
+		private DatabaseConfig database;
 
 		private Entry(String systemModel) {
 			this.systemModel = systemModel;

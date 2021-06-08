@@ -14,7 +14,7 @@ import org.openlca.app.cloud.index.DiffIndexUpgrades;
 import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -35,14 +35,14 @@ import org.slf4j.LoggerFactory;
 public class DbActivateAction extends Action implements INavigationAction {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	private IDatabaseConfiguration config;
+	private DatabaseConfig config;
 
 	public DbActivateAction() {
 		setText(M.OpenDatabase);
 		setImageDescriptor(Icon.CONNECT.descriptor());
 	}
 
-	public DbActivateAction(IDatabaseConfiguration config) {
+	public DbActivateAction(DatabaseConfig config) {
 		this();
 		this.config = config;
 	}

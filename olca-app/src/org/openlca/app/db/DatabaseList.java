@@ -24,13 +24,13 @@ import com.google.gson.GsonBuilder;
 public class DatabaseList {
 
 	private List<DerbyConfiguration> localDatabases = new ArrayList<>();
-	private List<MySQLConfiguration> remoteDatabases = new ArrayList<>();
+	private List<MySqlConfig> remoteDatabases = new ArrayList<>();
 
 	public List<DerbyConfiguration> getLocalDatabases() {
 		return localDatabases;
 	}
 
-	public List<MySQLConfiguration> getRemoteDatabases() {
+	public List<MySqlConfig> getRemoteDatabases() {
 		return remoteDatabases;
 	}
 
@@ -64,7 +64,7 @@ public class DatabaseList {
 		return localDatabases.contains(config);
 	}
 
-	public boolean contains(MySQLConfiguration config) {
+	public boolean contains(MySqlConfig config) {
 		return remoteDatabases.contains(config);
 	}
 
@@ -73,17 +73,17 @@ public class DatabaseList {
 		if (Strings.nullOrEmpty(name))
 			return false;
 		String newName = name.trim().toLowerCase();
-		Predicate<IDatabaseConfiguration> sameName = config -> {
-			if (config == null || config.getName() == null)
+		Predicate<DatabaseConfig> sameName = config -> {
+			if (config == null || config.name() == null)
 				return false;
 			return Strings.nullOrEqual(
-					config.getName().toLowerCase(), newName);
+					config.name().toLowerCase(), newName);
 		};
-		for (IDatabaseConfiguration config : localDatabases) {
+		for (DatabaseConfig config : localDatabases) {
 			if (sameName.test(config))
 				return true;
 		}
-		for (IDatabaseConfiguration config : remoteDatabases) {
+		for (DatabaseConfig config : remoteDatabases) {
 			if (sameName.test(config))
 				return true;
 		}

@@ -192,13 +192,13 @@ class DatabaseWizardPage extends WizardPage {
 		setPageComplete(false);
 	}
 
-	IDatabaseConfiguration getPageData() {
+	DatabaseConfig getPageData() {
 		if (buttonLocal.getSelection()) {
 			DerbyConfiguration derbyConfig = new DerbyConfiguration();
 			derbyConfig.setName(getText(nameText));
 			return derbyConfig;
 		} else {
-			MySQLConfiguration config = new MySQLConfiguration();
+			MySqlConfig config = new MySqlConfig();
 			config.setName(getText(nameText));
 			config.setHost(getText(hostText));
 			config.setPort(Integer.parseInt(getText(portText)));

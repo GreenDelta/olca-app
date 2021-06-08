@@ -8,7 +8,7 @@ import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.index.DiffUtil;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.GroupElement;
@@ -44,7 +44,7 @@ class RepositoryLabel {
 		return null;
 	}
 
-	static String getRepositoryText(IDatabaseConfiguration config) {
+	static String getRepositoryText(DatabaseConfig config) {
 		if (!Database.isActive(config))
 			return null;
 		RepositoryClient client = Database.getRepositoryClient();

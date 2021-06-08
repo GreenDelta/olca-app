@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -76,7 +76,7 @@ class DbImportPage extends WizardPage {
 		existingViewer.setLabelProvider(new DbLabel());
 		existingViewer.setContentProvider(ArrayContentProvider.getInstance());
 		existingViewer.addSelectionChangedListener(e -> {
-			IDatabaseConfiguration db = Viewers.getFirstSelected(existingViewer);
+			DatabaseConfig db = Viewers.getFirstSelected(existingViewer);
 			config.databaseConfiguration = db;
 			setPageComplete(db != null);
 		});
@@ -87,9 +87,9 @@ class DbImportPage extends WizardPage {
 	 * Returns the existing databases of the openLCA workspace that could be
 	 * imported into the currently active database.
 	 */
-	private List<IDatabaseConfiguration> existing() {
+	private List<DatabaseConfig> existing() {
 		var dbs = Database.getConfigurations();
-		var configs = new ArrayList<IDatabaseConfiguration>();
+		var configs = new ArrayList<DatabaseConfig>();
 		dbs.getLocalDatabases()
 				.stream()
 				.filter(c -> c != null && !Database.isActive(c))
@@ -98,7 +98,7 @@ class DbImportPage extends WizardPage {
 				.stream()
 				.filter(c -> c != null && !Database.isActive(c))
 				.forEach(configs::add);
-		configs.sort((c1, c2) -> Strings.compare(c1.getName(), c2.getName()));
+		configs.sort((c1, c2) -> Strings.compare(c1.name(), c2.name()));
 		return configs;
 	}
 
@@ -149,17 +149,17 @@ class DbImportPage extends WizardPage {
 		final int FILE_MODE = 1;
 
 		File file;
-		IDatabaseConfiguration databaseConfiguration;
+		DatabaseConfig databaseConfiguration;
 		int mode;
 	}
 
 	private static class DbLabel extends LabelProvider {
 		@Override
 		public String getText(Object element) {
-			if (!(element instanceof IDatabaseConfiguration))
+			if (!(element instanceof DatabaseConfig))
 				return null;
-			var config = (IDatabaseConfiguration) element;
-			return config.getName();
+			var config = (DatabaseConfig) element;
+			return config.name();
 		}
 	}
 }

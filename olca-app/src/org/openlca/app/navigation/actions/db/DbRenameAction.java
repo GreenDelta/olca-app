@@ -12,7 +12,7 @@ import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
-import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -56,7 +56,7 @@ public class DbRenameAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		if (config == null) {
-			IDatabaseConfiguration conf = Database.getActiveConfiguration();
+			DatabaseConfig conf = Database.getActiveConfiguration();
 			if (!(conf instanceof DerbyConfiguration))
 				return;
 			config = (DerbyConfiguration) conf;
@@ -64,7 +64,7 @@ public class DbRenameAction extends Action implements INavigationAction {
 		InputDialog dialog = new InputDialog(UI.shell(),
 				M.Rename,
 				M.PleaseEnterANewName,
-				config.getName(), null);
+				config.name(), null);
 		if (dialog.open() != Window.OK)
 			return;
 		String newName = dialog.getValue();
@@ -85,7 +85,7 @@ public class DbRenameAction extends Action implements INavigationAction {
 				Database.close();
 				ValidationView.clear();
 			}
-			File oldDbFolder = DatabaseDir.getRootFolder(config.getName());
+			File oldDbFolder = DatabaseDir.getRootFolder(config.name());
 			File newDbFolder = DatabaseDir.getRootFolder(newName);
 			boolean success = oldDbFolder.renameTo(newDbFolder);
 			if (!success) {

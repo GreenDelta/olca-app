@@ -9,7 +9,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -80,7 +80,7 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 			MsgBox.info("Cannot delete library",
 				"We cannot delete library " + lib.id() +
 				" as it is still used in database " +
-				config.get().getName() + ".");
+				config.get().name() + ".");
 			return;
 		}
 
@@ -96,16 +96,16 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 	 * An empty option is returned if the library is not used in
 	 * any of the databases in the database folder.
 	 */
-	private Optional<IDatabaseConfiguration> isUsed(Library lib) {
+	private Optional<DatabaseConfig> isUsed(Library lib) {
 		if (lib == null)
 			return Optional.empty();
 		var log = LoggerFactory.getLogger(getClass());
 		var libID = lib.id();
 
-		Predicate<IDatabaseConfiguration> isUsedIn = config -> {
+		Predicate<DatabaseConfig> isUsedIn = config -> {
 			if (config == null)
 				return false;
-			log.info("Check usage of {} in {}", libID, config.getName());
+			log.info("Check usage of {} in {}", libID, config.name());
 			if (Database.isActive(config)) {
 				var db = Database.get();
 				return db.getLibraries().contains(libID);
@@ -115,7 +115,7 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 							 && db.getLibraries().contains(libID);
 			} catch (Exception e) {
 				throw new RuntimeException(
-					"Failed to check library usage in database " + config.getName());
+					"Failed to check library usage in database " + config.name());
 			}
 		};
 

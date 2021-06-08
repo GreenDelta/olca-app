@@ -12,11 +12,11 @@ import org.zeroturnaround.zip.ZipUtil;
 
 public class MySQLDatabaseExport implements Runnable {
 
-	private MySQLConfiguration config;
+	private MySqlConfig config;
 	private File zolcaFile;
 	private boolean success = false;
 
-	public MySQLDatabaseExport(MySQLConfiguration config, File zolcaFile) {
+	public MySQLDatabaseExport(MySqlConfig config, File zolcaFile) {
 		this.config = config;
 		this.zolcaFile = zolcaFile;
 	}

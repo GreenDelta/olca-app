@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.IDatabaseConfiguration;
+import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.navigation.NavigationComparator;
 import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
@@ -231,7 +231,7 @@ class ModelSelectionPage extends WizardPage {
 		if (types != null && types.length == 1)
 			viewer.setInput(Navigator.findElement(types[0]));
 		else {
-			IDatabaseConfiguration config = Database.getActiveConfiguration();
+			DatabaseConfig config = Database.getActiveConfiguration();
 			viewer.setInput(Navigator.findElement(config));
 		}
 	}

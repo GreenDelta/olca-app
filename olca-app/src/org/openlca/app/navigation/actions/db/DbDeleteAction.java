@@ -15,8 +15,8 @@ import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DerbyConfiguration;
-import org.openlca.app.db.IDatabaseConfiguration;
-import org.openlca.app.db.MySQLConfiguration;
+import org.openlca.app.db.DatabaseConfig;
+import org.openlca.app.db.MySqlConfig;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -33,7 +33,7 @@ import org.openlca.app.validation.ValidationView;
  */
 public class DbDeleteAction extends Action implements INavigationAction {
 
-	private final List<IDatabaseConfiguration> configs = new ArrayList<>();
+	private final List<DatabaseConfig> configs = new ArrayList<>();
 
 	public DbDeleteAction() {
 		setImageDescriptor(Icon.DELETE.descriptor());
@@ -79,7 +79,7 @@ public class DbDeleteAction extends Action implements INavigationAction {
 	}
 
 	private boolean checkCloseEditors() {
-		for (IDatabaseConfiguration config : this.configs)
+		for (DatabaseConfig config : this.configs)
 			if (Database.isActive(config))
 				return Editors.closeAll();
 		return true;
@@ -95,20 +95,20 @@ public class DbDeleteAction extends Action implements INavigationAction {
 		}
 	}
 
-	private void tryDelete(IDatabaseConfiguration config) throws Exception {
+	private void tryDelete(DatabaseConfig config) throws Exception {
 		if (Database.isActive(config))
 			Database.close();
-		File dbFolder = DatabaseDir.getRootFolder(config.getName());
+		File dbFolder = DatabaseDir.getRootFolder(config.name());
 		if (dbFolder.isDirectory())
 			FileUtils.deleteDirectory(dbFolder);
 		if (config instanceof DerbyConfiguration)
 			Database.remove((DerbyConfiguration) config);
-		else if (config instanceof MySQLConfiguration)
-			Database.remove((MySQLConfiguration) config);
+		else if (config instanceof MySqlConfig)
+			Database.remove((MySqlConfig) config);
 	}
 
 	private MessageDialog createMessageDialog() {
-		String name = configs.size() == 1 ? configs.get(0).getName()
+		String name = configs.size() == 1 ? configs.get(0).name()
 				: "the selected databases";
 		return new MessageDialog(UI.shell(), M.Delete, null, NLS.bind(
 				M.DoYouReallyWantToDelete, name),
