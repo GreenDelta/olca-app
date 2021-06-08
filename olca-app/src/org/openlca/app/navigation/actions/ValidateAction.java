@@ -7,7 +7,6 @@ import java.util.Set;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -19,6 +18,7 @@ import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.validation.ValidationView;
+import org.openlca.core.database.config.DatabaseConfig;
 
 public class ValidateAction extends Action implements INavigationAction {
 

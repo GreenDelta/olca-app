@@ -21,9 +21,6 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseConfig;
-import org.openlca.app.db.DerbyConfig;
-import org.openlca.app.db.MySqlConfig;
 import org.openlca.app.navigation.actions.XNexusIndexExportAction.IndexEntry;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -37,6 +34,9 @@ import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.openlca.core.DataDir;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.database.config.DatabaseConfig;
+import org.openlca.core.database.config.DerbyConfig;
+import org.openlca.core.database.config.MySqlConfig;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.KeyGen;
@@ -199,8 +199,8 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 			@Override
 			protected DatabaseConfig[] getItems(Entry element) {
 				List<DatabaseConfig> databases = new ArrayList<>();
-				databases.addAll(Database.getConfigurations().getLocalDatabases());
-				databases.addAll(Database.getConfigurations().getRemoteDatabases());
+				databases.addAll(Database.getConfigurations().getDerbyConfigs());
+				databases.addAll(Database.getConfigurations().getMySqlConfigs());
 				return databases.toArray(new DatabaseConfig[0]);
 			}
 

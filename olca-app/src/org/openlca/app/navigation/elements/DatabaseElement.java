@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Dirs;
 

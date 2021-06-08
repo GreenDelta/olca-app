@@ -14,9 +14,6 @@ import org.openlca.app.cloud.ui.commits.HistoryView;
 import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
-import org.openlca.app.db.DerbyConfig;
-import org.openlca.app.db.DatabaseConfig;
-import org.openlca.app.db.MySqlConfig;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -26,6 +23,9 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.app.validation.ValidationView;
+import org.openlca.core.database.config.DatabaseConfig;
+import org.openlca.core.database.config.DerbyConfig;
+import org.openlca.core.database.config.MySqlConfig;
 
 /**
  * Deletes a database. Works only for local Derby databases; remote databases

@@ -13,13 +13,13 @@ import org.openlca.app.Config;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DerbyConfig;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.core.database.config.DerbyConfig;
 import org.zeroturnaround.zip.ZipUtil;
 
 public class DbRestoreAction extends Action implements INavigationAction {

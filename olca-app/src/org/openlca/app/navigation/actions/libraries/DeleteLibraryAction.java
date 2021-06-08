@@ -9,7 +9,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -19,6 +18,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.core.DataDir;
+import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.library.Library;
 import org.openlca.util.Dirs;
 import org.slf4j.LoggerFactory;
@@ -122,8 +122,8 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 
 		var configs = Database.getConfigurations();
 		return Stream.concat(
-			configs.getLocalDatabases().stream(),
-			configs.getRemoteDatabases().stream())
+			configs.getDerbyConfigs().stream(),
+			configs.getMySqlConfigs().stream())
 			.parallel()
 			.filter(isUsedIn)
 			.findAny();

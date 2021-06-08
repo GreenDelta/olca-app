@@ -8,6 +8,7 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.DataDir;
 import org.openlca.core.database.Derby;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.config.MySqlConfig;
 import org.openlca.io.olca.DatabaseImport;
 import org.zeroturnaround.zip.ZipUtil;
 

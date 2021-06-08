@@ -12,6 +12,10 @@ import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.api.update.RepositoryConfigConversion;
 import org.openlca.core.DataDir;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.config.DatabaseConfig;
+import org.openlca.core.database.config.DatabaseConfigList;
+import org.openlca.core.database.config.DerbyConfig;
+import org.openlca.core.database.config.MySqlConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +25,7 @@ public class Database {
 	private static IDatabase database;
 	private static DatabaseConfig config;
 	private static DatabaseListener listener;
-	private static final DatabaseList configurations = loadConfigs();
+	private static final DatabaseConfigList configurations = loadConfigs();
 	private static DiffIndex diffIndex;
 	private static RepositoryClient repositoryClient;
 
@@ -122,13 +126,12 @@ public class Database {
 		repositoryClient = null;
 	}
 
-	private static DatabaseList loadConfigs() {
-		File workspace = App.getWorkspace();
-		File listFile = new File(workspace, "databases.json");
-		if (!listFile.exists())
-			return new DatabaseList();
-		else
-			return DatabaseList.read(listFile);
+	private static DatabaseConfigList loadConfigs() {
+		var workspace = App.getWorkspace();
+		var listFile = new File(workspace, "databases.json");
+		return !listFile.exists()
+			? new DatabaseConfigList()
+			: DatabaseConfigList.read(listFile);
 	}
 
 	private static void saveConfig() {
@@ -137,15 +140,15 @@ public class Database {
 		configurations.write(listFile);
 	}
 
-	public static DatabaseList getConfigurations() {
+	public static DatabaseConfigList getConfigurations() {
 		return configurations;
 	}
 
 	public static DatabaseConfig getActiveConfiguration() {
-		for (var conf : configurations.getLocalDatabases())
+		for (var conf : configurations.getDerbyConfigs())
 			if (isActive(conf))
 				return conf;
-		for (var conf : configurations.getRemoteDatabases())
+		for (var conf : configurations.getMySqlConfigs())
 			if (isActive(conf))
 				return conf;
 		return null;
@@ -154,28 +157,28 @@ public class Database {
 	public static void register(DerbyConfig config) {
 		if (configurations.contains(config))
 			return;
-		configurations.getLocalDatabases().add(config);
+		configurations.getDerbyConfigs().add(config);
 		saveConfig();
 	}
 
 	public static void remove(DerbyConfig config) {
 		if (!configurations.contains(config))
 			return;
-		configurations.getLocalDatabases().remove(config);
+		configurations.getDerbyConfigs().remove(config);
 		saveConfig();
 	}
 
 	public static void register(MySqlConfig config) {
 		if (configurations.contains(config))
 			return;
-		configurations.getRemoteDatabases().add(config);
+		configurations.getMySqlConfigs().add(config);
 		saveConfig();
 	}
 
 	public static void remove(MySqlConfig config) {
 		if (!configurations.contains(config))
 			return;
-		configurations.getRemoteDatabases().remove(config);
+		configurations.getMySqlConfigs().remove(config);
 		saveConfig();
 	}
 

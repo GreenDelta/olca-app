@@ -42,9 +42,9 @@ public class NavigationRoot extends PlatformObject implements
 
 		// add database elements
 		var dbs = Database.getConfigurations();
-		for (var config : dbs.getLocalDatabases()) {
+		for (var config : dbs.getDerbyConfigs()) {
 			childs.add(new DatabaseElement(this, config));
-		} for (var config : dbs.getRemoteDatabases()) {
+		} for (var config : dbs.getMySqlConfigs()) {
 			childs.add(new DatabaseElement(this, config));
 		}
 

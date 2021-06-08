@@ -8,7 +8,6 @@ import org.openlca.app.cloud.index.Diff;
 import org.openlca.app.cloud.index.DiffType;
 import org.openlca.app.cloud.index.DiffUtil;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseConfig;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.GroupElement;
@@ -21,6 +20,7 @@ import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.cloud.api.RepositoryClient;
+import org.openlca.core.database.config.DatabaseConfig;
 
 class RepositoryLabel {
 
