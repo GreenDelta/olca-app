@@ -112,8 +112,8 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 				return db.getLibraries().contains(libID);
 			}
 			try (var db = config.connect(DataDir.databases())) {
-				return db.getVersion() >= 9
-							 && db.getLibraries().contains(libID);
+				return db.getVersion() >= 10
+					&& db.getLibraries().contains(libID);
 			} catch (Exception e) {
 				throw new RuntimeException(
 					"Failed to check library usage in database " + config.name());
