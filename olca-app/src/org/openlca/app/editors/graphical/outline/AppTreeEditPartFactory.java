@@ -8,7 +8,7 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class AppTreeEditPartFactory implements EditPartFactory {
 
-	private ProductSystemNode model;
+	private final ProductSystemNode model;
 
 	public AppTreeEditPartFactory(ProductSystemNode model) {
 		this.model = model;

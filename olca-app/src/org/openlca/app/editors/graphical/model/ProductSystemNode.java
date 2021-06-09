@@ -87,9 +87,4 @@ public class ProductSystemNode extends Node {
 				exchangeNode.setHighlighted(false);
 		}
 	}
-
-	public void refreshChildren() {
-		editPart.refreshChildren();
-	}
-
 }

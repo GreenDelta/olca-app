@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.db.Cache;
@@ -67,9 +66,10 @@ public class ProcessNode extends Node {
 	}
 
 	void setFigure(IFigure figure) {
-		Dimension prefSize = figure.getPreferredSize(-1, -1);
-		if (box == null)
+		if (box == null) {
+			var prefSize = figure.getPreferredSize(-1, -1);
 			box = new Rectangle(0, 0, prefSize.width, prefSize.height);
+		}
 		this.figure = figure;
 	}
 
@@ -234,21 +234,6 @@ public class ProcessNode extends Node {
 		if (sysNode.figure != null) {
 			sysNode.figure.revalidate();
 		}
-	}
-
-	/**
-	 * Returns true if the exchange with the given ID is already connected by a
-	 * process link.
-	 */
-	public boolean isConnected(long exchangeId) {
-		MutableProcessLinkSearchMap linkSearch = parent().linkSearch;
-		List<ProcessLink> links = linkSearch.getConnectionLinks(
-				process.id);
-		for (ProcessLink link : links) {
-			if (link.exchangeId == exchangeId)
-				return true;
-		}
-		return false;
 	}
 
 	public int getMinimumHeight() {

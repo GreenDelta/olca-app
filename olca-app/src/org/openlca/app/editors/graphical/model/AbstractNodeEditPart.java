@@ -87,7 +87,7 @@ abstract class AbstractNodeEditPart<N extends Node> extends AppAbstractEditPart<
 
 		// TODO: waste links
 		if (input.exchange.id != link.processLink.exchangeId
-				&& input.parent().isConnected(input.exchange.id))
+				&& input.isConnected())
 			return null;
 
 		return LinkAnchor.forInput(input.parent(), input);

@@ -48,15 +48,6 @@ class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 		if (!(node.figure instanceof ExchangeFigure))
 			return;
 		var figure = (ExchangeFigure) node.figure;
-
-		// force an update of the icon and text
-		// TODO: remove this
-//		var icon = node.config().showFlowIcons
-//				? Images.get(node.flowType())
-//				: null;
-//		// figure.label.setIcon(icon);
-		// figure.label.setText(node.getName());
-
 		var layout = new GridData(
 				SWT.LEFT, SWT.TOP, true, false);
 		figure.getParent().setConstraint(figure, layout);

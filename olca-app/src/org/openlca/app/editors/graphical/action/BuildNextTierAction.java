@@ -97,10 +97,8 @@ class BuildNextTierAction extends Action implements IBuildAction {
 	private List<ExchangeNode> getLinkCandidates(ProcessNode node) {
 		List<ExchangeNode> nodes = new ArrayList<>();
 		for (ExchangeNode e : node.loadExchangeNodes()) {
-			if (e.exchange == null)
+			if (e.exchange == null || e.isConnected())
 				continue;
-			if (e.parent().isConnected(e.exchange.id))
-				continue; // already connected
 			if (e.isWaste() && !e.exchange.isInput)
 				nodes.add(e);
 			else if (!e.isWaste() && e.exchange.isInput)

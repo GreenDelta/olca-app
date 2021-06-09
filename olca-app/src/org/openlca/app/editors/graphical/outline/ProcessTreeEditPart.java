@@ -8,7 +8,7 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class ProcessTreeEditPart extends AbstractTreeEditPart {
 
-	private ProductSystemNode node;
+	private final ProductSystemNode node;
 
 	public ProcessTreeEditPart(ProductSystemNode node) {
 		this.node = node;

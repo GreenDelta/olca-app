@@ -6,6 +6,7 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ProcessLink;
 
 public class ExchangeNode extends Node {
 
@@ -51,6 +52,22 @@ public class ExchangeNode extends Node {
 	@Override
 	public ProcessNode parent() {
 		return (ProcessNode) super.parent().parent();
+	}
+
+	/**
+	 * Returns true if this exchange is connected.
+	 */
+	public boolean isConnected() {
+		var parent = parent();
+		if (parent == null || parent.process == null || exchange == null)
+			return false;
+		var linkSearch = parent.parent().linkSearch;
+		var links = linkSearch.getConnectionLinks(parent.process.id);
+		for (ProcessLink link : links) {
+			if (link.exchangeId == exchange.id)
+				return true;
+		}
+		return false;
 	}
 
 }
