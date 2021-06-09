@@ -100,13 +100,6 @@ class ProcessFigure extends Figure {
 		setBorder(border);
 	}
 
-	private IOFigure getIOFigure() {
-		for (Object child : getChildren())
-			if (child instanceof IOFigure)
-				return (IOFigure) child;
-		return null;
-	}
-
 	void refresh() {
 
 		// refresh expanders
@@ -136,19 +129,6 @@ class ProcessFigure extends Figure {
 		g.fillRectangle(new Rectangle(getLocation(), getSize()));
 		g.popState();
 		super.paintFigure(g);
-	}
-
-	@Override
-	protected void paintChildren(Graphics g) {
-		super.paintChildren(g);
-		var io = getIOFigure();
-		if (io == null || !io.isVisible())
-			return;
-		if (io.intersects(g.getClip(Rectangle.SINGLETON))) {
-			g.clipRect(io.getBounds());
-			io.paint(g);
-			g.restoreState();
-		}
 	}
 
 	ProcessExpander getLeftExpander() {

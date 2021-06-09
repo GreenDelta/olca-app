@@ -127,24 +127,13 @@ public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 	}
 
 	@Override
-	public void refresh() {
-		super.refresh();
+	public void refreshChildren() {
+		var processNode = getModel();
+		processNode.getChildren().clear();
+		if (!processNode.isMinimized()) {
+			processNode.getChildren().add(new IONode(processNode));
+		}
+		super.refreshChildren();
 	}
-
-	@Override
-	protected void refreshVisuals() {
-		// we recreate the IO node here when the
-		// display of elementary flows changed.
-		var thisNode = getModel();
-		var childs = thisNode.getChildren();
-		if (childs.isEmpty())
-			return;
-		var withElems = thisNode.config().showElementaryFlows;
-		var ioNode = childs.get(0);
-		if (ioNode.isWithElementaryFlows == withElems)
-			return;
-		thisNode.remove(ioNode);
-		thisNode.add(new IONode(thisNode));
-		super.refreshVisuals();
-	}
+	
 }
