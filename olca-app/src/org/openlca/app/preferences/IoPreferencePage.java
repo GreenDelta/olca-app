@@ -140,7 +140,7 @@ public class IoPreferencePage extends PreferencePage implements
 	private void testConnection(SodaClient client) {
 		try {
 			client.connect();
-			AuthInfo info = client.getAuthentication();
+			AuthInfo info = client.getAuthInfo();
 			if (!info.isAuthenticated) {
 				MsgBox.info(M.ConnectionWithAnonymousAccess);
 				return;

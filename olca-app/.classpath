@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="libs/ph-commons-10.1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/ph-css-6.3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/animal-sniffer-annotations-1.18.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-4.1.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-api-6.0.53.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/aopalliance-repackaged-3.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-beanutils-1.9.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-codec-1.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-collections-3.2.2.jar"/>
@@ -28,15 +27,26 @@
 	<classpathentry exported="true" kind="lib" path="libs/gson-2.8.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/guava-21.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/HikariCP-4.0.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/hk2-api-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/hk2-locator-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/hk2-utils-3.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.activation-2.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jakarta.annotation-api-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jakarta.inject-api-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.persistence-api-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jakarta.ws.rs-api-3.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.xml.bind-api-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/javassist-3.25.0-GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jaxb-core-3.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jaxb-impl-3.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jcl-over-slf4j-1.7.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-client-1.19.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jersey-client-3.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jersey-common-3.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-core-1.19.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jersey-multipart-1.19.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jersey-hk2-3.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jersey-media-jaxb-3.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jersey-media-multipart-3.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jsr305-3.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jsr311-api-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jts-core-1.16.1.jar"/>
@@ -44,7 +54,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/log4j-1.2.17.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mapdb-2.0-beta7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mariadb-java-client-2.7.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.13.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/nanohttpd-2.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-cloud-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-core-2.0.0.jar"/>
@@ -60,7 +70,10 @@
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.core-3.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa.jpql-3.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/osgi-resource-locator-1.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/perfmark-api-0.19.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/ph-commons-10.1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/ph-css-6.3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/poi-4.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-4.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/poi-ooxml-schemas-4.1.2.jar"/>
