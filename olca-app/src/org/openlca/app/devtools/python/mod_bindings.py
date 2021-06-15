@@ -83,6 +83,7 @@ import org.openlca.util.DQSystems as DQSystems
 import org.openlca.core.database.Daos as Daos
 import org.openlca.core.DataDir as DataDir
 import org.openlca.proto.server.DataUpdateService as DataUpdateService
+import org.openlca.core.database.config.DatabaseConfigList as DatabaseConfigList
 import org.openlca.core.database.DatabaseException as DatabaseException
 import org.openlca.io.olca.DatabaseImport as DatabaseImport
 import org.openlca.util.Databases as Databases
@@ -93,6 +94,7 @@ import org.openlca.core.matrix.format.DenseByteMatrix as DenseByteMatrix
 import org.openlca.julia.DenseFactorization as DenseFactorization
 import org.openlca.core.matrix.format.DenseMatrix as DenseMatrix
 import org.openlca.core.database.Derby as Derby
+import org.openlca.core.database.config.DerbyConfig as DerbyConfig
 import org.openlca.core.model.descriptors.Descriptor as Descriptor
 import org.openlca.cloud.util.Directories as Directories
 import org.openlca.util.Dirs as Dirs
@@ -266,6 +268,7 @@ import org.openlca.geo.geojson.MultiLineString as MultiLineString
 import org.openlca.geo.geojson.MultiPoint as MultiPoint
 import org.openlca.geo.geojson.MultiPolygon as MultiPolygon
 import org.openlca.core.database.MySQL as MySQL
+import org.openlca.core.database.config.MySqlConfig as MySqlConfig
 import org.openlca.core.database.NativeSql as NativeSql
 import org.openlca.core.database.Notifiable as Notifiable
 import org.openlca.core.matrix.io.npy.Npy as Npy
