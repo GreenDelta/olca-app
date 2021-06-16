@@ -47,10 +47,23 @@ class LabelProvider extends DQLabelProvider {
 		Item item = (Item) obj;
 		switch (col) {
 
+			// process, sub-system, or category icon
 			case 0:
-				return item.isCategory()
-					? Images.getForCategory(ModelType.PROCESS)
-					: Images.get(ModelType.PROCESS);
+				if (item.isCategory())
+					return Images.getForCategory(ModelType.PROCESS);
+				if (item.isChild()) {
+					var product = item.asChild().product;
+					return product == null
+						? Images.get(ModelType.PROCESS)
+					    : Images.get(product.process());
+				}
+				if (item.isProvider()) {
+					var provider = item.asProvider().product;
+					return provider == null
+						? Images.get(ModelType.PROCESS)
+						: Images.get(provider.process());
+				}
+				return null;
 
 			// flow icon
 			case 1:
