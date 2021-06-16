@@ -8,9 +8,11 @@ import org.openlca.core.model.descriptors.ActorDescriptor as ActorDescriptor
 import org.openlca.io.ilcd.output.ActorExport as ActorExport
 import org.openlca.core.database.usage.ActorUseSearch as ActorUseSearch
 import org.openlca.proto.output.ActorWriter as ActorWriter
+import org.openlca.core.math.data_quality.AggregationType as AggregationType
 import org.openlca.util.AllocationCleanup as AllocationCleanup
 import org.openlca.core.model.AllocationFactor as AllocationFactor
 import org.openlca.core.matrix.AllocationIndex as AllocationIndex
+import org.openlca.core.model.AllocationMethod as AllocationMethod
 import org.openlca.expressions.functions.And as And
 import org.openlca.cloud.model.Announcement as Announcement
 import org.openlca.util.AutoTagger as AutoTagger
@@ -29,6 +31,7 @@ import org.openlca.core.matrix.CalcAllocationFactor as CalcAllocationFactor
 import org.openlca.core.matrix.CalcExchange as CalcExchange
 import org.openlca.core.matrix.CalcImpactFactor as CalcImpactFactor
 import org.openlca.core.math.CalculationSetup as CalculationSetup
+import org.openlca.core.math.CalculationType as CalculationType
 import org.openlca.ipc.handlers.Calculator as Calculator
 import org.openlca.util.Categories as Categories
 import org.openlca.core.model.descriptors.CategorizedDescriptor as CategorizedDescriptor
@@ -80,6 +83,7 @@ import org.openlca.core.database.references.DQSystemReferenceSearch as DQSystemR
 import org.openlca.core.database.usage.DQSystemUseSearch as DQSystemUseSearch
 import org.openlca.proto.output.DQSystemWriter as DQSystemWriter
 import org.openlca.util.DQSystems as DQSystems
+import org.openlca.core.matrix.io.npy.DType as DType
 import org.openlca.core.database.Daos as Daos
 import org.openlca.core.DataDir as DataDir
 import org.openlca.proto.server.DataUpdateService as DataUpdateService
@@ -144,15 +148,18 @@ import org.openlca.core.model.FlowPropertyFactor as FlowPropertyFactor
 import org.openlca.core.database.usage.FlowPropertyFactorUseSearch as FlowPropertyFactorUseSearch
 import org.openlca.io.ilcd.input.FlowPropertyImport as FlowPropertyImport
 import org.openlca.core.database.references.FlowPropertyReferenceSearch as FlowPropertyReferenceSearch
+import org.openlca.core.model.FlowPropertyType as FlowPropertyType
 import org.openlca.core.database.usage.FlowPropertyUseSearch as FlowPropertyUseSearch
 import org.openlca.proto.output.FlowPropertyWriter as FlowPropertyWriter
 import org.openlca.io.maps.FlowRef as FlowRef
 import org.openlca.core.database.references.FlowReferenceSearch as FlowReferenceSearch
 import org.openlca.core.results.FlowResult as FlowResult
 import org.openlca.core.matrix.cache.FlowTable as FlowTable
+import org.openlca.core.model.FlowType as FlowType
 import org.openlca.core.database.usage.FlowUseSearch as FlowUseSearch
 import org.openlca.proto.output.FlowWriter as FlowWriter
 import org.openlca.util.ForegroundSystemGenerator as ForegroundSystemGenerator
+import org.openlca.io.Format as Format
 import org.openlca.util.Formula as Formula
 import org.openlca.expressions.FormulaInterpreter as FormulaInterpreter
 import org.openlca.expressions.FormulaParser as FormulaParser
@@ -226,6 +233,7 @@ import org.openlca.core.library.LibraryDir as LibraryDir
 import org.openlca.core.library.LibraryExport as LibraryExport
 import org.openlca.core.library.LibraryImport as LibraryImport
 import org.openlca.core.library.LibraryInfo as LibraryInfo
+import org.openlca.core.library.LibraryMatrix as LibraryMatrix
 import org.openlca.core.library.LibraryPackage as LibraryPackage
 import org.openlca.cloud.model.LibraryRestriction as LibraryRestriction
 import org.openlca.geo.geojson.LineString as LineString
@@ -263,12 +271,14 @@ import org.openlca.io.ilcd.input.models.ModelImport as ModelImport
 import org.openlca.jsonld.ModelPath as ModelPath
 import org.openlca.cloud.api.data.ModelStream as ModelStream
 import org.openlca.cloud.api.data.ModelStreamReader as ModelStreamReader
+import org.openlca.core.model.ModelType as ModelType
 import org.openlca.geo.calc.Mollweide as Mollweide
 import org.openlca.geo.geojson.MultiLineString as MultiLineString
 import org.openlca.geo.geojson.MultiPoint as MultiPoint
 import org.openlca.geo.geojson.MultiPolygon as MultiPolygon
 import org.openlca.core.database.MySQL as MySQL
 import org.openlca.core.database.config.MySqlConfig as MySqlConfig
+import org.openlca.core.math.data_quality.NAHandling as NAHandling
 import org.openlca.core.database.NativeSql as NativeSql
 import org.openlca.core.database.Notifiable as Notifiable
 import org.openlca.core.matrix.io.npy.Npy as Npy
@@ -280,6 +290,7 @@ import org.openlca.core.model.NwSet as NwSet
 import org.openlca.core.database.NwSetDao as NwSetDao
 import org.openlca.core.model.descriptors.NwSetDescriptor as NwSetDescriptor
 import org.openlca.core.matrix.NwSetTable as NwSetTable
+import org.openlca.util.OS as OS
 import org.openlca.expressions.OpExponentiation as OpExponentiation
 import org.openlca.expressions.functions.Or as Or
 import org.openlca.proto.output.Out as Out
@@ -290,6 +301,7 @@ import org.openlca.core.model.descriptors.ParameterDescriptor as ParameterDescri
 import org.openlca.core.model.ParameterRedef as ParameterRedef
 import org.openlca.core.model.ParameterRedefSet as ParameterRedefSet
 import org.openlca.core.database.references.ParameterReferenceSearch as ParameterReferenceSearch
+import org.openlca.core.model.ParameterScope as ParameterScope
 import org.openlca.core.matrix.ParameterTable as ParameterTable
 import org.openlca.core.database.usage.ParameterUsageTree as ParameterUsageTree
 import org.openlca.core.database.usage.ParameterUseSearch as ParameterUseSearch
@@ -315,6 +327,7 @@ import org.openlca.core.model.ProcessLink as ProcessLink
 import org.openlca.core.matrix.ProcessLinkSearchMap as ProcessLinkSearchMap
 import org.openlca.core.database.references.ProcessReferenceSearch as ProcessReferenceSearch
 import org.openlca.core.matrix.cache.ProcessTable as ProcessTable
+import org.openlca.core.model.ProcessType as ProcessType
 import org.openlca.core.database.usage.ProcessUseSearch as ProcessUseSearch
 import org.openlca.io.simapro.csv.ProcessWriter as ProcessWriter
 import org.openlca.util.Processes as Processes
@@ -339,6 +352,7 @@ import org.openlca.geo.calc.Projection as Projection
 import org.openlca.core.library.Proto as Proto
 import org.openlca.proto.input.ProtoImport as ProtoImport
 import org.openlca.io.ilcd.input.ProviderLinker as ProviderLinker
+import org.openlca.core.matrix.linking.ProviderLinking as ProviderLinking
 import org.openlca.core.matrix.linking.ProviderSearch as ProviderSearch
 import org.openlca.core.database.Query as Query
 import org.openlca.io.refdata.RefDataExport as RefDataExport
@@ -353,10 +367,13 @@ import org.openlca.cloud.api.RepositoryClient as RepositoryClient
 import org.openlca.cloud.api.RepositoryConfig as RepositoryConfig
 import org.openlca.cloud.api.update.RepositoryConfigConversion as RepositoryConfigConversion
 import org.openlca.cloud.error.RepositoryNotFoundException as RepositoryNotFoundException
+import org.openlca.core.database.internal.Resource as Resource
 import org.openlca.ipc.Responses as Responses
+import org.openlca.cloud.model.RestrictionType as RestrictionType
 import org.openlca.io.xls.results.system.ResultExport as ResultExport
 import org.openlca.core.results.ResultItemView as ResultItemView
 import org.openlca.core.results.providers.ResultProviders as ResultProviders
+import org.openlca.core.model.RiskLevel as RiskLevel
 import org.openlca.core.model.RootEntity as RootEntity
 import org.openlca.core.database.RootEntityDao as RootEntityDao
 import org.openlca.ipc.RpcError as RpcError
@@ -373,6 +390,7 @@ import org.openlca.core.matrix.solvers.SequentialSolver as SequentialSolver
 import org.openlca.proto.server.Server as Server
 import org.openlca.cloud.error.ServerException as ServerException
 import org.openlca.io.simapro.csv.input.SimaProCsvImport as SimaProCsvImport
+import org.openlca.io.simapro.csv.SimaProUnit as SimaProUnit
 import org.openlca.core.matrix.io.SimpleBin as SimpleBin
 import org.openlca.expressions.SimpleCharStream as SimpleCharStream
 import org.openlca.core.results.SimpleResult as SimpleResult
@@ -421,6 +439,7 @@ import org.openlca.cloud.error.UnauthorizedAccessException as UnauthorizedAccess
 import org.openlca.jsonld.input.Uncertainties as Uncertainties
 import org.openlca.core.model.Uncertainty as Uncertainty
 import org.openlca.io.ecospold2.UncertaintyConverter as UncertaintyConverter
+import org.openlca.core.model.UncertaintyType as UncertaintyType
 import org.openlca.core.model.Unit as Unit
 import org.openlca.core.database.UnitDao as UnitDao
 import org.openlca.core.model.descriptors.UnitDescriptor as UnitDescriptor
@@ -436,6 +455,7 @@ import org.openlca.io.UnitMapping as UnitMapping
 import org.openlca.io.UnitMappingEntry as UnitMappingEntry
 import org.openlca.io.UnitMappingSync as UnitMappingSync
 import org.openlca.core.database.usage.UnitUseSearch as UnitUseSearch
+import org.openlca.jsonld.input.UpdateMode as UpdateMode
 import org.openlca.core.database.upgrades.Upgrades as Upgrades
 import org.openlca.core.results.UpstreamNode as UpstreamNode
 import org.openlca.core.results.UpstreamTree as UpstreamTree
@@ -445,6 +465,7 @@ import org.openlca.cloud.util.Valid as Valid
 import org.openlca.core.database.validation.Validation as Validation
 import org.openlca.expressions.VariableFunction as VariableFunction
 import org.openlca.core.model.Version as Version
+import org.openlca.core.database.upgrades.VersionState as VersionState
 import org.openlca.io.ecospold2.input.WasteFlows as WasteFlows
 import org.openlca.geo.calc.WebMercator as WebMercator
 import org.openlca.cloud.util.WebRequests as WebRequests
