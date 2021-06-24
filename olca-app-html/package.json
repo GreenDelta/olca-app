@@ -5,25 +5,24 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --config webpack.config.js --mode=production",
-    "dev": "webpack --config webpack.config.js --mode=development --watch"
+    "dev": "webpack --config webpack.config.js --mode=development --watch",
+    "server": "py -m http.server --directory ./dist 8080"
   },
-  "author": "",
   "license": "MPL-2.0",
   "devDependencies": {
-    "@types/chart.js": "^2.8.7",
     "@types/codemirror": "0.0.77",
+    "@types/ol": "^5.3.5",
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.0",
     "copy-webpack-plugin": "^5.0.4",
     "ts-loader": "^6.1.0",
-    "typescript": "^3.6.3",
+    "typescript": "^4.3.3",
     "webpack": "^4.40.1",
     "webpack-cli": "^3.3.8",
     "zip-webpack-plugin": "^3.0.0"
   },
   "dependencies": {
-    "@types/ol": "^5.3.5",
-    "chart.js": "^2.9.4",
+    "chart.js": "^3.3.2",
     "codemirror": "^5.58.2",
     "heatmap.js": "^2.0.5",
     "jquery": "^3.5.0",
