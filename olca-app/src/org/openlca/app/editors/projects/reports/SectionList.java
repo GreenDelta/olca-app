@@ -133,7 +133,7 @@ class SectionList {
 				if (c == null || c == ReportComponent.NONE)
 					model.componentId = null;
 				else
-					model.componentId = c.getId();
+					model.componentId = c.id();
 				// TODO: editor.setDirty(true);
 			});
 			if (model.componentId != null)

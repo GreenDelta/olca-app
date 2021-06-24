@@ -1,18 +1,27 @@
 package org.openlca.app.editors.projects.reports.model;
 
+import org.openlca.core.model.ProjectVariant;
+
 /**
  * The information of a project variant for a report. The name of the report
  * variant is the same as for the respective project variant.
  */
-public class ReportVariant {
+class ReportVariant {
 
-	public final int id;
-	public String name;
-	public String description;
-	public boolean isDisabled;
+  final String name;
+  final String description;
 
-	public ReportVariant(int id) {
-		this.id = id;
-	}
+  private ReportVariant(String name, String description) {
+    this.name = name;
+    this.description = description;
+  }
+
+  static ReportVariant of(ProjectVariant v) {
+    if (v == null)
+      return new ReportVariant("", "");
+    var name = v.name == null ? "" : v.name;
+    var description = v.description == null ? "" : v.description;
+    return new ReportVariant(name, description);
+  }
 
 }

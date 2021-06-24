@@ -52,7 +52,7 @@ public enum ReportComponent {
 		this.id = id;
 	}
 
-	public String getId() {
+	public String id() {
 		return id;
 	}
 
@@ -60,7 +60,7 @@ public enum ReportComponent {
 		if (id == null)
 			return NONE;
 		for (ReportComponent c : values()) {
-			if (Objects.equals(id, c.getId()))
+			if (Objects.equals(id, c.id()))
 				return c;
 		}
 		return NONE;

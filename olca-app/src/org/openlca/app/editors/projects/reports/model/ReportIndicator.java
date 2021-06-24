@@ -1,22 +1,33 @@
 package org.openlca.app.editors.projects.reports.model;
 
+import java.util.Objects;
+
+import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 
-/**
- * Wraps an LCIA category for a report with additional information.
- */
-public class ReportIndicator {
+class ReportIndicator {
 
-	public final int id;
-	public ImpactDescriptor descriptor;
-	public String reportName;
-	public String reportDescription;
-	public boolean displayed;
-	public Double normalisationFactor;
-	public Double weightingFactor;
+  final ImpactDescriptor impact;
+  final Double normalisationFactor;
+  final Double weightingFactor;
 
-	public ReportIndicator(int id) {
-		this.id = id;
-	}
+  ReportIndicator(Project project, ImpactDescriptor impact) {
+    this.impact = Objects.requireNonNull(impact);
+    Double nf = null;
+    Double wf = null;
+    if (project != null && project.nwSet != null) {
+      var f = project.nwSet.getFactor(impact);
+      if (f != null) {
+        nf = f.normalisationFactor;
+        wf = f.weightingFactor;
+      }
+    }
+    normalisationFactor = nf;
+    weightingFactor = wf;
+  }
+
+  static ReportIndicator of (Project project, ImpactDescriptor impact) {
+    return new ReportIndicator(project, impact);
+  }
 
 }
