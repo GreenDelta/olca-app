@@ -1,7 +1,6 @@
 package org.openlca.app.editors.projects.reports;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -14,7 +13,6 @@ import org.openlca.app.util.UI;
 
 class ReportEditorPage extends FormPage {
 
-	private final Report report;
 	private final ReportEditor editor;
 
 	private FormToolkit tk;
@@ -23,7 +21,10 @@ class ReportEditorPage extends FormPage {
 	public ReportEditorPage(ReportEditor editor) {
 		super(editor, "ReportInfoPage", M.Report);
 		this.editor = editor;
-		this.report = new Report();
+	}
+
+	private Report report() {
+		return editor.report;
 	}
 
 	@Override
@@ -38,22 +39,20 @@ class ReportEditorPage extends FormPage {
 	}
 
 	private void createAddButton(Composite body) {
-		Composite comp = UI.formComposite(body, tk);
+		var comp = UI.formComposite(body, tk);
 		UI.filler(comp);
-		Button addButton = tk.createButton(comp, M.AddSection, SWT.NONE);
+		var addButton = tk.createButton(comp, M.AddSection, SWT.NONE);
 		addButton.setImage(Icon.ADD.get());
 		Controls.onSelect(addButton, e -> sectionList.addNew());
 	}
 
 	private void createInfoSection(Composite body) {
-		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
+		var comp = UI.formSection(body, tk, M.GeneralInformation);
 		var titleText = UI.formText(comp, tk, M.Title);
-		if (report.title != null) {
-			titleText.setText(report.title);
+		if (report().title != null) {
+			titleText.setText(report().title);
 		}
-		titleText.addModifyListener($ -> {
-			report.title = titleText.getText();
-		});
+		titleText.addModifyListener($ -> report().title = titleText.getText());
 	}
 
 }

@@ -94,7 +94,6 @@ public class ProjectResultEditor extends SimpleFormEditor {
 			var reportBtn = tk.createButton(
 				buttonComp, "Create Report", SWT.NONE);
 			reportBtn.setImage(Images.get(ModelType.PROJECT));
-			reportBtn.setEnabled(false);
 			UI.gridData(reportBtn, false, false).widthHint = 120;
 			Controls.onSelect(
 				reportBtn, $ -> ReportEditor.open(data));

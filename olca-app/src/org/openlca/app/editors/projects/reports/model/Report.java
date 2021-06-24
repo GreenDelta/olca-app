@@ -78,7 +78,7 @@ public class Report {
         var section = new ReportSection();
         section.index = idx;
         section.title = props.getProperty(component.name() + ".title");
-        section.text = props.getProperty(component.name() + ".text");
+        section.text = wrap(props.getProperty(component.name() + ".text"));
         section.componentId = component.id();
         report.sections.add(section);
         idx++;
@@ -109,5 +109,28 @@ public class Report {
       + "the export button in the toolbar of the report view.";
     return section;
   }
+
+	private static String wrap(String s) {
+		if (s == null)
+			return "";
+		if (s.length() <= 80)
+			return s;
+		var text = new StringBuilder();
+		var line = new StringBuilder();
+		for (var word : s.split(" ")) {
+			if (line.length() + word.length() > 79) {
+				text.append(line).append('\n');
+				line.setLength(0);
+			}
+			if (line.length() > 0) {
+				line.append(' ');
+			}
+			line.append(word);
+		}
+		if (line.length() > 0) {
+			text.append(line);
+		}
+		return text.toString();
+	}
 
 }

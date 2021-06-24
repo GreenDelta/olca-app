@@ -47,7 +47,7 @@ public class ReportEditor extends SimpleFormEditor {
 		var data = (ProjectResultData) obj;
 		this.project = data.project();
 		this.result = data.result();
-		this.report = new Report();
+		this.report = Report.initDefault();
 		setPartName("Report of: " + Labels.name(project));
 	}
 
