@@ -12,7 +12,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -26,13 +25,10 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
-import org.openlca.app.editors.projects.reports.ReportEditorPage;
-import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
@@ -86,8 +82,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 		Composite body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
-		createButtons(infoSection.getContainer());
-		new ImpactSection(editor).render(body, toolkit);
+		createCalculationButton(infoSection.getContainer());
+		new CalculationSetupSection(editor).render(body, toolkit);
 		createVariantsSection(body);
 		Section section = UI.section(body, toolkit, M.Parameters);
 		parameterTable = new ProjectParameterTable(editor);
@@ -103,34 +99,15 @@ class ProjectSetupPage extends ModelPage<Project> {
 		variantViewer.setInput(variants);
 	}
 
-	private void createButtons(Composite parent) {
+	private void createCalculationButton(Composite parent) {
 		UI.filler(parent, toolkit);
 		var comp = toolkit.createComposite(parent);
-		UI.gridLayout(comp, 2, 0, 0).marginHeight = 5;
-
-		// calculation button
-		var calculateBtn = toolkit.createButton(comp, M.Calculate, SWT.NONE);
-		UI.gridData(calculateBtn, false, false).widthHint = 100;
-		calculateBtn.setImage(Images.get(ModelType.PROJECT));
-		Controls.onSelect(calculateBtn,
+		UI.gridLayout(comp, 1, 0, 0).marginHeight = 5;
+		var button = toolkit.createButton(comp, M.Calculate, SWT.NONE);
+		UI.gridData(button, false, false).widthHint = 100;
+		button.setImage(Images.get(ModelType.PROJECT));
+		Controls.onSelect(button,
 			e -> ProjectEditorToolBar.calculate(project));
-
-		// report button
-		var reportBtn = toolkit.createButton(
-			comp, "Create report", SWT.NONE);
-		reportBtn.setImage(Images.get(ModelType.PROJECT));
-		UI.gridData(reportBtn, false, false).widthHint = 120;
-		Controls.onSelect(reportBtn, $ -> {
-			editor.report = Report.initDefault();
-			try {
-				var reportPage = new ReportEditorPage(editor);
-				editor.addPage(reportPage);
-				reportBtn.dispose();
-				editor.setActivePage(reportPage.getId());
-			} catch (PartInitException e) {
-				ErrorReporter.on("Failed to add report editor", e);
-			}
-		});
 	}
 
 	private void createVariantsSection(Composite body) {

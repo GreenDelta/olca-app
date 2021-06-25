@@ -4,23 +4,30 @@ import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentControl;
+import org.openlca.app.editors.projects.reports.ReportEditorPage;
+import org.openlca.app.editors.projects.reports.model.Report;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NwSetDao;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
 
-class ImpactSection {
+class CalculationSetupSection {
 
 	private final ProjectEditor editor;
 	private final IDatabase db;
@@ -28,7 +35,7 @@ class ImpactSection {
 	private ImpactMethodViewer methodCombo;
 	private NwSetComboViewer nwSetCombo;
 
-	public ImpactSection(ProjectEditor editor) {
+	public CalculationSetupSection(ProjectEditor editor) {
 		this.editor = editor;
 		this.db = Database.get();
 	}
@@ -78,6 +85,43 @@ class ImpactSection {
 			project.isWithCosts = !project.isWithCosts;
 			editor.setDirty(true);
 		});
+		UI.filler(comp, tk);
+
+		// report button
+		if (editor.report == null) {
+			var beforeReport = UI.filler(comp, tk);
+			var reportBtn = tk.createButton(
+				comp, "Create report", SWT.NONE);
+			var afterButton = UI.filler(comp, tk);
+			reportBtn.setImage(Images.get(ModelType.PROJECT));
+			Controls.onSelect(reportBtn, $ -> {
+				try {
+
+					// create the report and add the editor page
+					editor.report = Report.initDefault();
+					var reportPage = new ReportEditorPage(editor);
+					editor.addPage(reportPage);
+					editor.setActivePage(reportPage.getId());
+
+					// dispose the button row and repaint the form
+					afterButton.dispose();
+					reportBtn.dispose();
+					beforeReport.dispose();
+					var c = comp;
+					while (true) {
+						c = c.getParent();
+						if (c == null)
+							break;
+						if (c instanceof ScrolledForm) {
+							((ScrolledForm) c).reflow(true);
+							break;
+						}
+					}
+				} catch (PartInitException e) {
+					ErrorReporter.on("Failed to add report editor", e);
+				}
+			});
+		}
 	}
 
 	private void addListeners() {
@@ -85,8 +129,8 @@ class ImpactSection {
 		nwSetCombo.addSelectionChangedListener(d -> {
 			var project = editor.getModel();
 			project.nwSet = d == null
-					? null
-					: new NwSetDao(db).getForId(d.id);
+				? null
+				: new NwSetDao(db).getForId(d.id);
 			editor.setDirty(true);
 		});
 	}
@@ -104,8 +148,8 @@ class ImpactSection {
 
 		// handle change
 		project.impactMethod = method == null
-				? null
-				: new ImpactMethodDao(db).getForId(method.id);
+			? null
+			: new ImpactMethodDao(db).getForId(method.id);
 		project.nwSet = null;
 		nwSetCombo.select(null);
 		nwSetCombo.setInput(method);
@@ -125,7 +169,7 @@ class ImpactSection {
 			var d = Descriptor.of(nwSet);
 			nws.add(d);
 			if (project.nwSet != null
-				&& project.nwSet.id == nwSet.id) {
+					&& project.nwSet.id == nwSet.id) {
 				selected = d;
 			}
 		}
