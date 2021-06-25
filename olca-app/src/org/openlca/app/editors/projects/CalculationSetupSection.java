@@ -101,6 +101,7 @@ class CalculationSetupSection {
 					var reportPage = new ReportEditorPage(editor);
 					editor.addPage(reportPage);
 					editor.setActivePage(reportPage.getId());
+					editor.setDirty(true);
 
 					// dispose the button row and repaint the form
 					afterButton.dispose();

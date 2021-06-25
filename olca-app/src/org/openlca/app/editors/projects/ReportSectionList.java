@@ -25,19 +25,21 @@ import org.openlca.app.viewers.Selections;
 
 class ReportSectionList {
 
-	private Report report;
-	private Composite parent;
-	private FormToolkit toolkit;
-	private ScrolledForm form;
+	private final ProjectEditor editor;
+	private final Report report;
+	private final Composite parent;
+	private final FormToolkit toolkit;
+	private final ScrolledForm form;
 
 	private final List<SectionWidget> sections = new ArrayList<>();
 
 	ReportSectionList(ProjectEditor editor, Composite parent, ScrolledForm form,
-							FormToolkit toolkit) {
+										FormToolkit toolkit) {
+		this.editor = editor;
+		report = editor.report();
 		this.parent = parent;
 		this.toolkit = toolkit;
 		this.form = form;
-		report = editor.report();
 		report.sections.sort(Comparator.comparingInt(s -> s.index));
 		report.sections.forEach((model) -> sections.add(
 			new SectionWidget(model, parent, toolkit)));
@@ -65,7 +67,7 @@ class ReportSectionList {
 		sections.add(widget);
 		form.reflow(true);
 		widget.ui.setFocus();
-		// TODO: editor.setDirty(true);
+		editor.setDirty(true);
 	}
 
 	private class SectionWidget {
@@ -106,7 +108,7 @@ class ReportSectionList {
 				String t = titleText.getText();
 				model.title = t;
 				ui.setText(t);
-				// TODO: editor.setDirty(true);
+				editor.setDirty(true);
 			});
 		}
 
@@ -116,7 +118,7 @@ class ReportSectionList {
 				descriptionText.setText(model.text);
 			descriptionText.addModifyListener(e -> {
 				model.text = descriptionText.getText();
-				// TODO: editor.setDirty(true);
+				editor.setDirty(true);
 			});
 		}
 
@@ -130,15 +132,15 @@ class ReportSectionList {
 			componentViewer.setInput(ReportComponent.values());
 			componentViewer.addSelectionChangedListener(e -> {
 				ReportComponent c = Selections.firstOf(e);
-				if (c == null || c == ReportComponent.NONE)
-					model.componentId = null;
-				else
-					model.componentId = c.id();
-				// TODO: editor.setDirty(true);
+				model.componentId = c == null || c == ReportComponent.NONE
+					? null
+					: c.id();
+				editor.setDirty(true);
 			});
-			if (model.componentId != null)
+			if (model.componentId != null) {
 				componentViewer.setSelection(new StructuredSelection(
 					ReportComponent.getForId(model.componentId)));
+			}
 		}
 
 		private void createActions() {
@@ -164,7 +166,7 @@ class ReportSectionList {
 				sec.model.index = i;
 			}
 			form.reflow(true);
-			// TODO: editor.setDirty(true);
+			editor.setDirty(true);
 		}
 
 		private void moveUp() {
