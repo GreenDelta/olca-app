@@ -14,6 +14,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
+import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.editors.projects.reports.model.ReportComponent;
 import org.openlca.app.editors.projects.reports.model.ReportSection;
@@ -32,12 +33,12 @@ class SectionList {
 
 	private final List<SectionWidget> sections = new ArrayList<>();
 
-	SectionList(ReportEditor editor, Composite parent, ScrolledForm form,
+	SectionList(ProjectEditor editor, Composite parent, ScrolledForm form,
 							FormToolkit toolkit) {
 		this.parent = parent;
 		this.toolkit = toolkit;
 		this.form = form;
-		report = editor.report;
+		report = editor.report();
 		report.sections.sort(Comparator.comparingInt(s -> s.index));
 		report.sections.forEach((model) -> sections.add(
 			new SectionWidget(model, parent, toolkit)));

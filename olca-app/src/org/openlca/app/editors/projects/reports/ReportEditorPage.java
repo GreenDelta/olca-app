@@ -6,25 +6,26 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
-class ReportEditorPage extends FormPage {
+public class ReportEditorPage extends FormPage {
 
-	private final ReportEditor editor;
+	private final ProjectEditor editor;
 
 	private FormToolkit tk;
 	private SectionList sectionList;
 
-	public ReportEditorPage(ReportEditor editor) {
+	public ReportEditorPage(ProjectEditor editor) {
 		super(editor, "ReportInfoPage", M.Report);
 		this.editor = editor;
 	}
 
 	private Report report() {
-		return editor.report;
+		return editor.report();
 	}
 
 	@Override

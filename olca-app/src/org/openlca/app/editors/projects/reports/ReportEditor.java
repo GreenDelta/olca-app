@@ -53,7 +53,7 @@ public class ReportEditor extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
-		return new ReportEditorPage(this);
+		return null; //new ReportEditorPage(this);
 	}
 
 	@Override

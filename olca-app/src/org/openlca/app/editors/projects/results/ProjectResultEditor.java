@@ -80,6 +80,8 @@ public class ProjectResultEditor extends SimpleFormEditor {
 			Controls.onSelect(excelBtn, $ -> {
 				var file = FileChooser.forSavingFile(
 					"Export project result", "project result.xlsx");
+				if (file == null)
+					return;
 				var export = new ProjectResultExport(
 					data.project(), data.result(), data.db());
 				try {

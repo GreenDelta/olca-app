@@ -3,13 +3,11 @@ package org.openlca.app.editors.projects.reports;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
@@ -68,11 +66,11 @@ public class ReportViewer extends SimpleFormEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			ScrolledForm form = mform.getForm();
-			Composite comp = form.getBody();
+			var form = mform.getForm();
+			var comp = form.getBody();
 			comp.setLayout(new FillLayout());
 			try {
-				Browser b = new Browser(comp, SWT.NONE);
+				var b = new Browser(comp, SWT.NONE);
 				b.setJavascriptEnabled(true);
 				UI.onLoaded(b, HtmlFolder.getUrl("report.html"), () -> {
 					Gson gson = new Gson();
