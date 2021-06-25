@@ -10,7 +10,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentControl;
-import org.openlca.app.editors.projects.reports.ReportEditorPage;
 import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;

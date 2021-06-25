@@ -1,4 +1,4 @@
-package org.openlca.app.editors.projects.reports;
+package org.openlca.app.editors.projects;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,7 +14,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.editors.projects.reports.model.ReportComponent;
 import org.openlca.app.editors.projects.reports.model.ReportSection;
@@ -24,7 +23,7 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 
-class SectionList {
+class ReportSectionList {
 
 	private Report report;
 	private Composite parent;
@@ -33,7 +32,7 @@ class SectionList {
 
 	private final List<SectionWidget> sections = new ArrayList<>();
 
-	SectionList(ProjectEditor editor, Composite parent, ScrolledForm form,
+	ReportSectionList(ProjectEditor editor, Composite parent, ScrolledForm form,
 							FormToolkit toolkit) {
 		this.parent = parent;
 		this.toolkit = toolkit;

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.projects.reports;
+package org.openlca.app.editors.projects;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.openlca.app.M;

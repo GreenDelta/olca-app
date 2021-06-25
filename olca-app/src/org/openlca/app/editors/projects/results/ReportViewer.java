@@ -1,4 +1,4 @@
-package org.openlca.app.editors.projects.reports;
+package org.openlca.app.editors.projects.results;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;

@@ -1,7 +1,5 @@
 package org.openlca.app.editors.projects;
 
-import java.util.Optional;
-
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;

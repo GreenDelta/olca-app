@@ -12,7 +12,6 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
-import org.openlca.app.editors.projects.reports.ReportEditor;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
@@ -20,7 +19,6 @@ import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.ModelType;
 import org.openlca.io.xls.results.ProjectResultExport;
 
 public class ProjectResultEditor extends SimpleFormEditor {
@@ -70,7 +68,7 @@ public class ProjectResultEditor extends SimpleFormEditor {
 			var body = UI.formBody(form, tk);
 
 			var buttonComp = tk.createComposite(body);
-			UI.gridLayout(buttonComp, 2);
+			UI.gridLayout(buttonComp, 1);
 
 			// Excel export button
 			var excelBtn = tk.createButton(
@@ -91,14 +89,6 @@ public class ProjectResultEditor extends SimpleFormEditor {
 					ErrorReporter.on("Export of project result failed", e);
 				}
 			});
-
-			// report button
-			var reportBtn = tk.createButton(
-				buttonComp, "Create Report", SWT.NONE);
-			reportBtn.setImage(Images.get(ModelType.PROJECT));
-			UI.gridData(reportBtn, false, false).widthHint = 120;
-			Controls.onSelect(
-				reportBtn, $ -> ReportEditor.open(data));
 
 			// create the sections
 			ProjectVariantSection.of(data).renderOn(body, tk);

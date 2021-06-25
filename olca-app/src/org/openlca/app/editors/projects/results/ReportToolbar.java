@@ -1,4 +1,4 @@
-package org.openlca.app.editors.projects.reports;
+package org.openlca.app.editors.projects.results;
 
 import java.io.File;
 import java.io.IOException;

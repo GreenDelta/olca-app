@@ -1,4 +1,4 @@
-package org.openlca.app.editors.projects.reports;
+package org.openlca.app.editors.projects;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -6,18 +6,17 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.editors.projects.ProjectEditor;
 import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
-public class ReportEditorPage extends FormPage {
+class ReportEditorPage extends FormPage {
 
 	private final ProjectEditor editor;
 
 	private FormToolkit tk;
-	private SectionList sectionList;
+	private ReportSectionList sectionList;
 
 	public ReportEditorPage(ProjectEditor editor) {
 		super(editor, "ReportInfoPage", M.Report);
@@ -35,7 +34,7 @@ public class ReportEditorPage extends FormPage {
 		var body = UI.formBody(form, tk);
 		createInfoSection(body);
 		createAddButton(body);
-		sectionList = new SectionList(editor, body, form, tk);
+		sectionList = new ReportSectionList(editor, body, form, tk);
 		form.reflow(true);
 	}
 
