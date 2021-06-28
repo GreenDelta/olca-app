@@ -3,27 +3,27 @@ package org.openlca.app.preferences;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openlca.app.App;
 import org.openlca.app.util.MsgBox;
 import org.openlca.util.OS;
-import org.python.jline.internal.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Reads and writes values from and to the openLCA.ini file which is located in
  * the installation directory of openLCA. Writing is not possible when openLCA
- * is installed in a read-only folder. This class is independent from the user
- * interface and could be re-used in other packages if needed.
+ * is installed in a read-only folder.
  */
 class ConfigIniFile {
 
+	private static final String EDGE_PROP = "-Dorg.eclipse.swt.browser.DefaultType=edge";
+
 	private Language language = Language.ENGLISH;
 	private int maxMemory = 3584;
+	private boolean useEdgeBrowser = false;
 
 	static ConfigIniFile read() {
 		try {
@@ -46,24 +46,46 @@ class ConfigIniFile {
 						iniFile + " does not exist.");
 				return;
 			}
-			List<String> oldLines = Files.readAllLines(iniFile.toPath());
-			List<String> newLines = new ArrayList<>();
+
+			var oldLines = Files.readAllLines(iniFile.toPath());
+			var newLines = new ArrayList<String>();
 			boolean nextIsLanguage = false;
-			for (String line : oldLines) {
-				if (line.trim().equals("-nl")) {
+
+			for (var l : oldLines) {
+				var line = l.trim();
+
+				// application language
+				if (line.equals("-nl")) {
 					nextIsLanguage = true;
 					newLines.add(line);
-				} else if (nextIsLanguage) {
+					continue;
+				}
+				if (nextIsLanguage) {
 					nextIsLanguage = false;
 					newLines.add(getLanguage().getCode());
-				} else if (line.trim().startsWith("-Xmx")) {
-					newLines.add("-Xmx" + maxMemory + "M");
-				} else {
-					newLines.add(line);
+					continue;
 				}
+
+				// memory
+				if (line.trim().startsWith("-Xmx")) {
+					newLines.add("-Xmx" + maxMemory + "M");
+					continue;
+				}
+
+				// Edge browser
+				if (line.equals(EDGE_PROP)) {
+					continue;
+				}
+
+				newLines.add(line);
 			}
-			Log.info("update ini file {}", iniFile.getAbsolutePath());
+
+			if (useEdgeBrowser) {
+				newLines.add(EDGE_PROP);
+			}
+
 			Files.write(iniFile.toPath(), newLines);
+
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(ConfigIniFile.class);
 			log.error("failed to write openLCA.ini file", e);
@@ -79,19 +101,34 @@ class ConfigIniFile {
 	}
 
 	private static ConfigIniFile parseFile(File iniFile) throws Exception {
-		List<String> lines = Files.readAllLines(iniFile.toPath());
-		ConfigIniFile ini = new ConfigIniFile();
+		var lines = Files.readAllLines(iniFile.toPath());
+
+		var ini = new ConfigIniFile();
 		boolean nextIsLanguage = false;
-		for (String line : lines) {
-			if (line.trim().equals("-nl")) {
+
+		for (var l : lines) {
+			var line = l.trim();
+
+			// read language code
+			if (line.equals("-nl")) {
 				nextIsLanguage = true;
 				continue;
 			}
 			if (nextIsLanguage) {
-				ini.language = Language.getForCode(line.trim());
+				ini.language = Language.getForCode(line);
 				nextIsLanguage = false;
-			} else if (line.trim().startsWith("-Xmx")) {
+				continue;
+			}
+
+			// memory
+			if (line.startsWith("-Xmx")) {
 				readMemory(line, ini);
+				continue;
+			}
+
+			// edge browser
+			if (line.equals(EDGE_PROP)) {
+				ini.useEdgeBrowser = true;
 			}
 		}
 		return ini;
@@ -118,23 +155,31 @@ class ConfigIniFile {
 		}
 	}
 
-	public Language getLanguage() {
+	Language getLanguage() {
 		if (language == null)
 			return Language.ENGLISH;
 		else
 			return language;
 	}
 
-	public void setLanguage(Language language) {
+	void setLanguage(Language language) {
 		this.language = language;
 	}
 
-	public int getMaxMemory() {
+	int getMaxMemory() {
 		return maxMemory;
 	}
 
-	public void setMaxMemory(int maxMemory) {
+	void setMaxMemory(int maxMemory) {
 		this.maxMemory = maxMemory;
+	}
+
+	void setUseEdgeBrowser(boolean useEdge) {
+		this.useEdgeBrowser = useEdge;
+	}
+
+	boolean useEdgeBrowser() {
+		return useEdgeBrowser;
 	}
 
 }

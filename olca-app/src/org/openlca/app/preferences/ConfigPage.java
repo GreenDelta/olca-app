@@ -16,13 +16,14 @@ import org.openlca.app.rcp.WindowLayout;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.julia.Julia;
+import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ConfigPage extends PreferencePage implements
-		IWorkbenchPreferencePage {
+	IWorkbenchPreferencePage {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private boolean isDirty = false;
 	private Combo languageCombo;
@@ -57,18 +58,25 @@ public class ConfigPage extends PreferencePage implements
 		memoryText = UI.formText(comp, M.MaximumMemoryUsage);
 		memoryText.setText(Integer.toString(iniFile.getMaxMemory()));
 		memoryText.addModifyListener((e) -> setDirty());
-		
+
+		// Edge browser check
+		if (OS.get() == OS.WINDOWS) {
+			var useEdge = UI.formCheckBox(
+				comp, "Use Edge as internal browser");
+			useEdge.setToolTipText("WebView2 needs to be installed for this");
+			useEdge.setSelection(iniFile.useEdgeBrowser());
+			Controls.onSelect(
+				useEdge, $ -> iniFile.setUseEdgeBrowser(useEdge.getSelection()));
+		}
+
 		// show / hide start page
 		var hideStart = UI.formCheckBox(
-				comp, "Hide welcome page");
+			comp, "Hide welcome page");
 		hideStart.setSelection(
-				Preferences.getBool("hide.welcome.page"));
-		Controls.onSelect(hideStart, e -> {
-			Preferences.set(
-					"hide.welcome.page", 
-					hideStart.getSelection());
-		});
-		
+			Preferences.getBool("hide.welcome.page"));
+		Controls.onSelect(hideStart, e -> Preferences.set(
+			"hide.welcome.page", hideStart.getSelection()));
+
 		// reset window layout
 		UI.filler(comp);
 		Composite bcomp = new Composite(comp, SWT.NONE);
@@ -84,15 +92,15 @@ public class ConfigPage extends PreferencePage implements
 			var libButton = new Button(bcomp, SWT.NONE);
 			libButton.setText("Download additional calculation libraries");
 			Controls.onSelect(
-					libButton,
-					_e -> LibraryDownload.open());
+				libButton,
+				_e -> LibraryDownload.open());
 			UI.gridData(b, true, false);
 			UI.gridData(libButton, true, false);
 		}
 
 		UI.filler(comp);
 		createNoteComposite(comp.getFont(), comp, M.Note
-				+ ": ", M.SelectLanguageNoteMessage);
+			+ ": ", M.SelectLanguageNoteMessage);
 		return body;
 	}
 
@@ -146,7 +154,7 @@ public class ConfigPage extends PreferencePage implements
 		iniFile.setMaxMemory(maxMem);
 		super.performDefaults();
 		performApply();
-		
+
 	}
 
 	private void selectLanguage(Language language) {
