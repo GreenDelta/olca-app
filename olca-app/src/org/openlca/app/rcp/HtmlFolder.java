@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Objects;
 
@@ -32,7 +33,7 @@ public class HtmlFolder {
 			return;
 		Version version = getWorkspaceVersion(bundle);
 		if (Objects.equals(version, bundle.getVersion())) {
-			log.trace("HTML folder for {} up-to-date");
+			log.trace("HTML folder for {} up-to-date", bundle);
 			return;
 		}
 		log.trace("initialize html folder {} for {}", zipPath, bundle);
@@ -65,7 +66,7 @@ public class HtmlFolder {
 			return null;
 		try {
 			byte[] bytes = Files.readAllBytes(versionFile.toPath());
-			String version = new String(bytes, "utf-8");
+			String version = new String(bytes, StandardCharsets.UTF_8);
 			return Version.parseVersion(version);
 		} catch (Exception e) {
 			log.error("failed to read HTML folder version", e);
@@ -94,7 +95,7 @@ public class HtmlFolder {
 	private static void writeVersion(Bundle bundle) throws Exception {
 		File versionFile = new File(getDir(bundle), ".version");
 		String version = bundle.getVersion().toString();
-		Files.write(versionFile.toPath(), version.getBytes("utf-8"));
+		Files.writeString(versionFile.toPath(), version);
 	}
 
 	public static String getUrl(Bundle bundle, String page) {

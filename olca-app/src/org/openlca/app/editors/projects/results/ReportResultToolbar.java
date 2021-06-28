@@ -2,70 +2,76 @@ package org.openlca.app.editors.projects.results;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.images.Icon;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openlca.app.util.ErrorReporter;
 
 import com.google.gson.Gson;
 
-public class ReportToolbar extends EditorActionBarContributor {
+public class ReportResultToolbar extends EditorActionBarContributor {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private ProjectResultEditor editor;
+	private ReportExportAction reportExport;
+
+	@Override
+	public void setActiveEditor(IEditorPart part) {
+		editor = part instanceof ProjectResultEditor
+			?  (ProjectResultEditor) part
+			: null;
+		super.setActiveEditor(part);
+		activateActions();
+	}
 
 	@Override
 	public void contributeToToolBar(IToolBarManager manager) {
-		manager.add(new ExportAction());
+		reportExport = new ReportExportAction();
+		manager.add(reportExport);
+		activateActions();
 	}
 
-	private Report getReport() {
-		try {
-			ReportViewer editor = Editors.getActive();
-			if (editor == null) {
-				log.error("unexpected error: report editor is not active");
-				return null;
-			}
-			return editor.getReport();
-		} catch (Exception e) {
-			log.error("failed to get report from editor", e);
-			return null;
+	private void activateActions() {
+		if (reportExport == null)
+			return;
+		if (editor == null || editor.data == null) {
+			reportExport.setEnabled(false);
+			return;
 		}
+		reportExport.setEnabled(editor.data.hasReport());
 	}
 
-	private class ExportAction extends Action {
+	private class ReportExportAction extends Action {
 
 		private final String CALL_HOOK = "//{{set_data_call}}";
 
-		public ExportAction() {
-			setImageDescriptor(Icon.EXPORT.descriptor());
+		public ReportExportAction() {
+			setImageDescriptor(Icon.CHART.descriptor());
 			setToolTipText(M.ExportReport);
 		}
 
 		@Override
 		public void run() {
-			Report report = getReport();
-			if (report == null)
+			if (editor == null || editor.data == null || !editor.data.hasReport())
 				return;
-			File dir = FileChooser.selectFolder();
+			var report = editor.data.report();
+			var dir = FileChooser.selectFolder();
 			if (dir == null)
 				return;
-			File htmlDir = HtmlFolder.getDir(RcpActivator.getDefault()
-					.getBundle());
-			if (htmlDir == null)
-				return;
+			var htmlDir = HtmlFolder.getDir(
+					RcpActivator.getDefault().getBundle());
 			tryExport(report, dir, htmlDir);
 		}
 
@@ -75,10 +81,10 @@ public class ReportToolbar extends EditorActionBarContributor {
 				String json = new Gson().toJson(report);
 				String call = "document.addEventListener(\"DOMContentLoaded\", "
 						+ "function() { setData(" + json + "); });";
-				File template = HtmlFolder.getFile(
-						RcpActivator.getDefault().getBundle(), "report.html");
-				StringBuilder text = new StringBuilder();
-				Files.readAllLines(template.toPath(), Charset.forName("utf-8"))
+				var template = Objects.requireNonNull(HtmlFolder.getFile(
+						RcpActivator.getDefault().getBundle(), "report.html"));
+				var text = new StringBuilder();
+				Files.readAllLines(template.toPath(), StandardCharsets.UTF_8)
 						.stream().map(line -> line.contains(CALL_HOOK)
 								? line.replace(CALL_HOOK, call)
 								: line)
@@ -87,13 +93,13 @@ public class ReportToolbar extends EditorActionBarContributor {
 							text.append('\n');
 						});
 
-				String fileName = report.title == null
+				var fileName = report.title == null
 						? "report.html"
 						: report.title.replaceAll("\\W+", "_") + ".html";
-				File file = new File(targetDir, fileName);
-				Files.write(file.toPath(), text.toString().getBytes("utf-8"));
+				var file = new File(targetDir, fileName);
+				Files.writeString(file.toPath(), text.toString());
 			} catch (Exception e) {
-				log.error("failed to export report", e);
+				ErrorReporter.on("failed to export report", e);
 			}
 		}
 
@@ -110,7 +116,7 @@ public class ReportToolbar extends EditorActionBarContributor {
 				return;
 			File targetLibDir = new File(targetDir, "lib");
 			if (!targetLibDir.exists()) {
-				targetLibDir.mkdirs();
+				Files.createDirectories(targetLibDir.toPath());
 			}
 			FileUtils.copyDirectory(libDir, targetLibDir);
 		}

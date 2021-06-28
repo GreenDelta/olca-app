@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 public class ProjectResultEditor extends FormEditor {
 
-	private ProjectResultData data;
+	ProjectResultData data;
 
 	public static void open(ProjectResultData data) {
 		if (data == null)

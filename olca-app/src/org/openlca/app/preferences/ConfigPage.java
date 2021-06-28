@@ -57,7 +57,7 @@ public class ConfigPage extends PreferencePage implements
 
 		memoryText = UI.formText(comp, M.MaximumMemoryUsage);
 		memoryText.setText(Integer.toString(iniFile.getMaxMemory()));
-		memoryText.addModifyListener((e) -> setDirty());
+		memoryText.addModifyListener(e -> setDirty());
 
 		// Edge browser check
 		if (OS.get() == OS.WINDOWS) {
@@ -66,7 +66,10 @@ public class ConfigPage extends PreferencePage implements
 			useEdge.setToolTipText("WebView2 needs to be installed for this");
 			useEdge.setSelection(iniFile.useEdgeBrowser());
 			Controls.onSelect(
-				useEdge, $ -> iniFile.setUseEdgeBrowser(useEdge.getSelection()));
+				useEdge, $ -> {
+					iniFile.setUseEdgeBrowser(useEdge.getSelection());
+					setDirty();
+				});
 		}
 
 		// show / hide start page
@@ -136,8 +139,9 @@ public class ConfigPage extends PreferencePage implements
 	@Override
 	protected void performApply() {
 		int memVal = ConfigMemCheck.parseAndCheck(memoryText.getText());
-		if (memVal < 0)
-			return;
+		if (memVal < 256) {
+			memVal = 256;
+		}
 		iniFile.setMaxMemory(memVal);
 		iniFile.write();
 		getApplyButton().setEnabled(false);

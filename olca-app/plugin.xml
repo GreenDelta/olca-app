@@ -217,23 +217,11 @@
             name="Simulation Editor">
       </editor>
       <editor
-            id="ReportViewer"
-            class="org.openlca.app.editors.projects.results.ReportViewer"
-            icon="icons/model/project.png"
-            name="%ReportViewer"
-            contributorClass="org.openlca.app.editors.projects.results.ReportToolbar">
-      </editor>
-      <editor
             id="ProjectResultEditor"
             class="org.openlca.app.editors.projects.results.ProjectResultEditor"
+            contributorClass="org.openlca.app.editors.projects.results.ReportResultToolbar"
             icon="icons/model/project.png"
             name="Project results">
-      </editor>
-      <editor
-            id="ReportEditor"
-            class="org.openlca.app.editors.projects.reports.ReportEditor"
-            icon="icons/model/project.png"
-            name="Report">
       </editor>
       <editor
             id="editors.LogFileEditor"
