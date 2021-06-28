@@ -130,6 +130,10 @@ class ReportSectionList {
 				.getInstance());
 			componentViewer.setLabelProvider(new ReportComponentLabel());
 			componentViewer.setInput(ReportComponent.values());
+			if (model.componentId != null) {
+				componentViewer.setSelection(new StructuredSelection(
+					ReportComponent.getForId(model.componentId)));
+			}
 			componentViewer.addSelectionChangedListener(e -> {
 				ReportComponent c = Selections.firstOf(e);
 				model.componentId = c == null || c == ReportComponent.NONE
@@ -137,10 +141,6 @@ class ReportSectionList {
 					: c.id();
 				editor.setDirty(true);
 			});
-			if (model.componentId != null) {
-				componentViewer.setSelection(new StructuredSelection(
-					ReportComponent.getForId(model.componentId)));
-			}
 		}
 
 		private void createActions() {

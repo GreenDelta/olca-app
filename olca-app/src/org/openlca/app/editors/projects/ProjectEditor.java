@@ -65,6 +65,11 @@ public class ProjectEditor extends ModelEditor<Project> {
 	public void doSave(IProgressMonitor monitor) {
 		if (report != null) {
 			try {
+				var file = reportFile();
+				var parent = file.getParentFile();
+				if (!parent.exists()) {
+					Files.createDirectories(parent.toPath());
+				}
 				Files.writeString(reportFile().toPath(), report.toJson());
 			} catch (IOException e) {
 				ErrorReporter.on("Failed to write report file", e);
