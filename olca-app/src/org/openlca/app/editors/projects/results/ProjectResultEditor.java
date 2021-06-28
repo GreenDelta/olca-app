@@ -11,20 +11,14 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
-import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.projects.ProjectResultData;
 import org.openlca.app.rcp.HtmlFolder;
-import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
-import org.openlca.io.xls.results.ProjectResultExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,29 +87,6 @@ public class ProjectResultEditor extends FormEditor {
 				"Results of: " + Labels.name(data.project()));
 			var tk = mform.getToolkit();
 			var body = UI.formBody(form, tk);
-
-			var buttonComp = tk.createComposite(body);
-			UI.gridLayout(buttonComp, 1);
-
-			// Excel export button
-			var excelBtn = tk.createButton(
-				buttonComp, M.ExcelExport, SWT.NONE);
-			excelBtn.setImage(Images.get(FileType.EXCEL));
-			UI.gridData(excelBtn, false, false).widthHint = 120;
-			Controls.onSelect(excelBtn, $ -> {
-				var file = FileChooser.forSavingFile(
-					"Export project result", "project result.xlsx");
-				if (file == null)
-					return;
-				var export = new ProjectResultExport(
-					data.project(), data.result(), data.db());
-				try {
-					export.writeTo(file);
-					Popup.info("Exported results to " + file.getName());
-				} catch (Exception e) {
-					ErrorReporter.on("Export of project result failed", e);
-				}
-			});
 
 			// create the sections
 			ProjectVariantSection.of(data).renderOn(body, tk);

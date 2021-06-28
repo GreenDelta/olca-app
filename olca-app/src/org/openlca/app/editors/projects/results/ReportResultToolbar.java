@@ -18,19 +18,24 @@ import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.ErrorReporter;
 
 import com.google.gson.Gson;
+import org.openlca.app.util.FileType;
+import org.openlca.app.util.Popup;
+import org.openlca.io.xls.results.ProjectResultExport;
 
 public class ReportResultToolbar extends EditorActionBarContributor {
 
 	private ProjectResultEditor editor;
 	private ReportExportAction reportExport;
+	private ExcelExportAction excelExport;
 
 	@Override
 	public void setActiveEditor(IEditorPart part) {
 		editor = part instanceof ProjectResultEditor
-			?  (ProjectResultEditor) part
+			? (ProjectResultEditor) part
 			: null;
 		super.setActiveEditor(part);
 		activateActions();
@@ -38,20 +43,52 @@ public class ReportResultToolbar extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager manager) {
+		excelExport = new ExcelExportAction();
+		manager.add(excelExport);
 		reportExport = new ReportExportAction();
 		manager.add(reportExport);
 		activateActions();
 	}
 
 	private void activateActions() {
-		if (reportExport == null)
+		if (reportExport == null || excelExport == null)
 			return;
 		if (editor == null || editor.data == null) {
 			reportExport.setEnabled(false);
+			excelExport.setEnabled(false);
 			return;
 		}
+		excelExport.setEnabled(true);
 		reportExport.setEnabled(editor.data.hasReport());
 	}
+
+	private class ExcelExportAction extends Action {
+
+		ExcelExportAction() {
+			setImageDescriptor(Images.descriptor(FileType.EXCEL));
+			setToolTipText(M.ExportToExcel);
+		}
+
+		@Override
+		public void run() {
+			if (editor == null || editor.data == null)
+				return;
+			var data = editor.data;
+			var file = FileChooser.forSavingFile(
+				"Export project result", "project result.xlsx");
+			if (file == null)
+				return;
+			var export = new ProjectResultExport(
+				data.project(), data.result(), data.db());
+			try {
+				export.writeTo(file);
+				Popup.info("Exported results to " + file.getName());
+			} catch (Exception e) {
+				ErrorReporter.on("Export of project result failed", e);
+			}
+		}
+	}
+
 
 	private class ReportExportAction extends Action {
 
@@ -71,7 +108,7 @@ public class ReportResultToolbar extends EditorActionBarContributor {
 			if (dir == null)
 				return;
 			var htmlDir = HtmlFolder.getDir(
-					RcpActivator.getDefault().getBundle());
+				RcpActivator.getDefault().getBundle());
 			tryExport(report, dir, htmlDir);
 		}
 
@@ -80,22 +117,22 @@ public class ReportResultToolbar extends EditorActionBarContributor {
 				copyLibs(targetDir, htmlFolder);
 				String json = new Gson().toJson(report);
 				String call = "document.addEventListener(\"DOMContentLoaded\", "
-						+ "function() { setData(" + json + "); });";
+					+ "function() { setData(" + json + "); });";
 				var template = Objects.requireNonNull(HtmlFolder.getFile(
-						RcpActivator.getDefault().getBundle(), "report.html"));
+					RcpActivator.getDefault().getBundle(), "report.html"));
 				var text = new StringBuilder();
 				Files.readAllLines(template.toPath(), StandardCharsets.UTF_8)
-						.stream().map(line -> line.contains(CALL_HOOK)
-								? line.replace(CALL_HOOK, call)
-								: line)
-						.forEach(line -> {
-							text.append(line);
-							text.append('\n');
-						});
+					.stream().map(line -> line.contains(CALL_HOOK)
+					? line.replace(CALL_HOOK, call)
+					: line)
+					.forEach(line -> {
+						text.append(line);
+						text.append('\n');
+					});
 
 				var fileName = report.title == null
-						? "report.html"
-						: report.title.replaceAll("\\W+", "_") + ".html";
+					? "report.html"
+					: report.title.replaceAll("\\W+", "_") + ".html";
 				var file = new File(targetDir, fileName);
 				Files.writeString(file.toPath(), text.toString());
 			} catch (Exception e) {
@@ -104,12 +141,12 @@ public class ReportResultToolbar extends EditorActionBarContributor {
 		}
 
 		private void copyLibs(File targetDir, File htmlFolder)
-				throws IOException {
+			throws IOException {
 			File lib = new File(htmlFolder, "report.js");
 			if (lib.exists()) {
 				File tlib = new File(targetDir, "report.js");
 				Files.copy(lib.toPath(), tlib.toPath(),
-						StandardCopyOption.REPLACE_EXISTING);
+					StandardCopyOption.REPLACE_EXISTING);
 			}
 			File libDir = new File(htmlFolder, "lib");
 			if (!libDir.exists())
