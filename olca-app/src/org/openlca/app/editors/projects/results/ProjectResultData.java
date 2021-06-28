@@ -1,5 +1,6 @@
 package org.openlca.app.editors.projects.results;
 
+import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.results.Sort;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.NwSetTable;
@@ -14,14 +15,17 @@ public class ProjectResultData {
 	private final IDatabase db;
 	private final Project project;
 	private final ProjectResult result;
+	private final Report report;
 	private final ProjectVariant[] variants;
 	private final ResultItemView items;
 	private final NwSetTable nwFactors;
 
-	private ProjectResultData(Project project, ProjectResult result, IDatabase db) {
+	private ProjectResultData(
+		IDatabase db, Project project, ProjectResult result, Report report) {
+		this.db = db;
 		this.project = project;
 		this.result = result;
-		this.db = db;
+		this.report = report;
 		this.variants = result.getVariants()
 			.stream()
 			.sorted((v1, v2) -> Strings.compare(v1.name, v2.name))
@@ -36,20 +40,29 @@ public class ProjectResultData {
 			: null;
 	}
 
-	public static ProjectResultData of(Project project, ProjectResult result, IDatabase db) {
-		return new ProjectResultData(project, result, db);
+	public static ProjectResultData of(
+		IDatabase db, Project project, ProjectResult result, Report report) {
+		return new ProjectResultData(db, project, result, report);
 	}
 
 	public IDatabase db() {
 		return db;
 	}
-	
+
 	public ProjectResult result() {
 		return result;
 	}
 
 	public Project project() {
 		return project;
+	}
+
+	public boolean hasReport() {
+		return report != null;
+	}
+
+	public Report report() {
+		return report;
 	}
 
 	public ProjectVariant[] variants() {
