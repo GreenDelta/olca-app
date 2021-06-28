@@ -1,6 +1,5 @@
 package org.openlca.app.editors.lcia;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -185,12 +184,12 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 	private void onAdd() {
 		var flows = ModelSelectionDialog.multiSelect(ModelType.FLOW);
-		if (flows == null || flows.length == 0)
+		if (flows.isEmpty())
 			return;
-		createFactors(Arrays.asList(flows));
+		createFactors(flows);
 	}
 
-	private void createFactors(List<Descriptor> flows) {
+	private void createFactors(List<? extends Descriptor> flows) {
 		if (flows == null || flows.isEmpty())
 			return;
 		for (var d : flows) {

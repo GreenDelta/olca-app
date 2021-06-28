@@ -225,8 +225,8 @@ class ExchangeTable {
 
 	private void onAdd() {
 		var descriptors = ModelSelectionDialog.multiSelect(ModelType.FLOW);
-		if (descriptors != null) {
-			add(Arrays.asList(descriptors));
+		if (descriptors.isEmpty()) {
+			add(descriptors);
 		}
 	}
 
@@ -244,7 +244,7 @@ class ExchangeTable {
 		editor.postEvent(ProcessEditor.EXCHANGES_CHANGED, this);
 	}
 
-	private void add(List<Descriptor> descriptors) {
+	private void add(List<? extends Descriptor> descriptors) {
 		if (descriptors.isEmpty())
 			return;
 		Process process = editor.getModel();

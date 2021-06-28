@@ -158,13 +158,13 @@ class ProjectSetupPage extends ModelPage<Project> {
 		});
 		Tables.onDrop(table, descriptors -> {
 			if (descriptors != null) {
-				addVariants(descriptors.toArray(new Descriptor[0]));
+				addVariants(descriptors);
 			}
 		});
 	}
 
-	private void addVariants(Descriptor[] descriptors) {
-		if (descriptors == null || descriptors.length == 0)
+	private void addVariants(List<? extends Descriptor> descriptors) {
+		if (descriptors.isEmpty())
 			return;
 		for (var d : descriptors) {
 			if (d == null)

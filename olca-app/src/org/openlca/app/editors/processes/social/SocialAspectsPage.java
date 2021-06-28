@@ -102,7 +102,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 
 	private void addIndicator() {
 		var list = ModelSelectionDialog.multiSelect(ModelType.SOCIAL_INDICATOR);
-		if (list == null)
+		if (list.isEmpty())
 			return;
 		for (var d : list) {
 			SocialAspect aspect = Aspects.find(getModel(), d);

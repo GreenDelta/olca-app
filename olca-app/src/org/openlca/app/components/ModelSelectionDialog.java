@@ -1,6 +1,7 @@
 package org.openlca.app.components;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -46,10 +47,9 @@ public class ModelSelectionDialog extends FormDialog {
 	public boolean isEmptyOk = false;
 
 	/**
-	 * The selected elements. Note that this array can be null when nothing was
-	 * selected.
+	 * The selected elements.
 	 */
-	public CategorizedDescriptor[] selection;
+	private List<CategorizedDescriptor> selection = Collections.emptyList();
 
 	private final ModelType modelType;
 	private TreeViewer viewer;
@@ -66,18 +66,18 @@ public class ModelSelectionDialog extends FormDialog {
 			return null;
 		ModelSelectionDialog d = new ModelSelectionDialog(type);
 		return d.open() == OK
-				? d.first()
-				: null;
+			? d.first()
+			: null;
 	}
 
-	public static CategorizedDescriptor[] multiSelect(ModelType type) {
+	public static List<CategorizedDescriptor> multiSelect(ModelType type) {
 		if (type == null || !type.isCategorized())
-			return null;
+			return Collections.emptyList();
 		ModelSelectionDialog d = new ModelSelectionDialog(type);
 		d.forMultiple = true;
-		if (d.open() == OK)
-			return d.selection;
-		return null;
+		return d.open() == OK
+			? d.selection
+			: Collections.emptyList();
 	}
 
 	/**
@@ -85,9 +85,9 @@ public class ModelSelectionDialog extends FormDialog {
 	 * empty.
 	 */
 	public CategorizedDescriptor first() {
-		if (selection == null || selection.length == 0)
+		if (selection == null || selection.isEmpty())
 			return null;
-		return selection[0];
+		return selection.get(0);
 	}
 
 	@Override
@@ -116,56 +116,37 @@ public class ModelSelectionDialog extends FormDialog {
 	private String getTitle() {
 		if (modelType == null)
 			return "unknown?";
-		switch (modelType) {
-		case ACTOR:
-			return forMultiple ? M.Actors : M.Actor;
-		case FLOW:
-			return forMultiple ? M.Flows : M.Flow;
-		case FLOW_PROPERTY:
-			return forMultiple ? M.FlowProperties : M.FlowProperty;
-		case IMPACT_METHOD:
-			return forMultiple
-					? M.ImpactAssessmentMethods
-					: M.ImpactAssessmentMethod;
-		case PROCESS:
-			return forMultiple ? M.Processes : M.Process;
-		case PRODUCT_SYSTEM:
-			return forMultiple ? M.ProductSystems : M.ProductSystem;
-		case PROJECT:
-			return forMultiple ? M.Projects : M.Project;
-		case SOCIAL_INDICATOR:
-			return forMultiple ? M.SocialIndicators : M.SocialIndicator;
-		case SOURCE:
-			return forMultiple ? M.Sources : M.Source;
-		case UNIT_GROUP:
-			return forMultiple ? M.UnitGroups : M.UnitGroup;
-		case CATEGORY:
-			return forMultiple ? "Categories" : M.Category;
-		case CURRENCY:
-			return forMultiple ? M.Currencies : M.Currency;
-		case DQ_SYSTEM:
-			return forMultiple ? M.DataQualitySystems : M.DataQualitySystem;
-		case IMPACT_CATEGORY:
-			return forMultiple ? M.ImpactCategories : M.ImpactCategory;
-		case LOCATION:
-			return forMultiple ? M.Locations : M.Location;
-		case PARAMETER:
-			return forMultiple ? M.Parameters : M.Parameter;
-		case NW_SET:
-			return forMultiple
-					? M.NormalizationWeightingSets
-					: M.NormalizationWeighting;
-		case UNIT:
-			return forMultiple ? M.Units : M.Unit;
-		default:
-			return "unknown?";
-		}
+		return switch (modelType) {
+			case ACTOR -> forMultiple ? M.Actors : M.Actor;
+			case FLOW -> forMultiple ? M.Flows : M.Flow;
+			case FLOW_PROPERTY -> forMultiple ? M.FlowProperties : M.FlowProperty;
+			case IMPACT_METHOD -> forMultiple
+				? M.ImpactAssessmentMethods
+				: M.ImpactAssessmentMethod;
+			case PROCESS -> forMultiple ? M.Processes : M.Process;
+			case PRODUCT_SYSTEM -> forMultiple ? M.ProductSystems : M.ProductSystem;
+			case PROJECT -> forMultiple ? M.Projects : M.Project;
+			case SOCIAL_INDICATOR -> forMultiple ? M.SocialIndicators : M.SocialIndicator;
+			case SOURCE -> forMultiple ? M.Sources : M.Source;
+			case UNIT_GROUP -> forMultiple ? M.UnitGroups : M.UnitGroup;
+			case CATEGORY -> forMultiple ? "Categories" : M.Category;
+			case CURRENCY -> forMultiple ? M.Currencies : M.Currency;
+			case DQ_SYSTEM -> forMultiple ? M.DataQualitySystems : M.DataQualitySystem;
+			case IMPACT_CATEGORY -> forMultiple ? M.ImpactCategories : M.ImpactCategory;
+			case LOCATION -> forMultiple ? M.Locations : M.Location;
+			case PARAMETER -> forMultiple ? M.Parameters : M.Parameter;
+			case NW_SET -> forMultiple
+				? M.NormalizationWeightingSets
+				: M.NormalizationWeighting;
+			case UNIT -> forMultiple ? M.Units : M.Unit;
+			default -> "unknown?";
+		};
 	}
 
 	private void createViewer(Composite comp) {
 		viewer = forMultiple
-				? NavigationTree.forMultiSelection(comp, modelType)
-				: NavigationTree.forSingleSelection(comp, modelType);
+			? NavigationTree.forMultiSelection(comp, modelType)
+			: NavigationTree.forSingleSelection(comp, modelType);
 		viewer.setFilters(new ModelTextFilter(filterText, viewer));
 		UI.gridData(viewer.getTree(), true, true);
 		viewer.addSelectionChangedListener(new SelectionChangedListener());
@@ -176,23 +157,23 @@ public class ModelSelectionDialog extends FormDialog {
 	protected Point getInitialSize() {
 		var shell = getShell().getDisplay().getBounds();
 		int width = shell.x > 0 && shell.x < 600
-				? shell.x
-				: 600;
+			? shell.x
+			: 600;
 		int height = shell.y > 0 && shell.y < 600
-				? shell.y
-				: 600;
+			? shell.y
+			: 600;
 		return new Point(width, height);
 	}
 
 	private void addSectionActions(Section section) {
 		Action expand = Actions.create(
-				M.ExpandAll,
-				Icon.EXPAND.descriptor(),
-				() -> viewer.expandAll());
+			M.ExpandAll,
+			Icon.EXPAND.descriptor(),
+			() -> viewer.expandAll());
 		Action collapse = Actions.create(
-				M.CollapseAll,
-				Icon.COLLAPSE.descriptor(),
-				() -> viewer.collapseAll());
+			M.CollapseAll,
+			Icon.COLLAPSE.descriptor(),
+			() -> viewer.collapseAll());
 		Actions.bind(section, expand, collapse);
 	}
 
@@ -207,7 +188,7 @@ public class ModelSelectionDialog extends FormDialog {
 	}
 
 	private class SelectionChangedListener
-			implements ISelectionChangedListener {
+		implements ISelectionChangedListener {
 
 		@Override
 		public void selectionChanged(SelectionChangedEvent e) {
@@ -223,22 +204,21 @@ public class ModelSelectionDialog extends FormDialog {
 				if (d == null || d.type != modelType)
 					continue;
 
-				// make sure that the selected element
-				// is visible and not hidden because of
-				// the filter
+				// make sure that the selected element is visible and not
+				// hidden because of the filter
 				if (!Strings.isNullOrEmpty(filter)) {
 					String label = Labels.name(d);
 					if (label == null ||
-							!label.toLowerCase().contains(filter))
+						!label.toLowerCase().contains(filter))
 						continue;
 				}
 
 				descriptors.add(d);
 			}
-			selection = descriptors.toArray(new CategorizedDescriptor[0]);
+			selection = descriptors;
 			if (!isEmptyOk) {
 				getButton(IDialogConstants.OK_ID).setEnabled(
-						selection != null && selection.length > 0);
+					selection != null && selection.size() > 0);
 			}
 		}
 	}
@@ -250,9 +230,7 @@ public class ModelSelectionDialog extends FormDialog {
 			Object obj = Viewers.getFirstSelected(viewer);
 			if (obj instanceof ModelElement) {
 				ModelElement elem = (ModelElement) obj;
-				selection = new CategorizedDescriptor[] {
-						elem.getContent()
-				};
+				selection = Collections.singletonList(elem.getContent());
 				okPressed();
 			}
 		}

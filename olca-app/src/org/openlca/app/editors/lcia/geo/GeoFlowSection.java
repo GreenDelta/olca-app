@@ -1,6 +1,5 @@
 package org.openlca.app.editors.lcia.geo;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -88,7 +87,7 @@ class GeoFlowSection {
 		if (page.setup == null)
 			return;
 		var flows = ModelSelectionDialog.multiSelect(ModelType.FLOW);
-		if (flows == null || flows.length == 0)
+		if (flows.isEmpty())
 			return;
 		var dao = new FlowDao(Database.get());
 		for (CategorizedDescriptor d : flows) {
@@ -132,10 +131,10 @@ class GeoFlowSection {
 
 		// select the locations
 		var locs = ModelSelectionDialog.multiSelect(ModelType.LOCATION);
-		if (locs == null || locs.length == 0)
+		if (locs.isEmpty())
 			return;
 		var locDao = new LocationDao(Database.get());
-		var locations = Arrays.stream(locs)
+		var locations = locs.stream()
 				.map(d -> locDao.getForId(d.id))
 				.filter(loc -> loc != null)
 				.collect(Collectors.toList());

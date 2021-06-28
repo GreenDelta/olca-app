@@ -64,7 +64,7 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		if (!editor.isEditable())
 			return;
 		var descriptors = ModelSelectionDialog.multiSelect(ModelType.SOURCE);
-		if (descriptors == null)
+		if (descriptors.isEmpty())
 			return;
 		boolean added = false;
 		for (var d : descriptors) {

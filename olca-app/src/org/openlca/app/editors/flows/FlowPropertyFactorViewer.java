@@ -102,8 +102,6 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 			return;
 		var descriptors = ModelSelectionDialog
 				.multiSelect(ModelType.FLOW_PROPERTY);
-		if (descriptors == null)
-			return;
 		for (var d : descriptors) {
 			add(d);
 		}
