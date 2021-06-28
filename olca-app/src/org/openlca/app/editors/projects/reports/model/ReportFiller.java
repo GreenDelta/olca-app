@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
-import org.openlca.app.editors.projects.results.ProjectResultData;
+import org.openlca.app.editors.projects.ProjectResultData;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Project;

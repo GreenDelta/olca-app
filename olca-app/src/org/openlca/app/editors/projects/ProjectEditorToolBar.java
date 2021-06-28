@@ -7,12 +7,10 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
-import org.openlca.app.editors.projects.results.ProjectResultData;
 import org.openlca.app.editors.projects.results.ProjectResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
-import org.openlca.core.model.Project;
 import org.openlca.core.results.ProjectResult;
 
 public class ProjectEditorToolBar extends EditorActionBarContributor {

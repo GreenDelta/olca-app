@@ -1,4 +1,4 @@
-package org.openlca.app.editors.projects.results;
+package org.openlca.app.editors.projects;
 
 import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.results.Sort;
@@ -40,7 +40,7 @@ public class ProjectResultData {
 			: null;
 	}
 
-	public static ProjectResultData of(
+	static ProjectResultData of(
 		IDatabase db, Project project, ProjectResult result, Report report) {
 		return new ProjectResultData(db, project, result, report);
 	}

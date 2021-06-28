@@ -107,7 +107,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		UI.gridData(button, false, false).widthHint = 100;
 		button.setImage(Images.get(ModelType.PROJECT));
 		Controls.onSelect(button,
-			e -> ProjectEditorToolBar.calculate(project));
+			e -> ProjectEditorToolBar.calculate(editor));
 	}
 
 	private void createVariantsSection(Composite body) {

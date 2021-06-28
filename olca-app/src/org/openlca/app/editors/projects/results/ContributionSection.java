@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
+import org.openlca.app.editors.projects.ProjectResultData;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;

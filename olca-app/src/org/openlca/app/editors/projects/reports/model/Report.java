@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Properties;
 
 import com.google.gson.GsonBuilder;
-import org.openlca.app.editors.projects.results.ProjectResultData;
+
+import org.openlca.app.editors.projects.ProjectResultData;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.LoggerFactory;
 

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openlca.app.editors.projects.results.ProjectResultData;
+import org.openlca.app.editors.projects.ProjectResultData;
 
 class ReportImpactResult {
 

@@ -12,6 +12,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
+import org.openlca.app.editors.projects.ProjectResultData;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
