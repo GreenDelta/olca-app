@@ -13,7 +13,7 @@ const readMessageMap = (file) => {
         .map(line => {
             const t = line.trim()
             const cut = t.indexOf("=")
-            if (t.length == 0 || cut < 0) {
+            if (t.length === 0 || cut < 0) {
                 return null
             }
             const key = t.substring(0, cut)

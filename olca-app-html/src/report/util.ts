@@ -1,7 +1,7 @@
 import { Report, ReportIndicator, ReportVariant, VariantResult } from "./model";
 
 export function isEmpty<T>(xs: T[]): boolean {
-  return !xs || xs.length == 0;
+  return !xs || xs.length === 0;
 }
 
 export function hasResults(report: Report): boolean {

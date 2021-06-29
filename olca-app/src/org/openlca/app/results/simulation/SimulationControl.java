@@ -35,9 +35,8 @@ class SimulationControl {
 
 	private void startProgress() {
 		try {
-			Display display = Display.getCurrent();
-			SimulationProgress progress = new SimulationProgress(display,
-					editor, page);
+			var display = Display.getCurrent();
+			var progress = new SimulationProgress(display, editor, page);
 			ModalContext.run(progress, true, monitor, display);
 		} catch (Exception e) {
 			log.error("Could not start simulation progress", e);
