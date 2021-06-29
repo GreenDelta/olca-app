@@ -42,6 +42,8 @@ public enum ReportComponent {
 	/** Contributions of the processes in the variants to the LCIA results. */
 	PROCESS_CONTRIBUTION_CHART("process_contribution_chart"),
 
+	PROCESS_CONTRIBUTION_TABLE("process_contribution_table"),
+
 	LCC_ADDED_VALUES_TABLE("lcc_added_values_table"),
 
 	LCC_NET_COSTS_TABLE("lcc_net_costs_table");

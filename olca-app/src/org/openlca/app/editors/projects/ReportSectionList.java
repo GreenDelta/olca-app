@@ -76,7 +76,7 @@ class ReportSectionList {
 		final Section ui;
 		Text titleText;
 		Text descriptionText;
-		ComboViewer componentViewer;
+		ComboViewer componentCombo;
 
 		SectionWidget(ReportSection model, Composite parent, FormToolkit tk) {
 			this.model = Objects.requireNonNull(model);
@@ -97,7 +97,7 @@ class ReportSectionList {
 			descriptionText.setText(text);
 
 			var component = ReportComponent.getForId(model.componentId);
-			componentViewer.setSelection(new StructuredSelection(component));
+			componentCombo.setSelection(new StructuredSelection(component));
 		}
 
 		private void createTitleText(Composite comp, FormToolkit tk) {
@@ -124,17 +124,16 @@ class ReportSectionList {
 
 		private void createComponentViewer(Composite comp, FormToolkit tk) {
 			UI.formLabel(comp, tk, M.Component);
-			componentViewer = new ComboViewer(comp);
-			UI.gridData(componentViewer.getControl(), false, false).widthHint = 250;
-			componentViewer.setContentProvider(ArrayContentProvider
-				.getInstance());
-			componentViewer.setLabelProvider(new ReportComponentLabel());
-			componentViewer.setInput(ReportComponent.values());
+			componentCombo = new ComboViewer(comp);
+			UI.gridData(componentCombo.getControl(), false, false).widthHint = 250;
+			componentCombo.setContentProvider(ArrayContentProvider.getInstance());
+			componentCombo.setLabelProvider(new ReportComponentLabel());
+			componentCombo.setInput(ReportComponent.values());
 			if (model.componentId != null) {
-				componentViewer.setSelection(new StructuredSelection(
+				componentCombo.setSelection(new StructuredSelection(
 					ReportComponent.getForId(model.componentId)));
 			}
-			componentViewer.addSelectionChangedListener(e -> {
+			componentCombo.addSelectionChangedListener(e -> {
 				ReportComponent c = Selections.firstOf(e);
 				model.componentId = c == null || c == ReportComponent.NONE
 					? null
