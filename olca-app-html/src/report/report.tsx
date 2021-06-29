@@ -15,6 +15,7 @@ import { IndicatorBarChart } from "./charts/indicator-bar-chart";
 import { ProcessContributionChart } from "./charts/process-contribution-chart";
 import { SingleScoreChart } from "./charts/single-score-bar-chart";
 import { ComparisonChart } from "./charts/comparison-chart";
+import { ProcessContributionTable } from "./process-contribution-table";
 
 const Page = ({ report }: { report: Report }) => {
   const sections: JSX.Element[] = [];
@@ -75,6 +76,8 @@ const getSectionComponent = (id: string, report: Report) => {
       return <SingleScoreChart report={report} />;
     case "process_contribution_chart":
       return <ProcessContributionChart report={report} />;
+    case "process_contribution_table":
+      return <ProcessContributionTable report={report} />;
     default:
       return null;
   }

@@ -12,13 +12,12 @@ import { IndicatorCombo } from "../indicator-combo";
 import { hasResults, isEmpty, variantResultOf } from "../util";
 
 export const ProcessContributionChart = ({ report }: { report: Report }) => {
-  const indicators = report.indicators;
-  if (!hasResults(report)
-    || isEmpty(report.results)) {
+  if (!hasResults(report)) {
     return <></>;
   }
 
   // the selected indicator
+  const indicators = report.indicators;
   const [indicator, setIndicator] = useState(indicators[0]);
 
   const canvas = useRef<HTMLCanvasElement>(null);
