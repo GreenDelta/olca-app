@@ -68,7 +68,7 @@ class ReportEditorPage extends FormPage {
 	private void createProcessesSection(Composite body) {
 		var section = UI.section(
 			body, tk, "Selected processes (for contribution analyses)");
-		section.setExpanded(false);
+		section.setExpanded(report().processes.size() != 0);
 		var comp = UI.sectionClient(section, tk, 1);
 		var table = Tables.createViewer(comp, M.Process);
 		table.setLabelProvider(new ProcessLabel());

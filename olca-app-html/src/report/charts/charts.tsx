@@ -66,29 +66,3 @@ export function colorOf(i: number, alpha?: number): string {
     ? `rgba(${color}, ${alpha})`
     : "rgb(" + color + ")"
 }
-
-export const IndicatorCombo = ({ indicators, selectedIndex, onChange }: {
-  indicators: ReportIndicator[],
-  selectedIndex: number,
-  onChange: (nextIndex: number) => void,
-}) => {
-
-  const options = indicators.map((indicator, idx) => (
-    <option key={indicator.impact.refId} value={idx}>
-      {indicator.impact.name}
-    </option>
-  ));
-
-  return (
-    <form>
-      <fieldset>
-        <select
-          value={selectedIndex}
-          style={{ width: 300 }}
-          onChange={e => onChange(parseInt(e.target.value, 10))}>
-          {options}
-        </select>
-      </fieldset>
-    </form>
-  );
-}

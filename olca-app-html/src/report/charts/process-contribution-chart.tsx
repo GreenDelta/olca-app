@@ -7,7 +7,8 @@ import {
   ReportIndicator,
   ReportVariant,
 } from "../model";
-import { colorOf, IndicatorCombo } from "./charts";
+import { colorOf } from "./charts";
+import { IndicatorCombo } from "../indicator-combo";
 import { hasResults, isEmpty, variantResultOf } from "../util";
 
 export const ProcessContributionChart = ({ report }: { report: Report }) => {
@@ -17,12 +18,11 @@ export const ProcessContributionChart = ({ report }: { report: Report }) => {
     return <></>;
   }
 
-  // the index of the selected indicator
-  const [indicatorIdx, setIndicatorIdx] = useState(0);
+  // the selected indicator
+  const [indicator, setIndicator] = useState(indicators[0]);
 
   const canvas = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    const indicator = indicators[indicatorIdx];
     const config = configOf(report, indicator);
     const context2d = canvas.current?.getContext("2d");
     const chart = context2d
@@ -35,8 +35,8 @@ export const ProcessContributionChart = ({ report }: { report: Report }) => {
     <div style={{ textAlign: "center" }}>
       <IndicatorCombo
         indicators={indicators}
-        selectedIndex={indicatorIdx}
-        onChange={setIndicatorIdx} />
+        selected={indicator}
+        onChange={indicator => setIndicator(indicator)} />
       <canvas width="650" height="400" ref={canvas}
         style={{ display: "inline-block" }} />
     </div>

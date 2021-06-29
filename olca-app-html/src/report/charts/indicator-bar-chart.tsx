@@ -1,7 +1,7 @@
 import { Chart, ChartConfiguration } from "chart.js";
 import React, { useEffect, useRef, useState } from "react";
 
-import { IndicatorCombo } from "./charts";
+import { IndicatorCombo } from "../indicator-combo";
 import { hasResults, totalResultOf } from "../util";
 import { Report, ReportIndicator } from "../model";
 
@@ -12,12 +12,11 @@ export const IndicatorBarChart = ({ report }: { report: Report }) => {
     return <></>;
   }
 
-  // the index of the selected indicator
-  const [indicatorIdx, setIndicatorIdx] = useState(0);
+  // the selected indicator
+  const [indicator, setIndicator] = useState(indicators[0]);
 
   const canvas = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    const indicator = indicators[indicatorIdx];
     const config = configOf(report, indicator);
     const context2d = canvas.current?.getContext("2d");
     const chart = context2d
@@ -30,8 +29,8 @@ export const IndicatorBarChart = ({ report }: { report: Report }) => {
     <div style={{ textAlign: "center" }}>
       <IndicatorCombo
         indicators={indicators}
-        selectedIndex={indicatorIdx}
-        onChange={setIndicatorIdx} />
+        selected={indicator}
+        onChange={indicator => setIndicator(indicator)} />
       <canvas width="650" height="400" ref={canvas}
         style={{ display: "inline-block" }} />
     </div>
