@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
@@ -116,7 +117,15 @@ class EditorPage extends FormPage {
 			Icon.EDIT.descriptor(), this::onEdit);
 
 		Actions.bind(table, onOpen, onUsage, onEvaluate, onEdit);
-		Tables.onDoubleClick(table, e -> onOpen.run());
+		Tables.onDoubleClick(table, e -> {
+			var cell = table.getCell(new Point(e.x, e.y));
+			if (cell == null)
+				return;
+			switch (cell.getColumnIndex()) {
+				case 0, 1 -> onOpen.run();
+				case 2, 3, 4 -> onEdit.run();
+			}
+		});
 	}
 
 	private void evaluateFormulas() {

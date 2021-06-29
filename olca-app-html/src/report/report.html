@@ -16,6 +16,25 @@
 
 <body>
     <div id="react-root"></div>
+    <script>
+        var errorMessageAdded = false;
+        window.onerror = function () {
+            if (errorMessageAdded) {
+                return;
+            }
+            var p = document.createElement("p");
+            p.setAttribute("style", "color: #44475a; margin: 20px")
+            p.textContent =
+                "Seems like your system browser does not support the execution"
+                + " of JavaScript that is used in this report. You can export the"
+                + " report with the export button in the toolbar and open it with"
+                + " an alternative browser. On Windows, you can also configure"
+                + " openLCA to use WebView2 with Edge, if this is installed"
+                + " under File > Settings > Configuration.";
+            document.body.appendChild(p);
+            errorMessageAdded = true;
+        };
+    </script>
     <script src="lib/react.js"></script>
     <script src="lib/react-dom.js"></script>
     <script src="lib/chart.min.js"></script>

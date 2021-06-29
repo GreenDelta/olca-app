@@ -22,16 +22,11 @@ class Label extends LabelProvider
 		if (col != 1 || !(obj instanceof Param))
 			return null;
 		Param p = (Param) obj;
-		switch (p.scope()) {
-		case GLOBAL:
-			return Images.get(ModelType.PARAMETER);
-		case IMPACT:
-			return Images.get(ModelType.IMPACT_CATEGORY);
-		case PROCESS:
-			return Images.get(ModelType.PROCESS);
-		default:
-			return null;
-		}
+		return switch (p.scope()) {
+			case GLOBAL -> Images.get(ModelType.PARAMETER);
+			case IMPACT -> Images.get(ModelType.IMPACT_CATEGORY);
+			case PROCESS -> Images.get(ModelType.PROCESS);
+		};
 	}
 
 	@Override
