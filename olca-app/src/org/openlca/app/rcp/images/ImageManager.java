@@ -9,7 +9,6 @@ import org.eclipse.jface.viewers.DecorationOverlayIcon;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.openlca.app.rcp.RcpActivator;
 
 /**
@@ -120,26 +119,34 @@ class ImageManager {
 
 	private static class OverlayImageDescriptor extends CompositeImageDescriptor {
 
-		private ImageDescriptor image;
-		private ImageDescriptor overlay;
-		private Point size;
-		private Point overlaySize;
+		private final ImageDescriptor image;
+		private final ImageDescriptor overlay;
+		private final Point size;
+		private final Point overlaySize;
 
 		private OverlayImageDescriptor(ImageDescriptor image, ImageDescriptor overlay) {
 			this.image = image;
 			this.overlay = overlay;
-			Rectangle bounds = image.createImage().getBounds();
-			size = new Point(bounds.width, bounds.height);
-			bounds = overlay.createImage().getBounds();
-			overlaySize = new Point(bounds.width, bounds.height);
+
+			// image bounds
+			var _image = image.createImage();
+			var imgBounds = _image.getBounds();
+			_image.dispose();
+			size = new Point(imgBounds.width, imgBounds.height);
+
+			// overlay bounds
+			var _overlay = overlay.createImage();
+			var overlayBounds = _overlay.getBounds();
+			_overlay.dispose();
+			overlaySize = new Point(overlayBounds.width, overlayBounds.height);
 		}
 
 		@Override
 		protected void drawCompositeImage(int width, int height) {
-			drawImage(zoom -> image.getImageData(zoom), 0, 0);
+			drawImage(image::getImageData, 0, 0);
 			int x = size.x - overlaySize.x;
 			int y = size.y - overlaySize.y;
-			drawImage(zoom -> overlay.getImageData(zoom), x, y);
+			drawImage(overlay::getImageData, x, y);
 		}
 
 		@Override
@@ -148,5 +155,5 @@ class ImageManager {
 		}
 
 	}
-	
+
 }
