@@ -33,15 +33,29 @@ class ModelSelectionState implements ICheckStateListener {
 		var parent = element.getParent();
 		if (parent == null)
 			return;
-		boolean checked = false;
-		boolean all = true;
+
+		// proof by contradiction
+		boolean oneChecked = false;
+		boolean allChecked = true;
 		for (var child : parent.getChildren()) {
-			checked = viewer.getChecked(child) || viewer.getGrayed(child);
-			if (!viewer.getChecked(child) || viewer.getGrayed(child))
-				all = false;
+			var isChecked = viewer.getChecked(child);
+			var isGrayed = viewer.getGrayed(child);
+			if (isChecked || isGrayed) {
+				oneChecked = true;
+			}
+			if (!isChecked) {
+				allChecked = false;
+			}
 		}
-		viewer.setGrayed(parent, !all && checked);
-		viewer.setChecked(parent, checked);
+
+		if (allChecked) {
+			viewer.setChecked(parent, true);
+			viewer.setGrayed(parent, false);
+		} else if (oneChecked) {
+			viewer.setGrayed(parent, true);
+		} else {
+			viewer.setGrayChecked(parent, false);
+		}
 		updateParent(parent);
 	}
 
@@ -56,8 +70,8 @@ class ModelSelectionState implements ICheckStateListener {
 	@Override
 	public void checkStateChanged(CheckStateChangedEvent event) {
 		viewer.getControl().setRedraw(false);
-		INavigationElement<?> element = (INavigationElement<?>) event
-				.getElement();
+		var element = (INavigationElement<?>) event.getElement();
+		System.out.println(viewer.getChecked(element));
 		viewer.setGrayed(element, false);
 		updateChildren(element, event.getChecked());
 		updateParent(element);

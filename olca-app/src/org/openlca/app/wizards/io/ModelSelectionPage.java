@@ -2,6 +2,7 @@ package org.openlca.app.wizards.io;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -225,16 +226,27 @@ class ModelSelectionPage extends WizardPage {
 				return true;
 			})
 			.toArray(INavigationElement<?>[]::new);
-
-		// check the selected elements
 		if (selection.length == 0)
 			return;
-		var checkState = new ModelSelectionState(this, viewer);
+
+		// check the selected elements
 		viewer.setCheckedElements(selection);
+		var checkState = new ModelSelectionState(this, viewer);
 		for (var e : selection) {
 			checkState.updateChildren(e, true);
 			checkState.updateParent(e);
 		}
-	}
 
+		// expand the selection
+		var expanded = new HashSet<INavigationElement<?>>();
+		for (var elem : selection) {
+			expanded.add(elem);
+			var parent = elem.getParent();
+			while (parent != null) {
+				expanded.add(parent);
+				parent = parent.getParent();
+			}
+		}
+		viewer.setExpandedElements(expanded.toArray());
+	}
 }
