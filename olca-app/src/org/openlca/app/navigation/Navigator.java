@@ -131,7 +131,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static void updateLabels(CommonViewer viewer,
-									 INavigationElement<?> element) {
+																	 INavigationElement<?> element) {
 		TreeItem item = findItem(viewer, element);
 		if (item == null)
 			return;
@@ -142,7 +142,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static TreeItem findItem(CommonViewer viewer,
-									 INavigationElement<?> element) {
+																	 INavigationElement<?> element) {
 		Stack<TreeItem> items = new Stack<>();
 		items.addAll(Arrays.asList(viewer.getTree().getItems()));
 		while (!items.empty()) {
@@ -155,7 +155,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static boolean itemEqualsElement(TreeItem item,
-											 INavigationElement<?> element) {
+																					 INavigationElement<?> element) {
 		INavigationElement<?> data = (INavigationElement<?>) item.getData();
 		if (data == null)
 			return false;
@@ -167,7 +167,7 @@ public class Navigator extends CommonNavigator {
 	 * elements of the <code>oldExpansion</code> array.
 	 */
 	private static void setRefreshedExpansion(CommonViewer viewer,
-											  Object[] oldExpansion) {
+																						Object[] oldExpansion) {
 		List<INavigationElement<?>> newExpanded = new ArrayList<>();
 		for (Object expandedElem : oldExpansion) {
 			if (!(expandedElem instanceof INavigationElement))
@@ -255,14 +255,14 @@ public class Navigator extends CommonNavigator {
 	}
 
 	public INavigationElement<?> getFirstSelected() {
-		INavigationElement<?>[] all = getAllSelected();
-		return all.length > 0 ? all[0] : null;
+		var all = getAllSelected();
+		return all.isEmpty()
+			? null
+			: all.get(0);
 	}
 
-	public INavigationElement<?>[] getAllSelected() {
-		List<INavigationElement<?>> selection = Viewers
-			.getAllSelected(getNavigationViewer());
-		return selection.toArray(new INavigationElement[0]);
+	public List<INavigationElement<?>> getAllSelected() {
+		return Viewers.getAllSelected(getNavigationViewer());
 	}
 
 	public static Set<CategorizedDescriptor> collectDescriptors(
@@ -279,7 +279,7 @@ public class Navigator extends CommonNavigator {
 	 * null in the unwrap function
 	 */
 	public static <T> Set<T> collect(Collection<INavigationElement<?>> elements,
-									 Function<INavigationElement<?>, T> unwrap) {
+																	 Function<INavigationElement<?>, T> unwrap) {
 		Set<T> set = new HashSet<>();
 		for (INavigationElement<?> element : elements) {
 			T content = unwrap.apply(element);

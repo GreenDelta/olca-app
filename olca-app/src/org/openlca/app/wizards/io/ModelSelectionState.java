@@ -8,8 +8,8 @@ import org.openlca.app.navigation.elements.ModelElement;
 
 class ModelSelectionState implements ICheckStateListener {
 
-	private CheckboxTreeViewer viewer;
-	private ModelSelectionPage page;
+	private final CheckboxTreeViewer viewer;
+	private final ModelSelectionPage page;
 
 	public ModelSelectionState(ModelSelectionPage page,
 			CheckboxTreeViewer viewer) {
@@ -17,8 +17,8 @@ class ModelSelectionState implements ICheckStateListener {
 		this.viewer = viewer;
 	}
 
-	private void updateChildren(INavigationElement<?> element, boolean state) {
-		for (INavigationElement<?> child : element.getChildren()) {
+	void updateChildren(INavigationElement<?> element, boolean state) {
+		for (var child : element.getChildren()) {
 			viewer.setGrayed(child, false);
 			viewer.setChecked(child, state);
 			if (child instanceof ModelElement) {
@@ -29,13 +29,13 @@ class ModelSelectionState implements ICheckStateListener {
 		}
 	}
 
-	private void updateParent(INavigationElement<?> element) {
-		INavigationElement<?> parent = element.getParent();
+	void updateParent(INavigationElement<?> element) {
+		var parent = element.getParent();
 		if (parent == null)
 			return;
 		boolean checked = false;
 		boolean all = true;
-		for (INavigationElement<?> child : parent.getChildren()) {
+		for (var child : parent.getChildren()) {
 			checked = viewer.getChecked(child) || viewer.getGrayed(child);
 			if (!viewer.getChecked(child) || viewer.getGrayed(child))
 				all = false;
