@@ -11,10 +11,24 @@ class ModelSelectionState implements ICheckStateListener {
 	private final CheckboxTreeViewer viewer;
 	private final ModelSelectionPage page;
 
-	public ModelSelectionState(ModelSelectionPage page,
-			CheckboxTreeViewer viewer) {
+	public ModelSelectionState(
+		ModelSelectionPage page, CheckboxTreeViewer viewer) {
 		this.page = page;
 		this.viewer = viewer;
+	}
+
+	@Override
+	public void checkStateChanged(CheckStateChangedEvent event) {
+		viewer.getControl().setRedraw(false);
+		var element = (INavigationElement<?>) event.getElement();
+		viewer.setGrayed(element, false);
+		updateChildren(element, event.getChecked());
+		updateParent(element);
+		if (element instanceof ModelElement) {
+			updateSelection((ModelElement) element, event.getChecked());
+		}
+		viewer.getControl().setRedraw(true);
+		page.checkCompletion();
 	}
 
 	void updateChildren(INavigationElement<?> element, boolean state) {
@@ -51,34 +65,21 @@ class ModelSelectionState implements ICheckStateListener {
 		if (allChecked) {
 			viewer.setChecked(parent, true);
 			viewer.setGrayed(parent, false);
-		} else if (oneChecked) {
-			viewer.setGrayed(parent, true);
 		} else {
-			viewer.setGrayChecked(parent, false);
+			viewer.setGrayChecked(parent, oneChecked);
 		}
 		updateParent(parent);
 	}
 
 	private void updateSelection(ModelElement element, boolean selected) {
-		var component = element.getContent();
-		if (selected)
-			page.getSelectedModels().add(component);
-		else
-			page.getSelectedModels().remove(component);
-	}
-
-	@Override
-	public void checkStateChanged(CheckStateChangedEvent event) {
-		viewer.getControl().setRedraw(false);
-		var element = (INavigationElement<?>) event.getElement();
-		System.out.println(viewer.getChecked(element));
-		viewer.setGrayed(element, false);
-		updateChildren(element, event.getChecked());
-		updateParent(element);
-		if (element instanceof ModelElement) {
-			updateSelection((ModelElement) element, event.getChecked());
+		var model = element.getContent();
+		var selection = page.getSelectedModels();
+		if (model == null || selection == null)
+			return;
+		if (selected) {
+			selection.add(model);
+		} else {
+			selection.remove(model);
 		}
-		viewer.getControl().setRedraw(true);
-		page.checkCompletion();
 	}
 }
