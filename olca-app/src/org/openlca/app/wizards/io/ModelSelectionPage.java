@@ -25,6 +25,7 @@ import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.preferences.Preferences;
 import org.openlca.app.util.Colors;
@@ -37,7 +38,7 @@ import org.openlca.core.model.descriptors.Descriptor;
 class ModelSelectionPage extends WizardPage {
 
 	private final ModelType[] types;
-	private final List<Descriptor> selectedComponents = new ArrayList<>();
+	private final List<Descriptor> selectedModels = new ArrayList<>();
 
 	private File exportDestination;
 	private CheckboxTreeViewer viewer;
@@ -74,7 +75,7 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	public List<Descriptor> getSelectedModels() {
-		return selectedComponents;
+		return selectedModels;
 	}
 
 	private void createTexts() {
@@ -88,8 +89,7 @@ class ModelSelectionPage extends WizardPage {
 
 
 	void checkCompletion() {
-		setPageComplete(exportDestination != null
-			&& selectedComponents.size() > 0);
+		setPageComplete(exportDestination != null && selectedModels.size() > 0);
 	}
 
 	@Override
@@ -233,6 +233,9 @@ class ModelSelectionPage extends WizardPage {
 		viewer.setCheckedElements(selection);
 		var checkState = new ModelSelectionState(this, viewer);
 		for (var e : selection) {
+			if (e instanceof ModelElement) {
+				checkState.updateSelection((ModelElement) e, true);
+			}
 			checkState.updateChildren(e, true);
 			checkState.updateParent(e);
 		}
@@ -248,5 +251,7 @@ class ModelSelectionPage extends WizardPage {
 			}
 		}
 		viewer.setExpandedElements(expanded.toArray());
+
+		checkCompletion();
 	}
 }

@@ -71,7 +71,7 @@ class ModelSelectionState implements ICheckStateListener {
 		updateParent(parent);
 	}
 
-	private void updateSelection(ModelElement element, boolean selected) {
+	void updateSelection(ModelElement element, boolean selected) {
 		var model = element.getContent();
 		var selection = page.getSelectedModels();
 		if (model == null || selection == null)
