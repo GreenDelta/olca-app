@@ -161,7 +161,8 @@ class ExchangeTable {
 	private void bindActions(Section section) {
 		if (!editor.isEditable())
 			return;
-		Action add = Actions.onAdd(this::onAdd);
+		var add = Actions.onAdd(
+				() -> add(ModelSelectionDialog.multiSelect(ModelType.FLOW)));
 		Action remove = Actions.onRemove(this::onRemove);
 		Action qRef = Actions.create(M.SetAsQuantitativeReference, null, () -> {
 			Exchange e = Viewers.getFirstSelected(viewer);
@@ -203,7 +204,7 @@ class ExchangeTable {
 		Tables.onDoubleClick(table, e -> {
 			TableItem item = Tables.getItem(table, e);
 			if (item == null) {
-				onAdd();
+				add(ModelSelectionDialog.multiSelect(ModelType.FLOW));
 				return;
 			}
 			Exchange exchange = Viewers.getFirstSelected(table);
@@ -221,13 +222,6 @@ class ExchangeTable {
 			columns.add(COMMENT);
 		}
 		return columns.toArray(new String[0]);
-	}
-
-	private void onAdd() {
-		var descriptors = ModelSelectionDialog.multiSelect(ModelType.FLOW);
-		if (descriptors.isEmpty()) {
-			add(descriptors);
-		}
 	}
 
 	private void onRemove() {
