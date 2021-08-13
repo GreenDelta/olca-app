@@ -17,6 +17,7 @@ import org.openlca.app.navigation.elements.MappingFileElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.validation.ValidationDialog;
 import org.openlca.app.validation.ValidationView;
 import org.openlca.core.database.config.DatabaseConfig;
 
@@ -90,6 +91,8 @@ public class ValidateAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
+		ValidationDialog.show();
+		/*
 		if (!elements.isEmpty()) {
 			ValidationView.validate(elements);
 			return;
@@ -110,6 +113,8 @@ public class ValidateAction extends Action implements INavigationAction {
 		if (!elements.isEmpty()) {
 			ValidationView.validate(elements);
 		}
+
+		 */
 	}
 
 }
