@@ -299,6 +299,14 @@
             name="Library">
       </editor>
 
+			<editor
+						class="org.openlca.app.validation.ValidationResultView"
+						default="false"
+						icon="icons/validate.png"
+						id="ValidationResultView"
+						name="Validation result">
+			</editor>
+
    </extension>
 
    <extension
@@ -528,10 +536,6 @@
          <property
                name="startupMessageRect"
                value="7,525,445,20">
-         </property>
-         <property
-               name="preferenceCustomization"
-               value="plugin_customization.ini">
          </property>
       </product>
    </extension>

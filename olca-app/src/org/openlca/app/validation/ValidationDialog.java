@@ -12,6 +12,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
+import org.openlca.validation.Validation;
 
 public class ValidationDialog extends FormDialog {
 
@@ -67,5 +68,16 @@ public class ValidationDialog extends FormDialog {
 			skipWarnings = check.getSelection();
 			System.out.println(skipWarnings);
 		});
+	}
+
+	@Override
+	protected void okPressed() {
+		var validation = Validation.on(db)
+			.maxItems(maxItems)
+			.skipWarnings(skipWarnings);
+		// TODO: currently blocking
+		validation.run();
+		ValidationResultView.open(validation.getItems());
+		super.okPressed();
 	}
 }
