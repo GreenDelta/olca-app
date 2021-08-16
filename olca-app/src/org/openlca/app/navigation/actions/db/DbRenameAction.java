@@ -20,7 +20,6 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.app.validation.ValidationView;
 import org.openlca.core.database.DbUtils;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
@@ -83,7 +82,6 @@ public class DbRenameAction extends Action implements INavigationAction {
 				if (!Editors.closeAll())
 					return;
 				Database.close();
-				ValidationView.clear();
 			}
 			File oldDbFolder = DatabaseDir.getRootFolder(config.name());
 			File newDbFolder = DatabaseDir.getRootFolder(newName);

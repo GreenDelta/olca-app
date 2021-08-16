@@ -22,7 +22,6 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
-import org.openlca.app.validation.ValidationView;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.config.MySqlConfig;
@@ -74,7 +73,6 @@ public class DbDeleteAction extends Action implements INavigationAction {
 			Navigator.refresh();
 			HistoryView.refresh();
 			CompareView.clear();
-			ValidationView.clear();
 		});
 	}
 

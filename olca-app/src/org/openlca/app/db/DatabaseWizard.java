@@ -13,7 +13,6 @@ import org.openlca.app.cloud.ui.diff.CompareView;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.UI;
-import org.openlca.app.validation.ValidationView;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.config.MySqlConfig;
@@ -51,7 +50,6 @@ public class DatabaseWizard extends Wizard {
 			Navigator.refresh();
 			HistoryView.refresh();
 			CompareView.clear();
-			ValidationView.clear();
 			return true;
 		} catch (Exception e) {
 			log.error("Database creation failed", e);

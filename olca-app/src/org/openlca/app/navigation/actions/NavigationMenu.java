@@ -26,22 +26,23 @@ import org.openlca.app.navigation.actions.cloud.ShowCommentsAction;
 import org.openlca.app.navigation.actions.cloud.ShowInHistoryAction;
 import org.openlca.app.navigation.actions.cloud.ToggleTrackingAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
-import org.openlca.app.navigation.actions.libraries.MountLibraryAction;
 import org.openlca.app.navigation.actions.db.DbCloseAction;
 import org.openlca.app.navigation.actions.db.DbCopyAction;
 import org.openlca.app.navigation.actions.db.DbCreateAction;
 import org.openlca.app.navigation.actions.db.DbDeleteAction;
 import org.openlca.app.navigation.actions.db.DbExportAction;
+import org.openlca.app.navigation.actions.db.DbRenameAction;
 import org.openlca.app.navigation.actions.db.DbRestoreAction;
+import org.openlca.app.navigation.actions.db.DbValidationAction;
 import org.openlca.app.navigation.actions.libraries.DeleteLibraryAction;
 import org.openlca.app.navigation.actions.libraries.ExportLibraryAction;
+import org.openlca.app.navigation.actions.libraries.MountLibraryAction;
 import org.openlca.app.navigation.actions.libraries.OpenLibraryAction;
 import org.openlca.app.navigation.actions.libraries.UseLibraryCategoryAction;
 import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
 import org.openlca.app.navigation.actions.scripts.ExportScriptAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.actions.db.DbRenameAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.FileImport;
 import org.openlca.app.util.Actions;
@@ -90,7 +91,7 @@ public class NavigationMenu extends CommonActionProvider {
 				new DbRestoreAction(),
 				new DbExportAction(),
 				new DbActivateAction(),
-				ValidateAction.forDatabase(),
+				new DbValidationAction(),
 				new DbCopyAction(),
 				new DbRenameAction(),
 				new DbDeleteAction(),
@@ -114,8 +115,7 @@ public class NavigationMenu extends CommonActionProvider {
 				new CalculateSystemAction(),
 				new CreateModelAction(),
 				new OpenUsageAction(),
-				new DeleteModelAction(),
-				ValidateAction.forModel());
+				new DeleteModelAction());
 
 		// script & mapping actions
 		addActions(selection, menu,

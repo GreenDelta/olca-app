@@ -29,7 +29,6 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
-import org.openlca.app.validation.ValidationView;
 import org.openlca.core.database.Derby;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
@@ -118,7 +117,6 @@ public class DbCompressAction extends Action implements INavigationAction {
 				if (isActive) {
 					if (!Editors.closeAll())
 						return;
-					ValidationView.clear();
 					db = (Derby) Database.get();
 				} else {
 					db = (Derby) Database.activate(config);
