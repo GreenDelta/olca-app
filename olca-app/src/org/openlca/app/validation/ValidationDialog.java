@@ -1,7 +1,5 @@
 package org.openlca.app.validation;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -86,19 +84,22 @@ public class ValidationDialog extends FormDialog {
 	@Override
 	protected void okPressed() {
 		var okButton = getButton(IDialogConstants.OK_ID);
-		okButton.setEnabled(false);
+		if (okButton != null) {
+			okButton.setEnabled(false);
+		}
 
 		progressBar.setVisible(true);
-		progressBar.setMinimum(0);
-		progressBar.setMaximum(100);
 		progressBar.setSelection(0);
 		var display = progressBar.getDisplay();
 
+		// start the validation thread
 		validation = Validation.on(db)
 			.maxItems(maxItems)
 			.skipWarnings(skipWarnings);
+		new Thread(validation).start();
+
+		// UI thread for updating the dialog
 		new Thread(() -> {
-			var progress = new AtomicInteger(0);
 			while (true) {
 				try {
 					Thread.sleep(100);
@@ -108,20 +109,27 @@ public class ValidationDialog extends FormDialog {
 						break;
 					}
 					display.asyncExec(() -> {
-						int p = progress.get() + 10;
-						progressBar.setSelection(p);
-						progress.set(p > 90 ? 0 : p);
+						progressBar.setMaximum(validation.workerCount() + 1);
+						progressBar.setSelection(1 + validation.finishedWorkerCount());
 					});
 				} catch (InterruptedException e) {
 					ErrorReporter.on("failed to wait during validation", e);
+					close();
 				}
 			}
 		}).start();
-		new Thread(validation).start();
+	}
 
-		// TODO: currently blocking
-
-		// ValidationResultView.open(validation.getItems());
-		// super.okPressed();
+	@Override
+	protected void cancelPressed() {
+		if (validation == null) {
+			super.cancelPressed();
+			return;
+		}
+		var cancelButton = getButton(IDialogConstants.CANCEL_ID);
+		if (cancelButton != null) {
+			cancelButton.setEnabled(false);
+		}
+		validation.cancel();
 	}
 }
