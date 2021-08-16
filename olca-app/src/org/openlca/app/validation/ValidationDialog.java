@@ -98,13 +98,15 @@ public class ValidationDialog extends FormDialog {
 			.maxItems(maxItems)
 			.skipWarnings(skipWarnings);
 		new Thread(() -> {
-			validation.run();
 			var progress = new AtomicInteger(0);
 			while (true) {
-				if(progress.get() > 100)
-					break;
 				try {
-					Thread.sleep(250);
+					Thread.sleep(100);
+					if (validation.hasFinished()) {
+						ValidationResultView.open(validation.items());
+						display.asyncExec(super::okPressed);
+						break;
+					}
 					display.asyncExec(() -> {
 						int p = progress.get() + 10;
 						progressBar.setSelection(p);
@@ -115,6 +117,7 @@ public class ValidationDialog extends FormDialog {
 				}
 			}
 		}).start();
+		new Thread(validation).start();
 
 		// TODO: currently blocking
 
