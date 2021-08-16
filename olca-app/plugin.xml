@@ -300,7 +300,7 @@
       </editor>
 
 			<editor
-						class="org.openlca.app.validation.ValidationResultView"
+						class="org.openlca.app.tools.ValidationResultView"
 						default="false"
 						icon="icons/validate.png"
 						id="ValidationResultView"

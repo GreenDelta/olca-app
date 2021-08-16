@@ -9,7 +9,7 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.validation.ValidationDialog;
+import org.openlca.app.tools.ValidationDialog;
 
 public class DbValidationAction extends Action implements INavigationAction {
 

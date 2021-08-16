@@ -1,16 +1,16 @@
-package org.openlca.app.validation;
+package org.openlca.app.tools;
 
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
@@ -22,6 +22,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.validation.Item;
 
 public class ValidationResultView extends SimpleFormEditor {
@@ -64,14 +65,22 @@ public class ValidationResultView extends SimpleFormEditor {
 			var form = UI.formHeader(mform, "Validation results");
 			var tk = mform.getToolkit();
 			var body = UI.formBody(form, tk);
-			TableViewer table = Tables.createViewer(body, M.DataSet, M.Message);
+			var table = Tables.createViewer(body, M.DataSet, M.Message);
 			Tables.bindColumnWidths(table, 0.2, 0.8);
 			var label = new Label();
 			table.setLabelProvider(label);
 			Viewers.sortByLabels(table, label, 0, 1);
 			table.setInput(items);
+			Tables.onDoubleClick(table, $ -> {
+				var e = Viewers.getFirstSelected(table);
+				if (!(e instanceof Item))
+					return;
+				var item = (Item) e;
+				if (item.model() instanceof CategorizedDescriptor) {
+					App.open((CategorizedDescriptor) item.model());
+				}
+			});
 		}
-
 	}
 
 	private static class Label extends LabelProvider
@@ -95,6 +104,7 @@ public class ValidationResultView extends SimpleFormEditor {
 			return null;
 		}
 
+		@Override
 		public String getColumnText(Object obj, int col) {
 			if (!(obj instanceof Item))
 				return null;

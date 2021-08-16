@@ -1,4 +1,4 @@
-package org.openlca.app.validation;
+package org.openlca.app.tools;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
