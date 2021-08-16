@@ -4,6 +4,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
@@ -26,6 +27,7 @@ public class ValidationDialog extends FormDialog {
 	private Validation validation;
 	private Combo combo;
 	private Spinner spinner;
+	private Label infoLabel;
 	private ProgressBar progressBar;
 
 	public static void show() {
@@ -66,7 +68,7 @@ public class ValidationDialog extends FormDialog {
 			"All messages",
 			"Warnings and errors",
 			"Errors only");
-		combo.select(0);
+		combo.select(1);
 		UI.gridData(combo, true, false);
 
 		// max. items
@@ -77,10 +79,17 @@ public class ValidationDialog extends FormDialog {
 		Controls.onSelect(
 			spinner, e -> maxItems = spinner.getSelection());
 
-		progressBar = new ProgressBar(body, SWT.SMOOTH);
-		UI.gridData(progressBar, true, false).horizontalSpan = 2;
+		// progress bar and message
+		var progressComp = tk.createComposite(body);
+		UI.gridData(progressComp, true, false).horizontalSpan = 2;
+		UI.gridLayout(progressComp, 1);
+		infoLabel = tk.createLabel(
+			progressComp, "Validation is running ...");
+		UI.gridData(infoLabel, true, false);
+		infoLabel.setVisible(false);
+		progressBar = new ProgressBar(progressComp, SWT.SMOOTH);
+		UI.gridData(progressBar, true, false);
 		progressBar.setVisible(false);
-
 	}
 
 	@Override
@@ -93,6 +102,7 @@ public class ValidationDialog extends FormDialog {
 		// set UI in `run`-mode
 		combo.setEnabled(false);
 		spinner.setEnabled(false);
+		infoLabel.setVisible(true);
 		progressBar.setVisible(true);
 		progressBar.setSelection(0);
 		var display = progressBar.getDisplay();
@@ -137,6 +147,8 @@ public class ValidationDialog extends FormDialog {
 		if (cancelButton != null) {
 			cancelButton.setEnabled(false);
 		}
+		infoLabel.setText("Cancelling validation ...");
+		infoLabel.getParent().redraw();
 		validation.cancel();
 	}
 }
