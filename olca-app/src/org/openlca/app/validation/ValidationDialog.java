@@ -3,6 +3,7 @@ package org.openlca.app.validation;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
@@ -21,10 +22,11 @@ public class ValidationDialog extends FormDialog {
 
 	private final IDatabase db;
 	private int maxItems = 1000;
-	private boolean skipWarnings = false;
 
-	private ProgressBar progressBar;
 	private Validation validation;
+	private Combo combo;
+	private Spinner spinner;
+	private ProgressBar progressBar;
 
 	public static void show() {
 		var db = Database.get();
@@ -58,22 +60,22 @@ public class ValidationDialog extends FormDialog {
 		var body = UI.formBody(mform.getForm(), tk);
 		UI.gridLayout(body, 2);
 
+		// types of messages that should be collected
+		combo = UI.formCombo(body, tk, "Validation messages");
+		combo.setItems(
+			"All messages",
+			"Warnings and errors",
+			"Errors only");
+		combo.select(0);
+		UI.gridData(combo, true, false);
+
 		// max. items
-		UI.formLabel(body, tk, "Maximum number of reported issues");
-		var spinner = new Spinner(body, SWT.BORDER);
+		UI.formLabel(body, tk, "Maximum message count");
+		spinner = new Spinner(body, SWT.BORDER);
 		tk.adapt(spinner);
 		spinner.setValues(maxItems, 0, Integer.MAX_VALUE, 0, 100, 1000);
-		Controls.onSelect(spinner, e -> {
-			maxItems = spinner.getSelection();
-			System.out.println(maxItems);
-		});
-
-		// skip warnings
-		var check = UI.formCheckBox(body, tk, "Skip warnings");
-		Controls.onSelect(check, e -> {
-			skipWarnings = check.getSelection();
-			System.out.println(skipWarnings);
-		});
+		Controls.onSelect(
+			spinner, e -> maxItems = spinner.getSelection());
 
 		progressBar = new ProgressBar(body, SWT.SMOOTH);
 		UI.gridData(progressBar, true, false).horizontalSpan = 2;
@@ -88,14 +90,19 @@ public class ValidationDialog extends FormDialog {
 			okButton.setEnabled(false);
 		}
 
+		// set UI in `run`-mode
+		combo.setEnabled(false);
+		spinner.setEnabled(false);
 		progressBar.setVisible(true);
 		progressBar.setSelection(0);
 		var display = progressBar.getDisplay();
 
 		// start the validation thread
+		int level = combo.getSelectionIndex();
 		validation = Validation.on(db)
 			.maxItems(maxItems)
-			.skipWarnings(skipWarnings);
+			.skipInfos(level > 0)
+			.skipWarnings(level > 1);
 		new Thread(validation).start();
 
 		// UI thread for updating the dialog
