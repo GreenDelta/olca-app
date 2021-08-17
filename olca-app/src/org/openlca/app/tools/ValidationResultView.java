@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -18,9 +19,11 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.validation.Item;
@@ -71,7 +74,11 @@ public class ValidationResultView extends SimpleFormEditor {
 			table.setLabelProvider(label);
 			Viewers.sortByLabels(table, label, 0, 1);
 			table.setInput(items);
-			Tables.onDoubleClick(table, $ -> {
+			bindActions(table);
+		}
+
+		private void bindActions(TableViewer table) {
+			var onOpen = Actions.onOpen(() -> {
 				var e = Viewers.getFirstSelected(table);
 				if (!(e instanceof Item))
 					return;
@@ -80,6 +87,9 @@ public class ValidationResultView extends SimpleFormEditor {
 					App.open((CategorizedDescriptor) item.model());
 				}
 			});
+			var onCopy = TableClipboard.onCopySelected(table);
+			Actions.bind(table, onOpen, onCopy);
+			Tables.onDoubleClick(table, $ -> onOpen.run());
 		}
 	}
 

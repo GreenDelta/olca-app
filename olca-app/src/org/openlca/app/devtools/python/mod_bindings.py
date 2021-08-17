@@ -216,6 +216,7 @@ import org.openlca.core.matrix.InventoryBuilder as InventoryBuilder
 import org.openlca.ipc.handlers.InventoryHandler as InventoryHandler
 import org.openlca.io.ecospold2.input.IsicCategoryTreeSync as IsicCategoryTreeSync
 import org.openlca.core.database.validation.Issue as Issue
+import org.openlca.validation.Item as Item
 import org.openlca.core.matrix.format.JavaMatrix as JavaMatrix
 import org.openlca.core.matrix.solvers.JavaSolver as JavaSolver
 import org.openlca.jsonld.Json as Json
