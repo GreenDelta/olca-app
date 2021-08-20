@@ -315,7 +315,7 @@ public class MapView {
 		final Bounds view = new Bounds();
 
 		void update(Rectangle canvasSize, int zoom) {
-			Point t = center.clone();
+			Point t = center.copy();
 			WebMercator.apply(t, zoom);
 			double cWidth = canvasSize.width / 2.0;
 			double cHeight = canvasSize.height / 2.0;
