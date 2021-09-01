@@ -2,6 +2,7 @@ package org.openlca.app.logging;
 
 import java.io.PrintStream;
 
+import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
@@ -11,15 +12,17 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
-import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 public class Console extends AppenderSkeleton {
 
+	private static final PrintStream sysOut = System.out;
+	private static final PrintStream sysErr = System.err;
 	private static Console instance;
-	private MessageConsoleStream stream;
-	private MessageConsole console;
+	private final MessageConsoleStream stream;
+	private final MessageConsole console;
+
 
 	public static void show() {
 		if (instance == null) {
@@ -32,38 +35,41 @@ public class Console extends AppenderSkeleton {
 		if (instance == null)
 			return;
 		instance.close();
-		IConsoleManager manager = ConsolePlugin.getDefault()
-				.getConsoleManager();
-		manager.removeConsoles(new IConsole[] { instance.console });
-		instance.console.destroy();
+		var manager = ConsolePlugin.getDefault().getConsoleManager();
+		manager.removeConsoles(new IConsole[]{instance.console});
 		instance = null;
-		System.setOut(System.out);
-		System.setErr(System.err);
+
+		System.setOut(sysOut);
+		System.setErr(sysErr);
 	}
 
 	private Console() {
-		console = findOrCreate("openLCA");
+		console = findOrCreate();
 		stream = console.newMessageStream();
-		Logger logger = Logger.getLogger("org.openlca");
+		var logger = Logger.getLogger("org.openlca");
 		logger.addAppender(this);
 
 		// link sys.out and sys.err
-		PrintStream pout = new PrintStream(stream);
-		System.setOut(pout);
-		System.setErr(pout);
+		var teeOut = new TeeOutputStream(sysOut, stream);
+		System.setOut(new PrintStream(teeOut));
+		var teeErr = new TeeOutputStream(sysErr, stream);
+		System.setErr(new PrintStream(teeErr));
 	}
 
-	private MessageConsole findOrCreate(String name) {
-		ConsolePlugin plugin = ConsolePlugin.getDefault();
-		IConsoleManager conMan = plugin.getConsoleManager();
-		IConsole[] existing = conMan.getConsoles();
-		for (int i = 0; i < existing.length; i++)
-			if (name.equals(existing[i].getName()))
-				return (MessageConsole) existing[i];
-		MessageConsole console = new MessageConsole(name, null);
+	private MessageConsole findOrCreate() {
+		var plugin = ConsolePlugin.getDefault();
+		var manager = plugin.getConsoleManager();
+		var consoles = manager.getConsoles();
+		if (consoles != null) {
+			for (var c : consoles) {
+				if ("openLCA".equals(c.getName()))
+					return (MessageConsole) c;
+			}
+		}
+		var console = new MessageConsole("openLCA", null);
 		// set the buffer size of the console
 		console.setWaterMarks(1000, 50000);
-		conMan.addConsoles(new IConsole[] { console });
+		manager.addConsoles(new IConsole[]{console});
 		return console;
 	}
 
@@ -75,14 +81,14 @@ public class Console extends AppenderSkeleton {
 		if (evt.getLevel().toInt() <= Level.DEBUG_INT) {
 			LocationInfo info = evt.getLocationInformation();
 			message = "" + evt.getLevel().toString()
-					+ " [" + DateFormatUtils.format(evt.timeStamp, "HH:mm:ss.SS") + "]"
-					+ " @" + info.getClassName()
-					+ ">" + info.getMethodName()
-					+ ">" + info.getLineNumber()
-					+ " - " + evt.getMessage();
+				+ " [" + DateFormatUtils.format(evt.timeStamp, "HH:mm:ss.SS") + "]"
+				+ " @" + info.getClassName()
+				+ ">" + info.getMethodName()
+				+ ">" + info.getLineNumber()
+				+ " - " + evt.getMessage();
 		} else {
 			message = "" + evt.getLevel().toString()
-					+ " - " + evt.getMessage();
+				+ " - " + evt.getMessage();
 		}
 		tryPrintMessage(message, evt.getThrowableInformation());
 	}
@@ -97,7 +103,7 @@ public class Console extends AppenderSkeleton {
 					throwable.printStackTrace(new PrintStream(stream));
 				}
 			}
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
 	}
 

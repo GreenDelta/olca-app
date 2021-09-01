@@ -2,17 +2,17 @@ package org.openlca.app.rcp;
 
 import java.io.PrintStream;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
+import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.IOConsole;
-import org.eclipse.ui.console.IOConsoleOutputStream;
 import org.openlca.app.M;
+import org.openlca.app.editors.Editors;
 import org.openlca.expressions.Repl;
 
 /**
@@ -28,43 +28,81 @@ class FormulaConsoleAction extends Action {
 
 	@Override
 	public void run() {
-		IOConsole console = findOrCreateConsole(M.FormulaInterpreter);
-		ConsoleJob job = new ConsoleJob(console);
-		job.schedule();
+		var manager = ConsolePlugin.getDefault().getConsoleManager();
+		if (manager == null)
+			return;
+
+		// there are two cases where we need to destroy the console
+		// 1) the user quits the interpreter via a command
+		// 2) the user closes the console view
+
+		var console = getConsole(manager);
+		var page = Editors.getActivePage();
+		var viewListener = new ViewListener(page, manager, console);
+
+		var repl = new Repl(
+			console.getInputStream(),
+			new PrintStream(console.newOutputStream()),
+			new PrintStream(console.newOutputStream()));
+		repl.onExit(() -> {
+			manager.removeConsoles(new IOConsole[]{console});
+			if (page != null) {
+				page.removePartListener(viewListener);
+			}
+		});
+		new Thread(repl::start).start();
+		console.activate();
 	}
 
-	private IOConsole findOrCreateConsole(String name) {
-		ConsolePlugin plugin = ConsolePlugin.getDefault();
-		IConsoleManager conMan = plugin.getConsoleManager();
-		IConsole[] existing = conMan.getConsoles();
-		for (int i = 0; i < existing.length; i++)
-			if (name.equals(existing[i].getName()))
-				return (IOConsole) existing[i];
-		IOConsole console = new IOConsole(name, null);
-		conMan.addConsoles(new IConsole[] { console });
+	private IOConsole getConsole(IConsoleManager manager) {
+		var name = M.FormulaInterpreter;
+		var consoles = manager.getConsoles();
+		if (consoles != null) {
+			for (var c : consoles) {
+				if (name.equals(c.getName()))
+					return (IOConsole) c;
+			}
+		}
+		var console = new IOConsole(name, null);
+		manager.addConsoles(new IConsole[]{console});
 		return console;
 	}
 
-	private class ConsoleJob extends Job {
+	private static class ViewListener implements IPartListener2 {
 
-		private IOConsole console;
+		private final IConsoleManager manager;
+		private final IWorkbenchPage page;
+		private final IOConsole console;
 
-		public ConsoleJob(IOConsole console) {
-			super(M.FormulaInterpreter);
+		ViewListener(IWorkbenchPage page,
+			IConsoleManager manager,
+			IOConsole console) {
+			this.manager = manager;
+			this.page = page;
 			this.console = console;
+			if (page != null) {
+				page.addPartListener(this);
+			}
 		}
 
 		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			console.activate();
-			IOConsoleOutputStream out = console.newOutputStream();
-			IOConsoleOutputStream err = console.newOutputStream();
-			Repl repl = new Repl(console.getInputStream(),
-					new PrintStream(out), new PrintStream(err));
-			repl.start();
-			return Status.OK_STATUS;
+		public void partClosed(IWorkbenchPartReference partRef) {
+			var viewId = IConsoleConstants.ID_CONSOLE_VIEW;
+			if (!viewId.equals(partRef.getId()))
+				return;
+			var isActive = false;
+			for (var c : manager.getConsoles()) {
+				if (console.equals(c)) {
+					isActive = true;
+					break;
+				}
+			}
+			if (isActive) {
+				manager.removeConsoles(new IConsole[]{console});
+			}
+			if (page != null) {
+				page.removePartListener(this);
+			}
 		}
-
 	}
-
 }

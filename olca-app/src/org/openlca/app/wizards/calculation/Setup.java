@@ -53,8 +53,7 @@ class Setup {
 		calcSetup.parameterRedefs.clear();
 		if (params == null)
 			return;
-		calcSetup.parameterRedefs.addAll(
-				params.parameters);
+		calcSetup.parameterRedefs.addAll(params.parameters);
 	}
 
 	/**
