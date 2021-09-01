@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -21,6 +20,7 @@ import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.expressions.FormulaInterpreter;
@@ -53,7 +53,7 @@ class EditorPage extends FormPage {
 		Runnable doFilter = () -> {
 			String t = filter.getText();
 			if (Strings.nullOrEmpty(t)
-					&& filterCombo.type != FilterCombo.ERRORS) {
+				&& filterCombo.type != FilterCombo.ERRORS) {
 				table.setInput(params);
 			} else {
 				List<Param> filtered = params.stream()
@@ -88,7 +88,8 @@ class EditorPage extends FormPage {
 	}
 
 	private void bindActions() {
-		Action onOpen = Actions.onOpen(() -> {
+
+		var onOpen = Actions.onOpen(() -> {
 			Param p = Viewers.getFirstSelected(table);
 			if (p == null)
 				return;
@@ -98,25 +99,27 @@ class EditorPage extends FormPage {
 				App.open(p.owner);
 			}
 		});
-		Action onUsage = Actions.create(
+
+		var onUsage = Actions.create(
 			M.Usage, Icon.LINK.descriptor(), () -> {
 				Param p = Viewers.getFirstSelected(table);
 				if (p == null)
 					return;
 				ParameterUsagePage.show(p.parameter, p.owner);
 			});
-		Action onEvaluate = Actions.create(
-			M.EvaluateAllFormulas, Icon.RUN.descriptor(), () -> {
-				App.runWithProgress(M.EvaluateAllFormulas,
-					this::evaluateFormulas, () -> {
-						table.setInput(params);
-						filter.setText("");
-					});
-			});
-		Action onEdit = Actions.create(M.Edit,
-			Icon.EDIT.descriptor(), this::onEdit);
 
-		Actions.bind(table, onOpen, onUsage, onEvaluate, onEdit);
+		var onEvaluate = Actions.create(
+			M.EvaluateAllFormulas, Icon.RUN.descriptor(), () -> App.runWithProgress(
+				M.EvaluateAllFormulas, this::evaluateFormulas, () -> {
+					table.setInput(params);
+					filter.setText("");
+				}));
+
+		var onEdit = Actions.create(M.Edit, Icon.EDIT.descriptor(), this::onEdit);
+		var onCopy = TableClipboard.onCopySelected(table);
+
+		Actions.bind(table, onOpen, onUsage, onEvaluate, onEdit, onCopy);
+
 		Tables.onDoubleClick(table, e -> {
 			var cell = table.getCell(new Point(e.x, e.y));
 			if (cell == null)
