@@ -46,9 +46,9 @@ class ValueEditor {
 	static boolean edit(EditorPage page, Param param) {
 		var db = Database.get();
 		if (db == null
-			  || page == null
-				|| param == null
-				|| param.parameter == null)
+			|| page == null
+			|| param == null
+			|| param.parameter == null)
 			return false;
 		return new ValueEditor(db, page, param).edit();
 	}
@@ -107,7 +107,7 @@ class ValueEditor {
 		return null;
 	}
 
-	private <T extends CategorizedEntity > T update(T e) {
+	private <T extends CategorizedEntity> T update(T e) {
 		if (e == null)
 			return null;
 		e.lastChange = Calendar.getInstance().getTimeInMillis();
@@ -118,14 +118,14 @@ class ValueEditor {
 	private boolean hasOpenEditor() {
 		var p = param.parameter;
 		if (param.owner == null
-				&& App.hasDirtyEditor(p)) {
+			&& App.hasDirtyEditor(p)) {
 			MsgBox.info("Cannot edit " + p.name,
 				"The parameter is currently "
-				+ "modified in another editor.");
+					+ "modified in another editor.");
 			return true;
 		}
 		if (param.owner != null
-				&& App.hasDirtyEditor(param.owner)) {
+			&& App.hasDirtyEditor(param.owner)) {
 			var label = Strings.cut(Labels.name(param.owner), 50);
 			MsgBox.info("Cannot edit " + p.name,
 				label + " is currently modified in another editor.");
@@ -181,12 +181,14 @@ class ValueEditor {
 
 			// label & text
 			tk.createLabel(comp, p.isInputParameter
-					? M.Value
-					: M.Formula);
-			var text = tk.createText(comp, p.isInputParameter
-				? Double.toString(value)
-				: formula == null ? "" : formula);
+				? M.Value
+				: M.Formula);
+			var text = tk.createText(comp, "");
 			UI.gridData(text, true, false);
+			Controls.onPainted(text, () -> text.setText(
+				p.isInputParameter
+					? Double.toString(value)
+					: formula == null ? "" : formula));
 
 			// uncertainty panel for input parameters
 			if (p.isInputParameter) {
@@ -237,7 +239,7 @@ class ValueEditor {
 						formula = textVal;
 						onError.accept(null);
 					} catch (Exception e) {
-						onError.accept(textVal + " " + M.IsInvalidFormula);
+						onError.accept("Formula error: " + Strings.cut(e.getMessage(), 80));
 					}
 				}
 			});

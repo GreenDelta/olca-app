@@ -3,10 +3,13 @@ package org.openlca.app.util;
 import java.util.function.Consumer;
 
 import org.eclipse.nebula.widgets.tablecombo.TableCombo;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.MenuItem;
@@ -30,6 +33,19 @@ public class Controls {
 		} else {
 			text.setText(s);
 		}
+	}
+
+	public static <T extends Control> void onPainted(T widget, Runnable fn) {
+		if (widget == null || fn == null)
+			return;
+		var listener = new PaintListener() {
+			@Override
+			public void paintControl(PaintEvent e) {
+				fn.run();
+				widget.removePaintListener(this);
+			}
+		};
+		widget.addPaintListener(listener);
 	}
 
 	public static void onSelect(Combo combo, Consumer<SelectionEvent> consumer) {
