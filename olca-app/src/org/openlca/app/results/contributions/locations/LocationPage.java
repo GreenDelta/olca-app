@@ -29,7 +29,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
-import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;

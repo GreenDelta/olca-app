@@ -21,9 +21,9 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
-import org.openlca.core.math.CalculationSetup;
 import org.openlca.core.math.Simulator;
 import org.openlca.core.matrix.index.TechFlow;
+import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ProductSystem;
@@ -88,7 +88,7 @@ class SimulationPage extends FormPage {
 		Text qRefText = UI.formText(settings, toolkit, M.QuantitativeReference);
 		Text simCountText = UI.formText(settings, toolkit, M.NumberOfSimulations);
 		if (editor.setup != null) {
-			CalculationSetup setup = editor.setup;
+			var setup = editor.setup;
 			systemText.setText(setup.productSystem.name);
 			processText.setText(setup.productSystem.referenceProcess.name);
 			qRefText.setText(getQRefText());

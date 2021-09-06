@@ -5,12 +5,12 @@ import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.preferences.Preferences;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NwSetDao;
-import org.openlca.core.math.CalculationSetup;
-import org.openlca.core.math.CalculationType;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.DQCalculationSetup;
 import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.CalculationSetup;
+import org.openlca.core.model.CalculationType;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -24,14 +24,13 @@ class Setup {
 	final boolean hasLibraries;
 	final CalculationSetup calcSetup;
 	final DQCalculationSetup dqSetup;
-	CalculationType calcType;
 	boolean storeInventory;
 	boolean withDataQuality;
 
 	private Setup(ProductSystem system) {
 		hasLibraries = FeatureFlag.LIBRARIES.isEnabled()
 				&& ProductSystems.hasLibraryLinks(system, Database.get());
-		calcSetup = new CalculationSetup(system);
+		calcSetup = CalculationSetup(system);
 		dqSetup = new DQCalculationSetup();
 		dqSetup.productSystemId = system.id;
 

@@ -21,7 +21,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.db.Database;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Question;
@@ -30,12 +29,13 @@ import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.MatrixData;
+import org.openlca.core.matrix.index.ImpactIndex;
 import org.openlca.core.matrix.index.TechIndex;
 import org.openlca.core.matrix.io.MatrixExport;
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.io.xls.MatrixExcelExport;
 import org.openlca.util.Strings;
 
@@ -198,9 +198,13 @@ public class MatrixExportDialog extends FormDialog {
 		UI.formLabel(comp, tk, M.ImpactAssessmentMethod);
 		var combo = new ImpactMethodViewer(comp);
 		combo.setNullable(true);
-		combo.setInput(Database.get());
-		combo.addSelectionChangedListener(
-			_e -> config.impactMethod = combo.getSelected());
+		combo.setInput(db);
+		combo.addSelectionChangedListener(_e -> {
+			var d = combo.getSelected();
+			if (d != null) {
+				config.impactMethod = db.get(ImpactMethod.class, d.id);
+			}
+		});
 	}
 
 	@Override
@@ -238,7 +242,7 @@ public class MatrixExportDialog extends FormDialog {
 		File folder;
 		Format format = Format.PYTHON;
 		AllocationMethod allocation;
-		ImpactMethodDescriptor impactMethod;
+		ImpactMethod impactMethod;
 		ParameterRedefSet parameters;
 		boolean regionalized;
 		boolean withCosts;
@@ -255,7 +259,7 @@ public class MatrixExportDialog extends FormDialog {
 				.withUncertainties(withUncertainties);
 
 			if (impactMethod != null) {
-				config.withImpacts(impactMethod);
+				config.withImpacts(ImpactIndex.of(impactMethod));
 			}
 
 			// set the parameter redefinitions
@@ -273,30 +277,23 @@ public class MatrixExportDialog extends FormDialog {
 			var data = config.build();
 
 			switch (format) {
-				case CSV:
-					MatrixExport.toCsv(db, folder, data)
-						.writeAll();
-					break;
-
-				case PYTHON:
-					MatrixExport.toCsv(db, folder, data)
-						.writeIndices();
-					MatrixExport.toNpy(db, folder, data)
-						.writeMatrices();
+				case CSV -> MatrixExport.toCsv(db, folder, data).writeAll();
+				case PYTHON -> {
+					MatrixExport.toCsv(db, folder, data).writeIndices();
+					MatrixExport.toNpy(db, folder, data).writeMatrices();
 					copyResource("MatrixExport_main.py", "main.py");
 					copyResource("MatrixExport_lib.py", "lib.py");
-					break;
-
-				case EXCEL:
-					new MatrixExcelExport(db, folder, data)
-						.writeAll();
-					break;
+				}
+				case EXCEL -> new MatrixExcelExport(db, folder, data).writeAll();
 			}
 			copyResource("MatrixExport_README.md", "README.md");
 		}
 
 		private void copyResource(String source, String target) {
-			try (var in = getClass().getResourceAsStream(source)) {
+			var in = getClass().getResourceAsStream(source);
+			if (in == null)
+				return;
+			try (in) {
 				var out = new File(folder, target).toPath();
 				Files.copy(in, out, StandardCopyOption.REPLACE_EXISTING);
 			} catch (Exception e) {
@@ -310,15 +307,11 @@ public class MatrixExportDialog extends FormDialog {
 
 		@Override
 		public String toString() {
-			switch (this) {
-				case CSV:
-					return "CSV";
-				case EXCEL:
-					return "Excel";
-				case PYTHON:
-					return "Python (NumPy, SciPy)";
-			}
-			return super.toString();
+			return switch (this) {
+				case CSV -> "CSV";
+				case EXCEL -> "Excel";
+				case PYTHON -> "Python (NumPy, SciPy)";
+			};
 		}
 	}
 }

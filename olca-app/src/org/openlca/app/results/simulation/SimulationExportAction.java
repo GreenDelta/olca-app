@@ -7,7 +7,7 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.FileType;
-import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.SimulationResult;
 import org.openlca.io.xls.results.SimulationResultExport;
 import org.slf4j.Logger;

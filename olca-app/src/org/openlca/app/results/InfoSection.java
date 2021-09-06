@@ -16,7 +16,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.math.CalculationSetup;
+import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
