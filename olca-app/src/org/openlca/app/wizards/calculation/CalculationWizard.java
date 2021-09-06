@@ -127,15 +127,16 @@ public class CalculationWizard extends Wizard {
 	}
 
 	private void runCalculation() {
+		
 		// for MC simulations, just open the simulation editor
-		if (setup.calcType == CalculationType.MONTE_CARLO_SIMULATION) {
+		if (setup.hasType(CalculationType.MONTE_CARLO_SIMULATION)) {
 			setup.calcSetup.withUncertainties = true;
 			SimulationEditor.open(setup.calcSetup);
 			return;
 		}
 
 		setup.calcSetup.withUncertainties = false;
-		boolean upstream = setup.calcType == CalculationType.UPSTREAM_ANALYSIS;
+		boolean upstream = setup.hasType(CalculationType.UPSTREAM_ANALYSIS);
 
 		// run the calculation
 		log.trace("run calculation");

@@ -3,14 +3,15 @@ package org.openlca.app.wizards.calculation;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.preferences.Preferences;
-import org.openlca.core.database.ImpactMethodDao;
-import org.openlca.core.database.NwSetDao;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.DQCalculationSetup;
 import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.CalculationType;
+import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.NwSet;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -24,26 +25,28 @@ class Setup {
 	final boolean hasLibraries;
 	final CalculationSetup calcSetup;
 	final DQCalculationSetup dqSetup;
+	private final IDatabase db = Database.get();
+
 	boolean storeInventory;
 	boolean withDataQuality;
 
 	private Setup(ProductSystem system) {
 		hasLibraries = FeatureFlag.LIBRARIES.isEnabled()
-				&& ProductSystems.hasLibraryLinks(system, Database.get());
-		calcSetup = CalculationSetup(system);
+			&& ProductSystems.hasLibraryLinks(system, Database.get());
+		calcSetup = CalculationSetup.contributions(system);
 		dqSetup = new DQCalculationSetup();
 		dqSetup.productSystemId = system.id;
 
 		// add parameter redefinitions
 		if (system.parameterSets.size() > 0) {
 			ParameterRedefSet baseline = system.parameterSets
-					.stream()
-					.filter(ps -> ps.isBaseline)
-					.findFirst()
-					.orElse(system.parameterSets.get(0));
+				.stream()
+				.filter(ps -> ps.isBaseline)
+				.findFirst()
+				.orElse(system.parameterSets.get(0));
 			if (baseline != null) {
 				calcSetup.parameterRedefs.addAll(
-						baseline.parameters);
+					baseline.parameters);
 			}
 		}
 	}
@@ -55,14 +58,44 @@ class Setup {
 		calcSetup.parameterRedefs.addAll(params.parameters);
 	}
 
+	boolean hasType(CalculationType type) {
+		return calcSetup.calculationType == type;
+	}
+
+	void setType(CalculationType type) {
+		calcSetup.calculationType = type;
+	}
+
+	void setMethod(ImpactMethodDescriptor method) {
+		calcSetup.nwSet = null;
+		if (method == null) {
+			calcSetup.impactMethod = null;
+			return;
+		}
+		calcSetup.impactMethod = db.get(ImpactMethod.class, method.id);
+	}
+
+	void setNwSet(NwSetDescriptor nwSet) {
+		calcSetup.nwSet = null;
+		if (nwSet == null)
+			return;
+		var method = calcSetup.impactMethod;
+		if (method == null)
+			return;
+		calcSetup.nwSet = method.nwSets.stream()
+			.filter(n -> n.id == nwSet.id)
+			.findAny()
+			.orElse(null);
+	}
+
 	/**
 	 * Initializes a calculation setup with the stored preferences of the last
 	 * calculation.
 	 */
 	static Setup init(ProductSystem system) {
 		Setup s = new Setup(system);
-		s.calcType = loadEnumPref(CalculationType.class,
-				CalculationType.CONTRIBUTION_ANALYSIS);
+		s.calcSetup.calculationType = loadEnumPref(CalculationType.class,
+			CalculationType.CONTRIBUTION_ANALYSIS);
 		s.calcSetup.allocationMethod = loadAllocationPref();
 		s.calcSetup.impactMethod = loadImpactMethodPref();
 		s.calcSetup.nwSet = loadNwSetPref(s.calcSetup.impactMethod);
@@ -73,9 +106,9 @@ class Setup {
 		// data quality settings
 		s.withDataQuality = false; // Preferences.getBool("calc.dqAssessment");
 		s.dqSetup.aggregationType = loadEnumPref(
-				AggregationType.class, AggregationType.WEIGHTED_AVERAGE);
+			AggregationType.class, AggregationType.WEIGHTED_AVERAGE);
 		s.dqSetup.naHandling = loadEnumPref(
-				NAHandling.class, NAHandling.EXCLUDE);
+			NAHandling.class, NAHandling.EXCLUDE);
 		s.dqSetup.ceiling = Preferences.getBool("calc.dqCeiling");
 		// init the DQ systems from the ref. process
 		if (system.referenceProcess != null) {
@@ -86,8 +119,6 @@ class Setup {
 
 		// reset features that are currently not supported with libraries
 		if (s.hasLibraries) {
-			s.calcType = CalculationType.CONTRIBUTION_ANALYSIS;
-			s.calcSetup.impactMethod = null;
 			s.calcSetup.nwSet = null;
 			s.calcSetup.withCosts = false;
 			s.withDataQuality = false;
@@ -107,46 +138,41 @@ class Setup {
 		return AllocationMethod.NONE;
 	}
 
-	private static ImpactMethodDescriptor loadImpactMethodPref() {
-		String val = Preferences.get("calc.impact.method");
-		if (val == null || val.isEmpty())
+	private static ImpactMethod loadImpactMethodPref() {
+		var refId = Preferences.get("calc.impact.method");
+		if (Strings.nullOrEmpty(refId))
 			return null;
 		try {
-			ImpactMethodDao dao = new ImpactMethodDao(Database.get());
-			for (ImpactMethodDescriptor d : dao.getDescriptors()) {
-				if (val.equals(d.refId))
-					return d;
-			}
+			return Database.get().get(ImpactMethod.class, refId);
 		} catch (Exception e) {
-			LoggerFactory.getLogger(Setup.class).error(
-					"failed to load LCIA methods", e);
+			var log = LoggerFactory.getLogger(Setup.class);
+			log.error("failed to load LCIA method", e);
+			return null;
 		}
-		return null;
 	}
 
-	private static NwSetDescriptor loadNwSetPref(ImpactMethodDescriptor method) {
-		if (method == null)
+	private static NwSet loadNwSetPref(ImpactMethod method) {
+		if (method == null || method.nwSets.isEmpty())
 			return null;
-		String val = Preferences.get("calc.nwset");
-		if (val == null || val.isEmpty())
+		var nwSetRefId = Preferences.get("calc.nwset");
+		if (nwSetRefId == null || nwSetRefId.isEmpty())
 			return null;
 		try {
-			NwSetDao dao = new NwSetDao(Database.get());
-			for (NwSetDescriptor d : dao.getDescriptorsForMethod(method.id)) {
-				if (val.equals(d.refId))
-					return d;
-			}
+			return method.nwSets.stream()
+				.filter(nwSet -> nwSetRefId.equals(nwSet.refId))
+				.findAny()
+				.orElse(null);
 		} catch (Exception e) {
-			LoggerFactory.getLogger(Setup.class).error(
-					"failed to load NW sets", e);
+			var log = LoggerFactory.getLogger(Setup.class);
+			log.error("failed to load NW sets", e);
 		}
 		return null;
 	}
 
 	private static <T extends Enum<T>> T loadEnumPref(
-			Class<T> type, T defaultVal) {
+		Class<T> type, T defaultVal) {
 		String name = Preferences.get(
-				"calc." + type.getSimpleName());
+			"calc." + type.getSimpleName());
 		if (Strings.nullOrEmpty(name))
 			return defaultVal;
 		try {
@@ -157,16 +183,14 @@ class Setup {
 	}
 
 	void savePreferences() {
-
-		savePreference(CalculationType.class, calcType);
-
 		if (calcSetup == null)
 			return;
+		savePreference(CalculationType.class, calcSetup.calculationType);
 
 		// allocation method
 		AllocationMethod am = calcSetup.allocationMethod;
 		Preferences.set("calc.allocation.method",
-				am == null ? "NONE" : am.name());
+			am == null ? "NONE" : am.name());
 
 		// LCIA method
 		var m = calcSetup.impactMethod;
@@ -194,7 +218,7 @@ class Setup {
 
 	private <T extends Enum<T>> void savePreference(Class<T> clazz, T value) {
 		Preferences.set("calc." + clazz.getSimpleName(),
-				value == null ? null : value.name());
+			value == null ? null : value.name());
 	}
 
 }

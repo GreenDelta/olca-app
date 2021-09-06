@@ -21,8 +21,9 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
-import org.openlca.core.math.CalculationType;
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.CalculationType;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
 /**
@@ -52,7 +53,7 @@ class CalculationWizardPage extends WizardPage {
 		if (!isPageComplete())
 			return false;
 		return setup.withDataQuality &&
-				setup.calcType != CalculationType.MONTE_CARLO_SIMULATION;
+			setup.calcSetup.calculationType != CalculationType.MONTE_CARLO_SIMULATION;
 	}
 
 	@Override
@@ -72,7 +73,7 @@ class CalculationWizardPage extends WizardPage {
 		new Label(body, SWT.NONE);
 		UI.gridData(new Label(
 				body, SWT.SEPARATOR | SWT.HORIZONTAL),
-				true, false);
+			true, false);
 		new Label(body, SWT.NONE);
 
 		// options
@@ -89,7 +90,7 @@ class CalculationWizardPage extends WizardPage {
 
 	private void createParamSetCombo(Composite comp) {
 		var paramSets = new ArrayList<>(
-				setup.calcSetup.productSystem.parameterSets);
+			setup.calcSetup.productSystem.parameterSets);
 		if (paramSets.size() < 2)
 			return;
 
@@ -103,7 +104,7 @@ class CalculationWizardPage extends WizardPage {
 
 		UI.formLabel(comp, "Parameter set");
 		var combo = new TableCombo(comp,
-				SWT.READ_ONLY | SWT.BORDER);
+			SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
 		for (var paramSet : paramSets) {
 			var item = new TableItem(
@@ -122,13 +123,13 @@ class CalculationWizardPage extends WizardPage {
 	private void createAllocationCombo(Composite comp) {
 		UI.formLabel(comp, M.AllocationMethod);
 		var combo = new AllocationCombo(
-				comp, AllocationMethod.values());
+			comp, AllocationMethod.values());
 		combo.setNullable(false);
 		combo.select(Objects.requireNonNullElse(
-				setup.calcSetup.allocationMethod,
-				AllocationMethod.NONE));
+			setup.calcSetup.allocationMethod,
+			AllocationMethod.NONE));
 		combo.addSelectionChangedListener(
-				m -> setup.calcSetup.allocationMethod = m);
+			m -> setup.calcSetup.allocationMethod = m);
 	}
 
 	private void createMethodCombo(Composite comp) {
@@ -136,11 +137,13 @@ class CalculationWizardPage extends WizardPage {
 		var combo = new ImpactMethodViewer(comp);
 		combo.setNullable(true);
 		combo.setInput(Database.get());
-		combo.select(setup.calcSetup.impactMethod);
+		if (setup.calcSetup.impactMethod != null) {
+			combo.select(Descriptor.of(setup.calcSetup.impactMethod));
+		}
 		combo.addSelectionChangedListener(_e -> {
 			var method = combo.getSelected();
-			setup.calcSetup.impactMethod = method;
 			nwViewer.setInput(method);
+			setup.setMethod(method);
 		});
 	}
 
@@ -148,24 +151,26 @@ class CalculationWizardPage extends WizardPage {
 		UI.formLabel(parent, M.NormalizationAndWeightingSet);
 		nwViewer = new NwSetComboViewer(parent, Database.get());
 		nwViewer.setNullable(true);
-		nwViewer.setInput(setup.calcSetup.impactMethod);
-		if (setup.calcSetup.nwSet != null) {
-			nwViewer.select(setup.calcSetup.nwSet);
+		var method = setup.calcSetup.impactMethod;
+		if (method != null) {
+			nwViewer.setInput(Descriptor.of(method));
 		}
-		nwViewer.addSelectionChangedListener(
-				nwSet -> setup.calcSetup.nwSet = nwSet);
+		if (setup.calcSetup.nwSet != null) {
+			nwViewer.select(Descriptor.of(setup.calcSetup.nwSet));
+		}
+		nwViewer.addSelectionChangedListener(setup::setNwSet);
 	}
 
 	private void createTypeRadios(Composite parent) {
 		CalculationType[] types = {
-				CalculationType.CONTRIBUTION_ANALYSIS,
-				CalculationType.UPSTREAM_ANALYSIS,
-				CalculationType.MONTE_CARLO_SIMULATION,
+			CalculationType.CONTRIBUTION_ANALYSIS,
+			CalculationType.UPSTREAM_ANALYSIS,
+			CalculationType.MONTE_CARLO_SIMULATION,
 		};
 		boolean[] enabled = {
-				true,
-				true,
-				!setup.hasLibraries,
+			true,
+			true,
+			!setup.hasLibraries,
 		};
 
 		UI.formLabel(parent, M.CalculationType);
@@ -176,14 +181,14 @@ class CalculationWizardPage extends WizardPage {
 		for (int i = 0; i < types.length; i++) {
 			var radio = new Button(comp, SWT.RADIO);
 			radio.setText(getLabel(types[i]));
-			radio.setSelection(setup.calcType == types[i]);
+			radio.setSelection(setup.hasType(types[i]));
 			radio.setEnabled(enabled[i]);
 			radios[i] = radio;
 			Controls.onSelect(radio, e -> {
 				for (int j = 0; j < types.length; j++) {
 					if (radios[j] == radio) {
 						radio.setSelection(true);
-						setup.calcType = types[j];
+						setup.setType(types[j]);
 					} else {
 						radios[j].setSelection(false);
 					}
@@ -194,16 +199,12 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private String getLabel(CalculationType type) {
-		switch (type) {
-		case UPSTREAM_ANALYSIS:
-			return M.Analysis;
-		case MONTE_CARLO_SIMULATION:
-			return M.MonteCarloSimulation;
-		case CONTRIBUTION_ANALYSIS:
-			return M.QuickResults;
-		default:
-			return M.Unknown;
-		}
+		return switch (type) {
+			case UPSTREAM_ANALYSIS -> M.Analysis;
+			case MONTE_CARLO_SIMULATION -> M.MonteCarloSimulation;
+			case CONTRIBUTION_ANALYSIS -> M.QuickResults;
+			default -> M.Unknown;
+		};
 	}
 
 	private void createCommonOptions(Composite parent) {
@@ -280,7 +281,7 @@ class CalculationWizardPage extends WizardPage {
 
 	private void updateOptions() {
 		StackLayout layout = (StackLayout) optionStack.getLayout();
-		if (setup.calcType == CalculationType.MONTE_CARLO_SIMULATION) {
+		if (setup.hasType(CalculationType.MONTE_CARLO_SIMULATION)) {
 			layout.topControl = monteCarloOptions;
 		} else {
 			layout.topControl = commonOptions;
