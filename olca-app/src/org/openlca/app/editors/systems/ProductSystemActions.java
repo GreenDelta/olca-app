@@ -14,7 +14,6 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
-import org.openlca.app.util.UI;
 import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.math.MatrixRowSorter;
 import org.openlca.core.matrix.MatrixData;
@@ -61,35 +60,6 @@ public class ProductSystemActions extends EditorActionBarContributor {
 		} catch (Exception e) {
 			ErrorReporter.on("failed to get product system", e);
 			return null;
-		}
-	}
-
-	@Deprecated
-	private class CsvExportAction extends Action {
-		public CsvExportAction() {
-			setImageDescriptor(Images.descriptor(FileType.CSV));
-			setText(M.ExportAsMatrix);
-		}
-
-		@Override
-		public void run() {
-			var system = getProductSystem();
-			var shell = new CsvExportShell(UI.shell(), system);
-			shell.open();
-		}
-	}
-
-	@Deprecated
-	private class ExcelExportAction extends Action {
-		public ExcelExportAction() {
-			setImageDescriptor(Images.descriptor(FileType.EXCEL));
-			setText(M.ExcelExport);
-		}
-
-		@Override
-		public void run() {
-			ProductSystem system = getProductSystem();
-			new SystemExportDialog(system, Database.get()).open();
 		}
 	}
 
