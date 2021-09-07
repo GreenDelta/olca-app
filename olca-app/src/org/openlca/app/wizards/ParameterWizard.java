@@ -64,7 +64,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 		}
 
 		@Override
-		protected void createContents(Composite parent) {
+		protected void modelWidgets(Composite parent) {
 			UI.formLabel(parent, M.Type);
 			var comp = UI.formComposite(parent);
 			UI.gridLayout(comp, 4);
@@ -171,7 +171,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 		}
 	}
 
-	private class TwoControlStack extends Composite {
+	private static class TwoControlStack extends Composite {
 
 		private Control first;
 		private Control second;

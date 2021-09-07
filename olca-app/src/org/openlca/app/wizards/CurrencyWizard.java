@@ -2,7 +2,6 @@ package org.openlca.app.wizards;
 
 import java.util.UUID;
 
-import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.CurrencyDao;
@@ -28,16 +27,12 @@ public class CurrencyWizard extends AbstractWizard<Currency> {
 		return ModelType.CURRENCY;
 	}
 
-	private class Page extends AbstractWizardPage<Currency> {
+	private static class Page extends AbstractWizardPage<Currency> {
 
 		Page() {
 			super("CurrencyWizardPage");
 			setTitle(M.NewCurrency);
 			setPageComplete(false);
-		}
-
-		@Override
-		protected void createContents(Composite container) {
 		}
 
 		@Override
@@ -48,11 +43,10 @@ public class CurrencyWizard extends AbstractWizard<Currency> {
 			c.description = getModelDescription();
 			c.conversionFactor = 1.0;
 			c.code = getModelName();
-			Currency ref = getRefCurrency();
-			if (ref != null)
-				c.referenceCurrency = ref;
-			else
-				c.referenceCurrency = c;
+			var ref = getRefCurrency();
+			c.referenceCurrency = ref != null
+				? ref
+				: c;
 			return c;
 		}
 

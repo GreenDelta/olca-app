@@ -28,7 +28,7 @@ public class LocationWizard extends AbstractWizard<Location> {
 		return ModelType.LOCATION;
 	}
 
-	private class LocationWizardPage extends AbstractWizardPage<Location> {
+	private static class LocationWizardPage extends AbstractWizardPage<Location> {
 
 		private Text codeText;
 		private Text descriptionText;
@@ -42,7 +42,7 @@ public class LocationWizard extends AbstractWizard<Location> {
 		}
 
 		@Override
-		protected void createContents(Composite comp) {
+		protected void modelWidgets(Composite comp) {
 			codeText = UI.formText(comp, M.Code);
 			codeText.addModifyListener(e -> checkInput());
 			descriptionText = UI.formMultiText(comp, M.Description);
@@ -71,7 +71,6 @@ public class LocationWizard extends AbstractWizard<Location> {
 			if (Strings.nullOrEmpty(codeText.getText())) {
 				setErrorMessage(M.ALocationCodeIsRequired);
 				setPageComplete(false);
-				return;
 			}
 		}
 	}

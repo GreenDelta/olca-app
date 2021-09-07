@@ -2,7 +2,6 @@ package org.openlca.app.wizards;
 
 import java.util.UUID;
 
-import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Project;
@@ -24,17 +23,13 @@ public class ProjectWizard extends AbstractWizard<Project> {
 		return ModelType.PROJECT;
 	}
 
-	private class ProjectWizardPage extends AbstractWizardPage<Project> {
+	private static class ProjectWizardPage extends AbstractWizardPage<Project> {
 
 		public ProjectWizardPage() {
 			super("ProjectWizardPage");
 			setTitle(M.NewProject);
 			setMessage(M.CreatesANewProject);
 			setPageComplete(false);
-		}
-
-		@Override
-		protected void createContents(final Composite container) {
 		}
 
 		@Override

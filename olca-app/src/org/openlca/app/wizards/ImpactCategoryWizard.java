@@ -36,7 +36,7 @@ public class ImpactCategoryWizard extends AbstractWizard<ImpactCategory> {
 		}
 
 		@Override
-		protected void createContents(Composite container) {
+		protected void modelWidgets(Composite container) {
 			refUnit = UI.formText(container, "Reference unit");
 		}
 
@@ -49,7 +49,5 @@ public class ImpactCategoryWizard extends AbstractWizard<ImpactCategory> {
 			ic.referenceUnit = refUnit.getText();
 			return ic;
 		}
-
 	}
-
 }

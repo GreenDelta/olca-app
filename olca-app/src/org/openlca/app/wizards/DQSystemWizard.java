@@ -27,7 +27,7 @@ public class DQSystemWizard extends AbstractWizard<DQSystem> {
 		return ModelType.DQ_SYSTEM;
 	}
 
-	private class DQSystemWizardPage extends AbstractWizardPage<DQSystem> {
+	private static class DQSystemWizardPage extends AbstractWizardPage<DQSystem> {
 
 		private Button hasUncertaintiesCheck;
 
@@ -39,7 +39,7 @@ public class DQSystemWizard extends AbstractWizard<DQSystem> {
 		}
 
 		@Override
-		protected void createContents(Composite container) {
+		protected void modelWidgets(Composite container) {
 			new Label(container, SWT.NONE);
 			hasUncertaintiesCheck = new Button(container, SWT.CHECK);
 			hasUncertaintiesCheck.setText(M.SystemDefinesUncertainties);

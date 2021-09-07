@@ -75,9 +75,9 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		private Composite labelStack;
 		private Composite contentStack;
 
-		private FlowTypeFilter wasteFilter = new FlowTypeFilter(
+		private final FlowTypeFilter wasteFilter = new FlowTypeFilter(
 				FlowType.ELEMENTARY_FLOW, FlowType.PRODUCT_FLOW);
-		private FlowTypeFilter productFilter = new FlowTypeFilter(
+		private final FlowTypeFilter productFilter = new FlowTypeFilter(
 				FlowType.ELEMENTARY_FLOW, FlowType.WASTE_FLOW);
 
 		protected Page() {
@@ -104,7 +104,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		}
 
 		@Override
-		protected void createContents(Composite comp) {
+		protected void modelWidgets(Composite comp) {
 			createWasteCheck(comp);
 			createRefFlowCheck(comp);
 			qRefLabel = UI.formLabel(comp, M.QuantitativeReference);
@@ -120,10 +120,11 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			labelStack.layout();
 			contentStack.layout();
 			if (refFlow != null) {
-				FlowDescriptor d = Descriptor.of(refFlow);
-				INavigationElement<?> e = Navigator.findElement(d);
-				ISelection s = new StructuredSelection(e);
-				flowTree.setSelection(s, true);
+				var d = Descriptor.of(refFlow);
+				var elem = Navigator.findElement(d);
+				if (elem != null) {
+					flowTree.setSelection(new StructuredSelection(elem), true);
+				}
 				String name = refFlow.name != null ? refFlow.name : "";
 				nameText.setText(name);
 			}
@@ -137,12 +138,11 @@ public class ProcessWizard extends AbstractWizard<Process> {
 				if (wasteCheck.getSelection()) {
 					flowTree.removeFilter(productFilter);
 					flowTree.addFilter(wasteFilter);
-					flowTree.refresh();
 				} else {
 					flowTree.removeFilter(wasteFilter);
 					flowTree.addFilter(productFilter);
-					flowTree.refresh();
 				}
+				flowTree.refresh();
 			});
 		}
 
@@ -159,13 +159,12 @@ public class ProcessWizard extends AbstractWizard<Process> {
 					labelLayout.topControl = selectFlowPropertyLabel;
 					contentLayout.topControl = flowPropertyContainer;
 					qRefLabel.setText("Name of the new flow");
-					qRefLabel.getParent().layout();
 				} else {
 					labelLayout.topControl = selectProductLabel;
 					contentLayout.topControl = productTreeContainer;
 					qRefLabel.setText(M.QuantitativeReference);
-					qRefLabel.getParent().layout();
 				}
+				qRefLabel.getParent().layout();
 				labelStack.layout();
 				contentStack.layout();
 				checkInput();

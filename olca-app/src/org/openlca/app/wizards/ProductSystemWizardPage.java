@@ -55,7 +55,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	@Override
-	protected void createContents(Composite comp) {
+	protected void modelWidgets(Composite comp) {
 		filterText = UI.formText(comp, M.ReferenceProcess);
 		UI.filler(comp);
 		createProcessTree(comp);

@@ -106,7 +106,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			suffix += M.SystemProcess;
 		}
 		if (config.cutoff != null) {
-			suffix += "; cutoff = " + config.cutoff.toString();
+			suffix += "; cutoff = " + config.cutoff;
 		}
 		return config.providerLinking == null
 				? suffix

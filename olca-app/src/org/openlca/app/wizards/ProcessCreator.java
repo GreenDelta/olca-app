@@ -7,7 +7,6 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
@@ -80,10 +79,10 @@ class ProcessCreator {
 		else
 			flow.name = name;
 		flow.description = description;
-		FlowType type = wasteProcess ? FlowType.WASTE_FLOW
-				: FlowType.PRODUCT_FLOW;
-		flow.flowType = type;
-		FlowProperty property = new FlowPropertyDao(db).getForId(flowProperty.id);
+		flow.flowType = wasteProcess
+			? FlowType.WASTE_FLOW
+			: FlowType.PRODUCT_FLOW;
+		var property = new FlowPropertyDao(db).getForId(flowProperty.id);
 		flow.referenceFlowProperty = property;
 		FlowPropertyFactor factor = new FlowPropertyFactor();
 		factor.conversionFactor = 1;

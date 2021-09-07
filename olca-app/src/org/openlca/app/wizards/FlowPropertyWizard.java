@@ -33,11 +33,10 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 		return ModelType.FLOW_PROPERTY;
 	}
 
-	private class Page extends AbstractWizardPage<FlowProperty> {
+	private static class Page extends AbstractWizardPage<FlowProperty> {
 
-		private FlowPropertyTypeViewer flowPropertyTypeViewer;
-
-		private UnitGroupViewer unitGroupComboViewer;
+		private FlowPropertyTypeViewer typeCombo;
+		private UnitGroupViewer unitGroupCombo;
 
 		public Page() {
 			super("FlowPropertyWizardPage");
@@ -50,7 +49,7 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 		protected void checkInput() {
 			super.checkInput();
 			if (getErrorMessage() == null) {
-				if (unitGroupComboViewer.getSelected() == null) {
+				if (unitGroupCombo.getSelected() == null) {
 					setErrorMessage(M.NoUnitGroupSelected);
 				}
 			}
@@ -58,19 +57,19 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 		}
 
 		@Override
-		protected void createContents(final Composite container) {
+		protected void modelWidgets(final Composite container) {
 			UI.formLabel(container, M.FlowPropertyType);
-			flowPropertyTypeViewer = new FlowPropertyTypeViewer(container);
-			flowPropertyTypeViewer.select(FlowPropertyType.PHYSICAL);
+			typeCombo = new FlowPropertyTypeViewer(container);
+			typeCombo.select(FlowPropertyType.PHYSICAL);
 			UI.formLabel(container, M.UnitGroup);
-			unitGroupComboViewer = new UnitGroupViewer(container);
-			unitGroupComboViewer.setInput(Database.get());
+			unitGroupCombo = new UnitGroupViewer(container);
+			unitGroupCombo.setInput(Database.get());
 		}
 
 		@Override
 		protected void initModifyListeners() {
 			super.initModifyListeners();
-			unitGroupComboViewer.addSelectionChangedListener((s) -> checkInput());
+			unitGroupCombo.addSelectionChangedListener((s) -> checkInput());
 		}
 
 		@Override
@@ -80,14 +79,13 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 			flowProperty.name = getModelName();
 			flowProperty.description = getModelDescription();
 			try {
-				UnitGroup unitGroup = Cache.getEntityCache().get(UnitGroup.class,
-						unitGroupComboViewer.getSelected().id);
-				flowProperty.unitGroup = unitGroup;
+				flowProperty.unitGroup = Cache.getEntityCache()
+					.get(UnitGroup.class, unitGroupCombo.getSelected().id);
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(getClass());
 				log.error("failed to load unit group", e);
 			}
-			flowProperty.flowPropertyType = flowPropertyTypeViewer.getSelected();
+			flowProperty.flowPropertyType = typeCombo.getSelected();
 			return flowProperty;
 		}
 

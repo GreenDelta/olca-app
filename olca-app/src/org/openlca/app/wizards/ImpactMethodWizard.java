@@ -2,7 +2,6 @@ package org.openlca.app.wizards;
 
 import java.util.UUID;
 
-import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
@@ -24,17 +23,13 @@ public class ImpactMethodWizard extends AbstractWizard<ImpactMethod> {
 		return ModelType.IMPACT_METHOD;
 	}
 
-	private class Page extends AbstractWizardPage<ImpactMethod> {
+	private static class Page extends AbstractWizardPage<ImpactMethod> {
 
 		public Page() {
 			super("LCIAMethodWizardPage");
 			setTitle(M.NewImpactMethod);
 			setMessage(M.CreatesANewImpactMethod);
 			setPageComplete(false);
-		}
-
-		@Override
-		protected void createContents(final Composite container) {
 		}
 
 		@Override

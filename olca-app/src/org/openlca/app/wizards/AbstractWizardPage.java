@@ -31,13 +31,19 @@ abstract class AbstractWizardPage<T extends CategorizedEntity> extends
 		nameText = UI.formText(container, M.Name);
 		if (withDescription)
 			descriptionText = UI.formMultiText(container, M.Description);
-		createContents(container);
+		modelWidgets(container);
 		initModifyListeners();
 		AbstractWizard<T> wizard = (AbstractWizard<T>) getWizard();
 		setImageDescriptor(Images.wizard(wizard.getModelType()));
 	}
 
-	protected abstract void createContents(Composite container);
+	/**
+	 * Create additional model specific widgets.
+	 *
+	 * @param container the wizard container with a 2-column grid layout
+	 */
+	protected void modelWidgets(Composite container) {
+	}
 
 	protected final String getModelDescription() {
 		return descriptionText != null ? descriptionText.getText() : "";

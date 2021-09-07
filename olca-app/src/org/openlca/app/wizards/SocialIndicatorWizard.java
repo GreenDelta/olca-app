@@ -24,16 +24,12 @@ public class SocialIndicatorWizard extends AbstractWizard<SocialIndicator> {
 		return ModelType.SOCIAL_INDICATOR;
 	}
 
-	private class Page extends AbstractWizardPage<SocialIndicator> {
+	private static class Page extends AbstractWizardPage<SocialIndicator> {
 
 		public Page() {
 			super("SocialIndicatorWizardPage");
 			setTitle(M.NewSocialIndicator);
 			setPageComplete(false);
-		}
-
-		@Override
-		protected void createContents(Composite container) {
 		}
 
 		@Override

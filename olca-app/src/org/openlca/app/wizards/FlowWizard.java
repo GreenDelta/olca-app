@@ -34,7 +34,7 @@ public class FlowWizard extends AbstractWizard<Flow> {
 		return ModelType.FLOW;
 	}
 
-	private class Page extends AbstractWizardPage<Flow> {
+	private static class Page extends AbstractWizardPage<Flow> {
 
 		private FlowTypeViewer typeCombo;
 		private FlowPropertyViewer propertyCombo;
@@ -58,7 +58,7 @@ public class FlowWizard extends AbstractWizard<Flow> {
 		}
 
 		@Override
-		protected void createContents(final Composite container) {
+		protected void modelWidgets(final Composite container) {
 			UI.formLabel(container, M.FlowType);
 			typeCombo = new FlowTypeViewer(container);
 			typeCombo.select(FlowType.ELEMENTARY_FLOW);

@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
@@ -36,9 +34,9 @@ public class UnitGroupWizard extends AbstractWizard<UnitGroup> {
 		return ModelType.UNIT_GROUP;
 	}
 
-	private class Page extends AbstractWizardPage<UnitGroup> {
+	private static class Page extends AbstractWizardPage<UnitGroup> {
 
-		private Logger log = LoggerFactory.getLogger(this.getClass());
+		private final Logger log = LoggerFactory.getLogger(this.getClass());
 		private Text referenceUnitText;
 
 		public Page() {
@@ -49,19 +47,14 @@ public class UnitGroupWizard extends AbstractWizard<UnitGroup> {
 		}
 
 		@Override
-		protected void createContents(Composite container) {
+		protected void modelWidgets(Composite container) {
 			referenceUnitText = UI.formText(container, M.ReferenceUnit);
 		}
 
 		@Override
 		protected void initModifyListeners() {
 			super.initModifyListeners();
-			referenceUnitText.addModifyListener(new ModifyListener() {
-				@Override
-				public void modifyText(final ModifyEvent e) {
-					checkInput();
-				}
-			});
+			referenceUnitText.addModifyListener($ -> checkInput());
 		}
 
 		@Override
@@ -108,6 +101,7 @@ public class UnitGroupWizard extends AbstractWizard<UnitGroup> {
 			}
 		}
 
+		@Override
 		public UnitGroup createModel() {
 			UnitGroup unitGroup = new UnitGroup();
 			unitGroup.refId = UUID.randomUUID().toString();
