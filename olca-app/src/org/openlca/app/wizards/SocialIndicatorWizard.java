@@ -2,7 +2,6 @@ package org.openlca.app.wizards;
 
 import java.util.UUID;
 
-import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.SocialIndicator;

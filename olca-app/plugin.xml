@@ -401,6 +401,12 @@
             id="wizards.new.dqsystem"
             name="%DQSystems">
       </wizard>
+      <wizard
+            class="org.openlca.app.wizards.ResultWizard"
+            icon="icons/wizard/impact_method.png"
+            id="wizards.new.resultmodel"
+            name="Results">
+      </wizard>
    </extension>
 
    <extension
@@ -435,13 +441,7 @@
             id="views.cloud.history"
             name="Commit history"
             restorable="true">
-      </view>
-      <view
-            class="org.openlca.app.validation.ValidationView"
-            id="views.problems"
-            name="Problems"
-            restorable="true">
-      </view>
+      </view>     
       <view
             class="org.openlca.app.cloud.ui.diff.CompareView"
             id="views.cloud.compare"

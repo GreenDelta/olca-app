@@ -86,40 +86,25 @@ class CreateModelAction extends Action implements INavigationAction {
 	public String getText() {
 		if (type == null)
 			return M.Unknown + "?";
-		switch (type) {
-		case ACTOR:
-			return M.NewActor;
-		case CURRENCY:
-			return M.NewCurrency;
-		case FLOW:
-			return M.NewFlow;
-		case FLOW_PROPERTY:
-			return M.NewFlowProperty;
-		case IMPACT_METHOD:
-			return M.NewLCIAMethod;
-		case IMPACT_CATEGORY:
-			return M.NewImpactCategory;
-		case PROCESS:
-			return M.NewProcess;
-		case PRODUCT_SYSTEM:
-			return M.NewProductSystem;
-		case PROJECT:
-			return M.NewProject;
-		case SOCIAL_INDICATOR:
-			return M.NewSocialIndicator;
-		case SOURCE:
-			return M.NewSource;
-		case UNIT_GROUP:
-			return M.NewUnitGroup;
-		case LOCATION:
-			return M.NewLocation;
-		case PARAMETER:
-			return M.NewParameter;
-		case DQ_SYSTEM:
-			return M.NewDataQualitySystem;
-		default:
-			return M.Unknown + "?";
-		}
+		return switch (type) {
+			case ACTOR -> M.NewActor;
+			case CURRENCY -> M.NewCurrency;
+			case FLOW -> M.NewFlow;
+			case FLOW_PROPERTY -> M.NewFlowProperty;
+			case IMPACT_METHOD -> M.NewLCIAMethod;
+			case IMPACT_CATEGORY -> M.NewImpactCategory;
+			case PROCESS -> M.NewProcess;
+			case PRODUCT_SYSTEM -> M.NewProductSystem;
+			case PROJECT -> M.NewProject;
+			case SOCIAL_INDICATOR -> M.NewSocialIndicator;
+			case SOURCE -> M.NewSource;
+			case UNIT_GROUP -> M.NewUnitGroup;
+			case LOCATION -> M.NewLocation;
+			case PARAMETER -> M.NewParameter;
+			case DQ_SYSTEM -> M.NewDataQualitySystem;
+			case RESULT -> "New result";
+			default -> M.Unknown + "?";
+		};
 	}
 
 	@Override
