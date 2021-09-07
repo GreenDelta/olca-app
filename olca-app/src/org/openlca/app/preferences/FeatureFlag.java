@@ -7,6 +7,8 @@ package org.openlca.app.preferences;
 public enum FeatureFlag {
 
 	LIBRARIES("Enable libraries"),
+	
+	RESULTS("Enable result storage"),
 
 	MATRIX_IMAGE_EXPORT("Enable matrix image export");
 	

@@ -320,7 +320,7 @@ public class Images {
 			case ACTOR -> ModelIcon.ACTOR;
 			case FLOW -> ModelIcon.FLOW;
 			case FLOW_PROPERTY -> ModelIcon.FLOW_PROPERTY;
-			case IMPACT_METHOD -> ModelIcon.IMPACT_METHOD;
+			case IMPACT_METHOD, RESULT -> ModelIcon.IMPACT_METHOD;
 			case IMPACT_CATEGORY -> ModelIcon.IMPACT_CATEGORY;
 			case PROCESS -> ModelIcon.PROCESS;
 			case PRODUCT_SYSTEM -> ModelIcon.PRODUCT_SYSTEM;
