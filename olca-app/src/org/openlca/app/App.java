@@ -152,13 +152,13 @@ public class App {
 	private static IEditorReference findEditor(Descriptor d) {
 		if (d == null)
 			return null;
-		for (IEditorReference ref : Editors.getReferences()) {
+		for (var ref : Editors.getReferences()) {
 			try {
-				IEditorInput inp = ref.getEditorInput();
+				var inp = ref.getEditorInput();
 				if (!(inp instanceof ModelEditorInput))
 					continue;
-				ModelEditorInput minp = (ModelEditorInput) inp;
-				if (Objects.equals(minp.getDescriptor(), d))
+				var input = (ModelEditorInput) inp;
+				if (Objects.equals(input.getDescriptor(), d))
 					return ref;
 			} catch (Exception e) {
 				log.error("editor search failed", e);

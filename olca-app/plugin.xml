@@ -189,7 +189,14 @@
             default="false"
             icon="icons/model/data_quality_system.png"
             id="editors.dqsystem"
-            name="%ActorEditor">
+            name="Data quality system">
+      </editor>
+      <editor
+            class="org.openlca.app.editors.results.ResultEditor"
+            default="false"
+            icon="icons/model/impact_method.png"
+            id="editors.resultmodel"
+            name="Data quality system">
       </editor>
 
       <!-- result views -->

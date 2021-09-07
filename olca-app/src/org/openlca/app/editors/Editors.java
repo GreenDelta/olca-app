@@ -44,10 +44,10 @@ public class Editors {
 			return;
 		CategorizedEntity model = editor.getModel();
 		Action refresh = Actions.create(M.Reload, Icon.REFRESH.descriptor(),
-				() -> {
-					App.close(model);
-					App.open(model);
-				});
+			() -> {
+				App.close(model);
+				App.open(model);
+			});
 		IToolBarManager toolbar = form.getToolBarManager();
 		toolbar.add(refresh);
 	}
@@ -77,32 +77,21 @@ public class Editors {
 			if (refs.size() == 0)
 				return true;
 			var restArray = refs.toArray(new IEditorReference[0]);
-			return getActivePage().closeEditors(restArray, true);
+			var page = getActivePage();
+			return page != null && page.closeEditors(restArray, true);
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to close editors", e);
 			return false;
 		}
 	}
 
-	/**
-	 * Calls the save action on the currently opened editor. You should only call
-	 * this method when you are sure that there is an active editor opened (e.g.
-	 * from a page of this editor).
-	 */
-	public static void callSaveActive() {
-		try {
-			IWorkbenchPage page = getActivePage();
-			IEditorPart editor = page.getActiveEditor();
-			page.saveEditor(editor, true /* confirm */);
-		} catch (Exception e) {
-			ErrorReporter.on("failed to call `save` on the active editor", e);
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	public static <T extends IEditorPart> T getActive() {
 		try {
-			return (T) getActivePage().getActiveEditor();
+			var page = getActivePage();
+			return page != null
+				? (T) getActivePage().getActiveEditor()
+				: null;
 		} catch (ClassCastException e) {
 			ErrorReporter.on("Failed to get active editor", e);
 			return null;
@@ -133,8 +122,8 @@ public class Editors {
 			if (refs == null)
 				return Collections.emptyList();
 			return Arrays.stream(refs)
-					.filter(Objects::nonNull)
-					.collect(Collectors.toList());
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to get editor references", e);
 			return Collections.emptyList();
@@ -157,8 +146,8 @@ public class Editors {
 			return page;
 		var pages = window.getPages();
 		return pages == null || pages.length == 0
-				? null
-				: pages[0];
+			? null
+			: pages[0];
 	}
 
 	private static class OpenInUIJob extends UIJob {
@@ -175,7 +164,10 @@ public class Editors {
 		@Override
 		public IStatus runInUIThread(IProgressMonitor monitor) {
 			try {
-				getActivePage().openEditor(input, editorId);
+				var page = getActivePage();
+				if(page == null)
+					return Status.CANCEL_STATUS;
+				page.openEditor(input, editorId);
 				return Status.OK_STATUS;
 			} catch (Exception e) {
 				ErrorReporter.on("Open editor " + editorId + " failed.", e);
