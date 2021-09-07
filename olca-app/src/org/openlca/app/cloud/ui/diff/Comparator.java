@@ -2,7 +2,7 @@ package org.openlca.app.cloud.ui.diff;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
-import org.openlca.app.navigation.ModelTypeComparison;
+import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.core.model.ModelType;
 
 class Comparator extends ViewerComparator {
@@ -27,7 +27,7 @@ class Comparator extends ViewerComparator {
 	private int compareModelTypes(DiffNode node1, DiffNode node2) {
 		ModelType type1 = (ModelType) node1.content;
 		ModelType type2 = (ModelType) node2.content;
-		return ModelTypeComparison.compare(type1, type2);
+		return ModelTypeOrder.compare(type1, type2);
 	}
 
 }

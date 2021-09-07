@@ -48,16 +48,16 @@ public class Images {
 		if (d == null || d.type == null)
 			return null;
 		switch (d.type) {
-		case PROCESS:
-			return get(((ProcessDescriptor) d).processType);
-		case FLOW:
-			return get(((FlowDescriptor) d).flowType);
-		case CATEGORY:
-			CategoryDescriptor cd = (CategoryDescriptor) d;
-			ModelIcon icon = categoryIcon(cd.categoryType);
-			return ImageManager.get(icon);
-		default:
-			return get(d.type);
+			case PROCESS:
+				return get(((ProcessDescriptor) d).processType);
+			case FLOW:
+				return get(((FlowDescriptor) d).flowType);
+			case CATEGORY:
+				CategoryDescriptor cd = (CategoryDescriptor) d;
+				ModelIcon icon = categoryIcon(cd.categoryType);
+				return ImageManager.get(icon);
+			default:
+				return get(d.type);
 		}
 	}
 
@@ -91,8 +91,8 @@ public class Images {
 			return null;
 		ModelIcon icon = icon(type);
 		return icon == null
-				? null
-				: ImageManager.get(icon);
+			? null
+			: ImageManager.get(icon);
 	}
 
 	public static Image get(ProcessType type) {
@@ -111,45 +111,33 @@ public class Images {
 
 	public static Image get(FileType type) {
 		return type == null
-				? null
-				: ImageManager.get(imgPath(type));
+			? null
+			: ImageManager.get(imgPath(type));
 	}
 
 	public static ImageDescriptor descriptor(FileType type) {
 		return type == null
-				? null
-				: ImageManager.descriptor(imgPath(type));
+			? null
+			: ImageManager.descriptor(imgPath(type));
 	}
 
 	private static String imgPath(FileType type) {
 		if (type == null)
 			return "file.png";
-		switch (type) {
-		case CSV:
-			return "file/csv.png";
-		case EXCEL:
-			return "file/excel.png";
-		case IMAGE:
-			return "file/image.png";
-		case MARKUP:
-			return "file/markup.png";
-		case PDF:
-			return "file/pdf.png";
-		case POWERPOINT:
-			return "file/powerpoint.png";
-		case WORD:
-			return "file/word.png";
-		case XML:
-			return "file/xml.png";
-		case ZIP:
-			return "file/zip.png";
-		case PYTHON:
-			return "python.png";
-		case SQL:
-			return "sql.png";
-		default:
-			return "file.png";
-		}
+		return switch (type) {
+			case CSV -> "file/csv.png";
+			case EXCEL -> "file/excel.png";
+			case IMAGE -> "file/image.png";
+			case MARKUP -> "file/markup.png";
+			case PDF -> "file/pdf.png";
+			case POWERPOINT -> "file/powerpoint.png";
+			case WORD -> "file/word.png";
+			case XML -> "file/xml.png";
+			case ZIP -> "file/zip.png";
+			case PYTHON -> "python.png";
+			case SQL -> "sql.png";
+			default -> "file.png";
+		};
 	}
 
 	public static Image get(ModelType type, Overlay overlay) {
@@ -208,14 +196,11 @@ public class Images {
 	public static ImageDescriptor descriptor(Descriptor d) {
 		if (d == null || d.type == null)
 			return null;
-		switch (d.type) {
-		case PROCESS:
-			return descriptor(((ProcessDescriptor) d).processType);
-		case FLOW:
-			return descriptor(((FlowDescriptor) d).flowType);
-		default:
-			return descriptor(d.type);
-		}
+		return switch (d.type) {
+			case PROCESS -> descriptor(((ProcessDescriptor) d).processType);
+			case FLOW -> descriptor(((FlowDescriptor) d).flowType);
+			default -> descriptor(d.type);
+		};
 	}
 
 	public static ImageDescriptor descriptor(Category category) {
@@ -285,22 +270,6 @@ public class Images {
 		return null;
 	}
 
-	public static ImageDescriptor descriptorForCategory(ModelType type) {
-		ModelIcon icon = Images.categoryIcon(type);
-		if (icon == null)
-			return ImageManager.descriptor(Icon.FOLDER);
-		return ImageManager.descriptor(icon);
-	}
-
-	public static ImageDescriptor descriptorForCategory(ModelType type, Overlay overlay) {
-		ModelIcon icon = Images.categoryIcon(type);
-		if (icon == null)
-			return ImageManager.descriptor(Icon.FOLDER);
-		if (overlay == null)
-			return ImageManager.descriptor(icon);
-		return ImageManager.descriptor(icon, overlay);
-	}
-
 	public static ImageDescriptor wizard(ModelType type) {
 		ModelIcon icon = wizardIcon(type);
 		if (icon == null)
@@ -315,168 +284,98 @@ public class Images {
 	private static ModelIcon wizardIcon(ModelType type) {
 		if (type == null)
 			return null;
-		switch (type) {
-		case ACTOR:
-			return ModelIcon.ACTOR_WIZARD;
-		case CURRENCY:
-			return ModelIcon.CURRENCY_WIZARD;
-		case FLOW:
-			return ModelIcon.FLOW_WIZARD;
-		case FLOW_PROPERTY:
-			return ModelIcon.FLOW_PROPERTY_WIZARD;
-		case IMPACT_METHOD:
-		case IMPACT_CATEGORY:
-			return ModelIcon.IMPACT_METHOD_WIZARD;// TODO
-		case LOCATION:
-			return ModelIcon.LOCATION_WIZARD;
-		case PARAMETER:
-			return ModelIcon.PARAMETER_WIZARD;
-		case PROCESS:
-			return ModelIcon.PROCESS_WIZARD;
-		case PRODUCT_SYSTEM:
-			return ModelIcon.PRODUCT_SYSTEM_WIZARD;
-		case PROJECT:
-			return ModelIcon.PROJECT_WIZARD;
-		case SOCIAL_INDICATOR:
-			return ModelIcon.SOCIAL_INDICATOR_WIZARD;
-		case SOURCE:
-			return ModelIcon.SOURCE_WIZARD;
-		case UNIT_GROUP:
-			return ModelIcon.UNIT_GROUP_WIZARD;
-		case DQ_SYSTEM:
-			return ModelIcon.DQ_SYSTEM_WIZARD;
-		default:
-			return null;
-		}
+		return switch (type) {
+			case ACTOR -> ModelIcon.ACTOR_WIZARD;
+			case CURRENCY -> ModelIcon.CURRENCY_WIZARD;
+			case FLOW -> ModelIcon.FLOW_WIZARD;
+			case FLOW_PROPERTY -> ModelIcon.FLOW_PROPERTY_WIZARD;
+			case IMPACT_METHOD, IMPACT_CATEGORY -> ModelIcon.IMPACT_METHOD_WIZARD;// TODO
+			case LOCATION -> ModelIcon.LOCATION_WIZARD;
+			case PARAMETER -> ModelIcon.PARAMETER_WIZARD;
+			case PROCESS -> ModelIcon.PROCESS_WIZARD;
+			case PRODUCT_SYSTEM -> ModelIcon.PRODUCT_SYSTEM_WIZARD;
+			case PROJECT -> ModelIcon.PROJECT_WIZARD;
+			case SOCIAL_INDICATOR -> ModelIcon.SOCIAL_INDICATOR_WIZARD;
+			case SOURCE -> ModelIcon.SOURCE_WIZARD;
+			case UNIT_GROUP -> ModelIcon.UNIT_GROUP_WIZARD;
+			case DQ_SYSTEM -> ModelIcon.DQ_SYSTEM_WIZARD;
+			default -> null;
+		};
 	}
 
 	private static ModelIcon icon(GroupType type) {
 		if (type == null)
 			return null;
-		switch (type) {
-		case BACKGROUND_DATA:
-			return ModelIcon.GROUP_BACKGROUND_DATA;
-		case INDICATORS:
-			return ModelIcon.GROUP_INDICATORS;
-		case MODELS:
-			return ModelIcon.GROUP_MODELS;
-		default:
-			return null;
-		}
+		return switch (type) {
+			case BACKGROUND_DATA -> ModelIcon.GROUP_BACKGROUND_DATA;
+			case INDICATORS -> ModelIcon.GROUP_INDICATORS;
+			case MODELS -> ModelIcon.GROUP_MODELS;
+		};
 	}
 
 	static ModelIcon icon(ModelType type) {
 		if (type == null)
 			return null;
-		switch (type) {
-		case ACTOR:
-			return ModelIcon.ACTOR;
-		case FLOW:
-			return ModelIcon.FLOW;
-		case FLOW_PROPERTY:
-			return ModelIcon.FLOW_PROPERTY;
-		case IMPACT_METHOD:
-			return ModelIcon.IMPACT_METHOD;
-		case IMPACT_CATEGORY:
-			return ModelIcon.IMPACT_CATEGORY;
-		case PROCESS:
-			return ModelIcon.PROCESS;
-		case PRODUCT_SYSTEM:
-			return ModelIcon.PRODUCT_SYSTEM;
-		case PROJECT:
-			return ModelIcon.PROJECT;
-		case SOURCE:
-			return ModelIcon.SOURCE;
-		case SOCIAL_INDICATOR:
-			return ModelIcon.SOCIAL_INDICATOR;
-		case LOCATION:
-			return ModelIcon.LOCATION;
-		case PARAMETER:
-			return ModelIcon.PARAMETER;
-		case CURRENCY:
-			return ModelIcon.CURRENCY;
-		case UNIT_GROUP:
-		case UNIT:
-			return ModelIcon.UNIT_GROUP;
-		case DQ_SYSTEM:
-			return ModelIcon.DQ_SYSTEM;
-		default:
-			return null;
-		}
+		return switch (type) {
+			case ACTOR -> ModelIcon.ACTOR;
+			case FLOW -> ModelIcon.FLOW;
+			case FLOW_PROPERTY -> ModelIcon.FLOW_PROPERTY;
+			case IMPACT_METHOD -> ModelIcon.IMPACT_METHOD;
+			case IMPACT_CATEGORY -> ModelIcon.IMPACT_CATEGORY;
+			case PROCESS -> ModelIcon.PROCESS;
+			case PRODUCT_SYSTEM -> ModelIcon.PRODUCT_SYSTEM;
+			case PROJECT -> ModelIcon.PROJECT;
+			case SOURCE -> ModelIcon.SOURCE;
+			case SOCIAL_INDICATOR -> ModelIcon.SOCIAL_INDICATOR;
+			case LOCATION -> ModelIcon.LOCATION;
+			case PARAMETER -> ModelIcon.PARAMETER;
+			case CURRENCY -> ModelIcon.CURRENCY;
+			case UNIT_GROUP, UNIT -> ModelIcon.UNIT_GROUP;
+			case DQ_SYSTEM -> ModelIcon.DQ_SYSTEM;
+			default -> null;
+		};
 	}
 
 	private static ModelIcon icon(FlowType type) {
 		if (type == null)
 			return null;
-		switch (type) {
-		case ELEMENTARY_FLOW:
-			return ModelIcon.FLOW_ELEMENTARY;
-		case PRODUCT_FLOW:
-			return ModelIcon.FLOW_PRODUCT;
-		case WASTE_FLOW:
-			return ModelIcon.FLOW_WASTE;
-		default:
-			return null;
-		}
+		return switch (type) {
+			case ELEMENTARY_FLOW -> ModelIcon.FLOW_ELEMENTARY;
+			case PRODUCT_FLOW -> ModelIcon.FLOW_PRODUCT;
+			case WASTE_FLOW -> ModelIcon.FLOW_WASTE;
+		};
 	}
 
 	private static ModelIcon icon(ProcessType type) {
 		if (type == null)
 			return null;
-		switch (type) {
-		case UNIT_PROCESS:
-			return ModelIcon.PROCESS;
-		case LCI_RESULT:
-			return ModelIcon.PROCESS_SYSTEM;
-		default:
-			return null;
-		}
+		return switch (type) {
+			case UNIT_PROCESS -> ModelIcon.PROCESS;
+			case LCI_RESULT -> ModelIcon.PROCESS_SYSTEM;
+		};
 	}
 
 	static ModelIcon categoryIcon(ModelType modelType) {
 		if (modelType == null)
 			return null;
-		switch (modelType) {
-		case ACTOR:
-			return ModelIcon.ACTOR_CATEGORY;
-		case FLOW:
-			return ModelIcon.FLOW_CATEGORY;
-		case FLOW_PROPERTY:
-			return ModelIcon.FLOW_PROPERTY_CATEGORY;
-		case IMPACT_METHOD:
-		case IMPACT_CATEGORY:
-			return ModelIcon.IMPACT_METHOD_CATEGORY;// TODO
-		case PROCESS:
-			return ModelIcon.PROCESS_CATEGORY;
-		case PRODUCT_SYSTEM:
-			return ModelIcon.PRODUCT_SYSTEM_CATEGORY;
-		case PROJECT:
-			return ModelIcon.PROJECT_CATEGORY;
-		case SOURCE:
-			return ModelIcon.SOURCE_CATEGORY;
-		case SOCIAL_INDICATOR:
-			return ModelIcon.SOCIAL_INDICATOR_CATEGORY;
-		case UNIT_GROUP:
-			return ModelIcon.UNIT_GROUP_CATEGORY;
-		case LOCATION:
-			return ModelIcon.LOCATION_CATEGORY;
-		case PARAMETER:
-			return ModelIcon.PARAMETER_CATEGORY;
-		case CURRENCY:
-			return ModelIcon.CURRENCY_CATEGORY;
-		case DQ_SYSTEM:
-			return ModelIcon.DQ_SYSTEM_CATEGORY;
-		default:
-			return null;
-		}
-	}
-
-	/**
-	 * Returns the shared image descriptor with the given name from the Eclipse
-	 * platform. See ISharedImages for the image names.
-	 */
-	public static ImageDescriptor platformDescriptor(String name) {
-		return PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(name);
+		return switch (modelType) {
+			case ACTOR -> ModelIcon.ACTOR_CATEGORY;
+			case FLOW -> ModelIcon.FLOW_CATEGORY;
+			case FLOW_PROPERTY -> ModelIcon.FLOW_PROPERTY_CATEGORY;
+			case IMPACT_METHOD, IMPACT_CATEGORY, RESULT
+				-> ModelIcon.IMPACT_METHOD_CATEGORY; // TODO
+			case PROCESS -> ModelIcon.PROCESS_CATEGORY;
+			case PRODUCT_SYSTEM -> ModelIcon.PRODUCT_SYSTEM_CATEGORY;
+			case PROJECT -> ModelIcon.PROJECT_CATEGORY;
+			case SOURCE -> ModelIcon.SOURCE_CATEGORY;
+			case SOCIAL_INDICATOR -> ModelIcon.SOCIAL_INDICATOR_CATEGORY;
+			case UNIT_GROUP -> ModelIcon.UNIT_GROUP_CATEGORY;
+			case LOCATION -> ModelIcon.LOCATION_CATEGORY;
+			case PARAMETER -> ModelIcon.PARAMETER_CATEGORY;
+			case CURRENCY -> ModelIcon.CURRENCY_CATEGORY;
+			case DQ_SYSTEM -> ModelIcon.DQ_SYSTEM_CATEGORY;
+			default -> null;
+		};
 	}
 
 	/**

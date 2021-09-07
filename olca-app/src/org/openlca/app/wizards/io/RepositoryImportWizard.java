@@ -33,7 +33,7 @@ import org.openlca.app.M;
 import org.openlca.app.cloud.CloudUtil;
 import org.openlca.app.cloud.ui.FetchNotifierMonitor;
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.ModelTypeComparison;
+import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -335,9 +335,9 @@ public class RepositoryImportWizard extends Wizard implements IImportWizard {
 		@Override
 		public int compare(FetchRequestData o1, FetchRequestData o2) {
 			if (o1.type != o2.type)
-				return ModelTypeComparison.compare(o1.type, o2.type);
+				return ModelTypeOrder.compare(o1.type, o2.type);
 			if (o1.type == ModelType.CATEGORY && o1.categoryType != o2.categoryType)
-				return ModelTypeComparison.compare(o1.categoryType, o2.categoryType);
+				return ModelTypeOrder.compare(o1.categoryType, o2.categoryType);
 			return CloudUtil.toFullPath(o1).toLowerCase().compareTo(CloudUtil.toFullPath(o2).toLowerCase());
 		}
 

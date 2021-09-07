@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.openlca.app.navigation.ModelTypeComparison;
+import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
@@ -44,7 +44,7 @@ class Search implements Runnable {
 			return;
 		log.trace("run search with term {}", rawTerm);
 		ModelType[] types = typeFilter == null
-				? ModelTypeComparison.getOrderedTypes()
+				? ModelTypeOrder.getOrderedTypes()
 				: new ModelType[] { typeFilter };
 		for (ModelType type : types) {
 			List<?> descriptors = getDescriptors(type);

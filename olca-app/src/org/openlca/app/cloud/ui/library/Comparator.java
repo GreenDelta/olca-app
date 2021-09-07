@@ -3,7 +3,7 @@ package org.openlca.app.cloud.ui.library;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.openlca.app.cloud.CloudUtil;
-import org.openlca.app.navigation.ModelTypeComparison;
+import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.cloud.model.LibraryRestriction;
 import org.openlca.cloud.model.RestrictionType;
 import org.openlca.cloud.model.data.Dataset;
@@ -26,7 +26,7 @@ public class Comparator extends ViewerComparator {
 	private int compare(Viewer viewer, Dataset d1, Dataset d2) {
 		ModelType type1 = d1.type == ModelType.CATEGORY ? d1.categoryType : d1.type;
 		ModelType type2 = d2.type == ModelType.CATEGORY ? d2.categoryType : d2.type;
-		int c = ModelTypeComparison.compare(type1, type2);
+		int c = ModelTypeOrder.compare(type1, type2);
 		if (c != 0)
 			return c;
 		if (d1.type == ModelType.CATEGORY && d2.type != ModelType.CATEGORY)

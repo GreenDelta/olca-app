@@ -32,7 +32,7 @@ public class NavigationComparator extends ViewerComparator {
 			return 0;
 		
 		if (e1 instanceof ModelTypeElement && e2 instanceof ModelTypeElement) {
-			return ModelTypeComparison.compare(
+			return ModelTypeOrder.compare(
 					((ModelTypeElement) e1).getContent(), 
 					((ModelTypeElement) e2).getContent());
 		}
