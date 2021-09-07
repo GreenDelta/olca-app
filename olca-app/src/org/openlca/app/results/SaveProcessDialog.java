@@ -1,7 +1,6 @@
 package org.openlca.app.results;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
@@ -13,6 +12,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.util.Categories;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -21,6 +21,10 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @deprecated will be removed when we switch to the new `SaveResultDialog`
+ */
+@Deprecated
 public final class SaveProcessDialog extends Wizard {
 
 	private final ResultEditor<?> editor;
@@ -31,14 +35,19 @@ public final class SaveProcessDialog extends Wizard {
 		setNeedsProgressMonitor(true);
 	}
 
-	public static int open(ResultEditor<?> editor) {
+	public static void open(ResultEditor<?> editor) {
 		if (editor == null)
-			return Window.CANCEL;
-		SaveProcessDialog d = new SaveProcessDialog(editor);
+			return;
+		// TODO
+		if (FeatureFlag.RESULTS.isEnabled()) {
+			SaveResultDialog.open(editor);
+			return;
+		}
+		var d = new SaveProcessDialog(editor);
 		d.setWindowTitle(M.SaveAsLCIResult);
-		WizardDialog dialog = new WizardDialog(UI.shell(), d);
+		var dialog = new WizardDialog(UI.shell(), d);
 		dialog.setPageSize(150, 250);
-		return dialog.open();
+		dialog.open();
 	}
 
 	@Override

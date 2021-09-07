@@ -169,6 +169,10 @@ public class UI {
 		return data;
 	}
 
+	public static GridData fillHorizontal(Control control) {
+		return gridData(control, true, false);
+	}
+
 	public static ScrolledForm formHeader(ModelPage<?> page) {
 		Image image = Images.get(page.getEditor().getModel());
 		ScrolledForm form = formHeader(page.getManagedForm(), page.getFormTitle(), image);
