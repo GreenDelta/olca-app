@@ -28,7 +28,7 @@ class ResultPage extends ModelPage<ResultModel> {
 		var sash = new SashForm(body, SWT.VERTICAL);
 		UI.gridData(sash, true, true);
 		tk.adapt(sash);
-
+		new ImpactSection(editor).render(sash, tk);
 		FlowSection.forInputs(editor).render(sash, tk);
 		FlowSection.forOutputs(editor).render(sash, tk);
 

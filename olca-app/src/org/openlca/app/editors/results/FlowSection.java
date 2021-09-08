@@ -13,6 +13,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ResultFlow;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
@@ -58,9 +59,16 @@ class FlowSection {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (col != 0 || !(obj instanceof ResultFlow))
+			if (!(obj instanceof ResultFlow))
 				return null;
-			return Images.get(((ResultFlow) obj).flow);
+			var r = (ResultFlow) obj;
+			return switch (col) {
+				case 0 -> Images.get(r.flow);
+				case 4 -> r.location == null
+					? null
+					: Images.get(ModelType.LOCATION);
+				default -> null;
+			};
 		}
 
 		@Override
