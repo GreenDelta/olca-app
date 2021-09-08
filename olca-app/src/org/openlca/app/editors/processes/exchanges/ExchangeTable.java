@@ -310,7 +310,7 @@ class ExchangeTable {
 					&& Strings.notEmpty(e.costFormula))
 				return e.costFormula + " " + e.currency.code;
 			else
-				return e.costs.toString() + " " + e.currency.code;
+				return e.costs + " " + e.currency.code;
 		case 6:
 			return e.isAvoided ? "TRUE" : "";
 		default:

@@ -1,8 +1,5 @@
 package org.openlca.app.results;
 
-import java.util.Date;
-import java.util.UUID;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
@@ -22,8 +19,8 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
-import org.openlca.core.model.ResultModel;
 import org.openlca.core.results.SystemProcess;
+import org.openlca.util.ResultModels;
 
 public class SaveResultDialog extends FormDialog {
 
@@ -158,10 +155,9 @@ public class SaveResultDialog extends FormDialog {
 				return db.insert(process);
 			}
 
-			var result = new ResultModel();
+			var result = ResultModels.createFrom(
+					db, editor.setup, editor.result);
 			result.name = name;
-			result.refId = UUID.randomUUID().toString();
-			result.lastChange = new Date().getTime();
 			return db.insert(result);
 		}
 	}

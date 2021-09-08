@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
@@ -91,12 +90,11 @@ public class InventoryPage extends FormPage {
 	private TreeViewer createTree(Composite parent, boolean forInputs) {
 
 		// create section and cutoff combo
-		Section section = UI.section(parent, toolkit,
+		var section = UI.section(parent, toolkit,
 			forInputs ? M.Inputs : M.Outputs);
 		UI.gridData(section, true, true);
-		Composite comp = UI.sectionClient(section, toolkit);
-		UI.gridLayout(comp, 1);
-		ContributionCutoff spinner = ContributionCutoff.create(comp, toolkit);
+		var comp = UI.sectionClient(section, toolkit, 1);
+		var spinner = ContributionCutoff.create(comp, toolkit);
 
 		// create the tree
 		String[] headers = new String[]{
@@ -224,20 +222,14 @@ public class InventoryPage extends FormPage {
 			if (f.flow() == null)
 				return null;
 			Pair<String, String> category = Labels.getCategory(f.flow());
-			switch (col) {
-				case 0:
-					return Labels.name(f);
-				case 1:
-					return category.getLeft();
-				case 2:
-					return category.getRight();
-				case 3:
-					return Numbers.format(getAmount(f));
-				case 4:
-					return Labels.refUnit(f);
-				default:
-					return null;
-			}
+			return switch (col) {
+				case 0 -> Labels.name(f);
+				case 1 -> category.getLeft();
+				case 2 -> category.getRight();
+				case 3 -> Numbers.format(getAmount(f));
+				case 4 -> Labels.refUnit(f);
+				default -> null;
+			};
 		}
 
 		private String getProcessColumnText(FlowContribution item, int col) {
