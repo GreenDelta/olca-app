@@ -44,23 +44,21 @@ class DQSettingsPage extends WizardPage {
 		// aggregation type
 		new Label(container, SWT.NULL).setText(M.AggregationType);
 		TypeCombo<AggregationType> aggCombo = new TypeCombo<>(
-				container, AggregationType.class);
+			container, AggregationType.class);
 		aggCombo.setInput(AggregationType.values());
 		aggCombo.select(setup.dqSetup.aggregationType);
-		aggCombo.addSelectionChangedListener(_e -> {
-			setup.dqSetup.aggregationType = aggCombo.getSelected();
-		});
+		aggCombo.addSelectionChangedListener(
+			_e -> setup.dqSetup.aggregationType = aggCombo.getSelected());
 
 		// rounding mode
 		new Label(container, SWT.NULL).setText(M.RoundingMode);
-		var roundCombo = new TypeCombo<RoundingMode>(
-				container, RoundingMode.class);
-		roundCombo.setInput(new RoundingMode[] {
-				RoundingMode.HALF_UP,
-				RoundingMode.CEILING });
+		var roundCombo = new TypeCombo<>(container, RoundingMode.class);
+		roundCombo.setInput(new RoundingMode[]{
+			RoundingMode.HALF_UP,
+			RoundingMode.CEILING});
 		roundCombo.select(setup.dqSetup.ceiling
-				? RoundingMode.CEILING
-				: RoundingMode.HALF_UP);
+			? RoundingMode.CEILING
+			: RoundingMode.HALF_UP);
 		roundCombo.addSelectionChangedListener(_e -> {
 			var rmode = roundCombo.getSelected();
 			setup.dqSetup.ceiling = rmode == RoundingMode.CEILING;
@@ -70,34 +68,35 @@ class DQSettingsPage extends WizardPage {
 		new Label(container, SWT.NULL).setText(M.NaValueHandling);
 		var naCombo = new TypeCombo<>(container, NAHandling.class);
 		naCombo.setInput(NAHandling.values());
-		naCombo.addSelectionChangedListener(_e -> {
-			setup.dqSetup.naHandling = naCombo.getSelected();
-		});
+		naCombo.addSelectionChangedListener(
+			_e -> setup.dqSetup.naHandling = naCombo.getSelected());
 	}
 
 	private void createDQViewer(Composite comp, boolean forExchanges) {
 		UI.formLabel(comp, forExchanges
-				? M.FlowSchema
-				: M.ProcessSchema);
+			? M.FlowSchema
+			: M.ProcessSchema);
 		var combo = new DQSystemViewer(comp);
 		combo.setNullable(true);
 
 		var dao = new DQSystemDao(Database.get());
-		var system = setup.calcSetup.productSystem;
+		var system = setup.calcSetup.hasProductSystem()
+			? setup.calcSetup.productSystem()
+			: null;
 
 		List<DQSystemDescriptor> dqSystems;
-		if (system.withoutNetwork) {
+		if (system == null) {
 			dqSystems = dao.getDescriptors();
 		} else {
 			dqSystems = forExchanges
-					? dao.getExchangeDqSystems(system.id)
-					: dao.getProcessDqSystems(system.id);
+				? dao.getExchangeDqSystems(system.id)
+				: dao.getProcessDqSystems(system.id);
 		}
 		combo.setInput(dqSystems);
 
 		var selected = forExchanges
-				? setup.dqSetup.exchangeSystem
-				: setup.dqSetup.processSystem;
+			? setup.dqSetup.exchangeSystem
+			: setup.dqSetup.processSystem;
 		if (selected != null) {
 			combo.select(Descriptor.of(selected));
 		} else {
@@ -106,8 +105,8 @@ class DQSettingsPage extends WizardPage {
 
 		combo.addSelectionChangedListener(d -> {
 			var dqSystem = d == null
-					? null
-					: new DQSystemDao(Database.get()).getForId(d.id);
+				? null
+				: new DQSystemDao(Database.get()).getForId(d.id);
 			if (forExchanges) {
 				setup.dqSetup.exchangeSystem = dqSystem;
 			} else {
