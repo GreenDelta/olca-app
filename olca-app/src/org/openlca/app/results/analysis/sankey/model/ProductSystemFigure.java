@@ -79,7 +79,7 @@ public class ProductSystemFigure extends Figure {
 				+ Numbers.format(cutoffValue, 3) + "%";
 		if (selection != null) {
 			g.drawText(M.ProductSystem + ": "
-					+ node.productSystem.name, new Point(5, 5));
+					+ node.calculationTarget.name, new Point(5, 5));
 			String label = selectionLabel(selection);
 			g.drawText(label, new Point(5, 30));
 			g.drawText(cutoffText, new Point(5, 60));

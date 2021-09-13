@@ -5,18 +5,17 @@ import java.util.List;
 
 import org.eclipse.draw2d.ConnectionRouter;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
-import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.CategorizedEntity;
 
 public class ProductSystemNode {
 
-	public final ProductSystem productSystem;
+	public final CategorizedEntity calculationTarget;
 	public final SankeyDiagram editor;
 	public final List<ProcessNode> processNodes = new ArrayList<>();
 
 	public ProductSystemNode(
-			ProductSystem productSystem,
-			SankeyDiagram editor) {
-		this.productSystem = productSystem;
+			CategorizedEntity calculationTarget, SankeyDiagram editor) {
+		this.calculationTarget = calculationTarget;
 		this.editor = editor;
 	}
 

@@ -33,7 +33,7 @@ import org.openlca.app.results.analysis.sankey.model.ProductSystemNode;
 import org.openlca.app.results.analysis.sankey.model.SankeyEditPartFactory;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.index.TechFlow;
-import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.ResultItemView;
 import org.openlca.core.results.Sankey;
@@ -55,16 +55,16 @@ public class SankeyDiagram extends GraphicalEditor {
 	private boolean routed = true;
 
 	public final Map<TechFlow, ProcessNode> createdNodes = new HashMap<>();
-	private final ProductSystem productSystem;
+	private final CategorizedEntity calculationTarget;
 
 	public SankeyDiagram(ResultEditor<FullResult> parent) {
 		this.dqResult = parent.dqResult;
 		this.result = parent.result;
 		this.resultItems = parent.resultItems;
-		productSystem = parent.setup.productSystem;
+		calculationTarget = parent.setup.target();
 		setEditDomain(new DefaultEditDomain(this));
-		if (productSystem != null) {
-			setPartName(productSystem.name);
+		if (calculationTarget != null) {
+			setPartName(calculationTarget.name);
 		}
 	}
 
@@ -195,7 +195,7 @@ public class SankeyDiagram extends GraphicalEditor {
 						.build(),
 				() -> {
 
-					node = new ProductSystemNode(productSystem, this);
+					node = new ProductSystemNode(calculationTarget, this);
 					updateModel();
 					getGraphicalViewer().deselectAll();
 					getGraphicalViewer().setContents(node);
