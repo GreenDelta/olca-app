@@ -28,6 +28,7 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.math.data_quality.DQResult;
+import org.openlca.core.model.CalculationTarget;
 import org.openlca.core.model.CalculationType;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -52,13 +53,13 @@ public class CalculationWizard extends Wizard {
 		setWindowTitle(M.CalculationProperties);
 	}
 
-	public static void open(ProductSystem system) {
-		if (system == null)
+	public static void open(CalculationTarget target) {
+		if (target == null)
 			return;
 		boolean doContinue = checkForUnsavedContent();
 		if (!doContinue)
 			return;
-		var wizard = new CalculationWizard(system);
+		var wizard = new CalculationWizard(target);
 		var dialog = new WizardDialog(UI.shell(), wizard);
 		dialog.open();
 	}

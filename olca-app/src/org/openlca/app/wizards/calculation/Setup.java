@@ -9,11 +9,11 @@ import org.openlca.core.math.data_quality.DQCalculationSetup;
 import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.CalculationSetup;
+import org.openlca.core.model.CalculationTarget;
 import org.openlca.core.model.CalculationType;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NwSet;
 import org.openlca.core.model.ParameterRedefSet;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.util.ProductSystems;
@@ -30,78 +30,78 @@ class Setup {
 	boolean storeInventory;
 	boolean withDataQuality;
 
-	private Setup(ProductSystem system) {
+	private Setup(CalculationTarget target) {
+		var system = target.isProductSystem()
+			? target.asProductSystem()
+			: null;
 		hasLibraries = FeatureFlag.LIBRARIES.isEnabled()
-			&& ProductSystems.hasLibraryLinks(system, Database.get());
-		calcSetup = CalculationSetup.contributions(system);
+			&& system != null
+			&& ProductSystems.hasLibraryLinks(system, db);
+
+		calcSetup = CalculationSetup.contributions(target);
 		dqSetup = new DQCalculationSetup();
-		dqSetup.productSystemId = system.id;
+		// dqSetup.productSystemId = target.id;
 
 		// add parameter redefinitions
-		if (system.parameterSets.size() > 0) {
-			ParameterRedefSet baseline = system.parameterSets
-				.stream()
+		if (system != null && system.parameterSets.size() > 0) {
+			var baseline = system.parameterSets.stream()
 				.filter(ps -> ps.isBaseline)
 				.findFirst()
 				.orElse(system.parameterSets.get(0));
 			if (baseline != null) {
-				calcSetup.parameterRedefs.addAll(
-					baseline.parameters);
+				calcSetup.withParameters(baseline.parameters);
 			}
 		}
 	}
 
 	void setParameters(ParameterRedefSet params) {
-		calcSetup.parameterRedefs.clear();
-		if (params == null)
-			return;
-		calcSetup.parameterRedefs.addAll(params.parameters);
+		calcSetup.withParameters(params.parameters);
 	}
 
 	boolean hasType(CalculationType type) {
-		return calcSetup.calculationType == type;
+		return calcSetup.type() == type;
 	}
 
 	void setType(CalculationType type) {
-		calcSetup.calculationType = type;
+		calcSetup.withType(type);
 	}
 
 	void setMethod(ImpactMethodDescriptor method) {
-		calcSetup.nwSet = null;
+		calcSetup.withNwSet(null);
 		if (method == null) {
-			calcSetup.impactMethod = null;
+			calcSetup.withImpactMethod(null);
 			return;
 		}
-		calcSetup.impactMethod = db.get(ImpactMethod.class, method.id);
+		calcSetup.withImpactMethod(db.get(ImpactMethod.class, method.id));
 	}
 
 	void setNwSet(NwSetDescriptor nwSet) {
-		calcSetup.nwSet = null;
+		calcSetup.withNwSet(null);
 		if (nwSet == null)
 			return;
-		var method = calcSetup.impactMethod;
+		var method = calcSetup.impactMethod();
 		if (method == null)
 			return;
-		calcSetup.nwSet = method.nwSets.stream()
+		calcSetup.withNwSet(method.nwSets.stream()
 			.filter(n -> n.id == nwSet.id)
 			.findAny()
-			.orElse(null);
+			.orElse(null));
 	}
 
 	/**
 	 * Initializes a calculation setup with the stored preferences of the last
 	 * calculation.
 	 */
-	static Setup init(ProductSystem system) {
-		Setup s = new Setup(system);
-		s.calcSetup.calculationType = loadEnumPref(CalculationType.class,
-			CalculationType.CONTRIBUTION_ANALYSIS);
-		s.calcSetup.allocationMethod = loadAllocationPref();
-		s.calcSetup.impactMethod = loadImpactMethodPref();
-		s.calcSetup.nwSet = loadNwSetPref(s.calcSetup.impactMethod);
-		s.calcSetup.numberOfRuns = Preferences.getInt("calc.numberOfRuns");
-		s.calcSetup.withRegionalization = Preferences.getBool("calc.regionalized");
-		s.calcSetup.withCosts = Preferences.getBool("calc.costCalculation");
+	static Setup init(CalculationTarget target) {
+		Setup s = new Setup(target);
+		s.calcSetup.withType(
+				loadEnumPref(CalculationType.class, CalculationType.CONTRIBUTION_ANALYSIS))
+			.withAllocation(loadAllocationPref())
+			.withImpactMethod(loadImpactMethodPref())
+			.withNwSet(loadNwSetPref(s.calcSetup.impactMethod()))
+			.withNumberOfRuns(Preferences.getInt("calc.numberOfRuns"))
+			.withRegionalization(Preferences.getBool("calc.regionalized"))
+			.withCosts(Preferences.getBool("calc.costCalculation"));
 
 		// data quality settings
 		s.withDataQuality = false; // Preferences.getBool("calc.dqAssessment");
@@ -111,16 +111,15 @@ class Setup {
 			NAHandling.class, NAHandling.EXCLUDE);
 		s.dqSetup.ceiling = Preferences.getBool("calc.dqCeiling");
 		// init the DQ systems from the ref. process
-		if (system.referenceProcess != null) {
-			var p = system.referenceProcess;
-			s.dqSetup.exchangeSystem = p.exchangeDqSystem;
-			s.dqSetup.processSystem = p.dqSystem;
+		var process = s.calcSetup.process();
+		if (process != null) {
+			s.dqSetup.exchangeSystem = process.exchangeDqSystem;
+			s.dqSetup.processSystem = process.dqSystem;
 		}
 
 		// reset features that are currently not supported with libraries
 		if (s.hasLibraries) {
-			s.calcSetup.nwSet = null;
-			s.calcSetup.withCosts = false;
+			s.calcSetup.withCosts(false);
 			s.withDataQuality = false;
 		}
 
@@ -185,25 +184,25 @@ class Setup {
 	void savePreferences() {
 		if (calcSetup == null)
 			return;
-		savePreference(CalculationType.class, calcSetup.calculationType);
+		savePreference(CalculationType.class, calcSetup.type());
 
 		// allocation method
-		AllocationMethod am = calcSetup.allocationMethod;
+		AllocationMethod am = calcSetup.allocation();
 		Preferences.set("calc.allocation.method",
 			am == null ? "NONE" : am.name());
 
 		// LCIA method
-		var m = calcSetup.impactMethod;
+		var m = calcSetup.impactMethod();
 		Preferences.set("calc.impact.method", m == null ? "" : m.refId);
 
 		// NW set
-		var nws = calcSetup.nwSet;
+		var nws = calcSetup.nwSet();
 		Preferences.set("calc.nwset", nws == null ? "" : nws.refId);
 
 		// calculation options
-		Preferences.set("calc.numberOfRuns", calcSetup.numberOfRuns);
-		Preferences.set("calc.costCalculation", calcSetup.withCosts);
-		Preferences.set("calc.regionalized", calcSetup.withRegionalization);
+		Preferences.set("calc.numberOfRuns", calcSetup.numberOfRuns());
+		Preferences.set("calc.costCalculation", calcSetup.hasCosts());
+		Preferences.set("calc.regionalized", calcSetup.hasRegionalization());
 
 		// data quality settings
 		if (!withDataQuality) {
