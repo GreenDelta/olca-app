@@ -97,7 +97,7 @@ public class ProcessResultPage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		toolkit = mform.getToolkit();
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.name(setup.productSystem),
+				Labels.name(setup.target()),
 				Images.get(result));
 		Composite body = UI.formBody(form, toolkit);
 		createFlowSection(body);

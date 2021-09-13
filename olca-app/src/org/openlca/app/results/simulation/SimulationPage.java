@@ -23,15 +23,10 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.math.Simulator;
 import org.openlca.core.matrix.index.TechFlow;
-import org.openlca.core.model.CalculationSetup;
-import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.SimulationResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class SimulationPage extends FormPage {
 
@@ -50,7 +45,9 @@ class SimulationPage extends FormPage {
 	private ScrolledForm form;
 	private ImpactCategoryViewer impactViewer;
 
-	/** A pinned product which results should be displayed. */
+	/**
+	 * A pinned product which results should be displayed.
+	 */
 	private TechFlow resultPin;
 
 	public SimulationPage(SimulationEditor editor) {
@@ -89,10 +86,10 @@ class SimulationPage extends FormPage {
 		Text simCountText = UI.formText(settings, toolkit, M.NumberOfSimulations);
 		if (editor.setup != null) {
 			var setup = editor.setup;
-			systemText.setText(setup.productSystem.name);
-			processText.setText(setup.productSystem.referenceProcess.name);
+			systemText.setText(Labels.name(setup.target()));
+			processText.setText(Labels.name(setup.process()));
 			qRefText.setText(getQRefText());
-			simCountText.setText(Integer.toString(setup.numberOfRuns));
+			simCountText.setText(Integer.toString(setup.numberOfRuns()));
 		}
 		systemText.setEditable(false);
 		processText.setEditable(false);
@@ -101,30 +98,24 @@ class SimulationPage extends FormPage {
 	}
 
 	private String getQRefText() {
-		try {
-			CalculationSetup setup = editor.setup;
-			ProductSystem system = setup.productSystem;
-			Exchange exchange = system.referenceExchange;
-			double amount = system.targetAmount;
-			Flow flow = exchange.flow;
-			Unit unit = system.targetUnit;
-			return String.format("%s %s %s", Numbers.format(amount, 2),
-					unit.name, Labels.name(flow));
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to create text for quan. ref.", e);
-			return "";
-		}
+		var setup = editor.setup;
+		double amount = setup.amount();
+		Flow flow = setup.flow();
+		Unit unit = setup.unit();
+		return String.format("%s %s %s",
+			Numbers.format(amount, 2),
+			Labels.name(unit),
+			Labels.name(flow));
 	}
 
 	private void createProgressSection(FormToolkit toolkit, Composite body) {
 		progressSection = UI.section(body, toolkit, M.Progress);
 		Composite composite = UI.sectionClient(progressSection, toolkit);
 		progressBar = new ProgressBar(composite, SWT.SMOOTH);
-		progressBar.setMaximum(editor.setup.numberOfRuns);
+		progressBar.setMaximum(editor.setup.numberOfRuns());
 		UI.gridData(progressBar, false, false).widthHint = 470;
 		Button progressButton = toolkit.createButton(composite,
-				M.Start, SWT.NONE);
+			M.Start, SWT.NONE);
 		UI.gridData(progressButton, false, false).widthHint = 70;
 		new SimulationControl(progressButton, editor, this);
 	}
@@ -134,7 +125,7 @@ class SimulationPage extends FormPage {
 			return;
 		Section section = UI.section(body, tk, M.Results);
 		SimulationExportAction exportAction = new SimulationExportAction(
-				result, editor.setup);
+			result, editor.setup);
 		Actions.bind(section, exportAction);
 		Composite comp = UI.sectionClient(section, tk);
 		initFlowCheckViewer(tk, comp);
@@ -149,7 +140,7 @@ class SimulationPage extends FormPage {
 
 	private void initImpactCheckViewer(FormToolkit toolkit, Composite section) {
 		Button impactCheck = toolkit.createButton(section,
-				M.ImpactCategories, SWT.RADIO);
+			M.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(section);
 		impactViewer.setEnabled(false);
 		impactViewer.setInput(result.getImpacts());
@@ -176,16 +167,16 @@ class SimulationPage extends FormPage {
 			if (flow == null)
 				return;
 			double[] vals = resultPin != null
-					? result.getAllUpstream(resultPin, flow)
-					: result.getAll(flow);
+				? result.getAllUpstream(resultPin, flow)
+				: result.getAll(flow);
 			statisticsCanvas.setValues(vals);
 		} else {
 			ImpactDescriptor cat = impactViewer.getSelected();
 			if (cat == null)
 				return;
 			double[] vals = resultPin != null
-					? result.getAllUpstream(resultPin, cat)
-					: result.getAll(cat);
+				? result.getAllUpstream(resultPin, cat)
+				: result.getAll(cat);
 			statisticsCanvas.setValues(vals);
 		}
 	}
@@ -197,7 +188,7 @@ class SimulationPage extends FormPage {
 		progressBar.setSelection(progressBar.getSelection() + 1);
 	}
 
-	void progressDone(int numberOfIteration) {
+	void progressDone() {
 		progressSection.dispose();
 		form.reflow(true);
 	}
@@ -209,7 +200,7 @@ class SimulationPage extends FormPage {
 		private final int type;
 
 		public ResultTypeCheck(AbstractComboViewer<T> viewer, Button check,
-				int type) {
+			int type) {
 			this.viewer = viewer;
 			this.check = check;
 			this.type = type;

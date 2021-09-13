@@ -8,6 +8,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.FileType;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.Popup;
 import org.openlca.io.xls.results.system.ResultExport;
 import org.slf4j.Logger;
@@ -34,8 +35,8 @@ public class ExcelExportAction extends Action {
 	}
 
 	private void runExport(ResultEditor<?> editor) {
-		String fileName = editor.setup.productSystem.name;
-		fileName = fileName.replaceAll("[^A-Za-z0-9]", "_") + ".xlsx";
+		String fileName = Labels.name(editor.setup.target())
+				.replaceAll("[^A-Za-z0-9]", "_") + ".xlsx";
 		var file = FileChooser.forSavingFile(M.Export, fileName);
 		if (file == null)
 			return;

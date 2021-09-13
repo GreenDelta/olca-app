@@ -251,7 +251,7 @@ public class MatrixExportDialog extends FormDialog {
 		void exec() {
 			var techIndex = system == null
 				? TechIndex.of(db)
-				: TechIndex.of(system, db);
+				: TechIndex.of(db, system);
 			var config = MatrixData.of(db, techIndex)
 				.withAllocation(allocation)
 				.withCosts(withCosts)

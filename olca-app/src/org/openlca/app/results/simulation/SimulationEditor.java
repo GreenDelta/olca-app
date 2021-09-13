@@ -13,6 +13,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Labels;
 import org.openlca.core.math.Simulator;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.util.Strings;
@@ -48,10 +49,10 @@ public class SimulationEditor extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput editorInput)
 			throws PartInitException {
 		super.init(site, editorInput);
-		SimulationInput input = (SimulationInput) editorInput;
+		var input = (SimulationInput) editorInput;
 		setup = Cache.getAppCache().remove(
 				input.setupKey, CalculationSetup.class);
-		setPartName(Strings.cut(setup.productSystem.name, 75));
+		setPartName(Strings.cut(Labels.name(setup.target()), 75));
 		simulator = Cache.getAppCache()
 				.remove(input.solverKey, Simulator.class);
 	}

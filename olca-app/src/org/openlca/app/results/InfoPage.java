@@ -28,7 +28,7 @@ public class InfoPage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		ContributionResult result = editor.result;
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.name(editor.setup.productSystem),
+				Labels.name(editor.setup.target()),
 				Images.get(editor.result));
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);

@@ -58,7 +58,7 @@ public class ContributionTreePage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		FormToolkit tk = mform.getToolkit();
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.name(setup.productSystem),
+				Labels.name(setup.target()),
 				Images.get(result));
 		Composite body = UI.formBody(form, tk);
 		Composite comp = tk.createComposite(body);

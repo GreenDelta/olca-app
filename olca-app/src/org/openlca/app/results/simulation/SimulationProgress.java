@@ -23,7 +23,7 @@ class SimulationProgress implements IRunnableWithProgress {
 			SimulationPage page) {
 		this.display = display;
 		this.solver = editor.simulator;
-		this.numberOfRuns = editor.setup.numberOfRuns;
+		this.numberOfRuns = editor.setup.numberOfRuns();
 		this.page = page;
 	}
 
@@ -48,7 +48,7 @@ class SimulationProgress implements IRunnableWithProgress {
 		display.asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				page.progressDone(numberOfRuns);
+				page.progressDone();
 			}
 		});
 	}
