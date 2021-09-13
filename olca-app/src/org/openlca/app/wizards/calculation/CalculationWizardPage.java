@@ -53,7 +53,7 @@ class CalculationWizardPage extends WizardPage {
 		if (!isPageComplete())
 			return false;
 		return setup.withDataQuality &&
-			setup.calcSetup.calculationType != CalculationType.MONTE_CARLO_SIMULATION;
+			!setup.hasType(CalculationType.MONTE_CARLO_SIMULATION);
 	}
 
 	@Override
@@ -89,8 +89,10 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createParamSetCombo(Composite comp) {
+		if (!setup.calcSetup.hasProductSystem())
+			return;
 		var paramSets = new ArrayList<>(
-			setup.calcSetup.productSystem.parameterSets);
+			setup.calcSetup.productSystem().parameterSets);
 		if (paramSets.size() < 2)
 			return;
 
@@ -126,10 +128,8 @@ class CalculationWizardPage extends WizardPage {
 			comp, AllocationMethod.values());
 		combo.setNullable(false);
 		combo.select(Objects.requireNonNullElse(
-			setup.calcSetup.allocationMethod,
-			AllocationMethod.NONE));
-		combo.addSelectionChangedListener(
-			m -> setup.calcSetup.allocationMethod = m);
+			setup.calcSetup.allocation(), AllocationMethod.NONE));
+		combo.addSelectionChangedListener(setup.calcSetup::withAllocation);
 	}
 
 	private void createMethodCombo(Composite comp) {
@@ -137,8 +137,8 @@ class CalculationWizardPage extends WizardPage {
 		var combo = new ImpactMethodViewer(comp);
 		combo.setNullable(true);
 		combo.setInput(Database.get());
-		if (setup.calcSetup.impactMethod != null) {
-			combo.select(Descriptor.of(setup.calcSetup.impactMethod));
+		if (setup.calcSetup.impactMethod() != null) {
+			combo.select(Descriptor.of(setup.calcSetup.impactMethod()));
 		}
 		combo.addSelectionChangedListener(_e -> {
 			var method = combo.getSelected();
@@ -151,12 +151,12 @@ class CalculationWizardPage extends WizardPage {
 		UI.formLabel(parent, M.NormalizationAndWeightingSet);
 		nwViewer = new NwSetComboViewer(parent, Database.get());
 		nwViewer.setNullable(true);
-		var method = setup.calcSetup.impactMethod;
+		var method = setup.calcSetup.impactMethod();
 		if (method != null) {
 			nwViewer.setInput(Descriptor.of(method));
 		}
-		if (setup.calcSetup.nwSet != null) {
-			nwViewer.select(Descriptor.of(setup.calcSetup.nwSet));
+		if (setup.calcSetup.nwSet() != null) {
+			nwViewer.select(Descriptor.of(setup.calcSetup.nwSet()));
 		}
 		nwViewer.addSelectionChangedListener(setup::setNwSet);
 	}
@@ -222,14 +222,6 @@ class CalculationWizardPage extends WizardPage {
 		if (setup.hasLibraries) {
 			dqCheck.setEnabled(false);
 		}
-
-		if (Database.isConnected()) {
-			var inventoryCheck = new Button(commonOptions, SWT.CHECK);
-			inventoryCheck.setSelection(setup.storeInventory);
-			inventoryCheck.setText(M.StoreInventoryResult);
-			Controls.onSelect(inventoryCheck,
-				_e -> setup.storeInventory = inventoryCheck.getSelection());
-		}
 	}
 
 	private void createMonteCarloOptions(Composite parent) {
@@ -245,16 +237,16 @@ class CalculationWizardPage extends WizardPage {
 		Text iterText = new Text(inner, SWT.BORDER);
 		UI.gridData(iterText, false, false).widthHint = 80;
 
-		int itCount = setup.calcSetup.numberOfRuns;
+		int itCount = setup.calcSetup.numberOfRuns();
 		if (itCount < 1) {
 			itCount = 100;
-			setup.calcSetup.numberOfRuns = itCount;
+			setup.calcSetup.withNumberOfRuns(itCount);
 		}
 		iterText.setText(Integer.toString(itCount));
 		iterText.addModifyListener(_e -> {
 			String text = iterText.getText();
 			try {
-				setup.calcSetup.numberOfRuns = Integer.parseInt(text);
+				setup.calcSetup.withNumberOfRuns(Integer.parseInt(text));
 			} catch (Exception e) {
 				MsgBox.error(M.InvalidNumber, text + " " + M.IsNotValidNumber);
 			}
@@ -265,15 +257,15 @@ class CalculationWizardPage extends WizardPage {
 	private void addRegioAndCostChecks(Composite comp) {
 		var regioCheck = new Button(comp, SWT.CHECK);
 		regioCheck.setText("Regionalized calculation");
-		regioCheck.setSelection(setup.calcSetup.withRegionalization);
+		regioCheck.setSelection(setup.calcSetup.hasRegionalization());
 		Controls.onSelect(regioCheck,
-			_e -> setup.calcSetup.withRegionalization = regioCheck.getSelection());
+			_e -> setup.calcSetup.withRegionalization(regioCheck.getSelection()));
 
 		var costCheck = new Button(comp, SWT.CHECK);
 		costCheck.setText(M.IncludeCostCalculation);
-		costCheck.setSelection(setup.calcSetup.withCosts);
+		costCheck.setSelection(setup.calcSetup.hasCosts());
 		Controls.onSelect(costCheck,
-			_e -> setup.calcSetup.withCosts = costCheck.getSelection());
+			_e -> setup.calcSetup.withCosts(costCheck.getSelection()));
 		if (setup.hasLibraries) {
 			costCheck.setEnabled(false);
 		}

@@ -31,7 +31,6 @@ import org.openlca.app.wizards.ProductSystemWizard;
 import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.xls.process.output.ExcelExport;
 import org.slf4j.Logger;
@@ -148,9 +147,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 		}
 
 		static void runCalculation(Process p) {
-			var system = ProductSystem.of(p);
-			system.withoutNetwork = true;
-			CalculationWizard.open(system);
+			CalculationWizard.open(p);
 		}
 
 		static void checkLinking(Process process) {

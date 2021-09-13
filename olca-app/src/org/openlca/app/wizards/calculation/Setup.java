@@ -26,8 +26,6 @@ class Setup {
 	final CalculationSetup calcSetup;
 	final DQCalculationSetup dqSetup;
 	private final IDatabase db = Database.get();
-
-	boolean storeInventory;
 	boolean withDataQuality;
 
 	private Setup(CalculationTarget target) {
