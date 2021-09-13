@@ -57,7 +57,7 @@ public class InventoryPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var form = UI.formHeader(mform,
-			Labels.name(setup.productSystem),
+			Labels.name(setup.target()),
 			Images.get(result));
 		toolkit = mform.getToolkit();
 		var body = UI.formBody(form, toolkit);

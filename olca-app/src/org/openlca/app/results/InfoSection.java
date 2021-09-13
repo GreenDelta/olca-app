@@ -24,30 +24,30 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 class InfoSection {
 
 	static void create(Composite body, FormToolkit tk, CalculationSetup setup) {
-		if (setup == null || setup.productSystem == null)
+		if (setup == null)
 			return;
 		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
-		if (setup.productSystem.withoutNetwork) {
-			link(comp, tk, M.ReferenceProcess,
-					setup.productSystem.referenceProcess);
+		if (setup.hasProductSystem()) {
+			link(comp, M.ProductSystem, setup.productSystem());
 		} else {
-			link(comp, tk, M.ProductSystem, setup.productSystem);
+			link(comp, M.ReferenceProcess, setup.process());
 		}
-		text(comp, tk, M.AllocationMethod, Labels.getEnumText(setup.allocationMethod));
+
+		text(comp, tk, M.AllocationMethod, Labels.getEnumText(setup.allocation()));
 		text(comp, tk, M.TargetAmount, targetAmountText(setup));
-		if (setup.impactMethod != null) {
-			link(comp, tk, M.ImpactAssessmentMethod, setup.impactMethod);
+		if (setup.impactMethod() != null) {
+			link(comp, M.ImpactAssessmentMethod, setup.impactMethod());
 		}
-		if (setup.nwSet != null) {
-			text(comp, tk, M.NormalizationAndWeightingSet, setup.nwSet.name);
+		if (setup.nwSet() != null) {
+			text(comp, tk, M.NormalizationAndWeightingSet, setup.nwSet().name);
 		}
 		buttons(comp, tk);
 	}
 
 	private static String targetAmountText(CalculationSetup setup) {
-		String refFlowName = setup.productSystem.referenceExchange.flow.name;
-		return Math.abs(setup.getAmount()) + " "
-				+ setup.getUnit().name + " " + refFlowName;
+		return Math.abs(setup.amount())
+				+ " " + Labels.name(setup.unit())
+				+ " " + Labels.name(setup.flow());
 	}
 
 	static void text(Composite comp, FormToolkit tk, String label, String val) {
@@ -58,12 +58,12 @@ class InfoSection {
 		text.setEditable(false);
 	}
 
-	static void link(Composite comp, FormToolkit tk, String label, Object entity) {
+	static void link(Composite comp, String label, Object entity) {
 		new Label(comp, SWT.NONE).setText(label);
-		ImageHyperlink link = new ImageHyperlink(comp, SWT.TOP);
+		var link = new ImageHyperlink(comp, SWT.TOP);
 		link.setForeground(Colors.linkBlue());
 		if (entity instanceof CategorizedDescriptor) {
-			CategorizedDescriptor d = (CategorizedDescriptor) entity;
+			var d = (CategorizedDescriptor) entity;
 			link.setText(Labels.name(d));
 			link.setImage(Images.get(d));
 			Controls.onClick(link, e -> App.open(d));

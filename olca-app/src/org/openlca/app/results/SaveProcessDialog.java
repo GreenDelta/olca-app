@@ -14,6 +14,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.util.Categories;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.results.SystemProcess;
@@ -103,7 +104,7 @@ public final class SaveProcessDialog extends Wizard {
 			setControl(parent);
 			UI.gridLayout(parent, 2);
 			nameText = UI.formText(parent, M.Name);
-			nameText.setText(editor.setup.productSystem.name + " - LCI");
+			nameText.setText(Labels.name(editor.setup.target()) + " - LCI");
 			UI.filler(parent);
 			metaCheck = UI.checkBox(parent, M.CopyMetaDataFromReferenceProcess);
 			metaCheck.setSelection(true);

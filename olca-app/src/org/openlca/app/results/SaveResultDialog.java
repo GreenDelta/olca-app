@@ -63,7 +63,7 @@ public class SaveResultDialog extends FormDialog {
 		UI.fillHorizontal(nameComp);
 		nameText = UI.formText(nameComp, tk, "Name");
 		Controls.onPainted(nameText, () -> {
-			var name = Labels.name(editor.setup.productSystem);
+			var name = Labels.name(editor.setup.target());
 			if (name != null) {
 				nameText.setText(name);
 			}

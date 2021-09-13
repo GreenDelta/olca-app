@@ -63,12 +63,12 @@ public class TotalImpactResultPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.name(setup.productSystem),
+				Labels.name(setup.target()),
 				Images.get(result));
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.ImpactAnalysis + ": "
-				+ Labels.name(setup.impactMethod));
+				+ Labels.name(setup.impactMethod()));
 		UI.gridData(section, true, true);
 		Composite client = toolkit.createComposite(section);
 		section.setClient(client);

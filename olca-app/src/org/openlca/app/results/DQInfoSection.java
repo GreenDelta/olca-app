@@ -44,8 +44,8 @@ public class DQInfoSection {
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
 		UI.gridData(client, true, true);
-		InfoSection.link(client, toolkit, M.ProcessDataQualitySchema, dqResult.setup.processSystem);
-		InfoSection.link(client, toolkit, M.FlowDataQualitySchema, dqResult.setup.exchangeSystem);
+		InfoSection.link(client, M.ProcessDataQualitySchema, dqResult.setup.processSystem);
+		InfoSection.link(client, M.FlowDataQualitySchema, dqResult.setup.exchangeSystem);
 		InfoSection.text(client, toolkit, M.Aggregation, Labels.of(dqResult.setup.aggregationType));
 		InfoSection.text(client, toolkit, M.RoundingMode, dqResult.setup.ceiling ? M.Up : M.HalfUp);
 		InfoSection.text(client, toolkit, M.NaValueHandling, Labels.of(dqResult.setup.naHandling));
