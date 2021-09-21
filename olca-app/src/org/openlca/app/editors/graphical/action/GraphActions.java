@@ -77,13 +77,13 @@ public class GraphActions {
 	}
 
 	public static IAction expandAll(GraphEditor editor) {
-		MassExpansionAction action = new MassExpansionAction(EXPAND);
+		var action = new MassExpansionAction(EXPAND);
 		action.editor = editor;
 		return action;
 	}
 
 	public static IAction collapseAll(GraphEditor editor) {
-		MassExpansionAction action = new MassExpansionAction(COLLAPSE);
+		var action = new MassExpansionAction(COLLAPSE);
 		action.editor = editor;
 		return action;
 	}

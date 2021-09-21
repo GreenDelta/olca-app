@@ -42,10 +42,12 @@ public class LayoutCommand extends Command {
 
 	@Override
 	public void execute() {
-		for (ProcessNode node : model.getChildren())
-			if (node.figure.isVisible())
-				oldConstraints.put(node.figure, node.figure
-						.getBounds().getCopy());
+		for (ProcessNode node : model.getChildren()) {
+			if (node.figure.isVisible()) {
+				oldConstraints.put(
+						node.figure, node.figure.getBounds().getCopy());
+			}
+		}
 		layoutManager.layout(model.figure, type);
 		model.editor.setDirty();
 	}

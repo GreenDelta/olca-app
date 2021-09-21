@@ -42,6 +42,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.action.BuildSupplyChainMenuAction;
 import org.openlca.app.editors.graphical.action.GraphActions;
 import org.openlca.app.editors.graphical.action.LayoutMenuAction;
+import org.openlca.app.editors.graphical.command.LayoutCommand;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.LayoutType;
 import org.openlca.app.editors.graphical.model.AppEditPartFactory;
@@ -379,6 +380,8 @@ public class GraphEditor extends GraphicalEditor {
 			node.expandLeft();
 			node.expandRight();
 		}
+		getCommandStack().execute(
+			new LayoutCommand(this, LayoutType.TREE_LAYOUT));
 	}
 
 	/**
@@ -392,6 +395,8 @@ public class GraphEditor extends GraphicalEditor {
 			return;
 		viewer.deselectAll();
 		viewer.setContents(model);
+		getCommandStack().execute(
+			new LayoutCommand(this, LayoutType.TREE_LAYOUT));
 	}
 
 	/**
