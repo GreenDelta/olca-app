@@ -34,7 +34,7 @@ public class SqlEditor extends ScriptingEditor {
 	private Page page;
 
 	public static void open() {
-		var id = UUID.randomUUID().toString() + "_new";
+		var id = UUID.randomUUID() + "_new";
 		var input = new SimpleEditorInput(id, "SQL");
 		Editors.open(input, "SqlEditor");
 	}
@@ -89,12 +89,17 @@ public class SqlEditor extends ScriptingEditor {
 			queryText.setText(script == null ? "" : script);
 			var styler = new SyntaxStyler(queryText);
 			styler.styleIt();
-			queryText.addModifyListener(e -> {
+			queryText.addModifyListener($ -> {
 				styler.styleIt();
 				script = queryText.getText();
 				setDirty();
 			});
-			Actions.bind(section, runAction = new RunAction());
+
+			// bind actions
+			runAction = new RunAction();
+			var saveAs = Actions.create(
+				M.SaveAs, Icon.SAVE_AS.descriptor(), () -> getEditor().doSaveAs());
+			Actions.bind(section, runAction, saveAs);
 		}
 
 		private void createResultSection(Composite body, FormToolkit toolkit) {
@@ -119,10 +124,10 @@ public class SqlEditor extends ScriptingEditor {
 					MsgBox.error(M.NoDatabaseOpened, M.NeedOpenDatabase);
 					return;
 				}
-				List<String> statements = getStatements();
-				List<String> results = new ArrayList<>();
+				var statements = getStatements();
+				var results = new ArrayList<String>();
 				for (String st : statements) {
-					String result = new SqlCommand().exec(st, Database.get());
+					var result = new SqlCommand().exec(st, Database.get());
 					results.add(result);
 				}
 				if (results.size() == 1)
