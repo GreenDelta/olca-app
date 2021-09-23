@@ -147,24 +147,18 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof Unit))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof Unit))
 				return null;
-			Unit unit = (Unit) element;
-			switch (columnIndex) {
-			case 0:
-				return unit.name;
-			case 1:
-				return unit.description;
-			case 2:
-				return unit.synonyms;
-			case 3:
-				return Numbers.format(unit.conversionFactor);
-			case 4:
-				return getFormulaText(unit);
-			default:
-				return null;
-			}
+			Unit unit = (Unit) obj;
+			return switch (col) {
+				case 0 -> unit.name;
+				case 1 -> unit.description;
+				case 2 -> unit.synonyms;
+				case 3 -> Numbers.format(unit.conversionFactor);
+				case 4 -> getFormulaText(unit);
+				default -> null;
+			};
 		}
 
 		private String getFormulaText(Unit unit) {

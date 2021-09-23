@@ -4,18 +4,13 @@ package org.openlca.app.viewers.tables.modify;
  * A combo-box modifier for table cells. We have two type variables here: one
  * for the type of elements behind the rows in the respective table viewer and
  * one for the respective values in the combo-box.
- * 
+ *
  * @param <R>
  *            the row type of the table
  * @param <C>
  *            the type of items in the combo-box
  */
 public abstract class ComboBoxCellModifier<R, C> implements ICellModifier<R> {
-
-	@Override
-	public boolean canModify(R element) {
-		return true;
-	}
 
 	@Override
 	public final ICellModifier.CellEditingType getCellEditingType() {
@@ -45,11 +40,6 @@ public abstract class ComboBoxCellModifier<R, C> implements ICellModifier<R> {
 	@Override
 	public final void modify(R element, Object value) {
 		setItem(element, (C) value);
-	}
-
-	@Override
-	public boolean affectsOtherElements() {
-		return false;
 	}
 
 	protected abstract C[] getItems(R element);

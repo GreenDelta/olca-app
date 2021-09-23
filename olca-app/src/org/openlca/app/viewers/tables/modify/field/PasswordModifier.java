@@ -15,10 +15,6 @@ public class PasswordModifier<T> extends StringModifier<T> {
 		this(editor, field, null);
 	}
 
-	public PasswordModifier(String field, Consumer<T> onChange) {
-		this(null, field, onChange);
-	}
-
 	public PasswordModifier(ModelEditor<?> editor, String field, Consumer<T> onChange) {
 		super(editor, field, onChange);
 		style = SWT.PASSWORD;

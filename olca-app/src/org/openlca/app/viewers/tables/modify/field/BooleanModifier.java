@@ -16,14 +16,6 @@ public class BooleanModifier<T> extends CheckBoxCellModifier<T> {
 	private final ModelEditor<?> editor;
 	private final Consumer<T> onChange;
 
-	public BooleanModifier(String field) {
-		this(null, field, null);
-	}
-
-	public BooleanModifier(ModelEditor<?> editor, String field) {
-		this(editor, field, null);
-	}
-
 	public BooleanModifier(String field, Consumer<T> onChange) {
 		this(null, field, onChange);
 	}

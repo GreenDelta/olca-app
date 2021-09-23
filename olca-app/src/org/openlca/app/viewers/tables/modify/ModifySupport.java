@@ -30,7 +30,7 @@ public class ModifySupport<T> {
 	private Map<String, ICellModifier<T>> cellModifiers;
 	private CellEditor[] editors;
 	private String[] columnProperties;
-	private ColumnViewer viewer;
+	private final ColumnViewer viewer;
 
 	public ModifySupport(ColumnViewer viewer) {
 		this.viewer = viewer;
@@ -63,7 +63,7 @@ public class ModifySupport<T> {
 	 * for the getter are allowed. The setter is only called if text was changed.
 	 */
 	public ModifySupport<T> bind(String property, Getter<T> getter, Setter<T> setter) {
-		TextCellModifier<T> modifier = new TextCellModifier<T>() {
+		TextCellModifier<T> modifier = new TextCellModifier<>() {
 			@Override
 			protected String getText(T element) {
 				if (getter == null)
@@ -226,7 +226,7 @@ public class ModifySupport<T> {
 				refresh(elem);
 			}
 			// update the viewer
-			if (viewer == null || viewer.getControl().isDisposed()) 
+			if (viewer == null || viewer.getControl().isDisposed())
 				return;
 			if (modifier != null && modifier.affectsOtherElements()) {
 				viewer.refresh(true);
@@ -240,17 +240,11 @@ public class ModifySupport<T> {
 				ICellModifier<T> modifier) {
 			T elem = (T) element;
 			switch (modifier.getCellEditingType()) {
-			case TEXTBOX:
-				modifier.modify(elem, value.toString());
-				break;
-			case COMBOBOX:
-				setComboValue(modifier, elem, value);
-				break;
-			case CHECKBOX:
-				modifier.modify(elem, value);
-				break;
-			default:
-				break;
+				case TEXTBOX -> modifier.modify(elem, value.toString());
+				case COMBOBOX -> setComboValue(modifier, elem, value);
+				case CHECKBOX -> modifier.modify(elem, value);
+				default -> {
+				}
 			}
 			return elem;
 		}
@@ -274,7 +268,7 @@ public class ModifySupport<T> {
 	 * entered strings that are elements of the respective combo-items are accepted
 	 * as user input.
 	 */
-	private class ComboEditor extends ComboBoxCellEditor {
+	private static class ComboEditor extends ComboBoxCellEditor {
 
 		public ComboEditor(Composite parent, String[] items) {
 			super(parent, items);

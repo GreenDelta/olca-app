@@ -16,16 +16,8 @@ public abstract class TextFieldModifier<T, V> extends TextCellModifier<T> {
 	private final ModelEditor<?> editor;
 	private final Consumer<T> onChange;
 
-	public TextFieldModifier(String field) {
-		this(null, field, null);
-	}
-
 	public TextFieldModifier(ModelEditor<?> editor, String field) {
 		this(editor, field, null);
-	}
-
-	public TextFieldModifier(String field, Consumer<T> onChange) {
-		this(null, field, onChange);
 	}
 
 	public TextFieldModifier(ModelEditor<?> editor, String field, Consumer<T> onChange) {

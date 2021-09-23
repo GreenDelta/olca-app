@@ -8,17 +8,13 @@ import org.openlca.app.editors.ModelEditor;
 public class StringModifier<T> extends TextFieldModifier<T, String> {
 
 	public int style = SWT.NONE;
-	
+
 	public StringModifier(String field) {
 		super(null, field);
 	}
 
 	public StringModifier(ModelEditor<?> editor, String field) {
 		super(editor, field);
-	}
-
-	public StringModifier(String field, Consumer<T> onChange) {
-		super(null, field, onChange);
 	}
 
 	public StringModifier(ModelEditor<?> editor, String field, Consumer<T> onChange) {
