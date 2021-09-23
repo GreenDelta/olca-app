@@ -23,8 +23,8 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
-import org.openlca.app.viewers.tables.modify.field.DoubleModifier;
 import org.openlca.app.viewers.tables.modify.field.StringModifier;
 import org.openlca.core.database.UnitDao;
 import org.openlca.core.database.usage.UnitUseSearch;
@@ -62,7 +62,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 				.bind(NAME, new NameModifier())
 				.bind(DESCRIPTION, new StringModifier<>(editor, "description"))
 				.bind(SYNONYMS, new StringModifier<>(editor, "synonyms"))
-				.bind(CONVERSION_FACTOR, new ConversionModifier())
+				.bind(CONVERSION_FACTOR, new FactorModifier(editor))
 				.bind(IS_REFERENCE, new ReferenceModifier())
 				.bind("", new CommentDialogModifier<>(
 						editor.getComments(), CommentPaths::get));
@@ -206,17 +206,34 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 	}
 
-	private class ConversionModifier extends DoubleModifier<Unit> {
+	private static class FactorModifier extends DoubleCellModifier<Unit> {
 
-		private ConversionModifier() {
-			super(editor, "conversionFactor");
+		private final UnitGroupEditor editor;
+
+		FactorModifier(UnitGroupEditor editor) {
+			this.editor = editor;
 		}
 
 		@Override
 		public boolean canModify(Unit unit) {
 			if (unit == null)
 				return false;
-			return !unit.equals(editor.getModel().referenceUnit);
+			var refUnit = editor.getModel().referenceUnit;
+			return !unit.equals(refUnit);
+		}
+
+		@Override
+		public Double getDouble(Unit unit) {
+			return unit.conversionFactor;
+		}
+
+		@Override
+		public void setDouble(Unit unit, Double value) {
+			double d = value == null ? 0 : value;
+			if (Double.compare(d, unit.conversionFactor) == 0)
+				return;
+			unit.conversionFactor = d;
+			editor.setDirty();
 		}
 	}
 

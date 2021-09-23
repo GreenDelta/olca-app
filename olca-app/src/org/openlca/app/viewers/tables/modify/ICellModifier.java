@@ -8,13 +8,15 @@ public interface ICellModifier<T> {
 		TEXTBOX, COMBOBOX, CHECKBOX
 	}
 
-	default boolean canModify(T element) {
-		return element != null;
-	}
-
 	Object getValue(T element);
 
 	void modify(T element, Object value);
+
+	CellEditingType getCellEditingType();
+
+	default boolean canModify(T element) {
+		return element != null;
+	}
 
 	/**
 	 * Only valid for combo-boxes: returns the list of items that can be
@@ -32,8 +34,6 @@ public interface ICellModifier<T> {
 	default String[] getStringValues(T element) {
 		return null;
 	}
-
-	CellEditingType getCellEditingType();
 
 	default boolean affectsOtherElements() {
 		return false;

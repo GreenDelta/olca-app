@@ -205,6 +205,10 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 		return (ModelEditorInput) super.getEditorInput();
 	}
 
+	public void setDirty() {
+		setDirty(true);
+	}
+
 	public void setDirty(boolean b) {
 		if (dirty != b) {
 			dirty = b;

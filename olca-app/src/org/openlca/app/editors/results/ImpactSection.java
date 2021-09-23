@@ -13,8 +13,11 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
+import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ResultImpact;
+import org.openlca.core.model.ResultOrigin;
 import org.openlca.util.Strings;
 
 public class ImpactSection {
@@ -33,6 +36,9 @@ public class ImpactSection {
 			comp, M.ImpactCategory, M.Amount, M.Unit);
 		table.setLabelProvider(new ImpactLabel());
 		Tables.bindColumnWidths(table, 0.35, 0.35, 0.3);
+		new ModifySupport<ResultImpact>(table)
+			.bind(M.Amount, new AmountModifier(editor));
+
 		var impacts = editor.getModel().impacts.stream()
 			.sorted((i1, i2) -> Strings.compare(
 				Labels.name(i1.indicator), Labels.name(i2.indicator))
@@ -63,6 +69,34 @@ public class ImpactSection {
 					: impact.indicator.referenceUnit;
 				default -> null;
 			};
+		}
+	}
+
+	private static class AmountModifier extends DoubleCellModifier<ResultImpact> {
+
+		private final ResultEditor editor;
+
+		AmountModifier(ResultEditor editor) {
+			this.editor = editor;
+		}
+
+		@Override
+		public Double getDouble(ResultImpact impact) {
+			return impact == null
+				? null
+				: impact.amount;
+		}
+
+		@Override
+		public void setDouble(ResultImpact impact, Double value) {
+			if (impact == null)
+				return;
+			double v = value == null ? 0 : value;
+			if (v == impact.amount)
+				return;
+			impact.amount = v;
+			impact.origin = ResultOrigin.ENTERED;
+			editor.setDirty();
 		}
 	}
 

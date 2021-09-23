@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Abstract implementation of AbstractViewer for SWT table viewer.
- * 
+ *
  * There are three extensions that can be implemented by annotating the methods
  * of implementing classes. To enable creation and removal actions use
  * annotations {@link OnAdd} and {@link OnRemove}. The run methods of each
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	private List<Action> actions;
 	private ModifySupport<T> cellModifySupport;
 
@@ -86,7 +87,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 		Transfer transferType = ModelTransfer.getInstance();
 		DropTarget dropTarget = new DropTarget(viewer.getTable(), DND.DROP_COPY
 				| DND.DROP_MOVE | DND.DROP_DEFAULT);
-		dropTarget.setTransfer(new Transfer[] { transferType });
+		dropTarget.setTransfer(transferType);
 		AbstractTableViewer<T> thisObject = this;
 		dropTarget.addDropListener(new DropTargetAdapter() {
 			@Override
@@ -150,13 +151,10 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	public void bindTo(Section section, Action... additionalActions) {
 		List<Action> all = actions;
 		if (additionalActions != null && additionalActions.length > 0) {
-			all = new ArrayList<>();
-			all.addAll(actions);
-			for (Action action : additionalActions) {
-				all.add(action);
-			}
+			all = new ArrayList<>(actions);
+			all.addAll(Arrays.asList(additionalActions));
 		}
-		Actions.bind(section, all.toArray(new Action[all.size()]));
+		Actions.bind(section, all.toArray(new Action[0]));
 	}
 
 	@SuppressWarnings("unchecked")
