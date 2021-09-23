@@ -51,9 +51,14 @@ public class ImpactSection {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			return col != 0 || !(obj instanceof ResultImpact)
-				? null
-				: Images.get(ModelType.IMPACT_CATEGORY);
+			if (!(obj instanceof ResultImpact))
+				return null;
+			var impact = (ResultImpact) obj;
+			return switch (col) {
+				case 0 -> Images.get(ModelType.IMPACT_CATEGORY);
+				case 1 -> ResultEditor.iconOf(impact.origin);
+				default -> null;
+			};
 		}
 
 		@Override
