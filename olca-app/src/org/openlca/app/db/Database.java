@@ -7,6 +7,7 @@ import org.openlca.app.App;
 import org.openlca.app.cloud.TokenDialog;
 import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.navigation.CopyPaste;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.cloud.api.RepositoryClient;
 import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.cloud.api.update.RepositoryConfigConversion;
@@ -40,8 +41,7 @@ public class Database {
 		return listener.getIndexUpdater();
 	}
 
-	public static IDatabase activate(DatabaseConfig config)
-			throws Exception {
+	public static IDatabase activate(DatabaseConfig config) {
 		try {
 			database = config.connect(DataDir.databases());
 			listener = new DatabaseListener(Database.database);
@@ -57,7 +57,8 @@ public class Database {
 			database = null;
 			Cache.close();
 			Database.config = null;
-			throw e;
+			ErrorReporter.on("failed to activate database: " + config, e);
+			return null;
 		}
 	}
 
