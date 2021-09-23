@@ -53,7 +53,7 @@
 
 		<dependency>
 			<groupId>org.openlca</groupId>
-			<artifactId>olca-proto</artifactId>
+			<artifactId>olca-proto-io</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

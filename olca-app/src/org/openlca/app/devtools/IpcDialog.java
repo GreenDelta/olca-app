@@ -34,7 +34,7 @@ public class IpcDialog extends FormDialog {
 	private Button grpcCheck;
 
 	private Server server;
-	private org.openlca.proto.server.Server grpcServer;
+	private org.openlca.proto.io.server.Server grpcServer;
 
 	public static int show() {
 		if (Database.get() == null) {
@@ -112,7 +112,7 @@ public class IpcDialog extends FormDialog {
 					"Start server ...",
 					() -> {
 						if (grpc) {
-							grpcServer = new org.openlca.proto.server.Server(db, port);
+							grpcServer = new org.openlca.proto.io.server.Server(db, port);
 							new Thread(() -> grpcServer.start()).start();
 						} else {
 							server = new Server(port)
