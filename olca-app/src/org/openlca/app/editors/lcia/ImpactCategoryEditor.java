@@ -116,7 +116,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 			var body = UI.formBody(form, tk);
 			var info = new InfoSection(getEditor());
 			info.render(body, tk);
-			var comp = info.getContainer();
+			var comp = info.composite();
 			text(comp, M.ReferenceUnit, "referenceUnit");
 			createUsedTable(tk, body);
 			body.setFocus();

@@ -52,7 +52,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		Composite body = UI.formBody(form, tk);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, tk);
-		addCalculationButton(infoSection.getContainer(), tk);
+		addCalculationButton(infoSection.composite(), tk);
 		createReferenceSection(body, tk);
 		body.setFocus();
 		form.reflow(true);

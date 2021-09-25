@@ -73,6 +73,10 @@ class SetupSection {
 				editor.setDirty();
 			});
 
+		// flow
+		UI.formLabel(comp, tk, M.Flow);
+		flowLink.renderOn(comp, tk).update();
+
 		// allocation
 		UI.formLabel(comp, tk, M.AllocationMethod);
 		var allocationCombo = new AllocationCombo(comp,
@@ -89,22 +93,14 @@ class SetupSection {
 		var allocControl = allocationCombo.getViewer().getControl();
 		UI.gridData(allocControl, false, false).widthHint = 250;
 
-		// flow
-		UI.formLabel(comp, tk, M.Flow);
-		flowLink.renderOn(comp, tk).update();
-
-		// calculation time
-		UI.formLabel(comp, tk, "Calculated on");
-		var calcTime = editor.getModel().calculationTime;
-		UI.formLabel(comp, tk, Numbers.asTimestamp(calcTime));
-
 		// amount & unit
 		UI.formLabel(comp, tk, M.Amount);
 		var amountComp = tk.createComposite(comp);
-		UI.gridData(amountComp, false, false);
+		UI.gridData(amountComp, true, false);
+		UI.gridLayout(amountComp, 2, 5, 0);
 		var amountStr = Numbers.format(setup().amount());
-		var amountText = UI.formText(amountComp, tk, amountStr);
-		UI.gridData(amountText, false, false).widthHint = 170;
+		var amountText = tk.createText(amountComp, amountStr);
+		UI.gridData(amountText, false, false).widthHint = 120;
 		amountText.addModifyListener($ -> {
 			try {
 				var text = amountText.getText();
@@ -117,7 +113,12 @@ class SetupSection {
 			}
 			editor.setDirty();
 		});
-		unitCombo.renderOn(comp, tk).update();
+		unitCombo.renderOn(amountComp, tk).update();
+
+		// calculation time
+		UI.formLabel(comp, tk, "Calculated at");
+		var calcTime = editor.getModel().calculationTime;
+		UI.formLabel(comp, tk, Numbers.asTimestamp(calcTime));
 
 		UI.filler(comp, tk);
 		var btn = tk.createButton(comp, "Recalculate", SWT.PUSH);

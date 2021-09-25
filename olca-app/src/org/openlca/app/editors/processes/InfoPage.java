@@ -54,9 +54,9 @@ class InfoPage extends ModelPage<Process> {
 		var body = UI.formBody(form, tk);
 		var info = new InfoSection(getEditor());
 		info.render(body, tk);
-		checkBox(info.getContainer(),
+		checkBox(info.composite(),
 				M.InfrastructureProcess, "infrastructureProcess");
-		createButtons(info.getContainer(), tk);
+		createButtons(info.composite(), tk);
 		createTimeSection(body, tk);
 		createGeographySection(body, tk);
 		createTechnologySection(body, tk);

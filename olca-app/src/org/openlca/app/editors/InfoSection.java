@@ -23,6 +23,7 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
+import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentControl;
@@ -47,6 +48,7 @@ public class InfoSection {
 	private CategorizedEntity entity;
 	private final ModelEditor<?> editor;
 
+	private Section section;
 	private Composite container;
 	private Label versionLabel;
 
@@ -55,8 +57,9 @@ public class InfoSection {
 		this.editor = editor;
 	}
 
-	public void render(Composite body, FormToolkit tk) {
-		container = UI.formSection(body, tk, M.GeneralInformation, 3);
+	public InfoSection render(Composite body, FormToolkit tk) {
+		section = UI.section(body, tk, M.GeneralInformation);
+		container = UI.sectionClient(section, tk, 3);
 
 		// name, library, description
 		Widgets.text(container, M.Name, "name", editor, tk)
@@ -94,6 +97,16 @@ public class InfoSection {
 		// date & tags
 		createDateText(tk);
 		createTags(tk);
+
+		return this;
+	}
+
+	public Composite composite() {
+		return container;
+	}
+
+	public Section section() {
+		return section;
 	}
 
 	private void createVersionText(FormToolkit tk) {
@@ -205,10 +218,6 @@ public class InfoSection {
 		});
 
 		UI.filler(container, tk);
-	}
-
-	public Composite getContainer() {
-		return container;
 	}
 
 	private static class CategoryLinkClick extends HyperlinkAdapter {

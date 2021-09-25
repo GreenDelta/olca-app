@@ -52,7 +52,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 	}
 
 	private void createAdditionalInfo(InfoSection infoSection, Composite body) {
-		Composite container = infoSection.getContainer();
+		Composite container = infoSection.composite();
 		checkBox(container, M.InfrastructureFlow, "infrastructureFlow");
 		readOnly(container, M.FlowType, Images.get(getModel()), "flowType");
 		Composite comp = UI.formSection(body, toolkit, M.AdditionalInformation, 3);
@@ -76,7 +76,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 		Flow flow = getModel();
 		if (flow.flowType != FlowType.PRODUCT_FLOW)
 			return;
-		Composite comp = infoSection.getContainer();
+		Composite comp = infoSection.composite();
 		toolkit.createLabel(comp, "");
 		Button button = toolkit.createButton(comp, M.CreateProcess, SWT.NONE);
 		button.setImage(Images.get(ModelType.PROCESS, Overlay.NEW));

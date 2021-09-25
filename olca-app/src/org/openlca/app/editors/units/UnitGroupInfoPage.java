@@ -40,7 +40,7 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 	}
 
 	protected void createAdditionalInfo(InfoSection infoSection, Composite body) {
-		dropComponent(infoSection.getContainer(), M.DefaultFlowProperty, "defaultFlowProperty");
+		dropComponent(infoSection.composite(), M.DefaultFlowProperty, "defaultFlowProperty");
 		Section section = UI.section(body, toolkit, M.Units);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit);
