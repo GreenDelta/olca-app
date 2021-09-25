@@ -28,11 +28,10 @@ public class ParameterProposals implements IContentProposalProvider {
 	}
 
 	public static ContentProposalAdapter on(Text text, Supplier<List<Parameter>> locals) {
-		ContentProposalAdapter adapter = new ContentProposalAdapter(
+		return new ContentProposalAdapter(
 				text, new TextContentAdapter(),
 				new ParameterProposals(locals),
 				null, null);
-		return adapter;
 	}
 
 	@Override
@@ -89,7 +88,7 @@ public class ParameterProposals implements IContentProposalProvider {
 				proposals.add(proposal);
 			}
 		}
-		return proposals.toArray(new IContentProposal[proposals.size()]);
+		return proposals.toArray(new IContentProposal[0]);
 	}
 
 	private Proposal newProposal(HashSet<String> existing, Parameter p, String prefix) {

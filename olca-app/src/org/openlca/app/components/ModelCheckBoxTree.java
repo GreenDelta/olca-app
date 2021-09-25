@@ -3,6 +3,7 @@ package org.openlca.app.components;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -45,7 +46,7 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 
 	public void drawOn(Composite comp, FormToolkit tk) {
 		tree = new CheckboxTreeViewer(comp,
-				SWT.VIRTUAL | SWT.MULTI | SWT.BORDER);
+			SWT.VIRTUAL | SWT.MULTI | SWT.BORDER);
 		tree.setUseHashlookup(true);
 		tree.setContentProvider(new NavigationContentProvider());
 		tree.setLabelProvider(new NavigationLabelProvider(false));
@@ -61,7 +62,7 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 		GridData data = UI.gridData(tree.getTree(), true, true);
 		data.minimumHeight = 120;
 		Point p = comp.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		data.heightHint = p.y < 120 ? 120 : p.y;
+		data.heightHint = Math.max(p.y, 120);
 
 		if (types == null || types.length == 0)
 			return;
@@ -69,9 +70,10 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 			tree.setInput(Navigator.findElement(types[0]));
 		} else {
 			List<INavigationElement<?>> elems = Arrays.stream(types)
-					.map(type -> Navigator.findElement(type))
-					.filter(elem -> !elem.getChildren().isEmpty())
-					.collect(Collectors.toList());
+				.map(Navigator::findElement)
+				.filter(Objects::nonNull)
+				.filter(elem -> !elem.getChildren().isEmpty())
+				.collect(Collectors.toList());
 			tree.setInput(elems);
 		}
 		tree.expandToLevel(2);
@@ -121,9 +123,9 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 		if (elems == null || elems.length == 0)
 			return Collections.emptyList();
 		return Arrays.stream(elems)
-				.filter(e -> e instanceof ModelElement)
-				.map(e -> ((ModelElement) e).getContent())
-				.collect(Collectors.toList());
+			.filter(e -> e instanceof ModelElement)
+			.map(e -> ((ModelElement) e).getContent())
+			.collect(Collectors.toList());
 	}
 
 }

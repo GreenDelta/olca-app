@@ -24,25 +24,23 @@ public class UncertaintyShell {
 		shell.setSize(620, 400);
 		shell.open();
 
-		new Thread() {
-			public void run() {
-				List<Double> values = new ArrayList<>();
-				for (int i = 0; i < 1000; i++) {
-					values.add(fun.next());
-					if (!shell.isDisposed())
-						display.syncExec(() -> {
-							if (shell.isDisposed())
-								return;
-							double[] vals = values.stream()
-									.mapToDouble(Double::doubleValue)
-									.toArray();
-							canvas.setValues(vals);
-						});
-				}
-				if (!display.isDisposed()) {
-					display.wake();
-				}
+		new Thread(() -> {
+			List<Double> values = new ArrayList<>();
+			for (int i = 0; i < 1000; i++) {
+				values.add(fun.next());
+				if (!shell.isDisposed())
+					display.syncExec(() -> {
+						if (shell.isDisposed())
+							return;
+						double[] vals = values.stream()
+								.mapToDouble(Double::doubleValue)
+								.toArray();
+						canvas.setValues(vals);
+					});
 			}
-		}.start();
+			if (!display.isDisposed()) {
+				display.wake();
+			}
+		}).start();
 	}
 }
