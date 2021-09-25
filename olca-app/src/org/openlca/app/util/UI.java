@@ -274,7 +274,7 @@ public class UI {
 
 	public static GridLayout gridLayout(Composite composite, int columns,
 			int spacing, int margin) {
-		final GridLayout layout = new GridLayout(columns, false);
+		var layout = new GridLayout(columns, false);
 		layout.verticalSpacing = spacing;
 		layout.marginWidth = margin;
 		layout.marginHeight = margin;
