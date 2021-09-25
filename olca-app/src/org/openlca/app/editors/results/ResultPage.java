@@ -22,8 +22,9 @@ class ResultPage extends ModelPage<ResultModel> {
 		var form = UI.formHeader(this);
 		var tk = mform.getToolkit();
 		var body = UI.formBody(form, tk);
-		var infoSection = new InfoSection(getEditor());
-		infoSection.render(body, tk);
+		new InfoSection(editor).render(body, tk);
+		new SetupSection(editor).render(body, tk);
+
 
 		var sash = new SashForm(body, SWT.VERTICAL);
 		UI.gridData(sash, true, true);

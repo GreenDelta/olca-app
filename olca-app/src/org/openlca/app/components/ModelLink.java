@@ -107,9 +107,10 @@ public class ModelLink<T extends CategorizedEntity> {
 	 * Set the model of this link to the given value without firing
 	 * an {@code onChange} event.
 	 */
-	public void setModel(T model) {
+	public ModelLink<T> setModel(T model) {
 		this.model = model;
 		updateLinkText();
+		return this;
 	}
 
 	private void updateLinkText() {
