@@ -3,6 +3,8 @@ package org.openlca.app.util;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import org.openlca.app.preferences.Preferences;
@@ -12,12 +14,14 @@ import org.openlca.app.preferences.Preferences;
  */
 public class Numbers {
 
-	private static DecimalFormat percentFormat = new DecimalFormat("#00.00%",
-			new DecimalFormatSymbols(Locale.US));
+	private static final DecimalFormat percentFormat = new DecimalFormat(
+		"#00.00%", new DecimalFormatSymbols(Locale.US));
 	private static DecimalFormat simpleFormat = getFormat("0.000");
 	private static DecimalFormat scienceFormat = getFormat("0.000E0");
 	private static double lowerBound = 0.001;
 	private static double upperBound = 1000;
+	private static SimpleDateFormat timestampFormat = new SimpleDateFormat(
+		"yyyy-MM-dd'T'HH:mm:ssZ");
 
 	public static void setDefaultAccuracy(int decimalPlaces) {
 		int acc = decimalPlaces < 1 || decimalPlaces > 50 ? 4 : decimalPlaces;
@@ -41,11 +45,10 @@ public class Numbers {
 	}
 
 	public static String decimalFormat(double number, int decimals) {
-		String pattern = "0";
-		if (decimals > 0)
-			pattern += ".";
-		for (int i = 1; i <= decimals; i++)
-			pattern += "0";
+		var pattern = "0";
+		if (decimals > 0) {
+			pattern += "." + "0".repeat(decimals);
+		}
 		return apply(getFormat(pattern), number);
 	}
 
@@ -88,6 +91,12 @@ public class Numbers {
 		return number == 0
 				|| (number >= -upper && number <= -lower)
 				|| (number >= lower && number <= upper);
+	}
+
+	public static String asTimestamp(long time) {
+		return time <= 0
+			? "---"
+			: timestampFormat.format(new Date(time));
 	}
 
 }

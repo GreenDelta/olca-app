@@ -7,9 +7,11 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.core.model.AllocationMethod;
@@ -80,6 +82,15 @@ class SetupSection {
 		UI.formLabel(comp, tk, M.Flow);
 		flowLink.renderOn(comp, tk).update();
 
+		// calculation time
+		UI.formLabel(comp, tk, "Calculated on");
+		var calcTime = editor.getModel().calculationTime;
+		UI.formLabel(comp, tk, Numbers.asTimestamp(calcTime));
+
+		UI.filler(comp, tk);
+		var btn = tk.createButton(comp, "Recalculate", SWT.PUSH);
+		btn.setImage(Icon.RUN.get());
+		btn.setEnabled(false);
 	}
 
 	private class FlowLink {

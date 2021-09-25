@@ -1,9 +1,7 @@
 package org.openlca.app.editors;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicReference;
@@ -33,6 +31,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
@@ -115,15 +114,14 @@ public class InfoSection {
 	}
 
 	private void createDateText(FormToolkit tk) {
-		var format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		UI.formLabel(container, tk, M.LastChange);
 		Label text = UI.formLabel(container, tk, "");
 		if (entity.lastChange != 0) {
-			text.setText(format.format(new Date(entity.lastChange)));
+			text.setText(Numbers.asTimestamp(entity.lastChange));
 		}
 		editor.onSaved(() -> {
 			entity = editor.getModel();
-			text.setText(format.format(new Date(entity.lastChange)));
+			text.setText(Numbers.asTimestamp(entity.lastChange));
 		});
 		UI.filler(container, tk);
 	}
