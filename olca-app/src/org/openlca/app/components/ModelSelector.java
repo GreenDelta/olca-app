@@ -3,7 +3,12 @@ package org.openlca.app.components;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
+import com.google.common.base.Strings;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -11,6 +16,8 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -23,6 +30,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
+import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
@@ -32,9 +40,7 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
-import com.google.common.base.Strings;
-
-public class ModelSelectionDialog extends FormDialog {
+public class ModelSelector extends FormDialog {
 
 	/**
 	 * Indicates whether multiple elements can be selected in the dialog or not.
@@ -51,11 +57,12 @@ public class ModelSelectionDialog extends FormDialog {
 	 */
 	private List<CategorizedDescriptor> selection = Collections.emptyList();
 
-	private final ModelType modelType;
 	private TreeViewer viewer;
 	private Text filterText;
+	private ModelFilter modelFilter;
+	private final ModelType modelType;
 
-	public ModelSelectionDialog(ModelType modelType) {
+	public ModelSelector(ModelType modelType) {
 		super(UI.shell());
 		this.modelType = modelType;
 		setBlockOnOpen(true);
@@ -64,19 +71,19 @@ public class ModelSelectionDialog extends FormDialog {
 	public static CategorizedDescriptor select(ModelType type) {
 		if (type == null || !type.isCategorized())
 			return null;
-		ModelSelectionDialog d = new ModelSelectionDialog(type);
-		return d.open() == OK
-			? d.first()
+		var dialog = new ModelSelector(type);
+		return dialog.open() == OK
+			? dialog.first()
 			: null;
 	}
 
 	public static List<CategorizedDescriptor> multiSelect(ModelType type) {
 		if (type == null || !type.isCategorized())
 			return Collections.emptyList();
-		ModelSelectionDialog d = new ModelSelectionDialog(type);
-		d.forMultiple = true;
-		return d.open() == OK
-			? d.selection
+		var dialog = new ModelSelector(type);
+		dialog.forMultiple = true;
+		return dialog.open() == OK
+			? dialog.selection
 			: Collections.emptyList();
 	}
 
@@ -88,6 +95,19 @@ public class ModelSelectionDialog extends FormDialog {
 		if (selection == null || selection.isEmpty())
 			return null;
 		return selection.get(0);
+	}
+
+	public ModelSelector withFilter(Predicate<CategorizedDescriptor> p) {
+		this.modelFilter = p != null
+			? new ModelFilter(p)
+			: null;
+		return this;
+	}
+
+	public <T> Optional<T> onOk(Function<ModelSelector, T> fn) {
+		return open() == OK
+			? Optional.of(fn.apply(this))
+			: Optional.empty();
 	}
 
 	@Override
@@ -147,7 +167,12 @@ public class ModelSelectionDialog extends FormDialog {
 		viewer = forMultiple
 			? NavigationTree.forMultiSelection(comp, modelType)
 			: NavigationTree.forSingleSelection(comp, modelType);
-		viewer.setFilters(new ModelTextFilter(filterText, viewer));
+		var textFilter = new ModelTextFilter(filterText, viewer);
+		if (modelFilter != null) {
+			viewer.setFilters(modelFilter, textFilter);
+		} else {
+			viewer.setFilters(textFilter);
+		}
 		UI.gridData(viewer.getTree(), true, true);
 		viewer.addSelectionChangedListener(new SelectionChangedListener());
 		viewer.addDoubleClickListener(new DoubleClickListener());
@@ -209,7 +234,7 @@ public class ModelSelectionDialog extends FormDialog {
 				if (!Strings.isNullOrEmpty(filter)) {
 					String label = Labels.name(d);
 					if (label == null ||
-						!label.toLowerCase().contains(filter))
+							!label.toLowerCase().contains(filter))
 						continue;
 				}
 
@@ -236,4 +261,31 @@ public class ModelSelectionDialog extends FormDialog {
 		}
 	}
 
+	private static class ModelFilter extends ViewerFilter {
+
+		private final Predicate<CategorizedDescriptor> predicate;
+
+		ModelFilter(Predicate<CategorizedDescriptor> p) {
+			this.predicate = Objects.requireNonNull(p);
+		}
+
+		@Override
+		public boolean select(Viewer viewer, Object parent, Object obj) {
+			if (!(obj instanceof INavigationElement))
+				return false;
+			var elem = (INavigationElement<?>) obj;
+			if (elem instanceof ModelElement) {
+				var model = ((ModelElement) elem).getContent();
+				return predicate.test(model);
+			}
+
+			// select the element when at least one of its child elements
+			// is visible
+			for (var child : elem.getChildren()) {
+				if (select(viewer, elem, child))
+					return true;
+			}
+			return false;
+		}
+	}
 }

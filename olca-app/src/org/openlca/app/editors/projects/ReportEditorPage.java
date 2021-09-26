@@ -12,7 +12,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.rcp.images.Icon;
@@ -76,7 +76,7 @@ class ReportEditorPage extends FormPage {
 
 		// bind actions
 		var add = Actions.onAdd(() -> {
-			var selected = ModelSelectionDialog.multiSelect(ModelType.PROCESS);
+			var selected = ModelSelector.multiSelect(ModelType.PROCESS);
 			if (selected.isEmpty())
 				return;
 			var existing = report().processes.stream()

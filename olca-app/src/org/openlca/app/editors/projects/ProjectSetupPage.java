@@ -18,7 +18,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
@@ -140,7 +140,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			}
 		});
 		Action add = Actions.onAdd(() -> {
-			var ds = ModelSelectionDialog.multiSelect(ModelType.PRODUCT_SYSTEM);
+			var ds = ModelSelector.multiSelect(ModelType.PRODUCT_SYSTEM);
 			addVariants(ds);
 		});
 		Action remove = Actions.onRemove(this::removeVariant);

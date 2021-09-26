@@ -59,7 +59,7 @@ public class ModelLink<T extends CategorizedEntity> {
 
 		// the selection handler of this widget
 		Runnable doSelect = () -> {
-			var d = ModelSelectionDialog.select(modelType);
+			var d = ModelSelector.select(modelType);
 			if (d == null)
 				return;
 			model = db.get(type, d.id);

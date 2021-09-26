@@ -14,7 +14,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
@@ -92,7 +92,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 	private void onAdd() {
 		ImpactMethod method = editor.getModel();
-		CategorizedDescriptor d = ModelSelectionDialog.select(
+		CategorizedDescriptor d = ModelSelector.select(
 				ModelType.IMPACT_CATEGORY);
 		if (d == null)
 			return;

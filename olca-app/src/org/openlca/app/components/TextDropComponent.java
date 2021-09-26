@@ -97,7 +97,7 @@ public final class TextDropComponent extends Composite {
 		btn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(final MouseEvent e) {
-				var d = ModelSelectionDialog.select(modelType);
+				var d = ModelSelector.select(modelType);
 				if (d != null) {
 					handleAdd(d);
 				}

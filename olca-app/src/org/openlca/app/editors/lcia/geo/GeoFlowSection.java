@@ -15,7 +15,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FormulaCellEditor;
-import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -86,7 +86,7 @@ class GeoFlowSection {
 	private void onAdd() {
 		if (page.setup == null)
 			return;
-		var flows = ModelSelectionDialog.multiSelect(ModelType.FLOW);
+		var flows = ModelSelector.multiSelect(ModelType.FLOW);
 		if (flows.isEmpty())
 			return;
 		var dao = new FlowDao(Database.get());
@@ -130,7 +130,7 @@ class GeoFlowSection {
 		}
 
 		// select the locations
-		var locs = ModelSelectionDialog.multiSelect(ModelType.LOCATION);
+		var locs = ModelSelector.multiSelect(ModelType.LOCATION);
 		if (locs.isEmpty())
 			return;
 		var locDao = new LocationDao(Database.get());

@@ -17,7 +17,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.DialogCellEditor;
 import org.openlca.app.components.FormulaCellEditor;
-import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.components.ModelSelector;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
@@ -183,7 +183,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	}
 
 	private void onAdd() {
-		var flows = ModelSelectionDialog.multiSelect(ModelType.FLOW);
+		var flows = ModelSelector.multiSelect(ModelType.FLOW);
 		if (flows.isEmpty())
 			return;
 		createFactors(flows);
@@ -306,7 +306,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 		protected Object openDialogBox(Control control) {
 			if (factor == null)
 				return null;
-			ModelSelectionDialog dialog = new ModelSelectionDialog(
+			ModelSelector dialog = new ModelSelector(
 				ModelType.LOCATION);
 			dialog.isEmptyOk = true;
 			if (dialog.open() != Window.OK)

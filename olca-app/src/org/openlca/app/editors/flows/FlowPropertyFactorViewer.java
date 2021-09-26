@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
@@ -100,7 +100,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	protected void onCreate() {
 		if (!editor.isEditable())
 			return;
-		var descriptors = ModelSelectionDialog
+		var descriptors = ModelSelector
 				.multiSelect(ModelType.FLOW_PROPERTY);
 		for (var d : descriptors) {
 			add(d);

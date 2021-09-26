@@ -13,7 +13,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
@@ -101,7 +101,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	}
 
 	private void addIndicator() {
-		var list = ModelSelectionDialog.multiSelect(ModelType.SOCIAL_INDICATOR);
+		var list = ModelSelector.multiSelect(ModelType.SOCIAL_INDICATOR);
 		if (list.isEmpty())
 			return;
 		for (var d : list) {

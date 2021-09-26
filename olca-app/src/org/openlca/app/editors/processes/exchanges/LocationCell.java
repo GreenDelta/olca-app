@@ -4,7 +4,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.openlca.app.components.DialogCellEditor;
-import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Labels;
@@ -39,7 +39,7 @@ class LocationCell extends DialogCellEditor {
 	protected Object openDialogBox(Control control) {
 		if (exchange == null)
 			return null;
-		ModelSelectionDialog dialog = new ModelSelectionDialog(
+		ModelSelector dialog = new ModelSelector(
 				ModelType.LOCATION);
 		dialog.isEmptyOk = true;
 		if (dialog.open() != Window.OK)

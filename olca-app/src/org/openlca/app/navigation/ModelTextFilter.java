@@ -53,9 +53,10 @@ public class ModelTextFilter extends ViewerFilter {
 					.toLowerCase();
 			return feed.contains(text);
 		}
-		for (INavigationElement<?> child : element.getChildren())
+		for (INavigationElement<?> child : element.getChildren()) {
 			if (select(child, text))
 				return true;
+		}
 		return false;
 	}
 }

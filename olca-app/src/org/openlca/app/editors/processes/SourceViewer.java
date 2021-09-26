@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.App;
-import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.components.ModelSelector;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
@@ -63,7 +63,7 @@ class SourceViewer extends AbstractTableViewer<Source> {
 	protected void onCreate() {
 		if (!editor.isEditable())
 			return;
-		var descriptors = ModelSelectionDialog.multiSelect(ModelType.SOURCE);
+		var descriptors = ModelSelector.multiSelect(ModelType.SOURCE);
 		if (descriptors.isEmpty())
 			return;
 		boolean added = false;

@@ -15,7 +15,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FormulaCellEditor;
-import org.openlca.app.components.ModelSelectionDialog;
+import org.openlca.app.components.ModelSelector;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentAction;
@@ -162,7 +162,7 @@ class ExchangeTable {
 		if (!editor.isEditable())
 			return;
 		var add = Actions.onAdd(
-				() -> add(ModelSelectionDialog.multiSelect(ModelType.FLOW)));
+				() -> add(ModelSelector.multiSelect(ModelType.FLOW)));
 		Action remove = Actions.onRemove(this::onRemove);
 		Action qRef = Actions.create(M.SetAsQuantitativeReference, null, () -> {
 			Exchange e = Viewers.getFirstSelected(viewer);
@@ -204,7 +204,7 @@ class ExchangeTable {
 		Tables.onDoubleClick(table, e -> {
 			TableItem item = Tables.getItem(table, e);
 			if (item == null) {
-				add(ModelSelectionDialog.multiSelect(ModelType.FLOW));
+				add(ModelSelector.multiSelect(ModelType.FLOW));
 				return;
 			}
 			Exchange exchange = Viewers.getFirstSelected(table);
