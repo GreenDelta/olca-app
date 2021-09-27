@@ -3,10 +3,12 @@ package org.openlca.app.util;
 import java.util.function.Consumer;
 
 import org.eclipse.nebula.widgets.tablecombo.TableCombo;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
@@ -101,6 +103,16 @@ public class Controls {
 		link.addHyperlinkListener(new HyperlinkAdapter() {
 			@Override
 			public void linkActivated(HyperlinkEvent e) {
+				fn.accept(e);
+			}
+		});
+	}
+
+	public static void onReturn(Text text, Consumer<TraverseEvent> fn) {
+		if (text == null || fn == null)
+			return;
+		text.addTraverseListener(e -> {
+			if (e.detail == SWT.TRAVERSE_RETURN) {
 				fn.accept(e);
 			}
 		});

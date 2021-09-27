@@ -5,9 +5,12 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
 
@@ -37,6 +40,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			super("Search");
 			setTitle("Search for EPD results");
 			setDescription("Login with your EC3 account and search for an EPD");
+			setPageComplete(false);
 		}
 
 		@Override
@@ -49,7 +53,22 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			var comp = new Composite(root, SWT.NONE);
 			UI.gridData(comp, true, false);
 			UI.gridLayout(comp, 2);
+			credentialFields(comp);
 
+			UI.formLabel(comp, "EPD");
+			var searchComp = new Composite(comp, SWT.NONE);
+			UI.gridData(searchComp, true, false);
+			UI.gridLayout(searchComp, 2, 10, 0);
+			var searchText = new Text(searchComp, SWT.SEARCH);
+			UI.gridData(searchText, true, false);
+			var button = new Button(searchComp, SWT.PUSH);
+			button.setText("Search");
+
+			Controls.onSelect(button, $ -> doSearch());
+			Controls.onReturn(searchText, $ -> doSearch());
+		}
+
+		private void credentialFields(Composite comp) {
 			var urlText = UI.formText(comp, "URL");
 			urlText.setText(Strings.orEmpty(credentials.url));
 			urlText.addModifyListener(
@@ -64,7 +83,10 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			pwText.setText(Strings.orEmpty(credentials.password));
 			pwText.addModifyListener(
 				$ -> credentials.password = pwText.getText());
+		}
 
+		private void doSearch() {
+			System.out.println("doSearch");
 		}
 	}
 }
