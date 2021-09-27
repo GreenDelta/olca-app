@@ -9,8 +9,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.util.UI;
+import org.openlca.util.Strings;
 
 public class ImportWizard extends Wizard implements IImportWizard {
+
+	private final Credentials credentials = Credentials.init();
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
@@ -19,6 +22,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public boolean performFinish() {
+		credentials.save();
 		return true;
 	}
 
@@ -27,9 +31,9 @@ public class ImportWizard extends Wizard implements IImportWizard {
 		addPage(new Page());
 	}
 
-	private static class Page extends WizardPage {
+	private class Page extends WizardPage {
 
-		Page () {
+		Page() {
 			super("Search");
 			setTitle("Search for EPD results");
 			setDescription("Login with your EC3 account and search for an EPD");
@@ -47,10 +51,19 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			UI.gridLayout(comp, 2);
 
 			var urlText = UI.formText(comp, "URL");
-			urlText.setText("https://etl-api.cqd.io/api");
-			var userText = UI.formText(comp, "User");
-			var pwText = UI.formText(comp, "Password", SWT.PASSWORD);
+			urlText.setText(Strings.orEmpty(credentials.url));
+			urlText.addModifyListener(
+				$ -> credentials.url = urlText.getText());
 
+			var userText = UI.formText(comp, "User");
+			userText.setText(Strings.orEmpty(credentials.user));
+			userText.addModifyListener(
+				$ -> credentials.user = userText.getText());
+
+			var pwText = UI.formText(comp, "Password", SWT.PASSWORD);
+			pwText.setText(Strings.orEmpty(credentials.password));
+			pwText.addModifyListener(
+				$ -> credentials.password = pwText.getText());
 
 		}
 	}
