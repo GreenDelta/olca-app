@@ -85,11 +85,7 @@ public class ProcessSearchPage extends WizardPage {
 		viewer = new SearchResultViewer(table);
 		viewer.addSelectionChangedListener((event) -> {
 			ISelection selection = event.getSelection();
-			if (selection == null || selection.isEmpty()) {
-				setPageComplete(false);
-			} else {
-				setPageComplete(true);
-			}
+			setPageComplete(selection != null && !selection.isEmpty());
 		});
 	}
 
@@ -127,16 +123,12 @@ public class ProcessSearchPage extends WizardPage {
 	}
 
 	public List<ProcessDescriptor> getSelectedProcesses() {
-		List<ProcessDescriptor> processes = new ArrayList<>();
-		IStructuredSelection selection = (IStructuredSelection) viewer
-				.getSelection();
+		var processes = new ArrayList<ProcessDescriptor>();
+		var selection = (IStructuredSelection) viewer.getSelection();
 		if (selection != null) {
-			Iterator<?> it = selection.iterator();
-			while (it.hasNext()) {
-				Object element = it.next();
+			for (var element : selection) {
 				if (element instanceof ProcessDescriptor) {
-					ProcessDescriptor process = (ProcessDescriptor) element;
-					processes.add(process);
+					processes.add((ProcessDescriptor) element);
 				}
 			}
 		}

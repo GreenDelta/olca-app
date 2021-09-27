@@ -448,7 +448,7 @@
             id="views.cloud.history"
             name="Commit history"
             restorable="true">
-      </view>     
+      </view>
       <view
             class="org.openlca.app.cloud.ui.diff.CompareView"
             id="views.cloud.compare"
@@ -698,8 +698,8 @@
             name="File Import">
       </category>
        <category
-               id="import.category.ilcdnetwork"
-               name="%ILCDNetworkImport">
+				    id="import.category.ilcdnetwork"
+            name="%ILCDNetworkImport">
        </category>
       <wizard
             category="import.category.file"
@@ -773,13 +773,18 @@
           icon="icons/model/location.png"
           id="wizard.import.geojson"
           name="Geometries from GeoJSON">
-       </wizard>
-    <wizard
+		 </wizard>
+     <wizard
           class="org.openlca.app.wizards.io.RepositoryImportWizard"
           icon="icons/cloud/logo.png"
           id="wizard.import.repository"
-          name="Repository Import">
-    </wizard>
+          name="Repository import">
+     </wizard>
+		 <wizard
+			 class="org.openlca.app.editors.results.openepd.ImportWizard"
+			 id="wizard.import.openepd"
+			 name="OpenEPD / EC3 import">
+		 </wizard>
    </extension>
 
    <!-- export wizards -->

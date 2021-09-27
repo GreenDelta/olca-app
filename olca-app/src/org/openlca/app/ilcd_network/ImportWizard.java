@@ -28,9 +28,9 @@ import org.slf4j.LoggerFactory;
  */
 public class ImportWizard extends Wizard implements IImportWizard {
 
-	private IDatabase database = Database.get();
+	private final IDatabase database = Database.get();
 	private ProcessSearchPage processSearchPage;
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public ImportWizard() {
 		super();
