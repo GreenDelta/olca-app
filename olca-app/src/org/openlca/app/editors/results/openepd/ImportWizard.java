@@ -1,22 +1,35 @@
 package org.openlca.app.editors.results.openepd;
 
+import java.util.ArrayList;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.App;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.tables.Tables;
 import org.openlca.util.Strings;
 
 public class ImportWizard extends Wizard implements IImportWizard {
 
 	private final Credentials credentials = Credentials.init();
+	private Ec3Client client;
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
@@ -26,6 +39,17 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public boolean performFinish() {
 		credentials.save();
+		if (client != null) {
+			client.logout();
+		}
+		return true;
+	}
+
+	@Override
+	public boolean performCancel() {
+		if (client != null) {
+			client.logout();
+		}
 		return true;
 	}
 
@@ -35,6 +59,8 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private class Page extends WizardPage {
+
+		private TableViewer table;
 
 		Page() {
 			super("Search");
@@ -66,6 +92,11 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
 			Controls.onSelect(button, $ -> doSearch());
 			Controls.onReturn(searchText, $ -> doSearch());
+
+			table = Tables.createViewer(
+				root, "EPD", "Manufacturer", "Published", "Valid until");
+			UI.gridData(table.getControl(), true, true);
+			table.setLabelProvider(new TableLabel());
 		}
 
 		private void credentialFields(Composite comp) {
@@ -86,7 +117,54 @@ public class ImportWizard extends Wizard implements IImportWizard {
 		}
 
 		private void doSearch() {
-			System.out.println("doSearch");
+			if (client == null) {
+				var c = credentials.login();
+				if (c.isEmpty()) {
+					MsgBox.error("Login failed",
+						"Failed to login into the EC3 API with the given" +
+							" user name and password. Check the log-file " +
+							"for further details.");
+					return;
+				}
+				client = c.get();
+			}
+
+			var descriptors = new ArrayList<EpdDescriptor>();
+			App.runWithProgress("Fetch epds", () -> {
+				try {
+					var epds = client.get("epds", JsonArray.class);
+					for (var elem : epds) {
+						if (elem == null || !elem.isJsonObject())
+							continue;
+						var d = EpdDescriptor.from(elem.getAsJsonObject());
+						descriptors.add(d);
+					}
+				} catch (Exception e) {
+					ErrorReporter.on("Failed to search for EPDs", e);
+				}
+			}, () -> table.setInput(descriptors));
 		}
+
+		private class TableLabel extends BaseLabelProvider
+			implements ITableLabelProvider {
+
+			@Override
+			public Image getColumnImage(Object obj, int col) {
+				return null;
+			}
+
+			@Override
+			public String getColumnText(Object obj, int col) {
+				if (!(obj instanceof EpdDescriptor))
+				return null;
+				var epd = (EpdDescriptor) obj;
+				return switch (col) {
+					case 0 -> epd.name();
+					case 2 -> epd.publicationDate();
+					default -> null;
+				};
+			}
+		}
+
 	}
 }
