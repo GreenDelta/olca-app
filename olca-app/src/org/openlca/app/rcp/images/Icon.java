@@ -37,6 +37,7 @@ public enum Icon {
 	DISCONNECT("disconnect.png"),
 	DOWN("down.png"),
 
+	EC3_WIZARD("wizard/ec3.png"),
 	EDIT("edit.png"),
 	ERROR("error.png"),
 	EXCHANGE_BG_LEFT("graphical/exchange_bg_left.jpg"),

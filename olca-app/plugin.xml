@@ -782,6 +782,7 @@
      </wizard>
 		 <wizard
 			 class="org.openlca.app.editors.results.openepd.ImportWizard"
+			 icon="icons/building.png"
 			 id="wizard.import.openepd"
 			 name="OpenEPD / EC3 import">
 		 </wizard>

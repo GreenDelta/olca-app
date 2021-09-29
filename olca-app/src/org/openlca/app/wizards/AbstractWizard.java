@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 abstract class AbstractWizard<T extends CategorizedEntity> extends
 		Wizard implements INewModelWizard {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	private Category category;
 	private AbstractWizardPage<T> page;
 
