@@ -1,5 +1,7 @@
 package org.openlca.app.editors.results.openepd;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import com.google.gson.JsonArray;
@@ -62,6 +64,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	private class Page extends WizardPage {
 
 		private TableViewer table;
+		private Text queryText;
 
 		Page() {
 			super("Search");
@@ -86,16 +89,17 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			var searchComp = new Composite(comp, SWT.NONE);
 			UI.gridData(searchComp, true, false);
 			UI.gridLayout(searchComp, 2, 10, 0);
-			var searchText = new Text(searchComp, SWT.SEARCH);
-			UI.gridData(searchText, true, false);
+			queryText = new Text(searchComp, SWT.SEARCH);
+			UI.gridData(queryText, true, false);
 			var button = new Button(searchComp, SWT.PUSH);
 			button.setText("Search");
 
-			Controls.onSelect(button, $ -> doSearch());
-			Controls.onReturn(searchText, $ -> doSearch());
+			Controls.onSelect(button, $ -> onSearch());
+			Controls.onReturn(queryText, $ -> onSearch());
 
 			table = Tables.createViewer(
-				root, "EPD", "Manufacturer", "Published", "Valid until");
+				root, "EPD", "Category", "Declared unit");
+			Tables.bindColumnWidths(table, 0.4, 0.4, 0.2);
 			UI.gridData(table.getControl(), true, true);
 			table.setLabelProvider(new TableLabel());
 		}
@@ -117,7 +121,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 				$ -> credentials.password = pwText.getText());
 		}
 
-		private void doSearch() {
+		private void onSearch() {
 			if (client == null) {
 				var c = credentials.login();
 				if (c.isEmpty()) {
@@ -130,20 +134,26 @@ public class ImportWizard extends Wizard implements IImportWizard {
 				client = c.get();
 			}
 
-			var descriptors = new ArrayList<EpdDescriptor>();
+			var query = createQuery();
+			var epds = new ArrayList<Ec3Epd>();
 			App.runWithProgress("Fetch epds", () -> {
 				try {
-					var epds = client.get("epds", JsonArray.class);
-					for (var elem : epds) {
-						if (elem == null || !elem.isJsonObject())
-							continue;
-						var d = EpdDescriptor.from(elem.getAsJsonObject());
-						descriptors.add(d);
+					var array = client.get(query, JsonArray.class);
+					for (var elem : array) {
+						Ec3Epd.fromJson(elem).ifPresent(epds::add);
 					}
 				} catch (Exception e) {
 					ErrorReporter.on("Failed to search for EPDs", e);
 				}
-			}, () -> table.setInput(descriptors));
+			}, () -> table.setInput(epds));
+		}
+
+		private String createQuery() {
+			var q = queryText.getText().trim();
+			var prefix = "epds?page_size=10";
+			return Strings.nullOrEmpty(q)
+				? prefix
+				: prefix + "&q=" + URLEncoder.encode(q, StandardCharsets.UTF_8);
 		}
 
 		private class TableLabel extends BaseLabelProvider
@@ -151,17 +161,17 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
 			@Override
 			public Image getColumnImage(Object obj, int col) {
-				return null;
+				return col == 0 ? Icon.BUILDING.get() : null;
 			}
 
 			@Override
 			public String getColumnText(Object obj, int col) {
-				if (!(obj instanceof EpdDescriptor))
-				return null;
-				var epd = (EpdDescriptor) obj;
+				if (!(obj instanceof Ec3Epd))
+					return null;
+				var epd = (Ec3Epd) obj;
 				return switch (col) {
-					case 0 -> epd.name();
-					case 2 -> epd.publicationDate();
+					case 0 -> epd.name;
+					case 2 -> epd.declaredUnit;
 					default -> null;
 				};
 			}
