@@ -20,18 +20,23 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
+import org.openlca.app.db.Database;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.model.ResultModel;
 import org.openlca.util.Strings;
 
 public class ImportWizard extends Wizard implements IImportWizard {
 
 	private final Credentials credentials = Credentials.init();
 	private Ec3Client client;
+	private Ec3Epd epd;
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
@@ -44,6 +49,17 @@ public class ImportWizard extends Wizard implements IImportWizard {
 		credentials.save();
 		if (client != null) {
 			client.logout();
+		}
+		if (epd == null)
+			return false;
+
+		var result = ResultModel.of(epd.name);
+		result.description = epd.description;
+		var db = Database.get();
+		if (db != null) {
+			db.insert(result);
+			Navigator.refresh();
+			App.open(result);
 		}
 		return true;
 	}
@@ -102,6 +118,14 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			Tables.bindColumnWidths(table, 0.4, 0.4, 0.2);
 			UI.gridData(table.getControl(), true, true);
 			table.setLabelProvider(new TableLabel());
+
+			table.addSelectionChangedListener(e -> {
+				Object first = Selections.firstOf(e.getSelection());
+				epd = first instanceof Ec3Epd
+					? (Ec3Epd) first
+					: null;
+				setPageComplete(epd != null);
+			});
 		}
 
 		private void credentialFields(Composite comp) {
@@ -122,6 +146,9 @@ public class ImportWizard extends Wizard implements IImportWizard {
 		}
 
 		private void onSearch() {
+			epd = null;
+			setPageComplete(false);
+
 			if (client == null) {
 				var c = credentials.login();
 				if (c.isEmpty()) {
