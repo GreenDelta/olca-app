@@ -3,16 +3,19 @@ package org.openlca.app.editors.results.openepd;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ResultModel;
@@ -25,6 +28,7 @@ public class ExportDialog extends FormDialog {
 	private final ResultModel result;
 	private final Ec3Epd epd;
 	private final Credentials credentials;
+	private String scope = "A1A2A3";
 
 	private ExportDialog(ResultModel result) {
 		super(UI.shell());
@@ -56,7 +60,7 @@ public class ExportDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(500, 300);
+		return new Point(600, 500);
 	}
 
 	@Override
@@ -108,15 +112,31 @@ public class ExportDialog extends FormDialog {
 	private void metaSection(Composite body, FormToolkit tk) {
 		var section = UI.section(body, tk, M.GeneralInformation);
 		var comp = UI.sectionClient(section, tk, 2);
+		text(UI.formText(comp, tk, "Name"),
+			epd.name, s -> epd.name = s);
+		text(UI.formMultiText(comp, tk, "Description"),
+			epd.description, s -> epd.description = s);
 
-		var nameText = UI.formText(comp, tk, "Name");
-		if (Strings.notEmpty(epd.name)) {
-			nameText.setText(epd.name);
-		}
-		nameText.addModifyListener($ -> {
-			epd.name = nameText.getText();
+		var combo = UI.formCombo(comp, tk, "Scope");
+		var items = new String[]{
+			"A1A2A3", "A1", "A2", "A3", "A4", "A5",
+			"B1", "B2", "B3", "B4", "B5", "B6", "B7",
+			"C1", "C2", "C3", "C4"};
+		combo.setItems(items);
+		combo.select(0);
+		Controls.onSelect(combo, $ -> {
+			var idx = combo.getSelectionIndex();
+			scope = combo.getItem(idx);
 		});
 	}
+
+	private void text(Text text, String initial, Consumer<String> onChange) {
+		if (initial != null) {
+			text.setText(initial);
+		}
+		text.addModifyListener($ -> onChange.accept(text.getText()));
+	}
+
 
 	@Override
 	protected void okPressed() {
