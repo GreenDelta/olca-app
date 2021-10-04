@@ -12,6 +12,7 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
+import org.openlca.app.editors.results.openepd.ExportDialog;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
@@ -120,10 +121,16 @@ class SetupSection {
 		var calcTime = editor.getModel().calculationTime;
 		UI.formLabel(comp, tk, Numbers.asTimestamp(calcTime));
 
+		// buttons
 		UI.filler(comp, tk);
-		var btn = tk.createButton(comp, "Recalculate", SWT.PUSH);
-		btn.setImage(Icon.RUN.get());
-		btn.setEnabled(false);
+		var btnComp = tk.createComposite(comp);
+		UI.gridLayout(btnComp, 2, 5, 0);
+		var calcBtn = tk.createButton(btnComp, "Recalculate", SWT.PUSH);
+		calcBtn.setImage(Icon.RUN.get());
+		calcBtn.setEnabled(false);
+		var expBtn = tk.createButton(btnComp, "Export to EC3", SWT.PUSH);
+		expBtn.setImage(Icon.BUILDING.get());
+		Controls.onSelect(expBtn, $ -> ExportDialog.show(editor.getModel()));
 	}
 
 	private class FlowLink {
@@ -207,7 +214,7 @@ class SetupSection {
 				}
 				items[i] = item;
 				if (Objects.equals(unit, selectedUnit)
-						&& Objects.equals(fact, selectedFact)) {
+					&& Objects.equals(fact, selectedFact)) {
 					selectedIdx = i;
 				}
 			}

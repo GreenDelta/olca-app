@@ -4,11 +4,12 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.Optional;
 
-import com.google.gson.JsonObject;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.jsonld.Json;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 class Credentials {
 
