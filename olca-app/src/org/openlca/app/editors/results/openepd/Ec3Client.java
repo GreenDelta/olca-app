@@ -9,6 +9,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class Ec3Client {
@@ -53,6 +54,27 @@ public class Ec3Client {
 			}
 		} catch (InterruptedException | IOException e) {
 			throw new RuntimeException("GET " + path + " failed", e);
+		}
+	}
+
+	public <T> T post(String path, JsonElement body, Class<T> responseType) {
+		try {
+			var bodyStr = HttpRequest.BodyPublishers.ofString(
+				new Gson().toJson(body), StandardCharsets.UTF_8);
+			var req = HttpRequest.newBuilder()
+				.uri(URI.create(endpoint + path))
+				.header("Content-Type", "application/json")
+				.header("Authorization", "Bearer " + authKey)
+				.header("Accept", "application/json")
+				.POST(bodyStr)
+				.build();
+			var resp = http.send(req, HttpResponse.BodyHandlers.ofInputStream());
+			try (var stream = resp.body();
+					 var reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+				return new Gson().fromJson(reader, responseType);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to post to EC3", e);
 		}
 	}
 

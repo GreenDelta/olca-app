@@ -23,6 +23,9 @@ public class Ec3Epd {
 
   public String docUrl;
 
+	public boolean isDraft;
+	public boolean isPrivate;
+
   public static Optional<Ec3Epd> fromJson(JsonElement elem) {
     if (elem == null || !elem.isJsonObject())
       return Optional.empty();
@@ -40,7 +43,10 @@ public class Ec3Epd {
     epd.reviewer = Ec3Certifier.fromJson(obj.get("reviewer")).orElse(null);
     epd.developer = Ec3Certifier.fromJson(obj.get("developer")).orElse(null);
     epd.verifier = Ec3Certifier.fromJson(obj.get("verifier")).orElse(null);
+
     epd.docUrl = Json.getString(obj, "doc");
+		epd.isDraft = Json.getBool(obj, "draft", false);
+		epd.isPrivate = Json.getBool(obj, "private", false);
 
     return Optional.of(epd);
   }
@@ -58,6 +64,9 @@ public class Ec3Epd {
     Json.put(obj, "gwp_per_kg", gwpPerKg);
 
     Json.put(obj, "doc", docUrl);
+
+		obj.addProperty("draft", isDraft);
+		obj.addProperty("private", isPrivate);
 
     if (reviewer != null) {
       obj.add("reviewer", reviewer.toJson());

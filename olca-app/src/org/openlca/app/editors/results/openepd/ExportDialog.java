@@ -1,5 +1,9 @@
 package org.openlca.app.editors.results.openepd;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -7,13 +11,19 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
+import org.openlca.app.components.FileChooser;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ResultModel;
 import org.openlca.util.Strings;
 
+import com.google.gson.GsonBuilder;
+
 public class ExportDialog extends FormDialog {
 
 	private final ResultModel result;
+	private final Ec3Epd epd;
 	private final Credentials credentials;
 
 	private ExportDialog(ResultModel result) {
@@ -27,6 +37,11 @@ public class ExportDialog extends FormDialog {
 			| SWT.RESIZE
 			| SWT.MIN);
 		credentials = Credentials.init();
+		epd = new Ec3Epd();
+		epd.name = result.name;
+		epd.description = result.description;
+		epd.isPrivate = true;
+		epd.isDraft = true;
 	}
 
 	public static int show(ResultModel result) {
@@ -49,6 +64,7 @@ public class ExportDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.formBody(mForm.getForm(), tk);
 		credentialsSection(body, tk);
+		metaSection(body, tk);
 	}
 
 	private void credentialsSection(Composite body, FormToolkit tk) {
@@ -87,8 +103,48 @@ public class ExportDialog extends FormDialog {
 		});
 
 		section.setExpanded(filled < 3);
-
 	}
 
+	private void metaSection(Composite body, FormToolkit tk) {
+		var section = UI.section(body, tk, M.GeneralInformation);
+		var comp = UI.sectionClient(section, tk, 2);
 
+		var nameText = UI.formText(comp, tk, "Name");
+		if (Strings.notEmpty(epd.name)) {
+			nameText.setText(epd.name);
+		}
+		nameText.addModifyListener($ -> {
+			epd.name = nameText.getText();
+		});
+	}
+
+	@Override
+	protected void okPressed() {
+
+		/**
+		 var client = credentials.login().orElse(null);
+		 if (client == null) {
+		 MsgBox.error(
+		 "Failed to login to EC3",
+		 "Could not login to EC3 with the provided credentials.");
+		 return;
+		 }
+		 */
+
+		var file = FileChooser.forSavingFile(
+			"Save in OpenEPD format",
+			URLEncoder.encode(Strings.orEmpty(epd.name), StandardCharsets.UTF_8)
+				+ ".json");
+		if (file == null)
+			return;
+		try {
+			var json = new GsonBuilder().setPrettyPrinting()
+				.create()
+				.toJson(epd.toJson());
+			Files.writeString(file.toPath(), json);
+			super.okPressed();
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to upload EPD", e);
+		}
+	}
 }
