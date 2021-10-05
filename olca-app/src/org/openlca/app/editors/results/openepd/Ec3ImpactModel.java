@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import org.openlca.core.model.ResultImpact;
 import org.openlca.core.model.ResultModel;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.ilcd.methods.ImpactModel;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 class Ec3ImpactModel {
 
@@ -29,7 +29,7 @@ class Ec3ImpactModel {
 
 	static Ec3ImpactModel read() {
 		// maybe also check the workspace later
-		var stream = ImpactModel.class.getResourceAsStream(
+		var stream = Ec3ImpactModel.class.getResourceAsStream(
 			"impact_model.json");
 		if (stream == null)
 			return empty();
@@ -54,7 +54,7 @@ class Ec3ImpactModel {
 		return model;
 	}
 
-	Pair<Ec3ImpactMethod, ImpactMethodDescriptor> map(ImpactMethodDescriptor d) {
+	Ec3ImpactMethod map(ImpactMethodDescriptor d) {
 		if (d == null)
 			return null;
 		var score = 0;
@@ -66,9 +66,7 @@ class Ec3ImpactModel {
 				score = nextScore;
 			}
 		}
-		return selected == null
-			? null
-			: Pair.of(selected, d);
+		return selected;
 	}
 
 	private static int mapScore(String s, List<String> keywords) {
@@ -114,6 +112,23 @@ class Ec3ImpactModel {
 				.forEach(method.indicators::add);
 
 			return method;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o)
+				return true;
+			if (!(o instanceof Ec3ImpactMethod))
+				return false;
+			var other = (Ec3ImpactMethod) o;
+			return Objects.equals(this.name, other.name);
+		}
+
+		@Override
+		public int hashCode() {
+			return name == null
+				? super.hashCode()
+				: name.hashCode();
 		}
 
 		/**
@@ -173,7 +188,7 @@ class Ec3ImpactModel {
 		String name;
 		String description;
 		String unit;
-		List<String> keywords;
+		final List<String> keywords = new ArrayList<>();
 
 		private static Ec3ImpactIndicator fromJson(JsonObject json) {
 			if (json == null)

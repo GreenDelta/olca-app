@@ -3,6 +3,7 @@ package org.openlca.app.editors.results.openepd;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
@@ -19,6 +20,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ResultModel;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
 import com.google.gson.GsonBuilder;
@@ -30,22 +32,32 @@ public class ExportDialog extends FormDialog {
 	private final Credentials credentials;
 	private String scope = "A1A2A3";
 
+	private final Ec3ImpactModel impactModel;
+	private Ec3ImpactModel.Ec3ImpactMethod selectedMethod;
+
 	private ExportDialog(ResultModel result) {
 		super(UI.shell());
 		this.result = result;
 		setBlockOnOpen(true);
 		setShellStyle(SWT.CLOSE
-			| SWT.MODELESS
-			| SWT.BORDER
-			| SWT.TITLE
-			| SWT.RESIZE
-			| SWT.MIN);
+									| SWT.MODELESS
+									| SWT.BORDER
+									| SWT.TITLE
+									| SWT.RESIZE
+									| SWT.MIN);
 		credentials = Credentials.init();
 		epd = new Ec3Epd();
 		epd.name = result.name;
 		epd.description = result.description;
 		epd.isPrivate = true;
 		epd.isDraft = true;
+
+		impactModel = Ec3ImpactModel.read();
+		impactModel.methods.sort((m1, m2) -> Strings.compare(m1.name, m2.name));
+		if (result.setup != null && result.setup.impactMethod() != null) {
+			var d = Descriptor.of(result.setup.impactMethod());
+			selectedMethod = impactModel.map(d);
+		}
 	}
 
 	public static int show(ResultModel result) {
@@ -69,6 +81,7 @@ public class ExportDialog extends FormDialog {
 		var body = UI.formBody(mForm.getForm(), tk);
 		credentialsSection(body, tk);
 		metaSection(body, tk);
+		createImpactSection(body, tk);
 	}
 
 	private void credentialsSection(Composite body, FormToolkit tk) {
@@ -137,6 +150,39 @@ public class ExportDialog extends FormDialog {
 		text.addModifyListener($ -> onChange.accept(text.getText()));
 	}
 
+	private void createImpactSection(Composite body, FormToolkit tk) {
+		var section = UI.section(body, tk, M.ImpactAssessmentResults);
+		var comp = UI.sectionClient(section, tk, 1);
+
+		var comboComp = tk.createComposite(comp);
+		UI.gridLayout(comboComp, 2, 0, 10);
+		var combo = UI.formCombo(comboComp, tk, M.ImpactAssessmentMethod);
+		UI.gridData(combo, false, false).widthHint = 250;
+
+		var methods = impactModel.methods;
+		var methodItems = new String[methods.size()];
+		var selectedIdx = -1;
+		for (int i = 0; i < methods.size(); i++) {
+			var method = methods.get(i);
+			methodItems[i] = method.name;
+			if (Objects.equals(method, selectedMethod)) {
+				selectedIdx = i;
+			}
+		}
+		combo.setItems(methodItems);
+		if (selectedIdx >= 0) {
+			combo.select(selectedIdx);
+		}
+
+		Controls.onSelect(combo, $ -> {
+			var idx = combo.getSelectionIndex();
+			if (idx > 0 && idx < methods.size()) {
+				selectedMethod = methods.get(idx);
+			}
+		});
+
+	}
+
 
 	@Override
 	protected void okPressed() {
@@ -154,7 +200,7 @@ public class ExportDialog extends FormDialog {
 		var file = FileChooser.forSavingFile(
 			"Save in OpenEPD format",
 			URLEncoder.encode(Strings.orEmpty(epd.name), StandardCharsets.UTF_8)
-				+ ".json");
+			+ ".json");
 		if (file == null)
 			return;
 		try {
