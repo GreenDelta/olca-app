@@ -3,10 +3,17 @@ package org.openlca.app.editors.results.openepd;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -18,7 +25,10 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.model.ResultImpact;
 import org.openlca.core.model.ResultModel;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
@@ -34,6 +44,7 @@ public class ExportDialog extends FormDialog {
 
 	private final Ec3ImpactModel impactModel;
 	private Ec3ImpactModel.Ec3ImpactMethod selectedMethod;
+	private TableViewer table;
 
 	private ExportDialog(ResultModel result) {
 		super(UI.shell());
@@ -72,7 +83,7 @@ public class ExportDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(600, 500);
+		return new Point(800, 700);
 	}
 
 	@Override
@@ -95,9 +106,8 @@ public class ExportDialog extends FormDialog {
 			urlText.setText(credentials.url);
 			filled++;
 		}
-		urlText.addModifyListener($ -> {
-			credentials.url = urlText.getText();
-		});
+		urlText.addModifyListener(
+			$ -> credentials.url = urlText.getText());
 
 		// user
 		var userText = UI.formText(comp, tk, "User");
@@ -105,9 +115,8 @@ public class ExportDialog extends FormDialog {
 			userText.setText(credentials.user);
 			filled++;
 		}
-		userText.addModifyListener($ -> {
-			credentials.user = userText.getText();
-		});
+		userText.addModifyListener(
+			$ -> credentials.user = userText.getText());
 
 		// password
 		var pwText = UI.formText(comp, tk, "Password", SWT.PASSWORD);
@@ -115,9 +124,8 @@ public class ExportDialog extends FormDialog {
 			pwText.setText(credentials.password);
 			filled++;
 		}
-		pwText.addModifyListener($ -> {
-			credentials.password = pwText.getText();
-		});
+		pwText.addModifyListener(
+			$ -> credentials.password = pwText.getText());
 
 		section.setExpanded(filled < 3);
 	}
@@ -155,8 +163,9 @@ public class ExportDialog extends FormDialog {
 		var comp = UI.sectionClient(section, tk, 1);
 
 		var comboComp = tk.createComposite(comp);
-		UI.gridLayout(comboComp, 2, 0, 10);
-		var combo = UI.formCombo(comboComp, tk, M.ImpactAssessmentMethod);
+		UI.gridLayout(comboComp, 2, 10, 0);
+		var combo = UI.formCombo(comboComp, tk,
+			"EC3 " + M.ImpactAssessmentMethod);
 		UI.gridData(combo, false, false).widthHint = 250;
 
 		var methods = impactModel.methods;
@@ -169,11 +178,11 @@ public class ExportDialog extends FormDialog {
 				selectedIdx = i;
 			}
 		}
+
 		combo.setItems(methodItems);
 		if (selectedIdx >= 0) {
 			combo.select(selectedIdx);
 		}
-
 		Controls.onSelect(combo, $ -> {
 			var idx = combo.getSelectionIndex();
 			if (idx > 0 && idx < methods.size()) {
@@ -181,13 +190,22 @@ public class ExportDialog extends FormDialog {
 			}
 		});
 
-	}
+		table = Tables.createViewer(comp,
+			"EC3 Indicator",
+			"EC3 Unit",
+			"Result amount",
+			"Result indicator",
+			"Result unit");
+		table.setLabelProvider(new TableLabel());
+		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
+		table.setInput(TableItem.createAll(selectedMethod, result));
 
+	}
 
 	@Override
 	protected void okPressed() {
 
-		/**
+		/*
 		 var client = credentials.login().orElse(null);
 		 if (client == null) {
 		 MsgBox.error(
@@ -211,6 +229,74 @@ public class ExportDialog extends FormDialog {
 			super.okPressed();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to upload EPD", e);
+		}
+	}
+
+	private static class TableItem {
+
+		final Ec3ImpactModel.Ec3ImpactIndicator indicator;
+		final ResultImpact impact;
+
+		TableItem(
+			Ec3ImpactModel.Ec3ImpactIndicator indicator,
+			ResultImpact impact) {
+			this.indicator = indicator;
+			this.impact = impact;
+		}
+
+		static List<TableItem> createAll(
+			Ec3ImpactModel.Ec3ImpactMethod selectedMethod, ResultModel result) {
+			if (selectedMethod == null
+					|| result.setup == null
+					|| result.setup.impactMethod() == null)
+				return Collections.emptyList();
+
+			var map = selectedMethod.map(result);
+			var items = new ArrayList<TableItem>();
+			for (var indicator : selectedMethod.indicators) {
+				var impact = map.get(indicator.name);
+				if (impact == null) {
+					impact = new ResultImpact();
+				}
+				items.add(new TableItem(indicator, impact));
+			}
+
+			items.sort((item1, item2) -> Strings.compare(
+				item1.indicator.name, item2.indicator.name));
+			return items;
+		}
+	}
+
+	private static class TableLabel extends LabelProvider
+		implements ITableLabelProvider {
+
+		@Override
+		public Image getColumnImage(Object obj, int col) {
+			return null;
+		}
+
+		@Override
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof TableItem))
+				return null;
+			var item = (TableItem) obj;
+			var indicator = item.indicator;
+			var impact = item.impact;
+			if (indicator == null || impact == null)
+				return null;
+
+			return switch (col) {
+				case 0 -> indicator.name;
+				case 1 -> indicator.unit;
+				case 2 -> Numbers.format(impact.amount);
+				case 3 -> impact.indicator != null
+					? impact.indicator.name
+					: "---";
+				case 4 -> impact.indicator != null
+					? impact.indicator.referenceUnit
+					: "---";
+				default -> null;
+			};
 		}
 	}
 }
