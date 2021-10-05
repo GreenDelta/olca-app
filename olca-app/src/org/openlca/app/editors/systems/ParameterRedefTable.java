@@ -166,7 +166,7 @@ class ParameterRedefTable {
 		log.trace("add new parameter redef");
 		for (ParameterRedef redef : redefs) {
 			if (!contains(redef, existing)) {
-				existing.add(redef.clone());
+				existing.add(redef.copy());
 			}
 		}
 		table.setInput(existing);
@@ -183,7 +183,7 @@ class ParameterRedefTable {
 		boolean added = false;
 		for (ParameterRedef redef : newList) {
 			if (!contains(redef, redefs)) {
-				redefs.add(redef.clone());
+				redefs.add(redef.copy());
 				added = true;
 			}
 		}

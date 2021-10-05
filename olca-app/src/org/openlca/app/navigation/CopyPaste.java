@@ -250,7 +250,7 @@ public class CopyPaste {
 		elements.add(element);
 		while (!elements.isEmpty()) {
 			CategoryElement current = elements.poll();
-			Category copy = current.getContent().clone();
+			Category copy = current.getContent().copy();
 			copy.childCategories.clear();
 			copy.category = parent;
 			if (parent == null)
@@ -283,7 +283,7 @@ public class CopyPaste {
 
 	private static CategorizedEntity cloneIt(CategorizedEntity entity) {
 		try {
-			CategorizedEntity clone = (CategorizedEntity) entity.clone();
+			CategorizedEntity clone = (CategorizedEntity) entity.copy();
 			DatabaseDir.copyDir(entity, clone);
 			return clone;
 		} catch (Exception e) {

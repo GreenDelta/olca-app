@@ -182,7 +182,7 @@ class ProjectParameterTable {
 				continue;
 			for (Column column : columns) {
 				if (findVariantRedef(column.variant, redef) == null)
-					column.variant.parameterRedefs.add(redef.clone());
+					column.variant.parameterRedefs.add(redef.copy());
 			}
 		}
 		viewer.setInput(this.redefs);
@@ -369,7 +369,7 @@ class ProjectParameterTable {
 				return;
 			var variantRedef = findVariantRedef(variant, redef);
 			if (variantRedef == null) {
-				variantRedef = redef.clone();
+				variantRedef = redef.copy();
 				variant.parameterRedefs.add(variantRedef);
 			}
 			try {

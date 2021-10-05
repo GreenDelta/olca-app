@@ -382,7 +382,7 @@ public class ParameterSection {
 
 			// do it
 			entity().parameters.remove(param);
-			var global = param.clone();
+			var global = param.copy();
 			global.scope = ParameterScope.GLOBAL;
 			new ParameterDao(Database.get()).insert(global);
 			page.setGlobalTableInput();

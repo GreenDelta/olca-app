@@ -236,7 +236,7 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 			return;
 		String newName = diag.getValue();
 		try {
-			T clone = (T) model.clone();
+			T clone = (T) model.copy();
 			if (clone.isFromLibrary()) {
 				clone.library = null;
 				clone.category = Categories.removeLibraryFrom(clone.category);

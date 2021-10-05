@@ -197,7 +197,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			.findAny();
 		if (redefSet.isPresent()) {
 			for (var redef : redefSet.get().parameters) {
-				v.parameterRedefs.add(redef.clone());
+				v.parameterRedefs.add(redef.copy());
 			}
 		}
 		return v;

@@ -76,7 +76,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		Object o = Viewers.getFirstSelected(tree);
 		if (!(o instanceof SocialAspect))
 			return;
-		SocialAspect copy = ((SocialAspect) o).clone();
+		var copy = ((SocialAspect) o).copy();
 		if (Dialog.open(copy, editor.getModel().socialDqSystem) == Window.OK) {
 			Aspects.update(getModel(), copy);
 			treeModel.update(copy);

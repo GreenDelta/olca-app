@@ -184,7 +184,7 @@ class ParameterPage2 extends ModelPage<ProductSystem> {
 			s.name = paramSet.name + " - Copy";
 			s.description = paramSet.description;
 			for (ParameterRedef redef : paramSet.parameters) {
-				s.parameters.add(redef.clone());
+				s.parameters.add(redef.copy());
 			}
 			addNew(s);
 		}
