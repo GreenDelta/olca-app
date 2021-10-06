@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -29,6 +30,9 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.database.CategoryDao;
+import org.openlca.core.model.Category;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ResultModel;
 import org.openlca.util.Strings;
 
@@ -37,6 +41,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	private final Credentials credentials = Credentials.init();
 	private Ec3Client client;
 	private Ec3Epd epd;
+	private Ec3CategoryIndex categories;
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
@@ -50,17 +55,26 @@ public class ImportWizard extends Wizard implements IImportWizard {
 		if (client != null) {
 			client.logout();
 		}
-		if (epd == null)
+		var db = Database.get();
+		if (epd == null || db == null)
 			return false;
 
+		Category resultCategory = null;
+		if (epd.category != null && categories != null) {
+			var path = categories.pathOf(epd.category.id);
+			if (path != null) {
+				var parts = path.split("/");
+				resultCategory = new CategoryDao(db)
+					.sync(ModelType.RESULT, parts);
+			}
+		}
 		var result = ResultModel.of(epd.name);
 		result.description = epd.description;
-		var db = Database.get();
-		if (db != null) {
-			db.insert(result);
-			Navigator.refresh();
-			App.open(result);
-		}
+		result.category = resultCategory;
+
+		db.insert(result);
+		Navigator.refresh();
+		App.open(result);
 		return true;
 	}
 
@@ -163,8 +177,18 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
 			var query = createQuery();
 			var epds = new ArrayList<Ec3Epd>();
-			App.runWithProgress("Fetch epds", () -> {
+			App.runWithProgress("Fetch EPDs", () -> {
 				try {
+
+					// load the category index once
+					if (categories == null) {
+						var root = client.get("categories/root", JsonObject.class);
+						if (root != null) {
+							Ec3Category.fromJson(root).ifPresent(
+								c -> categories = Ec3CategoryIndex.of(c));
+						}
+					}
+
 					var array = client.get(query, JsonArray.class);
 					for (var elem : array) {
 						Ec3Epd.fromJson(elem).ifPresent(epds::add);
@@ -198,8 +222,8 @@ public class ImportWizard extends Wizard implements IImportWizard {
 				var epd = (Ec3Epd) obj;
 				return switch (col) {
 					case 0 -> epd.name;
-					case 1 -> epd.category != null
-						? epd.category.name
+					case 1 -> epd.category != null && categories != null
+						? categories.pathOf(epd.category.id)
 						: null;
 					case 2 -> epd.declaredUnit;
 					default -> null;
