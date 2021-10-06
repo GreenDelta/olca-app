@@ -1,6 +1,10 @@
 package org.openlca.app.editors.results.openepd;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -26,6 +30,8 @@ public class Ec3Epd {
 	public boolean isDraft;
 	public boolean isPrivate;
 
+	private final Map<String, Ec3ImpactSet> impacts = new HashMap<>();
+
   public static Optional<Ec3Epd> fromJson(JsonElement elem) {
     if (elem == null || !elem.isJsonObject())
       return Optional.empty();
@@ -48,7 +54,19 @@ public class Ec3Epd {
 		epd.isDraft = Json.getBool(obj, "draft", false);
 		epd.isPrivate = Json.getBool(obj, "private", false);
 
-    return Optional.of(epd);
+
+		// impacts
+		var impactObj = Json.getObject(obj, "impacts");
+		if (impactObj != null) {
+			for (var method : impactObj.keySet()) {
+				var impactSet = Ec3ImpactSet.fromJson(impactObj.get(method));
+				if (!impactSet.isEmpty()) {
+					epd.putImpactSet(method, impactSet);
+				}
+			}
+		}
+
+		return Optional.of(epd);
   }
 
   public JsonObject toJson() {
@@ -77,7 +95,45 @@ public class Ec3Epd {
     if (verifier != null) {
       obj.add("verifier", verifier.toJson());
     }
+
+		// impacts
+		var impactObj = new JsonObject();
+		eachImpactSet((method, impactSet) -> {
+			if (method != null && impactSet != null) {
+				impactObj.add(method, impactSet.toJson());
+			}
+		});
+		if (impactObj.size() > 0) {
+			obj.add("impacts", impactObj);
+		}
+
     return obj;
   }
+
+	public Optional<Ec3ImpactSet> getImpactSet(String method) {
+		return Optional.ofNullable(impacts.get(method));
+	}
+
+	public Iterable<String> impacts() {
+		return Collections.unmodifiableCollection(impacts.keySet());
+	}
+
+	public void putImpactSet(String method, Ec3ImpactSet impactSet) {
+		if (method == null)
+			return;
+		impacts.put(method, impactSet);
+	}
+
+	public void eachImpactSet(BiConsumer<String, Ec3ImpactSet> fn) {
+		if (fn == null)
+			return;
+		for (var e : impacts.entrySet()) {
+			var method = e.getKey();
+			var impactSet = e.getValue();
+			if (method != null && impactSet != null) {
+				fn.accept(method, impactSet);
+			}
+		}
+	}
 
 }
