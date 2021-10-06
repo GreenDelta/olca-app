@@ -198,6 +198,9 @@ public class ImportWizard extends Wizard implements IImportWizard {
 				var epd = (Ec3Epd) obj;
 				return switch (col) {
 					case 0 -> epd.name;
+					case 1 -> epd.category != null
+						? epd.category.name
+						: null;
 					case 2 -> epd.declaredUnit;
 					default -> null;
 				};
