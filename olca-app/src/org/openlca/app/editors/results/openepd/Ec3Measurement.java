@@ -28,6 +28,13 @@ public class Ec3Measurement {
 	 */
 	public String dist;
 
+	public static Ec3Measurement of(double amount, String unit) {
+		var m = new Ec3Measurement();
+		m.mean = amount;
+		m.unit = unit;
+		return m;
+	}
+
 	public static Optional<Ec3Measurement> fromJson(JsonElement elem) {
 		if (elem == null || !elem.isJsonObject())
 			return Optional.empty();

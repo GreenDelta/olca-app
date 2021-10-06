@@ -37,25 +37,23 @@ import com.google.gson.GsonBuilder;
 
 public class ExportDialog extends FormDialog {
 
-	private final ResultModel result;
 	private final Ec3Epd epd;
 	private final Credentials credentials;
-	private String scope = "A1A2A3";
+	private String selectedScope = "A1A2A3";
 
 	private final Ec3ImpactModel impactModel;
 	private Ec3ImpactModel.Ec3ImpactMethod selectedMethod;
-	private TableViewer table;
+	private List<ImpactItem> impacts;
 
 	private ExportDialog(ResultModel result) {
 		super(UI.shell());
-		this.result = result;
 		setBlockOnOpen(true);
 		setShellStyle(SWT.CLOSE
-									| SWT.MODELESS
-									| SWT.BORDER
-									| SWT.TITLE
-									| SWT.RESIZE
-									| SWT.MIN);
+			| SWT.MODELESS
+			| SWT.BORDER
+			| SWT.TITLE
+			| SWT.RESIZE
+			| SWT.MIN);
 		credentials = Credentials.init();
 		epd = new Ec3Epd();
 		epd.name = result.name;
@@ -68,6 +66,7 @@ public class ExportDialog extends FormDialog {
 		if (result.setup != null && result.setup.impactMethod() != null) {
 			var d = Descriptor.of(result.setup.impactMethod());
 			selectedMethod = impactModel.map(d);
+			impacts = ImpactItem.createAll(selectedMethod, result);
 		}
 	}
 
@@ -147,7 +146,7 @@ public class ExportDialog extends FormDialog {
 		combo.select(0);
 		Controls.onSelect(combo, $ -> {
 			var idx = combo.getSelectionIndex();
-			scope = combo.getItem(idx);
+			selectedScope = combo.getItem(idx);
 		});
 	}
 
@@ -190,7 +189,7 @@ public class ExportDialog extends FormDialog {
 			}
 		});
 
-		table = Tables.createViewer(comp,
+		TableViewer table = Tables.createViewer(comp,
 			"EC3 Indicator",
 			"EC3 Unit",
 			"Result amount",
@@ -198,8 +197,9 @@ public class ExportDialog extends FormDialog {
 			"Result unit");
 		table.setLabelProvider(new TableLabel());
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
-		table.setInput(TableItem.createAll(selectedMethod, result));
-
+		if (impacts != null) {
+			table.setInput(impacts);
+		}
 	}
 
 	@Override
@@ -218,10 +218,27 @@ public class ExportDialog extends FormDialog {
 		var file = FileChooser.forSavingFile(
 			"Save in OpenEPD format",
 			URLEncoder.encode(Strings.orEmpty(epd.name), StandardCharsets.UTF_8)
-			+ ".json");
+				+ ".json");
 		if (file == null)
 			return;
 		try {
+
+			// add impacts
+			if (impacts != null && selectedMethod != null) {
+				var impactSet = new Ec3ImpactSet();
+				for (var i : impacts) {
+					var indicator = i.indicator;
+					var impact = i.impact;
+					var amount = Ec3Measurement.of(impact.amount, indicator.unit);
+					var scopeSet = new Ec3ScopeSet();
+					scopeSet.put(selectedScope, amount);
+					impactSet.put(indicator.name, scopeSet);
+				}
+				if (!impactSet.isEmpty()) {
+					epd.putImpactSet(selectedMethod.name, impactSet);
+				}
+			}
+
 			var json = new GsonBuilder().setPrettyPrinting()
 				.create()
 				.toJson(epd.toJson());
@@ -232,33 +249,33 @@ public class ExportDialog extends FormDialog {
 		}
 	}
 
-	private static class TableItem {
+	private static class ImpactItem {
 
 		final Ec3ImpactModel.Ec3ImpactIndicator indicator;
 		final ResultImpact impact;
 
-		TableItem(
+		ImpactItem(
 			Ec3ImpactModel.Ec3ImpactIndicator indicator,
 			ResultImpact impact) {
 			this.indicator = indicator;
 			this.impact = impact;
 		}
 
-		static List<TableItem> createAll(
+		static List<ImpactItem> createAll(
 			Ec3ImpactModel.Ec3ImpactMethod selectedMethod, ResultModel result) {
 			if (selectedMethod == null
-					|| result.setup == null
-					|| result.setup.impactMethod() == null)
+				|| result.setup == null
+				|| result.setup.impactMethod() == null)
 				return Collections.emptyList();
 
 			var map = selectedMethod.map(result);
-			var items = new ArrayList<TableItem>();
+			var items = new ArrayList<ImpactItem>();
 			for (var indicator : selectedMethod.indicators) {
 				var impact = map.get(indicator.name);
 				if (impact == null) {
 					impact = new ResultImpact();
 				}
-				items.add(new TableItem(indicator, impact));
+				items.add(new ImpactItem(indicator, impact));
 			}
 
 			items.sort((item1, item2) -> Strings.compare(
@@ -277,9 +294,9 @@ public class ExportDialog extends FormDialog {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof TableItem))
+			if (!(obj instanceof ImpactItem))
 				return null;
-			var item = (TableItem) obj;
+			var item = (ImpactItem) obj;
 			var indicator = item.indicator;
 			var impact = item.impact;
 			if (indicator == null || impact == null)
