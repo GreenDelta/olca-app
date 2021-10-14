@@ -1,0 +1,345 @@
+{
+  "methods": [
+    {
+      "id": "TRACI 2.1",
+      "name": "TRACI 2.1",
+      "description": "Tool for Reduction and Assessment of Chemicals and Other Environmental Impacts, Version 2.1, 2012.",
+      "keywords": [
+        "traci",
+        "2.1"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "TRACI 2.0",
+      "name": "TRACI 2.0",
+      "description": "Tool for Reduction and Assessment of Chemicals and Other Environmental Impacts, Version 2.0, 2011",
+      "keywords": [
+        "traci",
+        "2.0"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "TRACI 1.0",
+      "name": "TRACI 1.0",
+      "description": "Tool for Reduction and Assessment of Chemicals and Other Environmental Impacts, 2003",
+      "keywords": [
+        "traci",
+        "1.0"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "EF 3.0",
+      "name": "EF 3.0",
+      "description": "EF 3.0, 2019, required by EN 15804+A2.  This is the default for European PCRs.",
+      "keywords": [
+        "ef",
+        "3.0"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "CML 2016",
+      "name": "CML 2016",
+      "description": "CML-IA Baseline 4.8, 2016",
+      "keywords": [
+        "cml",
+        "2016"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "CML 2012",
+      "name": "CML 2012",
+      "description": "CML-IA Baseline 4.1, 2012.  Required by EN15804+A1",
+      "keywords": [
+        "cml",
+        "2012"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "CML 2007",
+      "name": "CML 2007",
+      "description": "CML-IA Baseline 3.0, 2007",
+      "keywords": [
+        "cml",
+        "2007"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "CML 2001",
+      "name": "CML 2001",
+      "description": "CML-IA Baseline 2.0, 2001",
+      "keywords": [
+        "cml",
+        "2001"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "CML 1992",
+      "name": "CML 1992",
+      "description": "CML-IA Baseline 1.0, 1992",
+      "keywords": [
+        "cml",
+        "1992"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "ReCiPe 2016",
+      "name": "ReCiPe 2016",
+      "description": "ReCiPe 1.1 (2016) Midpoint, with 2017 corrections",
+      "keywords": [
+        "recipe",
+        "2016"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "ReCiPe 2008",
+      "name": "ReCiPe 2008",
+      "description": "ReCiPe 2008 Midpoint ",
+      "keywords": [
+        "recipe",
+        "2008"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "EF 2.0, 2018",
+      "name": "EF 2.0, 2018",
+      "description": "Environmental Footprint 2.0, 2018",
+      "keywords": [
+        "ef",
+        "2.0,",
+        "2018"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "EN 15804+A2",
+      "name": "EN 15804+A2",
+      "description": "Impact set, using EF3.0 life cycle impact analysis factors",
+      "keywords": [
+        "en",
+        "15804+a2"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "CML 2014",
+      "name": "CML 2014",
+      "description": "Impact set, using CML 2014 baseline life cycle impact analysis factors",
+      "keywords": [
+        "cml",
+        "2014"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    },
+    {
+      "id": "Unknown LCIA",
+      "name": "Unknown LCIA",
+      "description": "Impact set, using life cycle impact analysis factors that are not known.  Permissible only for digitized legacy (paper or PDF) EPDs.",
+      "keywords": [
+        "unknown",
+        "lcia"
+      ],
+      "indicators": [
+        "ap",
+        "ep",
+        "ep-fresh",
+        "ep-marine",
+        "gwp",
+        "odp",
+        "pocp"
+      ]
+    }
+  ],
+  "indicators": [
+    {
+      "id": "gwp",
+      "name": "Global warming potential",
+      "unit": "kgCO2e",
+      "keywords": [
+        "gwp",
+        "100",
+        "global",
+        "warming",
+        "climate",
+        "change"
+      ]
+    },
+    {
+      "id": "ap",
+      "name": "Acidification potential",
+      "unit": "kgSO2e",
+      "keywords": [
+        "acidification"
+      ]
+    },
+    {
+      "id": "odp",
+      "name": "Ozone depletion potential",
+      "unit": "kgCFC11e",
+      "keywords": [
+        "ozone",
+        "depletion"
+      ]
+    },
+    {
+      "id": "ep",
+      "name": "Eutrophication potential",
+      "unit": "kgNe",
+      "keywords": [
+        "eutrophication"
+      ]
+    },
+    {
+      "id": "ep-marine",
+      "name": "Eutrophication potential, marine water",
+      "unit": "kgNe",
+      "keywords": [
+        "eutrophication",
+        "marine",
+        "water"
+      ]
+    },
+    {
+      "id": "ep-fresh",
+      "name": "Eutrophication potential, fresh water",
+      "unit": "kgNe",
+      "keywords": [
+        "eutrophication",
+        "fresh",
+        "water"
+      ]
+    },
+    {
+      "id": "pocp",
+      "name": "Photochemical ozone creation potential",
+      "unit": "kgO3e",
+      "keywords": [
+        "photochemical",
+        "smog",
+        "ozone"
+      ]
+    }
+  ]
+}
