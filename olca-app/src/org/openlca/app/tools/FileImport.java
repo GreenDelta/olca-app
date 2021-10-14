@@ -68,45 +68,22 @@ public class FileImport {
 		}
 
 		switch (format) {
-			case ES1_XML:
-			case ES1_ZIP:
-				EcoSpold01ImportWizard.of(file);
-				break;
-			case ES2_XML:
-			case ES2_ZIP:
-				EcoSpold2ImportWizard.of(file);
-				break;
-			case EXCEL:
-				ExcelImportWizard.of(file);
-				break;
-			case GEO_JSON:
-				GeoJsonImportWizard.of(file);
-				break;
-			case ILCD_ZIP:
-				ILCDImportWizard.of(file);
-				break;
-			case JSON_LD_ZIP:
-				JsonImportWizard.of(file);
-				break;
-			case LIBRARY_PACKAGE:
-				MountLibraryAction.run(file);
-				break;
-			case MAPPING_CSV:
-				importMappingFile(file);
-				break;
-			case SIMAPRO_CSV:
-				SimaProCsvImportWizard.of(file);
-				break;
-			case ZOLCA:
-				importZOLCA(file);
-				break;
-			default:
-				MsgBox.info("No import found",
-						"Format '" + format + "' was detected but no" +
-								" import wizard could be found. You can" +
-								" try the generic import under `Import >" +
-								" Other...` for selecting a more specific" +
-								" option.");
+			case ES1_XML, ES1_ZIP -> EcoSpold01ImportWizard.of(file);
+			case ES2_XML, ES2_ZIP -> EcoSpold2ImportWizard.of(file);
+			case EXCEL -> ExcelImportWizard.of(file);
+			case GEO_JSON -> GeoJsonImportWizard.of(file);
+			case ILCD_ZIP -> ILCDImportWizard.of(file);
+			case JSON_LD_ZIP -> JsonImportWizard.of(file);
+			case LIBRARY_PACKAGE -> MountLibraryAction.run(file);
+			case MAPPING_CSV -> importMappingFile(file);
+			case SIMAPRO_CSV -> SimaProCsvImportWizard.of(file);
+			case ZOLCA -> importZOLCA(file);
+			default -> MsgBox.info("No import found",
+				"Format '" + format + "' was detected but no" +
+					" import wizard could be found. You can" +
+					" try the generic import under `Import >" +
+					" Other...` for selecting a more specific" +
+					" option.");
 		}
 	}
 

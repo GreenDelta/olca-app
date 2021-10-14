@@ -1,4 +1,4 @@
-package org.openlca.app.editors.results.openepd;
+package org.openlca.app.editors.results.openepd.output;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -23,7 +23,12 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.editors.results.openepd.model.Ec3Epd;
 import org.openlca.app.editors.results.openepd.model.Ec3ImpactModel;
+import org.openlca.app.editors.results.openepd.model.Credentials;
+import org.openlca.app.editors.results.openepd.model.Ec3ImpactSet;
+import org.openlca.app.editors.results.openepd.model.Ec3Measurement;
+import org.openlca.app.editors.results.openepd.model.Ec3ScopeSet;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Numbers;
@@ -55,7 +60,7 @@ public class ExportDialog extends FormDialog {
 			| SWT.TITLE
 			| SWT.RESIZE
 			| SWT.MIN);
-		credentials = Credentials.init();
+		credentials = Credentials.getDefault();
 		epd = new Ec3Epd();
 		epd.name = result.name;
 		epd.description = result.description;
@@ -78,7 +83,7 @@ public class ExportDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Export as OpenEPD to EC3");
+		newShell.setText("Upload OpenEPD to EC3");
 	}
 
 	@Override
@@ -102,30 +107,30 @@ public class ExportDialog extends FormDialog {
 		// url
 		var filled = 0;
 		var urlText = UI.formText(comp, tk, "URL");
-		if (Strings.notEmpty(credentials.url)) {
-			urlText.setText(credentials.url);
+		if (Strings.notEmpty(credentials.url())) {
+			urlText.setText(credentials.url());
 			filled++;
 		}
 		urlText.addModifyListener(
-			$ -> credentials.url = urlText.getText());
+			$ -> credentials.url(urlText.getText()));
 
 		// user
 		var userText = UI.formText(comp, tk, "User");
-		if (Strings.notEmpty(credentials.user)) {
-			userText.setText(credentials.user);
+		if (Strings.notEmpty(credentials.user())) {
+			userText.setText(credentials.user());
 			filled++;
 		}
 		userText.addModifyListener(
-			$ -> credentials.user = userText.getText());
+			$ -> credentials.user(userText.getText()));
 
 		// password
 		var pwText = UI.formText(comp, tk, "Password", SWT.PASSWORD);
-		if (Strings.notEmpty(credentials.password)) {
-			pwText.setText(credentials.password);
+		if (Strings.notEmpty(credentials.password())) {
+			pwText.setText(credentials.password());
 			filled++;
 		}
 		pwText.addModifyListener(
-			$ -> credentials.password = pwText.getText());
+			$ -> credentials.password(pwText.getText()));
 
 		section.setExpanded(filled < 3);
 	}
@@ -217,7 +222,7 @@ public class ExportDialog extends FormDialog {
 		 */
 
 		var file = FileChooser.forSavingFile(
-			"Save in OpenEPD format",
+			"Save as OpenEPD document",
 			URLEncoder.encode(Strings.orEmpty(epd.name), StandardCharsets.UTF_8)
 				+ ".json");
 		if (file == null)

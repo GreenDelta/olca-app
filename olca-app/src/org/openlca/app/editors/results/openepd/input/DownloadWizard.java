@@ -1,15 +1,14 @@
-package org.openlca.app.editors.results.openepd;
+package org.openlca.app.editors.results.openepd.input;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -22,7 +21,11 @@ import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.Navigator;
+import org.openlca.app.editors.results.openepd.model.Credentials;
+import org.openlca.app.editors.results.openepd.model.Ec3Category;
+import org.openlca.app.editors.results.openepd.model.Ec3CategoryIndex;
+import org.openlca.app.editors.results.openepd.model.Ec3Client;
+import org.openlca.app.editors.results.openepd.model.Ec3Epd;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
@@ -30,15 +33,14 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.database.CategoryDao;
-import org.openlca.core.model.Category;
-import org.openlca.core.model.ModelType;
-import org.openlca.core.model.ResultModel;
 import org.openlca.util.Strings;
 
-public class ImportWizard extends Wizard implements IImportWizard {
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
-	private final Credentials credentials = Credentials.init();
+public class DownloadWizard extends Wizard implements IImportWizard {
+
+	private final Credentials credentials = Credentials.getDefault();
 	private Ec3Client client;
 	private Ec3Epd epd;
 	private Ec3CategoryIndex categories;
@@ -58,24 +60,8 @@ public class ImportWizard extends Wizard implements IImportWizard {
 		var db = Database.get();
 		if (epd == null || db == null)
 			return false;
-
-		Category resultCategory = null;
-		if (epd.category != null && categories != null) {
-			var path = categories.pathOf(epd.category.id);
-			if (path != null) {
-				var parts = path.split("/");
-				resultCategory = new CategoryDao(db)
-					.sync(ModelType.RESULT, parts);
-			}
-		}
-		var result = ResultModel.of(epd.name);
-		result.description = epd.description;
-		result.category = resultCategory;
-
-		db.insert(result);
-		Navigator.refresh();
-		App.open(result);
-		return true;
+		var status = ImportDialog.show(epd, categories);
+		return status == Window.OK;
 	}
 
 	@Override
@@ -128,7 +114,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			Controls.onReturn(queryText, $ -> onSearch());
 
 			table = Tables.createViewer(
-				root, "EPD", "Category", "Declared unit");
+					root, "EPD", "Category", "Declared unit");
 			Tables.bindColumnWidths(table, 0.4, 0.4, 0.2);
 			UI.gridData(table.getControl(), true, true);
 			table.setLabelProvider(new TableLabel());
@@ -136,27 +122,27 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			table.addSelectionChangedListener(e -> {
 				Object first = Selections.firstOf(e.getSelection());
 				epd = first instanceof Ec3Epd
-					? (Ec3Epd) first
-					: null;
+						? (Ec3Epd) first
+						: null;
 				setPageComplete(epd != null);
 			});
 		}
 
 		private void credentialFields(Composite comp) {
 			var urlText = UI.formText(comp, "URL");
-			urlText.setText(Strings.orEmpty(credentials.url));
+			urlText.setText(Strings.orEmpty(credentials.url()));
 			urlText.addModifyListener(
-				$ -> credentials.url = urlText.getText());
+					$ -> credentials.url(urlText.getText()));
 
 			var userText = UI.formText(comp, "User");
-			userText.setText(Strings.orEmpty(credentials.user));
+			userText.setText(Strings.orEmpty(credentials.user()));
 			userText.addModifyListener(
-				$ -> credentials.user = userText.getText());
+					$ -> credentials.user(userText.getText()));
 
 			var pwText = UI.formText(comp, "Password", SWT.PASSWORD);
-			pwText.setText(Strings.orEmpty(credentials.password));
+			pwText.setText(Strings.orEmpty(credentials.password()));
 			pwText.addModifyListener(
-				$ -> credentials.password = pwText.getText());
+					$ -> credentials.password(pwText.getText()));
 		}
 
 		private void onSearch() {
@@ -167,9 +153,9 @@ public class ImportWizard extends Wizard implements IImportWizard {
 				var c = credentials.login();
 				if (c.isEmpty()) {
 					MsgBox.error("Login failed",
-						"Failed to login into the EC3 API with the given" +
-							" user name and password. Check the log-file " +
-							"for further details.");
+							"Failed to login into the EC3 API with the given" +
+									" user name and password. Check the log-file " +
+									"for further details.");
 					return;
 				}
 				client = c.get();
@@ -185,7 +171,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 						var root = client.get("categories/root", JsonObject.class);
 						if (root != null) {
 							Ec3Category.fromJson(root).ifPresent(
-								c -> categories = Ec3CategoryIndex.of(c));
+									c -> categories = Ec3CategoryIndex.of(c));
 						}
 					}
 
@@ -203,12 +189,12 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			var q = queryText.getText().trim();
 			var prefix = "epds?page_size=10";
 			return Strings.nullOrEmpty(q)
-				? prefix
-				: prefix + "&q=" + URLEncoder.encode(q, StandardCharsets.UTF_8);
+					? prefix
+					: prefix + "&q=" + URLEncoder.encode(q, StandardCharsets.UTF_8);
 		}
 
 		private class TableLabel extends BaseLabelProvider
-			implements ITableLabelProvider {
+				implements ITableLabelProvider {
 
 			@Override
 			public Image getColumnImage(Object obj, int col) {
@@ -217,16 +203,15 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
 			@Override
 			public String getColumnText(Object obj, int col) {
-				if (!(obj instanceof Ec3Epd))
+				if (!(obj instanceof Ec3Epd epd))
 					return null;
-				var epd = (Ec3Epd) obj;
 				return switch (col) {
-					case 0 -> epd.name;
-					case 1 -> epd.category != null && categories != null
+				case 0 -> epd.name;
+				case 1 -> epd.category != null && categories != null
 						? categories.pathOf(epd.category.id)
 						: null;
-					case 2 -> epd.declaredUnit;
-					default -> null;
+				case 2 -> epd.declaredUnit;
+				default -> null;
 				};
 			}
 		}

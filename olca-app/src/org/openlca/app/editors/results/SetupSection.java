@@ -12,7 +12,7 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
-import org.openlca.app.editors.results.openepd.ExportDialog;
+import org.openlca.app.editors.results.openepd.output.ExportDialog;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;

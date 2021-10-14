@@ -1,4 +1,4 @@
-package org.openlca.app.editors.results.openepd;
+package org.openlca.app.editors.results.openepd.model;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

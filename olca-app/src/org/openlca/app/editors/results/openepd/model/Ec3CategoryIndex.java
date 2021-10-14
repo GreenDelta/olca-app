@@ -1,8 +1,10 @@
-package org.openlca.app.editors.results.openepd;
+package org.openlca.app.editors.results.openepd.model;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.openlca.util.Strings;
 
 public class Ec3CategoryIndex {
 
@@ -10,6 +12,10 @@ public class Ec3CategoryIndex {
 	private final Map<String, String> paths = new HashMap<>();
 
 	private Ec3CategoryIndex() {
+	}
+
+	public static Ec3CategoryIndex empty() {
+		return new Ec3CategoryIndex();
 	}
 
 	public static Ec3CategoryIndex of(Ec3Category category) {
@@ -29,6 +35,15 @@ public class Ec3CategoryIndex {
 			}
 		}
 		return idx;
+	}
+
+	public String pathOf(Ec3Category category) {
+		if (category == null)
+			return null;
+		var path = pathOf(category.id);
+		return Strings.nullOrEmpty(path)
+			? category.name
+			: path;
 	}
 
 	public String pathOf(String id) {

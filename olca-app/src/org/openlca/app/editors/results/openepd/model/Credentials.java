@@ -1,4 +1,4 @@
-package org.openlca.app.editors.results.openepd;
+package org.openlca.app.editors.results.openepd.model;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -11,13 +11,40 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
-class Credentials {
+public class Credentials {
 
-	String url;
-	String user;
-	String password;
+	private String url;
+	private String user;
+	private String password;
 
-	static Credentials init() {
+	public String url() {
+		return url;
+	}
+
+	public Credentials url(String url) {
+		this.url = url;
+		return this;
+	}
+
+	public String user() {
+		return user;
+	}
+
+	public Credentials user(String user) {
+		this.user = user;
+		return this;
+	}
+
+	public String password() {
+		return password;
+	}
+
+	public Credentials password(String password) {
+		this.password = password;
+		return this;
+	}
+
+	public static Credentials getDefault() {
 		var c = new Credentials();
 		c.url = "https://etl-api.cqd.io/api";
 		var file = file();
@@ -37,7 +64,7 @@ class Credentials {
 		}
 	}
 
-	void save() {
+	public void save() {
 		var json = new JsonObject();
 		json.addProperty("url", url);
 		json.addProperty("user", user);
@@ -50,7 +77,7 @@ class Credentials {
 		}
 	}
 
-	Optional<Ec3Client> login() {
+	public Optional<Ec3Client> login() {
 		try {
 			var client = Ec3Client.of(url).login(user, password);
 			return Optional.of(client);
