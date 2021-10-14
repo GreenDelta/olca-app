@@ -18,15 +18,7 @@ import org.openlca.core.model.ResultFlow;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
 
-class FlowSection {
-
-	private final ResultEditor editor;
-	private final boolean forInputs;
-
-	private FlowSection(ResultEditor editor, boolean forInputs) {
-		this.editor = editor;
-		this.forInputs = forInputs;
-	}
+record FlowSection(ResultEditor editor, boolean forInputs) {
 
 	static FlowSection forInputs(ResultEditor editor) {
 		return new FlowSection(editor, true);
@@ -59,9 +51,8 @@ class FlowSection {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof ResultFlow))
+			if (!(obj instanceof ResultFlow r))
 				return null;
-			var r = (ResultFlow) obj;
 			return switch (col) {
 				case 0 -> Images.get(r.flow);
 				case 4 -> r.location == null
@@ -73,9 +64,8 @@ class FlowSection {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ResultFlow))
+			if (!(obj instanceof ResultFlow r))
 				return null;
-			var r = (ResultFlow) obj;
 			return switch (col) {
 				case 0 -> Labels.name(r.flow);
 				case 1 -> {

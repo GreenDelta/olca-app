@@ -28,13 +28,7 @@ import org.openlca.core.model.ResultModel;
 import org.openlca.core.model.ResultOrigin;
 import org.openlca.util.Strings;
 
-public class ImpactSection {
-
-	private final ResultEditor editor;
-
-	ImpactSection(ResultEditor editor) {
-		this.editor = editor;
-	}
+record ImpactSection(ResultEditor editor) {
 
 	private ResultModel result() {
 		return editor.getModel();
@@ -102,9 +96,8 @@ public class ImpactSection {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof ResultImpact))
+			if (!(obj instanceof ResultImpact impact))
 				return null;
-			var impact = (ResultImpact) obj;
 			return switch (col) {
 				case 0 -> Images.get(ModelType.IMPACT_CATEGORY);
 				case 1 -> ResultEditor.iconOf(impact.origin);
@@ -114,9 +107,8 @@ public class ImpactSection {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ResultImpact))
+			if (!(obj instanceof ResultImpact impact))
 				return null;
-			var impact = (ResultImpact) obj;
 			return switch (col) {
 				case 0 -> Labels.name(impact.indicator);
 				case 1 -> Numbers.format(impact.amount);
