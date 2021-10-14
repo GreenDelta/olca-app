@@ -23,6 +23,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.editors.results.openepd.model.Ec3ImpactModel;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Numbers;
@@ -42,7 +43,7 @@ public class ExportDialog extends FormDialog {
 	private String selectedScope = "A1A2A3";
 
 	private final Ec3ImpactModel impactModel;
-	private Ec3ImpactModel.Ec3ImpactMethod selectedMethod;
+	private Ec3ImpactModel.Method selectedMethod;
 	private List<ImpactItem> impacts;
 
 	private ExportDialog(ResultModel result) {
@@ -61,11 +62,11 @@ public class ExportDialog extends FormDialog {
 		epd.isPrivate = true;
 		epd.isDraft = true;
 
-		impactModel = Ec3ImpactModel.read();
-		impactModel.methods.sort((m1, m2) -> Strings.compare(m1.name, m2.name));
+		impactModel = Ec3ImpactModel.get();
+
 		if (result.setup != null && result.setup.impactMethod() != null) {
 			var d = Descriptor.of(result.setup.impactMethod());
-			selectedMethod = impactModel.map(d);
+			selectedMethod = impactModel.find(d);
 			impacts = ImpactItem.createAll(selectedMethod, result);
 		}
 	}
@@ -167,12 +168,12 @@ public class ExportDialog extends FormDialog {
 			"EC3 " + M.ImpactAssessmentMethod);
 		UI.gridData(combo, false, false).widthHint = 250;
 
-		var methods = impactModel.methods;
+		var methods = impactModel.methods();
 		var methodItems = new String[methods.size()];
 		var selectedIdx = -1;
 		for (int i = 0; i < methods.size(); i++) {
 			var method = methods.get(i);
-			methodItems[i] = method.name;
+			methodItems[i] = method.id();
 			if (Objects.equals(method, selectedMethod)) {
 				selectedIdx = i;
 			}
@@ -229,13 +230,13 @@ public class ExportDialog extends FormDialog {
 				for (var i : impacts) {
 					var indicator = i.indicator;
 					var impact = i.impact;
-					var amount = Ec3Measurement.of(impact.amount, indicator.unit);
+					var amount = Ec3Measurement.of(impact.amount, indicator.unit());
 					var scopeSet = new Ec3ScopeSet();
 					scopeSet.put(selectedScope, amount);
-					impactSet.put(indicator.name, scopeSet);
+					impactSet.put(indicator.id(), scopeSet);
 				}
 				if (!impactSet.isEmpty()) {
-					epd.putImpactSet(selectedMethod.name, impactSet);
+					epd.putImpactSet(selectedMethod.id(), impactSet);
 				}
 			}
 
@@ -249,29 +250,21 @@ public class ExportDialog extends FormDialog {
 		}
 	}
 
-	private static class ImpactItem {
-
-		final Ec3ImpactModel.Ec3ImpactIndicator indicator;
-		final ResultImpact impact;
-
-		ImpactItem(
-			Ec3ImpactModel.Ec3ImpactIndicator indicator,
-			ResultImpact impact) {
-			this.indicator = indicator;
-			this.impact = impact;
-		}
+	private record ImpactItem(
+		Ec3ImpactModel.Indicator indicator,
+		ResultImpact impact) {
 
 		static List<ImpactItem> createAll(
-			Ec3ImpactModel.Ec3ImpactMethod selectedMethod, ResultModel result) {
+				Ec3ImpactModel.Method selectedMethod, ResultModel result) {
 			if (selectedMethod == null
-				|| result.setup == null
-				|| result.setup.impactMethod() == null)
+					|| result.setup == null
+					|| result.setup.impactMethod() == null)
 				return Collections.emptyList();
 
 			var map = selectedMethod.map(result);
 			var items = new ArrayList<ImpactItem>();
-			for (var indicator : selectedMethod.indicators) {
-				var impact = map.get(indicator.name);
+			for (var indicator : selectedMethod.indicators()) {
+				var impact = map.get(indicator.id());
 				if (impact == null) {
 					impact = new ResultImpact();
 				}
@@ -279,7 +272,7 @@ public class ExportDialog extends FormDialog {
 			}
 
 			items.sort((item1, item2) -> Strings.compare(
-				item1.indicator.name, item2.indicator.name));
+					item1.indicator.id(), item2.indicator.id()));
 			return items;
 		}
 	}
@@ -294,17 +287,16 @@ public class ExportDialog extends FormDialog {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ImpactItem))
+			if (!(obj instanceof ImpactItem item))
 				return null;
-			var item = (ImpactItem) obj;
 			var indicator = item.indicator;
 			var impact = item.impact;
 			if (indicator == null || impact == null)
 				return null;
 
 			return switch (col) {
-				case 0 -> indicator.name;
-				case 1 -> indicator.unit;
+				case 0 -> indicator.id();
+				case 1 -> indicator.unit();
 				case 2 -> Numbers.format(impact.amount);
 				case 3 -> impact.indicator != null
 					? impact.indicator.name

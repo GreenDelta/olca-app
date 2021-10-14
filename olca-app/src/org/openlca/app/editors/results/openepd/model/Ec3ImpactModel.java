@@ -1,40 +1,41 @@
-package org.openlca.app.editors.results.openepd;
+package org.openlca.app.editors.results.openepd.model;
 
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.openlca.core.model.ResultImpact;
 import org.openlca.core.model.ResultModel;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
+import org.openlca.util.Strings;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-class Ec3ImpactModel {
-
-	final List<Ec3ImpactMethod> methods = new ArrayList<>();
+public record Ec3ImpactModel(
+	List<Method> methods,
+	List<Indicator> indicators
+) {
 
 	private static Ec3ImpactModel empty() {
-		return new Ec3ImpactModel();
+		return new Ec3ImpactModel(
+			Collections.emptyList(), Collections.emptyList());
 	}
 
-	static Ec3ImpactModel read() {
+	public static Ec3ImpactModel get() {
 		// maybe also check the workspace later
-		var stream = Ec3ImpactModel.class.getResourceAsStream(
-			"impact_model.json");
+		var stream = Ec3ImpactModel.class.getResourceAsStream("impact_model.json");
 		if (stream == null)
 			return empty();
-		try (var reader = new InputStreamReader(
-			stream, StandardCharsets.UTF_8)) {
+		try (var reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
 			var json = new Gson().fromJson(reader, JsonObject.class);
 			return fromJson(json);
 		} catch (Exception e) {
@@ -45,22 +46,34 @@ class Ec3ImpactModel {
 	private static Ec3ImpactModel fromJson(JsonObject json) {
 		if (json == null)
 			return empty();
-		var model = new Ec3ImpactModel();
+
+		var model = new Ec3ImpactModel(new ArrayList<>(), new ArrayList<>());
+
+		Json.stream(Json.getArray(json, "indicators"))
+			.filter(JsonElement::isJsonObject)
+			.map(JsonElement::getAsJsonObject)
+			.map(Indicator::of)
+			.forEach(model.indicators::add);
+
 		Json.stream(Json.getArray(json, "methods"))
 			.filter(JsonElement::isJsonObject)
 			.map(JsonElement::getAsJsonObject)
-			.map(Ec3ImpactMethod::fromJson)
+			.map(obj -> Method.of(obj, model.indicators))
 			.forEach(model.methods::add);
+		model.methods().sort((m1, m2) -> Strings.compare(m1.name(), m2.name()));
+
 		return model;
 	}
 
-	Ec3ImpactMethod map(ImpactMethodDescriptor d) {
+	public Method find(ImpactMethodDescriptor d) {
 		if (d == null)
 			return null;
 		var score = 0;
-		Ec3ImpactMethod selected = null;
+		Method selected = null;
 		for (var next : methods) {
-			var nextScore = mapScore(d.name, next.keywords);
+			var nextScore = mapScore(d.name, next.keywords());
+			if (nextScore == 0)
+				continue;
 			if (selected == null || nextScore > score) {
 				selected = next;
 				score = nextScore;
@@ -86,49 +99,43 @@ class Ec3ImpactModel {
 		return score;
 	}
 
-	static class Ec3ImpactMethod {
-		String name;
-		String description;
-		final List<String> keywords = new ArrayList<>();
-		final List<Ec3ImpactIndicator> indicators = new ArrayList<>();
 
-		private static Ec3ImpactMethod fromJson(JsonObject json) {
+
+	public record Method(
+		String id,
+		String name,
+		String description,
+		List<String> keywords,
+		List<Indicator> indicators) {
+
+		static Method of(JsonObject json, List<Indicator> indicators) {
 			if (json == null)
 				return null;
 
-			var method = new Ec3ImpactMethod();
-			method.name = Json.getString(json, "name");
-			method.description = Json.getString(json, "description");
+			var method = new Method(
+				Json.getString(json, "id"),
+				Json.getString(json, "name"),
+				Json.getString(json, "description"),
+				new ArrayList<>(),
+				new ArrayList<>()
+			);
+
 			Json.stream(Json.getArray(json, "keywords"))
 				.filter(JsonElement::isJsonPrimitive)
 				.map(JsonElement::getAsString)
 				.forEach(method.keywords::add);
 
+			var indicatorMap = new HashMap<String, Indicator>();
+			for (var i : indicators) {
+				indicatorMap.put(i.id(), i);
+			}
 			Json.stream(Json.getArray(json, "indicators"))
-				.filter(JsonElement::isJsonObject)
-				.map(JsonElement::getAsJsonObject)
-				.map(Ec3ImpactIndicator::fromJson)
+				.filter(JsonElement::isJsonPrimitive)
+				.map(id -> indicatorMap.get(id.getAsString()))
 				.filter(Objects::nonNull)
 				.forEach(method.indicators::add);
 
 			return method;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o)
-				return true;
-			if (!(o instanceof Ec3ImpactMethod))
-				return false;
-			var other = (Ec3ImpactMethod) o;
-			return Objects.equals(this.name, other.name);
-		}
-
-		@Override
-		public int hashCode() {
-			return name == null
-				? super.hashCode()
-				: name.hashCode();
 		}
 
 		/**
@@ -136,7 +143,7 @@ class Ec3ImpactModel {
 		 * to the best matching impact results of the given result
 		 * (a "stable-mariage-problem").
 		 */
-		Map<String, ResultImpact> map(ResultModel result) {
+		public Map<String, ResultImpact> map(ResultModel result) {
 			var unmatchedResults = new ArrayDeque<ResultImpact>();
 			for (var impact : result.impacts) {
 				unmatchedResults.add(impact.copy());
@@ -149,16 +156,17 @@ class Ec3ImpactModel {
 					continue;
 
 				var score = 0;
-				Ec3ImpactIndicator selected = null;
+				Indicator selected = null;
 
 				// first try the unmapped indicators
 				for (var indicator : this.indicators) {
 					var nextScore = mapScore(
-						impact.indicator.name, indicator.keywords);
+						impact.indicator.name, indicator.keywords());
+
 					if (selected == null || nextScore > score) {
 
 						// checked if the indicator is already mapped
-						var mapped = scores.get(indicator.name);
+						var mapped = scores.get(indicator.id());
 						if (mapped != null && mapped.second >= nextScore) {
 							continue;
 						}
@@ -170,7 +178,7 @@ class Ec3ImpactModel {
 				if (selected == null)
 					continue;
 
-				var old = scores.put(selected.name, Pair.of(impact, score));
+				var old = scores.put(selected.id(), Pair.of(impact, score));
 				if (old != null) {
 					unmatchedResults.add(old.first);
 				}
@@ -184,41 +192,28 @@ class Ec3ImpactModel {
 		}
 	}
 
-	static class Ec3ImpactIndicator {
-		String name;
-		String description;
-		String unit;
-		final List<String> keywords = new ArrayList<>();
+	public record Indicator(
+		String id,
+		String name,
+		String description,
+		String unit,
+		List<String> keywords) {
 
-		private static Ec3ImpactIndicator fromJson(JsonObject json) {
+		static Indicator of(JsonObject json) {
 			if (json == null)
 				return null;
-			var indicator = new Ec3ImpactIndicator();
-			indicator.name = Json.getString(json, "name");
-			indicator.description = Json.getString(json, "description");
-			indicator.unit = Json.getString(json, "unit");
+			var indicator = new Indicator(
+				Json.getString(json, "id"),
+				Json.getString(json, "name"),
+				Json.getString(json, "description"),
+				Json.getString(json, "unit"),
+				new ArrayList<>()
+			);
 			Json.stream(Json.getArray(json, "keywords"))
 				.filter(JsonElement::isJsonPrimitive)
 				.map(JsonElement::getAsString)
 				.forEach(indicator.keywords::add);
 			return indicator;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o)
-				return true;
-			if (!(o instanceof Ec3ImpactIndicator))
-				return false;
-			var other = (Ec3ImpactIndicator) o;
-			return Objects.equals(this.name, other.name);
-		}
-
-		@Override
-		public int hashCode() {
-			return name == null
-				? super.hashCode()
-				: name.hashCode();
 		}
 	}
 }
