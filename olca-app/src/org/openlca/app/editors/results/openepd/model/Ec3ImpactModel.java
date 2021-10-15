@@ -14,6 +14,8 @@ import java.util.Optional;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.openlca.app.M;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ResultImpact;
 import org.openlca.core.model.ResultModel;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
@@ -73,6 +75,13 @@ public record Ec3ImpactModel(
 			.orElse(null);
 	}
 
+	public Indicator getIndicator(String id) {
+		return indicators.stream()
+			.filter(i -> Objects.equals(i.id, id))
+			.findAny()
+			.orElse(null);
+	}
+
 	public Method match(ImpactMethodDescriptor d) {
 		if (d == null)
 			return null;
@@ -106,7 +115,6 @@ public record Ec3ImpactModel(
 		}
 		return score;
 	}
-
 
 
 	public record Method(
@@ -149,9 +157,9 @@ public record Ec3ImpactModel(
 		/**
 		 * Maps the names (codes) of the indicators of this method
 		 * to the best matching impact results of the given result
-		 * (a "stable-mariage-problem").
+		 * (a "stable-marriage-problem").
 		 */
-		public Map<String, ResultImpact> map(ResultModel result) {
+		public Map<String, ResultImpact> matchIndicators(ResultModel result) {
 			var unmatchedResults = new ArrayDeque<ResultImpact>();
 			for (var impact : result.impacts) {
 				unmatchedResults.add(impact.copy());
@@ -198,6 +206,28 @@ public record Ec3ImpactModel(
 			}
 			return m;
 		}
+
+		/**
+		 * Find the best matching impact assessment method from  the given
+		 * list. Returns null if no such method could be found.
+		 */
+		public ImpactMethod matchMethod(List<ImpactMethod> methods) {
+			if (methods == null)
+				return null;
+			ImpactMethod selected = null;
+			var score = 0;
+			for (var method : methods) {
+				var nextScore = mapScore(method.name, keywords);
+				if (nextScore == 0)
+					continue;
+				if (selected == null || nextScore > score) {
+					selected = method;
+					score = nextScore;
+				}
+			}
+			return selected;
+		}
+
 	}
 
 	public record Indicator(

@@ -266,7 +266,7 @@ public class ExportDialog extends FormDialog {
 					|| result.setup.impactMethod() == null)
 				return Collections.emptyList();
 
-			var map = selectedMethod.map(result);
+			var map = selectedMethod.matchIndicators(result);
 			var items = new ArrayList<ImpactItem>();
 			for (var indicator : selectedMethod.indicators()) {
 				var impact = map.get(indicator.id());
