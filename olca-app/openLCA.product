@@ -53,7 +53,7 @@ project and other open source software.
    <intro introId="org.openlca.core.welcome.intro"/>
 
    <vm>
-      <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-14</windows>
+      <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-16</windows>
    </vm>
 
    <plugins>

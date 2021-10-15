@@ -11,6 +11,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.components.EntityCombo;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.results.openepd.model.Ec3CategoryIndex;
 import org.openlca.app.editors.results.openepd.model.Ec3Epd;
@@ -20,6 +21,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.ResultFlow;
 import org.openlca.core.model.ResultModel;
 import org.openlca.util.Strings;
@@ -78,14 +80,22 @@ public class ImportDialog extends FormDialog {
 		var amountText = UI.formText(comp, tk, M.Amount);
 		Controls.set(amountText, product.amount, amount -> product.amount = amount);
 
-		var quantityCombo = UI.formCombo(comp, tk, M.Quantity);
-		var properties = new FlowPropertyDao(db).getAll();
-		properties.sort((p1, p2) -> Strings.compare(p1.name, p2.name));
-		var items = new String[properties.size()];
-		var selectedPropIdx = -1;
-		for (int i = 0; ) {
-			items
-		}
+		var quantityCombo = EntityCombo.of(
+				UI.formCombo(comp, tk, M.Quantity), FlowProperty.class, db)
+			.select(product.flowPropertyFactor != null
+				? product.flowPropertyFactor.flowProperty
+				: null);
+
+		var unitCombo = EntityCombo.of(
+				UI.formCombo(comp, tk, M.Unit), Util.allowedUnitsOf(product))
+			.select(product.unit)
+			.onSelected(unit -> product.unit = unit);
+
+		quantityCombo.onSelected(property -> {
+			Util.setFlowProperty(product, property);
+			unitCombo.update(Util.allowedUnitsOf(product))
+				.select(product.unit);
+		});
 
 	}
 

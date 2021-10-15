@@ -38,6 +38,7 @@ class Util {
 	static void setFlowProperty(ResultFlow resultFlow, FlowProperty property) {
 		if (resultFlow == null || resultFlow.flow == null)
 			return;
+		resultFlow.flowPropertyFactor = null;
 		var f = resultFlow.flow;
 		f.flowPropertyFactors.clear();
 		f.referenceFlowProperty = null;
@@ -49,14 +50,18 @@ class Util {
 		factor.flowProperty = property;
 		f.flowPropertyFactors.add(factor);
 		f.referenceFlowProperty = property;
+
+		resultFlow.flowPropertyFactor = factor;
+		resultFlow.unit = property.getReferenceUnit();
 	}
 
-	static List<Unit> unitsOf(FlowProperty property) {
-		if (property == null || property.unitGroup == null)
+	static List<Unit> allowedUnitsOf(ResultFlow rf) {
+		if (rf == null || rf.flowPropertyFactor == null)
 			return Collections.emptyList();
-		var units = property.unitGroup.units;
-		units.sort(Comparator.comparing(u -> u.name));
-		return units;
+		var prop = rf.flowPropertyFactor.flowProperty;
+		return prop == null || prop.unitGroup == null
+			? Collections.emptyList()
+			: prop.unitGroup.units;
 	}
 
 }
