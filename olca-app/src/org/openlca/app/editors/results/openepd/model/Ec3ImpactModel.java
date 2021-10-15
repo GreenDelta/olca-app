@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -65,7 +66,14 @@ public record Ec3ImpactModel(
 		return model;
 	}
 
-	public Method find(ImpactMethodDescriptor d) {
+	public Method getMethod(String id) {
+		return methods.stream()
+			.filter(m -> Objects.equals(m.id, id))
+			.findAny()
+			.orElse(null);
+	}
+
+	public Method match(ImpactMethodDescriptor d) {
 		if (d == null)
 			return null;
 		var score = 0;

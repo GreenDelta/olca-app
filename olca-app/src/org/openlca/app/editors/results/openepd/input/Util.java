@@ -1,7 +1,6 @@
 package org.openlca.app.editors.results.openepd.input;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.openlca.app.editors.results.openepd.model.Ec3Epd;

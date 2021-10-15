@@ -1,8 +1,6 @@
 package org.openlca.app.editors.results.openepd.input;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -15,22 +13,19 @@ import org.openlca.app.components.EntityCombo;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.results.openepd.model.Ec3CategoryIndex;
 import org.openlca.app.editors.results.openepd.model.Ec3Epd;
+import org.openlca.app.editors.results.openepd.model.Ec3ImpactModel;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.ResultFlow;
-import org.openlca.core.model.ResultModel;
-import org.openlca.util.Strings;
 
 public class ImportDialog extends FormDialog {
 
-	private final IDatabase db;
-	private final Ec3Epd epd;
-	private final List<ResultModel> results = new ArrayList<>();
+	final IDatabase db;
+	final Ec3Epd epd;
+	final Ec3ImpactModel impactModel;
 	private final ResultFlow product;
 
 	public static void show(Ec3Epd epd) {
@@ -50,8 +45,9 @@ public class ImportDialog extends FormDialog {
 
 	private ImportDialog(Ec3Epd epd, IDatabase db) {
 		super(UI.shell());
-		this.epd = epd;
-		this.db = db;
+		this.epd = Objects.requireNonNull(epd);
+		this.db = Objects.requireNonNull(db);
+		this.impactModel = Ec3ImpactModel.get();
 		product = Util.initQuantitativeReference(epd, db);
 	}
 
@@ -71,6 +67,12 @@ public class ImportDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.formBody(mForm.getForm(), tk);
 		createProductSection(body, tk);
+
+		var resultSections = ResultSection.initAllOf(this);
+		for (var section : resultSections) {
+			section.render(body, tk);
+		}
+
 	}
 
 	private void createProductSection(Composite body, FormToolkit tk) {

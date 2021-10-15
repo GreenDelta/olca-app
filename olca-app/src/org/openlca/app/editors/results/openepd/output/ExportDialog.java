@@ -23,9 +23,9 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.editors.results.openepd.model.Credentials;
 import org.openlca.app.editors.results.openepd.model.Ec3Epd;
 import org.openlca.app.editors.results.openepd.model.Ec3ImpactModel;
-import org.openlca.app.editors.results.openepd.model.Credentials;
 import org.openlca.app.editors.results.openepd.model.Ec3ImpactSet;
 import org.openlca.app.editors.results.openepd.model.Ec3Measurement;
 import org.openlca.app.editors.results.openepd.model.Ec3ScopeSet;
@@ -71,7 +71,7 @@ public class ExportDialog extends FormDialog {
 
 		if (result.setup != null && result.setup.impactMethod() != null) {
 			var d = Descriptor.of(result.setup.impactMethod());
-			selectedMethod = impactModel.find(d);
+			selectedMethod = impactModel.match(d);
 			impacts = ImpactItem.createAll(selectedMethod, result);
 		}
 	}
