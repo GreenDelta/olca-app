@@ -99,7 +99,7 @@ public record Ec3ImpactModel(
 		return selected;
 	}
 
-	private static int mapScore(String s, List<String> keywords) {
+	public static int mapScore(String s, List<String> keywords) {
 		if (s == null || keywords.isEmpty()) {
 			return 0;
 		}

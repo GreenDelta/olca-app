@@ -1,18 +1,22 @@
 package org.openlca.app.editors.results.openepd.input;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.EntityCombo;
+import org.openlca.app.editors.results.openepd.model.Ec3ImpactModel;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
@@ -24,6 +28,7 @@ import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.CalculationType;
 import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ResultModel;
 import org.openlca.util.Strings;
@@ -35,6 +40,7 @@ class ResultSection {
 	private final String epdScope;
 	private final ResultModel result;
 	private final List<MappedValue> mappedValues;
+	private TableViewer mappingTable;
 
 	private ResultSection(
 		ImportDialog dialog, String epdMethod, String epdScope) {
@@ -109,26 +115,27 @@ class ResultSection {
 		UI.formLabel(top, tk, epdScope);
 
 		// mapped openLCA method
-		var methodCombo = UI.formCombo(top, tk, "openLCA LCIA Method");
+		var methodCombo = UI.formCombo(top, tk, "Mapped LCIA Method");
 		var methods = new ImpactMethodDao(dialog.db).getAll();
 		if (_method != null) {
 			var selected = _method.matchMethod(methods);
 			if (selected != null) {
 				result.setup.withImpactMethod(selected);
+				map(selected);
 			}
 		}
 		EntityCombo.of(methodCombo, methods)
 			.select(result.setup.impactMethod())
 			.onSelected(method -> {
 				result.setup.withImpactMethod(method);
-				// TODO: update the mapping table
+				map(method);
 			});
 
 		// indicator mappings
-		var mappingTable = Tables.createViewer(comp,
+		mappingTable = Tables.createViewer(comp,
 			/* 0 */ "EPD Indicator",
 			/* 1 */ "Result",
-			/* 2 */ "openLCA Unit",
+			/* 2 */ "Unit",
 			/* 3 */ "openLCA Indicator");
 		Tables.bindColumnWidths(mappingTable, 0.35, 0.15, 0.15, 0.35);
 		mappingTable.setLabelProvider(new MappingLabel());
@@ -159,6 +166,67 @@ class ResultSection {
 		return values;
 	}
 
+	private void map(ImpactMethod method) {
+		var queue = new ArrayDeque<>(method.impactCategories);
+		var model = dialog.impactModel;
+		var bindings = new HashMap<String, MapScore>();
+
+		while (!queue.isEmpty()) {
+
+			// find the best score for the next indicator
+			var next = queue.poll();
+			String bestMatch = null;
+			int bestScore = 0;
+			for (var mapping : mappedValues) {
+
+				// calculate a score
+				var epdId = mapping.epdImpact.id;
+				var epdIndicator = model.getIndicator(epdId);
+				if (epdIndicator == null)
+					continue;
+				var nextScore = Ec3ImpactModel.mapScore(
+					Labels.name(next), epdIndicator.keywords());
+				if (nextScore <= bestScore)
+					continue;
+
+				// check a possible binding
+				var binding = bindings.get(epdId);
+				if (binding != null && binding.score >= nextScore)
+					continue;
+
+				// found a better match
+				bestMatch = epdId;
+				bestScore = nextScore;
+
+			} // for
+
+
+			if (bestMatch == null)
+				continue;
+			// remove a possible binding
+			var binding = bindings.get(bestMatch);
+			if (binding != null) {
+				queue.add(binding.impact);
+			}
+			bindings.put(bestMatch, new MapScore(next, bestScore));
+
+		} // while
+
+		// update the mappings
+		for (var mv : mappedValues) {
+			var binding = bindings.get(mv.epdImpact.id);
+			mv.mappedImpact = binding != null
+				? binding.impact
+				: null;
+		}
+		if (mappingTable != null) {
+			mappingTable.refresh();
+		}
+
+	}
+
+	private record MapScore(ImpactCategory impact, double score) {
+	}
 
 	private static class MappedValue {
 		final EpdIndicator epdImpact;
@@ -191,7 +259,6 @@ class ResultSection {
 		public Image getColumnImage(Object obj, int col) {
 			return switch (col) {
 				case 0 -> Icon.BUILDING.get();
-				case 2 -> Images.get(ModelType.UNIT);
 				case 3 -> Images.get(ModelType.IMPACT_CATEGORY);
 				default -> null;
 			};
