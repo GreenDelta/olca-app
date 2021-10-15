@@ -1,6 +1,7 @@
 package org.openlca.app.editors.results.openepd.input;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.swt.graphics.Point;
@@ -13,12 +14,15 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.results.openepd.model.Ec3CategoryIndex;
 import org.openlca.app.editors.results.openepd.model.Ec3Epd;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ResultFlow;
 import org.openlca.core.model.ResultModel;
+import org.openlca.util.Strings;
 
 public class ImportDialog extends FormDialog {
 
@@ -46,9 +50,7 @@ public class ImportDialog extends FormDialog {
 		super(UI.shell());
 		this.epd = epd;
 		this.db = db;
-		product = new ResultFlow();
-		product.flow = new Flow();
-
+		product = Util.initQuantitativeReference(epd, db);
 	}
 
 	@Override
@@ -66,12 +68,24 @@ public class ImportDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var body = UI.formBody(mForm.getForm(), tk);
+		createProductSection(body, tk);
 	}
 
 	private void createProductSection(Composite body, FormToolkit tk) {
 		var comp = UI.formSection(body, tk, M.Product);
 		var nameText = UI.formText(comp, tk, M.Name);
+		Controls.set(nameText, product.flow.name, name -> product.flow.name = name);
+		var amountText = UI.formText(comp, tk, M.Amount);
+		Controls.set(amountText, product.amount, amount -> product.amount = amount);
 
+		var quantityCombo = UI.formCombo(comp, tk, M.Quantity);
+		var properties = new FlowPropertyDao(db).getAll();
+		properties.sort((p1, p2) -> Strings.compare(p1.name, p2.name));
+		var items = new String[properties.size()];
+		var selectedPropIdx = -1;
+		for (int i = 0; ) {
+			items
+		}
 
 	}
 

@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
  */
 public class Colors {
 
-	private static HashMap<RGBA, Color> createdColors = new HashMap<>();
+	private static final HashMap<RGBA, Color> createdColors = new HashMap<>();
 
-	private static Display display;
+	private static final Display display;
 	static {
 		display = PlatformUI.getWorkbench().getDisplay();
 		display.disposeExec(() -> {
@@ -75,7 +75,7 @@ public class Colors {
 	}
 
 	public static Color errorColor() {
-		RGB rgb = new RGB(255, 180, 180);
+		RGB rgb = new RGB(255, 235, 238);
 		return get(rgb);
 	}
 

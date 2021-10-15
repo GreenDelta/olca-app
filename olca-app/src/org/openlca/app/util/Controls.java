@@ -1,7 +1,9 @@
 package org.openlca.app.util;
 
 import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -30,11 +32,29 @@ public class Controls {
 	public static void set(Text text, String s) {
 		if (text == null)
 			return;
-		if (s == null) {
-			text.setText("");
-		} else {
-			text.setText(s);
-		}
+		text.setText(s == null ? "" : s);
+	}
+
+	public static void set(Text text, String initial, Consumer<String> fn){
+		set(text, initial);
+		if (text == null || fn == null)
+			return;
+		text.addModifyListener($ -> fn.accept(text.getText()));
+	}
+
+	public static void set(Text text, double initial, DoubleConsumer fn) {
+		set(text, Double.toString(initial));
+		if (text == null || fn == null)
+			return;
+		text.addModifyListener($ -> {
+			try {
+				var d = Double.parseDouble(text.getText());
+				fn.accept(d);
+				text.setBackground(Colors.white());
+			} catch (NumberFormatException e) {
+				text.setBackground(Colors.errorColor());
+			}
+		});
 	}
 
 	public static <T extends Control> void onPainted(T widget, Runnable fn) {
