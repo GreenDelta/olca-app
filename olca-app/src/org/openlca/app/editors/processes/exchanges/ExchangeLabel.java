@@ -30,7 +30,7 @@ import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
 class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
-		ITableColorProvider, ITableFontProvider {
+	ITableColorProvider, ITableFontProvider {
 
 	private final ProcessEditor editor;
 
@@ -42,24 +42,20 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 
 	@Override
 	public Image getColumnImage(Object obj, int col) {
-		if (!(obj instanceof Exchange))
+		if (!(obj instanceof Exchange e))
 			return null;
-		Exchange e = (Exchange) obj;
-		if (col == 0)
-			if (e.flow == null)
-				return Images.get(ModelType.FLOW);
-			else
-				return Images.get(e.flow);
-		if (col == 3)
-			return Images.get(ModelType.UNIT);
-		if (col == 7 && e.defaultProviderId != 0)
-			return Images.get(ModelType.PROCESS);
-		if (col == 6)
-			return getAvoidedCheck(e);
-		if (col == 10) {
-			return Images.get(editor.getComments(), CommentPaths.get(e));
-		}
-		return null;
+		return switch (col) {
+			case 0 -> e.flow == null
+				? Images.get(ModelType.FLOW)
+				: Images.get(e.flow);
+			case 3 -> Images.get(ModelType.UNIT);
+			case 6 -> getAvoidedCheck(e);
+			case 7 -> e.defaultProviderId != 0
+				? Images.get(ModelType.PROCESS)
+				: null;
+			case 10 -> Images.get(editor.getComments(), CommentPaths.get(e));
+			default -> null;
+		};
 	}
 
 	private Image getAvoidedCheck(Exchange e) {
@@ -82,44 +78,34 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 
 	@Override
 	public String getColumnText(Object obj, int col) {
-		if (!(obj instanceof Exchange))
+		if (!(obj instanceof Exchange e))
 			return null;
-		Exchange e = (Exchange) obj;
-		switch (col) {
-		case 0:
-			return Labels.name(e.flow);
-		case 1:
-			if (e.flow == null)
-				return null;
-			return CategoryPath.getShort(e.flow.category);
-		case 2:
-			return getAmountText(e);
-		case 3:
-			return Labels.name(e.unit);
-		case 4:
-			return getCostValue(e);
-		case 5:
-			return Uncertainty.string(e.uncertainty);
-		case 7:
-			return getDefaultProvider(e);
-		case 8:
-			// data quality entry
-			if (Strings.nullOrEmpty(e.dqEntry))
-				return null;
-			Process p = editor.getModel();
-			if (p.exchangeDqSystem == null)
-				return null;
-			return p.exchangeDqSystem.applyScoreLabels(e.dqEntry);
-		case 9:
-			return e.location == null ? ""
-					: e.location.code != null
-							? e.location.code
-							: Labels.name(e.location);
-		case 10:
-			return e.description;
-
-		}
-		return null;
+		return switch (col) {
+			case 0 -> Labels.name(e.flow);
+			case 1 -> e.flow == null
+				? null
+				: CategoryPath.getShort(e.flow.category);
+			case 2 -> getAmountText(e);
+			case 3 -> Labels.name(e.unit);
+			case 4 -> getCostValue(e);
+			case 5 -> Uncertainty.string(e.uncertainty);
+			case 7 -> getDefaultProvider(e);
+			case 8 -> {
+				// data quality entry
+				if (Strings.nullOrEmpty(e.dqEntry))
+					yield null;
+				Process p = editor.getModel();
+				yield p.exchangeDqSystem == null
+					? null
+					: p.exchangeDqSystem.applyScoreLabels(e.dqEntry);
+			}
+			case 9 -> e.location == null ? ""
+				: e.location.code != null
+				? e.location.code
+				: Labels.name(e.location);
+			case 10 -> e.description;
+			default -> null;
+		};
 	}
 
 	private String getDefaultProvider(Exchange e) {
@@ -127,7 +113,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			return null;
 		EntityCache cache = Cache.getEntityCache();
 		ProcessDescriptor p = cache.get(ProcessDescriptor.class,
-				e.defaultProviderId);
+			e.defaultProviderId);
 		if (p == null)
 			return null;
 		return Labels.name(p);
@@ -164,7 +150,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			return null;
 		FlowType type = e.flow.flowType;
 		boolean isRevenue = (e.isInput && type == FlowType.WASTE_FLOW)
-				|| (!e.isInput && type == FlowType.PRODUCT_FLOW);
+			|| (!e.isInput && type == FlowType.PRODUCT_FLOW);
 		if ((isRevenue && e.costs >= 0) || (!isRevenue && e.costs < 0))
 			return Colors.systemColor(SWT.COLOR_DARK_GREEN);
 		else
@@ -173,12 +159,11 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 
 	@Override
 	public Font getFont(Object obj, int col) {
-		if (!(obj instanceof Exchange))
+		if (!(obj instanceof Exchange e))
 			return null;
-		Exchange e = (Exchange) obj;
-		Exchange qRef = editor.getModel().quantitativeReference;
-		if (Objects.equals(e, qRef))
-			return UI.boldFont();
-		return null;
+		var qRef = editor.getModel().quantitativeReference;
+		return Objects.equals(e, qRef)
+			? UI.boldFont()
+			: null;
 	}
 }

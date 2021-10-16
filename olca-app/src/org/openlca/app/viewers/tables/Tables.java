@@ -25,7 +25,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
@@ -58,7 +57,7 @@ public class Tables {
 	 */
 	public static TableViewer createViewer(Composite parent, String[] properties,
 			IBaseLabelProvider labelProvider) {
-		TableViewer viewer = new TableViewer(parent,
+		var viewer = new TableViewer(parent,
 				SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		viewer.setContentProvider(new ArrayContentProvider());
 		boolean hasColumns = properties != null && properties.length > 0;
@@ -71,7 +70,7 @@ public class Tables {
 		if (labelProvider != null) {
 			viewer.setLabelProvider(labelProvider);
 		}
-		GridData data = UI.gridData(table, true, true);
+		var data = UI.gridData(table, true, true);
 		data.minimumHeight = 120;
 		// workaround for this bug:
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997

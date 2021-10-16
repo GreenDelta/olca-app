@@ -37,7 +37,6 @@ public class ImportDialog extends FormDialog {
 	final IDatabase db;
 	final Ec3Epd epd;
 	final Ec3ImpactModel impactModel;
-	private final Ec3CategoryIndex categories;
 	private final ResultFlow product;
 	private String categoryPath;
 	private final List<ResultSection> sections = new ArrayList<>();
@@ -62,7 +61,6 @@ public class ImportDialog extends FormDialog {
 		this.epd = Objects.requireNonNull(epd);
 		this.db = Objects.requireNonNull(db);
 		this.impactModel = Ec3ImpactModel.get();
-		this.categories = Objects.requireNonNull(categories);
 		this.categoryPath = categories.pathOf(epd.category);
 		product = Util.initQuantitativeReference(epd, db);
 	}
@@ -149,13 +147,13 @@ public class ImportDialog extends FormDialog {
 		try {
 			var resultCategory = syncCategory(ModelType.RESULT);
 			for (var result : results) {
-				var qref = product.copy();
-				qref.flow = productFlow;
+				var refFlow = product.copy();
+				refFlow.flow = productFlow;
 				// unit and amount are correctly set but need to sync
 				// the flow property factor
-				qref.flowPropertyFactor = productFlow.getReferenceFactor();
-				// TODO set it as quantitative reference of the result
-				result.inventory.add(qref);
+				refFlow.flowPropertyFactor = productFlow.getReferenceFactor();
+				result.referenceFlow = refFlow;
+				result.inventory.add(refFlow);
 				result.category = resultCategory;
 				result.lastChange = System.currentTimeMillis();
 				db.insert(result);

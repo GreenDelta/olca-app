@@ -142,9 +142,8 @@ class ExchangeTable {
 				() -> editor.getModel().parameters);
 		ms.bind(AMOUNT, amountEditor);
 		amountEditor.onEdited((obj, amount) -> {
-			if (!(obj instanceof Exchange))
+			if (!(obj instanceof Exchange e))
 				return;
-			Exchange e = (Exchange) obj;
 			try {
 				double value = Double.parseDouble(amount);
 				e.formula = null;
@@ -170,7 +169,7 @@ class ExchangeTable {
 				return;
 			editor.getModel().quantitativeReference = e;
 			page.refreshTables();
-			editor.setDirty(true);
+			editor.setDirty();
 		});
 		Action formulaSwitch = new FormulaSwitchAction();
 		Action copy = TableClipboard.onCopySelected(viewer, this::toClipboard);
@@ -288,9 +287,8 @@ class ExchangeTable {
 		if (item == null)
 			return "";
 		Object data = item.getData();
-		if (!(data instanceof Exchange))
+		if (!(data instanceof Exchange e))
 			return TableClipboard.text(item, col);
-		Exchange e = (Exchange) data;
 		switch (col) {
 		case 1:
 			if (e.flow != null && e.flow.category != null)
@@ -335,9 +333,8 @@ class ExchangeTable {
 	private class Filter extends ViewerFilter {
 		@Override
 		public boolean select(Viewer viewer, Object parent, Object obj) {
-			if (!(obj instanceof Exchange))
+			if (!(obj instanceof Exchange e))
 				return false;
-			Exchange e = (Exchange) obj;
 			if (e.isAvoided)
 				return e.isInput != forInputs;
 			else

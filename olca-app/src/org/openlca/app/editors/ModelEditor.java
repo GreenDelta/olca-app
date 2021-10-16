@@ -205,6 +205,9 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 		return (ModelEditorInput) super.getEditorInput();
 	}
 
+	/**
+	 * A shortcut for {@code setDirty(true)}.
+	 */
 	public void setDirty() {
 		setDirty(true);
 	}

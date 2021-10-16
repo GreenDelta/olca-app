@@ -36,7 +36,7 @@ record ImpactSection(ResultEditor editor) {
 
 	void render(Composite parent, FormToolkit tk) {
 		var section = UI.section(parent, tk, M.ImpactAssessmentResults);
-		UI.gridData(section, true, true);
+		UI.gridData(section, true, false);
 		var comp = UI.sectionClient(section, tk, 1);
 		var table = Tables.createViewer(
 			comp, M.ImpactCategory, M.Amount, M.Unit);
