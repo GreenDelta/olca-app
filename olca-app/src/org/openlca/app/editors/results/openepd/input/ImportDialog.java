@@ -17,6 +17,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.results.openepd.model.Ec3CategoryIndex;
 import org.openlca.app.editors.results.openepd.model.Ec3Epd;
 import org.openlca.app.editors.results.openepd.model.Ec3ImpactModel;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -28,6 +29,7 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ResultFlow;
+import org.openlca.core.model.ResultModel;
 import org.openlca.util.Strings;
 
 public class ImportDialog extends FormDialog {
@@ -125,10 +127,44 @@ public class ImportDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
+
+		// check and prepare the results
+		var results = new ArrayList<ResultModel>();
+		for (var section : sections) {
+			var result = section.createResult();
+			if (Strings.nullOrEmpty(result.name)) {
+				MsgBox.error("Invalid result",
+					"Result has an empty name.");
+				return;
+			}
+			results.add(result);
+		}
+
+		// create the reference product
 		var productFlow = createProduct();
 		if (productFlow == null)
 			return;
 
+		// save the results
+		try {
+			var resultCategory = syncCategory(ModelType.RESULT);
+			for (var result : results) {
+				var qref = product.copy();
+				qref.flow = productFlow;
+				// unit and amount are correctly set but need to sync
+				// the flow property factor
+				qref.flowPropertyFactor = productFlow.getReferenceFactor();
+				// TODO set it as quantitative reference of the result
+				result.inventory.add(qref);
+				result.category = resultCategory;
+				result.lastChange = System.currentTimeMillis();
+				db.insert(result);
+			}
+		} catch (Exception e) {
+			ErrorReporter.on("failed to save results", e);
+		}
+
+		Navigator.refresh();
 		super.okPressed();
 	}
 

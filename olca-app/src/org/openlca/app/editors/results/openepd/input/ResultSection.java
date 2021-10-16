@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -30,7 +31,9 @@ import org.openlca.core.model.CalculationType;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.ResultImpact;
 import org.openlca.core.model.ResultModel;
+import org.openlca.core.model.ResultOrigin;
 import org.openlca.util.Strings;
 
 class ResultSection {
@@ -87,6 +90,21 @@ class ResultSection {
 		});
 
 		return sections;
+	}
+
+	ResultModel createResult() {
+		var r = result.copy();
+		r.refId = UUID.randomUUID().toString();
+		for (var mapping : mappedValues) {
+			if (mapping.mappedImpact == null)
+				continue;
+			var impact = new ResultImpact();
+			impact.amount = mapping.value;
+			impact.origin = ResultOrigin.IMPORTED;
+			impact.indicator = mapping.mappedImpact;
+			r.impacts.add(impact);
+		}
+		return r;
 	}
 
 	void render(Composite body, FormToolkit tk) {
