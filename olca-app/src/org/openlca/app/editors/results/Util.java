@@ -1,7 +1,9 @@
 package org.openlca.app.editors.results;
 
 import org.openlca.app.db.Database;
+import org.openlca.core.model.Flow;
 import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ResultFlow;
 import org.openlca.core.model.ResultImpact;
 import org.openlca.core.model.ResultModel;
 import org.openlca.core.model.ResultOrigin;
@@ -32,10 +34,9 @@ class Util {
 			return true;
 		for (var i : method.impactCategories) {
 			if (i.id == impact.id)
-				return false;
+				return true;
 		}
-
-		return true;
+		return false;
 	}
 
 	static boolean addImpact(ResultModel result, CategorizedDescriptor d) {
@@ -50,6 +51,23 @@ class Util {
 		ri.amount = 1.0;
 		ri.origin = ResultOrigin.ENTERED;
 		return result.impacts.add(ri);
+	}
+
+	static boolean addFlow(ResultModel r, CategorizedDescriptor d, boolean input) {
+		var db = Database.get();
+		if (db == null || r == null || d == null)
+			return false;
+		var flow = db.get(Flow.class, d.id);
+		if (flow == null)
+			return false;
+		var rf = new ResultFlow();
+		rf.flow = flow;
+		rf.flowPropertyFactor = flow.getReferenceFactor();
+		rf.unit = flow.getReferenceUnit();
+		rf.isInput = input;
+		rf.amount = 1.0;
+		rf.origin = ResultOrigin.ENTERED;
+		return r.inventory.add(rf);
 	}
 
 }

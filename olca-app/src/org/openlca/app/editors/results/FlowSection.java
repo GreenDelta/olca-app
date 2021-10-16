@@ -12,7 +12,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.components.ModelSelector;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
@@ -20,21 +22,15 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ResultFlow;
+import org.openlca.core.model.ResultModel;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
 
-class FlowSection {
-
-	private final ResultEditor editor;
-	private final boolean forInputs;
-
-	private FlowSection(ResultEditor editor, boolean forInputs) {
-		this.editor = editor;
-		this.forInputs = forInputs;
-	}
+record FlowSection(ResultEditor editor, boolean forInputs) {
 
 	static FlowSection forInputs(ResultEditor editor) {
 		return new FlowSection(editor, true);
@@ -42,6 +38,10 @@ class FlowSection {
 
 	static FlowSection forOutputs(ResultEditor editor) {
 		return new FlowSection(editor, false);
+	}
+
+	private ResultModel result() {
+		return editor.getModel();
 	}
 
 	void render(Composite parent, FormToolkit tk) {
@@ -64,6 +64,38 @@ class FlowSection {
 	}
 
 	private void bindActions(Section section, TableViewer table) {
+
+		var onAdd = Actions.onAdd(
+			() -> new ModelSelector(ModelType.FLOW)
+				.onOk(ModelSelector::first)
+				.ifPresent(d -> {
+					if (Util.addFlow(result(), d, forInputs)) {
+						table.setInput(result().inventory);
+						editor.setDirty();
+					}
+				}));
+
+		var onRemove = Actions.onRemove(() -> {
+			ResultFlow flow = Viewers.getFirstSelected(table);
+			if (flow == null)
+				return;
+			var flows = result().inventory;
+			flows.remove(flow);
+			if (Objects.equals(result().referenceFlow, flow)) {
+				result().referenceFlow = null;
+			}
+			table.setInput(flows);
+			editor.setDirty();
+		});
+
+		var onOpen = Actions.onOpen(() -> {
+			ResultFlow flow = Viewers.getFirstSelected(table);
+			if (flow != null) {
+				App.open(flow.flow);
+			}
+		});
+		Tables.onDoubleClick(table, $ -> onOpen.run());
+
 		var refFlowAction = Actions.create(M.SetAsQuantitativeReference, () -> {
 			ResultFlow flow = Viewers.getFirstSelected(table);
 			if (!isProviderFlow(flow))
@@ -86,7 +118,9 @@ class FlowSection {
 			refFlowAction.setEnabled(isProviderFlow(flow));
 		});
 
-		Actions.bind(table, refFlowAction);
+		Actions.bind(section, onAdd, onRemove);
+		Actions.bind(table, onAdd, onRemove, onOpen,
+			TableClipboard.onCopySelected(table), refFlowAction);
 
 	}
 

@@ -9,12 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import org.openlca.app.M;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ResultImpact;
 import org.openlca.core.model.ResultModel;
@@ -23,10 +18,11 @@ import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
 import org.openlca.util.Strings;
 
-public record Ec3ImpactModel(
-	List<Method> methods,
-	List<Indicator> indicators
-) {
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+public record Ec3ImpactModel(List<Method> methods, List<Indicator> indicators) {
 
 	private static Ec3ImpactModel empty() {
 		return new Ec3ImpactModel(
