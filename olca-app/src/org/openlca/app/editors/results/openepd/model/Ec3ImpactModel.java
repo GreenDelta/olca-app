@@ -175,7 +175,7 @@ public record Ec3ImpactModel(List<Method> methods, List<Indicator> indicators) {
 					var nextScore = mapScore(
 						impact.indicator.name, indicator.keywords());
 
-					if (selected == null || nextScore > score) {
+					if (nextScore > score) {
 
 						// checked if the indicator is already mapped
 						var mapped = scores.get(indicator.id());

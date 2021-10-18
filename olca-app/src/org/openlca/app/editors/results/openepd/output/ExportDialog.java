@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import com.google.gson.GsonBuilder;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -39,15 +41,14 @@ import org.openlca.core.model.ResultModel;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
-import com.google.gson.GsonBuilder;
-
 public class ExportDialog extends FormDialog {
 
 	private final Ec3Epd epd;
 	private final Credentials credentials;
-	private String selectedScope = "A1A2A3";
+	final Ec3ImpactModel impactModel;
 
-	private final Ec3ImpactModel impactModel;
+	private final List<ResultSection> sections = new ArrayList<>();
+	private String selectedScope = "A1A2A3";
 	private Ec3ImpactModel.Method selectedMethod;
 	private List<ImpactItem> impacts;
 
@@ -69,6 +70,7 @@ public class ExportDialog extends FormDialog {
 
 		impactModel = Ec3ImpactModel.get();
 
+		sections.add(ResultSection.of(this, result));
 		if (result.setup != null && result.setup.impactMethod() != null) {
 			var d = Descriptor.of(result.setup.impactMethod());
 			selectedMethod = impactModel.match(d);
@@ -83,7 +85,7 @@ public class ExportDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Upload OpenEPD to EC3");
+		newShell.setText("Upload as OpenEPD to EC3");
 	}
 
 	@Override
@@ -98,6 +100,10 @@ public class ExportDialog extends FormDialog {
 		credentialsSection(body, tk);
 		metaSection(body, tk);
 		createImpactSection(body, tk);
+
+		for (var section : sections) {
+			section.render(body, tk);
+		}
 	}
 
 	private void credentialsSection(Composite body, FormToolkit tk) {
@@ -209,6 +215,37 @@ public class ExportDialog extends FormDialog {
 	}
 
 	@Override
+	protected void createButtonsForButtonBar(Composite parent) {
+		createButton(parent,  IDialogConstants.OK_ID, "Upload to EC3", false);
+		createButton(parent,  1024, "Save as file", false);
+		createButton(parent, IDialogConstants.CANCEL_ID,
+			IDialogConstants.CANCEL_LABEL, true);
+	}
+
+	@Override
+	protected void buttonPressed(int buttonId) {
+		if (buttonId != 1024) {
+			super.buttonPressed(buttonId);
+			return;
+		}
+		var file = FileChooser.forSavingFile(
+			"Save as OpenEPD document",
+			URLEncoder.encode(Strings.orEmpty(epd.name), StandardCharsets.UTF_8)
+				+ ".json");
+		if (file == null)
+			return;
+		var json = new GsonBuilder().setPrettyPrinting()
+			.create()
+			.toJson(epd.toJson());
+		try {
+			Files.writeString(file.toPath(), json);
+			close();
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to upload EPD", e);
+		}
+	}
+
+	@Override
 	protected void okPressed() {
 
 		/*
@@ -260,10 +297,10 @@ public class ExportDialog extends FormDialog {
 		ResultImpact impact) {
 
 		static List<ImpactItem> createAll(
-				Ec3ImpactModel.Method selectedMethod, ResultModel result) {
+			Ec3ImpactModel.Method selectedMethod, ResultModel result) {
 			if (selectedMethod == null
-					|| result.setup == null
-					|| result.setup.impactMethod() == null)
+				|| result.setup == null
+				|| result.setup.impactMethod() == null)
 				return Collections.emptyList();
 
 			var map = selectedMethod.matchIndicators(result);
@@ -277,7 +314,7 @@ public class ExportDialog extends FormDialog {
 			}
 
 			items.sort((item1, item2) -> Strings.compare(
-					item1.indicator.id(), item2.indicator.id()));
+				item1.indicator.id(), item2.indicator.id()));
 			return items;
 		}
 	}
