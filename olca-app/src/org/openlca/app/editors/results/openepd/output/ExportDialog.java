@@ -1,21 +1,12 @@
 package org.openlca.app.editors.results.openepd.output;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
-import com.google.gson.GsonBuilder;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -28,18 +19,16 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.results.openepd.model.Credentials;
 import org.openlca.app.editors.results.openepd.model.Ec3Epd;
 import org.openlca.app.editors.results.openepd.model.Ec3ImpactModel;
-import org.openlca.app.editors.results.openepd.model.Ec3ImpactSet;
-import org.openlca.app.editors.results.openepd.model.Ec3Measurement;
-import org.openlca.app.editors.results.openepd.model.Ec3ScopeSet;
-import org.openlca.app.util.Controls;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.Numbers;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.model.ResultImpact;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ResultModel;
-import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
+
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 
 public class ExportDialog extends FormDialog {
 
@@ -48,9 +37,6 @@ public class ExportDialog extends FormDialog {
 	final Ec3ImpactModel impactModel;
 
 	private final List<ResultSection> sections = new ArrayList<>();
-	private String selectedScope = "A1A2A3";
-	private Ec3ImpactModel.Method selectedMethod;
-	private List<ImpactItem> impacts;
 
 	private ExportDialog(ResultModel result) {
 		super(UI.shell());
@@ -69,13 +55,7 @@ public class ExportDialog extends FormDialog {
 		epd.isDraft = true;
 
 		impactModel = Ec3ImpactModel.get();
-
 		sections.add(ResultSection.of(this, result));
-		if (result.setup != null && result.setup.impactMethod() != null) {
-			var d = Descriptor.of(result.setup.impactMethod());
-			selectedMethod = impactModel.match(d);
-			impacts = ImpactItem.createAll(selectedMethod, result);
-		}
 	}
 
 	public static int show(ResultModel result) {
@@ -99,8 +79,6 @@ public class ExportDialog extends FormDialog {
 		var body = UI.formBody(mForm.getForm(), tk);
 		credentialsSection(body, tk);
 		metaSection(body, tk);
-		createImpactSection(body, tk);
-
 		for (var section : sections) {
 			section.render(body, tk);
 		}
@@ -148,18 +126,11 @@ public class ExportDialog extends FormDialog {
 			epd.name, s -> epd.name = s);
 		text(UI.formMultiText(comp, tk, "Description"),
 			epd.description, s -> epd.description = s);
+		UI.filler(comp, tk);
 
-		var combo = UI.formCombo(comp, tk, "Scope");
-		var items = new String[]{
-			"A1A2A3", "A1", "A2", "A3", "A4", "A5",
-			"B1", "B2", "B3", "B4", "B5", "B6", "B7",
-			"C1", "C2", "C3", "C4"};
-		combo.setItems(items);
-		combo.select(0);
-		Controls.onSelect(combo, $ -> {
-			var idx = combo.getSelectionIndex();
-			selectedScope = combo.getItem(idx);
-		});
+		var button = tk.createButton(comp, "Add result", SWT.PUSH);
+		button.setImage(Images.get(ModelType.RESULT));
+
 	}
 
 	private void text(Text text, String initial, Consumer<String> onChange) {
@@ -169,55 +140,10 @@ public class ExportDialog extends FormDialog {
 		text.addModifyListener($ -> onChange.accept(text.getText()));
 	}
 
-	private void createImpactSection(Composite body, FormToolkit tk) {
-		var section = UI.section(body, tk, M.ImpactAssessmentResults);
-		var comp = UI.sectionClient(section, tk, 1);
-
-		var comboComp = tk.createComposite(comp);
-		UI.gridLayout(comboComp, 2, 10, 0);
-		var combo = UI.formCombo(comboComp, tk,
-			"EC3 " + M.ImpactAssessmentMethod);
-		UI.gridData(combo, false, false).widthHint = 250;
-
-		var methods = impactModel.methods();
-		var methodItems = new String[methods.size()];
-		var selectedIdx = -1;
-		for (int i = 0; i < methods.size(); i++) {
-			var method = methods.get(i);
-			methodItems[i] = method.id();
-			if (Objects.equals(method, selectedMethod)) {
-				selectedIdx = i;
-			}
-		}
-
-		combo.setItems(methodItems);
-		if (selectedIdx >= 0) {
-			combo.select(selectedIdx);
-		}
-		Controls.onSelect(combo, $ -> {
-			var idx = combo.getSelectionIndex();
-			if (idx > 0 && idx < methods.size()) {
-				selectedMethod = methods.get(idx);
-			}
-		});
-
-		TableViewer table = Tables.createViewer(comp,
-			"EC3 Indicator",
-			"EC3 Unit",
-			"Result amount",
-			"Result indicator",
-			"Result unit");
-		table.setLabelProvider(new TableLabel());
-		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
-		if (impacts != null) {
-			table.setInput(impacts);
-		}
-	}
-
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent,  IDialogConstants.OK_ID, "Upload to EC3", false);
-		createButton(parent,  1024, "Save as file", false);
+		createButton(parent, IDialogConstants.OK_ID, "Upload to EC3", false);
+		createButton(parent, 1024, "Save as file", false);
 		createButton(parent, IDialogConstants.CANCEL_ID,
 			IDialogConstants.CANCEL_LABEL, true);
 	}
@@ -230,10 +156,10 @@ public class ExportDialog extends FormDialog {
 		}
 		var file = FileChooser.forSavingFile(
 			"Save as OpenEPD document",
-			URLEncoder.encode(Strings.orEmpty(epd.name), StandardCharsets.UTF_8)
-				+ ".json");
+			epd.name + ".json");
 		if (file == null)
 			return;
+		addResults();
 		var json = new GsonBuilder().setPrettyPrinting()
 			.create()
 			.toJson(epd.toJson());
@@ -248,106 +174,35 @@ public class ExportDialog extends FormDialog {
 	@Override
 	protected void okPressed() {
 
-		/*
-		 var client = credentials.login().orElse(null);
-		 if (client == null) {
-		 MsgBox.error(
-		 "Failed to login to EC3",
-		 "Could not login to EC3 with the provided credentials.");
-		 return;
-		 }
-		 */
-
-		var file = FileChooser.forSavingFile(
-			"Save as OpenEPD document",
-			URLEncoder.encode(Strings.orEmpty(epd.name), StandardCharsets.UTF_8)
-				+ ".json");
-		if (file == null)
+		var client = credentials.login().orElse(null);
+		if (client == null) {
+			MsgBox.error(
+				"Failed to login to EC3",
+				"Could not login to EC3 with the provided credentials.");
 			return;
+		}
+
 		try {
-
-			// add impacts
-			if (impacts != null && selectedMethod != null) {
-				var impactSet = new Ec3ImpactSet();
-				for (var i : impacts) {
-					var indicator = i.indicator;
-					var impact = i.impact;
-					var amount = Ec3Measurement.of(impact.amount, indicator.unit());
-					var scopeSet = new Ec3ScopeSet();
-					scopeSet.put(selectedScope, amount);
-					impactSet.put(indicator.id(), scopeSet);
-				}
-				if (!impactSet.isEmpty()) {
-					epd.putImpactSet(selectedMethod.id(), impactSet);
-				}
-			}
-
-			var json = new GsonBuilder().setPrettyPrinting()
+			addResults();
+			var response = client.post("epds", epd.toJson(), JsonElement.class);
+			var respStr = new GsonBuilder().setPrettyPrinting()
 				.create()
-				.toJson(epd.toJson());
-			Files.writeString(file.toPath(), json);
+				.toJson(response);
+			System.out.println(respStr);
 			super.okPressed();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to upload EPD", e);
 		}
 	}
 
-	private record ImpactItem(
-		Ec3ImpactModel.Indicator indicator,
-		ResultImpact impact) {
-
-		static List<ImpactItem> createAll(
-			Ec3ImpactModel.Method selectedMethod, ResultModel result) {
-			if (selectedMethod == null
-				|| result.setup == null
-				|| result.setup.impactMethod() == null)
-				return Collections.emptyList();
-
-			var map = selectedMethod.matchIndicators(result);
-			var items = new ArrayList<ImpactItem>();
-			for (var indicator : selectedMethod.indicators()) {
-				var impact = map.get(indicator.id());
-				if (impact == null) {
-					impact = new ResultImpact();
-				}
-				items.add(new ImpactItem(indicator, impact));
-			}
-
-			items.sort((item1, item2) -> Strings.compare(
-				item1.indicator.id(), item2.indicator.id()));
-			return items;
-		}
-	}
-
-	private static class TableLabel extends LabelProvider
-		implements ITableLabelProvider {
-
-		@Override
-		public Image getColumnImage(Object obj, int col) {
-			return null;
-		}
-
-		@Override
-		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ImpactItem item))
-				return null;
-			var indicator = item.indicator;
-			var impact = item.impact;
-			if (indicator == null || impact == null)
-				return null;
-
-			return switch (col) {
-				case 0 -> indicator.id();
-				case 1 -> indicator.unit();
-				case 2 -> Numbers.format(impact.amount);
-				case 3 -> impact.indicator != null
-					? impact.indicator.name
-					: "---";
-				case 4 -> impact.indicator != null
-					? impact.indicator.referenceUnit
-					: "---";
-				default -> null;
-			};
+	private void addResults() {
+		epd.clearImpacts();
+		// TODO: merge the impact sets
+		for (var section : sections) {
+			var pair = section.createImpacts();
+			if (pair == null)
+				continue;
+			epd.putImpactSet(pair.first, pair.second);
 		}
 	}
 }

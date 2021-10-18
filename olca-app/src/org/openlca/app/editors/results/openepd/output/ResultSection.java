@@ -14,6 +14,9 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.EntityCombo;
 import org.openlca.app.editors.results.openepd.model.Ec3ImpactModel;
+import org.openlca.app.editors.results.openepd.model.Ec3ImpactSet;
+import org.openlca.app.editors.results.openepd.model.Ec3Measurement;
+import org.openlca.app.editors.results.openepd.model.Ec3ScopeSet;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
@@ -23,6 +26,7 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ResultModel;
+import org.openlca.util.Pair;
 import org.openlca.util.Strings;
 
 class ResultSection {
@@ -33,6 +37,7 @@ class ResultSection {
 	private String selectedScope = "A1A2A3";
 	private Ec3ImpactModel.Method selectedMethod;
 	private Section section;
+	private final List<MappedValue> mappedValues = new ArrayList<>();
 
 	private ResultSection(ExportDialog dialog, ResultModel result) {
 		this.dialog = dialog;
@@ -52,10 +57,28 @@ class ResultSection {
 				}
 			}
 		}
+
+		if (selectedMethod != null) {
+			mappedValues.addAll(MappedValue.initAll(selectedMethod, result));
+		}
 	}
 
 	static ResultSection of(ExportDialog dialog, ResultModel result) {
 		return new ResultSection(dialog, result);
+	}
+
+	Pair<String, Ec3ImpactSet> createImpacts() {
+		if (selectedMethod == null)
+			return null;
+		var impactSet = new Ec3ImpactSet();
+		for (var val : mappedValues) {
+			var epdIndicator = val.epdIndicator;
+			var scopeSet = new Ec3ScopeSet();
+			scopeSet.put(selectedScope, Ec3Measurement.of(
+				val.amount, epdIndicator.unit()));
+			impactSet.put(epdIndicator.id(), scopeSet);
+		}
+		return Pair.of(selectedMethod.id(), impactSet);
 	}
 
 	void render(Composite body, FormToolkit tk) {
@@ -64,6 +87,7 @@ class ResultSection {
 		var comp = UI.sectionClient(section, tk, 1);
 
 		var top = tk.createComposite(comp);
+		UI.gridData(top, true, false);
 		UI.gridLayout(top, 2, 10, 0);
 
 		var methodCombo = new EntityCombo<>(
@@ -92,12 +116,14 @@ class ResultSection {
 			"Result Unit");
 		table.setLabelProvider(new TableLabel());
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
-		table.setInput(MappedValue.initAll(selectedMethod, result));
+		table.setInput(mappedValues);
 
 		methodCombo.onSelected(method -> {
 			selectedMethod = method;
 			updateSectionTitle();
-			table.setInput(MappedValue.initAll(method, result));
+			mappedValues.clear();
+			mappedValues.addAll(MappedValue.initAll(method, result));
+			table.setInput(mappedValues);
 		});
 	}
 
@@ -105,7 +131,7 @@ class ResultSection {
 		if (section == null)
 			return;
 		var title = selectedMethod != null
-			? selectedScope + " - " + selectedMethod
+			? selectedScope + " - " + selectedMethod.name()
 			: selectedScope;
 		section.setText(title);
 	}

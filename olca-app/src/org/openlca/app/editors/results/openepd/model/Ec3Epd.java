@@ -142,4 +142,7 @@ public class Ec3Epd {
 		}
 	}
 
+	public void clearImpacts() {
+		impacts.clear();
+	}
 }
