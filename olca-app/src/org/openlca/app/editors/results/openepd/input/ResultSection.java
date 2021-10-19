@@ -50,8 +50,8 @@ class ResultSection {
 		this.dialog = dialog;
 		this.epdMethod = epdMethod;
 		this.epdScope = epdScope;
-		this.result = new ResultModel();
-		this.result.name = dialog.epd.name + " - " + epdScope + " - " + epdMethod;
+		this.result = ResultModel.of(
+			dialog.epd.name + " - " + epdScope + " - " + epdMethod);
 		this.result.setup = new CalculationSetup()
 			.withType(CalculationType.SIMPLE_CALCULATION);
 		mappedValues = initMappings();

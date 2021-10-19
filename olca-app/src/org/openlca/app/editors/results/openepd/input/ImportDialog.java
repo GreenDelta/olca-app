@@ -137,6 +137,11 @@ public class ImportDialog extends FormDialog {
 			}
 			results.add(result);
 		}
+		if (results.isEmpty()) {
+			// create a default result in no LCIA results could
+			// be found in the EPD
+			results.add(ResultModel.of(epd.name));
+		}
 
 		// create the reference product
 		var productFlow = createProduct();

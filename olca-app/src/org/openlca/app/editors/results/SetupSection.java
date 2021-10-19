@@ -128,7 +128,7 @@ class SetupSection {
 		var calcBtn = tk.createButton(btnComp, "Recalculate", SWT.PUSH);
 		calcBtn.setImage(Icon.RUN.get());
 		calcBtn.setEnabled(false);
-		var expBtn = tk.createButton(btnComp, "Export to EC3", SWT.PUSH);
+		var expBtn = tk.createButton(btnComp, "Export as EPD", SWT.PUSH);
 		expBtn.setImage(Icon.BUILDING.get());
 		Controls.onSelect(expBtn, $ -> ExportDialog.show(editor.getModel()));
 	}

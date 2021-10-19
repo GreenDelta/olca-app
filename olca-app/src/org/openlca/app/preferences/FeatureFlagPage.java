@@ -11,7 +11,7 @@ public class FeatureFlagPage extends FieldEditorPreferencePage implements
 	public FeatureFlagPage() {
 		super(FieldEditorPreferencePage.GRID);
 		setDescription("Warning: Experimental features are less tested"
-				+ " and may be removed in future versions of openLCA.");
+				+ " and may are removed in future versions of openLCA.");
 	}
 
 	@Override
