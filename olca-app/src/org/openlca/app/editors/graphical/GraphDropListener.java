@@ -46,7 +46,8 @@ class GraphDropListener extends DropTargetAdapter {
 				.filter(d -> d instanceof CategorizedDescriptor
 						&& !system.processes.contains(d.id)
 						&& (d.type == ModelType.PROCESS
-						|| d.type == ModelType.PRODUCT_SYSTEM))
+						|| d.type == ModelType.PRODUCT_SYSTEM
+						|| d.type == ModelType.RESULT))
 				.map(d -> (CategorizedDescriptor) d)
 				.map(d -> {
 					system.processes.add(d.id);

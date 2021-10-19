@@ -7,9 +7,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.ResultModel;
 import org.openlca.util.Strings;
 
 public class IONode extends Node {
@@ -37,28 +37,41 @@ public class IONode extends Node {
 	}
 
 	private void addExchanges(ProcessNode node) {
-		if (node == null || node.process == null)
+		if (node == null || node.process == null || node.process.type == null)
 			return;
-
-		// load the exchanges
 		var model = node.process;
-		List<Exchange> exchanges = null;
-		if (model.type == ModelType.PROCESS) {
-			var process = Database.get()
-				.get(Process.class, model.id);
-			exchanges = process == null
-				? Collections.emptyList()
-				: process.exchanges;
-		}
-		if (model.type == ModelType.PRODUCT_SYSTEM) {
-			var sys = Database.get()
-				.get(ProductSystem.class, model.id);
-			exchanges = sys == null || sys.referenceExchange == null
-				? Collections.emptyList()
-				: Collections.singletonList(sys.referenceExchange);
-		}
 
-		if (exchanges == null || exchanges.isEmpty())
+		List<Exchange> exchanges = switch (model.type) {
+			case PROCESS -> {
+				var process = Database.get().get(Process.class, model.id);
+				yield process == null
+					? Collections.emptyList()
+					: process.exchanges;
+			}
+			case PRODUCT_SYSTEM -> {
+				var system = Database.get().get(ProductSystem.class, model.id);
+				yield system == null || system.referenceExchange == null
+					? Collections.emptyList()
+					: Collections.singletonList(system.referenceExchange);
+			}
+			case RESULT -> {
+				var result = Database.get().get(ResultModel.class, model.id);
+				var refFlow = result.referenceFlow;
+				if (refFlow == null)
+					yield Collections.emptyList();
+				var e = new Exchange();
+				e.isInput = refFlow.isInput;
+				e.flow = refFlow.flow;
+				e.amount = refFlow.amount;
+				e.flowPropertyFactor = refFlow.flowPropertyFactor;
+				e.unit = refFlow.unit;
+				e.location = refFlow.location;
+				yield Collections.singletonList(e);
+			}
+			default -> Collections.emptyList();
+		};
+
+		if (exchanges.isEmpty())
 			return;
 
 		// filter and sort the exchanges
@@ -67,7 +80,7 @@ public class IONode extends Node {
 				if (e.flow == null)
 					return false;
 				return isWithElementaryFlows
-							 || e.flow.flowType != FlowType.ELEMENTARY_FLOW;
+					|| e.flow.flowType != FlowType.ELEMENTARY_FLOW;
 			})
 			.sorted((e1, e2) -> {
 				int t1 = typeOrderOf(e1);
@@ -83,8 +96,8 @@ public class IONode extends Node {
 
 	private int typeOrderOf(Exchange e) {
 		if (e == null
-				|| e.flow == null
-				|| e.flow.flowType == null)
+			|| e.flow == null
+			|| e.flow.flowType == null)
 			return -1;
 		return switch (e.flow.flowType) {
 			case PRODUCT_FLOW -> 0;

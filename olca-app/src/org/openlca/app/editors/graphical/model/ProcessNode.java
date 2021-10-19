@@ -19,6 +19,7 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 
 import com.google.common.base.Objects;
+import org.openlca.core.model.descriptors.ResultDescriptor;
 
 public class ProcessNode extends Node {
 
@@ -43,6 +44,9 @@ public class ProcessNode extends Node {
 		CategorizedDescriptor d = cache.get(ProcessDescriptor.class, id);
 		if (d == null) {
 			d = cache.get(ProductSystemDescriptor.class, id);
+		}
+		if (d == null) {
+			d = cache.get(ResultDescriptor.class, id);
 		}
 		return d != null
 				? new ProcessNode(editor, d)
