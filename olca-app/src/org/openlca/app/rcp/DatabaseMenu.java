@@ -7,7 +7,8 @@ import org.eclipse.jface.action.MenuManager;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.LinkingPropertiesPage;
-import org.openlca.app.db.tables.DbFlowTable;
+import org.openlca.app.db.tables.FlowPropertyTable;
+import org.openlca.app.db.tables.FlowTable;
 import org.openlca.app.navigation.actions.db.DbCloseAction;
 import org.openlca.app.navigation.actions.db.DbCompressAction;
 import org.openlca.app.navigation.actions.db.DbCopyAction;
@@ -60,8 +61,12 @@ class DatabaseMenu implements IMenuListener {
 
 		var contents = new MenuManager();
 		contents.setMenuText("Content");
+
 		contents.add(Actions.create(M.Flows,
-			Images.descriptor(ModelType.FLOW), DbFlowTable::show));
+			Images.descriptor(ModelType.FLOW), FlowTable::show));
+		contents.add(Actions.create(M.FlowProperties,
+			Images.descriptor(ModelType.FLOW_PROPERTY), FlowPropertyTable::show));
+
 		menu.add(contents);
 	}
 }

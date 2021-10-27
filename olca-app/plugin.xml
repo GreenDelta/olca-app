@@ -282,11 +282,19 @@
       </editor>
 
 			<editor
-				    class="org.openlca.app.db.tables.DbFlowTable"
+				    class="org.openlca.app.db.tables.FlowTable"
 						default="false"
 						icon="icons/model/flow.png"
 						id="DbFlowTable"
 						name="Flows">
+			</editor>
+
+			<editor
+						class="org.openlca.app.db.tables.FlowPropertyTable"
+						default="false"
+						icon="icons/model/flow_property.png"
+						id="DbFlowPropertyTable"
+						name="Flow properties">
 			</editor>
 
       <editor
