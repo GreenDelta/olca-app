@@ -53,7 +53,7 @@ class FactorClipboard {
 		return factors;
 	}
 
-	private ImpactFactor factor(String row[]) {
+	private ImpactFactor factor(String[] row) {
 		if (row.length < 4)
 			return null;
 		String name = row[0];

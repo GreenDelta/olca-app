@@ -1,8 +1,5 @@
 package org.openlca.app.editors.parameters.bigtable;
 
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
@@ -24,12 +21,6 @@ public class BigParameterTable extends SimpleFormEditor {
 		}
 		String id = "BigParameterTable";
 		Editors.open(new SimpleEditorInput(id, M.Parameters), id);
-	}
-
-	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
-		super.init(site, input);
 	}
 
 	@Override

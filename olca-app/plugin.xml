@@ -281,6 +281,14 @@
             name="Parameters">
       </editor>
 
+			<editor
+				    class="org.openlca.app.db.tables.DbFlowTable"
+						default="false"
+						icon="icons/model/flow.png"
+						id="DbFlowTable"
+						name="Flows">
+			</editor>
+
       <editor
             class="org.openlca.app.db.LinkingPropertiesPage"
             default="false"
