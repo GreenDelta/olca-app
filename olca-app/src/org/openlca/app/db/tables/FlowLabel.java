@@ -46,6 +46,7 @@ class FlowLabel extends LabelProvider implements ITableLabelProvider {
 			case 4 -> Labels.name(flow.referenceFlowProperty);
 			case 5 -> flow.casNumber;
 			case 6 -> flow.formula;
+			case 7 -> flow.refId;
 			default -> null;
 		};
 	}

@@ -3,8 +3,6 @@ package org.openlca.app.db.tables;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -55,9 +53,6 @@ public class DbFlowTable extends SimpleFormEditor {
 
 		private final List<Flow> flows;
 
-		private TableViewer table;
-		private Text filter;
-
 		Page(DbFlowTable table) {
 			super(table, "DbFlowTable", M.Flows);
 			flows = table.flows != null
@@ -74,22 +69,26 @@ public class DbFlowTable extends SimpleFormEditor {
 			var filterComp = tk.createComposite(body);
 			UI.gridLayout(filterComp, 2);
 			UI.gridData(filterComp, true, false);
-			filter = UI.formText(filterComp, tk, M.Filter);
+			var filter = UI.formText(filterComp, tk, M.Filter);
 
-			table = Tables.createViewer(body,
+			var table = Tables.createViewer(body,
 				M.FlowType,
 				M.Name,
 				M.Category,
 				M.ReferenceUnit,
 				M.ReferenceFlowProperty,
 				M.CASNumber,
-				"Chemical formula");
-			Tables.bindColumnWidths(table, 0.1, 0.3, 0.3, 0.1, 0.1, 0.1);
+				"Chemical formula",
+				"ID");
+			Tables.bindColumnWidths(table, 0.1, 0.2, 0.3, 0.1, 0.1, 0.1, 0.1, 0.1);
 
 			var label = new FlowLabel(Database.get());
 			table.setLabelProvider(label);
 			Viewers.sortByLabels(table, label, 0, 1, 2, 3, 4, 5, 6);
 			table.setInput(flows);
+
+			TextFilter.on(table, filter);
+
 		}
 	}
 }
