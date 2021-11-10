@@ -33,9 +33,9 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 	BuildSupplyChainAction() {
 		setId(ActionIds.BUILD_SUPPLY_CHAIN);
 		setText(M.Complete);
-		config = new LinkingConfig();
-		config.preferredType = ProcessType.UNIT_PROCESS;
-		config.providerLinking = ProviderLinking.PREFER_DEFAULTS;
+		config = new LinkingConfig()
+			.preferredType(ProcessType.UNIT_PROCESS)
+			.providerLinking(ProviderLinking.PREFER_DEFAULTS);
 	}
 
 	@Override
@@ -45,12 +45,12 @@ class BuildSupplyChainAction extends Action implements IBuildAction {
 
 	@Override
 	public void setPreferredType(ProcessType preferredType) {
-		config.preferredType = preferredType;
+		config.preferredType(preferredType);
 	}
 
 	@Override
 	public void setProviderMethod(ProviderLinking providerLinking) {
-		config.providerLinking = providerLinking;
+		config.providerLinking(providerLinking);
 	}
 
 	@Override

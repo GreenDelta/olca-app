@@ -55,7 +55,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			return false;
 		var importer = new SimaProCsvImport(db, files);
 		if (filePage.flowMap != null) {
-			importer.with(filePage.flowMap);
+			importer.withFlowMap(filePage.flowMap);
 		}
 		try {
 			Database.getIndexUpdater().beginTransaction();

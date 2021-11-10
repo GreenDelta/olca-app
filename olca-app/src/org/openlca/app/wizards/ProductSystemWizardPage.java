@@ -194,7 +194,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	LinkingConfig getLinkingConfig() {
 		LinkingConfig config = linkingPanel.getLinkingConfig();
 		if (checkLinksCheck.getSelection()) {
-			config.callback = new ProviderCallback();
+			config.callback(new ProviderCallback());
 		}
 		return config;
 	}

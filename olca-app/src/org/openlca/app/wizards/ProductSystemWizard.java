@@ -60,7 +60,9 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		}
 
 		LinkingConfig config = page.getLinkingConfig();
-		system.cutoff = config.cutoff;
+		system.cutoff = config.cutoff().isPresent()
+			? config.cutoff().getAsDouble()
+			: null;
 		addCreationInfo(system, page);
 		try {
 			createDao().insert(system);
@@ -100,17 +102,17 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		if (!page.addSupplyChain() || config == null)
 			return M.None;
 		String suffix = "; " + M.PreferredProcessType + ": ";
-		if (config.preferredType == ProcessType.UNIT_PROCESS) {
+		if (config.preferredType() == ProcessType.UNIT_PROCESS) {
 			suffix += M.UnitProcess;
 		} else {
 			suffix += M.SystemProcess;
 		}
-		if (config.cutoff != null) {
-			suffix += "; cutoff = " + config.cutoff;
+		if (config.cutoff().isPresent()) {
+			suffix += "; cutoff = " + config.cutoff().getAsDouble();
 		}
-		return config.providerLinking == null
+		return config.providerLinking() == null
 				? suffix
-				: Labels.of(config.providerLinking) + suffix;
+				: Labels.of(config.providerLinking()) + suffix;
 	}
 
 	@Override

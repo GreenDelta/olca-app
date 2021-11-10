@@ -94,18 +94,18 @@ class LinkingConfigPanel {
 	public LinkingConfig getLinkingConfig() {
 		LinkingConfig config = new LinkingConfig();
 		if (preferUnitRadio.getSelection()) {
-			config.preferredType = ProcessType.UNIT_PROCESS;
+			config.preferredType(ProcessType.UNIT_PROCESS);
 		} else {
-			config.preferredType = ProcessType.LCI_RESULT;
+			config.preferredType(ProcessType.LCI_RESULT);
 		}
 		if (ignoreProvidersRadio.getSelection()) {
-			config.providerLinking = ProviderLinking.IGNORE_DEFAULTS;
+			config.providerLinking(ProviderLinking.IGNORE_DEFAULTS);
 		} else if (onlyLinkProvidersRadio.getSelection()) {
-			config.providerLinking = ProviderLinking.ONLY_DEFAULTS;
+			config.providerLinking(ProviderLinking.ONLY_DEFAULTS);
 		} else {
-			config.providerLinking = ProviderLinking.PREFER_DEFAULTS;
+			config.providerLinking(ProviderLinking.PREFER_DEFAULTS);
 		}
-		config.cutoff = getCutoff();
+		config.cutoff(getCutoff());
 		return config;
 	}
 
