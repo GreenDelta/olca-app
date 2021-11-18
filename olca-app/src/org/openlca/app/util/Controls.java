@@ -3,7 +3,6 @@ package org.openlca.app.util;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 
-import org.apache.poi.ss.formula.functions.T;
 import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;

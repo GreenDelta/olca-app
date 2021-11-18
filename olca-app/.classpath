@@ -10,6 +10,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/commons-collections-3.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-collections4-4.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-compress-1.19.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-csv-1.9.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-io-2.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-lang3-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-logging-1.2.jar"/>
@@ -68,7 +69,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-1.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-io-2.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-3.0.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.asm-9.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.core-3.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa.jpql-3.0.2.jar"/>
