@@ -17,20 +17,17 @@ import org.openlca.io.simapro.csv.input.SimaProCsvImport;
 public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
 	private FileImportPage filePage;
-
 	private File initialFile;
 
 	public static void of(File file) {
-		Wizards.forImport(
-				"wizard.import.csv",
+		Wizards.forImport("wizard.import.csv",
 				(SimaProCsvImportWizard w) -> w.initialFile = file);
 	}
 
 	public SimaProCsvImportWizard() {
 		setNeedsProgressMonitor(true);
 		setWindowTitle(M.SimaProCSVImport);
-		setDefaultPageImageDescriptor(
-				Icon.IMPORT_ZIP_WIZARD.descriptor());
+		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}
 
 	@Override

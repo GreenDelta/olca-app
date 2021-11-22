@@ -156,9 +156,8 @@ class DbImportPage extends WizardPage {
 	private static class DbLabel extends LabelProvider {
 		@Override
 		public String getText(Object element) {
-			if (!(element instanceof DatabaseConfig))
+			if (!(element instanceof DatabaseConfig config))
 				return null;
-			var config = (DatabaseConfig) element;
 			return config.name();
 		}
 	}

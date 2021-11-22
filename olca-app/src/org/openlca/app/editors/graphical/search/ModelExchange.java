@@ -129,11 +129,11 @@ class ModelExchange {
 
 		List<Candidate> candidates = new ArrayList<>();
 		for (LongPair e : exchanges) {
-			CategorizedDescriptor p = processes.get(e.second);
+			var p = processes.get(e.second());
 			if (p == null)
 				continue;
-			Candidate c = new Candidate(p);
-			c.exchangeId = e.first;
+			var c = new Candidate(p);
+			c.exchangeId = e.first();
 			c.processExists = sysNode.getProductSystem().processes.contains(p.id);
 			c.isDefaultProvider = !isProvider()
 					&& this.exchange.defaultProviderId == p.id;

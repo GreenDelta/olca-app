@@ -788,6 +788,13 @@
        name="SimaPro CSV">
        <description>Import SimaPro CSV files.</description>
      </wizard>
+      <wizard category="import.category.file"
+       class="org.openlca.app.wizards.io.SimaProCsvImportWizard2"
+       icon="icons/simapro.png"
+       id="wizard.import.simapro.csv"
+       name="SimaPro CSV">
+       <description>Import SimaPro CSV files.</description>
+     </wizard>
      <wizard
           class="org.openlca.app.wizards.io.GeoJsonImportWizard"
           icon="icons/model/location.png"
