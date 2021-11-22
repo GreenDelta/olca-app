@@ -32,7 +32,7 @@ import org.openlca.app.wizards.io.ExcelImportWizard;
 import org.openlca.app.wizards.io.GeoJsonImportWizard;
 import org.openlca.app.wizards.io.ILCDImportWizard;
 import org.openlca.app.wizards.io.JsonImportWizard;
-import org.openlca.app.wizards.io.SimaProCsvImportWizard;
+import org.openlca.app.wizards.io.SimaProCsvImportWizard2;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.MappingFileDao;
 import org.openlca.io.Format;
@@ -102,7 +102,7 @@ public class FileImport {
 			case JSON_LD_ZIP -> JsonImportWizard.of(file);
 			case LIBRARY_PACKAGE -> MountLibraryAction.run(file);
 			case MAPPING_CSV -> importMappingFile(file);
-			case SIMAPRO_CSV -> SimaProCsvImportWizard.of(file);
+			case SIMAPRO_CSV -> SimaProCsvImportWizard2.of(file);
 			case ZOLCA -> importZOLCA(file);
 			default -> MsgBox.info("No import found",
 				"Format '" + format + "' was detected but no" +

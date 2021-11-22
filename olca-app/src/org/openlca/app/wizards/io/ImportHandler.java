@@ -12,9 +12,8 @@ import com.google.common.eventbus.Subscribe;
 
 public class ImportHandler {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
-	private IProgressMonitor monitor;
-	private int cancelLookUpTime = 5000;
+	private final Logger log = LoggerFactory.getLogger(getClass());
+	private final IProgressMonitor monitor;
 
 	public ImportHandler(IProgressMonitor monitor) {
 		this.monitor = monitor;
@@ -33,6 +32,7 @@ public class ImportHandler {
 		thread.start();
 		while (!monitor.isCanceled() && thread.isAlive())
 			try {
+				int cancelLookUpTime = 5000;
 				thread.join(cancelLookUpTime);
 				if (monitor.isCanceled())
 					fileImport.cancel();
