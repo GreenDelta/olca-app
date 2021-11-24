@@ -117,16 +117,11 @@ public class ILCDProvider implements IProvider {
 	private FlowType map(org.openlca.ilcd.commons.FlowType t) {
 		if (t == null)
 			return FlowType.ELEMENTARY_FLOW;
-		switch (t) {
-		case ELEMENTARY_FLOW:
-			return FlowType.ELEMENTARY_FLOW;
-		case PRODUCT_FLOW:
-			return FlowType.PRODUCT_FLOW;
-		case WASTE_FLOW:
-			return FlowType.WASTE_FLOW;
-		default:
-			return FlowType.ELEMENTARY_FLOW;
-		}
+		return switch (t) {
+			case PRODUCT_FLOW -> FlowType.PRODUCT_FLOW;
+			case WASTE_FLOW -> FlowType.WASTE_FLOW;
+			default -> FlowType.ELEMENTARY_FLOW;
+		};
 	}
 
 	@Override
@@ -141,7 +136,7 @@ public class ILCDProvider implements IProvider {
 				if (flow != null)
 					continue;
 				FlowImport imp = new FlowImport(conf);
-				flow = imp.run(ref.flow.refId);
+				imp.run(ref.flow.refId);
 			}
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());

@@ -20,11 +20,11 @@ public interface IProvider {
 	/**
 	 * Synchronizes the given flow references with the database.
 	 */
-	public void persist(List<FlowRef> refs, IDatabase db);
+	void persist(List<FlowRef> refs, IDatabase db);
 
 	/**
 	 * Synchronize the given external references with the flows from this data
 	 * provider.
 	 */
-	public void sync(Stream<FlowRef> externalRefs);
+	void sync(Stream<FlowRef> externalRefs);
 }

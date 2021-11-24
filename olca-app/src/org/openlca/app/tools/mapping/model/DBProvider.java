@@ -38,12 +38,12 @@ public class DBProvider implements IProvider {
 		// collect categories, properties, locations
 		var categories = Categories.pathsOf(db);
 		Map<Long, FlowProperty> props = new FlowPropertyDao(db)
-				.getAll().stream()
-				.collect(Collectors.toMap(fp -> fp.id, fp -> fp));
+			.getAll().stream()
+			.collect(Collectors.toMap(fp -> fp.id, fp -> fp));
 		Map<Long, String> locations = new LocationDao(db).getCodes();
 
-		List<FlowRef> refs = new ArrayList<FlowRef>();
-		new FlowDao(db).getDescriptors().stream().forEach(flow -> {
+		List<FlowRef> refs = new ArrayList<>();
+		new FlowDao(db).getDescriptors().forEach(flow -> {
 			FlowRef ref = new FlowRef();
 			ref.flow = flow;
 			ref.flowCategory = categories.pathOf(flow.category);
@@ -53,7 +53,7 @@ public class DBProvider implements IProvider {
 					return;
 				ref.property = Descriptor.of(prop);
 				if (prop.unitGroup != null
-						&& prop.unitGroup.referenceUnit != null) {
+					&& prop.unitGroup.referenceUnit != null) {
 					ref.unit = Descriptor.of(prop.unitGroup.referenceUnit);
 				}
 			});
@@ -95,7 +95,7 @@ public class DBProvider implements IProvider {
 		Flow flow = new FlowDao(db).getForRefId(ref.flow.refId);
 		if (flow == null) {
 			ref.status = Status.error("there is no flow with id="
-					+ ref.flow.refId + " in the database");
+				+ ref.flow.refId + " in the database");
 			return null;
 		}
 
@@ -108,7 +108,7 @@ public class DBProvider implements IProvider {
 				if (f.flowProperty == null)
 					continue;
 				if (Objects.equals(
-						ref.property.refId, f.flowProperty.refId)) {
+					ref.property.refId, f.flowProperty.refId)) {
 					prop = f.flowProperty;
 					break;
 				}
@@ -116,7 +116,7 @@ public class DBProvider implements IProvider {
 		}
 		if (prop == null || prop.unitGroup == null) {
 			ref.status = Status.error("the flow in the database has"
-					+ " no corresponding flow property");
+				+ " no corresponding flow property");
 			return null;
 		}
 
@@ -134,7 +134,7 @@ public class DBProvider implements IProvider {
 		}
 		if (u == null) {
 			ref.status = Status.error("the flow in the database has"
-					+ " no corresponding unit");
+				+ " no corresponding unit");
 			return null;
 		}
 
@@ -144,18 +144,17 @@ public class DBProvider implements IProvider {
 			provider = new ProcessDao(db).getForRefId(ref.provider.refId);
 			if (provider == null) {
 				ref.status = Status.error(
-						"the provider does not exist in the database");
+					"the provider does not exist in the database");
 				return null;
 			}
-			boolean exists = provider.exchanges.stream().filter(e -> {
-				return !e.isAvoided &&
-						Objects.equals(e.flow, flow) &&
-						((e.isInput && flow.flowType == FlowType.WASTE_FLOW) ||
-								(!e.isInput && flow.flowType == FlowType.PRODUCT_FLOW));
-			}).findFirst().isPresent();
+			boolean exists = provider.exchanges.stream().anyMatch(
+				e -> !e.isAvoided
+					&& Objects.equals(e.flow, flow)
+					&& ((e.isInput && flow.flowType == FlowType.WASTE_FLOW)
+					|| (!e.isInput && flow.flowType == FlowType.PRODUCT_FLOW)));
 			if (!exists) {
 				ref.status = Status.error(
-						"the given provider does not deliver that flow");
+					"the given provider does not deliver that flow");
 				return null;
 			}
 		}
@@ -177,15 +176,15 @@ public class DBProvider implements IProvider {
 
 		Sync.checkFlowName(ref, flow.name);
 		Sync.checkFlowCategory(ref,
-				String.join("/", Categories.path(flow.category)));
+			String.join("/", Categories.path(flow.category)));
 		Sync.checkFlowType(ref, flow.flowType);
 		Sync.checkFlowLocation(ref, flow.location == null
-				? null
-				: flow.location.code);
+			? null
+			: flow.location.code);
 		if (provider != null) {
 			Sync.checkProviderLocation(ref, provider.location == null
-					? null
-					: provider.location.code);
+				? null
+				: provider.location.code);
 		}
 
 		if (ref.status == null) {
