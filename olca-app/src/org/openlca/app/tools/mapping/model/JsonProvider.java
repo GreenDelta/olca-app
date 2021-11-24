@@ -1,6 +1,7 @@
 package org.openlca.app.tools.mapping.model;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +23,7 @@ import com.google.gson.JsonObject;
 
 public class JsonProvider implements IProvider {
 
-	public final File file;
+	private final File file;
 
 	private JsonProvider(File file) {
 		this.file = file;
@@ -36,13 +37,17 @@ public class JsonProvider implements IProvider {
 		return new JsonProvider(file);
 	}
 
+	public File file() {
+		return file;
+	}
+
 	public List<FlowMap> getFlowMaps() {
 		try (ZipStore store = ZipStore.open(file)) {
 			List<String> files = store.getFiles("flow_mappings");
 			List<FlowMap> maps = new ArrayList<>();
 			for (String f : files) {
 				byte[] data = store.get(f);
-				String json = new String(data, "utf-8");
+				String json = new String(data, StandardCharsets.UTF_8);
 				JsonObject obj = new Gson().fromJson(json, JsonObject.class);
 				FlowMap map = FlowMap.fromJson(obj);
 				maps.add(map);

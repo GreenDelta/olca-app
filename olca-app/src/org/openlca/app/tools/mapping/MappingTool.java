@@ -1,6 +1,5 @@
 package org.openlca.app.tools.mapping;
 
-import java.io.File;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -54,14 +53,14 @@ public class MappingTool extends SimpleFormEditor {
 	}
 
 	public static void openFile() {
-		File file = FileChooser.open("*.*");
+		var file = FileChooser.open("*.*");
 		if (file == null)
 			return;
 		try {
-			ProviderType type = ProviderType.of(file);
-			if (type == ProviderType.JSON_LD_PACKAGE) {
+			var type = ProviderType.of(file);
+			if (type == ProviderType.JSON_ZIP) {
 				open(JsonImportDialog.open(file));
-			} else if (type == ProviderType.CSV_FILE) {
+			} else if (type == ProviderType.MAPPING_CSV) {
 				open(FlowMap.fromCsv(file));
 			} else {
 				MsgBox.info("Unsupported format file format. Supported are "
@@ -220,9 +219,9 @@ public class MappingTool extends SimpleFormEditor {
 	}
 
 	/**
-	 * Refreshes the flow mapping in the page. This method can be called when
-	 * the mapping was modified outside of the page (e.g. in a process that
-	 * generates new mappings).
+	 * Refreshes the flow mapping in the page. This method can be called when the
+	 * mapping was modified outside the page (e.g. in a process that generates new
+	 * mappings).
 	 */
 	void refresh() {
 		if (page != null && page.table != null) {

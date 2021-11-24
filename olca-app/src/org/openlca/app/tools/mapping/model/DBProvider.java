@@ -26,10 +26,14 @@ import org.openlca.util.Categories;
 
 public class DBProvider implements IProvider {
 
-	public final IDatabase db;
+	private final IDatabase db;
 
 	public DBProvider(IDatabase db) {
 		this.db = db;
+	}
+
+	public IDatabase db() {
+		return db;
 	}
 
 	@Override

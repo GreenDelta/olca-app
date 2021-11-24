@@ -17,6 +17,7 @@ import org.openlca.app.tools.mapping.model.ILCDProvider;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.tools.mapping.model.JsonProvider;
 import org.openlca.app.tools.mapping.model.ProviderType;
+import org.openlca.app.tools.mapping.model.SimaProCsvProvider;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -55,21 +56,20 @@ class ProviderRow {
 
 		// select a file as provider
 		Controls.onClick(fileLink, e -> {
-			File file = FileChooser.open("*.zip");
+			File file = FileChooser.openFile()
+				.withExtensions("*.zip", "*.csv")
+				.withTitle("Open a flow source")
+				.select()
+				.orElse(null);
 			if (file == null)
 				return;
-			ProviderType type = ProviderType.of(file);
-			IProvider provider = null;
-			switch (type) {
-			case ILCD_PACKAGE:
-				provider = ILCDProvider.of(file);
-				break;
-			case JSON_LD_PACKAGE:
-				provider = JsonProvider.of(file);
-				break;
-			default:
-				break;
-			}
+			var type = ProviderType.of(file);
+			IProvider provider = switch (type) {
+				case ILCD_ZIP -> ILCDProvider.of(file);
+				case JSON_ZIP -> JsonProvider.of(file);
+				case SIMAPRO_CSV -> SimaProCsvProvider.of(file);
+				default -> null;
+			};
 			if (provider == null) {
 				MsgBox.error("Unknown flow source (ILCD "
 						+ "or JSON-LD packages are supported).");
@@ -91,12 +91,14 @@ class ProviderRow {
 	private String label(IProvider provider) {
 		if (provider == null)
 			return "- none -";
-		if (provider instanceof DBProvider)
-			return "db://" + ((DBProvider) provider).db.getName();
-		if (provider instanceof JsonProvider)
-			return "jsonld://" + ((JsonProvider) provider).file.getName();
-		if (provider instanceof ILCDProvider)
-			return "ilcd://" + ((ILCDProvider) provider).file.getName();
+		if (provider instanceof DBProvider p)
+			return "db://" + p.db().getName();
+		if (provider instanceof JsonProvider p )
+			return "jsonld://" + p.file().getName();
+		if (provider instanceof ILCDProvider p)
+			return "ilcd://" + p.file().getName();
+		if (provider instanceof SimaProCsvProvider p)
+			return "simapro://" + p.file().getName();
 		return "?";
 	}
 }

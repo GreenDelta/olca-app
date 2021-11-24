@@ -85,9 +85,9 @@ class JsonImportDialog extends Dialog {
 		Composite comp = new Composite(root, SWT.NONE);
 		UI.gridLayout(comp, 2, 10, 0);
 		UI.formLabel(comp, M.File);
-		String fileText = Strings.cut(provider.file.getParent(), 50)
+		String fileText = Strings.cut(provider.file().getParent(), 50)
 				+ File.separator
-				+ Strings.cut(provider.file.getName(), 50);
+				+ Strings.cut(provider.file().getName(), 50);
 		Label label = UI.formLabel(comp, fileText);
 		label.setForeground(Colors.linkBlue());
 

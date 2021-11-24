@@ -30,7 +30,7 @@ class Matcher {
 
 	Matcher(IProvider targetSystem) {
 		db = targetSystem instanceof DBProvider
-				? ((DBProvider) targetSystem).db
+				? ((DBProvider) targetSystem).db()
 				: null;
 		this.targetFlows = targetSystem.getFlowRefs().stream()
 				.filter(f -> f.flow != null && f.flow.refId != null)

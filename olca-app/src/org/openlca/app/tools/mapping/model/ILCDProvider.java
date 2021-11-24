@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 public class ILCDProvider implements IProvider {
 
-	public final File file;
+	private final File file;
 	private List<FlowRef> refs;
 
 	private ILCDProvider(File file) {
@@ -47,6 +47,10 @@ public class ILCDProvider implements IProvider {
 
 	public static ILCDProvider of(File file) {
 		return new ILCDProvider(file);
+	}
+
+	public File file() {
+		return file;
 	}
 
 	@Override

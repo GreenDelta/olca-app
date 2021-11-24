@@ -35,6 +35,10 @@ public class SimaProCsvProvider implements IProvider {
 		return new SimaProCsvProvider(file);
 	}
 
+	public File file() {
+		return file;
+	}
+
 	@Override
 	public List<FlowRef> getFlowRefs() {
 		if (refs != null)
