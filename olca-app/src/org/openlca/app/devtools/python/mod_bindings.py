@@ -1,4 +1,5 @@
 # auto-generated bindings; do not edit them
+import org.openlca.proto.io.server.AboutService as AboutService
 import org.openlca.core.model.AbstractEntity as AbstractEntity
 import org.openlca.expressions.AbstractExpression as AbstractExpression
 import org.openlca.expressions.AbstractNumericOperator as AbstractNumericOperator
@@ -31,11 +32,12 @@ import org.openlca.core.matrix.CalcAllocationFactor as CalcAllocationFactor
 import org.openlca.core.matrix.CalcExchange as CalcExchange
 import org.openlca.core.matrix.CalcImpactFactor as CalcImpactFactor
 import org.openlca.core.model.CalculationSetup as CalculationSetup
+import org.openlca.proto.io.input.CalculationSetupReader as CalculationSetupReader
 import org.openlca.core.model.CalculationType as CalculationType
 import org.openlca.ipc.handlers.Calculator as Calculator
 import org.openlca.util.Categories as Categories
 import org.openlca.core.model.descriptors.CategorizedDescriptor as CategorizedDescriptor
-import org.openlca.core.model.CategorizedEntity as CategorizedEntity
+import org.openlca.core.model.CategorizedEntity	extends as CategorizedEntity	extends
 import org.openlca.core.database.CategorizedEntityDao as CategorizedEntityDao
 import org.openlca.core.model.Category as Category
 import org.openlca.core.database.CategoryDao as CategoryDao
@@ -121,6 +123,7 @@ import org.openlca.io.xls.process.input.ExcelImport as ExcelImport
 import org.openlca.util.Exceptions as Exceptions
 import org.openlca.core.model.Exchange as Exchange
 import org.openlca.core.database.ExchangeDao as ExchangeDao
+import org.openlca.util.ExchangeProviderQueue as ExchangeProviderQueue
 import org.openlca.core.matrix.cache.ExchangeTable as ExchangeTable
 import org.openlca.core.database.usage.ExchangeUseSearch as ExchangeUseSearch
 import org.openlca.util.Exchanges as Exchanges
@@ -202,7 +205,6 @@ import org.openlca.io.ecospold1.input.ImportConfig as ImportConfig
 import org.openlca.io.ImportEvent as ImportEvent
 import org.openlca.io.ilcd.input.ImportException as ImportException
 import org.openlca.io.ImportInfo as ImportInfo
-import org.openlca.proto.io.input.ImportStatus as ImportStatus
 import org.openlca.proto.io.input.In as In
 import org.openlca.proto.io.InMemoryProtoStore as InMemoryProtoStore
 import org.openlca.core.matrix.IndexedMatrix as IndexedMatrix
@@ -244,7 +246,6 @@ import org.openlca.core.results.LocationResult as LocationResult
 import org.openlca.core.database.usage.LocationUseSearch as LocationUseSearch
 import org.openlca.proto.io.output.LocationWriter as LocationWriter
 import org.openlca.cloud.util.Logs as Logs
-import org.openlca.core.matrix.index.LongPair as LongPair
 import org.openlca.ipc.Main as Main
 import org.openlca.io.maps.MapFactor as MapFactor
 import org.openlca.core.model.MappingFile as MappingFile
@@ -297,7 +298,9 @@ import org.openlca.core.model.Parameter as Parameter
 import org.openlca.core.database.ParameterDao as ParameterDao
 import org.openlca.core.model.descriptors.ParameterDescriptor as ParameterDescriptor
 import org.openlca.core.model.ParameterRedef as ParameterRedef
+import org.openlca.proto.io.input.ParameterRedefReader as ParameterRedefReader
 import org.openlca.core.model.ParameterRedefSet as ParameterRedefSet
+import org.openlca.util.ParameterRedefSets as ParameterRedefSets
 import org.openlca.core.database.references.ParameterReferenceSearch as ParameterReferenceSearch
 import org.openlca.core.model.ParameterScope as ParameterScope
 import org.openlca.core.matrix.ParameterTable as ParameterTable
@@ -349,9 +352,9 @@ import org.openlca.proto.io.output.ProjectWriter as ProjectWriter
 import org.openlca.geo.calc.Projection as Projection
 import org.openlca.core.library.Proto as Proto
 import org.openlca.proto.io.input.ProtoImport as ProtoImport
+import org.openlca.core.matrix.index.ProviderIndex as ProviderIndex
 import org.openlca.io.ilcd.input.ProviderLinker as ProviderLinker
 import org.openlca.core.matrix.linking.ProviderLinking as ProviderLinking
-import org.openlca.core.matrix.linking.ProviderSearch as ProviderSearch
 import org.openlca.core.database.Query as Query
 import org.openlca.io.refdata.RefDataExport as RefDataExport
 import org.openlca.io.refdata.RefDataImport as RefDataImport
@@ -368,8 +371,15 @@ import org.openlca.cloud.error.RepositoryNotFoundException as RepositoryNotFound
 import org.openlca.core.database.internal.Resource as Resource
 import org.openlca.ipc.Responses as Responses
 import org.openlca.cloud.model.RestrictionType as RestrictionType
+import org.openlca.core.database.ResultDao as ResultDao
+import org.openlca.core.model.descriptors.ResultDescriptor as ResultDescriptor
 import org.openlca.io.xls.results.system.ResultExport as ResultExport
+import org.openlca.core.model.ResultFlow as ResultFlow
+import org.openlca.core.model.ResultImpact as ResultImpact
 import org.openlca.core.results.ResultItemView as ResultItemView
+import org.openlca.core.model.ResultModel as ResultModel
+import org.openlca.util.ResultModels as ResultModels
+import org.openlca.core.model.ResultOrigin as ResultOrigin
 import org.openlca.core.results.providers.ResultProviders as ResultProviders
 import org.openlca.core.model.RiskLevel as RiskLevel
 import org.openlca.core.model.RootEntity as RootEntity
@@ -418,10 +428,11 @@ import org.openlca.cloud.util.Ssl as Ssl
 import org.openlca.core.results.Statistics as Statistics
 import org.openlca.io.maps.Status as Status
 import org.openlca.util.Strings as Strings
+import org.openlca.core.matrix.linking.SubSystemLinker as SubSystemLinker
 import org.openlca.core.math.SystemCalculator as SystemCalculator
 import org.openlca.io.ilcd.output.SystemExport as SystemExport
 import org.openlca.core.results.SystemProcess as SystemProcess
-import org.openlca.core.matrix.index.TechFlow as TechFlow
+import org.openlca.core.results.TagResult as TagResult
 import org.openlca.core.matrix.index.TechIndex as TechIndex
 import org.openlca.core.matrix.linking.TechIndexBuilder as TechIndexBuilder
 import org.openlca.core.matrix.linking.TechIndexCutoffBuilder as TechIndexCutoffBuilder
@@ -453,6 +464,7 @@ import org.openlca.io.UnitMappingEntry as UnitMappingEntry
 import org.openlca.io.UnitMappingSync as UnitMappingSync
 import org.openlca.core.database.usage.UnitUseSearch as UnitUseSearch
 import org.openlca.jsonld.input.UpdateMode as UpdateMode
+import org.openlca.core.database.upgrades.Upgrade11 as Upgrade11
 import org.openlca.core.database.upgrades.Upgrades as Upgrades
 import org.openlca.core.results.UpstreamNode as UpstreamNode
 import org.openlca.core.results.UpstreamTree as UpstreamTree

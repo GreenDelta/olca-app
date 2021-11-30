@@ -40,7 +40,7 @@ public final class Sort {
 
 		items.techFlows().sort((tf1, tf2) -> {
 			int c = Strings.compare(
-				Labels.name(tf1.process()), Labels.name(tf2.process()));
+				Labels.name(tf1.provider()), Labels.name(tf2.provider()));
 			if (c != 0)
 				return c;
 			return Strings.compare(

@@ -123,7 +123,7 @@ class TreeContentProvider implements ITreeContentProvider {
 		// in a non-regionalized result
 		if (enviIndex.isRegionalized()) {
 			return result.techIndex().content().stream().map(p -> {
-				var c = Contribution.of(p.process());
+				var c = Contribution.of(p.provider());
 				c.amount = result.getDirectFlowResult(p, enviFlow);
 				c.computeShare(total);
 				return c;
@@ -191,9 +191,9 @@ class TreeContentProvider implements ITreeContentProvider {
 	private List<ProcessDescriptor> processes(Location loc) {
 		List<ProcessDescriptor> list = new ArrayList<>();
 		result.techIndex().each((i, product) -> {
-			if (!(product.process() instanceof ProcessDescriptor))
+			if (!(product.provider() instanceof ProcessDescriptor))
 				return;
-			var process = (ProcessDescriptor) product.process();
+			var process = (ProcessDescriptor) product.provider();
 			if (loc == null && process.location == null) {
 				list.add(process);
 				return;

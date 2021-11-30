@@ -195,9 +195,9 @@ class UpstreamTreeExport implements Runnable {
 		maxColumn = Math.max(col, maxColumn);
 		var node = path.node;
 		if (node.provider == null
-				|| node.provider.process() == null)
+				|| node.provider.provider() == null)
 			return;
-		var label = Labels.name(node.provider.process());
+		var label = Labels.name(node.provider.provider());
 		Excel.cell(sheet, row, col, label);
 	}
 

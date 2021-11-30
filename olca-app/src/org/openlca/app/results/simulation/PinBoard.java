@@ -82,7 +82,7 @@ class PinBoard {
 			TechFlow pp = Viewers.getFirstSelected(table);
 			if (pp == null)
 				return;
-			App.open(pp.process());
+			App.open(pp.provider());
 		});
 		Tables.onDoubleClick(table, e -> open.run());
 
@@ -180,7 +180,7 @@ class PinBoard {
 			}
 
 			// process name matches
-			var s = Labels.name(pp.process()).toLowerCase(Locale.US);
+			var s = Labels.name(pp.provider()).toLowerCase(Locale.US);
 			if (s.contains(f)) {
 				input.add(pp);
 				continue;
@@ -203,8 +203,8 @@ class PinBoard {
 				return -1;
 			if (!pinned1 && pinned2)
 				return 1;
-			String s1 = Labels.name(pp1.process());
-			String s2 = Labels.name(pp2.process());
+			String s1 = Labels.name(pp1.provider());
+			String s2 = Labels.name(pp2.provider());
 			return Strings.compare(s1, s2);
 		});
 
@@ -236,7 +236,7 @@ class PinBoard {
 						? Icon.CHECK_TRUE.get()
 						: Icon.CHECK_FALSE.get();
 			case 1:
-				return Images.get(techFlow.process());
+				return Images.get(techFlow.provider());
 			case 2:
 				return Images.get(techFlow.flow());
 			case 3:
@@ -255,7 +255,7 @@ class PinBoard {
 				return null;
 			var techFlow = (TechFlow) obj;
 			if (col == 1)
-				return Labels.name(techFlow.process());
+				return Labels.name(techFlow.provider());
 			else if (col == 2)
 				return Labels.name(techFlow.flow());
 			return null;

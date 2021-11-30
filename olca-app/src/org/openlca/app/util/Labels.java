@@ -93,7 +93,7 @@ public class Labels {
 		// result in very long display names.
 		return product == null
 			? ""
-			: name(product.process());
+			: name(product.provider());
 	}
 
 	public static String name(EnviFlow flow) {

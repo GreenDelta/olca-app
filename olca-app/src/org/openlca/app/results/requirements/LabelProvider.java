@@ -55,13 +55,13 @@ class LabelProvider extends DQLabelProvider {
 					var product = item.asChild().product;
 					return product == null
 						? Images.get(ModelType.PROCESS)
-					    : Images.get(product.process());
+					    : Images.get(product.provider());
 				}
 				if (item.isProvider()) {
 					var provider = item.asProvider().product;
 					return provider == null
 						? Images.get(ModelType.PROCESS)
-						: Images.get(provider.process());
+						: Images.get(provider.provider());
 				}
 				return null;
 

@@ -189,7 +189,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 			var map = new HashMap<CategorizedDescriptor, Double>();
 			var result = data.result().getResult(variant);
 			for (var techFlow : result.techIndex()) {
-				map.compute(techFlow.process(), (process, value) -> {
+				map.compute(techFlow.provider(), (process, value) -> {
 					var v = fn.applyAsDouble(result, techFlow);
 					return value != null
 						? value + v

@@ -79,9 +79,9 @@ class ProviderItem implements Item {
 	}
 
 	Long categoryID() {
-		return product == null || product.process() == null
+		return product == null || product.provider() == null
 			? null
-			: product.process().category;
+			: product.provider().category;
 	}
 
 	boolean hasWasteFlow() {

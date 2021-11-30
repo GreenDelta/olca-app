@@ -92,7 +92,7 @@ public class ContributionTreePage extends FormPage {
 			UpstreamNode n = Viewers.getFirstSelected(tree);
 			if (n == null || n.provider == null)
 				return;
-			App.open(n.provider.process());
+			App.open(n.provider.provider());
 		});
 
 		Action onExport = Actions.create(M.ExportToExcel,
@@ -199,7 +199,7 @@ public class ContributionTreePage extends FormPage {
 				return null;
 			UpstreamNode n = (UpstreamNode) obj;
 			if (col == 1 && n.provider != null) {
-				return Images.get(n.provider.process());
+				return Images.get(n.provider.provider());
 			}
 			if (col == 2) {
 				return image.get(getContribution(n));
@@ -216,7 +216,7 @@ public class ContributionTreePage extends FormPage {
 			case 0:
 				return Numbers.percent(getContribution(node));
 			case 1:
-				return Labels.name(node.provider.process());
+				return Labels.name(node.provider.provider());
 			case 2:
 				return Numbers.format(node.result);
 			case 3:

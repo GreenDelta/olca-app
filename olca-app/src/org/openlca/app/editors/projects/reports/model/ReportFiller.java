@@ -70,7 +70,7 @@ class ReportFiller {
         .collect(Collectors.toSet());
       var synced = new ArrayList<ProcessDescriptor>();
       for (var tf : items.techFlows()) {
-        var p = tf.process();
+        var p = tf.provider();
         if (ids.contains(p.refId) && p instanceof ProcessDescriptor) {
           synced.add((ProcessDescriptor) p);
         }

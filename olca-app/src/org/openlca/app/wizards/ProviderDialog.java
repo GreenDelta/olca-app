@@ -85,7 +85,7 @@ class ProviderDialog extends Dialog {
 		UI.gridData(combo, true, false).widthHint = 80;
 		String[] labels = new String[providers.size()];
 		for (int i = 0; i < labels.length; i++) {
-			labels[i] = Labels.name(providers.get(i).process());
+			labels[i] = Labels.name(providers.get(i).provider());
 		}
 		combo.setItems(labels);
 		combo.select(0);
