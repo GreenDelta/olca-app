@@ -71,6 +71,7 @@ public enum Icon {
 	LAYOUT("graphical/layout.png"),
 	LIBRARY("library.png"),
 	LINK("link.png"),
+	LOCK("lock.png"),
 	LOGO("plugin/logo_32_32bit.png"),
 
 	MANAGE_PLUGINS("manage_plugins.png"),

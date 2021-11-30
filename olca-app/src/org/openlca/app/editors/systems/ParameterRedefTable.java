@@ -56,15 +56,15 @@ import org.slf4j.LoggerFactory;
  */
 class ParameterRedefTable {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	private ProductSystemEditor editor;
+	private final ProductSystemEditor editor;
 	private TableViewer table;
 	private final Supplier<List<ParameterRedef>> supplier;
 
 	public ParameterRedefTable(
-			ProductSystemEditor editor,
-			Supplier<List<ParameterRedef>> supplier) {
+		ProductSystemEditor editor,
+		Supplier<List<ParameterRedef>> supplier) {
 		this.editor = editor;
 		this.supplier = supplier;
 
@@ -80,29 +80,29 @@ class ParameterRedefTable {
 	public void create(FormToolkit tk, Composite comp) {
 		// configure the table
 		table = Tables.createViewer(comp,
-				/* 0 */ M.Context,
-				/* 1 */ M.Parameter,
-				/* 2 */ M.Amount,
-				/* 3 */ M.Uncertainty,
-				/* 4 */ M.Description,
-				/* 5 */ "" // comment
+			/* 0 */ M.Context,
+			/* 1 */ M.Parameter,
+			/* 2 */ M.Amount,
+			/* 3 */ M.Uncertainty,
+			/* 4 */ M.Description,
+			/* 5 */ "" // comment
 		);
 		table.setLabelProvider(new LabelProvider());
 		Tables.bindColumnWidths(table, 0.25, 0.2, 0.15, 0.2, 0.15, 0.05);
 
 		// bind modifiers
 		new ModifySupport<ParameterRedef>(table)
-				.bind(M.Amount, new DoubleModifier<>(editor, "value"))
-				.bind(M.Description, new StringModifier<>(editor, "description"))
-				.bind(M.Uncertainty, new UncertaintyCellEditor(
-						table.getTable(), editor))
-				.bind("", new CommentDialogModifier<>(
-						editor.getComments(),
-						p -> CommentPaths.get(p, getContext(p))));
+			.bind(M.Amount, new DoubleModifier<>(editor, "value"))
+			.bind(M.Description, new StringModifier<>(editor, "description"))
+			.bind(M.Uncertainty, new UncertaintyCellEditor(
+				table.getTable(), editor))
+			.bind("", new CommentDialogModifier<>(
+				editor.getComments(),
+				p -> CommentPaths.get(p, getContext(p))));
 
 		// set the input
-		List<ParameterRedef> redefs = supplier.get();
-		Collections.sort(redefs, new ParameterComparator());
+		var redefs = supplier.get();
+		redefs.sort(new ParameterComparator());
 		table.setInput(redefs);
 	}
 
@@ -110,23 +110,34 @@ class ParameterRedefTable {
 		if (p.contextId == null)
 			return null;
 		return Daos.categorized(Database.get(), p.contextType)
-				.getDescriptor(p.contextId);
+			.getDescriptor(p.contextId);
 	}
 
 	public void bindActions(Section section) {
-		Action add = Actions.onAdd(this::add);
-		Action remove = Actions.onRemove(this::remove);
-		Action copy = TableClipboard.onCopySelected(table);
-		Action paste = TableClipboard.onPaste(table, this::onPaste);
-		Action usage = Actions.create(M.Usage, Icon.LINK.descriptor(), () -> {
+		var add = Actions.onAdd(this::add);
+		var remove = Actions.onRemove(this::remove);
+		var copy = TableClipboard.onCopySelected(table);
+		var paste = TableClipboard.onPaste(table, this::onPaste);
+		var usage = Actions.create(M.Usage, Icon.LINK.descriptor(), () -> {
 			ParameterRedef redef = Viewers.getFirstSelected(table);
 			if (redef != null) {
 				ParameterUsagePage.show(redef.name);
 			}
 		});
+
+		var toggleProtection = Actions.create(
+			"Toggle protection", Icon.LOCK.descriptor(), () -> {
+			ParameterRedef redef = Viewers.getFirstSelected(table);
+			if (redef == null)
+				return;
+			redef.isProtected = !redef.isProtected;
+			table.refresh();
+			editor.setDirty();
+		});
+
 		CommentAction.bindTo(section, "parameterRedefs",
-				editor.getComments(), add, remove);
-		Actions.bind(table, add, remove, copy, paste, usage);
+			editor.getComments(), add, remove);
+		Actions.bind(table, add, remove, copy, paste, usage, toggleProtection);
 		Tables.onDeletePressed(table, _e -> remove());
 
 		// open the original parameter in double click
@@ -138,21 +149,19 @@ class ParameterRedefTable {
 			if (redef.contextId != null && redef.contextType != null) {
 				// process or LCIA parameter
 				var model = redef.contextType == ModelType.PROCESS
-						? db.get(Process.class, redef.contextId)
-						: db.get(ImpactCategory.class, redef.contextId);
+					? db.get(Process.class, redef.contextId)
+					: db.get(ImpactCategory.class, redef.contextId);
 				if (model != null) {
 					App.open(model);
 				}
 			} else {
 				// global parameter
-				var dao = new ParameterDao(db);
-				var global = dao.getGlobalDescriptors()
-						.stream()
-						.filter(g -> Strings.nullOrEqual(g.name, redef.name))
-						.findAny();
-				if (global.isPresent()) {
-					App.open(global.get());
-				}
+				new ParameterDao(db)
+					.getGlobalDescriptors()
+					.stream()
+					.filter(g -> Strings.nullOrEqual(g.name, redef.name))
+					.findAny()
+					.ifPresent(App::open);
 			}
 		});
 	}
@@ -160,7 +169,7 @@ class ParameterRedefTable {
 	private void add() {
 		List<ParameterRedef> existing = supplier.get();
 		List<ParameterRedef> redefs = ParameterRedefDialog.select(
-				editor.getModel().processes);
+			editor.getModel().processes);
 		if (redefs.isEmpty())
 			return;
 		log.trace("add new parameter redef");
@@ -176,7 +185,7 @@ class ParameterRedefTable {
 	private void onPaste(String text) {
 		List<ParameterRedef> newList = new ArrayList<>();
 		App.runWithProgress("Paste parameters ...",
-				() -> newList.addAll(ParameterClipboard.read(text)));
+			() -> newList.addAll(ParameterClipboard.read(text)));
 		if (newList.isEmpty())
 			return;
 		List<ParameterRedef> redefs = supplier.get();
@@ -196,8 +205,8 @@ class ParameterRedefTable {
 	private boolean contains(ParameterRedef redef, List<ParameterRedef> redefs) {
 		for (ParameterRedef contained : redefs) {
 			if (Strings.nullOrEqual(contained.name, redef.name)
-					&& Objects.equals(contained.contextId,
-							redef.contextId))
+				&& Objects.equals(contained.contextId,
+				redef.contextId))
 				return true;
 		}
 		return false;
@@ -213,50 +222,52 @@ class ParameterRedefTable {
 	}
 
 	private class LabelProvider extends org.eclipse.jface.viewers.LabelProvider
-			implements ITableLabelProvider {
+		implements ITableLabelProvider {
 
-		private EntityCache cache = Cache.getEntityCache();
+		private final EntityCache cache = Cache.getEntityCache();
 
 		@Override
 		public Image getColumnImage(Object obj, int column) {
-			if (!(obj instanceof ParameterRedef))
+			if (!(obj instanceof ParameterRedef redef))
 				return null;
-			var redef = (ParameterRedef) obj;
 			var model = getModel(redef);
 			switch (column) {
-			case 0:
-				if (model == null)
-					return Images.get(ModelType.PARAMETER);
-				return Images.get(model);
-			case 5:
-				String path = CommentPaths.get(redef, getContext(redef));
-				return Images.get(editor.getComments(), path);
-			default:
-				return null;
+				case 0:
+					return model == null
+						? Images.get(ModelType.PARAMETER)
+						: Images.get(model);
+				case 1:
+					return redef.isProtected
+						? Icon.LOCK.get()
+						: null;
+				case 5:
+					String path = CommentPaths.get(redef, getContext(redef));
+					return Images.get(editor.getComments(), path);
+				default:
+					return null;
 			}
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ParameterRedef))
+			if (!(obj instanceof ParameterRedef redef))
 				return null;
-			ParameterRedef redef = (ParameterRedef) obj;
 			switch (col) {
-			case 0:
-				var model = getModel(redef);
-				return model != null
+				case 0:
+					var model = getModel(redef);
+					return model != null
 						? Labels.name(model)
 						: "global";
-			case 1:
-				return redef.name;
-			case 2:
-				return Double.toString(redef.value);
-			case 3:
-				return Uncertainty.string(redef.uncertainty);
-			case 4:
-				return redef.description;
-			default:
-				return null;
+				case 1:
+					return redef.name;
+				case 2:
+					return Double.toString(redef.value);
+				case 3:
+					return Uncertainty.string(redef.uncertainty);
+				case 4:
+					return redef.description;
+				default:
+					return null;
 			}
 		}
 
@@ -266,8 +277,8 @@ class ParameterRedefTable {
 			long modelId = redef.contextId;
 			var model = cache.get(ImpactMethodDescriptor.class, modelId);
 			return model != null
-					? model
-					: cache.get(ProcessDescriptor.class, modelId);
+				? model
+				: cache.get(ProcessDescriptor.class, modelId);
 		}
 	}
 
