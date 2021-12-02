@@ -63,7 +63,7 @@ public class ContributionTreePage extends FormPage {
 		Composite body = UI.formBody(form, tk);
 		Composite comp = tk.createComposite(body);
 		UI.gridLayout(comp, 2);
-		ResultItemSelector selector = ResultItemSelector
+		var selector = ResultItemSelector
 				.on(resultItems)
 				.withSelectionHandler(new SelectionHandler())
 				.create(comp, tk);

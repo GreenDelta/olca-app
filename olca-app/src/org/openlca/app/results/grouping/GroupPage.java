@@ -68,7 +68,7 @@ public class GroupPage extends FormPage {
 	private Menu groupMoveMenu;
 	private GroupResultSection resultSection;
 	private Section groupingSection;
-	private CalculationSetup setup;
+	private final CalculationSetup setup;
 
 	public GroupPage(FormEditor editor, ContributionResult result, CalculationSetup setup) {
 		super(editor, "analysis.GroupPage", M.Grouping);
@@ -82,8 +82,7 @@ public class GroupPage extends FormPage {
 		ProcessGrouping restGroup = new ProcessGrouping();
 		restGroup.name = M.Other;
 		restGroup.rest = true;
-		for (CategorizedDescriptor p : result.getProcesses())
-			restGroup.processes.add(p);
+		restGroup.processes.addAll(result.getProcesses());
 		groups.add(restGroup);
 	}
 
@@ -138,7 +137,7 @@ public class GroupPage extends FormPage {
 		Composite composite = UI.sectionClient(groupingSection, toolkit);
 		UI.gridLayout(composite, 2);
 		Actions.bind(groupingSection, new AddGroupAction(),
-				new SaveGroupSetAction(this), new GroupSetAction(this));
+			new SaveGroupSetAction(this), new GroupSetAction(this));
 		createGroupViewer(composite);
 		processViewer = Tables.createViewer(composite);
 		UI.gridData(processViewer.getControl(), true, false).heightHint = 200;
@@ -248,15 +247,14 @@ public class GroupPage extends FormPage {
 		@Override
 		public void widgetSelected(SelectionEvent e) {
 			Object o = e.widget.getData();
-			if (!(o instanceof ProcessGrouping))
+			if (!(o instanceof ProcessGrouping targetGroup))
 				return;
-			ProcessGrouping targetGroup = (ProcessGrouping) o;
 			ProcessGrouping sourceGroup = Viewers.getFirstSelected(groupViewer);
 			if (sourceGroup == null)
 				return;
 			List<ProcessDescriptor> processes = Viewers
 					.getAllSelected(processViewer);
-			if (processes == null || processes.isEmpty())
+			if (processes.isEmpty())
 				return;
 			move(sourceGroup, targetGroup, processes);
 		}
@@ -298,7 +296,7 @@ public class GroupPage extends FormPage {
 					continue;
 				other.add(g);
 			}
-			Collections.sort(other, this);
+			other.sort(this);
 			return other;
 		}
 
@@ -310,7 +308,7 @@ public class GroupPage extends FormPage {
 		}
 	}
 
-	private class GroupPageLabel extends LabelProvider {
+	private static class GroupPageLabel extends LabelProvider {
 
 		@Override
 		public Image getImage(Object element) {
@@ -321,11 +319,9 @@ public class GroupPage extends FormPage {
 
 		@Override
 		public String getText(Object element) {
-			if (element instanceof ProcessGrouping) {
-				ProcessGrouping group = (ProcessGrouping) element;
+			if (element instanceof ProcessGrouping group) {
 				return group.name;
-			} else if (element instanceof ProcessDescriptor) {
-				ProcessDescriptor p = (ProcessDescriptor) element;
+			} else if (element instanceof ProcessDescriptor p) {
 				return Labels.name(p);
 			} else
 				return null;
@@ -335,7 +331,7 @@ public class GroupPage extends FormPage {
 	/**
 	 * A viewer comparator for groups and processes on the grouping page.
 	 */
-	private class GroupPageComparator extends ViewerComparator {
+	private static class GroupPageComparator extends ViewerComparator {
 
 		@Override
 		public int compare(Viewer viewer, Object first, Object second) {
@@ -374,10 +370,10 @@ public class GroupPage extends FormPage {
 	 * Action for saving a group set in the grouping page of the analysis
 	 * editor.
 	 */
-	private class SaveGroupSetAction extends Action {
+	private static class SaveGroupSetAction extends Action {
 
-		private Logger log = LoggerFactory.getLogger(getClass());
-		private GroupPage page;
+		private final Logger log = LoggerFactory.getLogger(getClass());
+		private final GroupPage page;
 
 		public SaveGroupSetAction(GroupPage page) {
 			this.page = page;
@@ -408,7 +404,7 @@ public class GroupPage extends FormPage {
 			}
 		}
 
-		private ProcessGroupSet createGroupSet() throws Exception {
+		private ProcessGroupSet createGroupSet() {
 			Shell shell = page.getEditorSite().getShell();
 			InputDialog dialog = new InputDialog(shell, M.SaveAs,
 					M.PleaseEnterAName, "", null);
