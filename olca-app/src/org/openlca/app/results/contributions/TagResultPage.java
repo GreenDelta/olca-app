@@ -15,10 +15,12 @@ import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ResultEditor;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -54,9 +56,11 @@ public class TagResultPage extends FormPage {
 			.withSelectionHandler(new SelectionHandler())
 			.create(comp, tk);
 
-		table = Tables.createViewer(body, "Tag", "Contribution");
+		table = Tables.createViewer(comp, "Tag", "Contribution");
 		table.setLabelProvider(new TagItemLabel());
 		Tables.bindColumnWidths(table, 0.5, 0.5);
+		Actions.bind(section, TableClipboard.onCopyAll(table));
+		Actions.bind(table, TableClipboard.onCopySelected(table));
 
 		form.reflow(true);
 
@@ -103,7 +107,7 @@ public class TagResultPage extends FormPage {
 		}
 
 		private void fillTable(String unit, double total,
-													 ToDoubleFunction<TagResult> result) {
+		                       ToDoubleFunction<TagResult> result) {
 			if (table == null)
 				return;
 
@@ -126,6 +130,7 @@ public class TagResultPage extends FormPage {
 				return Double.compare(item2.result, item1.result);
 			});
 
+			table.setInput(items);
 		}
 	}
 
