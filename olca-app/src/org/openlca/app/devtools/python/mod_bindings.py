@@ -37,7 +37,7 @@ import org.openlca.core.model.CalculationType as CalculationType
 import org.openlca.ipc.handlers.Calculator as Calculator
 import org.openlca.util.Categories as Categories
 import org.openlca.core.model.descriptors.CategorizedDescriptor as CategorizedDescriptor
-import org.openlca.core.model.CategorizedEntity	extends as CategorizedEntity	extends
+import org.openlca.core.model.CategorizedEntity as CategorizedEntity
 import org.openlca.core.database.CategorizedEntityDao as CategorizedEntityDao
 import org.openlca.core.model.Category as Category
 import org.openlca.core.database.CategoryDao as CategoryDao
@@ -53,6 +53,7 @@ import org.openlca.cloud.model.Comments as Comments
 import org.openlca.cloud.model.data.Commit as Commit
 import org.openlca.cloud.api.CommitInvocation as CommitInvocation
 import org.openlca.cloud.api.data.CommitStream as CommitStream
+import org.openlca.io.simapro.csv.Compartment as Compartment
 import org.openlca.core.matrix.format.CompressedRowMatrix as CompressedRowMatrix
 import org.openlca.io.ilcd.input.ContactImport as ContactImport
 import org.openlca.jsonld.output.Context as Context
@@ -206,6 +207,7 @@ import org.openlca.io.ecospold1.input.ImportConfig as ImportConfig
 import org.openlca.io.ImportEvent as ImportEvent
 import org.openlca.io.ilcd.input.ImportException as ImportException
 import org.openlca.io.ImportInfo as ImportInfo
+import org.openlca.proto.io.input.ImportStatus as ImportStatus
 import org.openlca.proto.io.input.In as In
 import org.openlca.proto.io.InMemoryProtoStore as InMemoryProtoStore
 import org.openlca.core.matrix.IndexedMatrix as IndexedMatrix
@@ -248,6 +250,7 @@ import org.openlca.core.results.LocationResult as LocationResult
 import org.openlca.core.database.usage.LocationUseSearch as LocationUseSearch
 import org.openlca.proto.io.output.LocationWriter as LocationWriter
 import org.openlca.cloud.util.Logs as Logs
+import org.openlca.core.matrix.index.LongPair as LongPair
 import org.openlca.ipc.Main as Main
 import org.openlca.io.maps.MapFactor as MapFactor
 import org.openlca.core.model.MappingFile as MappingFile
@@ -357,6 +360,7 @@ import org.openlca.proto.io.input.ProtoImport as ProtoImport
 import org.openlca.core.matrix.linking.ProviderIndex as ProviderIndex
 import org.openlca.io.ilcd.input.ProviderLinker as ProviderLinker
 import org.openlca.core.matrix.linking.ProviderLinking as ProviderLinking
+import org.openlca.core.matrix.linking.ProviderSearch as ProviderSearch
 import org.openlca.core.database.Query as Query
 import org.openlca.io.refdata.RefDataExport as RefDataExport
 import org.openlca.io.refdata.RefDataImport as RefDataImport
@@ -435,6 +439,7 @@ import org.openlca.core.math.SystemCalculator as SystemCalculator
 import org.openlca.io.ilcd.output.SystemExport as SystemExport
 import org.openlca.core.results.SystemProcess as SystemProcess
 import org.openlca.core.results.TagResult as TagResult
+import org.openlca.core.matrix.index.TechFlow as TechFlow
 import org.openlca.core.matrix.index.TechIndex as TechIndex
 import org.openlca.core.matrix.linking.TechIndexBuilder as TechIndexBuilder
 import org.openlca.core.matrix.linking.TechIndexCutoffBuilder as TechIndexCutoffBuilder

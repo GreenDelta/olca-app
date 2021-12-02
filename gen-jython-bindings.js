@@ -47,7 +47,7 @@ let scan = (folder, package, bindings) => {
     // search for public class declarations
     for (let line of lines) {
       let match = line.match(
-        /public( final)?( abstract)? (?:class|enum) ([^< ]*)(.*)?/)
+        /public( final)?( abstract)? (?:class|enum|record) ([a-zA-Z0-9]*)(.*)?/)
       if (!match || match.length < 4)
         continue
       let clazz = match[3]
