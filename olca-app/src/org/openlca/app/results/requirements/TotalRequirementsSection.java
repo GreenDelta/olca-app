@@ -38,7 +38,7 @@ public class TotalRequirementsSection {
 		this.result = result;
 		costs = !result.hasCosts()
 			? Costs.NONE
-			: result.totalCosts >= 0
+			: result.totalCosts() >= 0
 			? Costs.NET_COSTS
 			: Costs.ADDED_VALUE;
 		this.dqResult = dqResult;
@@ -154,10 +154,10 @@ public class TotalRequirementsSection {
 			? M.TotalNetcosts
 			: M.TotalAddedValue;
 		double v = costs == Costs.NET_COSTS
-			? result.totalCosts
-			: result.totalCosts == 0
+			? result.totalCosts()
+			: result.totalCosts() == 0
 			? 0
-			: -result.totalCosts;
+			: -result.totalCosts();
 		var currency = new CurrencyDao(Database.get())
 			.getReferenceCurrency();
 		var symbol = currency != null && currency.code != null

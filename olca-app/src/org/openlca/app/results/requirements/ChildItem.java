@@ -30,7 +30,7 @@ class ChildItem implements Item {
 		result.techIndex().each((col, product) -> {
 			if (row == col)
 				return;
-			var amount = result.provider.scaledTechValueOf(row, col);
+			var amount = result.provider().scaledTechValueOf(row, col);
 			if (amount == 0)
 				return;
 			var child = new ChildItem(parent, product);

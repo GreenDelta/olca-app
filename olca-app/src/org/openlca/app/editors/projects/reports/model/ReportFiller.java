@@ -87,7 +87,7 @@ class ReportFiller {
 
     var currency = new CurrencyDao(db).getReferenceCurrency();
     for (var v : result.getVariants()) {
-      double costs = result.getResult(v).totalCosts;
+      double costs = result.getResult(v).totalCosts();
       report.netCosts.add(ReportCostResult.of(v, currency, costs));
       double addedValue = costs == 0 ? 0 : -costs;
       report.addedValues.add(ReportCostResult.of(v, currency, addedValue));

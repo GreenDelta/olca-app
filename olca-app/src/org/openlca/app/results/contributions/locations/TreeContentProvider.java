@@ -141,8 +141,8 @@ class TreeContentProvider implements ITreeContentProvider {
 	private Stream<Contribution<?>> contributions(
 			Location loc, CostResultDescriptor c) {
 		double total = c.forAddedValue
-				? -result.totalCosts
-				: result.totalCosts;
+				? -result.totalCosts()
+				: result.totalCosts();
 		return processes(loc).stream().map(p -> {
 			Contribution<?> con = Contribution.of(p);
 			con.amount = c.forAddedValue

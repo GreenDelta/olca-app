@@ -38,7 +38,7 @@ class ProviderItem implements Item {
 
 			var item = new ProviderItem(index, product);
 			items.add(item);
-			var tr = result.totalRequirements[index];
+			var tr = result.totalRequirements()[index];
 			item.amount = tr == 0
 				? 0
 				: item.hasWasteFlow() ? -tr : tr;
@@ -46,7 +46,7 @@ class ProviderItem implements Item {
 			// costs
 			if (!withCosts)
 				return;
-			double c = result.provider.directCostsOf(index);
+			double c = result.provider().directCostsOf(index);
 			if (c == 0)
 				return;
 			item.costValue = costs == Costs.NET_COSTS

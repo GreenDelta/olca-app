@@ -95,6 +95,7 @@ import org.openlca.cloud.model.data.Dataset as Dataset
 import org.openlca.cloud.util.Datasets as Datasets
 import org.openlca.core.library.DbLibrarySwap as DbLibrarySwap
 import org.openlca.core.database.DbUtils as DbUtils
+import org.openlca.core.matrix.linking.DefaultProcessLinker as DefaultProcessLinker
 import org.openlca.core.matrix.format.DenseByteMatrix as DenseByteMatrix
 import org.openlca.julia.DenseFactorization as DenseFactorization
 import org.openlca.core.matrix.format.DenseMatrix as DenseMatrix
@@ -239,6 +240,7 @@ import org.openlca.core.library.LibraryPackage as LibraryPackage
 import org.openlca.cloud.model.LibraryRestriction as LibraryRestriction
 import org.openlca.geo.geojson.LineString as LineString
 import org.openlca.core.matrix.linking.LinkingConfig as LinkingConfig
+import org.openlca.core.matrix.linking.LinkingInfo as LinkingInfo
 import org.openlca.core.model.Location as Location
 import org.openlca.core.database.LocationDao as LocationDao
 import org.openlca.core.model.descriptors.LocationDescriptor as LocationDescriptor
@@ -352,7 +354,7 @@ import org.openlca.proto.io.output.ProjectWriter as ProjectWriter
 import org.openlca.geo.calc.Projection as Projection
 import org.openlca.core.library.Proto as Proto
 import org.openlca.proto.io.input.ProtoImport as ProtoImport
-import org.openlca.core.matrix.index.ProviderIndex as ProviderIndex
+import org.openlca.core.matrix.linking.ProviderIndex as ProviderIndex
 import org.openlca.io.ilcd.input.ProviderLinker as ProviderLinker
 import org.openlca.core.matrix.linking.ProviderLinking as ProviderLinking
 import org.openlca.core.database.Query as Query

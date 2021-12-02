@@ -68,7 +68,7 @@ class Combo {
 			CostResultDescriptor d2 = new CostResultDescriptor();
 			d2.forAddedValue = true;
 			d2.name = M.AddedValue;
-			c.costs = sr.totalCosts >= 0
+			c.costs = sr.totalCosts() >= 0
 					? Arrays.asList(d1, d2)
 					: Arrays.asList(d2, d1);
 		}
