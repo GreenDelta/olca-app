@@ -4,14 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
 
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.openlca.app.App;
+import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.TagResult;
@@ -20,6 +28,7 @@ public class TagResultPage extends FormPage {
 
 	private final ResultEditor<?> editor;
 	private final List<TagResult> tagResults;
+	private TableViewer table;
 
 	public TagResultPage(ResultEditor<?> editor) {
 		super(editor, "TagResultPage", "Tags");
@@ -45,8 +54,16 @@ public class TagResultPage extends FormPage {
 			.withSelectionHandler(new SelectionHandler())
 			.create(comp, tk);
 
+		table = Tables.createViewer(body, "Tag", "Contribution");
+		table.setLabelProvider(new TagItemLabel());
+		Tables.bindColumnWidths(table, 0.5, 0.5);
 
 		form.reflow(true);
+
+		App.runWithProgress("Calculate tag results", () -> {
+			tagResults.clear();
+			tagResults.addAll(TagResult.allOf(editor.result));
+		}, selector::initWithEvent);
 	}
 
 	private record TagItem(
@@ -55,32 +72,6 @@ public class TagResultPage extends FormPage {
 		String unit,
 		double share,
 		boolean isTotal) {
-
-		static List<TagItem> allOf(EnviFlow flow) {
-			var items = new ArrayList<TagItem>();
-			var unit = Labels.refUnit(flow);
-			double total = editor.result.getTotalFlowResult(flow).value;
-			items.add(new TagItem("Total", total, unit, 100, true);
-
-			for (var tagResult : tagResults) {
-				var result = tagResult.flowResult(flow);
-				var share = total == 0
-					? 0
-					: 100 * share / Math.abs(total);
-				items.add(new TagItem(tagResult.tag(), result, unit, share, false));
-			}
-
-			items.sort((item1, item2) -> {
-				if (item1.isTotal)
-					return -1;
-				if (item2.isTotal)
-					return 1;
-				return Double.compare(item2.result, item1.result);
-			});
-
-		}
-
-
 	}
 
 	private class SelectionHandler implements ResultItemSelector.SelectionHandler {
@@ -113,26 +104,58 @@ public class TagResultPage extends FormPage {
 
 		private void fillTable(String unit, double total,
 													 ToDoubleFunction<TagResult> result) {
+			if (table == null)
+				return;
 
 			var items = new ArrayList<TagItem>();
-			items.add(new TagItem("Total", total, unit, 100, true);
+			items.add(new TagItem("Total", total, unit, 1, true));
 
 			for (var tagResult : tagResults) {
 				var value = result.applyAsDouble(tagResult);
 				var share = total == 0
 					? 0
-					: 100 * value / Math.abs(total);
+					: value / Math.abs(total);
 				items.add(new TagItem(tagResult.tag(), value, unit, share, false));
 			}
 
 			items.sort((item1, item2) -> {
 				if (item1.isTotal)
-					return -1;
-				if (item2.isTotal)
 					return 1;
+				if (item2.isTotal)
+					return -1;
 				return Double.compare(item2.result, item1.result);
 			});
 
+		}
+	}
+
+	private static class TagItemLabel extends LabelProvider
+		implements ITableLabelProvider {
+
+		private final ContributionImage image = new ContributionImage();
+
+		@Override
+		public void dispose() {
+			image.dispose();
+			super.dispose();
+		}
+
+		@Override
+		public Image getColumnImage(Object obj, int col) {
+			if (!(obj instanceof TagItem item))
+				return null;
+			return col == 1
+				? image.get(item.share)
+				: null;
+		}
+
+		@Override
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof TagItem item))
+				return null;
+			return col == 0
+				? item.tag
+				: Numbers.format(item.result) + " " + item.unit;
 		}
 	}
 }

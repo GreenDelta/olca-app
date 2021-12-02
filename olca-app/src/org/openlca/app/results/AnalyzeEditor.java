@@ -8,9 +8,11 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
+import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.results.contributions.ContributionTreePage;
 import org.openlca.app.results.contributions.ProcessResultPage;
+import org.openlca.app.results.contributions.TagResultPage;
 import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.app.util.Labels;
@@ -65,6 +67,9 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 			setPageText(diagramIndex, M.SankeyDiagram);
 			if (result.hasImpacts()) {
 				addPage(new ImpactChecksPage(this));
+			}
+			if (FeatureFlag.TAG_RESULTS.isEnabled()) {
+				addPage(new TagResultPage(this));
 			}
 
 			// add a page listener to initialize the Sankey diagram
