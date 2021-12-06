@@ -114,6 +114,12 @@ public class Labels {
 		return refUnit(flow.flow());
 	}
 
+	public static String refUnit(TechFlow flow) {
+		return flow == null
+			? ""
+			: refUnit(flow.flow());
+	}
+
 	public static String refUnit(FlowDescriptor flow) {
 		if (flow == null)
 			return "";

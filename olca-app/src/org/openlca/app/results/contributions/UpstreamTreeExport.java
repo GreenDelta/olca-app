@@ -80,7 +80,7 @@ class UpstreamTreeExport implements Runnable {
 			// write the tree
 			row = 1;
 			maxColumn = 0;
-			totalResult = tree.root.result;
+			totalResult = tree.root.result();
 			Path path = new Path(tree.root);
 			traverse(path);
 
@@ -162,7 +162,7 @@ class UpstreamTreeExport implements Runnable {
 		}
 
 		var node = path.node;
-		double result = path.node.result;
+		double result = path.node.result();
 
 		// first check if we need to cut the path here
 		if (result == 0)
@@ -175,7 +175,7 @@ class UpstreamTreeExport implements Runnable {
 				return;
 		}
 		if (maxDepth < 0) {
-			int count = path.count(node.provider);
+			int count = path.count(node.provider());
 			if (count > maxRecursionDepth) {
 				return;
 			}
@@ -190,14 +190,14 @@ class UpstreamTreeExport implements Runnable {
 
 	private void write(Path path) {
 		row++;
-		values.add(path.node.result);
+		values.add(path.node.result());
 		int col = path.length;
 		maxColumn = Math.max(col, maxColumn);
 		var node = path.node;
-		if (node.provider == null
-				|| node.provider.provider() == null)
+		if (node.provider() == null
+				|| node.provider().provider() == null)
 			return;
-		var label = Labels.name(node.provider.provider());
+		var label = Labels.name(node.provider().provider());
 		Excel.cell(sheet, row, col, label);
 	}
 
@@ -223,7 +223,7 @@ class UpstreamTreeExport implements Runnable {
 		}
 
 		int count(TechFlow techFlow) {
-			int c = Objects.equals(techFlow, node.provider) ? 1 : 0;
+			int c = Objects.equals(techFlow, node.provider()) ? 1 : 0;
 			return prefix != null ? c + prefix.count(techFlow) : c;
 		}
 	}

@@ -44,8 +44,6 @@ public class ContributionTreePage extends FormPage {
 	private TreeViewer tree;
 	private Object selection;
 
-	private static final String[] HEADERS = { M.Contribution,
-			M.Process, M.Amount, M.Unit };
 
 	public ContributionTreePage(AnalyzeEditor editor) {
 		super(editor, "analysis.ContributionTreePage", M.ContributionTree);
@@ -58,15 +56,15 @@ public class ContributionTreePage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		FormToolkit tk = mform.getToolkit();
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.name(setup.target()),
-				Images.get(result));
+			Labels.name(setup.target()),
+			Images.get(result));
 		Composite body = UI.formBody(form, tk);
 		Composite comp = tk.createComposite(body);
 		UI.gridLayout(comp, 2);
 		var selector = ResultItemSelector
-				.on(resultItems)
-				.withSelectionHandler(new SelectionHandler())
-				.create(comp, tk);
+			.on(resultItems)
+			.withSelectionHandler(new SelectionHandler())
+			.create(comp, tk);
 		Composite treeComp = tk.createComposite(body);
 		UI.gridLayout(treeComp, 1);
 		UI.gridData(treeComp, true, true);
@@ -76,32 +74,39 @@ public class ContributionTreePage extends FormPage {
 	}
 
 	private void createTree(FormToolkit tk, Composite comp) {
-		tree = Trees.createViewer(comp, HEADERS,
-				new ContributionLabelProvider());
+		var headers = new String[]{
+			M.Contribution,
+			M.Process,
+			"Required amount",
+			M.Result};
+		tree = Trees.createViewer(comp, headers,
+			new ContributionLabelProvider());
+
 		tree.setAutoExpandLevel(2);
 		tree.getTree().setLinesVisible(false);
 		tree.setContentProvider(new ContributionContentProvider());
 		tk.adapt(tree.getTree(), false, false);
 		tk.paintBordersFor(tree.getTree());
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
+		tree.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(tree.getTree(),
-				0.20, 0.50, 0.20, 0.10);
+			0.20, 0.40, 0.20, 0.20);
 
 		// action bindings
 		Action onOpen = Actions.onOpen(() -> {
 			UpstreamNode n = Viewers.getFirstSelected(tree);
-			if (n == null || n.provider == null)
+			if (n == null || n.provider() == null)
 				return;
-			App.open(n.provider.provider());
+			App.open(n.provider().provider());
 		});
 
 		Action onExport = Actions.create(M.ExportToExcel,
-				Images.descriptor(FileType.EXCEL), () -> {
-					Object input = tree.getInput();
-					if (!(input instanceof UpstreamTree))
-						return;
-					TreeExportDialog.open((UpstreamTree) input);
-				});
+			Images.descriptor(FileType.EXCEL), () -> {
+				Object input = tree.getInput();
+				if (!(input instanceof UpstreamTree))
+					return;
+				TreeExportDialog.open((UpstreamTree) input);
+			});
 
 		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree), onExport);
 		Trees.onDoubleClick(tree, e -> onOpen.run());
@@ -127,8 +132,8 @@ public class ContributionTreePage extends FormPage {
 		public void onCostsSelected(CostResultDescriptor cost) {
 			selection = cost;
 			UpstreamTree model = cost.forAddedValue
-					? result.getAddedValueTree()
-					: result.getCostTree();
+				? result.getAddedValueTree()
+				: result.getCostTree();
 			tree.setInput(model);
 		}
 	}
@@ -139,11 +144,10 @@ public class ContributionTreePage extends FormPage {
 
 		@Override
 		public Object[] getChildren(Object parent) {
-			if (!(parent instanceof UpstreamNode))
+			if (!(parent instanceof UpstreamNode node))
 				return null;
 			if (tree == null)
 				return null;
-			UpstreamNode node = (UpstreamNode) parent;
 			return tree.childs(node).toArray();
 		}
 
@@ -151,7 +155,7 @@ public class ContributionTreePage extends FormPage {
 		public Object[] getElements(Object input) {
 			if (!(input instanceof UpstreamTree))
 				return null;
-			return new Object[] { ((UpstreamTree) input).root };
+			return new Object[]{((UpstreamTree) input).root};
 		}
 
 		@Override
@@ -161,9 +165,8 @@ public class ContributionTreePage extends FormPage {
 
 		@Override
 		public boolean hasChildren(Object elem) {
-			if (!(elem instanceof UpstreamNode))
+			if (!(elem instanceof UpstreamNode node))
 				return false;
-			UpstreamNode node = (UpstreamNode) elem;
 			return !tree.childs(node).isEmpty();
 		}
 
@@ -183,7 +186,7 @@ public class ContributionTreePage extends FormPage {
 	}
 
 	private class ContributionLabelProvider extends BaseLabelProvider implements
-			ITableLabelProvider {
+		ITableLabelProvider {
 
 		private final ContributionImage image = new ContributionImage();
 
@@ -195,43 +198,33 @@ public class ContributionTreePage extends FormPage {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof UpstreamNode))
+			if (!(obj instanceof UpstreamNode node))
 				return null;
-			UpstreamNode n = (UpstreamNode) obj;
-			if (col == 1 && n.provider != null) {
-				return Images.get(n.provider.provider());
-			}
-			if (col == 2) {
-				return image.get(getContribution(n));
-			}
+			if (col == 1 && node.provider() != null)
+				return Images.get(node.provider().provider());
+			if (col == 3)
+				return image.get(getContribution(node));
 			return null;
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof UpstreamNode))
+			if (!(obj instanceof UpstreamNode node))
 				return null;
-			UpstreamNode node = (UpstreamNode) obj;
-			switch (col) {
-			case 0:
-				return Numbers.percent(getContribution(node));
-			case 1:
-				return Labels.name(node.provider.provider());
-			case 2:
-				return Numbers.format(node.result);
-			case 3:
-				return getUnit();
-			default:
-				return null;
-			}
+			return switch (col) {
+				case 0 -> Numbers.percent(getContribution(node));
+				case 1 -> Labels.name(node.provider().provider());
+				case 2 -> Numbers.format(node.requiredAmount()) + " "
+					+ Labels.refUnit(node.provider());
+				case 3 -> Numbers.format(node.result()) + " " + getUnit();
+				default -> null;
+			};
 		}
 
 		private String getUnit() {
-			if (selection instanceof EnviFlow) {
-				var flow = (EnviFlow) selection;
+			if (selection instanceof EnviFlow flow) {
 				return Labels.refUnit(flow);
-			} else if (selection instanceof ImpactDescriptor) {
-				var impact = (ImpactDescriptor) selection;
+			} else if (selection instanceof ImpactDescriptor impact) {
 				return impact.referenceUnit;
 			} else if (selection instanceof CostResultDescriptor) {
 				return Labels.getReferenceCurrencyCode();
@@ -240,14 +233,14 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		private double getContribution(UpstreamNode node) {
-			if (node.result == 0)
+			if (node.result() == 0)
 				return 0;
-			double total = ((UpstreamTree) tree.getInput()).root.result;
+			double total = ((UpstreamTree) tree.getInput()).root.result();
 			if (total == 0)
 				return 0;
-			return total < 0 && node.result > 0
-					? - node.result / total
-					: node.result / total;
+			return total < 0 && node.result() > 0
+				? -node.result() / total
+				: node.result() / total;
 		}
 	}
 }
