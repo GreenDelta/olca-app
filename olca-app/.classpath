@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="libs/swt-material-icons-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-3.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/animal-sniffer-annotations-1.19.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-4.1.1.4.jar"/>

@@ -1,13 +1,11 @@
 package org.openlca.app.editors.systems;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
@@ -46,6 +44,7 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.swt.material.icons.MaterialIcon;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -238,7 +237,7 @@ class ParameterRedefTable {
 						: Images.get(model);
 				case 1:
 					return redef.isProtected
-						? Icon.LOCK.get()
+						? Icon.get(MaterialIcon.LOCK) // Icon.LOCK.get()
 						: null;
 				case 5:
 					String path = CommentPaths.get(redef, getContext(redef));

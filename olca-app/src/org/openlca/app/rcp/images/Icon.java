@@ -2,6 +2,10 @@ package org.openlca.app.rcp.images;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.widgets.Display;
+import org.openlca.app.util.UI;
+import org.openlca.swt.material.icons.MaterialIcon;
 
 public enum Icon {
 
@@ -137,7 +141,7 @@ public enum Icon {
 
 	final String fileName;
 
-	private Icon(String fileName) {
+	Icon(String fileName) {
 		this.fileName = fileName;
 	}
 
@@ -149,4 +153,23 @@ public enum Icon {
 		return ImageManager.descriptor(this);
 	}
 
+	public static Image get(MaterialIcon materialIcon) {
+		var key = "mat-" + materialIcon.name();
+		var image = ImageManager.registry.get(key);
+		if (image != null && !image.isDisposed())
+			return image;
+		image = new Image(Display.getDefault(), materialIcon.data());
+		ImageManager.registry.put(key, image);
+		return image;
+	}
+
+	public static ImageDescriptor descriptor(MaterialIcon materialIcon) {
+		var img = get(materialIcon);
+		return new ImageDescriptor() {
+			@Override
+			public ImageData getImageData(int zoom) {
+				return img.getImageData();
+			}
+		};
+	}
 }

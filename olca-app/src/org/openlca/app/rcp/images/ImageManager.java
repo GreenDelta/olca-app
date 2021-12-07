@@ -17,7 +17,7 @@ import org.openlca.app.rcp.RcpActivator;
 class ImageManager {
 
 	private static final String ROOT = "icons";
-	private static final ImageRegistry registry = new ImageRegistry();
+	static final ImageRegistry registry = new ImageRegistry();
 
 	static Image get(Icon icon) {
 		if (icon == null)

@@ -124,6 +124,12 @@
 			<version>6.3.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.openlca</groupId>
+			<artifactId>swt-material-icons</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
