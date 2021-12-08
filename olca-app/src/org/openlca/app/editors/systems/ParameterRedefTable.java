@@ -44,7 +44,7 @@ import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.swt.material.icons.MaterialIcon;
+import org.openlca.swt.material.icons.MaterialIcons;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,14 +125,15 @@ class ParameterRedefTable {
 		});
 
 		var toggleProtection = Actions.create(
-			"Toggle protection", Icon.LOCK.descriptor(), () -> {
-			ParameterRedef redef = Viewers.getFirstSelected(table);
-			if (redef == null)
-				return;
-			redef.isProtected = !redef.isProtected;
-			table.refresh();
-			editor.setDirty();
-		});
+			"Toggle protection",
+			Icon.descriptor(MaterialIcons.LOCK.outline()), () -> {
+				ParameterRedef redef = Viewers.getFirstSelected(table);
+				if (redef == null)
+					return;
+				redef.isProtected = !redef.isProtected;
+				table.refresh();
+				editor.setDirty();
+			});
 
 		CommentAction.bindTo(section, "parameterRedefs",
 			editor.getComments(), add, remove);
@@ -237,7 +238,7 @@ class ParameterRedefTable {
 						: Images.get(model);
 				case 1:
 					return redef.isProtected
-						? Icon.get(MaterialIcon.LOCK) // Icon.LOCK.get()
+						? Icon.get(MaterialIcons.LOCK.outline()) // Icon.LOCK.get()
 						: null;
 				case 5:
 					String path = CommentPaths.get(redef, getContext(redef));
@@ -283,7 +284,7 @@ class ParameterRedefTable {
 
 	private class ParameterComparator implements Comparator<ParameterRedef> {
 
-		private EntityCache cache = Cache.getEntityCache();
+		private final EntityCache cache = Cache.getEntityCache();
 
 		@Override
 		public int compare(ParameterRedef o1, ParameterRedef o2) {

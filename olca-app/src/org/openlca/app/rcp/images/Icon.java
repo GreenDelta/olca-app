@@ -3,8 +3,8 @@ package org.openlca.app.rcp.images;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
-import org.openlca.app.util.UI;
 import org.openlca.swt.material.icons.MaterialIcon;
 
 public enum Icon {
@@ -153,18 +153,39 @@ public enum Icon {
 		return ImageManager.descriptor(this);
 	}
 
-	public static Image get(MaterialIcon materialIcon) {
-		var key = "mat-" + materialIcon.name();
+	public static Image get(MaterialIcon icon) {
+		var image = ImageManager.registry.get(icon.name());
+		if (image != null && !image.isDisposed())
+			return image;
+		image = new Image(Display.getDefault(), icon.data());
+		ImageManager.registry.put(icon.name(), image);
+		return image;
+	}
+
+	public static Image get(MaterialIcon icon, RGB rgb) {
+		if (rgb == null)
+			return get(icon);
+		var key = icon.name() + rgb;
 		var image = ImageManager.registry.get(key);
 		if (image != null && !image.isDisposed())
 			return image;
-		image = new Image(Display.getDefault(), materialIcon.data());
+		image = new Image(Display.getDefault(), icon.data(rgb));
 		ImageManager.registry.put(key, image);
 		return image;
 	}
 
-	public static ImageDescriptor descriptor(MaterialIcon materialIcon) {
-		var img = get(materialIcon);
+	public static ImageDescriptor descriptor(MaterialIcon icon) {
+		var img = get(icon);
+		return new ImageDescriptor() {
+			@Override
+			public ImageData getImageData(int zoom) {
+				return img.getImageData();
+			}
+		};
+	}
+
+	public static ImageDescriptor descriptor(MaterialIcon icon, RGB rgb) {
+		var img = get(icon, rgb);
 		return new ImageDescriptor() {
 			@Override
 			public ImageData getImageData(int zoom) {
