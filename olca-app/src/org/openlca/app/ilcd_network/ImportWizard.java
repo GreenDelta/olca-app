@@ -15,11 +15,9 @@ import org.openlca.app.preferences.IoPreference;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.core.database.IDatabase;
 import org.openlca.ilcd.descriptors.ProcessDescriptor;
-import org.openlca.ilcd.io.SodaClient;
 import org.openlca.ilcd.processes.Process;
 import org.openlca.io.ilcd.input.ImportConfig;
 import org.openlca.io.ilcd.input.ProcessImport;
-import org.openlca.io.ilcd.input.ProviderLinker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,12 +50,11 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private void tryImport() throws Exception {
-		List<ProcessDescriptor> processes = processSearchPage
-				.getSelectedProcesses();
-		SodaClient client = IoPreference.createClient();
-		ImportConfig config = new ImportConfig(client, database);
-		config.langs = new String[] { IoPreference.getIlcdLanguage(), "en" };
+		var processes = processSearchPage.getSelectedProcesses();
+		var client = IoPreference.createClient();
 		client.connect();
+		var config = new ImportConfig(client, database)
+				.withLanguageOrder(IoPreference.getIlcdLanguage(), "en");
 		getContainer().run(true, true, monitor -> {
 			monitor.beginTask(M.ILCD_RunImport, IProgressMonitor.UNKNOWN);
 			try {
@@ -71,15 +68,12 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
 	private void importProcesses(List<ProcessDescriptor> descriptors,
 			ImportConfig config) throws Exception {
-		ProviderLinker linker = new ProviderLinker();
-		for (ProcessDescriptor d : descriptors) {
-			Process p = config.store.get(Process.class, d.uuid);
+		for (var d : descriptors) {
+			var p = config.store().get(Process.class, d.uuid);
 			if (p != null) {
-				ProcessImport imp = new ProcessImport(config, linker);
-				imp.run(p);
+				new ProcessImport(config).run(p);
 			}
 		}
-		linker.createLinks(config.db);
 	}
 
 	@Override

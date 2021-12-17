@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -132,15 +130,10 @@ public class ILCDProvider implements IProvider {
 	public void persist(List<FlowRef> refs, IDatabase db) {
 		if (refs == null || db == null)
 			return;
-		try (ZipStore store = new ZipStore(file)) {
-			FlowDao dao = new FlowDao(db);
-			ImportConfig conf = new ImportConfig(store, db);
+		try (var store = new ZipStore(file)) {
+			var conf = new ImportConfig(store, db);
 			for (FlowRef ref : refs) {
-				Flow flow = dao.getForRefId(ref.flow.refId);
-				if (flow != null)
-					continue;
-				FlowImport imp = new FlowImport(conf);
-				imp.run(ref.flow.refId);
+				FlowImport.get(conf, ref.flow.refId);
 			}
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());

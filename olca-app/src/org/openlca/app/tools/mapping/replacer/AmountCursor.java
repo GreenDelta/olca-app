@@ -42,8 +42,8 @@ class AmountCursor extends UpdatableCursor {
 			FlowMapEntry entry = replacer.entries.get(flowID);
 			if (entry == null)
 				return;
-			Flow source = replacer.flows.get(entry.sourceFlow.flow.id);
-			Flow target = replacer.flows.get(entry.targetFlow.flow.id);
+			Flow source = replacer.flows.get(entry.sourceFlow().flow.id);
+			Flow target = replacer.flows.get(entry.targetFlow().flow.id);
 			if (source == null || target == null)
 				return;
 
@@ -64,11 +64,11 @@ class AmountCursor extends UpdatableCursor {
 			update.setLong(1, target.id);
 
 			// f_unit
-			update.setLong(2, entry.targetFlow.unit.id);
+			update.setLong(2, entry.targetFlow().unit.id);
 
 			// f_flow_property_factor
 			FlowPropertyFactor targetPropFactor = propFactor(
-					target, entry.targetFlow);
+					target, entry.targetFlow());
 			update.setLong(3, targetPropFactor.id);
 
 			// amount
@@ -92,10 +92,10 @@ class AmountCursor extends UpdatableCursor {
 
 			// f_default_provider
 			if (type == ModelType.PROCESS) {
-				if (entry.targetFlow.provider == null) {
+				if (entry.targetFlow().provider == null) {
 					update.setNull(10, Types.INTEGER);
 				} else {
-					update.setLong(10, entry.targetFlow.provider.id);
+					update.setLong(10, entry.targetFlow().provider.id);
 				}
 			}
 

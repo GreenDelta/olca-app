@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.maps.FlowRef;
-import org.openlca.io.maps.Status;
+import org.openlca.io.maps.MappingStatus;
 import org.openlca.util.Strings;
 
 final class Sync {
@@ -41,7 +41,7 @@ final class Sync {
 			String flowID = mapRef.flow.refId;
 			FlowRef packRef = packRefs.get(flowID);
 			if (packRef == null) {
-				mapRef.status = Status.error("there is no flow with id="
+				mapRef.status = MappingStatus.error("there is no flow with id="
 						+ flowID + " in the data package");
 				return;
 			}
@@ -54,7 +54,7 @@ final class Sync {
 			} else {
 
 				if (packRef.property == null) {
-					mapRef.status = Status.error("the flow in the data package"
+					mapRef.status = MappingStatus.error("the flow in the data package"
 							+ " has no corresponding flow property");
 					return;
 				}
@@ -64,7 +64,8 @@ final class Sync {
 				if (Strings.nullOrEqual(packProp.refId, mapProp.refId)
 						&& packProp.name != null && mapProp.name != null
 						&& !Strings.nullOrEqual(packProp.name, mapProp.name)) {
-					mapRef.status = Status.error("the flow property in the data "
+					mapRef.status = MappingStatus.error(
+							"the flow property in the data "
 							+ "package has the same ID but a different name: "
 							+ packProp.name + " != " + mapProp.name);
 					return;
@@ -90,7 +91,7 @@ final class Sync {
 				if (Strings.nullOrEqual(packUnit.refId, mapUnit.refId)
 						&& packUnit.name != null && mapUnit.name != null
 						&& !Strings.nullOrEqual(packUnit.name, mapUnit.name)) {
-					mapRef.status = Status.error("the flow unit in the data "
+					mapRef.status = MappingStatus.error("the flow unit in the data "
 							+ "package has the same ID but a different name: "
 							+ packUnit.name + " != " + mapUnit.name);
 					return;
@@ -103,7 +104,7 @@ final class Sync {
 			Sync.checkFlowLocation(mapRef, packRef.flowLocation);
 
 			if (mapRef.status == null) {
-				mapRef.status = Status.ok("flow in sync with data package");
+				mapRef.status = MappingStatus.ok("flow in sync with data package");
 			}
 
 		});
@@ -113,7 +114,7 @@ final class Sync {
 		if (ref == null)
 			return true;
 		if (ref.flow == null || ref.flow.refId == null) {
-			ref.status = Status.error("missing flow reference with UUID");
+			ref.status = MappingStatus.error("missing flow reference with UUID");
 			return true;
 		}
 		return false;
@@ -191,15 +192,15 @@ final class Sync {
 		if (ref == null)
 			return;
 		if (ref.status == null || ref.status.isOk()) {
-			ref.status = Status.warn(message);
+			ref.status = MappingStatus.warn(message);
 			return;
 		}
 		if (ref.status.isError())
 			// do not overwrite an error
 			return;
 		// combine the warnings
-		String m = ref.status.message + "; " + message;
-		ref.status = Status.warn(m);
+		String m = ref.status.message() + "; " + message;
+		ref.status = MappingStatus.warn(m);
 	}
 
 }

@@ -1,7 +1,6 @@
 package org.openlca.app.ilcd_network;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ISelection;

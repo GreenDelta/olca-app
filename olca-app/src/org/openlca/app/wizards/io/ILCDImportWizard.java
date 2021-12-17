@@ -14,8 +14,10 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferences.IoPreference;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.ilcd.io.ZipStore;
 import org.openlca.io.ilcd.ILCDImport;
 import org.openlca.io.ilcd.input.ImportConfig;
+import org.openlca.io.maps.FlowMap;
 
 public class ILCDImportWizard extends Wizard implements IImportWizard {
 
@@ -25,15 +27,15 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 
 	public static void of(File file) {
 		Wizards.forImport(
-				"wizard.import.ilcd",
-				(ILCDImportWizard w) -> w.initialFile = file);
+			"wizard.import.ilcd",
+			(ILCDImportWizard w) -> w.initialFile = file);
 	}
 
 	public ILCDImportWizard() {
 		setWindowTitle(M.ImportILCD);
 		setNeedsProgressMonitor(true);
 		setDefaultPageImageDescriptor(
-				Icon.IMPORT_ZIP_WIZARD.descriptor());
+			Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}
 
 	@Override
@@ -43,8 +45,8 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public void addPages() {
 		importPage = initialFile != null
-				? new FileImportPage(initialFile)
-				: new FileImportPage(".zip");
+			? new FileImportPage(initialFile)
+			: new FileImportPage(".zip");
 		importPage.withMappingFile = true;
 		addPage(importPage);
 	}
@@ -76,24 +78,27 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private void doRun(File zip) throws Exception {
-		getContainer().run(true, true, m -> {
-			m.beginTask(M.Import, IProgressMonitor.UNKNOWN);
-			ImportHandler handler = new ImportHandler(m);
-			ILCDImport iImport = new ILCDImport(config(zip));
-			handler.run(iImport);
-		});
+		try (var store = new ZipStore(zip)) {
+			getContainer().run(true, true, m -> {
+
+				m.beginTask(M.Import, IProgressMonitor.UNKNOWN);
+
+				var lang = IoPreference.getIlcdLanguage();
+				var langOrder = !"en".equals(lang)
+					? new String[]{lang, "en"}
+					: new String[]{"en"};
+				var flowMap = importPage.flowMap != null
+					? importPage.flowMap
+					: FlowMap.empty();
+
+				var config = new ImportConfig(store, Database.get(), flowMap)
+					.withAllFlows(true)
+					.withLanguageOrder(langOrder);
+
+				var imp = new ILCDImport(config);
+				imp.run();
+			});
+		}
 	}
 
-	private ImportConfig config(File zip) {
-		ImportConfig config = new ImportConfig(zip, Database.get());
-		config.importFlows = true;
-		String lang = IoPreference.getIlcdLanguage();
-		if (!"en".equals(lang)) {
-			config.langs = new String[]{lang, "en"};
-		}
-		if (importPage.flowMap != null) {
-			config.setFlowMap(importPage.flowMap);
-		}
-		return config;
-	}
 }

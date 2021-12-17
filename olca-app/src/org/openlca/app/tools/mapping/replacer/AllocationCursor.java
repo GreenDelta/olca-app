@@ -31,7 +31,7 @@ class AllocationCursor extends UpdatableCursor {
 			if (!replacer.processes.contains(processID))
 				return;
 
-			update.setLong(1, entry.targetFlow.flow.id);
+			update.setLong(1, entry.targetFlow().flow.id);
 
 			update.executeUpdate();
 			stats.inc(flowID, Stats.REPLACEMENT);

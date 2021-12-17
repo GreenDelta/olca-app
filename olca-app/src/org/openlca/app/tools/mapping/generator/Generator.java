@@ -1,13 +1,10 @@
 package org.openlca.app.tools.mapping.generator;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.io.maps.FlowMap;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
-import org.openlca.io.maps.Status;
+import org.openlca.io.maps.MappingStatus;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,13 +35,13 @@ public class Generator implements Runnable {
 			log.info("generate mappings {} -> {}", sourceSystem, targetSystem);
 			log.info("load source flows");
 			// we only generate mappings for flows that are not already mapped
-			List<FlowRef> sourceFlows = sourceSystem.getFlowRefs()
-					.stream().filter(f -> {
-						if (f.flow == null || f.flow.refId == null)
-							return false;
-						FlowMapEntry e = mapping.getEntry(f.flow.refId);
-						return e == null || e.targetFlow == null;
-					}).collect(Collectors.toList());
+			var sourceFlows = sourceSystem.getFlowRefs()
+				.stream().filter(f -> {
+					if (f.flow == null || f.flow.refId == null)
+						return false;
+					var e = mapping.getEntry(f.flow.refId);
+					return e == null || e.targetFlow() == null;
+				}).toList();
 			if (sourceFlows.isEmpty()) {
 				log.info("found no unmapped source flows");
 				return;
@@ -53,26 +50,27 @@ public class Generator implements Runnable {
 			log.info("create target flow matcher");
 			Matcher matcher = new Matcher(targetSystem);
 			for (FlowRef sflow : sourceFlows) {
-				FlowMapEntry e = new FlowMapEntry();
-				e.sourceFlow = sflow.clone();
-				e.sourceFlow.status = Status.ok();
-				FlowRef tflow = matcher.find(sflow);
-				if (tflow != null) {
-					tflow = tflow.clone();
-					e.targetFlow = tflow;
-					if (Objects.equal(sflow.flow.refId, tflow.flow.refId)) {
-						tflow.status = Status.ok("matched by flow IDs");
+
+				var source = sflow.copy();
+				source.status = MappingStatus.ok();
+
+				FlowRef matched = matcher.find(sflow);
+				FlowRef target = null;
+				if (matched != null) {
+					target = matched.copy();
+					if (Objects.equal(sflow.flow.refId, target.flow.refId)) {
+						target.status = MappingStatus.ok("matched by flow IDs");
 					} else {
-						tflow.status = Status.warn("matched by flow attributes");
+						target.status = MappingStatus.warn("matched by flow attributes");
 					}
-					if (!sameUnits(sflow, tflow)) {
-						tflow.status = Status.warn("different units");
-					} else if (tflow.status.isOk() && tflow.provider != null) {
-						tflow.status = Status.warn("provider matched by attributes");
+					if (!sameUnits(source, target)) {
+						target.status = MappingStatus.warn("different units");
+					} else if (matched.status.isOk() && matched.provider != null) {
+						target.status = MappingStatus.warn("provider matched by attributes");
 					}
 				}
-				e.factor = 1.0;
-				mapping.entries.add(e);
+
+				mapping.entries.add(new FlowMapEntry(source, target, 1.0));
 			}
 
 		} catch (Exception e) {

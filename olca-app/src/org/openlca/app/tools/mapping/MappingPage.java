@@ -118,7 +118,7 @@ class MappingPage extends FormPage {
 
 	private void bindActions(Section section, TableViewer table) {
 		Action add = Actions.onAdd(() -> {
-			FlowMapEntry e = new FlowMapEntry();
+			var e = new FlowMapEntry(new FlowRef(), new FlowRef(), 1);
 			if (Dialog.OK != MappingDialog.open(tool, e))
 				return;
 			tool.mapping.entries.add(e);
@@ -158,12 +158,12 @@ class MappingPage extends FormPage {
 		Runnable tt = null;
 		if (tool.sourceSystem != null) {
 			Stream<FlowRef> stream = tool.mapping.entries
-					.stream().map(e -> e.sourceFlow);
+					.stream().map(e -> e.sourceFlow());
 			st = () -> tool.sourceSystem.sync(stream);
 		}
 		if (tool.targetSystem != null) {
 			Stream<FlowRef> stream = tool.mapping.entries
-					.stream().map(e -> e.targetFlow);
+					.stream().map(e -> e.targetFlow());
 			tt = () -> tool.targetSystem.sync(stream);
 		}
 		if (st == null && tt == null)

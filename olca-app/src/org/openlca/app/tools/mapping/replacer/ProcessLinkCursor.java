@@ -33,14 +33,14 @@ class ProcessLinkCursor extends UpdatableCursor {
 
 			// select the provider
 			long provider = 0L;
-			if (entry.targetFlow.provider != null) {
-				provider = entry.targetFlow.provider.id;
+			if (entry.targetFlow().provider != null) {
+				provider = entry.targetFlow().provider.id;
 			} else {
 				provider = cursor.getLong("f_provider");
 			}
 
 			update.setLong(1, provider);
-			update.setLong(2, entry.targetFlow.flow.id);
+			update.setLong(2, entry.targetFlow().flow.id);
 			long systemID = cursor.getLong("f_product_system");
 
 			update.executeUpdate();

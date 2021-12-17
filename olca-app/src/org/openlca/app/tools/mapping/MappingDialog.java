@@ -1,9 +1,9 @@
 package org.openlca.app.tools.mapping;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -35,7 +35,7 @@ import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
-import org.openlca.io.maps.Status;
+import org.openlca.io.maps.MappingStatus;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
 
@@ -49,19 +49,28 @@ class MappingDialog extends FormDialog {
 	static int open(MappingTool tool, FlowMapEntry entry) {
 		if (tool == null || entry == null)
 			return CANCEL;
-		MappingDialog d = new MappingDialog(tool, entry.clone());
-		int state = d.open();
+
+		// the dialog works on a copy of the entry; only if
+		// the user clicks on OK, the changes are applied
+		var copy = entry.copy();
+		var dialog = new MappingDialog(tool, entry.copy());
+		int state = dialog.open();
 		if (state != OK)
 			return state;
-		entry.factor = d.entry.factor;
-		if (d.entry.sourceFlow != null) {
-			entry.sourceFlow = d.entry.sourceFlow.clone();
-			entry.sourceFlow.status = Status.ok("edited or checked manually");
-		}
-		if (d.entry.targetFlow != null) {
-			entry.targetFlow = d.entry.targetFlow.clone();
-			entry.targetFlow.status = Status.ok("edited or checked manually");
-		}
+
+		Function<FlowRef, FlowRef> check = flowRef -> {
+				var r = flowRef == null
+					? new FlowRef()
+					: flowRef;
+				r.status = r.flow == null
+					? MappingStatus.error("no flow set")
+					: MappingStatus.ok("edited or checked manually");
+				return r;
+		};
+		entry.factor(copy.factor())
+			.sourceFlow(check.apply(copy.sourceFlow()))
+			.targetFlow(check.apply(copy.targetFlow()));
+
 		return state;
 	}
 
@@ -74,11 +83,11 @@ class MappingDialog extends FormDialog {
 		super(UI.shell());
 		this.tool = tool;
 		this.entry = entry;
-		if (entry.sourceFlow == null) {
-			entry.sourceFlow = new FlowRef();
+		if (entry.sourceFlow() == null) {
+			entry.sourceFlow(new FlowRef());
 		}
-		if (entry.targetFlow == null) {
-			entry.targetFlow = new FlowRef();
+		if (entry.targetFlow() == null) {
+			entry.targetFlow(new FlowRef());
 		}
 	}
 
@@ -109,32 +118,31 @@ class MappingDialog extends FormDialog {
 			label.setFont(UI.boldFont());
 			UI.gridData(label, true, false);
 		});
-		RefPanel sourcePanel = new RefPanel(entry.sourceFlow, true);
+		RefPanel sourcePanel = new RefPanel(entry.sourceFlow(), true);
 		sourcePanel.render(comp, tk);
 		UI.gridData(tk.createLabel(
-				comp, "", SWT.SEPARATOR | SWT.HORIZONTAL), true, false);
+			comp, "", SWT.SEPARATOR | SWT.HORIZONTAL), true, false);
 
 		// target flow
 		Fn.with(UI.formLabel(comp, tk, "Target flow"), label -> {
 			label.setFont(UI.boldFont());
 			UI.gridData(label, true, false);
 		});
-		RefPanel targetPanel = new RefPanel(entry.targetFlow, false);
+		RefPanel targetPanel = new RefPanel(entry.targetFlow(), false);
 		targetPanel.render(comp, tk);
 		UI.gridData(tk.createLabel(
-				comp, "", SWT.SEPARATOR | SWT.HORIZONTAL), true, false);
+			comp, "", SWT.SEPARATOR | SWT.HORIZONTAL), true, false);
 
 		// text with conversion factor
 		Composite convComp = tk.createComposite(body);
 		UI.gridLayout(convComp, 3);
 		UI.gridData(convComp, true, false);
 		Text convText = UI.formText(convComp, tk, M.ConversionFactor);
-		convText.setText(Double.toString(entry.factor));
+		convText.setText(Double.toString(entry.factor()));
 		convText.addModifyListener(e -> {
 			try {
-				entry.factor = Double.parseDouble(
-						convText.getText());
-			} catch (Exception _e) {
+				entry.factor(Double.parseDouble(convText.getText()));
+			} catch (Exception ignored) {
 			}
 		});
 
@@ -143,15 +151,15 @@ class MappingDialog extends FormDialog {
 		Runnable updateUnit = () -> {
 			String sunit = "?";
 			String tunit = "?";
-			if (entry.sourceFlow != null
-					&& entry.sourceFlow.unit != null
-					&& entry.sourceFlow.unit.name != null) {
-				sunit = entry.sourceFlow.unit.name;
+			if (entry.sourceFlow() != null
+				&& entry.sourceFlow().unit != null
+				&& entry.sourceFlow().unit.name != null) {
+				sunit = entry.sourceFlow().unit.name;
 			}
-			if (entry.targetFlow != null
-					&& entry.targetFlow.unit != null
-					&& entry.targetFlow.unit.name != null) {
-				tunit = entry.targetFlow.unit.name;
+			if (entry.targetFlow() != null
+				&& entry.targetFlow().unit != null
+				&& entry.targetFlow().unit.name != null) {
+				tunit = entry.targetFlow().unit.name;
 			}
 			unitLabel.setText(sunit + "/" + tunit);
 			unitLabel.getParent().pack();
@@ -188,20 +196,16 @@ class MappingDialog extends FormDialog {
 			flowLink = UI.formLink(comp, tk, "");
 			Controls.onClick(flowLink, _e -> {
 				IProvider p = forSource
-						? tool.sourceSystem
-						: tool.targetSystem;
+					? tool.sourceSystem
+					: tool.targetSystem;
 
 				if (p == null) {
 					MsgBox.error("Cannot select flow",
-							"No data source for flows connected");
+						"No data source for flows connected");
 					return;
 				}
 
-				FlowRefDialog.open(p, opt -> {
-					if (!opt.isPresent())
-						return;
-					updateWith(opt.get());
-				});
+				FlowRefDialog.open(p, o -> o.ifPresent(this::updateWith));
 			});
 
 			UI.formLabel(comp, tk, M.Category);
@@ -272,7 +276,7 @@ class MappingDialog extends FormDialog {
 				categoryLabel.setText("");
 			} else {
 				categoryLabel.setText(
-						Strings.cutLeft(ref.flowCategory, maxLen));
+					Strings.cutLeft(ref.flowCategory, maxLen));
 				categoryLabel.setToolTipText(ref.flowCategory);
 			}
 
@@ -322,8 +326,8 @@ class MappingDialog extends FormDialog {
 		void update() {
 
 			if (ref.flow == null
-					|| ref.flow.refId == null
-					|| ref.flow.flowType == FlowType.ELEMENTARY_FLOW) {
+				|| ref.flow.refId == null
+				|| ref.flow.flowType == FlowType.ELEMENTARY_FLOW) {
 				providers.clear();
 				combo.setItems();
 				combo.setEnabled(false);
@@ -344,13 +348,11 @@ class MappingDialog extends FormDialog {
 			}
 			if (flowID > 0L) {
 				Set<Long> ids = ref.flow.flowType == FlowType.WASTE_FLOW
-						? fdao.getWhereInput(flowID)
-						: fdao.getWhereOutput(flowID);
+					? fdao.getWhereInput(flowID)
+					: fdao.getWhereOutput(flowID);
 				providers.addAll(new ProcessDao(db).getDescriptors(ids));
-				Collections.sort(providers,
-						(p1, p2) -> Strings.compare(
-								Labels.name(p1),
-								Labels.name(p2)));
+				providers.sort(
+					(p1, p2) -> Strings.compare(Labels.name(p1), Labels.name(p2)));
 			}
 
 			// fill the provider combo
@@ -361,7 +363,7 @@ class MappingDialog extends FormDialog {
 				ProcessDescriptor p = providers.get(i);
 				items[i + 1] = Labels.name(p);
 				if (ref.provider != null
-						&& Objects.equals(p.refId, ref.provider.refId)) {
+					&& Objects.equals(p.refId, ref.provider.refId)) {
 					selected = i + 1;
 				}
 			}
@@ -387,16 +389,16 @@ class MappingDialog extends FormDialog {
 				ref.providerCategory = "";
 			} else {
 				ref.providerCategory = Categories.pathsOf(
-						Database.get()).pathOf(p.category);
+					Database.get()).pathOf(p.category);
 			}
 			if (p.location == null) {
 				ref.providerLocation = "";
 			} else {
 				Location loc = new LocationDao(
-						Database.get()).getForId(p.location);
+					Database.get()).getForId(p.location);
 				ref.providerLocation = loc != null
-						? loc.code
-						: "";
+					? loc.code
+					: "";
 			}
 		}
 

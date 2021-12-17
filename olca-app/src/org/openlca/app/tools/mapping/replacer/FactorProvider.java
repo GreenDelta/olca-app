@@ -38,7 +38,7 @@ class FactorProvider {
 	private double getFactor(FlowMapEntry entry, ResultSet cursor,
 			boolean forExchange) {
 		try {
-			Flow flow = flows.get(entry.sourceFlow.flow.id);
+			Flow flow = flows.get(entry.sourceFlow().flow.id);
 			long propFacID = cursor.getLong("f_flow_property_factor");
 			FlowPropertyFactor propFactor = propFactor(flow, propFacID);
 			long unitID = cursor.getLong("f_unit");
@@ -47,10 +47,10 @@ class FactorProvider {
 				return 0;
 
 			double factor = forExchange
-					? entry.factor
-					: 1 / entry.factor;
-			if (propFactor.flowProperty.id == entry.sourceFlow.property.id
-					&& unit.id == entry.sourceFlow.unit.id)
+					? entry.factor()
+					: 1 / entry.factor();
+			if (propFactor.flowProperty.id == entry.sourceFlow().property.id
+					&& unit.id == entry.sourceFlow().unit.id)
 				return factor;
 
 			// calculate an additional factor y that converts the exchange
@@ -59,12 +59,12 @@ class FactorProvider {
 			double pi = conversions.getPropertyFactor(propFactor.id);
 			double ui = conversions.getUnitFactor(unit.id);
 			FlowPropertyFactor entryPropFactor = propFactor(
-					flow, entry.sourceFlow);
+					flow, entry.sourceFlow());
 			if (entryPropFactor == null)
 				return 0;
 			double pj = conversions.getPropertyFactor(entryPropFactor.id);
 			double uj = conversions.getUnitFactor(
-					entry.sourceFlow.unit.id);
+					entry.sourceFlow().unit.id);
 			double y = forExchange
 					? (ui * pj) / (pi * uj)
 					: (pi * uj) / (ui * pj);

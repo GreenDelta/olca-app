@@ -21,7 +21,7 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.maps.FlowRef;
-import org.openlca.io.maps.Status;
+import org.openlca.io.maps.MappingStatus;
 import org.openlca.util.Categories;
 
 public class DBProvider implements IProvider {
@@ -98,7 +98,7 @@ public class DBProvider implements IProvider {
 		// check the flow
 		Flow flow = new FlowDao(db).getForRefId(ref.flow.refId);
 		if (flow == null) {
-			ref.status = Status.error("there is no flow with id="
+			ref.status = MappingStatus.error("there is no flow with id="
 				+ ref.flow.refId + " in the database");
 			return null;
 		}
@@ -119,7 +119,7 @@ public class DBProvider implements IProvider {
 			}
 		}
 		if (prop == null || prop.unitGroup == null) {
-			ref.status = Status.error("the flow in the database has"
+			ref.status = MappingStatus.error("the flow in the database has"
 				+ " no corresponding flow property");
 			return null;
 		}
@@ -137,7 +137,7 @@ public class DBProvider implements IProvider {
 			}
 		}
 		if (u == null) {
-			ref.status = Status.error("the flow in the database has"
+			ref.status = MappingStatus.error("the flow in the database has"
 				+ " no corresponding unit");
 			return null;
 		}
@@ -147,7 +147,7 @@ public class DBProvider implements IProvider {
 		if (ref.provider != null) {
 			provider = new ProcessDao(db).getForRefId(ref.provider.refId);
 			if (provider == null) {
-				ref.status = Status.error(
+				ref.status = MappingStatus.error(
 					"the provider does not exist in the database");
 				return null;
 			}
@@ -157,7 +157,7 @@ public class DBProvider implements IProvider {
 					&& ((e.isInput && flow.flowType == FlowType.WASTE_FLOW)
 					|| (!e.isInput && flow.flowType == FlowType.PRODUCT_FLOW)));
 			if (!exists) {
-				ref.status = Status.error(
+				ref.status = MappingStatus.error(
 					"the given provider does not deliver that flow");
 				return null;
 			}
@@ -192,7 +192,7 @@ public class DBProvider implements IProvider {
 		}
 
 		if (ref.status == null) {
-			ref.status = Status.ok("flow in sync. with database");
+			ref.status = MappingStatus.ok("flow in sync. with database");
 		}
 		return flow;
 	}

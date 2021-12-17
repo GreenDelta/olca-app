@@ -51,7 +51,7 @@ class FlowRefDialog extends FormDialog {
 			if (dialog.open() == OK) {
 				FlowRef selected = dialog.selected;
 				if (selected != null) {
-					selected = selected.clone();
+					selected = selected.copy();
 				}
 				fn.accept(Optional.ofNullable(selected));
 			} else {

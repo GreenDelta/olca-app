@@ -21,7 +21,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
-import org.openlca.io.maps.Status;
+import org.openlca.io.maps.MappingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,7 +132,7 @@ public class Replacer implements Runnable {
 				if (flowID == null || e == null)
 					continue;
 				if (stats.hadFailures(flowID)) {
-					e.sourceFlow.status = Status.error("Replacement error");
+					e.sourceFlow().status = MappingStatus.error("Replacement error");
 					continue;
 				}
 				if (deleteMapped && !usedFlows.contains(flowID)) {
@@ -141,9 +141,9 @@ public class Replacer implements Runnable {
 					dao.delete(flow);
 					log.info("removed mapped flow {} uuid={}",
 							Labels.name(flow), flow.refId);
-					e.sourceFlow.status = Status.ok("Applied and removed");
+					e.sourceFlow().status = MappingStatus.ok("Applied and removed");
 				} else {
-					e.sourceFlow.status = Status.ok("Applied (not removed)");
+					e.sourceFlow().status = MappingStatus.ok("Applied (not removed)");
 				}
 			}
 		} catch (Exception e) {
@@ -169,10 +169,10 @@ public class Replacer implements Runnable {
 		// first persist all target flows in the database that
 		// do not have an error flag
 		List<FlowRef> targetFlows = conf.mapping.entries.stream()
-				.filter(e -> e.targetFlow != null
-						&& e.targetFlow.status != null
-						&& !e.targetFlow.status.isError())
-				.map(e -> e.targetFlow)
+				.filter(e -> e.targetFlow() != null
+						&& e.targetFlow().status != null
+						&& !e.targetFlow().status.isError())
+				.map(e -> e.targetFlow())
 				.collect(Collectors.toList());
 
 		conf.provider.persist(targetFlows, db);
@@ -182,19 +182,19 @@ public class Replacer implements Runnable {
 
 			// only do the replacement for matched mapping entries
 			// (both flows should have no error flag)
-			if (e.sourceFlow == null
-					|| e.sourceFlow.status == null
-					|| e.sourceFlow.status.isError()
-					|| e.targetFlow == null
-					|| e.targetFlow.status == null
-					|| e.targetFlow.status.isError())
+			if (e.sourceFlow() == null
+					|| e.sourceFlow().status == null
+					|| e.sourceFlow().status.isError()
+					|| e.targetFlow() == null
+					|| e.targetFlow().status == null
+					|| e.targetFlow().status.isError())
 				continue;
 
 			// sync the flows
-			Flow source = dbProvider.sync(e.sourceFlow);
+			Flow source = dbProvider.sync(e.sourceFlow());
 			if (source == null)
 				continue;
-			Flow target = dbProvider.sync(e.targetFlow);
+			Flow target = dbProvider.sync(e.targetFlow());
 			if (target == null)
 				continue;
 
