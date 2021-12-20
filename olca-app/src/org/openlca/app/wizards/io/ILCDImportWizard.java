@@ -2,7 +2,6 @@ package org.openlca.app.wizards.io;
 
 import java.io.File;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
@@ -80,9 +79,6 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 	private void doRun(File zip) throws Exception {
 		try (var store = new ZipStore(zip)) {
 			getContainer().run(true, true, m -> {
-
-				m.beginTask(M.Import, IProgressMonitor.UNKNOWN);
-
 				var lang = IoPreference.getIlcdLanguage();
 				var langOrder = !"en".equals(lang)
 					? new String[]{lang, "en"}
@@ -94,9 +90,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 				var config = new ImportConfig(store, Database.get(), flowMap)
 					.withAllFlows(true)
 					.withLanguageOrder(langOrder);
-
-				var imp = new ILCDImport(config);
-				imp.run();
+				ImportMonitor.of(m).run(new ILCDImport(config), config.log());
 			});
 		}
 	}
