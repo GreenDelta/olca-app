@@ -6,7 +6,6 @@ import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -45,6 +44,7 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setWindowTitle("Import an EPD result");
 		setDefaultPageImageDescriptor(Icon.EC3_WIZARD.descriptor());
+		setNeedsProgressMonitor(true);
 	}
 
 	@Override
@@ -56,8 +56,20 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 		var db = Database.get();
 		if (epd == null || db == null)
 			return false;
-		var status = ImportDialog.show(epd, categories);
-		return status == Window.OK;
+		try {
+			getContainer().run(false, false, monitor -> {
+				var fullEpd = Api.getEpd(client, epd.id);
+				if (fullEpd.isEmpty()) {
+					ErrorReporter.on("Failed to download EPD " + epd.id);
+				} else {
+					ImportDialog.show(fullEpd.get(), categories);
+				}
+			});
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to download EPD " + epd.id, e);
+			return false;
+		}
+		return true;
 	}
 
 	@Override

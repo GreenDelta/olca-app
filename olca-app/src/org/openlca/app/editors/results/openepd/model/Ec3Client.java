@@ -35,16 +35,6 @@ public class Ec3Client {
 		return new Config(url);
 	}
 
-	public JsonObject getEpd(String id) {
-		var resp = get("epds/" + id);
-		if (!resp.hasJson())
-			return null;
-		var json = resp.json();
-		return json.isJsonObject()
-			? json.getAsJsonObject()
-			: null;
-	}
-
 	public Ec3Response get(String path) {
 		var p = path.startsWith("/")
 			? path.substring(1)
@@ -64,11 +54,14 @@ public class Ec3Client {
 	}
 
 	public <T> T post(String path, JsonElement body, Class<T> responseType) {
+		var p = path.startsWith("/")
+			? path.substring(1)
+			: path;
 		try {
 			var bodyStr = HttpRequest.BodyPublishers.ofString(
 				new Gson().toJson(body), StandardCharsets.UTF_8);
 			var req = HttpRequest.newBuilder()
-				.uri(URI.create(endpoint + path))
+				.uri(URI.create(endpoint + p))
 				.header("Content-Type", "application/json")
 				.header("Authorization", "Bearer " + authKey)
 				.header("Accept", "application/json")

@@ -16,6 +16,13 @@ public class Api {
 	private Api() {
 	}
 
+	public static Optional<Ec3Epd> getEpd(Ec3Client client, String id) {
+		var r = client.get("epds/" + id);
+		return r.hasJson()
+			? Ec3Epd.fromJson(r.json())
+			: Optional.empty();
+	}
+
 	public static DescriptorRequest descriptors(Ec3Client client) {
 		return new DescriptorRequest(client);
 	}

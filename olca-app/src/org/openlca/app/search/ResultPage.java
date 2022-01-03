@@ -14,7 +14,6 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
@@ -161,9 +160,8 @@ class ResultPage extends FormPage {
 	}
 
 	private void renderCategory(FormToolkit tk, Descriptor d, Composite comp) {
-		if (!(d instanceof CategorizedDescriptor))
+		if (!(d instanceof CategorizedDescriptor cd))
 			return;
-		CategorizedDescriptor cd = (CategorizedDescriptor) d;
 		Long id = cd.category;
 		if (id == null)
 			return;
@@ -199,8 +197,7 @@ class ResultPage extends FormPage {
 				continue;
 			}
 			int pageNumber = i;
-			Hyperlink link = tk.createHyperlink(pager,
-					label, SWT.NONE);
+			var link = tk.createHyperlink(pager, label, SWT.NONE);
 			Controls.onClick(link, e -> {
 				currentPage = pageNumber;
 				renderPage();
@@ -208,13 +205,12 @@ class ResultPage extends FormPage {
 		}
 	}
 
-	private class LinkClick extends HyperlinkAdapter {
+	private static class LinkClick extends HyperlinkAdapter {
 		@Override
 		public void linkActivated(HyperlinkEvent e) {
 			ImageHyperlink link = (ImageHyperlink) e.widget;
 			Object data = link.getData();
-			if (data instanceof CategoryDescriptor) {
-				CategoryDescriptor d = (CategoryDescriptor) data;
+			if (data instanceof CategoryDescriptor d) {
 				Category c = Cache.getEntityCache().get(Category.class, d.id);
 				Navigator.select(c);
 			} else if (data instanceof CategorizedDescriptor) {

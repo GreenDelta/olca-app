@@ -40,17 +40,14 @@ public class SearchPage extends SimpleFormEditor {
 		String title = "Find usages of " + Labels.name(d);
 		AtomicReference<List<Descriptor>> ref = new AtomicReference<>();
 		App.run(title, () -> {
-			List<CategorizedDescriptor> list = IUseSearch.FACTORY.createFor(
+			var list = IUseSearch.FACTORY.createFor(
 					d.type, Database.get()).findUses(d);
-			if (d != null) {
-				ref.set(new ArrayList<>(list));
-			}
+			ref.set(new ArrayList<>(list));
 		}, () -> {
 			String resultKey = Cache.getAppCache().put(ref.get());
 			Input input = new Input(d, resultKey);
 			Editors.open(input, "SearchPage");
 		});
-
 	}
 
 	@Override
