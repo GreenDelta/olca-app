@@ -2,6 +2,7 @@ package org.openlca.app.editors.results.openepd.input;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,6 +28,9 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
+import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.CalculationType;
@@ -165,6 +169,10 @@ class ResultSection {
 		Tables.bindColumnWidths(mappingTable, 0.35, 0.15, 0.15, 0.35);
 		mappingTable.setLabelProvider(new MappingLabel());
 		mappingTable.setInput(mappedValues);
+		UI.gridData(mappingTable.getTable(), true, false).heightHint = 80;
+		new ModifySupport<MappedValue>(mappingTable)
+			.bind("openLCA Indicator", new ImpactModifier(result))
+			.bind("Result", new ValueModifier());
 
 		// add the removal button
 		var onRemove = Actions.onRemove(() -> {
@@ -311,6 +319,61 @@ class ResultSection {
 				case 3 -> Labels.name(value.mappedImpact);
 				default -> null;
 			};
+		}
+	}
+
+	private static class ImpactModifier extends
+		ComboBoxCellModifier<MappedValue, ImpactCategory> {
+
+		private final ResultModel result;
+
+		ImpactModifier(ResultModel result) {
+			this.result = result;
+		}
+
+		@Override
+		protected ImpactCategory[] getItems(MappedValue mv) {
+			var empty = new ImpactCategory[0];
+			if (result == null
+				|| result.setup == null
+				|| result.setup.impactMethod() == null)
+				return empty;
+
+			var method = result.setup.impactMethod();
+			var impacts = method.impactCategories.toArray(empty);
+			Arrays.sort(impacts,
+				(i1, i2) -> Strings.compare(Labels.name(i1), Labels.name(i2)));
+			return impacts;
+		}
+
+		@Override
+		protected ImpactCategory getItem(MappedValue mv) {
+			return mv.mappedImpact;
+		}
+
+		@Override
+		protected String getText(ImpactCategory impact) {
+			return Labels.name(impact);
+		}
+
+		@Override
+		protected void setItem(MappedValue mv, ImpactCategory impact) {
+			mv.mappedImpact = impact;
+		}
+	}
+
+	private static class ValueModifier extends DoubleCellModifier<MappedValue> {
+
+		@Override
+		public Double getDouble(MappedValue mv) {
+			return mv.value;
+		}
+
+		@Override
+		public void setDouble(MappedValue mv, Double value) {
+			mv.value = value == null
+				? 0
+				: value;
 		}
 	}
 }
