@@ -1,7 +1,5 @@
 package org.openlca.app.editors.results.openepd.input;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -21,6 +19,7 @@ import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.results.openepd.model.Api;
 import org.openlca.app.editors.results.openepd.model.Credentials;
 import org.openlca.app.editors.results.openepd.model.Ec3Category;
 import org.openlca.app.editors.results.openepd.model.Ec3CategoryIndex;
@@ -158,7 +157,7 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 				client = c.get();
 			}
 
-			var query = createQuery();
+			var query = queryText.getText();
 			var epds = new ArrayList<Ec3Epd>();
 			App.runWithProgress("Fetch EPDs", () -> {
 				try {
@@ -176,27 +175,13 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 					}
 
 					// load the EPD descriptors
-					var r = client.get(query);
-					if (r.hasJson()) {
-						var json = r.json();
-						if (json.isJsonArray()) {
-							for (var elem : json.getAsJsonArray()) {
-								Ec3Epd.fromJson(elem).ifPresent(epds::add);
-							}
-						}
-					}
+					var response = Api.descriptors(client).query(query).get();
+					epds.addAll(response.descriptors());
+
 				} catch (Exception e) {
 					ErrorReporter.on("Failed to search for EPDs", e);
 				}
 			}, () -> table.setInput(epds));
-		}
-
-		private String createQuery() {
-			var q = queryText.getText().trim();
-			var prefix = "epds?page_size=10";
-			return Strings.nullOrEmpty(q)
-				? prefix
-				: prefix + "&q=" + URLEncoder.encode(q, StandardCharsets.UTF_8);
 		}
 
 		private class TableLabel extends BaseLabelProvider
