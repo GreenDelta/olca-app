@@ -1,6 +1,7 @@
 package org.openlca.app.editors.results.openepd.output;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -19,10 +20,15 @@ import org.openlca.app.editors.results.openepd.model.Ec3Measurement;
 import org.openlca.app.editors.results.openepd.model.Ec3ScopeSet;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
+import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ResultModel;
@@ -117,6 +123,25 @@ class ResultSection {
 		table.setLabelProvider(new TableLabel());
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 		table.setInput(mappedValues);
+		new ModifySupport<MappedValue>(table)
+			.bind("Amount", new AmountModifier())
+			.bind("Result Indicator", new ImpactModifier(result));
+
+		// add table actions
+		var onDeleteRow = Actions.onRemove(() -> {
+			MappedValue mv = Viewers.getFirstSelected(table);
+			if (mv != null) {
+				mappedValues.remove(mv);
+				table.setInput(mappedValues);
+			}
+		});
+		var onReInitRows = Actions.create(
+			"Reload", Icon.REFRESH.descriptor(), () -> {
+				mappedValues.clear();
+				mappedValues.addAll(MappedValue.initAll(selectedMethod, result));
+				table.setInput(mappedValues);
+		});
+		Actions.bind(table, onReInitRows, onDeleteRow);
 
 		methodCombo.onSelected(method -> {
 			selectedMethod = method;
@@ -203,6 +228,68 @@ class ResultSection {
 					: null;
 				default -> null;
 			};
+		}
+	}
+
+	private static class ImpactModifier extends
+		ComboBoxCellModifier<MappedValue, ImpactCategory> {
+
+		private final ResultModel result;
+
+		ImpactModifier(ResultModel result) {
+			this.result = result;
+		}
+
+		@Override
+		protected ImpactCategory[] getItems(MappedValue mv) {
+			var empty = new ImpactCategory[0];
+			if (result == null
+				|| result.setup == null
+				|| result.setup.impactMethod() == null)
+				return empty;
+
+			var method = result.setup.impactMethod();
+			var impacts = method.impactCategories.toArray(empty);
+			Arrays.sort(impacts,
+				(i1, i2) -> Strings.compare(Labels.name(i1), Labels.name(i2)));
+			return impacts;
+		}
+
+		@Override
+		protected ImpactCategory getItem(MappedValue mv) {
+			return mv.resultIndicator;
+		}
+
+		@Override
+		protected String getText(ImpactCategory impact) {
+			return Labels.name(impact);
+		}
+
+		@Override
+		protected void setItem(MappedValue mv, ImpactCategory impact) {
+			mv.resultIndicator = impact;
+			mv.amount = impact == null
+				? 0
+				: result.impacts.stream()
+				.filter(r -> Objects.equals(r.indicator, impact))
+				.mapToDouble(r -> r.amount)
+				.findAny()
+				.orElse(0);
+		}
+	}
+
+	private static class AmountModifier extends DoubleCellModifier<MappedValue> {
+
+		@Override
+		public Double getDouble(MappedValue mv) {
+			return mv.amount;
+		}
+
+		@Override
+		public void setDouble(MappedValue mv, Double value) {
+			mv.amount = value == null
+				? 0
+				: value;
 		}
 	}
 

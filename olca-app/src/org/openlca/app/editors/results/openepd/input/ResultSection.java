@@ -169,7 +169,6 @@ class ResultSection {
 		Tables.bindColumnWidths(mappingTable, 0.35, 0.15, 0.15, 0.35);
 		mappingTable.setLabelProvider(new MappingLabel());
 		mappingTable.setInput(mappedValues);
-		UI.gridData(mappingTable.getTable(), true, false).heightHint = 80;
 		new ModifySupport<MappedValue>(mappingTable)
 			.bind("openLCA Indicator", new ImpactModifier(result))
 			.bind("Result", new ValueModifier());
