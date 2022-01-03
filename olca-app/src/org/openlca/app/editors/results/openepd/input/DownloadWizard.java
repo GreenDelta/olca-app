@@ -35,9 +35,6 @@ import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.util.Strings;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 public class DownloadWizard extends Wizard implements IImportWizard {
 
 	private final Credentials credentials = Credentials.getDefault();
@@ -114,7 +111,7 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 			Controls.onReturn(queryText, $ -> onSearch());
 
 			table = Tables.createViewer(
-					root, "EPD", "Category", "Declared unit");
+				root, "EPD", "Category", "Declared unit");
 			Tables.bindColumnWidths(table, 0.4, 0.4, 0.2);
 			UI.gridData(table.getControl(), true, true);
 			table.setLabelProvider(new TableLabel());
@@ -122,8 +119,8 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 			table.addSelectionChangedListener(e -> {
 				Object first = Selections.firstOf(e.getSelection());
 				epd = first instanceof Ec3Epd
-						? (Ec3Epd) first
-						: null;
+					? (Ec3Epd) first
+					: null;
 				setPageComplete(epd != null);
 			});
 		}
@@ -132,17 +129,17 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 			var urlText = UI.formText(comp, "URL");
 			urlText.setText(Strings.orEmpty(credentials.url()));
 			urlText.addModifyListener(
-					$ -> credentials.url(urlText.getText()));
+				$ -> credentials.url(urlText.getText()));
 
 			var userText = UI.formText(comp, "User");
 			userText.setText(Strings.orEmpty(credentials.user()));
 			userText.addModifyListener(
-					$ -> credentials.user(userText.getText()));
+				$ -> credentials.user(userText.getText()));
 
 			var pwText = UI.formText(comp, "Password", SWT.PASSWORD);
 			pwText.setText(Strings.orEmpty(credentials.password()));
 			pwText.addModifyListener(
-					$ -> credentials.password(pwText.getText()));
+				$ -> credentials.password(pwText.getText()));
 		}
 
 		private void onSearch() {
@@ -153,9 +150,9 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 				var c = credentials.login();
 				if (c.isEmpty()) {
 					MsgBox.error("Login failed",
-							"Failed to login into the EC3 API with the given" +
-									" user name and password. Check the log-file " +
-									"for further details.");
+						"Failed to login into the EC3 API with the given" +
+							" user name and password. Check the log-file " +
+							"for further details.");
 					return;
 				}
 				client = c.get();
@@ -168,16 +165,25 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 
 					// load the category index once
 					if (categories == null) {
-						var root = client.get("categories/root", JsonObject.class);
-						if (root != null) {
-							Ec3Category.fromJson(root).ifPresent(
+						var r = client.get("categories/root");
+						if (r.hasJson()) {
+							var categoryJson = r.json();
+							if (categoryJson.isJsonObject()) {
+								Ec3Category.fromJson(categoryJson).ifPresent(
 									c -> categories = Ec3CategoryIndex.of(c));
+							}
 						}
 					}
 
-					var array = client.get(query, JsonArray.class);
-					for (var elem : array) {
-						Ec3Epd.fromJson(elem).ifPresent(epds::add);
+					// load the EPD descriptors
+					var r = client.get(query);
+					if (r.hasJson()) {
+						var json = r.json();
+						if (json.isJsonArray()) {
+							for (var elem : json.getAsJsonArray()) {
+								Ec3Epd.fromJson(elem).ifPresent(epds::add);
+							}
+						}
 					}
 				} catch (Exception e) {
 					ErrorReporter.on("Failed to search for EPDs", e);
@@ -189,12 +195,12 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 			var q = queryText.getText().trim();
 			var prefix = "epds?page_size=10";
 			return Strings.nullOrEmpty(q)
-					? prefix
-					: prefix + "&q=" + URLEncoder.encode(q, StandardCharsets.UTF_8);
+				? prefix
+				: prefix + "&q=" + URLEncoder.encode(q, StandardCharsets.UTF_8);
 		}
 
 		private class TableLabel extends BaseLabelProvider
-				implements ITableLabelProvider {
+			implements ITableLabelProvider {
 
 			@Override
 			public Image getColumnImage(Object obj, int col) {
@@ -206,12 +212,12 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 				if (!(obj instanceof Ec3Epd epd))
 					return null;
 				return switch (col) {
-				case 0 -> epd.name;
-				case 1 -> epd.category != null && categories != null
+					case 0 -> epd.name;
+					case 1 -> epd.category != null && categories != null
 						? categories.pathOf(epd.category.id)
 						: null;
-				case 2 -> epd.declaredUnit;
-				default -> null;
+					case 2 -> epd.declaredUnit;
+					default -> null;
 				};
 			}
 		}

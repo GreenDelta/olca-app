@@ -46,7 +46,7 @@ public class Credentials {
 
 	public static Credentials getDefault() {
 		var c = new Credentials();
-		c.url = "https://etl-api.cqd.io/api";
+		c.url = "https://buildingtransparency.org/api";
 		var file = file();
 		if (!file.exists())
 			return c;

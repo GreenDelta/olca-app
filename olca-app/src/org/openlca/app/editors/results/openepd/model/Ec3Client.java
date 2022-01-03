@@ -36,22 +36,28 @@ public class Ec3Client {
 	}
 
 	public JsonObject getEpd(String id) {
-		return get("epds/" + id, JsonObject.class);
+		var resp = get("epds/" + id);
+		if (!resp.hasJson())
+			return null;
+		var json = resp.json();
+		return json.isJsonObject()
+			? json.getAsJsonObject()
+			: null;
 	}
 
-	public <T> T get(String path, Class<T> type) {
+	public Ec3Response get(String path) {
+		var p = path.startsWith("/")
+			? path.substring(1)
+			: path;
 		var req = HttpRequest.newBuilder()
-			.uri(URI.create(endpoint + path))
+			.uri(URI.create(endpoint + p))
 			.header("Accept", "application/json")
 			.header("Authorization", "Bearer " + authKey)
 			.GET()
 			.build();
 		try {
 			var resp = http.send(req, HttpResponse.BodyHandlers.ofInputStream());
-			try (var stream = resp.body();
-					 var reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-				return new Gson().fromJson(reader, type);
-			}
+			return Ec3Response.of(resp);
 		} catch (InterruptedException | IOException e) {
 			throw new RuntimeException("GET " + path + " failed", e);
 		}
