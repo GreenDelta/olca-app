@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Strings;
 
@@ -17,10 +18,30 @@ public class Api {
 	}
 
 	public static Optional<Ec3Epd> getEpd(Ec3Client client, String id) {
-		var r = client.get("epds/" + id);
-		return r.hasJson()
-			? Ec3Epd.fromJson(r.json())
-			: Optional.empty();
+		try {
+			var r = client.get("epds/" + id);
+			return r.hasJson()
+				? Ec3Epd.fromJson(r.json())
+				: Optional.empty();
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to download EPD " + id, e);
+			return Optional.empty();
+		}
+	}
+
+	public static Ec3CategoryIndex getCategories(Ec3Client client) {
+		try {
+			var r = client.get("categories/root");
+			if (!r.hasJson())
+				return Ec3CategoryIndex.empty();
+			var root = Ec3Category.fromJson(r.json());
+			return root.isEmpty()
+				? Ec3CategoryIndex.empty()
+				: Ec3CategoryIndex.of(root.get());
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to load category index", e);
+			return Ec3CategoryIndex.empty();
+		}
 	}
 
 	public static DescriptorRequest descriptors(Ec3Client client) {
@@ -68,9 +89,13 @@ public class Api {
 		}
 
 		public DescriptorResponse get() {
-			return DescriptorResponse.get(this);
+			try {
+				return DescriptorResponse.get(this);
+			} catch (Exception e) {
+				ErrorReporter.on("Failed to get EPDs for " + path(), e);
+				return new DescriptorResponse(page, 0, 0, Collections.emptyList());
+			}
 		}
-
 	}
 
 	public record DescriptorResponse(

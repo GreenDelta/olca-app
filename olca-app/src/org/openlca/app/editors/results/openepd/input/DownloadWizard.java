@@ -20,7 +20,6 @@ import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.results.openepd.model.Api;
 import org.openlca.app.editors.results.openepd.model.Credentials;
-import org.openlca.app.editors.results.openepd.model.Ec3Category;
 import org.openlca.app.editors.results.openepd.model.Ec3CategoryIndex;
 import org.openlca.app.editors.results.openepd.model.Ec3Client;
 import org.openlca.app.editors.results.openepd.model.Ec3Epd;
@@ -122,8 +121,8 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 			Controls.onReturn(queryText, $ -> onSearch());
 
 			table = Tables.createViewer(
-				root, "EPD", "Category", "Declared unit");
-			Tables.bindColumnWidths(table, 0.4, 0.4, 0.2);
+				root, "EPD", "Manufacturer", "Category", "Declared unit");
+			Tables.bindColumnWidths(table, 0.25, 0.25, 0.25, 0.25);
 			UI.gridData(table.getControl(), true, true);
 			table.setLabelProvider(new TableLabel());
 
@@ -157,6 +156,7 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 			epd = null;
 			setPageComplete(false);
 
+			// login into EC3
 			if (client == null) {
 				var c = credentials.login();
 				if (c.isEmpty()) {
@@ -169,30 +169,36 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 				client = c.get();
 			}
 
-			var query = queryText.getText();
+			// load the category index once
+			if (categories == null) {
+				categories = App.exec(
+					"Fetch categories", () -> Api.getCategories(client));
+			}
+
+			var query = queryText.getText().trim();
+
+			// if the query field contains an http* URL, we try
+			// to directly fetch the EPD
+			if (query.toLowerCase().startsWith("http")) {
+				var parts = query.split("/");
+				if (parts.length > 2) {
+					var epd = App.exec("Fetch EPD", () -> {
+						var id = parts[parts.length - 1];
+						return Api.getEpd(client, id);
+					});
+					if (epd.isPresent()) {
+						ImportDialog.show(epd.get(), categories);
+						DownloadWizard.this.performCancel();
+						return;
+					}
+				}
+			}
+
+			// otherwise, search for EPDs
 			var epds = new ArrayList<Ec3Epd>();
 			App.runWithProgress("Fetch EPDs", () -> {
-				try {
-
-					// load the category index once
-					if (categories == null) {
-						var r = client.get("categories/root");
-						if (r.hasJson()) {
-							var categoryJson = r.json();
-							if (categoryJson.isJsonObject()) {
-								Ec3Category.fromJson(categoryJson).ifPresent(
-									c -> categories = Ec3CategoryIndex.of(c));
-							}
-						}
-					}
-
-					// load the EPD descriptors
 					var response = Api.descriptors(client).query(query).get();
 					epds.addAll(response.descriptors());
-
-				} catch (Exception e) {
-					ErrorReporter.on("Failed to search for EPDs", e);
-				}
 			}, () -> table.setInput(epds));
 		}
 
@@ -210,10 +216,13 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 					return null;
 				return switch (col) {
 					case 0 -> epd.name;
-					case 1 -> epd.category != null && categories != null
+					case 1 -> epd.manufacturer != null
+						? epd.manufacturer.name
+						: null;
+					case 2 -> epd.category != null && categories != null
 						? categories.pathOf(epd.category.id)
 						: null;
-					case 2 -> epd.declaredUnit;
+					case 3 -> epd.declaredUnit;
 					default -> null;
 				};
 			}

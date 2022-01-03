@@ -25,6 +25,7 @@ public class Ec3Epd {
   public Ec3Certifier reviewer;
   public Ec3Certifier developer;
   public Ec3Certifier verifier;
+	public Ec3Org manufacturer;
 
   public String docUrl;
 
@@ -52,6 +53,7 @@ public class Ec3Epd {
     epd.reviewer = Ec3Certifier.fromJson(obj.get("reviewer")).orElse(null);
     epd.developer = Ec3Certifier.fromJson(obj.get("developer")).orElse(null);
     epd.verifier = Ec3Certifier.fromJson(obj.get("verifier")).orElse(null);
+		epd.manufacturer = Ec3Org.fromJson(obj.get("manufacturer")).orElse(null);
 
     epd.docUrl = Json.getString(obj, "doc");
 		epd.isDraft = Json.getBool(obj, "draft", false);
