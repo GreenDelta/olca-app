@@ -81,10 +81,13 @@ public class ImportDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.formBody(mForm.getForm(), tk);
 		createProductSection(body, tk);
-		var resultSections = ResultSection.initAllOf(this);
-		for (var section : resultSections) {
-			sections.add(section);
+		for (var section : ResultSection.initAllOf(this)) {
 			section.render(body, tk);
+			section.onDeleted(s -> {
+				sections.remove(s);
+				mForm.reflow(true);
+			});
+			sections.add(section);
 		}
 	}
 

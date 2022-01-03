@@ -31,6 +31,7 @@ import org.openlca.ipc.handlers.CacheHandler as CacheHandler
 import org.openlca.core.matrix.CalcAllocationFactor as CalcAllocationFactor
 import org.openlca.core.matrix.CalcExchange as CalcExchange
 import org.openlca.core.matrix.CalcImpactFactor as CalcImpactFactor
+import org.openlca.core.math.CalculationQueue as CalculationQueue
 import org.openlca.core.model.CalculationSetup as CalculationSetup
 import org.openlca.proto.io.input.CalculationSetupReader as CalculationSetupReader
 import org.openlca.core.model.CalculationType as CalculationType
@@ -103,6 +104,7 @@ import org.openlca.core.matrix.format.DenseMatrix as DenseMatrix
 import org.openlca.core.database.Derby as Derby
 import org.openlca.core.database.config.DerbyConfig as DerbyConfig
 import org.openlca.core.model.descriptors.Descriptor as Descriptor
+import org.openlca.core.model.descriptors.DescriptorBuilder as DescriptorBuilder
 import org.openlca.cloud.util.Directories as Directories
 import org.openlca.util.Dirs as Dirs
 import org.openlca.io.DisplayValues as DisplayValues
@@ -119,13 +121,14 @@ import org.openlca.core.database.EntityCache as EntityCache
 import org.openlca.jsonld.Enums as Enums
 import org.openlca.core.matrix.index.EnviFlow as EnviFlow
 import org.openlca.core.matrix.index.EnviIndex as EnviIndex
+import org.openlca.io.ilcd.input.EpdImport as EpdImport
 import org.openlca.io.xls.Excel as Excel
 import org.openlca.io.xls.process.output.ExcelExport as ExcelExport
 import org.openlca.io.xls.process.input.ExcelImport as ExcelImport
 import org.openlca.util.Exceptions as Exceptions
 import org.openlca.core.model.Exchange as Exchange
 import org.openlca.core.database.ExchangeDao as ExchangeDao
-import org.openlca.util.ExchangeProviderQueue as ExchangeProviderQueue
+import org.openlca.core.io.ExchangeProviderQueue as ExchangeProviderQueue
 import org.openlca.core.matrix.cache.ExchangeTable as ExchangeTable
 import org.openlca.core.database.usage.ExchangeUseSearch as ExchangeUseSearch
 import org.openlca.util.Exchanges as Exchanges
@@ -158,6 +161,7 @@ import org.openlca.proto.io.output.FlowPropertyWriter as FlowPropertyWriter
 import org.openlca.io.maps.FlowRef as FlowRef
 import org.openlca.core.database.references.FlowReferenceSearch as FlowReferenceSearch
 import org.openlca.core.results.FlowResult as FlowResult
+import org.openlca.io.maps.FlowSync as FlowSync
 import org.openlca.core.matrix.cache.FlowTable as FlowTable
 import org.openlca.core.model.FlowType as FlowType
 import org.openlca.core.database.usage.FlowUseSearch as FlowUseSearch
@@ -194,6 +198,7 @@ import org.openlca.proto.io.output.ImpactCategoryWriter as ImpactCategoryWriter
 import org.openlca.core.model.descriptors.ImpactDescriptor as ImpactDescriptor
 import org.openlca.core.model.ImpactFactor as ImpactFactor
 import org.openlca.ipc.handlers.ImpactHandler as ImpactHandler
+import org.openlca.io.ilcd.input.ImpactImport as ImpactImport
 import org.openlca.core.matrix.index.ImpactIndex as ImpactIndex
 import org.openlca.core.model.ImpactMethod as ImpactMethod
 import org.openlca.core.database.ImpactMethodDao as ImpactMethodDao
@@ -205,8 +210,8 @@ import org.openlca.proto.io.output.ImpactMethodWriter as ImpactMethodWriter
 import org.openlca.core.results.ImpactResult as ImpactResult
 import org.openlca.io.ecospold1.input.ImportConfig as ImportConfig
 import org.openlca.io.ImportEvent as ImportEvent
-import org.openlca.io.ilcd.input.ImportException as ImportException
 import org.openlca.io.ImportInfo as ImportInfo
+import org.openlca.core.io.ImportLog as ImportLog
 import org.openlca.proto.io.input.ImportStatus as ImportStatus
 import org.openlca.proto.io.input.In as In
 import org.openlca.proto.io.InMemoryProtoStore as InMemoryProtoStore
@@ -255,6 +260,7 @@ import org.openlca.ipc.Main as Main
 import org.openlca.io.maps.MapFactor as MapFactor
 import org.openlca.core.model.MappingFile as MappingFile
 import org.openlca.core.database.MappingFileDao as MappingFileDao
+import org.openlca.io.maps.MappingStatus as MappingStatus
 import org.openlca.io.maps.Maps as Maps
 import org.openlca.core.matrix.io.MarketFormatWriter as MarketFormatWriter
 import org.openlca.io.ecospold2.input.MarketProcessCleanUp as MarketProcessCleanUp
@@ -358,7 +364,6 @@ import org.openlca.geo.calc.Projection as Projection
 import org.openlca.core.library.Proto as Proto
 import org.openlca.proto.io.input.ProtoImport as ProtoImport
 import org.openlca.core.matrix.linking.ProviderIndex as ProviderIndex
-import org.openlca.io.ilcd.input.ProviderLinker as ProviderLinker
 import org.openlca.core.matrix.linking.ProviderLinking as ProviderLinking
 import org.openlca.core.matrix.linking.ProviderSearch as ProviderSearch
 import org.openlca.core.database.Query as Query
@@ -432,9 +437,9 @@ import org.openlca.core.matrix.format.SparseMatrixData as SparseMatrixData
 import org.openlca.io.ecospold2.input.Spold2Files as Spold2Files
 import org.openlca.cloud.util.Ssl as Ssl
 import org.openlca.core.results.Statistics as Statistics
-import org.openlca.io.maps.Status as Status
 import org.openlca.util.Strings as Strings
 import org.openlca.core.matrix.linking.SubSystemLinker as SubSystemLinker
+import org.openlca.io.maps.SyncFlow as SyncFlow
 import org.openlca.core.math.SystemCalculator as SystemCalculator
 import org.openlca.io.ilcd.output.SystemExport as SystemExport
 import org.openlca.core.results.SystemProcess as SystemProcess

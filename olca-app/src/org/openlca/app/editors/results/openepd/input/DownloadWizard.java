@@ -189,6 +189,7 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 					if (epd.isPresent()) {
 						ImportDialog.show(epd.get(), categories);
 						DownloadWizard.this.performCancel();
+						DownloadWizard.this.getShell().close();
 						return;
 					}
 				}

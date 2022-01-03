@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -20,6 +21,7 @@ import org.openlca.app.components.EntityCombo;
 import org.openlca.app.editors.results.openepd.model.Ec3ImpactModel;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -44,6 +46,7 @@ class ResultSection {
 	private final ResultModel result;
 	private final List<MappedValue> mappedValues;
 	private TableViewer mappingTable;
+	private Consumer<ResultSection> onDeleted;
 
 	private ResultSection(
 		ImportDialog dialog, String epdMethod, String epdScope) {
@@ -55,6 +58,10 @@ class ResultSection {
 		this.result.setup = new CalculationSetup()
 			.withType(CalculationType.SIMPLE_CALCULATION);
 		mappedValues = initMappings();
+	}
+
+	public void onDeleted(Consumer<ResultSection> fn) {
+		this.onDeleted = fn;
 	}
 
 	/**
@@ -159,6 +166,15 @@ class ResultSection {
 		mappingTable.setLabelProvider(new MappingLabel());
 		mappingTable.setInput(mappedValues);
 
+		// add the removal button
+		var onRemove = Actions.onRemove(() -> {
+			if (onDeleted != null) {
+				onDeleted.accept(this);
+			}
+			section.dispose();
+			body.layout();
+		});
+		Actions.bind(section, onRemove);
 	}
 
 	private List<MappedValue> initMappings() {
