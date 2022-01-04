@@ -1,4 +1,4 @@
-package org.openlca.app.tools.openepd.panel;
+package org.openlca.app.tools.openepd;
 
 import java.util.Optional;
 

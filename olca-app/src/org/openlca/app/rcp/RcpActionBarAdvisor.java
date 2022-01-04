@@ -43,7 +43,8 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.libraries.LibraryExportDialog;
 import org.openlca.app.tools.mapping.MappingTool;
-import org.openlca.app.tools.openepd.panel.EpdPanel;
+import org.openlca.app.tools.openepd.EpdEditor;
+import org.openlca.app.tools.openepd.EpdPanel;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.FileType;
@@ -75,7 +76,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	@Override
 	protected void fillCoolBar(ICoolBarManager coolBar) {
-		IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.LEFT);
+		var toolbar = new ToolBarManager(SWT.FLAT | SWT.LEFT);
 		coolBar.add(new ToolBarContributionItem(toolbar, "main"));
 		toolbar.add(Actions.create(
 				M.Home, Icon.HOME.descriptor(), StartPage::open));
@@ -180,8 +181,13 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		// openEPD
 		if (FeatureFlag.RESULTS.isEnabled()) {
-			menu.add(Actions.create(
-				"openEPD", Icon.BUILDING.descriptor(), EpdPanel::open));
+			var epdMenu = new MenuManager("openEPD");
+			epdMenu.setImageDescriptor(Icon.BUILDING.descriptor());
+			menu.add(epdMenu);
+			epdMenu.add(Actions.create("Search and download",
+				Icon.SEARCH.descriptor(), EpdPanel::open));
+			epdMenu.add(Actions.create("Create new EPD",
+				Icon.FILE.descriptor(), EpdEditor::open));
 		}
 
 		// console

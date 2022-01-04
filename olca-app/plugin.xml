@@ -315,11 +315,19 @@
 		</editor>
 
 		<editor
-			class="org.openlca.app.tools.openepd.panel.EpdPanel"
+			class="org.openlca.app.tools.openepd.EpdPanel"
 			default="false"
 			icon="icons/building.png"
 			id="EpdPanel"
 			name="openEPD">
+		</editor>
+
+		<editor
+			class="org.openlca.app.tools.openepd.EpdEditor"
+			default="false"
+			icon="icons/building.png"
+			id="EpdEditor"
+			name="New EPD">
 		</editor>
 
 		<editor
