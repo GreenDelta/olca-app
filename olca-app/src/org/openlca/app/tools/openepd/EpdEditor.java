@@ -104,7 +104,7 @@ public class EpdEditor extends SimpleFormEditor {
 			int maxWidth = 0;
 			for (var b : buttons) {
 				b.pack();
-				maxWidth = Math.max(maxWidth,b.getBounds().width );
+				maxWidth = Math.max(maxWidth, b.getBounds().width);
 			}
 			for (var b : buttons) {
 				UI.gridData(b, false, false).widthHint = maxWidth;
@@ -118,8 +118,12 @@ public class EpdEditor extends SimpleFormEditor {
 				var model = db.get(ResultModel.class, d.id);
 				if (model == null)
 					return;
-				var section = ResultSection.of(EpdEditor.this, model);
-				section.render(body, tk);
+				var section = ResultSection.of(EpdEditor.this, model)
+					.render(body, tk)
+					.onDelete(s -> {
+						results.remove(s);
+						form.reflow(true);
+					});
 				results.add(section);
 				form.reflow(true);
 			});

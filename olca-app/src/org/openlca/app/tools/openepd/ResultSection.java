@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -43,6 +44,7 @@ public class ResultSection {
 	private String selectedScope = "A1A2A3";
 	private Ec3ImpactModel.Method selectedMethod;
 	private Section section;
+	private Consumer<ResultSection> onDelete;
 	private final List<MappedValue> mappedValues = new ArrayList<>();
 
 	private ResultSection(EpdEditor editor, ResultModel result) {
@@ -69,8 +71,13 @@ public class ResultSection {
 		}
 	}
 
-	static ResultSection of(EpdEditor dialog, ResultModel result) {
-		return new ResultSection(dialog, result);
+	static ResultSection of(EpdEditor editor, ResultModel result) {
+		return new ResultSection(editor, result);
+	}
+
+	ResultSection onDelete(Consumer<ResultSection> onDelete) {
+		this.onDelete = onDelete;
+		return this;
 	}
 
 	Pair<String, Ec3ImpactSet> createImpacts() {
@@ -87,21 +94,24 @@ public class ResultSection {
 		return Pair.of(selectedMethod.id(), impactSet);
 	}
 
-	void render(Composite body, FormToolkit tk) {
+	ResultSection render(Composite body, FormToolkit tk) {
 		section = UI.section(body, tk, M.GeneralInformation);
+		UI.fillHorizontal(section);
 		updateSectionTitle();
 		var comp = UI.sectionClient(section, tk, 1);
 
 		var top = tk.createComposite(comp);
-		UI.gridData(top, true, false);
+		UI.fillHorizontal(top);
 		UI.gridLayout(top, 2, 10, 0);
 
+		// create the method combo
 		var methodCombo = new EntityCombo<>(
 			UI.formCombo(top, tk, "OpenEPD LCIA Method"),
 			editor.impactModel.methods(),
 			m -> Strings.orEmpty(m.id()))
 			.select(selectedMethod);
 
+		// create the scope combo
 		var scopes = List.of(
 			"A1A2A3", "A1", "A2", "A3", "A4", "A5",
 			"B1", "B2", "B3", "B4", "B5", "B6", "B7",
@@ -114,6 +124,7 @@ public class ResultSection {
 				updateSectionTitle();
 			});
 
+		// create the table
 		var table = Tables.createViewer(comp,
 			"EPD Indicator",
 			"EPD Unit",
@@ -143,6 +154,7 @@ public class ResultSection {
 			});
 		Actions.bind(table, onReInitRows, onDeleteRow);
 
+		// handle method changes
 		methodCombo.onSelected(method -> {
 			selectedMethod = method;
 			updateSectionTitle();
@@ -150,6 +162,17 @@ public class ResultSection {
 			mappedValues.addAll(MappedValue.initAll(method, result));
 			table.setInput(mappedValues);
 		});
+
+		// add the delete action
+		var selfDelete = Actions.onRemove(() -> {
+			section.dispose();
+			if (onDelete!= null) {
+				onDelete.accept(this);
+			}
+		});
+		Actions.bind(section, selfDelete);
+
+		return this;
 	}
 
 	private void updateSectionTitle() {
