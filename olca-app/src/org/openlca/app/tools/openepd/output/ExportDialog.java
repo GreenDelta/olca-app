@@ -1,4 +1,4 @@
-package org.openlca.app.editors.results.openepd.output;
+package org.openlca.app.tools.openepd.output;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -16,10 +16,10 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.editors.results.openepd.model.Credentials;
-import org.openlca.app.editors.results.openepd.model.Ec3Epd;
-import org.openlca.app.editors.results.openepd.model.Ec3ImpactModel;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.tools.openepd.model.Credentials;
+import org.openlca.app.tools.openepd.model.Ec3Epd;
+import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.results.openepd.model;
+package org.openlca.app.tools.openepd.model;
 
 import java.util.Collections;
 import java.util.HashMap;

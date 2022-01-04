@@ -1,6 +1,6 @@
-package org.openlca.app.editors.results.openepd.input;
+package org.openlca.app.tools.openepd.input;
 
-import org.openlca.app.editors.results.openepd.model.Ec3Epd;
+import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Unit;

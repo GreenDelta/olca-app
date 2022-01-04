@@ -1,9 +1,9 @@
-package org.openlca.app.editors.results.openepd.input;
+package org.openlca.app.tools.openepd.input;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.openlca.app.editors.results.openepd.model.Ec3Epd;
+import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;

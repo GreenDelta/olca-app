@@ -1,4 +1,4 @@
-package org.openlca.app.editors.results.openepd.input;
+package org.openlca.app.tools.openepd.input;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -19,9 +19,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.EntityCombo;
-import org.openlca.app.editors.results.openepd.model.Ec3ImpactModel;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;

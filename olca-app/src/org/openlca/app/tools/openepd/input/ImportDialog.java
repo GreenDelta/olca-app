@@ -1,4 +1,4 @@
-package org.openlca.app.editors.results.openepd.input;
+package org.openlca.app.tools.openepd.input;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,10 +14,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.EntityCombo;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.results.openepd.model.Ec3CategoryIndex;
-import org.openlca.app.editors.results.openepd.model.Ec3Epd;
-import org.openlca.app.editors.results.openepd.model.Ec3ImpactModel;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.tools.openepd.model.Ec3CategoryIndex;
+import org.openlca.app.tools.openepd.model.Ec3Epd;
+import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;

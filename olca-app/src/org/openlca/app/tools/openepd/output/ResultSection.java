@@ -1,4 +1,4 @@
-package org.openlca.app.editors.results.openepd.output;
+package org.openlca.app.tools.openepd.output;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,12 +14,12 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.EntityCombo;
-import org.openlca.app.editors.results.openepd.model.Ec3ImpactModel;
-import org.openlca.app.editors.results.openepd.model.Ec3ImpactSet;
-import org.openlca.app.editors.results.openepd.model.Ec3Measurement;
-import org.openlca.app.editors.results.openepd.model.Ec3ScopeSet;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
+import org.openlca.app.tools.openepd.model.Ec3ImpactSet;
+import org.openlca.app.tools.openepd.model.Ec3Measurement;
+import org.openlca.app.tools.openepd.model.Ec3ScopeSet;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;

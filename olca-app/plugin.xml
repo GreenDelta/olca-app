@@ -800,7 +800,7 @@
           name="Repository import">
      </wizard>
 		 <wizard
-			 class="org.openlca.app.editors.results.openepd.input.DownloadWizard"
+			 class="org.openlca.app.tools.openepd.input.DownloadWizard"
 			 icon="icons/building.png"
 			 id="wizard.import.openepd"
 			 name="OpenEPD / EC3 import">

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.results.openepd.input;
+package org.openlca.app.tools.openepd.input;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,12 +21,12 @@ import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.results.openepd.model.Api;
-import org.openlca.app.editors.results.openepd.model.Credentials;
-import org.openlca.app.editors.results.openepd.model.Ec3CategoryIndex;
-import org.openlca.app.editors.results.openepd.model.Ec3Client;
-import org.openlca.app.editors.results.openepd.model.Ec3Epd;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.tools.openepd.model.Api;
+import org.openlca.app.tools.openepd.model.Credentials;
+import org.openlca.app.tools.openepd.model.Ec3CategoryIndex;
+import org.openlca.app.tools.openepd.model.Ec3Client;
+import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
