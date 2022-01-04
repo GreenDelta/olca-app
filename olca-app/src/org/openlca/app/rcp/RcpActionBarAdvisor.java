@@ -43,6 +43,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.libraries.LibraryExportDialog;
 import org.openlca.app.tools.mapping.MappingTool;
+import org.openlca.app.tools.openepd.panel.EpdPanel;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.FileType;
@@ -144,8 +145,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillToolsMenu(IMenuManager menuBar) {
-		MenuManager menu = new MenuManager("Tools");
-		MenuManager viewMenu = new MenuManager(M.Showviews);
+		var menu = new MenuManager("Tools");
+		var viewMenu = new MenuManager(M.Showviews);
 		viewMenu.add(showViews);
 		menu.add(viewMenu);
 		menu.add(new Separator());
@@ -156,7 +157,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		createDeveloperMenu(menu);
 
 		// bulk replace
-		MenuManager brMenu = new MenuManager(M.Bulkreplace);
+		var brMenu = new MenuManager(M.Bulkreplace);
 		menu.add(brMenu);
 		brMenu.add(Actions.create(
 				M.Flows, Images.descriptor(ModelType.FLOW),
@@ -166,19 +167,21 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 				ReplaceProvidersDialog::openDialog));
 
 		// flow mapping
-		MenuManager fmMenu = new MenuManager(
-				"Flow mapping (experimental)");
-		menu.add(fmMenu);
-		fmMenu.add(Actions.create(
-				"New", MappingTool::createNew));
-		fmMenu.add(Actions.create(
-				"Open file", MappingTool::openFile));
+		var mappings = new MenuManager("Flow mapping (experimental)");
+		menu.add(mappings);
+		mappings.add(Actions.create("New", MappingTool::createNew));
+		mappings.add(Actions.create("Open file", MappingTool::openFile));
 
 		// library export
 		if (FeatureFlag.LIBRARIES.isEnabled()) {
 			menu.add(Actions.create(
-					"Library export (experimental)",
-					LibraryExportDialog::show));
+					"Library export (experimental)", LibraryExportDialog::show));
+		}
+
+		// openEPD
+		if (FeatureFlag.RESULTS.isEnabled()) {
+			menu.add(Actions.create(
+				"openEPD", Icon.BUILDING.descriptor(), EpdPanel::open));
 		}
 
 		// console
