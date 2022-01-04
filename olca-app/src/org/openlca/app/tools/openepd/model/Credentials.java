@@ -4,12 +4,10 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.Optional;
 
+import com.google.gson.JsonObject;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.jsonld.Json;
-import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonObject;
 
 public class Credentials {
 
@@ -82,9 +80,6 @@ public class Credentials {
 			var client = Ec3Client.of(url).login(user, password);
 			return Optional.of(client);
 		} catch (Exception e) {
-			var log = LoggerFactory.getLogger(getClass());
-			log.error("failed to connect to EC3; user: "
-								+ user + "; password: " + password, e);
 			return Optional.empty();
 		}
 	}

@@ -15,18 +15,18 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
 
-public class LoginSection {
+public class LoginPanel {
 
 	private final Credentials credentials;
 	private Ec3Client client;
 	private Button button;
 
-	private LoginSection() {
+	private LoginPanel() {
 		credentials = Credentials.getDefault();
 	}
 
-	public static LoginSection create(Composite body, FormToolkit tk) {
-		var section = new LoginSection();
+	public static LoginPanel create(Composite body, FormToolkit tk) {
+		var section = new LoginPanel();
 		section.render(body, tk);
 		return section;
 	}
