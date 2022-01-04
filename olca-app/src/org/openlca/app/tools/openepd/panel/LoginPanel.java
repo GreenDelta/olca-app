@@ -95,7 +95,9 @@ public class LoginPanel {
 		try {
 			var o = credentials.login();
 			if (o.isEmpty()) {
-				MsgBox.error("Login failed");
+				MsgBox.error("Login failed",
+					"Failed to login into the EC3 API with" +
+						" the given user name and password.");
 				updateButton("Login");
 				client = null;
 				return Optional.empty();
