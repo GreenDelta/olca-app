@@ -73,14 +73,16 @@ public class FileChooser {
 	public static File forSavingFile(String title, String defaultName) {
 		var dialog = new FileDialog(UI.shell(), SWT.SAVE);
 		dialog.setText(title == null ? M.Save : title);
+
 		if (defaultName != null) {
 			dialog.setFileName(defaultName);
 			var parts = defaultName.split("\\.");
 			if (parts.length > 1) {
-				dialog.setFilterExtensions(
-					new String[]{"*." + parts[parts.length - 1]});
+				var ext = parts[parts.length - 1];
+				dialog.setFilterExtensions(new String[]{"*." + ext});
 			}
 		}
+
 		var path = dialog.open();
 		if (path == null)
 			return null;

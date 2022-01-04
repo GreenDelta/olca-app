@@ -6,11 +6,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Strings;
-
-import com.google.gson.JsonElement;
 
 public class Api {
 
@@ -18,10 +18,20 @@ public class Api {
 	}
 
 	public static Optional<Ec3Epd> getEpd(Ec3Client client, String id) {
+		var raw = getRawEpd(client, id);
+		return raw.isPresent()
+			? Ec3Epd.fromJson(raw.get())
+			: Optional.empty();
+	}
+
+	public static Optional<JsonObject> getRawEpd(Ec3Client client, String id) {
 		try {
 			var r = client.get("epds/" + id);
-			return r.hasJson()
-				? Ec3Epd.fromJson(r.json())
+			if (!r.hasJson())
+				return Optional.empty();
+			var json = r.json();
+			return json.isJsonObject()
+				? Optional.of(json.getAsJsonObject())
 				: Optional.empty();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to download EPD " + id, e);

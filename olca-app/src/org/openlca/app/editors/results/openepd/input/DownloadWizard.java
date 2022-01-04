@@ -1,11 +1,13 @@
 package org.openlca.app.editors.results.openepd.input;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -17,6 +19,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.results.openepd.model.Api;
 import org.openlca.app.editors.results.openepd.model.Credentials;
@@ -24,12 +27,15 @@ import org.openlca.app.editors.results.openepd.model.Ec3CategoryIndex;
 import org.openlca.app.editors.results.openepd.model.Ec3Client;
 import org.openlca.app.editors.results.openepd.model.Ec3Epd;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.jsonld.Json;
 import org.openlca.util.Strings;
 
 public class DownloadWizard extends Wizard implements IImportWizard {
@@ -56,19 +62,21 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 		if (epd == null || db == null)
 			return false;
 		try {
+			var ok = new AtomicBoolean(false);
 			getContainer().run(false, false, monitor -> {
 				var fullEpd = Api.getEpd(client, epd.id);
 				if (fullEpd.isEmpty()) {
 					ErrorReporter.on("Failed to download EPD " + epd.id);
 				} else {
-					ImportDialog.show(fullEpd.get(), categories);
+					int r = ImportDialog.show(fullEpd.get(), categories);
+					ok.set(r == Window.OK);
 				}
 			});
+			return ok.get();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to download EPD " + epd.id, e);
 			return false;
 		}
-		return true;
 	}
 
 	@Override
@@ -108,6 +116,7 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 			UI.gridLayout(comp, 2);
 			credentialFields(comp);
 
+			// search field
 			UI.formLabel(comp, "EPD");
 			var searchComp = new Composite(comp, SWT.NONE);
 			UI.gridData(searchComp, true, false);
@@ -116,16 +125,15 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 			UI.gridData(queryText, true, false);
 			var button = new Button(searchComp, SWT.PUSH);
 			button.setText("Search");
-
 			Controls.onSelect(button, $ -> onSearch());
 			Controls.onReturn(queryText, $ -> onSearch());
 
+			// descriptor table
 			table = Tables.createViewer(
 				root, "EPD", "Manufacturer", "Category", "Declared unit");
 			Tables.bindColumnWidths(table, 0.25, 0.25, 0.25, 0.25);
 			UI.gridData(table.getControl(), true, true);
 			table.setLabelProvider(new TableLabel());
-
 			table.addSelectionChangedListener(e -> {
 				Object first = Selections.firstOf(e.getSelection());
 				epd = first instanceof Ec3Epd
@@ -133,6 +141,26 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 					: null;
 				setPageComplete(epd != null);
 			});
+
+			// save-as-file action
+			var onSaveFile = Actions.create(
+				"Save as file", Icon.FILE.descriptor(), () -> {
+					Ec3Epd epd = Viewers.getFirstSelected(table);
+					if (epd == null)
+						return;
+					var file = FileChooser.forSavingFile(
+						"Save OpenEPD", epd.name + ".json");
+					if (file == null)
+						return;
+					var json = App.exec(
+						"Download EPD", () -> Api.getRawEpd(client, epd.id));
+					if (json.isEmpty()) {
+						MsgBox.error("Failed to download EPD " + epd.id);
+						return;
+					}
+					Json.write(json.get(), file);
+				});
+			Actions.bind(table, onSaveFile);
 		}
 
 		private void credentialFields(Composite comp) {
@@ -198,8 +226,8 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 			// otherwise, search for EPDs
 			var epds = new ArrayList<Ec3Epd>();
 			App.runWithProgress("Fetch EPDs", () -> {
-					var response = Api.descriptors(client).query(query).get();
-					epds.addAll(response.descriptors());
+				var response = Api.descriptors(client).query(query).get();
+				epds.addAll(response.descriptors());
 			}, () -> table.setInput(epds));
 		}
 
