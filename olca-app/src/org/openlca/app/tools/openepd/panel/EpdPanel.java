@@ -29,7 +29,7 @@ public class EpdPanel extends SimpleFormEditor {
 			var form = UI.formHeader(mform, "Flow mapping");
 			var tk = mform.getToolkit();
 			var body = UI.formBody(form, tk);
-			CredentialsSection.create(body, tk);
+			LoginSection.create(body, tk);
 
 			form.reflow(true);
 		}

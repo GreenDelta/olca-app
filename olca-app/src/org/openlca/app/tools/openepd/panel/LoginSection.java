@@ -1,0 +1,137 @@
+package org.openlca.app.tools.openepd.panel;
+
+import java.util.Optional;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.tools.openepd.model.Credentials;
+import org.openlca.app.tools.openepd.model.Ec3Client;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.UI;
+import org.openlca.util.Strings;
+
+public class LoginSection {
+
+	private final Credentials credentials;
+	private Ec3Client client;
+	private Button button;
+
+	private LoginSection() {
+		credentials = Credentials.getDefault();
+	}
+
+	public static LoginSection create(Composite body, FormToolkit tk) {
+		var section = new LoginSection();
+		section.render(body, tk);
+		return section;
+	}
+
+	public Credentials credentials() {
+		return credentials;
+	}
+
+	private void render(Composite body, FormToolkit tk) {
+		var section = UI.section(body, tk, "EC3 Login");
+		var comp = UI.sectionClient(section, tk, 2);
+
+		// url
+		var filled = 0;
+		var urlText = UI.formText(comp, tk, "URL");
+		if (Strings.notEmpty(credentials.url())) {
+			urlText.setText(credentials.url());
+			filled++;
+		}
+		urlText.addModifyListener(
+			$ -> credentials.url(urlText.getText()));
+
+		// user
+		var userText = UI.formText(comp, tk, "User");
+		if (Strings.notEmpty(credentials.user())) {
+			userText.setText(credentials.user());
+			filled++;
+		}
+		userText.addModifyListener(
+			$ -> credentials.user(userText.getText()));
+
+		// password
+		var pwText = UI.formText(comp, tk, "Password", SWT.PASSWORD);
+		if (Strings.notEmpty(credentials.password())) {
+			pwText.setText(credentials.password());
+			filled++;
+		}
+		pwText.addModifyListener(
+			$ -> credentials.password(pwText.getText()));
+
+		// login button
+		UI.filler(comp, tk);
+		button = tk.createButton(comp, "Login", SWT.NONE);
+		button.setImage(Icon.CONNECT.get());
+		Controls.onSelect(button, $ -> {
+			if (client == null) {
+				login();
+			} else {
+				logout();
+			}
+		});
+		button.addDisposeListener($ -> {
+			if (client != null) {
+				client.logout();
+			}
+		});
+
+		section.setExpanded(filled < 3);
+	}
+
+	public Optional<Ec3Client> login() {
+		if (client != null)
+			return Optional.of(client);
+		if (button.isDisposed())
+			return Optional.empty();
+		try {
+			var o = credentials.login();
+			if (o.isEmpty()) {
+				MsgBox.error("Login failed");
+				updateButton("Login");
+				client = null;
+				return Optional.empty();
+			}
+			client = o.get();
+			updateButton("Logout");
+			return o;
+		} catch (Exception e) {
+			ErrorReporter.on("EC3 login failed", e);
+			client = null;
+			updateButton("Login");
+			return Optional.empty();
+		}
+	}
+
+	public void logout() {
+		if (button.isDisposed())
+			return;
+		if (client != null) {
+			try {
+				client.logout();
+			} catch (Exception e) {
+				ErrorReporter.on("EC3 logout failed", e);
+			} finally {
+				client = null;
+			}
+		}
+		updateButton("Login");
+	}
+
+	private void updateButton(String text) {
+		if (button.isDisposed())
+			return;
+		button.setText(text);
+		button.getParent().layout();
+		button.getParent().redraw();
+	}
+
+}
