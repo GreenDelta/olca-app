@@ -18,8 +18,10 @@ import org.openlca.app.components.EntityCombo;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
+import org.openlca.app.tools.openepd.model.Ec3ImpactResult;
+import org.openlca.app.tools.openepd.model.Ec3IndicatorResult;
 import org.openlca.app.tools.openepd.model.Ec3Measurement;
-import org.openlca.app.tools.openepd.model.Ec3ScopeSet;
+import org.openlca.app.tools.openepd.model.Ec3ScopeValue;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -32,7 +34,6 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ResultModel;
-import org.openlca.util.Pair;
 import org.openlca.util.Strings;
 
 public class ResultSection {
@@ -79,18 +80,18 @@ public class ResultSection {
 		return this;
 	}
 
-	Pair<String, Ec3ImpactSet> createImpacts() {
+	Ec3ImpactResult createEpdResult() {
 		if (selectedMethod == null)
 			return null;
-		var impactSet = new Ec3ImpactSet();
+		var indicatorResults = new ArrayList<Ec3IndicatorResult>();
 		for (var val : mappedValues) {
 			var epdIndicator = val.epdIndicator;
-			var scopeSet = new Ec3ScopeSet();
-			scopeSet.put(selectedScope, Ec3Measurement.of(
-				val.amount, epdIndicator.unit()));
-			impactSet.put(epdIndicator.id(), scopeSet);
+			var value = Ec3Measurement.of(val.amount, epdIndicator.unit());
+			var scopeValue = new Ec3ScopeValue(selectedScope, value);
+			var result = Ec3IndicatorResult.of((epdIndicator.id()));
+			result.values().add(scopeValue);
 		}
-		return Pair.of(selectedMethod.id(), impactSet);
+		return new Ec3ImpactResult(selectedMethod.id(), indicatorResults);
 	}
 
 	ResultSection render(Composite body, FormToolkit tk) {

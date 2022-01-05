@@ -161,13 +161,11 @@ public class EpdEditor extends SimpleFormEditor {
 		}
 
 		private void addResults() {
-			epd.clearImpacts();
+			epd.impactResults.clear();
 			// TODO: merge the impact sets
 			for (var section : sections) {
-				var pair = section.createImpacts();
-				if (pair == null)
-					continue;
-				epd.putImpactSet(pair.first, pair.second);
+				var result = section.createEpdResult();
+				epd.impactResults.add(result);
 			}
 		}
 
