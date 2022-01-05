@@ -9,10 +9,12 @@ import java.util.function.Consumer;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.EntityCombo;
 import org.openlca.app.rcp.images.Icon;
@@ -23,6 +25,7 @@ import org.openlca.app.tools.openepd.model.Ec3IndicatorResult;
 import org.openlca.app.tools.openepd.model.Ec3Measurement;
 import org.openlca.app.tools.openepd.model.Ec3ScopeValue;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -104,6 +107,13 @@ public class ResultSection {
 		var top = tk.createComposite(comp);
 		UI.fillHorizontal(top);
 		UI.gridLayout(top, 2, 10, 0);
+
+		// the result link
+		UI.formLabel(top, tk, M.Result);
+		var link = tk.createImageHyperlink(top, SWT.NONE);
+		link.setImage(Images.get(ModelType.RESULT));
+		link.setText(Labels.name(result));
+		Controls.onClick(link, $ -> App.open(result));
 
 		// create the method combo
 		var methodCombo = new EntityCombo<>(
