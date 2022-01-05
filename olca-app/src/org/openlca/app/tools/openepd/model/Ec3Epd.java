@@ -1,5 +1,6 @@
 package org.openlca.app.tools.openepd.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,8 @@ public class Ec3Epd {
 
 	public boolean isDraft;
 	public boolean isPrivate;
+	public LocalDate dateOfIssue;
+	public LocalDate dateValidityEnds;
 
 	public final List<Ec3ImpactResult> impactResults = new ArrayList<>();
 
@@ -56,6 +59,8 @@ public class Ec3Epd {
 		epd.docUrl = Json.getString(obj, "doc");
 		epd.isDraft = Json.getBool(obj, "draft", false);
 		epd.isPrivate = Json.getBool(obj, "private", false);
+		epd.dateOfIssue = getLocalDate(obj, "date_of_issue");
+		epd.dateValidityEnds = getLocalDate(obj, "date_validity_ends");
 
 		// impacts
 		var impactJson = Json.getObject(obj, "impacts");
@@ -65,6 +70,17 @@ public class Ec3Epd {
 		}
 
 		return Optional.of(epd);
+	}
+
+	private static LocalDate getLocalDate(JsonObject obj, String field) {
+		var s = Json.getString(obj, field);
+		if (s == null)
+			return null;
+		try {
+			return LocalDate.parse(s);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public JsonObject toJson() {
@@ -83,9 +99,15 @@ public class Ec3Epd {
 		}
 
 		Json.put(obj, "doc", docUrl);
-
 		obj.addProperty("draft", isDraft);
 		obj.addProperty("private", isPrivate);
+
+		if (dateOfIssue != null) {
+			obj.addProperty("date_of_issue", dateOfIssue.toString());
+		}
+		if (dateValidityEnds != null) {
+			obj.addProperty("date_validity_ends", dateValidityEnds.toString());
+		}
 
 		if (reviewer != null) {
 			obj.add("reviewer", reviewer.toJson());

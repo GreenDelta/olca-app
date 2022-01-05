@@ -53,7 +53,7 @@ public class Ec3Client {
 		}
 	}
 
-	public <T> T post(String path, JsonElement body, Class<T> responseType) {
+	public Ec3Response post(String path, JsonElement body) {
 		var p = path.startsWith("/")
 			? path.substring(1)
 			: path;
@@ -68,10 +68,7 @@ public class Ec3Client {
 				.POST(bodyStr)
 				.build();
 			var resp = http.send(req, HttpResponse.BodyHandlers.ofInputStream());
-			try (var stream = resp.body();
-					 var reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-				return new Gson().fromJson(reader, responseType);
-			}
+			return Ec3Response.of(resp);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to post to EC3", e);
 		}

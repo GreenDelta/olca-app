@@ -1,6 +1,7 @@
 package org.openlca.app.tools.openepd;
 
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -8,6 +9,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -28,6 +30,7 @@ import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
@@ -55,13 +58,14 @@ public class EpdEditor extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 		throws PartInitException {
 		super.init(site, input);
-		epd.id = input instanceof SimpleEditorInput i
-			? i.id
-			: UUID.randomUUID().toString();
 		epd.isDraft = true;
 		epd.isPrivate = true;
 		epd.name = "New EPD";
 		epd.declaredUnit = "1 kg";
+		var today = LocalDate.now();
+		epd.dateOfIssue = today;
+		epd.dateValidityEnds = LocalDate.of(
+			today.getYear() + 1, today.getMonth(), today.getDayOfMonth());
 	}
 
 	@Override
@@ -92,6 +96,16 @@ public class EpdEditor extends SimpleFormEditor {
 				epd.name, s -> epd.name = s);
 			text(UI.formText(comp, tk, "Declared unit"),
 				epd.declaredUnit, s -> epd.declaredUnit = s);
+
+			UI.formLabel(comp, tk, "Date of issue");
+			var issueDate = new DateTime(comp, SWT.DROP_DOWN);
+			tk.adapt(issueDate);
+			date(issueDate, epd.dateOfIssue, d -> epd.dateOfIssue = d);
+			UI.formLabel(comp, tk, "End of validity");
+			var endDate = new DateTime(comp, SWT.DROP_DOWN);
+			tk.adapt(endDate);
+			date(endDate, epd.dateValidityEnds, d -> epd.dateValidityEnds = d);
+
 			text(UI.formMultiText(comp, tk, "Description"),
 				epd.description, s -> epd.description = s);
 
@@ -151,10 +165,32 @@ public class EpdEditor extends SimpleFormEditor {
 				try {
 					Files.writeString(file.toPath(), json);
 				} catch (Exception e) {
-					ErrorReporter.on("Failed to upload EPD", e);
+					ErrorReporter.on("Failed to save EPD", e);
 				}
 			});
 
+			// upload to EC3
+			Controls.onSelect(uploadButton, $ -> {
+				var client = loginPanel.login().orElse(null);
+				if (client == null)
+					return;
+				var b = Question.ask("Upload as draft?",
+					"Upload this as draft to " + loginPanel.credentials().url() + "?");
+				if (!b)
+					return;
+				mergeResults();
+				try {
+					var response = client.post("/epds", epd.toJson());
+					if (response.hasJson()) {
+						var json = new GsonBuilder().setPrettyPrinting()
+							.create()
+							.toJson(response.json());
+						System.out.println(json);
+					}
+				} catch (Exception e) {
+					ErrorReporter.on("Failed to upload EPD", e);
+				}
+			});
 		}
 
 		private void text(Text text, String initial, Consumer<String> onChange) {
@@ -162,6 +198,21 @@ public class EpdEditor extends SimpleFormEditor {
 				text.setText(initial);
 			}
 			text.addModifyListener($ -> onChange.accept(text.getText()));
+		}
+
+		private void date(
+			DateTime widget, LocalDate initial, Consumer<LocalDate> onChange) {
+			if (initial != null) {
+				widget.setDate(
+					initial.getYear(),
+					initial.getMonthValue()-1, // !
+					initial.getDayOfMonth());
+			}
+			widget.addSelectionListener(Controls.onSelect($ -> {
+				var newDate = LocalDate.of(
+					widget.getYear(), widget.getMonth() + 1, widget.getDay());
+				onChange.accept(newDate);
+			}));
 		}
 
 		private void mergeResults() {
