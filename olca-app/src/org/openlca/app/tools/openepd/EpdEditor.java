@@ -1,10 +1,12 @@
 package org.openlca.app.tools.openepd;
 
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import com.google.gson.GsonBuilder;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -13,6 +15,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
@@ -23,6 +26,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
@@ -32,8 +36,8 @@ import org.openlca.core.model.ResultModel;
 public class EpdEditor extends SimpleFormEditor {
 
 	final Ec3ImpactModel impactModel = Ec3ImpactModel.get();
-	private IDatabase db;
-	private Ec3Epd epd;
+	private final IDatabase db = Database.get();
+	private final Ec3Epd epd = new Ec3Epd();
 
 	public static void open() {
 		var db = Database.get();
@@ -49,8 +53,6 @@ public class EpdEditor extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 		throws PartInitException {
 		super.init(site, input);
-		db = Database.get();
-		epd = new Ec3Epd();
 		epd.id = input instanceof SimpleEditorInput i
 			? i.id
 			: UUID.randomUUID().toString();
@@ -65,7 +67,7 @@ public class EpdEditor extends SimpleFormEditor {
 
 	private class Page extends FormPage {
 
-		private final List<ResultSection> results = new ArrayList<>();
+		private final List<ResultSection> sections = new ArrayList<>();
 
 		public Page() {
 			super(EpdEditor.this, "EpdEditor.Page", "New EPD");
@@ -79,6 +81,7 @@ public class EpdEditor extends SimpleFormEditor {
 			var body = UI.formBody(form, tk);
 			var loginPanel = LoginPanel.create(body, tk);
 
+			// info section
 			var infoSection = UI.section(body, tk, M.GeneralInformation);
 			var comp = UI.sectionClient(infoSection, tk, 2);
 			text(UI.formText(comp, tk, "Name"),
@@ -110,22 +113,42 @@ public class EpdEditor extends SimpleFormEditor {
 				UI.gridData(b, false, false).widthHint = maxWidth;
 			}
 
-			// add-result-handler
+			// add result
 			Controls.onSelect(resultButton, $ -> {
-				var d = ModelSelector.select(ModelType.RESULT);
-				if (d == null)
+				var ds = ModelSelector.multiSelect(ModelType.RESULT);
+				if (ds == null)
 					return;
-				var model = db.get(ResultModel.class, d.id);
-				if (model == null)
-					return;
-				var section = ResultSection.of(EpdEditor.this, model)
-					.render(body, tk)
-					.onDelete(s -> {
-						results.remove(s);
-						form.reflow(true);
-					});
-				results.add(section);
+				for (var d : ds) {
+					var model = db.get(ResultModel.class, d.id);
+					if (model == null)
+						return;
+					var section = ResultSection.of(EpdEditor.this, model)
+						.render(body, tk)
+						.onDelete(s -> {
+							sections.remove(s);
+							form.reflow(true);
+						});
+					sections.add(section);
+				}
 				form.reflow(true);
+			});
+
+			// save as file
+			Controls.onSelect(fileButton, $ -> {
+				var file = FileChooser.forSavingFile(
+					"Save as openEPD document",
+					epd.name + ".json");
+				if (file == null)
+					return;
+				addResults();
+				var json = new GsonBuilder().setPrettyPrinting()
+					.create()
+					.toJson(epd.toJson());
+				try {
+					Files.writeString(file.toPath(), json);
+				} catch (Exception e) {
+					ErrorReporter.on("Failed to upload EPD", e);
+				}
 			});
 
 		}
@@ -135,6 +158,17 @@ public class EpdEditor extends SimpleFormEditor {
 				text.setText(initial);
 			}
 			text.addModifyListener($ -> onChange.accept(text.getText()));
+		}
+
+		private void addResults() {
+			epd.clearImpacts();
+			// TODO: merge the impact sets
+			for (var section : sections) {
+				var pair = section.createImpacts();
+				if (pair == null)
+					continue;
+				epd.putImpactSet(pair.first, pair.second);
+			}
 		}
 
 	}

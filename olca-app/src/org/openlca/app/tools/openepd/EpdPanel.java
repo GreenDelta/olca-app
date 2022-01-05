@@ -24,6 +24,7 @@ import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
@@ -134,6 +135,7 @@ public class EpdPanel extends SimpleFormEditor {
 					if (file == null)
 						return;
 					Json.write(epd.json, file);
+					Popup.info("Saved file", "Saved file " + file.getName());
 				});
 
 			Actions.bind(table, onImport, onSaveFile);

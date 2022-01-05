@@ -155,7 +155,7 @@ public class ExportDialog extends FormDialog {
 			return;
 		}
 		var file = FileChooser.forSavingFile(
-			"Save as OpenEPD document",
+			"Save as openEPD document",
 			epd.name + ".json");
 		if (file == null)
 			return;

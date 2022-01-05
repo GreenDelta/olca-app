@@ -253,8 +253,7 @@ public class ModelSelector extends FormDialog {
 		@Override
 		public void doubleClick(DoubleClickEvent e) {
 			Object obj = Viewers.getFirstSelected(viewer);
-			if (obj instanceof ModelElement) {
-				ModelElement elem = (ModelElement) obj;
+			if (obj instanceof ModelElement elem) {
 				selection = Collections.singletonList(elem.getContent());
 				okPressed();
 			}
@@ -271,16 +270,13 @@ public class ModelSelector extends FormDialog {
 
 		@Override
 		public boolean select(Viewer viewer, Object parent, Object obj) {
-			if (!(obj instanceof INavigationElement))
+			if (!(obj instanceof INavigationElement<?> elem))
 				return false;
-			var elem = (INavigationElement<?>) obj;
-			if (elem instanceof ModelElement) {
-				var model = ((ModelElement) elem).getContent();
-				return predicate.test(model);
-			}
+			if (elem instanceof ModelElement modElem)
+				return predicate.test(modElem.getContent());
 
-			// select the element when at least one of its child elements
-			// is visible
+			// select the element when at least one of its child
+			// elements is visible
 			for (var child : elem.getChildren()) {
 				if (select(viewer, elem, child))
 					return true;
