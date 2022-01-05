@@ -1,7 +1,9 @@
 package org.openlca.app.tools.openepd.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -33,6 +35,7 @@ public class Ec3Epd {
 	public boolean isPrivate;
 
 	private final Map<String, Ec3ImpactSet> impacts = new HashMap<>();
+	private final List<Ec3ImpactResult> impactResults = new ArrayList<>();
 
   public static Optional<Ec3Epd> fromJson(JsonElement elem) {
     if (elem == null || !elem.isJsonObject())
@@ -61,12 +64,22 @@ public class Ec3Epd {
 
 
 		// impacts
-		var impactObj = Json.getObject(obj, "impacts");
-		if (impactObj != null) {
-			for (var method : impactObj.keySet()) {
-				var impactSet = Ec3ImpactSet.fromJson(impactObj.get(method));
-				if (!impactSet.isEmpty()) {
-					epd.putImpactSet(method, impactSet);
+		var impactJson = Json.getObject(obj, "impacts");
+		if (impactJson != null) {
+			for (var method : impactJson.keySet()) {
+				var result = Ec3ImpactResult.of(method);
+				var indicatorJson = Json.getObject(impactJson, method);
+				if (indicatorJson == null)
+					continue;
+				for (var indicator : indicatorJson.keySet()) {
+					var indicatorResult = Ec3IndicatorResult.of(indicator);
+					var scopeJson = Json.getObject(indicatorJson, indicator);
+					if (scopeJson == null)
+						continue;
+					for (var scope : )
+				}
+				if (!indicatorJson.isEmpty()) {
+					epd.putImpactSet(method, indicatorJson);
 				}
 			}
 		}
@@ -115,8 +128,36 @@ public class Ec3Epd {
 			obj.add("impacts", impactObj);
 		}
 
+		// impact results
+		var impactJson = new JsonObject();
+		for (var result : impactResults) {
+			var indicatorJson = new JsonObject();
+			for (var indicatorResult : result.indicatorResults()) {
+				var scopeJson = new JsonObject();
+				for (var scopeValue : indicatorResult.values()) {
+					if (scopeValue.value() == null)
+						continue;
+					var measurement = scopeValue.value().toJson();
+					scopeJson.add(scopeValue.scope(), measurement);
+				}
+				if (scopeJson.size() > 0) {
+					indicatorJson.add(indicatorResult.indicator(), scopeJson);
+				}
+			}
+			if (indicatorJson.size() > 0) {
+				impactJson.add(result.method(), indicatorJson);
+			}
+		}
+		if (impactJson.size() > 0) {
+			obj.add("impacts", impactJson);
+		}
+
     return obj;
   }
+
+	public List<Ec3ImpactResult> impactResults() {
+		return impactResults;
+	}
 
 	public Optional<Ec3ImpactSet> getImpactSet(String method) {
 		return Optional.ofNullable(impacts.get(method));
