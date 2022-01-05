@@ -17,7 +17,6 @@ import org.openlca.app.components.EntityCombo;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
-import org.openlca.app.tools.openepd.model.Ec3ImpactSet;
 import org.openlca.app.tools.openepd.model.Ec3Measurement;
 import org.openlca.app.tools.openepd.model.Ec3ScopeSet;
 import org.openlca.app.util.Actions;

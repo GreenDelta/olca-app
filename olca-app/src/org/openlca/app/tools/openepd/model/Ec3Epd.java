@@ -1,12 +1,8 @@
 package org.openlca.app.tools.openepd.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -34,8 +30,7 @@ public class Ec3Epd {
 	public boolean isDraft;
 	public boolean isPrivate;
 
-	private final Map<String, Ec3ImpactSet> impacts = new HashMap<>();
-	private final List<Ec3ImpactResult> impactResults = new ArrayList<>();
+	public final List<Ec3ImpactResult> impactResults = new ArrayList<>();
 
   public static Optional<Ec3Epd> fromJson(JsonElement elem) {
     if (elem == null || !elem.isJsonObject())
@@ -62,26 +57,11 @@ public class Ec3Epd {
 		epd.isDraft = Json.getBool(obj, "draft", false);
 		epd.isPrivate = Json.getBool(obj, "private", false);
 
-
 		// impacts
 		var impactJson = Json.getObject(obj, "impacts");
 		if (impactJson != null) {
-			for (var method : impactJson.keySet()) {
-				var result = Ec3ImpactResult.of(method);
-				var indicatorJson = Json.getObject(impactJson, method);
-				if (indicatorJson == null)
-					continue;
-				for (var indicator : indicatorJson.keySet()) {
-					var indicatorResult = Ec3IndicatorResult.of(indicator);
-					var scopeJson = Json.getObject(indicatorJson, indicator);
-					if (scopeJson == null)
-						continue;
-					for (var scope : )
-				}
-				if (!indicatorJson.isEmpty()) {
-					epd.putImpactSet(method, indicatorJson);
-				}
-			}
+			var impactResults = Ec3ImpactResult.fromJson(impactJson);
+			epd.impactResults.addAll(impactResults);
 		}
 
 		return Optional.of(epd);
@@ -117,37 +97,8 @@ public class Ec3Epd {
       obj.add("verifier", verifier.toJson());
     }
 
-		// impacts
-		var impactObj = new JsonObject();
-		eachImpactSet((method, impactSet) -> {
-			if (method != null && impactSet != null) {
-				impactObj.add(method, impactSet.toJson());
-			}
-		});
-		if (impactObj.size() > 0) {
-			obj.add("impacts", impactObj);
-		}
-
 		// impact results
-		var impactJson = new JsonObject();
-		for (var result : impactResults) {
-			var indicatorJson = new JsonObject();
-			for (var indicatorResult : result.indicatorResults()) {
-				var scopeJson = new JsonObject();
-				for (var scopeValue : indicatorResult.values()) {
-					if (scopeValue.value() == null)
-						continue;
-					var measurement = scopeValue.value().toJson();
-					scopeJson.add(scopeValue.scope(), measurement);
-				}
-				if (scopeJson.size() > 0) {
-					indicatorJson.add(indicatorResult.indicator(), scopeJson);
-				}
-			}
-			if (indicatorJson.size() > 0) {
-				impactJson.add(result.method(), indicatorJson);
-			}
-		}
+		var impactJson = Ec3ImpactResult.toJson(impactResults);
 		if (impactJson.size() > 0) {
 			obj.add("impacts", impactJson);
 		}
@@ -155,37 +106,4 @@ public class Ec3Epd {
     return obj;
   }
 
-	public List<Ec3ImpactResult> impactResults() {
-		return impactResults;
-	}
-
-	public Optional<Ec3ImpactSet> getImpactSet(String method) {
-		return Optional.ofNullable(impacts.get(method));
-	}
-
-	public Iterable<String> impacts() {
-		return Collections.unmodifiableCollection(impacts.keySet());
-	}
-
-	public void putImpactSet(String method, Ec3ImpactSet impactSet) {
-		if (method == null)
-			return;
-		impacts.put(method, impactSet);
-	}
-
-	public void eachImpactSet(BiConsumer<String, Ec3ImpactSet> fn) {
-		if (fn == null)
-			return;
-		for (var e : impacts.entrySet()) {
-			var method = e.getKey();
-			var impactSet = e.getValue();
-			if (method != null && impactSet != null) {
-				fn.accept(method, impactSet);
-			}
-		}
-	}
-
-	public void clearImpacts() {
-		impacts.clear();
-	}
 }
