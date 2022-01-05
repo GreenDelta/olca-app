@@ -18,6 +18,7 @@ import org.openlca.util.Strings;
 public class LoginPanel {
 
 	private final Credentials credentials;
+	private boolean credentialsChanged;
 	private Ec3Client client;
 	private Button button;
 
@@ -46,8 +47,10 @@ public class LoginPanel {
 			urlText.setText(credentials.url());
 			filled++;
 		}
-		urlText.addModifyListener(
-			$ -> credentials.url(urlText.getText()));
+		urlText.addModifyListener($ -> {
+			credentialsChanged = true;
+			credentials.url(urlText.getText());
+		});
 
 		// user
 		var userText = UI.formText(comp, tk, "User");
@@ -55,8 +58,10 @@ public class LoginPanel {
 			userText.setText(credentials.user());
 			filled++;
 		}
-		userText.addModifyListener(
-			$ -> credentials.user(userText.getText()));
+		userText.addModifyListener($ -> {
+			credentialsChanged = true;
+			credentials.user(userText.getText());
+		});
 
 		// password
 		var pwText = UI.formText(comp, tk, "Password", SWT.PASSWORD);
@@ -64,8 +69,10 @@ public class LoginPanel {
 			pwText.setText(credentials.password());
 			filled++;
 		}
-		pwText.addModifyListener(
-			$ -> credentials.password(pwText.getText()));
+		pwText.addModifyListener($ -> {
+			credentialsChanged = true;
+			credentials.password(pwText.getText());
+		});
 
 		// login button
 		UI.filler(comp, tk);
@@ -92,6 +99,10 @@ public class LoginPanel {
 			return Optional.of(client);
 		if (button.isDisposed())
 			return Optional.empty();
+		if (credentialsChanged) {
+			credentials.save();
+			credentialsChanged = false;
+		}
 		try {
 			var o = credentials.login();
 			if (o.isEmpty()) {
