@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -78,18 +79,15 @@ class ResultSection {
 
 		var sections = new ArrayList<ResultSection>();
 		var epd = dialog.epd;
-		for (var epdMethod : epd.impacts()) {
-			var impacts = epd.getImpactSet(epdMethod).orElse(null);
-			if (impacts == null || impacts.isEmpty())
-				continue;
+		for (var epdResult : epd.impactResults) {
 			var scopes = new HashSet<String>();
-			impacts.each((_indicator, scopeSet) -> {
-				for (var scope : scopeSet.scopes()) {
-					scopes.add(scope);
+			for (var indicatorResult : epdResult.indicatorResults()) {
+				for (var scopeValue : indicatorResult.values()) {
+					scopes.add(scopeValue.scope());
 				}
-			});
+			}
 			for (var scope : scopes) {
-				sections.add(new ResultSection(dialog, epdMethod, scope));
+				sections.add(new ResultSection(dialog, epdResult.method(), scope));
 			}
 		}
 
@@ -186,23 +184,33 @@ class ResultSection {
 
 	private List<MappedValue> initMappings() {
 
-		var epdImpacts = dialog.epd.getImpactSet(epdMethod).orElse(null);
-		if (epdImpacts == null || epdImpacts.isEmpty())
+		var impactResult = dialog.epd.impactResults.stream()
+			.filter(r -> Objects.equals(r.method(), epdMethod))
+			.findAny()
+			.orElse(null);
+		if (impactResult == null || impactResult.indicatorResults().isEmpty())
 			return Collections.emptyList();
 
 		var values = new ArrayList<MappedValue>();
-		epdImpacts.each((epdId, scopes) -> {
-			var indicator = dialog.impactModel.getIndicator(epdId);
-			var epdName = indicator != null ? indicator.name() : "";
-			var result = scopes.get(epdScope).orElse(null);
-			var epdUnit = result != null
-				? result.unit()
-				: indicator != null ? indicator.unit() : "";
-			var epdIndicator = new EpdIndicator(epdId, epdName, epdUnit);
-			var value = new MappedValue(epdIndicator);
-			value.value = result != null ? result.mean() : 0;
-			values.add(value);
-		});
+		for (var indicatorResult : impactResult.indicatorResults()) {
+			var indicatorId = indicatorResult.indicator();
+			for (var scopeValue : indicatorResult.values()) {
+				if (!Objects.equals(scopeValue.scope(), epdScope))
+					continue;
+				var indicator = dialog.impactModel.getIndicator(indicatorId);
+				var epdName = indicator != null
+					? indicator.name()
+					: "";
+				var result = scopeValue.value();
+				var epdUnit = result != null
+					? result.unit()
+					: indicator != null ? indicator.unit() : "";
+				var epdIndicator = new EpdIndicator(indicatorId, epdName, epdUnit);
+				var value = new MappedValue(epdIndicator);
+				value.value = result != null ? result.mean() : 0;
+				values.add(value);
+			}
+		}
 		values.sort(Comparator.comparing(v -> v.epdImpact.toString()));
 		return values;
 	}

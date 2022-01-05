@@ -13,7 +13,6 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.openepd.output.ExportDialog;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
@@ -121,16 +120,11 @@ class SetupSection {
 		var calcTime = editor.getModel().calculationTime;
 		UI.formLabel(comp, tk, Numbers.asTimestamp(calcTime));
 
-		// buttons
+		// calculation button
 		UI.filler(comp, tk);
-		var btnComp = tk.createComposite(comp);
-		UI.gridLayout(btnComp, 2, 5, 0);
-		var calcBtn = tk.createButton(btnComp, "Recalculate", SWT.PUSH);
+		var calcBtn = tk.createButton(comp, "Recalculate", SWT.PUSH);
 		calcBtn.setImage(Icon.RUN.get());
 		calcBtn.setEnabled(false);
-		var expBtn = tk.createButton(btnComp, "Export as EPD", SWT.PUSH);
-		expBtn.setImage(Icon.BUILDING.get());
-		Controls.onSelect(expBtn, $ -> ExportDialog.show(editor.getModel()));
 	}
 
 	private class FlowLink {
