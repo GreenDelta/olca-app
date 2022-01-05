@@ -66,6 +66,8 @@ public class EpdEditor extends SimpleFormEditor {
 		epd.dateOfIssue = today;
 		epd.dateValidityEnds = LocalDate.of(
 			today.getYear() + 1, today.getMonth(), today.getDayOfMonth());
+		// TODO: currently for tests only
+		epd.categoryId = "41ff8f44d89c4cdbbcdf2671a35286f5";
 	}
 
 	@Override

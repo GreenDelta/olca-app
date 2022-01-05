@@ -15,6 +15,7 @@ public class Ec3Epd {
 	public String name;
 	public String description;
 	public Ec3Category category;
+	public String categoryId;
 
 	public String declaredUnit;
 	public String massPerDeclaredUnit;
@@ -45,6 +46,9 @@ public class Ec3Epd {
 		epd.description = Json.getString(obj, "description");
 		epd.category = Ec3Category.fromJson(
 			obj.get("category")).orElse(null);
+		epd.categoryId = epd.category != null
+			? epd.category.id
+			: Json.getString(obj, "category_id");
 
 		epd.declaredUnit = Json.getString(obj, "declared_unit");
 		epd.massPerDeclaredUnit = Json.getString(obj, "mass_per_declared_unit");
@@ -97,6 +101,7 @@ public class Ec3Epd {
 		if (category != null) {
 			obj.add("category", category.toJson());
 		}
+		Json.put(obj, "category_id", categoryId);
 
 		Json.put(obj, "doc", docUrl);
 		obj.addProperty("draft", isDraft);
