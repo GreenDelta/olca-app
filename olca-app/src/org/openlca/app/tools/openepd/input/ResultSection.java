@@ -196,11 +196,11 @@ class ResultSection {
 			var epdName = indicator != null ? indicator.name() : "";
 			var result = scopes.get(epdScope).orElse(null);
 			var epdUnit = result != null
-				? result.unit
+				? result.unit()
 				: indicator != null ? indicator.unit() : "";
 			var epdIndicator = new EpdIndicator(epdId, epdName, epdUnit);
 			var value = new MappedValue(epdIndicator);
-			value.value = result != null ? result.mean : 0;
+			value.value = result != null ? result.mean() : 0;
 			values.add(value);
 		});
 		values.sort(Comparator.comparing(v -> v.epdImpact.toString()));
