@@ -3,10 +3,10 @@ package org.openlca.app.tools.openepd;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import com.google.gson.GsonBuilder;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -33,6 +33,8 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ResultModel;
 
+import com.google.gson.GsonBuilder;
+
 public class EpdEditor extends SimpleFormEditor {
 
 	final Ec3ImpactModel impactModel = Ec3ImpactModel.get();
@@ -56,6 +58,8 @@ public class EpdEditor extends SimpleFormEditor {
 		epd.id = input instanceof SimpleEditorInput i
 			? i.id
 			: UUID.randomUUID().toString();
+		epd.isDraft = true;
+		epd.isPrivate = true;
 		epd.name = "New EPD";
 		epd.declaredUnit = "1 kg";
 	}
@@ -140,7 +144,7 @@ public class EpdEditor extends SimpleFormEditor {
 					epd.name + ".json");
 				if (file == null)
 					return;
-				addResults();
+				mergeResults();
 				var json = new GsonBuilder().setPrettyPrinting()
 					.create()
 					.toJson(epd.toJson());
@@ -160,12 +164,39 @@ public class EpdEditor extends SimpleFormEditor {
 			text.addModifyListener($ -> onChange.accept(text.getText()));
 		}
 
-		private void addResults() {
+		private void mergeResults() {
 			epd.impactResults.clear();
-			// TODO: merge the impact sets
+
 			for (var section : sections) {
-				var result = section.createEpdResult();
-				epd.impactResults.add(result);
+				var nextResult = section.createEpdResult();
+
+				// check the method
+				var epdResult = epd.impactResults.stream()
+					.filter(r -> Objects.equals(r.method(), nextResult.method()))
+					.findAny()
+					.orElse(null);
+				if (epdResult == null) {
+					epd.impactResults.add(nextResult);
+					continue;
+				}
+
+				for (var nextIndicator : nextResult.indicatorResults()) {
+
+					// check the indicator
+					var epdIndicator = epdResult.indicatorResults().stream()
+						.filter(i -> Objects.equals(nextIndicator.indicator(), i.indicator()))
+						.findAny()
+						.orElse(null);
+					if (epdIndicator == null) {
+						epdResult.indicatorResults().add(nextIndicator);
+						continue;
+					}
+
+					// add next scope values
+					for (var v : nextIndicator.values()) {
+						epdIndicator.values().add(v);
+					}
+				}
 			}
 		}
 

@@ -90,6 +90,7 @@ public class ResultSection {
 			var scopeValue = new Ec3ScopeValue(selectedScope, value);
 			var result = Ec3IndicatorResult.of((epdIndicator.id()));
 			result.values().add(scopeValue);
+			indicatorResults.add(result);
 		}
 		return new Ec3ImpactResult(selectedMethod.id(), indicatorResults);
 	}
