@@ -61,7 +61,7 @@ class Matcher {
 					Score score2 = pair2.getValue();
 					return score2.betterThan(score1) ? pair2 : pair1;
 				})
-				.map(pair -> pair.getFirst())
+				.map(Pair::getFirst)
 				.orElse(null);
 		if (tflow != null) {
 			checkAddProvider(sflow, tflow);

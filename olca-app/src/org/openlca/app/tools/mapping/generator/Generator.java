@@ -1,5 +1,9 @@
 package org.openlca.app.tools.mapping.generator;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.io.maps.FlowMap;
 import org.openlca.io.maps.FlowMapEntry;
@@ -8,8 +12,6 @@ import org.openlca.io.maps.MappingStatus;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Objects;
 
 /**
  * Try to find matching flows in a target system for the flows in a source
@@ -23,7 +25,7 @@ public class Generator implements Runnable {
 	private final FlowMap mapping;
 
 	public Generator(IProvider sourceSystem, IProvider targetSystem,
-			FlowMap mapping) {
+	                 FlowMap mapping) {
 		this.sourceSystem = sourceSystem;
 		this.targetSystem = targetSystem;
 		this.mapping = mapping;
@@ -35,41 +37,23 @@ public class Generator implements Runnable {
 			log.info("generate mappings {} -> {}", sourceSystem, targetSystem);
 			log.info("load source flows");
 			// we only generate mappings for flows that are not already mapped
-			var sourceFlows = sourceSystem.getFlowRefs()
-				.stream().filter(f -> {
-					if (f.flow == null || f.flow.refId == null)
-						return false;
-					var e = mapping.getEntry(f.flow.refId);
-					return e == null || e.targetFlow() == null;
-				}).toList();
+			var sourceFlows = getCandidateFlows();
 			if (sourceFlows.isEmpty()) {
 				log.info("found no unmapped source flows");
 				return;
 			}
 
-			log.info("create target flow matcher");
-			Matcher matcher = new Matcher(targetSystem);
-			for (FlowRef sflow : sourceFlows) {
-
-				var source = sflow.copy();
+			log.info("match unmapped flows");
+			var matcher = new Matcher(targetSystem);
+			for (var sourceFlow : sourceFlows) {
+				var source = sourceFlow.copy();
 				source.status = MappingStatus.ok();
-
-				FlowRef matched = matcher.find(sflow);
+				FlowRef matched = matcher.find(source);
 				FlowRef target = null;
 				if (matched != null) {
 					target = matched.copy();
-					if (Objects.equal(sflow.flow.refId, target.flow.refId)) {
-						target.status = MappingStatus.ok("matched by flow IDs");
-					} else {
-						target.status = MappingStatus.warn("matched by flow attributes");
-					}
-					if (!sameUnits(source, target)) {
-						target.status = MappingStatus.warn("different units");
-					} else if (matched.status.isOk() && matched.provider != null) {
-						target.status = MappingStatus.warn("provider matched by attributes");
-					}
+					target.status = getStatus(source, target);
 				}
-
 				mapping.entries.add(new FlowMapEntry(source, target, 1.0));
 			}
 
@@ -78,11 +62,46 @@ public class Generator implements Runnable {
 		}
 	}
 
-	private boolean sameUnits(FlowRef sflow, FlowRef tflow) {
-		if (sflow == null || tflow == null)
+	private MappingStatus getStatus(FlowRef source, FlowRef target) {
+		if (differentUnits(source, target))
+			return MappingStatus.warn("different units");
+
+		if (!Objects.equals(source.flow.refId, target.flow.refId))
+			return MappingStatus.warn("matched by flow attributes");
+
+		if (target.provider != null)
+			return MappingStatus.warn("provider matched by attributes");
+
+		return MappingStatus.ok("matched by flow IDs");
+	}
+
+	private boolean differentUnits(FlowRef source, FlowRef target) {
+		if (source.unit == null && target.unit == null)
 			return false;
-		if (sflow.unit == null || tflow.unit == null)
-			return false;
-		return Strings.nullOrEqual(sflow.unit.name, tflow.unit.name);
+		if (source.unit == null || target.unit == null)
+			return true;
+		var s = source.unit;
+		var t = target.unit;
+		boolean equal = Strings.notEmpty(s.refId) && Strings.notEmpty(t.refId)
+			? Strings.nullOrEqual(s.refId, t.refId)
+			: Strings.nullOrEqual(s.name, t.name);
+		return !equal;
+	}
+
+	/**
+	 * Get the unmapped flows of the source system that could be mapped to the
+	 * flows of the target system.
+	 */
+	private List<FlowRef> getCandidateFlows() {
+		var candidates = new ArrayList<FlowRef>();
+		for (var f : sourceSystem.getFlowRefs()) {
+			if (f.flow == null || f.flow.refId == null)
+				continue;
+			var e = mapping.getEntry(f.flow.refId);
+			if (e == null || e.targetFlow() == null) {
+				candidates.add(f);
+			}
+		}
+		return candidates;
 	}
 }
