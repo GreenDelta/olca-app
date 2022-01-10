@@ -95,6 +95,7 @@ public class EpdPanel extends SimpleFormEditor {
 						c.layout();
 						c = c.getParent();
 					}
+					table.refresh(true);
 				});
 			}
 

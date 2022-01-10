@@ -24,6 +24,9 @@ public class Ec3Category {
 		var category = new Ec3Category();
 		category.id = Json.getString(obj, "id");
 		category.name = Json.getString(obj, "display_name");
+		if (category.name == null) {
+			category.name = Json.getString(obj, "name");
+		}
 		category.description = Json.getString(obj, "description");
 
 		Json.stream(Json.getArray(obj, "parents"))
