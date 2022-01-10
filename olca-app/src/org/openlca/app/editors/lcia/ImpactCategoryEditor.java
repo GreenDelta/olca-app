@@ -13,6 +13,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.components.ModelLink;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
@@ -36,6 +37,7 @@ import org.openlca.core.database.usage.IUseSearch;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Source;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.io.CategoryPath;
@@ -114,9 +116,19 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 			var form = UI.formHeader(this);
 			var tk = mform.getToolkit();
 			var body = UI.formBody(form, tk);
-			var info = new InfoSection(getEditor());
-			info.render(body, tk);
+			var info = new InfoSection(getEditor()).render(body, tk);
 			var comp = info.composite();
+
+			// source
+			ModelLink.of(Source.class)
+				.renderOn(comp, tk, M.Source)
+				.setModel(getModel().source)
+				.onChange(source -> {
+					var impact = getModel();
+					impact.source = source;
+					getEditor().setDirty();
+				});
+
 			text(comp, M.ReferenceUnit, "referenceUnit");
 			createUsedTable(tk, body);
 			body.setFocus();
@@ -125,7 +137,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 
 		private void createUsedTable(FormToolkit tk, Composite body) {
 			var section = UI.section(body, tk,
-					"Used in impact assessment methods");
+				"Used in impact assessment methods");
 			UI.gridData(section, true, true);
 			var comp = UI.sectionClient(section, tk, 1);
 			var table = Tables.createViewer(comp, M.Name, M.Category);

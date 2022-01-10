@@ -53,6 +53,11 @@ public class ModelLink<T extends CategorizedEntity> {
 		return this;
 	}
 
+	public ModelLink<T> renderOn(Composite parent, FormToolkit tk, String label) {
+		UI.formLabel(parent, tk, label);
+		return renderOn(parent, tk);
+	}
+
 	public ModelLink<T> renderOn(Composite parent, FormToolkit tk) {
 		var comp = tk.createComposite(parent, SWT.FILL);
 		UI.gridLayout(comp, 3, 5, 0);
@@ -117,7 +122,7 @@ public class ModelLink<T extends CategorizedEntity> {
 		if (link == null)
 			return;
 		var text = model == null
-			? M.None
+			? "- none -"
 			: Labels.name(model);
 		link.setText(Strings.cut(text, 120));
 		link.setToolTipText(text);

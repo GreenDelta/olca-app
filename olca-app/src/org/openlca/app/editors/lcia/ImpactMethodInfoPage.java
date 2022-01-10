@@ -10,10 +10,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.components.ModelLink;
 import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
@@ -32,6 +32,7 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.NwFactor;
 import org.openlca.core.model.NwSet;
+import org.openlca.core.model.Source;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.util.Strings;
 
@@ -46,12 +47,23 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(this);
-		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.formBody(form, tk);
-		InfoSection info = new InfoSection(getEditor());
-		info.render(body, tk);
+	protected void createFormContent(IManagedForm mForm) {
+		var form = UI.formHeader(this);
+		var tk = mForm.getToolkit();
+		var body = UI.formBody(form, tk);
+
+		// info section with source link
+		var info = new InfoSection(getEditor()).render(body, tk);
+		var comp = info.composite();
+		ModelLink.of(Source.class)
+			.renderOn(comp, tk, M.Source)
+			.setModel(editor.getModel().source)
+			.onChange(source -> {
+				var method = editor.getModel();
+				method.source = source;
+				editor.setDirty();
+			});
+
 		createIndicatorTable(tk, body);
 		body.setFocus();
 		form.reflow(true);
@@ -62,7 +74,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk, 1);
 		indicatorTable = Tables.createViewer(comp,
-				M.Name, M.Description, M.ReferenceUnit, "");
+			M.Name, M.Description, M.ReferenceUnit, "");
 		indicatorTable.setLabelProvider(new CategoryLabelProvider());
 		ImpactMethod method = editor.getModel();
 		List<ImpactCategory> impacts = method.impactCategories;
@@ -85,7 +97,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		});
 		Actions.bind(indicatorTable, add, remove, open, copy);
 		CommentAction.bindTo(section, "impactCategories",
-				editor.getComments(), add, remove);
+			editor.getComments(), add, remove);
 		Tables.onDeletePressed(indicatorTable, _e -> onRemove());
 		Tables.onDoubleClick(indicatorTable, _e -> open.run());
 	}
@@ -93,7 +105,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	private void onAdd() {
 		ImpactMethod method = editor.getModel();
 		CategorizedDescriptor d = ModelSelector.select(
-				ModelType.IMPACT_CATEGORY);
+			ModelType.IMPACT_CATEGORY);
 		if (d == null)
 			return;
 		ImpactCategoryDao dao = new ImpactCategoryDao(Database.get());
@@ -127,35 +139,29 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	}
 
 	private class CategoryLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
+		ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof ImpactCategory))
+			if (!(obj instanceof ImpactCategory impact))
 				return null;
-			ImpactCategory i = (ImpactCategory) obj;
 			if (col == 0)
 				return Images.get(ModelType.IMPACT_CATEGORY);
 			if (col == 3)
-				return Images.get(editor.getComments(), CommentPaths.get(i));
+				return Images.get(editor.getComments(), CommentPaths.get(impact));
 			return null;
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ImpactCategory))
+			if (!(obj instanceof ImpactCategory impact))
 				return null;
-			ImpactCategory i = (ImpactCategory) obj;
-			switch (col) {
-			case 0:
-				return i.name;
-			case 1:
-				return i.description;
-			case 2:
-				return i.referenceUnit;
-			default:
-				return null;
-			}
+			return switch (col) {
+				case 0 -> impact.name;
+				case 1 -> impact.description;
+				case 2 -> impact.referenceUnit;
+				default -> null;
+			};
 		}
 	}
 }

@@ -73,10 +73,6 @@ class SetupSection {
 				editor.setDirty();
 			});
 
-		// flow
-		UI.formLabel(comp, tk, M.Flow);
-		flowLink.renderOn(comp, tk).update();
-
 		// allocation
 		UI.formLabel(comp, tk, M.AllocationMethod);
 		var allocationCombo = new AllocationCombo(comp,
@@ -92,28 +88,6 @@ class SetupSection {
 		});
 		var allocControl = allocationCombo.getViewer().getControl();
 		UI.gridData(allocControl, false, false).widthHint = 250;
-
-		// amount & unit
-		UI.formLabel(comp, tk, M.Amount);
-		var amountComp = tk.createComposite(comp);
-		UI.gridData(amountComp, true, false);
-		UI.gridLayout(amountComp, 2, 5, 0);
-		var amountStr = Numbers.format(setup().amount());
-		var amountText = tk.createText(amountComp, amountStr);
-		UI.gridData(amountText, false, false).widthHint = 120;
-		amountText.addModifyListener($ -> {
-			try {
-				var text = amountText.getText();
-				var amount = Strings.notEmpty(text)
-					? Double.parseDouble(text)
-					: 0;
-				setup().withAmount(amount);
-			} catch (NumberFormatException e) {
-				setup().withAmount(0);
-			}
-			editor.setDirty();
-		});
-		unitCombo.renderOn(amountComp, tk).update();
 
 		// calculation time
 		UI.formLabel(comp, tk, "Calculated at");

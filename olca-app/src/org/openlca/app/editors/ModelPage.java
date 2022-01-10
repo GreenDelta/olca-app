@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
+import org.openlca.app.components.ModelLink;
 import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.util.Labels;
 import org.openlca.cloud.model.Comments;
