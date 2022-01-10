@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import com.google.gson.GsonBuilder;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Text;
@@ -25,6 +26,8 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.tools.openepd.model.Api;
+import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
 import org.openlca.app.util.Controls;
@@ -36,13 +39,12 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ResultModel;
 
-import com.google.gson.GsonBuilder;
-
 public class EpdEditor extends SimpleFormEditor {
 
 	final Ec3ImpactModel impactModel = Ec3ImpactModel.get();
 	private final IDatabase db = Database.get();
 	private final Ec3Epd epd = new Ec3Epd();
+	private Ec3CategoryTree categories;
 
 	public static void open() {
 		var db = Database.get();
@@ -66,8 +68,7 @@ public class EpdEditor extends SimpleFormEditor {
 		epd.dateOfIssue = today;
 		epd.dateValidityEnds = LocalDate.of(
 			today.getYear() + 1, today.getMonth(), today.getDayOfMonth());
-		// TODO: currently for tests only
-		epd.categoryId = "41ff8f44d89c4cdbbcdf2671a35286f5";
+		categories = Ec3CategoryTree.loadFromCacheFile();
 	}
 
 	@Override
@@ -94,20 +95,53 @@ public class EpdEditor extends SimpleFormEditor {
 			// info section
 			var infoSection = UI.section(body, tk, M.GeneralInformation);
 			var comp = UI.sectionClient(infoSection, tk, 2);
-			text(UI.formText(comp, tk, "Name"),
+			text(UI.formText(comp, tk, M.Name),
 				epd.name, s -> epd.name = s);
 			text(UI.formText(comp, tk, "Declared unit"),
 				epd.declaredUnit, s -> epd.declaredUnit = s);
 
+			// category link
+			UI.formLabel(comp, tk, M.Category);
+			var categoryLink = tk.createImageHyperlink(comp, SWT.NONE);
+			categoryLink.setText(epd.category == null
+				? " - none -"
+				: categories.pathOf(epd.category));
+			Controls.onClick(categoryLink, $ -> {
+				if (categories.isEmpty()) {
+					var client = loginPanel.login().orElse(null);
+					if (client == null)
+						return;
+					categories = Api.getCategoryTree(client);
+					if (categories.isEmpty()) {
+						MsgBox.error("No categories could be loaded",
+							"No categories could be loaded from "
+								+ loginPanel.credentials().url());
+						return;
+					}
+				}
+				epd.category = CategoryDialog.selectFrom(categories);
+				if (epd.category != null) {
+					epd.categoryId = epd.category.id;
+				}
+				categoryLink.setText(epd.category == null
+					? " - none -"
+					: categories.pathOf(epd.category));
+				categoryLink.getParent().layout();
+			});
+
+			// date fields
 			UI.formLabel(comp, tk, "Date of issue");
 			var issueDate = new DateTime(comp, SWT.DROP_DOWN);
+			UI.gridData(issueDate, false, false).widthHint = 120;
 			tk.adapt(issueDate);
 			date(issueDate, epd.dateOfIssue, d -> epd.dateOfIssue = d);
 			UI.formLabel(comp, tk, "End of validity");
 			var endDate = new DateTime(comp, SWT.DROP_DOWN);
+			UI.gridData(endDate, false, false).widthHint = 120;
 			tk.adapt(endDate);
 			date(endDate, epd.dateValidityEnds, d -> epd.dateValidityEnds = d);
 
+			// description
 			text(UI.formMultiText(comp, tk, "Description"),
 				epd.description, s -> epd.description = s);
 
@@ -207,7 +241,7 @@ public class EpdEditor extends SimpleFormEditor {
 			if (initial != null) {
 				widget.setDate(
 					initial.getYear(),
-					initial.getMonthValue()-1, // !
+					initial.getMonthValue() - 1, // !
 					initial.getDayOfMonth());
 			}
 			widget.addSelectionListener(Controls.onSelect($ -> {
@@ -254,5 +288,4 @@ public class EpdEditor extends SimpleFormEditor {
 		}
 
 	}
-
 }
