@@ -153,9 +153,9 @@ public class ContributionTreePage extends FormPage {
 
 		@Override
 		public Object[] getElements(Object input) {
-			if (!(input instanceof UpstreamTree))
-				return null;
-			return new Object[]{((UpstreamTree) input).root};
+			return input instanceof UpstreamTree tree
+				? new Object[]{tree.root}
+				: null;
 		}
 
 		@Override

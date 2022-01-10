@@ -286,6 +286,5 @@ public class EpdEditor extends SimpleFormEditor {
 				}
 			}
 		}
-
 	}
 }
