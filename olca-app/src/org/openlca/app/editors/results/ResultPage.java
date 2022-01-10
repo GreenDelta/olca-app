@@ -3,10 +3,16 @@ package org.openlca.app.editors.results;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.App;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.Process;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.ResultModel;
+import org.openlca.util.Strings;
 
 class ResultPage extends ModelPage<ResultModel> {
 
@@ -22,10 +28,33 @@ class ResultPage extends ModelPage<ResultModel> {
 		var form = UI.formHeader(this);
 		var tk = mform.getToolkit();
 		var body = UI.formBody(form, tk);
-		new InfoSection(editor)
-			.render(body, tk)
-			.section()
-			.setExpanded(false);
+
+		// info section with URN link
+		var infoSection = new InfoSection(editor).render(body, tk);
+		infoSection.section().setExpanded(false);
+		var comp = infoSection.composite();
+		UI.formLabel(comp, tk, "URN");
+		var urnLink = tk.createImageHyperlink(comp, SWT.NONE);
+		var urn = editor.getModel().urn;
+		urnLink.setText(urn == null ? " - none -" : urn);
+		Controls.onClick(urnLink, $ -> {
+			if (Strings.nullOrEmpty(urn))
+				return;
+			if (urn.startsWith("openLCA:model:")) {
+				var refId = urn.substring(14);
+				var system = Database.get().get(ProductSystem.class, refId);
+				if (system != null) {
+					App.open(system);
+				}
+			} else if (urn.startsWith("openLCA:process:")) {
+				var refId = urn.substring(16);
+				var process = Database.get().get(Process.class, refId);
+				if (process != null) {
+					App.open(process);
+				}
+			}
+		});
+
 		new SetupSection(editor).render(body, tk);
 
 		var sash = new SashForm(body, SWT.VERTICAL);

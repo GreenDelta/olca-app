@@ -165,6 +165,7 @@ public class ImportDialog extends FormDialog {
 				result.inventory.add(refFlow);
 				result.category = resultCategory;
 				result.lastChange = System.currentTimeMillis();
+				result.urn = "openEPD:" + epd.id;
 				db.insert(result);
 			}
 		} catch (Exception e) {
