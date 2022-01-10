@@ -39,18 +39,18 @@ public class Api {
 		}
 	}
 
-	public static Ec3CategoryIndex getCategories(Ec3Client client) {
+	public static Ec3CategoryTree getCategoryTree(Ec3Client client) {
 		try {
 			var r = client.get("categories/root");
 			if (!r.hasJson())
-				return Ec3CategoryIndex.empty();
+				return Ec3CategoryTree.empty();
 			var root = Ec3Category.fromJson(r.json());
 			return root.isEmpty()
-				? Ec3CategoryIndex.empty()
-				: Ec3CategoryIndex.of(root.get());
+				? Ec3CategoryTree.empty()
+				: Ec3CategoryTree.of(root.get());
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to load category index", e);
-			return Ec3CategoryIndex.empty();
+			return Ec3CategoryTree.empty();
 		}
 	}
 

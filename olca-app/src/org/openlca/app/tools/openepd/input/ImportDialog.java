@@ -15,7 +15,7 @@ import org.openlca.app.M;
 import org.openlca.app.components.EntityCombo;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.tools.openepd.model.Ec3CategoryIndex;
+import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
 import org.openlca.app.util.Controls;
@@ -42,10 +42,10 @@ public class ImportDialog extends FormDialog {
 	private final List<ResultSection> sections = new ArrayList<>();
 
 	public static void show(Ec3Epd epd) {
-		show(epd, Ec3CategoryIndex.empty());
+		show(epd, Ec3CategoryTree.empty());
 	}
 
-	public static int show(Ec3Epd epd, Ec3CategoryIndex categories) {
+	public static int show(Ec3Epd epd, Ec3CategoryTree categories) {
 		if (epd == null)
 			return -1;
 		var db = Database.get();
@@ -56,7 +56,7 @@ public class ImportDialog extends FormDialog {
 		return new ImportDialog(epd, categories, db).open();
 	}
 
-	private ImportDialog(Ec3Epd epd, Ec3CategoryIndex categories, IDatabase db) {
+	private ImportDialog(Ec3Epd epd, Ec3CategoryTree categories, IDatabase db) {
 		super(UI.shell());
 		this.epd = Objects.requireNonNull(epd);
 		this.db = Objects.requireNonNull(db);

@@ -2,6 +2,7 @@ package org.openlca.app.tools.openepd;
 
 import java.util.ArrayList;
 
+import com.google.gson.JsonObject;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -19,7 +20,7 @@ import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
 import org.openlca.app.tools.openepd.model.Api;
-import org.openlca.app.tools.openepd.model.Ec3CategoryIndex;
+import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -29,8 +30,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.jsonld.Json;
-
-import com.google.gson.JsonObject;
 
 public class EpdPanel extends SimpleFormEditor {
 
@@ -46,10 +45,11 @@ public class EpdPanel extends SimpleFormEditor {
 	private static class Page extends FormPage {
 
 		private TableViewer table;
-		private Ec3CategoryIndex categories;
+		private Ec3CategoryTree categories;
 
 		public Page(EpdPanel panel) {
 			super(panel, "EpdPanel.Page", "openEPD");
+			categories = Ec3CategoryTree.loadFromCacheFile();
 		}
 
 		@Override
@@ -77,6 +77,27 @@ public class EpdPanel extends SimpleFormEditor {
 			spinner.setValues(100, 10, 1000, 0, 50, 100);
 			tk.adapt(spinner);
 
+			// category link
+			if (!categories.isEmpty()) {
+				var categoryLink = tk.createImageHyperlink(searchComp, SWT.NONE);
+				categoryLink.setText("Loaded categories from cached file. " +
+						"Click to reload categories from EC3.");
+				Controls.onClick(categoryLink, $ -> {
+					var client = loginPanel.login().orElse(null);
+					if (client == null)
+						return;
+					categories = App.exec(
+						"Fetch categories", () -> Api.getCategoryTree(client));
+					categories.saveToCacheFile();
+					categoryLink.dispose();
+					var c = searchComp;
+					while (c != null) {
+						c.layout();
+						c = c.getParent();
+					}
+				});
+			}
+
 			// descriptor table
 			table = createTable(comp, loginPanel);
 
@@ -87,9 +108,10 @@ public class EpdPanel extends SimpleFormEditor {
 					return;
 
 				// load the category index once
-				if (categories == null) {
+				if (categories.isEmpty()) {
 					categories = App.exec(
-						"Fetch categories", () -> Api.getCategories(client));
+						"Fetch categories", () -> Api.getCategoryTree(client));
+					categories.saveToCacheFile();
 				}
 
 				// search for EPDs

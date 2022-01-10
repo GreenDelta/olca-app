@@ -24,7 +24,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.model.Api;
 import org.openlca.app.tools.openepd.model.Credentials;
-import org.openlca.app.tools.openepd.model.Ec3CategoryIndex;
+import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
 import org.openlca.app.tools.openepd.model.Ec3Client;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.util.Actions;
@@ -43,7 +43,7 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 	private final Credentials credentials = Credentials.getDefault();
 	private Ec3Client client;
 	private Ec3Epd epd;
-	private Ec3CategoryIndex categories;
+	private Ec3CategoryTree categories;
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
@@ -200,7 +200,7 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 			// load the category index once
 			if (categories == null) {
 				categories = App.exec(
-					"Fetch categories", () -> Api.getCategories(client));
+					"Fetch categories", () -> Api.getCategoryTree(client));
 			}
 
 			var query = queryText.getText().trim();
