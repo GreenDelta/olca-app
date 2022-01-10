@@ -150,7 +150,7 @@ public class DownloadWizard extends Wizard implements IImportWizard {
 					if (epd == null)
 						return;
 					var file = FileChooser.forSavingFile(
-						"Save OpenEPD", epd.name + ".json");
+						"Save openEPD", epd.name + ".json");
 					if (file == null)
 						return;
 					var json = App.exec(

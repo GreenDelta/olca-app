@@ -2,7 +2,6 @@ package org.openlca.app.tools.openepd;
 
 import java.util.ArrayList;
 
-import com.google.gson.JsonObject;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -30,6 +29,8 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.jsonld.Json;
+
+import com.google.gson.JsonObject;
 
 public class EpdPanel extends SimpleFormEditor {
 
@@ -154,7 +155,7 @@ public class EpdPanel extends SimpleFormEditor {
 					if (epd.isEmpty())
 						return;
 					var file = FileChooser.forSavingFile(
-						"Save OpenEPD", epd.descriptor.name + ".json");
+						"Save openEPD", epd.descriptor.name + ".json");
 					if (file == null)
 						return;
 					Json.write(epd.json, file);

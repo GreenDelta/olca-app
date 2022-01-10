@@ -2,6 +2,7 @@ package org.openlca.app.tools.openepd.input;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.core.database.IDatabase;
@@ -21,9 +22,11 @@ class Util {
 	static ResultFlow initQuantitativeReference(Ec3Epd epd, IDatabase db) {
 		var f = new ResultFlow();
 		f.flow = new Flow();
+		f.flow.refId = UUID.randomUUID().toString();
 		f.isInput = false;
 		f.flow.flowType = FlowType.PRODUCT_FLOW;
 		f.flow.name = epd.name;
+		f.flow.description = epd.description;
 		f.origin = ResultOrigin.IMPORTED;
 		var quantity = Quantity.detect(epd, db);
 		f.amount = quantity.amount();

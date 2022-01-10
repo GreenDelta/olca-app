@@ -25,6 +25,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.validation.Item;
 
@@ -80,11 +81,14 @@ public class ValidationResultView extends SimpleFormEditor {
 		private void bindActions(TableViewer table) {
 			var onOpen = Actions.onOpen(() -> {
 				var e = Viewers.getFirstSelected(table);
-				if (!(e instanceof Item))
+				if (!(e instanceof Item item))
 					return;
-				var item = (Item) e;
-				if (item.model() instanceof CategorizedDescriptor) {
-					App.open((CategorizedDescriptor) item.model());
+				if (item.model() instanceof CategorizedDescriptor d) {
+					if (d.type != null
+						&& d.type != ModelType.CATEGORY
+						&& d.type.isCategorized()) {
+						App.open((CategorizedDescriptor) item.model());
+					}
 				}
 			});
 			var onCopy = TableClipboard.onCopySelected(table);
@@ -98,9 +102,8 @@ public class ValidationResultView extends SimpleFormEditor {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof Item))
+			if (!(obj instanceof Item item))
 				return null;
-			var item = (Item) obj;
 			if (col == 0 && item.hasModel())
 				return Images.get(item.model());
 			if (col == 1) {
@@ -116,9 +119,8 @@ public class ValidationResultView extends SimpleFormEditor {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Item))
+			if (!(obj instanceof Item item))
 				return null;
-			var item = (Item) obj;
 			if (col == 0)
 				return item.hasModel()
 					? Labels.name(item.model())

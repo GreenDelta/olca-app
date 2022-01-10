@@ -117,7 +117,7 @@ public class ResultSection {
 
 		// create the method combo
 		var methodCombo = new EntityCombo<>(
-			UI.formCombo(top, tk, "OpenEPD LCIA Method"),
+			UI.formCombo(top, tk, "openEPD LCIA Method"),
 			editor.impactModel.methods(),
 			m -> Strings.orEmpty(m.id()))
 			.select(selectedMethod);

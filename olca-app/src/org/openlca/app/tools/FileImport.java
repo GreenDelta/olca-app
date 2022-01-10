@@ -67,7 +67,7 @@ public class FileImport {
 			return;
 		}
 
-		// check if it is an OpenEPD file
+		// check if it is an openEPD file
 		if (name.endsWith(".json")) {
 			try {
 				// TODO: add and use generic Json.read(file): JsonElement
