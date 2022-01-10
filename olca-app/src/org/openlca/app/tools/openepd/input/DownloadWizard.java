@@ -38,6 +38,7 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Strings;
 
+@Deprecated
 public class DownloadWizard extends Wizard implements IImportWizard {
 
 	private final Credentials credentials = Credentials.getDefault();

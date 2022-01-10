@@ -42,7 +42,8 @@ public class ImportDialog extends FormDialog {
 	private final List<ResultSection> sections = new ArrayList<>();
 
 	public static void show(Ec3Epd epd) {
-		show(epd, Ec3CategoryTree.empty());
+		var categories = Ec3CategoryTree.loadFromCacheFile();
+		show(epd, categories);
 	}
 
 	public static int show(Ec3Epd epd, Ec3CategoryTree categories) {
