@@ -101,12 +101,12 @@ public class ConnectionDialog extends Dialog {
 			link.flowId = exchange.exchange.flow.id;
 			if (exchange.isProvider()) {
 				link.providerId = exchange.process.id;
-				link.isSystemLink = exchange.process.type == ModelType.PRODUCT_SYSTEM;
+				link.isSystemLink = exchange.process.type != ModelType.PROCESS;
 				link.processId = c.process.id;
 				link.exchangeId = c.exchangeId;
 			} else {
 				link.providerId = c.process.id;
-				link.isSystemLink = c.process.type == ModelType.PRODUCT_SYSTEM;
+				link.isSystemLink = c.process.type != ModelType.PROCESS;
 				link.exchangeId = exchange.exchange.id;
 				link.processId = exchange.process.id;
 

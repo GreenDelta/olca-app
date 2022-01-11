@@ -62,14 +62,14 @@ public class CreateLinkCommand extends Command {
 				processLink.exchangeId = input.exchange.id;
 			} else if (type == FlowType.WASTE_FLOW) {
 				processLink.providerId = p.id;
-				processLink.isSystemLink = p.type == ModelType.PRODUCT_SYSTEM;
+				processLink.isSystemLink = p.type != ModelType.PROCESS;
 			}
 		}
 		if (output != null) {
 			CategorizedDescriptor p = output.parent().process;
 			if (type == FlowType.PRODUCT_FLOW) {
 				processLink.providerId = p.id;
-				processLink.isSystemLink = p.type == ModelType.PRODUCT_SYSTEM;
+				processLink.isSystemLink = p.type != ModelType.PROCESS;
 			} else if (type == FlowType.WASTE_FLOW) {
 				processLink.processId = p.id;
 				processLink.exchangeId = output.exchange.id;

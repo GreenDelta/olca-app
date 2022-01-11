@@ -87,7 +87,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 			link.exchangeId = enode.exchange.id;
 			link.processId = node.process.id;
 			link.providerId = provider.id;
-			link.isSystemLink = provider.type == ModelType.PRODUCT_SYSTEM;
+			link.isSystemLink = provider.type != ModelType.PROCESS;
 			if (!newConnections.contains(link)) {
 				newConnections.add(link);
 			}

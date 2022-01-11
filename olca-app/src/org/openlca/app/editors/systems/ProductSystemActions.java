@@ -17,6 +17,7 @@ import org.openlca.app.util.FileType;
 import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.math.MatrixRowSorter;
 import org.openlca.core.matrix.MatrixData;
+import org.openlca.core.matrix.index.TechIndex;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.io.MatrixImageExport;
@@ -77,8 +78,12 @@ public class ProductSystemActions extends EditorActionBarContributor {
 				return;
 			App.run(M.ImageExport, () -> {
 				try {
+					var db = Database.get();
 					var setup = CalculationSetup.simple(system);
-					var data = MatrixData.of(Database.get(), setup);
+					var techIndex = TechIndex.of(db, setup);
+					var data = MatrixData.of(db, techIndex)
+							.withSetup(setup)
+							.build();;
 					var matrix = data.techMatrix.asMutable();
 					matrix = new MatrixRowSorter(matrix, App.getSolver()).run();
 					new MatrixImageExport(matrix, file).run();
