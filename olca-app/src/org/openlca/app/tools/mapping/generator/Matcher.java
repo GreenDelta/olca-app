@@ -24,7 +24,6 @@ class Matcher {
 	private final IDatabase db;
 	private final Map<String, FlowRef> targetFlows;
 
-	final WordMatcher words;
 	final CompartmentStemmer compartmentStemmer;
 
 	private final PhraseSimilarity similarity;
@@ -44,7 +43,6 @@ class Matcher {
 		this.targetFlows = targetSystem.getFlowRefs().stream()
 			.filter(f -> f.flow != null && f.flow.refId != null)
 			.collect(Collectors.toMap(f -> f.flow.refId, f -> f));
-		this.words = new WordMatcher();
 
 		this.compartmentStemmer = new CompartmentStemmer();
 		this.similarity = new PhraseSimilarity();
@@ -95,7 +93,7 @@ class Matcher {
 			return;
 		if (t.flow.flowType == FlowType.ELEMENTARY_FLOW)
 			return;
-		ProcessDescriptor prov = findProvider(s, t, db);
+		ProcessDescriptor prov = findProvider(db, s, t);
 		if (prov == null)
 			return;
 		t.provider = prov;
@@ -111,11 +109,10 @@ class Matcher {
 		}
 	}
 
-	private ProcessDescriptor findProvider(FlowRef sourceFlow,
-		FlowRef targetFlow, IDatabase db) {
+	private ProcessDescriptor findProvider(IDatabase db, FlowRef s,	FlowRef t) {
 
-		long tid = targetFlow.flow.id;
-		var processIDs = targetFlow.flow.flowType == FlowType.WASTE_FLOW
+		long tid = t.flow.id;
+		var processIDs = t.flow.flowType == FlowType.WASTE_FLOW
 			? new FlowDao(db).getWhereInput(tid)
 			: new FlowDao(db).getWhereOutput(tid);
 		if (processIDs.isEmpty())
@@ -129,15 +126,16 @@ class Matcher {
 
 		ProcessDescriptor cand = null;
 		double score = 0.0;
-		for (ProcessDescriptor d : candidates) {
-			// include possible location codes in the matching
-			// location codes are often added to names in Gabi
-			// database
-			String pname = Labels.name(d);
-			double s = words.matchAll(sourceFlow.flow.name, pname);
-			if (cand == null || s > score) {
+		parser.parseInto(phrase1, s.flow.name);
+		for (var d : candidates) {
+			// include possible location codes; location codes are
+			// often added to process names
+			var processName = Labels.name(d);
+			parser.parseInto(phrase2, processName);
+			double sim = similarity.get(phrase1, phrase2);
+			if (cand == null || sim > score) {
 				cand = d;
-				score = s;
+				score = sim;
 			}
 		}
 		return cand;
