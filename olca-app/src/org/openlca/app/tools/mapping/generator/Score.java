@@ -84,9 +84,19 @@ record Score(
 			return true;
 
 		double diff = this.nameScore - other.nameScore;
-		if (diff > 0.2)
+
+		// raw filter
+		if (diff > 0.75)
 			return true;
-		if (diff < -0.2)
+		if (diff < -0.75)
+			return false;
+
+		if (this.sameType != other.sameType)
+			return this.sameType;
+
+		if (this.categoryScore > 0 && other.categoryScore == 0)
+			return true;
+		if (other.categoryScore > 0 && this.categoryScore == 0)
 			return false;
 
 		return this.total() > other.total();
@@ -94,7 +104,7 @@ record Score(
 
 	private double total() {
 		double s = nameScore
-			+ (0.2 * categoryScore)
+			+ (0.3 * categoryScore)
 			+ (0.1 * locationScore);
 		if (sameType) {
 			s *= 1.1;
