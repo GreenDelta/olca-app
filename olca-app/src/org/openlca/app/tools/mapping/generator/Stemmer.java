@@ -16,7 +16,7 @@ package org.openlca.app.tools.mapping.generator;
  */
 public class Stemmer {
 
-	private char[] b;
+	private final char[] b;
 	private int i, /* offset into b */
 			i_end, /* offset to end of stemmed word */
 			j, k;
@@ -54,30 +54,23 @@ public class Stemmer {
 	}
 
 	/* cons(i) is true <=> b[i] is a consonant. */
-	private final boolean cons(int i) {
-		switch (b[i]) {
-		case 'a':
-		case 'e':
-		case 'i':
-		case 'o':
-		case 'u':
-			return false;
-		case 'y':
-			return (i == 0) ? true : !cons(i - 1);
-		default:
-			return true;
-		}
+	private boolean cons(int i) {
+		return switch (b[i]) {
+			case 'a', 'e', 'i', 'o', 'u' -> false;
+			case 'y' -> i == 0 || !cons(i - 1);
+			default -> true;
+		};
 	}
 
 	/*
 	 * m() measures the number of consonant sequences between 0 and j. if c is a
 	 * consonant sequence and v a vowel sequence, and <..> indicates arbitrary
 	 * presence,
-	 * 
+	 *
 	 * <c><v> gives 0 <c>vc<v> gives 1 <c>vcvc<v> gives 2 <c>vcvcvc<v> gives 3
 	 * ....
 	 */
-	private final int m() {
+	private int m() {
 		int n = 0;
 		int i = 0;
 		while (true) {
@@ -110,7 +103,7 @@ public class Stemmer {
 	}
 
 	/* vowelinstem() is true <=> 0,...j contains a vowel */
-	private final boolean vowelinstem() {
+	private boolean vowelinstem() {
 		int i;
 		for (i = 0; i <= j; i++)
 			if (!cons(i))
@@ -119,7 +112,7 @@ public class Stemmer {
 	}
 
 	/* doublec(j) is true <=> j,(j-1) contain a double consonant. */
-	private final boolean doublec(int j) {
+	private boolean doublec(int j) {
 		if (j < 1)
 			return false;
 		if (b[j] != b[j - 1])
@@ -131,22 +124,20 @@ public class Stemmer {
 	 * cvc(i) is true <=> i-2,i-1,i has the form consonant - vowel - consonant
 	 * and also if the second c is not w,x or y. this is used when trying to
 	 * restore an e at the end of a short word. e.g.
-	 * 
+	 *
 	 * cav(e), lov(e), hop(e), crim(e), but snow, box, tray.
-	 * 
+	 *
 	 */
-	private final boolean cvc(int i) {
+	private boolean cvc(int i) {
 		if (i < 2 || !cons(i) || cons(i - 1) || !cons(i - 2))
 			return false;
 		{
 			int ch = b[i];
-			if (ch == 'w' || ch == 'x' || ch == 'y')
-				return false;
+			return ch != 'w' && ch != 'x' && ch != 'y';
 		}
-		return true;
 	}
 
-	private final boolean ends(String s) {
+	private boolean ends(String s) {
 		int l = s.length();
 		int o = k - l + 1;
 		if (o < 0)
@@ -162,7 +153,7 @@ public class Stemmer {
 	 * setto(s) sets (j+1),...k to the characters in the string s, readjusting
 	 * k.
 	 */
-	private final void setto(String s) {
+	private void setto(String s) {
 		int l = s.length();
 		int o = j + 1;
 		for (int i = 0; i < l; i++)
@@ -171,25 +162,25 @@ public class Stemmer {
 	}
 
 	/* r(s) is used further down. */
-	private final void r(String s) {
+	private void r(String s) {
 		if (m() > 0)
 			setto(s);
 	}
 
 	/*
 	 * step1() gets rid of plurals and -ed or -ing. e.g.
-	 * 
+	 *
 	 * caresses -> caress ponies -> poni ties -> ti caress -> caress cats -> cat
-	 * 
+	 *
 	 * feed -> feed agreed -> agree disabled -> disable
-	 * 
+	 *
 	 * matting -> mat mating -> mate meeting -> meet milling -> mill messing ->
 	 * mess
-	 * 
+	 *
 	 * meetings -> meet
-	 * 
+	 *
 	 */
-	private final void step1() {
+	private void step1() {
 		if (b[k] == 's') {
 			if (ends("sses"))
 				k -= 2;
@@ -222,7 +213,7 @@ public class Stemmer {
 	}
 
 	/* step2() turns terminal y to i when there is another vowel in the stem. */
-	private final void step2() {
+	private void step2() {
 		if (ends("y") && vowelinstem())
 			b[k] = 'i';
 	}
@@ -232,7 +223,7 @@ public class Stemmer {
 	 * -ation) maps to -ize etc. note that the string before the suffix must
 	 * give m() > 0.
 	 */
-	private final void step3() {
+	private void step3() {
 		if (k == 0)
 			return;
 		/* For Bug 1 */ switch (b[k - 1]) {
@@ -339,7 +330,7 @@ public class Stemmer {
 	}
 
 	/* step4() deals with -ic-, -full, -ness etc. similar strategy to step3. */
-	private final void step4() {
+	private void step4() {
 		switch (b[k]) {
 		case 'e':
 			if (ends("icate")) {
@@ -382,7 +373,7 @@ public class Stemmer {
 
 	/* step5() takes off -ant, -ence etc., in context <c>vcvc<v>. */
 
-	private final void step5() {
+	private void step5() {
 		if (k == 0)
 			return;
 		/* for Bug 1 */ switch (b[k - 1]) {
@@ -459,7 +450,7 @@ public class Stemmer {
 	}
 
 	/* step6() removes a final -e if m() > 1. */
-	private final void step6() {
+	private void step6() {
 		j = k;
 		if (b[k] == 'e') {
 			int a = m();

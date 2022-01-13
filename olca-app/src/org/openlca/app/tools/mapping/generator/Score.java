@@ -4,80 +4,98 @@ import org.openlca.core.model.FlowType;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.util.Strings;
 
-class Score {
+record Score(
+	double nameScore,
+	double categoryScore,
+	double locationScore,
+	boolean sameType,
+	boolean sameUnit) {
 
-	private double keyNameMatch; // without stopwords
-	private double rawNameMatch; // with all words
-	private double categoryMatch;
-	private double locationMatch;
-	private boolean sameType;
-	private boolean sameUnit;
+	private static final Score noMatch = new Score(0, 0, 0, false, false);
 
-	private Score() {
+	static Score noMatch() {
+		return noMatch;
 	}
 
-	static Score compute(FlowRef sflow, FlowRef tflow, WordMatcher words) {
-		Score score = new Score();
-		if (sflow == null || sflow.flow == null
-				|| tflow == null || tflow.flow == null)
-			return score;
+	boolean isNoMatch() {
+		return this == noMatch || nameScore == 0;
+	}
 
-		score.rawNameMatch = words.matchAll(
-				sflow.flow.name, tflow.flow.name);
-		if (score.rawNameMatch == 0) {
-			score.keyNameMatch = 0;
-		} else {
-			score.keyNameMatch = words.matchKeys(
-					sflow.flow.name, tflow.flow.name);
-		}
+	static Score compute(Matcher matcher, FlowRef s, FlowRef t) {
+		if (s == null
+			|| s.flow == null
+			|| t == null
+			|| t.flow == null)
+			return noMatch;
 
-		String scategory = sflow.flowCategory;
-		if (sflow.flow.flowType == FlowType.ELEMENTARY_FLOW) {
-			scategory = stemCompartment(scategory);
-		}
-		String tcategory = tflow.flowCategory;
-		if (tflow.flow.flowType == FlowType.ELEMENTARY_FLOW) {
-			tcategory = stemCompartment(tcategory);
-		}
-		score.categoryMatch = words.matchAll(
-				scategory, tcategory);
+		double nameScore = s.flow.name != null && t.flow.name != null
+			? matcher.similarityOf(s.flow.name, t.flow.name)
+			: 0;
+		if (nameScore == 0)
+			return noMatch;
 
-		score.locationMatch = words.matchAll(
-				sflow.flowLocation, tflow.flowLocation);
-		score.sameType = sflow.flow.flowType == tflow.flow.flowType;
-		if (sflow.unit != null && tflow.unit != null
-				&& Strings.nullOrEqual(sflow.unit.name, tflow.unit.name)) {
-			score.sameUnit = true;
-		} else {
-			score.sameUnit = false;
+		double categoryScore = ofCategories(matcher, s, t);
+		double locationScore = s.flowLocation != null && t.flowLocation != null
+			? matcher.similarityOf(s.flowLocation, t.flowLocation)
+			: 0;
+
+		boolean sameType = s.flow.flowType == t.flow.flowType;
+		boolean sameUnit = s.unit != null
+			&& t.unit != null
+			&& Strings.nullOrEqual(s.unit.name, t.unit.name);
+
+		return new Score(nameScore, categoryScore, locationScore, sameType, sameUnit);
+	}
+
+	private static double ofCategories(Matcher matcher, FlowRef s, FlowRef t) {
+		if (s.flow.flowType != FlowType.ELEMENTARY_FLOW
+			|| t.flow.flowType != FlowType.ELEMENTARY_FLOW
+			|| s.flowCategory == null
+			|| t.flowCategory == null)
+			return 0;
+		var stemmed1 = matcher.compartmentStemmer.stem(s.flowCategory);
+		var stemmed2 = matcher.compartmentStemmer.stem(t.flowCategory);
+		int minLen = Math.min(stemmed1.length, stemmed2.length);
+		if (minLen == 0)
+			return 0;
+		double maxLen = Math.max(stemmed1.length, stemmed2.length);
+		double overlap = 0;
+		double pathFactor = 1;
+		for (int i = 0; i < minLen; i++) {
+			var s1 = stemmed1[i];
+			var s2 = stemmed2[i];
+			if (s1.equals(s2)) {
+				overlap += pathFactor;
+				continue;
+			}
+			double sim = matcher.similarityOf(s1, s2);
+			if (sim == 0)
+				break;
+			pathFactor *= sim;
+			overlap += pathFactor;
 		}
-		return score;
+		return overlap / maxLen;
 	}
 
 	boolean betterThan(Score other) {
-		if (other == null)
-			return true;
-		if (this.rawNameMatch == 0)
+		if (this.isNoMatch())
 			return false;
-		if (other.rawNameMatch == 0)
+		if (other.isNoMatch())
 			return true;
 
-		if (other.sameType && !this.sameType)
+		double diff = this.nameScore - other.nameScore;
+		if (diff > 0.2)
+			return true;
+		if (diff < -0.2)
 			return false;
-		if (!other.sameType && this.sameType)
-			return true;
 
-		double nameDiff = this.keyNameMatch - other.keyNameMatch;
-		if (nameDiff > 0.1)
-			return true;
-		else
-			return this.total() > other.total();
+		return this.total() > other.total();
 	}
 
 	private double total() {
-		double s = rawNameMatch
-				+ (0.2 * categoryMatch)
-				+ (0.1 * locationMatch);
+		double s = nameScore
+			+ (0.2 * categoryScore)
+			+ (0.1 * locationScore);
 		if (sameType) {
 			s *= 1.1;
 		}
@@ -86,41 +104,4 @@ class Score {
 		}
 		return s;
 	}
-
-	private static String stemCompartment(String s) {
-		if (Strings.nullOrEmpty(s))
-			return "";
-		String[] parts = s.toLowerCase().split("/");
-		String path = "";
-		String[] stopwords = {
-				"elementary",
-				"flows",
-				"unspecified",
-				"emission",
-				"emissions",
-				"to",
-				"in",
-				"from",
-				"and"
-		};
-		for (String part : parts) {
-			String p = part.trim();
-			if (p.isEmpty())
-				continue;
-			String[] words = p.split(" ");
-			p = "";
-			for (String word : words) {
-				for (String stop : stopwords) {
-					if (stop.equals(word))
-						continue;
-				}
-				if (path.contains(word))
-					continue;
-				p = p.length() == 0 ? word : p + " " + word;
-			}
-			path = path.length() == 0 ? p : path + "/" + p;
-		}
-		return path;
-	}
-
 }
