@@ -1,6 +1,7 @@
 # auto-generated bindings; do not edit them
 import org.openlca.proto.io.server.AboutService as AboutService
 import org.openlca.core.model.AbstractEntity as AbstractEntity
+import org.openlca.core.model.AbstractExchange as AbstractExchange
 import org.openlca.expressions.AbstractExpression as AbstractExpression
 import org.openlca.expressions.AbstractNumericOperator as AbstractNumericOperator
 import org.openlca.core.model.Actor as Actor
@@ -55,6 +56,7 @@ import org.openlca.cloud.model.data.Commit as Commit
 import org.openlca.cloud.api.CommitInvocation as CommitInvocation
 import org.openlca.cloud.api.data.CommitStream as CommitStream
 import org.openlca.io.simapro.csv.Compartment as Compartment
+import org.openlca.text.CompartmentStemmer as CompartmentStemmer
 import org.openlca.core.matrix.format.CompressedRowMatrix as CompressedRowMatrix
 import org.openlca.io.ilcd.input.ContactImport as ContactImport
 import org.openlca.jsonld.output.Context as Context
@@ -322,6 +324,8 @@ import org.openlca.core.model.ParameterizedEntity as ParameterizedEntity
 import org.openlca.util.Parameters as Parameters
 import org.openlca.expressions.ParseException as ParseException
 import org.openlca.io.ecospold2.input.PersonUpdate as PersonUpdate
+import org.openlca.text.PhraseParser as PhraseParser
+import org.openlca.text.PhraseSimilarity as PhraseSimilarity
 import org.openlca.geo.geojson.Point as Point
 import org.openlca.geo.geojson.Polygon as Polygon
 import org.openlca.geo.calc.PrecisionReduction as PrecisionReduction
@@ -389,6 +393,7 @@ import org.openlca.core.model.ResultFlow as ResultFlow
 import org.openlca.core.model.ResultImpact as ResultImpact
 import org.openlca.core.results.ResultItemView as ResultItemView
 import org.openlca.core.model.ResultModel as ResultModel
+import org.openlca.core.results.providers.ResultModelProvider as ResultModelProvider
 import org.openlca.util.ResultModels as ResultModels
 import org.openlca.core.model.ResultOrigin as ResultOrigin
 import org.openlca.core.results.providers.ResultProviders as ResultProviders
@@ -490,6 +495,7 @@ import org.openlca.core.database.upgrades.VersionState as VersionState
 import org.openlca.io.ecospold2.input.WasteFlows as WasteFlows
 import org.openlca.geo.calc.WebMercator as WebMercator
 import org.openlca.cloud.util.WebRequests as WebRequests
+import org.openlca.text.WordBuffer as WordBuffer
 import org.openlca.proto.io.output.WriterConfig as WriterConfig
 import org.openlca.io.Xml as Xml
 import org.openlca.jsonld.ZipStore as ZipStore

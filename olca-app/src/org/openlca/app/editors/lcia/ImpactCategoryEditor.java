@@ -128,6 +128,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 					impact.source = source;
 					getEditor().setDirty();
 				});
+			UI.filler(comp, tk);
 
 			text(comp, M.ReferenceUnit, "referenceUnit");
 			createUsedTable(tk, body);
@@ -172,9 +173,8 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 
 			@Override
 			public Image getColumnImage(Object obj, int col) {
-				if (!(obj instanceof ImpactMethodDescriptor))
+				if (!(obj instanceof ImpactMethodDescriptor m))
 					return null;
-				var m = (ImpactMethodDescriptor) obj;
 				if (col == 0)
 					return Images.get(m);
 				if (col == 1 && m.category != null)
@@ -184,9 +184,8 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 
 			@Override
 			public String getColumnText(Object obj, int col) {
-				if (!(obj instanceof ImpactMethodDescriptor))
+				if (!(obj instanceof ImpactMethodDescriptor m))
 					return null;
-				var m = (ImpactMethodDescriptor) obj;
 				if (col == 0)
 					return Labels.name(m);
 				if (col != 1 || m.category == null)
