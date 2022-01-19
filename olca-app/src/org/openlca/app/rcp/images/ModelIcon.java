@@ -13,7 +13,7 @@ enum ModelIcon {
 	DQ_SYSTEM("model/data_quality_system.png"),
 	DQ_SYSTEM_CATEGORY("category/data_quality_system.png"),
 	DQ_SYSTEM_WIZARD("wizard/data_quality_system.png"),
-	
+
 	FLOW("model/flow.png"),
 	FLOW_ELEMENTARY("model/flow_elementary.png"),
 	FLOW_PRODUCT("model/flow_product.png"),
@@ -64,6 +64,10 @@ enum ModelIcon {
 	SOURCE("model/source.png"),
 	SOURCE_CATEGORY("category/source.png"),
 	SOURCE_WIZARD("wizard/source.png"),
+
+	RESULT("model/result.png"),
+	RESULT_CATEGORY("category/result.png"),
+	RESULT_WIZARD("wizard/result.png"),
 
 	UNIT_GROUP("model/unit_group.png"),
 	UNIT_GROUP_CATEGORY("category/unit_group.png"),

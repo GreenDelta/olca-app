@@ -295,6 +295,7 @@ public class Images {
 			case PROCESS -> ModelIcon.PROCESS_WIZARD;
 			case PRODUCT_SYSTEM -> ModelIcon.PRODUCT_SYSTEM_WIZARD;
 			case PROJECT -> ModelIcon.PROJECT_WIZARD;
+			case RESULT -> ModelIcon.RESULT_WIZARD;
 			case SOCIAL_INDICATOR -> ModelIcon.SOCIAL_INDICATOR_WIZARD;
 			case SOURCE -> ModelIcon.SOURCE_WIZARD;
 			case UNIT_GROUP -> ModelIcon.UNIT_GROUP_WIZARD;
@@ -320,11 +321,12 @@ public class Images {
 			case ACTOR -> ModelIcon.ACTOR;
 			case FLOW -> ModelIcon.FLOW;
 			case FLOW_PROPERTY -> ModelIcon.FLOW_PROPERTY;
-			case IMPACT_METHOD, RESULT -> ModelIcon.IMPACT_METHOD;
+			case IMPACT_METHOD -> ModelIcon.IMPACT_METHOD;
 			case IMPACT_CATEGORY -> ModelIcon.IMPACT_CATEGORY;
 			case PROCESS -> ModelIcon.PROCESS;
 			case PRODUCT_SYSTEM -> ModelIcon.PRODUCT_SYSTEM;
 			case PROJECT -> ModelIcon.PROJECT;
+			case RESULT -> ModelIcon.RESULT;
 			case SOURCE -> ModelIcon.SOURCE;
 			case SOCIAL_INDICATOR -> ModelIcon.SOCIAL_INDICATOR;
 			case LOCATION -> ModelIcon.LOCATION;
@@ -362,11 +364,12 @@ public class Images {
 			case ACTOR -> ModelIcon.ACTOR_CATEGORY;
 			case FLOW -> ModelIcon.FLOW_CATEGORY;
 			case FLOW_PROPERTY -> ModelIcon.FLOW_PROPERTY_CATEGORY;
-			case IMPACT_METHOD, IMPACT_CATEGORY, RESULT
+			case IMPACT_METHOD, IMPACT_CATEGORY
 				-> ModelIcon.IMPACT_METHOD_CATEGORY; // TODO
 			case PROCESS -> ModelIcon.PROCESS_CATEGORY;
 			case PRODUCT_SYSTEM -> ModelIcon.PRODUCT_SYSTEM_CATEGORY;
 			case PROJECT -> ModelIcon.PROJECT_CATEGORY;
+			case RESULT -> ModelIcon.RESULT_CATEGORY;
 			case SOURCE -> ModelIcon.SOURCE_CATEGORY;
 			case SOCIAL_INDICATOR -> ModelIcon.SOCIAL_INDICATOR_CATEGORY;
 			case UNIT_GROUP -> ModelIcon.UNIT_GROUP_CATEGORY;

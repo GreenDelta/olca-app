@@ -4,11 +4,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
+import org.openlca.app.components.ModelLink;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Result;
@@ -29,10 +31,22 @@ class ResultPage extends ModelPage<Result> {
 		var tk = mform.getToolkit();
 		var body = UI.formBody(form, tk);
 
-		// info section with URN link
+		// info section
 		var infoSection = new InfoSection(editor).render(body, tk);
-		infoSection.section().setExpanded(false);
 		var comp = infoSection.composite();
+
+		// LCIA method
+		ModelLink.of(ImpactMethod.class)
+			.renderOn(comp, tk, "LCIA method")
+			.setModel(getModel().impactMethod)
+			.onChange(method -> {
+				var result = editor.getModel();
+				result.impactMethod = method;
+				editor.setDirty();
+			});
+		UI.filler(comp, tk);
+
+		// URN
 		UI.formLabel(comp, tk, "URN");
 		var urnLink = tk.createImageHyperlink(comp, SWT.NONE);
 		var urn = editor.getModel().urn;
