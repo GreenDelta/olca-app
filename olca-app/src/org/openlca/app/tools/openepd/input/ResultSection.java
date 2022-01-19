@@ -37,9 +37,9 @@ import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.CalculationType;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
-import org.openlca.core.model.ResultImpact;
 import org.openlca.core.model.ResultOrigin;
 import org.openlca.util.Strings;
 
@@ -107,7 +107,7 @@ class ResultSection {
 		for (var mapping : mappedValues) {
 			if (mapping.mappedImpact == null)
 				continue;
-			var impact = new ResultImpact();
+			var impact = new ImpactResult();
 			impact.amount = mapping.value;
 			impact.origin = ResultOrigin.IMPORTED;
 			impact.indicator = mapping.mappedImpact;

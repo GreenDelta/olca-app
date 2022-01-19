@@ -80,7 +80,7 @@ public class NwResultPage extends FormPage {
 		var viewer = Tables.createViewer(comp, columns);
 		viewer.setLabelProvider(new Label());
 		Tables.bindColumnWidths(viewer, colWidths);
-		var items = Contributions.calculate(results, r -> r.value);
+		var items = Contributions.calculate(results, r -> r.value());
 		Contributions.sortDescending(items);
 		viewer.setInput(items);
 		Actions.bind(viewer, TableClipboard.onCopySelected(viewer));
@@ -107,7 +107,7 @@ public class NwResultPage extends FormPage {
 			Contribution<ImpactValue> item = Contribution.class.cast(o);
 			switch (col) {
 			case 0:
-				return Labels.name(item.item.impact);
+				return Labels.name(item.item.impact());
 			case 1:
 				return Numbers.format(item.amount);
 			case 2:

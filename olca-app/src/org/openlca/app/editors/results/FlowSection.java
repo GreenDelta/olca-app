@@ -24,9 +24,9 @@ import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
-import org.openlca.core.model.ResultFlow;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
 
@@ -76,7 +76,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 				}));
 
 		var onRemove = Actions.onRemove(() -> {
-			ResultFlow flow = Viewers.getFirstSelected(table);
+			FlowResult flow = Viewers.getFirstSelected(table);
 			if (flow == null)
 				return;
 			var flows = result().inventory;
@@ -89,7 +89,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 		});
 
 		var onOpen = Actions.onOpen(() -> {
-			ResultFlow flow = Viewers.getFirstSelected(table);
+			FlowResult flow = Viewers.getFirstSelected(table);
 			if (flow != null) {
 				App.open(flow.flow);
 			}
@@ -97,7 +97,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 		Tables.onDoubleClick(table, $ -> onOpen.run());
 
 		var refFlowAction = Actions.create(M.SetAsQuantitativeReference, () -> {
-			ResultFlow flow = Viewers.getFirstSelected(table);
+			FlowResult flow = Viewers.getFirstSelected(table);
 			if (!isProviderFlow(flow))
 				return;
 			var result = editor.getModel();
@@ -114,7 +114,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 			if (selection == null || selection.size() != 1) {
 				refFlowAction.setEnabled(false);
 			}
-			ResultFlow flow = Selections.firstOf(selection);
+			FlowResult flow = Selections.firstOf(selection);
 			refFlowAction.setEnabled(isProviderFlow(flow));
 		});
 
@@ -124,7 +124,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 
 	}
 
-	private boolean isProviderFlow(ResultFlow flow) {
+	private boolean isProviderFlow(FlowResult flow) {
 		if (flow == null
 			|| flow.amount == 0
 			|| flow.flow == null
@@ -148,7 +148,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 
 		@Override
 		public Font getFont(Object obj, int col) {
-			if (!(obj instanceof ResultFlow r))
+			if (!(obj instanceof FlowResult r))
 				return null;
 			var result = editor.getModel();
 			return Objects.equals(result.referenceFlow, r)
@@ -158,7 +158,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof ResultFlow r))
+			if (!(obj instanceof FlowResult r))
 				return null;
 			return switch (col) {
 				case 0 -> Images.get(r.flow);
@@ -171,7 +171,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ResultFlow r))
+			if (!(obj instanceof FlowResult r))
 				return null;
 			return switch (col) {
 				case 0 -> Labels.name(r.flow);

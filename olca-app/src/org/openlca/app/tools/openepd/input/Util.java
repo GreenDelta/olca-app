@@ -9,8 +9,8 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
+import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ResultFlow;
 import org.openlca.core.model.ResultOrigin;
 import org.openlca.core.model.Unit;
 
@@ -19,8 +19,8 @@ class Util {
 	private Util() {
 	}
 
-	static ResultFlow initQuantitativeReference(Ec3Epd epd, IDatabase db) {
-		var f = new ResultFlow();
+	static FlowResult initQuantitativeReference(Ec3Epd epd, IDatabase db) {
+		var f = new FlowResult();
 		f.flow = new Flow();
 		f.flow.refId = UUID.randomUUID().toString();
 		f.isInput = false;
@@ -37,11 +37,11 @@ class Util {
 		return f;
 	}
 
-	static void setFlowProperty(ResultFlow resultFlow, FlowProperty property) {
-		if (resultFlow == null || resultFlow.flow == null)
+	static void setFlowProperty(FlowResult r, FlowProperty property) {
+		if (r == null || r.flow == null)
 			return;
-		resultFlow.flowPropertyFactor = null;
-		var f = resultFlow.flow;
+		r.flowPropertyFactor = null;
+		var f = r.flow;
 		f.flowPropertyFactors.clear();
 		f.referenceFlowProperty = null;
 		if (property == null)
@@ -53,14 +53,14 @@ class Util {
 		f.flowPropertyFactors.add(factor);
 		f.referenceFlowProperty = property;
 
-		resultFlow.flowPropertyFactor = factor;
-		resultFlow.unit = property.getReferenceUnit();
+		r.flowPropertyFactor = factor;
+		r.unit = property.getReferenceUnit();
 	}
 
-	static List<Unit> allowedUnitsOf(ResultFlow rf) {
-		if (rf == null || rf.flowPropertyFactor == null)
+	static List<Unit> allowedUnitsOf(FlowResult r) {
+		if (r == null || r.flowPropertyFactor == null)
 			return Collections.emptyList();
-		var prop = rf.flowPropertyFactor.flowProperty;
+		var prop = r.flowPropertyFactor.flowProperty;
 		return prop == null || prop.unitGroup == null
 			? Collections.emptyList()
 			: prop.unitGroup.units;

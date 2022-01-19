@@ -22,9 +22,9 @@ import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
+import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
-import org.openlca.core.model.ResultImpact;
 import org.openlca.core.model.ResultOrigin;
 import org.openlca.util.Strings;
 
@@ -42,7 +42,7 @@ record ImpactSection(ResultEditor editor) {
 			comp, M.ImpactCategory, M.Amount, M.Unit);
 		table.setLabelProvider(new ImpactLabel());
 		Tables.bindColumnWidths(table, 0.35, 0.35, 0.3);
-		new ModifySupport<ResultImpact>(table)
+		new ModifySupport<ImpactResult>(table)
 			.bind(M.Amount, new AmountModifier(editor));
 		bindActions(section, table);
 
@@ -69,7 +69,7 @@ record ImpactSection(ResultEditor editor) {
 		});
 
 		var onRemove = Actions.onRemove(() -> {
-			ResultImpact impact = Viewers.getFirstSelected(table);
+			ImpactResult impact = Viewers.getFirstSelected(table);
 			if (impact == null)
 				return;
 			var impacts = result().impacts;
@@ -79,7 +79,7 @@ record ImpactSection(ResultEditor editor) {
 		});
 
 		var onOpen = Actions.onOpen(() -> {
-			ResultImpact impact = Viewers.getFirstSelected(table);
+			ImpactResult impact = Viewers.getFirstSelected(table);
 			if (impact != null) {
 				App.open(impact.indicator);
 			}
@@ -96,7 +96,7 @@ record ImpactSection(ResultEditor editor) {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof ResultImpact impact))
+			if (!(obj instanceof ImpactResult impact))
 				return null;
 			return switch (col) {
 				case 0 -> Images.get(ModelType.IMPACT_CATEGORY);
@@ -107,7 +107,7 @@ record ImpactSection(ResultEditor editor) {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ResultImpact impact))
+			if (!(obj instanceof ImpactResult impact))
 				return null;
 			return switch (col) {
 				case 0 -> Labels.name(impact.indicator);
@@ -120,7 +120,7 @@ record ImpactSection(ResultEditor editor) {
 		}
 	}
 
-	private static class AmountModifier extends DoubleCellModifier<ResultImpact> {
+	private static class AmountModifier extends DoubleCellModifier<ImpactResult> {
 
 		private final ResultEditor editor;
 
@@ -129,14 +129,14 @@ record ImpactSection(ResultEditor editor) {
 		}
 
 		@Override
-		public Double getDouble(ResultImpact impact) {
+		public Double getDouble(ImpactResult impact) {
 			return impact == null
 				? null
 				: impact.amount;
 		}
 
 		@Override
-		public void setDouble(ResultImpact impact, Double value) {
+		public void setDouble(ImpactResult impact, Double value) {
 			if (impact == null)
 				return;
 			double v = value == null ? 0 : value;

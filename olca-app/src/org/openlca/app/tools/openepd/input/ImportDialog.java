@@ -27,9 +27,9 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
-import org.openlca.core.model.ResultFlow;
 import org.openlca.util.Strings;
 
 public class ImportDialog extends FormDialog {
@@ -37,7 +37,7 @@ public class ImportDialog extends FormDialog {
 	final IDatabase db;
 	final Ec3Epd epd;
 	final Ec3ImpactModel impactModel;
-	private final ResultFlow product;
+	private final FlowResult product;
 	private String categoryPath;
 	private final List<ResultSection> sections = new ArrayList<>();
 

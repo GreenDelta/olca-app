@@ -84,14 +84,14 @@ public class TagResultPage extends FormPage {
 		public void onFlowSelected(EnviFlow flow) {
 			fillTable(Labels.refUnit(flow),
 				editor.result.getTotalFlowResult(flow),
-				tagResult -> tagResult.inventoryResultOf(flow).value);
+				tagResult -> tagResult.inventoryResultOf(flow).value());
 		}
 
 		@Override
 		public void onImpactSelected(ImpactDescriptor impact) {
 			fillTable(impact.referenceUnit,
 				editor.result.getTotalImpactResult(impact),
-				tagResult -> tagResult.impactResultOf(impact).value);
+				tagResult -> tagResult.impactResultOf(impact).value());
 		}
 
 		@Override

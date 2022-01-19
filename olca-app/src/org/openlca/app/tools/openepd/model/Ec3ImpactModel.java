@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.Result;
-import org.openlca.core.model.ResultImpact;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
@@ -155,12 +155,12 @@ public record Ec3ImpactModel(List<Method> methods, List<Indicator> indicators) {
 		 * to the best matching impact results of the given result
 		 * (a "stable-marriage-problem").
 		 */
-		public Map<String, ResultImpact> matchIndicators(Result result) {
-			var unmatchedResults = new ArrayDeque<ResultImpact>();
+		public Map<String, ImpactResult> matchIndicators(Result result) {
+			var unmatchedResults = new ArrayDeque<ImpactResult>();
 			for (var impact : result.impacts) {
 				unmatchedResults.add(impact.copy());
 			}
-			var scores = new HashMap<String, Pair<ResultImpact, Integer>>();
+			var scores = new HashMap<String, Pair<ImpactResult, Integer>>();
 
 			while (!unmatchedResults.isEmpty()) {
 				var impact = unmatchedResults.poll();
@@ -196,7 +196,7 @@ public record Ec3ImpactModel(List<Method> methods, List<Indicator> indicators) {
 				}
 			}
 
-			var m = new HashMap<String, ResultImpact>();
+			var m = new HashMap<String, ImpactResult>();
 			for (var e : scores.entrySet()) {
 				m.put(e.getKey(), e.getValue().first);
 			}

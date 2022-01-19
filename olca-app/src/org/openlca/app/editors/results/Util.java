@@ -2,10 +2,10 @@ package org.openlca.app.editors.results;
 
 import org.openlca.app.db.Database;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.Result;
-import org.openlca.core.model.ResultFlow;
-import org.openlca.core.model.ResultImpact;
 import org.openlca.core.model.ResultOrigin;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
@@ -45,7 +45,7 @@ class Util {
 		var impact = db.get(ImpactCategory.class, d.id);
 		if (impact == null)
 			return false;
-		var ri = new ResultImpact();
+		var ri = new ImpactResult();
 		ri.indicator = impact;
 		ri.amount = 1.0;
 		ri.origin = ResultOrigin.ENTERED;
@@ -59,7 +59,7 @@ class Util {
 		var flow = db.get(Flow.class, d.id);
 		if (flow == null)
 			return false;
-		var rf = new ResultFlow();
+		var rf = new FlowResult();
 		rf.flow = flow;
 		rf.flowPropertyFactor = flow.getReferenceFactor();
 		rf.unit = flow.getReferenceUnit();
