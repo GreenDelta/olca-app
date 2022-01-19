@@ -26,12 +26,9 @@ class Util {
 
 		// false if the result has an assigned impact method
 		// and the given impact is not part of that method
-		var method = result.setup != null
-			? result.setup.impactMethod()
-			: null;
-		if (method == null)
+		if (result.impactMethod == null)
 			return true;
-		for (var i : method.impactCategories) {
+		for (var i : result.impactMethod.impactCategories) {
 			if (i.id == impact.id)
 				return true;
 		}

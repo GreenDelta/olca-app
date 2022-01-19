@@ -33,8 +33,6 @@ import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.database.ImpactMethodDao;
-import org.openlca.core.model.CalculationSetup;
-import org.openlca.core.model.CalculationType;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ImpactResult;
@@ -60,8 +58,6 @@ class ResultSection {
 		this.epdScope = epdScope;
 		this.result = Result.of(
 			dialog.epd.name + " - " + epdScope + " - " + epdMethod);
-		this.result.setup = new CalculationSetup()
-			.withType(CalculationType.SIMPLE_CALCULATION);
 		mappedValues = initMappings();
 	}
 
@@ -147,14 +143,14 @@ class ResultSection {
 		if (_method != null) {
 			var selected = _method.matchMethod(methods);
 			if (selected != null) {
-				result.setup.withImpactMethod(selected);
+				result.impactMethod = selected;
 				map(selected);
 			}
 		}
 		EntityCombo.of(methodCombo, methods)
-			.select(result.setup.impactMethod())
+			.select(result.impactMethod)
 			.onSelected(method -> {
-				result.setup.withImpactMethod(method);
+				result.impactMethod = method;
 				map(method);
 			});
 
@@ -341,12 +337,10 @@ class ResultSection {
 		@Override
 		protected ImpactCategory[] getItems(MappedValue mv) {
 			var empty = new ImpactCategory[0];
-			if (result == null
-				|| result.setup == null
-				|| result.setup.impactMethod() == null)
+			if (result == null || result.impactMethod == null)
 				return empty;
 
-			var method = result.setup.impactMethod();
+			var method = result.impactMethod;
 			var impacts = method.impactCategories.toArray(empty);
 			Arrays.sort(impacts,
 				(i1, i2) -> Strings.compare(Labels.name(i1), Labels.name(i2)));

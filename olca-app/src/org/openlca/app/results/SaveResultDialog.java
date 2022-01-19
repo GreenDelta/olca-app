@@ -20,7 +20,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.results.SystemProcess;
-import org.openlca.util.ResultModels;
+import org.openlca.util.Results;
 
 public class SaveResultDialog extends FormDialog {
 
@@ -155,8 +155,7 @@ public class SaveResultDialog extends FormDialog {
 				return db.insert(process);
 			}
 
-			var result = ResultModels.createFrom(
-					db, editor.setup, editor.result);
+			var result = Results.createFrom(db, editor.setup, editor.result);
 			result.name = name;
 			return db.insert(result);
 		}

@@ -195,7 +195,7 @@
 			class="org.openlca.app.editors.results.ResultEditor"
 			default="false"
 			icon="icons/model/impact_method.png"
-			id="editors.resultmodel"
+			id="editors.result"
 			name="Data quality system">
 		</editor>
 
@@ -443,7 +443,7 @@
 		<wizard
 			class="org.openlca.app.wizards.ResultWizard"
 			icon="icons/wizard/impact_method.png"
-			id="wizards.new.resultmodel"
+			id="wizards.new.result"
 			name="Results">
 		</wizard>
 	</extension>

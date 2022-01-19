@@ -57,8 +57,8 @@ public class ResultSection {
 		// select the best matching EC3 LCIA method for the LCIA method
 		// of the setup
 		var impactModel = editor.impactModel;
-		if (result.setup != null && result.setup.impactMethod() != null) {
-			var resultName = result.setup.impactMethod().name;
+		if (result.impactMethod != null) {
+			var resultName = result.impactMethod.name;
 			int score = 0;
 			for (var next : impactModel.methods()) {
 				var nextScore = Ec3ImpactModel.mapScore(resultName, next.keywords());
@@ -208,9 +208,7 @@ public class ResultSection {
 		static List<MappedValue> initAll(
 			Ec3ImpactModel.Method selectedMethod, Result result) {
 
-			if (selectedMethod == null
-				|| result.setup == null
-				|| result.setup.impactMethod() == null)
+			if (selectedMethod == null || result.impactMethod == null)
 				return Collections.emptyList();
 
 			var map = selectedMethod.matchIndicators(result);
@@ -277,13 +275,9 @@ public class ResultSection {
 		@Override
 		protected ImpactCategory[] getItems(MappedValue mv) {
 			var empty = new ImpactCategory[0];
-			if (result == null
-				|| result.setup == null
-				|| result.setup.impactMethod() == null)
+			if (result == null || result.impactMethod == null)
 				return empty;
-
-			var method = result.setup.impactMethod();
-			var impacts = method.impactCategories.toArray(empty);
+			var impacts = result.impactMethod.impactCategories.toArray(empty);
 			Arrays.sort(impacts,
 				(i1, i2) -> Strings.compare(Labels.name(i1), Labels.name(i2)));
 			return impacts;

@@ -55,8 +55,6 @@ class ResultPage extends ModelPage<Result> {
 			}
 		});
 
-		new SetupSection(editor).render(body, tk);
-
 		var sash = new SashForm(body, SWT.VERTICAL);
 		UI.gridLayout(sash, 1);
 		UI.gridData(sash, true, false);
