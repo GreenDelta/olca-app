@@ -9,7 +9,7 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.ResultModel;
+import org.openlca.core.model.Result;
 import org.openlca.util.Strings;
 
 public class IONode extends Node {
@@ -55,7 +55,7 @@ public class IONode extends Node {
 					: Collections.singletonList(system.referenceExchange);
 			}
 			case RESULT -> {
-				var result = Database.get().get(ResultModel.class, model.id);
+				var result = Database.get().get(Result.class, model.id);
 				var refFlow = result.referenceFlow;
 				if (refFlow == null)
 					yield Collections.emptyList();

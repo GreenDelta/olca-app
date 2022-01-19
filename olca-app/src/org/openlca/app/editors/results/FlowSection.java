@@ -25,8 +25,8 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Result;
 import org.openlca.core.model.ResultFlow;
-import org.openlca.core.model.ResultModel;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
 
@@ -40,7 +40,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 		return new FlowSection(editor, false);
 	}
 
-	private ResultModel result() {
+	private Result result() {
 		return editor.getModel();
 	}
 

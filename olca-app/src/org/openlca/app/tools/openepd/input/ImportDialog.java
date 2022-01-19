@@ -28,8 +28,8 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Result;
 import org.openlca.core.model.ResultFlow;
-import org.openlca.core.model.ResultModel;
 import org.openlca.util.Strings;
 
 public class ImportDialog extends FormDialog {
@@ -131,7 +131,7 @@ public class ImportDialog extends FormDialog {
 	protected void okPressed() {
 
 		// check and prepare the results
-		var results = new ArrayList<ResultModel>();
+		var results = new ArrayList<Result>();
 		for (var section : sections) {
 			var result = section.createResult();
 			if (Strings.nullOrEmpty(result.name)) {
@@ -144,7 +144,7 @@ public class ImportDialog extends FormDialog {
 		if (results.isEmpty()) {
 			// create a default result in no LCIA results could
 			// be found in the EPD
-			results.add(ResultModel.of(epd.name));
+			results.add(Result.of(epd.name));
 		}
 
 		// create the reference product

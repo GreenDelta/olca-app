@@ -17,7 +17,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
@@ -97,16 +96,16 @@ public class ConnectionDialog extends Dialog {
 		for (Candidate c : candidates) {
 			if (!c.doConnect)
 				continue;
-			ProcessLink link = new ProcessLink();
+			var link = new ProcessLink();
 			link.flowId = exchange.exchange.flow.id;
 			if (exchange.isProvider()) {
 				link.providerId = exchange.process.id;
-				link.isSystemLink = exchange.process.type != ModelType.PROCESS;
+				link.setProviderType(exchange.process.type);
 				link.processId = c.process.id;
 				link.exchangeId = c.exchangeId;
 			} else {
 				link.providerId = c.process.id;
-				link.isSystemLink = c.process.type != ModelType.PROCESS;
+				link.setProviderType(c.process.type);
 				link.exchangeId = exchange.exchange.id;
 				link.processId = exchange.process.id;
 

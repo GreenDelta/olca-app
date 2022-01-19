@@ -158,7 +158,7 @@ public class LinkUpdate {
 		link.providerId = providerId;
 		link.exchangeId = exchangeId;
 		link.processId = process.id;
-		link.isSystemLink = false;
+		link.providerType = ProcessLink.ProviderType.PROCESS;
 		link.flowId = exchange.flowId;
 		return link;
 	}

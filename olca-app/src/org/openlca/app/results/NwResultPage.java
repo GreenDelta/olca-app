@@ -24,13 +24,13 @@ import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.Contributions;
-import org.openlca.core.results.ImpactResult;
+import org.openlca.core.results.ImpactValue;
 import org.openlca.core.results.SimpleResult;
 
 public class NwResultPage extends FormPage {
 
-	private SimpleResult result;
-	private CalculationSetup setup;
+	private final SimpleResult result;
+	private final CalculationSetup setup;
 	private Composite body;
 	private FormToolkit toolkit;
 
@@ -65,7 +65,7 @@ public class NwResultPage extends FormPage {
 		}
 	}
 
-	private void createTable(String title, List<ImpactResult> results,
+	private void createTable(String title, List<ImpactValue> results,
 			boolean withUnit) {
 		var columns = withUnit
 				? new String[] { M.ImpactCategory, M.Amount, M.Unit }
@@ -88,14 +88,14 @@ public class NwResultPage extends FormPage {
 
 	private class Label extends LabelProvider implements ITableLabelProvider {
 
-		private ContributionImage image = new ContributionImage();
+		private final ContributionImage image = new ContributionImage();
 
 		@Override
 		@SuppressWarnings("unchecked")
 		public Image getColumnImage(Object o, int col) {
 			if (col != 0 || !(o instanceof Contribution))
 				return null;
-			Contribution<ImpactResult> item = Contribution.class.cast(o);
+			Contribution<ImpactValue> item = Contribution.class.cast(o);
 			return image.get(item.share);
 		}
 
@@ -104,7 +104,7 @@ public class NwResultPage extends FormPage {
 		public String getColumnText(Object o, int col) {
 			if (!(o instanceof Contribution))
 				return null;
-			Contribution<ImpactResult> item = Contribution.class.cast(o);
+			Contribution<ImpactValue> item = Contribution.class.cast(o);
 			switch (col) {
 			case 0:
 				return Labels.name(item.item.impact);

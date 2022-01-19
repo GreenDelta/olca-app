@@ -23,14 +23,14 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Result;
 import org.openlca.core.model.ResultImpact;
-import org.openlca.core.model.ResultModel;
 import org.openlca.core.model.ResultOrigin;
 import org.openlca.util.Strings;
 
 record ImpactSection(ResultEditor editor) {
 
-	private ResultModel result() {
+	private Result result() {
 		return editor.getModel();
 	}
 

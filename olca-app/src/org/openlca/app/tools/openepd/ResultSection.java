@@ -36,13 +36,13 @@ import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.ResultModel;
+import org.openlca.core.model.Result;
 import org.openlca.util.Strings;
 
 public class ResultSection {
 
 	private final EpdEditor editor;
-	private final ResultModel result;
+	private final Result result;
 
 	private String selectedScope = "A1A2A3";
 	private Ec3ImpactModel.Method selectedMethod;
@@ -50,7 +50,7 @@ public class ResultSection {
 	private Consumer<ResultSection> onDelete;
 	private final List<MappedValue> mappedValues = new ArrayList<>();
 
-	private ResultSection(EpdEditor editor, ResultModel result) {
+	private ResultSection(EpdEditor editor, Result result) {
 		this.editor = editor;
 		this.result = result;
 
@@ -74,7 +74,7 @@ public class ResultSection {
 		}
 	}
 
-	static ResultSection of(EpdEditor editor, ResultModel result) {
+	static ResultSection of(EpdEditor editor, Result result) {
 		return new ResultSection(editor, result);
 	}
 
@@ -206,7 +206,7 @@ public class ResultSection {
 		}
 
 		static List<MappedValue> initAll(
-			Ec3ImpactModel.Method selectedMethod, ResultModel result) {
+			Ec3ImpactModel.Method selectedMethod, Result result) {
 
 			if (selectedMethod == null
 				|| result.setup == null
@@ -268,9 +268,9 @@ public class ResultSection {
 	private static class ImpactModifier extends
 		ComboBoxCellModifier<MappedValue, ImpactCategory> {
 
-		private final ResultModel result;
+		private final Result result;
 
-		ImpactModifier(ResultModel result) {
+		ImpactModifier(Result result) {
 			this.result = result;
 		}
 

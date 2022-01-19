@@ -4,13 +4,13 @@ import org.eclipse.swt.graphics.Image;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.core.model.ResultModel;
+import org.openlca.core.model.Result;
 import org.openlca.core.model.ResultOrigin;
 
-public class ResultEditor extends ModelEditor<ResultModel> {
+public class ResultEditor extends ModelEditor<Result> {
 
 	public ResultEditor() {
-		super(ResultModel.class);
+		super(Result.class);
 	}
 
 	@Override

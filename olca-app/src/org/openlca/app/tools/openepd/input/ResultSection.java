@@ -38,8 +38,8 @@ import org.openlca.core.model.CalculationType;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Result;
 import org.openlca.core.model.ResultImpact;
-import org.openlca.core.model.ResultModel;
 import org.openlca.core.model.ResultOrigin;
 import org.openlca.util.Strings;
 
@@ -48,7 +48,7 @@ class ResultSection {
 	private final ImportDialog dialog;
 	private final String epdMethod;
 	private final String epdScope;
-	private final ResultModel result;
+	private final Result result;
 	private final List<MappedValue> mappedValues;
 	private TableViewer mappingTable;
 	private Consumer<ResultSection> onDeleted;
@@ -58,7 +58,7 @@ class ResultSection {
 		this.dialog = dialog;
 		this.epdMethod = epdMethod;
 		this.epdScope = epdScope;
-		this.result = ResultModel.of(
+		this.result = Result.of(
 			dialog.epd.name + " - " + epdScope + " - " + epdMethod);
 		this.result.setup = new CalculationSetup()
 			.withType(CalculationType.SIMPLE_CALCULATION);
@@ -101,7 +101,7 @@ class ResultSection {
 		return sections;
 	}
 
-	ResultModel createResult() {
+	Result createResult() {
 		var r = result.copy();
 		r.refId = UUID.randomUUID().toString();
 		for (var mapping : mappedValues) {
@@ -332,9 +332,9 @@ class ResultSection {
 	private static class ImpactModifier extends
 		ComboBoxCellModifier<MappedValue, ImpactCategory> {
 
-		private final ResultModel result;
+		private final Result result;
 
-		ImpactModifier(ResultModel result) {
+		ImpactModifier(Result result) {
 			this.result = result;
 		}
 

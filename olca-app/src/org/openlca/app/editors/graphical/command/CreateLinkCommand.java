@@ -7,10 +7,8 @@ import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 public class CreateLinkCommand extends Command {
 
@@ -56,20 +54,20 @@ public class CreateLinkCommand extends Command {
 			return processLink;
 		FlowType type = sysNode.flows.type(flowId);
 		if (input != null) {
-			CategorizedDescriptor p = input.parent().process;
+			var p = input.parent().process;
 			if (type == FlowType.PRODUCT_FLOW) {
 				processLink.processId = p.id;
 				processLink.exchangeId = input.exchange.id;
 			} else if (type == FlowType.WASTE_FLOW) {
 				processLink.providerId = p.id;
-				processLink.isSystemLink = p.type != ModelType.PROCESS;
+				processLink.setProviderType(p.type);
 			}
 		}
 		if (output != null) {
-			CategorizedDescriptor p = output.parent().process;
+			var p = output.parent().process;
 			if (type == FlowType.PRODUCT_FLOW) {
 				processLink.providerId = p.id;
-				processLink.isSystemLink = p.type != ModelType.PROCESS;
+				processLink.setProviderType(p.type);
 			} else if (type == FlowType.WASTE_FLOW) {
 				processLink.processId = p.id;
 				processLink.exchangeId = output.exchange.id;

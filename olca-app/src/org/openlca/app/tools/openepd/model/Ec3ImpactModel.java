@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.Result;
 import org.openlca.core.model.ResultImpact;
-import org.openlca.core.model.ResultModel;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
@@ -155,7 +155,7 @@ public record Ec3ImpactModel(List<Method> methods, List<Indicator> indicators) {
 		 * to the best matching impact results of the given result
 		 * (a "stable-marriage-problem").
 		 */
-		public Map<String, ResultImpact> matchIndicators(ResultModel result) {
+		public Map<String, ResultImpact> matchIndicators(Result result) {
 			var unmatchedResults = new ArrayDeque<ResultImpact>();
 			for (var impact : result.impacts) {
 				unmatchedResults.add(impact.copy());

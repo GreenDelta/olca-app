@@ -3,9 +3,9 @@ package org.openlca.app.wizards;
 import java.util.UUID;
 
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.ResultModel;
+import org.openlca.core.model.Result;
 
-public class ResultWizard extends AbstractWizard<ResultModel> {
+public class ResultWizard extends AbstractWizard<Result> {
 
 	@Override
 	protected String getTitle() {
@@ -18,11 +18,11 @@ public class ResultWizard extends AbstractWizard<ResultModel> {
 	}
 
 	@Override
-	protected AbstractWizardPage<ResultModel> createPage() {
+	protected AbstractWizardPage<Result> createPage() {
 		return new Page();
 	}
 
-	private static class Page extends AbstractWizardPage<ResultModel> {
+	private static class Page extends AbstractWizardPage<Result> {
 
 		private Page() {
 			super("ResultWizardPage");
@@ -31,8 +31,8 @@ public class ResultWizard extends AbstractWizard<ResultModel> {
 		}
 
 		@Override
-		public ResultModel createModel() {
-			var result = new ResultModel();
+		public Result createModel() {
+			var result = new Result();
 			result.refId = UUID.randomUUID().toString();
 			result.name = getModelName();
 			result.description = getModelDescription();

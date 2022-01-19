@@ -3,9 +3,9 @@ package org.openlca.app.editors.results;
 import org.openlca.app.db.Database;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.Result;
 import org.openlca.core.model.ResultFlow;
 import org.openlca.core.model.ResultImpact;
-import org.openlca.core.model.ResultModel;
 import org.openlca.core.model.ResultOrigin;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
@@ -14,8 +14,7 @@ class Util {
 	private Util() {
 	}
 
-	static boolean canAddImpact(
-		ResultModel result, CategorizedDescriptor impact) {
+	static boolean canAddImpact(Result result, CategorizedDescriptor impact) {
 		if (result == null || impact == null)
 			return false;
 
@@ -39,7 +38,7 @@ class Util {
 		return false;
 	}
 
-	static boolean addImpact(ResultModel result, CategorizedDescriptor d) {
+	static boolean addImpact(Result result, CategorizedDescriptor d) {
 		var db = Database.get();
 		if (db == null || result == null || d == null)
 			return false;
@@ -53,7 +52,7 @@ class Util {
 		return result.impacts.add(ri);
 	}
 
-	static boolean addFlow(ResultModel r, CategorizedDescriptor d, boolean input) {
+	static boolean addFlow(Result r, CategorizedDescriptor d, boolean input) {
 		var db = Database.get();
 		if (db == null || r == null || d == null)
 			return false;

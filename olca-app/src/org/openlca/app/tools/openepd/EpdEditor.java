@@ -37,7 +37,7 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.ResultModel;
+import org.openlca.core.model.Result;
 
 public class EpdEditor extends SimpleFormEditor {
 
@@ -173,7 +173,7 @@ public class EpdEditor extends SimpleFormEditor {
 				if (ds == null)
 					return;
 				for (var d : ds) {
-					var model = db.get(ResultModel.class, d.id);
+					var model = db.get(Result.class, d.id);
 					if (model == null)
 						return;
 					var section = ResultSection.of(EpdEditor.this, model)

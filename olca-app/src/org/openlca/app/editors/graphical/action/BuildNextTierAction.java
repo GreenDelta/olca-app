@@ -19,7 +19,6 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.Exchange;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
@@ -71,23 +70,30 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		systemNode.editor.setDirty();
 	}
 
-	private void collectFor(
-			ProcessNode node,
-			List<CategorizedDescriptor> providers,
-			List<ProcessLink> newConnections) {
-		for (ExchangeNode enode : getLinkCandidates(node)) {
-			CategorizedDescriptor provider = findProvider(enode.exchange);
+	private void collectFor(ProcessNode node,
+		List<CategorizedDescriptor> providers, List<ProcessLink> newConnections) {
+		for (var eNode : getLinkCandidates(node)) {
+			var provider = findProvider(eNode.exchange);
 			if (provider == null)
 				continue;
 			if (!providers.contains(provider)) {
 				providers.add(provider);
 			}
-			ProcessLink link = new ProcessLink();
-			link.flowId = enode.exchange.flow.id;
-			link.exchangeId = enode.exchange.id;
+			var link = new ProcessLink();
+			link.flowId = eNode.exchange.flow.id;
+			link.exchangeId = eNode.exchange.id;
 			link.processId = node.process.id;
 			link.providerId = provider.id;
-			link.isSystemLink = provider.type != ModelType.PROCESS;
+			if (provider.type == null) {
+				link.providerType = ProcessLink.ProviderType.PROCESS;
+			} else {
+				link.providerType = switch (provider.type) {
+					case PRODUCT_SYSTEM -> ProcessLink.ProviderType.SUB_SYSTEM;
+					case RESULT -> ProcessLink.ProviderType.RESULT;
+					default -> ProcessLink.ProviderType.PROCESS;
+				};
+			}
+
 			if (!newConnections.contains(link)) {
 				newConnections.add(link);
 			}
@@ -116,7 +122,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 			return processDao.getDescriptor(e.defaultProviderId);
 		}
 		if (providers == ProviderLinking.PREFER_DEFAULTS
-				&& e.defaultProviderId != 0L)
+			&& e.defaultProviderId != 0L)
 			return processDao.getDescriptor(e.defaultProviderId);
 
 		ProcessDescriptor bestMatch = null;
@@ -134,8 +140,8 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		if (e == null || e.flow == null)
 			return Collections.emptyList();
 		Set<Long> providerIds = e.isInput
-				? flowDao.getWhereOutput(e.flow.id)
-				: flowDao.getWhereInput(e.flow.id);
+			? flowDao.getWhereOutput(e.flow.id)
+			: flowDao.getWhereInput(e.flow.id);
 		return processDao.getDescriptors(providerIds);
 	}
 

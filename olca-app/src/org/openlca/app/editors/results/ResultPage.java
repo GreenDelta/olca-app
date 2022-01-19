@@ -11,10 +11,10 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.ResultModel;
+import org.openlca.core.model.Result;
 import org.openlca.util.Strings;
 
-class ResultPage extends ModelPage<ResultModel> {
+class ResultPage extends ModelPage<Result> {
 
 	private final ResultEditor editor;
 
