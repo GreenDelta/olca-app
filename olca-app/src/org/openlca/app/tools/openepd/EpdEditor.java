@@ -33,6 +33,7 @@ import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Popup;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
@@ -217,12 +218,23 @@ public class EpdEditor extends SimpleFormEditor {
 				mergeResults();
 				try {
 					var response = client.post("/epds", epd.toJson());
-					if (response.hasJson()) {
-						var json = new GsonBuilder().setPrettyPrinting()
-							.create()
-							.toJson(response.json());
-						System.out.println(json);
+					if (!response.hasJson()) {
+						MsgBox.error("Received no response from server");
+						return;
 					}
+					var json = response.json();
+					if (!json.isJsonObject()) {
+						MsgBox.error("Received an unexpected response from server");
+						return;
+					}
+					var obj = json.getAsJsonObject();
+					if (obj.has("validation_errors")) {
+						ErrorDialog.show(obj);
+						return;
+					}
+					var url = loginPanel.credentials().url();
+					Popup.info("Uploaded EPD",
+						"The EPD was uploaded to <a href='" + url + "'>" + url + "</a>");
 				} catch (Exception e) {
 					ErrorReporter.on("Failed to upload EPD", e);
 				}

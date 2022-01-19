@@ -2,15 +2,16 @@ package org.openlca.app.editors.graphical;
 
 import org.openlca.app.editors.graphical.themes.Theme;
 import org.openlca.app.editors.graphical.themes.Themes;
+import org.openlca.core.model.Copyable;
 import org.openlca.jsonld.Json;
 
 import com.google.gson.JsonObject;
 
-public class GraphConfig {
+public class GraphConfig implements Copyable<GraphConfig> {
 
-	public boolean showFlowIcons;
-	public boolean showFlowAmounts;
-	public boolean showElementaryFlows;
+	public boolean showFlowIcons = true;
+	public boolean showFlowAmounts = true;
+	public boolean showElementaryFlows = false;
 	public boolean isRouted = true;
 	private Theme theme = Themes.getDefault();
 
@@ -20,7 +21,7 @@ public class GraphConfig {
 	public static GraphConfig from(GraphConfig other) {
 		return other == null
 			? new GraphConfig()
-			: other.clone();
+			: other.copy();
 	}
 
 	public Theme theme() {
@@ -48,7 +49,7 @@ public class GraphConfig {
 	}
 
 	@Override
-	protected GraphConfig clone() {
+	public GraphConfig copy() {
 		var clone = new GraphConfig();
 		clone.showFlowIcons = showFlowIcons;
 		clone.showFlowAmounts = showFlowAmounts;
