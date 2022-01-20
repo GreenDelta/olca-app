@@ -15,8 +15,11 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
 import org.openlca.app.Event;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.util.Comments;
+import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Repository;
 import org.openlca.app.editors.comments.CommentsPage;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
@@ -24,8 +27,6 @@ import org.openlca.app.util.Categories;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.cloud.model.Comments;
-import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.EntityCache;
@@ -104,8 +105,8 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 
 	/**
 	 * Subscribes a handler for events with the given ID to this editor. When an
-	 * event occurs the original sender of that event is injected to the respective
-	 * handlers.
+	 * event occurs the original sender of that event is injected to the
+	 * respective handlers.
 	 */
 	public void onEvent(String eventID, Consumer<Object> handler) {
 		if (handler == null)
@@ -145,10 +146,12 @@ public abstract class ModelEditor<T extends CategorizedEntity>
 	}
 
 	private void loadComments(ModelType type, String refId) {
-		if (!App.isCommentingEnabled())
+		if (!App.isCommentingEnabled()
+				|| !Repository.isConnected()
+				|| !Repository.get().isCollaborationServer())
 			return;
 		try {
-			comments = Database.getRepositoryClient().getComments(type, refId);
+			comments = Repository.get().client.getComments(type, refId);
 		} catch (WebRequestException e) {
 			log.error("Error loading comments from repository", e);
 		}

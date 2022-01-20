@@ -13,8 +13,9 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.cloud.ui.commits.HistoryView;
-import org.openlca.app.cloud.ui.diff.CompareView;
+import org.openlca.app.collaboration.api.RepositoryConfig;
+import org.openlca.app.collaboration.ui.views.CompareView;
+import org.openlca.app.collaboration.ui.views.HistoryView;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
@@ -28,7 +29,6 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Popup;
-import org.openlca.cloud.api.RepositoryConfig;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.config.MySqlConfig;
@@ -124,7 +124,7 @@ public class DbExportAction extends Action implements INavigationAction {
 
 	private boolean exclude(String relativePath) {
 		return relativePath.startsWith(
-				DatabaseDir.FILE_STORAGE + File.separator + RepositoryConfig.DIR);
+				DatabaseDir.FILE_STORAGE + File.separator + RepositoryConfig.GIT_DIR);
 	}
 
 	private void updateUI(File zip, boolean active) {

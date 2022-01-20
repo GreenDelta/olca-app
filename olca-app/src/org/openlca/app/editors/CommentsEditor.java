@@ -7,11 +7,11 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
+import org.openlca.app.collaboration.api.RepositoryClient;
+import org.openlca.app.collaboration.model.Comment;
+import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
+import org.openlca.app.db.Repository;
 import org.openlca.app.editors.comments.CommentsPage;
-import org.openlca.cloud.api.RepositoryClient;
-import org.openlca.cloud.model.Comment;
-import org.openlca.cloud.util.WebRequests.WebRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,12 +42,14 @@ public class CommentsEditor extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
-		RepositoryClient client = Database.getRepositoryClient();
 		List<Comment> comments = new ArrayList<>();
-		try {
-			comments = client.getAllComments();
-		} catch (WebRequestException e) {
-			log.error("Error loading comments" , e);
+		if (Repository.get().isCollaborationServer()) {
+			RepositoryClient client = Repository.get().client;
+			try {
+				comments = client.getAllComments();
+			} catch (WebRequestException e) {
+				log.error("Error loading comments", e);
+			}
 		}
 		return new CommentsPage(this, comments);
 	}

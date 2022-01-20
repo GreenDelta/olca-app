@@ -97,7 +97,6 @@ public class M extends NLS {
 	public static String Causal;
 	public static String CausalAllocation;
 	public static String Change;
-	public static String ChangesToBeFetched;
 	public static String CheckAgainstLibraries;
 	public static String CheckLinkingProperties;
 	public static String CheckingAgainstLibraries;
@@ -278,6 +277,7 @@ public class M extends NLS {
 	public static String EmptyDatabase;
 	public static String EmptyValueMessage;
 	public static String EnableCollaboration;
+	public static String EnableComments;
 	public static String EnableJblasLibrary;
 	public static String EndDate;
 	public static String EnterLocationNameAndCode;

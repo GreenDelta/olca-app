@@ -4,13 +4,8 @@ import java.io.File;
 import java.util.Objects;
 
 import org.openlca.app.App;
-import org.openlca.app.cloud.TokenDialog;
-import org.openlca.app.cloud.index.DiffIndex;
 import org.openlca.app.navigation.CopyPaste;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.cloud.api.RepositoryClient;
-import org.openlca.cloud.api.RepositoryConfig;
-import org.openlca.cloud.api.update.RepositoryConfigConversion;
 import org.openlca.core.DataDir;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.config.DatabaseConfig;
@@ -27,8 +22,6 @@ public class Database {
 	private static DatabaseConfig config;
 	private static DatabaseListener listener;
 	private static final DatabaseConfigList configurations = loadConfigs();
-	private static DiffIndex diffIndex;
-	private static RepositoryClient repositoryClient;
 
 	private Database() {
 	}
@@ -37,21 +30,21 @@ public class Database {
 		return database;
 	}
 
-	public static IndexUpdater getIndexUpdater() {
-		return listener.getIndexUpdater();
+	public static WorkspaceIdUpdater getWorkspaceIdUpdater() {
+		return listener.getWorkspaceIdUpdater();
 	}
 
 	public static IDatabase activate(DatabaseConfig config) {
 		try {
 			database = config.connect(DataDir.databases());
-			listener = new DatabaseListener(Database.database);
+			listener = new DatabaseListener();
 			database.addListener(listener);
 			Cache.create(database);
 			Database.config = config;
 			Logger log = LoggerFactory.getLogger(Database.class);
 			log.trace("activated database {} with version{}",
 					database.getName(), database.getVersion());
-			tryConnectRepository();
+			Repository.connect(database);
 			return database;
 		} catch (Exception e) {
 			database = null;
@@ -60,48 +53,6 @@ public class Database {
 			ErrorReporter.on("failed to activate database: " + config, e);
 			return null;
 		}
-	}
-
-	private static void tryConnectRepository() {
-		try {
-			if (RepositoryConfigConversion.needsConversion(database)) {
-				RepositoryConfigConversion.applyTo(database);
-			}
-			var repoConfig = RepositoryConfig.loadActive(Database.get());
-			if (repoConfig != null) {
-				repoConfig.credentials.setTokenSupplier(TokenDialog::prompt);
-				connect(new RepositoryClient(repoConfig));
-			}
-		} catch (Exception e) {
-			disconnect();
-		}
-	}
-
-	public static void connect(RepositoryClient client) {
-		if (diffIndex != null)
-			diffIndex.close();
-		repositoryClient = client;
-		diffIndex = DiffIndex.getFor(repositoryClient);
-	}
-
-	public static void disconnect() {
-		if (repositoryClient == null)
-			return;
-		diffIndex.close();
-		diffIndex = null;
-		repositoryClient = null;
-	}
-
-	public static boolean isConnected() {
-		return repositoryClient != null;
-	}
-
-	public static RepositoryClient getRepositoryClient() {
-		return repositoryClient;
-	}
-
-	public static DiffIndex getDiffIndex() {
-		return diffIndex;
 	}
 
 	public static boolean isActive(DatabaseConfig config) {
@@ -120,19 +71,17 @@ public class Database {
 		database = null;
 		listener = null;
 		config = null;
-		if (repositoryClient == null)
-			return;
-		diffIndex.close();
-		diffIndex = null;
-		repositoryClient = null;
+		if (Repository.get() != null) {
+			Repository.disconnect();
+		}
 	}
 
 	private static DatabaseConfigList loadConfigs() {
 		var workspace = App.getWorkspace();
 		var listFile = new File(workspace, "databases.json");
 		return !listFile.exists()
-			? new DatabaseConfigList()
-			: DatabaseConfigList.read(listFile);
+				? new DatabaseConfigList()
+				: DatabaseConfigList.read(listFile);
 	}
 
 	private static void saveConfig() {

@@ -13,8 +13,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.cloud.ui.preferences.CloudPreference;
-import org.openlca.app.db.Database;
+import org.openlca.app.collaboration.ui.preferences.CollaborationPreference;
+import org.openlca.app.db.Repository;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.rcp.RcpActivator;
@@ -42,8 +42,8 @@ public class App {
 
 	/**
 	 * Get the folder where openLCA is installed. This is where our native math
-	 * libraries and the openLCA.ini file are located. On macOS this is the folder
-	 * `openLCA.app/Contents/Eclipse`. Also, the name of the ini file is
+	 * libraries and the openLCA.ini file are located. On macOS this is the
+	 * folder `openLCA.app/Contents/Eclipse`. Also, the name of the ini file is
 	 * `eclipse.ini` on macOS.
 	 */
 	public static File getInstallLocation() {
@@ -79,12 +79,11 @@ public class App {
 	 * Returns the version of the openLCA application.
 	 */
 	public static String getVersion() {
-		return RcpActivator.getDefault()
-			.getBundle().getVersion().toString();
+		return RcpActivator.getDefault().getBundle().getVersion().toString();
 	}
 
 	public static boolean isCommentingEnabled() {
-		return Database.isConnected() && CloudPreference.doDisplayComments();
+		return Repository.isConnected() && CollaborationPreference.commentsEnabled();
 	}
 
 	/**
@@ -111,7 +110,7 @@ public class App {
 		}
 		log.trace("open editor for {} ", d);
 		String editorId = "editors." + d.type.getModelClass()
-			.getSimpleName().toLowerCase();
+				.getSimpleName().toLowerCase();
 		var input = new ModelEditorInput(d);
 		Editors.open(input, editorId);
 	}
@@ -128,8 +127,8 @@ public class App {
 	}
 
 	/**
-	 * Returns true if the given data set is currently opened in an editor that has
-	 * a dirty (= unsaved) state.
+	 * Returns true if the given data set is currently opened in an editor that
+	 * has a dirty (= unsaved) state.
 	 */
 	public static boolean hasDirtyEditor(RootEntity e) {
 		if (e == null)
@@ -138,8 +137,8 @@ public class App {
 	}
 
 	/**
-	 * Returns true if the given data set is currently opened in an editor that has
-	 * a dirty (= unsaved) state.
+	 * Returns true if the given data set is currently opened in an editor that
+	 * has a dirty (= unsaved) state.
 	 */
 	public static boolean hasDirtyEditor(Descriptor d) {
 		IEditorReference ref = findEditor(d);
@@ -174,17 +173,17 @@ public class App {
 	}
 
 	/**
-	 * Wraps a runnable in a job and executes it using the Eclipse jobs framework.
-	 * No UI access is allowed for the runnable.
+	 * Wraps a runnable in a job and executes it using the Eclipse jobs
+	 * framework. No UI access is allowed for the runnable.
 	 */
 	public static Job run(String name, Runnable runnable) {
 		return run(name, runnable, null);
 	}
 
 	/**
-	 * See {@link App#run(String, Runnable)}. Additionally, this method allows to
-	 * give a callback which is executed in the UI thread when the runnable is
-	 * finished.
+	 * See {@link App#run(String, Runnable)}. Additionally, this method allows
+	 * to give a callback which is executed in the UI thread when the runnable
+	 * is finished.
 	 */
 	public static Job run(String name, Runnable runnable, Runnable callback) {
 		WrappedJob job = new WrappedJob(name, runnable);
@@ -197,7 +196,7 @@ public class App {
 
 	public static void runWithProgress(String name, Runnable runnable) {
 		var progress = PlatformUI.getWorkbench()
-			.getProgressService();
+				.getProgressService();
 		try {
 			progress.run(true, false, (monitor) -> {
 				monitor.beginTask(name, IProgressMonitor.UNKNOWN);
@@ -210,7 +209,7 @@ public class App {
 	}
 
 	public static void runWithProgress(String name, Runnable fn,
-									   Runnable callback) {
+			Runnable callback) {
 		var service = PlatformUI.getWorkbench().getProgressService();
 		try {
 			service.run(true, false, m -> {
@@ -237,11 +236,11 @@ public class App {
 		var ref = new AtomicReference<T>();
 		try {
 			PlatformUI.getWorkbench().getProgressService()
-				.busyCursorWhile((monitor) -> {
-					monitor.beginTask(task, IProgressMonitor.UNKNOWN);
-					ref.set(fn.get());
-					monitor.done();
-				});
+					.busyCursorWhile((monitor) -> {
+						monitor.beginTask(task, IProgressMonitor.UNKNOWN);
+						ref.set(fn.get());
+						monitor.done();
+					});
 		} catch (Exception e) {
 			ErrorReporter.on("exec " + task + " failed", e);
 		}
@@ -255,11 +254,11 @@ public class App {
 	public static void exec(String task, Runnable fn) {
 		try {
 			PlatformUI.getWorkbench().getProgressService()
-				.busyCursorWhile(monitor -> {
-					monitor.beginTask(task, IProgressMonitor.UNKNOWN);
-					fn.run();
-					monitor.done();
-				});
+					.busyCursorWhile(monitor -> {
+						monitor.beginTask(task, IProgressMonitor.UNKNOWN);
+						fn.run();
+						monitor.done();
+					});
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to execute task: " + task, e);
 		}

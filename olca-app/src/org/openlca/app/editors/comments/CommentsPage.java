@@ -13,19 +13,19 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.model.Comment;
+import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
-import org.openlca.cloud.model.Comment;
-import org.openlca.cloud.model.Comments;
-import org.openlca.cloud.util.Datasets;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.util.Categories;
 import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
@@ -102,9 +102,9 @@ public class CommentsPage extends FormPage {
 	private String getFullPath(Comment comment) {
 		if (model != null) // not needed
 			return null;
-		CategorizedDescriptor descriptor = getDescriptor(comment.type, comment.refId);
+		CategorizedDescriptor descriptor = getDescriptor(comment.type(), comment.refId());
 		Category category = getCategory(descriptor);
-		List<String> categories = Datasets.getCategories(category);
+		List<String> categories = Categories.path(category);
 		if (categories == null || categories.size() == 0)
 			return descriptor.name;
 		return Strings.join(categories, '/') + "/" + descriptor.name;

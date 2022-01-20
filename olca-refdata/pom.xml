@@ -26,12 +26,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.openlca</groupId>
-			<artifactId>olca-cloud</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.zeroturnaround</groupId>
 			<artifactId>zt-zip</artifactId>
 			<version>1.8</version>

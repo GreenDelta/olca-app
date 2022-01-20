@@ -9,10 +9,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
-import org.openlca.app.components.ModelLink;
+import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.util.Labels;
-import org.openlca.cloud.model.Comments;
 import org.openlca.core.model.CategorizedEntity;
 
 public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {

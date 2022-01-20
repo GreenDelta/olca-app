@@ -237,13 +237,13 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			return;
 
 		try {
-			Database.getIndexUpdater().beginTransaction();
+			Database.getWorkspaceIdUpdater().beginTransaction();
 			App.runWithProgress("Run import", imp);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("EcoSpold 2 import failed", e);
 		} finally {
-			Database.getIndexUpdater().endTransaction();
+			Database.getWorkspaceIdUpdater().endTransaction();
 			Navigator.refresh();
 			Cache.evictAll();
 		}

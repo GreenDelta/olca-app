@@ -8,10 +8,10 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.model.Comment;
+import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.util.UI;
-import org.openlca.cloud.model.Comment;
-import org.openlca.cloud.model.Comments;
 
 import com.google.gson.Gson;
 

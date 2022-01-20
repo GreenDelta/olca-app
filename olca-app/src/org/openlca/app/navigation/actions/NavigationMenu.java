@@ -15,16 +15,8 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.cloud.ui.preferences.CloudPreference;
+import org.openlca.app.collaboration.ui.navigation.RepositoryMenu;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.navigation.actions.cloud.CommitAction;
-import org.openlca.app.navigation.actions.cloud.ConfigureRepositoriesAction;
-import org.openlca.app.navigation.actions.cloud.FetchAction;
-import org.openlca.app.navigation.actions.cloud.OpenCompareViewAction;
-import org.openlca.app.navigation.actions.cloud.RebuildIndexAction;
-import org.openlca.app.navigation.actions.cloud.ShowCommentsAction;
-import org.openlca.app.navigation.actions.cloud.ShowInHistoryAction;
-import org.openlca.app.navigation.actions.cloud.ToggleTrackingAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.navigation.actions.db.DbCloseAction;
 import org.openlca.app.navigation.actions.db.DbCopyAction;
@@ -139,44 +131,10 @@ public class NavigationMenu extends CommonActionProvider {
 				new UseLibraryCategoryAction());
 
 		addIOMenu(selection, menu);
-		addCloudMenu(selection, menu);
+		RepositoryMenu.add(selection, menu);
 	}
 
-	private void addCloudMenu(
-			List<INavigationElement<?>> selection, IMenuManager menu) {
-		if (!CloudPreference.doEnable())
-			return;
-
-		// repo sub menu
-		var subMenu = new MenuManager(M.Repository);
-		int added = addActions(selection, menu,
-				new CommitAction(),
-				new FetchAction(),
-				ToggleTrackingAction.untrack(),
-				ToggleTrackingAction.track(),
-				new ShowCommentsAction(),
-				new ShowInHistoryAction());
-		added += addActions(selection, menu,
-				new RebuildIndexAction(),
-				new ConfigureRepositoriesAction());
-
-		// compare sub menuw
-		var compareMenu = new MenuManager(M.CompareWith);
-		int subAdded = addActions(selection, compareMenu,
-				new OpenCompareViewAction(false),
-				new OpenCompareViewAction(true));
-		if (subAdded > 0) {
-			subMenu.add(compareMenu);
-			added++;
-		}
-
-		if (added == 0)
-			return;
-		menu.add(subMenu);
-		menu.add(new Separator());
-	}
-
-	private int addActions(
+	public static int addActions(
 			List<INavigationElement<?>> selection,
 			IMenuManager menu,
 			INavigationAction... actions) {

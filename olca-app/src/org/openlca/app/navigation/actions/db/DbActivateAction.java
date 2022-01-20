@@ -9,10 +9,9 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.cloud.Announcements;
-import org.openlca.app.cloud.index.DiffIndexUpgrades;
-import org.openlca.app.cloud.ui.commits.HistoryView;
-import org.openlca.app.cloud.ui.diff.CompareView;
+import org.openlca.app.collaboration.ui.Announcements;
+import org.openlca.app.collaboration.ui.views.CompareView;
+import org.openlca.app.collaboration.ui.views.HistoryView;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
@@ -86,7 +85,6 @@ public class DbActivateAction extends Action implements INavigationAction {
 	private class Activation implements IRunnableWithProgress {
 
 		private VersionState versionState;
-		private int indexVersion;
 
 		@Override
 		public void run(IProgressMonitor monitor) {
@@ -98,10 +96,6 @@ public class DbActivateAction extends Action implements INavigationAction {
 				var db = Database.activate(config);
 				log.trace("Get version state");
 				versionState = VersionState.get(db);
-				if (Database.isConnected()) {
-					indexVersion = DiffIndexUpgrades.getVersion(
-							Database.getDiffIndex());
-				}
 				monitor.done();
 			} catch (Exception e) {
 				log.error("Failed to activate database", e);
@@ -127,26 +121,22 @@ public class DbActivateAction extends Action implements INavigationAction {
 				return;
 			}
 			handleVersionState(state);
-			if (activation.indexVersion > 0 && activation.indexVersion != DiffIndexUpgrades.CURRENT_VERSION) {
-				App.runWithProgress(M.UpgradingRepositoryIndex,
-						() -> DiffIndexUpgrades.upgradeFrom(Database.getDiffIndex(), activation.indexVersion));
-			}
 		}
 
 		private void handleVersionState(VersionState state) {
 			log.trace("Check version state");
 			switch (state) {
-				case HIGHER_VERSION:
-					error(M.DatabaseNeedsUpdate);
-					break;
-				case NEEDS_UPGRADE:
-					askRunUpgrades();
-					break;
-				case UP_TO_DATE:
-					refresh();
-					break;
-				default:
-					break;
+			case HIGHER_VERSION:
+				error(M.DatabaseNeedsUpdate);
+				break;
+			case NEEDS_UPGRADE:
+				askRunUpgrades();
+				break;
+			case UP_TO_DATE:
+				refresh();
+				break;
+			default:
+				break;
 			}
 		}
 
@@ -167,9 +157,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 				}
 			}
 			log.trace("Refresh history view (if open)");
-			if (Database.isConnected()) {
-				Announcements.check(Database.getRepositoryClient());
-			}
+			Announcements.check();
 			HistoryView.refresh();
 			CompareView.clear();
 		}
@@ -199,10 +187,10 @@ public class DbActivateAction extends Action implements INavigationAction {
 
 		private void runUpgrades(IDatabase db, AtomicBoolean failed) {
 			try {
-				Database.getIndexUpdater().disable();
+				Database.getWorkspaceIdUpdater().disable();
 				Upgrades.on(db);
 				db.getEntityFactory().getCache().evictAll();
-				Database.getIndexUpdater().enable();
+				Database.getWorkspaceIdUpdater().enable();
 			} catch (Exception e) {
 				failed.set(true);
 				log.error("Failed to update database", e);

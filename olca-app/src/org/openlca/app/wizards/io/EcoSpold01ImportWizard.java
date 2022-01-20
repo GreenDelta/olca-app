@@ -75,7 +75,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public boolean performFinish() {
 		try {
-			Database.getIndexUpdater().beginTransaction();
+			Database.getWorkspaceIdUpdater().beginTransaction();
 			getContainer().run(true, true, m -> {
 				m.beginTask(M.ImportEcoSpold01DataSets,
 						IProgressMonitor.UNKNOWN);
@@ -90,7 +90,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 			ErrorReporter.on("EcoSpold 1 import failed", e);
 			return false;
 		} finally {
-			Database.getIndexUpdater().endTransaction();
+			Database.getWorkspaceIdUpdater().endTransaction();
 			Navigator.refresh();
 			Cache.evictAll();
 		}

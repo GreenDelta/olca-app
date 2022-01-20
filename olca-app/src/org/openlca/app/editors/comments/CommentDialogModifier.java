@@ -2,8 +2,8 @@ package org.openlca.app.editors.comments;
 
 import java.util.function.Function;
 
+import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.viewers.tables.modify.DialogModifier;
-import org.openlca.cloud.model.Comments;
 
 public class CommentDialogModifier<T> extends DialogModifier<T> {
 

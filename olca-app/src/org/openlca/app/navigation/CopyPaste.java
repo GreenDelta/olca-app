@@ -138,13 +138,13 @@ public class CopyPaste {
 			return;
 		boolean started = false;
 		try {
-			Database.getIndexUpdater().beginTransaction();
+			Database.getWorkspaceIdUpdater().beginTransaction();
 			started = true;
 			for (INavigationElement<?> element : cache)
 				paste(element, categoryElement);
 		} finally {
 			if (started)
-				Database.getIndexUpdater().endTransaction();
+				Database.getWorkspaceIdUpdater().endTransaction();
 			clearCache();
 		}
 	}

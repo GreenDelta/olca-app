@@ -137,7 +137,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException, OperationCanceledException {
 			try {
-				Database.getIndexUpdater().beginTransaction();
+				Database.getWorkspaceIdUpdater().beginTransaction();
 				monitor.beginTask(M.ImportDatabase, IProgressMonitor.UNKNOWN);
 				if (sourceState == VersionState.NEEDS_UPGRADE) {
 					monitor.subTask(M.UpdateDatabase);
@@ -153,7 +153,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
 			} finally {
-				Database.getIndexUpdater().endTransaction();
+				Database.getWorkspaceIdUpdater().endTransaction();
 			}
 		}
 	}

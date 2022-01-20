@@ -3,10 +3,10 @@ package org.openlca.app.rcp.images;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.navigation.elements.Group;
 import org.openlca.app.navigation.elements.GroupType;
 import org.openlca.app.util.FileType;
-import org.openlca.cloud.model.Comments;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Flow;
@@ -157,7 +157,7 @@ public class Images {
 
 	public static Image get(Comments comments, String path) {
 		if (comments != null && comments.hasPath(path))
-			return Icon.SHOW_COMMENTS.get();
+			return Icon.COMMENT.get();
 		return null;
 	}
 
@@ -266,7 +266,7 @@ public class Images {
 
 	public static ImageDescriptor descriptor(Comments comments, String path) {
 		if (comments.hasPath(path))
-			return Icon.SHOW_COMMENTS.descriptor();
+			return Icon.COMMENT.descriptor();
 		return null;
 	}
 

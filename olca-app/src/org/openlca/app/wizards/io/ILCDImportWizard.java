@@ -56,14 +56,14 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 		if (zip == null)
 			return false;
 		try {
-			Database.getIndexUpdater().beginTransaction();
+			Database.getWorkspaceIdUpdater().beginTransaction();
 			doRun(zip);
 			return true;
 		} catch (Exception e) {
 			ErrorReporter.on("ILCD import failed", e);
 			return false;
 		} finally {
-			Database.getIndexUpdater().endTransaction();
+			Database.getWorkspaceIdUpdater().endTransaction();
 			Navigator.refresh();
 			Cache.evictAll();
 		}

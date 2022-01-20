@@ -1,7 +1,5 @@
 package org.openlca.app.editors.comments;
 
-import org.openlca.app.M;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,10 +8,11 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
+import org.openlca.app.M;
+import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
-import org.openlca.cloud.model.Comments;
 
 public class CommentAction extends Action {
 
@@ -52,7 +51,7 @@ public class CommentAction extends Action {
 		this.path = path;
 		this.comments = comments;
 		setText(M.ShowComments);
-		setImageDescriptor(Icon.SHOW_COMMENTS.descriptor());
+		setImageDescriptor(Icon.COMMENTS_VIEW.descriptor());
 	}
 
 	@Override

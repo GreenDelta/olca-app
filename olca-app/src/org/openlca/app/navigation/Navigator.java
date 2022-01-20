@@ -58,7 +58,7 @@ public class Navigator extends CommonNavigator {
 	protected CommonViewer createCommonViewer(Composite aParent) {
 		var viewer = super.createCommonViewer(aParent);
 		viewer.getTree().setBackground(
-			Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
 		return viewer;
 	}
 
@@ -131,7 +131,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static void updateLabels(CommonViewer viewer,
-																	 INavigationElement<?> element) {
+			INavigationElement<?> element) {
 		TreeItem item = findItem(viewer, element);
 		if (item == null)
 			return;
@@ -142,7 +142,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static TreeItem findItem(CommonViewer viewer,
-																	 INavigationElement<?> element) {
+			INavigationElement<?> element) {
 		Stack<TreeItem> items = new Stack<>();
 		items.addAll(Arrays.asList(viewer.getTree().getItems()));
 		while (!items.empty()) {
@@ -155,7 +155,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static boolean itemEqualsElement(TreeItem item,
-																					 INavigationElement<?> element) {
+			INavigationElement<?> element) {
 		INavigationElement<?> data = (INavigationElement<?>) item.getData();
 		if (data == null)
 			return false;
@@ -167,7 +167,7 @@ public class Navigator extends CommonNavigator {
 	 * elements of the <code>oldExpansion</code> array.
 	 */
 	private static void setRefreshedExpansion(CommonViewer viewer,
-																						Object[] oldExpansion) {
+			Object[] oldExpansion) {
 		List<INavigationElement<?>> newExpanded = new ArrayList<>();
 		for (Object expandedElem : oldExpansion) {
 			if (!(expandedElem instanceof INavigationElement))
@@ -257,8 +257,8 @@ public class Navigator extends CommonNavigator {
 	public INavigationElement<?> getFirstSelected() {
 		var all = getAllSelected();
 		return all.isEmpty()
-			? null
-			: all.get(0);
+				? null
+				: all.get(0);
 	}
 
 	public List<INavigationElement<?>> getAllSelected() {
@@ -266,7 +266,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	public static Set<CategorizedDescriptor> collectDescriptors(
-		Collection<INavigationElement<?>> elements) {
+			Collection<INavigationElement<?>> elements) {
 		return collect(elements, e -> {
 			if (!(e instanceof ModelElement))
 				return null;
@@ -279,7 +279,7 @@ public class Navigator extends CommonNavigator {
 	 * null in the unwrap function
 	 */
 	public static <T> Set<T> collect(Collection<INavigationElement<?>> elements,
-																	 Function<INavigationElement<?>, T> unwrap) {
+			Function<INavigationElement<?>, T> unwrap) {
 		Set<T> set = new HashSet<>();
 		for (INavigationElement<?> element : elements) {
 			T content = unwrap.apply(element);
@@ -294,9 +294,9 @@ public class Navigator extends CommonNavigator {
 	/**
 	 * Search for the navigation element with the given content in the given
 	 * tree. This assumes that the viewer has the `NavigationContentProvider`
-	 * assigned. You should use this function instead of the search function
-	 * of the full navigation tree if your viewer contains custom navigation
-	 * trees and you want to select elements etc.
+	 * assigned. You should use this function instead of the search function of
+	 * the full navigation tree if your viewer contains custom navigation trees
+	 * and you want to select elements etc.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> INavigationElement<T> find(TreeViewer viewer, T content) {
