@@ -58,12 +58,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.greendelta.search</groupId>
-			<artifactId>search-wrapper</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.python</groupId>
 			<artifactId>jython-standalone</artifactId>
 			<version>2.7.2</version>

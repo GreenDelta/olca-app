@@ -87,7 +87,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/protobuf-java-3.18.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/protobuf-java-util-3.18.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/proto-google-common-protos-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/search-wrapper-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/slf4j-api-1.7.25.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/slf4j-log4j12-1.7.25.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/SparseBitSet-1.2.jar"/>
