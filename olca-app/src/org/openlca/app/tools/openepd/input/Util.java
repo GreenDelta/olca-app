@@ -11,7 +11,6 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ResultOrigin;
 import org.openlca.core.model.Unit;
 
 class Util {
@@ -27,7 +26,6 @@ class Util {
 		f.flow.flowType = FlowType.PRODUCT_FLOW;
 		f.flow.name = epd.name;
 		f.flow.description = epd.description;
-		f.origin = ResultOrigin.IMPORTED;
 		var quantity = Quantity.detect(epd, db);
 		f.amount = quantity.amount();
 		if (quantity.hasUnit()) {

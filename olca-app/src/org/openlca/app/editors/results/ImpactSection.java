@@ -25,7 +25,6 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
-import org.openlca.core.model.ResultOrigin;
 import org.openlca.util.Strings;
 
 record ImpactSection(ResultEditor editor) {
@@ -96,13 +95,9 @@ record ImpactSection(ResultEditor editor) {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof ImpactResult impact))
-				return null;
-			return switch (col) {
-				case 0 -> Images.get(ModelType.IMPACT_CATEGORY);
-				case 1 -> ResultEditor.iconOf(impact.origin);
-				default -> null;
-			};
+			return col == 0
+				? Images.get(ModelType.IMPACT_CATEGORY)
+				: null;
 		}
 
 		@Override
@@ -143,7 +138,6 @@ record ImpactSection(ResultEditor editor) {
 			if (v == impact.amount)
 				return;
 			impact.amount = v;
-			impact.origin = ResultOrigin.ENTERED;
 			editor.setDirty();
 		}
 	}

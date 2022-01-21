@@ -6,7 +6,6 @@ import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.Result;
-import org.openlca.core.model.ResultOrigin;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class Util {
@@ -45,7 +44,6 @@ class Util {
 		var ri = new ImpactResult();
 		ri.indicator = impact;
 		ri.amount = 1.0;
-		ri.origin = ResultOrigin.ENTERED;
 		return result.impacts.add(ri);
 	}
 
@@ -62,7 +60,6 @@ class Util {
 		rf.unit = flow.getReferenceUnit();
 		rf.isInput = input;
 		rf.amount = 1.0;
-		rf.origin = ResultOrigin.ENTERED;
 		return r.inventory.add(rf);
 	}
 

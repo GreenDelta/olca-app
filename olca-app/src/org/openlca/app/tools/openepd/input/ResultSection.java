@@ -38,7 +38,6 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
-import org.openlca.core.model.ResultOrigin;
 import org.openlca.util.Strings;
 
 class ResultSection {
@@ -105,7 +104,6 @@ class ResultSection {
 				continue;
 			var impact = new ImpactResult();
 			impact.amount = mapping.value;
-			impact.origin = ResultOrigin.IMPORTED;
 			impact.indicator = mapping.mappedImpact;
 			r.impacts.add(impact);
 		}
