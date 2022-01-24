@@ -120,8 +120,8 @@ public class MountLibraryAction extends Action implements INavigationAction {
 			return false;
 		var imp = new LibraryImport(db, lib);
 		App.runWithProgress(
-			"Mounting library " + info.name + " "
-				+ info.version + " to " + db.getName(),
+			"Mounting library " + info.name() + " "
+				+ info.version() + " to " + db.getName(),
 			imp,
 			Navigator::refresh);
 		return true;
@@ -235,12 +235,10 @@ public class MountLibraryAction extends Action implements INavigationAction {
 				.stream()
 				.map(Library::getInfo)
 				.filter(info -> !dbLibs.contains(info.id()))
-				.sorted((i1, i2) -> Strings.compare(
-					i1.name + " " + i1.version,
-					i2.name + " " + i2.version))
+				.sorted((i1, i2) -> Strings.compare(i1.id(), i2.id()))
 				.toArray(LibraryInfo[]::new);
 			var items = Arrays.stream(infos)
-				.map(info -> info.name + " " + info.version)
+				.map(info -> info.name() + " " + info.version())
 				.toArray(String[]::new);
 
 			// create an fill the combo box

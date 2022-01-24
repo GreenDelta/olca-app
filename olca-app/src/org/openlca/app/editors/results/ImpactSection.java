@@ -45,7 +45,7 @@ record ImpactSection(ResultEditor editor) {
 			.bind(M.Amount, new AmountModifier(editor));
 		bindActions(section, table);
 
-		var impacts = result().impacts.stream()
+		var impacts = result().impactResults.stream()
 			.sorted((i1, i2) -> Strings.compare(
 				Labels.name(i1.indicator), Labels.name(i2.indicator)))
 			.collect(Collectors.toList());
@@ -61,7 +61,7 @@ record ImpactSection(ResultEditor editor) {
 				.onOk(ModelSelector::first)
 				.ifPresent(d -> {
 					if (Util.addImpact(result, d)) {
-						table.setInput(result.impacts);
+						table.setInput(result.impactResults);
 						editor.setDirty();
 					}
 				});
@@ -71,7 +71,7 @@ record ImpactSection(ResultEditor editor) {
 			ImpactResult impact = Viewers.getFirstSelected(table);
 			if (impact == null)
 				return;
-			var impacts = result().impacts;
+			var impacts = result().impactResults;
 			impacts.remove(impact);
 			table.setInput(impacts);
 			editor.setDirty();

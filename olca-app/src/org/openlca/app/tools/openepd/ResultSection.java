@@ -298,7 +298,7 @@ public class ResultSection {
 			mv.resultIndicator = impact;
 			mv.amount = impact == null
 				? 0
-				: result.impacts.stream()
+				: result.impactResults.stream()
 				.filter(r -> Objects.equals(r.indicator, impact))
 				.mapToDouble(r -> r.amount)
 				.findAny()

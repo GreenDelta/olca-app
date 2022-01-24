@@ -136,7 +136,7 @@ public class LibraryExportDialog extends FormDialog {
 		var libDir = Workspace.getLibraryDir();
 		var info = config.toInfo();
 		var exportDir = libDir.getFolder(info);
-		var name = info.name + " " + info.version;
+		var name = info.name() + " " + info.version();
 		if (libDir.exists(info)) {
 			MsgBox.error(name + " already exists",
 				"A library with this name and version already exists");
@@ -187,10 +187,8 @@ public class LibraryExportDialog extends FormDialog {
 		}
 
 		LibraryInfo toInfo() {
-			var info = new LibraryInfo();
-			info.name = name;
-			info.version = Version.format(version);
-			info.isRegionalized = regionalized;
+			var info = LibraryInfo.of(name, Version.format(version))
+					.isRegionalized(regionalized);
 			return info;
 		}
 	}

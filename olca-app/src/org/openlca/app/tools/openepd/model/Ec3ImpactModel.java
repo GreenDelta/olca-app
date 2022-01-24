@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.openlca.app.tools.openepd.model.Ec3ImpactModel.Indicator;
+import org.openlca.app.tools.openepd.model.Ec3ImpactModel.Method;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.Result;
@@ -157,7 +159,7 @@ public record Ec3ImpactModel(List<Method> methods, List<Indicator> indicators) {
 		 */
 		public Map<String, ImpactResult> matchIndicators(Result result) {
 			var unmatchedResults = new ArrayDeque<ImpactResult>();
-			for (var impact : result.impacts) {
+			for (var impact : result.impactResults) {
 				unmatchedResults.add(impact.copy());
 			}
 			var scores = new HashMap<String, Pair<ImpactResult, Integer>>();

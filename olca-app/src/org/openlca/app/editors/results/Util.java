@@ -18,7 +18,7 @@ class Util {
 			return false;
 
 		// false if the impact is already in the results
-		for (var ir : result.impacts) {
+		for (var ir : result.impactResults) {
 			if (ir.indicator != null && ir.indicator.id == impact.id)
 				return false;
 		}
@@ -44,7 +44,7 @@ class Util {
 		var ri = new ImpactResult();
 		ri.indicator = impact;
 		ri.amount = 1.0;
-		return result.impacts.add(ri);
+		return result.impactResults.add(ri);
 	}
 
 	static boolean addFlow(Result r, CategorizedDescriptor d, boolean input) {
@@ -60,7 +60,7 @@ class Util {
 		rf.unit = flow.getReferenceUnit();
 		rf.isInput = input;
 		rf.amount = 1.0;
-		return r.inventory.add(rf);
+		return r.flowResults.add(rf);
 	}
 
 }

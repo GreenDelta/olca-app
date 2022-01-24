@@ -54,7 +54,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 		table.setLabelProvider(new FlowLabel(editor));
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 
-		var flows = editor.getModel().inventory.stream()
+		var flows = editor.getModel().flowResults.stream()
 			.filter(flow -> flow.isInput == forInputs)
 			.sorted((f1, f2) -> Strings.compare(
 				Labels.name(f1.flow), Labels.name(f2.flow)))
@@ -70,7 +70,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 				.onOk(ModelSelector::first)
 				.ifPresent(d -> {
 					if (Util.addFlow(result(), d, forInputs)) {
-						table.setInput(result().inventory);
+						table.setInput(result().flowResults);
 						editor.setDirty();
 					}
 				}));
@@ -79,7 +79,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 			FlowResult flow = Viewers.getFirstSelected(table);
 			if (flow == null)
 				return;
-			var flows = result().inventory;
+			var flows = result().flowResults;
 			flows.remove(flow);
 			if (Objects.equals(result().referenceFlow, flow)) {
 				result().referenceFlow = null;

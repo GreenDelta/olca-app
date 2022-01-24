@@ -105,7 +105,7 @@ class ResultSection {
 			var impact = new ImpactResult();
 			impact.amount = mapping.value;
 			impact.indicator = mapping.mappedImpact;
-			r.impacts.add(impact);
+			r.impactResults.add(impact);
 		}
 		return r;
 	}

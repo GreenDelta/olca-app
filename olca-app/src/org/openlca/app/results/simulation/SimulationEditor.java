@@ -33,8 +33,8 @@ public class SimulationEditor extends SimpleFormEditor {
 	 */
 	public static void open(CalculationSetup setup) {
 		try {
-			Simulator sim = Simulator.create(
-					setup, Database.get(), App.getSolver());
+			Simulator sim = Simulator.create(setup, Database.get())
+					.withSolver(App.getSolver());
 			String setupKey = Cache.getAppCache().put(setup);
 			String simKey = Cache.getAppCache().put(sim);
 			SimulationInput input = new SimulationInput(setupKey, simKey);

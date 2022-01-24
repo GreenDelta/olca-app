@@ -32,7 +32,7 @@ public class LibraryInfoPage extends SimpleFormEditor {
 			return;
 		var info = library.getInfo();
 		var input = new SimpleEditorInput(
-				info.id(), info.name + " " + info.name);
+				info.id(), info.name() + " " + info.name());
 		Editors.open(input, "LibraryInfoPage");
 	}
 
@@ -76,24 +76,24 @@ public class LibraryInfoPage extends SimpleFormEditor {
 			var comp = UI.formSection(body, tk, M.GeneralInformation);
 			var name = UI.formText(comp, tk, M.Name);
 			name.setEditable(false);
-			if (info.name != null) {
-				name.setText(info.name);
+			if (info.name() != null) {
+				name.setText(info.name());
 			}
 
 			var version = UI.formText(comp, tk, M.Version);
 			version.setEditable(false);
-			if (info.version != null) {
-				version.setText(info.version);
+			if (info.version() != null) {
+				version.setText(info.version());
 			}
 
 			var description = UI.formMultiText(comp, tk, M.Description);
 			description.setEditable(false);
-			if (info.description != null) {
-				description.setText(info.description);
+			if (info.description() != null) {
+				description.setText(info.description());
 			}
 
 			var isRegionalized = UI.formCheckBox(comp, tk, "Is regionalized");
-			isRegionalized.setSelection(info.isRegionalized);
+			isRegionalized.setSelection(info.isRegionalized());
 			isRegionalized.setEnabled(false);
 		}
 	}

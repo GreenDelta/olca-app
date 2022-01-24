@@ -215,7 +215,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return "Libraries";
 		if (content instanceof Library) {
 			var info = ((Library) content).getInfo();
-			return info.name + " " + info.version;
+			return info.name() + " " + info.version();
 		}
 		if (elem instanceof MappingDirElement)
 			return "Mapping files";

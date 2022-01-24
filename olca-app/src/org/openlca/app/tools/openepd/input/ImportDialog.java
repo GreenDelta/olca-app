@@ -162,7 +162,7 @@ public class ImportDialog extends FormDialog {
 				// the flow property factor
 				refFlow.flowPropertyFactor = productFlow.getReferenceFactor();
 				result.referenceFlow = refFlow;
-				result.inventory.add(refFlow);
+				result.flowResults.add(refFlow);
 				result.category = resultCategory;
 				result.lastChange = System.currentTimeMillis();
 				result.urn = "openEPD:" + epd.id;
