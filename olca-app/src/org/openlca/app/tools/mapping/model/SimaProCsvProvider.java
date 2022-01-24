@@ -18,7 +18,9 @@ import org.openlca.io.maps.FlowRef;
 import org.openlca.simapro.csv.CsvDataSet;
 import org.openlca.simapro.csv.SimaProCsv;
 import org.openlca.simapro.csv.enums.ElementaryFlowType;
+import org.openlca.simapro.csv.enums.ProductType;
 import org.openlca.simapro.csv.enums.SubCompartment;
+import org.openlca.simapro.csv.process.ProcessBlock;
 import org.openlca.util.KeyGen;
 import org.openlca.util.Strings;
 
@@ -45,27 +47,51 @@ public class SimaProCsvProvider implements IProvider {
 			return refs;
 
 		var dataSet = SimaProCsv.read(file);
-		var quantities = QuantityDescriptors.of(dataSet);
+		var quantities = Quantities.of(dataSet);
 
 		refs = new ArrayList<>();
 		var handled = new HashSet<String>();
-		Consumer<Path> handle = path -> {
-			var key = path.key();
+		Consumer<FlowInfo> handle = info -> {
+			var key = info.key();
 			if (handled.contains(key))
 				return;
-			var flowRef = path.flowRef(quantities);
+			var flowRef = info.flowRef(quantities);
 			refs.add(flowRef);
 			handled.add(key);
 		};
 
+		// process flows
 		for (var process : dataSet.processes()) {
-			for (var flowType : ElementaryFlowType.values()) {
-				for (var exchange : process.exchangesOf(flowType)) {
-					var path = Path.of(flowType)
+
+			// product outputs
+			for (var output : process.products()) {
+				var info = new FlowInfo(productTypeOf(process))
+					.name(output.name())
+					.unit(output.unit());
+				handle.accept(info);
+			}
+
+			// product inputs
+			for (var techType : ProductType.values()) {
+				for (var exchange : process.exchangesOf(techType)) {
+					var flowType = techType == ProductType.WASTE_TO_TREATMENT
+						? FlowType.WASTE_FLOW
+						: FlowType.PRODUCT_FLOW;
+					var info = new FlowInfo(flowType)
+						.name(exchange.name())
+						.unit(exchange.unit());
+					handle.accept(info);
+				}
+			}
+
+			// add elementary flows
+			for (var elemType : ElementaryFlowType.values()) {
+				for (var exchange : process.exchangesOf(elemType)) {
+					var info = FlowInfo.of(elemType)
 						.subCompartment(exchange.subCompartment())
 						.name(exchange.name())
 						.unit(exchange.unit());
-					handle.accept(path);
+					handle.accept(info);
 				}
 			}
 		}
@@ -76,11 +102,11 @@ public class SimaProCsvProvider implements IProvider {
 					var type = ElementaryFlowType.of(factor.compartment());
 					if (type == null)
 						continue;
-					var path = Path.of(type)
+					var info = FlowInfo.of(type)
 						.subCompartment(factor.subCompartment())
 						.name(factor.flow())
 						.unit(factor.unit());
-					handle.accept(path);
+					handle.accept(info);
 				}
 			}
 		}
@@ -88,9 +114,17 @@ public class SimaProCsvProvider implements IProvider {
 		return refs;
 	}
 
+	private FlowType productTypeOf(ProcessBlock block) {
+		if (block.category() == null)
+			return FlowType.PRODUCT_FLOW;
+		return switch (block.category()) {
+			case WASTE_SCENARIO, WASTE_TREATMENT -> FlowType.WASTE_FLOW;
+			default -> FlowType.PRODUCT_FLOW;
+		};
+	}
+
 	@Override
 	public void persist(List<FlowRef> refs, IDatabase db) {
-
 	}
 
 	@Override
@@ -98,11 +132,11 @@ public class SimaProCsvProvider implements IProvider {
 		Sync.packageSync(this, externalRefs);
 	}
 
-	private record QuantityDescriptors(
+	private record Quantities(
 		Map<String, UnitDescriptor> units,
 		Map<String, FlowPropertyDescriptor> properties) {
 
-		static QuantityDescriptors of(CsvDataSet dataSet) {
+		static Quantities of(CsvDataSet dataSet) {
 
 			var props = new HashMap<String, FlowPropertyDescriptor>();
 			for (var quantity : dataSet.quantities()) {
@@ -111,7 +145,7 @@ public class SimaProCsvProvider implements IProvider {
 				props.put(quantity.name(), d);
 			}
 
-			var units = new HashMap<String, UnitDescriptor> ();
+			var units = new HashMap<String, UnitDescriptor>();
 			var unitProps = new HashMap<String, FlowPropertyDescriptor>();
 			for (var unit : dataSet.units()) {
 				var d = new UnitDescriptor();
@@ -121,7 +155,7 @@ public class SimaProCsvProvider implements IProvider {
 				unitProps.put(unit.name(), prop);
 			}
 
-			return new QuantityDescriptors(units, unitProps);
+			return new Quantities(units, unitProps);
 		}
 
 		FlowPropertyDescriptor propertyOf(String unit) {
@@ -134,46 +168,60 @@ public class SimaProCsvProvider implements IProvider {
 
 	}
 
-	private record Path(String[] slots) {
+	private static class FlowInfo {
 
-		static Path of(ElementaryFlowType type) {
-			var slots = new String[4];
-			slots[0] = type.compartment();
-			return new Path(slots);
+		final FlowType flowType;
+		String compartment;
+		String subCompartment;
+		String name;
+		String unit;
+
+		FlowInfo(FlowType flowType) {
+			this.flowType = flowType;
 		}
 
-		Path subCompartment(String sub) {
+		static FlowInfo of(ElementaryFlowType type) {
+			var info = new FlowInfo(FlowType.ELEMENTARY_FLOW);
+			info.compartment = type.compartment();
+			return info;
+		}
+
+		FlowInfo subCompartment(String sub) {
 			var subComp = SubCompartment.of(sub);
-			slots[1] = subComp == null
+			subCompartment = subComp == null
 				? SubCompartment.UNSPECIFIED.toString()
 				: subComp.toString();
 			return this;
 		}
 
-		Path name(String name) {
-			slots[2] = Strings.orEmpty(name).trim();
+		FlowInfo name(String name) {
+			this.name = Strings.orEmpty(name).trim();
 			return this;
 		}
 
-		Path unit(String unit) {
-			slots[3] = Strings.orEmpty(unit).trim();
+		FlowInfo unit(String unit) {
+			this.unit = Strings.orEmpty(unit).trim();
 			return this;
 		}
 
 		String key() {
-			return KeyGen.toPath(slots);
+			return flowType == FlowType.ELEMENTARY_FLOW
+				? KeyGen.toPath(compartment, subCompartment, name, unit)
+				: KeyGen.toPath(name, unit);
 		}
 
-		FlowRef flowRef(QuantityDescriptors quantities) {
+		FlowRef flowRef(Quantities quantities) {
 			var flowRef = new FlowRef();
 			var flow = new FlowDescriptor();
-			flow.flowType = FlowType.ELEMENTARY_FLOW;
-			flow.name = slots[2];
+			flow.flowType = flowType;
+			flow.name = name;
 			flow.refId = key();
 			flowRef.flow = flow;
-			flowRef.flowCategory = KeyGen.toPath(slots[0], slots[1]);
-			flowRef.unit = quantities.unitOf(slots[3]);
-			flowRef.property = quantities.propertyOf(slots[3]);
+			if (flowType == FlowType.ELEMENTARY_FLOW) {
+				flowRef.flowCategory = compartment + "/" + subCompartment;
+			}
+			flowRef.unit = quantities.unitOf(unit);
+			flowRef.property = quantities.propertyOf(unit);
 			return flowRef;
 		}
 
