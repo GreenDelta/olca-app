@@ -43,7 +43,7 @@ public class Repository {
 				: null;
 		var storeFile = new File(new File(database.getFileStorageLocation(), RepositoryConfig.GIT_DIR),
 				"object-id.store");
-		workspaceIds = ObjectIdStore.openJson(storeFile);
+		workspaceIds = ObjectIdStore.open(storeFile);
 		commits = new Commits(git);
 		datasets = new Datasets(git);
 		references = new References(git);
@@ -84,7 +84,7 @@ public class Repository {
 	public Config toConfig() {
 		// TODO correct person ident
 		var committer = new PersonIdent(config.credentials.username(), config.credentials.username() + "@email.com");
-		return Config.newJsonConfig(Database.get(), workspaceIds, git, committer);
+		return new Config(Database.get(), workspaceIds, git, committer);
 	}
 
 	public boolean isCollaborationServer() {

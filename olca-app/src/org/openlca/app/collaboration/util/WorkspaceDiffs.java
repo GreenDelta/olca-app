@@ -32,8 +32,7 @@ public class WorkspaceDiffs {
 
 	public static List<Diff> get(Commit commit, List<INavigationElement<?>> filterElements) {
 		try {
-			var config = Config.newJsonConfig(Database.get(), Repository.get().workspaceIds, Repository.get().git,
-					null);
+			var config = new Config(Database.get(), Repository.get().workspaceIds, Repository.get().git, null);
 			var pathFilters = toPathFilters(filterElements);
 			return DiffEntries.workspace(config, commit, pathFilters).stream()
 					.map(e -> new Diff(e, commit != null ? commit.id : null, null))
