@@ -55,7 +55,7 @@ public class SimaProCsvProvider implements IProvider {
 			var key = info.key();
 			if (handled.contains(key))
 				return;
-			var flowRef = info.flowRef(quantities);
+			var flowRef = info.flowRef();
 			refs.add(flowRef);
 			handled.add(key);
 		};
@@ -65,7 +65,8 @@ public class SimaProCsvProvider implements IProvider {
 
 			// product outputs
 			for (var output : process.products()) {
-				var info = new FlowInfo(productTypeOf(process))
+				var type = productTypeOf(process);
+				var info = new FlowInfo(type, quantities)
 					.name(output.name())
 					.unit(output.unit());
 				handle.accept(info);
@@ -77,7 +78,7 @@ public class SimaProCsvProvider implements IProvider {
 					var flowType = techType == ProductType.WASTE_TO_TREATMENT
 						? FlowType.WASTE_FLOW
 						: FlowType.PRODUCT_FLOW;
-					var info = new FlowInfo(flowType)
+					var info = new FlowInfo(flowType, quantities)
 						.name(exchange.name())
 						.unit(exchange.unit());
 					handle.accept(info);
@@ -87,7 +88,7 @@ public class SimaProCsvProvider implements IProvider {
 			// add elementary flows
 			for (var elemType : ElementaryFlowType.values()) {
 				for (var exchange : process.exchangesOf(elemType)) {
-					var info = FlowInfo.of(elemType)
+					var info = FlowInfo.of(elemType, quantities)
 						.subCompartment(exchange.subCompartment())
 						.name(exchange.name())
 						.unit(exchange.unit());
@@ -102,7 +103,7 @@ public class SimaProCsvProvider implements IProvider {
 					var type = ElementaryFlowType.of(factor.compartment());
 					if (type == null)
 						continue;
-					var info = FlowInfo.of(type)
+					var info = FlowInfo.of(type, quantities)
 						.subCompartment(factor.subCompartment())
 						.name(factor.flow())
 						.unit(factor.unit());
@@ -171,17 +172,19 @@ public class SimaProCsvProvider implements IProvider {
 	private static class FlowInfo {
 
 		final FlowType flowType;
+		final Quantities quantities;
 		String compartment;
 		String subCompartment;
 		String name;
 		String unit;
 
-		FlowInfo(FlowType flowType) {
+		FlowInfo(FlowType flowType, Quantities quantities) {
 			this.flowType = flowType;
+			this.quantities = quantities;
 		}
 
-		static FlowInfo of(ElementaryFlowType type) {
-			var info = new FlowInfo(FlowType.ELEMENTARY_FLOW);
+		static FlowInfo of(ElementaryFlowType type, Quantities quantities) {
+			var info = new FlowInfo(FlowType.ELEMENTARY_FLOW, quantities);
 			info.compartment = type.compartment();
 			return info;
 		}
@@ -205,12 +208,19 @@ public class SimaProCsvProvider implements IProvider {
 		}
 
 		String key() {
-			return flowType == FlowType.ELEMENTARY_FLOW
-				? KeyGen.toPath(compartment, subCompartment, name, unit)
-				: KeyGen.toPath(name, unit);
+			var q = quantities.propertyOf(unit);
+			var quantity = q == null
+				? ""
+				: q.name;
+			return switch (flowType) {
+				case PRODUCT_FLOW ->  KeyGen.toPath("product", name, quantity);
+				case WASTE_FLOW ->  KeyGen.toPath("waste", name, quantity);
+				case ELEMENTARY_FLOW -> KeyGen.toPath(
+					"elementary flow", compartment, subCompartment, name, quantity);
+			};
 		}
 
-		FlowRef flowRef(Quantities quantities) {
+		FlowRef flowRef() {
 			var flowRef = new FlowRef();
 			var flow = new FlowDescriptor();
 			flow.flowType = flowType;

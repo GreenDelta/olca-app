@@ -98,8 +98,8 @@ public class Tables {
 
 	public static void onDrop(TableViewer table,
 			Consumer<List<Descriptor>> fn) {
-		Transfer transfer = ModelTransfer.getInstance();
-		DropTarget target = new DropTarget(table.getTable(),
+		var transfer = ModelTransfer.getInstance();
+		var target = new DropTarget(table.getTable(),
 				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
 		target.setTransfer(transfer);
 		target.addDropListener(new DropTargetAdapter() {

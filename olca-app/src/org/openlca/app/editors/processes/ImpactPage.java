@@ -56,6 +56,7 @@ import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.providers.EagerResultProvider;
+import org.openlca.core.results.providers.SolverContext;
 import org.openlca.util.Strings;
 
 class ImpactPage extends ModelPage<Process> {
@@ -186,7 +187,8 @@ class ImpactPage extends ModelPage<Process> {
 		}
 		if (elemFlows.isEmpty()) {
 			// return an empty result if there are no elementary flows
-			return new ContributionResult(EagerResultProvider.create(data));
+			var provider = EagerResultProvider.create(SolverContext.of(data));
+			return new ContributionResult(provider);
 		}
 
 		// create the flow index and B matrix / vector
@@ -224,7 +226,7 @@ class ImpactPage extends ModelPage<Process> {
 				.build().impactMatrix;
 
 		// create the result
-		var provider = EagerResultProvider.create(data);
+		var provider = EagerResultProvider.create(SolverContext.of(data));
 		var result = new ContributionResult(provider);
 		return result;
 	}

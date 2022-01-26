@@ -94,11 +94,12 @@ public class Generator implements Runnable {
 	 */
 	private List<FlowRef> getCandidateFlows() {
 		var candidates = new ArrayList<FlowRef>();
+		var index = mapping.index();
 		for (var f : sourceSystem.getFlowRefs()) {
 			if (f.flow == null || f.flow.refId == null)
 				continue;
-			var e = mapping.getEntry(f.flow.refId);
-			if (e == null || e.targetFlow() == null) {
+			var entry = index.get(f.flow.refId);
+			if (entry == null || entry.targetFlow() == null) {
 				candidates.add(f);
 			}
 		}

@@ -11,7 +11,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -52,8 +51,8 @@ class MappingPage extends FormPage {
 	}
 
 	private void createInfoSection(FormToolkit tk, Composite body) {
-		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
-		Text name = UI.formText(comp, tk, M.Name);
+		var comp = UI.formSection(body, tk, M.GeneralInformation);
+		var name = UI.formText(comp, tk, M.Name);
 		Controls.set(name, this.tool.mapping.name);
 
 		UI.formLabel(comp, tk, "Source system");
@@ -145,6 +144,8 @@ class MappingPage extends FormPage {
 			table.refresh();
 			tool.setDirty();
 		});
+		Tables.onDeletePressed(table, $ -> delete.run());
+
 		Action copy = TableClipboard.onCopySelected(table);
 
 		Actions.bind(section, add, edit, delete);
@@ -158,12 +159,12 @@ class MappingPage extends FormPage {
 		Runnable tt = null;
 		if (tool.sourceSystem != null) {
 			Stream<FlowRef> stream = tool.mapping.entries
-					.stream().map(e -> e.sourceFlow());
+					.stream().map(FlowMapEntry::sourceFlow);
 			st = () -> tool.sourceSystem.sync(stream);
 		}
 		if (tool.targetSystem != null) {
 			Stream<FlowRef> stream = tool.mapping.entries
-					.stream().map(e -> e.targetFlow());
+					.stream().map(FlowMapEntry::targetFlow);
 			tt = () -> tool.targetSystem.sync(stream);
 		}
 		if (st == null && tt == null)
