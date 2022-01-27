@@ -1,6 +1,7 @@
 package org.openlca.app.editors;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
@@ -37,6 +38,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Version;
+import org.openlca.util.Categories;
 import org.openlca.util.Strings;
 
 /**
@@ -72,14 +74,26 @@ public class InfoSection {
 				.setEditable(editor.isEditable());
 
 		// category
-		if (entity.category != null) {
-			new Label(container, SWT.NONE).setText(M.Category);
-			createBreadcrumb(container);
+		UI.formLabel(container, tk, M.Category);
+		List<String> path = entity.category != null
+			? Categories.path(entity.category)
+			: Collections.emptyList();
+		if (path.isEmpty()) {
+			UI.filler(container, tk);
+		} else {
+			var category = String.join("/", path);
+			var link = tk.createImageHyperlink(container, SWT.NONE);
+			link.setImage(Images.get(entity.category));
+			link.setText(Strings.cutMid(category, 100));
+			link.setToolTipText(category);
+			Controls.onClick(link, $ -> {
+				Navigator.select(entity.category);
+			});
+		}
+		if (editor.hasComment("category")) {
 			new CommentControl(container, tk, "category", editor.getComments());
-		} else if (editor.hasComment("category")) {
-			new Label(container, SWT.NONE).setText(M.Category);
+		} else {
 			UI.filler(container);
-			new CommentControl(container, tk, "category", editor.getComments());
 		}
 
 		// version
@@ -139,32 +153,6 @@ public class InfoSection {
 		UI.filler(container, tk);
 	}
 
-	private void createBreadcrumb(Composite parent) {
-		Stack<Category> stack = new Stack<>();
-		Category current = entity.category;
-		while (current != null) {
-			stack.push(current);
-			current = current.category;
-		}
-		Composite breadcrumb = new Composite(parent, SWT.NONE);
-		UI.gridLayout(breadcrumb, stack.size() * 2 - 1, 0, 0);
-		while (!stack.isEmpty()) {
-			current = stack.pop();
-			Hyperlink link;
-			if (current.category == null) {
-				link = new ImageHyperlink(breadcrumb, SWT.NONE);
-				((ImageHyperlink) link).setImage(Images.get(current));
-			} else {
-				new Label(breadcrumb, SWT.NONE).setText(" > ");
-				link = new Hyperlink(breadcrumb, SWT.NONE);
-			}
-			link.setText(current.name);
-			link.addHyperlinkListener(new CategoryLinkClick(current));
-			link.setForeground(Colors.linkBlue());
-			link.setEnabled(editor.isEditable());
-		}
-	}
-
 	private void createTags(FormToolkit tk) {
 		UI.formLabel(container, tk, "Tags");
 		var comp = tk.createComposite(container);
@@ -218,20 +206,6 @@ public class InfoSection {
 		});
 
 		UI.filler(container, tk);
-	}
-
-	private static class CategoryLinkClick extends HyperlinkAdapter {
-
-		private final Category category;
-
-		private CategoryLinkClick(Category category) {
-			this.category = category;
-		}
-
-		@Override
-		public void linkActivated(HyperlinkEvent e) {
-			Navigator.select(category);
-		}
 	}
 
 	private class VersionLink extends HyperlinkAdapter {
