@@ -39,7 +39,7 @@ public class FetchAction extends Action implements INavigationAction {
 				.setRefSpecs(Constants.DEFAULT_FETCH_SPEC)
 				.call();
 		// TODO check if list is always correct
-		var newCommits= commits.find()
+		var newCommits = commits.find()
 				.refs(Constants.REMOTE_REF)
 				.after(lastId)
 				.all();

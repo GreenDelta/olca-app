@@ -89,7 +89,7 @@ public class RepositoryLabel {
 				.after(localCommitId)
 				.until(remoteCommitId)
 				.all().size();
-		var text = " [" + config.serverUrl + " " + config.repositoryId;
+		var text = " [" + config.url();
 		if (ahead > 0) {
 			text += " ↑" + ahead;
 		}

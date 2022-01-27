@@ -32,11 +32,11 @@ public class RepositoryClient {
 
 	public static boolean isCollaborationServer(RepositoryConfig config) {
 		try {
-			// TODO better test
+			// TODO find a better way
 			var response = WebRequests.call(Type.GET, config.apiUrl + "/public", null, null);
 			if (response.getStatus() != Status.OK.getStatusCode())
 				return false;
-			return "{\"id\":0}".equals(response.getEntity(String.class));
+			return response.getEntity(String.class).startsWith("{\"id\":}");
 		} catch (WebRequestException e) {
 			log.warn("Could not connect to repository server " + config.serverUrl + ": " + e.getMessage());
 			return false;

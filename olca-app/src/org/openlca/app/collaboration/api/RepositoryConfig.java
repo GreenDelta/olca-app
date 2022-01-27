@@ -36,10 +36,19 @@ public class RepositoryConfig {
 				throw new IllegalStateException("No remote URI configured");
 			var uri = config.getURIs().get(0);
 			var url = uri.toString();
-			var splitIndex = url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
-			var serverUrl = url.substring(0, splitIndex);
-			var repositoryId = url.substring(splitIndex + 1);
-			return new RepositoryConfig(serverUrl, repositoryId, credentialSupplier);
+			if (url.startsWith("git@")) {
+				var splitIndex = url.lastIndexOf(":");
+				var serverUrl = url.substring(0, splitIndex);
+				var repositoryId = url.substring(splitIndex + 1);
+				return new RepositoryConfig(serverUrl, repositoryId, credentialSupplier);
+			} 
+			if (url.startsWith("http")) {
+				var splitIndex = url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
+				var serverUrl = url.substring(0, splitIndex);
+				var repositoryId = url.substring(splitIndex + 1);
+				return new RepositoryConfig(serverUrl, repositoryId, credentialSupplier);
+			}
+			return null;
 		} catch (Exception e) {
 			log.error("Error loading git config", e);
 			return null;
@@ -50,4 +59,10 @@ public class RepositoryConfig {
 		return new File(database.getFileStorageLocation(), GIT_DIR);
 	}
 	
+	public String url() {
+		if (serverUrl.startsWith("git@"))
+			return serverUrl + ":" + repositoryId;
+		return serverUrl + "/" + repositoryId;
+	}
+
 }
