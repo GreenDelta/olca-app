@@ -5,6 +5,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.collaboration.util.Constants;
+import org.openlca.app.collaboration.util.ObjectIds;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
@@ -18,7 +19,6 @@ import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.core.database.config.DatabaseConfig;
-import org.openlca.git.util.ObjectIds;
 
 /**
  * known limitations: if a new model is created, the parent categories will be
@@ -69,7 +69,7 @@ public class RepositoryLabel {
 	}
 
 	private static boolean isZero(ObjectId id) {
-		return ObjectIds.isNullOrZero(id);
+		return ObjectIds.nullOrZero(id);
 	}
 
 	public static String getRepositoryText(DatabaseConfig dbConfig) {

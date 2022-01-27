@@ -80,7 +80,7 @@ public class GitStore implements EntityStore {
 		var ref = references.get(type, refId, remoteCommitId);
 		if (ref == null)
 			return Collections.emptyList();
-		return datasets.getBinaryPaths(ref);
+		return references.getBinaries(ref);
 	}
 
 	@Override

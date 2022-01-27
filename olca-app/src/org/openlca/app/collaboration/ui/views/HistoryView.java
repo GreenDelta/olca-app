@@ -16,6 +16,7 @@ import org.openlca.app.collaboration.ui.viewers.json.JsonDiffViewer;
 import org.openlca.app.collaboration.ui.viewers.json.olca.ModelDependencyResolver;
 import org.openlca.app.collaboration.ui.viewers.json.olca.ModelLabelProvider;
 import org.openlca.app.collaboration.ui.viewers.json.olca.ModelNodeBuilder;
+import org.openlca.app.collaboration.util.ObjectIds;
 import org.openlca.app.db.Repository;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
@@ -26,7 +27,6 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Reference;
-import org.openlca.git.util.ObjectIds;
 import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
@@ -97,7 +97,7 @@ public class HistoryView extends ViewPart {
 	}
 
 	private JsonObject getJson(Reference ref) {
-		if (ref == null || ObjectIds.isNullOrZero(ref.objectId))
+		if (ref == null || ObjectIds.nullOrZero(ref.objectId))
 			return null;
 		var datasets = Repository.get().datasets;
 		var json = datasets.get(ref.objectId);
