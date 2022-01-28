@@ -87,7 +87,6 @@ let main = () => {
     `${modPath}/olca-core/src/main/java`,
     `${modPath}/olca-formula/src/main/java`,
     `${modPath}/olca-io/src/main/java`,
-    `${modPath}/olca-cloud/src/main/java`,
     `${modPath}/olca-proto-io/src/main/java`,
     `${modPath}/olca-ipc/src/main/java`,
     // `${modPath}/olca-ilcd/src/main/java`,
