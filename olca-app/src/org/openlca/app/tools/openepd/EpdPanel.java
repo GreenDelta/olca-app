@@ -69,7 +69,7 @@ public class EpdPanel extends SimpleFormEditor {
 			var searchComp = tk.createComposite(comp);
 			UI.fillHorizontal(searchComp);
 			UI.gridLayout(searchComp, 4);
-			var searchText = tk.createText(searchComp, "");
+			var searchText = tk.createText(searchComp, "", SWT.BORDER);
 			UI.fillHorizontal(searchText);
 			var searchButton = tk.createButton(searchComp, "Search", SWT.NONE);
 			searchButton.setImage(Icon.SEARCH.get());

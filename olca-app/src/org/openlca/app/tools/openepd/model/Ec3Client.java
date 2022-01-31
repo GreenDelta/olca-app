@@ -7,19 +7,25 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.openlca.util.Strings;
 
 public class Ec3Client {
 
-	private final String endpoint;
+	private final String authUrl;
 	private final String authKey;
+	private final String queryUrl;
 	private final HttpClient http;
 
 	private Ec3Client(Config config, String authKey) {
-		this.endpoint = config.endpoint;
+		this.authUrl = config.authUrl;
+		this.queryUrl = config.queryUrl != null
+			? config.queryUrl
+			: config.authUrl;
 		this.authKey = authKey;
 		http = config.http;
 	}
@@ -28,10 +34,10 @@ public class Ec3Client {
 		return authKey;
 	}
 
-	public static Config of(String endpoint) {
-		var url = !endpoint.endsWith("/")
-			? endpoint + "/"
-			: endpoint;
+	public static Config of(String authUrl) {
+		var url = !authUrl.endsWith("/")
+			? authUrl + "/"
+			: authUrl;
 		return new Config(url);
 	}
 
@@ -40,7 +46,7 @@ public class Ec3Client {
 			? path.substring(1)
 			: path;
 		var req = HttpRequest.newBuilder()
-			.uri(URI.create(endpoint + p))
+			.uri(URI.create(queryUrl + p))
 			.header("Accept", "application/json")
 			.header("Authorization", "Bearer " + authKey)
 			.GET()
@@ -61,7 +67,7 @@ public class Ec3Client {
 			var bodyStr = HttpRequest.BodyPublishers.ofString(
 				new Gson().toJson(body), StandardCharsets.UTF_8);
 			var req = HttpRequest.newBuilder()
-				.uri(URI.create(endpoint + p))
+				.uri(URI.create(authUrl + p))
 				.header("Content-Type", "application/json")
 				.header("Authorization", "Bearer " + authKey)
 				.header("Accept", "application/json")
@@ -76,7 +82,7 @@ public class Ec3Client {
 
 	public boolean logout() {
 		var req = HttpRequest.newBuilder()
-			.uri(URI.create(endpoint + "rest-auth/logout"))
+			.uri(URI.create(authUrl + "rest-auth/logout"))
 			.header("Authorization", "Bearer " + authKey)
 			.POST(HttpRequest.BodyPublishers.noBody())
 			.build();
@@ -90,14 +96,22 @@ public class Ec3Client {
 
 	public static class Config {
 
-		private final String endpoint;
+		private final String authUrl;
 		private final HttpClient http;
+		private String queryUrl;
 
-		private Config(String endpoint) {
-			this.endpoint = endpoint;
+		private Config(String authUrl) {
+			this.authUrl = Objects.requireNonNull(authUrl);
 			this.http = HttpClient.newBuilder()
 				.version(HttpClient.Version.HTTP_2)
 				.build();
+		}
+
+		public Config withQueryUrl(String queryUrl) {
+			if (Strings.notEmpty(queryUrl)) {
+				this.queryUrl = queryUrl;
+			}
+			return this;
 		}
 
 		public Ec3Client login(String user, String password) {
@@ -107,7 +121,7 @@ public class Ec3Client {
 			var json = new Gson().toJson(obj);
 
 			var req = HttpRequest.newBuilder()
-				.uri(URI.create(endpoint + "rest-auth/login"))
+				.uri(URI.create(authUrl + "rest-auth/login"))
 				.header("Content-Type", "application/json")
 				.header("Accept", "application/json")
 				.POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8))
