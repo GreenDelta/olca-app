@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.openlca.app.util.ErrorReporter;
@@ -18,16 +17,9 @@ public class Api {
 	private Api() {
 	}
 
-	public static Optional<Ec3InternalEpd> getEpd(Ec3Client client, String id) {
-		var raw = getRawEpd(client, id);
-		return raw.isPresent()
-			? Ec3InternalEpd.fromJson(raw.get())
-			: Optional.empty();
-	}
-
 	public static Optional<JsonObject> getRawEpd(Ec3Client client, String id) {
 		try {
-			var r = client.get("epds/" + id);
+			var r = client.query("epds/" + id);
 			if (!r.hasJson())
 				return Optional.empty();
 			var json = r.json();
@@ -117,7 +109,7 @@ public class Api {
 		List<Ec3Epd> descriptors) {
 
 		private static DescriptorResponse get(DescriptorRequest req) {
-			var r = req.client.get(req.path());
+			var r = req.client.query(req.path());
 			List<Ec3Epd> descriptors = r.hasJson()
 				? parse(r.json())
 				: Collections.emptyList();

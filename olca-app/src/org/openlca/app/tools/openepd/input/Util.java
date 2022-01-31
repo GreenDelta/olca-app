@@ -88,14 +88,10 @@ class Util {
 
 		for (int i = 0; i < first.length(); i++) {
 			char c = first.charAt(i);
-			if (Character.isLetter(c)
-				|| Character.isDigit(c)
-				|| c == '&'
-				|| c == '-') {
-				word.append(c);
-				continue;
+			switch (c) {
+				case '/', '\\', '>', '<' -> nextWord.run();
+				default -> word.append(c);
 			}
-			nextWord.run();
 		}
 		nextWord.run();
 

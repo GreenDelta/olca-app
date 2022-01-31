@@ -43,13 +43,13 @@ public class LoginPanel {
 		// auth-url
 		var filled = 0;
 		var authUrlText = UI.formText(comp, tk, "Authentication URL");
-		if (Strings.notEmpty(credentials.authUrl())) {
-			authUrlText.setText(credentials.authUrl());
+		if (Strings.notEmpty(credentials.url())) {
+			authUrlText.setText(credentials.url());
 			filled++;
 		}
 		authUrlText.addModifyListener($ -> {
 			credentialsChanged = true;
-			credentials.authUrl(authUrlText.getText());
+			credentials.url(authUrlText.getText());
 		});
 
 		// query URL

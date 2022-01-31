@@ -212,7 +212,7 @@ public class EpdEditor extends SimpleFormEditor {
 				if (client == null)
 					return;
 				var b = Question.ask("Upload as draft?",
-					"Upload this as draft to " + loginPanel.credentials().authUrl() + "?");
+					"Upload this as draft to " + loginPanel.credentials().url() + "?");
 				if (!b)
 					return;
 				mergeResults();
@@ -232,7 +232,7 @@ public class EpdEditor extends SimpleFormEditor {
 						ErrorDialog.show(obj);
 						return;
 					}
-					var url = loginPanel.credentials().authUrl();
+					var url = loginPanel.credentials().url();
 					Popup.info("Uploaded EPD",
 						"The EPD was uploaded to <a href='" + url + "'>" + url + "</a>");
 				} catch (Exception e) {

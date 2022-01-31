@@ -16,37 +16,53 @@ import org.openlca.util.Strings;
 
 public class Ec3Client {
 
-	private final String authUrl;
+	private final String url;
 	private final String authKey;
 	private final String queryUrl;
 	private final HttpClient http;
 
 	private Ec3Client(Config config, String authKey) {
-		this.authUrl = config.authUrl;
+		this.url = formatUrl(config.url);
 		this.queryUrl = config.queryUrl != null
-			? config.queryUrl
-			: config.authUrl;
+			? formatUrl(config.queryUrl)
+			: this.url;
 		this.authKey = authKey;
 		http = config.http;
+	}
+
+	private static String formatUrl(String url) {
+		return !url.endsWith("/")
+			? url + "/"
+			: url;
 	}
 
 	public String authKey() {
 		return authKey;
 	}
 
-	public static Config of(String authUrl) {
-		var url = !authUrl.endsWith("/")
-			? authUrl + "/"
-			: authUrl;
-		return new Config(url);
+	public static Config of(String url) {
+		return new Config(formatUrl(url));
+	}
+
+	/**
+	 * Makes a http get request using the query URL. If there is no specific
+	 * query URL defined, this is the same as calling the `get` method of
+	 * this class.
+	 */
+	public Ec3Response query(String path) {
+		return internalGet(path, queryUrl);
 	}
 
 	public Ec3Response get(String path) {
+		return internalGet(path, url);
+	}
+
+	private Ec3Response internalGet(String path, String endpoint) {
 		var p = path.startsWith("/")
 			? path.substring(1)
 			: path;
 		var req = HttpRequest.newBuilder()
-			.uri(URI.create(queryUrl + p))
+			.uri(URI.create(endpoint + p))
 			.header("Accept", "application/json")
 			.header("Authorization", "Bearer " + authKey)
 			.GET()
@@ -67,7 +83,7 @@ public class Ec3Client {
 			var bodyStr = HttpRequest.BodyPublishers.ofString(
 				new Gson().toJson(body), StandardCharsets.UTF_8);
 			var req = HttpRequest.newBuilder()
-				.uri(URI.create(authUrl + p))
+				.uri(URI.create(url + p))
 				.header("Content-Type", "application/json")
 				.header("Authorization", "Bearer " + authKey)
 				.header("Accept", "application/json")
@@ -82,7 +98,7 @@ public class Ec3Client {
 
 	public boolean logout() {
 		var req = HttpRequest.newBuilder()
-			.uri(URI.create(authUrl + "rest-auth/logout"))
+			.uri(URI.create(url + "rest-auth/logout"))
 			.header("Authorization", "Bearer " + authKey)
 			.POST(HttpRequest.BodyPublishers.noBody())
 			.build();
@@ -96,12 +112,12 @@ public class Ec3Client {
 
 	public static class Config {
 
-		private final String authUrl;
+		private final String url;
 		private final HttpClient http;
 		private String queryUrl;
 
-		private Config(String authUrl) {
-			this.authUrl = Objects.requireNonNull(authUrl);
+		private Config(String url) {
+			this.url = Objects.requireNonNull(url);
 			this.http = HttpClient.newBuilder()
 				.version(HttpClient.Version.HTTP_2)
 				.build();
@@ -121,7 +137,7 @@ public class Ec3Client {
 			var json = new Gson().toJson(obj);
 
 			var req = HttpRequest.newBuilder()
-				.uri(URI.create(authUrl + "rest-auth/login"))
+				.uri(URI.create(url + "rest-auth/login"))
 				.header("Content-Type", "application/json")
 				.header("Accept", "application/json")
 				.POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8))

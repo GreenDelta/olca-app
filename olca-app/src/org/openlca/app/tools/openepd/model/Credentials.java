@@ -11,17 +11,17 @@ import org.openlca.jsonld.Json;
 
 public class Credentials {
 
-	private String authUrl;
+	private String url;
 	private String queryUrl;
 	private String user;
 	private String password;
 
-	public String authUrl() {
-		return authUrl;
+	public String url() {
+		return url;
 	}
 
-	public Credentials authUrl(String url) {
-		this.authUrl = url;
+	public Credentials url(String url) {
+		this.url = url;
 		return this;
 	}
 
@@ -30,7 +30,7 @@ public class Credentials {
 	}
 
 	public Credentials queryUrl(String url) {
-		this.authUrl = url;
+		this.url = url;
 		return this;
 	}
 
@@ -54,7 +54,7 @@ public class Credentials {
 
 	public static Credentials getDefault() {
 		var c = new Credentials();
-		c.authUrl = "https://buildingtransparency.org/api";
+		c.url = "https://buildingtransparency.org/api";
 		c.queryUrl = "https://openepd.buildingtransparency.org/api";
 		var file = file();
 		if (!file.exists())
@@ -63,7 +63,7 @@ public class Credentials {
 			var json = Json.readObject(file).orElse(null);
 			if (json == null)
 				return c;
-			c.authUrl = Json.getString(json, "authUrl");
+			c.url = Json.getString(json, "url");
 			c.queryUrl = Json.getString(json, "queryUrl");
 			c.user = Json.getString(json, "user");
 			c.password = Json.getString(json, "password");
@@ -76,7 +76,7 @@ public class Credentials {
 
 	public void save() {
 		var json = new JsonObject();
-		json.addProperty("authUrl", authUrl);
+		json.addProperty("url", url);
 		json.addProperty("queryUrl", queryUrl);
 		json.addProperty("user", user);
 		json.addProperty("password", password);
@@ -90,7 +90,7 @@ public class Credentials {
 
 	public Optional<Ec3Client> login() {
 		try {
-			var client = Ec3Client.of(authUrl)
+			var client = Ec3Client.of(url)
 				.withQueryUrl(queryUrl)
 				.login(user, password);
 			return Optional.of(client);
