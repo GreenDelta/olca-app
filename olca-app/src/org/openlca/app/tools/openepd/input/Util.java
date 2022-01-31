@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import org.openlca.app.tools.openepd.model.Ec3InternalEpd;
+import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
@@ -18,14 +18,14 @@ class Util {
 	private Util() {
 	}
 
-	static FlowResult initQuantitativeReference(Ec3InternalEpd epd, IDatabase db) {
+	static FlowResult initQuantitativeReference(Ec3Epd epd, IDatabase db) {
 		var f = new FlowResult();
 		f.flow = new Flow();
 		f.flow.refId = UUID.randomUUID().toString();
 		f.isInput = false;
 		f.flow.flowType = FlowType.PRODUCT_FLOW;
-		f.flow.name = epd.name;
-		f.flow.description = epd.description;
+		f.flow.name = epd.productName;
+		f.flow.description = epd.productDescription;
 		var quantity = Quantity.detect(epd, db);
 		f.amount = quantity.amount();
 		if (quantity.hasUnit()) {

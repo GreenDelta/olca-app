@@ -19,9 +19,7 @@ import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
 import org.openlca.app.tools.openepd.model.Api;
-import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
-import org.openlca.app.tools.openepd.model.Ec3InternalEpd;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
@@ -48,11 +46,9 @@ public class EpdPanel extends SimpleFormEditor {
 	private static class Page extends FormPage {
 
 		private TableViewer table;
-		private Ec3CategoryTree categories;
 
 		public Page(EpdPanel panel) {
 			super(panel, "EpdPanel.Page", "openEPD");
-			categories = Ec3CategoryTree.loadFromCacheFile();
 		}
 
 		@Override
@@ -80,28 +76,6 @@ public class EpdPanel extends SimpleFormEditor {
 			spinner.setValues(100, 10, 1000, 0, 50, 100);
 			tk.adapt(spinner);
 
-			// category link
-			if (!categories.isEmpty()) {
-				var categoryLink = tk.createImageHyperlink(searchComp, SWT.NONE);
-				categoryLink.setText("Loaded categories from cached file. " +
-						"Click to reload categories from EC3.");
-				Controls.onClick(categoryLink, $ -> {
-					var client = loginPanel.login().orElse(null);
-					if (client == null)
-						return;
-					categories = App.exec(
-						"Fetch categories", () -> Api.getCategoryTree(client));
-					categories.saveToCacheFile();
-					categoryLink.dispose();
-					var c = searchComp;
-					while (c != null) {
-						c.layout();
-						c = c.getParent();
-					}
-					table.refresh(true);
-				});
-			}
-
 			// descriptor table
 			table = createTable(comp, loginPanel);
 
@@ -110,13 +84,6 @@ public class EpdPanel extends SimpleFormEditor {
 				var client = loginPanel.login().orElse(null);
 				if (client == null)
 					return;
-
-				// load the category index once
-				if (categories.isEmpty()) {
-					categories = App.exec(
-						"Fetch categories", () -> Api.getCategoryTree(client));
-					categories.saveToCacheFile();
-				}
 
 				// search for EPDs
 				var epds = new ArrayList<Ec3Epd>();
@@ -148,7 +115,7 @@ public class EpdPanel extends SimpleFormEditor {
 					var epd = FullEpd.fetch(table, loginPanel);
 					if (epd.isEmpty())
 						return;
-					ImportDialog.show(epd.get(), categories);
+					ImportDialog.show(epd.get());
 				});
 
 			var onSaveFile = Actions.create(
@@ -157,7 +124,7 @@ public class EpdPanel extends SimpleFormEditor {
 					if (epd.isEmpty())
 						return;
 					var file = FileChooser.forSavingFile(
-						"Save openEPD", epd.descriptor.name + ".json");
+						"Save openEPD", epd.descriptor.id + ".json");
 					if (file == null)
 						return;
 					Json.write(epd.json, file);
@@ -168,11 +135,11 @@ public class EpdPanel extends SimpleFormEditor {
 			return table;
 		}
 
-		private record FullEpd(Ec3InternalEpd descriptor, JsonObject json) {
+		private record FullEpd(Ec3Epd descriptor, JsonObject json) {
 
-			Ec3InternalEpd get() {
+			Ec3Epd get() {
 				return json != null
-					? Ec3InternalEpd.fromJson(json).orElse(null)
+					? Ec3Epd.fromJson(json).orElse(null)
 					: null;
 			}
 
@@ -185,7 +152,7 @@ public class EpdPanel extends SimpleFormEditor {
 			}
 
 			static FullEpd fetch(TableViewer table, LoginPanel loginPanel) {
-				Ec3InternalEpd epd = Viewers.getFirstSelected(table);
+				Ec3Epd epd = Viewers.getFirstSelected(table);
 				if (epd == null)
 					return empty();
 				var client = loginPanel.login().orElse(null);

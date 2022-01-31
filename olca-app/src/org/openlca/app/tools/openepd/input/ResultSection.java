@@ -56,7 +56,7 @@ class ResultSection {
 		this.epdMethod = epdMethod;
 		this.epdScope = epdScope;
 		this.result = Result.of(
-			dialog.epd.name + " - " + epdScope + " - " + epdMethod);
+			dialog.epd.productName + " - " + epdScope + " - " + epdMethod);
 		mappedValues = initMappings();
 	}
 

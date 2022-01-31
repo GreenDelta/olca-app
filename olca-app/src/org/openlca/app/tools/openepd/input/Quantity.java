@@ -1,6 +1,7 @@
 package org.openlca.app.tools.openepd.input;
 
-import org.openlca.app.tools.openepd.model.Ec3InternalEpd;
+import org.openlca.app.tools.openepd.model.Ec3Epd;
+import org.openlca.app.tools.openepd.model.Ec3Quantity;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Unit;
@@ -13,12 +14,12 @@ record Quantity(double amount, Unit unit, FlowProperty property) {
 		return unit != null && property != null;
 	}
 
-	static Quantity detect(Ec3InternalEpd epd, IDatabase db) {
+	static Quantity detect(Ec3Epd epd, IDatabase db) {
 		var units = UnitMapping.createDefault(db);
 		var q = detect(epd.declaredUnit, units);
 		if (q != null && q.hasUnit())
 			return q;
-		var mass = detect(epd.massPerDeclaredUnit, units);
+		var mass = detect(epd.kgPerDeclaredUnit, units);
 		if (mass != null && mass.hasUnit())
 			return mass;
 		if (q != null)
@@ -28,37 +29,13 @@ record Quantity(double amount, Unit unit, FlowProperty property) {
 			: defaultOf(1, units);
 	}
 
-	private static Quantity detect(String str, UnitMapping units) {
-		if (Strings.nullOrEmpty(str))
+	private static Quantity detect(Ec3Quantity qty, UnitMapping units) {
+		if (qty == null || Strings.nullOrEmpty(qty.unit()))
 			return null;
-		var parts = str.split(" ");
-		try {
-			Double amount = null;
-			String unit = null;
-			for (var part : parts) {
-				var p = part.trim();
-				if (p.isEmpty())
-					continue;
-				if (amount == null) {
-					amount = Double.parseDouble(p);
-				} else {
-					unit = p;
-				}
-			}
-
-			if (amount == null)
-				return null;
-			if (unit == null)
-				return new Quantity(amount, null, null);
-
-			var u = units.getEntry(unit);
+			var u = units.getEntry(qty.unit());
 			return u == null
-				? new Quantity(amount, null, null)
-				: new Quantity(amount, u.unit, u.flowProperty);
-
-		} catch (Exception e) {
-			return null;
-		}
+				? new Quantity(qty.amount(), null, null)
+				: new Quantity(qty.amount(), u.unit, u.flowProperty);
 	}
 
 	private static Quantity defaultOf(double amount, UnitMapping units) {
