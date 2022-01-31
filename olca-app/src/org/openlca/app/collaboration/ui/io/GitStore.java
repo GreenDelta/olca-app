@@ -62,6 +62,8 @@ public class GitStore implements EntityStore {
 
 	private byte[] getDataset(String path) {
 		var ref = getRef(path);
+		if (ref == null)
+			return null;
 		return datasets.getBytes(ref.objectId);
 	}
 
