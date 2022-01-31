@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.openlca.app.util.ErrorReporter;
@@ -88,7 +89,8 @@ public class Api {
 			var path = "/epds" +
 				"?page_number=" + page +
 				"&page_size=" + pageSize +
-				"&fields=id,name,description,category,manufacturer,declared_unit";
+				"&fields=id,product_name,product_description," +
+				"product_classes,manufacturer,declared_unit";
 			if (query != null) {
 				var q = query.trim();
 				if (Strings.notEmpty(q)) {
@@ -112,22 +114,22 @@ public class Api {
 		int page,
 		int totalCount,
 		int totalPages,
-		List<Ec3InternalEpd> descriptors) {
+		List<Ec3Epd> descriptors) {
 
 		private static DescriptorResponse get(DescriptorRequest req) {
 			var r = req.client.get(req.path());
-			List<Ec3InternalEpd> descriptors = r.hasJson()
+			List<Ec3Epd> descriptors = r.hasJson()
 				? parse(r.json())
 				: Collections.emptyList();
 			return new DescriptorResponse(
 				req.page, r.totalCount(), r.pageCount(), descriptors);
 		}
 
-		private static List<Ec3InternalEpd> parse(JsonElement json) {
+		private static List<Ec3Epd> parse(JsonElement json) {
 			if (json == null || !json.isJsonArray())
 				return Collections.emptyList();
 			return Json.stream(json.getAsJsonArray())
-				.map(Ec3InternalEpd::fromJson)
+				.map(Ec3Epd::fromJson)
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.toList();

@@ -20,6 +20,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
 import org.openlca.app.tools.openepd.model.Api;
 import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
+import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.tools.openepd.model.Ec3InternalEpd;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -31,6 +32,7 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.jsonld.Json;
 
 import com.google.gson.JsonObject;
+import org.openlca.util.Strings;
 
 public class EpdPanel extends SimpleFormEditor {
 
@@ -117,7 +119,7 @@ public class EpdPanel extends SimpleFormEditor {
 				}
 
 				// search for EPDs
-				var epds = new ArrayList<Ec3InternalEpd>();
+				var epds = new ArrayList<Ec3Epd>();
 				var query = searchText.getText();
 				var count = spinner.getSelection();
 				App.runWithProgress("Fetch EPDs", () -> {
@@ -209,20 +211,30 @@ public class EpdPanel extends SimpleFormEditor {
 
 			@Override
 			public String getColumnText(Object obj, int col) {
-				if (!(obj instanceof Ec3InternalEpd epd))
+				if (!(obj instanceof Ec3Epd epd))
 					return null;
 				return switch (col) {
-					case 0 -> epd.name;
+					case 0 -> epd.productName;
 					case 1 -> epd.manufacturer != null
 						? epd.manufacturer.name
 						: null;
-					case 2 -> epd.category != null && categories != null
-						? categories.pathOf(epd.category.id)
+					case 2 -> categoryOf(epd);
+					case 3 -> epd.declaredUnit != null
+						? epd.declaredUnit.toString()
 						: null;
-					case 3 -> epd.declaredUnit;
 					default -> null;
 				};
 			}
+		}
+
+		private String categoryOf(Ec3Epd epd) {
+			if (epd == null || epd.productClasses.isEmpty())
+				return null;
+			return epd.productClasses.stream()
+				.map(p -> p.second)
+				.filter(Strings::notEmpty)
+				.findAny()
+				.orElse(null);
 		}
 	}
 

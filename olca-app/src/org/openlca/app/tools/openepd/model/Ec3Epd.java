@@ -27,6 +27,8 @@ public class Ec3Epd {
 	public String productName;
 	public String productDescription;
 	public final List<Pair<String, String>> productClasses = new ArrayList<>();
+	public Ec3Org manufacturer;
+
 	public final List<Ec3ImpactResult> impactResults = new ArrayList<>();
 
 	public static Optional<Ec3Epd> fromJson(JsonElement elem) {
@@ -51,6 +53,7 @@ public class Ec3Epd {
 
 		epd.productName = Json.getString(obj, "product_name");
 		epd.productDescription = Json.getString(obj, "product_description");
+		epd.manufacturer = Ec3Org.fromJson(obj.get("manufacturer")).orElse(null);
 
 		var classes = Json.getObject(obj, "product_classes");
 		if (classes != null) {
@@ -60,7 +63,7 @@ public class Ec3Epd {
 				if (!classVal.isJsonPrimitive())
 					continue;
 				epd.productClasses.add(
-					Pair.of(classification, classVal.toString()));
+					Pair.of(classification, classVal.getAsString()));
 			}
 		}
 

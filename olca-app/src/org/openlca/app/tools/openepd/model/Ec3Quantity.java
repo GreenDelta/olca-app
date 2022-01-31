@@ -31,4 +31,8 @@ public record Ec3Quantity(double amount, String unit) {
 		return obj;
 	}
 
+	@Override
+	public String toString() {
+		return amount + " " + unit;
+	}
 }
