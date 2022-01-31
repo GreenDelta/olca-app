@@ -63,8 +63,8 @@ public class Ec3InternalEpd {
 		epd.docUrl = Json.getString(obj, "doc");
 		epd.isDraft = Json.getBool(obj, "draft", false);
 		epd.isPrivate = Json.getBool(obj, "private", false);
-		epd.dateOfIssue = getLocalDate(obj, "date_of_issue");
-		epd.dateValidityEnds = getLocalDate(obj, "date_validity_ends");
+		epd.dateOfIssue = Util.getDate(obj, "date_of_issue");
+		epd.dateValidityEnds = Util.getDate(obj, "date_validity_ends");
 
 		// impacts
 		var impactJson = Json.getObject(obj, "impacts");
@@ -74,17 +74,6 @@ public class Ec3InternalEpd {
 		}
 
 		return Optional.of(epd);
-	}
-
-	private static LocalDate getLocalDate(JsonObject obj, String field) {
-		var s = Json.getString(obj, field);
-		if (s == null)
-			return null;
-		try {
-			return LocalDate.parse(s);
-		} catch (Exception e) {
-			return null;
-		}
 	}
 
 	public JsonObject toJson() {
