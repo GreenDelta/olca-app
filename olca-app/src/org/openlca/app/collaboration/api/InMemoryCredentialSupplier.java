@@ -5,8 +5,8 @@ import org.openlca.app.util.Input;
 
 public class InMemoryCredentialSupplier implements CredentialSupplier {
 
-	private String username = "greve";
-	private String password = "BiNy13189";
+	private String username;
+	private String password;
 
 	@Override
 	public String username() {
