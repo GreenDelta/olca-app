@@ -17,10 +17,10 @@ public class Api {
 	private Api() {
 	}
 
-	public static Optional<Ec3Epd> getEpd(Ec3Client client, String id) {
+	public static Optional<Ec3InternalEpd> getEpd(Ec3Client client, String id) {
 		var raw = getRawEpd(client, id);
 		return raw.isPresent()
-			? Ec3Epd.fromJson(raw.get())
+			? Ec3InternalEpd.fromJson(raw.get())
 			: Optional.empty();
 	}
 
@@ -112,22 +112,22 @@ public class Api {
 		int page,
 		int totalCount,
 		int totalPages,
-		List<Ec3Epd> descriptors) {
+		List<Ec3InternalEpd> descriptors) {
 
 		private static DescriptorResponse get(DescriptorRequest req) {
 			var r = req.client.get(req.path());
-			List<Ec3Epd> descriptors = r.hasJson()
+			List<Ec3InternalEpd> descriptors = r.hasJson()
 				? parse(r.json())
 				: Collections.emptyList();
 			return new DescriptorResponse(
 				req.page, r.totalCount(), r.pageCount(), descriptors);
 		}
 
-		private static List<Ec3Epd> parse(JsonElement json) {
+		private static List<Ec3InternalEpd> parse(JsonElement json) {
 			if (json == null || !json.isJsonArray())
 				return Collections.emptyList();
 			return Json.stream(json.getAsJsonArray())
-				.map(Ec3Epd::fromJson)
+				.map(Ec3InternalEpd::fromJson)
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.toList();

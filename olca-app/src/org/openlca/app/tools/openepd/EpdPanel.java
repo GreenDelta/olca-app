@@ -20,7 +20,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
 import org.openlca.app.tools.openepd.model.Api;
 import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
-import org.openlca.app.tools.openepd.model.Ec3Epd;
+import org.openlca.app.tools.openepd.model.Ec3InternalEpd;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
@@ -117,7 +117,7 @@ public class EpdPanel extends SimpleFormEditor {
 				}
 
 				// search for EPDs
-				var epds = new ArrayList<Ec3Epd>();
+				var epds = new ArrayList<Ec3InternalEpd>();
 				var query = searchText.getText();
 				var count = spinner.getSelection();
 				App.runWithProgress("Fetch EPDs", () -> {
@@ -166,11 +166,11 @@ public class EpdPanel extends SimpleFormEditor {
 			return table;
 		}
 
-		private record FullEpd(Ec3Epd descriptor, JsonObject json) {
+		private record FullEpd(Ec3InternalEpd descriptor, JsonObject json) {
 
-			Ec3Epd get() {
+			Ec3InternalEpd get() {
 				return json != null
-					? Ec3Epd.fromJson(json).orElse(null)
+					? Ec3InternalEpd.fromJson(json).orElse(null)
 					: null;
 			}
 
@@ -183,7 +183,7 @@ public class EpdPanel extends SimpleFormEditor {
 			}
 
 			static FullEpd fetch(TableViewer table, LoginPanel loginPanel) {
-				Ec3Epd epd = Viewers.getFirstSelected(table);
+				Ec3InternalEpd epd = Viewers.getFirstSelected(table);
 				if (epd == null)
 					return empty();
 				var client = loginPanel.login().orElse(null);
@@ -209,7 +209,7 @@ public class EpdPanel extends SimpleFormEditor {
 
 			@Override
 			public String getColumnText(Object obj, int col) {
-				if (!(obj instanceof Ec3Epd epd))
+				if (!(obj instanceof Ec3InternalEpd epd))
 					return null;
 				return switch (col) {
 					case 0 -> epd.name;

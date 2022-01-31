@@ -9,7 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.openlca.jsonld.Json;
 
-public class Ec3Epd {
+public class Ec3InternalEpd {
 
 	public String id;
 	public String name;
@@ -36,11 +36,11 @@ public class Ec3Epd {
 
 	public final List<Ec3ImpactResult> impactResults = new ArrayList<>();
 
-	public static Optional<Ec3Epd> fromJson(JsonElement elem) {
+	public static Optional<Ec3InternalEpd> fromJson(JsonElement elem) {
 		if (elem == null || !elem.isJsonObject())
 			return Optional.empty();
 		var obj = elem.getAsJsonObject();
-		var epd = new Ec3Epd();
+		var epd = new Ec3InternalEpd();
 		epd.id = Json.getString(obj, "id");
 		epd.name = Json.getString(obj, "name");
 		epd.description = Json.getString(obj, "description");

@@ -19,7 +19,7 @@ import org.openlca.app.navigation.actions.db.DbRestoreAction;
 import org.openlca.app.navigation.actions.libraries.MountLibraryAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
-import org.openlca.app.tools.openepd.model.Ec3Epd;
+import org.openlca.app.tools.openepd.model.Ec3InternalEpd;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -74,7 +74,7 @@ public class FileImport {
 				// then check if it is a JsonObject
 				var obj = Json.readObject(file).orElse(null);
 				if (obj != null && obj.has("pcr") && obj.has("impacts")) {
-					var epd = Ec3Epd.fromJson(obj).orElse(null);
+					var epd = Ec3InternalEpd.fromJson(obj).orElse(null);
 					if (epd != null) {
 						ImportDialog.show(epd);
 						return;
