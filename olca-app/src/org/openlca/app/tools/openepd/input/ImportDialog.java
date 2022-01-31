@@ -56,6 +56,7 @@ public class ImportDialog extends FormDialog {
 		this.epd = Objects.requireNonNull(epd);
 		this.db = Objects.requireNonNull(db);
 		this.impactModel = Ec3ImpactModel.get();
+		categoryPath = Util.categoryOf(epd);
 		product = Util.initQuantitativeReference(epd, db);
 	}
 
@@ -132,6 +133,7 @@ public class ImportDialog extends FormDialog {
 					"Result has an empty name.");
 				return;
 			}
+			result.description = epd.lcaDiscussion;
 			results.add(result);
 		}
 		if (results.isEmpty()) {
