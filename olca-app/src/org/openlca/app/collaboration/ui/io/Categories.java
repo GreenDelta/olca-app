@@ -22,7 +22,11 @@ class Categories {
 	private final Map<String, String> refIdToParent = new HashMap<>();
 	private final Map<String, String> pathToRefId = new HashMap<>();
 
-	Categories(Entries entries, String commitId) {
+	static Categories of(Entries entries, String commitId) {
+		return new Categories(entries, commitId);
+	}
+	
+	private Categories(Entries entries, String commitId) {
 		init(entries, commitId, "");
 	}
 

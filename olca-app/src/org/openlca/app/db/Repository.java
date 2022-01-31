@@ -44,12 +44,12 @@ public class Repository {
 		var storeFile = new File(new File(database.getFileStorageLocation(), RepositoryConfig.GIT_DIR),
 				"object-id.store");
 		workspaceIds = ObjectIdStore.open(storeFile);
-		commits = new Commits(git);
-		datasets = new Datasets(git);
-		references = new References(git);
-		diffs = new Diffs(git);
-		entries = new Entries(git);
-		ids = new Ids(git);
+		commits = Commits.of(git);
+		datasets = Datasets.of(git);
+		references = References.of(git);
+		diffs = Diffs.of(git);
+		entries = Entries.of(git);
+		ids = Ids.of(git);
 	}
 	
 	public static Repository get() {

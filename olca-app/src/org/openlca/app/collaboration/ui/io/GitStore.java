@@ -36,9 +36,9 @@ public class GitStore implements EntityStore {
 	}
 
 	public GitStore(FileRepository repo, String headCommitId, String remoteCommitId) {
-		this.categories = new Categories(new Entries(repo), remoteCommitId);
-		this.references = new References(repo);
-		this.datasets = new Datasets(repo);
+		this.categories = Categories.of(Entries.of(repo), remoteCommitId);
+		this.references = References.of(repo);
+		this.datasets = Datasets.of(repo);
 		this.headCommitId = headCommitId;
 		this.remoteCommitId = remoteCommitId;
 	}
