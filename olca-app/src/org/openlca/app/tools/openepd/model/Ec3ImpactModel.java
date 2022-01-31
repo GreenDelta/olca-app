@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.openlca.app.tools.openepd.model.Ec3ImpactModel.Indicator;
-import org.openlca.app.tools.openepd.model.Ec3ImpactModel.Method;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.Result;

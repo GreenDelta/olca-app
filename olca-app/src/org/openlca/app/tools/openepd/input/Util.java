@@ -1,5 +1,6 @@
 package org.openlca.app.tools.openepd.input;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -12,6 +13,7 @@ import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Unit;
+import org.openlca.util.Strings;
 
 class Util {
 
@@ -24,8 +26,8 @@ class Util {
 		f.flow.refId = UUID.randomUUID().toString();
 		f.isInput = false;
 		f.flow.flowType = FlowType.PRODUCT_FLOW;
-		f.flow.name = epd.name;
-		f.flow.description = epd.description;
+		f.flow.name = epd.productName;
+		f.flow.description = epd.productDescription;
 		var quantity = Quantity.detect(epd, db);
 		f.amount = quantity.amount();
 		if (quantity.hasUnit()) {
@@ -64,4 +66,35 @@ class Util {
 			: prop.unitGroup.units;
 	}
 
+	static String categoryOf(Ec3Epd epd) {
+		if (epd == null || epd.productClasses.isEmpty())
+			return "";
+		var first = epd.productClasses.stream()
+			.map(p -> p.second)
+			.filter(Strings::notEmpty)
+			.findAny()
+			.orElse(null);
+		if (first == null)
+			return "";
+
+		var segments = new ArrayList<String>();
+		var word = new StringBuilder();
+		Runnable nextWord = () -> {
+			if (word.length() == 0)
+				return;
+			segments.add(word.toString());
+			word.setLength(0);
+		};
+
+		for (int i = 0; i < first.length(); i++) {
+			char c = first.charAt(i);
+			switch (c) {
+				case '/', '\\', '>', '<' -> nextWord.run();
+				default -> word.append(c);
+			}
+		}
+		nextWord.run();
+
+		return String.join("/", segments);
+	}
 }

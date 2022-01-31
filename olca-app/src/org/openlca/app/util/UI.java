@@ -366,12 +366,12 @@ public class UI {
 		return formText(parent, toolkit, label, SWT.BORDER);
 	}
 
-	public static Text formText(Composite parent, FormToolkit toolkit,
+	public static Text formText(Composite parent, FormToolkit tk,
 		String label, int flags) {
 		if (label != null)
-			formLabel(parent, toolkit, label);
-		Text text = toolkit != null
-			? toolkit.createText(parent, null, flags)
+			formLabel(parent, tk, label);
+		Text text = tk != null
+			? tk.createText(parent, null, flags)
 			: new Text(parent, flags);
 		fillHorizontal(text);
 		return text;

@@ -19,7 +19,6 @@ import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
 import org.openlca.app.tools.openepd.model.Api;
-import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -31,6 +30,7 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.jsonld.Json;
 
 import com.google.gson.JsonObject;
+import org.openlca.util.Strings;
 
 public class EpdPanel extends SimpleFormEditor {
 
@@ -46,11 +46,9 @@ public class EpdPanel extends SimpleFormEditor {
 	private static class Page extends FormPage {
 
 		private TableViewer table;
-		private Ec3CategoryTree categories;
 
 		public Page(EpdPanel panel) {
 			super(panel, "EpdPanel.Page", "openEPD");
-			categories = Ec3CategoryTree.loadFromCacheFile();
 		}
 
 		@Override
@@ -69,7 +67,7 @@ public class EpdPanel extends SimpleFormEditor {
 			var searchComp = tk.createComposite(comp);
 			UI.fillHorizontal(searchComp);
 			UI.gridLayout(searchComp, 4);
-			var searchText = tk.createText(searchComp, "");
+			var searchText = tk.createText(searchComp, "", SWT.BORDER);
 			UI.fillHorizontal(searchText);
 			var searchButton = tk.createButton(searchComp, "Search", SWT.NONE);
 			searchButton.setImage(Icon.SEARCH.get());
@@ -77,28 +75,6 @@ public class EpdPanel extends SimpleFormEditor {
 			var spinner = new Spinner(searchComp, SWT.BORDER);
 			spinner.setValues(100, 10, 1000, 0, 50, 100);
 			tk.adapt(spinner);
-
-			// category link
-			if (!categories.isEmpty()) {
-				var categoryLink = tk.createImageHyperlink(searchComp, SWT.NONE);
-				categoryLink.setText("Loaded categories from cached file. " +
-						"Click to reload categories from EC3.");
-				Controls.onClick(categoryLink, $ -> {
-					var client = loginPanel.login().orElse(null);
-					if (client == null)
-						return;
-					categories = App.exec(
-						"Fetch categories", () -> Api.getCategoryTree(client));
-					categories.saveToCacheFile();
-					categoryLink.dispose();
-					var c = searchComp;
-					while (c != null) {
-						c.layout();
-						c = c.getParent();
-					}
-					table.refresh(true);
-				});
-			}
 
 			// descriptor table
 			table = createTable(comp, loginPanel);
@@ -108,13 +84,6 @@ public class EpdPanel extends SimpleFormEditor {
 				var client = loginPanel.login().orElse(null);
 				if (client == null)
 					return;
-
-				// load the category index once
-				if (categories.isEmpty()) {
-					categories = App.exec(
-						"Fetch categories", () -> Api.getCategoryTree(client));
-					categories.saveToCacheFile();
-				}
 
 				// search for EPDs
 				var epds = new ArrayList<Ec3Epd>();
@@ -146,7 +115,7 @@ public class EpdPanel extends SimpleFormEditor {
 					var epd = FullEpd.fetch(table, loginPanel);
 					if (epd.isEmpty())
 						return;
-					ImportDialog.show(epd.get(), categories);
+					ImportDialog.show(epd.get());
 				});
 
 			var onSaveFile = Actions.create(
@@ -155,7 +124,7 @@ public class EpdPanel extends SimpleFormEditor {
 					if (epd.isEmpty())
 						return;
 					var file = FileChooser.forSavingFile(
-						"Save openEPD", epd.descriptor.name + ".json");
+						"Save openEPD", epd.descriptor.id + ".json");
 					if (file == null)
 						return;
 					Json.write(epd.json, file);
@@ -212,17 +181,27 @@ public class EpdPanel extends SimpleFormEditor {
 				if (!(obj instanceof Ec3Epd epd))
 					return null;
 				return switch (col) {
-					case 0 -> epd.name;
+					case 0 -> epd.productName;
 					case 1 -> epd.manufacturer != null
 						? epd.manufacturer.name
 						: null;
-					case 2 -> epd.category != null && categories != null
-						? categories.pathOf(epd.category.id)
+					case 2 -> categoryOf(epd);
+					case 3 -> epd.declaredUnit != null
+						? epd.declaredUnit.toString()
 						: null;
-					case 3 -> epd.declaredUnit;
 					default -> null;
 				};
 			}
+		}
+
+		private String categoryOf(Ec3Epd epd) {
+			if (epd == null || epd.productClasses.isEmpty())
+				return null;
+			return epd.productClasses.stream()
+				.map(p -> p.second)
+				.filter(Strings::notEmpty)
+				.findAny()
+				.orElse(null);
 		}
 	}
 

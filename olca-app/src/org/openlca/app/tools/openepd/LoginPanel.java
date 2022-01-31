@@ -40,16 +40,27 @@ public class LoginPanel {
 		var section = UI.section(body, tk, "EC3 Login");
 		var comp = UI.sectionClient(section, tk, 2);
 
-		// url
+		// auth-url
 		var filled = 0;
-		var urlText = UI.formText(comp, tk, "URL");
+		var authUrlText = UI.formText(comp, tk, "Authentication URL");
 		if (Strings.notEmpty(credentials.url())) {
-			urlText.setText(credentials.url());
+			authUrlText.setText(credentials.url());
 			filled++;
 		}
-		urlText.addModifyListener($ -> {
+		authUrlText.addModifyListener($ -> {
 			credentialsChanged = true;
-			credentials.url(urlText.getText());
+			credentials.url(authUrlText.getText());
+		});
+
+		// query URL
+		var queryUrlText = UI.formText(comp, tk, "Query URL");
+		if (Strings.notEmpty(credentials.queryUrl())) {
+			queryUrlText.setText(credentials.queryUrl());
+			filled++;
+		}
+		queryUrlText.addModifyListener($ -> {
+			credentialsChanged = true;
+			credentials.queryUrl(queryUrlText.getText());
 		});
 
 		// user
@@ -64,7 +75,7 @@ public class LoginPanel {
 		});
 
 		// password
-		var pwText = UI.formText(comp, tk, "Password", SWT.PASSWORD);
+		var pwText = UI.formText(comp, tk, "Password", SWT.PASSWORD | SWT.BORDER);
 		if (Strings.notEmpty(credentials.password())) {
 			pwText.setText(credentials.password());
 			filled++;

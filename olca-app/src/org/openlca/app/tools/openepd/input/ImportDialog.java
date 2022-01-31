@@ -15,7 +15,6 @@ import org.openlca.app.M;
 import org.openlca.app.components.EntityCombo;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
 import org.openlca.app.util.Controls;
@@ -41,12 +40,7 @@ public class ImportDialog extends FormDialog {
 	private String categoryPath;
 	private final List<ResultSection> sections = new ArrayList<>();
 
-	public static void show(Ec3Epd epd) {
-		var categories = Ec3CategoryTree.loadFromCacheFile();
-		show(epd, categories);
-	}
-
-	public static int show(Ec3Epd epd, Ec3CategoryTree categories) {
+	public static int show(Ec3Epd epd) {
 		if (epd == null)
 			return -1;
 		var db = Database.get();
@@ -54,15 +48,15 @@ public class ImportDialog extends FormDialog {
 			MsgBox.error(M.NoDatabaseOpened);
 			return -1;
 		}
-		return new ImportDialog(epd, categories, db).open();
+		return new ImportDialog(epd, db).open();
 	}
 
-	private ImportDialog(Ec3Epd epd, Ec3CategoryTree categories, IDatabase db) {
+	private ImportDialog(Ec3Epd epd, IDatabase db) {
 		super(UI.shell());
 		this.epd = Objects.requireNonNull(epd);
 		this.db = Objects.requireNonNull(db);
 		this.impactModel = Ec3ImpactModel.get();
-		this.categoryPath = categories.pathOf(epd.category);
+		categoryPath = Util.categoryOf(epd);
 		product = Util.initQuantitativeReference(epd, db);
 	}
 
@@ -139,12 +133,13 @@ public class ImportDialog extends FormDialog {
 					"Result has an empty name.");
 				return;
 			}
+			result.description = epd.lcaDiscussion;
 			results.add(result);
 		}
 		if (results.isEmpty()) {
 			// create a default result in no LCIA results could
 			// be found in the EPD
-			results.add(Result.of(epd.name));
+			results.add(Result.of(epd.productName));
 		}
 
 		// create the reference product
