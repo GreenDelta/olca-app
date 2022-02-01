@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="libs/JavaEWAH-1.1.13.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.jgit-6.0.0.202111291000-r.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/animal-sniffer-annotations-1.19.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-4.1.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-api-6.0.53.jar"/>
@@ -43,6 +41,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.persistence-api-3.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.ws.rs-api-3.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.xml.bind-api-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/JavaEWAH-1.1.13.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/javassist-3.25.0-GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jaxb-core-3.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jaxb-impl-3.0.1.jar"/>
@@ -77,6 +76,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-1.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-io-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.jgit-6.0.0.202111291000-r.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.asm-9.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.core-3.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa.jpql-3.0.2.jar"/>
