@@ -68,7 +68,7 @@ public class MergeAction extends Action implements INavigationAction {
 		var workspaceIds = Repository.get().workspaceIds;
 		var jsonStore = new GitStore(Repository.get().git, localCommitId, remoteCommitId);
 		var jsonImport = new JsonImport(jsonStore, Database.get());
-		jsonImport.setUpdateMode(UpdateMode.IF_NEWER);
+		jsonImport.setUpdateMode(UpdateMode.ALWAYS);
 		Database.getWorkspaceIdUpdater().disable();
 		for (var type : ModelType.categorized()) {
 			if (type == ModelType.CATEGORY)

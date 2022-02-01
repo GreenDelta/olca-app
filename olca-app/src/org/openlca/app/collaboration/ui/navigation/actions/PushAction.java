@@ -47,10 +47,15 @@ public class PushAction extends Action implements INavigationAction {
 			}
 			var git = Git.wrap(Repository.get().git);
 			git.gc().call();
-			var result = Actions.withCredentialsProvider(git.push())
+			var gitPush = git.push()
+					.setCredentialsProvider(Actions.credentialsProvider())
 					.setRemote(Constants.DEFAULT_REMOTE)
-					.setRefSpecs(new RefSpec(Constants.LOCAL_REF))
-					.call();
+					.setRefSpecs(new RefSpec(Constants.LOCAL_REF));
+			var result = Actions.runWithProgress(monitor -> gitPush
+					.setProgressMonitor(Actions.progressMonitor(monitor))
+					.call());
+			if (result == null)
+				return;
 			var update = getUpdate(result);
 			if (update == null) {
 				MsgBox.info("No commits to push - Everything up to date");

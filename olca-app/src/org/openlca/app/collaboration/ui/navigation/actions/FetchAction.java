@@ -1,5 +1,6 @@
 package org.openlca.app.collaboration.ui.navigation.actions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,10 +35,15 @@ public class FetchAction extends Action implements INavigationAction {
 				.refs(Constants.REMOTE_REF)
 				.latestId();
 		var git = Git.wrap(Repository.get().git);
-		Actions.withCredentialsProvider(git.fetch())
+		var gitFetch = git.fetch()
+				.setCredentialsProvider(Actions.credentialsProvider())
 				.setRemote(Constants.DEFAULT_REMOTE)
-				.setRefSpecs(Constants.DEFAULT_FETCH_SPEC)
-				.call();
+				.setRefSpecs(Constants.DEFAULT_FETCH_SPEC);
+		var result = Actions.runWithProgress(monitor -> gitFetch
+				.setProgressMonitor(Actions.progressMonitor(monitor))
+				.call());
+		if (result == null)
+			return new ArrayList<>();
 		// TODO check if list is always correct
 		var newCommits = commits.find()
 				.refs(Constants.REMOTE_REF)
@@ -54,7 +60,7 @@ public class FetchAction extends Action implements INavigationAction {
 	void showNoCommitsMessage() {
 		MsgBox.info("No commits to fetch - Everything up to date");
 	}
-	
+
 	@Override
 	public void run() {
 		try {
