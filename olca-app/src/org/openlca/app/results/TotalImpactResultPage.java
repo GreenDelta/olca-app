@@ -63,12 +63,12 @@ public class TotalImpactResultPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.name(setup.target()),
-				Images.get(result));
+			Labels.name(setup.target()),
+			Images.get(result));
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.ImpactAnalysis + ": "
-				+ Labels.name(setup.impactMethod()));
+			+ Labels.name(setup.impactMethod()));
 		UI.gridData(section, true, true);
 		Composite client = toolkit.createComposite(section);
 		section.setClient(client);
@@ -83,7 +83,7 @@ public class TotalImpactResultPage extends FormPage {
 		Composite comp = UI.formComposite(parent, toolkit);
 		UI.gridLayout(comp, 3);
 		Button button = UI.formCheckBox(
-				comp, toolkit, M.SubgroupByProcesses);
+			comp, toolkit, M.SubgroupByProcesses);
 		button.setSelection(true);
 		Controls.onSelect(button, (e) -> {
 			subgroupByProcesses = button.getSelection();
@@ -94,17 +94,17 @@ public class TotalImpactResultPage extends FormPage {
 
 	private void setInput() {
 		List<Item> items = result.getImpacts().stream()
-				.map(Item::new)
-				.collect(Collectors.toList());
+			.map(Item::new)
+			.collect(Collectors.toList());
 		viewer.setInput(items);
 	}
 
 	private void createTree(Composite comp) {
-		String[] columns = { M.Name, M.Category, M.InventoryResult,
-				M.ImpactFactor, M.ImpactResult, M.Unit };
+		String[] columns = {M.Name, M.Category, M.InventoryResult,
+			M.ImpactFactor, M.ImpactResult, M.Unit};
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			columns = DQUI.appendTableHeaders(columns,
-					dqResult.setup.exchangeSystem);
+				dqResult.setup.exchangeSystem);
 		}
 		LabelProvider label = new LabelProvider();
 		viewer = Trees.createViewer(comp, columns, label);
@@ -114,13 +114,13 @@ public class TotalImpactResultPage extends FormPage {
 
 		Action onOpen = Actions.onOpen(this::onOpen);
 		Actions.bind(viewer, onOpen,
-				TreeClipboard.onCopy(viewer, new ClipboardLabel()));
+			TreeClipboard.onCopy(viewer, new ClipboardLabel()));
 		Trees.onDoubleClick(viewer, e -> onOpen.run());
 		createColumnSorters(label);
-		double[] widths = { .35, .2, .10, .10, .15, .05 };
+		double[] widths = {.35, .2, .10, .10, .15, .05};
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			widths = DQUI.adjustTableWidths(
-					widths, dqResult.setup.exchangeSystem);
+				widths, dqResult.setup.exchangeSystem);
 		}
 		viewer.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		viewer.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
@@ -159,14 +159,14 @@ public class TotalImpactResultPage extends FormPage {
 		private final LabelProvider label = new LabelProvider();
 
 		private final String[] columns = {
-				M.Name,
-				M.Category,
-				M.InventoryResult,
-				M.Unit,
-				M.ImpactFactor,
-				M.Unit,
-				M.ImpactResult,
-				M.Unit
+			M.Name,
+			M.Category,
+			M.InventoryResult,
+			M.Unit,
+			M.ImpactFactor,
+			M.Unit,
+			M.ImpactResult,
+			M.Unit
 		};
 
 		@Override
@@ -183,26 +183,26 @@ public class TotalImpactResultPage extends FormPage {
 		public String getLabel(TreeItem treeItem, int col) {
 			Item item = (Item) treeItem.getData();
 			switch (col) {
-			case 0:
-				return label.getText(item, 0);
-			case 1:
-				return label.getText(item, 1);
-			case 2:
-				return format(item.flowAmount());
-			case 3:
-				if (item.flowAmount() == null)
-					return "";
-				return Labels.refUnit(item.flow);
-			case 4:
-				return format(item.impactFactor());
-			case 5:
-				if (item.impactFactor() == null)
-					return "";
-				return item.impactFactorUnit();
-			case 6:
-				return label.getText(item, 4);
-			case 7:
-				return label.getText(item, 5);
+				case 0:
+					return label.getText(item, 0);
+				case 1:
+					return label.getText(item, 1);
+				case 2:
+					return format(item.flowAmount());
+				case 3:
+					if (item.flowAmount() == null)
+						return "";
+					return Labels.refUnit(item.flow);
+				case 4:
+					return format(item.impactFactor());
+				case 5:
+					if (item.impactFactor() == null)
+						return "";
+					return item.impactFactorUnit();
+				case 6:
+					return label.getText(item, 4);
+				case 7:
+					return label.getText(item, 5);
 			}
 			return null;
 		}
@@ -221,8 +221,8 @@ public class TotalImpactResultPage extends FormPage {
 
 		LabelProvider() {
 			super(dqResult, dqResult != null
-					? dqResult.setup.exchangeSystem
-					: null, 6);
+				? dqResult.setup.exchangeSystem
+				: null, 6);
 		}
 
 		@Override
@@ -233,11 +233,15 @@ public class TotalImpactResultPage extends FormPage {
 
 		@Override
 		public Image getImage(Object obj, int col) {
-			if (!(obj instanceof Item))
+			if (!(obj instanceof Item item))
 				return null;
-			Item item = (Item) obj;
-			if (col == 0)
-				return Images.get(item.type());
+			if (col == 0) {
+				if (item.flow != null)
+					return Images.get(item.flow);
+				if (item.process != null)
+					return Images.get(item.process);
+				return Images.get(item.impact);
+			}
 			if (col == 4 && item.type() != ModelType.IMPACT_CATEGORY)
 				return img.get(item.contribution());
 			return null;
@@ -245,64 +249,54 @@ public class TotalImpactResultPage extends FormPage {
 
 		@Override
 		public String getText(Object obj, int col) {
-			if (!(obj instanceof Item))
+			if (!(obj instanceof Item item))
 				return null;
-			Item item = (Item) obj;
-			switch (col) {
-			case 0:
-				return item.name();
-			case 1:
-				return item.category();
-			case 2:
-				return item.flowAmountString();
-			case 3:
-				return item.impactFactorString();
-			case 4:
-				return Numbers.format(item.result());
-			case 5:
-				return item.unit();
-			default:
-				return null;
-			}
+			return switch (col) {
+				case 0 -> item.name();
+				case 1 -> item.category();
+				case 2 -> item.flowAmountString();
+				case 3 -> item.impactFactorString();
+				case 4 -> Numbers.format(item.result());
+				case 5 -> item.unit();
+				default -> null;
+			};
 		}
 
 		@Override
 		protected int[] getQuality(Object obj) {
 			if (dqResult == null)
 				return null;
-			Item item = (Item) obj;
-			switch (item.type()) {
-			case IMPACT_CATEGORY:
-				return dqResult.get(item.impact);
-			case PROCESS:
-				return dqResult.get(item.impact, item.process);
-			case FLOW:
-				if (item.flow == null)
-					return null;
-				if (item.process != null)
-					return dqResult.get(item.process, item.flow);
-				else
-					return dqResult.get(item.impact, item.flow);
-			default:
+			if (!(obj instanceof Item item))
 				return null;
-			}
+			return switch (item.type()) {
+				case IMPACT_CATEGORY -> dqResult.get(item.impact);
+				case PROCESS -> dqResult.get(item.impact, item.process);
+				case FLOW -> {
+					if (item.flow == null)
+						yield null;
+					if (item.process != null)
+						yield dqResult.get(item.process, item.flow);
+					else
+						yield dqResult.get(item.impact, item.flow);
+				}
+				default -> null;
+			};
 		}
 	}
 
 	private class ContentProvider extends ArrayContentProvider
-			implements ITreeContentProvider, CutoffContentProvider {
+		implements ITreeContentProvider, CutoffContentProvider {
 
 		private double cutoff;
 
 		@Override
 		public Object[] getChildren(Object obj) {
-			if (!(obj instanceof Item))
+			if (!(obj instanceof Item parent))
 				return null;
-			Item parent = (Item) obj;
 			List<Item> childs = new ArrayList<>();
 
+			double cutoffValue = Math.abs(parent.result() * cutoff);
 			if (parent.type() == ModelType.IMPACT_CATEGORY && subgroupByProcesses) {
-				double cutoffValue = Math.abs(parent.result() * cutoff);
 				for (CategorizedDescriptor process : result.getProcesses()) {
 					Item child = new Item(parent.impact, process);
 					double result = child.result();
@@ -313,8 +307,7 @@ public class TotalImpactResultPage extends FormPage {
 					}
 				}
 
-			} else {
-				double cutoffValue = Math.abs(parent.result() * cutoff);
+			} else if (result.hasEnviFlows()) {
 				result.enviIndex().each((i, f) -> {
 					Item child = new Item(parent.impact, parent.process, f);
 					double result = child.result();
@@ -325,6 +318,7 @@ public class TotalImpactResultPage extends FormPage {
 					}
 				});
 			}
+
 			childs.sort((i1, i2) -> -Double.compare(i1.result(), i2.result()));
 			return childs.toArray();
 		}
@@ -336,9 +330,8 @@ public class TotalImpactResultPage extends FormPage {
 
 		@Override
 		public boolean hasChildren(Object o) {
-			if (!(o instanceof Item))
+			if (!(o instanceof Item item))
 				return false;
-			Item item = (Item) o;
 			return item.type() != ModelType.FLOW;
 		}
 
@@ -365,13 +358,15 @@ public class TotalImpactResultPage extends FormPage {
 		}
 
 		Item(ImpactDescriptor impact, CategorizedDescriptor process,
-				EnviFlow flow) {
+			EnviFlow flow) {
 			this.impact = impact;
 			this.process = process;
 			this.flow = flow;
 		}
 
-		/** The type of contribution shown by the item. */
+		/**
+		 * The type of contribution shown by the item.
+		 */
 		ModelType type() {
 			if (flow != null)
 				return ModelType.FLOW;
@@ -392,17 +387,18 @@ public class TotalImpactResultPage extends FormPage {
 				iUnit = "1";
 			}
 			String fUnit = flow != null
-					? Labels.refUnit(flow)
-					: "?";
+				? Labels.refUnit(flow)
+				: "?";
 			return iUnit + "/" + fUnit;
 		}
 
 		String impactFactorString() {
 			if (type() != ModelType.FLOW)
 				return null;
-			String f = Numbers.format(impactFactor());
-			String unit = impactFactorUnit();
-			return f + " " + unit;
+			var factor = impactFactor();
+			if (factor == null)
+				return null;
+			return Numbers.format(factor) + " " + impactFactorUnit();
 		}
 
 		Double flowAmount() {
@@ -416,22 +412,26 @@ public class TotalImpactResultPage extends FormPage {
 		String flowAmountString() {
 			if (type() != ModelType.FLOW)
 				return null;
-			String amount = Numbers.format(flowAmount());
+			var amount = flowAmount();
+			if (amount == null)
+				return null;
 			String unit = Labels.refUnit(flow);
-			return amount + " " + unit;
+			return Numbers.format(amount) + " " + unit;
 		}
 
 		double result() {
-			switch (type()) {
-			case IMPACT_CATEGORY:
-				return result.getTotalImpactResult(impact);
-			case PROCESS:
-				return result.getDirectImpactResult(process, impact);
-			case FLOW:
-				return impactFactor() * flowAmount();
-			default:
-				return 0;
-			}
+			return switch (type()) {
+				case IMPACT_CATEGORY -> result.getTotalImpactResult(impact);
+				case PROCESS -> result.getDirectImpactResult(process, impact);
+				case FLOW -> {
+					var factor = impactFactor();
+					var amount = flowAmount();
+					yield factor == null || amount == null
+						? 0
+						: factor * amount;
+				}
+				default -> 0;
+			};
 		}
 
 		String unit() {
@@ -441,32 +441,26 @@ public class TotalImpactResultPage extends FormPage {
 		}
 
 		String name() {
-			switch (type()) {
-			case IMPACT_CATEGORY:
-				return impact.name;
-			case FLOW:
-				return Labels.name(flow);
-			case PROCESS:
-				return Labels.name(process);
-			default:
-				return null;
-			}
+			return switch (type()) {
+				case IMPACT_CATEGORY -> Labels.name(impact);
+				case FLOW -> Labels.name(flow);
+				case PROCESS -> Labels.name(process);
+				default -> null;
+			};
 		}
 
 		String category() {
-			switch (type()) {
-			case FLOW:
-				return Labels.category(flow);
-			case PROCESS:
-				return Labels.category(process);
-			default:
-				return null;
-			}
+			return switch (type()) {
+				case IMPACT_CATEGORY -> Labels.category(impact);
+				case FLOW -> Labels.category(flow);
+				case PROCESS -> Labels.category(process);
+				default -> null;
+			};
 		}
 
 		double contribution() {
 			double total = Math.abs(
-					result.getTotalImpactResult(impact));
+				result.getTotalImpactResult(impact));
 			double r = result();
 			if (r == 0)
 				return 0;
