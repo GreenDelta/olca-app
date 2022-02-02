@@ -30,7 +30,7 @@ public class Credentials {
 	}
 
 	public Credentials queryUrl(String url) {
-		this.url = url;
+		this.queryUrl = url;
 		return this;
 	}
 

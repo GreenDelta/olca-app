@@ -42,7 +42,7 @@ public class LoginPanel {
 
 		// auth-url
 		var filled = 0;
-		var authUrlText = UI.formText(comp, tk, "Authentication URL");
+		var authUrlText = UI.formText(comp, tk, "EC3 Endpoint");
 		if (Strings.notEmpty(credentials.url())) {
 			authUrlText.setText(credentials.url());
 			filled++;
@@ -53,7 +53,7 @@ public class LoginPanel {
 		});
 
 		// query URL
-		var queryUrlText = UI.formText(comp, tk, "Query URL");
+		var queryUrlText = UI.formText(comp, tk, "openEPD Endpoint");
 		if (Strings.notEmpty(credentials.queryUrl())) {
 			queryUrlText.setText(credentials.queryUrl());
 			filled++;
