@@ -1,6 +1,5 @@
 package org.openlca.app.collaboration.ui.io;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,17 +10,15 @@ import org.openlca.git.find.Entries;
 import org.openlca.git.find.References;
 import org.openlca.git.model.Reference;
 import org.openlca.git.util.GitUtil;
-import org.openlca.jsonld.EntityStore;
+import org.openlca.jsonld.JsonStoreReader;
+import org.openlca.jsonld.JsonStoreWriter;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-public class GitStore implements EntityStore {
+public class GitStore implements JsonStoreReader, JsonStoreWriter {
 
-	private static final Logger log = LoggerFactory.getLogger(GitStore.class);
 	private static final Gson gson = new Gson();
 	private static final JsonObject defaultContext;
 	private final References references;
@@ -43,7 +40,6 @@ public class GitStore implements EntityStore {
 		this.remoteCommitId = remoteCommitId;
 	}
 
-	@Override
 	public boolean contains(ModelType type, String refId) {
 		if (type == ModelType.CATEGORY)
 			return true;
@@ -51,7 +47,7 @@ public class GitStore implements EntityStore {
 	}
 
 	@Override
-	public byte[] get(String path) {
+	public byte[] getBytes(String path) {
 		var binDir = GitUtil.findBinDir(path);
 		if (binDir == null && !path.endsWith(GitUtil.DATASET_SUFFIX))
 			return categories.getForPath(path);
@@ -124,19 +120,6 @@ public class GitStore implements EntityStore {
 				.all();
 	}
 
-	@Override
-	public JsonObject getContext() {
-		var data = get("context.json");
-		if (data == null)
-			return defaultContext;
-		try {
-			return parse(new String(data, "utf-8"));
-		} catch (Exception e) {
-			log.error("Error reading context.json", e);
-			return defaultContext;
-		}
-	}
-
 	private JsonObject parse(String data) {
 		if (Strings.nullOrEmpty(data))
 			return null;
@@ -156,21 +139,6 @@ public class GitStore implements EntityStore {
 	@Override
 	public void putBin(ModelType type, String refId, String filename, byte[] data) {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void putContext() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void putMetaInfo(JsonObject model) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void close() throws IOException {
-
 	}
 
 }

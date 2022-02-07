@@ -46,7 +46,7 @@ public class JsonProvider implements IProvider {
 			List<String> files = store.getFiles("flow_mappings");
 			List<FlowMap> maps = new ArrayList<>();
 			for (String f : files) {
-				byte[] data = store.get(f);
+				byte[] data = store.getBytes(f);
 				String json = new String(data, StandardCharsets.UTF_8);
 				JsonObject obj = new Gson().fromJson(json, JsonObject.class);
 				FlowMap map = FlowMap.fromJson(obj);
