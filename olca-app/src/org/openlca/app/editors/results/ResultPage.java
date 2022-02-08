@@ -74,6 +74,7 @@ class ResultPage extends ModelPage<Result> {
 		UI.gridData(sash, true, false);
 		tk.adapt(sash);
 		new ImpactSection(editor).render(sash, tk);
+
 		FlowSection.forInputs(editor).render(sash, tk);
 		FlowSection.forOutputs(editor).render(sash, tk);
 

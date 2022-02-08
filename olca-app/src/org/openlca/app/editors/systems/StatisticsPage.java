@@ -37,7 +37,7 @@ import org.openlca.core.model.ProductSystem;
 
 class StatisticsPage extends ModelPage<ProductSystem> {
 
-	private List<Runnable> updates = new ArrayList<>();
+	private final List<Runnable> updates = new ArrayList<>();
 	private Statistics stats;
 	private ScrolledForm form;
 	private TableViewer inLinkTable;
@@ -48,9 +48,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 	}
 
 	private <T> void bind(T comp, Consumer<T> fn) {
-		updates.add(() -> {
-			fn.accept(comp);
-		});
+		updates.add(() -> fn.accept(comp));
 	}
 
 	@Override
@@ -71,20 +69,18 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 		UI.gridLayout(comp, 2, 15, 10);
 
 		UI.formLabel(comp, "Number of processes");
-		bind(UI.formLabel(comp, ""), label -> {
-			label.setText(Integer.toString(stats.processCount));
-		});
+		bind(UI.formLabel(comp, ""),
+			label -> label.setText(Integer.toString(stats.processCount)));
 
 		UI.formLabel(comp, "Number of process links");
-		bind(UI.formLabel(comp, ""), label -> {
-			label.setText(Integer.toString(stats.linkCount));
-		});
+		bind(UI.formLabel(comp, ""),
+			label -> label.setText(Integer.toString(stats.linkCount)));
 
 		UI.formLabel(comp, "Connected graph / can calculate?");
 		bind(UI.formLabel(comp, ""), label -> {
 			String text = stats.connectedGraph
-					? "yes"
-					: "no";
+				? "yes"
+				: "no";
 			label.setText(text);
 		});
 
@@ -97,9 +93,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 				App.open(stats.refProcess);
 			}
 		});
-		bind(link, l -> {
-			l.setText(Labels.name(stats.refProcess));
-		});
+		bind(link, l -> l.setText(Labels.name(stats.refProcess)));
 
 		UI.formLabel(comp, "");
 		Button btn = tk.createButton(comp, M.Update, SWT.NONE);
@@ -111,42 +105,39 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 		UI.gridLayout(comp, 2, 15, 10);
 
 		UI.formLabel(comp, "Links that are linked with default providers");
-		bind(UI.formLabel(comp, ""), label -> {
-			label.setText(Integer.toString(stats.defaultProviderLinkCount));
-		});
+		bind(UI.formLabel(comp, ""),
+			label -> label.setText(Integer.toString(stats.defaultProviderLinkCount)));
 
 		UI.formLabel(comp, "Links with exactly one possible provider");
-		bind(UI.formLabel(comp, ""), label -> {
-			label.setText(Integer.toString(stats.singleProviderLinkCount));
-		});
+		bind(UI.formLabel(comp, ""),
+			label -> label.setText(Integer.toString(stats.singleProviderLinkCount)));
 
 		UI.formLabel(comp, "Links with multiple possible providers");
-		bind(UI.formLabel(comp, ""), label -> {
-			label.setText(Integer.toString(stats.multiProviderLinkCount));
-		});
+		bind(UI.formLabel(comp, ""),
+			label -> label.setText(Integer.toString(stats.multiProviderLinkCount)));
 	}
 
 	private void linkDegreeTable(Composite body, FormToolkit tk, boolean inDegree) {
 		String title = inDegree
-				? "Processes with highest in-degree (linked inputs)"
-				: "Processes with highest out-degree (linked outputs)";
+			? "Processes with highest in-degree (linked inputs)"
+			: "Processes with highest out-degree (linked outputs)";
 		Composite comp = UI.formSection(body, tk, title);
 		UI.gridLayout(comp, 1, 0, 10);
 		TableViewer table = Tables.createViewer(
-				comp, "Processes", "Number of linked inputs");
+			comp, "Processes", "Number of linked inputs");
 		Tables.bindColumnWidths(table, 0.5, 0.5);
 		table.setLabelProvider(new LinkDegreeLabel(() -> {
 			if (stats == null)
 				return Collections.emptyList();
 			return inDegree
-					? stats.topInDegrees
-					: stats.topOutDegrees;
+				? stats.topInDegrees
+				: stats.topOutDegrees;
 		}));
 
 		Action onOpen = Actions.onOpen(() -> {
 			LinkDegree link = Viewers.getFirstSelected(table);
-			if (link != null) {
-				App.open(link.process);
+			if (link != null && link.process() != null) {
+				App.open(link.process());
 			}
 		});
 		Tables.onDoubleClick(table, e -> onOpen.run());
@@ -160,27 +151,26 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 	}
 
 	private void calculate() {
-		App.runWithProgress("Updating statistics ...", () -> {
-			stats = Statistics.calculate(
-					getModel(), Cache.getEntityCache());
-		}, () -> {
-			if (stats != null) {
-				for (Runnable update : updates) {
-					update.run();
+		App.runWithProgress("Updating statistics ...",
+			() -> stats = Statistics.calculate(getModel(), Cache.getEntityCache()),
+			() -> {
+				if (stats != null) {
+					for (Runnable update : updates) {
+						update.run();
+					}
+					inLinkTable.setInput(stats.topInDegrees);
+					outLinkTable.setInput(stats.topOutDegrees);
+					form.reflow(true);
 				}
-				inLinkTable.setInput(stats.topInDegrees);
-				outLinkTable.setInput(stats.topOutDegrees);
-				form.reflow(true);
-			}
-		});
+			});
 	}
 
-	private class LinkDegreeLabel extends LabelProvider
-			implements ITableLabelProvider {
+	private static class LinkDegreeLabel extends LabelProvider
+		implements ITableLabelProvider {
 
-		private Supplier<List<LinkDegree>> links;
-		private ContributionImage img = new ContributionImage()
-				.withColor(Colors.fromHex("#607d8b"));
+		private final Supplier<List<LinkDegree>> links;
+		private final ContributionImage img = new ContributionImage()
+			.withColor(Colors.fromHex("#607d8b"));
 
 		LinkDegreeLabel(Supplier<List<LinkDegree>> links) {
 			this.links = links;
@@ -194,31 +184,29 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
+			if (!(obj instanceof LinkDegree link))
+				return null;
 			if (col == 0)
-				return Images.get(ModelType.PROCESS);
-			if (col != 1 || !(obj instanceof LinkDegree))
+				return Images.get(link.process());
+			if (col != 1)
 				return null;
 			int maxDegree = links.get().stream()
-					.mapToInt(link -> link.degree).max()
-					.orElse(0);
-			double share = (double) ((LinkDegree) obj).degree
-					/ (double) maxDegree;
+				.mapToInt(LinkDegree::degree)
+				.max()
+				.orElse(0);
+			double share = (double) link.degree() / (double) maxDegree;
 			return img.get(share);
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof LinkDegree))
+			if (!(obj instanceof LinkDegree link))
 				return null;
-			LinkDegree link = (LinkDegree) obj;
-			switch (col) {
-			case 0:
-				return Labels.name(link.process);
-			case 1:
-				return Integer.toString(link.degree);
-			default:
-				return null;
-			}
+			return switch (col) {
+				case 0 -> Labels.name(link.process());
+				case 1 -> Integer.toString(link.degree());
+				default -> null;
+			};
 		}
 	}
 

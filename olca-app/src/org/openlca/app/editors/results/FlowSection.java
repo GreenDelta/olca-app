@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelSelector;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
@@ -80,6 +81,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 			if (flow == null)
 				return;
 			var flows = result().flowResults;
+			// TODO: check that this is not a linked flow in a system!
 			flows.remove(flow);
 			if (Objects.equals(result().referenceFlow, flow)) {
 				result().referenceFlow = null;
@@ -96,7 +98,8 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 		});
 		Tables.onDoubleClick(table, $ -> onOpen.run());
 
-		var refFlowAction = Actions.create(M.SetAsQuantitativeReference, () -> {
+		var refFlowAction = Actions.create(
+			M.SetAsQuantitativeReference, Icon.FORMULA.descriptor(), () -> {
 			FlowResult flow = Viewers.getFirstSelected(table);
 			if (!isProviderFlow(flow))
 				return;
