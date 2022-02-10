@@ -86,8 +86,7 @@ public class DiffNodeBuilder {
 	}
 
 	private String getKey(DiffResult result) {
-		var ref = result.ref();
-		return ref.type.name() + ref.refId;
+		return result.ref().fullPath;
 	}
 
 }
