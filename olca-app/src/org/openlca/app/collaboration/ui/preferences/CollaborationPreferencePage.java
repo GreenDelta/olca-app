@@ -15,7 +15,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
@@ -28,7 +27,6 @@ public class CollaborationPreferencePage extends PreferencePage implements IWork
 
 	public static final String ID = "preferencepages.collaboration";
 	private List<CollaborationConfiguration> configs;
-	private Button enableCheckBox;
 	private Button libraryCheckBox;
 	private Button referenceCheckBox;
 	private Button commentCheckBox;
@@ -46,22 +44,13 @@ public class CollaborationPreferencePage extends PreferencePage implements IWork
 		UI.gridLayout(body, 1);
 		var general = new Composite(body, SWT.NONE);
 		UI.gridLayout(general, 2, 0, 0);
-		createEnableCheckBox(general);
 		createLibraryCheckBox(general);
 		createReferenceCheckBox(general);
 		createCommentCheckBox(general);
 		UI.formLabel(body, M.ServerConfigurations);
 		configViewer = new ConfigurationViewer(body);
 		configViewer.setInput(configs);
-		checkEnabled();
 		return body;
-	}
-
-	private void createEnableCheckBox(Composite parent) {
-		enableCheckBox = UI.formCheckBox(parent, M.EnableCollaboration);
-		UI.gridData(enableCheckBox, true, false).horizontalIndent = 5;
-		Controls.onSelect(enableCheckBox, (e) -> checkEnabled());
-		enableCheckBox.setSelection(CollaborationPreference.enabled());
 	}
 
 	private void createLibraryCheckBox(Composite parent) {
@@ -82,17 +71,9 @@ public class CollaborationPreferencePage extends PreferencePage implements IWork
 		commentCheckBox.setSelection(CollaborationPreference.commentsEnabled());
 	}
 
-	private void checkEnabled() {
-		libraryCheckBox.setEnabled(enableCheckBox.getSelection());
-		referenceCheckBox.setEnabled(enableCheckBox.getSelection());
-		commentCheckBox.setEnabled(enableCheckBox.getSelection());
-		configViewer.setEnabled(enableCheckBox.getSelection());
-	}
-
 	@Override
 	public boolean performOk() {
 		var store = CollaborationPreference.getStore();
-		store.setValue(CollaborationPreference.ENABLE, enableCheckBox.getSelection());
 		store.setValue(CollaborationPreference.CHECK_AGAINST_LIBRARIES, libraryCheckBox.getSelection());
 		store.setValue(CollaborationPreference.CHECK_REFERENCES, referenceCheckBox.getSelection());
 		store.setValue(CollaborationPreference.DISPLAY_COMMENTS, commentCheckBox.getSelection());

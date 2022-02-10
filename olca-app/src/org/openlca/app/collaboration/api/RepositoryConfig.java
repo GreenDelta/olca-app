@@ -4,6 +4,8 @@ import java.io.File;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.openlca.app.collaboration.util.Constants;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.core.database.IDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public class RepositoryConfig {
 
 	private static final Logger log = LoggerFactory.getLogger(RepositoryConfig.class);
-	public static final String GIT_DIR = ".git";
+	public static final String GIT_DIR = "repositories";
 	public final String serverUrl;
 	public final String repositoryId;
 	public final String apiUrl;
@@ -29,7 +31,7 @@ public class RepositoryConfig {
 		try {
 			var configs = new Git(repo).remoteList().call();
 			var config = configs.stream()
-					.filter(c -> c.getName().equals("origin"))
+					.filter(c -> c.getName().equals(Constants.DEFAULT_REMOTE))
 					.findFirst()
 					.orElse(null);
 			if (config == null || config.getURIs().isEmpty())
@@ -56,7 +58,8 @@ public class RepositoryConfig {
 	}
 
 	public static File getGirDir(IDatabase database) {
-		return new File(database.getFileStorageLocation(), GIT_DIR);
+		var repos = new File(Workspace.getDir(), GIT_DIR);
+		return new File(repos, database.getName());
 	}
 	
 	public String url() {

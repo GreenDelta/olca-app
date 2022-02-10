@@ -7,7 +7,7 @@ import org.openlca.core.model.ModelType;
  */
 class SearchInvocation {
 
-	private static final String PATH = "/public/search";
+//	private static final String PATH = "/public/search";
 	String baseUrl;
 	String sessionId;
 	String query;

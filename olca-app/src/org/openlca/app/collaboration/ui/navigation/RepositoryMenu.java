@@ -16,7 +16,6 @@ import org.openlca.app.collaboration.ui.navigation.actions.PullAction;
 import org.openlca.app.collaboration.ui.navigation.actions.PushAction;
 import org.openlca.app.collaboration.ui.navigation.actions.ShowCommentsAction;
 import org.openlca.app.collaboration.ui.navigation.actions.ShowInHistoryAction;
-import org.openlca.app.collaboration.ui.preferences.CollaborationPreference;
 import org.openlca.app.navigation.actions.NavigationMenu;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
@@ -24,8 +23,6 @@ import org.openlca.app.rcp.images.Icon;
 public class RepositoryMenu {
 
 	public static void add(List<INavigationElement<?>> selection, IMenuManager menu) {
-		if (!CollaborationPreference.enabled())
-			return;
 		var subMenu = new MenuManager(M.Repository);
 		subMenu.setImageDescriptor(Icon.REPOSITORY.descriptor());
 		var added = NavigationMenu.addActions(selection, subMenu,
