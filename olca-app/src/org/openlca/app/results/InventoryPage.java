@@ -1,10 +1,8 @@
 package org.openlca.app.results;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -74,15 +72,14 @@ public class InventoryPage extends FormPage {
 	}
 
 	private void fillTrees(TreeViewer inputTree, TreeViewer outputTree) {
-		List<EnviFlow> inFlows = new ArrayList<>();
-		List<EnviFlow> outFlows = new ArrayList<>();
-		result.getFlows().forEach(f -> {
-			if (f.isInput()) {
-				inFlows.add(f);
-			} else {
-				outFlows.add(f);
-			}
-		});
+		var inFlows = new ArrayList<EnviFlow>();
+		var outFlows = new ArrayList<EnviFlow>();
+		for (var flow : result.getFlows()) {
+			if (flow.isVirtual())
+				continue;
+			var list = flow.isInput() ? inFlows : outFlows;
+			list.add(flow);
+		}
 		inputTree.setInput(inFlows);
 		outputTree.setInput(outFlows);
 	}
@@ -103,8 +100,8 @@ public class InventoryPage extends FormPage {
 			headers = DQUI.appendTableHeaders(
 				headers, dqResult.setup.exchangeSystem);
 		}
-		Label label = new Label();
-		TreeViewer viewer = Trees.createViewer(comp, headers, label);
+		var label = new Label();
+		var viewer = Trees.createViewer(comp, headers, label);
 		viewer.setContentProvider(new ContentProvider());
 		createColumnSorters(viewer, label);
 		double[] widths = {.4, .2, .2, .15, .05};
@@ -116,13 +113,13 @@ public class InventoryPage extends FormPage {
 		Trees.bindColumnWidths(viewer.getTree(), DQUI.MIN_COL_WIDTH, widths);
 
 		// bind actions
-		Action onOpen = Actions.onOpen(() -> {
-			Object obj = Viewers.getFirstSelected(viewer);
-			if (obj instanceof CategorizedDescriptor) {
-				App.open((CategorizedDescriptor) obj);
+		var onOpen = Actions.onOpen(() -> {
+			var obj = Viewers.getFirstSelected(viewer);
+			if (obj instanceof CategorizedDescriptor d) {
+				App.open(d);
 			}
-			if (obj instanceof FlowContribution) {
-				App.open(((FlowContribution) obj).item.item);
+			if (obj instanceof FlowContribution c) {
+				App.open(c.item.item);
 			}
 		});
 		Trees.onDoubleClick(viewer, e -> onOpen.run());
@@ -149,9 +146,8 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public Object[] getChildren(Object e) {
-			if (!(e instanceof EnviFlow))
+			if (!(e instanceof EnviFlow flow))
 				return null;
-			var flow = (EnviFlow) e;
 			double cutoffValue = Math.abs(getAmount(flow) * this.cutoff);
 			return result.getProcessContributions(flow).stream()
 				.filter(i -> i.amount != 0)
@@ -163,9 +159,9 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public Object getParent(Object e) {
-			if (e instanceof FlowContribution)
-				return ((FlowContribution) e).flow;
-			return null;
+			return e instanceof FlowContribution f
+				? f.flow
+				: null;
 		}
 
 		@Override
@@ -197,24 +193,23 @@ public class InventoryPage extends FormPage {
 
 		@Override
 		public Image getImage(Object obj, int col) {
-			if (col == 0 && obj instanceof EnviFlow)
-				return Images.get(((EnviFlow) obj).flow());
-			if (!(obj instanceof FlowContribution))
+			if (col == 0 && obj instanceof EnviFlow e)
+				return Images.get(e.flow());
+			if (!(obj instanceof FlowContribution c))
 				return null;
-			FlowContribution c = (FlowContribution) obj;
-			if (col == 0)
-				return Images.get(c.item.item);
-			if (col == 3)
-				return img.get(c.item.share);
-			return null;
+			return switch (col) {
+				case 0 -> Images.get(c.item.item);
+				case 3 -> img.get(c.item.share);
+				default -> null;
+			};
 		}
 
 		@Override
 		public String getText(Object obj, int col) {
-			if (obj instanceof EnviFlow)
-				return getFlowColumnText((EnviFlow) obj, col);
-			if (obj instanceof FlowContribution)
-				return getProcessColumnText((FlowContribution) obj, col);
+			if (obj instanceof EnviFlow e)
+				return getFlowColumnText(e, col);
+			if (obj instanceof FlowContribution c)
+				return getProcessColumnText(c, col);
 			return null;
 		}
 
@@ -235,58 +230,39 @@ public class InventoryPage extends FormPage {
 		private String getProcessColumnText(FlowContribution item, int col) {
 			CategorizedDescriptor process = item.item.item;
 			Pair<String, String> category = Labels.getCategory(process);
-			switch (col) {
-				case 0:
-					return Labels.name(process);
-				case 1:
-					return category.getLeft();
-				case 2:
-					return category.getRight();
-				case 3:
-					double v = getAmount(item);
-					return Numbers.format(v);
-				case 4:
-					return Labels.refUnit(item.flow);
-				default:
-					return null;
-			}
+			return switch (col) {
+				case 0 -> Labels.name(process);
+				case 1 -> category.getLeft();
+				case 2 -> category.getRight();
+				case 3 -> Numbers.format(getAmount(item));
+				case 4 -> Labels.refUnit(item.flow);
+				default -> null;
+			};
 		}
 
 		@Override
 		protected int[] getQuality(Object obj) {
-			if (obj instanceof EnviFlow) {
-				var f = (EnviFlow) obj;
+			if (obj instanceof EnviFlow f)
 				return dqResult.get(f);
-			}
-			if (obj instanceof FlowContribution) {
-				FlowContribution item = (FlowContribution) obj;
-				return dqResult.get(item.item.item, item.flow);
-			}
+			if (obj instanceof FlowContribution c)
+				return dqResult.get(c.item.item, c.flow);
 			return null;
 		}
 	}
 
 	private double getAmount(Object o) {
-		if (o instanceof EnviFlow) {
-			return result.getTotalFlowResult((EnviFlow) o);
-		} else if (o instanceof FlowContribution) {
-			FlowContribution item = (FlowContribution) o;
-			return item.item.amount;
+		if (o instanceof EnviFlow e) {
+			return result.getTotalFlowResult(e);
+		} else if (o instanceof FlowContribution c) {
+			return c.item.amount;
 		}
 		return 0d;
 	}
 
-	private static class FlowContribution {
+	private record FlowContribution(
+		Contribution<CategorizedDescriptor> item,
+		EnviFlow flow) {
 
-		final Contribution<CategorizedDescriptor> item;
-		final EnviFlow flow;
-
-		private FlowContribution(
-			Contribution<CategorizedDescriptor> item,
-			EnviFlow flow) {
-			this.item = item;
-			this.flow = flow;
-		}
 	}
 
 }
