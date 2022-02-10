@@ -7,6 +7,7 @@ import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.openlca.app.collaboration.util.Constants;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.config.DatabaseConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +56,11 @@ public class RepositoryConfig {
 			log.error("Error loading git config", e);
 			return null;
 		}
+	}
+
+	public static File getGirDir(DatabaseConfig config) {
+		var repos = new File(Workspace.getDir(), GIT_DIR);
+		return new File(repos, config.name());
 	}
 
 	public static File getGirDir(IDatabase database) {

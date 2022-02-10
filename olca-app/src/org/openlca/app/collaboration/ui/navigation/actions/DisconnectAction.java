@@ -1,7 +1,9 @@
 package org.openlca.app.collaboration.ui.navigation.actions;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.collaboration.api.RepositoryConfig;
@@ -11,7 +13,7 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.util.Dirs;
+import org.openlca.app.util.ErrorReporter;
 
 public class DisconnectAction extends Action implements INavigationAction {
 
@@ -30,7 +32,9 @@ public class DisconnectAction extends Action implements INavigationAction {
 		try {
 			Repository.disconnect();
 			var gitDir = RepositoryConfig.getGirDir(Database.get());
-			Dirs.delete(gitDir);
+			FileUtils.deleteDirectory(gitDir);
+		} catch (IOException e) {
+			ErrorReporter.on("failed to delete git directory", e);
 		} finally {
 			Actions.refresh();
 		}

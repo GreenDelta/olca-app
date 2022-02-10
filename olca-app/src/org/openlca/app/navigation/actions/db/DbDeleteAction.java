@@ -10,6 +10,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.api.RepositoryConfig;
 import org.openlca.app.collaboration.ui.views.CompareView;
 import org.openlca.app.collaboration.ui.views.HistoryView;
 import org.openlca.app.db.Database;
@@ -99,6 +100,9 @@ public class DbDeleteAction extends Action implements INavigationAction {
 		File dbFolder = DatabaseDir.getRootFolder(config.name());
 		if (dbFolder.isDirectory())
 			FileUtils.deleteDirectory(dbFolder);
+		File gitFolder = RepositoryConfig.getGirDir(config);
+		if (gitFolder.isDirectory())
+			FileUtils.deleteDirectory(gitFolder);
 		if (config instanceof DerbyConfig)
 			Database.remove((DerbyConfig) config);
 		else if (config instanceof MySqlConfig)
