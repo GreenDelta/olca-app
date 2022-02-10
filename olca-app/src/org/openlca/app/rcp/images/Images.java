@@ -25,65 +25,63 @@ import org.openlca.core.results.IResult;
 
 public class Images {
 
-	public static Image get(EnviFlow iflow) {
-		if (iflow == null)
+	public static Image get(EnviFlow f) {
+		if (f == null)
 			return null;
-		return get(iflow.flow());
+		return f.isVirtual() && f.wrapped() != null
+			? get(f.wrapped())
+			: get(f.flow());
 	}
 
 	public static Image get(RootEntity entity) {
-		if (entity instanceof Source) {
-			Source source = (Source) entity;
+		if (entity instanceof Source source) {
 			if (source.externalFile != null)
 				return get(FileType.forName(source.externalFile));
 		}
-		if (entity instanceof Process)
-			return get(((Process) entity).processType);
-		if (entity instanceof Flow)
-			return get(((Flow) entity).flowType);
+		if (entity instanceof Process process)
+			return get(process.processType);
+		if (entity instanceof Flow flow)
+			return get(flow.flowType);
 		return get(ModelType.forModelClass(entity.getClass()));
 	}
 
 	public static Image get(Descriptor d) {
 		if (d == null || d.type == null)
 			return null;
-		switch (d.type) {
-			case PROCESS:
-				return get(((ProcessDescriptor) d).processType);
-			case FLOW:
-				return get(((FlowDescriptor) d).flowType);
-			case CATEGORY:
-				CategoryDescriptor cd = (CategoryDescriptor) d;
-				ModelIcon icon = categoryIcon(cd.categoryType);
-				return ImageManager.get(icon);
-			default:
-				return get(d.type);
+		if (d instanceof ProcessDescriptor p && p.processType != null)
+			return get(p.processType);
+		if (d instanceof FlowDescriptor f && f.flowType != null)
+			return get(f.flowType);
+		if (d instanceof CategoryDescriptor c && c.category != null) {
+			var icon = categoryIcon(c.categoryType);
+			return ImageManager.get(icon);
 		}
+		return get(d.type);
 	}
 
 	public static Image get(Category c) {
 		if (c == null)
 			return null;
-		ModelIcon icon = categoryIcon(c.modelType);
-		if (icon == null)
-			return Icon.FOLDER.get();
-		return ImageManager.get(icon);
+		var icon = categoryIcon(c.modelType);
+		return icon == null
+			? Icon.FOLDER.get()
+			: ImageManager.get(icon);
 	}
 
 	public static Image get(Group group) {
 		if (group == null)
 			return null;
-		ModelIcon icon = icon(group.type);
-		if (icon == null)
-			return Icon.FOLDER.get();
-		return ImageManager.get(icon);
+		var icon = icon(group.type);
+		return icon == null
+			? Icon.FOLDER.get()
+			: ImageManager.get(icon);
 	}
 
 	public static Image get(ModelType type) {
-		ModelIcon icon = icon(type);
-		if (icon == null)
-			return null;
-		return ImageManager.get(icon);
+		var icon = icon(type);
+		return icon != null
+			? ImageManager.get(icon)
+			: null;
 	}
 
 	public static Image get(FlowType type) {
@@ -364,8 +362,7 @@ public class Images {
 			case ACTOR -> ModelIcon.ACTOR_CATEGORY;
 			case FLOW -> ModelIcon.FLOW_CATEGORY;
 			case FLOW_PROPERTY -> ModelIcon.FLOW_PROPERTY_CATEGORY;
-			case IMPACT_METHOD, IMPACT_CATEGORY
-				-> ModelIcon.IMPACT_METHOD_CATEGORY; // TODO
+			case IMPACT_METHOD, IMPACT_CATEGORY -> ModelIcon.IMPACT_METHOD_CATEGORY; // TODO
 			case PROCESS -> ModelIcon.PROCESS_CATEGORY;
 			case PRODUCT_SYSTEM -> ModelIcon.PRODUCT_SYSTEM_CATEGORY;
 			case PROJECT -> ModelIcon.PROJECT_CATEGORY;

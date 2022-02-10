@@ -49,12 +49,10 @@ public class Labels {
 		if (entity == null || entity.name == null)
 			return "";
 		Location loc = null;
-		if (entity instanceof Flow) {
-			Flow flow = (Flow) entity;
+		if (entity instanceof Flow flow) {
 			loc = flow.location;
 		}
-		if (entity instanceof Process) {
-			Process process = (Process) entity;
+		if (entity instanceof Process process) {
 			loc = process.location;
 		}
 		if (loc == null || Strings.isNullOrEmpty(loc.code))
@@ -70,16 +68,14 @@ public class Labels {
 		if (cache == null)
 			return text;
 		Long locationId = null;
-		if (d instanceof ProcessDescriptor) {
-			ProcessDescriptor process = (ProcessDescriptor) d;
+		if (d instanceof ProcessDescriptor process) {
 			locationId = process.location;
 		}
-		if (d instanceof FlowDescriptor) {
-			FlowDescriptor flow = (FlowDescriptor) d;
+		if (d instanceof FlowDescriptor flow) {
 			locationId = flow.location;
 		}
 		if (locationId != null) {
-			Location loc = cache.get(Location.class, locationId);
+			var loc = cache.get(Location.class, locationId);
 			if (loc != null && !Strings.isNullOrEmpty(loc.code))
 				text = text + " - " + loc.code;
 		}
@@ -99,6 +95,8 @@ public class Labels {
 	public static String name(EnviFlow flow) {
 		if (flow == null || flow.flow() == null)
 			return "";
+		if (flow.isVirtual() && flow.wrapped() != null)
+			return name(flow.wrapped());
 		if (flow.flow().flowType != FlowType.ELEMENTARY_FLOW)
 			return Labels.name(flow.flow());
 		String name = flow.flow().name;
