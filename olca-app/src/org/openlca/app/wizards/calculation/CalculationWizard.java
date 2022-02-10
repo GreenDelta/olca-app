@@ -2,7 +2,6 @@ package org.openlca.app.wizards.calculation;
 
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.stream.Collectors;
 
 import org.apache.commons.math3.exception.MathIllegalArgumentException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -70,8 +69,7 @@ public class CalculationWizard extends Wizard {
 					return false;
 				var type = ((ModelEditorInput) inp).getDescriptor().type;
 				return !ok.contains(type);
-			})
-			.collect(Collectors.toList());
+			}).toList();
 
 		if (dirtyEditors.isEmpty())
 			return true;
