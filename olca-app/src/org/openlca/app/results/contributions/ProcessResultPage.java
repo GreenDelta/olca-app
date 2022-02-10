@@ -18,7 +18,6 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
@@ -64,23 +63,22 @@ public class ProcessResultPage extends FormPage {
 	private double impactCutOff = 0.01;
 
 	private final static String[] EXCHANGE_COLUMN_LABELS = {
-			M.Contribution,
-			M.Flow, M.UpstreamInclDirect, M.Direct,
-			M.Unit };
+		M.Contribution,
+		M.Flow, M.UpstreamInclDirect, M.Direct,
+		M.Unit};
 	private final static String[] IMPACT_COLUMN_LABELS = {
-			M.Contribution,
-			M.ImpactCategory, M.UpstreamInclDirect,
-			M.Direct, M.Unit };
+		M.Contribution,
+		M.ImpactCategory, M.UpstreamInclDirect,
+		M.Direct, M.Unit};
 
 	public ProcessResultPage(FormEditor editor,
-			FullResult result, CalculationSetup setup) {
+													 FullResult result, CalculationSetup setup) {
 		super(editor, ProcessResultPage.class.getName(), M.ProcessResults);
 		this.result = result;
 		this.setup = setup;
 		for (CategorizedDescriptor desc : result.getProcesses()) {
 			if (desc instanceof ProcessDescriptor) {
-				processes.put(desc.id,
-						(ProcessDescriptor) desc);
+				processes.put(desc.id, (ProcessDescriptor) desc);
 			}
 		}
 		this.flowResult = new ResultProvider(result);
@@ -94,15 +92,18 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		toolkit = mform.getToolkit();
-		ScrolledForm form = UI.formHeader(mform,
-				Labels.name(setup.target()),
-				Images.get(result));
-		Composite body = UI.formBody(form, toolkit);
-		createFlowSection(body);
-		if (result.hasImpacts())
+	protected void createFormContent(IManagedForm mForm) {
+		toolkit = mForm.getToolkit();
+		var form = UI.formHeader(mForm,
+			Labels.name(setup.target()),
+			Images.get(result));
+		var body = UI.formBody(form, toolkit);
+		if (result.hasEnviFlows()) {
+			createFlowSection(body);
+		}
+		if (result.hasImpacts()) {
 			createImpactSection(body);
+		}
 		form.reflow(true);
 		setInputs();
 	}
@@ -123,15 +124,16 @@ public class ProcessResultPage extends FormPage {
 		boolean input = table == inputTable;
 		var list = new ArrayList<EnviFlow>();
 		for (var f : result.getFlows()) {
-			if (f.isInput() == input)
+			if (!f.isVirtual() && f.isInput() == input) {
 				list.add(f);
+			}
 		}
 		table.setInput(list);
 	}
 
 	private void createFlowSection(Composite parent) {
-		Section section = UI.section(parent, toolkit,
-				M.FlowContributionsToProcessResults);
+		var section = UI.section(parent, toolkit,
+			M.FlowContributionsToProcessResults);
 		UI.gridData(section, true, true);
 		Composite comp = toolkit.createComposite(section);
 		section.setClient(comp);
@@ -185,7 +187,7 @@ public class ProcessResultPage extends FormPage {
 
 	private void createImpactSection(Composite parent) {
 		Section section = UI.section(parent, toolkit,
-				M.ImpactAssessmentResults);
+			M.ImpactAssessmentResults);
 		UI.gridData(section, true, true);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
@@ -248,80 +250,64 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	private class FlowLabel extends BaseLabelProvider implements
-			ITableLabelProvider {
+		ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object o, int col) {
-			if (!(o instanceof EnviFlow) || col != 0)
+			if (!(o instanceof EnviFlow flow) || col != 0)
 				return null;
-			var flow = (EnviFlow) o;
 			double c = flowResult.getUpstreamContribution(flow);
 			return image.get(c);
 		}
 
 		@Override
 		public String getColumnText(Object o, int col) {
-			if (!(o instanceof EnviFlow))
+			if (!(o instanceof EnviFlow f))
 				return null;
-			var flow = (EnviFlow) o;
-			switch (col) {
-			case 0:
-				return Numbers.percent(
-						flowResult.getUpstreamContribution(flow));
-			case 1:
-				return getFlowLabel(flow.flow());
-			case 2:
-				return Numbers.format(flowResult.getUpstreamTotal(flow));
-			case 3:
-				return Numbers.format(flowResult.getDirectResult(flow));
-			case 4:
-				return Labels.refUnit(flow);
-			default:
-				return null;
-			}
+			return switch (col) {
+				case 0 -> Numbers.percent(flowResult.getUpstreamContribution(f));
+				case 1 -> getFlowLabel(f.flow());
+				case 2 -> Numbers.format(flowResult.getUpstreamTotal(f));
+				case 3 -> Numbers.format(flowResult.getDirectResult(f));
+				case 4 -> Labels.refUnit(f);
+				default -> null;
+			};
 		}
 
 		private String getFlowLabel(FlowDescriptor flow) {
 			if (flow == null)
 				return "";
-			String val = flow.name;
-			if (flow.category == null)
-				return val;
-			return val + " (" + Labels.getShortCategory(flow) + ")";
+			String name = flow.name;
+			return flow.category != null
+				? name + " (" + Labels.getShortCategory(flow) + ")"
+				: name;
 		}
 	}
 
 	private class ImpactLabel extends BaseLabelProvider implements
-			ITableLabelProvider {
+		ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object o, int col) {
-			if (!(o instanceof ImpactDescriptor))
+			if (!(o instanceof ImpactDescriptor d))
 				return null;
 			if (col != 0)
 				return null;
-			var d = (ImpactDescriptor) o;
 			return image.get(impactResult.getUpstreamContribution(d));
 		}
 
 		@Override
 		public String getColumnText(Object o, int col) {
-			if (!(o instanceof ImpactDescriptor))
+			if (!(o instanceof ImpactDescriptor d))
 				return null;
-			var d = (ImpactDescriptor) o;
-			switch (col) {
-			case 0:
-				return Numbers.percent(impactResult.getUpstreamContribution(d));
-			case 1:
-				return d.name;
-			case 2:
-				return Numbers.format(impactResult.getUpstreamTotal(d));
-			case 3:
-				return Numbers.format(impactResult.getDirectResult(d));
-			case 4:
-				return d.referenceUnit;
-			}
-			return null;
+			return switch (col) {
+				case 0 -> Numbers.percent(impactResult.getUpstreamContribution(d));
+				case 1 -> d.name;
+				case 2 -> Numbers.format(impactResult.getUpstreamTotal(d));
+				case 3 -> Numbers.format(impactResult.getDirectResult(d));
+				case 4 -> d.referenceUnit;
+				default -> null;
+			};
 		}
 
 	}
@@ -336,12 +322,9 @@ public class ProcessResultPage extends FormPage {
 			double cutoff = forFlow ? flowCutOff : impactCutOff;
 			if (cutoff == 0)
 				return true;
-			double c = 0;
-			if (forFlow)
-				c = flowResult.getUpstreamContribution((EnviFlow) o);
-			else
-				c = impactResult.getUpstreamContribution(
-						(ImpactDescriptor) o);
+			double c = forFlow
+				? flowResult.getUpstreamContribution((EnviFlow) o)
+				: impactResult.getUpstreamContribution((ImpactDescriptor) o);
 			return c * 100 > cutoff;
 		}
 	}

@@ -33,6 +33,7 @@ import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
 import org.slf4j.Logger;
@@ -109,6 +110,8 @@ public class Labels {
 	public static String refUnit(EnviFlow flow) {
 		if (flow == null)
 			return "";
+		if (flow.isVirtual() && flow.wrapped() instanceof ImpactDescriptor i)
+			return i.referenceUnit;
 		return refUnit(flow.flow());
 	}
 
