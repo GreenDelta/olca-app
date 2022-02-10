@@ -90,7 +90,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 				var config = new ImportConfig(store, Database.get(), flowMap)
 					.withAllFlows(true)
 					.withLanguageOrder(langOrder);
-				ImportMonitor.of(m).run(new ILCDImport(config), config.log());
+				ImportMonitor.on(m).run(new ILCDImport(config));
 			});
 		}
 	}

@@ -2,7 +2,6 @@ package org.openlca.app.wizards.io;
 
 import java.io.File;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
@@ -77,13 +76,9 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		try {
 			Database.getWorkspaceIdUpdater().beginTransaction();
 			getContainer().run(true, true, m -> {
-				m.beginTask(M.ImportEcoSpold01DataSets,
-						IProgressMonitor.UNKNOWN);
 				var imp = new EcoSpold01Import(config());
 				imp.setFiles(filePage.getFiles());
-				var handler = new ImportHandler(m);
-				handler.run(imp);
-				m.done();
+				ImportMonitor.on(m).run(imp);
 			});
 			return true;
 		} catch (Exception e) {
