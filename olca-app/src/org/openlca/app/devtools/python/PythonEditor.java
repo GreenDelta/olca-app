@@ -24,7 +24,7 @@ public class PythonEditor extends ScriptingEditor {
 	private Page page;
 
 	public static void open() {
-		var id = UUID.randomUUID().toString() + "_new";
+		var id = UUID.randomUUID() + "_new";
 		var input = new SimpleEditorInput(id, "Python");
 		Editors.open(input, "PythonEditor");
 	}

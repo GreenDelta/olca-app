@@ -59,33 +59,41 @@
       icon="icons/export.png">
     </image>
   </extension>
-  <extension
-         point="org.eclipse.ui.editors">
+
+  <extension point="org.eclipse.ui.editors">
 
       <editor
-      class="org.openlca.app.editors.StartPage"
-      default="false"
-      id="olca.StartPage"
-      name="%Welcome"
-      icon="icons/home.png">
+      	class="org.openlca.app.editors.StartPage"
+      	default="false"
+      	id="olca.StartPage"
+      	name="%Welcome"
+      	icon="icons/home.png">
       </editor>
 
       <editor
-      class="org.openlca.app.editors.CommentsEditor"
-      default="false"
-      id="CommentsEditor"
-      name="%Comments"
-      icon="icons/collaboration/comments_view.png">
+      	class="org.openlca.app.editors.CommentsEditor"
+      	default="false"
+      	id="CommentsEditor"
+      	name="%Comments"
+      	icon="icons/collaboration/comments_view.png">
       </editor>
+
+			<editor
+				class="org.openlca.app.wizards.io.ImportLogView"
+				default="false"
+				id="ImportLogView"
+				name="Import details"
+				icon="icons/import.png">
+			</editor>
 
       <!-- developer tools -->
       <editor
-            class="org.openlca.app.devtools.sql.SqlEditor"
-            contributorClass="org.openlca.app.devtools.Toolbar"
-            default="false"
-            icon="icons/sql.png"
-            id="SqlEditor"
-            name="SQL">
+				class="org.openlca.app.devtools.sql.SqlEditor"
+				contributorClass="org.openlca.app.devtools.Toolbar"
+				default="false"
+				icon="icons/sql.png"
+				id="SqlEditor"
+				name="SQL">
       </editor>
       <editor
           class="org.openlca.app.devtools.python.PythonEditor"
