@@ -1,12 +1,21 @@
 package org.openlca.app.wizards.io;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.forms.FormDialog;
+import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.UI;
+import org.openlca.core.io.ImportLog;
 import org.openlca.io.Import;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 record ImportMonitor(IProgressMonitor monitor) {
 
@@ -29,6 +38,7 @@ record ImportMonitor(IProgressMonitor monitor) {
 							+ Labels.of(d.type) + ": " + Labels.name(d));
 					}
 				}
+				default -> {}
 			}
 		});
 
@@ -50,5 +60,94 @@ record ImportMonitor(IProgressMonitor monitor) {
 			}
 		}
 		monitor.done();
+		InfoDialog.show(imp);
 	}
+
+	private static class InfoDialog extends FormDialog {
+
+		private final Import imp;
+		private final ImportLog log;
+
+		static void show(Import imp) {
+			if (imp == null || imp.log() == null)
+				return;
+			App.runInUI(
+				titleOf(imp),
+				() -> new InfoDialog(imp).open());
+		}
+
+		private static String titleOf(Import imp) {
+			return imp.isCanceled()
+				? "Import canceled"
+				: "Import finished";
+		}
+
+		private InfoDialog(Import imp) {
+			super(UI.shell());
+			this.imp = imp;
+			this.log = imp.log();
+		}
+
+		@Override
+		protected void configureShell(Shell newShell) {
+			super.configureShell(newShell);
+			newShell.setText(titleOf(imp));
+		}
+
+		@Override
+		protected Point getInitialSize() {
+			return UI.initialSizeOf(this, 400, 300);
+		}
+
+		@Override
+		protected void createButtonsForButtonBar(Composite parent) {
+			createButton(parent, IDialogConstants.OK_ID,
+				IDialogConstants.OK_LABEL, true);
+			createButton(parent, IDialogConstants.DETAILS_ID,
+				"Details...", false);
+		}
+
+		@Override
+		protected void createFormContent(IManagedForm mForm) {
+			var tk = mForm.getToolkit();
+			var body = UI.formBody(mForm.getForm(), tk);
+			UI.gridLayout(body, 1, 10, 25);
+
+			long count = log.messages().stream()
+				.filter(ImportLog.Message::hasDescriptor)
+				.count();
+			tk.createLabel(body, String.format("Handled %d data sets:", count))
+				.setFont(UI.boldFont());
+
+			var comp = tk.createComposite(body);
+			UI.gridLayout(comp, 2, 5, 5);
+			var states = new ImportLog.State[] {
+				ImportLog.State.IMPORTED,
+				ImportLog.State.UPDATED,
+				ImportLog.State.SKIPPED,
+				ImportLog.State.ERROR,
+				ImportLog.State.WARNING
+			};
+			for (var state : states) {
+				tk.createLabel(comp, headerOf(state));
+				int c = log.countOf(state);
+				tk.createLabel(comp, Integer.toString(c));
+			}
+		}
+
+		private String headerOf(ImportLog.State state) {
+			if (state == null)
+				return "?";
+			return switch (state) {
+				case IMPORTED -> "Imported:";
+				case UPDATED -> "Updated:";
+				case SKIPPED -> "Skipped:";
+				case ERROR -> "Errors:";
+				case WARNING -> "Warnings:";
+				case INFO -> "Other:";
+			};
+		}
+
+	}
+
 }
