@@ -10,7 +10,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
-import org.openlca.app.M;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -34,15 +33,14 @@ record ImportMonitor(IProgressMonitor monitor) {
 						monitor.subTask(message.message());
 					} else if (message.hasDescriptor()) {
 						var d = message.descriptor();
-						monitor.subTask("wrote "
-							+ Labels.of(d.type) + ": " + Labels.name(d));
+						monitor.subTask(Labels.of(d.type) + "; " + Labels.name(d));
 					}
 				}
 				default -> {}
 			}
 		});
 
-		monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
+		monitor.beginTask("Import: ", IProgressMonitor.UNKNOWN);
 		var watcher = new Thread(imp);
 		watcher.start();
 
@@ -105,6 +103,16 @@ record ImportMonitor(IProgressMonitor monitor) {
 				IDialogConstants.OK_LABEL, true);
 			createButton(parent, IDialogConstants.DETAILS_ID,
 				"Details...", false);
+		}
+
+		@Override
+		protected void buttonPressed(int buttonId) {
+			if (buttonId != IDialogConstants.DETAILS_ID) {
+				super.buttonPressed(buttonId);
+				return;
+			}
+			ImportLogView.open(log);
+			okPressed();
 		}
 
 		@Override

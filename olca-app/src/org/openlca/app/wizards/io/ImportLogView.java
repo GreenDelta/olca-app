@@ -8,13 +8,17 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.openlca.app.App;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.io.ImportLog;
 
@@ -54,9 +58,19 @@ public class ImportLogView extends SimpleFormEditor {
 			var tk = mForm.getToolkit();
 			var body = UI.formBody(form, tk);
 			var table = Tables.createViewer(
-				body, "Status", "Message", "Data set");
+				body, "Status", "Data set", "Message");
 			table.setLabelProvider(new MessageLabel());
+			Tables.bindColumnWidths(table, 0.2, 0.4, 0.4);
 			table.setInput(log.messages());
+
+			var onOpen = Actions.onOpen(() -> {
+				ImportLog.Message message = Viewers.getFirstSelected(table);
+				if (!message.hasDescriptor())
+					return;
+				App.open(message.descriptor());
+			});
+			Actions.bind(table, onOpen);
+			Tables.onDoubleClick(table, $ -> onOpen.run());
 		}
 
 	}
@@ -66,7 +80,25 @@ public class ImportLogView extends SimpleFormEditor {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
+			if (!(obj instanceof ImportLog.Message message))
+				return null;
+			if (col == 0)
+				return iconOf(message.state());
+			if (col == 1 && message.hasDescriptor())
+				return Images.get(message.descriptor());
 			return null;
+		}
+
+		private Image iconOf(ImportLog.State state) {
+			if (state == null)
+				return null;
+			return switch (state) {
+				case IMPORTED, UPDATED -> Icon.IMPORT.get();
+				case ERROR -> Icon.ERROR.get();
+				case WARNING -> Icon.WARNING.get();
+				case INFO -> Icon.INFO.get();
+				case SKIPPED -> Icon.UNDO.get();
+			};
 		}
 
 		@Override
@@ -74,12 +106,23 @@ public class ImportLogView extends SimpleFormEditor {
 			if (!(obj instanceof ImportLog.Message message))
 				return null;
 			return switch (col) {
-				case 0 -> message.state() != null
-					? message.state().name()
-					: "";
-				case 1 -> message.message();
-				case 2 -> Labels.name(message.descriptor());
+				case 0 -> labelOf(message.state());
+				case 1 -> Labels.name(message.descriptor());
+				case 2 -> message.message();
 				default -> null;
+			};
+		}
+
+		private String labelOf(ImportLog.State state) {
+			if (state == null)
+				return null;
+			return switch (state) {
+				case IMPORTED -> "Imported";
+				case UPDATED -> "Updated";
+				case ERROR -> "Error";
+				case WARNING -> "Warning";
+				case INFO -> "Information";
+				case SKIPPED -> "Ignored";
 			};
 		}
 	}
