@@ -24,6 +24,25 @@ import org.openlca.jsonld.input.UpdateMode;
 
 public class MergeAction extends Action implements INavigationAction {
 
+	private static final ModelType[] typeOrder = new ModelType[] {
+			ModelType.DQ_SYSTEM,
+			ModelType.LOCATION,
+			ModelType.ACTOR,
+			ModelType.SOURCE,
+			ModelType.PARAMETER,
+			ModelType.UNIT_GROUP,
+			ModelType.FLOW_PROPERTY,
+			ModelType.CURRENCY,
+			ModelType.FLOW,
+			ModelType.IMPACT_CATEGORY,
+			ModelType.IMPACT_METHOD,
+			ModelType.SOCIAL_INDICATOR,
+			ModelType.PROCESS,
+			ModelType.PRODUCT_SYSTEM,
+			ModelType.PROJECT,
+			ModelType.RESULT
+		};
+	
 	@Override
 	public String getText() {
 		return "Merge...";
@@ -70,9 +89,7 @@ public class MergeAction extends Action implements INavigationAction {
 		var jsonImport = new JsonImport(jsonStore, Database.get());
 		jsonImport.setUpdateMode(UpdateMode.ALWAYS);
 		Database.getWorkspaceIdUpdater().disable();
-		for (var type : ModelType.categorized()) {
-			if (type == ModelType.CATEGORY)
-				continue;
+		for (var type : typeOrder) {
 			var changes = jsonStore.getChanges(type);
 			for (var change : changes) {
 				jsonImport.run(type, change.refId);
