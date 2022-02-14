@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -89,11 +88,8 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
 		try {
 			Database.getWorkspaceIdUpdater().beginTransaction();
-			getContainer().run(true, true, monitor -> {
-				monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
-				var handler = new ImportHandler(monitor);
-				handler.run(imp);
-			});
+			getContainer().run(
+				true, true, monitor -> ImportMonitor.on(monitor).run(imp));
 			Navigator.refresh();
 			return true;
 		} catch (Exception e) {

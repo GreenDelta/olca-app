@@ -2,7 +2,6 @@ package org.openlca.app.wizards.io;
 
 import java.io.File;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
@@ -56,16 +55,13 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public boolean performFinish() {
-		EcoSpold2Import pi = createImport();
-		if (pi == null)
+		var imp = createImport();
+		if (imp == null)
 			return false;
 		try {
 			Database.getWorkspaceIdUpdater().beginTransaction();
-			getContainer().run(true, true, (monitor) -> {
-				monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
-				ImportHandler handler = new ImportHandler(monitor);
-				handler.run(pi);
-			});
+			getContainer().run(
+				true, true, monitor -> ImportMonitor.on(monitor).run(imp));
 			return true;
 		} catch (Exception e) {
 			ErrorReporter.on("EcoSpold 02 import failed", e);
