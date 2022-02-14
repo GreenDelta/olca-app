@@ -213,7 +213,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 
 		@Override
 		public Process createModel() {
-			ProcessCreator creator = new ProcessCreator(Database.get());
+			var creator = new ProcessCreator(Database.get());
 			creator.name = getModelName();
 			creator.createWithProduct = createRefFlowCheck.getSelection();
 			creator.wasteProcess = wasteCheck.getSelection();

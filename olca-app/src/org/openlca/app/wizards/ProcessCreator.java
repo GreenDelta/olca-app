@@ -4,15 +4,14 @@ import java.util.Calendar;
 import java.util.UUID;
 
 import org.openlca.core.database.FlowDao;
-import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.descriptors.Descriptor;
 
 import com.google.common.base.Strings;
 
@@ -29,7 +28,7 @@ class ProcessCreator {
 
 	String name;
 	String description;
-	Descriptor flowProperty;
+	FlowProperty flowProperty;
 	Flow flow;
 	String flowName;
 	boolean createWithProduct;
@@ -82,11 +81,10 @@ class ProcessCreator {
 		flow.flowType = wasteProcess
 			? FlowType.WASTE_FLOW
 			: FlowType.PRODUCT_FLOW;
-		var property = new FlowPropertyDao(db).getForId(flowProperty.id);
-		flow.referenceFlowProperty = property;
-		FlowPropertyFactor factor = new FlowPropertyFactor();
+		flow.referenceFlowProperty = flowProperty;
+		var factor = new FlowPropertyFactor();
 		factor.conversionFactor = 1;
-		factor.flowProperty = property;
+		factor.flowProperty = flowProperty;
 		flow.flowPropertyFactors.add(factor);
 		new FlowDao(db).insert(flow);
 		return flow;

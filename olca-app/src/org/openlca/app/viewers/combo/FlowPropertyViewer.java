@@ -1,26 +1,21 @@
 package org.openlca.app.viewers.combo;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.core.database.FlowPropertyDao;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
-import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
+import org.openlca.core.model.FlowProperty;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class FlowPropertyViewer extends
-		AbstractComboViewer<FlowPropertyDescriptor> {
+public class FlowPropertyViewer extends AbstractComboViewer<FlowProperty> {
 
 	public FlowPropertyViewer(Composite parent) {
 		super(parent);
-		setInput(new FlowPropertyDescriptor[0]);
+		setInput(new FlowProperty[0]);
 	}
 
 	/**
@@ -31,11 +26,10 @@ public class FlowPropertyViewer extends
 	 */
 	public void setInput(IDatabase db) {
 		try {
-			List<FlowPropertyDescriptor> props = new FlowPropertyDao(
-					db).getDescriptors();
-			Map<Long, Integer> count = propCount(db);
+			var props = db.allOf(FlowProperty.class);
+			var count = propCount(db);
 
-			Collections.sort(props, (p1, p2) -> {
+			props.sort((p1, p2) -> {
 				if ("mass".equalsIgnoreCase(p1.name))
 					return -1;
 				if ("mass".equalsIgnoreCase(p2.name))
@@ -50,11 +44,9 @@ public class FlowPropertyViewer extends
 				props.subList(10, props.size()).sort(
 						(p1, p2) -> Strings.compare(p1.name, p2.name));
 			}
-			setInput(props.toArray(
-					new FlowPropertyDescriptor[props.size()]));
+			setInput(props.toArray(new FlowProperty[0]));
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("Loading flow properties failed", e);
+			ErrorReporter.on("Loading flow properties failed", e);
 		}
 	}
 
@@ -64,8 +56,8 @@ public class FlowPropertyViewer extends
 	}
 
 	@Override
-	public Class<FlowPropertyDescriptor> getType() {
-		return FlowPropertyDescriptor.class;
+	public Class<FlowProperty> getType() {
+		return FlowProperty.class;
 	}
 
 	private static Map<Long, Integer> propCount(IDatabase db) {
@@ -79,9 +71,7 @@ public class FlowPropertyViewer extends
 				return true;
 			});
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(
-					FlowPropertyViewer.class);
-			log.error("Collecting usage count failed", e);
+			ErrorReporter.on("Collecting usage count failed", e);
 		}
 		return count;
 	}

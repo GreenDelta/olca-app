@@ -13,13 +13,10 @@ import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowPropertyViewer;
 import org.openlca.app.viewers.combo.UnitViewer;
-import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.SocialIndicator;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +83,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 			quantityCombo.setInput(Database.get());
 			FlowProperty aq = getModel().activityQuantity;
 			if (aq != null) {
-				quantityCombo.select(Descriptor.of(aq));
+				quantityCombo.select(aq);
 			}
 			quantityCombo.addSelectionChangedListener(this::quantityChanged);
 			new CommentControl(comp, getToolkit(), "activityQuantity", getComments());
@@ -108,15 +105,11 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 			new CommentControl(comp, getToolkit(), "activityUnit", getComments());
 		}
 
-		private void quantityChanged(FlowPropertyDescriptor d) {
-			if (d == null)
+		private void quantityChanged(FlowProperty property) {
+			if (property == null)
 				return;
-			FlowPropertyDao dao = new FlowPropertyDao(Database.get());
-			FlowProperty fp = dao.getForId(d.id);
-			if (fp == null)
-				return;
-			getModel().activityQuantity = fp;
-			UnitGroup ug = fp.unitGroup;
+			getModel().activityQuantity = property;
+			UnitGroup ug = property.unitGroup;
 			if (ug == null)
 				return;
 			getModel().activityUnit = ug.referenceUnit;

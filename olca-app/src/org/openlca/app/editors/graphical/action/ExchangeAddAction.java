@@ -33,7 +33,6 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
-import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.util.Strings;
 
 public class ExchangeAddAction extends Action implements GraphAction {
@@ -122,7 +121,7 @@ public class ExchangeAddAction extends Action implements GraphAction {
 		Text text;
 		Flow flow;
 		FlowType type = FlowType.PRODUCT_FLOW;
-		FlowPropertyDescriptor quantity;
+		FlowProperty quantity;
 
 		Dialog() {
 			super(UI.shell());
