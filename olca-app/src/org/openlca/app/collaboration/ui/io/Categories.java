@@ -25,7 +25,7 @@ class Categories {
 	static Categories of(Entries entries, String commitId) {
 		return new Categories(entries, commitId);
 	}
-	
+
 	private Categories(Entries entries, String commitId) {
 		init(entries, commitId, "");
 	}
@@ -41,7 +41,7 @@ class Categories {
 			refIdToName.put(refId, entry.name);
 			refIdToType.put(refId, entry.type);
 			if (!Strings.nullOrEmpty(entry.category)) {
-				refIdToParent.put(refId, getRefId(entry.category));
+				refIdToParent.put(refId, getRefId(entry.type.name() + "/" + entry.category));
 			}
 			pathToRefId.put(entry.fullPath, refId);
 		});
@@ -71,7 +71,13 @@ class Categories {
 		category.addProperty("name", refIdToName.get(refId));
 		category.addProperty("modelType", refIdToType.get(refId).name());
 		category.addProperty("version", new Version(0).toString());
-		category.addProperty("category", refIdToParent.get(refId));
+		var parentRefId = refIdToParent.get(refId);
+		if (parentRefId != null) {
+			var parent = new JsonObject();
+			parent.addProperty("@type", ModelType.CATEGORY.name());
+			parent.addProperty("@id", parentRefId);
+			category.add("category", parent);
+		}
 		return category;
 	}
 
