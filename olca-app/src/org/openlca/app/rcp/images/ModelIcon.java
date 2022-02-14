@@ -14,6 +14,10 @@ enum ModelIcon {
 	DQ_SYSTEM_CATEGORY("category/data_quality_system.png"),
 	DQ_SYSTEM_WIZARD("wizard/data_quality_system.png"),
 
+	EPD("model/epd.png"),
+	EPD_CATEGORY("category/epd.png"),
+	EPD_WIZARD("wizard/epd.png"),
+
 	FLOW("model/flow.png"),
 	FLOW_ELEMENTARY("model/flow_elementary.png"),
 	FLOW_PRODUCT("model/flow_product.png"),
@@ -75,7 +79,7 @@ enum ModelIcon {
 
 	final String fileName;
 
-	private ModelIcon(String fileName) {
+	ModelIcon(String fileName) {
 		this.fileName = fileName;
 	}
 

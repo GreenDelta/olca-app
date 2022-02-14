@@ -61,8 +61,7 @@ public class NavigationTree {
 		var coll = new ArrayList<INavigationElement<?>>();
 		while (!queue.isEmpty()) {
 			var next = queue.poll();
-			if (next instanceof ModelTypeElement) {
-				var elem = (ModelTypeElement) next;
+			if (next instanceof ModelTypeElement elem) {
 				if (elem.getContent() == type) {
 					var lib = elem.getLibrary();
 					coll.add(lib.isPresent()

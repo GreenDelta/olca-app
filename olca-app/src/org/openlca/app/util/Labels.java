@@ -312,6 +312,7 @@ public class Labels {
 			case CATEGORY -> M.Category;
 			case DQ_SYSTEM -> M.DataQualitySystems;
 			case RESULT -> M.Results;
+			case EPD -> "EPDs";
 			default -> M.Unknown;
 		};
 	}
@@ -336,6 +337,7 @@ public class Labels {
 			case PARAMETER -> M.GlobalParameter;
 			case CATEGORY -> M.Category;
 			case RESULT -> M.Result;
+			case EPD -> "EPD";
 			default -> M.Unknown;
 		};
 	}

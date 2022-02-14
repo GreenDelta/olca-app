@@ -46,29 +46,6 @@ class ResultPage extends ModelPage<Result> {
 			});
 		UI.filler(comp, tk);
 
-		// URN
-		UI.formLabel(comp, tk, "URN");
-		var urnLink = tk.createImageHyperlink(comp, SWT.NONE);
-		var urn = editor.getModel().urn;
-		urnLink.setText(urn == null ? " - none -" : urn);
-		Controls.onClick(urnLink, $ -> {
-			if (Strings.nullOrEmpty(urn))
-				return;
-			if (urn.startsWith("openLCA:model:")) {
-				var refId = urn.substring(14);
-				var system = Database.get().get(ProductSystem.class, refId);
-				if (system != null) {
-					App.open(system);
-				}
-			} else if (urn.startsWith("openLCA:process:")) {
-				var refId = urn.substring(16);
-				var process = Database.get().get(Process.class, refId);
-				if (process != null) {
-					App.open(process);
-				}
-			}
-		});
-
 		var sash = new SashForm(body, SWT.VERTICAL);
 		UI.gridLayout(sash, 1);
 		UI.gridData(sash, true, false);

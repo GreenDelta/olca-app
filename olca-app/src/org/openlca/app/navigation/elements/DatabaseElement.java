@@ -34,6 +34,7 @@ public class DatabaseElement extends NavigationElement<DatabaseConfig> {
 		list.add(new ModelTypeElement(this, ModelType.FLOW));
 
 		if (FeatureFlag.RESULTS.isEnabled()) {
+			list.add(new ModelTypeElement(this, ModelType.EPD));
 			list.add(new ModelTypeElement(this, ModelType.RESULT));
 		}
 
