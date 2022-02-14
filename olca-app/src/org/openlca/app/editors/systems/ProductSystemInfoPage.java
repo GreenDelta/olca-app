@@ -21,7 +21,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowPropertyFactorViewer;
-import org.openlca.app.viewers.combo.UnitViewer;
+import org.openlca.app.viewers.combo.UnitCombo;
 import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -37,7 +37,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 
 	private ExchangeViewer productViewer;
 	private FlowPropertyFactorViewer propertyViewer;
-	private UnitViewer unitViewer;
+	private UnitCombo unitViewer;
 	private Text targetAmountText;
 	private ScrolledForm form;
 
@@ -75,7 +75,7 @@ class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		propertyViewer.addSelectionChangedListener(this::propertyChanged);
 		new CommentControl(composite, getToolkit(), "targetFlowPropertyFactor", getComments());
 		tk.createLabel(composite, M.Unit);
-		unitViewer = new UnitViewer(composite);
+		unitViewer = new UnitCombo(composite);
 		new CommentControl(composite, getToolkit(), "targetUnit", getComments());
 		targetAmountText = UI.formText(composite, getManagedForm().getToolkit(), M.TargetAmount);
 		new CommentControl(composite, getToolkit(), "targetAmount", getComments());

@@ -21,7 +21,7 @@ import org.openlca.app.navigation.filters.FlowTypeFilter;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
-import org.openlca.app.viewers.combo.FlowPropertyViewer;
+import org.openlca.app.viewers.combo.FlowPropertyCombo;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
@@ -63,7 +63,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		private Button createRefFlowCheck;
 		private Button wasteCheck;
 		private TreeViewer flowTree;
-		private FlowPropertyViewer propertyCombo;
+		private FlowPropertyCombo propertyCombo;
 		private Label selectProductLabel;
 		private Label selectFlowPropertyLabel;
 		private Label qRefLabel;
@@ -206,7 +206,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			flowPropertyContainer = new Composite(contentStack, SWT.NONE);
 			UI.gridData(flowPropertyContainer, true, false);
 			flowPropertyContainer.setLayout(gridLayout());
-			propertyCombo = new FlowPropertyViewer(flowPropertyContainer);
+			propertyCombo = new FlowPropertyCombo(flowPropertyContainer);
 			propertyCombo.setInput(Database.get());
 			propertyCombo.selectFirst();
 		}

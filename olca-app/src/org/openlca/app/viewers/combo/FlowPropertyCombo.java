@@ -11,9 +11,9 @@ import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.util.Strings;
 
-public class FlowPropertyViewer extends AbstractComboViewer<FlowProperty> {
+public class FlowPropertyCombo extends AbstractComboViewer<FlowProperty> {
 
-	public FlowPropertyViewer(Composite parent) {
+	public FlowPropertyCombo(Composite parent) {
 		super(parent);
 		setInput(new FlowProperty[0]);
 	}

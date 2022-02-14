@@ -11,8 +11,8 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.combo.FlowPropertyViewer;
-import org.openlca.app.viewers.combo.UnitViewer;
+import org.openlca.app.viewers.combo.FlowPropertyCombo;
+import org.openlca.app.viewers.combo.UnitCombo;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.SocialIndicator;
 import org.openlca.core.model.Unit;
@@ -42,8 +42,8 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 	private class Page extends ModelPage<SocialIndicator> {
 
 		private SocialIndicatorEditor editor;
-		private FlowPropertyViewer quantityCombo;
-		private UnitViewer unitCombo;
+		private FlowPropertyCombo quantityCombo;
+		private UnitCombo unitCombo;
 		private ScrolledForm form;
 
 		Page() {
@@ -79,7 +79,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 
 		private void createQuantityCombo(FormToolkit tk, Composite comp) {
 			UI.formLabel(comp, tk, M.Quantity);
-			quantityCombo = new FlowPropertyViewer(comp);
+			quantityCombo = new FlowPropertyCombo(comp);
 			quantityCombo.setInput(Database.get());
 			FlowProperty aq = getModel().activityQuantity;
 			if (aq != null) {
@@ -91,7 +91,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 
 		private void createUnitCombo(FormToolkit tk, Composite comp) {
 			UI.formLabel(comp, tk, M.Unit);
-			unitCombo = new UnitViewer(comp);
+			unitCombo = new UnitCombo(comp);
 			FlowProperty fp = getModel().activityQuantity;
 			if (fp != null && fp.unitGroup != null)
 				unitCombo.setInput(fp.unitGroup.units);

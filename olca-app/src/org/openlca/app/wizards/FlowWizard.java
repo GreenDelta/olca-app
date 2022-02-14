@@ -7,7 +7,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.combo.FlowPropertyViewer;
+import org.openlca.app.viewers.combo.FlowPropertyCombo;
 import org.openlca.app.viewers.combo.FlowTypeViewer;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
@@ -37,7 +37,7 @@ public class FlowWizard extends AbstractWizard<Flow> {
 	private static class Page extends AbstractWizardPage<Flow> {
 
 		private FlowTypeViewer typeCombo;
-		private FlowPropertyViewer propertyCombo;
+		private FlowPropertyCombo propertyCombo;
 
 		public Page() {
 			super("FlowWizardPage");
@@ -63,7 +63,7 @@ public class FlowWizard extends AbstractWizard<Flow> {
 			typeCombo = new FlowTypeViewer(container);
 			typeCombo.select(FlowType.ELEMENTARY_FLOW);
 			UI.formLabel(container, M.ReferenceFlowProperty);
-			propertyCombo = new FlowPropertyViewer(container);
+			propertyCombo = new FlowPropertyCombo(container);
 			propertyCombo.setInput(Database.get());
 			propertyCombo.selectFirst();
 		}

@@ -25,7 +25,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
-import org.openlca.app.viewers.combo.FlowPropertyViewer;
+import org.openlca.app.viewers.combo.FlowPropertyCombo;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
@@ -164,7 +164,7 @@ public class ExchangeAddAction extends Action implements GraphAction {
 			var propComp = tk.createComposite(body);
 			UI.gridData(propComp, true, false);
 			UI.gridLayout(propComp, 1, 5, 0);
-			var propViewer = new FlowPropertyViewer(propComp);
+			var propViewer = new FlowPropertyCombo(propComp);
 			propViewer.setInput(db);
 			propViewer.selectFirst();
 			this.quantity = propViewer.getSelected();
