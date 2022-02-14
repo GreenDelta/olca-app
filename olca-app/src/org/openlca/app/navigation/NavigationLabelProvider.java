@@ -36,7 +36,6 @@ import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryDir;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Categories;
 
@@ -64,9 +63,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return null;
 
 		// for local databases show the full path to the folder
-		if (obj instanceof DatabaseElement) {
-			DatabaseElement elem = (DatabaseElement) obj;
-			DatabaseConfig config = elem.getContent();
+		if (obj instanceof DatabaseElement elem) {
+			var config = elem.getContent();
 			if (config == null)
 				return null;
 			if (config.isEmbedded()) {
@@ -79,42 +77,46 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		}
 
 		// for models show the category path + name
-		if (obj instanceof ModelElement) {
-			ModelElement element = (ModelElement) obj;
-			CategorizedDescriptor d = element.getContent();
-			String name = Labels.name(d);
-			if (d.category == null)
+		if (obj instanceof ModelElement elem) {
+			var descriptor = elem.getContent();
+			var name = Labels.name(descriptor);
+			if (descriptor.category == null)
 				return name;
-			Category c = Cache.getEntityCache().get(
-					Category.class, d.category);
-			if (c == null)
-				return name;
-			return String.join(" / ", Categories.path(c)) + " / " + name;
+			var category = Cache.getEntityCache().get(
+					Category.class, descriptor.category);
+			return category != null
+				? String.join(" / ", Categories.path(category)) + " / " + name
+				: name;
 		}
 
 		// for categories show the full path
-		if (obj instanceof CategoryElement) {
-			CategoryElement elem = (CategoryElement) obj;
-			Category c = elem.getContent();
-			if (c == null)
-				return null;
-			return String.join(" / ", Categories.path(c));
+		if (obj instanceof CategoryElement elem) {
+			var category = elem.getContent();
+			return category != null
+				? String.join(" / ", Categories.path(category))
+				: null;
 		}
 
 		// for script files and folders show the full file path
-		if (obj instanceof ScriptElement) {
-			var file = ((ScriptElement) obj).getContent();
-			return file.getAbsolutePath();
+		if (obj instanceof ScriptElement elem) {
+			var file = elem.getContent();
+			return file != null
+				? file.getAbsolutePath()
+				: null;
 		}
 
 		// libraries
-		if (obj instanceof LibraryDirElement) {
-			var libDir = ((LibraryDirElement) obj).getContent();
-			return libDir.folder().getAbsolutePath();
+		if (obj instanceof LibraryDirElement elem) {
+			var libDir = elem.getContent();
+			return libDir != null
+				? libDir.folder().getAbsolutePath()
+				: null;
 		}
-		if (obj instanceof LibraryElement) {
-			var lib = ((LibraryElement) obj).getContent();
-			return lib.folder.getAbsolutePath();
+		if (obj instanceof LibraryElement elem) {
+			var lib = elem.getContent();
+			return lib != null
+				? lib.folder.getAbsolutePath()
+				: null;
 		}
 
 		return getText(obj);
@@ -122,9 +124,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 
 	@Override
 	public Image getImage(Object obj) {
-		if (!(obj instanceof INavigationElement))
+		if (!(obj instanceof INavigationElement<?> elem))
 			return null;
-		var elem = (INavigationElement<?>) obj;
 
 		if (indicateRepositoryState) {
 			var img = RepositoryLabel.getWithOverlay(elem);
@@ -133,22 +134,21 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		}
 
 		var content = (elem).getContent();
-		if (content instanceof DatabaseConfig) {
-			var config = (DatabaseConfig) content;
+		if (content instanceof DatabaseConfig config) {
 			return Database.isActive(config)
 					? Icon.DATABASE.get()
 					: Icon.DATABASE_DISABLED.get();
 		}
 
 		// groups and models
-		if (content instanceof Group)
-			return Images.get((Group) content);
-		if (content instanceof ModelType)
-			return Images.getForCategory((ModelType) content);
-		if (content instanceof Category)
-			return Images.get((Category) content);
-		if (content instanceof Descriptor)
-			return Images.get((Descriptor) content);
+		if (content instanceof Group group)
+			return Images.get(group);
+		if (content instanceof ModelType type)
+			return Images.getForCategory(type);
+		if (content instanceof Category category)
+			return Images.get(category);
+		if (content instanceof Descriptor descriptor)
+			return Images.get(descriptor);
 
 		// libraries
 		if (content instanceof LibraryDir)
@@ -157,8 +157,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return Icon.LIBRARY.get();
 
 		// files and folders
-		if (content instanceof File) {
-			var file = (File) content;
+		if (content instanceof File file) {
 			return file.isDirectory()
 					? Icon.FOLDER.get()
 					: Images.get(FileType.of(file));
@@ -179,14 +178,13 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 
 	@Override
 	public String getText(Object obj) {
-		if (!(obj instanceof INavigationElement))
+		if (!(obj instanceof INavigationElement<?> elem))
 			return null;
-		var elem = (INavigationElement<?>) obj;
 		var baseText = getBaseText(elem);
 		if (baseText == null)
 			return null;
-		if (elem instanceof DatabaseElement) {
-			var config = ((DatabaseElement) elem).getContent();
+		if (elem instanceof DatabaseElement dbElem) {
+			var config = dbElem.getContent();
 			var repoText = RepositoryLabel.getRepositoryText(config);
 			if (repoText != null)
 				baseText += repoText;
@@ -232,8 +230,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 	public Font getFont(Object elem) {
 		if (!(elem instanceof INavigationElement<?>))
 			return null;
-		if (elem instanceof DatabaseElement) {
-			DatabaseElement dbElem = (DatabaseElement) elem;
+		if (elem instanceof DatabaseElement dbElem) {
 			if (Database.isActive(dbElem.getContent()))
 				return UI.boldFont();
 			return null;

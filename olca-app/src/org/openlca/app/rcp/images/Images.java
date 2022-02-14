@@ -168,10 +168,10 @@ public class Images {
 	}
 
 	public static Image getForCategory(ModelType type) {
-		ModelIcon icon = categoryIcon(type);
-		if (icon == null)
-			return Icon.FOLDER.get();
-		return ImageManager.get(icon);
+		var icon = categoryIcon(type);
+		return icon == null
+			? Icon.FOLDER.get()
+			: ImageManager.get(icon);
 	}
 
 	public static Image getForCategory(ModelType type, Overlay overlay) {
@@ -284,6 +284,7 @@ public class Images {
 			return null;
 		return switch (type) {
 			case ACTOR -> ModelIcon.ACTOR_WIZARD;
+			case EPD -> ModelIcon.EPD_WIZARD;
 			case CURRENCY -> ModelIcon.CURRENCY_WIZARD;
 			case FLOW -> ModelIcon.FLOW_WIZARD;
 			case FLOW_PROPERTY -> ModelIcon.FLOW_PROPERTY_WIZARD;
@@ -317,6 +318,7 @@ public class Images {
 			return null;
 		return switch (type) {
 			case ACTOR -> ModelIcon.ACTOR;
+			case EPD -> ModelIcon.EPD;
 			case FLOW -> ModelIcon.FLOW;
 			case FLOW_PROPERTY -> ModelIcon.FLOW_PROPERTY;
 			case IMPACT_METHOD -> ModelIcon.IMPACT_METHOD;
@@ -360,6 +362,7 @@ public class Images {
 			return null;
 		return switch (modelType) {
 			case ACTOR -> ModelIcon.ACTOR_CATEGORY;
+			case EPD -> ModelIcon.EPD_CATEGORY;
 			case FLOW -> ModelIcon.FLOW_CATEGORY;
 			case FLOW_PROPERTY -> ModelIcon.FLOW_PROPERTY_CATEGORY;
 			case IMPACT_METHOD, IMPACT_CATEGORY -> ModelIcon.IMPACT_METHOD_CATEGORY; // TODO

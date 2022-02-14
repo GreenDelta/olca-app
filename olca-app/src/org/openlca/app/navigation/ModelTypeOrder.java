@@ -47,6 +47,7 @@ public class ModelTypeOrder {
 			ModelType.SOURCE,
 			ModelType.LOCATION,
 			ModelType.DQ_SYSTEM,
+			ModelType.EPD,
 			ModelType.RESULT
 		};
 	}
