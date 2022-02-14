@@ -38,12 +38,10 @@ class CreateModelAction extends Action implements INavigationAction {
 		type = null;
 		category = null;
 
-		if (first instanceof ModelTypeElement) {
-			var e = (ModelTypeElement) first;
+		if (first instanceof ModelTypeElement e) {
 			type = e.getContent();
 		}
-		if (first instanceof CategoryElement) {
-			var e = (CategoryElement) first;
+		if (first instanceof CategoryElement e) {
 			category = e.getContent();
 			type = category.modelType;
 		}
@@ -64,8 +62,7 @@ class CreateModelAction extends Action implements INavigationAction {
 					.getNewWizardRegistry()
 					.findWizard(wizardId)
 					.createWizard();
-			if (wizard instanceof INewModelWizard) {
-				var modelWizard = (INewModelWizard) wizard;
+			if (wizard instanceof INewModelWizard modelWizard) {
 				modelWizard.setCategory(category);
 			}
 			var dialog = new WizardDialog(UI.shell(), wizard);
@@ -103,6 +100,7 @@ class CreateModelAction extends Action implements INavigationAction {
 			case PARAMETER -> M.NewParameter;
 			case DQ_SYSTEM -> M.NewDataQualitySystem;
 			case RESULT -> "New result";
+			case EPD -> "New EPD";
 			default -> M.Unknown + "?";
 		};
 	}
