@@ -204,8 +204,14 @@
 			default="false"
 			icon="icons/model/impact_method.png"
 			id="editors.result"
-			name="Data quality system">
+			name="Result">
 		</editor>
+		<editor
+			class="org.openlca.app.editors.epds.EpdEditor"
+			default="false"
+			icon="icons/model/epd.png"
+			id="editors.epd"
+			name="EPD"/>
 
 		<!-- result views -->
 		<editor
