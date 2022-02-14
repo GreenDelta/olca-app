@@ -21,7 +21,6 @@ import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.Uncertainty;
@@ -182,9 +181,6 @@ class ModelUtil {
 		if (property.equals("exchange"))
 			if (isType(parent, AllocationFactor.class))
 				return false;
-		if (property.equals("lastModificationDate"))
-			if (isType(parent, Project.class))
-				return false;
 		if (isType(parent, Uncertainty.class))
 			if (!property.contains("Formula"))
 				return false;
@@ -206,7 +202,7 @@ class ModelUtil {
 				return true;
 			else if ("processLinks".equals(property))
 				return true;
-			else if ("parameterRedefs".equals(property))
+			else if ("parameterSets".equals(property))
 				return true;
 		if (isType(parent, DQSystem.class))
 			if ("hasUncertainties".equals(property))
@@ -254,6 +250,8 @@ class ModelUtil {
 				return new String[] { "name", "productSystem.@id" };
 			if (property.equals("parameterRedefs"))
 				return new String[] { "name", "context.@id" };
+			if (property.equals("parameterSets"))
+				return new String[] { "name" };
 			if (property.equals("indicators") || property.equals("scores"))
 				return new String[] { "position" };
 			return new String[] { "@id" };

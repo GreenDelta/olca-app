@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProcessDocumentation;
-import org.openlca.core.model.Project;
 
 import com.google.gson.JsonElement;
 
@@ -25,8 +24,6 @@ class DateFields {
 		putDate(ProcessDocumentation.class, "validFrom");
 		putDate(ProcessDocumentation.class, "validUntil");
 		putTimestamp(ProcessDocumentation.class, "creationDate");
-		putTimestamp(Project.class, "creationDate");
-		putTimestamp(Project.class, "lastModificationDate");
 	}
 
 	private static void putTimestamp(Class<?> clazz, String property) {

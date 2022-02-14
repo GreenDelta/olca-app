@@ -187,6 +187,8 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 			return Images.get(ModelType.PARAMETER);
 		if (property.equals("parameterRedefs"))
 			return Images.get(ModelType.PARAMETER);
+		if (property.equals("parameterSets"))
+			return Images.get(ModelType.PARAMETER);
 		if (property.equals("socialAspects"))
 			return Images.get(ModelType.SOCIAL_INDICATOR);
 		if (property.equals("processes"))

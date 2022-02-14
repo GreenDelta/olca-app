@@ -29,8 +29,8 @@ public class ModelDependencyResolver implements IDependencyResolver {
 		put(ProductSystem.class, "referenceExchange", "targetFlowProperty");
 		put(ProductSystem.class, "targetFlowProperty", "targetUnit");
 		put(ProductSystem.class, "processes", "processLinks");
-		put(ProductSystem.class, "processes", "parameterRedefs");
-		put(ProductSystem.class, "processLinks", "parameterRedefs");
+		put(ProductSystem.class, "processes", "parameterSets");
+		put(ProductSystem.class, "processLinks", "parameterSets");
 	}
 
 	private static void put(Class<?> clazz, String from, String to) {

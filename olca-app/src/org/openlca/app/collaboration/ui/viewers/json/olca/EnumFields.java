@@ -35,8 +35,6 @@ class EnumFields {
 		put(Uncertainty.class, "distributionType", UncertaintyType.class);
 		put(Parameter.class, "parameterScope", ParameterScope.class);
 		put(Process.class, "processType", ProcessType.class);
-		// support old schemas with typo
-		put(Process.class, "processTyp", ProcessType.class);
 		put(Process.class, "defaultAllocationMethod", AllocationMethod.class);
 		put(AllocationFactor.class, "allocationType", AllocationMethod.class);
 		put(ProjectVariant.class, "allocationMethod", AllocationMethod.class);

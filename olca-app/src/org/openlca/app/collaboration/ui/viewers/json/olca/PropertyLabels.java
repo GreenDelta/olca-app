@@ -24,6 +24,7 @@ import org.openlca.core.model.NwFactor;
 import org.openlca.core.model.NwSet;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterRedef;
+import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.ProductSystem;
@@ -89,6 +90,7 @@ class PropertyLabels {
 		putNwFactorLabels();
 		putProductSystemLabels();
 		putParameterRedefLabels();
+		putParameterRedefSetLabels();
 		putProjectLabels();
 		putProjectVariantLabels();
 		putDQSystemLabels();
@@ -261,6 +263,7 @@ class PropertyLabels {
 		put(clazz, "costValue", M.CostValue);
 		put(clazz, "currency", M.Currency);
 		put(clazz, "uncertainty", M.Uncertainty);
+		put(clazz, "location", M.Location);
 	}
 
 	private static void putUncertaintyLabels() {
@@ -288,6 +291,7 @@ class PropertyLabels {
 		put(clazz, "product", M.Product);
 		put(clazz, "exchange", M.InputOutput);
 		put(clazz, "value", M.Value);
+		put(clazz, "formula", M.Formula);
 	}
 
 	private static void putParameterLabels() {
@@ -316,11 +320,8 @@ class PropertyLabels {
 		putBasicLabels(clazz);
 		put(clazz, "impactCategories", M.ImpactCategories);
 		put(clazz, "nwSets", M.NormalizationWeightingSets);
-		put(clazz, "parameters", M.Parameters);
-		put(clazz, "parameterMean", M.ParameterAggregationFunction);
-		put(clazz, "sources", M.Sources);
-		put(clazz, "author", M.Author);
-		put(clazz, "generator", M.Generator);
+		put(clazz, "source", M.Source);
+		put(clazz, "code", M.Code);
 	}
 
 	private static void putImpactCategoryLabels() {
@@ -328,6 +329,10 @@ class PropertyLabels {
 		putBasicLabels(clazz);
 		put(clazz, "referenceUnitName", M.ReferenceUnit);
 		put(clazz, "impactFactors", M.ImpactFactors);
+		put(clazz, "source", M.Source);
+		put(clazz, "location", M.Location);
+		put(clazz, "parameters", M.Parameters);
+		put(clazz, "code", M.Code);
 	}
 
 	private static void putImpactFactorLabels() {
@@ -364,7 +369,7 @@ class PropertyLabels {
 		put(clazz, "targetAmount", M.TargetAmount);
 		put(clazz, "processes", M.Processes);
 		put(clazz, "processLinks", M.ProcessLinks);
-		put(clazz, "parameterRedefs", M.Parameters);
+		put(clazz, "parameterSets", M.ParameterSets);
 	}
 
 	private static void putParameterRedefLabels() {
@@ -373,20 +378,23 @@ class PropertyLabels {
 		put(clazz, "name", M.Name);
 		put(clazz, "value", M.Value);
 		put(clazz, "uncertainty", M.Uncertainty);
+		put(clazz, "isProtected", M.IsProtected);
 	}
 
+	private static void putParameterRedefSetLabels() {
+		var clazz = ParameterRedefSet.class;
+		put(clazz, "name", M.Name);
+		put(clazz, "description", M.Description);
+		put(clazz, "isBaseline", M.IsBaseline);
+		put(clazz, "parameters", M.Parameters);
+	}
+	
 	private static void putProjectLabels() {
 		var clazz = Project.class;
 		putBasicLabels(clazz);
-		put(clazz, "functionalUnit", M.FunctionalUnit);
-		put(clazz, "goal", M.Goal);
-		put(clazz, "author", M.Author);
-		put(clazz, "creationDate", M.CreationDate);
-		put(clazz, "lastModificationDate", M.LastModificationDate);
 		put(clazz, "impactMethod", M.ImpactAssessmentMethod);
 		put(clazz, "nwSet", M.NormalizationAndWeightingSet);
 		put(clazz, "variants", M.Variants);
-		put(clazz, "isDisabled", M.Disabled);
 	}
 
 	private static void putProjectVariantLabels() {
