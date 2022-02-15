@@ -4,6 +4,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowPropertyCombo;
 import org.openlca.app.viewers.combo.UnitCombo;
@@ -26,8 +27,9 @@ public record EpdProductSection(EpdEditor editor) {
 		// flow properties
 		UI.formLabel(comp, tk, M.FlowProperty);
 		var propCombo = new FlowPropertyCombo(comp);
+		UI.gridData(propCombo.getControl(), false, false).widthHint = 150;
 		fillProperties(propCombo);
-		if (product().property !=  null) {
+		if (product().property != null) {
 			propCombo.select(product().property);
 		}
 		propCombo.addSelectionChangedListener(property -> {
@@ -38,6 +40,7 @@ public record EpdProductSection(EpdEditor editor) {
 		// units
 		UI.formLabel(comp, tk, M.Unit);
 		var unitCombo = new UnitCombo(comp);
+		UI.gridData(unitCombo.getControl(), false, false).widthHint = 150;
 		fillUnits(unitCombo);
 		if (product().unit != null) {
 			unitCombo.select(product().unit);
@@ -66,7 +69,10 @@ public record EpdProductSection(EpdEditor editor) {
 		});
 
 		var amountText = UI.formText(comp, tk, M.Amount);
-
+		Controls.set(amountText, product().amount, amount -> {
+			product().amount = amount;
+			editor.setDirty();
+		});
 	}
 
 	private EpdProduct product() {

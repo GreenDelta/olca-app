@@ -10,9 +10,10 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 public abstract class AbstractViewer<T, V extends StructuredViewer> implements
-		org.eclipse.jface.viewers.ISelectionChangedListener {
+	org.eclipse.jface.viewers.ISelectionChangedListener {
 
 	private final List<Consumer<T>> listener = new ArrayList<>();
 	private final V viewer;
@@ -35,12 +36,16 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		return viewer;
 	}
 
+	public Control getControl() {
+		return viewer.getControl();
+	}
+
 	public void refresh() {
 		viewer.refresh();
 	}
 
 	public void addSelectionChangedListener(
-			Consumer<T> listener) {
+		Consumer<T> listener) {
 		if (this.listener.size() == 0) {
 			startListening();
 		}
@@ -48,7 +53,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	}
 
 	public void removeSelectionChangedListener(
-			Consumer<T> listener) {
+		Consumer<T> listener) {
 		this.listener.remove(listener);
 		if (this.listener.size() == 0) {
 			stopListening();
@@ -99,7 +104,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 
 	private void setInternalInput(Object[] input) {
 		Object[] internalInput = new Object[nullable ? input.length + 1
-				: input.length];
+			: input.length];
 		if (nullable)
 			internalInput[0] = new Null();
 		for (int i = 0; i < input.length; i++)
@@ -111,8 +116,8 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 	public T getSelected() {
 		var first = Viewers.getFirstSelected(viewer);
 		return first instanceof AbstractViewer.Null
-				? null
-				: (T) first;
+			? null
+			: (T) first;
 	}
 
 	public void select(T value) {
@@ -166,7 +171,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		@Override
 		public boolean equals(Object other) {
 			return other == null
-					|| this.getClass().equals(other.getClass());
+				|| this.getClass().equals(other.getClass());
 		}
 
 		@Override

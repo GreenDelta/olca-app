@@ -26,8 +26,11 @@ public class EpdEditor extends ModelEditor<Epd> {
 
 	private static class EpdPage extends ModelPage<Epd> {
 
+		private final EpdEditor editor;
+
 		EpdPage(EpdEditor editor) {
 			super(editor, "EpdInfoPage", M.GeneralInformation);
+			this.editor = editor;
 		}
 
 		@Override
@@ -35,7 +38,8 @@ public class EpdEditor extends ModelEditor<Epd> {
 			var form = UI.formHeader(this);
 			var tk = mForm.getToolkit();
 			var body = UI.formBody(form, tk);
-			new InfoSection(getEditor()).render(body, tk);
+			new InfoSection(editor).render(body, tk);
+			new EpdProductSection(editor).render(body, tk);
 			body.setFocus();
 			form.reflow(true);
 		}
