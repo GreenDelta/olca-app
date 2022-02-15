@@ -15,7 +15,7 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.ui.navigation.RepositoryMenu;
+import org.openlca.app.collaboration.navigation.RepositoryMenu;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.navigation.actions.db.DbCloseAction;

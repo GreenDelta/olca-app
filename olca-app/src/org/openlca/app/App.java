@@ -13,7 +13,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.collaboration.ui.preferences.CollaborationPreference;
+import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.db.Repository;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;

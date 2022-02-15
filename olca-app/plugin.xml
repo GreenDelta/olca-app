@@ -493,14 +493,14 @@
 			name="%Navigation">
 		</view>
 		<view
-			class="org.openlca.app.collaboration.ui.views.HistoryView"
+			class="org.openlca.app.collaboration.views.HistoryView"
 			icon="icons/collaboration/history_view.png"
 			id="views.collaboration.history"
 			name="Commit history"
 			restorable="true">
 		</view>
 		<view
-			class="org.openlca.app.collaboration.ui.views.CompareView"
+			class="org.openlca.app.collaboration.views.CompareView"
 			id="views.collaboration.compare"
 			name="Compare with repository"
 			icon="icons/collaboration/compare_view.png"
@@ -536,7 +536,7 @@
 			name="%Configuration">
 		</page>
 		<page
-			class="org.openlca.app.collaboration.ui.preferences.CollaborationPreferencePage"
+			class="org.openlca.app.collaboration.preferences.CollaborationPreferencePage"
 			id="preferencepages.collaboration"
 			name="Collaboration">
 		</page>
@@ -740,7 +740,7 @@
 			class="org.openlca.app.preferences.IoPreference">
 		</initializer>
 		<initializer
-			class="org.openlca.app.collaboration.ui.preferences.CollaborationPreference">
+			class="org.openlca.app.collaboration.preferences.CollaborationPreference">
 		</initializer>
 	</extension>
 

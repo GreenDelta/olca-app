@@ -1,6 +1,6 @@
 package org.openlca.app.collaboration.api;
 
-import org.openlca.app.collaboration.ui.dialogs.TokenDialog;
+import org.openlca.app.collaboration.dialogs.TokenDialog;
 import org.openlca.app.util.Input;
 
 public class InMemoryCredentialSupplier implements CredentialSupplier {
