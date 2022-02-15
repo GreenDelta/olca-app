@@ -449,11 +449,14 @@ public class M extends NLS {
 	public static String IsBaseline;
 	public static String IsDefault;
 	public static String IsDefaultProvider;
+	public static String IsDisabled;
 	public static String IsInvalidFormula;
 	public static String IsNotValidNumber;
 	public static String IsNotValidParameterName;
 	public static String IsProtected;
 	public static String IsReference;
+	public static String IsWithCosts;
+	public static String IsWithRegionalization;
 	public static String KeepLocalModel;
 	public static String KeepModelDeleted;
 	public static String KmlEditor;

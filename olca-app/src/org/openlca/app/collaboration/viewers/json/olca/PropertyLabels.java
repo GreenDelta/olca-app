@@ -330,7 +330,6 @@ class PropertyLabels {
 		put(clazz, "referenceUnitName", M.ReferenceUnit);
 		put(clazz, "impactFactors", M.ImpactFactors);
 		put(clazz, "source", M.Source);
-		put(clazz, "location", M.Location);
 		put(clazz, "parameters", M.Parameters);
 		put(clazz, "code", M.Code);
 	}
@@ -342,6 +341,7 @@ class PropertyLabels {
 		put(clazz, "unit", M.Unit);
 		put(clazz, "formula", M.Formula);
 		put(clazz, "value", M.Value);
+		put(clazz, "location", M.Location);
 		put(clazz, "uncertainty", M.Uncertainty);
 	}
 
@@ -395,6 +395,8 @@ class PropertyLabels {
 		put(clazz, "impactMethod", M.ImpactAssessmentMethod);
 		put(clazz, "nwSet", M.NormalizationAndWeightingSet);
 		put(clazz, "variants", M.Variants);
+		put(clazz, "isWithCosts", M.IsWithCosts);
+		put(clazz, "isWithRegionalization", M.IsWithRegionalization);
 	}
 
 	private static void putProjectVariantLabels() {
@@ -406,6 +408,7 @@ class PropertyLabels {
 		put(clazz, "amount", M.Amount);
 		put(clazz, "allocationMethod", M.AllocationMethod);
 		put(clazz, "description", M.Description);
+		put(clazz, "isDisabled", M.IsDisabled);
 		put(clazz, "parameterRedefs", M.Parameters);
 	}
 
