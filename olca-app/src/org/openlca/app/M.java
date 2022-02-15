@@ -52,7 +52,6 @@ public class M extends NLS {
 	public static String AsDefinedInProcesses;
 	public static String AssessDataQuality;
 	public static String AssignUnits;
-	public static String Author;
 	public static String AutoLinkProcesses;
 	public static String AvoidedProduct;
 	public static String AvoidedProductFlow;
