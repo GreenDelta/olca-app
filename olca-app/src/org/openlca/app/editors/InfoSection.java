@@ -13,13 +13,13 @@ import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.Section;
@@ -49,7 +49,7 @@ public class InfoSection {
 
 	private Section section;
 	private Composite container;
-	private Label versionLabel;
+	private FormText versionLabel;
 
 	public InfoSection(ModelEditor<?> editor) {
 		this.entity = editor.getModel();
@@ -60,15 +60,13 @@ public class InfoSection {
 		section = UI.section(body, tk, M.GeneralInformation);
 		container = UI.sectionClient(section, tk, 3);
 
-		// name, library, description
+		// name and library
 		Widgets.text(container, M.Name, "name", editor, tk)
 				.setEditable(editor.isEditable());
 		if (entity.isFromLibrary()) {
 			Widgets.text(container, "Library", "library", editor, tk)
 					.setEditable(false);
 		}
-		Widgets.multiText(container, M.Description, "description", editor, tk)
-				.setEditable(editor.isEditable());
 
 		// category
 		UI.formLabel(container, tk, M.Category);
@@ -76,7 +74,7 @@ public class InfoSection {
 			? Categories.path(entity.category)
 			: Collections.emptyList();
 		if (path.isEmpty()) {
-			UI.filler(container, tk);
+			tk.createLabel(container, "- none -");
 		} else {
 			var category = String.join("/", path);
 			var link = tk.createImageHyperlink(container, SWT.NONE);
@@ -91,20 +89,30 @@ public class InfoSection {
 			UI.filler(container);
 		}
 
+		// description
+		Widgets.multiText(container, M.Description, "description", editor, tk)
+			.setEditable(editor.isEditable());
+
 		// version
-		createVersionText(tk);
+		UI.filler(container, tk);
+		var versionComp = tk.createComposite(container);
+		UI.gridLayout(versionComp, 8, 10, 0);
+		createVersionText(versionComp, tk);
 
 		// uuid
-		var uuidText = UI.formText(container, tk, "UUID");
-		uuidText.setEditable(false);
-		uuidText.setEnabled(editor.isEditable());
+		tk.createLabel(versionComp, " ");
+		tk.createLabel(versionComp, "UUID:");
+		var uuidText = tk.createFormText(versionComp, false);
 		if (entity.refId != null) {
-			uuidText.setText(entity.refId);
+			uuidText.setText(entity.refId, false, false);
 		}
+
+		// last change
+		tk.createLabel(versionComp, " ");
+		createDateText(versionComp, tk);
 		UI.filler(container, tk);
 
-		// date & tags
-		createDateText(tk);
+		// tags
 		createTags(tk);
 
 		return this;
@@ -118,34 +126,34 @@ public class InfoSection {
 		return section;
 	}
 
-	private void createVersionText(FormToolkit tk) {
-		UI.formLabel(container, tk, M.Version);
-		var comp = tk.createComposite(container);
+	private void createVersionText(Composite parent, FormToolkit tk) {
+		tk.createLabel(parent, M.Version + ":");
+		var comp = tk.createComposite(parent);
 		var layout = UI.gridLayout(comp, 3);
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
-		versionLabel = tk.createLabel(comp,
-				Version.asString(entity.version));
+		versionLabel = tk.createFormText(comp, false);
+		versionLabel.setText(Version.asString(entity.version), false, false);
 		editor.onSaved(() -> {
 			entity = editor.getModel();
-			versionLabel.setText(Version.asString(entity.version));
+			versionLabel.setText(Version.asString(entity.version), false, false);
 		});
 		new VersionLink(comp, tk, VersionLink.MAJOR);
 		new VersionLink(comp, tk, VersionLink.MINOR);
-		UI.filler(container, tk);
 	}
 
-	private void createDateText(FormToolkit tk) {
-		UI.formLabel(container, tk, M.LastChange);
-		Label text = UI.formLabel(container, tk, "");
+	private void createDateText(Composite parent, FormToolkit tk) {
+		tk.createLabel(parent, M.LastChange + ":");
+		var text = tk.createLabel(parent, "");
 		if (entity.lastChange != 0) {
 			text.setText(Numbers.asTimestamp(entity.lastChange));
+		} else {
+			text.setText(" --- ");
 		}
 		editor.onSaved(() -> {
 			entity = editor.getModel();
 			text.setText(Numbers.asTimestamp(entity.lastChange));
 		});
-		UI.filler(container, tk);
 	}
 
 	private void createTags(FormToolkit tk) {
@@ -247,7 +255,7 @@ public class InfoSection {
 			else
 				version.incMinor();
 			entity.version = version.getValue();
-			versionLabel.setText(version.toString());
+			versionLabel.setText(version.toString(), false, false);
 			editor.setDirty(true);
 		}
 

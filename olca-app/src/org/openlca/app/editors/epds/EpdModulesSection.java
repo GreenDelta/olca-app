@@ -15,7 +15,6 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.model.Epd;
 import org.openlca.core.model.EpdModule;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
@@ -28,6 +27,7 @@ record EpdModulesSection(EpdEditor editor) {
 
 		// create the table
 		var section = UI.section(body, tk, "Modules");
+		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk);
 		var table = Tables.createViewer(comp,
 			"Module",
@@ -82,6 +82,7 @@ record EpdModulesSection(EpdEditor editor) {
 
 		Actions.bind(section, onAdd, onDelete);
 		Actions.bind(table, onAdd, onEdit, onOpenResult, onDelete);
+		Tables.onDoubleClick(table, $ -> onEdit.run());
 
 		// fill the table
 		var modules = modules();

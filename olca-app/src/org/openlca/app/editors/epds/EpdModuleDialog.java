@@ -62,6 +62,7 @@ class EpdModuleDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.formBody(mForm.getForm(), tk);
 
+		// module name
 		var nameComp = tk.createComposite(body);
 		UI.fillHorizontal(nameComp);
 		UI.gridLayout(nameComp, 2, 10, 0);
@@ -71,14 +72,12 @@ class EpdModuleDialog extends FormDialog {
 		if (module.name != null) {
 			nameCombo.setText(module.name);
 		}
+		nameCombo.addModifyListener($ -> module.name = nameCombo.getText());
 
-		nameCombo.addModifyListener($ -> {
-			module.name = nameCombo.getText();
-			System.out.println(module.name);
-		});
-
+		// result tree
 		UI.formLabel(nameComp, tk, "Result:");
 		var tree = NavigationTree.forSingleSelection(body, ModelType.RESULT);
+		UI.gridData(tree.getTree(), true, true);
 		tree.addSelectionChangedListener(e -> {
 			var selection = Selections.firstOf(e);
 			if (selection instanceof ModelElement elem) {
@@ -93,8 +92,11 @@ class EpdModuleDialog extends FormDialog {
 			return names[0];
 		for (var name : names) {
 			boolean found = false;
+			var s = name.toLowerCase();
 			for (var mod : epd.modules) {
-				if (name.equalsIgnoreCase(mod.name)) {
+				if (mod.name == null)
+					continue;
+				if (name.toLowerCase().contains(s)) {
 					found = true;
 					break;
 				}

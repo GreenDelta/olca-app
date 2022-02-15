@@ -20,8 +20,8 @@ public class Numbers {
 	private static DecimalFormat scienceFormat = getFormat("0.000E0");
 	private static double lowerBound = 0.001;
 	private static double upperBound = 1000;
-	private static SimpleDateFormat timestampFormat = new SimpleDateFormat(
-		"yyyy-MM-dd'T'HH:mm:ssZ");
+	private static final SimpleDateFormat timestampFormat = new SimpleDateFormat(
+		"yyyy-MM-dd HH:mm:ss");
 
 	public static void setDefaultAccuracy(int decimalPlaces) {
 		int acc = decimalPlaces < 1 || decimalPlaces > 50 ? 4 : decimalPlaces;
