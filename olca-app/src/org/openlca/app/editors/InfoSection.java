@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Stack;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -22,7 +21,6 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
@@ -36,7 +34,6 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.CategorizedEntity;
-import org.openlca.core.model.Category;
 import org.openlca.core.model.Version;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
@@ -86,9 +83,7 @@ public class InfoSection {
 			link.setImage(Images.get(entity.category));
 			link.setText(Strings.cutMid(category, 100));
 			link.setToolTipText(category);
-			Controls.onClick(link, $ -> {
-				Navigator.select(entity.category);
-			});
+			Controls.onClick(link, $ -> Navigator.select(entity.category));
 		}
 		if (editor.hasComment("category")) {
 			new CommentControl(container, tk, "category", editor.getComments());

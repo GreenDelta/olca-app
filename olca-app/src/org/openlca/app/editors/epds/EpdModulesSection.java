@@ -2,14 +2,20 @@ package org.openlca.app.editors.epds;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.App;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.model.Epd;
 import org.openlca.core.model.EpdModule;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
@@ -20,6 +26,7 @@ record EpdModulesSection(EpdEditor editor) {
 
 	void render(Composite body, FormToolkit tk) {
 
+		// create the table
 		var section = UI.section(body, tk, "Modules");
 		var comp = UI.sectionClient(section, tk);
 		var table = Tables.createViewer(comp,
@@ -28,7 +35,55 @@ record EpdModulesSection(EpdEditor editor) {
 			"LCIA Method",
 			"Quantitative reference");
 		table.setLabelProvider(new LabelProvider());
+		Tables.bindColumnWidths(table, 0.25, 0.25, 0.25, 0.25);
 
+		// bind actions
+		var onAdd = Actions.onAdd(
+			() -> EpdModuleDialog.createNew(editor.getModel())
+				.ifPresent(module -> {
+					var mods = modules();
+					mods.add(module);
+					table.setInput(mods);
+					editor.setDirty();
+				}));
+
+		var onEdit = Actions.onEdit(() -> {
+			var mod = selectedModuleOf(table);
+			if (mod == null) {
+				onAdd.run();
+				return;
+			}
+			var copy = mod.copy();
+			if (EpdModuleDialog.edit(copy)) {
+				mod.name = copy.name;
+				mod.result = copy.result;
+				table.refresh(true);
+				editor.setDirty();
+			}
+		});
+
+		var onDelete = Actions.onRemove(() -> {
+			var mod = selectedModuleOf(table);
+			if (mod != null) {
+				var mods = modules();
+				mods.remove(mod);
+				table.setInput(mods);
+				editor.setDirty();
+			}
+		});
+
+		var onOpenResult = Actions.create(
+			"Open result", Icon.FOLDER_OPEN.descriptor(), () -> {
+				var mod = selectedModuleOf(table);
+				if (mod != null && mod.result != null) {
+					App.open(mod.result);
+				}
+			});
+
+		Actions.bind(section, onAdd, onDelete);
+		Actions.bind(table, onAdd, onEdit, onOpenResult, onDelete);
+
+		// fill the table
 		var modules = modules();
 		modules.sort((m1, m2) -> Strings.compare(m1.name, m2.name));
 		table.setInput(modules);
@@ -36,6 +91,21 @@ record EpdModulesSection(EpdEditor editor) {
 
 	private List<EpdModule> modules() {
 		return editor.getModel().modules;
+	}
+
+	private EpdModule selectedModuleOf(TableViewer table) {
+		var obj = Viewers.getFirstSelected(table);
+		if (!(obj instanceof EpdModule mod))
+			return null;
+		// select it from the list where it could be a different
+		// instance if the list was JPA synced
+		for (var other : modules()) {
+			if (mod.id != other.id)
+				continue;
+			if (mod.id != 0 || mod == other)
+				return other;
+		}
+		return null;
 	}
 
 	private static class LabelProvider extends BaseLabelProvider
