@@ -33,6 +33,7 @@ import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.model.EpdModule;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ImpactResult;
@@ -40,7 +41,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
 import org.openlca.util.Strings;
 
-class ResultSection {
+class ModuleSection {
 
 	private final ImportDialog dialog;
 	private final String epdMethod;
@@ -48,9 +49,9 @@ class ResultSection {
 	private final Result result;
 	private final List<MappedValue> mappedValues;
 	private TableViewer mappingTable;
-	private Consumer<ResultSection> onDeleted;
+	private Consumer<ModuleSection> onDeleted;
 
-	private ResultSection(
+	private ModuleSection(
 		ImportDialog dialog, String epdMethod, String epdScope) {
 		this.dialog = dialog;
 		this.epdMethod = epdMethod;
@@ -60,7 +61,7 @@ class ResultSection {
 		mappedValues = initMappings();
 	}
 
-	public void onDeleted(Consumer<ResultSection> fn) {
+	public void onDeleted(Consumer<ModuleSection> fn) {
 		this.onDeleted = fn;
 	}
 
@@ -68,11 +69,11 @@ class ResultSection {
 	 * Initializes a result section for each method and scope pair that can
 	 * be found in the EPD of the given import dialog.
 	 */
-	static List<ResultSection> initAllOf(ImportDialog dialog) {
+	static List<ModuleSection> initAllOf(ImportDialog dialog) {
 		if (dialog == null)
 			return Collections.emptyList();
 
-		var sections = new ArrayList<ResultSection>();
+		var sections = new ArrayList<ModuleSection>();
 		var epd = dialog.epd;
 		for (var epdResult : epd.impactResults) {
 			var scopes = new HashSet<String>();
@@ -82,7 +83,7 @@ class ResultSection {
 				}
 			}
 			for (var scope : scopes) {
-				sections.add(new ResultSection(dialog, epdResult.method(), scope));
+				sections.add(new ModuleSection(dialog, epdResult.method(), scope));
 			}
 		}
 
@@ -96,18 +97,18 @@ class ResultSection {
 		return sections;
 	}
 
-	Result createResult() {
-		var r = result.copy();
-		r.refId = UUID.randomUUID().toString();
+	EpdModule createModule() {
+		var result = this.result.copy();
+		result.refId = UUID.randomUUID().toString();
 		for (var mapping : mappedValues) {
 			if (mapping.mappedImpact == null)
 				continue;
 			var impact = new ImpactResult();
 			impact.amount = mapping.value;
 			impact.indicator = mapping.mappedImpact;
-			r.impactResults.add(impact);
+			result.impactResults.add(impact);
 		}
-		return r;
+		return EpdModule.of(epdScope, result);
 	}
 
 	void render(Composite body, FormToolkit tk) {

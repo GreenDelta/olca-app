@@ -24,11 +24,13 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.Epd;
+import org.openlca.core.model.EpdModule;
+import org.openlca.core.model.EpdProduct;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Result;
 import org.openlca.util.Strings;
 
 public class ImportDialog extends FormDialog {
@@ -38,7 +40,7 @@ public class ImportDialog extends FormDialog {
 	final Ec3ImpactModel impactModel;
 	private final FlowResult product;
 	private String categoryPath;
-	private final List<ResultSection> sections = new ArrayList<>();
+	private final List<ModuleSection> sections = new ArrayList<>();
 
 	public static int show(Ec3Epd epd) {
 		if (epd == null)
@@ -76,7 +78,7 @@ public class ImportDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.formBody(mForm.getForm(), tk);
 		createProductSection(body, tk);
-		for (var section : ResultSection.initAllOf(this)) {
+		for (var section : ModuleSection.initAllOf(this)) {
 			section.render(body, tk);
 			section.onDeleted(s -> {
 				sections.remove(s);
@@ -124,46 +126,49 @@ public class ImportDialog extends FormDialog {
 	@Override
 	protected void okPressed() {
 
-		// check and prepare the results
-		var results = new ArrayList<Result>();
-		for (var section : sections) {
-			var result = section.createResult();
-			if (Strings.nullOrEmpty(result.name)) {
-				MsgBox.error("Invalid result",
-					"Result has an empty name.");
-				return;
-			}
-			result.description = epd.lcaDiscussion;
-			results.add(result);
-		}
-		if (results.isEmpty()) {
-			// create a default result in no LCIA results could
-			// be found in the EPD
-			results.add(Result.of(epd.productName));
-		}
-
 		// create the reference product
 		var productFlow = createProduct();
 		if (productFlow == null)
 			return;
 
-		// save the results
+		// prepare the modules
+		var modules = new ArrayList<EpdModule>();
+		for (var section : sections) {
+			modules.add(section.createModule());
+		}
+
+		// save the results and the EPD
 		try {
-			var resultCategory = syncCategory(ModelType.RESULT);
-			for (var result : results) {
-				var refFlow = product.copy();
-				refFlow.flow = productFlow;
-				// unit and amount are correctly set but need to sync
-				// the flow property factor
-				refFlow.flowPropertyFactor = productFlow.getReferenceFactor();
-				result.referenceFlow = refFlow;
-				result.flowResults.add(refFlow);
-				result.category = resultCategory;
-				result.lastChange = System.currentTimeMillis();
-				db.insert(result);
+
+			for (var module : modules) {
+				var result = module.result;
+				if (result != null) {
+					var refFlow = product.copy();
+					refFlow.flow = productFlow;
+					refFlow.flowPropertyFactor = productFlow.getReferenceFactor();
+					result.referenceFlow = refFlow;
+					result.flowResults.add(refFlow);
+					result.category = syncCategory(ModelType.RESULT);
+					result.lastChange = System.currentTimeMillis();
+					module.result = db.insert(result);
+				}
 			}
+
+			var _epd = new Epd();
+			_epd.name = productFlow.name;
+			_epd.refId = epd.id;
+			_epd.description = epd.lcaDiscussion;
+			_epd.modules.addAll(modules);
+			_epd.urn = "openEPD:" + epd.id;
+			_epd.category = syncCategory(ModelType.EPD);
+			_epd.lastChange = System.currentTimeMillis();
+			_epd.product = EpdProduct.of(productFlow, product.amount);
+			_epd.product.unit = product.unit;
+
+			db.insert(_epd);
 		} catch (Exception e) {
-			ErrorReporter.on("failed to save results", e);
+			ErrorReporter.on("failed to save EPD", e);
+			return;
 		}
 
 		Navigator.refresh();
