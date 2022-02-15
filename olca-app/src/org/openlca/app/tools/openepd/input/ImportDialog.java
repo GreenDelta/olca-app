@@ -17,12 +17,14 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
+import org.openlca.app.tools.openepd.model.Ec3Org;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.Actor;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Epd;
 import org.openlca.core.model.EpdModule;
@@ -31,41 +33,48 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.ModelType;
+import org.openlca.util.KeyGen;
 import org.openlca.util.Strings;
 
 public class ImportDialog extends FormDialog {
 
 	final IDatabase db;
-	final Ec3Epd epd;
+	final Ec3Epd epdDoc;
 	final Ec3ImpactModel impactModel;
 	private final FlowResult product;
 	private String categoryPath;
 	private final List<ModuleSection> sections = new ArrayList<>();
 
-	public static int show(Ec3Epd epd) {
-		if (epd == null)
+	public static int show(Ec3Epd doc) {
+		if (doc == null)
 			return -1;
 		var db = Database.get();
 		if (db == null) {
 			MsgBox.error(M.NoDatabaseOpened);
 			return -1;
 		}
-		return new ImportDialog(epd, db).open();
+		var epd = db.get(Epd.class, doc.id);
+		if (epd != null) {
+			MsgBox.error("EPD already exists",
+				"An EPD with ID='" + epd.id + "' already exists in the database.");
+			return -1;
+		}
+		return new ImportDialog(doc, db).open();
 	}
 
-	private ImportDialog(Ec3Epd epd, IDatabase db) {
+	private ImportDialog(Ec3Epd epdDoc, IDatabase db) {
 		super(UI.shell());
-		this.epd = Objects.requireNonNull(epd);
+		this.epdDoc = Objects.requireNonNull(epdDoc);
 		this.db = Objects.requireNonNull(db);
 		this.impactModel = Ec3ImpactModel.get();
-		categoryPath = Util.categoryOf(epd);
-		product = Util.initQuantitativeReference(epd, db);
+		categoryPath = Util.categoryOf(epdDoc);
+		product = Util.initQuantitativeReference(epdDoc, db);
 	}
 
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Import results from an openEPD document");
+		newShell.setText("Import an openEPD document");
 	}
 
 	@Override
@@ -154,18 +163,22 @@ public class ImportDialog extends FormDialog {
 				}
 			}
 
-			var _epd = new Epd();
-			_epd.name = productFlow.name;
-			_epd.refId = epd.id;
-			_epd.description = epd.lcaDiscussion;
-			_epd.modules.addAll(modules);
-			_epd.urn = "openEPD:" + epd.id;
-			_epd.category = syncCategory(ModelType.EPD);
-			_epd.lastChange = System.currentTimeMillis();
-			_epd.product = EpdProduct.of(productFlow, product.amount);
-			_epd.product.unit = product.unit;
+			var epd = new Epd();
+			epd.name = productFlow.name;
+			epd.refId = epdDoc.id;
+			epd.description = epdDoc.lcaDiscussion;
+			epd.modules.addAll(modules);
+			epd.urn = "openEPD:" + epdDoc.id;
+			epd.category = syncCategory(ModelType.EPD);
+			epd.lastChange = System.currentTimeMillis();
+			epd.product = EpdProduct.of(productFlow, product.amount);
+			epd.product.unit = product.unit;
 
-			db.insert(_epd);
+			epd.manufacturer = toActor(epdDoc.manufacturer);
+			epd.verifier = toActor(epdDoc.verifier);
+			epd.programOperator = toActor(epdDoc.programOperator);
+
+			db.insert(epd);
 		} catch (Exception e) {
 			ErrorReporter.on("failed to save EPD", e);
 			return;
@@ -215,4 +228,23 @@ public class ImportDialog extends FormDialog {
 		return null;
 	}
 
+	private Actor toActor(Ec3Org org) {
+		if (org == null || Strings.nullOrEmpty(org.name))
+			return null;
+		var id = org.id;
+		if (Strings.nullOrEmpty(id)) {
+			id = Strings.notEmpty(org.ref)
+				? KeyGen.get(org.ref)
+				: KeyGen.get(org.name);
+		}
+		var actor = db.get(Actor.class, id);
+		if (actor != null)
+			return actor;
+		actor = Actor.of(org.name);
+		actor.refId = id;
+		actor.website = org.website;
+		actor.address = org.address;
+		actor.country = org.country;
+		return db.insert(actor);
+	}
 }

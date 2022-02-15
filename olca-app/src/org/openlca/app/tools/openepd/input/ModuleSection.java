@@ -57,7 +57,7 @@ class ModuleSection {
 		this.epdMethod = epdMethod;
 		this.epdScope = epdScope;
 		this.result = Result.of(
-			dialog.epd.productName + " - " + epdScope + " - " + epdMethod);
+			dialog.epdDoc.productName + " - " + epdScope + " - " + epdMethod);
 		mappedValues = initMappings();
 	}
 
@@ -74,7 +74,7 @@ class ModuleSection {
 			return Collections.emptyList();
 
 		var sections = new ArrayList<ModuleSection>();
-		var epd = dialog.epd;
+		var epd = dialog.epdDoc;
 		for (var epdResult : epd.impactResults) {
 			var scopes = new HashSet<String>();
 			for (var indicatorResult : epdResult.indicatorResults()) {
@@ -179,7 +179,7 @@ class ModuleSection {
 
 	private List<MappedValue> initMappings() {
 
-		var impactResult = dialog.epd.impactResults.stream()
+		var impactResult = dialog.epdDoc.impactResults.stream()
 			.filter(r -> Objects.equals(r.method(), epdMethod))
 			.findAny()
 			.orElse(null);

@@ -28,6 +28,8 @@ public class Ec3Epd {
 	public String productDescription;
 	public final List<Pair<String, String>> productClasses = new ArrayList<>();
 	public Ec3Org manufacturer;
+	public Ec3Org verifier;
+	public Ec3Org programOperator;
 
 	public final List<Ec3ImpactResult> impactResults = new ArrayList<>();
 
@@ -53,7 +55,13 @@ public class Ec3Epd {
 
 		epd.productName = Json.getString(obj, "product_name");
 		epd.productDescription = Json.getString(obj, "product_description");
-		epd.manufacturer = Ec3Org.fromJson(obj.get("manufacturer")).orElse(null);
+
+		epd.manufacturer = Ec3Org.fromJson(
+			obj.get("manufacturer")).orElse(null);
+		epd.verifier = Ec3Org.fromJson(
+			obj.get("third_party_verifier")).orElse(null);
+		epd.programOperator = Ec3Org.fromJson(
+			obj.get("program_operator")).orElse(null);
 
 		var classes = Json.getObject(obj, "product_classes");
 		if (classes != null) {
