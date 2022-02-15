@@ -40,6 +40,7 @@ public class EpdEditor extends ModelEditor<Epd> {
 			var body = UI.formBody(form, tk);
 			new InfoSection(editor).render(body, tk);
 			new EpdProductSection(editor).render(body, tk);
+			new EpdModulesSection(editor).render(body, tk);
 			body.setFocus();
 			form.reflow(true);
 		}
