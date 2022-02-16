@@ -8,6 +8,7 @@ import org.openlca.core.model.Actor as Actor
 import org.openlca.core.database.ActorDao as ActorDao
 import org.openlca.core.model.descriptors.ActorDescriptor as ActorDescriptor
 import org.openlca.io.ilcd.output.ActorExport as ActorExport
+import org.openlca.jsonld.input.ActorReader as ActorReader
 import org.openlca.core.database.usage.ActorUseSearch as ActorUseSearch
 import org.openlca.proto.io.output.ActorWriter as ActorWriter
 import org.openlca.core.math.data_quality.AggregationType as AggregationType
@@ -27,6 +28,7 @@ import org.openlca.core.matrix.format.CSCByteMatrix as CSCByteMatrix
 import org.openlca.core.matrix.format.CSCMatrix as CSCMatrix
 import org.openlca.ipc.Cache as Cache
 import org.openlca.ipc.handlers.CacheHandler as CacheHandler
+import org.openlca.core.io.CachedDbEntityResolver as CachedDbEntityResolver
 import org.openlca.core.matrix.CalcAllocationFactor as CalcAllocationFactor
 import org.openlca.core.matrix.CalcExchange as CalcExchange
 import org.openlca.core.matrix.CalcImpactFactor as CalcImpactFactor
@@ -44,6 +46,7 @@ import org.openlca.core.database.CategoryDao as CategoryDao
 import org.openlca.core.model.descriptors.CategoryDescriptor as CategoryDescriptor
 import org.openlca.io.CategoryPair as CategoryPair
 import org.openlca.io.CategoryPath as CategoryPath
+import org.openlca.jsonld.input.CategoryReader as CategoryReader
 import org.openlca.core.database.references.CategoryReferenceSearch as CategoryReferenceSearch
 import org.openlca.core.database.usage.CategoryUseSearch as CategoryUseSearch
 import org.openlca.proto.io.output.CategoryWriter as CategoryWriter
@@ -61,11 +64,11 @@ import org.openlca.util.Copy as Copy
 import org.openlca.ipc.handlers.CostHandler as CostHandler
 import org.openlca.core.matrix.io.Csv as Csv
 import org.openlca.core.matrix.io.CsvExport as CsvExport
-import org.openlca.io.xls.CsvMatrixExportConfig as CsvMatrixExportConfig
 import org.openlca.core.model.Currency as Currency
 import org.openlca.core.database.CurrencyDao as CurrencyDao
 import org.openlca.core.model.descriptors.CurrencyDescriptor as CurrencyDescriptor
 import org.openlca.io.refdata.CurrencyImport as CurrencyImport
+import org.openlca.jsonld.input.CurrencyReader as CurrencyReader
 import org.openlca.core.database.references.CurrencyReferenceSearch as CurrencyReferenceSearch
 import org.openlca.core.database.usage.CurrencyUseSearch as CurrencyUseSearch
 import org.openlca.proto.io.output.CurrencyWriter as CurrencyWriter
@@ -76,6 +79,7 @@ import org.openlca.core.model.DQScore as DQScore
 import org.openlca.core.model.DQSystem as DQSystem
 import org.openlca.core.database.DQSystemDao as DQSystemDao
 import org.openlca.core.model.descriptors.DQSystemDescriptor as DQSystemDescriptor
+import org.openlca.jsonld.input.DQSystemReader as DQSystemReader
 import org.openlca.core.database.references.DQSystemReferenceSearch as DQSystemReferenceSearch
 import org.openlca.core.database.usage.DQSystemUseSearch as DQSystemUseSearch
 import org.openlca.proto.io.output.DQSystemWriter as DQSystemWriter
@@ -87,6 +91,7 @@ import org.openlca.core.database.config.DatabaseConfigList as DatabaseConfigList
 import org.openlca.core.database.DatabaseException as DatabaseException
 import org.openlca.io.olca.DatabaseImport as DatabaseImport
 import org.openlca.util.Databases as Databases
+import org.openlca.core.io.DbEntityResolver as DbEntityResolver
 import org.openlca.core.library.DbLibrarySwap as DbLibrarySwap
 import org.openlca.core.database.DbUtils as DbUtils
 import org.openlca.core.matrix.linking.DefaultProcessLinker as DefaultProcessLinker
@@ -112,7 +117,12 @@ import org.openlca.core.database.EntityCache as EntityCache
 import org.openlca.jsonld.Enums as Enums
 import org.openlca.core.matrix.index.EnviFlow as EnviFlow
 import org.openlca.core.matrix.index.EnviIndex as EnviIndex
+import org.openlca.core.model.Epd as Epd
+import org.openlca.core.database.EpdDao as EpdDao
+import org.openlca.core.model.descriptors.EpdDescriptor as EpdDescriptor
 import org.openlca.io.ilcd.input.EpdImport as EpdImport
+import org.openlca.core.model.EpdModule as EpdModule
+import org.openlca.core.model.EpdProduct as EpdProduct
 import org.openlca.io.xls.Excel as Excel
 import org.openlca.io.xls.process.output.ExcelExport as ExcelExport
 import org.openlca.io.xls.process.input.ExcelImport as ExcelImport
@@ -129,6 +139,8 @@ import org.openlca.expressions.ExpressionException as ExpressionException
 import org.openlca.geo.geojson.Feature as Feature
 import org.openlca.geo.geojson.FeatureCollection as FeatureCollection
 import org.openlca.core.database.FileStore as FileStore
+import org.openlca.jsonld.FileStoreReader as FileStoreReader
+import org.openlca.jsonld.FileStoreWriter as FileStoreWriter
 import org.openlca.core.model.Flow as Flow
 import org.openlca.core.database.FlowDao as FlowDao
 import org.openlca.core.model.descriptors.FlowDescriptor as FlowDescriptor
@@ -143,10 +155,12 @@ import org.openlca.io.ilcd.output.FlowPropertyExport as FlowPropertyExport
 import org.openlca.core.model.FlowPropertyFactor as FlowPropertyFactor
 import org.openlca.core.database.usage.FlowPropertyFactorUseSearch as FlowPropertyFactorUseSearch
 import org.openlca.io.ilcd.input.FlowPropertyImport as FlowPropertyImport
+import org.openlca.jsonld.input.FlowPropertyReader as FlowPropertyReader
 import org.openlca.core.database.references.FlowPropertyReferenceSearch as FlowPropertyReferenceSearch
 import org.openlca.core.model.FlowPropertyType as FlowPropertyType
 import org.openlca.core.database.usage.FlowPropertyUseSearch as FlowPropertyUseSearch
 import org.openlca.proto.io.output.FlowPropertyWriter as FlowPropertyWriter
+import org.openlca.jsonld.input.FlowReader as FlowReader
 import org.openlca.io.maps.FlowRef as FlowRef
 import org.openlca.core.database.references.FlowReferenceSearch as FlowReferenceSearch
 import org.openlca.core.model.FlowResult as FlowResult
@@ -183,6 +197,7 @@ import org.openlca.core.matrix.ImpactBuilder as ImpactBuilder
 import org.openlca.core.model.ImpactCategory as ImpactCategory
 import org.openlca.core.database.ImpactCategoryDao as ImpactCategoryDao
 import org.openlca.io.refdata.ImpactCategoryExport as ImpactCategoryExport
+import org.openlca.jsonld.input.ImpactCategoryReader as ImpactCategoryReader
 import org.openlca.core.database.usage.ImpactCategoryUseSearch as ImpactCategoryUseSearch
 import org.openlca.proto.io.output.ImpactCategoryWriter as ImpactCategoryWriter
 import org.openlca.core.model.descriptors.ImpactDescriptor as ImpactDescriptor
@@ -200,8 +215,6 @@ import org.openlca.proto.io.output.ImpactMethodWriter as ImpactMethodWriter
 import org.openlca.core.model.ImpactResult as ImpactResult
 import org.openlca.core.results.ImpactValue as ImpactValue
 import org.openlca.io.ecospold1.input.ImportConfig as ImportConfig
-import org.openlca.io.ImportEvent as ImportEvent
-import org.openlca.io.ImportInfo as ImportInfo
 import org.openlca.core.io.ImportLog as ImportLog
 import org.openlca.proto.io.input.ImportStatus as ImportStatus
 import org.openlca.proto.io.input.In as In
@@ -295,6 +308,7 @@ import org.openlca.util.Pair as Pair
 import org.openlca.core.model.Parameter as Parameter
 import org.openlca.core.database.ParameterDao as ParameterDao
 import org.openlca.core.model.descriptors.ParameterDescriptor as ParameterDescriptor
+import org.openlca.jsonld.input.ParameterReader as ParameterReader
 import org.openlca.core.model.ParameterRedef as ParameterRedef
 import org.openlca.proto.io.input.ParameterRedefReader as ParameterRedefReader
 import org.openlca.core.model.ParameterRedefSet as ParameterRedefSet
@@ -383,7 +397,7 @@ import org.openlca.ipc.RpcResponse as RpcResponse
 import org.openlca.ipc.handlers.RuntimeHandler as RuntimeHandler
 import org.openlca.core.database.internal.SQLScriptWriter as SQLScriptWriter
 import org.openlca.core.results.Sankey as Sankey
-import org.openlca.jsonld.Schema as Schema
+import org.openlca.jsonld.SchemaVersion as SchemaVersion
 import org.openlca.expressions.Scope as Scope
 import org.openlca.core.database.internal.ScriptRunner as ScriptRunner
 import org.openlca.core.matrix.solvers.SeqAgg as SeqAgg
