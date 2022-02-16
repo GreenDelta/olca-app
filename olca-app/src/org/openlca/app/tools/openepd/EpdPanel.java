@@ -19,6 +19,7 @@ import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
 import org.openlca.app.tools.openepd.model.Api;
+import org.openlca.app.tools.openepd.model.Ec3Client;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -52,17 +53,32 @@ public class EpdPanel extends SimpleFormEditor {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm mform) {
-			var form = UI.formHeader(mform, "Building Transparency - openEPD",
+		protected void createFormContent(IManagedForm mForm) {
+			var form = UI.formHeader(mForm, "Building Transparency - openEPD",
 				Icon.EC3_WIZARD.get());
-			var tk = mform.getToolkit();
+			var tk = mForm.getToolkit();
 			var body = UI.formBody(form, tk);
+
+			// login
 			var loginPanel = LoginPanel.create(body, tk);
 
-			var section = UI.section(body, tk, "Find EPDs");
-			UI.gridData(section, true, true);
+			// direct download
+			var downloadComp = UI.formSection(body, tk, "Direct download");
+			UI.gridLayout(downloadComp, 3);
+			tk.createLabel(downloadComp, "URL or ID");
+			var urlText = tk.createText(downloadComp, "", SWT.BORDER);
+			UI.fillHorizontal(urlText);
+			var downloadBtn = tk.createButton(downloadComp, "Download", SWT.NONE);
+			Controls.onSelect(downloadBtn, $ -> {
+				var client = loginPanel.login().orElse(null);
+				if (client == null)
+					return;
+				directDownload(client, urlText.getText());
+			});
 
 			// search panel
+			var section = UI.section(body, tk, "Find EPDs");
+			UI.gridData(section, true, true);
 			var comp = UI.sectionClient(section, tk, 1);
 			var searchComp = tk.createComposite(comp);
 			UI.fillHorizontal(searchComp);
@@ -135,7 +151,42 @@ public class EpdPanel extends SimpleFormEditor {
 			return table;
 		}
 
+		private void directDownload(Ec3Client client, String url) {
+			if (Strings.nullOrEmpty(url)) {
+				MsgBox.error("No URL or ID provided");
+				return;
+			}
+
+			// we assume that the last non-empty part of the provided
+			// URL is the ID of the EPD.
+			var parts = url.split("/");
+			String last = null;
+			for (int i = parts.length -1; i >= 0; i--) {
+				var part = parts[i].trim();
+				if (!part.isEmpty()) {
+					last = part;
+					break;
+				}
+			}
+			if (last == null) {
+				MsgBox.error("No valid URL or ID of an EPD provided.");
+				return;
+			}
+
+			var id = last;
+			var json = App.exec(
+				"Download EPD " + id, () -> Api.getRawEpd(client, id));
+			if (json.isEmpty()) {
+				MsgBox.error(
+					"Could not download an EPD for the given ID '" + id +"'.");
+				return;
+			}
+			var epd = Ec3Epd.fromJson(json.get()).orElse(null);
+			ImportDialog.show(epd);
+		}
+
 		private record FullEpd(Ec3Epd descriptor, JsonObject json) {
+
 
 			Ec3Epd get() {
 				return json != null
