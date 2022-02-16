@@ -17,7 +17,7 @@ import org.openlca.util.Strings;
 
 class UnitCell extends ComboBoxCellModifier<Exchange, UnitItem> {
 
-	private ProcessEditor editor;
+	private final ProcessEditor editor;
 
 	UnitCell(ProcessEditor editor) {
 		this.editor = editor;
@@ -68,17 +68,8 @@ class UnitCell extends ComboBoxCellModifier<Exchange, UnitItem> {
 		editor.setDirty(true);
 	}
 
-	static class UnitItem implements Comparable<UnitItem> {
-
-		final Unit unit;
-		final FlowPropertyFactor factor;
-		final Exchange exchange;
-
-		UnitItem(Unit unit, FlowPropertyFactor factor, Exchange exchange) {
-			this.unit = unit;
-			this.factor = factor;
-			this.exchange = exchange;
-		}
+	record UnitItem(Unit unit, FlowPropertyFactor factor, Exchange exchange)
+		implements Comparable<UnitItem> {
 
 		@Override
 		public String toString() {
@@ -123,9 +114,8 @@ class UnitCell extends ComboBoxCellModifier<Exchange, UnitItem> {
 				return false;
 			if (this == obj)
 				return true;
-			if (!(obj instanceof UnitItem))
+			if (!(obj instanceof UnitItem other))
 				return false;
-			UnitItem other = (UnitItem) obj;
 			return Objects.equals(this.unit, other.unit)
 					&& Objects.equals(this.factor, other.factor)
 					&& Objects.equals(this.exchange, other.exchange);

@@ -60,7 +60,7 @@ public class ModelLink<T extends CategorizedEntity> {
 
 	public ModelLink<T> renderOn(Composite parent, FormToolkit tk) {
 		var comp = tk.createComposite(parent, SWT.FILL);
-		UI.gridLayout(comp, 3, 5, 0);
+		UI.gridLayout(comp, 3, 10, 0);
 
 		// the selection handler of this widget
 		Runnable doSelect = () -> {
@@ -75,13 +75,13 @@ public class ModelLink<T extends CategorizedEntity> {
 		};
 
 		// selection button
-		var btn = tk.createButton(comp, "", SWT.PUSH);
+		var btn = tk.createImageHyperlink(comp, SWT.BORDER);
 		btn.setToolTipText("Select a data set");
 		btn.setImage(Images.get(modelType));
-		Controls.onSelect(btn, $ -> doSelect.run());
+		Controls.onClick(btn, $ -> doSelect.run());
 
 		// the link
-		link = tk.createImageHyperlink(comp, SWT.TOP);
+		link = tk.createImageHyperlink(comp, SWT.NONE);
 		link.setForeground(Colors.linkBlue());
 		Controls.onClick(link, $ -> {
 			if (model != null) {
