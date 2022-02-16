@@ -268,6 +268,6 @@ public class ImportDialog extends FormDialog {
 		source.refId = id;
 		source.url = pcr.ref;
 		source.version = Version.fromString(pcr.version).getValue();
-		return source;
+		return db.insert(source);
 	}
 }
