@@ -45,7 +45,7 @@ public abstract class ResultEditor<T extends ContributionResult>
 
 	@Override
 	public void doSaveAs() {
-		SaveProcessDialog.open(this);
+		SaveResultDialog.open(this);
 	}
 
 	@Override

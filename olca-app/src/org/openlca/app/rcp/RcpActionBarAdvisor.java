@@ -6,7 +6,6 @@ import java.util.Objects;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarContributionItem;
@@ -180,15 +179,13 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		}
 
 		// openEPD
-		if (FeatureFlag.RESULTS.isEnabled()) {
-			var epdMenu = new MenuManager("openEPD");
-			epdMenu.setImageDescriptor(Icon.BUILDING.descriptor());
-			menu.add(epdMenu);
-			epdMenu.add(Actions.create("Search and download",
-				Icon.SEARCH.descriptor(), EpdPanel::open));
-			epdMenu.add(Actions.create("Create new EPD",
-				Icon.FILE.descriptor(), EpdEditor::open));
-		}
+		var epdMenu = new MenuManager("openEPD");
+		epdMenu.setImageDescriptor(Icon.BUILDING.descriptor());
+		menu.add(epdMenu);
+		epdMenu.add(Actions.create("Search and download",
+			Icon.SEARCH.descriptor(), EpdPanel::open));
+		epdMenu.add(Actions.create("Create new EPD",
+			Icon.FILE.descriptor(), EpdEditor::open));
 
 		// console
 		menu.add(new Separator());

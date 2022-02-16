@@ -74,7 +74,7 @@ public class QuickResultEditor extends ResultEditor<ContributionResult> {
 
 	@Override
 	public void doSaveAs() {
-		SaveProcessDialog.open(this);
+		SaveResultDialog.open(this);
 	}
 
 	@Override

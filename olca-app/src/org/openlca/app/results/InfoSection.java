@@ -91,7 +91,7 @@ class InfoSection {
 			ResultEditor<?> editor = Editors.getActive();
 			if (editor == null)
 				return;
-			SaveProcessDialog.open(editor);
+			SaveResultDialog.open(editor);
 		});
 
 	}

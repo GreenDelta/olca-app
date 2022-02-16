@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.ModelType;
@@ -32,11 +31,8 @@ public class DatabaseElement extends NavigationElement<DatabaseConfig> {
 		list.add(new ModelTypeElement(this, ModelType.PRODUCT_SYSTEM));
 		list.add(new ModelTypeElement(this, ModelType.PROCESS));
 		list.add(new ModelTypeElement(this, ModelType.FLOW));
-
-		if (FeatureFlag.RESULTS.isEnabled()) {
-			list.add(new ModelTypeElement(this, ModelType.EPD));
-			list.add(new ModelTypeElement(this, ModelType.RESULT));
-		}
+		list.add(new ModelTypeElement(this, ModelType.EPD));
+		list.add(new ModelTypeElement(this, ModelType.RESULT));
 
 		list.add(new GroupElement(this, g(M.IndicatorsAndParameters,
 				GroupType.INDICATORS,
