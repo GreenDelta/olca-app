@@ -21,6 +21,7 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
@@ -36,10 +37,9 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
 
 public class Labels {
 
@@ -49,6 +49,12 @@ public class Labels {
 	public static String name(RootEntity entity) {
 		if (entity == null || entity.name == null)
 			return "";
+		if (entity instanceof ImpactCategory impact) {
+			return Strings.nullOrEmpty(impact.code)
+				? impact.name
+				: impact.name + " - " + impact.code;
+		}
+
 		Location loc = null;
 		if (entity instanceof Flow flow) {
 			loc = flow.location;
@@ -56,7 +62,7 @@ public class Labels {
 		if (entity instanceof Process process) {
 			loc = process.location;
 		}
-		if (loc == null || Strings.isNullOrEmpty(loc.code))
+		if (loc == null || Strings.nullOrEmpty(loc.code))
 			return entity.name;
 		return entity.name + " - " + loc.code;
 	}
@@ -77,7 +83,7 @@ public class Labels {
 		}
 		if (locationId != null) {
 			var loc = cache.get(Location.class, locationId);
-			if (loc != null && !Strings.isNullOrEmpty(loc.code))
+			if (loc != null && !Strings.nullOrEmpty(loc.code))
 				text = text + " - " + loc.code;
 		}
 		return text;
@@ -187,11 +193,11 @@ public class Labels {
 	 */
 	public static String getShortCategory(CategorizedDescriptor entity) {
 		Pair<String, String> p = getCategory(entity);
-		if (Strings.isNullOrEmpty(p.getLeft()) && Strings.isNullOrEmpty(p.getRight()))
+		if (Strings.nullOrEmpty(p.getLeft()) && Strings.nullOrEmpty(p.getRight()))
 			return "";
-		if (Strings.isNullOrEmpty(p.getLeft()))
+		if (Strings.nullOrEmpty(p.getLeft()))
 			return p.getRight();
-		if (Strings.isNullOrEmpty(p.getRight()))
+		if (Strings.nullOrEmpty(p.getRight()))
 			return p.getLeft();
 		return p.getLeft() + " / " + p.getRight();
 	}

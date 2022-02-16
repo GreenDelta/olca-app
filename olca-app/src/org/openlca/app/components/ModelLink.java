@@ -12,7 +12,6 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -82,7 +81,6 @@ public class ModelLink<T extends CategorizedEntity> {
 
 		// the link
 		link = tk.createImageHyperlink(comp, SWT.NONE);
-		link.setForeground(Colors.linkBlue());
 		Controls.onClick(link, $ -> {
 			if (model != null) {
 				App.open(model);

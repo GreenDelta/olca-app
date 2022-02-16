@@ -1,5 +1,6 @@
 package org.openlca.app.editors.epds;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -13,6 +14,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.Epd;
 import org.openlca.core.model.Source;
+import org.openlca.util.Strings;
 
 public class EpdEditor extends ModelEditor<Epd> {
 
@@ -52,9 +54,9 @@ public class EpdEditor extends ModelEditor<Epd> {
 		}
 
 		private void referenceSection(Composite body, FormToolkit tk) {
-			var refComp = UI.formSection(body, tk, "References", 2);
+			var comp = UI.formSection(body, tk, "References", 2);
 			ModelLink.of(Actor.class)
-				.renderOn(refComp, tk, "Manufacturer")
+				.renderOn(comp, tk, "Manufacturer")
 				.setModel(epd().manufacturer)
 				.onChange(actor -> {
 					epd().manufacturer = actor;
@@ -62,7 +64,7 @@ public class EpdEditor extends ModelEditor<Epd> {
 				});
 
 			ModelLink.of(Actor.class)
-				.renderOn(refComp, tk, "Program operator")
+				.renderOn(comp, tk, "Program operator")
 				.setModel(epd().programOperator)
 				.onChange(actor -> {
 					epd().programOperator = actor;
@@ -70,7 +72,7 @@ public class EpdEditor extends ModelEditor<Epd> {
 				});
 
 			ModelLink.of(Source.class)
-				.renderOn(refComp, tk, "PCR")
+				.renderOn(comp, tk, "PCR")
 				.setModel(epd().pcr)
 				.onChange(source -> {
 					epd().pcr = source;
@@ -78,12 +80,20 @@ public class EpdEditor extends ModelEditor<Epd> {
 				});
 
 			ModelLink.of(Actor.class)
-				.renderOn(refComp, tk, "Verifier")
+				.renderOn(comp, tk, "Verifier")
 				.setModel(epd().verifier)
 				.onChange(actor -> {
 					epd().verifier = actor;
 					editor.setDirty();
 				});
+
+			UI.formLabel(comp, tk, "URN");
+			var link = tk.createImageHyperlink(comp, SWT.NONE);
+			link.setText(Strings.nullOrEmpty(epd().urn)
+				? "- none -"
+				: epd().urn
+			);
+
 		}
 
 		private Epd epd() {

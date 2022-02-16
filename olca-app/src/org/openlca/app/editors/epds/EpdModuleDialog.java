@@ -68,6 +68,7 @@ class EpdModuleDialog extends FormDialog {
 		UI.gridLayout(nameComp, 2, 10, 0);
 		UI.formLabel(nameComp, tk, "Name:");
 		var nameCombo = new Combo(nameComp, SWT.BORDER);
+		UI.fillHorizontal(nameCombo);
 		nameCombo.setItems(names);
 		if (module.name != null) {
 			nameCombo.setText(module.name);

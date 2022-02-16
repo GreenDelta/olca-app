@@ -22,6 +22,8 @@ import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
@@ -63,6 +65,15 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 				method.source = source;
 				editor.setDirty();
 			});
+		UI.filler(comp, tk);
+
+		// code
+		var codeText = UI.formText(comp, tk, "Code");
+		Controls.set(codeText, getModel().code, code -> {
+			getModel().code = code;
+			getEditor().setDirty();
+		});
+		UI.filler(comp, tk);
 
 		createIndicatorTable(tk, body);
 		body.setFocus();
@@ -157,7 +168,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 			if (!(obj instanceof ImpactCategory impact))
 				return null;
 			return switch (col) {
-				case 0 -> impact.name;
+				case 0 -> Labels.name(impact);
 				case 1 -> impact.description;
 				case 2 -> impact.referenceUnit;
 				default -> null;

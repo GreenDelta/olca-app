@@ -26,6 +26,7 @@ import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
@@ -130,8 +131,24 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 				});
 			UI.filler(comp, tk);
 
-			text(comp, M.ReferenceUnit, "referenceUnit");
+			// code
+			var codeText = UI.formText(comp, tk, "Code");
+			Controls.set(codeText, getModel().code, code -> {
+				getModel().code = code;
+				getEditor().setDirty();
+			});
+			UI.filler(comp, tk);
+
+			// reference unit
+			var unitText = UI.formText(comp, tk, M.ReferenceUnit);
+			Controls.set(unitText, getModel().referenceUnit, unit -> {
+				getModel().referenceUnit = unit;
+				getEditor().setDirty();
+			});
+			UI.filler(comp, tk);
+
 			createUsedTable(tk, body);
+
 			body.setFocus();
 			form.reflow(true);
 		}
