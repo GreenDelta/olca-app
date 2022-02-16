@@ -8,14 +8,8 @@ import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.combo.FlowPropertyCombo;
-import org.openlca.app.viewers.combo.UnitCombo;
 import org.openlca.core.model.EpdProduct;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowProperty;
-import org.openlca.core.model.Unit;
-
-import java.util.Objects;
 
 public record EpdProductSection(EpdEditor editor) {
 
@@ -26,31 +20,6 @@ public record EpdProductSection(EpdEditor editor) {
 			.renderOn(comp, tk, M.Flow)
 			.setModel(product().flow);
 
-		// flow properties
-		UI.formLabel(comp, tk, M.FlowProperty);
-		var propCombo = new FlowPropertyCombo(comp);
-		UI.gridData(propCombo.getControl(), false, false).widthHint = 150;
-		fillProperties(propCombo);
-		if (product().property != null) {
-			propCombo.select(product().property);
-		}
-		propCombo.addSelectionChangedListener(property -> {
-			product().property = property;
-			editor.setDirty();
-		});
-
-		// units
-		UI.formLabel(comp, tk, M.Unit);
-		var unitCombo = new UnitCombo(comp);
-		UI.gridData(unitCombo.getControl(), false, false).widthHint = 150;
-		fillUnits(unitCombo);
-		if (product().unit != null) {
-			unitCombo.select(product().unit);
-		}
-		unitCombo.addSelectionChangedListener(unit -> {
-			product().unit = unit;
-			editor.setDirty();
-		});
 
 		// amount
 		UI.formLabel(comp, M.Amount);
@@ -66,7 +35,7 @@ public record EpdProductSection(EpdEditor editor) {
 		// unit
 		var combo = new Combo(amountComp, SWT.READ_ONLY);
 		UI.gridData(combo, false, false).widthHint = 50;
-		var units = org.openlca.app.editors.epds.UnitCombo.of(combo);
+		var units = UnitCombo.of(combo);
 		if (product().flow != null) {
 			units.fill(product().flow);
 			units.select(product().unit, product().property);
@@ -87,15 +56,13 @@ public record EpdProductSection(EpdEditor editor) {
 			product.unit = flow != null
 				? flow.getReferenceUnit()
 				: null;
-			fillProperties(propCombo);
-			fillUnits(unitCombo);
-
-			propCombo.select(product.property);
-			unitCombo.select(product.unit);
+			if (flow == null) {
+				units.clear();
+			} else {
+				units.fill(flow);
+			}
 			editor.setDirty();
 		});
-
-
 	}
 
 	private EpdProduct product() {
@@ -106,27 +73,4 @@ public record EpdProductSection(EpdEditor editor) {
 		}
 		return epd.product;
 	}
-
-	private void fillProperties(FlowPropertyCombo combo) {
-		var flow = product().flow;
-		if (flow == null) {
-			combo.setInput(new FlowProperty[0]);
-			return;
-		}
-		var props = flow.flowPropertyFactors.stream()
-			.map(f -> f.flowProperty)
-			.filter(Objects::nonNull)
-			.toArray(FlowProperty[]::new);
-		combo.setInput(props);
-	}
-
-	private void fillUnits(UnitCombo combo) {
-		var prop = product().property;
-		if (prop == null || prop.unitGroup == null) {
-			combo.setInput(new Unit[0]);
-			return;
-		}
-		combo.setInput(prop.unitGroup);
-	}
-
 }

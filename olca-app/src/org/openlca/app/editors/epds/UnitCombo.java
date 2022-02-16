@@ -2,7 +2,6 @@ package org.openlca.app.editors.epds;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.widgets.Combo;
@@ -22,7 +21,6 @@ class UnitCombo {
 	private UnitCombo(Combo combo) {
 		this.combo = combo;
 		Controls.onSelect(combo, $ -> {
-			System.out.println("changed!");
 			int idx = combo.getSelectionIndex();
 			if (idx < 0 || idx >= items.size())
 				return;
@@ -40,23 +38,23 @@ class UnitCombo {
 		this.listener = listener;
 	}
 
-	Optional<Item> fill(Flow flow) {
+	void fill(Flow flow) {
 		if (flow == null) {
 			clear();
-			return Optional.empty();
+			return;
 		}
 
 		items.clear();
 		boolean isMultiProp = flow.flowPropertyFactors.size() > 1;
 		for (var factor : flow.flowPropertyFactors) {
-			if (factor.flowProperty == null
-				|| factor.flowProperty.unitGroup == null)
+			var property = factor.flowProperty;
+			if (property == null || property.unitGroup == null)
 				continue;
-			var group = factor.flowProperty.unitGroup;
+			var group = property.unitGroup;
 			for (var unit : group.units) {
-				var item = new Item(unit, factor,
-					Objects.equals(group.referenceUnit, unit));
-				items.add(item);
+				boolean isRef = Objects.equals(group.referenceUnit, unit)
+					&& Objects.equals(flow.referenceFlowProperty, property);
+				items.add(new Item(unit, factor, isRef));
 			}
 		}
 
@@ -80,9 +78,6 @@ class UnitCombo {
 			combo.select(selected);
 		}
 
-		return selected >= 0
-			? Optional.of(items.get(selected))
-			: Optional.empty();
 	}
 
 	void select(Unit unit, FlowProperty property) {
