@@ -18,6 +18,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
 import org.openlca.app.tools.openepd.model.Ec3Org;
+import org.openlca.app.tools.openepd.model.Ec3Pcr;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -33,6 +34,8 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Source;
+import org.openlca.core.model.Version;
 import org.openlca.util.KeyGen;
 import org.openlca.util.Strings;
 
@@ -177,6 +180,7 @@ public class ImportDialog extends FormDialog {
 			epd.manufacturer = toActor(epdDoc.manufacturer);
 			epd.verifier = toActor(epdDoc.verifier);
 			epd.programOperator = toActor(epdDoc.programOperator);
+			epd.pcr = toSource(epdDoc.pcr);
 
 			db.insert(epd);
 		} catch (Exception e) {
@@ -246,5 +250,24 @@ public class ImportDialog extends FormDialog {
 		actor.address = org.address;
 		actor.country = org.country;
 		return db.insert(actor);
+	}
+
+	private Source toSource(Ec3Pcr pcr) {
+		if (pcr == null || Strings.nullOrEmpty(pcr.name))
+			return null;
+		var id = pcr.id;
+		if (Strings.nullOrEmpty(id)) {
+			id = Strings.notEmpty(pcr.ref)
+				? KeyGen.get(pcr.ref)
+				: KeyGen.get(pcr.name);
+		}
+		var source = db.get(Source.class, id);
+		if (source != null)
+			return source;
+		source = Source.of(pcr.name);
+		source.refId = id;
+		source.url = pcr.ref;
+		source.version = Version.fromString(pcr.version).getValue();
+		return source;
 	}
 }

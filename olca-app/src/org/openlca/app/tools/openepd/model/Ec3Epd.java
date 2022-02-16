@@ -30,6 +30,7 @@ public class Ec3Epd {
 	public Ec3Org manufacturer;
 	public Ec3Org verifier;
 	public Ec3Org programOperator;
+	public Ec3Pcr pcr;
 
 	public final List<Ec3ImpactResult> impactResults = new ArrayList<>();
 
@@ -62,6 +63,7 @@ public class Ec3Epd {
 			obj.get("third_party_verifier")).orElse(null);
 		epd.programOperator = Ec3Org.fromJson(
 			obj.get("program_operator")).orElse(null);
+		epd.pcr = Ec3Pcr.fromJson(obj.get("pcr")).orElse(null);
 
 		var classes = Json.getObject(obj, "product_classes");
 		if (classes != null) {
