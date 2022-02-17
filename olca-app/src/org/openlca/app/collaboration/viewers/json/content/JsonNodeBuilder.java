@@ -74,7 +74,7 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 	}
 
 	private void build(JsonNode node, JsonArray left, JsonArray right) {
-		if (isReadOnly(node, node.property))
+		if (isReadOnly(node))
 			return;
 		var added = new HashSet<Integer>();
 		if (left != null) {
@@ -100,27 +100,19 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 			var left = side == Side.LOCAL ? value : otherValue;
 			var right = side == Side.LOCAL ? otherValue : value;
 			var property = Integer.toString(counter++);
-			var parent = node.parent.element(side);
-			var readOnly = isReadOnly(node, node.property);
+			var readOnly = isReadOnly(node);
 			var childNode = JsonNode.create(node, property, left, right, elementFinder, readOnly);
-			if (!skipChildren(parent, value)) {
-				build(childNode, left, right);
-			}
+			build(childNode, left, right);
 			node.children.add(childNode);
 		}
 	}
 
 	private JsonNode build(JsonNode parent, String property, JsonElement leftValue, JsonElement rightValue) {
-		if (skip(parent.element(), property))
+		if (skip(parent, property))
 			return null;
-		var readOnly = isReadOnly(parent, property);
+		var readOnly = isReadOnly(parent);
 		var childNode = JsonNode.create(parent, property, leftValue, rightValue, elementFinder, readOnly);
 		parent.children.add(childNode);
-		if (leftValue == null) {
-			if (skipChildren(parent.localElement, rightValue))
-				return childNode;
-		} else if (skipChildren(parent.remoteElement, leftValue))
-			return childNode;
 		build(childNode, leftValue, rightValue);
 		return childNode;
 	}
@@ -130,10 +122,8 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 		node.children.forEach(child -> sort(child));
 	}
 
-	protected abstract boolean skip(JsonElement parent, String property);
+	protected abstract boolean skip(JsonNode parent, String property);
 
-	protected abstract boolean skipChildren(JsonElement parent, JsonElement element);
-
-	protected abstract boolean isReadOnly(JsonNode node, String property);
+	protected abstract boolean isReadOnly(JsonNode node);
 
 }

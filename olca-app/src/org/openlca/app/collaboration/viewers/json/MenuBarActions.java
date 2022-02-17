@@ -139,7 +139,7 @@ class MenuBarActions {
 		var parent = node.parent.element();
 		if (!parent.isJsonObject())
 			return Collections.emptyList();
-		var dependent = dependencyResolver.resolve(parent, node.property);
+		var dependent = dependencyResolver.resolve(node);
 		if (dependent == null)
 			return Collections.emptyList();
 		return node.parent.children.stream()

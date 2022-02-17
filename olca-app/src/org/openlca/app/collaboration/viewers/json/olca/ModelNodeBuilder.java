@@ -5,8 +5,6 @@ import java.util.Comparator;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.content.JsonNodeBuilder;
 
-import com.google.gson.JsonElement;
-
 public class ModelNodeBuilder extends JsonNodeBuilder implements Comparator<JsonNode> {
 
 	public ModelNodeBuilder() {
@@ -14,18 +12,13 @@ public class ModelNodeBuilder extends JsonNodeBuilder implements Comparator<Json
 	}
 
 	@Override
-	protected boolean skip(JsonElement parent, String property) {
-		return !ModelUtil.displayElement(parent, property);
+	protected boolean skip(JsonNode node, String property) {
+		return !ModelUtil.displayElement(node, property);
 	}
 
 	@Override
-	protected boolean skipChildren(JsonElement parent, JsonElement element) {
-		return ModelUtil.isReference(parent, element);
-	}
-
-	@Override
-	protected boolean isReadOnly(JsonNode node, String property) {
-		return ModelUtil.isReadOnly(node, property);
+	protected boolean isReadOnly(JsonNode node) {
+		return ModelUtil.isReadOnly(node);
 	}
 
 	@Override
@@ -38,15 +31,13 @@ public class ModelNodeBuilder extends JsonNodeBuilder implements Comparator<Json
 	private int getOrdinal(JsonNode node) {
 		if (node.parent == null)
 			return 0;
-		var parent = node.parent.element();
-		var type = ModelUtil.getType(parent);
 		if (node.parent.element().isJsonArray() && node.element().isJsonObject()) {
 			var obj = node.element().getAsJsonObject();
 			if (obj.has("position")) {
 				return obj.get("position").getAsInt();
 			}
 		}
-		return PropertyLabels.getOrdinal(type, node.property);
+		return PropertyLabels.getOrdinal(node);
 	}
 
 }

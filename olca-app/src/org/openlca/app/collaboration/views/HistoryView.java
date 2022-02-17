@@ -24,12 +24,14 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.model.ModelType;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Reference;
 import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class HistoryView extends ViewPart {
@@ -103,7 +105,34 @@ public class HistoryView extends ViewPart {
 		var json = datasets.get(ref.objectId);
 		if (Strings.nullOrEmpty(json))
 			return null;
-		return gson.fromJson(json, JsonObject.class);
+		var obj = gson.fromJson(json, JsonObject.class);
+		if (ref.type != ModelType.PROCESS)
+			return obj;
+		var exchanges = obj.get("exchanges");
+		if (exchanges == null || !exchanges.isJsonArray())
+			return obj;
+		var inputs = new JsonArray();
+		var outputs = new JsonArray();
+		for (var elem : exchanges.getAsJsonArray()) {
+			if (!elem.isJsonObject())
+				continue;
+			var e = elem.getAsJsonObject();
+			var f = e.get("input");
+			var isInput = f.isJsonPrimitive() && f.getAsBoolean() == true;
+			if (isInput) {
+				inputs.add(elem);
+			} else {
+				outputs.add(elem);
+			}
+		}
+		if (!inputs.isEmpty()) {
+			obj.add("inputs", inputs);
+		}
+		if (!outputs.isEmpty()) {
+			obj.add("outputs", outputs);
+		}
+		obj.remove("exchanges");
+		return obj;
 	}
 
 	public static void refresh() {

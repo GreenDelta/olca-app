@@ -1,451 +1,439 @@
 package org.openlca.app.collaboration.viewers.json.olca;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.openlca.app.M;
-import org.openlca.core.model.Actor;
-import org.openlca.core.model.AllocationFactor;
-import org.openlca.core.model.CategorizedEntity;
-import org.openlca.core.model.Category;
-import org.openlca.core.model.Currency;
-import org.openlca.core.model.DQIndicator;
-import org.openlca.core.model.DQScore;
-import org.openlca.core.model.DQSystem;
-import org.openlca.core.model.Exchange;
-import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowProperty;
-import org.openlca.core.model.FlowPropertyFactor;
-import org.openlca.core.model.ImpactCategory;
-import org.openlca.core.model.ImpactFactor;
-import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.Location;
-import org.openlca.core.model.NwFactor;
-import org.openlca.core.model.NwSet;
-import org.openlca.core.model.Parameter;
-import org.openlca.core.model.ParameterRedef;
-import org.openlca.core.model.ParameterRedefSet;
-import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessDocumentation;
-import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.Project;
-import org.openlca.core.model.ProjectVariant;
-import org.openlca.core.model.SocialAspect;
-import org.openlca.core.model.SocialIndicator;
-import org.openlca.core.model.Source;
-import org.openlca.core.model.Uncertainty;
-import org.openlca.core.model.Unit;
-import org.openlca.core.model.UnitGroup;
+import org.openlca.app.collaboration.viewers.json.content.JsonNode;
+import org.openlca.core.model.ModelType;
 
 class PropertyLabels {
 
-	private static final Map<String, Map<String, String>> labels = new HashMap<>();
-	private static final Map<String, Map<String, Integer>> ordinals = new HashMap<>();
+	private static final EnumMap<ModelType, Map<String, String>> labels = new EnumMap<>(ModelType.class);
+	private static final EnumMap<ModelType, Map<String, ModelType>> imageTypes = new EnumMap<>(ModelType.class);
+	private static final EnumMap<ModelType, Map<String, Integer>> ordinals = new EnumMap<>(ModelType.class);
 
 	static {
 		putLabels();
 	}
 
-	static String get(String parentType, String property) {
-		if (!labels.containsKey(parentType))
-			return property;
-		var typeLabels = labels.get(parentType);
-		if (typeLabels.containsKey(property))
-			return typeLabels.get(property);
-		return property;
+	static String get(JsonNode node) {
+		return get(labels, node, PropertyLabels::propertyOf);
 	}
 
-	static int getOrdinal(String parentType, String property) {
-		if (!ordinals.containsKey(parentType))
-			return 0;
-		var typeOrdinals = ordinals.get(parentType);
-		if (typeOrdinals.containsKey(property))
-			return typeOrdinals.get(property);
-		return 0;
+	private static <T> T get(EnumMap<ModelType, Map<String, T>> map, JsonNode node, Function<String, T> defaultValue) {
+		var type = ModelUtil.typeOf(node);
+		var path = ModelUtil.pathOf(node);
+		if (!map.containsKey(type))
+			return defaultValue != null ? defaultValue.apply(path) : null;
+		var subMap = map.get(type);
+		if (subMap.containsKey(path))
+			return subMap.get(path);
+		return defaultValue != null ? defaultValue.apply(path) : null;
+	}
+
+	private static String propertyOf(String path) {
+		if (path.contains("."))
+			return path.substring(path.lastIndexOf(".") + 1);
+		return path;
+	}
+
+	static int getOrdinal(JsonNode node) {
+		return get(ordinals, node, path -> 0);
+	}
+
+	static ModelType getImageType(JsonNode node) {
+		return get(imageTypes, node, null);
 	}
 
 	private static void putLabels() {
-		putCategoryLabels();
 		putLocationLabels();
 		putCurrencyLabels();
 		putActorLabels();
 		putSourceLabels();
 		putUnitGroupLabels();
-		putUnitLabels();
 		putFlowPropertyLabels();
 		putSocialIndicatorLabels();
 		putFlowLabels();
-		putFlowPropertyFactorsLabels();
 		putProcessLabels();
-		putProcessDocumentationLabels();
-		putExchangeLabels();
-		putUncertaintyLabels();
-		putAllocationFactorLabels();
 		putParameterLabels();
-		putSocialAspectLabels();
 		putImpactMethodLabels();
 		putImpactCategoryLabels();
-		putImpactFactorLabels();
-		putNwSetLabels();
-		putNwFactorLabels();
 		putProductSystemLabels();
-		putParameterRedefLabels();
-		putParameterRedefSetLabels();
 		putProjectLabels();
-		putProjectVariantLabels();
 		putDQSystemLabels();
-		putDQIndicatorLabels();
-		putDQScoreLabels();
 	}
 
-	private static void putBasicLabels(Class<?> clazz) {
-		put(clazz, "name", M.Name);
-		put(clazz, "description", M.Description);
-		if (CategorizedEntity.class.isAssignableFrom(clazz))
-			put(clazz, "category", M.Category);
+	private static void putBasicLabels(ModelType type) {
+		putBasicLabels(type, null);
 	}
 
-	private static void putCategoryLabels() {
-		var clazz = Category.class;
-		put(clazz, "modelType", M.ModelType);
-		put(clazz, "name", M.Name);
-		put(clazz, "category", M.Category);
+	private static void putBasicLabels(ModelType type, String path) {
+		var prefix = path != null ? path + "." : "";
+		put(type, prefix + "name", M.Name);
+		put(type, prefix + "description", M.Description);
+		if (path == null) {
+			put(type, "category", M.Category);
+			put(type, "tags", "Tags");
+		}
 	}
 
 	private static void putLocationLabels() {
-		var clazz = Location.class;
-		putBasicLabels(clazz);
-		put(clazz, "code", M.Code);
-		put(clazz, "longitude", M.Longitude);
-		put(clazz, "latitude", M.Latitude);
-		put(clazz, "geometry", M.Geometry);
+		var type = ModelType.LOCATION;
+		putBasicLabels(type);
+		put(type, "code", M.Code);
+		put(type, "longitude", M.Longitude);
+		put(type, "latitude", M.Latitude);
+		put(type, "geometry", M.Geometry);
 	}
 
 	private static void putCurrencyLabels() {
-		var clazz = Currency.class;
-		putBasicLabels(clazz);
-		put(clazz, "code", M.Code);
-		put(clazz, "conversionFactor", M.ConversionFactor);
-		put(clazz, "referenceCurrency", M.ReferenceCurrency);
+		var type = ModelType.CURRENCY;
+		putBasicLabels(type);
+		put(type, "code", M.Code);
+		put(type, "conversionFactor", M.ConversionFactor);
+		put(type, "referenceCurrency", M.ReferenceCurrency, ModelType.CURRENCY);
 	}
 
 	private static void putActorLabels() {
-		var clazz = Actor.class;
-		putBasicLabels(clazz);
-		put(clazz, "address", M.Address);
-		put(clazz, "city", M.City);
-		put(clazz, "country", M.Country);
-		put(clazz, "email", M.Email);
-		put(clazz, "telefax", M.Telefax);
-		put(clazz, "telephone", M.Telephone);
-		put(clazz, "website", M.Website);
-		put(clazz, "zipCode", M.ZipCode);
+		var type = ModelType.ACTOR;
+		putBasicLabels(type);
+		put(type, "address", M.Address);
+		put(type, "city", M.City);
+		put(type, "country", M.Country);
+		put(type, "email", M.Email);
+		put(type, "telefax", M.Telefax);
+		put(type, "telephone", M.Telephone);
+		put(type, "website", M.Website);
+		put(type, "zipCode", M.ZipCode);
 	}
 
 	private static void putSourceLabels() {
-		var clazz = Source.class;
-		putBasicLabels(clazz);
-		put(clazz, "url", M.URL);
-		put(clazz, "textReference", M.TextReference);
-		put(clazz, "year", M.Year);
-		put(clazz, "externalFile", M.ExternalFile);
+		var type = ModelType.SOURCE;
+		putBasicLabels(type);
+		put(type, "url", M.URL);
+		put(type, "textReference", M.TextReference);
+		put(type, "year", M.Year);
+		put(type, "externalFile", M.ExternalFile);
 	}
 
 	private static void putUnitGroupLabels() {
-		var clazz = UnitGroup.class;
-		putBasicLabels(clazz);
-		put(clazz, "defaultFlowProperty", M.DefaultFlowProperty);
-		put(clazz, "units", M.Units);
+		var type = ModelType.UNIT_GROUP;
+		putBasicLabels(type);
+		put(type, "defaultFlowProperty", M.DefaultFlowProperty, ModelType.FLOW_PROPERTY);
+		put(type, "units", M.Units, ModelType.UNIT);
+		putUnitLabels(type, "units");
 	}
 
-	private static void putUnitLabels() {
-		var clazz = Unit.class;
-		putBasicLabels(clazz);
-		put(clazz, "conversionFactor", M.ConversionFactor);
-		put(clazz, "referenceUnit", M.ReferenceUnit);
-		put(clazz, "synonyms", M.Synonyms);
+	private static void putUnitLabels(ModelType type, String path) {
+		putBasicLabels(type, path);
+		put(type, path + ".conversionFactor", M.ConversionFactor);
+		put(type, path + ".referenceUnit", M.ReferenceUnit);
+		put(type, path + ".synonyms", M.Synonyms);
 	}
 
 	private static void putFlowPropertyLabels() {
-		var clazz = FlowProperty.class;
-		putBasicLabels(clazz);
-		put(clazz, "unitGroup", M.UnitGroup);
-		put(clazz, "flowPropertyType", M.FlowPropertyType);
+		var type = ModelType.FLOW_PROPERTY;
+		putBasicLabels(type);
+		put(type, "unitGroup", M.UnitGroup, ModelType.UNIT_GROUP);
+		put(type, "flowPropertyType", M.FlowPropertyType);
 	}
 
 	private static void putSocialIndicatorLabels() {
-		var clazz = SocialIndicator.class;
-		putBasicLabels(clazz);
-		put(clazz, "unitOfMeasurement", M.UnitOfMeasurement);
-		put(clazz, "evaluationScheme", M.EvaluationSchema);
-		put(clazz, "activityVariable", M.ActivityVariable);
-		put(clazz, "activityQuantity", M.ActivityQuantity);
-		put(clazz, "activityUnit", M.ActivityUnit);
+		var type = ModelType.SOCIAL_INDICATOR;
+		putBasicLabels(type);
+		put(type, "unitOfMeasurement", M.UnitOfMeasurement);
+		put(type, "evaluationScheme", M.EvaluationSchema);
+		put(type, "activityVariable", M.ActivityVariable);
+		put(type, "activityQuantity", M.ActivityQuantity, ModelType.FLOW_PROPERTY);
+		put(type, "activityUnit", M.ActivityUnit, ModelType.UNIT);
 	}
 
 	private static void putFlowLabels() {
-		var clazz = Flow.class;
-		putBasicLabels(clazz);
-		put(clazz, "flowType", M.FlowType);
-		put(clazz, "location", M.Location);
-		put(clazz, "infrastructureFlow", M.InfrastructureFlow);
-		put(clazz, "cas", M.CASNumber);
-		put(clazz, "formula", M.Formula);
-		put(clazz, "flowProperties", M.FlowProperties);
+		var type = ModelType.FLOW;
+		putBasicLabels(type);
+		put(type, "flowType", M.FlowType);
+		put(type, "location", M.Location, ModelType.LOCATION);
+		put(type, "infrastructureFlow", M.InfrastructureFlow);
+		put(type, "cas", M.CASNumber);
+		put(type, "formula", M.Formula);
+		put(type, "synonyms", M.Synonyms);
+		put(type, "flowProperties", M.FlowProperties, ModelType.FLOW_PROPERTY);
+		putFlowPropertyFactorLabels(type, "flowProperties");
 	}
 
-	private static void putFlowPropertyFactorsLabels() {
-		var clazz = FlowPropertyFactor.class;
-		put(clazz, "flowProperty", M.FlowProperty);
-		put(clazz, "conversionFactor", M.ConversionFactor);
-		put(clazz, "referenceFlowProperty", M.ReferenceFlowProperty);
+	private static void putFlowPropertyFactorLabels(ModelType type, String path) {
+		put(type, path + ".conversionFactor", M.ConversionFactor);
+		put(type, path + ".referenceFlowProperty", M.ReferenceFlowProperty);
 	}
 
 	private static void putProcessLabels() {
-		var clazz = Process.class;
-		putBasicLabels(clazz);
-		put(clazz, "processType", M.ProcessType);
-		put(clazz, "location", M.Location);
-		put(clazz, "dqSystem", M.ProcessDataQualitySchema);
-		put(clazz, "dqEntry", M.DataQualityEntry);
-		put(clazz, "exchangeDqSystem", M.ExchangeDataQualitySchema);
-		put(clazz, "socialDqSystem", M.SocialDataQualitySchema);
-		put(clazz, "infrastructureProcess", M.InfrastructureProcess);
-		put(clazz, "defaultAllocationMethod", M.AllocationMethod);
-		put(clazz, "processDocumentation", M.ProcessDocumentation);
-		put(clazz, "inputs", M.Inputs);
-		put(clazz, "outputs", M.Outputs);
-		put(clazz, "allocationFactors", M.AllocationFactors);
-		put(clazz, "parameters", M.Parameters);
-		put(clazz, "socialAspects", M.SocialAspects);
+		var type = ModelType.PROCESS;
+		putBasicLabels(type);
+		put(type, "processType", M.ProcessType);
+		put(type, "location", M.Location, ModelType.LOCATION);
+		put(type, "dqSystem", M.ProcessDataQualitySchema, ModelType.DQ_SYSTEM);
+		put(type, "dqEntry", M.DataQualityEntry);
+		put(type, "exchangeDqSystem", M.ExchangeDataQualitySchema, ModelType.DQ_SYSTEM);
+		put(type, "socialDqSystem", M.SocialDataQualitySchema, ModelType.DQ_SYSTEM);
+		put(type, "infrastructureProcess", M.InfrastructureProcess);
+		put(type, "defaultAllocationMethod", M.AllocationMethod);
+		put(type, "processDocumentation", M.ProcessDocumentation);
+		putProcessDocumentationLabels(type, "processDocumentation");
+		put(type, "inputs", M.Inputs, ModelType.FLOW);
+		putExchangeLabels(type, "inputs");
+		put(type, "outputs", M.Outputs, ModelType.FLOW);
+		putExchangeLabels(type, "outputs");
+		put(type, "allocationFactors", M.AllocationFactors);
+		putAllocationFactorLabels(type, "allocationFactors");
+		put(type, "socialAspects", M.SocialAspects, ModelType.SOCIAL_INDICATOR);
+		putSocialAspectLabels(type, "socialAspects");
+		put(type, "parameters", M.Parameters, ModelType.PARAMETER);
+		putParameterLabels(type, "parameters");
 	}
 
-	private static void putProcessDocumentationLabels() {
-		var clazz = ProcessDocumentation.class;
-		put(clazz, "creationDate", M.CreationDate);
-		put(clazz, "validFrom", M.StartDate);
-		put(clazz, "validUntil", M.EndDate);
-		put(clazz, "timeDescription", M.TimeDescription);
-		put(clazz, "geographyDescription", M.GeographyDescription);
-		put(clazz, "technologyDescription", M.TechnologyDescription);
-		put(clazz, "intendedApplication", M.IntendedApplication);
-		put(clazz, "dataSetOwner", M.DataSetOwner);
-		put(clazz, "dataGenerator", M.DataGenerator);
-		put(clazz, "dataDocumentor", M.DataDocumentor);
-		put(clazz, "publication", M.Publication);
-		put(clazz, "restrictionsDescription", M.AccessAndUseRestrictions);
-		put(clazz, "projectDescription", M.Project);
-		put(clazz, "inventoryMethodDescription", M.LCIMethod);
-		put(clazz, "modelingConstantsDescription", M.ModelingConstants);
-		put(clazz, "completenessDescription", M.DataCompleteness);
-		put(clazz, "dataSelectionDescription", M.DataSelection);
-		put(clazz, "dataTreatmentDescription", M.DataTreatment);
-		put(clazz, "samplingDescription", M.SamplingProcedure);
-		put(clazz, "dataCollectionDescription", M.DataCollectionPeriod);
-		put(clazz, "reviewer", M.Reviewer);
-		put(clazz, "reviewDetails", M.DataSetOtherEvaluation);
-		put(clazz, "copyright", M.Copyright);
-		put(clazz, "sources", M.Sources);
+	private static void putProcessDocumentationLabels(ModelType type, String path) {
+		put(type, path + ".creationDate", M.CreationDate);
+		put(type, path + ".validFrom", M.StartDate);
+		put(type, path + ".validUntil", M.EndDate);
+		put(type, path + ".timeDescription", M.TimeDescription);
+		put(type, path + ".geographyDescription", M.GeographyDescription);
+		put(type, path + ".technologyDescription", M.TechnologyDescription);
+		put(type, path + ".intendedApplication", M.IntendedApplication);
+		put(type, path + ".dataSetOwner", M.DataSetOwner, ModelType.ACTOR);
+		put(type, path + ".dataGenerator", M.DataGenerator, ModelType.ACTOR);
+		put(type, path + ".dataDocumentor", M.DataDocumentor, ModelType.ACTOR);
+		put(type, path + ".publication", M.Publication, ModelType.SOURCE);
+		put(type, path + ".restrictionsDescription", M.AccessAndUseRestrictions);
+		put(type, path + ".projectDescription", M.Project);
+		put(type, path + ".inventoryMethodDescription", M.LCIMethod);
+		put(type, path + ".modelingConstantsDescription", M.ModelingConstants);
+		put(type, path + ".completenessDescription", M.DataCompleteness);
+		put(type, path + ".dataSelectionDescription", M.DataSelection);
+		put(type, path + ".dataTreatmentDescription", M.DataTreatment);
+		put(type, path + ".samplingDescription", M.SamplingProcedure);
+		put(type, path + ".dataCollectionDescription", M.DataCollectionPeriod);
+		put(type, path + ".reviewer", M.Reviewer, ModelType.ACTOR);
+		put(type, path + ".reviewDetails", M.DataSetOtherEvaluation);
+		put(type, path + ".copyright", M.Copyright);
+		put(type, path + ".sources", M.Sources, ModelType.SOURCE);
 	}
 
-	private static void putExchangeLabels() {
-		var clazz = Exchange.class;
-		put(clazz, "flow", M.Flow);
-		put(clazz, "flowProperty", M.FlowProperty);
-		put(clazz, "unit", M.Unit);
-		put(clazz, "amount", M.Amount);
-		put(clazz, "quantitativeReference", M.QuantitativeReference);
-		put(clazz, "avoidedProduct", M.AvoidedProduct);
-		put(clazz, "defaultProvider", M.DefaultProvider);
-		put(clazz, "dqEntry", M.DataQualityEntry);
-		put(clazz, "costCategory", M.CostCategory);
-		put(clazz, "costFormula", M.CostFormula);
-		put(clazz, "costValue", M.CostValue);
-		put(clazz, "currency", M.Currency);
-		put(clazz, "uncertainty", M.Uncertainty);
-		put(clazz, "location", M.Location);
+	private static void putExchangeLabels(ModelType type, String path) {
+		put(type, path + ".flow", M.Flow, ModelType.FLOW);
+		put(type, path + ".flowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
+		put(type, path + ".unit", M.Unit, ModelType.UNIT);
+		put(type, path + ".amount", M.Amount);
+		put(type, path + ".amountFormula", "Amount formula");
+		put(type, path + ".quantitativeReference", M.QuantitativeReference);
+		put(type, path + ".avoidedProduct", M.AvoidedProduct);
+		put(type, path + ".defaultProvider", M.DefaultProvider);
+		put(type, path + ".dqEntry", M.DataQualityEntry);
+		put(type, path + ".costCategory", M.CostCategory);
+		put(type, path + ".costFormula", M.CostFormula);
+		put(type, path + ".costValue", M.CostValue);
+		put(type, path + ".currency", M.Currency, ModelType.CURRENCY);
+		put(type, path + ".baseUncertainty", M.BaseUncertainty);
+		put(type, path + ".location", M.Location, ModelType.LOCATION);
+		put(type, path + ".description", M.Description);
+		put(type, path + ".uncertainty", M.Uncertainty);
+		putUncertaintyLabels(type, path + ".uncertainty");
 	}
 
-	private static void putUncertaintyLabels() {
-		var clazz = Uncertainty.class;
-		put(clazz, "distributionType", M.UncertaintyDistribution);
-		put(clazz, "meanFormula", M.MeanFormula);
-		put(clazz, "mean", M.Mean);
-		put(clazz, "sdFormula", M.StandardDeviationFormula);
-		put(clazz, "sd", M.StandardDeviation);
-		put(clazz, "geomMeanFormula", M.GeometricMeanFormula);
-		put(clazz, "geomMean", M.GeometricMean);
-		put(clazz, "geomSdFormula", M.GeometricStandardDeviationFormula);
-		put(clazz, "geomSd", M.GeometricStandardDeviation);
-		put(clazz, "minimumFormula", M.MinimumFormula);
-		put(clazz, "minimum", M.Minimum);
-		put(clazz, "modeFormula", M.ModeFormula);
-		put(clazz, "mode", M.Mode);
-		put(clazz, "maximumFormula", M.MaximumFormula);
-		put(clazz, "maximum", M.Maximum);
+	private static void putUncertaintyLabels(ModelType type, String path) {
+		put(type, path + ".distributionType", M.UncertaintyDistribution);
+		put(type, path + ".meanFormula", M.MeanFormula);
+		put(type, path + ".mean", M.Mean);
+		put(type, path + ".sdFormula", M.StandardDeviationFormula);
+		put(type, path + ".sd", M.StandardDeviation);
+		put(type, path + ".geomMeanFormula", M.GeometricMeanFormula);
+		put(type, path + ".geomMean", M.GeometricMean);
+		put(type, path + ".geomSdFormula", M.GeometricStandardDeviationFormula);
+		put(type, path + ".geomSd", M.GeometricStandardDeviation);
+		put(type, path + ".minimumFormula", M.MinimumFormula);
+		put(type, path + ".minimum", M.Minimum);
+		put(type, path + ".modeFormula", M.ModeFormula);
+		put(type, path + ".mode", M.Mode);
+		put(type, path + ".maximumFormula", M.MaximumFormula);
+		put(type, path + ".maximum", M.Maximum);
 	}
 
-	private static void putAllocationFactorLabels() {
-		var clazz = AllocationFactor.class;
-		put(clazz, "allocationType", M.AllocationMethod);
-		put(clazz, "product", M.Product);
-		put(clazz, "exchange", M.InputOutput);
-		put(clazz, "value", M.Value);
-		put(clazz, "formula", M.Formula);
+	private static void putAllocationFactorLabels(ModelType type, String path) {
+		put(type, path + ".allocationType", M.AllocationMethod);
+		put(type, path + ".value", M.Value);
+		put(type, path + ".formula", M.Formula);
 	}
 
 	private static void putParameterLabels() {
-		var clazz = Parameter.class;
-		putBasicLabels(clazz);
-		put(clazz, "flowProperty", M.FlowProperty);
-		put(clazz, "conversionFactor", M.ConversionFactor);
-		put(clazz, "inputParameter", M.Type);
-		put(clazz, "formula", M.Formula);
-		put(clazz, "value", M.Value);
+		putParameterLabels(ModelType.PARAMETER, null);
 	}
 
-	private static void putSocialAspectLabels() {
-		var clazz = SocialAspect.class;
-		put(clazz, "socialIndicator", M.SocialIndicator);
-		put(clazz, "rawAmount", M.RawValue);
-		put(clazz, "riskLevel", M.RiskLevel);
-		put(clazz, "activityValue", M.ActivityVariable);
-		put(clazz, "quality", M.DataQuality);
-		put(clazz, "comment", M.Comment);
-		put(clazz, "source", M.Source);
+	private static void putParameterLabels(ModelType type, String path) {
+		var prefix = path == null ? "" : path + ".";
+		putBasicLabels(type, path);
+		put(type, prefix + "inputParameter", M.Type);
+		put(type, prefix + "formula", M.Formula);
+		put(type, prefix + "value", M.Value);
+		put(type, prefix + "uncertainty", M.Uncertainty);
+	}
+
+	private static void putSocialAspectLabels(ModelType type, String path) {
+		put(type, path + ".rawAmount", M.RawValue);
+		put(type, path + ".riskLevel", M.RiskLevel);
+		put(type, path + ".activityValue", M.ActivityVariable);
+		put(type, path + ".quality", M.DataQuality);
+		put(type, path + ".comment", M.Comment);
+		put(type, path + ".source", M.Source, ModelType.SOURCE);
 	}
 
 	private static void putImpactMethodLabels() {
-		var clazz = ImpactMethod.class;
-		putBasicLabels(clazz);
-		put(clazz, "impactCategories", M.ImpactCategories);
-		put(clazz, "nwSets", M.NormalizationWeightingSets);
-		put(clazz, "source", M.Source);
-		put(clazz, "code", M.Code);
+		var type = ModelType.IMPACT_METHOD;
+		putBasicLabels(type);
+		put(type, "source", M.Source, ModelType.SOURCE);
+		put(type, "code", M.Code);
+		put(type, "impactCategories", M.ImpactCategories, ModelType.IMPACT_CATEGORY);
+		put(type, "impactCategories.refUnit", M.ReferenceUnit);
+		put(type, "nwSets", M.NormalizationWeightingSets);
+		putNwSetLabels(type, "nwSets");
 	}
 
 	private static void putImpactCategoryLabels() {
-		var clazz = ImpactCategory.class;
-		putBasicLabels(clazz);
-		put(clazz, "referenceUnitName", M.ReferenceUnit);
-		put(clazz, "impactFactors", M.ImpactFactors);
-		put(clazz, "source", M.Source);
-		put(clazz, "parameters", M.Parameters);
-		put(clazz, "code", M.Code);
+		var type = ModelType.IMPACT_CATEGORY;
+		putBasicLabels(type);
+		put(type, "referenceUnitName", M.ReferenceUnit);
+		put(type, "source", M.Source, ModelType.SOURCE);
+		put(type, "code", M.Code);
+		put(type, "impactFactors", M.ImpactFactors, ModelType.IMPACT_CATEGORY);
+		putImpactFactorLabels(type, "impactFactors");
+		put(type, "parameters", M.Parameters, ModelType.PARAMETER);
+		putParameterLabels(type, "parameters");
 	}
 
-	private static void putImpactFactorLabels() {
-		var clazz = ImpactFactor.class;
-		put(clazz, "flow", M.Flow);
-		put(clazz, "flowProperty", M.FlowProperty);
-		put(clazz, "unit", M.Unit);
-		put(clazz, "formula", M.Formula);
-		put(clazz, "value", M.Value);
-		put(clazz, "location", M.Location);
-		put(clazz, "uncertainty", M.Uncertainty);
+	private static void putImpactFactorLabels(ModelType type, String path) {
+		put(type, path + ".flow", M.Flow, ModelType.FLOW);
+		put(type, path + ".flowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
+		put(type, path + ".unit", M.Unit, ModelType.UNIT);
+		put(type, path + ".formula", M.Formula);
+		put(type, path + ".value", M.Value);
+		put(type, path + ".location", M.Location, ModelType.LOCATION);
+		put(type, path + ".uncertainty", M.Uncertainty);
+		putUncertaintyLabels(type, path + ".uncertainty");
 	}
 
-	private static void putNwSetLabels() {
-		var clazz = NwSet.class;
-		putBasicLabels(clazz);
-		put(clazz, "weightedScoreUnit", M.ReferenceUnit);
-		put(clazz, "factors", M.Factors);
+	private static void putNwSetLabels(ModelType type, String path) {
+		putBasicLabels(type, path);
+		put(type, path + ".weightedScoreUnit", M.ReferenceUnit);
+		put(type, path + ".factors", M.Factors, ModelType.IMPACT_CATEGORY);
+		putNwFactorLabels(type, path + ".factors");
 	}
 
-	private static void putNwFactorLabels() {
-		var clazz = NwFactor.class;
-		put(clazz, "impactCategory", M.ImpactCategory);
-		put(clazz, "normalisationFactor", M.NormalizationFactor);
-		put(clazz, "weightingFactor", M.WeightingFactor);
+	private static void putNwFactorLabels(ModelType type, String path) {
+		put(type, path + ".normalisationFactor", M.NormalizationFactor);
+		put(type, path + ".weightingFactor", M.WeightingFactor);
 	}
 
 	private static void putProductSystemLabels() {
-		var clazz = ProductSystem.class;
-		putBasicLabels(clazz);
-		put(clazz, "referenceProcess", M.Process);
-		put(clazz, "referenceExchange", M.Product);
-		put(clazz, "targetFlowProperty", M.FlowProperty);
-		put(clazz, "targetUnit", M.Unit);
-		put(clazz, "targetAmount", M.TargetAmount);
-		put(clazz, "processes", M.Processes);
-		put(clazz, "processLinks", M.ProcessLinks);
-		put(clazz, "parameterSets", M.ParameterSets);
+		var type = ModelType.PRODUCT_SYSTEM;
+		putBasicLabels(type);
+		put(type, "referenceProcess", M.Process, ModelType.PROCESS);
+		put(type, "referenceExchange", M.Product, ModelType.FLOW);
+		put(type, "targetFlowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
+		put(type, "targetUnit", M.Unit, ModelType.UNIT);
+		put(type, "targetAmount", M.TargetAmount);
+		put(type, "processes", M.Processes, ModelType.PROCESS);
+		put(type, "processLinks", M.ProcessLinks);
+		put(type, "parameterSets", M.ParameterSets, ModelType.PARAMETER);
+		putParameterRedefSetLabels(type, "parameterSets");
 	}
 
-	private static void putParameterRedefLabels() {
-		var clazz = ParameterRedef.class;
-		put(clazz, "context", M.Context);
-		put(clazz, "name", M.Name);
-		put(clazz, "value", M.Value);
-		put(clazz, "uncertainty", M.Uncertainty);
-		put(clazz, "isProtected", M.IsProtected);
+	private static void putParameterRedefSetLabels(ModelType type, String path) {
+		put(type, path + ".name", M.Name);
+		put(type, path + ".description", M.Description);
+		put(type, path + ".isBaseline", M.IsBaseline);
+		put(type, path + ".parameters", M.Parameters, ModelType.PARAMETER);
+		putParameterRedefLabels(type, path + ".parameters");
 	}
 
-	private static void putParameterRedefSetLabels() {
-		var clazz = ParameterRedefSet.class;
-		put(clazz, "name", M.Name);
-		put(clazz, "description", M.Description);
-		put(clazz, "isBaseline", M.IsBaseline);
-		put(clazz, "parameters", M.Parameters);
+	private static void putParameterRedefLabels(ModelType type, String path) {
+		put(type, path + ".context", M.Context);
+		put(type, path + ".name", M.Name);
+		put(type, path + ".value", M.Value);
+		put(type, path + ".isProtected", M.IsProtected);
+		put(type, path + ".uncertainty", M.Uncertainty);
+		putUncertaintyLabels(type, path + ".uncertainty");
 	}
-	
+
 	private static void putProjectLabels() {
-		var clazz = Project.class;
-		putBasicLabels(clazz);
-		put(clazz, "impactMethod", M.ImpactAssessmentMethod);
-		put(clazz, "nwSet", M.NormalizationAndWeightingSet);
-		put(clazz, "variants", M.Variants);
-		put(clazz, "isWithCosts", M.IsWithCosts);
-		put(clazz, "isWithRegionalization", M.IsWithRegionalization);
+		var type = ModelType.PROJECT;
+		putBasicLabels(type);
+		put(type, "impactMethod", M.ImpactAssessmentMethod, ModelType.IMPACT_METHOD);
+		put(type, "nwSet", M.NormalizationAndWeightingSet);
+		put(type, "isWithCosts", M.IsWithCosts);
+		put(type, "isWithRegionalization", M.IsWithRegionalization);
+		put(type, "variants", M.Variants, ModelType.PRODUCT_SYSTEM);
+		putProjectVariantLabels(type, "variants");
 	}
 
-	private static void putProjectVariantLabels() {
-		var clazz = ProjectVariant.class;
-		put(clazz, "name", M.Name);
-		put(clazz, "productSystem", M.ProductSystem);
-		put(clazz, "flowProperty", M.FlowProperty);
-		put(clazz, "unit", M.Unit);
-		put(clazz, "amount", M.Amount);
-		put(clazz, "allocationMethod", M.AllocationMethod);
-		put(clazz, "description", M.Description);
-		put(clazz, "isDisabled", M.IsDisabled);
-		put(clazz, "parameterRedefs", M.Parameters);
+	private static void putProjectVariantLabels(ModelType type, String path) {
+		put(type, path + ".name", M.Name);
+		put(type, path + ".productSystem", M.ProductSystem, ModelType.PRODUCT_SYSTEM);
+		put(type, path + ".flowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
+		put(type, path + ".unit", M.Unit, ModelType.UNIT);
+		put(type, path + ".amount", M.Amount);
+		put(type, path + ".allocationMethod", M.AllocationMethod);
+		put(type, path + ".description", M.Description);
+		put(type, path + ".isDisabled", M.IsDisabled);
+		put(type, path + ".parameterRedefs", M.Parameters, ModelType.PARAMETER);
+		putParameterRedefLabels(type, path + ".parameterRedefs");
 	}
 
 	private static void putDQSystemLabels() {
-		var clazz = DQSystem.class;
-		putBasicLabels(clazz);
-		put(clazz, "hasUncertainties", M.HasUncertainties);
-		put(clazz, "indicators", M.Indicators);
-		put(clazz, "source", M.Source);
+		var type = ModelType.DQ_SYSTEM;
+		putBasicLabels(type);
+		put(type, "hasUncertainties", M.HasUncertainties);
+		put(type, "source", M.Source, ModelType.SOURCE);
+		put(type, "indicators", M.Indicators);
+		putDQIndicatorLabels(type, "indicators");
 	}
 
-	private static void putDQIndicatorLabels() {
-		var clazz = DQIndicator.class;
-		putBasicLabels(clazz);
-		put(clazz, "position", M.Position);
-		put(clazz, "scores", M.Scores);
+	private static void putDQIndicatorLabels(ModelType type, String path) {
+		putBasicLabels(type);
+		put(type, path + ".scores", M.Scores);
+		putDQScoreLabels(type, path + ".scores");
 	}
 
-	private static void putDQScoreLabels() {
-		var clazz = DQScore.class;
-		putBasicLabels(clazz);
-		put(clazz, "position", M.Position);
-		put(clazz, "label", M.Label);
-		put(clazz, "description", M.Description);
-		put(clazz, "uncertainty", M.Uncertainty);
+	private static void putDQScoreLabels(ModelType type, String path) {
+		putBasicLabels(type);
+		put(type, path + ".label", M.Label);
+		put(type, path + ".description", M.Description);
+		put(type, path + ".uncertainty", M.Uncertainty);
+		putUncertaintyLabels(type, path + ".uncertainty");
 	}
 
-	private static void put(Class<?> clazz, String property, String label) {
-		String type = clazz.getSimpleName();
-		Map<String, String> labelMap = labels.get(type);
-		if (labelMap == null)
+	private static void put(ModelType type, String path, String label) {
+		put(type, path, label, null);
+	}
+
+	private static void put(ModelType type, String path, String label, ModelType imageType) {
+		var labelMap = labels.get(type);
+		if (labelMap == null) {
 			labels.put(type, labelMap = new HashMap<>());
-		labelMap.put(property, label);
-		Map<String, Integer> ordinalMap = ordinals.get(type);
-		if (ordinalMap == null)
+		}
+		labelMap.put(path, label);
+		var ordinalMap = ordinals.get(type);
+		if (ordinalMap == null) {
 			ordinals.put(type, ordinalMap = new HashMap<>());
-		ordinalMap.put(property, ordinalMap.size() + 1);
+		}
+		ordinalMap.put(path, ordinalMap.size() + 1);
+		if (imageType == null)
+			return;
+		var typeMap = imageTypes.get(type);
+		if (typeMap == null) {
+			imageTypes.put(type, typeMap = new HashMap<>());
+		}
+		typeMap.put(path, imageType);
 	}
 
 }
