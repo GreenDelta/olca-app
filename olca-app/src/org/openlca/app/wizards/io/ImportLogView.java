@@ -2,12 +2,18 @@ package org.openlca.app.wizards.io;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
@@ -21,6 +27,8 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.io.ImportLog;
+import org.openlca.core.io.ImportLog.State;
+import org.openlca.core.model.ModelType;
 
 public class ImportLogView extends SimpleFormEditor {
 
@@ -57,12 +65,19 @@ public class ImportLogView extends SimpleFormEditor {
 			var form = UI.formHeader(mForm, "Import details", Icon.IMPORT.get());
 			var tk = mForm.getToolkit();
 			var body = UI.formBody(form, tk);
+
+			// filter
+			var filter = new Filter(log);
+			filter.render(body, tk);
+
+			// table
 			var table = Tables.createViewer(
 				body, "Status", "Data set", "Message");
 			table.setLabelProvider(new MessageLabel());
 			Tables.bindColumnWidths(table, 0.2, 0.4, 0.4);
 			table.setInput(log.messages());
 
+			// actions
 			var onOpen = Actions.onOpen(() -> {
 				ImportLog.Message message = Viewers.getFirstSelected(table);
 				if (!message.hasDescriptor())
@@ -125,5 +140,67 @@ public class ImportLogView extends SimpleFormEditor {
 				case SKIPPED -> "Ignored";
 			};
 		}
+	}
+
+	private static class Filter {
+
+		private final ImportLog log;
+
+		private int maxCount = 1000;
+		private String text;
+		private ModelType type;
+		private State state;
+
+		Filter(ImportLog log) {
+			this.log = log;
+
+
+		}
+
+		void render(Composite body, FormToolkit tk) {
+
+			var comp = tk.createComposite(body);
+			UI.fillHorizontal(comp);
+			UI.gridLayout(comp, 2);
+
+			var icon = tk.createLabel(comp, "");
+			icon.setImage(Icon.SEARCH.get());
+
+			// search text
+			var searchComp = tk.createComposite(comp);
+			UI.fillHorizontal(searchComp);
+			UI.gridLayout(searchComp, 2, 10, 0);
+			var searchText = tk.createText(searchComp, "", SWT.SEARCH);
+			UI.fillHorizontal(searchText);
+
+			// type button
+			var typeBtn =tk.createButton(searchComp, "All types", SWT.NONE);
+			typeBtn.setImage(Icon.DOWN.get());
+			var menu = new Menu(typeBtn);
+			for (var type : ModelType.values()) {
+				if (!type.isCategorized())
+					continue;
+				var typeLabel = Labels.plural(type) + " (0)";
+				var item = new MenuItem(menu, SWT.NONE);
+				item.setText(typeLabel);
+				item.setToolTipText(typeLabel);
+				item.setImage(Images.get(type));
+			}
+			typeBtn.setMenu(menu);
+
+			// checkboxes
+			UI.filler(comp, tk);
+			var optComp = tk.createComposite(comp);
+			UI.gridLayout(optComp, 6, 10, 0);
+
+			tk.createButton(optComp, "Errors", SWT.CHECK);
+			tk.createButton(optComp, "Warnings", SWT.CHECK);
+			tk.createButton(optComp, "All", SWT.CHECK);
+			tk.createLabel(optComp, " | ");
+			tk.createLabel(optComp, "Max. number of messages:");
+			var spinner = new Spinner(optComp, SWT.NONE);
+			spinner.setValues(1000, 1000, 1_000_000, 0, 1000, 5000);
+		}
+
 	}
 }

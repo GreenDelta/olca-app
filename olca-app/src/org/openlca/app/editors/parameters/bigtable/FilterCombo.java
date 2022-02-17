@@ -54,21 +54,14 @@ class FilterCombo {
 	}
 
 	private static String label(int type) {
-		switch (type) {
-		case ALL:
-			return "All columns";
-		case NAMES:
-			return "Names";
-		case SCOPES:
-			return "Parameter scopes";
-		case FORMULAS:
-			return "Formulas";
-		case DESCRIPTIONS:
-			return "Descriptions";
-		case ERRORS:
-			return "Evaluation errors";
-		default:
-			return "?";
-		}
+		return switch (type) {
+			case ALL -> "All columns";
+			case NAMES -> "Names";
+			case SCOPES -> "Parameter scopes";
+			case FORMULAS -> "Formulas";
+			case DESCRIPTIONS -> "Descriptions";
+			case ERRORS -> "Evaluation errors";
+			default -> "?";
+		};
 	}
 }
