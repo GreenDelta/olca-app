@@ -2,6 +2,7 @@ package org.openlca.app.wizards.io;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -22,17 +23,27 @@ import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.io.ImportLog;
+import org.openlca.core.io.ImportLog.Message;
 import org.openlca.core.io.ImportLog.State;
 import org.openlca.core.model.ModelType;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+
 public class ImportLogView extends SimpleFormEditor {
 
-	private ImportLog log;
+	private Set<Message> messages;
 
 	public static void open(ImportLog log) {
 		var id = Cache.getAppCache().put(log);
@@ -46,7 +57,10 @@ public class ImportLogView extends SimpleFormEditor {
 		super.init(site, raw);
 		if (!(raw instanceof SimpleEditorInput input))
 			return;
-		log = Cache.getAppCache().remove(input.id);
+		var obj = Cache.getAppCache().remove(input.id);
+		messages = obj instanceof ImportLog log
+			? log.messages()
+			: Collections.emptySet();
 	}
 
 	@Override
@@ -67,7 +81,7 @@ public class ImportLogView extends SimpleFormEditor {
 			var body = UI.formBody(form, tk);
 
 			// filter
-			var filter = new Filter(log);
+			var filter = new Filter(messages);
 			filter.render(body, tk);
 
 			// table
@@ -75,7 +89,7 @@ public class ImportLogView extends SimpleFormEditor {
 				body, "Status", "Data set", "Message");
 			table.setLabelProvider(new MessageLabel());
 			Tables.bindColumnWidths(table, 0.2, 0.4, 0.4);
-			table.setInput(log.messages());
+			filter.apply(table);
 
 			// actions
 			var onOpen = Actions.onOpen(() -> {
@@ -144,16 +158,16 @@ public class ImportLogView extends SimpleFormEditor {
 
 	private static class Filter {
 
-		private final ImportLog log;
+		private final Set<Message> messages;
 
+		private TableViewer table;
 		private int maxCount = 1000;
 		private String text;
 		private ModelType type;
 		private State state;
 
-		Filter(ImportLog log) {
-			this.log = log;
-
+		Filter(Set<Message> messages) {
+			this.messages = messages;
 
 		}
 
@@ -174,19 +188,24 @@ public class ImportLogView extends SimpleFormEditor {
 			UI.fillHorizontal(searchText);
 
 			// type button
-			var typeBtn =tk.createButton(searchComp, "All types", SWT.NONE);
+			var typeBtn = tk.createButton(searchComp, "All types", SWT.NONE);
+			var typeItems = TypeItem.allOf(messages);
 			typeBtn.setImage(Icon.DOWN.get());
-			var menu = new Menu(typeBtn);
-			for (var type : ModelType.values()) {
-				if (!type.isCategorized())
-					continue;
-				var typeLabel = Labels.plural(type) + " (0)";
-				var item = new MenuItem(menu, SWT.NONE);
-				item.setText(typeLabel);
-				item.setToolTipText(typeLabel);
-				item.setImage(Images.get(type));
+			var typeMenu = new Menu(typeBtn);
+			for (var item : typeItems) {
+				item.mountTo(typeMenu, selectedType -> {
+					type = selectedType;
+					typeBtn.setText(selectedType == null
+						? "All types"
+						: Labels.of(selectedType));
+					typeBtn.pack();
+					typeBtn.getParent().layout();
+					update();
+				});
 			}
-			typeBtn.setMenu(menu);
+
+			typeBtn.setMenu(typeMenu);
+			Controls.onSelect(typeBtn, e -> typeMenu.setVisible(true));
 
 			// checkboxes
 			UI.filler(comp, tk);
@@ -199,8 +218,61 @@ public class ImportLogView extends SimpleFormEditor {
 			tk.createLabel(optComp, " | ");
 			tk.createLabel(optComp, "Max. number of messages:");
 			var spinner = new Spinner(optComp, SWT.NONE);
-			spinner.setValues(1000, 1000, 1_000_000, 0, 1000, 5000);
+			spinner.setValues(maxCount, 1000, 1_000_000, 0, 1000, 5000);
 		}
 
+		void apply(TableViewer table) {
+			this.table = table;
+			update();
+		}
+
+		private void update() {
+			if (table == null)
+				return;
+		}
+
+	}
+
+	private record TypeItem(ModelType type, int count) {
+
+		static List<TypeItem> allOf(Set<Message> messages) {
+			var map = new EnumMap<ModelType, Integer>(ModelType.class);
+			for (var message : messages) {
+				var d = message.descriptor();
+				if (d == null || d.type == null)
+					continue;
+				map.compute(d.type,
+					(type, count) -> count != null ? count + 1 : 1);
+			}
+
+			var items = new ArrayList<TypeItem>(map.size() + 1);
+			items.add(new TypeItem(null, messages.size()));
+			map.entrySet().stream()
+				.filter(e -> e.getValue() != null)
+				.map(e -> new TypeItem(e.getKey(), e.getValue()))
+				.sorted(Comparator.comparingInt(TypeItem::count).reversed())
+				.forEach(items::add);
+			return items;
+		}
+
+		@Override
+		public String toString() {
+			return type == null
+				? "All types (" + count + ")"
+				: Labels.of(type) + " (" + count + ")";
+		}
+
+		void mountTo(Menu menu, Consumer<ModelType> fn) {
+			var item = new MenuItem(menu, SWT.NONE);
+			var label = toString();
+			item.setText(label);
+			item.setToolTipText(label);
+			item.setImage(Images.get(type));
+			Controls.onSelect(item, $ -> {
+				if (fn != null) {
+					fn.accept(type);
+				}
+			});
+		}
 	}
 }
