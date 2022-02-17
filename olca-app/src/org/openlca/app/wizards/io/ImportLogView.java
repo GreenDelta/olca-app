@@ -32,11 +32,14 @@ import org.openlca.core.io.ImportLog;
 import org.openlca.core.io.ImportLog.Message;
 import org.openlca.core.io.ImportLog.State;
 import org.openlca.core.model.ModelType;
+import org.openlca.util.Strings;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -93,7 +96,7 @@ public class ImportLogView extends SimpleFormEditor {
 
 			// actions
 			var onOpen = Actions.onOpen(() -> {
-				ImportLog.Message message = Viewers.getFirstSelected(table);
+				Message message = Viewers.getFirstSelected(table);
 				if (!message.hasDescriptor())
 					return;
 				App.open(message.descriptor());
@@ -109,7 +112,7 @@ public class ImportLogView extends SimpleFormEditor {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof ImportLog.Message message))
+			if (!(obj instanceof Message message))
 				return null;
 			if (col == 0)
 				return iconOf(message.state());
@@ -118,7 +121,7 @@ public class ImportLogView extends SimpleFormEditor {
 			return null;
 		}
 
-		private Image iconOf(ImportLog.State state) {
+		private Image iconOf(State state) {
 			if (state == null)
 				return null;
 			return switch (state) {
@@ -132,17 +135,17 @@ public class ImportLogView extends SimpleFormEditor {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ImportLog.Message message))
+			if (!(obj instanceof Message message))
 				return null;
 			return switch (col) {
-				case 0 -> labelOf(message.state());
+				case 0 -> of(message.state());
 				case 1 -> Labels.name(message.descriptor());
 				case 2 -> message.message();
 				default -> null;
 			};
 		}
 
-		private String labelOf(ImportLog.State state) {
+		private static String of(State state) {
 			if (state == null)
 				return null;
 			return switch (state) {
@@ -164,7 +167,7 @@ public class ImportLogView extends SimpleFormEditor {
 		private int maxCount = 1000;
 		private String text;
 		private ModelType type;
-		private State state;
+		private Set<State> states = EnumSet.noneOf(State.class);
 
 		Filter(Set<Message> messages) {
 			this.messages = messages;
@@ -177,8 +180,10 @@ public class ImportLogView extends SimpleFormEditor {
 			UI.fillHorizontal(comp);
 			UI.gridLayout(comp, 2);
 
-			var icon = tk.createLabel(comp, "");
+			var icon = tk.createImageHyperlink(comp, SWT.BORDER);
+			icon.setToolTipText("Click to search or press enter");
 			icon.setImage(Icon.SEARCH.get());
+			Controls.onClick(icon, $ -> update());
 
 			// search text
 			var searchComp = tk.createComposite(comp);
@@ -186,6 +191,8 @@ public class ImportLogView extends SimpleFormEditor {
 			UI.gridLayout(searchComp, 2, 10, 0);
 			var searchText = tk.createText(searchComp, "", SWT.SEARCH);
 			UI.fillHorizontal(searchText);
+			searchText.addModifyListener($ -> text = searchText.getText());
+			Controls.onReturn(searchText, $ -> update());
 
 			// type button
 			var typeBtn = tk.createButton(searchComp, "All types", SWT.NONE);
@@ -229,6 +236,55 @@ public class ImportLogView extends SimpleFormEditor {
 		private void update() {
 			if (table == null)
 				return;
+
+			// states & type
+			var stream = messages.stream();
+			if (!states.isEmpty()) {
+				stream = stream.filter(
+					m -> m.state() != null && states.contains(m.state()));
+			}
+			if (type != null) {
+				stream = stream.filter(
+					m -> {
+						var d = m.descriptor();
+						return d != null && d.type == type;
+					});
+			}
+
+			// text filter
+			var phrase = text == null
+				? null
+				: text.trim();
+			if (Strings.notEmpty(phrase)) {
+				var words = Arrays.stream(phrase.split(" "))
+					.map(s -> s.trim().toLowerCase())
+					.filter(Strings::notEmpty)
+					.toList();
+				stream = stream.filter(m -> matches(m, words));
+			}
+
+			var list = stream.limit(maxCount).toList();
+			table.setInput(list);
+		}
+
+		private boolean matches(Message message, List<String> words) {
+			if(words.isEmpty())
+				return true;
+			for (var word : words) {
+				var s = message.message();
+				if (s != null && s.toLowerCase().contains(word))
+					continue;
+				s = message.descriptor() != null
+					? Labels.name(message.descriptor())
+					: null;
+				if (s != null && s.toLowerCase().contains(word))
+					continue;
+				s = MessageLabel.of(message.state());
+				if (s != null && s.toLowerCase().contains(word))
+					continue;
+				return false;
+			}
+			return true;
 		}
 
 	}
