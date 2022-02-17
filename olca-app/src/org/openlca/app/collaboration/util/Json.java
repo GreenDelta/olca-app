@@ -2,6 +2,9 @@ package org.openlca.app.collaboration.util;
 
 import java.util.HashSet;
 import java.util.Map.Entry;
+
+import org.openlca.core.model.ModelType;
+
 import java.util.Set;
 import java.util.Stack;
 
@@ -246,6 +249,24 @@ public class Json {
 			index++;
 		}
 		return -1;
+	}
+
+	public static ModelType getModelType(JsonElement element) {
+		if (element == null)
+			return null;
+		if (!element.isJsonObject())
+			return null;
+		var type = element.getAsJsonObject().get("@type");
+		if (type == null)
+			return null;
+		for (ModelType mType : ModelType.values())
+			if (mType != ModelType.UNKNOWN && mType.getModelClass().getSimpleName().equals(type.getAsString()))
+				return mType;
+		return null;
+	}
+
+	public static boolean isJsonObject(JsonElement element) {
+		return element != null && element.isJsonObject();
 	}
 
 	private static int findPrimitive(JsonPrimitive element, JsonArray array) {
