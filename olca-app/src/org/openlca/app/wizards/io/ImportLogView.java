@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -42,6 +43,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class ImportLogView extends SimpleFormEditor {
@@ -167,7 +169,7 @@ public class ImportLogView extends SimpleFormEditor {
 		private int maxCount = 1000;
 		private String text;
 		private ModelType type;
-		private Set<State> states = EnumSet.noneOf(State.class);
+		private final Set<State> states = EnumSet.noneOf(State.class);
 
 		Filter(Set<Message> messages) {
 			this.messages = messages;
@@ -218,14 +220,45 @@ public class ImportLogView extends SimpleFormEditor {
 			UI.filler(comp, tk);
 			var optComp = tk.createComposite(comp);
 			UI.gridLayout(optComp, 6, 10, 0);
+			var errCheck = tk.createButton(optComp, "Errors", SWT.CHECK);
+			var warnCheck = tk.createButton(optComp, "Warnings", SWT.CHECK);
+			var allCheck = tk.createButton(optComp, "All", SWT.CHECK);
+			allCheck.setSelection(true);
 
-			tk.createButton(optComp, "Errors", SWT.CHECK);
-			tk.createButton(optComp, "Warnings", SWT.CHECK);
-			tk.createButton(optComp, "All", SWT.CHECK);
+			BiConsumer<Button, State> stateCheck = (button, state) -> {
+				if (button.getSelection()) {
+					states.add(state);
+					allCheck.setSelection(false);
+				} else {
+					states.remove(state);
+					allCheck.setSelection(states.isEmpty());
+				}
+				update();
+			};
+
+			Controls.onSelect(errCheck, $ -> stateCheck.accept(errCheck, State.ERROR));
+			Controls.onSelect(warnCheck, $ -> stateCheck.accept(warnCheck, State.WARNING));
+
+			Controls.onSelect(allCheck, $ -> {
+				if (allCheck.getSelection()) {
+					states.clear();
+					errCheck.setSelection(false);
+					warnCheck.setSelection(false);
+				} else {
+					states.add(State.ERROR);
+					errCheck.setSelection(true);
+				}
+				update();
+			});
+
 			tk.createLabel(optComp, " | ");
 			tk.createLabel(optComp, "Max. number of messages:");
 			var spinner = new Spinner(optComp, SWT.NONE);
 			spinner.setValues(maxCount, 1000, 1_000_000, 0, 1000, 5000);
+			spinner.addModifyListener($ -> {
+				maxCount = spinner.getSelection();
+				update();
+			});
 		}
 
 		void apply(TableViewer table) {
