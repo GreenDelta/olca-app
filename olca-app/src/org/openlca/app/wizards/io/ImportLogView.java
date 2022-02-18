@@ -1,5 +1,16 @@
 package org.openlca.app.wizards.io;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -34,17 +45,6 @@ import org.openlca.core.io.ImportLog.Message;
 import org.openlca.core.io.ImportLog.State;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class ImportLogView extends SimpleFormEditor {
 
@@ -253,7 +253,7 @@ public class ImportLogView extends SimpleFormEditor {
 
 			tk.createLabel(optComp, " | ");
 			tk.createLabel(optComp, "Max. number of messages:");
-			var spinner = new Spinner(optComp, SWT.NONE);
+			var spinner = new Spinner(optComp, SWT.BORDER);
 			spinner.setValues(maxCount, 1000, 1_000_000, 0, 1000, 5000);
 			spinner.addModifyListener($ -> {
 				maxCount = spinner.getSelection();

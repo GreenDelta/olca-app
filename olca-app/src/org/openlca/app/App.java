@@ -153,9 +153,8 @@ public class App {
 		for (var ref : Editors.getReferences()) {
 			try {
 				var inp = ref.getEditorInput();
-				if (!(inp instanceof ModelEditorInput))
+				if (!(inp instanceof ModelEditorInput input))
 					continue;
-				var input = (ModelEditorInput) inp;
 				if (Objects.equals(input.getDescriptor(), d))
 					return ref;
 			} catch (Exception e) {
