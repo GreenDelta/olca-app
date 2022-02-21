@@ -102,6 +102,12 @@ public class GitStore implements JsonStoreReader, JsonStoreWriter {
 				.map(binary -> ref.getBinariesPath() + "/" + binary)
 				.toList();
 	}
+	
+	@Override
+	public List<String> getFiles(String dir) {
+		// TODO think about if this makes ever sense for this type of store
+		return Collections.emptyList();
+	}
 
 	@Override
 	public List<String> getRefIds(ModelType type) {
