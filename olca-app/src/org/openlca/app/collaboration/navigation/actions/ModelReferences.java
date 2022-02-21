@@ -84,6 +84,8 @@ class ModelReferences {
 		scanProcesses();
 		scanProductSystems();
 		scanProjects();
+		scanEpds();
+		scanResults();
 	}
 
 	private void scanCurrencies() {
@@ -186,6 +188,33 @@ class ModelReferences {
 				new ModelField(ModelType.PROJECT, "f_project"),
 				new ModelField(ModelType.PRODUCT_SYSTEM, "f_product_system"));
 		scanParameterRedefs(ModelType.PROJECT, variantToProject::get);
+	}
+
+	private void scanEpds() {
+		scanTable("tbl_epds",
+				new ModelField(ModelType.EPD, "id"),
+				new ModelField(ModelType.ACTOR, "f_manufacturer"),
+				new ModelField(ModelType.ACTOR, "f_verifier"),
+				new ModelField(ModelType.ACTOR, "f_program_operator"),
+				new ModelField(ModelType.SOURCE, "f_pcr"),
+				new ModelField(ModelType.FLOW, "f_flow"));
+		scanTable("tbl_epd_modules",
+				new ModelField(ModelType.EPD, "f_epd"),
+				new ModelField(ModelType.RESULT, "f_result"));
+	}
+
+	private void scanResults() {
+		scanTable("tbl_results",
+				new ModelField(ModelType.RESULT, "id"),
+				new ModelField(ModelType.PRODUCT_SYSTEM, "f_product_system"),
+				new ModelField(ModelType.IMPACT_METHOD, "f_impact_method"));
+		scanTable("tbl_flow_results",
+				new ModelField(ModelType.RESULT, "f_result"),
+				new ModelField(ModelType.FLOW, "f_flow"),
+				new ModelField(ModelType.LOCATION, "f_location"));
+		scanTable("tbl_impact_results",
+				new ModelField(ModelType.RESULT, "f_result"),
+				new ModelField(ModelType.IMPACT_CATEGORY, "f_impact_category"));
 	}
 
 	private void scanParameterRedefs(ModelType ownerType, Function<Long, Long> mediator) {
