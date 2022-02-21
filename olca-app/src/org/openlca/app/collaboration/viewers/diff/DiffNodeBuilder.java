@@ -1,7 +1,7 @@
 package org.openlca.app.collaboration.viewers.diff;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.openlca.core.database.IDatabase;
@@ -19,7 +19,7 @@ public class DiffNodeBuilder {
 		this.database = database.getName();
 	}
 
-	public DiffNode build(List<DiffResult> diffs) {
+	public DiffNode build(Collection<DiffResult> diffs) {
 		if (!init(diffs))
 			return null;
 		DiffNode root = new DiffNode(null, database);
@@ -30,7 +30,7 @@ public class DiffNodeBuilder {
 		return root;
 	}
 
-	private boolean init(List<DiffResult> diffs) {
+	private boolean init(Collection<DiffResult> diffs) {
 		for (DiffResult result : diffs) {
 			this.results.put(getKey(result), result);
 		}

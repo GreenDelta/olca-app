@@ -34,8 +34,11 @@ public class WorkspaceDiffs {
 		try {
 			var config = new Config(Database.get(), Repository.get().workspaceIds, Repository.get().git, null);
 			var pathFilters = toPathFilters(filterElements);
+			var commitIsAhead = false; // TODO
+			var leftCommitId = !commitIsAhead && commit != null ? commit.id : null;
+			var rightCommitId = commitIsAhead && commit != null ? commit.id : null;
 			return DiffEntries.workspace(config, commit, pathFilters).stream()
-					.map(e -> new Diff(e, commit != null ? commit.id : null, null))
+					.map(e -> new Diff(e, leftCommitId, rightCommitId))
 					.toList();
 		} catch (IOException e) {
 			log.error("Error getting workspace diffs", e);
@@ -67,7 +70,7 @@ public class WorkspaceDiffs {
 		if (element instanceof CategoryElement e)
 			return e.getContent().modelType.name() + Strings.join(Categories.path(e.getContent().category), '/');
 		if (element instanceof ModelElement e)
-			return getPath(e.getParent()) + "/" + e.getContent().refId;
+			return getPath(e.getParent()) + "/" + e.getContent().refId + ".json";
 		return null;
 	}
 

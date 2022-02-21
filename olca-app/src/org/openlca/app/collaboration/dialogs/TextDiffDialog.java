@@ -8,10 +8,10 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.openlca.app.collaboration.model.ActionType;
 import org.openlca.app.collaboration.viewers.json.Side;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.label.DiffStyle;
+import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.olca.ModelLabelProvider;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
@@ -19,12 +19,12 @@ import org.openlca.app.util.UI;
 public class TextDiffDialog extends FormDialog {
 
 	private final JsonNode node;
-	private final ActionType action;
+	private final Direction direction;
 
-	public TextDiffDialog(JsonNode node, ActionType action) {
+	public TextDiffDialog(JsonNode node, Direction direction) {
 		super(UI.shell());
 		this.node = node;
-		this.action = action;
+		this.direction = direction;
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class TextDiffDialog extends FormDialog {
 
 	private void createText(Composite parent, String value, String otherValue, Side side) {
 		var styled = new StyledString(value);
-		new DiffStyle().applyTo(styled, otherValue, side, action);
+		new DiffStyle().applyTo(styled, otherValue, side, direction);
 		var text = new StyledText(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
 		text.setText(styled.toString());
 		text.setStyleRanges(styled.getStyleRanges());

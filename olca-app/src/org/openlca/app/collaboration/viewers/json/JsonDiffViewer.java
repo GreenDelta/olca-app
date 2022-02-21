@@ -4,9 +4,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.model.ActionType;
 import org.openlca.app.collaboration.viewers.json.content.IDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
+import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.label.IJsonNodeLabelProvider;
 import org.openlca.app.util.UI;
 
@@ -15,24 +15,27 @@ public class JsonDiffViewer extends Composite {
 	private final FormToolkit toolkit;
 	private JsonNode root;
 	private final boolean editMode;
+	private final Direction direction;
 	private JsonViewer leftTree;
 	private JsonViewer rightTree;
 	private String localLabel = M.LocalModel;
 	private String remoteLabel = M.RemoteModel;
 
-	public static JsonDiffViewer forEditing(Composite parent, FormToolkit toolkit, JsonNode root) {
-		return new JsonDiffViewer(parent, toolkit, root, true);
+	public static JsonDiffViewer forEditing(Composite parent, FormToolkit toolkit, JsonNode root, Direction direction) {
+		return new JsonDiffViewer(parent, toolkit, root, direction, true);
 	}
 
-	public static JsonDiffViewer forViewing(Composite parent, FormToolkit toolkit, JsonNode root) {
-		return new JsonDiffViewer(parent, toolkit, root, false);
+	public static JsonDiffViewer forViewing(Composite parent, FormToolkit toolkit, JsonNode root, Direction direction) {
+		return new JsonDiffViewer(parent, toolkit, root, direction, false);
 	}
 
-	private JsonDiffViewer(Composite parent, FormToolkit toolkit, JsonNode root, boolean editMode) {
+	private JsonDiffViewer(Composite parent, FormToolkit toolkit, JsonNode root, Direction direction,
+			boolean editMode) {
 		super(parent, SWT.NONE);
 		this.toolkit = toolkit;
 		this.root = root;
 		this.editMode = editMode;
+		this.direction = direction;
 	}
 
 	public void setLabels(String local, String remote) {
@@ -40,14 +43,13 @@ public class JsonDiffViewer extends Composite {
 		this.remoteLabel = remote;
 	}
 
-	public void initialize(IJsonNodeLabelProvider labelProvider, IDependencyResolver dependencyResolver,
-			ActionType action) {
+	public void initialize(IJsonNodeLabelProvider labelProvider, IDependencyResolver dependencyResolver) {
 		UI.gridLayout(this, 1, 0, 0);
 		MenuBar menu = null;
 		if (editMode && root != null && root.localElement != null && root.remoteElement != null) {
 			menu = new MenuBar(this, root);
 		}
-		createTreeParts(labelProvider, action);
+		createTreeParts(labelProvider);
 		if (menu != null) {
 			// one listener is enough since trees are synced
 			rightTree.getViewer().addSelectionChangedListener(menu::updateButtons);
@@ -74,13 +76,13 @@ public class JsonDiffViewer extends Composite {
 		}
 	}
 
-	private void createTreeParts(IJsonNodeLabelProvider labelProvider, ActionType action) {
+	private void createTreeParts(IJsonNodeLabelProvider labelProvider) {
 		var comp = new Composite(this, SWT.BORDER);
 		var layout = UI.gridLayout(comp, 2, 0, 0);
 		layout.makeColumnsEqualWidth = true;
 		UI.gridData(comp, true, true).widthHint = 1;
-		leftTree = createTree(comp, localLabel, Side.LOCAL, action);
-		rightTree = createTree(comp, remoteLabel, Side.REMOTE, action);
+		leftTree = createTree(comp, localLabel, Side.LOCAL);
+		rightTree = createTree(comp, remoteLabel, Side.REMOTE);
 		leftTree.setCounterpart(rightTree);
 		rightTree.setCounterpart(leftTree);
 		leftTree.setLabelProvider(labelProvider);
@@ -90,12 +92,12 @@ public class JsonDiffViewer extends Composite {
 		}
 	}
 
-	private JsonViewer createTree(Composite container, String label, Side side, ActionType action) {
+	private JsonViewer createTree(Composite container, String label, Side side) {
 		var composite = UI.formComposite(container, toolkit);
 		UI.gridLayout(composite, 1, 0, 0);
 		UI.gridData(composite, true, true);
 		UI.formLabel(composite, toolkit, label);
-		return new JsonViewer(composite, side, action);
+		return new JsonViewer(composite, side, direction);
 	}
 
 	public boolean leftDiffersFromRight() {

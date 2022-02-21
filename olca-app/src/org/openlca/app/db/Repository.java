@@ -8,6 +8,7 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.openlca.app.collaboration.api.InMemoryCredentialSupplier;
 import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.collaboration.api.RepositoryConfig;
+import org.openlca.app.collaboration.util.Constants;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.Config;
 import org.openlca.git.ObjectIdStore;
@@ -17,6 +18,7 @@ import org.openlca.git.find.Diffs;
 import org.openlca.git.find.Entries;
 import org.openlca.git.find.Ids;
 import org.openlca.git.find.References;
+import org.openlca.git.model.Commit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +55,15 @@ public class Repository {
 
 	public static Repository get() {
 		return repository;
+	}
+
+	public boolean isAhead(Commit commit) {
+		var localCommitId = commits.resolve(Constants.LOCAL_BRANCH);
+		return commits.find()
+				.after(localCommitId)
+				.until(commit.id)
+				.all()
+				.contains(commit);
 	}
 
 	public static void connect(IDatabase database) {

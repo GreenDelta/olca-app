@@ -3,7 +3,6 @@ package org.openlca.app.collaboration.viewers.json.label;
 import java.util.LinkedList;
 
 import org.eclipse.jface.viewers.StyledString;
-import org.openlca.app.collaboration.model.ActionType;
 import org.openlca.app.collaboration.viewers.json.Side;
 import org.openlca.app.collaboration.viewers.json.label.DiffMatchPatch.Diff;
 import org.openlca.app.collaboration.viewers.json.label.DiffMatchPatch.Operation;
@@ -15,7 +14,7 @@ public class DiffStyle {
 	private ColorStyler insertStyler = new ColorStyler().background(Colors.get(230, 255, 230));
 	private ColorStyler defaultStyler = new ColorStyler().background(Colors.get(240, 240, 240));
 
-	public void applyTo(StyledString styled, String otherText, Side side, ActionType action) {
+	public void applyTo(StyledString styled, String otherText, Side side, Direction action) {
 		var text = styled.getString();
 		if (text.isEmpty())
 			return;
@@ -37,12 +36,12 @@ public class DiffStyle {
 		}
 	}
 
-	private LinkedList<Diff> getDiffs(String text, String otherText, Side side, ActionType action) {
+	private LinkedList<Diff> getDiffs(String text, String otherText, Side side, Direction action) {
 		LinkedList<Diff> diffs = null;
 		var dmp = new DiffMatchPatch();
-		if (side == Side.LOCAL && action == ActionType.FETCH) {
+		if (side == Side.LOCAL && action == Direction.RIGHT_TO_LEFT) {
 			diffs = dmp.diff_main(text, otherText);
-		} else if (side == Side.REMOTE && action == ActionType.COMMIT) {
+		} else if (side == Side.REMOTE && action == Direction.LEFT_TO_RIGHT) {
 			diffs = dmp.diff_main(text, otherText);
 		} else {
 			diffs = dmp.diff_main(otherText, text);
@@ -51,14 +50,14 @@ public class DiffStyle {
 		return diffs;
 	}
 
-	private boolean doShowDelete(Side side, ActionType action) {
-		if (action == ActionType.COMMIT || action == ActionType.COMPARE_BEHIND)
+	private boolean doShowDelete(Side side, Direction action) {
+		if (action == Direction.LEFT_TO_RIGHT)
 			return side == Side.REMOTE;
 		return side == Side.LOCAL;
 	}
 
-	private boolean doShowInsert(Side side, ActionType action) {
-		if (action == ActionType.COMMIT || action == ActionType.COMPARE_BEHIND)
+	private boolean doShowInsert(Side side, Direction action) {
+		if (action == Direction.LEFT_TO_RIGHT)
 			return side == Side.LOCAL;
 		return side == Side.REMOTE;
 	}

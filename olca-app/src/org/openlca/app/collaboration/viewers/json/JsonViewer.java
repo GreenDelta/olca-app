@@ -8,9 +8,9 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.collaboration.dialogs.TextDiffDialog;
-import org.openlca.app.collaboration.model.ActionType;
 import org.openlca.app.collaboration.viewers.json.content.JsonContentProvider;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
+import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.label.IJsonNodeLabelProvider;
 import org.openlca.app.collaboration.viewers.json.label.JsonLabelProvider;
 import org.openlca.app.collaboration.viewers.json.listener.ExpansionListener;
@@ -23,12 +23,12 @@ import org.openlca.app.viewers.Viewers;
 public class JsonViewer extends AbstractViewer<JsonNode, TreeViewer> {
 
 	private Side side;
-	private ActionType action;
+	private Direction direction;
 
-	public JsonViewer(Composite parent, Side side, ActionType action) {
+	public JsonViewer(Composite parent, Side side, Direction direction) {
 		super(parent, side);
 		this.side = side;
-		this.action = action;
+		this.direction = direction;
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class JsonViewer extends AbstractViewer<JsonNode, TreeViewer> {
 		var node = (JsonNode) sel.getFirstElement();
 		if (!node.element().isJsonPrimitive())
 			return;
-		new TextDiffDialog(node, action).open();
+		new TextDiffDialog(node, direction).open();
 	}
 
 	public List<JsonNode> getSelection() {

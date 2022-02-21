@@ -1,5 +1,6 @@
 package org.openlca.app.collaboration.viewers.diff;
 
+import org.eclipse.jgit.lib.ObjectId;
 import org.openlca.app.collaboration.util.Json;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
@@ -21,7 +22,7 @@ class RefJson {
 	static JsonObject get(Reference ref) {
 		if (ref.type == null || ref.refId == null)
 			return null;
-		if (ref.objectId == null)
+		if (ref.objectId == null || ref.objectId.equals(ObjectId.zeroId()))
 			return getLocalJson(ref);
 		var json = gson.fromJson(Repository.get().datasets.get(ref.objectId), JsonObject.class);
 		if (json == null)

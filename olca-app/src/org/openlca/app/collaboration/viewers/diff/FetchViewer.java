@@ -7,7 +7,7 @@ import java.util.Stack;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.collaboration.model.ActionType;
+import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.viewers.trees.Trees;
 
 public class FetchViewer extends DiffNodeViewer {
@@ -15,7 +15,7 @@ public class FetchViewer extends DiffNodeViewer {
 	private Runnable onMerge;
 
 	public FetchViewer(Composite parent) {
-		super(parent, ActionType.FETCH);
+		super(parent);
 	}
 
 	@Override
@@ -27,12 +27,6 @@ public class FetchViewer extends DiffNodeViewer {
 
 	public void setOnMerge(Runnable onMerge) {
 		this.onMerge = onMerge;
-	}
-
-	@Override
-	protected void onMerge(DiffNode node) {
-		if (onMerge != null)
-			onMerge.run();
 	}
 
 	@Override
@@ -78,6 +72,30 @@ public class FetchViewer extends DiffNodeViewer {
 			conflicts.add(node);
 		}
 		return conflicts;
+	}
+
+	@Override
+	protected void openDiffDialog(DiffNode node) {
+		var diff = node.contentAsDiffResult();
+		if (diff == null)
+			return;
+		var viewMode = !diff.conflict();
+		var left = diff.local != null ? diff.local.right : diff.remote.left;
+		var right = diff.remote.right;
+		var mergeResult = DiffHelper.openDiffDialog(left, right, viewMode, Direction.RIGHT_TO_LEFT);
+		if (mergeResult == null)
+			return;
+		diff.reset();
+		if (mergeResult.overwriteLocalChanges) {
+			diff.overwriteRemoteChanges = true;
+		} else {
+			diff.overwriteLocalChanges = true;
+		}
+		diff.mergedData = mergeResult.merged;
+		getViewer().refresh(node);
+		if (onMerge != null) {
+			onMerge.run();
+		}
 	}
 
 }

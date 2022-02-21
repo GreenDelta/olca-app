@@ -10,7 +10,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.collaboration.model.ActionType;
 import org.openlca.app.collaboration.util.RefLabels;
 import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.app.rcp.images.Images;
@@ -25,14 +24,10 @@ import org.openlca.git.model.Reference;
 abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	DiffNode root;
-	private DiffHelper diffHelper;
-	private ActionType action;
 
-	DiffNodeViewer(Composite parent, ActionType action) {
+	DiffNodeViewer(Composite parent) {
 		super(parent);
-		this.diffHelper = new DiffHelper(action);
-		this.action = action;
-		setLabelProvider(action);
+		getViewer().setLabelProvider(new DiffNodeLabelProvider());
 	}
 
 	protected void configureViewer(TreeViewer viewer, boolean checkable) {
@@ -41,13 +36,8 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		viewer.addDoubleClickListener(this::onDoubleClick);
 	}
 
-	void setLabelProvider(ActionType action) {
-		getViewer().setLabelProvider(new DiffNodeLabelProvider());
-	}
-
 	@Override
 	public void setInput(Collection<DiffNode> collection) {
-		diffHelper.reset();
 		if (collection.isEmpty()) {
 			root = null;
 			super.setInput((Collection<DiffNode>) null);
@@ -64,18 +54,13 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	}
 
 	private void onDoubleClick(DoubleClickEvent event) {
-		DiffNode selected = getSelected(event);
-		boolean isComparison = action == ActionType.COMPARE_AHEAD || action == ActionType.COMPARE_BEHIND;
-		boolean merged = diffHelper.openDiffDialog(selected, isComparison);
-		if (merged && !isComparison) {
-			getViewer().refresh(selected);
-			onMerge(selected);
-		}
+		var selected = getSelected(event);
+		if (selected == null)
+			return;
+		openDiffDialog(selected);
 	}
 
-	protected void onMerge(DiffNode node) {
-		// subclasses may override
-	}
+	protected abstract void openDiffDialog(DiffNode node);
 
 	private DiffNode getSelected(DoubleClickEvent event) {
 		if (event.getSelection().isEmpty())
@@ -150,12 +135,12 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			return getText(result);
 		}
 
-		private String getText(DiffResult result) {
-			if (result.remote != null && (action == ActionType.FETCH || action == ActionType.COMPARE_AHEAD))
-				return RefLabels.getName(result.remote.ref());
-			if (result.local != null)
-				return RefLabels.getName(result.local.ref());
-			return RefLabels.getName(result.ref());
+		private String getText(DiffResult diff) {
+			if (diff.remote != null)
+				return RefLabels.getName(diff.remote.ref());
+			if (diff.local != null)
+				return RefLabels.getName(diff.local.ref());
+			return RefLabels.getName(diff.ref());
 		}
 
 		@Override
@@ -174,11 +159,9 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		private Overlay getOverlay(DiffResult diff) {
 			if (diff.noAction())
 				return null;
-			if (action == ActionType.COMMIT || action == ActionType.COMPARE_BEHIND)
-				return getOverlay(diff.local, diff.remote);
-			if (!diff.conflict() && !diff.merged())
-				return getOverlay(diff.remote, diff.local);
-			return getOverlayMerged(diff);
+			if (diff.merged())
+				return getOverlayMerged(diff);
+			return getOverlay(diff.local, diff.remote);
 		}
 
 		private Overlay getOverlay(Diff prev, Diff next) {

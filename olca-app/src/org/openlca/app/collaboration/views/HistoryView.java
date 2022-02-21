@@ -9,11 +9,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.model.ActionType;
 import org.openlca.app.collaboration.util.ObjectIds;
 import org.openlca.app.collaboration.util.RefLabels;
 import org.openlca.app.collaboration.viewers.HistoryViewer;
 import org.openlca.app.collaboration.viewers.json.JsonDiffViewer;
+import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.olca.ModelDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.olca.ModelLabelProvider;
 import org.openlca.app.collaboration.viewers.json.olca.ModelNodeBuilder;
@@ -93,9 +93,9 @@ public class HistoryView extends ViewPart {
 	}
 
 	private void createDiffViewer(Composite parent) {
-		diffViewer = JsonDiffViewer.forViewing(parent, null, null);
+		diffViewer = JsonDiffViewer.forViewing(parent, null, null, Direction.LEFT_TO_RIGHT);
 		diffViewer.setLabels(M.SelectedCommit, M.PreviousCommit);
-		diffViewer.initialize(new ModelLabelProvider(), ModelDependencyResolver.INSTANCE, ActionType.COMPARE_BEHIND);
+		diffViewer.initialize(new ModelLabelProvider(), ModelDependencyResolver.INSTANCE);
 	}
 
 	private JsonObject getJson(Reference ref) {

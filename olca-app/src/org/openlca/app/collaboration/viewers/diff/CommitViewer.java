@@ -11,8 +11,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.openlca.app.collaboration.model.ActionType;
 import org.openlca.app.collaboration.util.ModelTypeRefIdMap;
+import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Reference;
@@ -25,7 +25,7 @@ public class CommitViewer extends DiffNodeViewer {
 	private boolean lockNewElements;
 
 	public CommitViewer(Composite parent, boolean lockNewElements) {
-		super(parent, ActionType.COMMIT);
+		super(parent);
 		this.lockNewElements = lockNewElements;
 	}
 
@@ -117,6 +117,14 @@ public class CommitViewer extends DiffNodeViewer {
 
 	public boolean hasChecked() {
 		return !selected.isEmpty();
+	}
+
+	@Override
+	protected void openDiffDialog(DiffNode node) {
+		var diff = node.contentAsDiffResult();
+		if (diff == null)
+			return;
+		DiffHelper.openDiffDialog(diff.local.right, diff.local.left, true, Direction.LEFT_TO_RIGHT);
 	}
 
 }

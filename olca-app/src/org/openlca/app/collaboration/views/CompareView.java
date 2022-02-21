@@ -2,7 +2,10 @@ package org.openlca.app.collaboration.views;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -16,11 +19,13 @@ import org.openlca.app.collaboration.viewers.diff.CompareViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.DiffResult;
+import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.Commit;
+import org.openlca.git.model.Diff;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +35,6 @@ public class CompareView extends ViewPart {
 	private final static Logger log = LoggerFactory.getLogger(CompareView.class);
 	private CompareViewer viewer;
 	private DiffNode input;
-//	private List<INavigationElement<?>> currentSelection;
-//	private Commit commit;
 
 	public static void clear() {
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -43,8 +46,6 @@ public class CompareView extends ViewPart {
 			CompareView view = (CompareView) viewRef.getView(false);
 			if (view == null)
 				return;
-//			view.commit = null;
-//			view.currentSelection = null;
 			view.input = null;
 			view.viewer.setInput(new ArrayList<>());
 		}
@@ -55,7 +56,6 @@ public class CompareView extends ViewPart {
 		Composite body = new Composite(parent, SWT.NONE);
 		UI.gridLayout(body, 1, 0, 0);
 		viewer = new CompareViewer(body);
-		// Actions.bind(viewer.getViewer(), new OverwriteAction());
 	}
 
 	public static void update(Commit commit) {
@@ -79,63 +79,46 @@ public class CompareView extends ViewPart {
 			viewer.setInput(new ArrayList<>());
 			return;
 		}
-//		this.currentSelection = elements;
-//		this.commit = commit;
-		input = buildNode();
+		input = buildNode(commit, elements);
 		viewer.setInput(input != null ? Collections.singleton(input) : new ArrayList<>());
 	}
 
-	private DiffNode buildNode() {
-		var headCommit = Repository.get().commits.head();
-		var diffs = WorkspaceDiffs.get(headCommit);
-		// TODO also find "remote" diff
-		var differences = diffs.stream()
-				.map(d -> new DiffResult(d, null))
-				.toList();
-		return new DiffNodeBuilder(Database.get()).build(differences);
+	private DiffNode buildNode(Commit commit, List<INavigationElement<?>> elements) {
+		var isAhead = Repository.get().isAhead(commit);
+		viewer.setDirection(isAhead ? Direction.RIGHT_TO_LEFT : Direction.LEFT_TO_RIGHT);
+		var head = Repository.get().commits.head();
+		var rDiffs = getDiffs(commit, head, isAhead);
+		var wsDiffs = new HashMap<String, Diff>();
+		for (var diff : WorkspaceDiffs.get(head, elements)) {
+			wsDiffs.put(diff.path(), diff);
+		}
+		var keys = new HashSet<String>();
+		keys.addAll(wsDiffs.keySet());
+		keys.addAll(rDiffs.keySet());
+		var differences = new HashMap<String, DiffResult>();
+		for (var key : keys) {
+			differences.put(key, new DiffResult(wsDiffs.get(key), rDiffs.get(key)));
+		}
+		return new DiffNodeBuilder(Database.get()).build(differences.values());
+	}
+
+	private Map<String, Diff> getDiffs(Commit commit, Commit head, boolean isAhead) {
+		var diffMap = new HashMap<String, Diff>();
+		var headId = head != null ? head.id : null;
+		var diffs = Repository.get().diffs.find()
+				.between(
+						isAhead ? headId : commit.id,
+						isAhead ? commit.id : headId)
+				.all();
+		for (var diff : diffs) {
+			diffMap.put(diff.path(), diff);
+		}
+		return diffMap;
 	}
 
 	@Override
 	public void setFocus() {
 
 	}
-
-	// TODO
-	// private class OverwriteAction extends Action {
-	//
-	// private Exception error;
-	//
-	// private OverwriteAction() {
-	// setText("Overwrite local changes");
-	// }
-	//
-	// @Override
-	// public void run() {
-	// // List<DiffNode> selected =
-	// // Viewers.getAllSelected(viewer.getViewer());
-	// var dialog = new ProgressMonitorDialog(UI.shell());
-	// // TODO collect refs from selection
-	// try {
-	// dialog.run(true, false, new IRunnableWithProgress() {
-	//
-	// @Override
-	// public void run(IProgressMonitor m) throws InvocationTargetException,
-	// InterruptedException {
-	// // TODO run import
-	// }
-	// });
-	// } catch (Exception e) {
-	// error = e;
-	// } finally {
-	// Navigator.refresh();
-	// }
-	// if (error != null)
-	// MsgBox.error("Error during download", error.getMessage());
-	// else {
-	// update(commit, currentSelection);
-	// }
-	// }
-	//
-	// }
 
 }

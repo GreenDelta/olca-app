@@ -7,38 +7,38 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.model.ActionType;
 import org.openlca.app.collaboration.viewers.json.JsonDiffViewer;
 import org.openlca.app.collaboration.viewers.json.content.IDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
+import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.label.IJsonNodeLabelProvider;
 import org.openlca.app.util.UI;
 
-public class DiffDialog extends FormDialog {
+public class JsonDiffDialog extends FormDialog {
 
 	public final static int KEEP_LOCAL_MODEL = 2;
 	public final static int FETCH_REMOTE_MODEL = 3;
 	private final JsonNode root;
 	private final boolean editMode;
-	private final ActionType action;
+	private final Direction direction;
 	private JsonDiffViewer viewer;
 	private IJsonNodeLabelProvider labelProvider;
 	private IDependencyResolver dependencyResolver;
 	private String title;
 	private Image logo;
 
-	public static DiffDialog forEditing(JsonNode root, ActionType action) {
-		return new DiffDialog(root, action, true);
+	public static JsonDiffDialog forEditing(JsonNode root, Direction direction) {
+		return new JsonDiffDialog(root, direction, true);
 	}
 
-	public static DiffDialog forViewing(JsonNode root, ActionType action) {
-		return new DiffDialog(root, action, false);
+	public static JsonDiffDialog forViewing(JsonNode root, Direction direction) {
+		return new JsonDiffDialog(root, direction, false);
 	}
 
-	private DiffDialog(JsonNode root, ActionType action, boolean editMode) {
+	private JsonDiffDialog(JsonNode root, Direction direction, boolean editMode) {
 		super(UI.shell());
 		this.root = root;
-		this.action = action;
+		this.direction = direction;
 		this.editMode = editMode;
 		setBlockOnOpen(true);
 	}
@@ -59,9 +59,9 @@ public class DiffDialog extends FormDialog {
 		toolkit.paintBordersFor(body);
 		UI.gridData(body, true, true);
 		viewer = editMode
-				? JsonDiffViewer.forEditing(body, toolkit, root)
-				: JsonDiffViewer.forViewing(body, toolkit, root);
-		viewer.initialize(labelProvider, dependencyResolver, action);
+				? JsonDiffViewer.forEditing(body, toolkit, root, direction)
+				: JsonDiffViewer.forViewing(body, toolkit, root, direction);
+		viewer.initialize(labelProvider, dependencyResolver);
 		UI.gridData(viewer, true, true);
 		form.reflow(true);
 	}
