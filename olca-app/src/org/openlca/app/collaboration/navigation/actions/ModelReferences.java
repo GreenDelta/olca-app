@@ -111,6 +111,9 @@ class ModelReferences {
 	}
 
 	private void scanImpactCategories() {
+		scanTable("tbl_impact_categories",
+				new ModelField(ModelType.IMPACT_METHOD, "id"),
+				new ModelField(ModelType.SOURCE, "f_source"));
 		scanTable("tbl_impact_factors",
 				new ModelField(ModelType.IMPACT_CATEGORY, "f_impact_category"),
 				new ModelField(ModelType.FLOW, "f_flow"),
@@ -121,7 +124,8 @@ class ModelReferences {
 		scanTable("tbl_impact_methods",
 				new ModelField(ModelType.IMPACT_METHOD, "id"),
 				new ModelField(ModelType.ACTOR, "f_author"),
-				new ModelField(ModelType.ACTOR, "f_generator"));
+				new ModelField(ModelType.ACTOR, "f_generator"),
+				new ModelField(ModelType.SOURCE, "f_source"));
 		scanTable("tbl_source_links",
 				new ModelField(ModelType.IMPACT_METHOD, "f_owner"),
 				new ModelField(ModelType.SOURCE, "f_source"));

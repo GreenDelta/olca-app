@@ -38,6 +38,7 @@ class ReferenceCheck {
 	}
 
 	private List<DiffResult> collect(List<DiffResult> initial, List<Diff> diffs) {
+		// TODO
 		return new ArrayList<>();
 	}
 
