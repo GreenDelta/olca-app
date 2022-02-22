@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.collaboration.util.RefLabels;
+import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
@@ -24,9 +25,13 @@ import org.openlca.git.model.Reference;
 abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	DiffNode root;
+	private final boolean viewMode;
+	private Direction direction;
+	private Runnable onMerge;
 
-	DiffNodeViewer(Composite parent) {
+	DiffNodeViewer(Composite parent, boolean viewMode) {
 		super(parent);
+		this.viewMode = viewMode;
 		getViewer().setLabelProvider(new DiffNodeLabelProvider());
 	}
 
@@ -53,14 +58,26 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		super.setInput(input);
 	}
 
+	public void setOnMerge(Runnable onMerge) {
+		this.onMerge = onMerge;
+	}
+
+	public void setDirection(Direction direction) {
+		this.direction = direction;
+	}
+
 	private void onDoubleClick(DoubleClickEvent event) {
 		var selected = getSelected(event);
 		if (selected == null)
 			return;
-		openDiffDialog(selected);
+		var merged = JsonDiff.openDialog(selected, direction, viewMode);
+		if (merged) {
+			getViewer().refresh(selected);
+			if (onMerge != null) {
+				onMerge.run();
+			}
+		}
 	}
-
-	protected abstract void openDiffDialog(DiffNode node);
 
 	private DiffNode getSelected(DoubleClickEvent event) {
 		if (event.getSelection().isEmpty())

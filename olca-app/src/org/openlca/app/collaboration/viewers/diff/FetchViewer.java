@@ -12,10 +12,14 @@ import org.openlca.app.viewers.trees.Trees;
 
 public class FetchViewer extends DiffNodeViewer {
 
-	private Runnable onMerge;
-
 	public FetchViewer(Composite parent) {
-		super(parent);
+		super(parent, true);
+		super.setDirection(Direction.RIGHT_TO_LEFT);
+	}
+
+	@Override
+	public final void setDirection(Direction direction) {
+		throw new UnsupportedOperationException("Can't change fetch direction");
 	}
 
 	@Override
@@ -23,10 +27,6 @@ public class FetchViewer extends DiffNodeViewer {
 		TreeViewer viewer = Trees.createViewer(parent);
 		configureViewer(viewer, false);
 		return viewer;
-	}
-
-	public void setOnMerge(Runnable onMerge) {
-		this.onMerge = onMerge;
 	}
 
 	@Override
@@ -72,30 +72,6 @@ public class FetchViewer extends DiffNodeViewer {
 			conflicts.add(node);
 		}
 		return conflicts;
-	}
-
-	@Override
-	protected void openDiffDialog(DiffNode node) {
-		var diff = node.contentAsDiffResult();
-		if (diff == null)
-			return;
-		var viewMode = !diff.conflict();
-		var left = diff.local != null ? diff.local.right : diff.remote.left;
-		var right = diff.remote.right;
-		var mergeResult = DiffHelper.openDiffDialog(left, right, viewMode, Direction.RIGHT_TO_LEFT);
-		if (mergeResult == null)
-			return;
-		diff.reset();
-		if (mergeResult.overwriteLocalChanges) {
-			diff.overwriteRemoteChanges = true;
-		} else {
-			diff.overwriteLocalChanges = true;
-		}
-		diff.mergedData = mergeResult.merged;
-		getViewer().refresh(node);
-		if (onMerge != null) {
-			onMerge.run();
-		}
 	}
 
 }

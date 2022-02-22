@@ -25,8 +25,14 @@ public class CommitViewer extends DiffNodeViewer {
 	private boolean lockNewElements;
 
 	public CommitViewer(Composite parent, boolean lockNewElements) {
-		super(parent);
+		super(parent, false);
+		super.setDirection(Direction.LEFT_TO_RIGHT);
 		this.lockNewElements = lockNewElements;
+	}
+
+	@Override
+	public final void setDirection(Direction direction) {
+		throw new UnsupportedOperationException("Can't change commit direction");
 	}
 
 	public void setSelection(ModelTypeRefIdMap initialSelection) {
@@ -117,14 +123,6 @@ public class CommitViewer extends DiffNodeViewer {
 
 	public boolean hasChecked() {
 		return !selected.isEmpty();
-	}
-
-	@Override
-	protected void openDiffDialog(DiffNode node) {
-		var diff = node.contentAsDiffResult();
-		if (diff == null)
-			return;
-		DiffHelper.openDiffDialog(diff.local.right, diff.local.left, true, Direction.LEFT_TO_RIGHT);
 	}
 
 }
