@@ -8,9 +8,8 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.openlca.app.collaboration.api.InMemoryCredentialSupplier;
 import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.collaboration.api.RepositoryConfig;
-import org.openlca.app.collaboration.util.Constants;
 import org.openlca.core.database.IDatabase;
-import org.openlca.git.Config;
+import org.openlca.git.GitConfig;
 import org.openlca.git.ObjectIdStore;
 import org.openlca.git.find.Commits;
 import org.openlca.git.find.Datasets;
@@ -19,6 +18,7 @@ import org.openlca.git.find.Entries;
 import org.openlca.git.find.Ids;
 import org.openlca.git.find.References;
 import org.openlca.git.model.Commit;
+import org.openlca.git.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,14 +91,17 @@ public class Repository {
 		repository = null;
 	}
 
-	public Config toConfig() {
-		// TODO correct person ident
-		var committer = new PersonIdent(config.credentials.username(), config.credentials.username() + "@email.com");
-		return new Config(Database.get(), workspaceIds, git, committer);
+	public PersonIdent personIdent() {
+		// TODO
+		return new PersonIdent(config.credentials.username(), config.credentials.username() + "@email.com");
 	}
 
 	public boolean isCollaborationServer() {
 		return client != null;
+	}
+
+	public GitConfig toConfig() {
+		return new GitConfig(Database.get(), Repository.get().workspaceIds, Repository.get().git, personIdent());
 	}
 
 }

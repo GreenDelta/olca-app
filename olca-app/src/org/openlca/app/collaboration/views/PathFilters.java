@@ -1,52 +1,21 @@
-package org.openlca.app.collaboration.util;
+package org.openlca.app.collaboration.views;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.openlca.app.db.Database;
-import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
-import org.openlca.git.Config;
-import org.openlca.git.model.Commit;
-import org.openlca.git.model.Diff;
-import org.openlca.git.util.DiffEntries;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class WorkspaceDiffs {
+public class PathFilters {
 
-	private final static Logger log = LoggerFactory.getLogger(WorkspaceDiffs.class);
-
-	public static List<Diff> get(Commit commit) {
-		return get(commit, null);
-	}
-
-	public static List<Diff> get(Commit commit, List<INavigationElement<?>> filterElements) {
-		try {
-			var config = new Config(Database.get(), Repository.get().workspaceIds, Repository.get().git, null);
-			var pathFilters = toPathFilters(filterElements);
-			var commitIsAhead = false; // TODO
-			var leftCommitId = !commitIsAhead && commit != null ? commit.id : null;
-			var rightCommitId = commitIsAhead && commit != null ? commit.id : null;
-			return DiffEntries.workspace(config, commit, pathFilters).stream()
-					.map(e -> new Diff(e, leftCommitId, rightCommitId))
-					.toList();
-		} catch (IOException e) {
-			log.error("Error getting workspace diffs", e);
-			return new ArrayList<>();
-		}
-	}
-
-	private static List<String> toPathFilters(List<INavigationElement<?>> filterElements) {
+	public static List<String> of(List<INavigationElement<?>> filterElements) {
 		if (filterElements == null || filterElements.isEmpty())
 			return new ArrayList<>();
 		var all = filterElements.stream()
@@ -56,7 +25,7 @@ public class WorkspaceDiffs {
 				.filter(e -> e instanceof GroupElement)
 				.forEach(e -> all.addAll(e.getChildren()));
 		return onlyRetainTopLevel(filterElements.stream()
-				.map(WorkspaceDiffs::getPath)
+				.map(PathFilters::getPath)
 				.filter(Strings::notEmpty)
 				.distinct()
 				.toList());
@@ -112,5 +81,4 @@ public class WorkspaceDiffs {
 		}
 		return count;
 	}
-
 }

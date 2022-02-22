@@ -1,5 +1,6 @@
 package org.openlca.app.collaboration.views;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,7 +15,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
-import org.openlca.app.collaboration.util.WorkspaceDiffs;
 import org.openlca.app.collaboration.viewers.diff.CompareViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
@@ -23,9 +23,11 @@ import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.Commit;
 import org.openlca.git.model.Diff;
+import org.openlca.git.util.DiffEntries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,22 +86,33 @@ public class CompareView extends ViewPart {
 	}
 
 	private DiffNode buildNode(Commit commit, List<INavigationElement<?>> elements) {
-		var isAhead = Repository.get().isAhead(commit);
-		viewer.setDirection(isAhead ? Direction.RIGHT_TO_LEFT : Direction.LEFT_TO_RIGHT);
-		var head = Repository.get().commits.head();
-		var rDiffs = getDiffs(commit, head, isAhead);
-		var wsDiffs = new HashMap<String, Diff>();
-		for (var diff : WorkspaceDiffs.get(head, elements)) {
-			wsDiffs.put(diff.path(), diff);
+		try {
+			var isAhead = Repository.get().isAhead(commit);
+			viewer.setDirection(isAhead ? Direction.RIGHT_TO_LEFT : Direction.LEFT_TO_RIGHT);
+			var head = Repository.get().commits.head();
+			var rDiffs = getDiffs(commit, head, isAhead);
+			var wsDiffs = new HashMap<String, Diff>();
+			var leftCommitId = !isAhead && commit != null ? commit.id : null;
+			var rightCommitId = isAhead && commit != null ? commit.id : null;
+			var diffs = DiffEntries.workspace(Repository.get().toConfig(), commit, PathFilters.of(elements)).stream()
+					.map(e -> new Diff(e, leftCommitId, rightCommitId))
+					.toList();
+			for (var diff : diffs) {
+				wsDiffs.put(diff.path(), diff);
+			}
+			var keys = new HashSet<String>();
+			keys.addAll(wsDiffs.keySet());
+			keys.addAll(rDiffs.keySet());
+			var differences = new HashMap<String, DiffResult>();
+			for (var key : keys) {
+				differences.put(key, new DiffResult(wsDiffs.get(key), rDiffs.get(key)));
+			}
+			return new DiffNodeBuilder(Database.get()).build(differences.values());
+		} catch (IOException e) {
+			log.error("Error comparing workspace with commit", e);
+			MsgBox.error(e.getMessage());
+			return null;
 		}
-		var keys = new HashSet<String>();
-		keys.addAll(wsDiffs.keySet());
-		keys.addAll(rDiffs.keySet());
-		var differences = new HashMap<String, DiffResult>();
-		for (var key : keys) {
-			differences.put(key, new DiffResult(wsDiffs.get(key), rDiffs.get(key)));
-		}
-		return new DiffNodeBuilder(Database.get()).build(differences.values());
 	}
 
 	private Map<String, Diff> getDiffs(Commit commit, Commit head, boolean isAhead) {

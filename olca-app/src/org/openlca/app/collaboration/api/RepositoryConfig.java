@@ -4,10 +4,10 @@ import java.io.File;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
-import org.openlca.app.collaboration.util.Constants;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.config.DatabaseConfig;
+import org.openlca.git.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,7 @@ public class RepositoryConfig {
 				var serverUrl = url.substring(0, splitIndex);
 				var repositoryId = url.substring(splitIndex + 1);
 				return new RepositoryConfig(serverUrl, repositoryId, credentialSupplier);
-			} 
+			}
 			if (url.startsWith("http")) {
 				var splitIndex = url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
 				var serverUrl = url.substring(0, splitIndex);
@@ -67,7 +67,7 @@ public class RepositoryConfig {
 		var repos = new File(Workspace.getDir(), GIT_DIR);
 		return new File(repos, database.getName());
 	}
-	
+
 	public String url() {
 		if (serverUrl.startsWith("git@"))
 			return serverUrl + ":" + repositoryId;

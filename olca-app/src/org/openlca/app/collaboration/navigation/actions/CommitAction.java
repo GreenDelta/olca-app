@@ -11,15 +11,15 @@ import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.DiffResult;
-import org.openlca.app.collaboration.util.WorkspaceDiffs;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
+import org.openlca.git.actions.GitCommit;
 import org.openlca.git.model.Diff;
-import org.openlca.git.writer.CommitWriter;
+import org.openlca.git.util.DiffEntries;
 
 public class CommitAction extends Action implements INavigationAction {
 
@@ -37,23 +37,40 @@ public class CommitAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var headCommit = Repository.get().commits.head();
-		var diffs = WorkspaceDiffs.get(headCommit);
-		var input = getCommitInput(diffs);
-		if (input == null)
-			return;
-		var withReferences = new ReferenceCheck(Database.get()).run(input.selection, diffs);
-		if (withReferences == null)
-			return;
-		if (!checkLibraries(withReferences))
-			return;
-		var toCommit = withReferences.stream()
-				.map(r -> r.local)
-				.toList();
-		writeCommit(input.message, toCommit);
+		try {
+			var diffs = getWorkspaceDiffs();
+			var input = getCommitInput(diffs);
+			if (input == null)
+				return;
+			var withReferences = new ReferenceCheck(Database.get()).run(input.getSelected(), diffs);
+			if (withReferences == null)
+				return;
+			if (!checkLibraries(withReferences))
+				return;
+			var toCommit = withReferences.stream()
+					.map(r -> r.local)
+					.toList();
+			GitCommit
+					.to(Repository.get().git)
+					.diffs(toCommit)
+					.withMessage(input.getMessage())
+					.as(Repository.get().personIdent())
+					.update(Repository.get().workspaceIds)
+					.run();
+		} catch (IOException e) {
+			Actions.handleException("Error during commit", e);
+		}
 	}
 
-	private CommitInput getCommitInput(List<Diff> diffs) {
+	private List<Diff> getWorkspaceDiffs() throws IOException {
+		var commit = Repository.get().commits.head();
+		var leftCommitId = commit != null ? commit.id : null;
+		return DiffEntries.workspace(Repository.get().toConfig(), commit).stream()
+				.map(e -> new Diff(e, leftCommitId, null))
+				.toList();
+	}
+
+	private CommitDialog getCommitInput(List<Diff> diffs) {
 		var differences = diffs.stream()
 				.map(d -> new DiffResult(d, null))
 				.toList();
@@ -66,7 +83,7 @@ public class CommitAction extends Action implements INavigationAction {
 		dialog.setInitialSelection(selection);
 		if (dialog.open() != CommitDialog.OK)
 			return null;
-		return new CommitInput(dialog.getMessage(), dialog.getSelected());
+		return dialog;
 	}
 
 	private boolean checkLibraries(List<DiffResult> result) {
@@ -87,26 +104,12 @@ public class CommitAction extends Action implements INavigationAction {
 		}
 	}
 
-	private void writeCommit(String message, List<Diff> diffs) {
-		var writer = new CommitWriter(Repository.get().toConfig());
-		try {
-			writer.commit(message, diffs);
-		} catch (IOException e) {
-			Actions.handleException("Error committing data", e);
-		} finally {
-			Actions.refresh();
-		}
-	}
-
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (!Repository.isConnected())
 			return false;
 		this.selection = selection;
 		return true;
-	}
-
-	private record CommitInput(String message, List<DiffResult> selection) {
 	}
 
 }

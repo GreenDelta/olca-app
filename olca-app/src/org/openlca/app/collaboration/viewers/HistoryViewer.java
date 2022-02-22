@@ -11,12 +11,12 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.util.Constants;
 import org.openlca.app.collaboration.util.Format;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.db.Repository;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.git.model.Commit;
+import org.openlca.git.util.Constants;
 
 public class HistoryViewer extends AbstractTableViewer<Commit> {
 

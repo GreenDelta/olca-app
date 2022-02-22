@@ -7,13 +7,13 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.transport.URIish;
 import org.openlca.app.collaboration.api.RepositoryConfig;
 import org.openlca.app.collaboration.util.Announcements;
-import org.openlca.app.collaboration.util.Constants;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.Input;
+import org.openlca.git.util.Constants;
 import org.openlca.util.Strings;
 
 public class ConnectAction extends Action implements INavigationAction {
