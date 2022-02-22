@@ -11,13 +11,12 @@ import org.openlca.git.find.References;
 import org.openlca.git.model.Reference;
 import org.openlca.git.util.GitUtil;
 import org.openlca.jsonld.JsonStoreReader;
-import org.openlca.jsonld.JsonStoreWriter;
 import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-public class GitStore implements JsonStoreReader, JsonStoreWriter {
+public class GitStore implements JsonStoreReader {
 
 	private static final Gson gson = new Gson();
 	private static final JsonObject defaultContext;
@@ -130,21 +129,6 @@ public class GitStore implements JsonStoreReader, JsonStoreWriter {
 		if (Strings.nullOrEmpty(data))
 			return null;
 		return gson.fromJson(data, JsonObject.class);
-	}
-
-	@Override
-	public void put(ModelType type, JsonObject model) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void put(String path, byte[] data) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void putBin(ModelType type, String refId, String filename, byte[] data) {
-		throw new UnsupportedOperationException();
 	}
 
 }
