@@ -43,7 +43,7 @@ public class Repository {
 		client = RepositoryClient.isCollaborationServer(config)
 				? new RepositoryClient(config)
 				: null;
-		var storeFile = new File(RepositoryConfig.getGirDir(database), "object-id.store");
+		var storeFile = new File(RepositoryConfig.getGitDir(database), "object-id.store");
 		workspaceIds = ObjectIdStore.open(storeFile);
 		commits = Commits.of(git);
 		datasets = Datasets.of(git);
@@ -71,7 +71,7 @@ public class Repository {
 			disconnect();
 		}
 		try {
-			var gitDir = RepositoryConfig.getGirDir(database);
+			var gitDir = RepositoryConfig.getGitDir(database);
 			if (!gitDir.exists() || !gitDir.isDirectory() || gitDir.listFiles().length == 0)
 				return;
 			repository = new Repository(database, gitDir);

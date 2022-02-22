@@ -58,12 +58,12 @@ public class RepositoryConfig {
 		}
 	}
 
-	public static File getGirDir(DatabaseConfig config) {
+	public static File getGitDir(DatabaseConfig config) {
 		var repos = new File(Workspace.getDir(), GIT_DIR);
 		return new File(repos, config.name());
 	}
 
-	public static File getGirDir(IDatabase database) {
+	public static File getGitDir(IDatabase database) {
 		var repos = new File(Workspace.getDir(), GIT_DIR);
 		return new File(repos, database.getName());
 	}

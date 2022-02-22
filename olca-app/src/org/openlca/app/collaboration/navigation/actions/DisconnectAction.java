@@ -31,7 +31,7 @@ public class DisconnectAction extends Action implements INavigationAction {
 	public void run() {
 		try {
 			Repository.disconnect();
-			var gitDir = RepositoryConfig.getGirDir(Database.get());
+			var gitDir = RepositoryConfig.getGitDir(Database.get());
 			FileUtils.deleteDirectory(gitDir);
 		} catch (IOException e) {
 			ErrorReporter.on("failed to delete git directory", e);
