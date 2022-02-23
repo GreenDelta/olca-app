@@ -6,7 +6,6 @@ import org.openlca.app.App;
 import org.openlca.core.database.FileStore;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.CategorizedEntity;
-import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 
 /**
@@ -47,7 +46,7 @@ public class DatabaseDir {
 		return fs.getFolder(d);
 	}
 
-	public static File getDir(RootEntity e) {
+	public static File getDir(CategorizedEntity e) {
 		File root = getFileStorageLocation(Database.get());
 		FileStore fs = new FileStore(root);
 		return fs.getFolder(e);

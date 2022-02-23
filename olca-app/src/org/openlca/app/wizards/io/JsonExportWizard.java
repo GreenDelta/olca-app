@@ -16,8 +16,8 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Callback.Message;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.output.JsonExport;
@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 
 public class JsonExportWizard extends Wizard implements IExportWizard {
 
-	private final Logger log = LoggerFactory.getLogger(getClass());
 	private ModelSelectionPage page;
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
@@ -95,8 +95,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 					break;
 				monitor.subTask(model.name);
 				ModelType type = model.type;
-				RootEntity o = Daos.base(database, type.getModelClass())
-						.getForId(model.id);
+				var o = Daos.categorized(database, type).getForId(model.id);
 				if (o != null) {
 					doExport(export, o);
 				}
@@ -104,7 +103,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 			}
 		}
 
-		private void doExport(JsonExport export, RootEntity entity) {
+		private void doExport(JsonExport export, CategorizedEntity entity) {
 			export.write(entity, (message, data) -> {
 				if (message == null)
 					return;

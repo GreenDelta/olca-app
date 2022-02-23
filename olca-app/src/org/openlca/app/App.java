@@ -23,7 +23,6 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.matrix.solvers.JavaSolver;
 import org.openlca.core.matrix.solvers.MatrixSolver;
 import org.openlca.core.model.CategorizedEntity;
-import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.julia.Julia;
@@ -130,7 +129,7 @@ public class App {
 	 * Returns true if the given data set is currently opened in an editor that
 	 * has a dirty (= unsaved) state.
 	 */
-	public static boolean hasDirtyEditor(RootEntity e) {
+	public static boolean hasDirtyEditor(CategorizedEntity e) {
 		if (e == null)
 			return false;
 		return hasDirtyEditor(Descriptor.of(e));

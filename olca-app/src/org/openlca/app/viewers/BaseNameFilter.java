@@ -1,18 +1,8 @@
-/*******************************************************************************
- * Copyright (c) 2007 - 2010 GreenDeltaTC. All rights reserved. This program and
- * the accompanying materials are made available under the terms of the Mozilla
- * Public License v1.1 which accompanies this distribution, and is available at
- * http://www.openlca.org/uploads/media/MPL-1.1.html
- * 
- * Contributors: GreenDeltaTC - initial API and implementation
- * www.greendeltatc.com tel.: +49 30 4849 6030 mail: gdtc@greendeltatc.com
- ******************************************************************************/
-
 package org.openlca.app.viewers;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.RefEntity;
 
 /**
  * Filters instances of {@link IModelComponent} by their name.
@@ -61,8 +51,8 @@ public class BaseNameFilter extends ViewerFilter {
 	public boolean select(final Viewer viewer, final Object parentElement,
 			final Object element) {
 		String content = null;
-		if (element instanceof RootEntity) {
-			content = ((RootEntity) element).name;
+		if (element instanceof RefEntity) {
+			content = ((RefEntity) element).name;
 		}
 		return select(filter, content);
 	}

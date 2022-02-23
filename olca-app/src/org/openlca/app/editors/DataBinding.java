@@ -20,7 +20,7 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.AbstractEntity;
-import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.RefEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,8 +210,8 @@ public class DataBinding {
 			return "";
 		if (val.getClass().isEnum())
 			return Labels.getEnumText(val);
-		else if (val instanceof RootEntity)
-			return ((RootEntity) val).name;
+		else if (val instanceof RefEntity e)
+			return e.name;
 		else if (val instanceof Descriptor)
 			return ((Descriptor) val).name;
 		else if (val instanceof Date)
@@ -245,7 +245,7 @@ public class DataBinding {
 				return;
 			if (Descriptor.class.isAssignableFrom(viewer.getType())
 					&& !Descriptor.class.isAssignableFrom(val.getClass())) {
-				val = Descriptor.of((RootEntity) val);
+				val = Descriptor.of((RefEntity) val);
 			}
 			viewer.select((T) val);
 		} catch (Exception e) {
@@ -256,8 +256,8 @@ public class DataBinding {
 	private void initValue(Object bean, String property, TextDropComponent text) {
 		try {
 			Object val = Bean.getValue(bean, property);
-			if (val instanceof RootEntity) {
-				var descriptor = Descriptor.of((RootEntity) val);
+			if (val instanceof RefEntity e) {
+				var descriptor = Descriptor.of(e);
 				text.setContent(descriptor);
 			}
 		} catch (Exception e) {

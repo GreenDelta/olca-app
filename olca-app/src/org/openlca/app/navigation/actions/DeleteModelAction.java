@@ -27,8 +27,8 @@ import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.IUseSearch;
+import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
@@ -152,7 +152,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends RootEntity> void delete(Descriptor d) {
+	private <T extends CategorizedEntity> void delete(Descriptor d) {
 		try {
 			log.trace("delete model {}", d);
 			IDatabase database = Database.get();

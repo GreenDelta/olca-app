@@ -26,8 +26,8 @@ import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.RefEntity;
 import org.openlca.core.model.RiskLevel;
-import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
@@ -46,7 +46,7 @@ public class Labels {
 	private Labels() {
 	}
 
-	public static String name(RootEntity entity) {
+	public static String name(RefEntity entity) {
 		if (entity == null || entity.name == null)
 			return "";
 		if (entity instanceof ImpactCategory impact) {

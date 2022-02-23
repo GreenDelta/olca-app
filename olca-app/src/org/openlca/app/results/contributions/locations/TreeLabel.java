@@ -12,7 +12,7 @@ import org.openlca.app.util.Numbers;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.RefEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -93,8 +93,8 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 			return Labels.name((EnviFlow) c.item);
 		if (c.item instanceof Descriptor)
 			return Labels.name((Descriptor) c.item);
-		if (c.item instanceof RootEntity)
-			return Labels.name((RootEntity) c.item);
+		if (c.item instanceof RefEntity)
+			return Labels.name((RefEntity) c.item);
 		return null;
 	}
 }

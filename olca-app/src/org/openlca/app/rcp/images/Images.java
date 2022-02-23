@@ -14,7 +14,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.RefEntity;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
@@ -33,7 +33,7 @@ public class Images {
 			: get(f.flow());
 	}
 
-	public static Image get(RootEntity entity) {
+	public static Image get(RefEntity entity) {
 		if (entity instanceof Source source) {
 			if (source.externalFile != null)
 				return get(FileType.forName(source.externalFile));
@@ -183,7 +183,7 @@ public class Images {
 		return ImageManager.get(icon, overlay);
 	}
 
-	public static ImageDescriptor descriptor(RootEntity entity) {
+	public static ImageDescriptor descriptor(RefEntity entity) {
 		if (entity instanceof Process)
 			return descriptor(((Process) entity).processType);
 		if (entity instanceof Flow)

@@ -6,7 +6,7 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Parameter;
-import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.RefEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 
 /**
@@ -18,9 +18,9 @@ public class BaseNameComparator extends ViewerComparator {
 	public int compare(final Viewer viewer, final Object e1, final Object e2) {
 		String s1 = null;
 		String s2 = null;
-		if (e1 instanceof RootEntity && e2 instanceof RootEntity) {
-			s1 = ((RootEntity) e1).name;
-			s2 = ((RootEntity) e2).name;
+		if (e1 instanceof RefEntity && e2 instanceof RefEntity) {
+			s1 = ((RefEntity) e1).name;
+			s2 = ((RefEntity) e2).name;
 		} else if (e1 instanceof Exchange && e2 instanceof Exchange) {
 			s1 = ((Exchange) e1).flow.name;
 			s2 = ((Exchange) e2).flow.name;

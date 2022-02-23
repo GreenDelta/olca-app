@@ -12,7 +12,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.RefEntity;
 import org.openlca.util.Strings;
 
 /**
@@ -35,7 +35,7 @@ public class EntityCombo<T> {
 		fillItems();
 	}
 
-	public static <T extends RootEntity> EntityCombo<T> of(
+	public static <T extends RefEntity> EntityCombo<T> of(
 		Combo combo, Class<T> type, IDatabase db) {
 		var dao = Daos.base(db, type);
 		List<T> all = dao == null
@@ -44,7 +44,7 @@ public class EntityCombo<T> {
 		return new EntityCombo<T>(combo, all, Labels::name);
 	}
 
-	public static <T extends RootEntity> EntityCombo<T> of(
+	public static <T extends RefEntity> EntityCombo<T> of(
 		Combo combo, List<T> entities) {
 		var list = new ArrayList<>(entities);
 		return new EntityCombo<>(combo, list, Labels::name);

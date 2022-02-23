@@ -15,7 +15,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.RefEntity;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
@@ -24,8 +24,8 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 
 	@Override
 	public Image getImage(Object element) {
-		if (element instanceof RootEntity)
-			return Images.get((RootEntity) element);
+		if (element instanceof RefEntity)
+			return Images.get((RefEntity) element);
 		if (element instanceof Descriptor)
 			return Images.get((Descriptor) element);
 		if (element instanceof Exchange)
@@ -45,8 +45,8 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 	public String getText(Object element) {
 		if (element instanceof Descriptor)
 			return getModelLabel((Descriptor) element);
-		if (element instanceof RootEntity)
-			return getModelLabel((RootEntity) element);
+		if (element instanceof RefEntity)
+			return getModelLabel((RefEntity) element);
 		if (element instanceof Exchange)
 			return getModelLabel(((Exchange) element).flow);
 		if (element instanceof FlowPropertyFactor)
@@ -74,7 +74,7 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 		return null;
 	}
 
-	protected String getModelLabel(RootEntity o) {
+	protected String getModelLabel(RefEntity o) {
 		if (o == null)
 			return "";
 		String label = Strings.cut(o.name, 75);
