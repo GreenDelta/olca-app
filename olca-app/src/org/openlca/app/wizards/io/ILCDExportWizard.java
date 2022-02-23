@@ -13,8 +13,8 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferences.IoPreference;
 import org.openlca.core.database.Daos;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.ilcd.ILCDExport;
 import org.openlca.io.ilcd.output.ExportConfig;
@@ -76,8 +76,8 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 			try {
 				Object obj = Daos.root(
 						config.db, d.type).getForId(d.id);
-				if (obj instanceof CategorizedEntity)
-					export.export((CategorizedEntity) obj);
+				if (obj instanceof RootEntity e)
+					export.export(e);
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
 			} finally {

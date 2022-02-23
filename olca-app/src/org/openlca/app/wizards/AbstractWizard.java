@@ -8,14 +8,14 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Daos;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class AbstractWizard<T extends CategorizedEntity> extends
+abstract class AbstractWizard<T extends RootEntity> extends
 		Wizard implements INewModelWizard {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -66,7 +66,7 @@ abstract class AbstractWizard<T extends CategorizedEntity> extends
 
 	@SuppressWarnings("unchecked")
 	protected BaseDao<T> createDao() {
-		return (BaseDao<T>) Daos.categorized(Database.get(), getModelType());
+		return (BaseDao<T>) Daos.root(Database.get(), getModelType());
 	}
 
 	protected abstract String getTitle();

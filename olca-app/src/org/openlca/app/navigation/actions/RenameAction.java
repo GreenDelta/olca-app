@@ -17,15 +17,15 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.ParameterDao;
-import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.database.RootEntityDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 class RenameAction extends Action implements INavigationAction {
 
@@ -96,9 +96,9 @@ class RenameAction extends Action implements INavigationAction {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends CategorizedEntity> void doUpdate(
-			CategorizedDescriptor d, String newName) {
-		var dao = (CategorizedEntityDao<T, ?>) Daos.categorized(
+	private <T extends RootEntity> void doUpdate(
+			RootDescriptor d, String newName) {
+		var dao = (RootEntityDao<T, ?>) Daos.root(
 				Database.get(), d.type);
 		T entity = dao.getForId(d.id);
 		entity.name = newName.trim();

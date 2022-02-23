@@ -24,7 +24,7 @@ import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 public class ModelCheckBoxTree implements ICheckStateListener {
 
@@ -118,7 +118,7 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 		checkParent(parent);
 	}
 
-	public List<CategorizedDescriptor> getSelection() {
+	public List<RootDescriptor> getSelection() {
 		Object[] elems = tree.getCheckedElements();
 		if (elems == null || elems.length == 0)
 			return Collections.emptyList();

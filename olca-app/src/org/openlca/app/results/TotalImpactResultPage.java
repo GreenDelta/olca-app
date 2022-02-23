@@ -37,8 +37,8 @@ import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.ContributionResult;
 
 public class TotalImpactResultPage extends FormPage {
@@ -297,7 +297,7 @@ public class TotalImpactResultPage extends FormPage {
 
 			double cutoffValue = Math.abs(parent.result() * cutoff);
 			if (parent.type() == ModelType.IMPACT_CATEGORY && subgroupByProcesses) {
-				for (CategorizedDescriptor process : result.getProcesses()) {
+				for (var process : result.getProcesses()) {
 					Item child = new Item(parent.impact, process);
 					double result = child.result();
 					if (result == 0)
@@ -345,7 +345,7 @@ public class TotalImpactResultPage extends FormPage {
 	private class Item {
 
 		final ImpactDescriptor impact;
-		final CategorizedDescriptor process;
+		final RootDescriptor process;
 		final EnviFlow flow;
 
 		Item(ImpactDescriptor impact) {
@@ -353,11 +353,11 @@ public class TotalImpactResultPage extends FormPage {
 
 		}
 
-		Item(ImpactDescriptor impact, CategorizedDescriptor process) {
+		Item(ImpactDescriptor impact, RootDescriptor process) {
 			this(impact, process, null);
 		}
 
-		Item(ImpactDescriptor impact, CategorizedDescriptor process,
+		Item(ImpactDescriptor impact, RootDescriptor process,
 			EnviFlow flow) {
 			this.impact = impact;
 			this.process = process;

@@ -18,7 +18,7 @@ import org.openlca.app.util.Categories;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.results.SystemProcess;
 import org.openlca.util.Results;
 
@@ -143,7 +143,7 @@ public class SaveResultDialog extends FormDialog {
 			return this;
 		}
 
-		CategorizedEntity run() {
+		RootEntity run() {
 			var db = Database.get();
 			if (createProcess) {
 				var process = withMetaData

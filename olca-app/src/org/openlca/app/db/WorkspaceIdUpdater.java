@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 public class WorkspaceIdUpdater {
 
@@ -34,7 +34,7 @@ public class WorkspaceIdUpdater {
 		disabled = false;
 	}
 
-	public void invalidate(CategorizedDescriptor descriptor) {
+	public void invalidate(RootDescriptor descriptor) {
 		if (disabled || !Repository.isConnected())
 			return;
 		var workspaceIds = Repository.get().workspaceIds;

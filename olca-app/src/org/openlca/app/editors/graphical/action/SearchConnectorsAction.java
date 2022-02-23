@@ -20,7 +20,7 @@ import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.search.ConnectionDialog;
 import org.openlca.app.util.Controls;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 class SearchConnectorsAction extends EditorAction {
 
@@ -55,7 +55,7 @@ class SearchConnectorsAction extends EditorAction {
 		ConnectionDialog dialog = new ConnectionDialog(enode);
 		if (dialog.open() != IDialogConstants.OK_ID)
 			return;
-		List<CategorizedDescriptor> newProcesses = dialog.getNewProcesses();
+		List<RootDescriptor> newProcesses = dialog.getNewProcesses();
 		List<ProcessLink> newLinks = dialog.getNewLinks();
 		Command command = type == PROVIDER
 				? MassCreationCommand.providers(newProcesses, newLinks, sysNode)

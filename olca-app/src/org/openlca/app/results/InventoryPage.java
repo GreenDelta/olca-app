@@ -30,7 +30,7 @@ import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.CalculationSetup;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 
@@ -115,7 +115,7 @@ public class InventoryPage extends FormPage {
 		// bind actions
 		var onOpen = Actions.onOpen(() -> {
 			var obj = Viewers.getFirstSelected(viewer);
-			if (obj instanceof CategorizedDescriptor d) {
+			if (obj instanceof RootDescriptor d) {
 				App.open(d);
 			}
 			if (obj instanceof FlowContribution c) {
@@ -228,8 +228,8 @@ public class InventoryPage extends FormPage {
 		}
 
 		private String getProcessColumnText(FlowContribution item, int col) {
-			CategorizedDescriptor process = item.item.item;
-			Pair<String, String> category = Labels.getCategory(process);
+			var process = item.item.item;
+			var category = Labels.getCategory(process);
 			return switch (col) {
 				case 0 -> Labels.name(process);
 				case 1 -> category.getLeft();
@@ -260,7 +260,7 @@ public class InventoryPage extends FormPage {
 	}
 
 	private record FlowContribution(
-		Contribution<CategorizedDescriptor> item,
+		Contribution<RootDescriptor> item,
 		EnviFlow flow) {
 
 	}

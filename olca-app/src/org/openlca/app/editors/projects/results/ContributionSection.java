@@ -29,8 +29,8 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.ProjectVariant;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.util.Strings;
 
@@ -186,7 +186,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 	private void updateCells(ToDoubleBiFunction<ContributionResult, TechFlow> fn) {
 		var cells = new ArrayList<List<Contribution>>();
 		for (var variant : variants) {
-			var map = new HashMap<CategorizedDescriptor, Double>();
+			var map = new HashMap<RootDescriptor, Double>();
 			var result = data.result().getResult(variant);
 			for (var techFlow : result.techIndex()) {
 				map.compute(techFlow.provider(), (process, value) -> {

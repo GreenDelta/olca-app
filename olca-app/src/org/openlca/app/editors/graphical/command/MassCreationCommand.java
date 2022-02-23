@@ -16,36 +16,36 @@ import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 public class MassCreationCommand extends Command {
 
 	private final ProductSystemNode sysNode;
-	private final List<CategorizedDescriptor> toCreate;
+	private final List<RootDescriptor> toCreate;
 	private final List<ProcessLink> newLinks;
 	// for undoing
 	private final Map<IFigure, Rectangle> oldConstraints = new HashMap<>();
 	private final List<ProcessNode> createdNodes = new ArrayList<>();
 	private final List<Link> createdLinks = new ArrayList<>();
 
-	public static MassCreationCommand nextTier(List<CategorizedDescriptor> toCreate,
+	public static MassCreationCommand nextTier(List<RootDescriptor> toCreate,
 			List<ProcessLink> newConnections, ProductSystemNode model) {
 		return new MassCreationCommand(model, toCreate, newConnections, M.BuildNextTier);
 	}
 
-	public static MassCreationCommand providers(List<CategorizedDescriptor> toCreate,
+	public static MassCreationCommand providers(List<RootDescriptor> toCreate,
 			List<ProcessLink> newConnections, ProductSystemNode model) {
 		return new MassCreationCommand(model, toCreate, newConnections, M.ConnectProviders);
 	}
 
-	public static MassCreationCommand recipients(List<CategorizedDescriptor> toCreate,
+	public static MassCreationCommand recipients(List<RootDescriptor> toCreate,
 			List<ProcessLink> newConnections, ProductSystemNode model) {
 		return new MassCreationCommand(model, toCreate, newConnections, M.ConnectRecipients);
 	}
 
 	private MassCreationCommand(
 			ProductSystemNode model,
-			List<CategorizedDescriptor> toCreate,
+			List<RootDescriptor> toCreate,
 			List<ProcessLink> newConnections,
 			String label) {
 		this.sysNode = model;
@@ -56,7 +56,7 @@ public class MassCreationCommand extends Command {
 
 	@Override
 	public void execute() {
-		for (CategorizedDescriptor process : toCreate)
+		for (RootDescriptor process : toCreate)
 			addNode(process);
 		for (ProcessLink newLink : newLinks)
 			link(newLink);
@@ -69,7 +69,7 @@ public class MassCreationCommand extends Command {
 			sysNode.editor.getOutline().refresh();
 	}
 
-	private void addNode(CategorizedDescriptor process) {
+	private void addNode(RootDescriptor process) {
 		if (sysNode.getProcessNode(process.id) != null)
 			return;
 		ProcessNode node = new ProcessNode(sysNode.editor, process);

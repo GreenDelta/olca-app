@@ -10,9 +10,9 @@ import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.matrix.index.EnviFlow;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.RefEntity;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -53,8 +53,8 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 			return null;
 		if (c.item instanceof Descriptor)
 			return Images.get((Descriptor) c.item);
-		if (c.item instanceof CategorizedEntity)
-			return Images.get((CategorizedEntity) c.item);
+		if (c.item instanceof RootEntity)
+			return Images.get((RootEntity) c.item);
 		if (c.item instanceof EnviFlow)
 			return Images.get(((EnviFlow) c.item).flow());
 		return null;

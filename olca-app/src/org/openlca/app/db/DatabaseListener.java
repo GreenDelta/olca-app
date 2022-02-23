@@ -1,8 +1,8 @@
 package org.openlca.app.db;
 
 import org.openlca.core.database.IDatabaseListener;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 class DatabaseListener implements IDatabaseListener {
 
@@ -28,7 +28,7 @@ class DatabaseListener implements IDatabaseListener {
 	}
 
 	private void invalidateId(Descriptor descriptor) {
-		if (descriptor instanceof CategorizedDescriptor d) {
+		if (descriptor instanceof RootDescriptor d) {
 			workspaceIdsUpdater.invalidate(d);
 		}
 	}

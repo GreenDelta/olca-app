@@ -10,21 +10,21 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.search.ParameterUsagePage;
 import org.openlca.app.search.SearchPage;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 /**
  * Opens a view with the usages of a model in other entities.
  */
 class OpenUsageAction extends Action implements INavigationAction {
 
-	private CategorizedDescriptor descriptor;
+	private RootDescriptor descriptor;
 
 	public OpenUsageAction() {
 		setText(M.Usage);
 		setImageDescriptor(Icon.LINK.descriptor());
 	}
 
-	public void setDescriptor(CategorizedDescriptor descriptor) {
+	public void setDescriptor(RootDescriptor descriptor) {
 		this.descriptor = descriptor;
 	}
 
@@ -33,13 +33,12 @@ class OpenUsageAction extends Action implements INavigationAction {
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		if (!(first instanceof ModelElement))
+		if (!(first instanceof ModelElement e))
 			return false;
-		var e = (ModelElement) first;
 		var d = e.getContent();
 		if (d == null || d.type == null)
 			return false;
-		if (!d.type.isCategorized())
+		if (!d.type.isRoot())
 			return false;
 		descriptor = d;
 		return true;

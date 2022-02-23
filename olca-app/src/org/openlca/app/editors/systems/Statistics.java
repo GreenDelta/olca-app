@@ -17,11 +17,11 @@ import org.openlca.core.matrix.cache.ProcessTable;
 import org.openlca.core.matrix.index.LongPair;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.ResultDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,9 +186,9 @@ class Statistics {
 		}
 	}
 
-	record LinkDegree(int degree, CategorizedDescriptor process) {
+	record LinkDegree(int degree, RootDescriptor process) {
 		static LinkDegree of(long id, EntityCache cache,  int degree) {
-			CategorizedDescriptor process = cache.get(ProcessDescriptor.class, id);
+			RootDescriptor process = cache.get(ProcessDescriptor.class, id);
 			if (process == null) {
 				process = cache.get(ProductSystemDescriptor.class, id);
 			}

@@ -1,13 +1,11 @@
 package org.openlca.app.editors.systems;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
@@ -42,10 +40,10 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,10 +104,10 @@ class ParameterRedefTable {
 		table.setInput(redefs);
 	}
 
-	private CategorizedDescriptor getContext(ParameterRedef p) {
+	private RootDescriptor getContext(ParameterRedef p) {
 		if (p.contextId == null)
 			return null;
-		return Daos.categorized(Database.get(), p.contextType)
+		return Daos.root(Database.get(), p.contextType)
 			.getDescriptor(p.contextId);
 	}
 

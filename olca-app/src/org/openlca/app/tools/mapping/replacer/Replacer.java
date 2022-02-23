@@ -18,7 +18,6 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.io.maps.FlowMapEntry;
 import org.openlca.io.maps.FlowRef;
 import org.openlca.io.maps.MappingStatus;
@@ -59,7 +58,7 @@ public class Replacer implements Runnable {
 		// where flows should be replaced
 		processes.clear();
 		impacts.clear();
-		for (CategorizedDescriptor model : conf.models) {
+		for (var model : conf.models) {
 			if (model.type == ModelType.PROCESS) {
 				processes.add(model.id);
 			} else if (model.type == ModelType.IMPACT_METHOD) {
@@ -172,7 +171,7 @@ public class Replacer implements Runnable {
 				.filter(e -> e.targetFlow() != null
 						&& e.targetFlow().status != null
 						&& !e.targetFlow().status.isError())
-				.map(e -> e.targetFlow())
+				.map(FlowMapEntry::targetFlow)
 				.collect(Collectors.toList());
 
 		conf.provider.persist(targetFlows, db);

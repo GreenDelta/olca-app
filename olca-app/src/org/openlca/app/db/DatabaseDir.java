@@ -5,7 +5,7 @@ import java.io.File;
 import org.openlca.app.App;
 import org.openlca.core.database.FileStore;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 
 /**
@@ -19,7 +19,7 @@ import org.openlca.core.model.descriptors.Descriptor;
 public class DatabaseDir {
 
 	public static final String FILE_STORAGE = "_olca_";
-	
+
 	private DatabaseDir() {
 	}
 
@@ -46,7 +46,7 @@ public class DatabaseDir {
 		return fs.getFolder(d);
 	}
 
-	public static File getDir(CategorizedEntity e) {
+	public static File getDir(RootEntity e) {
 		File root = getFileStorageLocation(Database.get());
 		FileStore fs = new FileStore(root);
 		return fs.getFolder(e);
@@ -60,7 +60,7 @@ public class DatabaseDir {
 		fs.deleteFolder(d);
 	}
 
-	public static void copyDir(CategorizedEntity from, CategorizedEntity to) {
+	public static void copyDir(RootEntity from, RootEntity to) {
 		File dir = DatabaseDir.getFileStorageLocation(Database.get());
 		if (dir == null || !dir.exists())
 			return;

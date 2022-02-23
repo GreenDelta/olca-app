@@ -30,11 +30,11 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.model.CalculationSetup;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Location;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.LocationResult;
@@ -141,10 +141,10 @@ public class LocationPage extends FormPage {
 				return;
 			if (obj instanceof Contribution) {
 				Contribution<?> c = (Contribution<?>) obj;
-				if (c.item instanceof CategorizedDescriptor) {
-					App.open((CategorizedDescriptor) c.item);
-				} else if (c.item instanceof CategorizedEntity) {
-					App.open((CategorizedEntity) c.item);
+				if (c.item instanceof RootDescriptor) {
+					App.open((RootDescriptor) c.item);
+				} else if (c.item instanceof RootEntity) {
+					App.open((RootEntity) c.item);
 				}
 			}
 		});

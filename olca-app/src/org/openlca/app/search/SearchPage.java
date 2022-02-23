@@ -20,8 +20,8 @@ import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.usage.IUseSearch;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 public class SearchPage extends SimpleFormEditor {
 
@@ -34,7 +34,7 @@ public class SearchPage extends SimpleFormEditor {
 		Editors.open(input, "SearchPage");
 	}
 
-	public static void forUsage(CategorizedDescriptor d) {
+	public static void forUsage(RootDescriptor d) {
 		if (d == null || d.type == null)
 			return;
 		String title = "Find usages of " + Labels.name(d);
@@ -86,7 +86,7 @@ public class SearchPage extends SimpleFormEditor {
 			this.resultKey = resultKey;
 		}
 
-		public Input(CategorizedDescriptor d, String resultKey) {
+		public Input(RootDescriptor d, String resultKey) {
 			super(resultKey, M.UsageOf + " " + Labels.name(d));
 			forSearch = false;
 			this.resultKey = resultKey;

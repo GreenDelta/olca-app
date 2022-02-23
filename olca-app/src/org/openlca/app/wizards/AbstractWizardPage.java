@@ -6,9 +6,9 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.RootEntity;
 
-abstract class AbstractWizardPage<T extends CategorizedEntity> extends
+abstract class AbstractWizardPage<T extends RootEntity> extends
 		WizardPage {
 
 	private Text descriptionText;

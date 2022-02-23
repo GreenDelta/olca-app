@@ -16,8 +16,8 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Callback.Message;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.output.JsonExport;
@@ -37,7 +37,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void addPages() {
-		page = ModelSelectionPage.forFile("zip", ModelType.categorized());
+		page = ModelSelectionPage.forFile("zip", ModelType.rootTypes());
 		addPage(page);
 	}
 
@@ -95,7 +95,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 					break;
 				monitor.subTask(model.name);
 				ModelType type = model.type;
-				var o = Daos.categorized(database, type).getForId(model.id);
+				var o = Daos.root(database, type).getForId(model.id);
 				if (o != null) {
 					doExport(export, o);
 				}
@@ -103,7 +103,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 			}
 		}
 
-		private void doExport(JsonExport export, CategorizedEntity entity) {
+		private void doExport(JsonExport export, RootEntity entity) {
 			export.write(entity, (message, data) -> {
 				if (message == null)
 					return;

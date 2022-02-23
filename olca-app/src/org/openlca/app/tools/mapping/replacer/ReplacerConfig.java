@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.app.tools.mapping.model.IProvider;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.maps.FlowMap;
 
 /**
@@ -19,11 +19,11 @@ public class ReplacerConfig {
 	 * flows (that should be replaced by the target flows) are always flows in the
 	 * currently active databases. Of course, the target flow provider could be also
 	 * the same database.
-	 * 
+	 *
 	 */
 	public final IProvider provider;
 
-	public final List<CategorizedDescriptor> models = new ArrayList<>();
+	public final List<RootDescriptor> models = new ArrayList<>();
 	public boolean deleteMapped;
 
 	public ReplacerConfig(FlowMap mapping, IProvider provider) {

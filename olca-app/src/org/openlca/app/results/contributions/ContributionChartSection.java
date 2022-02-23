@@ -17,8 +17,8 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.matrix.index.EnviFlow;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.ContributionResult;
 
@@ -87,7 +87,7 @@ public class ContributionChartSection {
 			return;
 		Object e = itemViewer.getSelected();
 		String unit = null;
-		List<Contribution<CategorizedDescriptor>> cons = null;
+		List<Contribution<RootDescriptor>> cons = null;
 		if (e instanceof EnviFlow) {
 			var flow = (EnviFlow) e;
 			unit = Labels.refUnit(flow);

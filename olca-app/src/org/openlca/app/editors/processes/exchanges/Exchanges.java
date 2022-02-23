@@ -17,7 +17,6 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
@@ -106,8 +105,7 @@ class Exchanges {
 			return true;
 
 		// check usage in product systems
-		List<CategorizedDescriptor> usages = new ExchangeUseSearch(
-				Database.get(), p).findUses(techFlows);
+		var usages = new ExchangeUseSearch(Database.get(), p).findUses(techFlows);
 		if (!usages.isEmpty()) {
 			MsgBox.error(M.CannotRemoveExchanges, M.ExchangesAreUsed);
 			return false;

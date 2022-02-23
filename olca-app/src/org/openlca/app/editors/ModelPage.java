@@ -12,9 +12,9 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.util.Labels;
-import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.RootEntity;
 
-public abstract class ModelPage<T extends CategorizedEntity> extends FormPage {
+public abstract class ModelPage<T extends RootEntity> extends FormPage {
 
 	public ModelPage(ModelEditor<T> editor, String id, String title) {
 		super(editor, id, title);

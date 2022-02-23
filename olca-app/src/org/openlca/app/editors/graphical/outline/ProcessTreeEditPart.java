@@ -4,7 +4,7 @@ import org.eclipse.gef.editparts.AbstractTreeEditPart;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.util.Labels;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 public class ProcessTreeEditPart extends AbstractTreeEditPart {
 
@@ -15,8 +15,8 @@ public class ProcessTreeEditPart extends AbstractTreeEditPart {
 	}
 
 	@Override
-	public CategorizedDescriptor getModel() {
-		return (CategorizedDescriptor) super.getModel();
+	public RootDescriptor getModel() {
+		return (RootDescriptor) super.getModel();
 	}
 
 	@Override

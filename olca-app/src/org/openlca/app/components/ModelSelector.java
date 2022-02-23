@@ -38,7 +38,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 public class ModelSelector extends FormDialog {
 
@@ -55,7 +55,7 @@ public class ModelSelector extends FormDialog {
 	/**
 	 * The selected elements.
 	 */
-	private List<CategorizedDescriptor> selection = Collections.emptyList();
+	private List<RootDescriptor> selection = Collections.emptyList();
 
 	private TreeViewer viewer;
 	private Text filterText;
@@ -68,8 +68,8 @@ public class ModelSelector extends FormDialog {
 		setBlockOnOpen(true);
 	}
 
-	public static CategorizedDescriptor select(ModelType type) {
-		if (type == null || !type.isCategorized())
+	public static RootDescriptor select(ModelType type) {
+		if (type == null || !type.isRoot())
 			return null;
 		var dialog = new ModelSelector(type);
 		return dialog.open() == OK
@@ -77,8 +77,8 @@ public class ModelSelector extends FormDialog {
 			: null;
 	}
 
-	public static List<CategorizedDescriptor> multiSelect(ModelType type) {
-		if (type == null || !type.isCategorized())
+	public static List<RootDescriptor> multiSelect(ModelType type) {
+		if (type == null || !type.isRoot())
 			return Collections.emptyList();
 		var dialog = new ModelSelector(type);
 		dialog.forMultiple = true;
@@ -91,13 +91,13 @@ public class ModelSelector extends FormDialog {
 	 * Returns the first element from the selection or null when the selection is
 	 * empty.
 	 */
-	public CategorizedDescriptor first() {
+	public RootDescriptor first() {
 		if (selection == null || selection.isEmpty())
 			return null;
 		return selection.get(0);
 	}
 
-	public ModelSelector withFilter(Predicate<CategorizedDescriptor> p) {
+	public ModelSelector withFilter(Predicate<RootDescriptor> p) {
 		this.modelFilter = p != null
 			? new ModelFilter(p)
 			: null;
@@ -219,13 +219,13 @@ public class ModelSelector extends FormDialog {
 		public void selectionChanged(SelectionChangedEvent e) {
 
 			List<Object> allSelected = Viewers.getAllSelected(viewer);
-			List<CategorizedDescriptor> descriptors = new ArrayList<>();
+			List<RootDescriptor> descriptors = new ArrayList<>();
 			String filter = filterText.getText().toLowerCase();
 
 			for (Object obj : allSelected) {
 				if (!(obj instanceof ModelElement))
 					continue;
-				CategorizedDescriptor d = ((ModelElement) obj).getContent();
+				RootDescriptor d = ((ModelElement) obj).getContent();
 				if (d == null || d.type != modelType)
 					continue;
 
@@ -234,7 +234,7 @@ public class ModelSelector extends FormDialog {
 				if (!Strings.isNullOrEmpty(filter)) {
 					String label = Labels.name(d);
 					if (label == null ||
-							!label.toLowerCase().contains(filter))
+						!label.toLowerCase().contains(filter))
 						continue;
 				}
 
@@ -262,9 +262,9 @@ public class ModelSelector extends FormDialog {
 
 	private static class ModelFilter extends ViewerFilter {
 
-		private final Predicate<CategorizedDescriptor> predicate;
+		private final Predicate<RootDescriptor> predicate;
 
-		ModelFilter(Predicate<CategorizedDescriptor> p) {
+		ModelFilter(Predicate<RootDescriptor> p) {
 			this.predicate = Objects.requireNonNull(p);
 		}
 

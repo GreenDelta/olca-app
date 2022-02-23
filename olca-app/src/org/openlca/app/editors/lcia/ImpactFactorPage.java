@@ -40,7 +40,6 @@ import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Uncertainty;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
@@ -127,9 +126,8 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			viewer, () -> editor.getModel().parameters);
 		support.bind(M.Factor, factorEditor);
 		factorEditor.onEdited((obj, factor) -> {
-			if (!(obj instanceof ImpactFactor))
+			if (!(obj instanceof ImpactFactor f))
 				return;
-			var f = (ImpactFactor) obj;
 			try {
 				double value = Double.parseDouble(factor);
 				f.formula = null;
@@ -228,9 +226,8 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 		@Override
 		public Image getColumnImage(Object o, int col) {
-			if (!(o instanceof ImpactFactor))
+			if (!(o instanceof ImpactFactor f))
 				return null;
-			ImpactFactor f = (ImpactFactor) o;
 			if (col == 0)
 				return Images.get(f.flow);
 			if (col == 6)
@@ -241,9 +238,8 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 		@Override
 		public String getColumnText(Object o, int col) {
-			if (!(o instanceof ImpactFactor))
+			if (!(o instanceof ImpactFactor f))
 				return null;
-			ImpactFactor f = (ImpactFactor) o;
 			switch (col) {
 				case 0:
 					return Labels.name(f.flow);
@@ -312,7 +308,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			if (dialog.open() != Window.OK)
 				return null;
 
-			CategorizedDescriptor loc = dialog.first();
+			var loc = dialog.first();
 
 			// clear the location
 			if (loc == null) {

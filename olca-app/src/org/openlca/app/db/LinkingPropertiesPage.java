@@ -33,10 +33,10 @@ import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
 public class LinkingPropertiesPage extends SimpleFormEditor {
@@ -157,7 +157,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			fillTable(table, list);
 		}
 
-		private <T extends CategorizedDescriptor> void fillTable(
+		private <T extends RootDescriptor> void fillTable(
 				TableViewer table, List<T> list) {
 			table.setLabelProvider(new TableLabel());
 			Tables.bindColumnWidths(table, 1.0);
@@ -166,7 +166,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 					Labels.name(d2)));
 			table.setInput(list);
 			Tables.onDoubleClick(table, e -> {
-				CategorizedDescriptor d = Viewers.getFirstSelected(table);
+				RootDescriptor d = Viewers.getFirstSelected(table);
 				App.open(d);
 			});
 			Action copy = TableClipboard.onCopySelected(table);
@@ -179,9 +179,8 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			public Image getColumnImage(Object o, int col) {
 				if (col != 0)
 					return null;
-				if (!(o instanceof Descriptor))
+				if (!(o instanceof Descriptor d))
 					return null;
-				Descriptor d = (Descriptor) o;
 				return Images.get(d);
 			}
 

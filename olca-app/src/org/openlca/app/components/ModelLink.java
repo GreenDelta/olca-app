@@ -16,11 +16,11 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.RootEntity;
 import org.openlca.util.Strings;
 
-public class ModelLink<T extends CategorizedEntity> {
+public class ModelLink<T extends RootEntity> {
 
 	private final IDatabase db;
 	private final Class<T> type;
@@ -43,7 +43,7 @@ public class ModelLink<T extends CategorizedEntity> {
 		this.modelType = modelType;
 	}
 
-	public static <T extends CategorizedEntity> ModelLink<T> of(Class<T> type) {
+	public static <T extends RootEntity> ModelLink<T> of(Class<T> type) {
 		return new ModelLink<>(type);
 	}
 

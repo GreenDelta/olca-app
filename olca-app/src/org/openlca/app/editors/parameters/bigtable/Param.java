@@ -13,7 +13,7 @@ import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ class Param implements Comparable<Param> {
 	/**
 	 * If null, it is a global parameter.
 	 */
-	final CategorizedDescriptor owner;
+	final RootDescriptor owner;
 
 	Parameter parameter;
 
@@ -37,7 +37,7 @@ class Param implements Comparable<Param> {
 		this(p, null);
 	}
 
-	private Param(Parameter p, CategorizedDescriptor owner) {
+	private Param(Parameter p, RootDescriptor owner) {
 		this.parameter = p;
 		this.owner = owner;
 	}

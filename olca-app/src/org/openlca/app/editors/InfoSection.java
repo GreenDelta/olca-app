@@ -33,7 +33,7 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Version;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
@@ -44,7 +44,7 @@ import org.openlca.util.Strings;
  */
 public class InfoSection {
 
-	private CategorizedEntity entity;
+	private RootEntity entity;
 	private final ModelEditor<?> editor;
 
 	private Section section;

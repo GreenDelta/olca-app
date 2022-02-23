@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
-import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.RootEntity;
 import org.openlca.util.Strings;
 
 import jakarta.persistence.Table;
@@ -15,7 +15,7 @@ final class Tags {
 	private Tags() {
 	}
 
-	public static String[] of(CategorizedEntity model) {
+	public static String[] of(RootEntity model) {
 		if (model == null || Strings.nullOrEmpty(model.tags))
 			return new String[0];
 		return Arrays.stream(model.tags.split(","))
@@ -24,7 +24,7 @@ final class Tags {
 				.toArray(String[]::new);
 	}
 
-	public static String[] add(CategorizedEntity model, String tag) {
+	public static String[] add(RootEntity model, String tag) {
 		var existing = of(model);
 		if (Strings.nullOrEmpty(tag))
 			return existing;
@@ -39,7 +39,7 @@ final class Tags {
 		return next;
 	}
 
-	public static String[] remove(CategorizedEntity model, String tag) {
+	public static String[] remove(RootEntity model, String tag) {
 		var existing = of(model);
 		if (Strings.nullOrEmpty(tag))
 			return existing;
@@ -53,7 +53,7 @@ final class Tags {
 	/**
 	 * Search for possible tags of the given model.
 	 */
-	public static String[] searchFor(CategorizedEntity model, IDatabase db) {
+	public static String[] searchFor(RootEntity model, IDatabase db) {
 		if (model == null)
 			return new String[0];
 		var type = model.getClass();

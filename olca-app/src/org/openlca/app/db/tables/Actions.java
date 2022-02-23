@@ -8,7 +8,7 @@ import org.openlca.app.search.SearchPage;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.model.CategorizedEntity;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 
 class Actions {
@@ -19,7 +19,7 @@ class Actions {
 
 		var open = org.openlca.app.util.Actions.onOpen(() -> {
 			var obj = Viewers.getFirstSelected(table);
-			if (obj instanceof CategorizedEntity e) {
+			if (obj instanceof RootEntity e) {
 				App.open(e);
 			}
 		});
@@ -28,7 +28,7 @@ class Actions {
 		var usage = org.openlca.app.util.Actions.create(
 			M.Usage, Icon.LINK.descriptor(), () -> {
 				var obj = Viewers.getFirstSelected(table);
-				if (obj instanceof CategorizedEntity e) {
+				if (obj instanceof RootEntity e) {
 					SearchPage.forUsage(Descriptor.of(e));
 				}
 			});

@@ -20,9 +20,9 @@ import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,11 +41,11 @@ public class Widgets {
 				link.setText("-");
 				return link;
 			}
-			if (!(value instanceof CategorizedEntity)) {
+			if (!(value instanceof RootEntity)) {
 				link.setText(value.toString());
 				return link;
 			}
-			CategorizedEntity entity = (CategorizedEntity) value;
+			var entity = (RootEntity) value;
 			link.setText(Labels.name(entity));
 			link.setImage(Images.get(entity));
 			link.addHyperlinkListener(new ModelLinkClickedListener(entity));
@@ -156,16 +156,16 @@ public class Widgets {
 
 		private final Object model;
 
-		public ModelLinkClickedListener(CategorizedEntity entity) {
+		public ModelLinkClickedListener(RootEntity entity) {
 			this.model = entity;
 		}
 
 		@Override
 		public void linkActivated(HyperlinkEvent e) {
-			if (model instanceof CategorizedEntity)
-				App.open((CategorizedEntity) model);
-			else if (model instanceof CategorizedDescriptor)
-				App.open((CategorizedDescriptor) model);
+			if (model instanceof RootEntity)
+				App.open((RootEntity) model);
+			else if (model instanceof RootDescriptor)
+				App.open((RootDescriptor) model);
 		}
 
 	}

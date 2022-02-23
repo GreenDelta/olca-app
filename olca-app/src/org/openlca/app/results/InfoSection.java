@@ -17,9 +17,9 @@ import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.CalculationSetup;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 class InfoSection {
 
@@ -62,13 +62,13 @@ class InfoSection {
 		new Label(comp, SWT.NONE).setText(label);
 		var link = new ImageHyperlink(comp, SWT.TOP);
 		link.setForeground(Colors.linkBlue());
-		if (entity instanceof CategorizedDescriptor) {
-			var d = (CategorizedDescriptor) entity;
+		if (entity instanceof RootDescriptor) {
+			var d = (RootDescriptor) entity;
 			link.setText(Labels.name(d));
 			link.setImage(Images.get(d));
 			Controls.onClick(link, e -> App.open(d));
-		} else if (entity instanceof CategorizedEntity) {
-			CategorizedEntity ce = (CategorizedEntity) entity;
+		} else if (entity instanceof RootEntity) {
+			var ce = (RootEntity) entity;
 			link.setText(Labels.name(ce));
 			link.setImage(Images.get(ce));
 			Controls.onClick(link, e -> App.open(ce));

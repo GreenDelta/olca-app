@@ -21,10 +21,10 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
 
@@ -32,7 +32,7 @@ import com.google.gson.Gson;
 
 public class CommentsPage extends FormPage {
 
-	private final CategorizedEntity model;
+	private final RootEntity model;
 	private final List<Comment> comments;
 
 	public CommentsPage(FormEditor editor, List<Comment> comments) {
@@ -42,7 +42,7 @@ public class CommentsPage extends FormPage {
 		this.comments = comments;
 	}
 
-	public CommentsPage(FormEditor editor, Comments comments, CategorizedEntity model) {
+	public CommentsPage(FormEditor editor, Comments comments, RootEntity model) {
 		super(editor, "CommentsPage", M.Comments);
 		this.model = model;
 		this.comments = comments.getForRefId(model.refId);
@@ -102,7 +102,7 @@ public class CommentsPage extends FormPage {
 	private String getFullPath(Comment comment) {
 		if (model != null) // not needed
 			return null;
-		CategorizedDescriptor descriptor = getDescriptor(comment.type(), comment.refId());
+		var descriptor = getDescriptor(comment.type(), comment.refId());
 		Category category = getCategory(descriptor);
 		List<String> categories = Categories.path(category);
 		if (categories == null || categories.size() == 0)
@@ -110,11 +110,11 @@ public class CommentsPage extends FormPage {
 		return Strings.join(categories, '/') + "/" + descriptor.name;
 	}
 
-	private CategorizedDescriptor getDescriptor(ModelType type, String refId) {
-		return Daos.categorized(Database.get(), type).getDescriptorForRefId(refId);
+	private RootDescriptor getDescriptor(ModelType type, String refId) {
+		return Daos.root(Database.get(), type).getDescriptorForRefId(refId);
 	}
 
-	private Category getCategory(CategorizedDescriptor descriptor) {
+	private Category getCategory(RootDescriptor descriptor) {
 		if (descriptor.category == null)
 			return null;
 		return new CategoryDao(Database.get()).getForId(descriptor.category);

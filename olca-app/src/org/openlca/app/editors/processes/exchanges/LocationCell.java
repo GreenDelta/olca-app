@@ -11,7 +11,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 
 class LocationCell extends DialogCellEditor {
 
@@ -45,7 +44,7 @@ class LocationCell extends DialogCellEditor {
 		if (dialog.open() != Window.OK)
 			return null;
 
-		CategorizedDescriptor loc = dialog.first();
+		var loc = dialog.first();
 
 		// clear the location
 		if (loc == null) {

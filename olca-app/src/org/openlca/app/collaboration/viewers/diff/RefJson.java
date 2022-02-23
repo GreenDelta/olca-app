@@ -5,9 +5,9 @@ import org.openlca.app.collaboration.util.Json;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.core.database.Daos;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.RootEntity;
 import org.openlca.git.model.Reference;
 import org.openlca.jsonld.output.JsonExport;
 
@@ -18,7 +18,7 @@ import com.google.gson.JsonObject;
 class RefJson {
 
 	private static Gson gson = new Gson();
-	
+
 	static JsonObject get(Reference ref) {
 		if (ref.type == null || ref.refId == null)
 			return null;
@@ -45,10 +45,10 @@ class RefJson {
 		return json;
 	}
 
-	private static CategorizedEntity load(ModelType type, String refId) {
+	private static RootEntity load(ModelType type, String refId) {
 		if (type == null || refId == null)
 			return null;
-		return Daos.categorized(Database.get(), type).getForRefId(refId);
+		return Daos.root(Database.get(), type).getForRefId(refId);
 	}
 
 	private static void splitExchanges(JsonObject obj) {

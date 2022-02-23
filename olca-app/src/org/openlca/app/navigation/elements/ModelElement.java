@@ -4,11 +4,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.app.db.Cache;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
-public class ModelElement extends NavigationElement<CategorizedDescriptor> {
+public class ModelElement extends NavigationElement<RootDescriptor> {
 
-	public ModelElement(INavigationElement<?> parent, CategorizedDescriptor d) {
+	public ModelElement(INavigationElement<?> parent, RootDescriptor d) {
 		super(parent, d);
 	}
 

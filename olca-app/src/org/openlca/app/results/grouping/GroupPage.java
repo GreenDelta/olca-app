@@ -46,7 +46,6 @@ import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessGroup;
 import org.openlca.core.model.ProcessGroupSet;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.ProcessGrouping;
@@ -439,7 +438,7 @@ public class GroupPage extends FormPage {
 				ProcessGroup group = new ProcessGroup();
 				group.name = pageGroup.name;
 				groups.add(group);
-				for (CategorizedDescriptor p : pageGroup.processes)
+				for (var p : pageGroup.processes)
 					group.processIds.add(p.refId);
 			}
 			return groups;

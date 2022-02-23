@@ -32,7 +32,7 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
 public class ExchangeAddAction extends Action implements GraphAction {
@@ -197,11 +197,11 @@ public class ExchangeAddAction extends Action implements GraphAction {
 			});
 		}
 
-		private CategorizedDescriptor unwrap(ISelection s) {
+		private RootDescriptor unwrap(ISelection s) {
 			var obj = Selections.firstOf(s);
-			CategorizedDescriptor d = null;
-			if (obj instanceof CategorizedDescriptor) {
-				d = (CategorizedDescriptor) obj;
+			RootDescriptor d = null;
+			if (obj instanceof RootDescriptor) {
+				d = (RootDescriptor) obj;
 			} else if (obj instanceof ModelElement) {
 				d = ((ModelElement) obj).getContent();
 			}

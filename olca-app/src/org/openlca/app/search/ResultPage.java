@@ -26,9 +26,9 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
@@ -160,7 +160,7 @@ class ResultPage extends FormPage {
 	}
 
 	private void renderCategory(FormToolkit tk, Descriptor d, Composite comp) {
-		if (!(d instanceof CategorizedDescriptor cd))
+		if (!(d instanceof RootDescriptor cd))
 			return;
 		Long id = cd.category;
 		if (id == null)
@@ -208,13 +208,13 @@ class ResultPage extends FormPage {
 	private static class LinkClick extends HyperlinkAdapter {
 		@Override
 		public void linkActivated(HyperlinkEvent e) {
-			ImageHyperlink link = (ImageHyperlink) e.widget;
-			Object data = link.getData();
+			var link = (ImageHyperlink) e.widget;
+			var data = link.getData();
 			if (data instanceof CategoryDescriptor d) {
-				Category c = Cache.getEntityCache().get(Category.class, d.id);
+				var c = Cache.getEntityCache().get(Category.class, d.id);
 				Navigator.select(c);
-			} else if (data instanceof CategorizedDescriptor) {
-				App.open((CategorizedDescriptor) data);
+			} else if (data instanceof RootDescriptor d) {
+				App.open(d);
 			}
 		}
 	}

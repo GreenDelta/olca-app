@@ -21,8 +21,8 @@ import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 class BuildNextTierAction extends Action implements IBuildAction {
 
@@ -59,7 +59,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		if (nodes == null || nodes.isEmpty())
 			return;
 		ProductSystemNode systemNode = nodes.get(0).parent();
-		List<CategorizedDescriptor> providers = new ArrayList<>();
+		List<RootDescriptor> providers = new ArrayList<>();
 		List<ProcessLink> newConnections = new ArrayList<>();
 		for (ProcessNode node : nodes)
 			collectFor(node, providers, newConnections);
@@ -71,7 +71,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 	}
 
 	private void collectFor(ProcessNode node,
-		List<CategorizedDescriptor> providers, List<ProcessLink> newConnections) {
+		List<RootDescriptor> providers, List<ProcessLink> newConnections) {
 		for (var eNode : getLinkCandidates(node)) {
 			var provider = findProvider(eNode.exchange);
 			if (provider == null)
@@ -113,7 +113,7 @@ class BuildNextTierAction extends Action implements IBuildAction {
 		return nodes;
 	}
 
-	private CategorizedDescriptor findProvider(Exchange e) {
+	private RootDescriptor findProvider(Exchange e) {
 		if (e.flow == null)
 			return null;
 		if (providers == ProviderLinking.ONLY_DEFAULTS) {

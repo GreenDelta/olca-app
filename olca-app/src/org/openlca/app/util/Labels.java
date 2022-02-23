@@ -14,7 +14,6 @@ import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.AllocationMethod;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Flow;
@@ -28,14 +27,15 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.RefEntity;
 import org.openlca.core.model.RiskLevel;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -150,7 +150,7 @@ public class Labels {
 		return category(flow.flow());
 	}
 
-	public static String category(CategorizedEntity e) {
+	public static String category(RootEntity e) {
 		if (e == null || e.category == null)
 			return "";
 		return CategoryPath.getFull(e.category);
@@ -159,7 +159,7 @@ public class Labels {
 	/**
 	 * Returns the full category path of the given entity.
 	 */
-	public static String category(CategorizedDescriptor d) {
+	public static String category(RootDescriptor d) {
 		if (d == null || d.category == null)
 			return "";
 		Category c = Cache.getEntityCache().get(Category.class, d.category);
@@ -174,7 +174,7 @@ public class Labels {
 	 * category and the right value is the sub-category. Default values are
 	 * empty strings.
 	 */
-	public static Pair<String, String> getCategory(CategorizedDescriptor entity) {
+	public static Pair<String, String> getCategory(RootDescriptor entity) {
 		EntityCache cache = Cache.getEntityCache();
 		if (entity == null || entity.category == null)
 			return Pair.of("", "");
@@ -191,7 +191,7 @@ public class Labels {
 	 * Same as {@link #getCategory(CategorizedDescriptor)} but top-
 	 * and sub-category concatenated as a short string.
 	 */
-	public static String getShortCategory(CategorizedDescriptor entity) {
+	public static String getShortCategory(RootDescriptor entity) {
 		Pair<String, String> p = getCategory(entity);
 		if (Strings.nullOrEmpty(p.getLeft()) && Strings.nullOrEmpty(p.getRight()))
 			return "";

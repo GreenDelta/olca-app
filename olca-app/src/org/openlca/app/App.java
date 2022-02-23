@@ -22,9 +22,9 @@ import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.matrix.solvers.JavaSolver;
 import org.openlca.core.matrix.solvers.MatrixSolver;
-import org.openlca.core.model.CategorizedEntity;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.julia.Julia;
 import org.openlca.julia.JuliaSolver;
 import org.slf4j.Logger;
@@ -96,11 +96,11 @@ public class App {
 		return val.equals("true");
 	}
 
-	public static void open(CategorizedEntity model) {
+	public static void open(RootEntity model) {
 		open(Descriptor.of(model));
 	}
 
-	public static void open(CategorizedDescriptor d) {
+	public static void open(RootDescriptor d) {
 		// the model editor will try to load the thing from
 		// the database, thus the ID has to be >= 0 here
 		if (d == null || d.type == null || d.id <= 0) {
@@ -114,7 +114,7 @@ public class App {
 		Editors.open(input, editorId);
 	}
 
-	public static void close(CategorizedEntity entity) {
+	public static void close(RootEntity entity) {
 		close(Descriptor.of(entity));
 	}
 
@@ -129,7 +129,7 @@ public class App {
 	 * Returns true if the given data set is currently opened in an editor that
 	 * has a dirty (= unsaved) state.
 	 */
-	public static boolean hasDirtyEditor(CategorizedEntity e) {
+	public static boolean hasDirtyEditor(RootEntity e) {
 		if (e == null)
 			return false;
 		return hasDirtyEditor(Descriptor.of(e));

@@ -17,7 +17,7 @@ import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.maps.FlowMap;
 
 class ReplacerDialog extends FormDialog {
@@ -43,7 +43,7 @@ class ReplacerDialog extends FormDialog {
 
 	private final ReplacerConfig conf;
 	private ModelCheckBoxTree tree;
-	private List<CategorizedDescriptor> selection;
+	private List<RootDescriptor> selection;
 
 	private ReplacerDialog(ReplacerConfig conf) {
 		super(UI.shell());
@@ -72,9 +72,8 @@ class ReplacerDialog extends FormDialog {
 		tree.drawOn(comp, tk);
 		Button delete = tk.createButton(comp,
 				"Delete replaced and unused flows", SWT.CHECK);
-		Controls.onSelect(delete, _e -> {
-			conf.deleteMapped = delete.getSelection();
-		});
+		Controls.onSelect(delete,
+			_e -> conf.deleteMapped = delete.getSelection());
 	}
 
 	@Override

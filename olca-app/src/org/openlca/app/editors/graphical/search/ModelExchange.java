@@ -19,8 +19,8 @@ import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.matrix.index.LongPair;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ class ModelExchange {
 	final Exchange exchange;
 
 	/** The ID of the process to which this exchange belongs. */
-	final CategorizedDescriptor process;
+	final RootDescriptor process;
 
 	/**
 	 * Indicates whether this exchange is already connected. This is only relevant
@@ -94,7 +94,7 @@ class ModelExchange {
 
 		List<ProcessDescriptor> procs = new ProcessDao(db)
 				.getDescriptors(processIds);
-		Map<Long, CategorizedDescriptor> processes = new HashMap<>();
+		Map<Long, RootDescriptor> processes = new HashMap<>();
 		for (ProcessDescriptor p : procs) {
 			processes.put(p.id, p);
 		}
@@ -168,7 +168,7 @@ class ModelExchange {
 /** Contains the data of a possible connection candidate. */
 class Candidate implements Comparable<Candidate> {
 
-	final CategorizedDescriptor process;
+	final RootDescriptor process;
 	long exchangeId;
 	boolean processExists;
 
@@ -178,15 +178,14 @@ class Candidate implements Comparable<Candidate> {
 	boolean doConnect;
 	boolean doCreate;
 
-	Candidate(CategorizedDescriptor process) {
+	Candidate(RootDescriptor process) {
 		this.process = process;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof Candidate))
+		if (!(obj instanceof Candidate other))
 			return false;
-		Candidate other = (Candidate) obj;
 		if (other.process == null)
 			return process == null;
 		return Objects.equals(other.process, process)

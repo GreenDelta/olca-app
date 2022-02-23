@@ -32,7 +32,6 @@ import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.io.CategoryPath;
 
 class GeoFlowSection {
@@ -77,7 +76,7 @@ class GeoFlowSection {
 		if (page.setup == null)
 			return;
 		List<GeoFlowBinding> bindings = Viewers.getAllSelected(table);
-		if (bindings == null || bindings.isEmpty())
+		if (bindings.isEmpty())
 			return;
 		page.setup.bindings.removeAll(bindings);
 		table.setInput(page.setup.bindings);
@@ -90,7 +89,7 @@ class GeoFlowSection {
 		if (flows.isEmpty())
 			return;
 		var dao = new FlowDao(Database.get());
-		for (CategorizedDescriptor d : flows) {
+		for (var d : flows) {
 			boolean isPresent = false;
 			for (GeoFlowBinding b : page.setup.bindings) {
 				if (b.flow == null)
@@ -136,7 +135,7 @@ class GeoFlowSection {
 		var locDao = new LocationDao(Database.get());
 		var locations = locs.stream()
 				.map(d -> locDao.getForId(d.id))
-				.filter(loc -> loc != null)
+				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 
 		var calc = new GeoFactorCalculator(
@@ -174,9 +173,8 @@ class GeoFlowSection {
 		});
 
 		editor.onEdited((obj, formula) -> {
-			if (!(obj instanceof GeoFlowBinding))
+			if (!(obj instanceof GeoFlowBinding binding))
 				return;
-			var binding = (GeoFlowBinding) obj;
 			binding.formula = formula;
 			table.refresh();
 		});
@@ -187,31 +185,23 @@ class GeoFlowSection {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-
-			if (!(obj instanceof GeoFlowBinding))
+			if (!(obj instanceof GeoFlowBinding b))
 				return null;
-			GeoFlowBinding b = (GeoFlowBinding) obj;
 			if (b.flow == null)
 				return null;
-
-			switch (col) {
-			case 0:
-				return Images.get(b.flow);
-			case 1:
-				return Images.get(b.flow.category);
-			case 2:
-				return Icon.EDIT.get();
-			default:
-				return null;
-			}
+			return switch (col) {
+				case 0 -> Images.get(b.flow);
+				case 1 -> Images.get(b.flow.category);
+				case 2 -> Icon.EDIT.get();
+				default -> null;
+			};
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
 
-			if (!(obj instanceof GeoFlowBinding))
+			if (!(obj instanceof GeoFlowBinding b))
 				return null;
-			GeoFlowBinding b = (GeoFlowBinding) obj;
 			if (b.flow == null)
 				return null;
 

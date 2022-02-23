@@ -10,7 +10,7 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 class GraphDropListener extends DropTargetAdapter {
 
@@ -43,12 +43,12 @@ class GraphDropListener extends DropTargetAdapter {
 		var added = new AtomicBoolean(false);
 		ModelTransfer.getDescriptors(e.data)
 				.stream()
-				.filter(d -> d instanceof CategorizedDescriptor
+				.filter(d -> d instanceof RootDescriptor
 						&& !system.processes.contains(d.id)
 						&& (d.type == ModelType.PROCESS
 						|| d.type == ModelType.PRODUCT_SYSTEM
 						|| d.type == ModelType.RESULT))
-				.map(d -> (CategorizedDescriptor) d)
+				.map(d -> (RootDescriptor) d)
 				.map(d -> {
 					system.processes.add(d.id);
 					var node = new ProcessNode(editor, d);

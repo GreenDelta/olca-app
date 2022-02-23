@@ -36,7 +36,7 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 		});
 
 		// models without category
-		var dao = Daos.categorized(Database.get(), type);
+		var dao = Daos.root(Database.get(), type);
 		if (dao == null)
 			return list;
 		for (var d : dao.getDescriptors(Optional.empty())) {

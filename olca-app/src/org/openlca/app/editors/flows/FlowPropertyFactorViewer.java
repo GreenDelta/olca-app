@@ -1,6 +1,5 @@
 package org.openlca.app.editors.flows;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -33,7 +32,6 @@ import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 
 class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
@@ -55,8 +53,8 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 			getModifySupport()
 					.bind(M.ConversionFactor, new ConversionModifier())
 					.bind(M.IsReference, new ReferenceModifier())
-					.bind("", new CommentDialogModifier<FlowPropertyFactor>(
-							editor.getComments(), CommentPaths::get));
+					.bind("", new CommentDialogModifier<>(
+						editor.getComments(), CommentPaths::get));
 		}
 	}
 
@@ -130,24 +128,22 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	protected void onRemove() {
 		if (!editor.isEditable())
 			return;
-		FlowPropertyFactor fac = getSelected();
-		if (fac == null)
+		var factor = getSelected();
+		if (factor == null)
 			return;
 		Flow flow = editor.getModel();
-		if (fac.equals(flow.getReferenceFactor())) {
+		if (factor.equals(flow.getReferenceFactor())) {
 			MsgBox.error(M.CannotDeleteReferenceFlowProperty,
 					M.ReferenceFlowPropertyCannotBeDeleted);
 			return;
 		}
-		FlowPropertyFactorUseSearch search = new FlowPropertyFactorUseSearch(
-				flow, Database.get());
-		List<CategorizedDescriptor> list = search.findUses(fac);
+		var search = new FlowPropertyFactorUseSearch(flow, Database.get());
+		var list = search.findUses(factor);
 		if (!list.isEmpty()) {
-			MsgBox.error(M.CannotDeleteFlowProperty,
-					M.FlowPropertyIsUsed);
+			MsgBox.error(M.CannotDeleteFlowProperty, M.FlowPropertyIsUsed);
 			return;
 		}
-		flow.flowPropertyFactors.remove(fac);
+		flow.flowPropertyFactors.remove(factor);
 		setInput(flow.flowPropertyFactors);
 		editor.setDirty(true);
 	}
@@ -183,26 +179,25 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof FlowPropertyFactor))
+			if (!(obj instanceof FlowPropertyFactor factor))
 				return null;
-			FlowPropertyFactor f = (FlowPropertyFactor) obj;
 			switch (col) {
 			case 0:
-				if (f.flowProperty == null)
+				if (factor.flowProperty == null)
 					return null;
-				return f.flowProperty.name;
+				return factor.flowProperty.name;
 			case 1:
-				return Double.toString(f.conversionFactor);
+				return Double.toString(factor.conversionFactor);
 			case 2:
-				if (f.flowProperty == null)
+				if (factor.flowProperty == null)
 					return null;
-				if (f.flowProperty.unitGroup == null)
+				if (factor.flowProperty.unitGroup == null)
 					return null;
-				if (f.flowProperty.unitGroup.referenceUnit == null)
+				if (factor.flowProperty.unitGroup.referenceUnit == null)
 					return null;
-				return f.flowProperty.unitGroup.referenceUnit.name;
+				return factor.flowProperty.unitGroup.referenceUnit.name;
 			case 3:
-				return getFormula(f);
+				return getFormula(factor);
 			default:
 				return null;
 			}
@@ -216,7 +211,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 			if (unit == null || refUnit == null)
 				return null;
 			return "1.0 " + refUnit.name
-					+ " = " + Double.toString(f.conversionFactor)
+					+ " = " + f.conversionFactor
 					+ " " + unit.name;
 		}
 
@@ -274,9 +269,8 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 				return;
 			flow.referenceFlowProperty = element.flowProperty;
 			double f = element.conversionFactor;
-			for (FlowPropertyFactor fpFactor : flow.flowPropertyFactors) {
-				double factor = fpFactor.conversionFactor / f;
-				fpFactor.conversionFactor = factor;
+			for (var fpFactor : flow.flowPropertyFactors) {
+				fpFactor.conversionFactor = fpFactor.conversionFactor / f;
 			}
 			editor.setDirty(true);
 		}

@@ -27,7 +27,6 @@ import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.core.model.CategorizedEntity;
 
 public class Editors {
 
@@ -42,7 +41,7 @@ public class Editors {
 	public static void addRefresh(ScrolledForm form, ModelEditor<?> editor) {
 		if (form == null || editor == null)
 			return;
-		CategorizedEntity model = editor.getModel();
+		var model = editor.getModel();
 		Action refresh = Actions.create(M.Reload, Icon.REFRESH.descriptor(),
 			() -> {
 				App.close(model);

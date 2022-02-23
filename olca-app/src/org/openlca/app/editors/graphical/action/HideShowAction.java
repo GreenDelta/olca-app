@@ -9,7 +9,7 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.command.Commands;
 import org.openlca.app.editors.graphical.command.HideShowCommand;
 import org.openlca.app.editors.graphical.outline.ProcessTreeEditPart;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 class HideShowAction extends Action {
 
@@ -39,9 +39,8 @@ class HideShowAction extends Action {
 			return;
 		Command command = null;
 		for (Object o : ((StructuredSelection) viewer.getSelection()).toArray()) {
-			if (!(o instanceof ProcessTreeEditPart))
+			if (!(o instanceof ProcessTreeEditPart part))
 				continue;
-			ProcessTreeEditPart part = (ProcessTreeEditPart) o;
 			command = Commands.chain(createCommand(part.getModel()), command);
 		}
 		if (command == null)
@@ -49,7 +48,7 @@ class HideShowAction extends Action {
 		editor.getCommandStack().execute(command);
 	}
 
-	private Command createCommand(CategorizedDescriptor process) {
+	private Command createCommand(RootDescriptor process) {
 		if (type == SHOW)
 			return HideShowCommand.show(editor.getModel(), process);
 		if (type == HIDE)

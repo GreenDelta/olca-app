@@ -22,7 +22,7 @@ import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.SimpleResult;
 
 public class DQInfoSection {
@@ -81,8 +81,8 @@ public class DQInfoSection {
 			if (!(parent instanceof DQIndicator) && !forProcesses)
 				return null;
 			List<Object> children = new ArrayList<>();
-			for (CategorizedDescriptor p : result.getProcesses()) {
-				children.add(new Tupel(p, (DQIndicator) parent));
+			for (RootDescriptor p : result.getProcesses()) {
+				children.add(new Tuple(p, (DQIndicator) parent));
 			}
 			return children.toArray();
 		}
@@ -120,7 +120,7 @@ public class DQInfoSection {
 		public String getColumnText(Object element, int columnIndex) {
 			if (element instanceof DQIndicator)
 				return getText((DQIndicator) element, columnIndex);
-			return getText((Tupel) element, columnIndex);
+			return getText((Tuple) element, columnIndex);
 		}
 
 		private String getText(DQIndicator indicator, int col) {
@@ -143,7 +143,7 @@ public class DQInfoSection {
 			}
 		}
 
-		private String getText(Tupel value, int col) {
+		private String getText(Tuple value, int col) {
 			switch (col) {
 			case 0:
 				return value.process.name;
@@ -164,17 +164,7 @@ public class DQInfoSection {
 		}
 	}
 
-	private class Tupel {
-
-		final CategorizedDescriptor process;
-		final DQIndicator indicator;
-
-		private Tupel(CategorizedDescriptor process,
-				DQIndicator indicator) {
-			this.process = process;
-			this.indicator = indicator;
-		}
-
+	private record Tuple(RootDescriptor process, DQIndicator indicator) {
 	}
 
 }

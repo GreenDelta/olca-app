@@ -15,9 +15,9 @@ import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.Unit;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 // TODO: add null checks?
 public class CommentPaths {
@@ -95,7 +95,7 @@ public class CommentPaths {
 		return get(indicator) + "." + get(score);
 	}
 
-	public static String get(ParameterRedef redef, CategorizedDescriptor contextElement) {
+	public static String get(ParameterRedef redef, RootDescriptor contextElement) {
 		String context = contextElement != null ? contextElement.refId : "global";
 		return "parameterRedefs[" + context + "-" + redef.name + "]";
 	}
@@ -104,7 +104,7 @@ public class CommentPaths {
 		return "variants[" + variant.productSystem.refId + "-" + variant.name + "]";
 	}
 
-	public static String get(ProjectVariant variant, ParameterRedef redef, CategorizedDescriptor contextElement) {
+	public static String get(ProjectVariant variant, ParameterRedef redef, RootDescriptor contextElement) {
 		return get(variant) + "." + get(redef, contextElement);
 	}
 }

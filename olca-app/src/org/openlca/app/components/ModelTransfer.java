@@ -9,7 +9,6 @@ import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ActorDescriptor;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.CurrencyDescriptor;
 import org.openlca.core.model.descriptors.DQSystemDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
@@ -23,6 +22,7 @@ import org.openlca.core.model.descriptors.ParameterDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.ProjectDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.model.descriptors.SocialIndicatorDescriptor;
 import org.openlca.core.model.descriptors.SourceDescriptor;
 import org.openlca.core.model.descriptors.UnitDescriptor;
@@ -64,8 +64,7 @@ public final class ModelTransfer extends ByteArrayTransfer {
 	public static Descriptor getDescriptor(Object data) {
 		if (data instanceof Descriptor)
 			return (Descriptor) data;
-		if (data instanceof Object[]) {
-			Object[] objects = (Object[]) data;
+		if (data instanceof Object[] objects) {
 			if (objects.length > 0 && (objects[0] instanceof Descriptor))
 				return (Descriptor) objects[0];
 		}
@@ -80,8 +79,7 @@ public final class ModelTransfer extends ByteArrayTransfer {
 	public static List<Descriptor> getDescriptors(Object data) {
 		if (data instanceof Descriptor)
 			return Collections.singletonList((Descriptor) data);
-		if (data instanceof Object[]) {
-			Object[] objects = (Object[]) data;
+		if (data instanceof Object[] objects) {
 			ArrayList<Descriptor> descriptors = new ArrayList<>();
 			for (Object object : objects) {
 				if (object instanceof Descriptor)
@@ -115,9 +113,8 @@ public final class ModelTransfer extends ByteArrayTransfer {
 		if (!isSupportedType(data))
 			return new Object[0];
 		Object o = super.nativeToJava(data);
-		if (!(o instanceof byte[]))
+		if (!(o instanceof byte[] bytes))
 			return new Object[0];
-		byte[] bytes = (byte[]) o;
 		try {
 			Gson gson = new Gson();
 			String json = new String(bytes, StandardCharsets.UTF_8);
@@ -143,56 +140,35 @@ public final class ModelTransfer extends ByteArrayTransfer {
 		if (typeElem == null || !typeElem.isJsonPrimitive())
 			return null;
 		ModelType type = ModelType.valueOf(typeElem.getAsString());
-		switch (type) {
-		case ACTOR:
-			return gson.fromJson(e, ActorDescriptor.class);
-		case CATEGORY:
-			return gson.fromJson(e, CategorizedDescriptor.class);
-		case CURRENCY:
-			return gson.fromJson(e, CurrencyDescriptor.class);
-		case DQ_SYSTEM:
-			return gson.fromJson(e, DQSystemDescriptor.class);
-		case FLOW:
-			return gson.fromJson(e, FlowDescriptor.class);
-		case FLOW_PROPERTY:
-			return gson.fromJson(e, FlowPropertyDescriptor.class);
-		case IMPACT_CATEGORY:
-			return gson.fromJson(e, ImpactDescriptor.class);
-		case IMPACT_METHOD:
-			return gson.fromJson(e, ImpactMethodDescriptor.class);
-		case LOCATION:
-			return gson.fromJson(e, LocationDescriptor.class);
-		case NW_SET:
-			return gson.fromJson(e, NwSetDescriptor.class);
-		case PARAMETER:
-			return gson.fromJson(e, ParameterDescriptor.class);
-		case PROCESS:
-			return gson.fromJson(e, ProcessDescriptor.class);
-		case PRODUCT_SYSTEM:
-			return gson.fromJson(e, ProductSystemDescriptor.class);
-		case PROJECT:
-			return gson.fromJson(e, ProjectDescriptor.class);
-		case SOCIAL_INDICATOR:
-			return gson.fromJson(e, SocialIndicatorDescriptor.class);
-		case SOURCE:
-			return gson.fromJson(e, SourceDescriptor.class);
-		case UNIT:
-			return gson.fromJson(e, UnitDescriptor.class);
-		case UNIT_GROUP:
-			return gson.fromJson(e, UnitGroupDescriptor.class);
-		default:
-			if (type.isCategorized())
-				return gson.fromJson(e, CategorizedDescriptor.class);
-			else
-				return gson.fromJson(e, Descriptor.class);
-		}
+		return switch (type) {
+			case ACTOR -> gson.fromJson(e, ActorDescriptor.class);
+			case CATEGORY -> gson.fromJson(e, RootDescriptor.class);
+			case CURRENCY -> gson.fromJson(e, CurrencyDescriptor.class);
+			case DQ_SYSTEM -> gson.fromJson(e, DQSystemDescriptor.class);
+			case FLOW -> gson.fromJson(e, FlowDescriptor.class);
+			case FLOW_PROPERTY -> gson.fromJson(e, FlowPropertyDescriptor.class);
+			case IMPACT_CATEGORY -> gson.fromJson(e, ImpactDescriptor.class);
+			case IMPACT_METHOD -> gson.fromJson(e, ImpactMethodDescriptor.class);
+			case LOCATION -> gson.fromJson(e, LocationDescriptor.class);
+			case NW_SET -> gson.fromJson(e, NwSetDescriptor.class);
+			case PARAMETER -> gson.fromJson(e, ParameterDescriptor.class);
+			case PROCESS -> gson.fromJson(e, ProcessDescriptor.class);
+			case PRODUCT_SYSTEM -> gson.fromJson(e, ProductSystemDescriptor.class);
+			case PROJECT -> gson.fromJson(e, ProjectDescriptor.class);
+			case SOCIAL_INDICATOR -> gson.fromJson(e, SocialIndicatorDescriptor.class);
+			case SOURCE -> gson.fromJson(e, SourceDescriptor.class);
+			case UNIT -> gson.fromJson(e, UnitDescriptor.class);
+			case UNIT_GROUP -> gson.fromJson(e, UnitGroupDescriptor.class);
+			default -> type.isRoot()
+				? gson.fromJson(e, RootDescriptor.class)
+				: gson.fromJson(e, Descriptor.class);
+		};
 	}
 
 	@Override
 	protected boolean validate(Object object) {
-		if (!(object instanceof Object[]))
+		if (!(object instanceof Object[] data))
 			return false;
-		Object[] data = (Object[]) object;
 		for (Object d : data) {
 			if (!(d instanceof Descriptor))
 				return false;

@@ -20,8 +20,8 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
-import org.openlca.core.model.CategorizedEntity;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
 
 class ChartLegend {
@@ -57,15 +57,15 @@ class ChartLegend {
 	}
 
 	private void element(String text, Object model, int colorIndex) {
-		if (model instanceof CategorizedDescriptor || model instanceof CategorizedEntity) {
+		if (model instanceof RootDescriptor || model instanceof RootEntity) {
 			ImageHyperlink link = new ImageHyperlink(composite, SWT.TOP);
 			link.setText(text);
 			link.setImage(getImage(colorIndex));
 			Controls.onClick(link, (e) -> {
-				if (model instanceof CategorizedDescriptor) {
-					App.open((CategorizedDescriptor) model);
-				} else if (model instanceof CategorizedEntity) {
-					App.open((CategorizedEntity) model);
+				if (model instanceof RootDescriptor) {
+					App.open((RootDescriptor) model);
+				} else if (model instanceof RootEntity) {
+					App.open((RootEntity) model);
 				}
 			});
 			createdLinks.push(link);

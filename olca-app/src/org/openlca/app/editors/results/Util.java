@@ -6,14 +6,14 @@ import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.Result;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 class Util {
 
 	private Util() {
 	}
 
-	static boolean canAddImpact(Result result, CategorizedDescriptor impact) {
+	static boolean canAddImpact(Result result, RootDescriptor impact) {
 		if (result == null || impact == null)
 			return false;
 
@@ -34,7 +34,7 @@ class Util {
 		return false;
 	}
 
-	static boolean addImpact(Result result, CategorizedDescriptor d) {
+	static boolean addImpact(Result result, RootDescriptor d) {
 		var db = Database.get();
 		if (db == null || result == null || d == null)
 			return false;
@@ -47,7 +47,7 @@ class Util {
 		return result.impactResults.add(ri);
 	}
 
-	static boolean addFlow(Result r, CategorizedDescriptor d, boolean input) {
+	static boolean addFlow(Result r, RootDescriptor d, boolean input) {
 		var db = Database.get();
 		if (db == null || r == null || d == null)
 			return false;

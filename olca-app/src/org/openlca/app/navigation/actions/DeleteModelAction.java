@@ -27,10 +27,10 @@ import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.IUseSearch;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 		boolean dontAsk = false;
 		showInUseMessage = true;
 		for (ModelElement element : models) {
-			CategorizedDescriptor descriptor = element.getContent();
+			var descriptor = element.getContent();
 			if (descriptor == null)
 				continue;
 			String name = Labels.name(descriptor);
@@ -136,10 +136,9 @@ class DeleteModelAction extends Action implements INavigationAction {
 		categories.clear();
 	}
 
-	private boolean isUsed(CategorizedDescriptor d) {
-		IUseSearch<CategorizedDescriptor> search = IUseSearch.FACTORY
-				.createFor(d.type, Database.get());
-		List<CategorizedDescriptor> descriptors = search.findUses(d);
+	private boolean isUsed(RootDescriptor d) {
+		var search = IUseSearch.FACTORY.createFor(d.type, Database.get());
+		var descriptors = search.findUses(d);
 		if (descriptors.isEmpty())
 			return false;
 		if (showInUseMessage) {
@@ -152,7 +151,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends CategorizedEntity> void delete(Descriptor d) {
+	private <T extends RootEntity> void delete(Descriptor d) {
 		try {
 			log.trace("delete model {}", d);
 			IDatabase database = Database.get();
@@ -177,7 +176,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 					canBeDeleted = false;
 				}
 			} else if (child instanceof ModelElement) {
-				CategorizedDescriptor descriptor = ((ModelElement) child).getContent();
+				var descriptor = ((ModelElement) child).getContent();
 				if (isUsed(descriptor)) {
 					canBeDeleted = false;
 					continue;

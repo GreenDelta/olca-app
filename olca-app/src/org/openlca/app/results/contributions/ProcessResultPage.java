@@ -33,10 +33,10 @@ import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.CalculationSetup;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.FullResult;
 
 /**
@@ -76,7 +76,7 @@ public class ProcessResultPage extends FormPage {
 		super(editor, ProcessResultPage.class.getName(), M.ProcessResults);
 		this.result = result;
 		this.setup = setup;
-		for (CategorizedDescriptor desc : result.getProcesses()) {
+		for (var desc : result.getProcesses()) {
 			if (desc instanceof ProcessDescriptor) {
 				processes.put(desc.id, (ProcessDescriptor) desc);
 			}
@@ -332,7 +332,7 @@ public class ProcessResultPage extends FormPage {
 	private static class ResultProvider {
 
 		private final FullResult result;
-		private CategorizedDescriptor process;
+		private RootDescriptor process;
 
 		public ResultProvider(FullResult result) {
 			this.process = result.techIndex().getRefFlow().provider();

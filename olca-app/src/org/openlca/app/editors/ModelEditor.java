@@ -30,8 +30,8 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.EntityCache;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Version;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ import com.google.common.base.Objects;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-public abstract class ModelEditor<T extends CategorizedEntity>
+public abstract class ModelEditor<T extends RootEntity>
 		extends FormEditor {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());

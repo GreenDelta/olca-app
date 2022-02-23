@@ -14,22 +14,22 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 
 import com.google.common.base.Objects;
 import org.openlca.core.model.descriptors.ResultDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 public class ProcessNode extends Node {
 
-	public final CategorizedDescriptor process;
+	public final RootDescriptor process;
 	public final List<Link> links = new ArrayList<>();
 	private Rectangle box;
 	private boolean minimized = true;
 	private boolean marked = false;
 
-	public ProcessNode(GraphEditor editor, CategorizedDescriptor d) {
+	public ProcessNode(GraphEditor editor, RootDescriptor d) {
 		super(editor);
 		this.process = d;
 	}
@@ -41,7 +41,7 @@ public class ProcessNode extends Node {
 	 */
 	public static ProcessNode create(GraphEditor editor, long id) {
 		var cache = Cache.getEntityCache();
-		CategorizedDescriptor d = cache.get(ProcessDescriptor.class, id);
+		RootDescriptor d = cache.get(ProcessDescriptor.class, id);
 		if (d == null) {
 			d = cache.get(ProductSystemDescriptor.class, id);
 		}
@@ -49,8 +49,8 @@ public class ProcessNode extends Node {
 			d = cache.get(ResultDescriptor.class, id);
 		}
 		return d != null
-				? new ProcessNode(editor, d)
-				: null;
+			? new ProcessNode(editor, d)
+			: null;
 	}
 
 	public boolean isWasteProcess() {
@@ -181,12 +181,12 @@ public class ProcessNode extends Node {
 		for (ExchangeNode n : getExchangeNodes()) {
 			Exchange e = n.exchange;
 			if (e == null || e.isInput ||
-					e.flow == null || e.flow.id != link.flowId)
+				e.flow == null || e.flow.id != link.flowId)
 				continue;
 			if (type == FlowType.PRODUCT_FLOW)
 				return n;
 			if (type == FlowType.WASTE_FLOW
-					&& e.id == link.exchangeId)
+				&& e.id == link.exchangeId)
 				return n;
 		}
 		return null;
@@ -201,10 +201,10 @@ public class ProcessNode extends Node {
 		for (ExchangeNode n : getExchangeNodes()) {
 			Exchange e = n.exchange;
 			if (e == null || !e.isInput ||
-					e.flow == null || e.flow.id != link.flowId)
+				e.flow == null || e.flow.id != link.flowId)
 				continue;
 			if (type == FlowType.PRODUCT_FLOW
-					&& e.id == link.exchangeId)
+				&& e.id == link.exchangeId)
 				return n;
 			if (type == FlowType.WASTE_FLOW)
 				return n;
@@ -241,8 +241,8 @@ public class ProcessNode extends Node {
 
 	public int getMinimumHeight() {
 		return isMinimized()
-				? ProcessFigure.MINIMUM_HEIGHT
-				: figure().getMinimumHeight();
+			? ProcessFigure.MINIMUM_HEIGHT
+			: figure().getMinimumHeight();
 	}
 
 	public int getMinimumWidth() {
@@ -316,9 +316,8 @@ public class ProcessNode extends Node {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof ProcessNode))
+		if (!(obj instanceof ProcessNode other))
 			return false;
-		ProcessNode other = (ProcessNode) obj;
 		return Objects.equal(process, other.process);
 	}
 
@@ -330,10 +329,10 @@ public class ProcessNode extends Node {
 	@Override
 	public String toString() {
 		String id = process != null
-				? Long.toString(process.id)
-				: "null";
+			? Long.toString(process.id)
+			: "null";
 		return "ProcessNode [ id =" + id + " name = "
-				+ Labels.name(process) + " ]";
+			+ Labels.name(process) + " ]";
 	}
 
 }

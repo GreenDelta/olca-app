@@ -114,7 +114,7 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 		var db = Database.get();
 		if (db == null || category.modelType == null)
 			return false;
-		var dao = Daos.categorized(db, category.modelType);
+		var dao = Daos.root(db, category.modelType);
 		if (dao == null)
 			return false;
 		return dao.getDescriptors(Optional.of(category))

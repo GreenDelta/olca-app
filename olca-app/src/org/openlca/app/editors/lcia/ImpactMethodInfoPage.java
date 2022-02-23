@@ -35,7 +35,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.NwFactor;
 import org.openlca.core.model.NwSet;
 import org.openlca.core.model.Source;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.util.Strings;
 
 class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
@@ -115,8 +114,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 	private void onAdd() {
 		ImpactMethod method = editor.getModel();
-		CategorizedDescriptor d = ModelSelector.select(
-			ModelType.IMPACT_CATEGORY);
+		var d = ModelSelector.select(ModelType.IMPACT_CATEGORY);
 		if (d == null)
 			return;
 		ImpactCategoryDao dao = new ImpactCategoryDao(Database.get());

@@ -49,7 +49,7 @@ public class CategoryElement extends NavigationElement<Category> {
 		}
 
 		// models in this category
-		var dao = Daos.categorized(Database.get(), category.modelType);
+		var dao = Daos.root(Database.get(), category.modelType);
 		if (dao == null)
 			return list;
 		for (var d : dao.getDescriptors(Optional.of(category))) {

@@ -9,7 +9,7 @@ import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 
 import org.openlca.app.util.Labels;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Pair;
 import org.openlca.util.Strings;
 
@@ -22,7 +22,7 @@ class Contribution {
 	 * The process or product system of the result contribution. This is
 	 * {@code null} when this is the "rest" ("others") contribution.
 	 */
-	final CategorizedDescriptor process;
+	final RootDescriptor process;
 
 	/**
 	 * The amount of the result contribution.
@@ -36,7 +36,7 @@ class Contribution {
 	 */
 	final boolean isRest;
 
-	Contribution(CategorizedDescriptor process, double amount) {
+	Contribution(RootDescriptor process, double amount) {
 		this.process = process;
 		this.amount = amount;
 		this.isRest = process == null;

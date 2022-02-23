@@ -18,7 +18,7 @@ import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 public class ConnectionDialog extends Dialog {
 
@@ -81,8 +81,8 @@ public class ConnectionDialog extends Dialog {
 		return exchange.canConnect(c, candidates);
 	}
 
-	public List<CategorizedDescriptor> getNewProcesses() {
-		List<CategorizedDescriptor> processes = new ArrayList<>();
+	public List<RootDescriptor> getNewProcesses() {
+		List<RootDescriptor> processes = new ArrayList<>();
 		for (Candidate c : candidates) {
 			if (c.doCreate) {
 				processes.add(c.process);

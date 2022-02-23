@@ -39,7 +39,7 @@ import org.openlca.app.tools.libraries.LibraryInfoPage;
 import org.openlca.app.util.Colors;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 import com.google.common.base.Objects;
 
@@ -265,7 +265,7 @@ public class Navigator extends CommonNavigator {
 		return Viewers.getAllSelected(getNavigationViewer());
 	}
 
-	public static Set<CategorizedDescriptor> collectDescriptors(
+	public static Set<RootDescriptor> collectDescriptors(
 			Collection<INavigationElement<?>> elements) {
 		return collect(elements, e -> {
 			if (!(e instanceof ModelElement))

@@ -12,13 +12,12 @@ import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
-import org.openlca.core.database.CategorizedEntityDao;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -191,7 +190,7 @@ public class CopyPaste {
 	}
 
 	private static void copy(ModelElement element, INavigationElement<?> categoryElement) {
-		CategorizedEntity copy = copy(element);
+		RootEntity copy = copy(element);
 		if (copy == null)
 			return;
 		copy.category = getCategory(categoryElement);
@@ -238,10 +237,10 @@ public class CopyPaste {
 	}
 
 	private static void move(ModelElement element, INavigationElement<?> categoryElement) {
-		CategorizedDescriptor entity = element.getContent();
+		RootDescriptor entity = element.getContent();
 		Category category = getCategory(categoryElement);
 		Optional<Category> parent = Optional.ofNullable(category);
-		Daos.categorized(Database.get(), entity.type).updateCategory(entity, parent);
+		Daos.root(Database.get(), entity.type).updateCategory(entity, parent);
 	}
 
 	private static void copy(CategoryElement element, INavigationElement<?> category) {
@@ -263,7 +262,7 @@ public class CopyPaste {
 				if (child instanceof CategoryElement)
 					elements.add((CategoryElement) child);
 				else {
-					CategorizedEntity modelCopy = copy((ModelElement) child);
+					RootEntity modelCopy = copy((ModelElement) child);
 					modelCopy.category = copy;
 					insert(modelCopy);
 				}
@@ -271,19 +270,19 @@ public class CopyPaste {
 		}
 	}
 
-	private static CategorizedEntity copy(ModelElement element) {
-		CategorizedDescriptor descriptor = element.getContent();
-		CategorizedEntityDao<?, ?> dao = Daos.categorized(Database.get(), descriptor.type);
-		CategorizedEntity entity = dao.getForId(descriptor.id);
-		CategorizedEntity copy = cloneIt(entity);
+	private static RootEntity copy(ModelElement element) {
+		var descriptor = element.getContent();
+		var dao = Daos.root(Database.get(), descriptor.type);
+		var entity = dao.getForId(descriptor.id);
+		var copy = cloneIt(entity);
 		if (copy != null)
 			copy.name = copy.name + " (copy)";
 		return copy;
 	}
 
-	private static CategorizedEntity cloneIt(CategorizedEntity entity) {
+	private static RootEntity cloneIt(RootEntity entity) {
 		try {
-			CategorizedEntity clone = (CategorizedEntity) entity.copy();
+			RootEntity clone = (RootEntity) entity.copy();
 			DatabaseDir.copyDir(entity, clone);
 			return clone;
 		} catch (Exception e) {
@@ -294,7 +293,7 @@ public class CopyPaste {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T extends CategorizedEntity> void insert(T entity) {
+	private static <T extends RootEntity> void insert(T entity) {
 		Class<T> clazz = (Class<T>) entity.getClass();
 		Daos.base(Database.get(), clazz).insert(entity);
 	}

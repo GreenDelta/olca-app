@@ -41,7 +41,7 @@ public class DiffNodeBuilder {
 	private void build(DiffResult result) {
 		if (nodes.containsKey(getKey(result)))
 			return;
-		if (!result.ref().type.isCategorized())
+		if (!result.ref().type.isRoot())
 			return;
 		if (result.noAction())
 			return;

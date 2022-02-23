@@ -26,7 +26,7 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.validation.Item;
 
 public class ValidationResultView extends SimpleFormEditor {
@@ -83,11 +83,11 @@ public class ValidationResultView extends SimpleFormEditor {
 				var e = Viewers.getFirstSelected(table);
 				if (!(e instanceof Item item))
 					return;
-				if (item.model() instanceof CategorizedDescriptor d) {
+				if (item.model() instanceof RootDescriptor d) {
 					if (d.type != null
 						&& d.type != ModelType.CATEGORY
-						&& d.type.isCategorized()) {
-						App.open((CategorizedDescriptor) item.model());
+						&& d.type.isRoot()) {
+						App.open((RootDescriptor) item.model());
 					}
 				}
 			});

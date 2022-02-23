@@ -17,7 +17,7 @@ public class RefLabels {
 	public static String getName(Reference ref) {
 		// TODO optimize
 		if (ObjectIds.nullOrZero(ref.objectId)) {
-			return Daos.categorized(Database.get(), ref.type).getDescriptorForRefId(ref.refId).name;
+			return Daos.root(Database.get(), ref.type).getDescriptorForRefId(ref.refId).name;
 		}
 		return Repository.get().datasets.getName(ref.objectId);
 	}

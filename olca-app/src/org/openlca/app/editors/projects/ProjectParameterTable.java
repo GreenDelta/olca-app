@@ -42,8 +42,8 @@ import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
 class ProjectParameterTable {
@@ -157,10 +157,10 @@ class ProjectParameterTable {
 		}
 	}
 
-	private CategorizedDescriptor getContext(ParameterRedef p) {
+	private RootDescriptor getContext(ParameterRedef p) {
 		if (p.contextId == null)
 			return null;
-		return Daos.categorized(Database.get(), p.contextType)
+		return Daos.root(Database.get(), p.contextType)
 			.getDescriptor(p.contextId);
 	}
 

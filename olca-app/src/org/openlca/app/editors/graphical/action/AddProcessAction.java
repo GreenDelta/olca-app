@@ -32,8 +32,8 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.descriptors.CategorizedDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
 public class AddProcessAction extends Action implements GraphAction {
@@ -119,11 +119,11 @@ public class AddProcessAction extends Action implements GraphAction {
 			});
 		}
 
-		private CategorizedDescriptor unwrap(ISelection s) {
+		private RootDescriptor unwrap(ISelection s) {
 			var obj = Selections.firstOf(s);
-			CategorizedDescriptor d = null;
-			if (obj instanceof CategorizedDescriptor) {
-				d = (CategorizedDescriptor) obj;
+			RootDescriptor d = null;
+			if (obj instanceof RootDescriptor) {
+				d = (RootDescriptor) obj;
 			} else if (obj instanceof ModelElement) {
 				d = ((ModelElement) obj).getContent();
 			}
@@ -159,11 +159,11 @@ public class AddProcessAction extends Action implements GraphAction {
 			// select existing
 			if (button == _SELECT) {
 				var obj = Viewers.getFirstSelected(tree);
-				if (!(obj instanceof CategorizedDescriptor)) {
+				if (!(obj instanceof RootDescriptor)) {
 					cancelPressed();
 					return;
 				}
-				addProcess((CategorizedDescriptor) obj);
+				addProcess((RootDescriptor) obj);
 				return;
 			}
 
@@ -185,7 +185,7 @@ public class AddProcessAction extends Action implements GraphAction {
 			}
 		}
 
-		private void addProcess(CategorizedDescriptor d) {
+		private void addProcess(RootDescriptor d) {
 			if (d.type != ModelType.PROCESS
 					&& d.type != ModelType.PRODUCT_SYSTEM) {
 				return;

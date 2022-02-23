@@ -20,10 +20,10 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Version;
@@ -97,7 +97,7 @@ class ValueEditor {
 		return true;
 	}
 
-	private CategorizedEntity getOwner() {
+	private RootEntity getOwner() {
 		if (param.owner == null)
 			return null;
 		if (param.owner.type == ModelType.PROCESS)
@@ -107,7 +107,7 @@ class ValueEditor {
 		return null;
 	}
 
-	private <T extends CategorizedEntity> T update(T e) {
+	private <T extends RootEntity> T update(T e) {
 		if (e == null)
 			return null;
 		e.lastChange = Calendar.getInstance().getTimeInMillis();
