@@ -200,7 +200,7 @@ class DeleteModelAction extends Action implements INavigationAction {
 				dao.update(parent);
 			}
 			dao.delete(category);
-			Cache.getPathCache().remove(category.id);
+			Cache.evict(Descriptor.of(category));
 			return true;
 		} catch (Exception e) {
 			ErrorReporter.on("failed to delete category " + category, e);

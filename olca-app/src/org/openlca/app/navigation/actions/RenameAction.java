@@ -25,6 +25,7 @@ import org.openlca.core.model.CategorizedEntity;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.CategorizedDescriptor;
+import org.openlca.core.model.descriptors.Descriptor;
 
 class RenameAction extends Action implements INavigationAction {
 
@@ -87,7 +88,7 @@ class RenameAction extends Action implements INavigationAction {
 		try {
 			category.name = newName.trim();
 			category = new CategoryDao(Database.get()).update(category);
-			Cache.getPathCache().update(category);
+			Cache.evict(Descriptor.of(category));
 			Navigator.refresh(element);
 		} catch (final Exception e) {
 			ErrorReporter.on("Failed to update category", e);

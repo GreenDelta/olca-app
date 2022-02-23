@@ -6,7 +6,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.CategoryElement;
@@ -67,7 +66,6 @@ class CreateCategoryAction extends Action implements INavigationAction {
 			// we have to refresh the category starting from it's root
 			// otherwise the object model is out of sync.
 			var element = Navigator.findElement(category.modelType);
-			Cache.getPathCache().update(category);
 			Navigator.refresh(element);
 			Navigator.select(category);
 		} catch (Exception e) {

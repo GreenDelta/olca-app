@@ -115,8 +115,8 @@ public final class Cache {
 		clazz = d.type.getModelClass();
 		log.trace("evict from entity cache {} with id={}", clazz, id);
 		entityCache.invalidate(clazz, id);
-		if (pathCache != null && d.type == ModelType.CATEGORY) {
-			pathCache.remove(d.id);
+		if (d.type == ModelType.CATEGORY) {
+			pathCache = null;
 		}
 	}
 
