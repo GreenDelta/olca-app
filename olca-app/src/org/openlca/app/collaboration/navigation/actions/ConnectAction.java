@@ -3,6 +3,7 @@ package org.openlca.app.collaboration.navigation.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.api.RepositoryConfig;
 import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.db.Database;
@@ -18,7 +19,7 @@ public class ConnectAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "Connect...";
+		return M.Connect + "...";
 	}
 
 	@Override

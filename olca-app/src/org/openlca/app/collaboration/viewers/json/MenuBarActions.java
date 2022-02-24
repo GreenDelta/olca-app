@@ -129,8 +129,8 @@ class MenuBarActions {
 				return;
 		}
 		var element = leftToRight
-				? node.originalElement
-				: node.remoteElement;
+				? node.original
+				: node.right;
 		node.setValue(element, leftToRight);
 		getDependent(node).forEach(d -> applyTo(d, leftToRight));
 	}

@@ -1,5 +1,6 @@
 package org.openlca.app.collaboration.viewers.diff;
 
+import java.time.Instant;
 import java.util.Collection;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -10,14 +11,21 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.collaboration.dialogs.JsonDiffDialog;
+import org.openlca.app.collaboration.util.ConflictResolutionMap;
 import org.openlca.app.collaboration.util.RefLabels;
+import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
+import org.openlca.app.collaboration.viewers.json.olca.ModelNodeBuilder;
 import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Version;
+import org.openlca.git.actions.ConflictResolver.ConflictResolution;
+import org.openlca.git.actions.ConflictResolver.ConflictResolutionType;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Reference;
@@ -25,13 +33,14 @@ import org.openlca.git.model.Reference;
 abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	DiffNode root;
-	private final boolean viewMode;
+	private final boolean editMode;
 	private Direction direction;
 	private Runnable onMerge;
+	private ConflictResolutionMap resolvedConflicts = new ConflictResolutionMap();
 
-	DiffNodeViewer(Composite parent, boolean viewMode) {
+	DiffNodeViewer(Composite parent, boolean editMode) {
 		super(parent);
-		this.viewMode = viewMode;
+		this.editMode = editMode;
 		getViewer().setLabelProvider(new DiffNodeLabelProvider());
 	}
 
@@ -58,25 +67,57 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		super.setInput(input);
 	}
 
+	public void setDirection(Direction direction) {
+		this.direction = direction;
+	}
+
 	public void setOnMerge(Runnable onMerge) {
 		this.onMerge = onMerge;
 	}
 
-	public void setDirection(Direction direction) {
-		this.direction = direction;
+	public ConflictResolutionMap getResolvedConflicts() {
+		return resolvedConflicts;
 	}
 
 	private void onDoubleClick(DoubleClickEvent event) {
 		var selected = getSelected(event);
 		if (selected == null)
 			return;
-		var merged = JsonDiff.openDialog(selected, direction, viewMode);
-		if (merged) {
-			getViewer().refresh(selected);
+		var diff = selected.contentAsDiffResult();
+		var node = createNode(diff);
+		var dialogResult = JsonDiffDialog.open(node, direction, editMode);
+		if (editMode && dialogResult != JsonDiffDialog.CANCEL) {
+			var ref = diff.diff().ref();
+			var resolution = toResolution(node, dialogResult);
+			resolvedConflicts.put(ref, resolution);
 			if (onMerge != null) {
 				onMerge.run();
 			}
+			getViewer().refresh(selected);
 		}
+	}
+
+	private ConflictResolution toResolution(JsonNode node, int dialogResult) {
+		if (dialogResult == JsonDiffDialog.OVERWRITE_LOCAL || node.hasEqualValues())
+			return ConflictResolution.overwriteLocal();
+		if (dialogResult == JsonDiffDialog.KEEP_LOCAL_MODEL || node.leftEqualsOriginal())
+			return ConflictResolution.keepLocal();
+		var merged = node.left.getAsJsonObject();
+		Version version = Version.fromString(node.right.getAsJsonObject().get("version").getAsString());
+		version.incUpdate();
+		merged.addProperty("version", Version.asString(version.getValue()));
+		merged.addProperty("lastChange", Instant.now().toString());
+		return ConflictResolution.merge(merged);
+	}
+
+	private JsonNode createNode(DiffResult diff) {
+		if (diff == null)
+			return null;
+		var left = diff.local != null ? diff.local.right : diff.remote.left;
+		var right = diff.remote != null ? diff.remote.right : diff.local.left;
+		var leftJson = left != null ? RefJson.get(left) : null;
+		var rightJson = right != null ? RefJson.get(right) : null;
+		return new ModelNodeBuilder().build(leftJson, rightJson);
 	}
 
 	private DiffNode getSelected(DoubleClickEvent event) {
@@ -176,7 +217,8 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		private Overlay getOverlay(DiffResult diff) {
 			if (diff.noAction())
 				return null;
-			if (diff.merged())
+			var ref = diff.ref();
+			if (resolvedConflicts.contains(ref))
 				return getOverlayMerged(diff);
 			return getOverlay(diff.local, diff.remote);
 		}
@@ -216,7 +258,8 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		}
 
 		private Overlay getOverlayMerged(DiffResult result) {
-			if (!result.overwriteLocalChanges)
+			var resolution = resolvedConflicts.get(result.ref());
+			if (resolution != null && resolution.type != ConflictResolutionType.OVERWRITE_LOCAL)
 				return Overlay.MERGED;
 			if (result.remote.type == DiffType.DELETED)
 				return Overlay.DELETE_FROM_LOCAL;

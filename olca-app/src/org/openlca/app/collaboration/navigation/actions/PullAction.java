@@ -7,7 +7,9 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -21,7 +23,7 @@ public class PullAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "Pull...";
+		return M.Pull + "...";
 	}
 
 	@Override
@@ -31,6 +33,7 @@ public class PullAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
+		Database.getWorkspaceIdUpdater().disable();
 		try {
 			var newCommits = Actions.run(GitFetch
 					.from(Repository.get().git)
@@ -38,16 +41,24 @@ public class PullAction extends Action implements INavigationAction {
 			if (!newCommits.isEmpty()) {
 				new HistoryDialog("Fetched commits", newCommits).open();
 			}
+			var conflictResolutionMap = Conflicts.solve();
+			if (conflictResolutionMap == null)
+				return;
 			var imported = GitMerge
 					.from(Repository.get().git)
 					.into(Database.get())
 					.update(Repository.get().workspaceIds)
+					.resolveConflictsWith(conflictResolutionMap)
 					.run();
 			if (imported.isEmpty()) {
 				MsgBox.info("No commits to fetch - Everything up to date");
 			}
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error pulling data", e);
+		} finally {
+			Database.getWorkspaceIdUpdater().enable();
+			Cache.evictAll();
+			Actions.refresh();
 		}
 	}
 

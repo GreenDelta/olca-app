@@ -7,17 +7,21 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.util.Json;
 import org.openlca.app.collaboration.viewers.json.JsonDiffViewer;
 import org.openlca.app.collaboration.viewers.json.content.IDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.label.IJsonNodeLabelProvider;
+import org.openlca.app.collaboration.viewers.json.olca.ModelDependencyResolver;
+import org.openlca.app.collaboration.viewers.json.olca.ModelLabelProvider;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 
 public class JsonDiffDialog extends FormDialog {
 
 	public final static int KEEP_LOCAL_MODEL = 2;
-	public final static int FETCH_REMOTE_MODEL = 3;
+	public final static int OVERWRITE_LOCAL = 3;
 	private final JsonNode root;
 	private final boolean editMode;
 	private final Direction direction;
@@ -27,12 +31,15 @@ public class JsonDiffDialog extends FormDialog {
 	private String title;
 	private Image logo;
 
-	public static JsonDiffDialog forEditing(JsonNode root, Direction direction) {
-		return new JsonDiffDialog(root, direction, true);
-	}
-
-	public static JsonDiffDialog forViewing(JsonNode root, Direction direction) {
-		return new JsonDiffDialog(root, direction, false);
+	public static int open(JsonNode node, Direction direction, boolean editMode) {
+		if (node == null)
+			return IDialogConstants.CANCEL_ID;
+		var dialog = new JsonDiffDialog(node, direction, editMode);
+		dialog.setTitle(Json.getName(node.element()));
+		dialog.setLogo(Images.get(Json.getModelType(node.element())));
+		dialog.setDependencyResolver(ModelDependencyResolver.INSTANCE);
+		dialog.setLabelProvider(new ModelLabelProvider());
+		return dialog.open();
 	}
 
 	private JsonDiffDialog(JsonNode root, Direction direction, boolean editMode) {
@@ -68,18 +75,18 @@ public class JsonDiffDialog extends FormDialog {
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		var hasLeft = root.localElement != null;
-		var hasRight = root.remoteElement != null;
+		var hasLeft = root.left != null;
+		var hasRight = root.right != null;
 		if (!editMode) {
 			createButton(parent, IDialogConstants.OK_ID, M.Close, true);
 		} else if (hasLeft && hasRight) {
 			createButton(parent, IDialogConstants.OK_ID, M.MarkAsMerged, true);
 		} else if (hasRight) {
 			createButton(parent, KEEP_LOCAL_MODEL, M.KeepModelDeleted, true);
-			createButton(parent, FETCH_REMOTE_MODEL, M.FetchRemoteModel, false);
+			createButton(parent, OVERWRITE_LOCAL, M.FetchRemoteModel, false);
 		} else {
 			createButton(parent, KEEP_LOCAL_MODEL, M.KeepLocalModel, false);
-			createButton(parent, FETCH_REMOTE_MODEL, M.DeleteLocalModel, true);
+			createButton(parent, OVERWRITE_LOCAL, M.DeleteLocalModel, true);
 		}
 	}
 
@@ -104,14 +111,10 @@ public class JsonDiffDialog extends FormDialog {
 		this.labelProvider = labelProvider;
 	}
 
-	public boolean leftDiffersFromRight() {
-		return !viewer.leftDiffersFromRight();
-	}
-
 	@Override
 	protected void buttonPressed(int buttonId) {
 		super.buttonPressed(buttonId);
-		if (buttonId == KEEP_LOCAL_MODEL || buttonId == FETCH_REMOTE_MODEL) {
+		if (buttonId == KEEP_LOCAL_MODEL || buttonId == OVERWRITE_LOCAL) {
 			setReturnCode(buttonId);
 			close();
 		}

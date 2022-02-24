@@ -4,15 +4,10 @@ import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Reference;
 
-import com.google.gson.JsonObject;
-
 public class DiffResult {
 
 	public final Diff remote;
 	public final Diff local;
-	public JsonObject mergedData;
-	public boolean overwriteLocalChanges;
-	public boolean overwriteRemoteChanges;
 
 	public DiffResult(Diff local, Diff remote) {
 		this.local = local;
@@ -49,16 +44,6 @@ public class DiffResult {
 			return remote.type != DiffType.DELETED;
 		}
 		return false;
-	}
-
-	public boolean merged() {
-		return mergedData != null || overwriteLocalChanges || overwriteRemoteChanges;
-	}
-
-	void reset() {
-		overwriteLocalChanges = false;
-		overwriteRemoteChanges = false;
-		mergedData = null;
 	}
 
 }

@@ -2,11 +2,10 @@ package org.openlca.app.collaboration.util;
 
 import java.util.HashSet;
 import java.util.Map.Entry;
-
-import org.openlca.core.model.ModelType;
-
 import java.util.Set;
 import java.util.Stack;
+
+import org.openlca.core.model.ModelType;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -263,6 +262,17 @@ public class Json {
 			if (mType != ModelType.UNKNOWN && mType.getModelClass().getSimpleName().equals(type.getAsString()))
 				return mType;
 		return null;
+	}
+
+	public static String getName(JsonElement element) {
+		if (element == null)
+			return null;
+		if (!element.isJsonObject())
+			return null;
+		var name = element.getAsJsonObject().get("name");
+		if (name == null)
+			return null;
+		return name.getAsString();
 	}
 
 	public static boolean isJsonObject(JsonElement element) {

@@ -11,16 +11,18 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.util.ConflictResolutionMap;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.FetchViewer;
 import org.openlca.app.util.UI;
+import org.openlca.git.actions.ConflictResolver.ConflictResolution;
 
 public class FetchDialog extends FormDialog {
 
 	private DiffNode rootNode;
 	private FetchViewer viewer;
-	private static final int DISCARD_LOCAL_CHANGES = 2;
-	private static final int OVERWRITE_REMOTE_CHANGES = 3;
+	private static final int OVERWRITE_LOCAL = 2;
+	private static final int KEEP_LOCAL = 3;
 
 	public FetchDialog(DiffNode rootNode) {
 		super(UI.shell());
@@ -58,44 +60,36 @@ public class FetchDialog extends FormDialog {
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, DISCARD_LOCAL_CHANGES, M.DiscardLocalChanges, false);
-		createButton(parent, OVERWRITE_REMOTE_CHANGES, M.OverwriteRemoteChanges, false);
+		createButton(parent, OVERWRITE_LOCAL, M.DiscardLocalChanges, false);
+		createButton(parent, KEEP_LOCAL, M.OverwriteRemoteChanges, false);
 		super.createButtonsForButtonBar(parent);
 	}
 
 	@Override
 	protected void buttonPressed(int buttonId) {
-		if (buttonId == DISCARD_LOCAL_CHANGES) {
-			discardLocalChanges();
-		} else if (buttonId == OVERWRITE_REMOTE_CHANGES) {
-			overwriteRemoteChanges();
+		if (buttonId == OVERWRITE_LOCAL) {
+			solveAll(ConflictResolution.overwriteLocal());
+		} else if (buttonId == KEEP_LOCAL) {
+			solveAll(ConflictResolution.keepLocal());
 		} else {
 			super.buttonPressed(buttonId);
 		}
 	}
-	
-	private void discardLocalChanges() {
-		for (DiffNode node : viewer.getConflicts()) {
-			node.contentAsDiffResult().mergedData = null;
-			node.contentAsDiffResult().overwriteRemoteChanges = false;
-			node.contentAsDiffResult().overwriteLocalChanges = true;
-		}
-		viewer.refresh();
-		getButton(OK).setEnabled(true);
-		getButton(DISCARD_LOCAL_CHANGES).setEnabled(false);
-		getButton(OVERWRITE_REMOTE_CHANGES).setEnabled(false);
+
+	public ConflictResolutionMap getResolvedConflicts() {
+		return viewer.getResolvedConflicts();
 	}
-	
-	private void overwriteRemoteChanges() {
+
+	private void solveAll(ConflictResolution resolution) {
+		viewer.getResolvedConflicts().clear();
 		for (DiffNode node : viewer.getConflicts()) {
-			node.contentAsDiffResult().mergedData = null;
-			node.contentAsDiffResult().overwriteLocalChanges = false;
-			node.contentAsDiffResult().overwriteRemoteChanges = true;
+			var ref = node.contentAsDiffResult().ref();
+			viewer.getResolvedConflicts().put(ref, resolution);
 		}
 		viewer.refresh();
 		getButton(OK).setEnabled(true);
-		getButton(DISCARD_LOCAL_CHANGES).setEnabled(false);
-		getButton(OVERWRITE_REMOTE_CHANGES).setEnabled(false);
+		getButton(OVERWRITE_LOCAL).setEnabled(false);
+		getButton(KEEP_LOCAL).setEnabled(false);
 	}
 
 }

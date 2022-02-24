@@ -1,11 +1,17 @@
 package org.openlca.app.collaboration.navigation.actions;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
+import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.collaboration.dialogs.LibraryRestrictionDialog;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
@@ -18,6 +24,7 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitCommit;
+import org.openlca.git.actions.GitPush;
 import org.openlca.git.model.Diff;
 import org.openlca.git.util.DiffEntries;
 
@@ -27,7 +34,7 @@ public class CommitAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "Commit...";
+		return M.Commit + "...";
 	}
 
 	@Override
@@ -39,10 +46,13 @@ public class CommitAction extends Action implements INavigationAction {
 	public void run() {
 		try {
 			var diffs = getWorkspaceDiffs();
-			var input = getCommitInput(diffs);
-			if (input == null)
+			var dialog = createCommitDialog(diffs);
+			if (dialog == null)
 				return;
-			var withReferences = new ReferenceCheck(Database.get()).run(input.getSelected(), diffs);
+			var dialogResult = dialog.open();
+			if (dialogResult == CommitDialog.CANCEL)
+				return;
+			var withReferences = new ReferenceCheck(Database.get()).run(dialog.getSelected(), diffs);
 			if (withReferences == null)
 				return;
 			if (!checkLibraries(withReferences))
@@ -50,15 +60,28 @@ public class CommitAction extends Action implements INavigationAction {
 			var toCommit = withReferences.stream()
 					.map(r -> r.local)
 					.toList();
-			GitCommit
+			GitCommit.from(Database.get())
 					.to(Repository.get().git)
 					.diffs(toCommit)
-					.withMessage(input.getMessage())
+					.withMessage(dialog.getMessage())
 					.as(Repository.get().personIdent())
 					.update(Repository.get().workspaceIds)
 					.run();
-		} catch (IOException e) {
+			if (dialogResult != CommitDialog.COMMIT_AND_PUSH)
+				return;
+			var result = Actions.run(GitPush
+					.to(Repository.get().git)
+					.authorizeWith(Actions.credentialsProvider()));
+			if (result.status() == Status.REJECTED_NONFASTFORWARD) {
+				MsgBox.error("Rejected - Not up to date - Please merge remote changes to continue");
+			} else {
+				Collections.reverse(result.newCommits());
+				new HistoryDialog("Pushed commits", result.newCommits()).open();
+			}
+		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during commit", e);
+		} finally {
+			Actions.refresh();
 		}
 	}
 
@@ -70,7 +93,7 @@ public class CommitAction extends Action implements INavigationAction {
 				.toList();
 	}
 
-	private CommitDialog getCommitInput(List<Diff> diffs) {
+	private CommitDialog createCommitDialog(List<Diff> diffs) {
 		var differences = diffs.stream()
 				.map(d -> new DiffResult(d, null))
 				.toList();
@@ -81,8 +104,6 @@ public class CommitAction extends Action implements INavigationAction {
 		}
 		var dialog = new CommitDialog(node);
 		dialog.setInitialSelection(selection);
-		if (dialog.open() != CommitDialog.OK)
-			return null;
 		return dialog;
 	}
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
@@ -18,7 +19,7 @@ public class MergeAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "Merge...";
+		return M.Merge + "...";
 	}
 
 	@Override
@@ -31,10 +32,14 @@ public class MergeAction extends Action implements INavigationAction {
 		Database.getWorkspaceIdUpdater().disable();
 		var workspaceIds = Repository.get().workspaceIds;
 		try {
+			var conflictResolutionMap = Conflicts.solve();
+			if (conflictResolutionMap == null)
+				return;
 			var imported = GitMerge
 					.from(Repository.get().git)
 					.into(Database.get())
 					.update(workspaceIds)
+					.resolveConflictsWith(conflictResolutionMap)
 					.run();
 			if (imported.isEmpty()) {
 				MsgBox.info("No changes to merge");

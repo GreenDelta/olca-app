@@ -8,6 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -20,7 +21,7 @@ public class PushAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "Push";
+		return M.Push;
 	}
 
 	@Override
