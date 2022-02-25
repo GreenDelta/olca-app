@@ -38,9 +38,6 @@ import org.openlca.proto.io.input.CalculationSetupReader as CalculationSetupRead
 import org.openlca.core.model.CalculationType as CalculationType
 import org.openlca.ipc.handlers.Calculator as Calculator
 import org.openlca.util.Categories as Categories
-import org.openlca.core.model.descriptors.CategorizedDescriptor as CategorizedDescriptor
-import org.openlca.core.model.CategorizedEntity as CategorizedEntity
-import org.openlca.core.database.CategorizedEntityDao as CategorizedEntityDao
 import org.openlca.core.model.Category as Category
 import org.openlca.core.database.CategoryDao as CategoryDao
 import org.openlca.core.model.descriptors.CategoryDescriptor as CategoryDescriptor
@@ -55,7 +52,6 @@ import org.openlca.io.simapro.csv.Compartment as Compartment
 import org.openlca.text.CompartmentStemmer as CompartmentStemmer
 import org.openlca.core.matrix.format.CompressedRowMatrix as CompressedRowMatrix
 import org.openlca.io.ilcd.input.ContactImport as ContactImport
-import org.openlca.jsonld.output.Context as Context
 import org.openlca.core.results.Contribution as Contribution
 import org.openlca.core.results.ContributionResult as ContributionResult
 import org.openlca.core.results.Contributions as Contributions
@@ -372,6 +368,8 @@ import org.openlca.core.matrix.linking.ProviderSearch as ProviderSearch
 import org.openlca.core.database.Query as Query
 import org.openlca.io.refdata.RefDataExport as RefDataExport
 import org.openlca.io.refdata.RefDataImport as RefDataImport
+import org.openlca.core.model.RefEntity as RefEntity
+import org.openlca.core.database.RefEntityDao as RefEntityDao
 import org.openlca.util.RefIdMap as RefIdMap
 import org.openlca.core.database.references.Reference as Reference
 import org.openlca.core.math.ReferenceAmount as ReferenceAmount
@@ -389,6 +387,7 @@ import org.openlca.core.results.providers.ResultModelProvider as ResultModelProv
 import org.openlca.core.results.providers.ResultProviders as ResultProviders
 import org.openlca.util.Results as Results
 import org.openlca.core.model.RiskLevel as RiskLevel
+import org.openlca.core.model.descriptors.RootDescriptor as RootDescriptor
 import org.openlca.core.model.RootEntity as RootEntity
 import org.openlca.core.database.RootEntityDao as RootEntityDao
 import org.openlca.ipc.RpcError as RpcError
