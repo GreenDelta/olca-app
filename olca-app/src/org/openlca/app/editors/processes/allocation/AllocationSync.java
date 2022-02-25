@@ -109,15 +109,15 @@ class AllocationSync {
 		double totalAmount = 0;
 		for (Exchange product : products) {
 			double refAmount = getRefAmount(product);
-			double amount = 0;
+			double absAmount = 0;
 			if (commonProp != null) {
 				Flow flow = product.flow;
 				FlowPropertyFactor factor = flow.getFactor(commonProp);
 				if (factor != null)
-					amount = refAmount * factor.conversionFactor;
+					absAmount = Math.abs(refAmount * factor.conversionFactor);
 			}
-			totalAmount += amount;
-			factors.add(new F(product, amount));
+			totalAmount += absAmount;
+			factors.add(new F(product, absAmount));
 		}
 		if (totalAmount == 0)
 			return factors;
