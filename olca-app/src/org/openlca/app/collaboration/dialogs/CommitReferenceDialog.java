@@ -13,7 +13,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.util.ModelTypeRefIdMap;
+import org.openlca.app.collaboration.util.TypeRefIdSet;
 import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffResult;
@@ -50,7 +50,7 @@ public class CommitReferenceDialog extends FormDialog {
 		form.reflow(true);
 		viewer.setInput(Collections.singleton(node));
 		var initialSelection = getNewElements(node);
-		var map = new ModelTypeRefIdMap(initialSelection);
+		var map = new TypeRefIdSet(initialSelection);
 		viewer.setSelection(map);
 	}
 

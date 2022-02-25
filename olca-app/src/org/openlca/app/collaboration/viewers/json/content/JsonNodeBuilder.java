@@ -22,7 +22,7 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 	}
 
 	public JsonNode build(JsonElement leftJson, JsonElement rightJson) {
-		var node = JsonNode.create(null, null, leftJson, rightJson, elementFinder, false);
+		var node = JsonNode.createEditable(null, null, leftJson, rightJson, elementFinder);
 		build(node, leftJson, rightJson);
 		sort(node);
 		return node;
@@ -100,8 +100,9 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 			var left = side == Side.LOCAL ? value : otherValue;
 			var right = side == Side.LOCAL ? otherValue : value;
 			var property = Integer.toString(counter++);
-			var readOnly = isReadOnly(node);
-			var childNode = JsonNode.create(node, property, left, right, elementFinder, readOnly);
+			var childNode = isReadOnly(node)
+					? JsonNode.createReadOnly(node, property, left, right, elementFinder)
+					: JsonNode.createEditable(node, property, left, right, elementFinder);
 			build(childNode, left, right);
 			node.children.add(childNode);
 		}
@@ -110,8 +111,9 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 	private JsonNode build(JsonNode parent, String property, JsonElement leftValue, JsonElement rightValue) {
 		if (skip(parent, property))
 			return null;
-		var readOnly = isReadOnly(parent);
-		var childNode = JsonNode.create(parent, property, leftValue, rightValue, elementFinder, readOnly);
+		var childNode = isReadOnly(parent)
+				? JsonNode.createReadOnly(parent, property, leftValue, rightValue, elementFinder)
+				: JsonNode.createEditable(parent, property, leftValue, rightValue, elementFinder);
 		parent.children.add(childNode);
 		build(childNode, leftValue, rightValue);
 		return childNode;

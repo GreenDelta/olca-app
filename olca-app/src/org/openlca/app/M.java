@@ -117,6 +117,7 @@ public class M extends NLS {
 	public static String Comment;
 	public static String Comments;
 	public static String Commit;
+	public static String CommitAndPush;
 	public static String CommitChangesToRepository;
 	public static String CommitDate;
 	public static String CommitError;
@@ -258,7 +259,7 @@ public class M extends NLS {
 	public static String Direction;
 	public static String Disabled;
 	public static String DiscardLocalChanges;
-	public static String DisconnectFromRepository;
+	public static String Disconnect;
 	public static String Display;
 	public static String DontShowSmallerThen;
 	public static String DoNotShowThisMessageAgain;
@@ -509,6 +510,7 @@ public class M extends NLS {
 	public static String MediumRisk;
 	public static String MemoryToHighMessage;
 	public static String MemoryToLowMessage;
+	public static String Merge;
 	public static String Message;
 	public static String Methods;
 	public static String MinimalTree;
@@ -691,6 +693,8 @@ public class M extends NLS {
 	public static String Provider;
 	public static String Providers;
 	public static String Publication;
+	public static String Pull;
+	public static String Push;
 	public static String QuantitativeReference;
 	public static String Quantity;
 	public static String QuickResults;

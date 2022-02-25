@@ -11,7 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.openlca.app.collaboration.util.ModelTypeRefIdMap;
+import org.openlca.app.collaboration.util.TypeRefIdSet;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.DiffType;
@@ -35,7 +35,7 @@ public class CommitViewer extends DiffNodeViewer {
 		throw new UnsupportedOperationException("Can't change commit direction");
 	}
 
-	public void setSelection(ModelTypeRefIdMap initialSelection) {
+	public void setSelection(TypeRefIdSet initialSelection) {
 		selected = findNodes(initialSelection, root);
 		Set<String> expanded = new HashSet<>();
 		Tree tree = getViewer().getTree();
@@ -57,7 +57,7 @@ public class CommitViewer extends DiffNodeViewer {
 	// can't use setChecked(Object[]) for performance reasons. Original method
 	// reveals path internally for all elements, which is unnecessary because
 	// this is already done in a more efficient way in setInitialSelection
-	private void setChecked(ModelTypeRefIdMap models, TreeItem[] items) {
+	private void setChecked(TypeRefIdSet models, TreeItem[] items) {
 		for (TreeItem item : items) {
 			DiffNode node = (DiffNode) item.getData();
 			if (node != null && node.isModelNode()) {
@@ -74,7 +74,7 @@ public class CommitViewer extends DiffNodeViewer {
 		setSelection(null);
 	}
 
-	private List<DiffNode> findNodes(ModelTypeRefIdMap models, DiffNode node) {
+	private List<DiffNode> findNodes(TypeRefIdSet models, DiffNode node) {
 		List<DiffNode> elements = new ArrayList<>();
 		for (DiffNode child : node.children) {
 			if (child.isModelNode() && child.hasChanged()) {

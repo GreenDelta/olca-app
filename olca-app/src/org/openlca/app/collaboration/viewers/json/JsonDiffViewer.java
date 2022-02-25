@@ -46,7 +46,7 @@ public class JsonDiffViewer extends Composite {
 	public void initialize(IJsonNodeLabelProvider labelProvider, IDependencyResolver dependencyResolver) {
 		UI.gridLayout(this, 1, 0, 0);
 		MenuBar menu = null;
-		if (editMode && root != null && root.localElement != null && root.remoteElement != null) {
+		if (editMode && root != null && root.left != null && root.right != null) {
 			menu = new MenuBar(this, root);
 		}
 		createTreeParts(labelProvider);
@@ -98,10 +98,6 @@ public class JsonDiffViewer extends Composite {
 		UI.gridData(composite, true, true);
 		UI.formLabel(composite, toolkit, label);
 		return new JsonViewer(composite, side, direction);
-	}
-
-	public boolean leftDiffersFromRight() {
-		return root.hasEqualValues();
 	}
 
 }
