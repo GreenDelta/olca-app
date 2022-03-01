@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -22,6 +23,7 @@ import org.openlca.app.tools.openepd.model.Ec3Pcr;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
@@ -48,6 +50,7 @@ public class ImportDialog extends FormDialog {
 	private final FlowResult product;
 	private String categoryPath;
 	private final List<ModuleSection> sections = new ArrayList<>();
+	private final AtomicBoolean mappingChanged = new AtomicBoolean(false);
 
 	public static int show(Ec3Epd doc) {
 		if (doc == null)
@@ -74,6 +77,10 @@ public class ImportDialog extends FormDialog {
 		this.mapping = ImportMapping.init(epdDoc, db);
 		categoryPath = Util.categoryOf(epdDoc);
 		product = Util.initQuantitativeReference(epdDoc, db);
+	}
+
+	void setMappingChanged() {
+		mappingChanged.set(true);
 	}
 
 	@Override
@@ -141,6 +148,15 @@ public class ImportDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
+
+		if (mappingChanged.get()) {
+			boolean b = Question.ask("Save indicator mappings?",
+				"Should the assigned mapping codes of the LCIA" +
+					" methods and indicators be saved in the database?");
+			if (b) {
+				mapping.persistIn(db);
+			}
+		}
 
 		// create the reference product
 		var productFlow = createProduct();

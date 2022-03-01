@@ -119,7 +119,7 @@ record ImportMapping(
 		mappings.add(new IndicatorMapping(key, impact));
 	}
 
-	void persist(IDatabase db) {
+	void persistIn(IDatabase db) {
 		var persisted = new HashMap<String, MethodMapping>();
 		var updatedMethods = new TLongObjectHashMap<ImpactMethod>();
 		var updatedIndicators = new TLongObjectHashMap<ImpactCategory>();

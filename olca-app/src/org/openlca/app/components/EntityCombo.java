@@ -20,18 +20,13 @@ import org.openlca.util.Strings;
  * entities to the respective combo box items and simplifies
  * a bit the selection handling.
  */
-public class EntityCombo<T> {
+public record EntityCombo<T>(Combo combo, List<T> entities,
+														 Function<T, String> label) {
 
-	private final Combo combo;
-	private final List<T> entities;
-	private final Function<T, String> label;
-
-	public EntityCombo(
-		Combo combo, List<T> entities, Function<T, String> label) {
+	public EntityCombo(Combo combo, List<T> entities, Function<T, String> label) {
 		this.combo = combo;
 		this.entities = new ArrayList<>(entities);
-		this.label = Objects.requireNonNullElse(
-			label, Objects::toString);
+		this.label = Objects.requireNonNullElse(label, Objects::toString);
 		fillItems();
 	}
 
@@ -41,7 +36,7 @@ public class EntityCombo<T> {
 		List<T> all = dao == null
 			? Collections.emptyList()
 			: dao.getAll();
-		return new EntityCombo<T>(combo, all, Labels::name);
+		return new EntityCombo<>(combo, all, Labels::name);
 	}
 
 	public static <T extends RefEntity> EntityCombo<T> of(
