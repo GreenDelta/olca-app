@@ -47,8 +47,7 @@ class Jython {
 			}
 
 		} catch (Exception e) {
-			var log = LoggerFactory.getLogger(Jython.class);
-			log.error("failed execute script", e);
+			ErrorReporter.on("failed execute script", e);
 		}
 	}
 
@@ -99,8 +98,7 @@ class Jython {
 			}
 			Files.writeString(versionFile.toPath(), App.getVersion());
 		} catch (Exception e) {
-			var log = LoggerFactory.getLogger(Jython.class);
-			log.error("failed to initialize Python folder " + pyDir, e);
+			ErrorReporter.on("failed to initialize Python folder " + pyDir, e);
 		}
 	}
 

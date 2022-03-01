@@ -28,7 +28,6 @@ import org.openlca.core.matrix.format.CSCByteMatrix as CSCByteMatrix
 import org.openlca.core.matrix.format.CSCMatrix as CSCMatrix
 import org.openlca.ipc.Cache as Cache
 import org.openlca.ipc.handlers.CacheHandler as CacheHandler
-import org.openlca.core.io.CachedDbEntityResolver as CachedDbEntityResolver
 import org.openlca.core.matrix.CalcAllocationFactor as CalcAllocationFactor
 import org.openlca.core.matrix.CalcExchange as CalcExchange
 import org.openlca.core.matrix.CalcImpactFactor as CalcImpactFactor
@@ -45,6 +44,7 @@ import org.openlca.io.CategoryPair as CategoryPair
 import org.openlca.io.CategoryPath as CategoryPath
 import org.openlca.jsonld.input.CategoryReader as CategoryReader
 import org.openlca.core.database.references.CategoryReferenceSearch as CategoryReferenceSearch
+import org.openlca.core.io.CategorySync as CategorySync
 import org.openlca.core.database.usage.CategoryUseSearch as CategoryUseSearch
 import org.openlca.proto.io.output.CategoryWriter as CategoryWriter
 import org.openlca.io.xls.results.CellWriter as CellWriter

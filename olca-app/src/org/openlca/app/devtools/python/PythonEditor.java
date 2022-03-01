@@ -14,10 +14,9 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PythonEditor extends ScriptingEditor {
 
@@ -92,8 +91,7 @@ public class PythonEditor extends ScriptingEditor {
 				});
 
 			} catch (Exception e) {
-				Logger log = LoggerFactory.getLogger(getClass());
-				log.error("failed to create browser in Python editor", e);
+				ErrorReporter.on("failed to create browser in Python editor", e);
 			}
 		}
 
@@ -104,8 +102,7 @@ public class PythonEditor extends ScriptingEditor {
 						? script.toString()
 						: "";
 			} catch (Exception e) {
-				Logger log = LoggerFactory.getLogger(getClass());
-				log.error("failed to get script content", e);
+				ErrorReporter.on("failed to get script content", e);
 				return "";
 			}
 		}
