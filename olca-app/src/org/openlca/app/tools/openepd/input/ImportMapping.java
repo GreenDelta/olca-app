@@ -104,6 +104,19 @@ record ImportMapping(
 		methodMappings.put(code, next);
 		return next;
 	}
+
+	void swapIndicator(
+		String methodCode, IndicatorKey key, ImpactCategory impact) {
+		var methodMapping = getMethodMapping(methodCode);
+		if (methodMapping.isEmpty())
+			return;
+		var mappings = methodMapping.indicatorMappings();
+		mappings.stream()
+			.filter(m -> Objects.equals(m.key(), key))
+			.findAny()
+			.ifPresent(mappings::remove);
+		mappings.add(new IndicatorMapping(key, impact));
+	}
 }
 
 record MethodMapping(

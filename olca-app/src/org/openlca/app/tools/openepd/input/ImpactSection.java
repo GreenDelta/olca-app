@@ -2,6 +2,7 @@ package org.openlca.app.tools.openepd.input;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -11,10 +12,14 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.ModifySupport;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 class ImpactSection {
@@ -22,6 +27,7 @@ class ImpactSection {
 	private final ImportDialog dialog;
 	private final String methodCode;
 	private final ImportMapping mapping;
+	private TableViewer table;
 
 	private ImpactSection(ImportDialog dialog, String methodCode) {
 		this.dialog = dialog;
@@ -54,18 +60,52 @@ class ImpactSection {
 			.select(current.method())
 			.onSelected(method -> {
 				var next = mapping.swapMethod(methodCode, method);
-				// TODO update table
+				if (table != null) {
+					table.setInput(next.keys());
+				}
 			});
 
-		var table = Tables.createViewer(combo,
-				"openEPD Code",
-				"openEPD unit",
-				"openLCA indicator",
-				"openLCA code",
-				"openLCA unit");
+		table = Tables.createViewer(comp,
+			"openEPD Code",
+			"openEPD unit",
+			"openLCA indicator",
+			"openLCA code",
+			"openLCA unit");
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 		table.setLabelProvider(new MappingLabel());
+		new ModifySupport<IndicatorKey>(table)
+			.bind("openLCA indicator", new ImpactModifier());
 		table.setInput(current.keys());
+	}
+
+	private class ImpactModifier extends
+		ComboBoxCellModifier<IndicatorKey, ImpactCategory> {
+
+		@Override
+		protected ImpactCategory[] getItems(IndicatorKey key) {
+			var m = mapping.getMethodMapping(methodCode);
+			if (m.isEmpty())
+				return new ImpactCategory[0];
+			return m.method().impactCategories.stream()
+				.sorted(Comparator.comparing(Labels::name))
+				.toArray(ImpactCategory[]::new);
+		}
+
+		@Override
+		protected ImpactCategory getItem(IndicatorKey key) {
+			var m = mapping.getIndicatorMapping(methodCode, key);
+			return m.indicator();
+		}
+
+		@Override
+		protected String getText(ImpactCategory impact) {
+			return Labels.name(impact);
+		}
+
+		@Override
+		protected void setItem(IndicatorKey key, ImpactCategory impact) {
+			mapping.swapIndicator(methodCode, key, impact);
+		}
 	}
 
 	private class MappingLabel extends LabelProvider
@@ -78,7 +118,7 @@ class ImpactSection {
 			var m = mapping.getIndicatorMapping(methodCode, key);
 			return switch (col) {
 				case 0, 1 -> Icon.BUILDING.get();
-				default ->  m.isEmpty()
+				default -> m.isEmpty()
 					? null
 					: Images.get(ModelType.IMPACT_CATEGORY);
 			};
