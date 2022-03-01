@@ -7,6 +7,7 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.util.Strings;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,11 +76,33 @@ record ImportMapping(
 		return empty;
 	}
 
+	IndicatorMapping getIndicatorMapping(String methodCode, IndicatorKey key) {
+		var methodMapping = getMethodMapping(methodCode);
+		for (var i : methodMapping.indicatorMappings()) {
+			if (Objects.equals(i.key(), key)) {
+				return i;
+			}
+		}
+		return IndicatorMapping.emptyOf(key);
+	}
+
 	List<String> methodCodes() {
 		return methodMappings.keySet()
 			.stream()
 			.sorted()
 			.toList();
+	}
+
+	MethodMapping swapMethod(String code, ImpactMethod method) {
+		var current = methodMappings.get(code);
+		List<IndicatorKey> keys = current != null
+			? current.keys()
+			: Collections.emptyList();
+		var next = method == null
+			? MethodMapping.emptyOf(code, keys)
+			: MethodMapping.init(code, method, keys);
+		methodMappings.put(code, next);
+		return next;
 	}
 }
 
@@ -88,7 +111,7 @@ record MethodMapping(
 	ImpactMethod method,
 	List<IndicatorMapping> indicatorMappings) {
 
-	static MethodMapping emptyOf(String code, Set<IndicatorKey> keys) {
+	static MethodMapping emptyOf(String code, Collection<IndicatorKey> keys) {
 		var indicatorMappings = keys.stream()
 			.map(IndicatorMapping::emptyOf)
 			.toList();
@@ -96,7 +119,7 @@ record MethodMapping(
 	}
 
 	static MethodMapping init(
-		String code, ImpactMethod method, Set<IndicatorKey> keys) {
+		String code, ImpactMethod method, Collection<IndicatorKey> keys) {
 		var mappings = new ArrayList<IndicatorMapping>();
 		for (var key : keys) {
 			ImpactCategory impact = null;

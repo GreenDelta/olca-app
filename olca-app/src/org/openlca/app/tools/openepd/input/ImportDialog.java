@@ -44,6 +44,7 @@ public class ImportDialog extends FormDialog {
 	final IDatabase db;
 	final Ec3Epd epdDoc;
 	final Ec3ImpactModel impactModel;
+	final ImportMapping mapping;
 	private final FlowResult product;
 	private String categoryPath;
 	private final List<ModuleSection> sections = new ArrayList<>();
@@ -70,6 +71,7 @@ public class ImportDialog extends FormDialog {
 		this.epdDoc = Objects.requireNonNull(epdDoc);
 		this.db = Objects.requireNonNull(db);
 		this.impactModel = Ec3ImpactModel.get();
+		this.mapping = ImportMapping.init(epdDoc, db);
 		categoryPath = Util.categoryOf(epdDoc);
 		product = Util.initQuantitativeReference(epdDoc, db);
 	}
@@ -90,6 +92,8 @@ public class ImportDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.formBody(mForm.getForm(), tk);
 		createProductSection(body, tk);
+		ImpactSection.initAllOf(this)
+			.forEach(section -> section.render(body, tk));
 		for (var section : ModuleSection.initAllOf(this)) {
 			section.render(body, tk);
 			section.onDeleted(s -> {
