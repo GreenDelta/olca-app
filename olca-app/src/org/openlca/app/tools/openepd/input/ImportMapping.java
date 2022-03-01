@@ -1,5 +1,6 @@
 package org.openlca.app.tools.openepd.input;
 
+import gnu.trove.map.hash.TLongObjectHashMap;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ImpactCategory;
@@ -117,6 +118,65 @@ record ImportMapping(
 			.ifPresent(mappings::remove);
 		mappings.add(new IndicatorMapping(key, impact));
 	}
+
+	void persist(IDatabase db) {
+		var persisted = new HashMap<String, MethodMapping>();
+		var updatedMethods = new TLongObjectHashMap<ImpactMethod>();
+		var updatedIndicators = new TLongObjectHashMap<ImpactCategory>();
+
+		for (var e : methodMappings.entrySet()) {
+			var code = e.getKey();
+			var mapping = e.getValue();
+			if (mapping.isEmpty()) {
+				persisted.put(code, mapping);
+				continue;
+			}
+
+			// update indicator codes
+			var indicatorMappings = new ArrayList<IndicatorMapping>();
+			for (var i : mapping.indicatorMappings()) {
+				if (i.isEmpty()) {
+					indicatorMappings.add(i);
+					continue;
+				}
+				var indicator = i.indicator();
+
+				// if it already was updated, then do it just once and
+				// take the updated version
+				var updated = updatedIndicators.get(indicator.id);
+				if (updated != null) {
+					indicatorMappings.add(new IndicatorMapping(i.key(), updated));
+					continue;
+				}
+
+				indicator.code = i.code();
+				indicator = db.update(indicator);
+				updatedIndicators.put(indicator.id, indicator);
+				indicatorMappings.add(new IndicatorMapping(i.key(), indicator));
+			}
+
+			// update method code
+			var method = mapping.method();
+			var updated = updatedMethods.get(method.id);
+			if (updated != null) {
+				persisted.put(code, new MethodMapping(code, updated, indicatorMappings));
+				continue;
+			}
+			if (sameCode(code, method.code)) {
+				persisted.put(code, new MethodMapping(code, method, indicatorMappings));
+				continue;
+			}
+
+			method.code = code;
+			method = db.update(method);
+			updatedMethods.put(method.id, method);
+			persisted.put(code, new MethodMapping(code, method, indicatorMappings));
+		}
+
+		methodMappings.clear();
+		methodMappings.putAll(persisted);
+	}
+
 }
 
 record MethodMapping(
