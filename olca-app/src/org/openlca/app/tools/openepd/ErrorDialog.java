@@ -10,11 +10,11 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 
-class ErrorDialog extends FormDialog {
+public class ErrorDialog extends FormDialog {
 
 	private final JsonObject message;
 
-	static void show(JsonObject message) {
+	public static void show(JsonObject message) {
 		if (message == null)
 			return;
 		new ErrorDialog(message).open();

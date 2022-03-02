@@ -1,5 +1,6 @@
 package org.openlca.app.editors.epds;
 
+import com.google.gson.GsonBuilder;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -11,6 +12,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.tools.openepd.CategoryDialog;
+import org.openlca.app.tools.openepd.ErrorDialog;
 import org.openlca.app.tools.openepd.LoginPanel;
 import org.openlca.app.tools.openepd.model.Api;
 import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
@@ -18,6 +20,8 @@ import org.openlca.app.tools.openepd.model.Ec3InternalEpd;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Popup;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.jsonld.Json;
 
@@ -149,8 +153,38 @@ class ExportDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
-
-
+		var client = loginPanel.login().orElse(null);
+		if (client == null)
+			return;
+		var b = Question.ask("Upload as draft?",
+			"Upload this as draft to " + loginPanel.credentials().url() + "?");
+		if (!b)
+			return;
+		try {
+			var response = client.post("/epds", epd.toJson());
+			if (!response.hasJson()) {
+				MsgBox.error("Received no response from server");
+				return;
+			}
+			var json = response.json();
+			if (!json.isJsonObject()) {
+				MsgBox.error("Received an unexpected response from server");
+				return;
+			}
+			var obj = json.getAsJsonObject();
+			// TODO
+			System.out.println(
+				new GsonBuilder().setPrettyPrinting().create().toJson(obj));
+			if (obj.has("validation_errors")) {
+				ErrorDialog.show(obj);
+				return;
+			}
+			var url = loginPanel.credentials().url();
+			Popup.info("Uploaded EPD",
+				"The EPD was uploaded to <a href='" + url + "'>" + url + "</a>");
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to upload EPD", e);
+		}
 	}
 
 	@Override

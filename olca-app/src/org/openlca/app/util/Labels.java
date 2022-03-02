@@ -20,7 +20,6 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
@@ -49,12 +48,6 @@ public class Labels {
 	public static String name(RefEntity entity) {
 		if (entity == null || entity.name == null)
 			return "";
-		if (entity instanceof ImpactCategory impact) {
-			return Strings.nullOrEmpty(impact.code)
-				? impact.name
-				: impact.name + " - " + impact.code;
-		}
-
 		Location loc = null;
 		if (entity instanceof Flow flow) {
 			loc = flow.location;
@@ -188,7 +181,7 @@ public class Labels {
 	}
 
 	/**
-	 * Same as {@link #getCategory(CategorizedDescriptor)} but top-
+	 * Same as {@link #getCategory(RootDescriptor)} but top-
 	 * and sub-category concatenated as a short string.
 	 */
 	public static String getShortCategory(RootDescriptor entity) {

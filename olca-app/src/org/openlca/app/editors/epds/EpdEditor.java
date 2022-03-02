@@ -11,6 +11,7 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Desktop;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -112,6 +113,16 @@ public class EpdEditor extends ModelEditor<Epd> {
 				? "- none -"
 				: epd().urn
 			);
+			Controls.onClick(link, $ -> {
+				var urn = epd().urn;
+				if (Strings.nullOrEmpty(urn))
+					return;
+				if (urn.startsWith("openEPD:")) {
+					var extId = urn.substring(8);
+					var url = "https://buildingtransparency.org/ec3/epds/" + extId;
+					Desktop.browse(url);
+				}
+			});
 
 		}
 
