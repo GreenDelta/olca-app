@@ -53,6 +53,7 @@ class EpdConverter {
 		if (epd.product != null && epd.product.unit != null) {
 			doc.declaredUnit = epd.product.amount + " " + epd.product.unit.name;
 		}
+		doc.description = epd.description;
 		var today = LocalDate.now();
 		doc.dateOfIssue = today;
 		doc.dateValidityEnds = LocalDate.of(

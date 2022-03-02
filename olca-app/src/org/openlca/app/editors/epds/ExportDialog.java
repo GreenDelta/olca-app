@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-class ExportDialog extends FormDialog  {
+class ExportDialog extends FormDialog {
 
 	private final Ec3InternalEpd epd;
 	private Ec3CategoryTree categories;
@@ -117,6 +117,11 @@ class ExportDialog extends FormDialog  {
 		// UI.gridData(endDate, false, false).widthHint = 120;
 		tk.adapt(endDate);
 		date(endDate, epd.dateValidityEnds, d -> epd.dateValidityEnds = d);
+
+		// result sections
+		for (var result : epd.impactResults) {
+			new ExportResultSection(result).render(body, tk);
+		}
 	}
 
 	private void date(
