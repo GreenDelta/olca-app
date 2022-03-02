@@ -21,7 +21,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.util.Strings;
 
-class CategoryDialog extends FormDialog {
+public class CategoryDialog extends FormDialog {
 
 	private final Ec3CategoryTree categories;
 	private Ec3Category selected;
