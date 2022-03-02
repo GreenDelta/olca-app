@@ -10,7 +10,6 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.components.EntityCombo;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
@@ -21,7 +20,6 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Epd;
-import org.openlca.core.model.FlowProperty;
 
 public class ImportDialog extends FormDialog {
 
@@ -79,44 +77,44 @@ public class ImportDialog extends FormDialog {
 	}
 
 	private void createProductSection(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, M.Product);
+		var comp = UI.formSection(body, tk, "Declared product");
 
 		// name
-		var nameText = UI.formText(comp, tk, M.Name);
-		Controls.set(nameText , epdDoc.productName);
+		var nameText = UI.formText(comp, tk, M.Product);
+		nameText.setEditable(false);
+		Controls.set(nameText, epdDoc.productName);
 
 		// category
 		var categoryText = UI.formText(comp, tk, M.Category);
+		categoryText.setEditable(false);
 		Controls.set(categoryText, Util.categoryOf(epdDoc));
 
 		// amount
-		var amountText = UI.formText(comp, tk, M.Amount);
-		Controls.set(amountText, Double.toString(mapping.quantity().amount()));
-
-		// quantity
-		var quantityCombo = EntityCombo.of(
-				UI.formCombo(comp, tk, M.Quantity), FlowProperty.class, db)
-			.select(mapping.quantity().property());
-
-		// unit
-		// TODO: checks..
-		var unitCombo = EntityCombo.of(
-				UI.formCombo(comp, tk, M.Unit), mapping.quantity().property().unitGroup.units)
-			.select(mapping.quantity().unit());
-			// .onSelected(unit -> product.unit = unit);
-
-		/*
-		quantityCombo.onSelected(property -> {
-			Util.setFlowProperty(product, property);
-			unitCombo.update(Util.allowedUnitsOf(product))
-				.select(product.unit);
-		});
-
-		 */
+		var amountText = UI.formText(comp, tk, "Declared unit");
+		amountText.setEditable(false);
+		var quantity = mapping.quantity();
+		if (quantity.hasUnit()) {
+			Controls.set(amountText, quantity.amount() +
+				" " + quantity.unit().name);
+		} else {
+			Controls.set(amountText, quantity.amount() +
+				" ERROR! could not find matching unit in openLCA");
+		}
 	}
 
 	@Override
 	protected void okPressed() {
+
+		if (mapping.hasEmptyMappings()) {
+			boolean b = Question.ask("Missing mappings",
+				"Not all of the used impact assessment methods and categories of " +
+					"the openEPD document are mapped to corresponding impact assessment " +
+					"methods and categories in openLCA. These results will be skipped. " +
+					"Do you want to continue?");
+			if (!b) {
+				return;
+			}
+		}
 
 		if (mappingChanged.get()) {
 			boolean b = Question.ask("Save indicator mappings?",

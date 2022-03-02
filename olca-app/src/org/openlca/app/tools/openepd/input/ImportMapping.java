@@ -114,6 +114,21 @@ record ImportMapping(
 		mappings.add(new IndicatorMapping(key, impact));
 	}
 
+	/**
+	 * Returns true if this mapping contains empty method or indicator mappings.
+	 */
+	boolean hasEmptyMappings() {
+		for (var m : methodMappings.values()) {
+			if (m.isEmpty())
+				return true;
+			for (var i : m.indicatorMappings()) {
+				if (i.isEmpty())
+					return true;
+			}
+		}
+		return false;
+	}
+
 	void persistIn(IDatabase db) {
 		var persisted = new HashMap<String, MethodMapping>();
 		var updatedMethods = new TLongObjectHashMap<ImpactMethod>();
