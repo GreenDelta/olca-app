@@ -3,12 +3,15 @@ package org.openlca.app.tools.openepd.input;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
@@ -18,6 +21,7 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.app.wizards.io.ImportLogView;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Epd;
 
@@ -127,7 +131,25 @@ public class ImportDialog extends FormDialog {
 
 		try {
 			var imp = new Import(db, epdDoc, mapping);
-			imp.run();
+			var epd = imp.run();
+
+			var msg = new MessageDialog(
+				UI.shell(),
+				"Import finished",
+				null,
+				"Imported EPD and related data sets.",
+				MessageDialog.INFORMATION,
+				new String[]{
+					IDialogConstants.OK_LABEL, "Open EPD", "Import details"},
+				0);
+			msg.setBlockOnOpen(true);
+			var state = msg.open();
+			if (state == 1) {
+				App.open(epd);
+			} else if (state == 2) {
+				ImportLogView.open(imp.log());
+			}
+
 		} catch (Exception e) {
 			ErrorReporter.on("failed to save EPD", e);
 			return;

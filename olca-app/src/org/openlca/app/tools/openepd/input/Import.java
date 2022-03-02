@@ -43,7 +43,11 @@ class Import {
 		this.log = new ImportLog();
 	}
 
-	void run() {
+	public ImportLog log() {
+		return log;
+	}
+
+	Epd run() {
 
 		var refFlow = createRefFlow();
 		var modules = createModules(refFlow);
@@ -66,6 +70,7 @@ class Import {
 
 		e = db.insert(e);
 		log.imported(e);
+		return e;
 	}
 
 	private Category syncCategory(ModelType type) {
