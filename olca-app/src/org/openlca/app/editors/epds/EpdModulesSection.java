@@ -20,6 +20,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
 
 import java.util.List;
+import java.util.Objects;
 
 record EpdModulesSection(EpdEditor editor) {
 
@@ -63,13 +64,13 @@ record EpdModulesSection(EpdEditor editor) {
 		});
 
 		var onDelete = Actions.onRemove(() -> {
-			var mod = selectedModuleOf(table);
-			if (mod != null) {
-				var mods = modules();
-				mods.remove(mod);
-				table.setInput(mods);
-				editor.setDirty();
-			}
+			var selected = selectedModulesOf(table);
+			if (selected.isEmpty())
+				return;
+			var mods = modules();
+			mods.removeAll(selected);
+			table.setInput(mods);
+			editor.setDirty();
 		});
 
 		var onOpenResult = Actions.create(
@@ -96,15 +97,30 @@ record EpdModulesSection(EpdEditor editor) {
 
 	private EpdModule selectedModuleOf(TableViewer table) {
 		var obj = Viewers.getFirstSelected(table);
-		if (!(obj instanceof EpdModule mod))
-			return null;
-		// select it from the list where it could be a different
-		// instance if the list was JPA synced
-		for (var other : modules()) {
-			if (mod.id != other.id)
+		return obj instanceof EpdModule mod
+			? syncedModuleOf(mod)
+			: null;
+	}
+
+	private List<EpdModule> selectedModulesOf(TableViewer table) {
+		return Viewers.getAllSelected(table)
+			.stream()
+			.filter(it -> it instanceof EpdModule)
+			.map(EpdModule.class::cast)
+			.map(this::syncedModuleOf)
+			.filter(Objects::nonNull)
+			.toList();
+	}
+
+	/**
+	 * Get the JPA synced version of the module.
+	 */
+	private EpdModule syncedModuleOf(EpdModule mod) {
+		for (var synced : modules()) {
+			if (mod.id != synced.id)
 				continue;
-			if (mod.id != 0 || mod == other)
-				return other;
+			if (mod.id != 0 || mod == synced)
+				return synced;
 		}
 		return null;
 	}
