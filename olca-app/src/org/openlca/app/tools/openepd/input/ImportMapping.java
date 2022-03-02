@@ -78,13 +78,8 @@ record ImportMapping(
 	}
 
 	IndicatorMapping getIndicatorMapping(String methodCode, IndicatorKey key) {
-		var methodMapping = getMethodMapping(methodCode);
-		for (var i : methodMapping.indicatorMappings()) {
-			if (Objects.equals(i.key(), key)) {
-				return i;
-			}
-		}
-		return IndicatorMapping.emptyOf(key);
+		var m = getMethodMapping(methodCode);
+		return m.getIndicatorMapping(key);
 	}
 
 	List<String> methodCodes() {
@@ -216,6 +211,14 @@ record MethodMapping(
 			.map(IndicatorMapping::key)
 			.sorted()
 			.toList();
+	}
+
+	IndicatorMapping getIndicatorMapping(IndicatorKey key) {
+		for (var i : indicatorMappings) {
+			if (Objects.equals(key, i.key()))
+				return i;
+		}
+		return IndicatorMapping.emptyOf(key);
 	}
 }
 
