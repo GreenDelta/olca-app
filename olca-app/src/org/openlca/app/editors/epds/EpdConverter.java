@@ -1,7 +1,17 @@
 package org.openlca.app.editors.epds;
 
+import org.openlca.app.tools.openepd.model.Ec3ImpactResult;
+import org.openlca.app.tools.openepd.model.Ec3IndicatorResult;
+import org.openlca.app.tools.openepd.model.Ec3InternalEpd;
+import org.openlca.app.tools.openepd.model.Ec3Measurement;
+import org.openlca.app.tools.openepd.model.Ec3ScopeValue;
 import org.openlca.core.model.Epd;
 import org.openlca.util.Strings;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
 class EpdConverter {
 
@@ -35,7 +45,54 @@ class EpdConverter {
 		return Validation.ok();
 	}
 
+	static Ec3InternalEpd convert(Epd epd) {
+		var doc = new Ec3InternalEpd();
+		doc.isDraft = true;
+		doc.isPrivate = true;
+		doc.name = epd.name;
+		if (epd.product != null && epd.product.unit != null) {
+			doc.declaredUnit = epd.product.amount + " " + epd.product.unit.name;
+		}
+		var today = LocalDate.now();
+		doc.dateOfIssue = today;
+		doc.dateValidityEnds = LocalDate.of(
+			today.getYear() + 1, today.getMonth(), today.getDayOfMonth());
 
+		var docResults = new HashMap<String, Ec3ImpactResult>();
+		for (var mod : epd.modules) {
+			var result = mod.result;
+			if (result == null
+				|| result.impactMethod == null
+				|| Strings.nullOrEmpty(result.impactMethod.code))
+				continue;
+			var docResult = docResults.computeIfAbsent(
+				result.impactMethod.code,
+				code -> new Ec3ImpactResult(code, new ArrayList<>()));
+
+			for (var impact : result.impactResults) {
+				if (impact.indicator == null
+					|| Strings.nullOrEmpty(impact.indicator.code))
+					continue;
+				var code = impact.indicator.code;
+				Ec3IndicatorResult docImpact = null;
+				for (var i : docResult.indicatorResults()) {
+					if (Objects.equals(code, i.indicator())) {
+						docImpact = i;
+						break;
+					}
+				}
+				if (docImpact == null) {
+					docImpact = new Ec3IndicatorResult(code, new ArrayList<>());
+					docResult.indicatorResults().add(docImpact);
+				}
+				var value = Ec3Measurement.of(
+					impact.amount, impact.indicator.referenceUnit);
+				docImpact.values().add(new Ec3ScopeValue(mod.name, value));
+			}
+		}
+		doc.impactResults.addAll(docResults.values());
+		return doc;
+	}
 }
 
 record Validation(String error) {

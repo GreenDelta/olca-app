@@ -4,22 +4,23 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.tools.openepd.model.Ec3InternalEpd;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.Epd;
 
 import java.util.Objects;
 
 class ExportDialog extends FormDialog  {
 
-	private final Epd epd;
+	private final Ec3InternalEpd epd;
 
-	public static int show(Epd epd) {
+	public static void show(Ec3InternalEpd epd) {
 		if (epd == null)
-			return -1;
+			return;
+
 
 	}
 
-	private ExportDialog(Epd epd) {
+	private ExportDialog(Ec3InternalEpd epd) {
 		super(UI.shell());
 		this.epd = Objects.requireNonNull(epd);
 	}
