@@ -9,7 +9,10 @@ import org.openlca.app.components.ModelLink;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.Epd;
@@ -45,7 +48,21 @@ public class EpdEditor extends ModelEditor<Epd> {
 			var form = UI.formHeader(this);
 			var tk = mForm.getToolkit();
 			var body = UI.formBody(form, tk);
-			new InfoSection(editor).render(body, tk);
+
+			var info = new InfoSection(editor).render(body, tk);
+			UI.filler(info.composite());
+			var exportBtn = tk.createButton(
+				info.composite(), "Upload as draft to EC3", SWT.NONE);
+			exportBtn.setImage(Icon.BUILDING.get());
+			Controls.onSelect(exportBtn, $ -> {
+				var check = EpdConverter.validate(epd());
+				if (check.hasError()) {
+					MsgBox.error("Validation error",
+						"EPD cannot be converted to an openEPD document: " + check.error());
+					return;
+				}
+			});
+
 			new EpdProductSection(editor).render(body, tk);
 			referenceSection(body, tk);
 			new EpdModulesSection(editor).render(body, tk);

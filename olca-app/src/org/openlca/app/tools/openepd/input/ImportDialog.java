@@ -68,7 +68,7 @@ public class ImportDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(800, 700);
+		return new Point(800, 600);
 	}
 
 	@Override
