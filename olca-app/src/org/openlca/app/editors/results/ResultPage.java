@@ -3,18 +3,14 @@ package org.openlca.app.editors.results;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.ui.forms.IManagedForm;
-import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Result;
-import org.openlca.util.Strings;
 
 class ResultPage extends ModelPage<Result> {
 
@@ -34,6 +30,16 @@ class ResultPage extends ModelPage<Result> {
 		// info section
 		var infoSection = new InfoSection(editor).render(body, tk);
 		var comp = infoSection.composite();
+
+		// product system
+		ModelLink.of(ProductSystem.class)
+			.renderOn(comp, tk, M.ProductSystem)
+			.setModel(getModel().productSystem)
+			.onChange(system -> {
+				editor.getModel().productSystem = system;
+				editor.setDirty();
+			});
+		UI.filler(comp, tk);
 
 		// LCIA method
 		ModelLink.of(ImpactMethod.class)

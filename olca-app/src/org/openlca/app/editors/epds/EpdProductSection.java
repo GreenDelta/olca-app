@@ -20,12 +20,11 @@ public record EpdProductSection(EpdEditor editor) {
 			.renderOn(comp, tk, M.Flow)
 			.setModel(product().flow);
 
-
 		// amount
 		UI.formLabel(comp, M.Amount);
 		var amountComp = tk.createComposite(comp);
 		UI.gridLayout(amountComp, 2, 5, 0);
-		var amountText = tk.createText(amountComp, "");
+		var amountText = tk.createText(amountComp, "", SWT.BORDER);
 		UI.gridData(amountText, false, false).widthHint = 100;
 		Controls.set(amountText, product().amount, amount -> {
 			product().amount = amount;
