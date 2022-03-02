@@ -182,6 +182,7 @@ class ExportDialog extends FormDialog {
 			var url = loginPanel.credentials().url();
 			Popup.info("Uploaded EPD",
 				"The EPD was uploaded to <a href='" + url + "'>" + url + "</a>");
+			super.okPressed();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to upload EPD", e);
 		}

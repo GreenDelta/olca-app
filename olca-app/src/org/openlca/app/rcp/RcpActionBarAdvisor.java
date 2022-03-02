@@ -42,7 +42,6 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.libraries.LibraryExportDialog;
 import org.openlca.app.tools.mapping.MappingTool;
-import org.openlca.app.tools.openepd.EpdEditor;
 import org.openlca.app.tools.openepd.EpdPanel;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
@@ -78,7 +77,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		var toolbar = new ToolBarManager(SWT.FLAT | SWT.LEFT);
 		coolBar.add(new ToolBarContributionItem(toolbar, "main"));
 		toolbar.add(Actions.create(
-				M.Home, Icon.HOME.descriptor(), StartPage::open));
+			M.Home, Icon.HOME.descriptor(), StartPage::open));
 		toolbar.add(saveAction);
 		toolbar.add(saveAsAction);
 		toolbar.add(saveAllAction);
@@ -101,9 +100,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		var reg = WorkbenchPlugin.getDefault().getActionSetRegistry();
 		for (var aset : reg.getActionSets()) {
 			if (Objects.equals(aset.getId(),
-					"org.eclipse.ui.cheatsheets.actionSet")) {
+				"org.eclipse.ui.cheatsheets.actionSet")) {
 				var ext = aset.getConfigurationElement()
-						.getDeclaringExtension();
+					.getDeclaringExtension();
 				reg.removeExtension(ext, new Object[]{aset});
 			}
 		}
@@ -111,20 +110,20 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private void fillHelpMenu(IMenuManager menuBar) {
 		MenuManager helpMenu = new MenuManager(
-				M.Help, IWorkbenchActionConstants.M_HELP);
+			M.Help, IWorkbenchActionConstants.M_HELP);
 		helpMenu.add(Actions.create(
-				M.OnlineHelp, Icon.HELP.descriptor(),
-				() -> Desktop.browse(Config.HELP_URL)));
+			M.OnlineHelp, Icon.HELP.descriptor(),
+			() -> Desktop.browse(Config.HELP_URL)));
 		helpMenu.add(new Separator());
 		helpMenu.add(Actions.create(
-				M.OpenLogFile, Icon.FILE.descriptor(), LogFileEditor::open));
+			M.OpenLogFile, Icon.FILE.descriptor(), LogFileEditor::open));
 		helpMenu.add(aboutAction);
 		menuBar.add(helpMenu);
 	}
 
 	private void fillFileMenu(IMenuManager menuBar) {
 		MenuManager menu = new MenuManager(
-				M.File, IWorkbenchActionConstants.M_FILE);
+			M.File, IWorkbenchActionConstants.M_FILE);
 		menu.add(saveAction);
 		menu.add(saveAsAction);
 		menu.add(saveAllAction);
@@ -151,20 +150,20 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(viewMenu);
 		menu.add(new Separator());
 		menu.add(Actions.create(
-				M.Parameters,
-				Images.descriptor(ModelType.PARAMETER),
-				BigParameterTable::show));
+			M.Parameters,
+			Images.descriptor(ModelType.PARAMETER),
+			BigParameterTable::show));
 		createDeveloperMenu(menu);
 
 		// bulk replace
 		var brMenu = new MenuManager(M.Bulkreplace);
 		menu.add(brMenu);
 		brMenu.add(Actions.create(
-				M.Flows, Images.descriptor(ModelType.FLOW),
-				ReplaceFlowsDialog::openDialog));
+			M.Flows, Images.descriptor(ModelType.FLOW),
+			ReplaceFlowsDialog::openDialog));
 		brMenu.add(Actions.create(
-				M.Providers, Images.descriptor(ModelType.PROCESS),
-				ReplaceProvidersDialog::openDialog));
+			M.Providers, Images.descriptor(ModelType.PROCESS),
+			ReplaceProvidersDialog::openDialog));
 
 		// flow mapping
 		var mappings = new MenuManager("Flow mapping (experimental)");
@@ -175,17 +174,12 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		// library export
 		if (FeatureFlag.LIBRARIES.isEnabled()) {
 			menu.add(Actions.create(
-					"Library export (experimental)", LibraryExportDialog::show));
+				"Library export (experimental)", LibraryExportDialog::show));
 		}
 
 		// openEPD
-		var epdMenu = new MenuManager("openEPD");
-		epdMenu.setImageDescriptor(Icon.BUILDING.descriptor());
-		menu.add(epdMenu);
-		epdMenu.add(Actions.create("Search and download",
-			Icon.SEARCH.descriptor(), EpdPanel::open));
-		epdMenu.add(Actions.create("Create new EPD",
-			Icon.FILE.descriptor(), EpdEditor::open));
+		menu.add(Actions.create("Get EPDs from EC3",
+			Icon.BUILDING.descriptor(), EpdPanel::open));
 
 		// console
 		menu.add(new Separator());
@@ -198,9 +192,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			MenuManager eiMenu = new MenuManager("ecoinvent 3.x");
 			menu.add(eiMenu);
 			eiMenu.add(Actions.create("Import processes",
-					() -> runSpold2Import(ModelType.PROCESS)));
+				() -> runSpold2Import(ModelType.PROCESS)));
 			eiMenu.add(Actions.create("Import LCIA methods",
-					() -> runSpold2Import(ModelType.IMPACT_METHOD)));
+				() -> runSpold2Import(ModelType.IMPACT_METHOD)));
 		}
 		menuBar.add(menu);
 	}
@@ -209,7 +203,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		IDatabase db = Database.get();
 		if (db == null) {
 			MsgBox.error("No database opened",
-					"You need to open a database for the import");
+				"You need to open a database for the import");
 			return;
 		}
 		File file = FileChooser.open("*.zip");
