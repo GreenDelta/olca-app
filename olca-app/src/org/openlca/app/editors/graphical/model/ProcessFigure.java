@@ -84,8 +84,7 @@ class ProcessFigure extends Figure {
 		top.add(leftExpander, new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
 		// process icon and header
-		top.add(new ImageFigure(Images.get(node.process)),
-				new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		top.add(new ImageFigure(Images.get(node.process)), new GridData(SWT.LEFT, SWT.CENTER, false, false));
 		top.add(new BoxHeader(node), new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// right expander
@@ -96,7 +95,7 @@ class ProcessFigure extends Figure {
 
 		// box border
 		var theme = node.config().theme();
-		border = new LineBorder(theme.boxBorderWidth(Box.of(node)));
+		border = new RoundBorder(theme.boxBorderWidth(Box.of(node)));
 		setBorder(border);
 	}
 
@@ -116,6 +115,7 @@ class ProcessFigure extends Figure {
 			} else if (node.equals(link.outputNode)) {
 				link.refreshSourceAnchor();
 			}
+
 		}
 	}
 
@@ -126,7 +126,7 @@ class ProcessFigure extends Figure {
 		border.setColor(theme.boxBorderColor(box));
 		g.pushState();
 		g.setBackgroundColor(theme.boxBackgroundColor(box));
-		g.fillRectangle(new Rectangle(getLocation(), getSize()));
+		g.fillRoundRectangle(new Rectangle(getLocation(), getSize()), 15, 15);
 		g.popState();
 		super.paintFigure(g);
 	}
@@ -231,5 +231,4 @@ class ProcessFigure extends Figure {
 			super.paintFigure(g);
 		}
 	}
-
 }

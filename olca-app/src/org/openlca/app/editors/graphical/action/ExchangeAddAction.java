@@ -72,6 +72,10 @@ public class ExchangeAddAction extends Action implements GraphAction {
 
 	@Override
 	public void run() {
+		runAddFlow(this.node);
+	}
+	
+	public void runAddFlow(ProcessNode node) {
 		if (node == null)
 			return;
 		var d = node.process;

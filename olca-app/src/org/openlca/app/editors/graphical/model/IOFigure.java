@@ -35,11 +35,11 @@ class IOFigure extends Figure {
 	}
 
 	private ExchangePanel initPanel(boolean forInputs) {
-		add(new Header(forInputs), new GridData(
-			SWT.FILL, SWT.TOP, true, false));
+		add(new Header(forInputs), new GridData(SWT.FILL, SWT.TOP, true, false));
 		var panel = new ExchangePanel(node);
-		add(panel, new GridData(
-			SWT.FILL, SWT.FILL, true, true));
+		add(panel, new GridData(SWT.FILL, SWT.FILL, true, true));
+		var figure = new ExchangeFigure(node.getExchangeNodes().get(0));
+		add(new FlowButton(figure, forInputs, node), new GridData(SWT.FILL, SWT.TOP, true, false));
 		return panel;
 	}
 
@@ -57,9 +57,7 @@ class IOFigure extends Figure {
 		if (ef.node == null || ef.node.exchange == null)
 			return;
 		var exchange = ef.node.exchange;
-		var panel = exchange.isInput
-			? inputPanel
-			: outputPanel;
+		var panel = exchange.isInput ? inputPanel : outputPanel;
 		ExchangeRow.create(ef, panel);
 	}
 
@@ -72,12 +70,8 @@ class IOFigure extends Figure {
 			layout.marginHeight = 3;
 			layout.marginWidth = 5;
 			setLayoutManager(layout);
-			label = new Label(forInputs
-				? ">> input flows"
-				: "output flows >>");
-			var alignment = forInputs
-				? SWT.LEFT
-				: SWT.RIGHT;
+			label = new Label(forInputs ? ">> input flows" : "output flows >>");
+			var alignment = forInputs ? SWT.LEFT : SWT.RIGHT;
 			add(label, new GridData(alignment, SWT.TOP, true, false));
 		}
 
@@ -135,11 +129,7 @@ class IOFigure extends Figure {
 		private final Label amountLabel;
 		private final Label unitLabel;
 
-		private ExchangeRow(
-			ImageFigure icon,
-			ExchangeFigure figure,
-			Label amountLabel,
-			Label unitLabel) {
+		private ExchangeRow(ImageFigure icon, ExchangeFigure figure, Label amountLabel, Label unitLabel) {
 			this.icon = icon;
 			this.figure = figure;
 			this.amountLabel = amountLabel;
@@ -147,36 +137,25 @@ class IOFigure extends Figure {
 		}
 
 		static void create(ExchangeFigure figure, ExchangePanel panel) {
-			if (figure == null
-					|| panel == null
-					|| figure.node == null
-					|| figure.node.exchange == null)
+			if (figure == null || panel == null || figure.node == null || figure.node.exchange == null)
 				return;
 
 			var config = figure.node.config();
 			var flowType = figure.node.flowType();
 			var exchange = figure.node.exchange;
 
-			var icon = config.showFlowIcons
-				? add(panel, SWT.LEFT, new ImageFigure(Images.get(flowType)))
-				: null;
+			var icon = config.showFlowIcons ? add(panel, SWT.LEFT, new ImageFigure(Images.get(flowType))) : null;
 			add(panel, SWT.FILL, figure);
-			var amount = config.showFlowAmounts
-				? add(panel, SWT.RIGHT, new Label(Numbers.format(exchange.amount, 2)))
-				: null;
-			var unit = config.showFlowAmounts
-				? add(panel, SWT.LEFT, new Label(Labels.name(exchange.unit)))
-				: null;
+			var amount = config.showFlowAmounts ? add(panel, SWT.RIGHT, new Label(Numbers.format(exchange.amount, 2)))
+					: null;
+			var unit = config.showFlowAmounts ? add(panel, SWT.LEFT, new Label(Labels.name(exchange.unit))) : null;
 
 			var row = new ExchangeRow(icon, figure, amount, unit);
 			panel.rows.add(row);
 		}
 
-		private static <T extends Figure> T add(
-			ExchangePanel panel, int hAlign, T figure) {
-			panel.add(
-				figure,
-				new GridData(hAlign, SWT.TOP, hAlign == SWT.FILL, false));
+		private static <T extends Figure> T add(ExchangePanel panel, int hAlign, T figure) {
+			panel.add(figure, new GridData(hAlign, SWT.TOP, hAlign == SWT.FILL, false));
 			return figure;
 		}
 
