@@ -27,7 +27,7 @@ import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.openlca.app.viewers.tables.modify.field.StringModifier;
 import org.openlca.core.database.UnitDao;
-import org.openlca.core.database.usage.UnitUseSearch;
+import org.openlca.core.database.usage.UnitUsageSearch;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 
@@ -116,8 +116,8 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 						M.ReferenceUnitCannotBeDeleted);
 				continue;
 			}
-			UnitUseSearch usage = new UnitUseSearch(Database.get());
-			if (!usage.findUses(unit).isEmpty()) {
+			var usage = new UnitUsageSearch(Database.get(), unit).run();
+			if (!usage.isEmpty()) {
 				MsgBox.error(M.CannotDeleteUnit, M.UnitIsUsed);
 				continue;
 			}

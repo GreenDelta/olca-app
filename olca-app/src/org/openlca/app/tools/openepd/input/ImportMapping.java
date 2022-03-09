@@ -40,7 +40,7 @@ record ImportMapping(
 		}
 
 		// initialize the method mappings
-		var methods = db.allOf(ImpactMethod.class);
+		var methods = db.getAll(ImpactMethod.class);
 		var mappings = new HashMap<String, MethodMapping>();
 		for (var e : codes.entrySet()) {
 			var code = e.getKey();

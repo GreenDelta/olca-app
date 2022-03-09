@@ -19,7 +19,7 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
-import org.openlca.core.database.usage.IUseSearch;
+import org.openlca.core.database.usage.UsageSearch;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
@@ -40,8 +40,7 @@ public class SearchPage extends SimpleFormEditor {
 		String title = "Find usages of " + Labels.name(d);
 		AtomicReference<List<Descriptor>> ref = new AtomicReference<>();
 		App.run(title, () -> {
-			var list = IUseSearch.FACTORY.createFor(
-					d.type, Database.get()).findUses(d);
+			var list = UsageSearch.of(d.type, Database.get()).find(d.id);
 			ref.set(new ArrayList<>(list));
 		}, () -> {
 			String resultKey = Cache.getAppCache().put(ref.get());

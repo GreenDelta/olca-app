@@ -565,8 +565,8 @@
 				value="icons/logo/16_32bit.png,icons/logo/32_32bit.png,icons/logo/48_32bit.png,icons/logo/64.png,icons/logo/128.png">
 			</property>
 			<property
-				name="aboutText"
-				value="openLCA 2.0.0&#x0A;&#x0A;Copyright (c) 2007 - 2021 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
+         name="aboutText"
+         value="openLCA 2.0.0&#x0A;&#x0A;Copyright (c) 2007 - 2021 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA &#x0A;project and other open source software.">
 			</property>
 			<property
 				name="aboutImage"
@@ -594,10 +594,10 @@
 				name="startupMessageRect"
 				value="7,525,445,20">
 			</property>
-			<property
-				name="preferenceCustomization"
-				value="plugin_customization.ini">
-			</property>
+   <property
+         name="preferenceCustomization"
+         value="plugin_customization.ini">
+   </property>
 		</product>
 	</extension>
 	<extension

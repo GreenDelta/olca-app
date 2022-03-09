@@ -26,7 +26,7 @@ import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.usage.IUseSearch;
+import org.openlca.core.database.usage.UsageSearch;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
@@ -137,8 +137,8 @@ class DeleteModelAction extends Action implements INavigationAction {
 	}
 
 	private boolean isUsed(RootDescriptor d) {
-		var search = IUseSearch.FACTORY.createFor(d.type, Database.get());
-		var descriptors = search.findUses(d);
+		var search = UsageSearch.of(d.type, Database.get());
+		var descriptors = search.find(d.id);
 		if (descriptors.isEmpty())
 			return false;
 		if (showInUseMessage) {

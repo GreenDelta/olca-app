@@ -45,7 +45,7 @@ public class FlowPropertyTable extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 		throws PartInitException {
 		try {
-			properties = Database.get().allOf(FlowProperty.class);
+			properties = Database.get().getAll(FlowProperty.class);
 		} catch (Exception e) {
 			ErrorReporter.on("failed to load flows properties", e);
 		}

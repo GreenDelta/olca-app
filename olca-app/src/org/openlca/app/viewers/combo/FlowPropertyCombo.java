@@ -26,7 +26,7 @@ public class FlowPropertyCombo extends AbstractComboViewer<FlowProperty> {
 	 */
 	public void setInput(IDatabase db) {
 		try {
-			var props = db.allOf(FlowProperty.class);
+			var props = db.getAll(FlowProperty.class);
 			var count = propCount(db);
 
 			props.sort((p1, p2) -> {

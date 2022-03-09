@@ -60,7 +60,7 @@ class ImpactSection {
 
 		// method combo
 		var combo = UI.formCombo(top, tk, "Mapped openLCA method");
-		var methods = dialog.db.allOf(ImpactMethod.class);
+		var methods = dialog.db.getAll(ImpactMethod.class);
 		methods.sort(Comparator.comparing(Labels::name));
 		var withNull = new ArrayList<ImpactMethod>(methods.size() + 1);
 		withNull.add(null);

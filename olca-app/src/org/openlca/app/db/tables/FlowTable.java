@@ -45,7 +45,7 @@ public class FlowTable extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 		throws PartInitException {
 		try {
-			flows = Database.get().allOf(Flow.class);
+			flows = Database.get().getAll(Flow.class);
 		} catch (Exception e) {
 			ErrorReporter.on("failed to load flows", e);
 		}

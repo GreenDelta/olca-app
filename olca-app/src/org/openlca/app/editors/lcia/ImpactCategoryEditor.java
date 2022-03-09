@@ -34,7 +34,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.database.usage.IUseSearch;
+import org.openlca.core.database.usage.UsageSearch;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
@@ -174,10 +174,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 			Tables.onDoubleClick(table, _e -> onOpen.run());
 
 			// set input
-			var d = Descriptor.of(getModel());
-			var methods = IUseSearch.FACTORY
-				.createFor(ModelType.IMPACT_CATEGORY, Database.get())
-				.findUses(d)
+			var methods = UsageSearch.find(Database.get(), getModel())
 				.stream()
 				.filter(m -> m.type == ModelType.IMPACT_METHOD)
 				.sorted((m1, m2) -> Strings.compare(m1.name, m2.name))
