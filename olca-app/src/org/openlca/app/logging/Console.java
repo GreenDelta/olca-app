@@ -2,20 +2,17 @@ package org.openlca.app.logging;
 
 import java.io.PrintStream;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.ThrowableProxy;
+import ch.qos.logback.core.AppenderBase;
 import org.apache.commons.io.output.TeeOutputStream;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LocationInfo;
-import org.apache.log4j.spi.LoggingEvent;
-import org.apache.log4j.spi.ThrowableInformation;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+import org.openlca.app.util.ErrorReporter;
 
-public class Console extends AppenderSkeleton {
+public class Console  extends AppenderBase<ILoggingEvent> {
 
 	private static final PrintStream sysOut = System.out;
 	private static final PrintStream sysErr = System.err;
@@ -46,8 +43,8 @@ public class Console extends AppenderSkeleton {
 	private Console() {
 		console = findOrCreate();
 		stream = console.newMessageStream();
-		var logger = Logger.getLogger("org.openlca");
-		logger.addAppender(this);
+		// var logger = Logger.getLogger("org.openlca");
+		// logger.addAppender(this);
 
 		// link sys.out and sys.err
 		var teeOut = new TeeOutputStream(sysOut, stream);
@@ -74,30 +71,14 @@ public class Console extends AppenderSkeleton {
 	}
 
 	@Override
-	protected void append(LoggingEvent evt) {
+	protected void append(ILoggingEvent evt) {
 		if (stream.isClosed())
 			return;
-		String message;
-		if (evt.getLevel().toInt() <= Level.DEBUG_INT) {
-			LocationInfo info = evt.getLocationInformation();
-			message = "" + evt.getLevel().toString()
-				+ " [" + DateFormatUtils.format(evt.timeStamp, "HH:mm:ss.SS") + "]"
-				+ " @" + info.getClassName()
-				+ ">" + info.getMethodName()
-				+ ">" + info.getLineNumber()
-				+ " - " + evt.getMessage();
-		} else {
-			message = "" + evt.getLevel().toString()
-				+ " - " + evt.getMessage();
-		}
-		tryPrintMessage(message, evt.getThrowableInformation());
-	}
-
-	private void tryPrintMessage(String message, ThrowableInformation info) {
+		String message = evt.getLevel()	+ " - " + evt.getMessage();
 		try {
 			stream.println(message);
-			if (info != null) {
-				Throwable throwable = info.getThrowable();
+			if (evt.getThrowableProxy() instanceof ThrowableProxy tp) {
+				var throwable = tp.getThrowable();
 				if (throwable != null) {
 					stream.println(throwable.getMessage());
 					throwable.printStackTrace(new PrintStream(stream));
@@ -107,23 +88,16 @@ public class Console extends AppenderSkeleton {
 		}
 	}
 
-	@Override
 	public void close() {
-		Logger logger = Logger.getLogger("org.openlca");
-		logger.removeAppender(this);
+		// Logger logger = Logger.getLogger("org.openlca");
+		// logger.removeAppender(this);
 		if (!stream.isClosed()) {
 			try {
 				stream.flush();
 				stream.close();
 			} catch (Exception e) {
-				logger.error("Cannot close console stream.", e);
+				ErrorReporter.on("Cannot close console stream.", e);
 			}
 		}
 	}
-
-	@Override
-	public boolean requiresLayout() {
-		return false;
-	}
-
 }
