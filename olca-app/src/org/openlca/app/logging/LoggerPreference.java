@@ -1,9 +1,9 @@
 package org.openlca.app.logging;
 
-import org.apache.log4j.Level;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.openlca.app.rcp.RcpActivator;
+import org.openlca.util.Strings;
+import org.slf4j.event.Level;
 
 /**
  * The preferences of the application logging.
@@ -20,40 +20,33 @@ public class LoggerPreference extends AbstractPreferenceInitializer {
 
 	@Override
 	public void initializeDefaultPreferences() {
-		IPreferenceStore store = getStore();
+		var store = RcpActivator.getDefault().getPreferenceStore();
 		store.setDefault(LOG_CONSOLE, false);
 		store.setDefault(LOG_LEVEL, LEVEL_INFO);
 	}
 
 	static Level getLogLevel() {
-		IPreferenceStore store = getStore();
-		String levelId = store.getString(LOG_LEVEL);
+		var store = RcpActivator.getDefault().getPreferenceStore();
+		var levelId = store.getString(LOG_LEVEL);
 		if (levelId == null)
 			return Level.INFO;
 		return getLevelForId(levelId);
 	}
 
 	private static Level getLevelForId(String levelId) {
-		switch (levelId) {
-		case LEVEL_ALL:
-			return Level.ALL;
-		case LEVEL_INFO:
+		if (Strings.nullOrEmpty(levelId))
 			return Level.INFO;
-		case LEVEL_WARN:
-			return Level.WARN;
-		case LEVEL_ERROR:
-			return Level.ERROR;
-		}
-		return Level.INFO;
+		return switch (levelId) {
+			case LEVEL_ALL -> Level.TRACE;
+			case LEVEL_WARN -> Level.WARN;
+			case LEVEL_ERROR -> Level.ERROR;
+			default -> Level.INFO;
+		};
 	}
 
 	public static boolean getShowConsole() {
-		IPreferenceStore store = getStore();
+		var store = RcpActivator.getDefault().getPreferenceStore();
 		return store.getBoolean(LOG_CONSOLE);
-	}
-
-	static IPreferenceStore getStore() {
-		return RcpActivator.getDefault().getPreferenceStore();
 	}
 
 }

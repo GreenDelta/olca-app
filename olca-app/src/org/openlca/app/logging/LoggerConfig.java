@@ -1,13 +1,12 @@
 package org.openlca.app.logging;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import ch.qos.logback.classic.Logger;
 import org.openlca.app.AppArg;
 
 import com.google.common.base.Objects;
+
+import ch.qos.logback.classic.Level;
+import org.slf4j.LoggerFactory;
 
 /**
  * The configuration of the application logging.
@@ -15,10 +14,13 @@ import com.google.common.base.Objects;
 public class LoggerConfig {
 
 	public static void setLevel(Level level) {
-		Logger logger = Objects.equal(level, Level.ALL) ? Logger
-				.getLogger("org.openlca") : Logger.getRootLogger();
-		logger.setLevel(level);
-		logger.info("Log-level=" + level);
+		var log = Objects.equal(level, Level.ALL)
+			? LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)
+			: LoggerFactory.getLogger("org.openlca");
+		if (log instanceof Logger logger) {
+			logger.setLevel(level);
+			logger.info("Log-level=" + level);
+		}
 	}
 
 	public static void setUp() {
@@ -31,16 +33,17 @@ public class LoggerConfig {
 		Logger logger = Logger.getLogger("org.openlca");
 		HtmlLogFile.create(logger);
 		logger.addAppender(new PopupAppender());
+
 		addConsoleOutput(logger);
+
 		setLogLevel(logger);
 	}
 
 	private static void addConsoleOutput(Logger logger) {
-		BasicConfigurator.configure();
-		ConsoleAppender appender = new ConsoleAppender(new PatternLayout());
+		var appender = Appenders.createConsoleAppender();
+		if (appender == null)
+			return;
 		logger.addAppender(appender);
-		appender.setTarget(ConsoleAppender.SYSTEM_OUT);
-		appender.activateOptions();
 	}
 
 	private static void setLogLevel(Logger logger) {

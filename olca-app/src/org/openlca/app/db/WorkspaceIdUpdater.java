@@ -2,13 +2,11 @@ package org.openlca.app.db;
 
 import java.io.IOException;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.openlca.core.model.descriptors.RootDescriptor;
+import org.slf4j.LoggerFactory;
 
 public class WorkspaceIdUpdater {
 
-	private static final Logger log = LogManager.getLogger(WorkspaceIdUpdater.class);
 	private boolean disabled;
 	private boolean inTransaction;
 
@@ -51,6 +49,7 @@ public class WorkspaceIdUpdater {
 		try {
 			Repository.get().workspaceIds.save();
 		} catch (IOException e) {
+			var log = LoggerFactory.getLogger(getClass());
 			log.error("Error flushing object ids", e);
 		}
 	}
