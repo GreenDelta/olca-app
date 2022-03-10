@@ -33,19 +33,11 @@ public class LoggerConfig {
 		if (!(root instanceof Logger log))
 			return;
 
-		// console appender
-		var console = Appenders.createConsoleAppender();
-		if (console != null) {
-			log.addAppender(console);
-		}
-
-		// html-file
-		var html = Appenders.createHtmlRollingAppender();
+		var html = HtmlLog.createAppender();
 		if (html != null) {
 			log.addAppender(html);
 		}
 
-		// pop-up
 		var popup = PopupAppender.create();
 		if (popup != null) {
 			log.addAppender(popup);
@@ -56,7 +48,6 @@ public class LoggerConfig {
 			? levelOf(arg)
 			: LoggerPreference.getLogLevel();
 		setLevel(level);
-
 	}
 
 	private static Level levelOf(String arg) {
