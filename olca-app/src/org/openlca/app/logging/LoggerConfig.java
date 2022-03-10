@@ -46,22 +46,18 @@ public class LoggerConfig {
 			log.addAppender(html);
 		}
 
+		// pop-up
+		var popup = PopupAppender.create();
+		if (popup != null) {
+			log.addAppender(popup);
+		}
+
 		var arg = AppArg.LOG_LEVEL.getValue();
 		var level = arg != null
 			? levelOf(arg)
 			: LoggerPreference.getLogLevel();
 		setLevel(level);
 
-	}
-
-	private static void setUpOlcaLogger() {
-		Logger logger = Logger.getLogger("org.openlca");
-		HtmlLogFile.create(logger);
-		logger.addAppender(new PopupAppender());
-
-		addConsoleOutput(logger);
-
-		initLogLevel(logger);
 	}
 
 	private static Level levelOf(String arg) {
