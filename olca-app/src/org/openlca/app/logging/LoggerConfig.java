@@ -1,11 +1,10 @@
 package org.openlca.app.logging;
 
-import ch.qos.logback.classic.Logger;
-import org.openlca.app.AppArg;
-
-import com.google.common.base.Objects;
-
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+
+import org.openlca.app.AppArg;
+import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -13,20 +12,46 @@ import org.slf4j.LoggerFactory;
  */
 public class LoggerConfig {
 
-	public static void setLevel(Level level) {
-		var log = Objects.equal(level, Level.ALL)
-			? LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)
-			: LoggerFactory.getLogger("org.openlca");
-		if (log instanceof Logger logger) {
-			logger.setLevel(level);
-			logger.info("Log-level=" + level);
+	static void setLevel(Level level) {
+		if (level == null)
+			return;
+
+		var domainLog = LoggerFactory.getLogger("org.openlca");
+		if (domainLog instanceof Logger log) {
+			log.setLevel(level);
+		}
+		domainLog.info("set log-level=" + level);
+
+		var rootLog = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+		if (rootLog instanceof Logger log) {
+			log.setLevel(translateForRoot(level));
 		}
 	}
 
+
 	public static void setUp() {
-		Logger rootLogger = Logger.getRootLogger();
-		rootLogger.setLevel(Level.WARN);
-		setUpOlcaLogger();
+		var root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+		if (!(root instanceof Logger log))
+			return;
+
+		// console appender
+		var console = Appenders.createConsoleAppender();
+		if (console != null) {
+			log.addAppender(console);
+		}
+
+		// html-file
+		var html = Appenders.createHtmlRollingAppender();
+		if (html != null) {
+			log.addAppender(html);
+		}
+
+		var arg = AppArg.LOG_LEVEL.getValue();
+		var level = arg != null
+			? levelOf(arg)
+			: LoggerPreference.getLogLevel();
+		setLevel(level);
+
 	}
 
 	private static void setUpOlcaLogger() {
@@ -36,37 +61,33 @@ public class LoggerConfig {
 
 		addConsoleOutput(logger);
 
-		setLogLevel(logger);
+		initLogLevel(logger);
 	}
 
-	private static void addConsoleOutput(Logger logger) {
-		var appender = Appenders.createConsoleAppender();
-		if (appender == null)
-			return;
-		logger.addAppender(appender);
+	private static Level levelOf(String arg) {
+		if (Strings.nullOrEmpty(arg))
+			return Level.INFO;
+		return switch (arg.toLowerCase()) {
+			case "all", "trace" -> Level.ALL;
+			case "debug" -> Level.DEBUG;
+			case "warn", "warning" -> Level.WARN;
+			case "error" -> Level.ERROR;
+			default -> Level.INFO;
+		};
 	}
 
-	private static void setLogLevel(Logger logger) {
-		String level = AppArg.LOG_LEVEL.getValue();
-		if (level != null) {
-			setLevelFromCommandLine(logger, level);
-		} else {
-			logger.setLevel(LoggerPreference.getLogLevel());
-		}
-		logger.info("Log-level=" + logger.getLevel());
-	}
-
-	private static void setLevelFromCommandLine(Logger logger, String level) {
-		if (level.equalsIgnoreCase("all")) {
-			logger.setLevel(Level.ALL);
-		} else if (level.equalsIgnoreCase("error")) {
-			logger.setLevel(Level.ERROR);
-		} else if (level.equalsIgnoreCase("info")) {
-			logger.setLevel(Level.INFO);
-		} else if (level.equalsIgnoreCase("warn")) {
-			logger.setLevel(Level.WARN);
-		} else {
-			logger.setLevel(Level.INFO);
-		}
+	/**
+	 * Depending on the log-level of the openLCA domain logger,
+	 * we hide some details for the root logger.
+	 */
+	private static Level translateForRoot(Level level) {
+		if (level == null)
+			return Level.ERROR;
+		return switch (level.levelInt) {
+			case Level.WARN_INT -> Level.ERROR;
+			case Level.INFO_INT -> Level.WARN;
+			case Level.DEBUG_INT -> Level.INFO;
+			default -> level;
+		};
 	}
 }

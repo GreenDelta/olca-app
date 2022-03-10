@@ -1,9 +1,10 @@
 package org.openlca.app.logging;
 
+import ch.qos.logback.classic.Level;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.util.Strings;
-import org.slf4j.event.Level;
 
 /**
  * The preferences of the application logging.
@@ -20,20 +21,13 @@ public class LoggerPreference extends AbstractPreferenceInitializer {
 
 	@Override
 	public void initializeDefaultPreferences() {
-		var store = RcpActivator.getDefault().getPreferenceStore();
+		var store = store();
 		store.setDefault(LOG_CONSOLE, false);
 		store.setDefault(LOG_LEVEL, LEVEL_INFO);
 	}
 
 	static Level getLogLevel() {
-		var store = RcpActivator.getDefault().getPreferenceStore();
-		var levelId = store.getString(LOG_LEVEL);
-		if (levelId == null)
-			return Level.INFO;
-		return getLevelForId(levelId);
-	}
-
-	private static Level getLevelForId(String levelId) {
+		var levelId = store().getString(LOG_LEVEL);
 		if (Strings.nullOrEmpty(levelId))
 			return Level.INFO;
 		return switch (levelId) {
@@ -45,8 +39,10 @@ public class LoggerPreference extends AbstractPreferenceInitializer {
 	}
 
 	public static boolean getShowConsole() {
-		var store = RcpActivator.getDefault().getPreferenceStore();
-		return store.getBoolean(LOG_CONSOLE);
+		return store().getBoolean(LOG_CONSOLE);
 	}
 
+	static IPreferenceStore store() {
+		return RcpActivator.getDefault().getPreferenceStore();
+	}
 }

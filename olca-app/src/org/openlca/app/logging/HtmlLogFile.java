@@ -53,19 +53,15 @@ class HtmlLogFile {
 	}
 
 	static List<File> getAllFiles() {
-		File workspaceDir = Platform.getLocation().toFile();
+		var workspaceDir = Platform.getLocation().toFile();
 		if (!workspaceDir.exists())
-			workspaceDir.mkdirs();
-		List<File> files = new ArrayList<>();
+			return Collections.emptyList();
+
+		var files = new ArrayList<File>();
 		for (File file : workspaceDir.listFiles())
 			if (file.getName().startsWith(FILENAME))
 				files.add(file);
-		Collections.sort(files, new Comparator<File>() {
-			@Override
-			public int compare(File o1, File o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
+		files.sort(Comparator.comparing(File::getName));
 		return files;
 	}
 }
