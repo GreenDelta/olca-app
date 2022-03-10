@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import org.openlca.app.rcp.Workspace;
+import org.slf4j.LoggerFactory;
+
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.html.HTMLLayout;
@@ -15,8 +18,6 @@ import ch.qos.logback.core.joran.spi.ConsoleTarget;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import ch.qos.logback.core.util.FileSize;
-import org.openlca.app.rcp.Workspace;
-import org.slf4j.LoggerFactory;
 
 class Appenders {
 
@@ -30,8 +31,7 @@ class Appenders {
 
 		var encoder = new PatternLayoutEncoder();
 		encoder.setContext(context);
-		encoder.setPattern(
-			"%d{HH:mm:ss.SSS} %green([%thread]) %highlight(%level) %logger{50} - %msg%n\"");
+		encoder.setPattern("%d{HH:mm:ss} %level %logger{50} - %msg%n");
 		encoder.start();
 
 		var appender = new ConsoleAppender<ILoggingEvent>();
@@ -64,12 +64,6 @@ class Appenders {
 		appender.setContext(context);
 		appender.setName("html");
 
-		var encoder = new PatternLayoutEncoder();
-		encoder.setContext(context);
-		encoder.setPattern(
-			"%date{HH:mm:ss.SSS} [%thread] %level %logger [%file:%line] %msg%n");
-		encoder.start();
-
 		var policy = new TimeBasedRollingPolicy<ILoggingEvent>();
 		policy.setContext(context);
 		policy.setFileNamePattern(
@@ -79,19 +73,19 @@ class Appenders {
 		policy.setParent(appender);
 		policy.start();
 
-		HTMLLayout layout = new HTMLLayout();
+		var layout = new HTMLLayout();
 		layout.setContext(context);
-		layout.setPattern("%d{HH:mm:ss.SSS}%thread%level%logger%line%msg");
+		layout.setPattern("%d{HH:mm:ss}%level%logger%msg");
 		layout.start();
 
-		var wrap = new LayoutWrappingEncoder<ILoggingEvent>();
-		wrap.setContext(context);
-		wrap.setCharset(StandardCharsets.UTF_8);
-		wrap.setLayout(layout);
-		wrap.start();
+		var encoder = new LayoutWrappingEncoder<ILoggingEvent>();
+		encoder.setContext(context);
+		encoder.setCharset(StandardCharsets.UTF_8);
+		encoder.setLayout(layout);
+		encoder.start();
 
 		appender.setRollingPolicy(policy);
-		appender.setEncoder(wrap);
+		appender.setEncoder(encoder);
 		appender.setAppend(true);
 		appender.start();
 

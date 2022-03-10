@@ -385,6 +385,7 @@ import org.openlca.io.xls.results.system.ResultExport as ResultExport
 import org.openlca.core.results.ResultItemView as ResultItemView
 import org.openlca.core.results.providers.ResultModelProvider as ResultModelProvider
 import org.openlca.core.results.providers.ResultProviders as ResultProviders
+import org.openlca.core.database.usage.ResultUsageSearch as ResultUsageSearch
 import org.openlca.util.Results as Results
 import org.openlca.core.model.RiskLevel as RiskLevel
 import org.openlca.core.model.descriptors.RootDescriptor as RootDescriptor
@@ -437,6 +438,7 @@ import org.openlca.io.maps.SyncFlow as SyncFlow
 import org.openlca.core.math.SystemCalculator as SystemCalculator
 import org.openlca.io.ilcd.output.SystemExport as SystemExport
 import org.openlca.core.results.SystemProcess as SystemProcess
+import org.openlca.util.TLongSets as TLongSets
 import org.openlca.core.results.TagResult as TagResult
 import org.openlca.core.matrix.index.TechFlow as TechFlow
 import org.openlca.core.matrix.index.TechIndex as TechIndex
@@ -467,7 +469,7 @@ import org.openlca.proto.io.output.UnitGroupWriter as UnitGroupWriter
 import org.openlca.io.UnitMapping as UnitMapping
 import org.openlca.io.UnitMappingEntry as UnitMappingEntry
 import org.openlca.io.UnitMappingSync as UnitMappingSync
-import org.openlca.core.database.usage.UnitUseSearch as UnitUseSearch
+import org.openlca.core.database.usage.UnitUsageSearch as UnitUsageSearch
 import org.openlca.jsonld.input.UpdateMode as UpdateMode
 import org.openlca.core.database.upgrades.Upgrade11 as Upgrade11
 import org.openlca.core.database.upgrades.Upgrades as Upgrades

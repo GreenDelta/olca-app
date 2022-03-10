@@ -1,11 +1,11 @@
 package org.openlca.app.logging;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-
 import org.openlca.app.AppArg;
 import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 
 /**
  * The configuration of the application logging.
@@ -27,7 +27,6 @@ public class LoggerConfig {
 			log.setLevel(translateForRoot(level));
 		}
 	}
-
 
 	public static void setUp() {
 		var root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
