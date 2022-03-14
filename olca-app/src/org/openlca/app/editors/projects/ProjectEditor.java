@@ -34,14 +34,12 @@ public class ProjectEditor extends ModelEditor<Project> {
 		super.init(site, input);
 		var reportFile = reportFile();
 		if (reportFile.exists()) {
-			try {
-				report = Report.fromJsonFile(reportFile);
+			report = Report.fromFile(reportFile, Database.get()).orElse(null);
+			if (report == null) {
+				ErrorReporter.on("Failed to read report file: " + reportFile);
 			}
-			catch (IOException e) {
-				ErrorReporter.on("Failed to open report file: " + reportFile, e);
 		}
 	}
-}
 
 	@Override
 	protected void addPages() {
@@ -65,7 +63,7 @@ public class ProjectEditor extends ModelEditor<Project> {
 				if (!parent.exists()) {
 					Files.createDirectories(parent.toPath());
 				}
-				Files.writeString(reportFile().toPath(), report.toJson());
+				Files.writeString(file.toPath(), report.toJson());
 			} catch (IOException e) {
 				ErrorReporter.on("Failed to write report file", e);
 			}
