@@ -1,13 +1,21 @@
 package org.openlca.app.editors.projects.reports.model;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.openlca.app.editors.projects.ProjectResultData;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.jsonld.Json;
 import org.slf4j.LoggerFactory;
 
 public class Report {
@@ -25,7 +33,129 @@ public class Report {
   final List<ReportCostResult> addedValues = new ArrayList<>();
   final List<ReportCostResult> netCosts = new ArrayList<>();
 
-  /**
+
+	public static Report fromJsonFile(File reportFile)
+		throws IOException {
+		try (InputStream stream = new FileInputStream(reportFile);
+				 Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+			JsonElement json = JsonParser.parseReader(reader);
+			JsonObject obj = json.getAsJsonObject();
+			Report report = new Report();
+
+			var log = LoggerFactory.getLogger(Report.class);
+
+			var title = Json.getString(obj, "title");
+			if (title == null) {
+				log.warn("No report's title could be found.");
+			} else {
+				report.title = title;
+			}
+
+			report.withNormalisation = Json.getBool(obj, "withNormalisation", false);
+			report.withWeighting = Json.getBool(obj, "withWeighting", false);
+
+			var sections = Json.getArray(obj, "sections");
+			if (sections == null) {
+				log.warn("No report's sections could be found.");
+			} else {
+				Json.stream(sections)
+					.filter(JsonElement::isJsonObject)
+					.map(JsonElement::getAsJsonObject)
+					.map(ReportSection::fromJson)
+					.filter(Objects::nonNull)
+					.forEach(report.sections::add);
+			}
+
+			// TODO (M) Synchronize with the database.
+			var processes = Json.getArray(obj, "processes");
+			if (processes == null) {
+				log.warn("No report's processes could be found.");
+			} else {
+				Json.stream(processes)
+					.filter(JsonElement::isJsonObject)
+					.map(JsonElement::getAsJsonObject)
+					.map(elem -> new Gson().fromJson(elem, ProcessDescriptor.class))
+					.filter(Objects::nonNull)
+					.forEach(report.processes::add);
+			}
+
+			var variants = Json.getArray(obj, "variants");
+			if (variants == null) {
+				log.warn("No report's variants could be found.");
+			} else {
+				Json.stream(variants)
+					.filter(JsonElement::isJsonObject)
+					.map(JsonElement::getAsJsonObject)
+					.map(ReportVariant::fromJson)
+					.filter(Objects::nonNull)
+					.forEach(report.variants::add);
+			}
+
+			var parameters = Json.getArray(obj, "parameters");
+			if (parameters == null) {
+				log.warn("No report's parameters could be found.");
+			} else {
+				Json.stream(parameters)
+					.filter(JsonElement::isJsonObject)
+					.map(JsonElement::getAsJsonObject)
+					.map(ReportParameter::fromJson)
+					.filter(Objects::nonNull)
+					.forEach(report.parameters::add);
+			}
+
+			var indicators = Json.getArray(obj, "indicators");
+			if (indicators == null) {
+				log.warn("No report's indicators could be found.");
+			} else {
+				Json.stream(indicators)
+					.filter(JsonElement::isJsonObject)
+					.map(JsonElement::getAsJsonObject)
+					.map(ReportIndicator::fromJson)
+					.filter(Objects::nonNull)
+					.forEach(report.indicators::add);
+			}
+
+			var results = Json.getArray(obj, "results");
+			if (results == null) {
+				log.warn("No report's results could be found.");
+			} else {
+				Json.stream(results)
+					.filter(JsonElement::isJsonObject)
+					.map(JsonElement::getAsJsonObject)
+					.map(ReportImpactResult::fromJson)
+					.filter(Objects::nonNull)
+					.forEach(report.results::add);
+			}
+
+			var addedValues = Json.getArray(obj, "addedValues");
+			if (addedValues == null) {
+				log.warn("No report's added values could be found.");
+			} else {
+				Json.stream(addedValues)
+					.filter(JsonElement::isJsonObject)
+					.map(JsonElement::getAsJsonObject)
+					.map(ReportCostResult::fromJson)
+					.filter(Objects::nonNull)
+					.forEach(report.addedValues::add);
+			}
+
+			var netCosts = Json.getArray(obj, "netCosts");
+			if (netCosts == null) {
+				log.warn("No report's net costs could be found.");
+			} else {
+				Json.stream(netCosts)
+					.filter(JsonElement::isJsonObject)
+					.map(JsonElement::getAsJsonObject)
+					.map(ReportCostResult::fromJson)
+					.filter(Objects::nonNull)
+					.forEach(report.netCosts::add);
+			}
+
+			return report;
+		}
+	}
+
+	/**
    * Removes the result data from this report. The result data are the
    * dynamic data of a report that may change with every calculation.
    */

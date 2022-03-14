@@ -1,11 +1,11 @@
 package org.openlca.app.editors.projects.reports.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Type;
+import java.util.*;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
@@ -13,7 +13,9 @@ import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.jsonld.Json;
 import org.openlca.util.Strings;
+import org.slf4j.LoggerFactory;
 
 class ReportParameter {
 
@@ -25,6 +27,39 @@ class ReportParameter {
 	  this.redef = redef;
 	  this.context = context;
   }
+
+	static ReportParameter fromJson(JsonObject obj) {
+		if (obj == null)
+			return null;
+
+		var log = LoggerFactory.getLogger(ReportParameter.class);
+
+		// TODO (M) Synchronize with the database instead of parsing the Json.
+		var redef = new Gson().fromJson(
+			Json.getObject(obj, "redef"),
+			ParameterRedef.class
+		);
+
+		var context = new Gson().fromJson(
+			Json.getObject(obj, "context"),
+			Descriptor.class
+		);
+
+		var reportParameter = new ReportParameter(redef, context);
+
+		var variantValues = Json.getObject(obj, "variantValues");
+		if (variantValues == null) {
+			log.warn("Failed to parse the variant values of the report's parameters.");
+		} else {
+			Type variantValuesMapType = new TypeToken<Map<String, Double>>() {}
+				.getType();
+			Map<String, Double> variantValuesMap = new Gson()
+				.fromJson(variantValues, variantValuesMapType);
+			reportParameter.variantValues.putAll(variantValuesMap);
+		}
+
+		return reportParameter;
+	}
 
   static List<ReportParameter> allOf(IDatabase db, Project project) {
 	  if (db == null || project == null)

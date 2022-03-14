@@ -1,12 +1,15 @@
 package org.openlca.app.editors.projects.reports.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Type;
+import java.util.*;
 
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.openlca.app.editors.projects.ProjectResultData;
+import org.openlca.jsonld.Json;
+import org.slf4j.LoggerFactory;
 
 class ReportImpactResult {
 
@@ -15,6 +18,36 @@ class ReportImpactResult {
 
 	private ReportImpactResult(String indicatorId) {
 		this.indicatorId = indicatorId;
+	}
+
+	static ReportImpactResult fromJson(JsonObject obj) {
+		if (obj == null)
+			return null;
+
+		var log = LoggerFactory.getLogger(ReportImpactResult.class);
+
+		var indicatorId = Json.getString(obj, "indicatorId");
+		if (indicatorId == null) {
+			log.warn("Failed to parse an impact result of the report.");
+			return null;
+		}
+
+		ReportImpactResult reportImpactResult = new ReportImpactResult(indicatorId);
+
+		var variantResults = Json.getArray(obj, "variantResults");
+		if (variantResults == null) {
+			log.warn("Failed to parse the variant's results of the impact results " +
+				"of the report.");
+		} else {
+			Json.stream(variantResults)
+				.filter(JsonElement::isJsonObject)
+				.map(JsonElement::getAsJsonObject)
+				.map(VariantResult::fromJson)
+				.filter(Objects::nonNull)
+				.forEach(reportImpactResult.variantResults::add);
+		}
+
+		return reportImpactResult;
 	}
 
 	static List<ReportImpactResult> allOf(Report report, ProjectResultData data) {
@@ -59,6 +92,23 @@ class ReportImpactResult {
 		  this.variant = variant;
 		  this.totalAmount = totalAmount;
     }
-	}
 
+		static VariantResult fromJson(JsonObject obj) {
+			if (obj == null)
+				return null;
+
+			var variantResult = new VariantResult(
+				Json.getString(obj, "variant"),
+				Json.getDouble(obj, "totalAmount", 0)
+			);
+
+
+			if (!obj.get("contributions").isJsonArray()) {
+				Type contributionsMapType = new TypeToken<Map<String, Double>>() {}.getType();
+				Map<String, Double> contributionsMap = new Gson().fromJson(obj.get("contributions"), contributionsMapType);
+				variantResult.contributions.putAll(contributionsMap);
+			}
+			return variantResult;
+		}
+	}
 }

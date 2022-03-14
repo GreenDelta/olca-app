@@ -1,18 +1,14 @@
 package org.openlca.app.editors.projects;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
-import com.google.gson.Gson;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.projects.reports.model.Report;
@@ -38,15 +34,14 @@ public class ProjectEditor extends ModelEditor<Project> {
 		super.init(site, input);
 		var reportFile = reportFile();
 		if (reportFile.exists()) {
-			try (var stream = new FileInputStream(reportFile);
-					 var reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
-					 var buffer = new BufferedReader(reader)) {
-				report = new Gson().fromJson(buffer, Report.class);
-			} catch (IOException e) {
-				ErrorReporter.on("Failed to open report file: " + reportFile, e);
+			try {
+				report = Report.fromJsonFile(reportFile);
 			}
+			catch (IOException e) {
+				ErrorReporter.on("Failed to open report file: " + reportFile, e);
 		}
 	}
+}
 
 	@Override
 	protected void addPages() {
