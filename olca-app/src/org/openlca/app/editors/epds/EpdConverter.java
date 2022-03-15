@@ -1,15 +1,18 @@
 package org.openlca.app.editors.epds;
 
+import org.openlca.app.tools.openepd.model.EpdDoc;
 import org.openlca.app.tools.openepd.model.EpdImpactResult;
 import org.openlca.app.tools.openepd.model.EpdIndicatorResult;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.tools.openepd.model.EpdMeasurement;
+import org.openlca.app.tools.openepd.model.EpdQuantity;
 import org.openlca.app.tools.openepd.model.EpdScopeValue;
 import org.openlca.core.model.Epd;
 import org.openlca.util.Strings;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -45,7 +48,7 @@ class EpdConverter {
 		return Validation.ok();
 	}
 
-	static Ec3Epd convert(Epd epd) {
+	static Ec3Epd toEc3(Epd epd) {
 		var doc = new Ec3Epd();
 		doc.isDraft = true;
 		doc.isPrivate = true;
@@ -59,14 +62,36 @@ class EpdConverter {
 		doc.dateValidityEnds = LocalDate.of(
 			today.getYear() + 1, today.getMonth(), today.getDayOfMonth());
 
-		var docResults = new HashMap<String, EpdImpactResult>();
+		doc.impactResults.addAll(convertResults(epd));
+		return doc;
+	}
+
+	static EpdDoc toOpenEpd(Epd epd) {
+		var doc = new EpdDoc();
+		doc.isPrivate = true;
+		doc.productName = epd.name;
+		if (epd.product != null && epd.product.unit != null) {
+			doc.declaredUnit = new EpdQuantity(
+				epd.product.amount, epd.product.unit.name);
+		}
+		doc.lcaDiscussion = epd.description;
+		var today = LocalDate.now();
+		doc.dateOfIssue = today;
+		doc.dateValidityEnds = LocalDate.of(
+			today.getYear() + 1, today.getMonth(), today.getDayOfMonth());
+		doc.impactResults.addAll(convertResults(epd));
+		return doc;
+	}
+
+	private static Collection<EpdImpactResult> convertResults(Epd epd) {
+		var map = new HashMap<String, EpdImpactResult>();
 		for (var mod : epd.modules) {
 			var result = mod.result;
 			if (result == null
 				|| result.impactMethod == null
 				|| Strings.nullOrEmpty(result.impactMethod.code))
 				continue;
-			var docResult = docResults.computeIfAbsent(
+			var docResult = map.computeIfAbsent(
 				result.impactMethod.code,
 				code -> new EpdImpactResult(code, new ArrayList<>()));
 
@@ -91,9 +116,9 @@ class EpdConverter {
 				docImpact.values().add(new EpdScopeValue(mod.name, value));
 			}
 		}
-		doc.impactResults.addAll(docResults.values());
-		return doc;
+		return map.values();
 	}
+
 }
 
 record Validation(String error) {

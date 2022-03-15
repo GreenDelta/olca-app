@@ -16,7 +16,7 @@ import org.openlca.app.tools.openepd.ErrorDialog;
 import org.openlca.app.tools.openepd.LoginPanel;
 import org.openlca.app.tools.openepd.model.Api;
 import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
-import org.openlca.app.tools.openepd.model.Ec3Epd;
+import org.openlca.app.tools.openepd.model.EpdDoc;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -24,6 +24,7 @@ import org.openlca.app.util.Popup;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.jsonld.Json;
+import org.openlca.util.Pair;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -31,17 +32,17 @@ import java.util.function.Consumer;
 
 class ExportDialog extends FormDialog {
 
-	private final Ec3Epd epd;
+	private final EpdDoc epd;
 	private Ec3CategoryTree categories;
 	private LoginPanel loginPanel;
 
-	public static void show(Ec3Epd epd) {
+	public static void show(EpdDoc epd) {
 		if (epd == null)
 			return;
 		new ExportDialog(epd).open();
 	}
 
-	private ExportDialog(Ec3Epd epd) {
+	private ExportDialog(EpdDoc epd) {
 		super(UI.shell());
 		this.epd = Objects.requireNonNull(epd);
 		this.categories = Ec3CategoryTree.loadFromCacheFile();
@@ -71,7 +72,7 @@ class ExportDialog extends FormDialog {
 		// name and unit
 		Controls.set(
 			UI.formText(comp, tk, M.Name),
-			epd.name, name -> epd.name = name);
+			epd.productName, name -> epd.productName = name);
 		Controls.set(
 			UI.formText(comp, tk, "Declared unit"),
 			epd.declaredUnit, s -> epd.declaredUnit = s);
@@ -95,20 +96,22 @@ class ExportDialog extends FormDialog {
 					return;
 				}
 			}
-			epd.category = CategoryDialog.selectFrom(categories);
-			if (epd.category != null) {
-				epd.categoryId = epd.category.id;
+
+			var ec3Category = CategoryDialog.selectFrom(categories);
+			if (ec3Category != null) {
+				epd.productClasses.clear();
+				epd.productClasses.add(Pair.of("io.cqd.ec3", ec3Category.openEpd));
 			}
-			categoryLink.setText(epd.category == null
+			categoryLink.setText(ec3Category== null
 				? " - none -"
-				: categories.pathOf(epd.category));
+				: categories.pathOf(ec3Category.openEpd));
 			categoryLink.getParent().layout();
 		});
 
 		// description
 		Controls.set(
 			UI.formMultiText(comp, tk, "Description"),
-			epd.description, s -> epd.description = s);
+			epd.productDescription, s -> epd.productDescription = s);
 
 		// date fields
 		UI.formLabel(comp, tk, "Date of issue");

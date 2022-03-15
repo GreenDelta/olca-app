@@ -63,7 +63,7 @@ public class EpdEditor extends ModelEditor<Epd> {
 						"EPD cannot be converted to an openEPD document: " + check.error());
 					return;
 				}
-				var ec3Epd = EpdConverter.convert(epd());
+				var ec3Epd = EpdConverter.toOpenEpd(epd());
 				ExportDialog.show(ec3Epd);
 			});
 
