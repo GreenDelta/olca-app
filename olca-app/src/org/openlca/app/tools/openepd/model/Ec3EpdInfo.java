@@ -11,6 +11,7 @@ import java.util.Optional;
 public class Ec3EpdInfo {
 
 	public String id;
+	public String epdId;
 	public String name;
 	public String description;
 	public Ec3Category category;
@@ -23,6 +24,7 @@ public class Ec3EpdInfo {
 		var obj = elem.getAsJsonObject();
 		var info = new Ec3EpdInfo();
 		info.id = Json.getString(obj, "id");
+		info.epdId = Json.getString(obj, "open_xpd_uuid");
 		info.name = Json.getString(obj, "name");
 		info.description = Json.getString(obj, "description");
 		info.category = Ec3Category.fromJson(

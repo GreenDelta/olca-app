@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.openlca.app.util.ErrorReporter;
@@ -115,6 +116,9 @@ public class Api {
 			List<Ec3EpdInfo> descriptors = r.hasJson()
 				? parse(r.json())
 				: Collections.emptyList();
+			if (r.hasJson()) {
+				System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(r.json()));
+				}
 			return new DescriptorResponse(
 				req.page, r.totalCount(), r.pageCount(), descriptors);
 		}

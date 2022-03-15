@@ -141,7 +141,7 @@ public class EpdPanel extends SimpleFormEditor {
 					if (epd.isEmpty())
 						return;
 					var file = FileChooser.forSavingFile(
-						"Save openEPD", epd.descriptor.id + ".json");
+						"Save openEPD", epd.descriptor.epdId + ".json");
 					if (file == null)
 						return;
 					Json.write(epd.json, file);
@@ -203,19 +203,19 @@ public class EpdPanel extends SimpleFormEditor {
 			}
 
 			static FullEpd fetch(TableViewer table, LoginPanel loginPanel) {
-				Ec3EpdInfo epd = Viewers.getFirstSelected(table);
-				if (epd == null)
+				Ec3EpdInfo info = Viewers.getFirstSelected(table);
+				if (info == null)
 					return empty();
 				var client = loginPanel.login().orElse(null);
 				if (client == null)
 					return empty();
 				var json = App.exec(
-					"Download EPD", () -> Api.getRawEpd(client, epd.id));
+					"Download EPD", () -> Api.getRawEpd(client, info.epdId));
 				if (json.isEmpty()) {
-					MsgBox.error("Failed to download EPD " + epd.id);
+					MsgBox.error("Failed to download EPD " + info.epdId);
 					return empty();
 				}
-				return new FullEpd(epd, json.get());
+				return new FullEpd(info, json.get());
 			}
 		}
 
