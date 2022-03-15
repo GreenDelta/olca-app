@@ -6,14 +6,14 @@ import java.util.List;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public record Ec3ImpactResult(
-	String method, List<Ec3IndicatorResult> indicatorResults) {
+public record EpdImpactResult(
+	String method, List<EpdIndicatorResult> indicatorResults) {
 
-	public static Ec3ImpactResult of(String method) {
-		return new Ec3ImpactResult(method, new ArrayList<>());
+	public static EpdImpactResult of(String method) {
+		return new EpdImpactResult(method, new ArrayList<>());
 	}
 
-	public static JsonObject toJson(List<Ec3ImpactResult> results) {
+	public static JsonObject toJson(List<EpdImpactResult> results) {
 		var json = new JsonObject();
 		if (results == null)
 			return json;
@@ -22,14 +22,14 @@ public record Ec3ImpactResult(
 				|| result.indicatorResults == null
 				|| result.indicatorResults.isEmpty())
 				continue;
-			var indicators = Ec3IndicatorResult.toJson(result.indicatorResults);
+			var indicators = EpdIndicatorResult.toJson(result.indicatorResults);
 			json.add(result.method, indicators);
 		}
 		return json;
 	}
 
-	public static List<Ec3ImpactResult> fromJson(JsonElement elem) {
-		var results = new ArrayList<Ec3ImpactResult>();
+	public static List<EpdImpactResult> fromJson(JsonElement elem) {
+		var results = new ArrayList<EpdImpactResult>();
 		if (elem == null || !elem.isJsonObject())
 			return results;
 		var json = elem.getAsJsonObject();
@@ -37,10 +37,10 @@ public record Ec3ImpactResult(
 			var v = json.get(method);
 			if (v == null)
 				continue;
-			var indicatorResults = Ec3IndicatorResult.fromJson(v);
+			var indicatorResults = EpdIndicatorResult.fromJson(v);
 			if (indicatorResults.isEmpty())
 				continue;
-			results.add(new Ec3ImpactResult(method, indicatorResults));
+			results.add(new EpdImpactResult(method, indicatorResults));
 		}
 		return results;
 	}

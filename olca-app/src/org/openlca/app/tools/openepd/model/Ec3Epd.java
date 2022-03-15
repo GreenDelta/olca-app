@@ -37,7 +37,7 @@ public class Ec3Epd {
 	public LocalDate dateOfIssue;
 	public LocalDate dateValidityEnds;
 
-	public final List<Ec3ImpactResult> impactResults = new ArrayList<>();
+	public final List<EpdImpactResult> impactResults = new ArrayList<>();
 
 	public static Optional<Ec3Epd> fromJson(JsonElement elem) {
 		if (elem == null || !elem.isJsonObject())
@@ -72,7 +72,7 @@ public class Ec3Epd {
 		// impacts
 		var impactJson = Json.getObject(obj, "impacts");
 		if (impactJson != null) {
-			var impactResults = Ec3ImpactResult.fromJson(impactJson);
+			var impactResults = EpdImpactResult.fromJson(impactJson);
 			epd.impactResults.addAll(impactResults);
 		}
 
@@ -117,7 +117,7 @@ public class Ec3Epd {
 		}
 
 		// impact results
-		var impactJson = Ec3ImpactResult.toJson(impactResults);
+		var impactJson = EpdImpactResult.toJson(impactResults);
 		if (impactJson.size() > 0) {
 			obj.add("impacts", impactJson);
 		}

@@ -6,18 +6,18 @@ import org.openlca.jsonld.Json;
 
 import java.util.Optional;
 
-public record Ec3Quantity(double amount, String unit) {
+public record EpdQuantity(double amount, String unit) {
 
-	public static Ec3Quantity of(double amount, String unit) {
-		return new Ec3Quantity(amount, unit);
+	public static EpdQuantity of(double amount, String unit) {
+		return new EpdQuantity(amount, unit);
 	}
 
-	public static Optional<Ec3Quantity> fromJson(JsonElement elem) {
+	public static Optional<EpdQuantity> fromJson(JsonElement elem) {
 		if (elem == null || !elem.isJsonObject())
 			return Optional.empty();
 		var obj = elem.getAsJsonObject();
 		var unit = Json.getString(obj, "unit");
-		var qty = new Ec3Quantity(
+		var qty = new EpdQuantity(
 			Json.getDouble(obj, "qty", 0),
 			unit != null ? unit : ""
 		);

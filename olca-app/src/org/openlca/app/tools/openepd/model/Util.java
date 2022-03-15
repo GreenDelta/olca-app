@@ -18,10 +18,10 @@ class Util {
 		}
 	}
 
-	static Ec3Quantity getQuantity(JsonObject obj, String field) {
+	static EpdQuantity getQuantity(JsonObject obj, String field) {
 		if (obj == null || field == null)
 			return null;
-		return Ec3Quantity.fromJson(obj.get(field))
+		return EpdQuantity.fromJson(obj.get(field))
 			.orElse(null);
 	}
 }

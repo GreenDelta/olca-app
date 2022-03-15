@@ -2,7 +2,7 @@ package org.openlca.app.tools.openepd.input;
 
 import org.openlca.app.tools.openepd.model.EpdDoc;
 import org.openlca.app.tools.openepd.model.EpdOrg;
-import org.openlca.app.tools.openepd.model.Ec3Pcr;
+import org.openlca.app.tools.openepd.model.EpdPcr;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.io.ImportLog;
@@ -95,26 +95,22 @@ class Import {
 	private Actor getActor(EpdOrg org) {
 		if (org == null || Strings.nullOrEmpty(org.name))
 			return null;
-		var id = org.id;
-		if (Strings.nullOrEmpty(id)) {
-			id = Strings.notEmpty(org.ref)
+		var id = Strings.notEmpty(org.ref)
 				? KeyGen.get(org.ref)
 				: KeyGen.get(org.name);
-		}
 		var actor = db.get(Actor.class, id);
 		if (actor != null)
 			return actor;
 		actor = Actor.of(org.name);
 		actor.refId = id;
-		actor.website = org.website;
-		actor.address = org.address;
-		actor.country = org.country;
+		actor.website = org.webDomain;
+		actor.address = org.ref;
 		actor = db.insert(actor);
 		log.imported(actor);
 		return actor;
 	}
 
-	private Source getSource(Ec3Pcr pcr) {
+	private Source getSource(EpdPcr pcr) {
 		if (pcr == null || Strings.nullOrEmpty(pcr.name))
 			return null;
 		var id = pcr.id;

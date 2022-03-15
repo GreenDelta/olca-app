@@ -24,8 +24,8 @@ public class EpdDoc {
 
 	public LocalDate dateOfIssue;
 	public LocalDate dateValidityEnds;
-	public Ec3Quantity declaredUnit;
-	public Ec3Quantity kgPerDeclaredUnit;
+	public EpdQuantity declaredUnit;
+	public EpdQuantity kgPerDeclaredUnit;
 
 	public String productName;
 	public String productDescription;
@@ -33,9 +33,9 @@ public class EpdDoc {
 	public EpdOrg manufacturer;
 	public EpdOrg verifier;
 	public EpdOrg programOperator;
-	public Ec3Pcr pcr;
+	public EpdPcr pcr;
 
-	public final List<Ec3ImpactResult> impactResults = new ArrayList<>();
+	public final List<EpdImpactResult> impactResults = new ArrayList<>();
 
 	public static Optional<EpdDoc> fromJson(JsonElement elem) {
 		if (elem == null || !elem.isJsonObject())
@@ -66,7 +66,7 @@ public class EpdDoc {
 			obj.get("third_party_verifier")).orElse(null);
 		epd.programOperator = EpdOrg.fromJson(
 			obj.get("program_operator")).orElse(null);
-		epd.pcr = Ec3Pcr.fromJson(obj.get("pcr")).orElse(null);
+		epd.pcr = EpdPcr.fromJson(obj.get("pcr")).orElse(null);
 
 		var classes = Json.getObject(obj, "product_classes");
 		if (classes != null) {
@@ -83,7 +83,7 @@ public class EpdDoc {
 		// impacts
 		var impactJson = Json.getObject(obj, "impacts");
 		if (impactJson != null) {
-			var impactResults = Ec3ImpactResult.fromJson(impactJson);
+			var impactResults = EpdImpactResult.fromJson(impactJson);
 			epd.impactResults.addAll(impactResults);
 		}
 

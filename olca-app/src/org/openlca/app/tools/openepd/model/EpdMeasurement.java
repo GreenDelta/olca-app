@@ -14,22 +14,22 @@ import org.openlca.jsonld.Json;
  * @param rsd  the relative standard deviation, i.e. standard_deviation/mean
  * @param dist statistical distribution of the measurement error
  */
-public record Ec3Measurement(
+public record EpdMeasurement(
 	double mean,
 	String unit,
 	Double rsd,
 	String dist
 ) {
 
-	public static Ec3Measurement of(double amount, String unit) {
-		return new Ec3Measurement(amount, unit, null, null);
+	public static EpdMeasurement of(double amount, String unit) {
+		return new EpdMeasurement(amount, unit, null, null);
 	}
 
-	public static Optional<Ec3Measurement> fromJson(JsonElement elem) {
+	public static Optional<EpdMeasurement> fromJson(JsonElement elem) {
 		if (elem == null || !elem.isJsonObject())
 			return Optional.empty();
 		var obj = elem.getAsJsonObject();
-		var m = new Ec3Measurement(
+		var m = new EpdMeasurement(
 			Json.getDouble(obj, "mean", 0),
 			Json.getString(obj, "unit"),
 			Json.getDouble(obj, "rsd").orElse(null),

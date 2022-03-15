@@ -1,10 +1,10 @@
 package org.openlca.app.editors.epds;
 
-import org.openlca.app.tools.openepd.model.Ec3ImpactResult;
-import org.openlca.app.tools.openepd.model.Ec3IndicatorResult;
+import org.openlca.app.tools.openepd.model.EpdImpactResult;
+import org.openlca.app.tools.openepd.model.EpdIndicatorResult;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
-import org.openlca.app.tools.openepd.model.Ec3Measurement;
-import org.openlca.app.tools.openepd.model.Ec3ScopeValue;
+import org.openlca.app.tools.openepd.model.EpdMeasurement;
+import org.openlca.app.tools.openepd.model.EpdScopeValue;
 import org.openlca.core.model.Epd;
 import org.openlca.util.Strings;
 
@@ -59,7 +59,7 @@ class EpdConverter {
 		doc.dateValidityEnds = LocalDate.of(
 			today.getYear() + 1, today.getMonth(), today.getDayOfMonth());
 
-		var docResults = new HashMap<String, Ec3ImpactResult>();
+		var docResults = new HashMap<String, EpdImpactResult>();
 		for (var mod : epd.modules) {
 			var result = mod.result;
 			if (result == null
@@ -68,14 +68,14 @@ class EpdConverter {
 				continue;
 			var docResult = docResults.computeIfAbsent(
 				result.impactMethod.code,
-				code -> new Ec3ImpactResult(code, new ArrayList<>()));
+				code -> new EpdImpactResult(code, new ArrayList<>()));
 
 			for (var impact : result.impactResults) {
 				if (impact.indicator == null
 					|| Strings.nullOrEmpty(impact.indicator.code))
 					continue;
 				var code = impact.indicator.code;
-				Ec3IndicatorResult docImpact = null;
+				EpdIndicatorResult docImpact = null;
 				for (var i : docResult.indicatorResults()) {
 					if (Objects.equals(code, i.indicator())) {
 						docImpact = i;
@@ -83,12 +83,12 @@ class EpdConverter {
 					}
 				}
 				if (docImpact == null) {
-					docImpact = new Ec3IndicatorResult(code, new ArrayList<>());
+					docImpact = new EpdIndicatorResult(code, new ArrayList<>());
 					docResult.indicatorResults().add(docImpact);
 				}
-				var value = Ec3Measurement.of(
+				var value = EpdMeasurement.of(
 					impact.amount, impact.indicator.referenceUnit);
-				docImpact.values().add(new Ec3ScopeValue(mod.name, value));
+				docImpact.values().add(new EpdScopeValue(mod.name, value));
 			}
 		}
 		doc.impactResults.addAll(docResults.values());

@@ -5,10 +5,10 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.tools.openepd.model.Ec3ImpactResult;
-import org.openlca.app.tools.openepd.model.Ec3IndicatorResult;
-import org.openlca.app.tools.openepd.model.Ec3Measurement;
-import org.openlca.app.tools.openepd.model.Ec3ScopeValue;
+import org.openlca.app.tools.openepd.model.EpdImpactResult;
+import org.openlca.app.tools.openepd.model.EpdIndicatorResult;
+import org.openlca.app.tools.openepd.model.EpdMeasurement;
+import org.openlca.app.tools.openepd.model.EpdScopeValue;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 
@@ -18,10 +18,10 @@ import java.util.Objects;
 
 class ExportResultSection {
 
-	private final Ec3ImpactResult result;
+	private final EpdImpactResult result;
 	private final String[] mods;
 
-	ExportResultSection(Ec3ImpactResult result) {
+	ExportResultSection(EpdImpactResult result) {
 		this.result = result;
 		var mods = new HashSet<String>();
 		result.indicatorResults()
@@ -54,7 +54,7 @@ class ExportResultSection {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Ec3IndicatorResult r))
+			if (!(obj instanceof EpdIndicatorResult r))
 				return null;
 			return switch (col) {
 				case 0 -> r.indicator();
@@ -70,9 +70,9 @@ class ExportResultSection {
 					var mod = mods[modIdx];
 					var d = r.values().stream()
 						.filter(v -> Objects.equals(mod, v.scope()))
-						.map(Ec3ScopeValue::value)
+						.map(EpdScopeValue::value)
 						.filter(Objects::nonNull)
-						.mapToDouble(Ec3Measurement::mean)
+						.mapToDouble(EpdMeasurement::mean)
 						.findAny();
 					yield d.isPresent()
 						? Double.toString(d.getAsDouble())
