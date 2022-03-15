@@ -16,7 +16,7 @@ import org.openlca.app.tools.openepd.ErrorDialog;
 import org.openlca.app.tools.openepd.LoginPanel;
 import org.openlca.app.tools.openepd.model.Api;
 import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
-import org.openlca.app.tools.openepd.model.Ec3InternalEpd;
+import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -31,17 +31,17 @@ import java.util.function.Consumer;
 
 class ExportDialog extends FormDialog {
 
-	private final Ec3InternalEpd epd;
+	private final Ec3Epd epd;
 	private Ec3CategoryTree categories;
 	private LoginPanel loginPanel;
 
-	public static void show(Ec3InternalEpd epd) {
+	public static void show(Ec3Epd epd) {
 		if (epd == null)
 			return;
 		new ExportDialog(epd).open();
 	}
 
-	private ExportDialog(Ec3InternalEpd epd) {
+	private ExportDialog(Ec3Epd epd) {
 		super(UI.shell());
 		this.epd = Objects.requireNonNull(epd);
 		this.categories = Ec3CategoryTree.loadFromCacheFile();

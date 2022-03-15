@@ -2,7 +2,7 @@ package org.openlca.app.editors.epds;
 
 import org.openlca.app.tools.openepd.model.Ec3ImpactResult;
 import org.openlca.app.tools.openepd.model.Ec3IndicatorResult;
-import org.openlca.app.tools.openepd.model.Ec3InternalEpd;
+import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.tools.openepd.model.Ec3Measurement;
 import org.openlca.app.tools.openepd.model.Ec3ScopeValue;
 import org.openlca.core.model.Epd;
@@ -45,8 +45,8 @@ class EpdConverter {
 		return Validation.ok();
 	}
 
-	static Ec3InternalEpd convert(Epd epd) {
-		var doc = new Ec3InternalEpd();
+	static Ec3Epd convert(Epd epd) {
+		var doc = new Ec3Epd();
 		doc.isDraft = true;
 		doc.isPrivate = true;
 		doc.name = epd.name;

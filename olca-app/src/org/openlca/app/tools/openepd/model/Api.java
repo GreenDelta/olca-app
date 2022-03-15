@@ -106,22 +106,22 @@ public class Api {
 		int page,
 		int totalCount,
 		int totalPages,
-		List<Ec3Epd> descriptors) {
+		List<EpdDoc> descriptors) {
 
 		private static DescriptorResponse get(DescriptorRequest req) {
 			var r = req.client.query(req.path());
-			List<Ec3Epd> descriptors = r.hasJson()
+			List<EpdDoc> descriptors = r.hasJson()
 				? parse(r.json())
 				: Collections.emptyList();
 			return new DescriptorResponse(
 				req.page, r.totalCount(), r.pageCount(), descriptors);
 		}
 
-		private static List<Ec3Epd> parse(JsonElement json) {
+		private static List<EpdDoc> parse(JsonElement json) {
 			if (json == null || !json.isJsonArray())
 				return Collections.emptyList();
 			return Json.stream(json.getAsJsonArray())
-				.map(Ec3Epd::fromJson)
+				.map(EpdDoc::fromJson)
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.toList();

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import org.openlca.app.tools.openepd.model.Ec3Epd;
+import org.openlca.app.tools.openepd.model.EpdDoc;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
@@ -20,7 +20,7 @@ class Util {
 	private Util() {
 	}
 
-	static FlowResult initQuantitativeReference(Ec3Epd epd, IDatabase db) {
+	static FlowResult initQuantitativeReference(EpdDoc epd, IDatabase db) {
 		var f = new FlowResult();
 		f.flow = new Flow();
 		f.flow.refId = UUID.randomUUID().toString();
@@ -66,7 +66,7 @@ class Util {
 			: prop.unitGroup.units;
 	}
 
-	static String categoryOf(Ec3Epd epd) {
+	static String categoryOf(EpdDoc epd) {
 		if (epd == null || epd.productClasses.isEmpty())
 			return "";
 		var first = epd.productClasses.stream()

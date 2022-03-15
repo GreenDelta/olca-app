@@ -10,7 +10,7 @@ public class Ec3Certifier {
 
 	public String name;
 	public String email;
-	public Ec3Org org;
+	public EpdOrg org;
 
 	public static Optional<Ec3Certifier> fromJson(JsonElement elem) {
 		if (elem == null || !elem.isJsonObject())
@@ -19,7 +19,7 @@ public class Ec3Certifier {
 		var certifier = new Ec3Certifier();
 		certifier.name = Json.getString(obj, "name");
 		certifier.email = Json.getString(obj, "email");
-		certifier.org = Ec3Org.fromJson(obj.get("org")).orElse(null);
+		certifier.org = EpdOrg.fromJson(obj.get("org")).orElse(null);
 		return Optional.of(certifier);
 	}
 

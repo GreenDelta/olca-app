@@ -20,7 +20,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
 import org.openlca.app.tools.openepd.model.Api;
 import org.openlca.app.tools.openepd.model.Ec3Client;
-import org.openlca.app.tools.openepd.model.Ec3Epd;
+import org.openlca.app.tools.openepd.model.EpdDoc;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
@@ -102,7 +102,7 @@ public class EpdPanel extends SimpleFormEditor {
 					return;
 
 				// search for EPDs
-				var epds = new ArrayList<Ec3Epd>();
+				var epds = new ArrayList<EpdDoc>();
 				var query = searchText.getText();
 				var count = spinner.getSelection();
 				App.runWithProgress("Fetch EPDs", () -> {
@@ -181,16 +181,16 @@ public class EpdPanel extends SimpleFormEditor {
 					"Could not download an EPD for the given ID '" + id +"'.");
 				return;
 			}
-			var epd = Ec3Epd.fromJson(json.get()).orElse(null);
+			var epd = EpdDoc.fromJson(json.get()).orElse(null);
 			ImportDialog.show(epd);
 		}
 
-		private record FullEpd(Ec3Epd descriptor, JsonObject json) {
+		private record FullEpd(EpdDoc descriptor, JsonObject json) {
 
 
-			Ec3Epd get() {
+			EpdDoc get() {
 				return json != null
-					? Ec3Epd.fromJson(json).orElse(null)
+					? EpdDoc.fromJson(json).orElse(null)
 					: null;
 			}
 
@@ -203,7 +203,7 @@ public class EpdPanel extends SimpleFormEditor {
 			}
 
 			static FullEpd fetch(TableViewer table, LoginPanel loginPanel) {
-				Ec3Epd epd = Viewers.getFirstSelected(table);
+				EpdDoc epd = Viewers.getFirstSelected(table);
 				if (epd == null)
 					return empty();
 				var client = loginPanel.login().orElse(null);
@@ -229,7 +229,7 @@ public class EpdPanel extends SimpleFormEditor {
 
 			@Override
 			public String getColumnText(Object obj, int col) {
-				if (!(obj instanceof Ec3Epd epd))
+				if (!(obj instanceof EpdDoc epd))
 					return null;
 				return switch (col) {
 					case 0 -> epd.productName;
@@ -245,7 +245,7 @@ public class EpdPanel extends SimpleFormEditor {
 			}
 		}
 
-		private String categoryOf(Ec3Epd epd) {
+		private String categoryOf(EpdDoc epd) {
 			if (epd == null || epd.productClasses.isEmpty())
 				return null;
 			return epd.productClasses.stream()

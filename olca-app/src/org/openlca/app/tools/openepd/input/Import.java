@@ -1,7 +1,7 @@
 package org.openlca.app.tools.openepd.input;
 
-import org.openlca.app.tools.openepd.model.Ec3Epd;
-import org.openlca.app.tools.openepd.model.Ec3Org;
+import org.openlca.app.tools.openepd.model.EpdDoc;
+import org.openlca.app.tools.openepd.model.EpdOrg;
 import org.openlca.app.tools.openepd.model.Ec3Pcr;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
@@ -28,13 +28,13 @@ import java.util.HashMap;
 class Import {
 
 	private final IDatabase db;
-	private final Ec3Epd epd;
+	private final EpdDoc epd;
 	private final ImportMapping mapping;
 	private final Quantity quantity;
 	private final String category;
 	private final ImportLog log;
 
-	Import(IDatabase db, Ec3Epd epd, ImportMapping mapping) {
+	Import(IDatabase db, EpdDoc epd, ImportMapping mapping) {
 		this.db = db;
 		this.epd = epd;
 		this.mapping = mapping;
@@ -92,7 +92,7 @@ class Import {
 		return refFlow;
 	}
 
-	private Actor getActor(Ec3Org org) {
+	private Actor getActor(EpdOrg org) {
 		if (org == null || Strings.nullOrEmpty(org.name))
 			return null;
 		var id = org.id;
