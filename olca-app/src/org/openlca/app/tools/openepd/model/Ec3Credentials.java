@@ -2,6 +2,7 @@ package org.openlca.app.tools.openepd.model;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.google.gson.JsonObject;
@@ -9,28 +10,28 @@ import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.jsonld.Json;
 
-public class Credentials {
+public class Ec3Credentials {
 
-	private String url;
-	private String queryUrl;
+	private String ec3Url;
+	private String epdUrl;
 	private String user;
 	private String password;
 
-	public String url() {
-		return url;
+	public String ec3Url() {
+		return ec3Url;
 	}
 
-	public Credentials url(String url) {
-		this.url = url;
+	public Ec3Credentials ec3Url(String url) {
+		this.ec3Url = url;
 		return this;
 	}
 
-	public String queryUrl() {
-		return queryUrl;
+	public String epdUrl() {
+		return epdUrl;
 	}
 
-	public Credentials queryUrl(String url) {
-		this.queryUrl = url;
+	public Ec3Credentials epdUrl(String url) {
+		this.epdUrl = url;
 		return this;
 	}
 
@@ -38,7 +39,7 @@ public class Credentials {
 		return user;
 	}
 
-	public Credentials user(String user) {
+	public Ec3Credentials user(String user) {
 		this.user = user;
 		return this;
 	}
@@ -47,15 +48,15 @@ public class Credentials {
 		return password;
 	}
 
-	public Credentials password(String password) {
+	public Ec3Credentials password(String password) {
 		this.password = password;
 		return this;
 	}
 
-	public static Credentials getDefault() {
-		var c = new Credentials();
-		c.url = "https://buildingtransparency.org/api";
-		c.queryUrl = "https://openepd.buildingtransparency.org/api";
+	public static Ec3Credentials getDefault() {
+		var c = new Ec3Credentials();
+		c.ec3Url = "https://buildingtransparency.org/api";
+		c.epdUrl = "https://openepd.buildingtransparency.org/api";
 		var file = file();
 		if (!file.exists())
 			return c;
@@ -63,8 +64,10 @@ public class Credentials {
 			var json = Json.readObject(file).orElse(null);
 			if (json == null)
 				return c;
-			c.url = Json.getString(json, "url");
-			c.queryUrl = Json.getString(json, "queryUrl");
+			c.ec3Url = Objects.requireNonNullElse(
+					Json.getString(json, "ec3Url"), c.ec3Url);
+			c.epdUrl = Objects.requireNonNullElse(
+					Json.getString(json, "epdUrl"), c.epdUrl);
 			c.user = Json.getString(json, "user");
 			c.password = Json.getString(json, "password");
 			return c;
@@ -76,8 +79,8 @@ public class Credentials {
 
 	public void save() {
 		var json = new JsonObject();
-		json.addProperty("url", url);
-		json.addProperty("queryUrl", queryUrl);
+		json.addProperty("ec3Url", ec3Url);
+		json.addProperty("epdUrl", epdUrl);
 		json.addProperty("user", user);
 		json.addProperty("password", password);
 		var file = file();
@@ -90,8 +93,8 @@ public class Credentials {
 
 	public Optional<Ec3Client> login() {
 		try {
-			var client = Ec3Client.of(url)
-				.withQueryUrl(queryUrl)
+			var client = Ec3Client.of(ec3Url)
+				.withEpdUrl(epdUrl)
 				.login(user, password);
 			return Optional.of(client);
 		} catch (Exception e) {

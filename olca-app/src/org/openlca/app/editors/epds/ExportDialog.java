@@ -91,7 +91,7 @@ class ExportDialog extends FormDialog {
 				if (categories.isEmpty()) {
 					MsgBox.error("No categories could be loaded",
 						"No categories could be loaded from "
-							+ loginPanel.credentials().queryUrl());
+							+ loginPanel.credentials().ec3Url());
 					return;
 				}
 			}
@@ -157,7 +157,7 @@ class ExportDialog extends FormDialog {
 		if (client == null)
 			return;
 		var b = Question.ask("Upload as draft?",
-			"Upload this as draft to " + loginPanel.credentials().url() + "?");
+			"Upload this as draft to " + loginPanel.credentials().ec3Url() + "?");
 		if (!b)
 			return;
 		try {
@@ -179,7 +179,7 @@ class ExportDialog extends FormDialog {
 				ErrorDialog.show(obj);
 				return;
 			}
-			var url = loginPanel.credentials().url();
+			var url = loginPanel.credentials().ec3Url();
 			Popup.info("Uploaded EPD",
 				"The EPD was uploaded to <a href='" + url + "'>" + url + "</a>");
 			super.okPressed();

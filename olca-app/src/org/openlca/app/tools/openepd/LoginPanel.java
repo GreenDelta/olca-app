@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.openepd.model.Credentials;
+import org.openlca.app.tools.openepd.model.Ec3Credentials;
 import org.openlca.app.tools.openepd.model.Ec3Client;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
@@ -17,13 +17,13 @@ import org.openlca.util.Strings;
 
 public class LoginPanel {
 
-	private final Credentials credentials;
+	private final Ec3Credentials credentials;
 	private boolean credentialsChanged;
 	private Ec3Client client;
 	private Button button;
 
 	private LoginPanel() {
-		credentials = Credentials.getDefault();
+		credentials = Ec3Credentials.getDefault();
 	}
 
 	public static LoginPanel create(Composite body, FormToolkit tk) {
@@ -32,7 +32,7 @@ public class LoginPanel {
 		return section;
 	}
 
-	public Credentials credentials() {
+	public Ec3Credentials credentials() {
 		return credentials;
 	}
 
@@ -40,27 +40,27 @@ public class LoginPanel {
 		var section = UI.section(body, tk, "EC3 Login");
 		var comp = UI.sectionClient(section, tk, 2);
 
-		// auth-url
+		// EC3 URL
 		var filled = 0;
-		var authUrlText = UI.formText(comp, tk, "EC3 Endpoint");
-		if (Strings.notEmpty(credentials.url())) {
-			authUrlText.setText(credentials.url());
+		var ec3UrlText = UI.formText(comp, tk, "EC3 Endpoint");
+		if (Strings.notEmpty(credentials.ec3Url())) {
+			ec3UrlText.setText(credentials.ec3Url());
 			filled++;
 		}
-		authUrlText.addModifyListener($ -> {
+		ec3UrlText.addModifyListener($ -> {
 			credentialsChanged = true;
-			credentials.url(authUrlText.getText());
+			credentials.ec3Url(ec3UrlText.getText());
 		});
 
-		// query URL
-		var queryUrlText = UI.formText(comp, tk, "openEPD Endpoint");
-		if (Strings.notEmpty(credentials.queryUrl())) {
-			queryUrlText.setText(credentials.queryUrl());
+		// EPD URL
+		var epdUrlText = UI.formText(comp, tk, "openEPD Endpoint");
+		if (Strings.notEmpty(credentials.epdUrl())) {
+			epdUrlText.setText(credentials.epdUrl());
 			filled++;
 		}
-		queryUrlText.addModifyListener($ -> {
+		epdUrlText.addModifyListener($ -> {
 			credentialsChanged = true;
-			credentials.queryUrl(queryUrlText.getText());
+			credentials.epdUrl(epdUrlText.getText());
 		});
 
 		// user

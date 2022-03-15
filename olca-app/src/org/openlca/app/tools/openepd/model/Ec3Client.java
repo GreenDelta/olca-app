@@ -18,13 +18,13 @@ public class Ec3Client {
 
 	private final String url;
 	private final String authKey;
-	private final String queryUrl;
+	private final String epdUrl;
 	private final HttpClient http;
 
 	private Ec3Client(Config config, String authKey) {
 		this.url = formatUrl(config.url);
-		this.queryUrl = config.queryUrl != null
-			? formatUrl(config.queryUrl)
+		this.epdUrl = config.epdUrl != null
+			? formatUrl(config.epdUrl)
 			: this.url;
 		this.authKey = authKey;
 		http = config.http;
@@ -50,7 +50,7 @@ public class Ec3Client {
 	 * this class.
 	 */
 	public Ec3Response query(String path) {
-		return internalGet(path, queryUrl);
+		return internalGet(path, epdUrl);
 	}
 
 	public Ec3Response get(String path) {
@@ -114,7 +114,7 @@ public class Ec3Client {
 
 		private final String url;
 		private final HttpClient http;
-		private String queryUrl;
+		private String epdUrl;
 
 		private Config(String url) {
 			this.url = Objects.requireNonNull(url);
@@ -123,9 +123,9 @@ public class Ec3Client {
 				.build();
 		}
 
-		public Config withQueryUrl(String queryUrl) {
+		public Config withEpdUrl(String queryUrl) {
 			if (Strings.notEmpty(queryUrl)) {
-				this.queryUrl = queryUrl;
+				this.epdUrl = queryUrl;
 			}
 			return this;
 		}
