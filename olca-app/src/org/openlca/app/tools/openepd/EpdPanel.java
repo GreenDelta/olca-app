@@ -20,6 +20,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
 import org.openlca.app.tools.openepd.model.Api;
 import org.openlca.app.tools.openepd.model.Ec3Client;
+import org.openlca.app.tools.openepd.model.Ec3EpdInfo;
 import org.openlca.app.tools.openepd.model.EpdDoc;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -102,7 +103,7 @@ public class EpdPanel extends SimpleFormEditor {
 					return;
 
 				// search for EPDs
-				var epds = new ArrayList<EpdDoc>();
+				var epds = new ArrayList<Ec3EpdInfo>();
 				var query = searchText.getText();
 				var count = spinner.getSelection();
 				App.runWithProgress("Fetch EPDs", () -> {
@@ -161,7 +162,7 @@ public class EpdPanel extends SimpleFormEditor {
 			// URL is the ID of the EPD.
 			var parts = url.split("/");
 			String last = null;
-			for (int i = parts.length -1; i >= 0; i--) {
+			for (int i = parts.length - 1; i >= 0; i--) {
 				var part = parts[i].trim();
 				if (!part.isEmpty()) {
 					last = part;
@@ -178,15 +179,14 @@ public class EpdPanel extends SimpleFormEditor {
 				"Download EPD " + id, () -> Api.getRawEpd(client, id));
 			if (json.isEmpty()) {
 				MsgBox.error(
-					"Could not download an EPD for the given ID '" + id +"'.");
+					"Could not download an EPD for the given ID '" + id + "'.");
 				return;
 			}
 			var epd = EpdDoc.fromJson(json.get()).orElse(null);
 			ImportDialog.show(epd);
 		}
 
-		private record FullEpd(EpdDoc descriptor, JsonObject json) {
-
+		private record FullEpd(Ec3EpdInfo descriptor, JsonObject json) {
 
 			EpdDoc get() {
 				return json != null
@@ -203,7 +203,7 @@ public class EpdPanel extends SimpleFormEditor {
 			}
 
 			static FullEpd fetch(TableViewer table, LoginPanel loginPanel) {
-				EpdDoc epd = Viewers.getFirstSelected(table);
+				Ec3EpdInfo epd = Viewers.getFirstSelected(table);
 				if (epd == null)
 					return empty();
 				var client = loginPanel.login().orElse(null);
@@ -219,7 +219,7 @@ public class EpdPanel extends SimpleFormEditor {
 			}
 		}
 
-		private class TableLabel extends BaseLabelProvider
+		private static class TableLabel extends BaseLabelProvider
 			implements ITableLabelProvider {
 
 			@Override
@@ -229,32 +229,22 @@ public class EpdPanel extends SimpleFormEditor {
 
 			@Override
 			public String getColumnText(Object obj, int col) {
-				if (!(obj instanceof EpdDoc epd))
+				if (!(obj instanceof Ec3EpdInfo epd))
 					return null;
 				return switch (col) {
-					case 0 -> epd.productName;
+					case 0 -> epd.name;
 					case 1 -> epd.manufacturer != null
 						? epd.manufacturer.name
 						: null;
-					case 2 -> categoryOf(epd);
+					case 2 -> epd.category != null
+						? epd.category.openEpd
+						: null;
 					case 3 -> epd.declaredUnit != null
-						? epd.declaredUnit.toString()
+						? epd.declaredUnit
 						: null;
 					default -> null;
 				};
 			}
 		}
-
-		private String categoryOf(EpdDoc epd) {
-			if (epd == null || epd.productClasses.isEmpty())
-				return null;
-			return epd.productClasses.stream()
-				.map(p -> p.second)
-				.filter(Strings::notEmpty)
-				.findAny()
-				.orElse(null);
-		}
 	}
-
-
 }

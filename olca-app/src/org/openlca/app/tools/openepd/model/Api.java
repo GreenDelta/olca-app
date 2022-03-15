@@ -19,7 +19,7 @@ public class Api {
 
 	public static Optional<JsonObject> getRawEpd(Ec3Client client, String id) {
 		try {
-			var r = client.query("epds/" + id);
+			var r = client.getEpd("epds/" + id);
 			if (!r.hasJson())
 				return Optional.empty();
 			var json = r.json();
@@ -80,9 +80,11 @@ public class Api {
 		private String path() {
 			var path = "/epds" +
 				"?page_number=" + page +
-				"&page_size=" + pageSize +
-				"&fields=id,product_name,product_description," +
-				"product_classes,manufacturer,declared_unit";
+				"&page_size=" + pageSize;
+			// we remove the field filters for now as this does not always work; e.g.
+			// manufacturer is missing  when we add a filter
+			// "&fields=id,category,name,description," +
+			// "manufacturer,declared_unit,openepd";
 			if (query != null) {
 				var q = query.trim();
 				if (Strings.notEmpty(q)) {
@@ -106,22 +108,22 @@ public class Api {
 		int page,
 		int totalCount,
 		int totalPages,
-		List<EpdDoc> descriptors) {
+		List<Ec3EpdInfo> descriptors) {
 
 		private static DescriptorResponse get(DescriptorRequest req) {
-			var r = req.client.query(req.path());
-			List<EpdDoc> descriptors = r.hasJson()
+			var r = req.client.get(req.path());
+			List<Ec3EpdInfo> descriptors = r.hasJson()
 				? parse(r.json())
 				: Collections.emptyList();
 			return new DescriptorResponse(
 				req.page, r.totalCount(), r.pageCount(), descriptors);
 		}
 
-		private static List<EpdDoc> parse(JsonElement json) {
+		private static List<Ec3EpdInfo> parse(JsonElement json) {
 			if (json == null || !json.isJsonArray())
 				return Collections.emptyList();
 			return Json.stream(json.getAsJsonArray())
-				.map(EpdDoc::fromJson)
+				.map(Ec3EpdInfo::fromJson)
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.toList();

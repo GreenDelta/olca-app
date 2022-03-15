@@ -49,7 +49,7 @@ public class Ec3Client {
 	 * query URL defined, this is the same as calling the `get` method of
 	 * this class.
 	 */
-	public Ec3Response query(String path) {
+	public Ec3Response getEpd(String path) {
 		return internalGet(path, epdUrl);
 	}
 
