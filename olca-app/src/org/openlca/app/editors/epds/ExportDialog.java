@@ -1,6 +1,9 @@
 package org.openlca.app.editors.epds;
 
-import com.google.gson.GsonBuilder;
+import java.time.LocalDate;
+import java.util.Objects;
+import java.util.function.Consumer;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -9,6 +12,8 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.tools.openepd.CategoryDialog;
@@ -26,9 +31,8 @@ import org.openlca.app.util.UI;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
 
-import java.time.LocalDate;
-import java.util.Objects;
-import java.util.function.Consumer;
+import com.google.gson.GsonBuilder;
+import org.openlca.util.Strings;
 
 class ExportDialog extends FormDialog {
 
@@ -73,41 +77,13 @@ class ExportDialog extends FormDialog {
 		Controls.set(
 			UI.formText(comp, tk, M.Name),
 			epd.productName, name -> epd.productName = name);
-		Controls.set(
-			UI.formText(comp, tk, "Declared unit"),
-			epd.declaredUnit, s -> epd.declaredUnit = s);
+		// Controls.set(
+		//	UI.formText(comp, tk, "Declared unit"),
+		// 	epd.declaredUnit, s -> epd.declaredUnit = s);
 
 		// category link
 		UI.formLabel(comp, tk, M.Category);
-
-		var categoryLink = tk.createImageHyperlink(comp, SWT.NONE);
-		categoryLink.setText(epd.category == null
-			? " - none -"
-			: categories.pathOf(epd.category));
-		Controls.onClick(categoryLink, $ -> {
-			if (categories.isEmpty()) {
-				var client = loginPanel.login().orElse(null);
-				if (client == null)
-					return;
-				categories = Api.getCategoryTree(client);
-				if (categories.isEmpty()) {
-					MsgBox.error("No categories could be loaded",
-						"No categories could be loaded from "
-							+ loginPanel.credentials().ec3Url());
-					return;
-				}
-			}
-
-			var ec3Category = CategoryDialog.selectFrom(categories);
-			if (ec3Category != null) {
-				epd.productClasses.clear();
-				epd.productClasses.add(Pair.of("io.cqd.ec3", ec3Category.openEpd));
-			}
-			categoryLink.setText(ec3Category== null
-				? " - none -"
-				: categories.pathOf(ec3Category.openEpd));
-			categoryLink.getParent().layout();
-		});
+		new CategoryLink(this).render(comp, tk);
 
 		// description
 		Controls.set(
@@ -206,7 +182,7 @@ class ExportDialog extends FormDialog {
 		// save as file
 		var json = epd.toJson();
 		var file = FileChooser.forSavingFile(
-			"Save openEPD document", epd.name + ".json");
+			"Save openEPD document", epd.productName + ".json");
 		if (file == null)
 			return;
 		try {
@@ -216,4 +192,71 @@ class ExportDialog extends FormDialog {
 			ErrorReporter.on("Failed to save openEPD document", e);
 		}
 	}
+
+	private record CategoryLink(ExportDialog dialog) {
+
+		void render(Composite comp, FormToolkit tk) {
+			var link = tk.createImageHyperlink(comp, SWT.NONE);
+			updateLink(link, getPath());
+
+			Controls.onClick(link, $ -> {
+				var categories = getCategories();
+				if (categories.isEmpty())
+					return;
+				var category = CategoryDialog.selectFrom(categories);
+				if (category == null)
+					return;
+				var path = Strings.notEmpty(category.openEpd)
+					? category.openEpd
+					: categories.pathOf(category);
+				if (Strings.nullOrEmpty(path))
+					return;
+				setPath(path);
+				updateLink(link, path);
+			});
+		}
+
+		String getPath() {
+			for (var c : dialog.epd.productClasses) {
+				if (Objects.equals(c.first, "io.cqd.ec3")) {
+					return c.second;
+				}
+			}
+			return null;
+		}
+
+		Ec3CategoryTree getCategories() {
+			var d = dialog;
+			if (!d.categories.isEmpty())
+				return d.categories;
+			var client = d.loginPanel.login().orElse(null);
+			if (client == null)
+				return dialog.categories;
+			d.categories = Api.getCategoryTree(client);
+			if (d.categories.isEmpty()) {
+				MsgBox.error("No categories could be loaded",
+					"No categories could be loaded from "
+						+ d.loginPanel.credentials().ec3Url());
+			}
+			return d.categories;
+		}
+
+		void setPath(String path) {
+			var classes = dialog.epd.productClasses;
+			classes.clear();
+			if (Strings.nullOrEmpty(path))
+				return;
+			classes.add(Pair.of("io.cqd.ec3", path));
+		}
+
+		void updateLink(ImageHyperlink link, String path) {
+			if (Strings.nullOrEmpty(path)) {
+				link.setText(" - none -");
+			} else {
+				link.setText(path);
+			}
+			link.getParent().pack();
+		}
+	}
+
 }
