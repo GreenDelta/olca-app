@@ -255,7 +255,7 @@ class ExportDialog extends FormDialog {
 			} else {
 				link.setText(path);
 			}
-			link.getParent().pack();
+			link.getParent().layout();
 		}
 	}
 

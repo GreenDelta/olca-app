@@ -31,7 +31,7 @@ class Import {
 	private final EpdDoc epd;
 	private final ImportMapping mapping;
 	private final Quantity quantity;
-	private final String category;
+	private final String[] categoryPath;
 	private final ImportLog log;
 
 	Import(IDatabase db, EpdDoc epd, ImportMapping mapping) {
@@ -39,7 +39,7 @@ class Import {
 		this.epd = epd;
 		this.mapping = mapping;
 		this.quantity = mapping.quantity();
-		this.category = Util.categoryOf(epd);
+		this.categoryPath = Util.categoryOf(epd).orElse(null);
 		this.log = new ImportLog();
 	}
 
@@ -74,9 +74,9 @@ class Import {
 	}
 
 	private Category syncCategory(ModelType type) {
-		return Strings.notEmpty(category)
-			? CategoryDao.sync(db, type, category)
-			: null;
+		return categoryPath == null || categoryPath.length == 0
+			? null
+			: CategoryDao.sync(db, type, categoryPath);
 	}
 
 	private FlowResult createRefFlow() {
@@ -96,8 +96,8 @@ class Import {
 		if (org == null || Strings.nullOrEmpty(org.name))
 			return null;
 		var id = Strings.notEmpty(org.ref)
-				? KeyGen.get(org.ref)
-				: KeyGen.get(org.name);
+			? KeyGen.get(org.ref)
+			: KeyGen.get(org.name);
 		var actor = db.get(Actor.class, id);
 		if (actor != null)
 			return actor;
@@ -182,7 +182,7 @@ class Import {
 	}
 
 	private Result initResult(String name, FlowResult refFlow,
-														ImpactMethod method) {
+		ImpactMethod method) {
 		var qRef = refFlow.copy();
 		var result = Result.of(name);
 		result.impactMethod = method;

@@ -8,6 +8,8 @@ import org.openlca.app.tools.openepd.model.EpdMeasurement;
 import org.openlca.app.tools.openepd.model.EpdQuantity;
 import org.openlca.app.tools.openepd.model.EpdScopeValue;
 import org.openlca.core.model.Epd;
+import org.openlca.util.Categories;
+import org.openlca.util.Pair;
 import org.openlca.util.Strings;
 
 import java.time.LocalDate;
@@ -79,6 +81,16 @@ class EpdConverter {
 		doc.dateOfIssue = today;
 		doc.dateValidityEnds = LocalDate.of(
 			today.getYear() + 1, today.getMonth(), today.getDayOfMonth());
+
+		// category
+		if (epd.category != null) {
+			var path = Categories.path(epd.category);
+			if (!path.isEmpty()) {
+				doc.productClasses.add(
+					Pair.of("io.cqd.ec3", String.join(" >> ", path)));
+			}
+		}
+
 		doc.impactResults.addAll(convertResults(epd));
 		return doc;
 	}

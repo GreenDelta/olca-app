@@ -91,7 +91,10 @@ public class ImportDialog extends FormDialog {
 		// category
 		var categoryText = UI.formText(comp, tk, M.Category);
 		categoryText.setEditable(false);
-		Controls.set(categoryText, Util.categoryOf(epdDoc));
+		Controls.set(categoryText,
+			Util.categoryOf(epdDoc)
+				.map(path -> String.join(" >> ", path))
+				.orElse("- none -"));
 
 		// amount
 		var amountText = UI.formText(comp, tk, "Declared unit");

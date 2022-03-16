@@ -3,6 +3,8 @@ package org.openlca.app.tools.openepd.input;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.openlca.app.tools.openepd.model.EpdDoc;
@@ -66,16 +68,22 @@ class Util {
 			: prop.unitGroup.units;
 	}
 
-	static String categoryOf(EpdDoc epd) {
+	static Optional<String[]> categoryOf(EpdDoc epd) {
 		if (epd == null || epd.productClasses.isEmpty())
-			return "";
-		var first = epd.productClasses.stream()
-			.map(p -> p.second)
-			.filter(Strings::notEmpty)
-			.findAny()
-			.orElse(null);
-		if (first == null)
-			return "";
+			return Optional.empty();
+		String path = null;
+		for (var c : epd.productClasses) {
+			if(Objects.equals(c.first, "io.cqd.ec3")) {
+				path = c.second;
+				break;
+			}
+			if (path == null) {
+				path = c.second;
+			}
+		}
+		if (Strings.nullOrEmpty(path))
+			return Optional.empty();
+
 
 		var segments = new ArrayList<String>();
 		var word = new StringBuilder();
@@ -86,8 +94,8 @@ class Util {
 			word.setLength(0);
 		};
 
-		for (int i = 0; i < first.length(); i++) {
-			char c = first.charAt(i);
+		for (int i = 0; i < path.length(); i++) {
+			char c = path.charAt(i);
 			switch (c) {
 				case '/', '\\', '>', '<' -> nextWord.run();
 				default -> word.append(c);
@@ -95,6 +103,9 @@ class Util {
 		}
 		nextWord.run();
 
-		return String.join("/", segments);
+
+		return segments.size() > 0
+			? Optional.of(segments.toArray(String[]::new))
+			: Optional.empty();
 	}
 }
