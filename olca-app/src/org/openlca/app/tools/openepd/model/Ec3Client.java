@@ -75,7 +75,7 @@ public class Ec3Client {
 		}
 	}
 
-	public Ec3Response post(String path, JsonElement body) {
+	public Ec3Response postEpd(String path, JsonElement body) {
 		var p = path.startsWith("/")
 			? path.substring(1)
 			: path;
@@ -83,7 +83,7 @@ public class Ec3Client {
 			var bodyStr = HttpRequest.BodyPublishers.ofString(
 				new Gson().toJson(body), StandardCharsets.UTF_8);
 			var req = HttpRequest.newBuilder()
-				.uri(URI.create(url + p))
+				.uri(URI.create(epdUrl + p))
 				.header("Content-Type", "application/json")
 				.header("Authorization", "Bearer " + authKey)
 				.header("Accept", "application/json")

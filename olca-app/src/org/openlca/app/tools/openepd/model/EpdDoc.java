@@ -16,6 +16,7 @@ import java.util.Optional;
 public class EpdDoc {
 
 	public String id;
+	public int version;
 	public String ref;
 	public String language;
 	public boolean isPrivate = true;
@@ -45,6 +46,7 @@ public class EpdDoc {
 		var epd = new EpdDoc();
 
 		epd.id = Json.getString(obj, "id");
+		epd.version = Json.getInt(obj, "version", 0);
 		epd.ref = Json.getString(obj, "ref");
 		epd.language = Json.getString(obj, "language");
 		epd.isPrivate = Json.getBool(obj, "private", false);
@@ -94,6 +96,7 @@ public class EpdDoc {
 		var obj = new JsonObject();
 		Json.put(obj, "doctype", "OpenEPD");
 		Json.put(obj, "id", id);
+		Json.put(obj, "version", version);
 		Json.put(obj, "language", language != null ? language : "en");
 		Json.put(obj, "private", isPrivate);
 		Json.put(obj, "declaration_url", declarationUrl);

@@ -21,7 +21,7 @@ class Util {
 	static void put(JsonObject obj, String field, LocalDate date) {
 		if (obj == null || field == null || date == null)
 			return;
-		Json.put(obj, field, date.toString());
+		Json.put(obj, field, date + "T00:00");
 	}
 
 	static void put(JsonObject obj, String field, Jsonable v) {

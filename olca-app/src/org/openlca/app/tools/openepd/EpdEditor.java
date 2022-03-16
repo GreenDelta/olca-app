@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import com.google.gson.GsonBuilder;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Text;
@@ -39,6 +38,8 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
+
+import com.google.gson.GsonBuilder;
 
 public class EpdEditor extends SimpleFormEditor {
 
@@ -217,7 +218,7 @@ public class EpdEditor extends SimpleFormEditor {
 					return;
 				mergeResults();
 				try {
-					var response = client.post("/epds", epd.toJson());
+					var response = client.postEpd("/epds", epd.toJson());
 					if (!response.hasJson()) {
 						MsgBox.error("Received no response from server");
 						return;

@@ -5,9 +5,13 @@ import org.openlca.app.tools.openepd.model.EpdImpactResult;
 import org.openlca.app.tools.openepd.model.EpdIndicatorResult;
 import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.tools.openepd.model.EpdMeasurement;
+import org.openlca.app.tools.openepd.model.EpdOrg;
+import org.openlca.app.tools.openepd.model.EpdPcr;
 import org.openlca.app.tools.openepd.model.EpdQuantity;
 import org.openlca.app.tools.openepd.model.EpdScopeValue;
+import org.openlca.core.model.Actor;
 import org.openlca.core.model.Epd;
+import org.openlca.core.model.Source;
 import org.openlca.util.Categories;
 import org.openlca.util.Pair;
 import org.openlca.util.Strings;
@@ -71,6 +75,7 @@ class EpdConverter {
 	static EpdDoc toOpenEpd(Epd epd) {
 		var doc = new EpdDoc();
 		doc.isPrivate = true;
+		doc.version = 1;
 		doc.productName = epd.name;
 		if (epd.product != null && epd.product.unit != null) {
 			doc.declaredUnit = new EpdQuantity(
@@ -91,8 +96,31 @@ class EpdConverter {
 			}
 		}
 
+		doc.manufacturer = toOrg(epd.manufacturer);
+		doc.verifier = toOrg(epd.verifier);
+		doc.programOperator = toOrg(epd.programOperator);
+		doc.pcr = toPcr(epd.pcr);
+
 		doc.impactResults.addAll(convertResults(epd));
 		return doc;
+	}
+
+	private static EpdOrg toOrg(Actor actor) {
+		if (actor == null)
+			return null;
+		var org = new EpdOrg();
+		org.name = actor.name;
+		org.webDomain = actor.website;
+		return org;
+	}
+
+	private static EpdPcr toPcr(Source source) {
+		if (source == null)
+			return null;
+		var pcr = new EpdPcr();
+		pcr.id = source.refId;
+		pcr.name = source.name;
+		return pcr;
 	}
 
 	private static Collection<EpdImpactResult> convertResults(Epd epd) {

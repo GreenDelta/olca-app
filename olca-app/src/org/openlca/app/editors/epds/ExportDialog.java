@@ -30,9 +30,9 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
+import org.openlca.util.Strings;
 
 import com.google.gson.GsonBuilder;
-import org.openlca.util.Strings;
 
 class ExportDialog extends FormDialog {
 
@@ -141,7 +141,7 @@ class ExportDialog extends FormDialog {
 		if (!b)
 			return;
 		try {
-			var response = client.post("/epds", epd.toJson());
+			var response = client.postEpd("/epds", epd.toJson());
 			if (!response.hasJson()) {
 				MsgBox.error("Received no response from server");
 				return;
