@@ -22,9 +22,11 @@ import org.openlca.app.tools.openepd.LoginPanel;
 import org.openlca.app.tools.openepd.model.Api;
 import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
 import org.openlca.app.tools.openepd.model.EpdDoc;
+import org.openlca.app.tools.openepd.model.EpdQuantity;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -70,37 +72,51 @@ class ExportDialog extends FormDialog {
 		loginPanel = LoginPanel.create(body, tk);
 
 		// info section
-		var infoSection = UI.section(body, tk, M.GeneralInformation);
-		var comp = UI.sectionClient(infoSection, tk, 2);
+		var header = epd.productName;
+		if (epd.declaredUnit != null) {
+			var num = Numbers.format(epd.declaredUnit.amount(), 2)
+				+ " " + epd.declaredUnit.unit();
+			header = num + " " + header;
+		}
+		var infoSection = UI.section(body, tk, header);
+		var comp = UI.sectionClient(infoSection, tk, 3);
 
-		// name and unit
-		Controls.set(
-			UI.formText(comp, tk, M.Name),
-			epd.productName, name -> epd.productName = name);
-		// Controls.set(
-		//	UI.formText(comp, tk, "Declared unit"),
-		// 	epd.declaredUnit, s -> epd.declaredUnit = s);
+		// declaration URL
+		if (Strings.nullOrEmpty(epd.declarationUrl)) {
+			epd.declarationUrl = "http://add.an.original.declaration.url";
+		}
+		Controls.set(UI.formText(comp, tk, "Declaration URL"),
+			epd.declarationUrl, s -> epd.declarationUrl = s);
+		UI.filler(comp, tk);
+
+		// kg per declared unit
+		if (epd.kgPerDeclaredUnit == null) {
+			epd.kgPerDeclaredUnit = new EpdQuantity(1, "kg");
+		}
+		Controls.set(UI.formText(comp, tk, "Mass per declared unit"),
+			epd.kgPerDeclaredUnit.amount(),
+			amount -> epd.kgPerDeclaredUnit = new EpdQuantity(amount, "kg"));
+		UI.formLabel(comp, "kg/" + (epd.declaredUnit != null
+			? epd.declaredUnit.unit()
+			: "?"));
 
 		// category link
 		UI.formLabel(comp, tk, M.Category);
 		new CategoryLink(this).render(comp, tk);
-
-		// description
-		Controls.set(
-			UI.formMultiText(comp, tk, "Description"),
-			epd.productDescription, s -> epd.productDescription = s);
+		UI.filler(comp, tk);
 
 		// date fields
 		UI.formLabel(comp, tk, "Date of issue");
 		var issueDate = new DateTime(comp, SWT.DROP_DOWN);
-		// UI.gridData(issueDate, false, false).widthHint = 120;
 		tk.adapt(issueDate);
 		date(issueDate, epd.dateOfIssue, d -> epd.dateOfIssue = d);
+		UI.filler(comp, tk);
+
 		UI.formLabel(comp, tk, "End of validity");
 		var endDate = new DateTime(comp, SWT.DROP_DOWN);
-		// UI.gridData(endDate, false, false).widthHint = 120;
 		tk.adapt(endDate);
 		date(endDate, epd.dateValidityEnds, d -> epd.dateValidityEnds = d);
+		UI.filler(comp, tk);
 
 		// result sections
 		for (var result : epd.impactResults) {
@@ -233,7 +249,9 @@ class ExportDialog extends FormDialog {
 			if (client == null)
 				return dialog.categories;
 			d.categories = Api.getCategoryTree(client);
-			if (d.categories.isEmpty()) {
+			if (!d.categories.isEmpty()) {
+				d.categories.saveToCacheFile();
+			} else {
 				MsgBox.error("No categories could be loaded",
 					"No categories could be loaded from "
 						+ d.loginPanel.credentials().ec3Url());
