@@ -4,12 +4,13 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.openlca.jsonld.Json;
 
 /**
  * A description of a PCR (product category rule) in the openEPD format.
  */
-public class EpdPcr {
+public class EpdPcr implements Jsonable {
 
 	/**
 	 * The unique ID for this PCR. To ensure global uniqueness, should be
@@ -52,7 +53,6 @@ public class EpdPcr {
 	 */
 	public String ref;
 
-
 	public static Optional<EpdPcr> fromJson(JsonElement elem) {
 		if (elem == null || !elem.isJsonObject())
 			return Optional.empty();
@@ -67,6 +67,20 @@ public class EpdPcr {
 		pcr.dateOfIssue = Util.getDate(obj, "date_of_issue");
 		pcr.dateValidityEnds = Util.getDate(obj, "valid_until");
 		return Optional.of(pcr);
+	}
+
+	@Override
+	public JsonObject toJson() {
+		var obj = new JsonObject();
+		Json.put(obj, "id", id);
+		Json.put(obj, "issuer_doc_id", issuerDocId);
+		Json.put(obj, "ref", ref);
+		Json.put(obj, "name", name);
+		Json.put(obj, "short_name", shortName);
+		Json.put(obj, "version", version);
+		Util.put(obj, "date_of_issue", dateOfIssue);
+		Util.put(obj, "valid_until", dateValidityEnds);
+		return obj;
 	}
 
 }

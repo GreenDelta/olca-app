@@ -18,6 +18,18 @@ class Util {
 		}
 	}
 
+	static void put(JsonObject obj, String field, LocalDate date) {
+		if (obj == null || field == null || date == null)
+			return;
+		Json.put(obj, field, date.toString());
+	}
+
+	static void put(JsonObject obj, String field, Jsonable v) {
+		if (obj == null || field == null || v == null)
+			return;
+		Json.put(obj, field, v.toJson());
+	}
+
 	static EpdQuantity getQuantity(JsonObject obj, String field) {
 		if (obj == null || field == null)
 			return null;

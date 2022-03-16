@@ -12,7 +12,7 @@ import org.openlca.jsonld.Json;
 /**
  * An organisation description in the openEPD format.
  */
-public class EpdOrg {
+public class EpdOrg implements Jsonable {
 
 	/**
 	 * A web domain name owned by organization. Typically, is the org's home
@@ -62,14 +62,13 @@ public class EpdOrg {
 		return Optional.of(org);
 	}
 
+	@Override
 	public JsonObject toJson() {
 		var obj = new JsonObject();
 		Json.put(obj, "web_domain", webDomain);
 		Json.put(obj, "name", name);
 		Json.put(obj, "ref", ref);
-		if (owner != null) {
-			Json.put(obj, "owner", owner.toJson());
-		}
+		Util.put(obj, "owner", owner);
 		if (!altNames.isEmpty()) {
 			var array = new JsonArray();
 			altNames.forEach(array::add);

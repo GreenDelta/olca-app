@@ -79,6 +79,7 @@ class ExportDialog extends FormDialog {
 
 		// category link
 		UI.formLabel(comp, tk, M.Category);
+
 		var categoryLink = tk.createImageHyperlink(comp, SWT.NONE);
 		categoryLink.setText(epd.category == null
 			? " - none -"

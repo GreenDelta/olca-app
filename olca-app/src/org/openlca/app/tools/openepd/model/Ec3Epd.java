@@ -12,7 +12,7 @@ import org.openlca.jsonld.Json;
 /**
  * The Ec3 internal EPD format.
  */
-public class Ec3Epd {
+public class Ec3Epd implements Jsonable {
 
 	public String id;
 	public String name;
@@ -79,6 +79,7 @@ public class Ec3Epd {
 		return Optional.of(epd);
 	}
 
+	@Override
 	public JsonObject toJson() {
 		var obj = new JsonObject();
 
@@ -90,31 +91,20 @@ public class Ec3Epd {
 		Json.put(obj, "mass_per_declared_unit", massPerDeclaredUnit);
 		Json.put(obj, "gwp", gwp);
 		Json.put(obj, "gwp_per_kg", gwpPerKg);
-		if (category != null) {
-			obj.add("category", category.toJson());
-		}
+		Util.put(obj, "category", category);
 		Json.put(obj, "category_id", categoryId);
 
 		Json.put(obj, "doc", docUrl);
-		obj.addProperty("draft", isDraft);
-		obj.addProperty("private", isPrivate);
+		Json.put(obj, "draft", isDraft);
+		Json.put(obj, "private", isPrivate);
 
-		if (dateOfIssue != null) {
-			obj.addProperty("date_of_issue", dateOfIssue.toString());
-		}
-		if (dateValidityEnds != null) {
-			obj.addProperty("date_validity_ends", dateValidityEnds.toString());
-		}
+		Util.put(obj, "date_of_issue", dateOfIssue);
+		Util.put(obj, "date_validity_ends", dateValidityEnds);
 
-		if (reviewer != null) {
-			obj.add("reviewer", reviewer.toJson());
-		}
-		if (developer != null) {
-			obj.add("developer", developer.toJson());
-		}
-		if (verifier != null) {
-			obj.add("verifier", verifier.toJson());
-		}
+		Util.put(obj, "reviewer", reviewer);
+		Util.put(obj, "developer", developer);
+		Util.put(obj, "verifier", verifier);
+		Util.put(obj, "manufacturer", manufacturer);
 
 		// impact results
 		var impactJson = EpdImpactResult.toJson(impactResults);

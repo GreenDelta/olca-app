@@ -19,7 +19,7 @@ public record EpdMeasurement(
 	String unit,
 	Double rsd,
 	String dist
-) {
+) implements Jsonable {
 
 	public static EpdMeasurement of(double amount, String unit) {
 		return new EpdMeasurement(amount, unit, null, null);
@@ -38,6 +38,7 @@ public record EpdMeasurement(
 		return Optional.of(m);
 	}
 
+	@Override
 	public JsonObject toJson() {
 		var obj = new JsonObject();
 		obj.addProperty("mean", mean);

@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.openlca.jsonld.Json;
 
-public class Ec3Certifier {
+public class Ec3Certifier implements Jsonable {
 
 	public String name;
 	public String email;
@@ -23,13 +23,12 @@ public class Ec3Certifier {
 		return Optional.of(certifier);
 	}
 
+	@Override
 	public JsonObject toJson() {
 		var obj = new JsonObject();
 		Json.put(obj, "name", name);
 		Json.put(obj, "email", email);
-		if (org != null) {
-			obj.add("org", org.toJson());
-		}
+		Util.put(obj,"org", org);
 		return obj;
 	}
 

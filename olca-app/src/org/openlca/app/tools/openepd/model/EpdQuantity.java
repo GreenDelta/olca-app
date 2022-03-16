@@ -6,7 +6,7 @@ import org.openlca.jsonld.Json;
 
 import java.util.Optional;
 
-public record EpdQuantity(double amount, String unit) {
+public record EpdQuantity(double amount, String unit) implements Jsonable {
 
 	public static EpdQuantity of(double amount, String unit) {
 		return new EpdQuantity(amount, unit);
@@ -24,6 +24,7 @@ public record EpdQuantity(double amount, String unit) {
 		return Optional.of(qty);
 	}
 
+	@Override
 	public JsonObject toJson() {
 		var obj = new JsonObject();
 		obj.addProperty("qty", amount);
