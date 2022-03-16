@@ -406,7 +406,9 @@ public class M extends NLS {
 	public static String ImpactCategory;
 	public static String ImpactFactor;
 	public static String ImpactFactors;
+	public static String ImpactMethod;
 	public static String ImpactResult;
+	public static String ImpactResults;
 	public static String Import;
 	public static String ImportData;
 	public static String ImportDatabase;
@@ -434,6 +436,7 @@ public class M extends NLS {
 	public static String InputParameter;
 	public static String InputParameters;
 	public static String Inputs;
+	public static String InputResults;
 	public static String InputsOutputs;
 	public static String IntendedApplication;
 	public static String InterventionMatrix;
@@ -493,6 +496,7 @@ public class M extends NLS {
 
 	// M
 	public static String ManagePlugins;
+	public static String Manufacturer;
 	public static String Map;
 	public static String MapCanNotBeDisplayed;
 	public static String Mark;
@@ -524,6 +528,7 @@ public class M extends NLS {
 	public static String ModelType;
 	public static String ModelingAndValidation;
 	public static String ModelingConstants;
+	public static String Modules;
 	public static String MonteCarloSimulation;
 	public static String MoreThanXProcesses;
 	public static String Move;
@@ -622,6 +627,7 @@ public class M extends NLS {
 	public static String Other;
 	public static String OutOfMemory;
 	public static String Output;
+	public static String OutputResults;
 	public static String Outputs;
 	public static String OverwriteRemoteChanges;
 	public static String OverwriteFile;
@@ -639,6 +645,7 @@ public class M extends NLS {
 	public static String ParameterSets;
 	public static String Password;
 	public static String Paste;
+	public static String Pcr;
 	public static String PedigreeMatrix;
 	public static String PedigreeMatrixMessage;
 	public static String Physical;
@@ -684,6 +691,7 @@ public class M extends NLS {
 	public static String ProductSystemExcelExportMessage;
 	public static String ProductSystemStatistics;
 	public static String ProductSystems;
+	public static String ProgramOperator;
 	public static String Progress;
 	public static String Project;
 	public static String ProjectSetup;
@@ -919,6 +927,7 @@ public class M extends NLS {
 	public static String UpgradingRepositoryIndex;
 	public static String UpstreamInclDirect;
 	public static String UpstreamTotal;
+	public static String Urn;
 	public static String Usage;
 	public static String UsageOf;
 	public static String UsageType;
@@ -933,6 +942,7 @@ public class M extends NLS {
 	public static String Variant;
 	public static String VariantDescriptionTable;
 	public static String Variants;
+	public static String Verifier;
 	public static String Version;
 	public static String VersionNewer;
 	public static String VeryHighRisk;

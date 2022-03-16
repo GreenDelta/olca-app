@@ -33,8 +33,11 @@ class ModelUtil {
 		if (path.equals("flowProperties"))
 			return getString(element, "flowProperty.name");
 		if (path.equals("inputs") || path.equals("outputs") || path.equals("impactFactors")
-				|| path.equals("referenceExchange"))
+				|| path.equals("inputResults") || path.equals("outputResults")
+				|| path.equals("referenceExchange") || path.equals("product"))
 			return getString(element, "flow.name");
+		if (path.equals("impactResults"))
+			return getString(element, "indicator.name");
 		if (path.equals("socialAspects"))
 			return getString(element, "socialIndicator.name");
 		if (path.equals("nwSets.factors"))
@@ -74,11 +77,14 @@ class ModelUtil {
 				: property;
 		var hiddenProps = Arrays.asList("@id", "@type", "lastChange", "version", "internalId", "lastInternalId",
 				"precedingDataSet", "position", "parameterScope", "context");
-		var hiddenPaths = Arrays.asList("flowProperties.flowProperty", "impactFactors.flow",
+		var hiddenPaths = Arrays.asList("flowProperties.flowProperty", "impactFactors.flow", "product.flow",
 				"nwSets.name", "nwSet.name", "nwSets.factors.impactCategory", "socialAspects.socialIndicator",
 				"variants.productSystem", "inputs.input", "outputs.input", "inputs.flow", "outputs.flow",
+				"inputResults.isInput", "outputResults.isInput", "inputResults.flow.flowType",
+				"outputResults.flow.flowType", "inputResults.flow.refUnit", "outputResults.flow.refUnit",
 				"allocationFactors.product", "allocationFactors.exchange", "variants.name", "indicators.name");
-		var hiddenRefs = Arrays.asList("processLinks", "category", "referenceProcess", "referenceExchange", "activityQuantity", "targetFlowProperty", "impactCategories");
+		var hiddenRefs = Arrays.asList("processLinks", "category", "referenceProcess", "referenceExchange",
+				"activityQuantity", "targetFlowProperty", "impactCategories");
 		if (hiddenProps.contains(property) || hiddenPaths.contains(path) || hiddenRefs.contains(parentPath))
 			return false;
 		if (parentPath.contains(".uncertainty") || parentPath.startsWith("uncertainty")
@@ -86,7 +92,7 @@ class ModelUtil {
 			return false;
 		if (property.equals("refUnit") && parentPath.endsWith(".flowProperty"))
 			return false;
-		if (property.equals("name") && PropertyLabels.getImageType(node) != null)
+		if ((property.equals("name") || property.equals("category")) && PropertyLabels.getImageType(node) != null)
 			return false;
 		return true;
 	}
@@ -164,12 +170,14 @@ class ModelUtil {
 				return new String[0];
 			if (property.equals("allocationFactors"))
 				return new String[] { "product.@id", "exchange.internalId", "allocationType" };
-			if (property.equals("impactFactors"))
+			if (property.equals("impactFactors") || property.equals("inputResults") || property.equals("outputResults"))
 				return new String[] { "flow.@id" };
-			if (property.equals("factors"))
+			if (property.equals("factors") || property.equals("impactResults"))
 				return new String[] { "impactCategory.@id" };
 			if (property.equals("variants"))
 				return new String[] { "name", "productSystem.@id" };
+			if (property.equals("modules"))
+				return new String[] { "result.@id" };
 			if (property.equals("parameterRedefs"))
 				return new String[] { "name", "context.@id" };
 			if (property.equals("parameters"))

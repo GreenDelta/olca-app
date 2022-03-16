@@ -7,6 +7,7 @@ import org.openlca.app.db.Repository;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.Result;
 import org.openlca.core.model.RootEntity;
 import org.openlca.git.model.Reference;
 import org.openlca.jsonld.output.JsonExport;
@@ -29,7 +30,9 @@ class RefJson {
 			return null;
 		var type = Json.getString(json, "@type");
 		if (Process.class.getSimpleName().equals(type)) {
-			splitExchanges(json);
+			split(json, "exchanges", "input", "inputs", "outputs");
+		} else if (Result.class.getSimpleName().equals(type)) {
+			split(json, "flowResults", "isInput", "inputResults", "outputResults");
 		}
 		return json;
 	}
@@ -40,7 +43,9 @@ class RefJson {
 			return null;
 		var json = JsonExport.toJson(entity, Database.get());
 		if (entity instanceof Process) {
-			splitExchanges(json);
+			split(json, "exchanges", "input", "inputs", "outputs");
+		} else if (entity instanceof Result) {
+			split(json, "flowResults", "isInput", "inputResults", "outputResults");
 		}
 		return json;
 	}
@@ -51,14 +56,15 @@ class RefJson {
 		return Daos.root(Database.get(), type).getForRefId(refId);
 	}
 
-	private static void splitExchanges(JsonObject obj) {
-		var exchanges = obj.getAsJsonArray("exchanges");
+	private static void split(JsonObject obj, String arrayProperty, String splitProperty, String property1,
+			String property2) {
+		var exchanges = obj.getAsJsonArray(arrayProperty);
 		var inputs = new JsonArray();
 		var outputs = new JsonArray();
 		if (exchanges != null) {
 			for (var elem : exchanges) {
 				var e = elem.getAsJsonObject();
-				var isInput = e.get("input");
+				var isInput = e.get(splitProperty);
 				if (isInput.isJsonPrimitive() && isInput.getAsBoolean()) {
 					inputs.add(e);
 				} else {
@@ -66,9 +72,9 @@ class RefJson {
 				}
 			}
 		}
-		obj.remove("exchanges");
-		obj.add("inputs", inputs);
-		obj.add("outputs", outputs);
+		obj.remove(arrayProperty);
+		obj.add(property1, inputs);
+		obj.add(property2, outputs);
 	}
 
 }

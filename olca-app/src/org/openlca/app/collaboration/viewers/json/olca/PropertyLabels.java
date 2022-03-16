@@ -64,6 +64,8 @@ class PropertyLabels {
 		putProductSystemLabels();
 		putProjectLabels();
 		putDQSystemLabels();
+		putResultLabels();
+		putEpdLabels();
 	}
 
 	private static void putBasicLabels(ModelType type) {
@@ -412,6 +414,56 @@ class PropertyLabels {
 		putUncertaintyLabels(type, path + ".uncertainty");
 	}
 
+	private static void putResultLabels() {
+		var type = ModelType.RESULT;
+		putBasicLabels(type);
+		put(type, "productSystem", M.ProductSystem, ModelType.PRODUCT_SYSTEM);
+		put(type, "impactMethod", M.ImpactMethod, ModelType.PRODUCT_SYSTEM);
+		put(type, "impactResults", M.ImpactResults, ModelType.IMPACT_CATEGORY);
+		putImpactResultLabels(type, "impactResults");
+		put(type, "inputResults", M.InputResults, ModelType.FLOW);
+		putFlowResultLabels(type, "inputResults");
+		put(type, "outputResults", M.OutputResults, ModelType.FLOW);
+		putFlowResultLabels(type, "outputResults");
+	}
+
+	private static void putImpactResultLabels(ModelType type, String path) {
+		put(type, path + ".indicator", M.Indicator, ModelType.IMPACT_CATEGORY);
+		put(type, path + ".indicator.refUnit", M.ReferenceUnit);
+		put(type, path + ".amount", M.Amount);
+		put(type, path + ".description", M.Description);
+	}
+
+	private static void putFlowResultLabels(ModelType type, String path) {
+		put(type, path + ".flow", M.Flow, ModelType.FLOW);
+		put(type, path + ".flowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
+		put(type, path + ".unit", M.Unit, ModelType.UNIT);
+		put(type, path + ".location", M.Flow, ModelType.LOCATION);
+		put(type, path + ".amount", M.Amount);
+		put(type, path + ".description", M.Description);		
+	}
+
+	private static void putEpdLabels() {
+		var type = ModelType.EPD;
+		putBasicLabels(type);
+		put(type, "urn", M.Urn);
+		put(type, "manufacturer", M.Manufacturer, ModelType.ACTOR);
+		put(type, "verifier", M.Verifier, ModelType.ACTOR);
+		put(type, "programOperator", M.ProgramOperator, ModelType.ACTOR);
+		put(type, "pcr", M.Pcr, ModelType.SOURCE);
+		put(type, "product", M.Product, ModelType.FLOW);
+		putEpdProduct(type, "product");
+		put(type, "modules", M.Modules, ModelType.RESULT);
+		put(type, "modules.result", M.Result, ModelType.RESULT);
+	}
+
+	private static void putEpdProduct(ModelType type, String path) {
+		put(type, path + ".flow", M.Flow, ModelType.FLOW);
+		put(type, path + ".flowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
+		put(type, path + ".unit", M.Unit, ModelType.UNIT);
+		put(type, path + ".amount", M.Amount);
+	}
+	
 	private static void put(ModelType type, String path, String label) {
 		put(type, path, label, null);
 	}

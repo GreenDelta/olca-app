@@ -3,13 +3,11 @@ package org.openlca.app.collaboration.viewers.diff;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.openlca.app.collaboration.util.TypeRefIdSet;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
@@ -37,13 +35,13 @@ public class CommitViewer extends DiffNodeViewer {
 
 	public void setSelection(TypeRefIdSet initialSelection) {
 		selected = findNodes(initialSelection, root);
-		Set<String> expanded = new HashSet<>();
-		Tree tree = getViewer().getTree();
-		for (DiffNode node : selected) {
+		var expanded = new HashSet<String>();
+		var tree = getViewer().getTree();
+		for (var node : selected) {
 			if (!node.isModelNode())
 				continue;
-			Reference ref = node.contentAsDiffResult().ref();
-			String path = ref.type.name() + "/" + ref.category;
+			var ref = node.contentAsDiffResult().ref();
+			var path = ref.type.name() + "/" + ref.category;
 			if (expanded.contains(path))
 				continue;
 			expanded.add(path);
@@ -58,8 +56,8 @@ public class CommitViewer extends DiffNodeViewer {
 	// reveals path internally for all elements, which is unnecessary because
 	// this is already done in a more efficient way in setInitialSelection
 	private void setChecked(TypeRefIdSet models, TreeItem[] items) {
-		for (TreeItem item : items) {
-			DiffNode node = (DiffNode) item.getData();
+		for (var item : items) {
+			var node = (DiffNode) item.getData();
 			if (node != null && node.isModelNode()) {
 				Reference ref = node.contentAsDiffResult().ref();
 				// null is used as hack to select all
@@ -75,11 +73,11 @@ public class CommitViewer extends DiffNodeViewer {
 	}
 
 	private List<DiffNode> findNodes(TypeRefIdSet models, DiffNode node) {
-		List<DiffNode> elements = new ArrayList<>();
-		for (DiffNode child : node.children) {
+		var elements = new ArrayList<DiffNode>();
+		for (var child : node.children) {
 			if (child.isModelNode() && child.hasChanged()) {
 				// TODO && child.getContent().local.tracked
-				Reference ref = child.contentAsDiffResult().ref();
+				var ref = child.contentAsDiffResult().ref();
 				// null is used as hack to select all
 				if (models == null || models.contains(ref))
 					elements.add(child);
@@ -91,7 +89,7 @@ public class CommitViewer extends DiffNodeViewer {
 
 	@Override
 	protected TreeViewer createViewer(Composite parent) {
-		CheckboxTreeViewer viewer = new CheckboxTreeViewer(parent, SWT.BORDER);
+		var viewer = new CheckboxTreeViewer(parent, SWT.BORDER);
 		configureViewer(viewer, true);
 		viewer.addCheckStateListener((e) -> setChecked(viewer, (DiffNode) e.getElement(), e.getChecked()));
 		UI.gridData(viewer.getTree(), true, true);
@@ -99,7 +97,7 @@ public class CommitViewer extends DiffNodeViewer {
 	}
 
 	private void setChecked(CheckboxTreeViewer viewer, DiffNode node, boolean value) {
-		DiffResult result = node.contentAsDiffResult();
+		var result = node.contentAsDiffResult();
 		if (result == null || result.noAction()) {
 			// TODO || !result.local.tracked
 			viewer.setChecked(node, false);

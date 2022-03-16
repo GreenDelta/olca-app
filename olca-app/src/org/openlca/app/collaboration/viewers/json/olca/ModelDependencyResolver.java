@@ -31,6 +31,8 @@ public class ModelDependencyResolver implements IDependencyResolver {
 		put(ModelType.PRODUCT_SYSTEM, null, "processes", "processLinks");
 		put(ModelType.PRODUCT_SYSTEM, null, "processes", "parameterSets");
 		put(ModelType.PRODUCT_SYSTEM, null, "processLinks", "parameterSets");
+		put(ModelType.RESULT, "inputResults", "flowProperty", "unit");		
+		put(ModelType.RESULT, "outputResults", "flowProperty", "unit");		
 	}
 
 	private static void put(ModelType type, String path, String from, String to) {
