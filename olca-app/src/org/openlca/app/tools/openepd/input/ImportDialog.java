@@ -15,7 +15,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.tools.openepd.model.Ec3Epd;
+import org.openlca.app.tools.openepd.model.EpdDoc;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -28,11 +28,11 @@ import org.openlca.core.model.Epd;
 public class ImportDialog extends FormDialog {
 
 	final IDatabase db;
-	final Ec3Epd epdDoc;
+	final EpdDoc epdDoc;
 	final ImportMapping mapping;
 	private final AtomicBoolean mappingChanged = new AtomicBoolean(false);
 
-	public static int show(Ec3Epd doc) {
+	public static int show(EpdDoc doc) {
 		if (doc == null)
 			return -1;
 		var db = Database.get();
@@ -49,7 +49,7 @@ public class ImportDialog extends FormDialog {
 		return new ImportDialog(doc, db).open();
 	}
 
-	private ImportDialog(Ec3Epd epdDoc, IDatabase db) {
+	private ImportDialog(EpdDoc epdDoc, IDatabase db) {
 		super(UI.shell());
 		this.epdDoc = Objects.requireNonNull(epdDoc);
 		this.db = Objects.requireNonNull(db);
@@ -91,7 +91,10 @@ public class ImportDialog extends FormDialog {
 		// category
 		var categoryText = UI.formText(comp, tk, M.Category);
 		categoryText.setEditable(false);
-		Controls.set(categoryText, Util.categoryOf(epdDoc));
+		Controls.set(categoryText,
+			Util.categoryOf(epdDoc)
+				.map(path -> String.join(" >> ", path))
+				.orElse("- none -"));
 
 		// amount
 		var amountText = UI.formText(comp, tk, "Declared unit");

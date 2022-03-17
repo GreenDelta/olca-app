@@ -18,10 +18,22 @@ class Util {
 		}
 	}
 
-	static Ec3Quantity getQuantity(JsonObject obj, String field) {
+	static void put(JsonObject obj, String field, LocalDate date) {
+		if (obj == null || field == null || date == null)
+			return;
+		Json.put(obj, field, date + "T00:00");
+	}
+
+	static void put(JsonObject obj, String field, Jsonable v) {
+		if (obj == null || field == null || v == null)
+			return;
+		Json.put(obj, field, v.toJson());
+	}
+
+	static EpdQuantity getQuantity(JsonObject obj, String field) {
 		if (obj == null || field == null)
 			return null;
-		return Ec3Quantity.fromJson(obj.get(field))
+		return EpdQuantity.fromJson(obj.get(field))
 			.orElse(null);
 	}
 }

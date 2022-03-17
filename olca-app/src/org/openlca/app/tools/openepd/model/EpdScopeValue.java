@@ -6,9 +6,9 @@ import java.util.List;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public record Ec3ScopeValue(String scope, Ec3Measurement value) {
+public record EpdScopeValue(String scope, EpdMeasurement value) {
 
-	public static JsonObject toJson(List<Ec3ScopeValue> values) {
+	public static JsonObject toJson(List<EpdScopeValue> values) {
 		var json = new JsonObject();
 		if (values == null)
 			return json;
@@ -20,8 +20,8 @@ public record Ec3ScopeValue(String scope, Ec3Measurement value) {
 		return json;
 	}
 
-	public static List<Ec3ScopeValue> fromJson(JsonElement elem) {
-		var values = new ArrayList<Ec3ScopeValue>();
+	public static List<EpdScopeValue> fromJson(JsonElement elem) {
+		var values = new ArrayList<EpdScopeValue>();
 		if (elem == null || !elem.isJsonObject())
 			return values;
 		var json = elem.getAsJsonObject();
@@ -29,10 +29,10 @@ public record Ec3ScopeValue(String scope, Ec3Measurement value) {
 			var m = json.get(scope);
 			if (m == null)
 				continue;
-			var measurement = Ec3Measurement.fromJson(m);
+			var measurement = EpdMeasurement.fromJson(m);
 			if (measurement.isEmpty())
 				continue;
-			values.add(new Ec3ScopeValue(scope, measurement.get()));
+			values.add(new EpdScopeValue(scope, measurement.get()));
 		}
 		return values;
 	}

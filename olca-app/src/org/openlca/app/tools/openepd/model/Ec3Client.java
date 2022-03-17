@@ -18,13 +18,13 @@ public class Ec3Client {
 
 	private final String url;
 	private final String authKey;
-	private final String queryUrl;
+	private final String epdUrl;
 	private final HttpClient http;
 
 	private Ec3Client(Config config, String authKey) {
 		this.url = formatUrl(config.url);
-		this.queryUrl = config.queryUrl != null
-			? formatUrl(config.queryUrl)
+		this.epdUrl = config.epdUrl != null
+			? formatUrl(config.epdUrl)
 			: this.url;
 		this.authKey = authKey;
 		http = config.http;
@@ -49,8 +49,8 @@ public class Ec3Client {
 	 * query URL defined, this is the same as calling the `get` method of
 	 * this class.
 	 */
-	public Ec3Response query(String path) {
-		return internalGet(path, queryUrl);
+	public Ec3Response getEpd(String path) {
+		return internalGet(path, epdUrl);
 	}
 
 	public Ec3Response get(String path) {
@@ -75,7 +75,7 @@ public class Ec3Client {
 		}
 	}
 
-	public Ec3Response post(String path, JsonElement body) {
+	public Ec3Response postEpd(String path, JsonElement body) {
 		var p = path.startsWith("/")
 			? path.substring(1)
 			: path;
@@ -83,7 +83,7 @@ public class Ec3Client {
 			var bodyStr = HttpRequest.BodyPublishers.ofString(
 				new Gson().toJson(body), StandardCharsets.UTF_8);
 			var req = HttpRequest.newBuilder()
-				.uri(URI.create(url + p))
+				.uri(URI.create(epdUrl + p))
 				.header("Content-Type", "application/json")
 				.header("Authorization", "Bearer " + authKey)
 				.header("Accept", "application/json")
@@ -114,7 +114,7 @@ public class Ec3Client {
 
 		private final String url;
 		private final HttpClient http;
-		private String queryUrl;
+		private String epdUrl;
 
 		private Config(String url) {
 			this.url = Objects.requireNonNull(url);
@@ -123,9 +123,9 @@ public class Ec3Client {
 				.build();
 		}
 
-		public Config withQueryUrl(String queryUrl) {
+		public Config withEpdUrl(String queryUrl) {
 			if (Strings.notEmpty(queryUrl)) {
-				this.queryUrl = queryUrl;
+				this.epdUrl = queryUrl;
 			}
 			return this;
 		}

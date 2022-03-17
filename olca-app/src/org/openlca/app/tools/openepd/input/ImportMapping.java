@@ -1,7 +1,7 @@
 package org.openlca.app.tools.openepd.input;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
-import org.openlca.app.tools.openepd.model.Ec3Epd;
+import org.openlca.app.tools.openepd.model.EpdDoc;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
@@ -21,7 +21,7 @@ record ImportMapping(
 	Quantity quantity,
 	Map<String, MethodMapping> methodMappings) {
 
-	static ImportMapping init(Ec3Epd epd, IDatabase db) {
+	static ImportMapping init(EpdDoc epd, IDatabase db) {
 
 		// collect the method codes and related indicator keys
 		var codes = new HashMap<String, Set<IndicatorKey>>();

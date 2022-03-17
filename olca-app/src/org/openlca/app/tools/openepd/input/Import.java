@@ -1,8 +1,8 @@
 package org.openlca.app.tools.openepd.input;
 
-import org.openlca.app.tools.openepd.model.Ec3Epd;
-import org.openlca.app.tools.openepd.model.Ec3Org;
-import org.openlca.app.tools.openepd.model.Ec3Pcr;
+import org.openlca.app.tools.openepd.model.EpdDoc;
+import org.openlca.app.tools.openepd.model.EpdOrg;
+import org.openlca.app.tools.openepd.model.EpdPcr;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.io.ImportLog;
@@ -28,18 +28,18 @@ import java.util.HashMap;
 class Import {
 
 	private final IDatabase db;
-	private final Ec3Epd epd;
+	private final EpdDoc epd;
 	private final ImportMapping mapping;
 	private final Quantity quantity;
-	private final String category;
+	private final String[] categoryPath;
 	private final ImportLog log;
 
-	Import(IDatabase db, Ec3Epd epd, ImportMapping mapping) {
+	Import(IDatabase db, EpdDoc epd, ImportMapping mapping) {
 		this.db = db;
 		this.epd = epd;
 		this.mapping = mapping;
 		this.quantity = mapping.quantity();
-		this.category = Util.categoryOf(epd);
+		this.categoryPath = Util.categoryOf(epd).orElse(null);
 		this.log = new ImportLog();
 	}
 
@@ -74,9 +74,9 @@ class Import {
 	}
 
 	private Category syncCategory(ModelType type) {
-		return Strings.notEmpty(category)
-			? CategoryDao.sync(db, type, category)
-			: null;
+		return categoryPath == null || categoryPath.length == 0
+			? null
+			: CategoryDao.sync(db, type, categoryPath);
 	}
 
 	private FlowResult createRefFlow() {
@@ -92,29 +92,25 @@ class Import {
 		return refFlow;
 	}
 
-	private Actor getActor(Ec3Org org) {
+	private Actor getActor(EpdOrg org) {
 		if (org == null || Strings.nullOrEmpty(org.name))
 			return null;
-		var id = org.id;
-		if (Strings.nullOrEmpty(id)) {
-			id = Strings.notEmpty(org.ref)
-				? KeyGen.get(org.ref)
-				: KeyGen.get(org.name);
-		}
+		var id = Strings.notEmpty(org.ref)
+			? KeyGen.get(org.ref)
+			: KeyGen.get(org.name);
 		var actor = db.get(Actor.class, id);
 		if (actor != null)
 			return actor;
 		actor = Actor.of(org.name);
 		actor.refId = id;
-		actor.website = org.website;
-		actor.address = org.address;
-		actor.country = org.country;
+		actor.website = org.webDomain;
+		actor.address = org.ref;
 		actor = db.insert(actor);
 		log.imported(actor);
 		return actor;
 	}
 
-	private Source getSource(Ec3Pcr pcr) {
+	private Source getSource(EpdPcr pcr) {
 		if (pcr == null || Strings.nullOrEmpty(pcr.name))
 			return null;
 		var id = pcr.id;
@@ -186,7 +182,7 @@ class Import {
 	}
 
 	private Result initResult(String name, FlowResult refFlow,
-														ImpactMethod method) {
+		ImpactMethod method) {
 		var qRef = refFlow.copy();
 		var result = Result.of(name);
 		result.impactMethod = method;

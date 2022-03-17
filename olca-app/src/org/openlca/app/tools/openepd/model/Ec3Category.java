@@ -9,11 +9,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.openlca.jsonld.Json;
 
-public class Ec3Category {
+public class Ec3Category implements Jsonable {
 
 	public String id;
 	public String name;
 	public String description;
+
+	/**
+	 * The full path of the category in openEPD format.
+	 */
+	public String openEpd;
+
 	public final List<String> parents = new ArrayList<>();
 	public final List<Ec3Category> subCategories = new ArrayList<>();
 
@@ -28,6 +34,7 @@ public class Ec3Category {
 			category.name = Json.getString(obj, "name");
 		}
 		category.description = Json.getString(obj, "description");
+		category.openEpd = Json.getString(obj, "openepd");
 
 		Json.stream(Json.getArray(obj, "parents"))
 			.filter(JsonElement::isJsonPrimitive)
@@ -44,11 +51,13 @@ public class Ec3Category {
 		return Optional.of(category);
 	}
 
+	@Override
 	public JsonObject toJson() {
 		var obj = new JsonObject();
 		Json.put(obj, "id", id);
 		Json.put(obj, "name", name);
 		Json.put(obj, "description", description);
+		Json.put(obj, "openepd", openEpd);
 
 		if (!parents.isEmpty()) {
 			var parentsArray = new JsonArray();

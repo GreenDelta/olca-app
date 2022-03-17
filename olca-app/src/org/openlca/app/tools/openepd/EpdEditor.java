@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import com.google.gson.GsonBuilder;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Text;
@@ -28,7 +27,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.openepd.model.Api;
 import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
-import org.openlca.app.tools.openepd.model.Ec3InternalEpd;
+import org.openlca.app.tools.openepd.model.Ec3Epd;
 import org.openlca.app.tools.openepd.model.Ec3ImpactModel;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
@@ -40,11 +39,13 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
 
+import com.google.gson.GsonBuilder;
+
 public class EpdEditor extends SimpleFormEditor {
 
 	final Ec3ImpactModel impactModel = Ec3ImpactModel.get();
 	private final IDatabase db = Database.get();
-	private final Ec3InternalEpd epd = new Ec3InternalEpd();
+	private final Ec3Epd epd = new Ec3Epd();
 	private Ec3CategoryTree categories;
 
 	public static void open() {
@@ -116,7 +117,7 @@ public class EpdEditor extends SimpleFormEditor {
 					if (categories.isEmpty()) {
 						MsgBox.error("No categories could be loaded",
 							"No categories could be loaded from "
-								+ loginPanel.credentials().queryUrl());
+								+ loginPanel.credentials().ec3Url());
 						return;
 					}
 				}
@@ -212,12 +213,12 @@ public class EpdEditor extends SimpleFormEditor {
 				if (client == null)
 					return;
 				var b = Question.ask("Upload as draft?",
-					"Upload this as draft to " + loginPanel.credentials().url() + "?");
+					"Upload this as draft to " + loginPanel.credentials().ec3Url() + "?");
 				if (!b)
 					return;
 				mergeResults();
 				try {
-					var response = client.post("/epds", epd.toJson());
+					var response = client.postEpd("/epds", epd.toJson());
 					if (!response.hasJson()) {
 						MsgBox.error("Received no response from server");
 						return;
@@ -232,7 +233,7 @@ public class EpdEditor extends SimpleFormEditor {
 						ErrorDialog.show(obj);
 						return;
 					}
-					var url = loginPanel.credentials().url();
+					var url = loginPanel.credentials().epdUrl();
 					Popup.info("Uploaded EPD",
 						"The EPD was uploaded to <a href='" + url + "'>" + url + "</a>");
 				} catch (Exception e) {

@@ -4,6 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.editors.InfoSection;
@@ -62,7 +63,7 @@ public class EpdEditor extends ModelEditor<Epd> {
 						"EPD cannot be converted to an openEPD document: " + check.error());
 					return;
 				}
-				var ec3Epd = EpdConverter.convert(epd());
+				var ec3Epd = EpdConverter.toOpenEpd(epd());
 				ExportDialog.show(ec3Epd);
 			});
 
@@ -107,12 +108,29 @@ public class EpdEditor extends ModelEditor<Epd> {
 					editor.setDirty();
 				});
 
+			// urn
 			UI.formLabel(comp, tk, "URN");
+			new UrnLink(editor).render(comp, tk);
+		}
+
+		private Epd epd() {
+			return getModel();
+		}
+	}
+
+	private record UrnLink(EpdEditor editor) {
+
+		private Epd epd() {
+			return editor.getModel();
+		}
+
+		void render(Composite parent, FormToolkit tk) {
+			var comp = tk.createComposite(parent);
+			UI.gridLayout(comp, 2, 10, 0);
+
+			// link text
 			var link = tk.createImageHyperlink(comp, SWT.NONE);
-			link.setText(Strings.nullOrEmpty(epd().urn)
-				? "- none -"
-				: epd().urn
-			);
+			update(link);
 			Controls.onClick(link, $ -> {
 				var urn = epd().urn;
 				if (Strings.nullOrEmpty(urn))
@@ -124,10 +142,24 @@ public class EpdEditor extends ModelEditor<Epd> {
 				}
 			});
 
+			// delete button
+			var deleteBtn = tk.createImageHyperlink(comp, SWT.TOP);
+			deleteBtn.setToolTipText(M.Remove);
+			deleteBtn.setHoverImage(Icon.DELETE.get());
+			deleteBtn.setImage(Icon.DELETE_DISABLED.get());
+			Controls.onClick(deleteBtn, $ -> {
+				epd().urn = "";
+				update(link);
+				editor.setDirty();
+			});
 		}
 
-		private Epd epd() {
-			return getModel();
+		private void update(ImageHyperlink link) {
+			link.setText(Strings.nullOrEmpty(epd().urn)
+				? "- none -"
+				: epd().urn
+			);
+			link.getParent().pack();
 		}
 	}
 }

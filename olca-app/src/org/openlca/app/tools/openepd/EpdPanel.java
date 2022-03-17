@@ -20,7 +20,8 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
 import org.openlca.app.tools.openepd.model.Api;
 import org.openlca.app.tools.openepd.model.Ec3Client;
-import org.openlca.app.tools.openepd.model.Ec3Epd;
+import org.openlca.app.tools.openepd.model.Ec3EpdInfo;
+import org.openlca.app.tools.openepd.model.EpdDoc;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
@@ -102,7 +103,7 @@ public class EpdPanel extends SimpleFormEditor {
 					return;
 
 				// search for EPDs
-				var epds = new ArrayList<Ec3Epd>();
+				var epds = new ArrayList<Ec3EpdInfo>();
 				var query = searchText.getText();
 				var count = spinner.getSelection();
 				App.runWithProgress("Fetch EPDs", () -> {
@@ -140,7 +141,7 @@ public class EpdPanel extends SimpleFormEditor {
 					if (epd.isEmpty())
 						return;
 					var file = FileChooser.forSavingFile(
-						"Save openEPD", epd.descriptor.id + ".json");
+						"Save openEPD", epd.descriptor.epdId + ".json");
 					if (file == null)
 						return;
 					Json.write(epd.json, file);
@@ -161,7 +162,7 @@ public class EpdPanel extends SimpleFormEditor {
 			// URL is the ID of the EPD.
 			var parts = url.split("/");
 			String last = null;
-			for (int i = parts.length -1; i >= 0; i--) {
+			for (int i = parts.length - 1; i >= 0; i--) {
 				var part = parts[i].trim();
 				if (!part.isEmpty()) {
 					last = part;
@@ -178,19 +179,18 @@ public class EpdPanel extends SimpleFormEditor {
 				"Download EPD " + id, () -> Api.getRawEpd(client, id));
 			if (json.isEmpty()) {
 				MsgBox.error(
-					"Could not download an EPD for the given ID '" + id +"'.");
+					"Could not download an EPD for the given ID '" + id + "'.");
 				return;
 			}
-			var epd = Ec3Epd.fromJson(json.get()).orElse(null);
+			var epd = EpdDoc.fromJson(json.get()).orElse(null);
 			ImportDialog.show(epd);
 		}
 
-		private record FullEpd(Ec3Epd descriptor, JsonObject json) {
+		private record FullEpd(Ec3EpdInfo descriptor, JsonObject json) {
 
-
-			Ec3Epd get() {
+			EpdDoc get() {
 				return json != null
-					? Ec3Epd.fromJson(json).orElse(null)
+					? EpdDoc.fromJson(json).orElse(null)
 					: null;
 			}
 
@@ -203,23 +203,23 @@ public class EpdPanel extends SimpleFormEditor {
 			}
 
 			static FullEpd fetch(TableViewer table, LoginPanel loginPanel) {
-				Ec3Epd epd = Viewers.getFirstSelected(table);
-				if (epd == null)
+				Ec3EpdInfo info = Viewers.getFirstSelected(table);
+				if (info == null)
 					return empty();
 				var client = loginPanel.login().orElse(null);
 				if (client == null)
 					return empty();
 				var json = App.exec(
-					"Download EPD", () -> Api.getRawEpd(client, epd.id));
+					"Download EPD", () -> Api.getRawEpd(client, info.epdId));
 				if (json.isEmpty()) {
-					MsgBox.error("Failed to download EPD " + epd.id);
+					MsgBox.error("Failed to download EPD " + info.epdId);
 					return empty();
 				}
-				return new FullEpd(epd, json.get());
+				return new FullEpd(info, json.get());
 			}
 		}
 
-		private class TableLabel extends BaseLabelProvider
+		private static class TableLabel extends BaseLabelProvider
 			implements ITableLabelProvider {
 
 			@Override
@@ -229,32 +229,22 @@ public class EpdPanel extends SimpleFormEditor {
 
 			@Override
 			public String getColumnText(Object obj, int col) {
-				if (!(obj instanceof Ec3Epd epd))
+				if (!(obj instanceof Ec3EpdInfo epd))
 					return null;
 				return switch (col) {
-					case 0 -> epd.productName;
+					case 0 -> epd.name;
 					case 1 -> epd.manufacturer != null
 						? epd.manufacturer.name
 						: null;
-					case 2 -> categoryOf(epd);
+					case 2 -> epd.category != null
+						? epd.category.openEpd
+						: null;
 					case 3 -> epd.declaredUnit != null
-						? epd.declaredUnit.toString()
+						? epd.declaredUnit
 						: null;
 					default -> null;
 				};
 			}
 		}
-
-		private String categoryOf(Ec3Epd epd) {
-			if (epd == null || epd.productClasses.isEmpty())
-				return null;
-			return epd.productClasses.stream()
-				.map(p -> p.second)
-				.filter(Strings::notEmpty)
-				.findAny()
-				.orElse(null);
-		}
 	}
-
-
 }
