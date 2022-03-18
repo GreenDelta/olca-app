@@ -115,7 +115,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (obj instanceof LibraryElement elem) {
 			var lib = elem.getContent();
 			return lib != null
-				? lib.folder.getAbsolutePath()
+				? lib.folder().getAbsolutePath()
 				: null;
 		}
 

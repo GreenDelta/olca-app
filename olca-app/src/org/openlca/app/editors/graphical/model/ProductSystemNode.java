@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical.model;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
@@ -54,9 +55,18 @@ public class ProductSystemNode extends Node {
 	}
 
 	public ProcessNode getProcessNode(long id) {
-		for (ProcessNode node : getChildren())
-			if (node.process.id == id)
+		for (var node : getChildren()) {
+			if (node.process != null && node.process.id == id)
 				return node;
+		}
+		return null;
+	}
+
+	public ProcessNode getProcessNode(String refId) {
+		for (var node : getChildren()) {
+			if (node.process != null && Objects.equals(refId, node.process.refId))
+				return node;
+		}
 		return null;
 	}
 

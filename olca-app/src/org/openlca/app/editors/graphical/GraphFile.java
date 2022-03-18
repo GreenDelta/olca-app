@@ -1,12 +1,18 @@
 package org.openlca.app.editors.graphical;
 
 import java.io.File;
+import java.util.List;
+import java.util.function.Function;
 
+import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.Result;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.jsonld.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +63,7 @@ public final class GraphFile {
 		if (node == null || node.process == null)
 			return null;
 		var json = new JsonObject();
-		json.addProperty("id", node.process.id);
+		json.addProperty("id", node.process.refId);
 
 		var box = node.getBox();
 		if (box != null) {
@@ -111,6 +117,18 @@ public final class GraphFile {
 	private static void applyNodes(JsonArray array, ProductSystemNode root) {
 		if (array == null || root == null)
 			return;
+
+		Function<String, RootDescriptor> provider = refId -> {
+			var db = Database.get();
+			if (db == null)
+				return null;
+			for (var c : List.of(Process.class, ProductSystem.class, Result.class)) {
+				if (db.getDescriptor(c, refId) instanceof RootDescriptor d)
+					return d;
+			}
+			return null;
+		};
+
 		for (var elem : array) {
 			if (!elem.isJsonObject())
 				continue;
@@ -118,14 +136,35 @@ public final class GraphFile {
 			var info = toInfo(obj);
 			if (info == null)
 				continue;
+
 			var node = root.getProcessNode(info.id);
 			if (node != null) {
 				node.apply(info);
 				continue;
 			}
-			node = ProcessNode.create(root.editor, info.id);
+
+			// we changed the ID to a string in openLCA v2; to be a bit
+			// backwards compatible we try the long ID too
+			try {
+				var id = Long.parseLong(info.id);
+				node = root.getProcessNode(id);
+				if (node != null) {
+					node.apply(info);
+					continue;
+				}
+				node = ProcessNode.create(root.editor, id);
+			} catch (Exception ignored) {
+			}
+
+			if (node == null) {
+				var p = provider.apply(info.id);
+				if (p != null) {
+					node = new ProcessNode(root.editor, p);
+				}
+			}
 			if (node == null)
 				continue;
+
 			root.add(node);
 			node.apply(info);
 			root.editor.createNecessaryLinks(node);
@@ -136,7 +175,7 @@ public final class GraphFile {
 		if (obj == null)
 			return null;
 		var info = new NodeLayoutInfo();
-		info.id = Json.getLong(obj, "id", 0);
+		info.id = Json.getString(obj, "id");
 		info.box.x = Json.getInt(obj, "x", 0);
 		info.box.y = Json.getInt(obj, "y", 0);
 		info.box.width = Json.getInt(obj, "width", 175);
