@@ -94,7 +94,7 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 			return !d.isFromLibrary();
 		if (Strings.nullOrEmpty(d.library))
 			return false;
-		var libID = lib.getInfo().id();
+		var libID = lib.id();
 		return Strings.nullOrEqual(libID, d.library);
 	}
 

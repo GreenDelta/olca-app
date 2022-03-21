@@ -52,7 +52,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 		// if this is a library process
 		if (p.isFromLibrary()) {
 			var library = Workspace.getLibraryDir()
-				.get(p.library)
+				.getLibrary(p.library)
 				.orElse(null);
 			if (library != null) {
 				var exchanges = library.getExchanges(

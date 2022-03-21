@@ -25,7 +25,7 @@ public class LibraryDirElement extends NavigationElement<LibraryDir> {
 	protected List<INavigationElement<?>> queryChilds() {
 		if (only != null) {
 			return only.stream()
-					.map(id -> Workspace.getLibraryDir().get(id))
+					.map(id -> Workspace.getLibraryDir().getLibrary(id))
 					.filter(Optional::isPresent)
 					.map(lib -> new LibraryElement(this, lib.get()))
 					.collect(Collectors.toList());

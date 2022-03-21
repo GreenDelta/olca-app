@@ -211,9 +211,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return Labels.name((Descriptor) content);
 		if (content instanceof LibraryDir)
 			return "Libraries";
-		if (content instanceof Library) {
-			var info = ((Library) content).getInfo();
-			return info.name() + " " + info.version();
+		if (content instanceof Library lib) {
+			return lib.id();
 		}
 		if (elem instanceof MappingDirElement)
 			return "Mapping files";

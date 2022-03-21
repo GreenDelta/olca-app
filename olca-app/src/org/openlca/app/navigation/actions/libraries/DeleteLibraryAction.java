@@ -13,7 +13,6 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryElement;
-import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
@@ -86,9 +85,7 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 		}
 
 		// delete it
-		var dir = Workspace.getLibraryDir()
-			.getFolder(lib.getInfo());
-		Dirs.delete(dir);
+		Dirs.delete(lib.folder());
 		Navigator.refresh();
 	}
 

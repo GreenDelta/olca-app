@@ -34,8 +34,8 @@ public class CategoryElement extends NavigationElement<Category> {
 		if (category == null)
 			return Collections.emptyList();
 		var lib = getLibrary().orElse(null);
-		var libID = lib != null && lib.getInfo() != null
-				? lib.getInfo().id()
+		var libID = lib != null
+				? lib.id()
 				: null;
 
 		var list = new ArrayList<INavigationElement<?>>();

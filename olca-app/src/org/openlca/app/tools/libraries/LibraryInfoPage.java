@@ -32,7 +32,7 @@ public class LibraryInfoPage extends SimpleFormEditor {
 			return;
 		var info = library.getInfo();
 		var input = new SimpleEditorInput(
-				info.id(), info.name() + " " + info.name());
+				library.id(), info.name() + " " + info.version());
 		Editors.open(input, "LibraryInfoPage");
 	}
 
@@ -43,11 +43,11 @@ public class LibraryInfoPage extends SimpleFormEditor {
 		try {
 			var inp = (SimpleEditorInput) input;
 			library = Workspace.getLibraryDir()
-					.get(inp.id)
+					.getLibrary(inp.id)
 					.orElseThrow();
 			info = library.getInfo();
 			var db = Database.get();
-			if (db != null && db.getLibraries().contains(info.id())) {
+			if (db != null && db.getLibraries().contains(library.id())) {
 				this.db = db;
 			}
 		} catch (Exception e) {

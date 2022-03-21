@@ -36,7 +36,6 @@ import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryImport;
-import org.openlca.core.library.LibraryInfo;
 import org.openlca.core.library.LibraryPackage;
 import org.openlca.util.Strings;
 
@@ -53,11 +52,8 @@ public class MountLibraryAction extends Action implements INavigationAction {
 			return false;
 		if (selection.size() != 1)
 			return false;
-		var first = selection.get(0);
-		if (!(first instanceof DatabaseElement))
-			return false;
-		var e = (DatabaseElement) first;
-		return Database.isActive(e.getContent());
+		return selection.get(0) instanceof DatabaseElement e
+			&& Database.isActive(e.getContent());
 	}
 
 	@Override
@@ -76,7 +72,7 @@ public class MountLibraryAction extends Action implements INavigationAction {
 		new FileImportDialog(file).open();
 	}
 
-	private static LibraryInfo extract(File file) {
+	private static Library extract(File file) {
 		if (file == null)
 			return null;
 
@@ -88,14 +84,14 @@ public class MountLibraryAction extends Action implements INavigationAction {
 			return null;
 		}
 
+		var id = Strings.notEmpty(info.version())
+			? info.name() + " " + info.version()
+			: info.name();
+
 		// check if it already exists
 		var libDir = Workspace.getLibraryDir();
-		var existing = libDir.getLibraries()
-			.stream()
-			.map(Library::id)
-			.collect(Collectors.toSet());
-		if (existing.contains(info.id())) {
-			MsgBox.error("The library " + info.id() + " already exists.");
+		if (libDir.hasLibrary(id)) {
+			MsgBox.error("A library " + id + " already exists.");
 			return null;
 		}
 
@@ -104,24 +100,21 @@ public class MountLibraryAction extends Action implements INavigationAction {
 			LibraryPackage.unzip(file, libDir);
 			return true;
 		});
-		if (extracted == null || !extracted || !libDir.exists(info))
+		if (extracted == null || !extracted)
 			return null;
 		Navigator.refresh();
-		return info;
+		return libDir.getLibrary(id).orElse(null);
 	}
 
-	private static boolean mount(LibraryInfo info, IDatabase db) {
-		if (info == null || db == null)
+	private static boolean mount(Library lib, IDatabase db) {
+		if (lib == null || db == null)
 			return false;
-		var libDir = Workspace.getLibraryDir();
-		var lib = libDir.get(info.id()).orElse(null);
 		var b = App.exec("Check library", () -> canMount(lib, db));
 		if (b == null || !b)
 			return false;
 		var imp = new LibraryImport(db, lib);
 		App.runWithProgress(
-			"Mounting library " + info.name() + " "
-				+ info.version() + " to " + db.getName(),
+			"Mounting library " + lib.id() +  " to " + db.getName(),
 			imp,
 			Navigator::refresh);
 		return true;
@@ -173,7 +166,7 @@ public class MountLibraryAction extends Action implements INavigationAction {
 	private static class Dialog extends FormDialog {
 
 		private final IDatabase db;
-		private LibraryInfo workspaceLib;
+		private Library workspaceLib;
 		private File externalFile;
 		private boolean inWorkspaceMode = true;
 
@@ -230,15 +223,14 @@ public class MountLibraryAction extends Action implements INavigationAction {
 		private void createCombo(Composite body) {
 			// collect libraries that can mounted
 			var dbLibs = db.getLibraries();
-			var infos = Workspace.getLibraryDir()
+			var libs = Workspace.getLibraryDir()
 				.getLibraries()
 				.stream()
-				.map(Library::getInfo)
-				.filter(info -> !dbLibs.contains(info.id()))
-				.sorted((i1, i2) -> Strings.compare(i1.id(), i2.id()))
-				.toArray(LibraryInfo[]::new);
-			var items = Arrays.stream(infos)
-				.map(info -> info.name() + " " + info.version())
+				.filter(lib -> !dbLibs.contains(lib.id()))
+				.sorted((l1, l2) -> Strings.compare(l1.id(), l2.id()))
+				.toArray(Library[]::new);
+			var items = Arrays.stream(libs)
+				.map(Library::id)
 				.toArray(String[]::new);
 
 			// create an fill the combo box
@@ -247,13 +239,13 @@ public class MountLibraryAction extends Action implements INavigationAction {
 			combo.setItems(items);
 			if (items.length > 0) {
 				combo.select(0);
-				workspaceLib = infos[0];
+				workspaceLib = libs[0];
 			}
 			Controls.onSelect(combo, _e -> {
 				int idx = combo.getSelectionIndex();
 				if (idx < 0)
 					return;
-				workspaceLib = infos[idx];
+				workspaceLib = libs[idx];
 				onSelectionChanged();
 			});
 		}
@@ -293,12 +285,12 @@ public class MountLibraryAction extends Action implements INavigationAction {
 
 		@Override
 		protected void okPressed() {
-			var info = inWorkspaceMode
+			var lib = inWorkspaceMode
 				? workspaceLib
 				: extract(externalFile);
-			if (info == null)
+			if (lib == null)
 				return;
-			if (mount(info, db)) {
+			if (mount(lib, db)) {
 				super.okPressed();
 			}
 		}

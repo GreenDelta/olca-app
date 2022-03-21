@@ -69,7 +69,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 		var impact = getModel();
 		if (impact.isFromLibrary()) {
 			var lib = Workspace.getLibraryDir()
-				.get(impact.library)
+				.getLibrary(impact.library)
 				.orElse(null);
 			if (lib != null) {
 				var factors = lib.getImpactFactors(

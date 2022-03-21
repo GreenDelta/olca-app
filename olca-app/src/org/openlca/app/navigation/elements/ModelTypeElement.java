@@ -21,8 +21,8 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 		var type = getContent();
 		var db = Database.get();
 		var lib = getLibrary().orElse(null);
-		var libID = lib != null && lib.getInfo() != null
-				? lib.getInfo().id()
+		var libID = lib != null
+				? lib.id()
 				: null;
 
 		var list = new ArrayList<INavigationElement<?>>();

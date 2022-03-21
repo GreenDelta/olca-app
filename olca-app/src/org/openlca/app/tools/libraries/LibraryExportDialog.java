@@ -1,5 +1,6 @@
 package org.openlca.app.tools.libraries;
 
+import java.io.File;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -34,7 +35,7 @@ public class LibraryExportDialog extends FormDialog {
 		super(UI.shell());
 		this.config = config;
 		config.name = config.db.getName();
-		config.version = "0.0.1";
+		config.version = "1.0";
 		config.allocation = AllocationMethod.NONE;
 	}
 
@@ -43,7 +44,7 @@ public class LibraryExportDialog extends FormDialog {
 		if (db == null) {
 			MsgBox.error(M.NoDatabaseOpened,
 				"You need to open the database first from which" +
-				" you want to create the library.");
+					" you want to create the library.");
 			return;
 		}
 		try {
@@ -53,7 +54,7 @@ public class LibraryExportDialog extends FormDialog {
 			if (!config.dbHasInventory) {
 				MsgBox.error("No inventory data",
 					"The library export of databases without inventory data" +
-					" is not supported yet.");
+						" is not supported yet.");
 				return;
 			}
 			new LibraryExportDialog(config).open();
@@ -102,21 +103,21 @@ public class LibraryExportDialog extends FormDialog {
 
 		if (config.dbHasImpacts) {
 			check.apply(
-				"With LCIA data",
-				b -> config.withImpacts = b)
+					"With LCIA data",
+					b -> config.withImpacts = b)
 				.setSelection(config.withImpacts);
 		}
 
 		if (config.dbHasUncertainties) {
 			check.apply(
-				"With uncertainty distributions",
-				b -> config.withUncertainties = b)
+					"With uncertainty distributions",
+					b -> config.withUncertainties = b)
 				.setSelection(config.withUncertainties);
 		}
 
 		check.apply(
-			"Regionalized",
-			b -> config.regionalized = b)
+				"Regionalized",
+				b -> config.regionalized = b)
 			.setSelection(config.regionalized);
 
 		// data quality values
@@ -135,13 +136,13 @@ public class LibraryExportDialog extends FormDialog {
 	protected void okPressed() {
 		var libDir = Workspace.getLibraryDir();
 		var info = config.toInfo();
-		var exportDir = libDir.getFolder(info);
-		var name = info.name() + " " + info.version();
-		if (libDir.exists(info)) {
-			MsgBox.error(name + " already exists",
+		var id = info.toId();
+		if (libDir.hasLibrary(id)) {
+			MsgBox.error("Library " + id + " already exists",
 				"A library with this name and version already exists");
 			return;
 		}
+		var exportDir = new File(libDir.folder(), id);
 		super.okPressed();
 		var export = new LibraryExport(config.db, exportDir)
 			.withConfig(info)
@@ -149,7 +150,7 @@ public class LibraryExportDialog extends FormDialog {
 			.withAllocation(config.allocation)
 			.withUncertainties(config.withUncertainties);
 		App.runWithProgress(
-			"Creating library " + name,
+			"Creating library " + id,
 			export,
 			Navigator::refresh);
 	}
@@ -187,9 +188,9 @@ public class LibraryExportDialog extends FormDialog {
 		}
 
 		LibraryInfo toInfo() {
-			var info = LibraryInfo.of(name, Version.format(version))
-					.isRegionalized(regionalized);
-			return info;
+			return LibraryInfo.of(name)
+				.version(version)
+				.isRegionalized(regionalized);
 		}
 	}
 }
