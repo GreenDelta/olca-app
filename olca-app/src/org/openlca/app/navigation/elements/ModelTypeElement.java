@@ -21,16 +21,12 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 		var type = getContent();
 		var db = Database.get();
 		var lib = getLibrary().orElse(null);
-		var libID = lib != null
-				? lib.id()
-				: null;
-
 		var list = new ArrayList<INavigationElement<?>>();
 
 		// add root categories
 		new CategoryDao(db).getRootCategories(type).forEach(category -> {
 			if (matches(Descriptor.of(category), lib)
-					|| (libID != null && hasElementsOf(category, libID))) {
+					|| (lib != null && hasElementsOf(category, lib))) {
 				list.add(new CategoryElement(this, category));
 			}
 		});

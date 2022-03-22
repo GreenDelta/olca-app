@@ -11,6 +11,8 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
+import javax.annotation.Nullable;
+
 /**
  * Basic implementation of a navigation element which manages an internal cache
  * for its child elements.
@@ -87,25 +89,23 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 			&& Objects.equals(this.parent, other.parent);
 	}
 
-	static boolean matches(Descriptor d, Library lib) {
+	static boolean matches(Descriptor d, @Nullable Library lib) {
 		if (d == null)
 			return false;
-		if (lib == null || lib.getInfo() == null)
-			return !d.isFromLibrary();
-		if (Strings.nullOrEmpty(d.library))
-			return false;
-		var libID = lib.id();
-		return Strings.nullOrEqual(libID, d.library);
+		return Strings.nullOrEmpty(d.library)
+			? lib == null
+			: lib != null && Strings.nullOrEqual(d.library, lib.id());
 	}
 
 	/**
 	 * Returns true if the given category contains (recursively) elements
 	 * from the given library.
 	 */
-	static boolean hasElementsOf(Category category, String library) {
+	static boolean hasElementsOf(Category category, Library library) {
 		if (category == null || library == null)
 			return false;
-		if (Strings.nullOrEqual(category.library, library))
+		var libId = library.id();
+		if (Strings.nullOrEqual(category.library, libId))
 			return true;
 		for (var child : category.childCategories) {
 			if (hasElementsOf(child, library))
@@ -119,6 +119,6 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 			return false;
 		return dao.getDescriptors(Optional.of(category))
 			.stream()
-			.anyMatch(d -> Strings.nullOrEqual(d.library, library));
+			.anyMatch(d -> Strings.nullOrEqual(d.library, libId));
 	}
 }

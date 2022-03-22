@@ -34,16 +34,12 @@ public class CategoryElement extends NavigationElement<Category> {
 		if (category == null)
 			return Collections.emptyList();
 		var lib = getLibrary().orElse(null);
-		var libID = lib != null
-				? lib.id()
-				: null;
-
 		var list = new ArrayList<INavigationElement<?>>();
 
 		// child categories
 		for (var child : category.childCategories) {
 			if (matches(Descriptor.of(child), lib)
-					|| (libID != null && hasElementsOf(child, libID))) {
+					|| (lib != null && hasElementsOf(child, lib))) {
 				list.add(new CategoryElement(this, child));
 			}
 		}
