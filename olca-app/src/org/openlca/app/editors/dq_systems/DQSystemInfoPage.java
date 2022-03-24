@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
@@ -39,8 +37,8 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	private Composite body;
 	private Section indicatorSection;
 	private Section uncertaintySection;
-	private Map<Integer, Text> indicatorTexts = new HashMap<>();
-	private Map<Integer, Text> scoreTexts = new HashMap<>();
+	private final Map<Integer, Text> indicatorTexts = new HashMap<>();
+	private final Map<Integer, Text> scoreTexts = new HashMap<>();
 
 	DQSystemInfoPage(DQSystemEditor editor) {
 		super(editor, "DQSystemInfoPage", M.GeneralInformation);
@@ -169,11 +167,9 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 
 	private Text createTextCell(Composite composite, int heightFactor, int widthFactor) {
 		Text text = toolkit.createText(composite, null, SWT.BORDER | SWT.MULTI | SWT.WRAP);
-		text.addTraverseListener(new TraverseListener() {
-			public void keyTraversed(TraverseEvent e) {
-				if (e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_TAB_PREVIOUS) {
-					e.doit = true;
-				}
+		text.addTraverseListener(e -> {
+			if (e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_TAB_PREVIOUS) {
+				e.doit = true;
 			}
 		});
 		setGridData(text, heightFactor, widthFactor);

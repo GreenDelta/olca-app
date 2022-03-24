@@ -1,5 +1,6 @@
 package org.openlca.app.editors;
 
+
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
@@ -109,5 +110,4 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 		comp.setEnabled(isEditable());
 		return comp;
 	}
-
 }
