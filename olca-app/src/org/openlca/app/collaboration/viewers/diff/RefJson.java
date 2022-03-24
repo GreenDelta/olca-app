@@ -43,7 +43,7 @@ class RefJson {
 			return null;
 		var json = JsonExport.toJson(entity, Database.get());
 		if (entity instanceof Process) {
-			split(json, "exchanges", "input", "inputs", "outputs");
+			split(json, "exchanges", "isInput", "inputs", "outputs");
 		} else if (entity instanceof Result) {
 			split(json, "flowResults", "isInput", "inputResults", "outputResults");
 		}
