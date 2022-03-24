@@ -32,9 +32,9 @@ class ValueLabels {
 		}
 		if (value == null)
 			return "null";
-		if (property.equals("inputParameter"))
+		if (property.equals("isInputParameter"))
 			return getInputParameterValue(value);
-		if (property.equals("input"))
+		if (property.equals("isInput"))
 			return getInputValue(value);
 		if (value.equalsIgnoreCase("true"))
 			return "Yes";

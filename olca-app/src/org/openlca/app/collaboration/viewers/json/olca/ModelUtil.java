@@ -34,7 +34,7 @@ class ModelUtil {
 			return getString(element, "flowProperty.name");
 		if (path.equals("inputs") || path.equals("outputs") || path.equals("impactFactors")
 				|| path.equals("inputResults") || path.equals("outputResults")
-				|| path.equals("referenceExchange") || path.equals("product"))
+				|| path.equals("refExchange") || path.equals("product"))
 			return getString(element, "flow.name");
 		if (path.equals("impactResults"))
 			return getString(element, "indicator.name");
@@ -79,11 +79,11 @@ class ModelUtil {
 				"precedingDataSet", "position", "parameterScope", "context");
 		var hiddenPaths = Arrays.asList("flowProperties.flowProperty", "impactFactors.flow", "product.flow",
 				"nwSets.name", "nwSet.name", "nwSets.factors.impactCategory", "socialAspects.socialIndicator",
-				"variants.productSystem", "inputs.input", "outputs.input", "inputs.flow", "outputs.flow",
+				"variants.productSystem", "inputs.isInput", "outputs.isInput", "inputs.flow", "outputs.flow",
 				"inputResults.isInput", "outputResults.isInput", "inputResults.flow.flowType",
 				"outputResults.flow.flowType", "inputResults.flow.refUnit", "outputResults.flow.refUnit",
 				"allocationFactors.product", "allocationFactors.exchange", "variants.name", "indicators.name");
-		var hiddenRefs = Arrays.asList("processLinks", "category", "referenceProcess", "referenceExchange",
+		var hiddenRefs = Arrays.asList("processLinks", "category", "refProcess", "refExchange",
 				"activityQuantity", "targetFlowProperty", "impactCategories");
 		if (hiddenProps.contains(property) || hiddenPaths.contains(path) || hiddenRefs.contains(parentPath))
 			return false;

@@ -22,11 +22,11 @@ public class ModelDependencyResolver implements IDependencyResolver {
 		put(ModelType.PROCESS, "exchanges", "flowProperty", "unit");
 		put(ModelType.IMPACT_CATEGORY, "impactFactors", "flowProperty", "unit");
 		put(ModelType.SOCIAL_INDICATOR, null, "activityQuantity", "activityUnit");
-		put(ModelType.PRODUCT_SYSTEM, null, "referenceProcess", "referenceExchange");
-		put(ModelType.PRODUCT_SYSTEM, null, "referenceProcess", "targetFlowProperty");
-		put(ModelType.PRODUCT_SYSTEM, null, "referenceProcess", "targetUnit");
-		put(ModelType.PRODUCT_SYSTEM, null, "referenceExchange", "targetFlowProperty");
-		put(ModelType.PRODUCT_SYSTEM, null, "referenceExchange", "targetUnit");
+		put(ModelType.PRODUCT_SYSTEM, null, "refProcess", "refExchange");
+		put(ModelType.PRODUCT_SYSTEM, null, "refProcess", "targetFlowProperty");
+		put(ModelType.PRODUCT_SYSTEM, null, "refProcess", "targetUnit");
+		put(ModelType.PRODUCT_SYSTEM, null, "refExchange", "targetFlowProperty");
+		put(ModelType.PRODUCT_SYSTEM, null, "refExchange", "targetUnit");
 		put(ModelType.PRODUCT_SYSTEM, null, "targetFlowProperty", "targetUnit");
 		put(ModelType.PRODUCT_SYSTEM, null, "processes", "processLinks");
 		put(ModelType.PRODUCT_SYSTEM, null, "processes", "parameterSets");

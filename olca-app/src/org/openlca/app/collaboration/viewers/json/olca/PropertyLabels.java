@@ -96,7 +96,7 @@ class PropertyLabels {
 		putBasicLabels(type);
 		put(type, "code", M.Code);
 		put(type, "conversionFactor", M.ConversionFactor);
-		put(type, "referenceCurrency", M.ReferenceCurrency, ModelType.CURRENCY);
+		put(type, "refCurrency", M.ReferenceCurrency, ModelType.CURRENCY);
 	}
 
 	private static void putActorLabels() {
@@ -132,7 +132,7 @@ class PropertyLabels {
 	private static void putUnitLabels(ModelType type, String path) {
 		putBasicLabels(type, path);
 		put(type, path + ".conversionFactor", M.ConversionFactor);
-		put(type, path + ".referenceUnit", M.ReferenceUnit);
+		put(type, path + ".isRefUnit", M.ReferenceUnit);
 		put(type, path + ".synonyms", M.Synonyms);
 	}
 
@@ -158,7 +158,7 @@ class PropertyLabels {
 		putBasicLabels(type);
 		put(type, "flowType", M.FlowType);
 		put(type, "location", M.Location, ModelType.LOCATION);
-		put(type, "infrastructureFlow", M.InfrastructureFlow);
+		put(type, "isInfrastructureFlow", M.InfrastructureFlow);
 		put(type, "cas", M.CASNumber);
 		put(type, "formula", M.Formula);
 		put(type, "synonyms", M.Synonyms);
@@ -168,7 +168,7 @@ class PropertyLabels {
 
 	private static void putFlowPropertyFactorLabels(ModelType type, String path) {
 		put(type, path + ".conversionFactor", M.ConversionFactor);
-		put(type, path + ".referenceFlowProperty", M.ReferenceFlowProperty);
+		put(type, path + ".isRefFlowProperty", M.ReferenceFlowProperty);
 	}
 
 	private static void putProcessLabels() {
@@ -180,7 +180,7 @@ class PropertyLabels {
 		put(type, "dqEntry", M.DataQualityEntry);
 		put(type, "exchangeDqSystem", M.ExchangeDataQualitySchema, ModelType.DQ_SYSTEM);
 		put(type, "socialDqSystem", M.SocialDataQualitySchema, ModelType.DQ_SYSTEM);
-		put(type, "infrastructureProcess", M.InfrastructureProcess);
+		put(type, "isInfrastructureProcess", M.InfrastructureProcess);
 		put(type, "defaultAllocationMethod", M.AllocationMethod);
 		put(type, "processDocumentation", M.ProcessDocumentation);
 		putProcessDocumentationLabels(type, "processDocumentation");
@@ -219,7 +219,7 @@ class PropertyLabels {
 		put(type, path + ".dataCollectionDescription", M.DataCollectionPeriod);
 		put(type, path + ".reviewer", M.Reviewer, ModelType.ACTOR);
 		put(type, path + ".reviewDetails", M.DataSetOtherEvaluation);
-		put(type, path + ".copyright", M.Copyright);
+		put(type, path + ".isCopyrightProtected", M.Copyright);
 		put(type, path + ".sources", M.Sources, ModelType.SOURCE);
 	}
 
@@ -229,8 +229,8 @@ class PropertyLabels {
 		put(type, path + ".unit", M.Unit, ModelType.UNIT);
 		put(type, path + ".amount", M.Amount);
 		put(type, path + ".amountFormula", "Amount formula");
-		put(type, path + ".quantitativeReference", M.QuantitativeReference);
-		put(type, path + ".avoidedProduct", M.AvoidedProduct);
+		put(type, path + ".isQuantitativeReference", M.QuantitativeReference);
+		put(type, path + ".isAvoidedProduct", M.AvoidedProduct);
 		put(type, path + ".defaultProvider", M.DefaultProvider);
 		put(type, path + ".dqEntry", M.DataQualityEntry);
 		put(type, path + ".costCategory", M.CostCategory);
@@ -275,7 +275,7 @@ class PropertyLabels {
 	private static void putParameterLabels(ModelType type, String path) {
 		var prefix = path == null ? "" : path + ".";
 		putBasicLabels(type, path);
-		put(type, prefix + "inputParameter", M.Type);
+		put(type, prefix + "isInputParameter", M.Type);
 		put(type, prefix + "formula", M.Formula);
 		put(type, prefix + "value", M.Value);
 		put(type, prefix + "uncertainty", M.Uncertainty);
@@ -304,7 +304,7 @@ class PropertyLabels {
 	private static void putImpactCategoryLabels() {
 		var type = ModelType.IMPACT_CATEGORY;
 		putBasicLabels(type);
-		put(type, "referenceUnitName", M.ReferenceUnit);
+		put(type, "refUnitName", M.ReferenceUnit);
 		put(type, "source", M.Source, ModelType.SOURCE);
 		put(type, "code", M.Code);
 		put(type, "impactFactors", M.ImpactFactors, ModelType.IMPACT_CATEGORY);
@@ -339,8 +339,8 @@ class PropertyLabels {
 	private static void putProductSystemLabels() {
 		var type = ModelType.PRODUCT_SYSTEM;
 		putBasicLabels(type);
-		put(type, "referenceProcess", M.Process, ModelType.PROCESS);
-		put(type, "referenceExchange", M.Product, ModelType.FLOW);
+		put(type, "refProcess", M.Process, ModelType.PROCESS);
+		put(type, "refExchange", M.Product, ModelType.FLOW);
 		put(type, "targetFlowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
 		put(type, "targetUnit", M.Unit, ModelType.UNIT);
 		put(type, "targetAmount", M.TargetAmount);
