@@ -18,26 +18,23 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.Flow;
+import org.openlca.core.model.Currency;
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Categories;
 
-public class FlowTable extends SimpleFormEditor {
+public class CurrencyTable extends SimpleFormEditor {
 
-	private List<Flow> flows;
+	private List<Currency> currencies;
 
 	public static void show() {
 		if (Database.get() == null) {
 			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return;
 		}
-		var id = "DbFlowTable";
+		var id = "DbCurrencyTable";
 		Editors.open(new SimpleEditorInput(id, M.Parameters), id);
 	}
 
@@ -45,9 +42,9 @@ public class FlowTable extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 		throws PartInitException {
 		try {
-			flows = Database.get().getAll(Flow.class);
+			currencies = Database.get().getAll(Currency.class);
 		} catch (Exception e) {
-			ErrorReporter.on("failed to load flows", e);
+			ErrorReporter.on("failed to load currencies", e);
 		}
 		super.init(site, input);
 	}
@@ -59,18 +56,18 @@ public class FlowTable extends SimpleFormEditor {
 
 	private static class Page extends FormPage {
 
-		private final List<Flow> flows;
+		private final List<Currency> currencies;
 
-		Page(FlowTable table) {
-			super(table, "DbFlowTable", M.Flows);
-			flows = table.flows != null
-				? table.flows
+		Page(CurrencyTable table) {
+			super(table, "DbCurrencyTable", M.Currencies);
+			currencies = table.currencies != null
+				? table.currencies
 				: Collections.emptyList();
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.formHeader(mform, M.Flows);
+			var form = UI.formHeader(mform, M.Currencies);
 			var tk = mform.getToolkit();
 			var body = UI.formBody(form, tk);
 
@@ -80,64 +77,56 @@ public class FlowTable extends SimpleFormEditor {
 			var filter = UI.formText(filterComp, tk, M.Filter);
 
 			var table = Tables.createViewer(body,
-				M.FlowType,
 				M.Name,
-				M.Category,
-				M.ReferenceUnit,
-				M.ReferenceFlowProperty,
-				M.CASNumber,
-				"Chemical formula",
+				M.Code,
+				"Exchange rate",
 				"ID");
-			Tables.bindColumnWidths(table, 0.1, 0.2, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1);
+			Tables.bindColumnWidths(table, 0.3, 0.1, 0.2, 0.4);
 
-			var label = new FlowLabel(Database.get());
+			var label = new Label();
 			table.setLabelProvider(label);
-			Viewers.sortByLabels(table, label, 0, 1, 2, 3, 4, 5, 6, 7);
-			table.setInput(flows);
+			Viewers.sortByLabels(table, label, 0, 1, 2, 3);
+			table.setInput(currencies);
 			TextFilter.on(table, filter);
 			Actions.forRootEntities(table);
 		}
 	}
 
-	private static class FlowLabel extends LabelProvider
+	private static class Label extends LabelProvider
 		implements ITableLabelProvider {
-
-		private final Categories.PathBuilder categories;
-
-		FlowLabel(IDatabase db) {
-			this.categories = Categories.pathsOf(db);
-		}
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof Flow flow))
+			if (!(obj instanceof Currency))
 				return null;
 			return switch (col) {
-				case 0 -> Images.get(flow.flowType);
-				case 2 -> Images.get(flow.category);
-				case 3 -> Images.get(ModelType.UNIT);
-				case 4 -> Images.get(ModelType.FLOW_PROPERTY);
+				case 0 -> Images.get(ModelType.CURRENCY);
 				default -> null;
 			};
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Flow flow))
+			if (!(obj instanceof Currency currency))
 				return null;
 			return switch (col) {
-				case 0 -> Labels.of(flow.flowType);
-				case 1 -> Labels.name(flow);
-				case 2 -> flow.category != null
-					? categories.pathOf(flow.category.id)
-					: null;
-				case 3 -> Labels.name(flow.getReferenceUnit());
-				case 4 -> Labels.name(flow.referenceFlowProperty);
-				case 5 -> flow.casNumber;
-				case 6 -> flow.formula;
-				case 7 -> flow.refId;
+				case 0 -> currency.name;
+				case 1 -> currency.code;
+				case 2 -> getExchangeRate(currency, currency.referenceCurrency);
+				case 3 -> currency.refId;
 				default -> null;
 			};
 		}
+
+		// TODO (francois) Use a currency utility method as it is a "repetition" of
+		// TODO getExchangeRate in the currency editor.
+		private String getExchangeRate(Currency currency, Currency referenceCurrency) {
+			String s = "1 " + currency.code + " = ";
+			double f = currency.conversionFactor / referenceCurrency.conversionFactor;
+			f = Math.round(1000 * f) / 1000.0;
+			s += f + " " + referenceCurrency.code;
+			return s;
+		}
 	}
+
 }

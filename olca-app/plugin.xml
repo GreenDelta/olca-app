@@ -312,6 +312,14 @@
 		</editor>
 
 		<editor
+			class="org.openlca.app.db.tables.CurrencyTable"
+			default="false"
+			icon="icons/model/currency.png"
+			id="DbCurrencyTable"
+			name="Currencies">
+		</editor>
+
+		<editor
 			class="org.openlca.app.db.LinkingPropertiesPage"
 			default="false"
 			icon="icons/model/database.png"

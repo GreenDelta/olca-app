@@ -89,7 +89,7 @@ public class FlowPropertyTable extends SimpleFormEditor {
 
 			var label = new Label(Database.get());
 			table.setLabelProvider(label);
-			Viewers.sortByLabels(table, label, 0, 1, 2, 3, 4, 5);
+			Viewers.sortByLabels(table, label, 0, 1, 2, 3, 4);
 			table.setInput(properties);
 			TextFilter.on(table, filter);
 			Actions.forRootEntities(table);
