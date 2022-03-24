@@ -30,7 +30,7 @@ class RefJson {
 			return null;
 		var type = Json.getString(json, "@type");
 		if (Process.class.getSimpleName().equals(type)) {
-			split(json, "exchanges", "input", "inputs", "outputs");
+			split(json, "exchanges", "isInput", "inputs", "outputs");
 		} else if (Result.class.getSimpleName().equals(type)) {
 			split(json, "flowResults", "isInput", "inputResults", "outputResults");
 		}
