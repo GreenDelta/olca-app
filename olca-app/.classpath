@@ -27,7 +27,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/grpc-protobuf-1.41.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/grpc-protobuf-lite-1.41.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/grpc-stub-1.41.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/gson-2.8.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gson-2.9.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/guava-31.0.1-jre.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/HikariCP-4.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/hk2-api-3.0.1.jar"/>
@@ -74,6 +74,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-io-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-native-0.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-1.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-io-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-3.0.0.jar"/>

@@ -3,9 +3,12 @@ package org.openlca.app.preferences;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.openlca.app.App;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
-import org.openlca.julia.Julia;
+import org.openlca.nativelib.Module;
+import org.openlca.nativelib.NativeLib;
+import org.slf4j.LoggerFactory;
 
 public class LibraryDownload {
 
@@ -26,8 +29,14 @@ public class LibraryDownload {
 
 		var success = new AtomicBoolean(false);
 		App.runWithProgress("Download native libraries", () -> {
-			var result = Julia.fetchSparseLibraries();
-			success.set(result);
+			try {
+				NativeLib.download(Workspace.getDir(), Module.UMFPACK);
+				NativeLib.reloadFrom(Workspace.getDir());
+				success.set(true);
+			} catch (Exception e) {
+				var log = LoggerFactory.getLogger(LibraryDownload.class);
+				log.error("failed to download native libraries", e);
+			}
 		}, () -> {
 			if (!success.get()) {
 				MsgBox.error("The download of the libraries or "

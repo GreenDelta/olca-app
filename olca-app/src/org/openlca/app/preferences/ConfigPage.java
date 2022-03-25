@@ -15,7 +15,8 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.WindowLayout;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.julia.Julia;
+import org.openlca.nativelib.Module;
+import org.openlca.nativelib.NativeLib;
 import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +92,7 @@ public class ConfigPage extends PreferencePage implements
 			b.setEnabled(false);
 		});
 
-		if (!Julia.hasSparseLibraries()) {
+		if (!NativeLib.isLoaded(Module.UMFPACK)) {
 			var libButton = new Button(bcomp, SWT.NONE);
 			libButton.setText("Download additional calculation libraries");
 			Controls.onSelect(

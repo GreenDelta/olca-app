@@ -16,7 +16,8 @@ import org.openlca.app.preferences.LibraryDownload;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.UI;
-import org.openlca.julia.Julia;
+import org.openlca.nativelib.Module;
+import org.openlca.nativelib.NativeLib;
 import org.openlca.util.OS;
 import org.openlca.util.Strings;
 
@@ -71,7 +72,7 @@ public class StartPage extends SimpleFormEditor {
 				config.put("version", getVersion());
 				var lang = AppArg.get("nl");
 				config.put("lang", Strings.nullOrEmpty(lang) ? "en" : lang);
-				config.put("showLibHint", !Julia.hasSparseLibraries());
+				config.put("showLibHint", !NativeLib.isLoaded(Module.UMFPACK));
 				var json = new Gson().toJson(config);
 				browser.execute("setData(" + json + ")");
 			});

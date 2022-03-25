@@ -22,11 +22,12 @@ import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.matrix.solvers.JavaSolver;
 import org.openlca.core.matrix.solvers.MatrixSolver;
+import org.openlca.core.matrix.solvers.NativeSolver;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.julia.Julia;
-import org.openlca.julia.JuliaSolver;
+import org.openlca.nativelib.Module;
+import org.openlca.nativelib.NativeLib;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,16 +62,30 @@ public class App {
 	public static MatrixSolver getSolver() {
 		if (solver != null)
 			return solver;
-		try {
-			if (Julia.load()) {
-				solver = new JuliaSolver();
+
+		synchronized (App.class) {
+			if (solver != null)
 				return solver;
+
+			// try to load the native libraries
+			try {
+				NativeLib.loadFrom(Workspace.getDir());
+				if (!NativeLib.isLoaded()) {
+					NativeLib.loadFrom(getInstallLocation());
+				}
+			} catch (Exception e) {
+				ErrorReporter.on("Failed to load native libraries", e);
 			}
-		} catch (Exception e) {
-			log.error("Failed to load native libraries", e);
+
+			if (NativeLib.isLoaded()) {
+				log.info("loaded native libraries; with UMFPACK={}",
+					NativeLib.isLoaded(Module.UMFPACK));
+				solver = new NativeSolver();
+			} else {
+				log.warn("could not load a high-performance library for calculations");
+				solver = new JavaSolver();
+			}
 		}
-		log.warn("could not load a high-performance library for calculations");
-		solver = new JavaSolver();
 		return solver;
 	}
 

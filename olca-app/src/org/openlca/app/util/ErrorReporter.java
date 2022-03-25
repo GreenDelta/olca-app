@@ -17,7 +17,8 @@ import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.openlca.app.App;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.julia.Julia;
+import org.openlca.nativelib.Module;
+import org.openlca.nativelib.NativeLib;
 import org.slf4j.LoggerFactory;
 
 public class ErrorReporter extends FormDialog {
@@ -164,8 +165,8 @@ public class ErrorReporter extends FormDialog {
 				"* operating system: " + System.getProperty("os.name") + "\n" +
 				"* os architecture: " + System.getProperty("os.arch") + "\n" +
 				"* os version: " + System.getProperty("os.version") + "\n" +
-				"* native libraries loaded: " + Julia.isLoaded() + "\n" +
-				"* with sparse matrix support: " + Julia.hasSparseLibraries() + "\n" +
+				"* native libraries loaded: " + NativeLib.isLoaded() + "\n" +
+				"* with sparse matrix support: " +  NativeLib.isLoaded(Module.UMFPACK)  + "\n" +
 				"\n" +
 				"# Full error stack trace\n" +
 				"\n" +
