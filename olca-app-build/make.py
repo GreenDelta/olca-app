@@ -72,6 +72,16 @@ def pack_win(version, version_date):
             shutil.copytree(jre_dir, p(product_dir + '/jre'))
             print('done')
 
+    # blas
+    blas_dir = p('runtime/blas/win-x64/olca-native')
+    if not exists(blas_dir):
+        print(f'  WARNING: folder with native libraries not found: {blas_dir}')
+    else:
+        if not exists(p(product_dir + '/olca-native')):
+            printw('  Copy native libraries')
+            shutil.copytree(blas_dir, p(product_dir + '/olca-native'))
+            print('done')
+
     # zip file
     zip_file = p('build/dist/openLCA_win64_' + version_date)
     printw('  Create zip %s' % zip_file)
