@@ -4,10 +4,16 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.Optional;
 
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.forms.FormDialog;
+import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
@@ -35,8 +41,8 @@ public class LoginPanel {
 		return section;
 	}
 
-	public Ec3Credentials credentials() {
-		return credentials;
+	public String url() {
+		return credentials.ec3Url();
 	}
 
 	private void render(Composite body, FormToolkit tk) {
@@ -44,11 +50,9 @@ public class LoginPanel {
 		var comp = UI.sectionClient(section, tk, 2);
 
 		// EC3 URL
-		var filled = 0;
 		var ec3UrlText = UI.formText(comp, tk, "EC3 Endpoint");
 		if (Strings.notEmpty(credentials.ec3Url())) {
 			ec3UrlText.setText(credentials.ec3Url());
-			filled++;
 		}
 		ec3UrlText.addModifyListener($ -> {
 			credentialsChanged = true;
@@ -59,7 +63,6 @@ public class LoginPanel {
 		var epdUrlText = UI.formText(comp, tk, "openEPD Endpoint");
 		if (Strings.notEmpty(credentials.epdUrl())) {
 			epdUrlText.setText(credentials.epdUrl());
-			filled++;
 		}
 		epdUrlText.addModifyListener($ -> {
 			credentialsChanged = true;
@@ -70,42 +73,26 @@ public class LoginPanel {
 		var userText = UI.formText(comp, tk, "User");
 		if (Strings.notEmpty(credentials.user())) {
 			userText.setText(credentials.user());
-			filled++;
 		}
 		userText.addModifyListener($ -> {
 			credentialsChanged = true;
 			credentials.user(userText.getText());
 		});
 
-		// password
-		var pwText = UI.formText(comp, tk, "Password", SWT.PASSWORD | SWT.BORDER);
-		if (Strings.notEmpty(credentials.password())) {
-			pwText.setText(credentials.password());
-			filled++;
-		}
-		pwText.addModifyListener($ -> {
-			credentialsChanged = true;
-			credentials.password(pwText.getText());
-		});
-
 		// login button
 		UI.filler(comp, tk);
-		button = tk.createButton(comp, "Login", SWT.NONE);
+		button = tk.createButton(comp, "", SWT.NONE);
+		updateButton();
 		button.setImage(Icon.CONNECT.get());
 		Controls.onSelect(button, $ -> {
-			if (client == null) {
-				login();
-			} else {
+			if (Strings.notEmpty(credentials.token())) {
 				logout();
-			}
-		});
-		button.addDisposeListener($ -> {
-			if (client != null) {
-				client.logout();
+			} else {
+				login();
 			}
 		});
 
-		section.setExpanded(filled < 3);
+		section.setExpanded(Strings.nullOrEmpty(credentials.token()));
 	}
 
 	public Optional<Ec3Client> login() {
@@ -118,45 +105,63 @@ public class LoginPanel {
 			credentialsChanged = false;
 		}
 		try {
-			var o = credentials.login();
-			if (o.isEmpty()) {
+			var fromToken = Ec3Client.tryToken(credentials);
+			if (fromToken.isPresent()) {
+				client = fromToken.get();
+				return fromToken;
+			}
+
+			var dialog = new LoginDialog(credentials);
+			if (dialog.open() != Window.OK)
+				return Optional.empty();
+
+			var fromLogin = Ec3Client.tryLogin(credentials);
+			if (fromLogin.isEmpty()) {
 				MsgBox.error("Login failed",
 					"Failed to login into the EC3 API with" +
 						" the given user name and password.");
-				updateButton("Login");
+				credentials.token(null);
 				client = null;
 				return Optional.empty();
 			}
-			client = o.get();
-			updateButton("Logout");
-			return o;
+
+			client = fromLogin.get();
+			credentials.save(cacheFile());
+			return fromLogin;
 		} catch (Exception e) {
 			ErrorReporter.on("EC3 login failed", e);
 			client = null;
-			updateButton("Login");
 			return Optional.empty();
+		} finally {
+			updateButton();
 		}
 	}
 
 	public void logout() {
-		if (button.isDisposed())
-			return;
-		if (client != null) {
-			try {
+		try {
+			credentials.token(null).save(cacheFile());
+			if (client != null) {
 				client.logout();
-			} catch (Exception e) {
-				ErrorReporter.on("EC3 logout failed", e);
-			} finally {
-				client = null;
 			}
+		} catch (Exception e) {
+			ErrorReporter.on("EC3 logout failed", e);
+		} finally {
+			client = null;
+			updateButton();
 		}
-		updateButton("Login");
 	}
 
-	private void updateButton(String text) {
-		if (button.isDisposed())
+	private void updateButton() {
+		if (button == null || button.isDisposed())
 			return;
-		button.setText(text);
+		var label = Strings.notEmpty(credentials.token())
+			? "Logout"
+			: "Login";
+		var tooltip = Strings.notEmpty(credentials.token())
+			? "Delete the current access token"
+			: "Get a new access token";
+		button.setText(label);
+		button.setToolTipText(tooltip);
 		button.getParent().layout();
 		button.getParent().redraw();
 	}
@@ -174,4 +179,44 @@ public class LoginPanel {
 		return new File(dir, ".ec3");
 	}
 
+	static class LoginDialog extends FormDialog {
+
+		private final Ec3Credentials credentials;
+
+		LoginDialog(Ec3Credentials credentials) {
+			super(UI.shell());
+			this.credentials = credentials;
+		}
+
+		@Override
+		protected void configureShell(Shell newShell) {
+			super.configureShell(newShell);
+			newShell.setText("Login with your EC3 Account");
+		}
+
+		@Override
+		protected Point getInitialSize() {
+			return UI.initialSizeOf(this, 450, 250);
+		}
+
+		@Override
+		protected void createFormContent(IManagedForm mForm) {
+			var tk = mForm.getToolkit();
+			var body = UI.formBody(mForm.getForm(), tk);
+			var outer = tk.createComposite(body);
+			UI.fillHorizontal(outer);
+			UI.gridLayout(outer, 2);
+			tk.createLabel(outer, "").setImage(Icon.EC3_WIZARD.get());
+			var right = tk.createComposite(outer);
+			UI.fillHorizontal(right);
+			UI.gridLayout(right, 2, 10, 0);
+
+			var userTxt = UI.formText(right, tk, M.User);
+			UI.fillHorizontal(userTxt);
+			Controls.set(userTxt, credentials.user(), credentials::user);
+			var pwTxt = UI.formText(right, tk, M.Password, SWT.PASSWORD);
+			UI.fillHorizontal(pwTxt);
+			pwTxt.addModifyListener($ -> credentials.password(pwTxt.getText()));
+		}
+	}
 }
