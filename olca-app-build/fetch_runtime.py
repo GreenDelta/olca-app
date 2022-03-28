@@ -23,6 +23,10 @@ PACKAGE_PREFIXE = "olca-native-blas-"
 PACKAGE_PATH = "org/openlca/nativelib/"
 INDEX_JSON = "olca-native.json"
 
+# JRE
+JRE_DIR = Path("runtime/jre")
+URL_ADOPTIUM = URL("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.2%2B8/")
+
 
 class OS(Enum):
     MACOS_ARM = "macos-arm64"
@@ -164,6 +168,49 @@ def clean_libs(_os: OS):
     return
 
 
+def check_jre(_os: OS) -> bool:
+    directory = BUILD_ROOT / JRE_DIR / _os.short()
+    if not os.path.isdir(directory):
+        print(f"Creating the directory: {directory}")
+        Path(directory).mkdir(parents=True, exist_ok=True)
+    if glob.glob(str(directory / _os.get_jre_name())):
+        print(f"{_os.short()} JRE is located in {directory}")
+        return True
+    else:
+        print(f"{_os.short()} JRE could not be found in {directory}")
+        return False
+
+
+def fetch_jre(_os: OS):
+    if check_jre(_os):
+        return
+
+    # Downloading the JRE.
+    print(f"Downloading {_os.short()} JRE.")
+    archive_name = _os.get_jre_name()
+    archive_path = BUILD_ROOT / JRE_DIR / _os.short() / archive_name
+    url = URL_ADOPTIUM / archive_name
+    try:
+        r = requests.get(url, allow_redirects=True)
+    except OSError as e:
+        print(f"Failed to download {url} due to: \n{e}")
+        return
+
+    if not r.status_code == 200:
+        print(f"<Error {r.status_code}> Failed to download {url}.")
+        return
+
+    open(archive_path, 'wb').write(r.content)
+
+
+def clean_jre(_os: OS):
+    archive_name = _os.get_jre_name()
+    archive_path = BUILD_ROOT / JRE_DIR / _os.short() / archive_name
+    print(f"Removing {archive_path}")
+    shutil.rmtree(archive_path)
+    return
+
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -171,7 +218,7 @@ def main():
 
     parser.add_argument("--os", "-o", type=str, choices=[_os.short() for _os in OS],
                         help="Select the OS for which the script is suppose to run.")
-    parser.add_argument("--element", "-e", type=str, choices=["libs"], help="Select the element to be fetched.")
+    parser.add_argument("--element", "-e", type=str, choices=["libs", "jre"], help="Select the element to be fetched.")
 
     # Read arguments from the command line
     args = parser.parse_args()
@@ -180,10 +227,13 @@ def main():
 
     if args.action == "fetch":
         function_libs = fetch_libs
+        function_jre = fetch_jre
     elif args.action == "check":
         function_libs = check_libs
+        function_jre = check_jre
     elif args.action == "clean":
         function_libs = clean_libs
+        function_jre = clean_jre
     else:
         return
 
@@ -191,14 +241,23 @@ def main():
         if args.os is None:
             for _os in OS:
                 function_libs(_os)
+                function_jre(_os)
         else:
             function_libs(OS.from_str(args.os))
+            function_jre(OS.from_str(args.os))
     elif args.element == "libs":
         if args.os is None:
             for _os in OS:
                 function_libs(_os)
         else:
             function_libs(OS.from_str(args.os))
+    elif args.element == "jre":
+        if args.os is None:
+            for _os in OS:
+                function_jre(_os)
+        else:
+            function_jre(OS.from_str(args.os))
+    return
 
 
 if __name__ == '__main__':
