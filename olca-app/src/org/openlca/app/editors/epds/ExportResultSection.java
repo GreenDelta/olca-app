@@ -1,20 +1,20 @@
 package org.openlca.app.editors.epds;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.tools.openepd.model.EpdImpactResult;
-import org.openlca.app.tools.openepd.model.EpdIndicatorResult;
-import org.openlca.app.tools.openepd.model.EpdMeasurement;
-import org.openlca.app.tools.openepd.model.EpdScopeValue;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
+import org.openlca.io.openepd.EpdImpactResult;
+import org.openlca.io.openepd.EpdIndicatorResult;
+import org.openlca.io.openepd.EpdMeasurement;
+import org.openlca.io.openepd.EpdScopeValue;
 
 class ExportResultSection {
 

@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.openlca.app.tools.openepd.model.EpdDoc;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
@@ -15,6 +14,7 @@ import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Unit;
+import org.openlca.io.openepd.EpdDoc;
 import org.openlca.util.Strings;
 
 class Util {

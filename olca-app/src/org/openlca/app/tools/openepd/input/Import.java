@@ -1,8 +1,8 @@
 package org.openlca.app.tools.openepd.input;
 
-import org.openlca.app.tools.openepd.model.EpdDoc;
-import org.openlca.app.tools.openepd.model.EpdOrg;
-import org.openlca.app.tools.openepd.model.EpdPcr;
+import java.util.Collection;
+import java.util.HashMap;
+
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.io.ImportLog;
@@ -19,11 +19,11 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.Version;
+import org.openlca.io.openepd.EpdDoc;
+import org.openlca.io.openepd.EpdOrg;
+import org.openlca.io.openepd.EpdPcr;
 import org.openlca.util.KeyGen;
 import org.openlca.util.Strings;
-
-import java.util.Collection;
-import java.util.HashMap;
 
 class Import {
 

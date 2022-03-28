@@ -1,26 +1,26 @@
 package org.openlca.app.editors.epds;
 
-import org.openlca.app.tools.openepd.model.EpdDoc;
-import org.openlca.app.tools.openepd.model.EpdImpactResult;
-import org.openlca.app.tools.openepd.model.EpdIndicatorResult;
-import org.openlca.app.tools.openepd.model.Ec3Epd;
-import org.openlca.app.tools.openepd.model.EpdMeasurement;
-import org.openlca.app.tools.openepd.model.EpdOrg;
-import org.openlca.app.tools.openepd.model.EpdPcr;
-import org.openlca.app.tools.openepd.model.EpdQuantity;
-import org.openlca.app.tools.openepd.model.EpdScopeValue;
-import org.openlca.core.model.Actor;
-import org.openlca.core.model.Epd;
-import org.openlca.core.model.Source;
-import org.openlca.util.Categories;
-import org.openlca.util.Pair;
-import org.openlca.util.Strings;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
+
+import org.openlca.core.model.Actor;
+import org.openlca.core.model.Epd;
+import org.openlca.core.model.Source;
+import org.openlca.io.openepd.Ec3Epd;
+import org.openlca.io.openepd.EpdDoc;
+import org.openlca.io.openepd.EpdImpactResult;
+import org.openlca.io.openepd.EpdIndicatorResult;
+import org.openlca.io.openepd.EpdMeasurement;
+import org.openlca.io.openepd.EpdOrg;
+import org.openlca.io.openepd.EpdPcr;
+import org.openlca.io.openepd.EpdQuantity;
+import org.openlca.io.openepd.EpdScopeValue;
+import org.openlca.util.Categories;
+import org.openlca.util.Pair;
+import org.openlca.util.Strings;
 
 class EpdConverter {
 

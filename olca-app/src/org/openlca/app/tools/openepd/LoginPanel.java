@@ -7,12 +7,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.openepd.model.Ec3Credentials;
-import org.openlca.app.tools.openepd.model.Ec3Client;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.io.openepd.Ec3Client;
+import org.openlca.io.openepd.Ec3Credentials;
 import org.openlca.util.Strings;
 
 public class LoginPanel {

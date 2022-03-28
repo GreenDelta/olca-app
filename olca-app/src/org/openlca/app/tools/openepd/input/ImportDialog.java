@@ -15,7 +15,6 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.tools.openepd.model.EpdDoc;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -24,6 +23,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.wizards.io.ImportLogView;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Epd;
+import org.openlca.io.openepd.EpdDoc;
 
 public class ImportDialog extends FormDialog {
 

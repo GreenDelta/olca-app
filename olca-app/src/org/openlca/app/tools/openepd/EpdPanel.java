@@ -18,10 +18,6 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
-import org.openlca.app.tools.openepd.model.Api;
-import org.openlca.app.tools.openepd.model.Ec3Client;
-import org.openlca.app.tools.openepd.model.Ec3EpdInfo;
-import org.openlca.app.tools.openepd.model.EpdDoc;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
@@ -29,10 +25,14 @@ import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.io.openepd.Api;
+import org.openlca.io.openepd.Ec3Client;
+import org.openlca.io.openepd.Ec3EpdInfo;
+import org.openlca.io.openepd.EpdDoc;
 import org.openlca.jsonld.Json;
+import org.openlca.util.Strings;
 
 import com.google.gson.JsonObject;
-import org.openlca.util.Strings;
 
 public class EpdPanel extends SimpleFormEditor {
 

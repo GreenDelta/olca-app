@@ -1,12 +1,5 @@
 package org.openlca.app.tools.openepd.input;
 
-import gnu.trove.map.hash.TLongObjectHashMap;
-import org.openlca.app.tools.openepd.model.EpdDoc;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.ImpactCategory;
-import org.openlca.core.model.ImpactMethod;
-import org.openlca.util.Strings;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,6 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.ImpactCategory;
+import org.openlca.core.model.ImpactMethod;
+import org.openlca.io.openepd.EpdDoc;
+import org.openlca.util.Strings;
+
+import gnu.trove.map.hash.TLongObjectHashMap;
 
 record ImportMapping(
 	Quantity quantity,

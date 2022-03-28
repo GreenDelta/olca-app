@@ -1,11 +1,11 @@
 package org.openlca.app.tools.openepd.input;
 
-import org.openlca.app.tools.openepd.model.EpdDoc;
-import org.openlca.app.tools.openepd.model.EpdQuantity;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.Unit;
 import org.openlca.io.UnitMapping;
+import org.openlca.io.openepd.EpdDoc;
+import org.openlca.io.openepd.EpdQuantity;
 import org.openlca.util.Strings;
 
 record Quantity(double amount, Unit unit, FlowProperty property) {

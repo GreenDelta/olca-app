@@ -19,7 +19,6 @@ import org.openlca.app.navigation.actions.db.DbRestoreAction;
 import org.openlca.app.navigation.actions.libraries.MountLibraryAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
-import org.openlca.app.tools.openepd.model.EpdDoc;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -37,6 +36,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.MappingFileDao;
 import org.openlca.io.Format;
 import org.openlca.io.maps.FlowMap;
+import org.openlca.io.openepd.EpdDoc;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Strings;
 

@@ -14,11 +14,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.openepd.model.Ec3Category;
-import org.openlca.app.tools.openepd.model.Ec3CategoryTree;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.io.openepd.Ec3Category;
+import org.openlca.io.openepd.Ec3CategoryTree;
 import org.openlca.util.Strings;
 
 public class CategoryDialog extends FormDialog {
