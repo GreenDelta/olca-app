@@ -97,6 +97,7 @@ def check_libs(_os: OS) -> bool:
     if not os.path.isdir(directory):
         print(f"Creating the directory: {directory}")
         Path(directory).mkdir(parents=True, exist_ok=True)
+        return False
     paths_list = directory.glob('**/*')
     files = [path.name for path in paths_list if path.is_file()]
     if INDEX_JSON in files:
@@ -173,6 +174,7 @@ def check_jre(_os: OS) -> bool:
     if not os.path.isdir(directory):
         print(f"Creating the directory: {directory}")
         Path(directory).mkdir(parents=True, exist_ok=True)
+        return False
     if glob.glob(str(directory / _os.get_jre_name())):
         print(f"{_os.short()} JRE is located in {directory}")
         return True

@@ -6,23 +6,49 @@
 import datetime
 import glob
 import os
+
+import requests
 import shutil
 import subprocess
 import sys
-import tarfile
 
+from io import BytesIO
 from os.path import exists
+from pathlib import Path, PureWindowsPath
+from pyunpack import Archive
+from urlpath import URL
+from zipfile import ZipFile
+
+from fetch_runtime import OS, fetch_libs, fetch_jre, JRE_DIR, BLAS_DIR
+
+BUILD_ROOT = Path(os.path.dirname(os.path.abspath(__file__)))
+MANIFEST_DIR = BUILD_ROOT.parent / Path("olca-app/META-INF/MANIFEST.MF")
+
+DIST_DIR = Path("build/dist")
+RESOURCES_DIR = Path("resources")
+
+NSIS_VERSION = "2.51"
+NSIS_DIR = Path("tools/nsis-" + NSIS_VERSION)
+NSIS_URL = URL("https://sourceforge.net/projects/nsis/files/NSIS%202/") / NSIS_VERSION / \
+           ("nsis-" + NSIS_VERSION + ".zip") / "download"
+
+SEVENZIP_DIR = Path("tools/7zip")
+SEVENZIP_URL = URL("https://www.7-zip.org/a/7z2107-extra.7z")
+
+WIN_DIR = Path("build/win32.win32.x86_64")
+LINUX_DIR = Path("build/linux.gtk.x86_64")
+MACOS_DIR = Path("build/macosx.cocoa.x86_64")
 
 
 def main():
     print('Create the openLCA distribution packages')
 
     # delete the old versions
-    if exists('build/dist'):
-        print('Delete the old packages under build/dist', end=' ... ')
-        shutil.rmtree('build/dist', ignore_errors=True)
+    if exists(DIST_DIR):
+        print(f"Delete the old packages under {DIST_DIR}", end=' ... ')
+        shutil.rmtree(DIST_DIR, ignore_errors=True)
         print('done')
-    mkdir('build/dist')
+    mkdir(DIST_DIR)
 
     # version and time
     version = get_version()
@@ -31,18 +57,20 @@ def main():
                                         now.month, now.day)
 
     # create packages
-    pack_win(version, version_date)
-    pack_linux(version_date)
-    pack_macos(version_date)
+    win_result = pack_win(version, version_date)
+    linux_result = pack_linux(version_date)
+    # macos_result = pack_macos(version_date)
 
-    print('All done\n')
+    print("All done\n")
+    print(f"Windows: {report(win_result)}")
+    print(f"Linux: {report(linux_result)}")
+    # print(f"MacOS: {report(macos_result)}")
 
 
-def get_version():
+def get_version() -> str:
     version = ''
-    manifest = '../olca-app/META-INF/MANIFEST.MF'
-    printw('Read version from %s' % manifest)
-    with open(manifest, 'r', encoding='utf-8') as f:
+    printw(f"Read version from {MANIFEST_DIR}")
+    with open(MANIFEST_DIR, 'r', encoding='utf-8') as f:
         for line in f:
             text = line.strip()
             if not text.startswith('Bundle-Version'):
@@ -50,227 +78,305 @@ def get_version():
             version = text.split(':')[1].strip()
             break
     print("done version=%s" % version)
-    return version
+    return "2.0.0.0"
 
 
-def pack_win(version, version_date):
-    product_dir = 'build/win32.win32.x86_64/openLCA'
+def pack_win(version: str, version_date: str) -> bool:
+    _os = OS.WINDOWS
+    product_dir = BUILD_ROOT / WIN_DIR / "openLCA"
     if not exists(product_dir):
-        print('folder %s does not exist; skip Windows version' % product_dir)
-        return
+        print(f"folder {product_dir} does not exist; skip Windows version")
+        return False
 
     print('Create Windows package')
     copy_licenses(product_dir)
 
-    # jre
-    jre_dir = p('runtime/jre/win64')
-    if not exists(jre_dir):
-        print('  WARNING: No JRE found %s' % jre_dir)
-    else:
-        if not exists(p(product_dir + '/jre')):
-            printw('  Copy JRE')
-            shutil.copytree(jre_dir, p(product_dir + '/jre'))
-            print('done')
+    # JRE
+    if not exists(product_dir / "jre"):
+        fetch_jre(_os)
+        printw('  Copy JRE')
+        shutil.copytree(JRE_DIR / _os.short(), product_dir / "jre")
+        print('done')
 
-    # blas
-    blas_dir = p('runtime/blas/win-x64/olca-native')
-    if not exists(blas_dir):
-        print(f'  WARNING: folder with native libraries not found: {blas_dir}')
-    else:
-        if not exists(p(product_dir + '/olca-native')):
-            printw('  Copy native libraries')
-            shutil.copytree(blas_dir, p(product_dir + '/olca-native'))
-            print('done')
+    # BLAS
+    if not exists(product_dir / "olca-native"):
+        fetch_libs(_os)
+        printw('  Copy native libraries')
+        shutil.copytree(BLAS_DIR / _os.short(), product_dir / "olca-native")
+        print('done')
 
     # zip file
-    zip_file = p('build/dist/openLCA_win64_' + version_date)
-    printw('  Create zip %s' % zip_file)
-    shutil.make_archive(zip_file, 'zip', 'build/win32.win32.x86_64')
+    zip_file = DIST_DIR / ("openLCA_win64_" + version_date)
+    printw(f"  Create zip {zip_file}")
+    shutil.make_archive(zip_file.as_posix(), 'zip', WIN_DIR)
     print('done')
 
     # create installer when the `--winstaller` flag is set
     if '--winstaller' not in sys.argv:
-        return
-    pack_dir = 'build/win32.win32.x86_64'
-    inst_files = glob.glob('resources/installer_static_win/*')
+        return False
+    inst_files = glob.glob((RESOURCES_DIR / "installer_static_win/*").as_posix())
     for res in inst_files:
         if os.path.isfile(res):
-            shutil.copy2(res, p(pack_dir + '/' + os.path.basename(res)))
-    mkdir(p(pack_dir + '/english'))
-    ini = fill_template(p('templates/openLCA_win.ini'),
-                        lang='en', heap='3584M')
-    with open(p(pack_dir + '/english/openLCA.ini'), 'w',
+            shutil.copy2(res, WIN_DIR / os.path.basename(res))
+    mkdir(WIN_DIR / "english")
+    ini = fill_template(file_path=Path("templates/openLCA_win.ini"),
+                        lang='en',
+                        heap='3584M')
+    with open(file=WIN_DIR / "english/openLCA.ini",
+              mode='w',
               encoding='iso-8859-1') as f:
         f.write(ini)
-    mkdir(p(pack_dir + '/german'))
-    ini_de = fill_template(p('templates/openLCA_win.ini'),
-                           lang='de', heap='3584M')
-    with open(p(pack_dir + '/german/openLCA.ini'), 'w',
+    mkdir(WIN_DIR / "german")
+    ini_de = fill_template(file_path=Path("templates/openLCA_win.ini"),
+                           lang='de',
+                           heap='3584M')
+    with open(file=WIN_DIR / "german/openLCA.ini",
+              mode='w',
               encoding='iso-8859-1') as f:
         f.write(ini_de)
-    setup = fill_template('templates/setup.nsi', version=version)
-    with open(p(pack_dir + '/setup.nsi'), 'w',
+    setup = fill_template(file_path=Path("templates/setup.nsi"),
+                          version=version)
+    with open(WIN_DIR / "setup.nsi",
+              mode='w',
               encoding='iso-8859-1') as f:
         f.write(setup)
-    cmd = [p('tools/nsis-2.46/makensis.exe'), p(pack_dir + '/setup.nsi')]
+    try:
+        fetch_nsis()
+    except OSError or ConnectionError as e:
+        print(f"Failed to download NSIS, thus, not able to generate the Windows installer: {e}")
+        return False
+    cmd = [NSIS_DIR / "makensis.exe", WIN_DIR / "setup.nsi"]
     subprocess.call(cmd)
-    shutil.move(p(pack_dir + '/setup.exe'),
-                p('build/dist/openLCA_win64_' + version_date + ".exe"))
+    shutil.move(src=WIN_DIR / "setup.exe",
+                dst=DIST_DIR / Path("openLCA_win64_" + version_date + ".exe"))
+    return True
 
 
-def pack_linux(version_date):
-    product_dir = 'build/linux.gtk.x86_64/openLCA'
+def pack_linux(version_date: str) -> bool:
+    _os = OS.LINUX
+    product_dir = BUILD_ROOT / LINUX_DIR / "openLCA"
     if not exists(product_dir):
         print('folder %s does not exist; skip Linux version' % product_dir)
-        return
+        return False
 
     print('Create Linux package')
     copy_licenses(product_dir)
 
-    # package the JRE
-    if not exists(product_dir + '/jre'):
-        jre_tar = glob.glob('runtime/jre/*linux*.tar')
-        if len(jre_tar) == 0:
-            print('  WARNING: No Linux JRE found')
-        else:
-            printw('  Copy JRE')
-            unzip(jre_tar[0], product_dir)
-            jre_dir = glob.glob(product_dir + '/*jre*')
-            os.rename(jre_dir[0], p(product_dir + '/jre'))
-            print('done')
+    # JRE
+    if not exists(product_dir / "jre"):
+        fetch_jre(_os)
+        printw('  Copy JRE')
+        archive_path = BUILD_ROOT / JRE_DIR / _os.short() / _os.get_jre_name()
+        try:
+            fetch_7zip()
+        except OSError or ConnectionError as e:
+            print(f"Failed to download 7zip, thus, not able to generate the Linux installer: {e}")
+            return False
+        unzip(archive_path, product_dir / "jre")
+        print('done')
+
+    # BLAS
+    fetch_libs(_os)
+    if not exists(product_dir / "olca-native"):
+        printw('  Copy native libraries')
+        shutil.copytree(BLAS_DIR / _os.short(), product_dir / "olca-native")
+        print('done')
 
     # copy the ini file
-    shutil.copy2('templates/openLCA_linux.ini',
-                 p(product_dir + "/openLCA.ini"))
+    shutil.copy2('templates/openLCA_linux.ini', product_dir / "openLCA.ini")
 
-    printw('  Create distribtuion package')
-    dist_pack = p('build/dist/openLCA_linux64_%s' % version_date)
-    targz('.\\build\\linux.gtk.x86_64\\*', dist_pack)
+    printw('  Create distribution package')
+    dist_pack = DIST_DIR / Path("openLCA_linux64_" + version_date)
+    try:
+        fetch_7zip()
+    except OSError or ConnectionError as e:
+        print(f"Failed to download 7zip, thus, not able to generate the Linux installer: {e}")
+        return False
+    targz(PureWindowsPath(LINUX_DIR), PureWindowsPath(dist_pack))
     print('done')
+    return True
 
 
-def pack_macos(version_date):
-    base = 'build/macosx.cocoa.x86_64/openLCA'
-    if not exists(base):
-        print('folder %s does not exist; skip macOS version' % base)
-        return
-    base += "/"
+def pack_macos(version_date: str) -> bool:
+    _os = OS.MACOS_X64
+    product_dir = BUILD_ROOT / MACOS_DIR / "openLCA"
+    if not exists(product_dir):
+        print(f"folder {product_dir} does not exist; skip macOS version")
+        return False
     print('Create macOS package')
 
     printw('Move folders around')
 
-    os.makedirs(base + 'openLCA.app/Contents/Eclipse', exist_ok=True)
-    os.makedirs(base + 'openLCA.app/Contents/MacOS', exist_ok=True)
+    os.makedirs(product_dir / 'openLCA.app/Contents/Eclipse', exist_ok=True)
+    os.makedirs(product_dir / 'openLCA.app/Contents/MacOS', exist_ok=True)
 
-    shutil.copyfile('macos/Info.plist', base+'openLCA.app/Contents/Info.plist')
-    shutil.move(base+"configuration", base + 'openLCA.app/Contents/Eclipse')
-    shutil.move(base+"plugins", base + 'openLCA.app/Contents/Eclipse')
-    shutil.move(base+".eclipseproduct", base + 'openLCA.app/Contents/Eclipse')
-    shutil.move(base+"Resources", base+"openLCA.app/Contents")
-    shutil.copyfile(base+"MacOS/openLCA", base +
-                    'openLCA.app/Contents/MacOS/eclipse')
+    shutil.copyfile('macos/Info.plist', product_dir / 'openLCA.app/Contents/Info.plist')
+    shutil.move(product_dir / "configuration", product_dir / 'openLCA.app/Contents/Eclipse')
+    shutil.move(product_dir / "plugins", product_dir / 'openLCA.app/Contents/Eclipse')
+    shutil.move(product_dir / ".eclipseproduct", product_dir / 'openLCA.app/Contents/Eclipse')
+    shutil.move(product_dir / "Resources", product_dir / "openLCA.app/Contents")
+    shutil.copyfile(product_dir / "MacOS/openLCA", product_dir / 'openLCA.app/Contents/MacOS/eclipse')
 
     # create the ini file
-    plugins_dir = base + "openLCA.app/Contents/Eclipse/plugins/"
+    plugins_dir = product_dir / "openLCA.app/Contents/Eclipse/plugins"
     launcher_jar = os.path.basename(
-        glob.glob(plugins_dir + "*launcher*.jar")[0])
+        glob.glob((plugins_dir / "*launcher*.jar").as_posix())[0])
     launcher_lib = os.path.basename(
-        glob.glob(plugins_dir + "*launcher.cocoa.macosx*")[0])
+        glob.glob((plugins_dir / "*launcher.cocoa.macosx*").as_posix())[0])
     with open("macos/openLCA.ini", mode='r', encoding="utf-8") as f:
         text = f.read()
         text = text.format(launcher_jar=launcher_jar,
                            launcher_lib=launcher_lib)
-        out_ini_path = base + "openLCA.app/Contents/Eclipse/eclipse.ini"
+        out_ini_path = product_dir / "openLCA.app/Contents/Eclipse/eclipse.ini"
         with open(out_ini_path, mode='w', encoding='utf-8', newline='\n') as o:
             o.write(text)
 
-    shutil.rmtree(base + "MacOS")
-    os.remove(base + "Info.plist")
+    shutil.rmtree(product_dir / "MacOS")
+    os.remove(product_dir / "Info.plist")
 
-    # package the JRE
-    jre_tar = glob.glob('runtime/jre/*mac*.tar')
-    print(jre_tar)
-    if len(jre_tar) == 0:
-        print('ERROR: no JRE for Mac OSX found')
-        return
-    unzip(jre_tar[0], base + 'openLCA.app')
-    jre_dir = glob.glob(base + 'openLCA.app' + '/*jre*')
-    os.rename(jre_dir[0], base + 'openLCA.app' + '/jre')
+    # JRE
+    if not exists(product_dir / "jre"):
+        fetch_jre(_os)
+        printw('  Copy JRE')
+        archive_path = BUILD_ROOT / JRE_DIR / _os.short() / _os.get_jre_name()
+        unzip(archive_path, product_dir / 'openLCA.app')
+        print("done")
 
-    printw('  Create distribtuion package')
-    dist_pack = p('build/dist/openLCA_macOS_%s' % version_date)
-    targz('.\\build\\macosx.cocoa.x86_64\\openLCA\\*', dist_pack)
+    printw('  Create distribution package')
+    dist_pack = DIST_DIR / Path("openLCA_macOS_" + version_date)
+    try:
+        fetch_7zip()
+    except OSError or ConnectionError as e:
+        print(f"Failed to download 7zip, thus, not able to generate the Linux installer: {e}")
+        return False
+    targz(PureWindowsPath(MACOS_DIR / "openLCA"), PureWindowsPath(dist_pack))
     print('done')
+    return True
 
 
-def copy_licenses(product_dir: str):
+def copy_licenses(product_dir: Path):
     # licenses
     printw('  Copy licenses')
-    shutil.copy2(p('resources/OPENLCA_README.txt'), product_dir)
-    if not exists(p(product_dir + '/licenses')):
-        shutil.copytree(p('resources/licenses'), p(product_dir + '/licenses'))
+    shutil.copy2(RESOURCES_DIR / "OPENLCA_README.txt", product_dir)
+    if not exists(product_dir / "licenses"):
+        shutil.copytree(RESOURCES_DIR / "licenses", product_dir / "licenses")
     print('done')
 
 
-def mkdir(path):
+def mkdir(path: Path):
     if exists(path):
         return
     try:
         os.mkdir(path)
     except Exception as e:
-        print('Failed to create folder ' + path, e)
+        print(f"Failed to create folder {path}", e)
 
 
-def targz(folder, tar_file):
-    print('targz %s to %s' % (folder, tar_file))
-    tar_app = p('tools/7zip/7za.exe')
-    cmd = [tar_app, 'a', '-ttar', tar_file + '.tar', folder]
+def targz(folder: PureWindowsPath, tar_file: PureWindowsPath):
+    printw(f"  Making a targz archive of {folder} to {tar_file}.")
+    tar_app = SEVENZIP_DIR / "7za.exe"
+    cmd = [tar_app, 'a', '-ttar', tar_file.with_suffix(".tar"), folder / "*"]
     subprocess.call(cmd)
-    cmd = [tar_app, 'a', '-tgzip', tar_file + '.tar.gz', tar_file + '.tar']
+    cmd = [tar_app, 'a', '-tgzip', tar_file.with_suffix(".tar.gz"), tar_file.with_suffix(".tar")]
     subprocess.call(cmd)
-    os.remove(tar_file + '.tar')
+    os.remove(tar_file.with_suffix(".tar"))
+    print("done")
 
 
-def unzip(zip_file, to_dir):
+def unzip(zip_file: Path, to_dir: Path):
     """ Extracts the given file to the given folder using 7zip."""
-    print('unzip %s to %s' % (zip_file, to_dir))
+    printw(f"  Unzip {zip_file} to {to_dir}.")
     if not os.path.exists(to_dir):
         os.makedirs(to_dir)
-    zip_app = p('tools/7zip/7za.exe')
-    cmd = [zip_app, 'x', zip_file, '-o%s' % to_dir]
-    code = subprocess.call(cmd)
-    print(code)
+    zip_app = SEVENZIP_DIR / "7za.exe"
+    cmd = [zip_app.as_posix(), 'x', zip_file.as_posix(), f"-o{to_dir.as_posix()}"]
+    subprocess.call(cmd)
+    print("done")
 
 
-def move(f_path, target_dir):
-    """ Moves the given file or directory to the given folder. """
-    if not os.path.exists(f_path):
-        # source file does not exist
-        return
-    base = os.path.basename(f_path)
-    if os.path.exists(target_dir + '/' + base):
-        # target file or dir already exsists
-        return
-    if not os.path.exists(target_dir):
-        os.makedirs(target_dir)
-    shutil.move(f_path, target_dir)
-
-
-def fill_template(file_path, **kwargs):
+def fill_template(file_path: Path, **kwargs):
     with open(file_path, mode='r', encoding='utf-8') as f:
         text = f.read()
         return text.format(**kwargs)
 
 
-def p(path):
-    """ Joins the given strings to a path """
-    if os.sep != '/':
-        return path.replace('/', os.sep)
-    return path
+def check_nsis():
+    directory = NSIS_DIR
+    if not os.path.isdir(directory):
+        printw(f"  Creating the directory: {directory}")
+        Path(directory).mkdir(parents=True, exist_ok=True)
+        print("done")
+        return False
+    paths_list = directory.glob('*.exe')
+    files = [path.name for path in paths_list if path.is_file()]
+    return "makensis.exe" in files
+
+
+def fetch_nsis():
+    if check_nsis():
+        return
+
+    printw(f"  Downloading NSIS archive.")
+    try:
+        r = requests.get(NSIS_URL, allow_redirects=True, stream=True)
+    except OSError as e:
+        print(f"Failed to download {NSIS_URL} due to: \n{e}")
+        raise e
+
+    if not r.status_code == 200:
+        print(f"<Error {r.status_code}> Failed to download {NSIS_URL}.")
+        raise ConnectionError
+
+    zipfile = ZipFile(BytesIO(r.content))
+    zipfile.extractall(NSIS_DIR.parent)
+    print("done")
+
+
+def check_7zip():
+    directory = SEVENZIP_DIR
+    if not os.path.isdir(directory):
+        printw(f"  Creating the directory: {directory}")
+        Path(directory).mkdir(parents=True, exist_ok=True)
+        print("done")
+        return False
+    paths_list = directory.glob('*.exe')
+    files = [path.name for path in paths_list if path.is_file()]
+    return "7za.exe" in files
+
+
+def fetch_7zip():
+    if check_7zip():
+        return
+
+    printw(f"  Downloading 7zip archive.")
+    archive_name = "7zip.7z"
+    target_path = SEVENZIP_DIR / archive_name
+    try:
+        r = requests.get(SEVENZIP_URL, allow_redirects=True, stream=True)
+    except OSError as e:
+        print(f"Failed to download {SEVENZIP_URL} due to: \n{e}")
+        raise e
+
+    if not r.status_code == 200:
+        print(f"<Error {r.status_code}> Failed to download {SEVENZIP_URL}.")
+        raise ConnectionError
+
+    open(target_path, 'wb').write(r.content)
+
+    Archive(target_path).extractall(SEVENZIP_DIR)
+
+    print("done")
 
 
 def printw(msg: str):
     print(msg, end=' ... ', flush=True)
+
+
+def report(result: bool) -> str:
+    if result:
+        return "Success"
+    else:
+        return "Fail"
 
 
 if __name__ == '__main__':
