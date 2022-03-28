@@ -1,6 +1,7 @@
 package org.openlca.app.tools;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.dialogs.InputDialog;
@@ -70,14 +71,15 @@ public class FileImport {
 		// check if it is an openEPD file
 		if (name.endsWith(".json")) {
 			try {
-				// TODO: add and use generic Json.read(file): JsonElement
-				// then check if it is a JsonObject
-				var obj = Json.readObject(file).orElse(null);
-				if (obj != null && obj.has("pcr") && obj.has("impacts")) {
-					var epd = EpdDoc.fromJson(obj).orElse(null);
-					if (epd != null) {
-						ImportDialog.show(epd);
-						return;
+				var json = Json.read(file).orElse(null);
+				if (json != null && json.isJsonObject()) {
+					var obj = json.getAsJsonObject();
+					if (Objects.equals("OpenEPD", Json.getString(obj, "doctype"))) {
+						var epd = EpdDoc.fromJson(obj).orElse(null);
+						if (epd != null) {
+							ImportDialog.show(epd);
+							return;
+						}
 					}
 				}
 			} catch (Exception ignored) {

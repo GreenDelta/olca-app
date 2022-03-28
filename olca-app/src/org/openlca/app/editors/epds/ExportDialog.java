@@ -1,5 +1,6 @@
 package org.openlca.app.editors.epds;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -16,6 +17,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.tools.openepd.CategoryDialog;
 import org.openlca.app.tools.openepd.ErrorDialog;
 import org.openlca.app.tools.openepd.LoginPanel;
@@ -51,7 +53,7 @@ class ExportDialog extends FormDialog {
 	private ExportDialog(EpdDoc epd) {
 		super(UI.shell());
 		this.epd = Objects.requireNonNull(epd);
-		this.categories = Ec3CategoryTree.loadFromCacheFile();
+		this.categories = Ec3CategoryTree.fromFile(categoryCacheFile());
 	}
 
 	@Override
@@ -250,7 +252,7 @@ class ExportDialog extends FormDialog {
 				return dialog.categories;
 			d.categories = Api.getCategoryTree(client);
 			if (!d.categories.isEmpty()) {
-				d.categories.saveToCacheFile();
+				d.categories.save(categoryCacheFile());
 			} else {
 				MsgBox.error("No categories could be loaded",
 					"No categories could be loaded from "
@@ -275,6 +277,10 @@ class ExportDialog extends FormDialog {
 			}
 			link.getParent().layout();
 		}
+	}
+
+	private static File categoryCacheFile() {
+		return new File(Workspace.getDir(), ".ec3-categories");
 	}
 
 }
