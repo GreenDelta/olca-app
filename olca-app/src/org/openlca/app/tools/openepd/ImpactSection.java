@@ -1,4 +1,9 @@
-package org.openlca.app.tools.openepd.input;
+package org.openlca.app.tools.openepd;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
@@ -22,11 +27,8 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import org.openlca.io.openepd.input.ImportMapping;
+import org.openlca.io.openepd.input.IndicatorKey;
 
 class ImpactSection {
 

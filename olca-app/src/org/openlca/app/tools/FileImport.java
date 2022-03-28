@@ -19,7 +19,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.db.DbRestoreAction;
 import org.openlca.app.navigation.actions.libraries.MountLibraryAction;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.openepd.input.ImportDialog;
+import org.openlca.app.tools.openepd.ImportDialog;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;

@@ -1,4 +1,4 @@
-package org.openlca.app.tools.openepd.input;
+package org.openlca.app.tools.openepd;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,6 +24,8 @@ import org.openlca.app.wizards.io.ImportLogView;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Epd;
 import org.openlca.io.openepd.EpdDoc;
+import org.openlca.io.openepd.input.EpdImport;
+import org.openlca.io.openepd.input.ImportMapping;
 
 public class ImportDialog extends FormDialog {
 
@@ -92,7 +94,7 @@ public class ImportDialog extends FormDialog {
 		var categoryText = UI.formText(comp, tk, M.Category);
 		categoryText.setEditable(false);
 		Controls.set(categoryText,
-			Util.categoryOf(epdDoc)
+			EpdImport.categoryOf(epdDoc)
 				.map(path -> String.join(" >> ", path))
 				.orElse("- none -"));
 
@@ -133,7 +135,7 @@ public class ImportDialog extends FormDialog {
 		}
 
 		try {
-			var imp = new Import(db, epdDoc, mapping);
+			var imp = new EpdImport(db, epdDoc, mapping);
 			var epd = imp.run();
 
 			var msg = new MessageDialog(
