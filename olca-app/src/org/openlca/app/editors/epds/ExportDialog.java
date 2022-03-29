@@ -1,15 +1,12 @@
 package org.openlca.app.editors.epds;
 
 import java.io.File;
-import java.time.LocalDate;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -26,6 +23,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.Epd;
 import org.openlca.io.openepd.Api;
 import org.openlca.io.openepd.Ec3CategoryTree;
 import org.openlca.io.openepd.EpdDoc;
@@ -37,24 +35,32 @@ import org.openlca.util.Strings;
 class ExportDialog extends FormDialog {
 
 	private final EpdDoc epd;
+	private final Epd model;
+	private final String existingId;
+
 	private Ec3CategoryTree categories;
 	private LoginPanel loginPanel;
 	private ExportState state;
 
-	public static ExportState show(EpdDoc epd) {
-		if (epd == null)
+	static ExportState of(Epd model) {
+		if (model == null)
 			return ExportState.canceled();
-		var dialog = new ExportDialog(epd);
+		var dialog = new ExportDialog(model);
 		dialog.open();
 		return dialog.state != null
 			? dialog.state
 			: ExportState.canceled();
 	}
 
-	private ExportDialog(EpdDoc epd) {
+	private ExportDialog(Epd model) {
 		super(UI.shell());
-		this.epd = Objects.requireNonNull(epd);
+		this.model = model;
+		this.epd = EpdConverter.toEpdDoc(model);
+		this.existingId = model.urn != null && model.urn.startsWith("openEPD:")
+			? model.urn.substring(8)
+			: null;
 		this.categories = Ec3CategoryTree.fromFile(categoryCacheFile());
+
 	}
 
 	@Override
@@ -84,14 +90,6 @@ class ExportDialog extends FormDialog {
 		var infoSection = UI.section(body, tk, header);
 		var comp = UI.sectionClient(infoSection, tk, 3);
 
-		// declaration URL
-		if (Strings.nullOrEmpty(epd.declarationUrl)) {
-			epd.declarationUrl = "http://add.an.original.declaration.url";
-		}
-		Controls.set(UI.formText(comp, tk, "Declaration URL"),
-			epd.declarationUrl, s -> epd.declarationUrl = s);
-		UI.filler(comp, tk);
-
 		// kg per declared unit
 		if (epd.kgPerDeclaredUnit == null) {
 			epd.kgPerDeclaredUnit = new EpdQuantity(1, "kg");
@@ -108,38 +106,10 @@ class ExportDialog extends FormDialog {
 		new CategoryLink(this).render(comp, tk);
 		UI.filler(comp, tk);
 
-		// date fields
-		UI.formLabel(comp, tk, "Date of issue");
-		var issueDate = new DateTime(comp, SWT.DROP_DOWN);
-		tk.adapt(issueDate);
-		date(issueDate, epd.dateOfIssue, d -> epd.dateOfIssue = d);
-		UI.filler(comp, tk);
-
-		UI.formLabel(comp, tk, "End of validity");
-		var endDate = new DateTime(comp, SWT.DROP_DOWN);
-		tk.adapt(endDate);
-		date(endDate, epd.dateValidityEnds, d -> epd.dateValidityEnds = d);
-		UI.filler(comp, tk);
-
 		// result sections
 		for (var result : epd.impactResults) {
 			new ExportResultSection(result).render(body, tk);
 		}
-	}
-
-	private void date(
-		DateTime widget, LocalDate initial, Consumer<LocalDate> onChange) {
-		if (initial != null) {
-			widget.setDate(
-				initial.getYear(),
-				initial.getMonthValue() - 1, // !
-				initial.getDayOfMonth());
-		}
-		widget.addSelectionListener(Controls.onSelect($ -> {
-			var newDate = LocalDate.of(
-				widget.getYear(), widget.getMonth() + 1, widget.getDay());
-			onChange.accept(newDate);
-		}));
 	}
 
 	@Override

@@ -26,8 +26,7 @@ record UploadButton(EpdEditor editor) {
 					"EPD cannot be converted to an openEPD document: " + check.error());
 				return;
 			}
-			var ec3Epd = EpdConverter.toOpenEpd(epd());
-			var state = ExportDialog.show(ec3Epd);
+			var state = ExportDialog.of(epd());
 			if (state.isCreated()) {
 				epd().urn = "openEPD:" + state.id();
 				editor.emitEvent("urn.change");

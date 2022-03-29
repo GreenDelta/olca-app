@@ -1,6 +1,5 @@
 package org.openlca.app.editors.epds;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,7 +8,6 @@ import java.util.Objects;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.Epd;
 import org.openlca.core.model.Source;
-import org.openlca.io.openepd.Ec3Epd;
 import org.openlca.io.openepd.EpdDoc;
 import org.openlca.io.openepd.EpdImpactResult;
 import org.openlca.io.openepd.EpdIndicatorResult;
@@ -54,25 +52,7 @@ class EpdConverter {
 		return Validation.ok();
 	}
 
-	static Ec3Epd toEc3(Epd epd) {
-		var doc = new Ec3Epd();
-		doc.isDraft = true;
-		doc.isPrivate = true;
-		doc.name = epd.name;
-		if (epd.product != null && epd.product.unit != null) {
-			doc.declaredUnit = epd.product.amount + " " + epd.product.unit.name;
-		}
-		doc.description = epd.description;
-		var today = LocalDate.now();
-		doc.dateOfIssue = today;
-		doc.dateValidityEnds = LocalDate.of(
-			today.getYear() + 1, today.getMonth(), today.getDayOfMonth());
-
-		doc.impactResults.addAll(convertResults(epd));
-		return doc;
-	}
-
-	static EpdDoc toOpenEpd(Epd epd) {
+	static EpdDoc toEpdDoc(Epd epd) {
 		var doc = new EpdDoc();
 		doc.isPrivate = true;
 		doc.version = 1;
@@ -82,10 +62,6 @@ class EpdConverter {
 				epd.product.amount, epd.product.unit.name);
 		}
 		doc.lcaDiscussion = epd.description;
-		var today = LocalDate.now();
-		doc.dateOfIssue = today;
-		doc.dateValidityEnds = LocalDate.of(
-			today.getYear() + 1, today.getMonth(), today.getDayOfMonth());
 
 		// category
 		if (epd.category != null) {
@@ -173,6 +149,20 @@ record Validation(String error) {
 
 	boolean hasError() {
 		return error != null;
+	}
+}
+
+record Mass(EpdQuantity quantity, boolean isPresent) {
+
+	private static Mass getDefault() {
+		return new Mass(new EpdQuantity(1, "kg"), false);
+	}
+
+	static Mass infer(Epd epd) {
+		if (epd.product == null)
+			return getDefault();
+		// TODO: infer kg per declared unit from product properties
+		return getDefault();
 	}
 
 }
