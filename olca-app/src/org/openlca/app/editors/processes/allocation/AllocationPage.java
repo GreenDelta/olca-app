@@ -11,7 +11,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.Event;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
@@ -41,8 +40,6 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.eventbus.Subscribe;
-
 public class AllocationPage extends ModelPage<Process> {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -54,10 +51,14 @@ public class AllocationPage extends ModelPage<Process> {
 	public AllocationPage(ProcessEditor editor) {
 		super(editor, "process.AllocationPage", M.Allocation);
 		this.editor = editor;
-		editor.getEventBus().register(this);
+		editor.onEvent(ProcessEditor.EXCHANGES_CHANGED, () -> {
+			log.trace("update allocation page");
+			AllocationSync.updateFactors(process());
+			setTableInputs();
+		});
 		editor.onSaved(this::setTableInputs);
 	}
-
+	
 	/**
 	 * Update the given allocation factor with the given value. Returns true if it
 	 * was updated and false when the value is the same as before or invalid.
@@ -101,15 +102,6 @@ public class AllocationPage extends ModelPage<Process> {
 			MsgBox.error(M.InvalidAllocationFactor, value + M.IsNotValidNumber);
 			return false;
 		}
-	}
-
-	@Subscribe
-	public void handleExchangesChange(Event event) {
-		if (!event.matches(ProcessEditor.EXCHANGES_CHANGED))
-			return;
-		log.trace("update allocation page");
-		AllocationSync.updateFactors(process());
-		setTableInputs();
 	}
 
 	private void setTableInputs() {

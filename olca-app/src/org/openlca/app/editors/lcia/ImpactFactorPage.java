@@ -60,7 +60,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				viewer.refresh();
 			}
 		});
-		editor.onEvent(editor.FACTORS_CHANGED_EVENT, sender -> {
+		editor.onEvent(editor.FACTORS_CHANGED_EVENT, () -> {
 			if (viewer != null) {
 				viewer.setInput(impact().impactFactors);
 			}

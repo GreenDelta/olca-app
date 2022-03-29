@@ -1,6 +1,5 @@
 package org.openlca.app.editors;
 
-
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
@@ -20,10 +19,10 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	public ModelPage(ModelEditor<T> editor, String id, String title) {
 		super(editor, id, title);
 		editor.onSaved(() -> {
-			var mform = getManagedForm();
-			if (mform == null || mform.getForm() == null)
+			var mForm = getManagedForm();
+			if (mForm == null || mForm.getForm() == null)
 				return;
-			mform.getForm().setText(getFormTitle());
+			mForm.getForm().setText(getFormTitle());
 		});
 	}
 
@@ -82,7 +81,7 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	}
 
 	protected Text shortText(Composite parent, String label, String property) {
-		var text =  Widgets.shortText(parent, label, property, getEditor(), getToolkit());
+		var text = Widgets.shortText(parent, label, property, getEditor(), getToolkit());
 		text.setEditable(isEditable());
 		return text;
 	}
@@ -100,13 +99,13 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	}
 
 	protected Button checkBox(Composite parent, String label, String property) {
-		var btn =  Widgets.checkBox(parent, label, property, getEditor(), getToolkit());
+		var btn = Widgets.checkBox(parent, label, property, getEditor(), getToolkit());
 		btn.setEnabled(isEditable());
 		return btn;
 	}
 
 	protected TextDropComponent dropComponent(Composite parent, String label, String property) {
-		var comp =  Widgets.dropComponent(parent, label, property, getEditor(), getToolkit());
+		var comp = Widgets.dropComponent(parent, label, property, getEditor(), getToolkit());
 		comp.setEnabled(isEditable());
 		return comp;
 	}

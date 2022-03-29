@@ -3,7 +3,7 @@ package org.openlca.app.editors;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -13,7 +13,6 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
-import org.openlca.app.Event;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
@@ -37,18 +36,19 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Objects;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-
 public abstract class ModelEditor<T extends RootEntity>
-		extends FormEditor {
+	extends FormEditor {
+
+	/**
+	 * An event that is emitted by the model editor by default after the model
+	 * of this editor was saved.
+	 */
+	public static final String ON_SAVED = "event.on.saved";
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private final Class<T> modelClass;
-	private final EventBus eventBus = new EventBus();
+	private final List<EventHandler> eventHandlers = new ArrayList<>();
 	private final DataBinding binding = new DataBinding(this);
-	private final List<Runnable> savedHandlers = new ArrayList<>();
 
 	private boolean dirty;
 	private T model;
@@ -65,60 +65,48 @@ public abstract class ModelEditor<T extends RootEntity>
 
 	public boolean hasComment(String path) {
 		return App.isCommentingEnabled() && comments != null
-				&& comments.hasPath(path);
+			&& comments.hasPath(path);
 	}
 
 	public boolean hasAnyComment(String path) {
 		return App.isCommentingEnabled() && comments != null
-				&& comments.hasAnyPath(path);
+			&& comments.hasAnyPath(path);
 	}
 
 	protected void addCommentPage() throws PartInitException {
 		if (!App.isCommentingEnabled() || comments == null
-				|| !comments.hasRefId(model.refId))
+			|| !comments.hasRefId(model.refId))
 			return;
 		addPage(new CommentsPage(this, comments, model));
 	}
 
-	/**
-	 * Calls the given event handler AFTER the model in this editor was saved.
-	 */
-	public void onSaved(Runnable handler) {
-		savedHandlers.add(handler);
-	}
-
-	/**
-	 * @deprecated Do not expose the event bus anymore we even could replace the
-	 *             event bus with a simple list of subscribers.
-	 */
-	@Deprecated
-	public EventBus getEventBus() {
-		return eventBus;
-	}
-
-	/**
-	 * Post an event with the given ID and sender to possible subscribers.
-	 */
-	public void postEvent(String eventID, Object sender) {
-		eventBus.post(new Event(eventID, sender));
-	}
-
-	/**
-	 * Subscribes a handler for events with the given ID to this editor. When an
-	 * event occurs the original sender of that event is injected to the
-	 * respective handlers.
-	 */
-	public void onEvent(String eventID, Consumer<Object> handler) {
-		if (handler == null)
-			return;
-		eventBus.register(new Object() {
-			@Subscribe
-			public void handle(Event e) {
-				if (e == null || !Objects.equal(e.id, eventID))
-					return;
-				handler.accept(e.sender);
+	public void emitEvent(String eventId) {
+		var matched = false;
+		for (var handler : eventHandlers) {
+			if (Objects.equals(eventId, handler.eventId)) {
+				matched = true;
+				handler.action.run();
 			}
-		});
+		}
+		if (matched || ON_SAVED.equals(eventId))
+			return;
+		var log = LoggerFactory.getLogger(getClass());
+		log.warn("unmatched event ID: {}", eventId);
+	}
+
+	public void onEvent(String eventId, Runnable action) {
+		if (eventId == null || action == null)
+			return;
+		eventHandlers.add(new EventHandler(eventId, action));
+	}
+
+	/**
+	 * A short form for `onEvent(ON_SAVED, ...)`.
+	 */
+	public void onSaved(Runnable action) {
+		if (action == null)
+			return;
+		eventHandlers.add(new EventHandler(ON_SAVED, action));
 	}
 
 	public DataBinding getBinding() {
@@ -127,7 +115,7 @@ public abstract class ModelEditor<T extends RootEntity>
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+		throws PartInitException {
 		super.init(site, input);
 		log.trace("open " + modelClass.getSimpleName() + " editor {}", input);
 		ModelEditorInput i = (ModelEditorInput) input;
@@ -137,18 +125,17 @@ public abstract class ModelEditor<T extends RootEntity>
 			dao = Daos.base(Database.get(), modelClass);
 			model = dao.getForId(i.getDescriptor().id);
 			loadComments(i.getDescriptor().type,
-					i.getDescriptor().refId);
-			eventBus.register(this);
+				i.getDescriptor().refId);
 		} catch (Exception e) {
 			log.error("failed to load " + modelClass.getSimpleName()
-					+ " from editor input", e);
+				+ " from editor input", e);
 		}
 	}
 
 	private void loadComments(ModelType type, String refId) {
 		if (!App.isCommentingEnabled()
-				|| !Repository.isConnected()
-				|| !Repository.get().isCollaborationServer())
+			|| !Repository.isConnected()
+			|| !Repository.get().isCollaborationServer())
 			return;
 		try {
 			comments = Repository.get().client.getComments(type, refId);
@@ -160,18 +147,20 @@ public abstract class ModelEditor<T extends RootEntity>
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		try {
-			if (monitor != null)
+			if (monitor != null) {
 				monitor.beginTask(M.Save + " " + modelClass.getSimpleName()
-						+ "...", IProgressMonitor.UNKNOWN);
+					+ "...", IProgressMonitor.UNKNOWN);
+			}
 			model.lastChange = Calendar.getInstance().getTimeInMillis();
 			Version.incUpdate(model);
 			model = dao.update(model);
 			doAfterUpdate();
-			if (monitor != null)
+			if (monitor != null) {
 				monitor.done();
+			}
 		} catch (Exception e) {
 			ErrorReporter.on(
-					"failed to update " + modelClass.getSimpleName(), e);
+				"failed to update " + modelClass.getSimpleName(), e);
 		}
 	}
 
@@ -195,11 +184,7 @@ public abstract class ModelEditor<T extends RootEntity>
 		cache.invalidate(modelClass, model.id);
 		this.setPartName(Labels.name(model));
 		Cache.evict(descriptor);
-		for (Runnable handler : savedHandlers) {
-			if (handler != null) {
-				handler.run();
-			}
-		}
+		emitEvent(ON_SAVED);
 		Navigator.refresh(Navigator.findElement(descriptor));
 	}
 
@@ -231,13 +216,13 @@ public abstract class ModelEditor<T extends RootEntity>
 	@SuppressWarnings("unchecked")
 	public void doSaveAs() {
 		var diag = new InputDialog(UI.shell(), M.SaveAs, M.SaveAs,
-				model.name + " - Copy", (name) -> {
-					if (Strings.nullOrEmpty(name))
-						return M.NameCannotBeEmpty;
-					if (Strings.nullOrEqual(name, model.name))
-						return M.NameShouldBeDifferent;
-					return null;
-				});
+			model.name + " - Copy", (name) -> {
+			if (Strings.nullOrEmpty(name))
+				return M.NameCannotBeEmpty;
+			if (Strings.nullOrEqual(name, model.name))
+				return M.NameShouldBeDifferent;
+			return null;
+		});
 		if (diag.open() != Window.OK)
 			return;
 		String newName = diag.getValue();
@@ -265,4 +250,6 @@ public abstract class ModelEditor<T extends RootEntity>
 		return model;
 	}
 
+	private record EventHandler(String eventId, Runnable action) {
+	}
 }

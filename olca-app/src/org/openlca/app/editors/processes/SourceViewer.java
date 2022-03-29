@@ -121,7 +121,7 @@ class SourceViewer extends AbstractTableViewer<Source> {
 	private void update() {
 		var doc = editor.getModel().documentation;
 		setInput(doc.sources);
-		editor.getEventBus().post(ProcessEditor.SOURCES_CHANGED);
+		editor.emitEvent(ProcessEditor.SOURCES_CHANGED);
 		editor.setDirty(true);
 	}
 

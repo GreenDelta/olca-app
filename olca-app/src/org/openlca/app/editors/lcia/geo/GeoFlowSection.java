@@ -142,8 +142,7 @@ class GeoFlowSection {
 				page.setup, page.editor.getModel(), locations);
 		App.runWithProgress("Calculate regionalized factors", calc, () -> {
 			page.editor.setDirty(true);
-			page.editor.postEvent(
-					page.editor.FACTORS_CHANGED_EVENT, this);
+			page.editor.emitEvent(page.editor.FACTORS_CHANGED_EVENT);
 			page.editor.setActivePage("ImpactFactorPage");
 		});
 	}

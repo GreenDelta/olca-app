@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -22,7 +21,6 @@ import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.Source;
 import org.openlca.util.Strings;
 
-import com.google.common.eventbus.Subscribe;
 
 class ImageSection {
 
@@ -37,14 +35,7 @@ class ImageSection {
 		this.body = body;
 		this.tk = tk;
 		this.editor = editor;
-		editor.getEventBus().register(new Object() {
-			@Subscribe
-			void onUpdateSources(Object e) {
-				if (Objects.equals(e, ProcessEditor.SOURCES_CHANGED)) {
-					update();
-				}
-			}
-		});
+		editor.onEvent(ProcessEditor.SOURCES_CHANGED, this::update);
 		update();
 	}
 

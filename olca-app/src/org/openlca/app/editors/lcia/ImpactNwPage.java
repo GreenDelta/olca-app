@@ -9,10 +9,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.Event;
 import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
@@ -20,49 +17,41 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NwSet;
 
-import com.google.common.eventbus.Subscribe;
-
 class ImpactNwPage extends ModelPage<ImpactMethod> {
 
-	private FormToolkit toolkit;
+	private final ImpactMethodEditor editor;
 	private NwFactorViewer factorViewer;
-	private ImpactMethodEditor editor;
 	private NwSetViewer setViewer;
-	private ScrolledForm form;
 
 	ImpactNwPage(ImpactMethodEditor editor) {
 		super(editor, "ImpactNormalizationWeightingPage",
 				M.NormalizationWeighting);
 		this.editor = editor;
+		editor.onEvent(editor.IMPACT_CATEGORY_CHANGE, () -> {
+			if (factorViewer != null) {
+				factorViewer.refresh();
+			}
+		});
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(this);
-		toolkit = managedForm.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
-		Section section = UI.section(body, toolkit,
-				M.NormalizationWeightingSets);
+		var form = UI.formHeader(this);
+		var toolkit = managedForm.getToolkit();
+		var body = UI.formBody(form, toolkit);
+		var section = UI.section(body, toolkit, M.NormalizationWeightingSets);
 		UI.gridData(section, true, true);
-		Composite client = toolkit.createComposite(section);
+		var client = toolkit.createComposite(section);
 		section.setClient(client);
 		UI.gridLayout(client, 1);
-		SashForm sashForm = createSash(client);
+		var sashForm = createSash(client);
 		setViewer = createNwSetViewer(section, sashForm);
 		factorViewer = new NwFactorViewer(sashForm, editor);
-		sashForm.setWeights(new int[] { 25, 75 });
+		sashForm.setWeights(25, 75);
 		setViewer.selectFirst();
 		body.setFocus();
 		form.reflow(true);
-		editor.getEventBus().register(this);
-		editor.onSaved(() -> updateInput());
-	}
-
-	@Subscribe
-	public void refresh(Event event) {
-		if (!event.matches(editor.IMPACT_CATEGORY_CHANGE))
-			return;
-		factorViewer.refresh();
+		editor.onSaved(this::updateInput);
 	}
 
 	private SashForm createSash(Composite client) {

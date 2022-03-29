@@ -44,7 +44,6 @@ class InfoPage extends ModelPage<Process> {
 
 	InfoPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage", M.GeneralInformation);
-		editor.getEventBus().register(this);
 	}
 
 	@Override

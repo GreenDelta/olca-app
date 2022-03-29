@@ -143,7 +143,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 	}
 
 	private void fireCategoryChange() {
-		editor.postEvent(editor.IMPACT_CATEGORY_CHANGE, this);
+		editor.emitEvent(editor.IMPACT_CATEGORY_CHANGE);
 		editor.setDirty(true);
 	}
 

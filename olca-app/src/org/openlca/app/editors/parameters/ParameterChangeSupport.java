@@ -9,8 +9,8 @@ import java.util.List;
  */
 public class ParameterChangeSupport {
 
-	private List<Runnable> evaluators = new ArrayList<>();
-	private List<Runnable> observers = new ArrayList<>();
+	private final List<Runnable> evaluators = new ArrayList<>();
+	private final List<Runnable> observers = new ArrayList<>();
 
 	public void onEvaluation(Runnable fn) {
 		if (fn != null)
