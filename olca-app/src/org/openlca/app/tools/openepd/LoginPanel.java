@@ -1,7 +1,5 @@
 package org.openlca.app.tools.openepd;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.Optional;
 
 import org.eclipse.jface.window.Window;
@@ -14,7 +12,6 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
@@ -32,7 +29,7 @@ public class LoginPanel {
 	private Button button;
 
 	private LoginPanel() {
-		credentials = Ec3Credentials.getDefault(cacheFile());
+		credentials = Ec3.credentials();
 	}
 
 	public static LoginPanel create(Composite body, FormToolkit tk) {
@@ -101,7 +98,7 @@ public class LoginPanel {
 		if (button.isDisposed())
 			return Optional.empty();
 		if (credentialsChanged) {
-			credentials.save(cacheFile());
+			Ec3.save(credentials);
 			credentialsChanged = false;
 		}
 		try {
@@ -126,7 +123,7 @@ public class LoginPanel {
 			}
 
 			client = fromLogin.get();
-			credentials.save(cacheFile());
+			Ec3.save(credentials);
 			return fromLogin;
 		} catch (Exception e) {
 			ErrorReporter.on("EC3 login failed", e);
@@ -139,9 +136,11 @@ public class LoginPanel {
 
 	public void logout() {
 		try {
-			credentials.token(null).save(cacheFile());
+			credentials.token(null);
+			Ec3.save(credentials);
 			if (client != null) {
 				client.logout();
+				client = null;
 			}
 		} catch (Exception e) {
 			ErrorReporter.on("EC3 logout failed", e);
@@ -164,19 +163,6 @@ public class LoginPanel {
 		button.setToolTipText(tooltip);
 		button.getParent().layout();
 		button.getParent().redraw();
-	}
-
-	private static File cacheFile() {
-		var dir = Workspace.getDir();
-		if (!dir.exists()) {
-			try {
-				Files.createDirectories(dir.toPath());
-			} catch (Exception e) {
-				ErrorReporter.on(
-					"No write access in workspace; failed to create " + dir, e);
-			}
-		}
-		return new File(dir, ".ec3");
 	}
 
 	static class LoginDialog extends FormDialog {

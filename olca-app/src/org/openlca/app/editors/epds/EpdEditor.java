@@ -70,6 +70,7 @@ public class EpdEditor extends ModelEditor<Epd> {
 					editor.emitEvent("urn.change");
 					editor.setDirty();
 				}
+				state.display();
 			});
 
 			new EpdProductSection(editor).render(body, tk);
