@@ -1,7 +1,7 @@
 package org.openlca.app.tools.openepd;
 
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
@@ -10,25 +10,27 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 
-public class ErrorDialog extends FormDialog {
+public class JsonErrorDialog extends FormDialog {
 
-	private final JsonObject message;
+	private final String title;
+	private final JsonElement json;
 
-	public static void show(JsonObject message) {
-		if (message == null)
+	public static void show(String title, JsonElement json) {
+		if (json == null)
 			return;
-		new ErrorDialog(message).open();
+		new JsonErrorDialog(title, json).open();
 	}
 
-	private ErrorDialog(JsonObject message) {
+	private JsonErrorDialog(String title, JsonElement json) {
 		super(UI.shell());
-		this.message = message;
+		this.title = title;
+		this.json = json;
 	}
 
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Validation errors");
+		newShell.setText("Error");
 		newShell.setImage(Icon.ERROR.get());
 	}
 
@@ -41,12 +43,11 @@ public class ErrorDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var body = UI.formBody(mForm.getForm(), tk);
-		UI.formLabel(body, tk,
-			"The upload failed with the following validation error:");
+		UI.formLabel(body, tk, title);
 		var text = new GsonBuilder()
 			.setPrettyPrinting()
 			.create()
-			.toJson(message);
+			.toJson(json);
 		var widget = tk.createText(body, text,
 			SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
 		UI.gridData(widget, true, true);

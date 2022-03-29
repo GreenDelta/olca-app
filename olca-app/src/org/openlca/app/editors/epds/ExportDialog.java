@@ -19,13 +19,12 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.tools.openepd.CategoryDialog;
-import org.openlca.app.tools.openepd.ErrorDialog;
+import org.openlca.app.tools.openepd.JsonErrorDialog;
 import org.openlca.app.tools.openepd.LoginPanel;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
-import org.openlca.app.util.Popup;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.io.openepd.Api;
@@ -36,18 +35,21 @@ import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
 import org.openlca.util.Strings;
 
-import com.google.gson.GsonBuilder;
-
 class ExportDialog extends FormDialog {
 
 	private final EpdDoc epd;
 	private Ec3CategoryTree categories;
 	private LoginPanel loginPanel;
+	private ExportState state;
 
-	public static void show(EpdDoc epd) {
+	public static ExportState show(EpdDoc epd) {
 		if (epd == null)
-			return;
-		new ExportDialog(epd).open();
+			return ExportState.canceled();
+		var dialog = new ExportDialog(epd);
+		dialog.open();
+		return dialog.state != null
+			? dialog.state
+			: ExportState.canceled();
 	}
 
 	private ExportDialog(EpdDoc epd) {
@@ -159,27 +161,39 @@ class ExportDialog extends FormDialog {
 		if (!b)
 			return;
 		try {
+
 			var response = client.postEpd("/epds", epd.toJson());
-			if (!response.hasJson()) {
-				MsgBox.error("Received no response from server");
+			var json = response.hasJson()
+				? response.json()
+				: null;
+
+			// check the response
+			if (response.isError()) {
+				if (json != null) {
+					JsonErrorDialog.show(
+						"The upload failed with the following error", json);
+				} else {
+					MsgBox.error("Upload failed", "Failed to upload EPD to EC3.");
+				}
 				return;
 			}
-			var json = response.json();
-			if (!json.isJsonObject()) {
-				MsgBox.error("Received an unexpected response from server");
+
+			// extract the ID from the response
+			String id = null;
+			if (json != null && json.isJsonObject()) {
+				id = Json.getString(json.getAsJsonObject(), "id");
+			}
+			if (Strings.nullOrEmpty(id)) {
+				var error = "No ID returned from server.";
+				if (json != null) {
+					JsonErrorDialog.show(error, json);
+				} else {
+					MsgBox.error("Upload failed", error);
+				}
 				return;
 			}
-			var obj = json.getAsJsonObject();
-			// TODO
-			System.out.println(
-				new GsonBuilder().setPrettyPrinting().create().toJson(obj));
-			if (obj.has("validation_errors")) {
-				ErrorDialog.show(obj);
-				return;
-			}
-			var url = loginPanel.url();
-			Popup.info("Uploaded EPD",
-				"The EPD was uploaded to <a href='" + url + "'>" + url + "</a>");
+
+			state = ExportState.created(id);
 			super.okPressed();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to upload EPD", e);
@@ -205,6 +219,7 @@ class ExportDialog extends FormDialog {
 			return;
 		try {
 			Json.write(json, file);
+			state = ExportState.file(file.getAbsolutePath());
 			super.okPressed();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to save openEPD document", e);

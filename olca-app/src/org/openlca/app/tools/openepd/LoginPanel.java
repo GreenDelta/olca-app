@@ -214,7 +214,7 @@ public class LoginPanel {
 			var userTxt = UI.formText(right, tk, M.User);
 			UI.fillHorizontal(userTxt);
 			Controls.set(userTxt, credentials.user(), credentials::user);
-			var pwTxt = UI.formText(right, tk, M.Password, SWT.PASSWORD);
+			var pwTxt = UI.formText(right, tk, M.Password, SWT.PASSWORD | SWT.BORDER);
 			UI.fillHorizontal(pwTxt);
 			pwTxt.addModifyListener($ -> credentials.password(pwTxt.getText()));
 		}
