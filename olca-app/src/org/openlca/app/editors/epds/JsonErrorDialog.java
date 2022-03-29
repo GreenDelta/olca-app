@@ -1,4 +1,4 @@
-package org.openlca.app.tools.openepd;
+package org.openlca.app.editors.epds;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -10,12 +10,12 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 
-public class JsonErrorDialog extends FormDialog {
+class JsonErrorDialog extends FormDialog {
 
 	private final String title;
 	private final JsonElement json;
 
-	public static void show(String title, JsonElement json) {
+	static void show(String title, JsonElement json) {
 		if (json == null)
 			return;
 		new JsonErrorDialog(title, json).open();

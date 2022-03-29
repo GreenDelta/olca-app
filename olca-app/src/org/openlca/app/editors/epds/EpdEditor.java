@@ -64,7 +64,12 @@ public class EpdEditor extends ModelEditor<Epd> {
 					return;
 				}
 				var ec3Epd = EpdConverter.toOpenEpd(epd());
-				ExportDialog.show(ec3Epd);
+				var state = ExportDialog.show(ec3Epd);
+				if (state.isCreated()) {
+					epd().urn = "openEPD:" + state.id();
+					editor.emitEvent("urn.change");
+					editor.setDirty();
+				}
 			});
 
 			new EpdProductSection(editor).render(body, tk);
@@ -149,12 +154,16 @@ public class EpdEditor extends ModelEditor<Epd> {
 			deleteBtn.setImage(Icon.DELETE_DISABLED.get());
 			Controls.onClick(deleteBtn, $ -> {
 				epd().urn = "";
-				update(link);
+				editor.emitEvent("urn.change");
 				editor.setDirty();
 			});
+
+			editor.onEvent("urn.change", () -> update(link));
 		}
 
 		private void update(ImageHyperlink link) {
+			if (link == null || link.isDisposed())
+				return;
 			link.setText(Strings.nullOrEmpty(epd().urn)
 				? "- none -"
 				: epd().urn

@@ -19,7 +19,6 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.tools.openepd.CategoryDialog;
-import org.openlca.app.tools.openepd.JsonErrorDialog;
 import org.openlca.app.tools.openepd.LoginPanel;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
