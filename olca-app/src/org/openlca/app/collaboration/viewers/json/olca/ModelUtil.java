@@ -90,7 +90,7 @@ class ModelUtil {
 		if (parentPath.contains(".uncertainty") || parentPath.startsWith("uncertainty")
 				|| parentPath.equals("geometry"))
 			return false;
-		if (property.equals("refUnit") && parentPath.endsWith(".flowProperty"))
+		if (property.equals("refUnit") && parentPath.endsWith(".flowProperty") || parentPath.equals("defaultFlowProperty"))
 			return false;
 		if ((property.equals("name") || property.equals("category")) && PropertyLabels.getImageType(node) != null)
 			return false;
