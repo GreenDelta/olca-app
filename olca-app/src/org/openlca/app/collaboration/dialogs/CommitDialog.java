@@ -79,7 +79,7 @@ public class CommitDialog extends FormDialog {
 	}
 
 	private void createCommitMessage(Composite parent, FormToolkit toolkit) {
-		var section = UI.section(parent, toolkit, M.CommitMessage);
+		var section = UI.section(parent, toolkit, M.CommitMessage + "*");
 		var client = toolkit.createComposite(section);
 		client.setLayout(new GridLayout());
 		section.setClient(client);
@@ -94,7 +94,7 @@ public class CommitDialog extends FormDialog {
 	}
 
 	private void createModelViewer(Composite parent, FormToolkit toolkit) {
-		var section = UI.section(parent, toolkit, M.Files);
+		var section = UI.section(parent, toolkit, M.Files + "*");
 		UI.gridData(section, true, true);
 		var comp = toolkit.createComposite(section);
 		UI.gridData(comp, true, true);
