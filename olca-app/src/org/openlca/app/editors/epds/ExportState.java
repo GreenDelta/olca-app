@@ -63,8 +63,11 @@ record ExportState(State state, String id) {
 		if (state == null)
 			return;
 		switch (state) {
-			case FILE -> Popup.info("Exported as file", "The EPD was exported as file: " + id);
+			case FILE -> Popup.info(
+				"Exported as file", "The EPD was exported as file: " + id);
 			case UPDATED, CREATED -> Ec3Dialog.show(this);
+			default -> {
+			}
 		}
 	}
 
@@ -93,7 +96,7 @@ record ExportState(State state, String id) {
 
 		@Override
 		protected Point getInitialSize() {
-			return UI.initialSizeOf(this, 550, 250);
+			return UI.initialSizeOf(this, 575, 250);
 		}
 
 		@Override

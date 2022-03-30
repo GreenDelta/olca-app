@@ -26,7 +26,10 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.Epd;
 import org.openlca.io.openepd.Api;
 import org.openlca.io.openepd.Ec3CategoryTree;
+import org.openlca.io.openepd.Ec3Client;
+import org.openlca.io.openepd.EpdConverter;
 import org.openlca.io.openepd.EpdDoc;
+import org.openlca.io.openepd.EpdImpactResult;
 import org.openlca.io.openepd.EpdQuantity;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
@@ -35,7 +38,6 @@ import org.openlca.util.Strings;
 class ExportDialog extends FormDialog {
 
 	private final EpdDoc epd;
-	private final Epd model;
 	private final String existingId;
 
 	private Ec3CategoryTree categories;
@@ -54,13 +56,11 @@ class ExportDialog extends FormDialog {
 
 	private ExportDialog(Epd model) {
 		super(UI.shell());
-		this.model = model;
 		this.epd = EpdConverter.toEpdDoc(model);
 		this.existingId = model.urn != null && model.urn.startsWith("openEPD:")
 			? model.urn.substring(8)
 			: null;
 		this.categories = Ec3CategoryTree.fromFile(categoryCacheFile());
-
 	}
 
 	@Override
@@ -114,7 +114,9 @@ class ExportDialog extends FormDialog {
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.OK_ID, "Upload", true);
+		createButton(parent, IDialogConstants.OK_ID,
+			existingId == null ? "Upload" : "Update",
+			true);
 		createButton(parent, 999, "Save as file", false);
 		createButton(parent, IDialogConstants.CANCEL_ID,
 			IDialogConstants.CANCEL_LABEL, false);
@@ -125,13 +127,27 @@ class ExportDialog extends FormDialog {
 		var client = loginPanel.login().orElse(null);
 		if (client == null)
 			return;
-		var b = Question.ask("Upload as draft?",
-			"Upload this as draft to " + loginPanel.url() + "?");
-		if (!b)
+
+		var qTitle = existingId == null
+			? "Upload as draft?"
+			: "Update existing EPD?";
+		var qText = existingId == null
+			? "Upload this as draft to " + loginPanel.url() + "?"
+			: "Update existing EPD on " + loginPanel.url() + "?";
+		if (!Question.ask(qTitle, qText))
 			return;
+
+		if (existingId == null) {
+			tryUploadNew(client);
+		} else {
+			tryUpdateExisting(client);
+		}
+	}
+
+	private void tryUploadNew(Ec3Client client) {
 		try {
 
-			var response = client.postEpd("/epds", epd.toJson());
+			var response = client.postEpd(epd.toJson());
 			var json = response.hasJson()
 				? response.json()
 				: null;
@@ -166,6 +182,35 @@ class ExportDialog extends FormDialog {
 			super.okPressed();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to upload EPD", e);
+		}
+	}
+
+	private void tryUpdateExisting(Ec3Client client) {
+		try {
+			var r = client.getEpd(existingId);
+			if (r.isError() || !r.hasJson() || !r.json().isJsonObject()) {
+				MsgBox.error(
+					"Failed to get existing EPD",
+					"Failed to load EPD (id='" + existingId + "') from server.");
+				return;
+			}
+			var json = r.json().getAsJsonObject();
+			var impacts = EpdImpactResult.toJson(epd.impactResults);
+			json.add("impacts", impacts);
+			r = client.putEpd(existingId, json);
+			if (r.isError()) {
+				var error = "Failed to update EPD " + existingId;
+				if (r.hasJson()) {
+					JsonErrorDialog.show(error, r.json());
+				} else {
+					MsgBox.error("Upload failed", error);
+				}
+				return;
+			}
+			state = ExportState.updated(existingId);
+			super.okPressed();
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to update EPD", e);
 		}
 	}
 

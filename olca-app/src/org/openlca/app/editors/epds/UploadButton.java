@@ -8,6 +8,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.Epd;
+import org.openlca.io.openepd.EpdConverter;
 
 record UploadButton(EpdEditor editor) {
 
