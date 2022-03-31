@@ -320,6 +320,14 @@
 		</editor>
 
 		<editor
+			class="org.openlca.app.db.tables.UnitTable"
+			default="false"
+			icon="icons/model/unit_group.png"
+			id="DbUnitTable"
+			name="Units">
+		</editor>
+
+		<editor
 			class="org.openlca.app.db.LinkingPropertiesPage"
 			default="false"
 			icon="icons/model/database.png"
