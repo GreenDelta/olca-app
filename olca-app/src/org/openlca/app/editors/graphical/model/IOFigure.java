@@ -11,10 +11,14 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.swt.SWT;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.themes.Theme.Box;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessType;
 
 class IOFigure extends Figure {
 
@@ -39,7 +43,16 @@ class IOFigure extends Figure {
 		var panel = new ExchangePanel(node);
 		add(panel, new GridData(SWT.FILL, SWT.FILL, true, true));
 		var figure = new ExchangeFigure(node.getExchangeNodes().get(0));
-		add(new FlowButton(figure, forInputs, node), new GridData(SWT.FILL, SWT.TOP, true, false));
+
+		// "+ add flow" button for unit processes that are not part of a library.
+		if (node.process.type == ModelType.PROCESS
+			&& node.process.library == null) {
+			var process = Database.get().get(Process.class, node.process.id);
+			if (process.processType == ProcessType.UNIT_PROCESS) {
+				add(new FlowButtonWrapper(figure, forInputs, node),
+					new GridData(SWT.FILL, SWT.TOP, true, false));
+			}
+		}
 		return panel;
 	}
 
@@ -147,7 +160,7 @@ class IOFigure extends Figure {
 			var icon = config.showFlowIcons ? add(panel, SWT.LEFT, new ImageFigure(Images.get(flowType))) : null;
 			add(panel, SWT.FILL, figure);
 			var amount = config.showFlowAmounts ? add(panel, SWT.RIGHT, new Label(Numbers.format(exchange.amount, 2)))
-					: null;
+				: null;
 			var unit = config.showFlowAmounts ? add(panel, SWT.LEFT, new Label(Labels.name(exchange.unit))) : null;
 
 			var row = new ExchangeRow(icon, figure, amount, unit);
@@ -171,4 +184,17 @@ class IOFigure extends Figure {
 
 	}
 
+	private class FlowButtonWrapper extends Figure {
+		private final FlowButton flowButton;
+
+		public FlowButtonWrapper(ExchangeFigure figure, boolean forInputs, ProcessNode node) {
+			flowButton = new FlowButton(figure, forInputs, node);
+			var layout = new GridLayout(1, true);
+			layout.marginHeight = 3;
+			layout.marginWidth = 5;
+			setLayoutManager(layout);
+			var alignment = forInputs ? SWT.LEFT : SWT.RIGHT;
+			add(flowButton, new GridData(alignment, SWT.TOP, true, false));
+		}
+	}
 }
