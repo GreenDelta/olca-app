@@ -202,7 +202,7 @@
 		<editor
 			class="org.openlca.app.editors.results.ResultEditor"
 			default="false"
-			icon="icons/model/impact_method.png"
+			icon="icons/model/result.png"
 			id="editors.result"
 			name="Result">
 		</editor>
@@ -429,7 +429,7 @@
 		</wizard>
 		<wizard
 			class="org.openlca.app.wizards.ImpactCategoryWizard"
-			icon="icons/wizard/impact_method.png"
+			icon="icons/wizard/impact_category.png"
 			id="wizards.new.impactcategory"
 			name="Environmental indicators">
 		</wizard>
