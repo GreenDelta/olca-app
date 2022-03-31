@@ -19,6 +19,7 @@ import org.openlca.git.find.Ids;
 import org.openlca.git.find.References;
 import org.openlca.git.model.Commit;
 import org.openlca.git.util.Constants;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +94,10 @@ public class Repository {
 
 	public PersonIdent personIdent() {
 		// TODO
-		return new PersonIdent(config.credentials.username(), config.credentials.username() + "@email.com");
+		var username = config.credentials.username();
+		if (Strings.nullOrEmpty(username))
+			return null;
+		return new PersonIdent(username, username + "@email.com");
 	}
 
 	public boolean isCollaborationServer() {
@@ -101,7 +105,10 @@ public class Repository {
 	}
 
 	public GitConfig toConfig() {
-		return new GitConfig(Database.get(), Repository.get().workspaceIds, Repository.get().git, personIdent());
+		var committer = personIdent();
+		if (committer == null)
+			return null;
+		return new GitConfig(Database.get(), Repository.get().workspaceIds, Repository.get().git, committer);
 	}
 
 }

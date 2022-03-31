@@ -45,6 +45,9 @@ public class CommitAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		try {
+			var committer = Repository.get().personIdent();
+			if (committer == null)
+				return;
 			var diffs = getWorkspaceDiffs();
 			var dialog = createCommitDialog(diffs);
 			if (dialog == null)
@@ -64,7 +67,7 @@ public class CommitAction extends Action implements INavigationAction {
 					.to(Repository.get().git)
 					.diffs(toCommit)
 					.withMessage(dialog.getMessage())
-					.as(Repository.get().personIdent())
+					.as(committer)
 					.update(Repository.get().workspaceIds)
 					.run();
 			if (dialogResult != CommitDialog.COMMIT_AND_PUSH)

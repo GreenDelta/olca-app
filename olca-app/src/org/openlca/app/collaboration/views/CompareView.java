@@ -77,7 +77,7 @@ public class CompareView extends ViewPart {
 	}
 
 	private void doUpdate(Commit commit, List<INavigationElement<?>> elements) {
-		if (!Repository.isConnected() || commit == null) {
+		if (!Repository.isConnected() || commit == null || Repository.get().personIdent() == null) {
 			viewer.setInput(new ArrayList<>());
 			return;
 		}

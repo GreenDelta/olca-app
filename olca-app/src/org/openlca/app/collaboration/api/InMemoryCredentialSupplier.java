@@ -2,6 +2,7 @@ package org.openlca.app.collaboration.api;
 
 import org.openlca.app.collaboration.dialogs.TokenDialog;
 import org.openlca.app.util.Input;
+import org.openlca.util.Strings;
 
 public class InMemoryCredentialSupplier implements CredentialSupplier {
 
@@ -10,7 +11,7 @@ public class InMemoryCredentialSupplier implements CredentialSupplier {
 
 	@Override
 	public String username() {
-		if (username == null) {
+		if (Strings.nullOrEmpty(username)) {
 			username = Input.promptString("Enter username", "Please enter your username to proceed", "");
 		}
 		return username;
