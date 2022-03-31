@@ -39,7 +39,7 @@ class IOFigure extends Figure {
 		var panel = new ExchangePanel(node);
 		add(panel, new GridData(SWT.FILL, SWT.FILL, true, true));
 		var figure = new ExchangeFigure(node.getExchangeNodes().get(0));
-		add(new FlowButton(figure, forInputs, node), new GridData(SWT.FILL, SWT.TOP, true, false));
+		add(new FlowButtonWrapper(figure, forInputs, node), new GridData(SWT.FILL, SWT.TOP, true, false));
 		return panel;
 	}
 
@@ -171,4 +171,17 @@ class IOFigure extends Figure {
 
 	}
 
+	private class FlowButtonWrapper extends Figure {
+		private final FlowButton flowButton;
+
+		public FlowButtonWrapper(ExchangeFigure figure, boolean forInputs, ProcessNode node) {
+			flowButton = new FlowButton(figure, forInputs, node);
+			var layout = new GridLayout(1, true);
+			layout.marginHeight = 3;
+			layout.marginWidth = 5;
+			setLayoutManager(layout);
+			var alignment = forInputs ? SWT.LEFT : SWT.RIGHT;
+			add(flowButton, new GridData(alignment, SWT.TOP, true, false));
+		}
+	}
 }
