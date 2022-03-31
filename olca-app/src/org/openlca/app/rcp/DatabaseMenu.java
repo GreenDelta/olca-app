@@ -10,6 +10,7 @@ import org.openlca.app.db.LinkingPropertiesPage;
 import org.openlca.app.db.tables.CurrencyTable;
 import org.openlca.app.db.tables.FlowPropertyTable;
 import org.openlca.app.db.tables.FlowTable;
+import org.openlca.app.db.tables.ProcessTable;
 import org.openlca.app.db.tables.UnitTable;
 import org.openlca.app.navigation.actions.db.DbCloseAction;
 import org.openlca.app.navigation.actions.db.DbCompressAction;
@@ -68,10 +69,12 @@ class DatabaseMenu implements IMenuListener {
 			Images.descriptor(ModelType.FLOW), FlowTable::show));
 		contents.add(Actions.create(M.FlowProperties,
 			Images.descriptor(ModelType.FLOW_PROPERTY), FlowPropertyTable::show));
-		contents.add(Actions.create(M.Currencies,
-			Images.descriptor(ModelType.CURRENCY), CurrencyTable::show));
+		contents.add(Actions.create(M.Processes,
+			Images.descriptor(ModelType.PROCESS), ProcessTable::show));
 		contents.add(Actions.create(M.Units,
 			Images.descriptor(ModelType.UNIT), UnitTable::show));
+		contents.add(Actions.create(M.Currencies,
+			Images.descriptor(ModelType.CURRENCY), CurrencyTable::show));
 
 		menu.add(contents);
 	}

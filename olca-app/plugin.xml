@@ -328,6 +328,14 @@
 		</editor>
 
 		<editor
+			class="org.openlca.app.db.tables.ProcessTable"
+			default="false"
+			icon="icons/model/process.png"
+			id="DbProcessTable"
+			name="Processes">
+		</editor>
+
+		<editor
 			class="org.openlca.app.db.LinkingPropertiesPage"
 			default="false"
 			icon="icons/model/database.png"
