@@ -118,8 +118,6 @@ public class CurrencyTable extends SimpleFormEditor {
 			};
 		}
 
-		// TODO (francois) Use a currency utility method as it is a "repetition" of
-		// TODO getExchangeRate in the currency editor.
 		private String getExchangeRate(Currency currency, Currency referenceCurrency) {
 			String s = "1 " + currency.code + " = ";
 			double f = currency.conversionFactor / referenceCurrency.conversionFactor;
