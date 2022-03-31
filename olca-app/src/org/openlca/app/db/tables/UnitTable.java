@@ -17,12 +17,14 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ import java.util.Objects;
 
 public class UnitTable extends SimpleFormEditor {
 
-	private List<UnitItem> unitItems;
+	private List<UnitItem> items;
 
 	public static void show() {
 		if (Database.get() == null) {
@@ -47,14 +49,13 @@ public class UnitTable extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 		throws PartInitException {
 		try {
-			var items = new ArrayList<UnitItem>();
+			this.items = new ArrayList<>();
 			for (var group : Database.get().getAll(UnitGroup.class)) {
 				for (var unit : group.units) {
 					items.add(new UnitItem(group, unit));
 				}
 			}
 			Collections.sort(items);
-			unitItems = items;
 		} catch (Exception e) {
 			ErrorReporter.on("failed to load units", e);
 		}
@@ -72,8 +73,8 @@ public class UnitTable extends SimpleFormEditor {
 
 		Page(UnitTable table) {
 			super(table, "DbUnitTable", M.Units);
-			unitItems = table.unitItems != null
-				? table.unitItems
+			unitItems = table.items != null
+				? table.items
 				: Collections.emptyList();
 		}
 
@@ -97,12 +98,14 @@ public class UnitTable extends SimpleFormEditor {
 				"ID");
 			Tables.bindColumnWidths(table, 0.2, 0.1, 0.2, 0.2, 0.1, 0.2);
 
-			var label = new UnitTable.Label();
+			var label = new Label();
 			table.setLabelProvider(label);
 			Viewers.sortByLabels(table, label, 0, 1, 2, 3, 4, 5, 6);
 			table.setInput(unitItems);
 			TextFilter.on(table, filter);
-			Actions.forRootEntities(table);
+			Actions.bind(table, obj -> obj instanceof UnitItem item
+				? Descriptor.of(item.group)
+				: null);
 		}
 	}
 
@@ -111,25 +114,31 @@ public class UnitTable extends SimpleFormEditor {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof UnitItem))
-				return null;
-			return switch (col) {
-				case 0 -> Images.get(ModelType.UNIT_GROUP);
-				default -> null;
-			};
+			return col == 0
+				? Images.get(ModelType.UNIT_GROUP)
+				: null;
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof UnitItem unitItem))
+			if (!(obj instanceof UnitItem item))
 				return null;
 			return switch (col) {
-				case 0 -> Labels.name(unitItem.group);
-				case 1 -> Labels.name(unitItem.unit);
-				case 2 -> unitItem.unit.description;
-				case 3 -> unitItem.unit.synonyms;
-				case 4 -> Labels.name(unitItem.group.referenceUnit);
-				case 5 -> unitItem.unit.refId;
+				case 0 -> Labels.name(item.group);
+				case 1 -> Labels.name(item.unit);
+				case 2 -> item.unit.description;
+				case 3 -> item.unit.synonyms;
+				case 4 -> {
+					var refUnit = item.group.referenceUnit;
+					if (Objects.equals(refUnit, item.unit))
+						yield "1 " + Labels.name(refUnit);
+					var ref = Labels.name(refUnit);
+					var f = item.unit.conversionFactor != 0
+						? 1 / item.unit.conversionFactor
+						: 0;
+					yield "1 " + ref  + " = " + Numbers.format(f) + " " + Labels.name(item.unit);
+				}
+				case 5 -> item.unit.refId;
 				default -> null;
 			};
 		}
@@ -139,18 +148,25 @@ public class UnitTable extends SimpleFormEditor {
 
 		@Override
 		public int compareTo(UnitItem other) {
-			if (other == null)
+
+			// first by group name
+			if (!Objects.equals(this.group, other.group)) {
+				var c = Strings.compare(
+					Labels.name(this.group), Labels.name(other.group));
+				return c == 0 // compare by ID when names are the same
+					? Long.compare(this.group.id, other.group.id)
+					: c;
+			}
+
+			// then ref-units first
+			if (Objects.equals(unit, group.referenceUnit))
+				return -1;
+			if (Objects.equals(other.unit, group.referenceUnit))
 				return 1;
-			if (Objects.equals(this.group, other.group)
-				|| this.group == null
-				|| this.unit == null
-				|| other.group == null
-				|| other.unit == null)
-				return Strings.compare(
-					Labels.name(this.unit), Labels.name(other.unit));
+
+			// finally, by unit names
 			return Strings.compare(
-				Labels.name(this.group),
-				Labels.name(other.group));
+				Labels.name(this.unit), Labels.name(other.unit));
 		}
 	}
 }

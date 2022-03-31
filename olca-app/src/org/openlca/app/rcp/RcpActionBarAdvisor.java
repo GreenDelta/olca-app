@@ -31,7 +31,6 @@ import org.openlca.app.devtools.IpcDialog;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
-import org.openlca.app.editors.parameters.bigtable.BigParameterTable;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.navigation.Navigator;
@@ -47,7 +46,6 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.MsgBox;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.ecospold2.input.EcoSpold2Import;
 import org.openlca.io.ecospold2.input.ImportConfig;
@@ -197,7 +195,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void runSpold2Import(ModelType type) {
-		IDatabase db = Database.get();
+		var db = Database.get();
 		if (db == null) {
 			MsgBox.error("No database opened",
 				"You need to open a database for the import");
@@ -238,7 +236,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void createDeveloperMenu(MenuManager menu) {
-		MenuManager devMenu = new MenuManager(M.DeveloperTools);
+		var devMenu = new MenuManager(M.DeveloperTools);
 		menu.add(devMenu);
 		devMenu.add(Actions.create("SQL", Icon.SQL.descriptor(), SqlEditor::open));
 		devMenu.add(Actions.create("Console", Images.descriptor(FileType.DEFAULT), Console::show));

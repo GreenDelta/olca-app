@@ -90,7 +90,7 @@ public class ProcessTable extends SimpleFormEditor {
 			Viewers.sortByLabels(table, label, 0, 1, 2, 3);
 			table.setInput(processes);
 			TextFilter.on(table, filter);
-			Actions.forRootEntities(table);
+			Actions.bind(table);
 		}
 	}
 
@@ -115,7 +115,9 @@ public class ProcessTable extends SimpleFormEditor {
 				return null;
 			return switch (col) {
 				case 0 -> Labels.name(process);
-				case 1 -> Labels.name(process.category);
+				case 1 -> process.category != null
+					? process.category.toPath()
+					: null;
 				case 2 -> Labels.name(process.quantitativeReference.flow);
 				case 3 -> process.refId;
 				default -> null;

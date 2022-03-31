@@ -30,7 +30,7 @@ import org.openlca.core.model.ModelType;
 class DatabaseMenu implements IMenuListener {
 
 	private DatabaseMenu(IMenuManager manager) {
-		MenuManager menu = new MenuManager(M.Database, "Database.Menu");
+		var menu = new MenuManager(M.Database, "Database.Menu");
 		menu.setRemoveAllWhenShown(true);
 		menu.addMenuListener(this);
 		manager.add(menu);
@@ -48,7 +48,7 @@ class DatabaseMenu implements IMenuListener {
 			return;
 		var checkLinksAction = Actions.create(
 				M.CheckLinkingProperties, null, LinkingPropertiesPage::show);
-		IAction[] actions = new IAction[] {
+		var actions = new IAction[] {
 				new DbExportAction(),
 				new DbValidationAction(),
 				new DbCopyAction(),
@@ -59,21 +59,21 @@ class DatabaseMenu implements IMenuListener {
 				new DbPropertiesAction(),
 				new DbCompressAction(),
 		};
-		for (IAction a : actions) {
-			menu.add(a);
+		for (var action : actions) {
+			menu.add(action);
 		}
 
 		var contents = new MenuManager();
 		contents.setMenuText("Content");
 
-		contents.add(Actions.create(M.Flows,
-			Images.descriptor(ModelType.FLOW), FlowTable::show));
-		contents.add(Actions.create(M.FlowProperties,
-			Images.descriptor(ModelType.FLOW_PROPERTY), FlowPropertyTable::show));
 		contents.add(Actions.create(M.Processes,
 			Images.descriptor(ModelType.PROCESS), ProcessTable::show));
 		contents.add(Actions.create(M.Parameters,
 			Images.descriptor(ModelType.PARAMETER), BigParameterTable::show));
+		contents.add(Actions.create(M.Flows,
+			Images.descriptor(ModelType.FLOW), FlowTable::show));
+		contents.add(Actions.create(M.FlowProperties,
+			Images.descriptor(ModelType.FLOW_PROPERTY), FlowPropertyTable::show));
 		contents.add(Actions.create(M.Units,
 			Images.descriptor(ModelType.UNIT), UnitTable::show));
 		contents.add(Actions.create(M.Currencies,

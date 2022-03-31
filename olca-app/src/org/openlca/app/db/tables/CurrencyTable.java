@@ -88,7 +88,7 @@ public class CurrencyTable extends SimpleFormEditor {
 			Viewers.sortByLabels(table, label, 0, 1, 2, 3);
 			table.setInput(currencies);
 			TextFilter.on(table, filter);
-			Actions.forRootEntities(table);
+			Actions.bind(table);
 		}
 	}
 
@@ -97,12 +97,9 @@ public class CurrencyTable extends SimpleFormEditor {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof Currency))
-				return null;
-			return switch (col) {
-				case 0 -> Images.get(ModelType.CURRENCY);
-				default -> null;
-			};
+			return col == 0
+				? Images.get(ModelType.CURRENCY)
+				: null;
 		}
 
 		@Override
@@ -118,11 +115,11 @@ public class CurrencyTable extends SimpleFormEditor {
 			};
 		}
 
-		private String getExchangeRate(Currency currency, Currency referenceCurrency) {
+		private String getExchangeRate(Currency currency, Currency refCurrency) {
 			String s = "1 " + currency.code + " = ";
-			double f = currency.conversionFactor / referenceCurrency.conversionFactor;
+			double f = currency.conversionFactor / refCurrency.conversionFactor;
 			f = Math.round(1000 * f) / 1000.0;
-			s += f + " " + referenceCurrency.code;
+			s += f + " " + refCurrency.code;
 			return s;
 		}
 	}

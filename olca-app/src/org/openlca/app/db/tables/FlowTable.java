@@ -23,10 +23,8 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Categories;
 
 public class FlowTable extends SimpleFormEditor {
 
@@ -90,23 +88,17 @@ public class FlowTable extends SimpleFormEditor {
 				"ID");
 			Tables.bindColumnWidths(table, 0.1, 0.2, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1);
 
-			var label = new FlowLabel(Database.get());
+			var label = new FlowLabel();
 			table.setLabelProvider(label);
 			Viewers.sortByLabels(table, label, 0, 1, 2, 3, 4, 5, 6, 7);
 			table.setInput(flows);
 			TextFilter.on(table, filter);
-			Actions.forRootEntities(table);
+			Actions.bind(table);
 		}
 	}
 
 	private static class FlowLabel extends LabelProvider
 		implements ITableLabelProvider {
-
-		private final Categories.PathBuilder categories;
-
-		FlowLabel(IDatabase db) {
-			this.categories = Categories.pathsOf(db);
-		}
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
@@ -129,7 +121,7 @@ public class FlowTable extends SimpleFormEditor {
 				case 0 -> Labels.of(flow.flowType);
 				case 1 -> Labels.name(flow);
 				case 2 -> flow.category != null
-					? categories.pathOf(flow.category.id)
+					? flow.category.toPath()
 					: null;
 				case 3 -> Labels.name(flow.getReferenceUnit());
 				case 4 -> Labels.name(flow.referenceFlowProperty);
