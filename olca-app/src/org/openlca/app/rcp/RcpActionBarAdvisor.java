@@ -149,10 +149,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		viewMenu.add(showViews);
 		menu.add(viewMenu);
 		menu.add(new Separator());
-		menu.add(Actions.create(
-			M.Parameters,
-			Images.descriptor(ModelType.PARAMETER),
-			BigParameterTable::show));
+
 		createDeveloperMenu(menu);
 
 		// bulk replace
