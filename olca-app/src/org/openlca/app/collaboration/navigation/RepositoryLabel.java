@@ -1,5 +1,7 @@
 package org.openlca.app.collaboration.navigation;
 
+import java.util.List;
+
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -18,6 +20,7 @@ import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.core.database.config.DatabaseConfig;
+import org.openlca.git.model.Commit;
 import org.openlca.git.util.Constants;
 
 /**
@@ -79,16 +82,14 @@ public class RepositoryLabel {
 			return null;
 		var config = Repository.get().config;
 		var commits = Repository.get().commits;
-		var localCommitId = commits.resolve(Constants.LOCAL_BRANCH);
-		var remoteCommitId = commits.resolve(Constants.REMOTE_BRANCH);
-		var ahead = commits.find()
-				.after(remoteCommitId)
-				.until(localCommitId)
-				.all().size();
-		var behind = commits.find()
-				.after(localCommitId)
-				.until(remoteCommitId)
-				.all().size();
+		var local = commits.find()
+				.refs(Constants.LOCAL_REF)
+				.all();
+		var remote = commits.find()
+				.refs(Constants.REMOTE_REF)
+				.all();
+		var ahead = countNew(local, remote);
+		var behind = countNew(remote, local);
 		var text = " [" + config.url();
 		if (ahead > 0) {
 			text += " ↑" + ahead;
@@ -97,6 +98,13 @@ public class RepositoryLabel {
 			text += " ↓" + behind;
 		}
 		return text + "]";
+	}
+
+	private static int countNew(List<Commit> left, List<Commit> right) {
+		for (var i = left.size() - 1; i >= 0; i--)
+			if (right.contains(left.get(i)))
+				return left.size() - 1 - i;
+		return left.size();
 	}
 
 	public static String getStateIndicator(INavigationElement<?> elem) {
