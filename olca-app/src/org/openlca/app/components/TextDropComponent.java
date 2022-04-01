@@ -7,7 +7,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Button;
@@ -32,8 +31,8 @@ public final class TextDropComponent extends Composite {
 
 	private Descriptor content;
 	private Text text;
-	private FormToolkit toolkit;
-	private ModelType modelType;
+	private final FormToolkit toolkit;
+	private final ModelType modelType;
 	private Button removeButton;
 	private Consumer<Descriptor> handler;
 
@@ -99,7 +98,7 @@ public final class TextDropComponent extends Composite {
 			public void mouseDown(final MouseEvent e) {
 				var d = ModelSelector.select(modelType);
 				if (d != null) {
-					handleAdd(d);
+					handleDrop(d);
 				}
 			}
 		});
@@ -109,7 +108,7 @@ public final class TextDropComponent extends Composite {
 		text = toolkit.createText(this, "", SWT.BORDER);
 		text.setEditable(false);
 		TableWrapData layoutData = new TableWrapData(TableWrapData.FILL,
-				TableWrapData.FILL);
+			TableWrapData.FILL);
 		layoutData.grabHorizontal = true;
 		text.setLayoutData(layoutData);
 		if (content != null)
@@ -121,7 +120,7 @@ public final class TextDropComponent extends Composite {
 		removeButton.setLayoutData(new TableWrapData());
 		removeButton.setImage(Icon.DELETE.get());
 		removeButton
-				.setToolTipText(M.RemoveObject);
+			.setToolTipText(M.RemoveObject);
 		if (content == null)
 			removeButton.setEnabled(false);
 		Controls.onSelect(removeButton, e -> {
@@ -133,25 +132,25 @@ public final class TextDropComponent extends Composite {
 	}
 
 	private void addDropToText() {
-		final Transfer transferType = ModelTransfer.getInstance();
-		DropTarget dropTarget = new DropTarget(text, DND.DROP_COPY
-				| DND.DROP_MOVE | DND.DROP_DEFAULT);
-		dropTarget.setTransfer(new Transfer[] { transferType });
-		dropTarget.addDropListener(new DropTargetAdapter() {
+		var transfer = ModelTransfer.getInstance();
+		var target = new DropTarget(
+			text, DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
+		target.setTransfer(transfer);
+		target.addDropListener(new DropTargetAdapter() {
 			@Override
 			public void dragEnter(DropTargetEvent event) {
 			}
 
 			@Override
 			public void drop(DropTargetEvent event) {
-				if (transferType.isSupportedType(event.currentDataType)) {
-					handleAdd(event.data);
+				if (transfer.isSupportedType(event.currentDataType)) {
+					handleDrop(event.data);
 				}
 			}
 		});
 	}
 
-	private void handleAdd(Object data) {
+	private void handleDrop(Object data) {
 		var d = ModelTransfer.getDescriptor(data);
 		if (d == null || d.type != modelType)
 			return;
