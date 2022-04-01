@@ -3,6 +3,7 @@ package org.openlca.app.editors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -20,6 +21,7 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.UI;
 import org.openlca.core.model.RootEntity;
 
 public abstract class ModelPage<T extends RootEntity> extends FormPage {
@@ -90,52 +92,101 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	}
 
 	protected Label readOnly(Composite parent, String label, String property) {
-		return Widgets.readOnly(parent, label, property, getEditor(), getToolkit());
+		UI.formLabel(parent, label);
+		Label labelWidget = new Label(parent, SWT.NONE);
+		GridData gridData = UI.gridData(labelWidget, false, false);
+		gridData.verticalAlignment = SWT.TOP;
+		gridData.verticalIndent = 2;
+		getBinding().readOnly(getModel(), property, labelWidget);
+		new CommentControl(parent, getToolkit(), property, getComments());
+		return labelWidget;
 	}
 
-	protected CLabel readOnly(Composite parent, String label, Image image, String property) {
-		return Widgets.readOnly(parent, label, image, property, getEditor(), getToolkit());
+	protected CLabel readOnly(
+		Composite parent, String label, Image image, String property) {
+		UI.formLabel(parent, label);
+		CLabel labelWidget = new CLabel(parent, SWT.NONE);
+		GridData gridData = UI.gridData(labelWidget, false, false);
+		gridData.verticalAlignment = SWT.TOP;
+		gridData.verticalIndent = 2;
+		labelWidget.setImage(image);
+		getBinding().readOnly(getModel(), property, labelWidget);
+		new CommentControl(parent, getToolkit(), property, getComments());
+		return labelWidget;
 	}
 
 	protected Text text(Composite parent, String label, String property) {
-		var text = Widgets.text(parent, label, property, getEditor(), getToolkit());
+		var text = text(parent, label, property, getEditor(), getToolkit());
 		text.setEditable(isEditable());
 		return text;
 	}
 
 	protected Text doubleText(Composite parent, String label, String property) {
-		var text = Widgets.doubleText(parent, label, property, getEditor(), getToolkit());
+		var text = UI.formText(parent, getToolkit(), label);
+		getBinding().onDouble(this::getModel, property, text);
 		text.setEditable(isEditable());
+		new CommentControl(parent, getToolkit(), property, getComments());
 		return text;
 	}
 
 	protected Text shortText(Composite parent, String label, String property) {
-		var text = Widgets.shortText(parent, label, property, getEditor(), getToolkit());
+		var text = UI.formText(parent, getToolkit(), label);
+		getBinding().onShort(this::getModel, property, text);
 		text.setEditable(isEditable());
+		new CommentControl(parent, getToolkit(), property, getComments());
 		return text;
 	}
 
-	protected Text multiText(Composite parent, String label, String property) {
-		var text = Widgets.multiText(parent, label, property, getEditor(), getToolkit());
+	protected void multiText(Composite parent, String label, String property) {
+		var text = multiText(parent, label, property, getEditor(), getToolkit());
 		text.setEditable(isEditable());
-		return text;
 	}
 
-	protected Text multiText(Composite parent, String label, String property, int heightHint) {
-		var text = Widgets.multiText(parent, label, property, getEditor(), getToolkit(), heightHint);
+	protected void multiText(Composite parent, String label, String property, int heightHint) {
+		var text = UI.formMultiText(parent, getToolkit(), label, heightHint);
+		getBinding().onString(this::getModel, property, text);
 		text.setEditable(isEditable());
-		return text;
+		new CommentControl(parent, getToolkit(), property, getComments());
 	}
 
 	protected Button checkBox(Composite parent, String label, String property) {
-		var btn = Widgets.checkBox(parent, label, property, getEditor(), getToolkit());
+		var btn = UI.formCheckBox(parent, getToolkit(), label);
+		getBinding().onBoolean(this::getModel, property, btn);
 		btn.setEnabled(isEditable());
+		new CommentControl(parent, getToolkit(), property, getComments());
 		return btn;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected ModelLink<?> modelLink(Composite parent, String label, String property) {
-		var link = Widgets.modelLink(parent, label, property, getEditor(), getToolkit());
-		link.setEditable(isEditable());
-		return link;
+		try {
+			var type = (Class<RootEntity>) Bean.getType(getModel(), property);
+			var link = ModelLink.of(type)
+				.setEditable(getEditor().isEditable())
+				.renderOn(parent, getToolkit(), label);
+			getBinding().onModel(this::getModel, property, link);
+			new CommentControl(parent, getToolkit(), property, getComments());
+			return link;
+		} catch (Exception e) {
+			ErrorReporter.on("failed to create model link");
+			return ModelLink.of(RootEntity.class);
+		}
 	}
+
+	public static Text text(Composite parent, String label, String property,
+		ModelEditor<?> editor, FormToolkit toolkit) {
+		Text text = UI.formText(parent, toolkit, label);
+		editor.getBinding().onString(editor::getModel, property, text);
+		new CommentControl(parent, toolkit, property, editor.getComments());
+		return text;
+	}
+
+	public static Text multiText(Composite parent, String label, String property,
+		ModelEditor<?> editor, FormToolkit toolkit) {
+		Text text = UI.formMultiText(parent, toolkit, label);
+		editor.getBinding().onString(editor::getModel, property, text);
+		new CommentControl(parent, toolkit, property, editor.getComments());
+		return text;
+	}
+
 }
