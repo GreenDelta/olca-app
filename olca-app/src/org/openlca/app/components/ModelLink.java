@@ -29,6 +29,7 @@ public class ModelLink<T extends RootEntity> {
 	private ImageHyperlink link;
 	private Consumer<T> onChange;
 	private T model;
+	private boolean editable = true;
 
 	private ModelLink(Class<T> type) {
 		this.db = Objects.requireNonNull(Database.get());
@@ -45,6 +46,15 @@ public class ModelLink<T extends RootEntity> {
 
 	public static <T extends RootEntity> ModelLink<T> of(Class<T> type) {
 		return new ModelLink<>(type);
+	}
+
+	/**
+	 * Set if the model link is enabled or not. This has to be done before the
+	 * model links is rendered.
+	 */
+	public ModelLink<T> setEditable(boolean editable) {
+		this.editable = editable;
+		return this;
 	}
 
 	public ModelLink<T> onChange(Consumer<T> fn) {
@@ -77,6 +87,7 @@ public class ModelLink<T extends RootEntity> {
 		var btn = tk.createImageHyperlink(comp, SWT.BORDER);
 		btn.setToolTipText("Select a data set");
 		btn.setImage(Images.get(modelType));
+		btn.setEnabled(editable);
 		Controls.onClick(btn, $ -> doSelect.run());
 
 		// the link
@@ -84,13 +95,14 @@ public class ModelLink<T extends RootEntity> {
 		Controls.onClick(link, $ -> {
 			if (model != null) {
 				App.open(model);
-			} else {
+			} else if (editable) {
 				doSelect.run();
 			}
 		});
 
 		// the delete button
 		var deleteBtn = tk.createImageHyperlink(comp, SWT.TOP);
+		deleteBtn.setEnabled(editable);
 		deleteBtn.setToolTipText(M.Remove);
 		deleteBtn.setHoverImage(Icon.DELETE.get());
 		deleteBtn.setImage(Icon.DELETE_DISABLED.get());
@@ -105,6 +117,7 @@ public class ModelLink<T extends RootEntity> {
 		updateLinkText();
 		return this;
 	}
+
 
 	/**
 	 * Set the model of this link to the given value without firing

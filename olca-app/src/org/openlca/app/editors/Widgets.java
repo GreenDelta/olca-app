@@ -13,11 +13,13 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
+import org.openlca.app.components.ModelLink;
 import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
@@ -31,7 +33,7 @@ public class Widgets {
 	private static final Logger log = LoggerFactory.getLogger(Widgets.class);
 
 	public static ImageHyperlink link(Composite parent, String label, String property, ModelEditor<?> editor,
-			FormToolkit toolkit) {
+		FormToolkit toolkit) {
 		new Label(parent, SWT.NONE).setText(label);
 		ImageHyperlink link = new ImageHyperlink(parent, SWT.TOP);
 		link.setForeground(Colors.linkBlue());
@@ -41,11 +43,10 @@ public class Widgets {
 				link.setText("-");
 				return link;
 			}
-			if (!(value instanceof RootEntity)) {
+			if (!(value instanceof RootEntity entity)) {
 				link.setText(value.toString());
 				return link;
 			}
-			var entity = (RootEntity) value;
 			link.setText(Labels.name(entity));
 			link.setImage(Images.get(entity));
 			link.addHyperlinkListener(new ModelLinkClickedListener(entity));
@@ -58,7 +59,7 @@ public class Widgets {
 	}
 
 	public static Label readOnly(Composite parent, String label, String property, ModelEditor<?> editor,
-			FormToolkit toolkit) {
+		FormToolkit toolkit) {
 		UI.formLabel(parent, label);
 		Label labelWidget = new Label(parent, SWT.NONE);
 		GridData gridData = UI.gridData(labelWidget, false, false);
@@ -70,7 +71,7 @@ public class Widgets {
 	}
 
 	public static CLabel readOnly(Composite parent, String label, Image image, String property, ModelEditor<?> editor,
-			FormToolkit toolkit) {
+		FormToolkit toolkit) {
 		UI.formLabel(parent, label);
 		CLabel labelWidget = new CLabel(parent, SWT.NONE);
 		GridData gridData = UI.gridData(labelWidget, false, false);
@@ -83,7 +84,7 @@ public class Widgets {
 	}
 
 	public static Text text(Composite parent, String label, String property, ModelEditor<?> editor,
-			FormToolkit toolkit) {
+		FormToolkit toolkit) {
 		Text text = UI.formText(parent, toolkit, label);
 		editor.getBinding().onString(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
@@ -91,7 +92,7 @@ public class Widgets {
 	}
 
 	public static Text doubleText(Composite parent, String label, String property, ModelEditor<?> editor,
-			FormToolkit toolkit) {
+		FormToolkit toolkit) {
 		Text text = UI.formText(parent, toolkit, label);
 		editor.getBinding().onDouble(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
@@ -99,7 +100,7 @@ public class Widgets {
 	}
 
 	public static Text shortText(Composite parent, String label, String property, ModelEditor<?> editor,
-			FormToolkit toolkit) {
+		FormToolkit toolkit) {
 		Text text = UI.formText(parent, toolkit, label);
 		editor.getBinding().onShort(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
@@ -107,7 +108,7 @@ public class Widgets {
 	}
 
 	public static Text multiText(Composite parent, String label, String property, ModelEditor<?> editor,
-			FormToolkit toolkit) {
+		FormToolkit toolkit) {
 		Text text = UI.formMultiText(parent, toolkit, label);
 		editor.getBinding().onString(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
@@ -115,7 +116,7 @@ public class Widgets {
 	}
 
 	public static Text multiText(Composite parent, String label, String property, ModelEditor<?> editor,
-			FormToolkit toolkit, int heightHint) {
+		FormToolkit toolkit, int heightHint) {
 		Text text = UI.formMultiText(parent, toolkit, label, heightHint);
 		editor.getBinding().onString(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
@@ -123,23 +124,40 @@ public class Widgets {
 	}
 
 	public static Button checkBox(Composite parent, String label, String property, ModelEditor<?> editor,
-			FormToolkit toolkit) {
+		FormToolkit toolkit) {
 		Button button = UI.formCheckBox(parent, toolkit, label);
 		editor.getBinding().onBoolean(editor::getModel, property, button);
 		new CommentControl(parent, toolkit, property, editor.getComments());
 		return button;
 	}
 
-	public static TextDropComponent dropComponent(Composite parent, String label, String property,
-			ModelEditor<?> editor, FormToolkit toolkit) {
-		ModelType modelType = getModelType(editor.getModel(), property);
-		toolkit.createLabel(parent, label, SWT.NONE);
-		TextDropComponent text = new TextDropComponent(
-				parent, toolkit, modelType);
+	public static TextDropComponent dropComponent(Composite parent, String label,
+		String property, ModelEditor<?> editor, FormToolkit tk) {
+		var modelType = getModelType(editor.getModel(), property);
+		tk.createLabel(parent, label, SWT.NONE);
+		var text = new TextDropComponent(parent, tk, modelType);
 		UI.gridData(text, true, false);
 		editor.getBinding().onModel(editor::getModel, property, text);
-		new CommentControl(parent, toolkit, property, editor.getComments());
+		new CommentControl(parent, tk, property, editor.getComments());
 		return text;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static ModelLink<?> modelLink(Composite parent, String label,
+		String property, ModelEditor<?> editor, FormToolkit tk) {
+		try {
+			var type = (Class<RootEntity>) Bean.getType(
+					editor.getModel(), property);
+			var link = ModelLink.of(type)
+				.setEditable(editor.isEditable())
+				.renderOn(parent, tk, label);
+			editor.getBinding().onModel(editor::getModel, property, link);
+			new CommentControl(parent, tk, property, editor.getComments());
+			return link;
+		} catch (Exception e) {
+			ErrorReporter.on("failed to create model link");
+			return null;
+		}
 	}
 
 	private static ModelType getModelType(Object model, String property) {
