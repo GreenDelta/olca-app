@@ -8,53 +8,15 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ImageHyperlink;
-import org.openlca.app.App;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.editors.comments.CommentControl;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Bean;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.descriptors.RootDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Widgets {
-
-	private static final Logger log = LoggerFactory.getLogger(Widgets.class);
-
-	public static ImageHyperlink link(Composite parent, String label, String property, ModelEditor<?> editor,
-		FormToolkit toolkit) {
-		new Label(parent, SWT.NONE).setText(label);
-		ImageHyperlink link = new ImageHyperlink(parent, SWT.TOP);
-		link.setForeground(Colors.linkBlue());
-		try {
-			Object value = Bean.getValue(editor.getModel(), property);
-			if (value == null) {
-				link.setText("-");
-				return link;
-			}
-			if (!(value instanceof RootEntity entity)) {
-				link.setText(value.toString());
-				return link;
-			}
-			link.setText(Labels.name(entity));
-			link.setImage(Images.get(entity));
-			link.addHyperlinkListener(new ModelLinkClickedListener(entity));
-			new CommentControl(parent, toolkit, property, editor.getComments());
-			return link;
-		} catch (Exception e) {
-			log.error("Could not get value " + property + " of " + editor.getModel(), e);
-			return link;
-		}
-	}
 
 	public static Label readOnly(Composite parent, String label, String property, ModelEditor<?> editor,
 		FormToolkit toolkit) {
@@ -145,24 +107,6 @@ public class Widgets {
 			ErrorReporter.on("failed to create model link");
 			return ModelLink.of(RootEntity.class);
 		}
-	}
-
-	private static class ModelLinkClickedListener extends HyperlinkAdapter {
-
-		private final Object model;
-
-		public ModelLinkClickedListener(RootEntity entity) {
-			this.model = entity;
-		}
-
-		@Override
-		public void linkActivated(HyperlinkEvent e) {
-			if (model instanceof RootEntity)
-				App.open((RootEntity) model);
-			else if (model instanceof RootDescriptor)
-				App.open((RootDescriptor) model);
-		}
-
 	}
 
 }

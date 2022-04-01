@@ -1,5 +1,6 @@
 package org.openlca.app.editors;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
@@ -9,8 +10,15 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
+import org.openlca.app.App;
 import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.components.ModelLink;
+import org.openlca.app.editors.comments.CommentControl;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Bean;
+import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.RootEntity;
 
@@ -57,7 +65,28 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	}
 
 	protected ImageHyperlink link(Composite parent, String label, String property) {
-		return Widgets.link(parent, label, property, getEditor(), getToolkit());
+		new Label(parent, SWT.NONE).setText(label);
+		var link = new ImageHyperlink(parent, SWT.TOP);
+		link.setForeground(Colors.linkBlue());
+		try {
+			var value = Bean.getValue(getModel(), property);
+			if (value == null) {
+				link.setText("- none -");
+				return link;
+			}
+			if (!(value instanceof RootEntity entity)) {
+				link.setText(value.toString());
+				return link;
+			}
+			link.setText(Labels.name(entity));
+			link.setImage(Images.get(entity));
+			Controls.onClick(link, $ -> App.open(entity));
+			new CommentControl(parent, getToolkit(), property, getComments());
+			return link;
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to get '" + property + "' of " + getModel(), e);
+			return link;
+		}
 	}
 
 	protected Label readOnly(Composite parent, String label, String property) {
