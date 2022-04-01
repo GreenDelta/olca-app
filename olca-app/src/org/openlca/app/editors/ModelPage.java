@@ -11,7 +11,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.components.ModelLink;
-import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.RootEntity;
 
@@ -103,12 +102,6 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 		var btn = Widgets.checkBox(parent, label, property, getEditor(), getToolkit());
 		btn.setEnabled(isEditable());
 		return btn;
-	}
-
-	protected TextDropComponent dropComponent(Composite parent, String label, String property) {
-		var comp = Widgets.dropComponent(parent, label, property, getEditor(), getToolkit());
-		comp.setEnabled(isEditable());
-		return comp;
 	}
 
 	protected ModelLink<?> modelLink(Composite parent, String label, String property) {

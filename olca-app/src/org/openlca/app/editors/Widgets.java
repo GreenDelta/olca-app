@@ -14,7 +14,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
 import org.openlca.app.components.ModelLink;
-import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Bean;
@@ -22,7 +21,6 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.slf4j.Logger;
@@ -131,17 +129,6 @@ public class Widgets {
 		return button;
 	}
 
-	public static TextDropComponent dropComponent(Composite parent, String label,
-		String property, ModelEditor<?> editor, FormToolkit tk) {
-		var modelType = getModelType(editor.getModel(), property);
-		tk.createLabel(parent, label, SWT.NONE);
-		var text = new TextDropComponent(parent, tk, modelType);
-		UI.gridData(text, true, false);
-		editor.getBinding().onModel(editor::getModel, property, text);
-		new CommentControl(parent, tk, property, editor.getComments());
-		return text;
-	}
-
 	@SuppressWarnings("unchecked")
 	public static ModelLink<?> modelLink(Composite parent, String label,
 		String property, ModelEditor<?> editor, FormToolkit tk) {
@@ -156,17 +143,7 @@ public class Widgets {
 			return link;
 		} catch (Exception e) {
 			ErrorReporter.on("failed to create model link");
-			return null;
-		}
-	}
-
-	private static ModelType getModelType(Object model, String property) {
-		try {
-			Class<?> type = Bean.getType(model, property);
-			return ModelType.forModelClass(type);
-		} catch (Exception e) {
-			log.error("Error determining model type", e);
-			return null;
+			return ModelLink.of(RootEntity.class);
 		}
 	}
 

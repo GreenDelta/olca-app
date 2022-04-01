@@ -17,8 +17,7 @@ import org.openlca.core.model.Process;
 class ProcessModelingPage extends ModelPage<Process> {
 
 	private FormToolkit toolkit;
-	private ProcessEditor editor;
-	private ScrolledForm form;
+	private final ProcessEditor editor;
 
 	ProcessModelingPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage", M.ModelingAndValidation);
@@ -27,7 +26,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(this);
+		ScrolledForm form = UI.formHeader(this);
 		toolkit = managedForm.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		createModelingSection(body);
@@ -43,7 +42,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 		getToolkit().createLabel(comp, M.ProcessType);
 		var typeCombo = new ProcessTypeViewer(comp);
-		getBinding().onModel(() -> getModel(), "processType", typeCombo);
+		getBinding().onModel(this::getModel, "processType", typeCombo);
 		typeCombo.setEnabled(isEditable());
 
 		new CommentControl(comp, getToolkit(), "processType", getComments());
@@ -55,15 +54,15 @@ class ProcessModelingPage extends ModelPage<Process> {
 	}
 
 	private void createDataSourceSection(Composite parent) {
-		Composite composite = UI.formSection(parent, toolkit, M.DataSourceInformation, 3);
-		multiText(composite, M.SamplingProcedure, "documentation.sampling", 40);
-		multiText(composite, M.DataCollectionPeriod, "documentation.dataCollectionPeriod", 40);
+		var comp = UI.formSection(parent, toolkit, M.DataSourceInformation, 3);
+		multiText(comp, M.SamplingProcedure, "documentation.sampling", 40);
+		multiText(comp, M.DataCollectionPeriod, "documentation.dataCollectionPeriod", 40);
 	}
 
 	private void createEvaluationSection(Composite parent) {
-		Composite composite = UI.formSection(parent, toolkit, M.ProcessEvaluationAndValidation, 3);
-		dropComponent(composite, M.Reviewer, "documentation.reviewer");
-		multiText(composite, M.DataSetOtherEvaluation, "documentation.reviewDetails", 40);
+		var comp = UI.formSection(parent, toolkit, M.ProcessEvaluationAndValidation, 3);
+		modelLink(comp, M.Reviewer, "documentation.reviewer");
+		multiText(comp, M.DataSetOtherEvaluation, "documentation.reviewDetails", 40);
 	}
 
 	private void createSourcesSection(Composite parent) {

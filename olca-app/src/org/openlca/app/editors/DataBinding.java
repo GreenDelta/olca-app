@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.components.ModelLink;
-import org.openlca.app.components.TextDropComponent;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Bean;
 import org.openlca.app.util.Colors;
@@ -19,7 +18,6 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.RefEntity;
 import org.openlca.core.model.RootEntity;
@@ -68,13 +66,6 @@ public class DataBinding {
 		}
 	}
 
-	public void onModel(Supplier<?> supplier, String property, TextDropComponent text) {
-		if (supplier == null || property == null || text == null)
-			return;
-		initValue(supplier.get(), property, text);
-		text.onChange(d -> setModel(supplier.get(), property, d));
-	}
-
 	@SuppressWarnings("unchecked")
 	public <T extends RootEntity> void onModel(
 		Supplier<?> supplier, String property, ModelLink<T> link) {
@@ -103,25 +94,6 @@ public class DataBinding {
 				ErrorReporter.on("failed to set value in model link", e);
 			}
 		});
-	}
-
-	private void setModel(Object bean, String property, Descriptor d) {
-		log.trace("Change value {} @ {}", property, bean);
-		try {
-			Object newValue = null;
-			if (d != null && d.type != null) {
-				BaseDao<?> dao = Daos.base(Database.get(),
-					d.type.getModelClass());
-				newValue = dao.getForId(d.id);
-			}
-			Object oldValue = Bean.getValue(bean, property);
-			if (Objects.equals(newValue, oldValue))
-				return;
-			Bean.setValue(bean, property, newValue);
-			editorChange();
-		} catch (Exception e) {
-			ErrorReporter.on("Cannot set bean value", e);
-		}
 	}
 
 	public void onBoolean(Supplier<?> supplier, String property, Button button) {
@@ -268,18 +240,6 @@ public class DataBinding {
 				val = Descriptor.of((RefEntity) val);
 			}
 			viewer.select((T) val);
-		} catch (Exception e) {
-			ErrorReporter.on("Cannot set text value", e);
-		}
-	}
-
-	private void initValue(Object bean, String property, TextDropComponent text) {
-		try {
-			Object val = Bean.getValue(bean, property);
-			if (val instanceof RefEntity e) {
-				var descriptor = Descriptor.of(e);
-				text.setContent(descriptor);
-			}
 		} catch (Exception e) {
 			ErrorReporter.on("Cannot set text value", e);
 		}
