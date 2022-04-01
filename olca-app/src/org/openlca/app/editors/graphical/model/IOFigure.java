@@ -15,6 +15,7 @@ import org.openlca.app.editors.graphical.themes.Theme.Box;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.core.model.ModelType;
 
 class IOFigure extends Figure {
 
@@ -39,7 +40,22 @@ class IOFigure extends Figure {
 		var panel = new ExchangePanel(node);
 		add(panel, new GridData(SWT.FILL, SWT.FILL, true, true));
 		var figure = new ExchangeFigure(node.getExchangeNodes().get(0));
-		add(new FlowButtonWrapper(figure, forInputs, node), new GridData(SWT.FILL, SWT.TOP, true, false));
+
+		System.out.println("\n\n\nnode.getName: " + node.getName());
+		System.out.println("node.process.type: " + node.process.type);
+		System.out.println("node.process.type: " + node.);
+		for (var ionode : node.getExchangeNodes()) {
+			System.out.println("\nnode.getExchangeNodes()[].getName: " + ionode.getName());
+			System.out.println("node.getExchangeNodes()[].isConnected: " + ionode.isConnected());
+			System.out.println("node.getExchangeNodes()[].flowType: " + ionode.flowType());
+		}
+		for (var ionode : node.getChildren()) {
+			System.out.println("\nnode.getChildren()[].isWithElementaryFlows: " + ionode.isWithElementaryFlows);
+		}
+		if (node.process.type == ModelType.PROCESS
+			&& node.process.library == null) {
+			add(new FlowButtonWrapper(figure, forInputs, node), new GridData(SWT.FILL, SWT.TOP, true, false));
+		}
 		return panel;
 	}
 
