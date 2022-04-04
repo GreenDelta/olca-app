@@ -4,10 +4,14 @@ import platform
 import shutil
 import subprocess
 import urllib.request
+import zipfile
 
 from enum import Enum
 from dataclasses import dataclass
 from pathlib import Path
+
+# the version of the native library package
+NATIVE_LIB_VERSION = '0.0.1'
 
 # the root of the build project olca-app/olca-app-build
 PROJECT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -119,6 +123,11 @@ class BuildDir:
     def jre_dir(self) -> Path:
         return self.app_dir / 'jre'
 
+    @property
+    def native_lib_dir(self) -> Path:
+        arch = 'arm64' if self.osa == OsArch.MACOS_ARM else 'x64'
+        return self.app_dir / f'olca-native/{NATIVE_LIB_VERSION}/{arch}'
+
 
 class JRE:
 
@@ -183,7 +192,69 @@ class JRE:
         os.rename(jre_dir, build_dir.jre_dir)
 
 
+class NativeLib:
+
+    @staticmethod
+    def base_name(osa: OsArch) -> str:
+        if osa == OsArch.MACOS_ARM:
+            arch = 'macos-arm64'
+        elif osa == OsArch.MACOS_X64:
+            arch = 'macos-x64'
+        elif osa == OsArch.LINUX_X64:
+            arch = 'linux-x64'
+        elif osa == OsArch.WINDOWS_X64:
+            arch = 'win-x64'
+        else:
+            raise ValueError(f'unsupported OS+arch: {osa}')
+        return f'olca-native-blas-{arch}'
+
+    @staticmethod
+    def jar_name(osa: OsArch) -> str:
+        base = NativeLib.base_name(osa)
+        return f'{base}-{NATIVE_LIB_VERSION}.jar'
+
+    @staticmethod
+    def cache_dir() -> Path:
+        d = PROJECT_DIR / f'runtime/blas'
+        if not os.path.exists(d):
+            d.mkdir(parents=True, exist_ok=True)
+        return d
+
+    @staticmethod
+    def fetch(osa: OsArch) -> Path:
+        jar = NativeLib.jar_name(osa)
+        cached = NativeLib.cache_dir() / jar
+        if cached.exists():
+            return cached
+        base = NativeLib.base_name(osa)
+        url = f'https://repo1.maven.org/maven2/org/openlca/' \
+              f'{base}/{NATIVE_LIB_VERSION}/{jar}'
+        print(f'  download native libraries from {url}')
+        urllib.request.urlretrieve(url, cached)
+        if not os.path.exists(cached):
+            raise AssertionError(f'native-library download failed; url={url}')
+        return cached
+
+    @staticmethod
+    def extract_to(build_dir: BuildDir):
+        target = build_dir.native_lib_dir
+        if not target.exists():
+            target.mkdir(parents=True, exist_ok=True)
+        jar = NativeLib.fetch(build_dir.osa)
+
+        with zipfile.ZipFile(jar.as_posix(), 'r') as z:
+            for e in z.filelist:
+                if e.is_dir():
+                    continue
+                name = Path(e.filename).name
+                if name.endswith(('.MF', '.xml', '.properties')):
+                    continue
+                target_file = target / name
+                target_file.write_bytes(z.read(e))
+
+
 if __name__ == '__main__':
-    osa = OsArch.LINUX_X64
+    osa = OsArch.WINDOWS_X64
     target = BuildDir(osa)
-    JRE.extract_to(target)
+    # JRE.extract_to(target)
+    NativeLib.extract_to(target)
