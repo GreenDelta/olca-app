@@ -1,5 +1,6 @@
 import os
 import datetime
+import platform
 import urllib.request
 
 from enum import Enum
@@ -45,6 +46,52 @@ class Version:
         return f'{self.app_version}_{datetime.date.today().isoformat()}'
 
 
+class Zip:
+
+    __zip: 'Zip'
+
+    def __init__(self, win7zip: bool):
+        self.win7zip = win7zip
+
+    @staticmethod
+    def get() -> 'Zip':
+        if Zip.__zip is not None:
+            return Zip.__zip
+        sys = platform.system().lower()
+        if sys != 'windows':
+            Zip.__zip = Zip(False)
+            return Zip.__zip
+
+
+    @staticmethod
+    def unzip():
+
+
+@dataclass
+class BuildDir:
+    osa: OsArch
+
+    @property
+    def root(self) -> Path:
+        build_dir = PROJECT_DIR / 'build'
+        if self.osa == OsArch.LINUX_X64:
+            return build_dir / 'linux.gtk.x86_64'
+        if self.osa == OsArch.WINDOWS_X64:
+            return build_dir / 'win32.win32.x86_64'
+        if self.osa == OsArch.MACOS_X64:
+            return build_dir / 'macosx.cocoa.x86_64'
+        raise AssertionError(f'unknown build target {self.osa}')
+
+    @property
+    def app_dir(self) -> Path:
+        # TODO: check for macOS
+        return self.root / 'openLCA'
+
+    @property
+    def jre_dir(self) -> Path:
+        return self.app_dir / 'jre'
+
+
 class JRE:
 
     @staticmethod
@@ -64,7 +111,10 @@ class JRE:
 
     @staticmethod
     def cache_dir() -> Path:
-        return PROJECT_DIR / 'runtime/jre'
+        d = PROJECT_DIR / 'runtime/jre'
+        if not os.path.exists(d):
+            d.mkdir(parents=True, exist_ok=True)
+        return d
 
     @staticmethod
     def fetch(osa: OsArch) -> Path:
@@ -73,18 +123,30 @@ class JRE:
         zf = cache_dir / JRE.zip_name(osa)
         if os.path.exists(zf):
             return zf
-        if not os.path.exists(cache_dir):
-            cache_dir.mkdir()
         url = 'https://github.com/adoptium/temurin17-binaries/releases/' \
               f'download/jdk-17.0.2%2B8/{zip_name}'
-        with urllib.request.urlopen(url) as inp:
-            with open(zf, 'wb') as out:
-                out.write(inp)
+        print(f'  download JRE from {url}')
+        urllib.request.urlretrieve(url, zf)
         if not os.path.exists(zf):
             raise AssertionError(f'JRE download failed; url={url}')
         return zf
 
+    @staticmethod
+    def extract_to(build_dir: BuildDir):
+        zf = JRE.fetch(build_dir.osa)
+        if zf.name.endswith('.zip'):
+            unzip(zf, build_dir.jre_dir)
+
+        # zf.name.endswith('.tar.gz')
+
+
+def unzip(zip_file: Path, target: Path):
+    """Extracts the content of the given zip file under the given path."""
+    if not os.path.exists(target):
+        target.mkdir(parents=True, exist_ok=True)
+
 
 if __name__ == '__main__':
-    JRE.cache_dir().mkdir(parents=True, exist_ok=True)
-    # JRE.fetch(OsArch.WINDOWS_X64)
+    osa = OsArch.WINDOWS_X64
+    target = BuildDir(osa)
+    JRE.extract_to(target)
