@@ -19,7 +19,7 @@ from os.path import exists
 from pathlib import Path, PureWindowsPath
 from zipfile import ZipFile
 
-from fetch_runtime import OS, fetch_libs, fetch_jre, JRE_DIR, BLAS_DIR
+from fetch_runtime import OS, fetch_libs, JRE_DIR, BLAS_DIR
 
 BUILD_ROOT = Path(os.path.dirname(os.path.abspath(__file__)))
 
@@ -46,7 +46,7 @@ class Version:
     def get() -> 'Version':
         # read app version from manifest
         manifest = BUILD_ROOT.parent / Path("olca-app/META-INF/MANIFEST.MF")
-        print(f'Read version from {manifest}')
+        print(f'read version from {manifest}')
         app_version = None
         with open(manifest, 'r', encoding='utf-8') as f:
             for line in f:
@@ -65,13 +65,12 @@ class Version:
 
 
 def main():
-    print('Create the openLCA distribution packages')
+    print('create the openLCA distribution packages')
 
     # delete the old versions
     if exists(DIST_DIR):
-        print(f"Delete the old packages under {DIST_DIR}", end=' ... ')
+        print(f"delete the old packages under {DIST_DIR}", end=' ... ')
         shutil.rmtree(DIST_DIR, ignore_errors=True)
-        print('done')
     mkdir(DIST_DIR)
 
     version = Version.get()
@@ -86,7 +85,6 @@ def main():
 
 
 def pack_win(version: Version) -> bool:
-    _os = OS.WINDOWS
 
     win_dir = Path("build/win32.win32.x86_64")
 
@@ -95,20 +93,21 @@ def pack_win(version: Version) -> bool:
         print(f"folder {product_dir} does not exist; skip Windows version")
         return False
 
-    print('Create Windows package')
+    print('create Windows package')
     copy_licenses(product_dir)
 
     # JRE
     if not exists(product_dir / "jre"):
-        fetch_jre(_os)
+        fetch_jre(OS.WINDOWS)
         print('  Copy JRE')
-        shutil.copytree(JRE_DIR / _os.short(), product_dir / "jre")
+        shutil.copytree(JRE_DIR / OS.WINDOWS.short(), product_dir / "jre")
+    return
 
     # BLAS
     if not exists(product_dir / "olca-native"):
-        fetch_libs(_os)
+        fetch_libs(OS.WINDOWS)
         print('  Copy native libraries')
-        shutil.copytree(BLAS_DIR / _os.short(), product_dir / "olca-native")
+        shutil.copytree(BLAS_DIR / OS.WINDOWS.short(), product_dir / "olca-native")
 
     # zip file
     zip_file = DIST_DIR / f"openLCA_win64_{version.app_suffix}"
@@ -269,12 +268,10 @@ def pack_macos(version_date: str) -> bool:
 
 
 def copy_licenses(product_dir: Path):
-    # licenses
-    print('  Copy licenses')
+    print('  copy licenses')
     shutil.copy2(RESOURCES_DIR / "OPENLCA_README.txt", product_dir)
     if not exists(product_dir / "licenses"):
         shutil.copytree(RESOURCES_DIR / "licenses", product_dir / "licenses")
-    print('done')
 
 
 def mkdir(path: Path):
@@ -385,5 +382,6 @@ def fetch_7zip():
 
 
 if __name__ == '__main__':
-    print(Version.get().app_suffix)
+    v = Version.get()
+    pack_win(v)
     # main()
