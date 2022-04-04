@@ -10,7 +10,6 @@ import zipfile
 
 from enum import Enum
 from pathlib import Path
-from urlpath import URL
 
 
 BUILD_ROOT = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +24,7 @@ INDEX_JSON = "olca-native.json"
 
 # JRE
 JRE_DIR = Path("runtime/jre")
-URL_ADOPTIUM = URL("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.2%2B8/")
+URL_ADOPTIUM = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.2%2B8/"
 
 
 class OS(Enum):
@@ -117,7 +116,7 @@ def fetch_libs(_os: OS):
     package_name = PACKAGE_PREFIXE + _os.value
     archive_name = package_name + "-" + VERSION + ".jar"
     archive_path = BUILD_ROOT / BLAS_DIR / _os.short() / archive_name
-    url = URL(MAVEN_REPO + package_name + "/" + VERSION + "/" + archive_name)
+    url = MAVEN_REPO + package_name + "/" + VERSION + "/" + archive_name
     try:
         r = requests.get(url, allow_redirects=True)
     except OSError as e:
@@ -191,7 +190,7 @@ def fetch_jre(_os: OS):
     print(f"Downloading {_os.short()} JRE.")
     archive_name = _os.get_jre_name()
     archive_path = BUILD_ROOT / JRE_DIR / _os.short() / archive_name
-    url = URL_ADOPTIUM / archive_name
+    url = f'{URL_ADOPTIUM}/{archive_name}'
     try:
         r = requests.get(url, allow_redirects=True)
     except OSError as e:
