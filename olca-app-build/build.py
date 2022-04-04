@@ -1,6 +1,8 @@
-import os
 import datetime
+import os
 import platform
+import shutil
+import subprocess
 import urllib.request
 
 from enum import Enum
@@ -47,11 +49,14 @@ class Version:
 
 
 class Zip:
+    __zip: 'Zip' = None
 
-    __zip: 'Zip'
+    def __init__(self, is_z7: bool):
+        self.is_z7 = is_z7
 
-    def __init__(self, win7zip: bool):
-        self.win7zip = win7zip
+    @staticmethod
+    def z7() -> Path:
+        return PROJECT_DIR / 'tools/7zip/7za.exe'
 
     @staticmethod
     def get() -> 'Zip':
@@ -61,10 +66,33 @@ class Zip:
         if sys != 'windows':
             Zip.__zip = Zip(False)
             return Zip.__zip
+        z7 = Zip.z7()
+        if os.path.exists(z7):
+            Zip.__zip = Zip(True)
+            return Zip.__zip
 
+        # try to fetch a version 7zip version from the web
+        url = 'https://www.7-zip.org/a/7za920.zip'
+        print(f'WARNING no 7zip version found under {z7}, will download an OLD'
+              f' version from {url}')
+        z7_dir = PROJECT_DIR / 'tools/7zip'
+        z7_dir.mkdir(parents=True, exist_ok=True)
+        z7_zip = z7_dir / '7zip.zip'
+        urllib.request.urlretrieve(url, z7_zip)
+        shutil.unpack_archive(z7_zip, z7_dir)
+        Zip.__zip = Zip(os.path.exists(z7))
+        return Zip.__zip
 
     @staticmethod
-    def unzip():
+    def unzip(zip_file: Path, target: Path):
+        """Extracts the content of the given zip file under the given path."""
+        if not os.path.exists(target):
+            target.mkdir(parents=True, exist_ok=True)
+        if Zip.get().is_z7:
+            subprocess.call([
+                Zip.z7(), 'x', zip_file, f'-o{target}'])
+        else:
+            shutil.unpack_archive(zip_file, target)
 
 
 @dataclass
@@ -133,20 +161,29 @@ class JRE:
 
     @staticmethod
     def extract_to(build_dir: BuildDir):
+        if build_dir.jre_dir.exists():
+            return
+
+        # fetch and extract the JRE
         zf = JRE.fetch(build_dir.osa)
         if zf.name.endswith('.zip'):
-            unzip(zf, build_dir.jre_dir)
+            Zip.unzip(zf, build_dir.app_dir)
+        else:
+            tar = zf.parent / zf.name[0:-3]
+            if not tar.exists():
+                Zip.unzip(zf, zf.parent)
+                if not tar.exists():
+                    raise AssertionError(f'could not find JRE tar {tar}')
+            Zip.unzip(tar, build_dir.app_dir)
 
-        # zf.name.endswith('.tar.gz')
-
-
-def unzip(zip_file: Path, target: Path):
-    """Extracts the content of the given zip file under the given path."""
-    if not os.path.exists(target):
-        target.mkdir(parents=True, exist_ok=True)
+        # rename the JRE folder if required
+        if build_dir.jre_dir.exists():
+            return
+        jre_dir = next(build_dir.app_dir.glob('*jre*'))
+        os.rename(jre_dir, build_dir.jre_dir)
 
 
 if __name__ == '__main__':
-    osa = OsArch.WINDOWS_X64
+    osa = OsArch.LINUX_X64
     target = BuildDir(osa)
     JRE.extract_to(target)
