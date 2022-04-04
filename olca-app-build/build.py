@@ -18,10 +18,10 @@ PROJECT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
 
 
 class OsArch(Enum):
-    MACOS_ARM = "macos-arm64"
-    MACOS_X64 = "macos-x64"
-    WINDOWS_X64 = "win-x64"
-    LINUX_X64 = "linux-x64"
+    MACOS_ARM = "macOS_arm64"
+    MACOS_X64 = "macOS_x64"
+    WINDOWS_X64 = "Windows_x64"
+    LINUX_X64 = "Linux_x64"
 
 
 @dataclass
@@ -32,7 +32,6 @@ class Version:
     def get() -> 'Version':
         # read app version from the app-manifest
         manifest = PROJECT_DIR.parent / Path("olca-app/META-INF/MANIFEST.MF")
-        print(f'read version from {manifest}')
         app_version = None
         with open(manifest, 'r', encoding='utf-8') as f:
             for line in f:
@@ -98,6 +97,39 @@ class Zip:
         else:
             shutil.unpack_archive(zip_file, target)
 
+    @staticmethod
+    def targz(folder: Path, tar_file: Path):
+        if not tar_file.parent.exists():
+            tar_file.parent.mkdir(parents=True, exist_ok=True)
+        if Zip.get().is_z7:
+            tar = tar_file.with_suffix('tar')
+            gz = tar.with_suffix('tar.gz')
+            subprocess.call([
+                Zip.z7(), 'a', '-ttar', str(tar), folder.as_posix() + '/*'])
+            subprocess.call([
+                Zip.z7(), 'a', '-tgzip', str(gz), str(tar)])
+            os.remove(tar)
+        else:
+            target = tar_file.with_suffix('')
+            shutil.make_archive(str(target), 'gztar', str(folder))
+
+
+class Build:
+
+    @staticmethod
+    def dist_dir() -> Path:
+        d = PROJECT_DIR / 'build/dist'
+        if not d.exists():
+            d.mkdir(parents=True, exist_ok=True)
+        return d
+
+    @staticmethod
+    def clean():
+        d = Build.dist_dir()
+        if d.exists():
+            shutil.rmtree(d, ignore_errors=True)
+        d.mkdir(parents=True, exist_ok=True)
+
 
 @dataclass
 class BuildDir:
@@ -115,6 +147,10 @@ class BuildDir:
         raise AssertionError(f'unknown build target {self.osa}')
 
     @property
+    def exists(self) -> bool:
+        return self.root.exists()
+
+    @property
     def app_dir(self) -> Path:
         # TODO: check for macOS
         return self.root / 'openLCA'
@@ -127,6 +163,27 @@ class BuildDir:
     def native_lib_dir(self) -> Path:
         arch = 'arm64' if self.osa == OsArch.MACOS_ARM else 'x64'
         return self.app_dir / f'olca-native/{NATIVE_LIB_VERSION}/{arch}'
+
+    def package(self):
+
+        # TODO: arrange macOS dir
+
+        JRE.extract_to(self)
+        NativeLib.extract_to(self)
+
+        print('  copy licenses')
+        resources = PROJECT_DIR / 'resources'
+        shutil.copy2(resources / 'OPENLCA_README.txt', self.app_dir)
+        license_target = self.app_dir / 'licenses'
+        if not license_target.exists():
+            shutil.copytree(resources / 'licenses', license_target)
+
+        version = Version.get()
+        pack = Build.dist_dir() / f'openLCA_{self.osa}_{version.app_suffix}'
+        if self.osa == OsArch.WINDOWS_X64:
+            shutil.make_archive(pack.as_posix(), 'zip', self.root.as_posix())
+        else:
+            Zip.targz(self.root, pack)
 
 
 class JRE:
@@ -172,7 +229,7 @@ class JRE:
     def extract_to(build_dir: BuildDir):
         if build_dir.jre_dir.exists():
             return
-
+        print('  copy JRE')
         # fetch and extract the JRE
         zf = JRE.fetch(build_dir.osa)
         if zf.name.endswith('.zip'):
@@ -237,6 +294,7 @@ class NativeLib:
 
     @staticmethod
     def extract_to(build_dir: BuildDir):
+        print('  copy native libraries')
         target = build_dir.native_lib_dir
         if not target.exists():
             target.mkdir(parents=True, exist_ok=True)
@@ -253,8 +311,27 @@ class NativeLib:
                 target_file.write_bytes(z.read(e))
 
 
+def pack_win():
+    build_dir = BuildDir(OsArch.WINDOWS_X64)
+    if not build_dir.root.exists():
+        print('no Windows build available; skipped')
+        return
+    build_dir.prepare()
+
+    version = Version.get()
+    dist = Build.dist_dir() / f'openLCA_win64_{version.app_suffix}'
+
+
+def main():
+    for osa in OsArch:
+        build_dir = BuildDir(osa)
+        if not build_dir.exists:
+            print(f'no {} build available; skipped')
+        build_dir.package()
+    Build.clean()
+
+    pack_win()
+
+
 if __name__ == '__main__':
-    osa = OsArch.WINDOWS_X64
-    target = BuildDir(osa)
-    # JRE.extract_to(target)
-    NativeLib.extract_to(target)
+    main()
