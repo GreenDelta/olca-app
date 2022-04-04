@@ -6,17 +6,15 @@
 import datetime
 import glob
 import os
-
 import requests
 import shutil
 import subprocess
 import sys
+import zipfile
 
 from io import BytesIO
 from os.path import exists
 from pathlib import Path, PureWindowsPath
-from pyunpack import Archive
-from urlpath import URL
 from zipfile import ZipFile
 
 from fetch_runtime import OS, fetch_libs, fetch_jre, JRE_DIR, BLAS_DIR
@@ -29,11 +27,11 @@ RESOURCES_DIR = Path("resources")
 
 NSIS_VERSION = "2.51"
 NSIS_DIR = Path("tools/nsis-" + NSIS_VERSION)
-NSIS_URL = URL("https://sourceforge.net/projects/nsis/files/NSIS%202/") / NSIS_VERSION / \
-           ("nsis-" + NSIS_VERSION + ".zip") / "download"
+NSIS_URL = "https://sourceforge.net/projects/nsis/files/NSIS%202/" + NSIS_VERSION + "/nsis-" + NSIS_VERSION \
+           + ".zip/download"
 
 SEVENZIP_DIR = Path("tools/7zip")
-SEVENZIP_URL = URL("https://www.7-zip.org/a/7z2107-extra.7z")
+SEVENZIP_URL = "https://www.7-zip.org/a/7za920.zip"
 
 WIN_DIR = Path("build/win32.win32.x86_64")
 LINUX_DIR = Path("build/linux.gtk.x86_64")
@@ -361,9 +359,11 @@ def fetch_7zip():
         print(f"<Error {r.status_code}> Failed to download {SEVENZIP_URL}.")
         raise ConnectionError
 
-    open(target_path, 'wb').write(r.content)
+    with open(target_path, "wb") as f:
+        f.write(r.content)
 
-    Archive(target_path).extractall(SEVENZIP_DIR)
+    with zipfile.ZipFile(target_path, 'r') as zip_ref:
+        zip_ref.extractall(SEVENZIP_DIR)
 
     print("done")
 
