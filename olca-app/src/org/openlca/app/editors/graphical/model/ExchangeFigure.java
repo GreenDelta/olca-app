@@ -25,13 +25,14 @@ class ExchangeFigure extends Figure {
 		layout.marginHeight = 0;
 		setLayoutManager(layout);
 		label = new Label(node.getName());
-		highlightQuantitativeReference(node);	
+		highlightQuantitativeReference(node);
 		setToolTip(new Label(tooltip()));
 		add(label, new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 	}
-	
+
 	private void highlightQuantitativeReference(ExchangeNode exchangeNode) {
-		if (exchangeNode.parent().process instanceof ProcessDescriptor p) {
+		if (exchangeNode.parent().process instanceof ProcessDescriptor p
+		&& p.quantitativeReference != null) {
 			if (p.quantitativeReference == node.exchange.id)
 				setHighlighted(true);
 		}
