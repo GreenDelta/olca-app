@@ -11,11 +11,14 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.swt.SWT;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.themes.Theme.Box;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessType;
 
 class IOFigure extends Figure {
 
@@ -41,20 +44,14 @@ class IOFigure extends Figure {
 		add(panel, new GridData(SWT.FILL, SWT.FILL, true, true));
 		var figure = new ExchangeFigure(node.getExchangeNodes().get(0));
 
-		System.out.println("\n\n\nnode.getName: " + node.getName());
-		System.out.println("node.process.type: " + node.process.type);
-		System.out.println("node.process.type: " + node.);
-		for (var ionode : node.getExchangeNodes()) {
-			System.out.println("\nnode.getExchangeNodes()[].getName: " + ionode.getName());
-			System.out.println("node.getExchangeNodes()[].isConnected: " + ionode.isConnected());
-			System.out.println("node.getExchangeNodes()[].flowType: " + ionode.flowType());
-		}
-		for (var ionode : node.getChildren()) {
-			System.out.println("\nnode.getChildren()[].isWithElementaryFlows: " + ionode.isWithElementaryFlows);
-		}
+		// "+ add flow" button for unit processes that are not part of a library.
 		if (node.process.type == ModelType.PROCESS
 			&& node.process.library == null) {
-			add(new FlowButtonWrapper(figure, forInputs, node), new GridData(SWT.FILL, SWT.TOP, true, false));
+			var process = Database.get().get(Process.class, node.process.id);
+			if (process.processType == ProcessType.UNIT_PROCESS) {
+				add(new FlowButtonWrapper(figure, forInputs, node),
+					new GridData(SWT.FILL, SWT.TOP, true, false));
+			}
 		}
 		return panel;
 	}
@@ -163,7 +160,7 @@ class IOFigure extends Figure {
 			var icon = config.showFlowIcons ? add(panel, SWT.LEFT, new ImageFigure(Images.get(flowType))) : null;
 			add(panel, SWT.FILL, figure);
 			var amount = config.showFlowAmounts ? add(panel, SWT.RIGHT, new Label(Numbers.format(exchange.amount, 2)))
-					: null;
+				: null;
 			var unit = config.showFlowAmounts ? add(panel, SWT.LEFT, new Label(Labels.name(exchange.unit))) : null;
 
 			var row = new ExchangeRow(icon, figure, amount, unit);

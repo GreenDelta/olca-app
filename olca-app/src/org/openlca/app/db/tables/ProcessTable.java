@@ -81,13 +81,14 @@ public class ProcessTable extends SimpleFormEditor {
 			var table = Tables.createViewer(body,
 				M.Name,
 				M.Category,
+				M.FlowType,
 				"Reference Flow",
 				"ID");
-			Tables.bindColumnWidths(table, 0.4, 0.2, 0.2, 0.2);
+			Tables.bindColumnWidths(table, 0.4, 0.1, 0.1, 0.2, 0.2);
 
 			var label = new Label();
 			table.setLabelProvider(label);
-			Viewers.sortByLabels(table, label, 0, 1, 2, 3);
+			Viewers.sortByLabels(table, label, 0, 1, 2, 3, 4);
 			table.setInput(processes);
 			TextFilter.on(table, filter);
 			Actions.bind(table);
@@ -104,7 +105,8 @@ public class ProcessTable extends SimpleFormEditor {
 			return switch (col) {
 				case 0 -> Images.get(ModelType.PROCESS);
 				case 1 -> Images.get(process.category);
-				case 2 -> Images.get(process.quantitativeReference.flow.flowType);
+				case 2 -> Images.get(process.processType);
+				case 3 -> Images.get(process.quantitativeReference.flow.flowType);
 				default -> null;
 			};
 		}
@@ -118,8 +120,9 @@ public class ProcessTable extends SimpleFormEditor {
 				case 1 -> process.category != null
 					? process.category.toPath()
 					: null;
-				case 2 -> Labels.name(process.quantitativeReference.flow);
-				case 3 -> process.refId;
+				case 2 -> Labels.of(process.processType);
+				case 3 -> Labels.name(process.quantitativeReference.flow);
+				case 4 -> process.refId;
 				default -> null;
 			};
 		}
