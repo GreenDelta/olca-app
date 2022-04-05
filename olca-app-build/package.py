@@ -1,6 +1,7 @@
 import datetime
 import os
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -61,6 +62,11 @@ class Version:
     def app_suffix(self):
         return f'{self.app_version}_{datetime.date.today().isoformat()}'
 
+    @property
+    def base(self) -> str:
+        m = re.search(r'(\d+(\.\d+)?(\.\d+)?)', self.app_version)
+        return '2' if m is None else m.group(0)
+
 
 class Zip:
     __zip: 'Zip' = None
@@ -76,8 +82,8 @@ class Zip:
     def get() -> 'Zip':
         if Zip.__zip is not None:
             return Zip.__zip
-        sys = platform.system().lower()
-        if sys != 'windows':
+        system = platform.system().lower()
+        if system != 'windows':
             Zip.__zip = Zip(False)
             return Zip.__zip
         z7 = Zip.z7()
@@ -225,6 +231,9 @@ class BuildDir:
             shutil.make_archive(pack.as_posix(), 'zip', self.root.as_posix())
         else:
             Zip.targz(self.root, pack)
+
+        if self.osa.is_win():
+            Nsis.run(self, version)
 
 
 class JRE:
@@ -400,7 +409,7 @@ class Nsis:
 
     @staticmethod
     def fetch() -> Path:
-        nsis = PROJECT_DIR / f'tools/nsis-{Nsis.VERSION}/NSIS.exe'
+        nsis = PROJECT_DIR / f'tools/nsis-{Nsis.VERSION}/makensis.exe'
         if nsis.exists():
             return nsis
         url = f'https://sourceforge.net/projects/nsis/files' \
@@ -408,13 +417,13 @@ class Nsis:
         print(f'  download NSIS from {url}')
         nsis_zip = PROJECT_DIR / f'tools/nsis-{Nsis.VERSION}.zip'
         urllib.request.urlretrieve(url, nsis_zip)
-        Zip.unzip(nsis_zip,  PROJECT_DIR / f'tools')
+        Zip.unzip(nsis_zip, PROJECT_DIR / f'tools')
         if not nsis.exists():
             AssertionError(f'failed to fetch NSIS from {url}')
         return nsis
 
     @staticmethod
-    def run(build_dir: BuildDir):
+    def run(build_dir: BuildDir, version: Version):
         if not build_dir.osa.is_win():
             return
         if '--winstaller' not in sys.argv:
@@ -422,6 +431,40 @@ class Nsis:
             return False
         if platform.system().lower() != 'windows':
             print('WARNING: NSIS installers can be only build on Windows')
+
+        exe = Nsis.fetch()
+
+        # installer resources
+        inst_files = (PROJECT_DIR / 'resources/installer_static_win').glob('*')
+        for f in inst_files:
+            shutil.copy2(f, build_dir.root / f.name)
+        Template.apply(
+            PROJECT_DIR / 'templates/setup.nsi',
+            build_dir.root / 'setup.nsi',
+            encoding='iso-8859-1', version=version.base)
+
+        # ini files with language flag
+        en_dir = build_dir.root / 'english'
+        en_dir.mkdir(parents=True, exist_ok=True)
+        Template.apply(
+            PROJECT_DIR / 'templates/openLCA_win.ini',
+            en_dir / 'openLCA.ini',
+            encoding='iso-8859-1', lang='en')
+        de_dir = build_dir.root / 'german'
+        de_dir.mkdir(parents=True, exist_ok=True)
+        Template.apply(
+            PROJECT_DIR / 'templates/openLCA_win.ini',
+            de_dir / 'openLCA.ini',
+            encoding='iso-8859-1', lang='de')
+
+        # create the installer
+        subprocess.call([exe, build_dir.root / 'setup.nsi'])
+        dist_dir = PROJECT_DIR / 'build/dist'
+        if not dist_dir.exists():
+            dist_dir.mkdir(parents=True, exist_ok=True)
+        app_file = dist_dir / f'openLCA_{build_dir.osa.name}' \
+                              f'_{version.app_suffix}.exe'
+        shutil.move(build_dir.root / 'setup.exe', app_file)
 
 
 class Template:
@@ -448,5 +491,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    print(Nsis.fetch())
+    main()
