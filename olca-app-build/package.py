@@ -23,6 +23,9 @@ class OsArch(Enum):
     WINDOWS_X64 = "Windows_x64"
     LINUX_X64 = "Linux_x64"
 
+    def is_mac(self) -> bool:
+        return self == OsArch.MACOS_ARM or self == OsArch.MACOS_X64
+
 
 @dataclass
 class Version:
@@ -165,8 +168,10 @@ class BuildDir:
 
     @property
     def app_dir(self) -> Path:
-        # TODO: check for macOS
-        return self.root / 'openLCA'
+        if self.osa.is_mac():
+            return self.root / 'openLCA/openLCA.app'
+        else:
+            return self.root / 'openLCA'
 
     @property
     def jre_dir(self) -> Path:
@@ -179,7 +184,8 @@ class BuildDir:
 
     def package(self, version: Version):
 
-        # TODO: arrange macOS dir
+        if self.osa.is_mac():
+            MacDir.arrange(self)
 
         # JRE and native libraries
         JRE.extract_to(self)
@@ -194,7 +200,7 @@ class BuildDir:
             shutil.copytree(resources / 'licenses', license_target)
 
         pack_name = f'openLCA_{self.osa.value}_{version.app_suffix}'
-        print(f'create package {pack_name}')
+        print(f'  create package {pack_name}')
         pack = Build.dist_dir() / pack_name
         if self.osa == OsArch.WINDOWS_X64:
             shutil.make_archive(pack.as_posix(), 'zip', self.root.as_posix())
@@ -327,6 +333,60 @@ class NativeLib:
                 target_file.write_bytes(z.read(e))
 
 
+class MacDir:
+
+    @staticmethod
+    def arrange(build_dir: BuildDir):
+
+        # create the folder structure
+        app_root = build_dir.root / 'openLCA'
+        app_dir = build_dir.app_dir
+        eclipse_dir = app_dir / 'Contents/Eclipse'
+        macos_dir = app_dir / 'Contents/MacOS'
+        for d in (app_dir, eclipse_dir, macos_dir):
+            d.mkdir(parents=True, exist_ok=True)
+
+        # move files and folders
+        moves = [
+            (app_root / 'configuration', eclipse_dir),
+            (app_root / 'plugins', eclipse_dir),
+            (app_root / '.eclipseproduct', eclipse_dir),
+            (app_root / 'Resources', app_dir / 'Contents'),
+            (app_root / 'MacOS/openLCA', macos_dir / 'eclipse')]
+        for (source, target) in moves:
+            shutil.move(source, target)
+
+        shutil.copyfile(
+            PROJECT_DIR / 'macos/Info.plist',
+            app_dir / 'Contents/Info.plist')
+
+        # create the ini file
+        plugins_dir = eclipse_dir / 'plugins'
+        launcher_jar = next(plugins_dir.glob('*launcher*.jar'))
+        launcher_lib = next(plugins_dir.glob('**launcher.cocoa.macosx*'))
+        Template.apply(
+            PROJECT_DIR / 'macos/openLCA.ini',
+            eclipse_dir / 'eclipse.ini',
+            launcher_jar=launcher_jar,
+            launcher_lib=launcher_lib)
+
+        # clean up
+        shutil.rmtree(app_root / 'MacOS')
+        os.remove(app_root / 'Info.plist')
+        os.remove(macos_dir / 'openLCA.ini')
+
+
+class Template:
+
+    @staticmethod
+    def apply(source: Path, target: Path, encoding='utf-8', **kwargs):
+        with open(source, mode='r', encoding='utf-8') as inp:
+            template = inp.read()
+            text = template.format(**kwargs)
+        with open(target, 'w', encoding=encoding) as out:
+            out.write(text)
+
+
 def main():
     Build.clean()
     version = Version.get()
@@ -340,4 +400,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    build_dir = BuildDir(OsArch.MACOS_X64)
+    MacDir.arrange(build_dir)
