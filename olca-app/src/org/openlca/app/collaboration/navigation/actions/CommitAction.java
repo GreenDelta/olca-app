@@ -13,12 +13,14 @@ import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.collaboration.dialogs.LibraryRestrictionDialog;
+import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.DiffResult;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
@@ -42,6 +44,11 @@ public class CommitAction extends Action implements INavigationAction {
 		return Icon.COMMIT.descriptor();
 	}
 
+	@Override
+	public boolean isEnabled() {
+		return RepositoryLabel.hasChanged(Navigator.findElement(Database.getActiveConfiguration()));
+	}
+	
 	@Override
 	public void run() {
 		try {

@@ -30,6 +30,11 @@ public class PushAction extends Action implements INavigationAction {
 	}
 
 	@Override
+	public boolean isEnabled() {
+		return !Repository.get().getAhead().isEmpty();
+	}
+	
+	@Override
 	public void run() {
 		try {
 			var result = Actions.run(GitPush
@@ -52,7 +57,9 @@ public class PushAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
-		return Repository.isConnected();
+		if (!Repository.isConnected())
+			return false;
+		return true;
 	}
 
 }
