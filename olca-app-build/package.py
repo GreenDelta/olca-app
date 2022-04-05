@@ -99,20 +99,29 @@ class Zip:
             shutil.unpack_archive(zip_file, target)
 
     @staticmethod
-    def targz(folder: Path, tar_file: Path):
-        if not tar_file.parent.exists():
-            tar_file.parent.mkdir(parents=True, exist_ok=True)
+    def targz(folder: Path, target: Path):
+        if not target.parent.exists():
+            target.parent.mkdir(parents=True, exist_ok=True)
+
+        # remove possible extensions from the given target file
+        base_name = target.name
+        if base_name.endswith('.tar.gz'):
+            base_name = base_name[0:-7]
+        elif base_name.endswith('.tar'):
+            base_name = base_name[0:-4]
+        base = target.parent / base_name
+
+        # package the folder
         if Zip.get().is_z7:
-            tar = tar_file.with_suffix('.tar')
-            gz = tar.with_suffix('.tar.gz')
+            tar = base.with_suffix('.tar')
+            gz = base.with_suffix('.tar.gz')
             subprocess.call([
                 Zip.z7(), 'a', '-ttar', str(tar), folder.as_posix() + '/*'])
             subprocess.call([
                 Zip.z7(), 'a', '-tgzip', str(gz), str(tar)])
             os.remove(tar)
         else:
-            target = tar_file.with_suffix('')
-            shutil.make_archive(str(target), 'gztar', str(folder))
+            shutil.make_archive(str(base), 'gztar', str(folder))
 
 
 class Build:
