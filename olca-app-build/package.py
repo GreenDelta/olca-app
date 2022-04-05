@@ -32,6 +32,7 @@ class Version:
     def get() -> 'Version':
         # read app version from the app-manifest
         manifest = PROJECT_DIR.parent / Path("olca-app/META-INF/MANIFEST.MF")
+        print(f'read version from {manifest}')
         app_version = None
         with open(manifest, 'r', encoding='utf-8') as f:
             for line in f:
@@ -102,8 +103,8 @@ class Zip:
         if not tar_file.parent.exists():
             tar_file.parent.mkdir(parents=True, exist_ok=True)
         if Zip.get().is_z7:
-            tar = tar_file.with_suffix('tar')
-            gz = tar.with_suffix('tar.gz')
+            tar = tar_file.with_suffix('.tar')
+            gz = tar.with_suffix('.tar.gz')
             subprocess.call([
                 Zip.z7(), 'a', '-ttar', str(tar), folder.as_posix() + '/*'])
             subprocess.call([
@@ -127,6 +128,7 @@ class Build:
     def clean():
         d = Build.dist_dir()
         if d.exists():
+            print('clean dist folder')
             shutil.rmtree(d, ignore_errors=True)
         d.mkdir(parents=True, exist_ok=True)
 
@@ -144,6 +146,8 @@ class BuildDir:
             return build_dir / 'win32.win32.x86_64'
         if self.osa == OsArch.MACOS_X64:
             return build_dir / 'macosx.cocoa.x86_64'
+        if self.osa == OsArch.MACOS_ARM:
+            return build_dir / 'macosx.cocoa.aarch64'
         raise AssertionError(f'unknown build target {self.osa}')
 
     @property
@@ -164,13 +168,15 @@ class BuildDir:
         arch = 'arm64' if self.osa == OsArch.MACOS_ARM else 'x64'
         return self.app_dir / f'olca-native/{NATIVE_LIB_VERSION}/{arch}'
 
-    def package(self):
+    def package(self, version: Version):
 
         # TODO: arrange macOS dir
 
+        # JRE and native libraries
         JRE.extract_to(self)
         NativeLib.extract_to(self)
 
+        # copy licenses
         print('  copy licenses')
         resources = PROJECT_DIR / 'resources'
         shutil.copy2(resources / 'OPENLCA_README.txt', self.app_dir)
@@ -178,8 +184,9 @@ class BuildDir:
         if not license_target.exists():
             shutil.copytree(resources / 'licenses', license_target)
 
-        version = Version.get()
-        pack = Build.dist_dir() / f'openLCA_{self.osa}_{version.app_suffix}'
+        pack_name = f'openLCA_{self.osa.value}_{version.app_suffix}'
+        print(f'create package {pack_name}')
+        pack = Build.dist_dir() / pack_name
         if self.osa == OsArch.WINDOWS_X64:
             shutil.make_archive(pack.as_posix(), 'zip', self.root.as_posix())
         else:
@@ -311,26 +318,16 @@ class NativeLib:
                 target_file.write_bytes(z.read(e))
 
 
-def pack_win():
-    build_dir = BuildDir(OsArch.WINDOWS_X64)
-    if not build_dir.root.exists():
-        print('no Windows build available; skipped')
-        return
-    build_dir.prepare()
-
-    version = Version.get()
-    dist = Build.dist_dir() / f'openLCA_win64_{version.app_suffix}'
-
-
 def main():
+    Build.clean()
+    version = Version.get()
     for osa in OsArch:
         build_dir = BuildDir(osa)
         if not build_dir.exists:
-            print(f'no {} build available; skipped')
-        build_dir.package()
-    Build.clean()
-
-    pack_win()
+            print(f'no {osa} build available; skipped')
+            continue
+        print(f'package build: {osa}')
+        build_dir.package(version)
 
 
 if __name__ == '__main__':
