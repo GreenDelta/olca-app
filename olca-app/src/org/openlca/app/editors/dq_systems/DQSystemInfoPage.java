@@ -60,7 +60,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		body = UI.formBody(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
-		dropComponent(infoSection.composite(), M.Source, "source");
+		modelLink(infoSection.composite(), M.Source, "source");
 		createAdditionalInfo(body);
 		body.setFocus();
 		form.reflow(true);

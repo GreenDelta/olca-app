@@ -1,7 +1,5 @@
 package org.openlca.app.collaboration.navigation;
 
-import java.util.List;
-
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -20,8 +18,6 @@ import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.core.database.config.DatabaseConfig;
-import org.openlca.git.model.Commit;
-import org.openlca.git.util.Constants;
 
 /**
  * known limitations: if a new model is created, the parent categories will be
@@ -80,40 +76,26 @@ public class RepositoryLabel {
 			return null;
 		if (!Repository.isConnected())
 			return null;
-		var config = Repository.get().config;
-		var commits = Repository.get().commits;
-		var local = commits.find()
-				.refs(Constants.LOCAL_REF)
-				.all();
-		var remote = commits.find()
-				.refs(Constants.REMOTE_REF)
-				.all();
-		var ahead = countNew(local, remote);
-		var behind = countNew(remote, local);
-		var text = " [" + config.url();
-		if (ahead > 0) {
-			text += " ↑" + ahead;
+		var repository = Repository.get();
+		var ahead = repository.getAhead();
+		var behind = repository.getBehind();
+		var text = " [" + repository.config.url();
+		if (!ahead.isEmpty()) {
+			text += " ↑" + ahead.size();
 		}
-		if (behind > 0) {
-			text += " ↓" + behind;
+		if (!behind.isEmpty()) {
+			text += " ↓" + behind.size();
 		}
 		return text + "]";
 	}
 
-	private static int countNew(List<Commit> left, List<Commit> right) {
-		for (var i = left.size() - 1; i >= 0; i--)
-			if (right.contains(left.get(i)))
-				return left.size() - 1 - i;
-		return left.size();
-	}
-
 	public static String getStateIndicator(INavigationElement<?> elem) {
-		if (indicateChangedState(elem))
+		if (hasChanged(elem))
 			return CHANGED_STATE;
 		return null;
 	}
 
-	private static boolean indicateChangedState(INavigationElement<?> elem) {
+	public static boolean hasChanged(INavigationElement<?> elem) {
 		if (!Repository.isConnected())
 			return false;
 		if (elem instanceof NavigationRoot)
@@ -122,13 +104,13 @@ public class RepositoryLabel {
 			if (!Database.isActive(e.getContent()))
 				return false;
 			for (var child : elem.getChildren())
-				if (indicateChangedState(child))
+				if (hasChanged(child))
 					return true;
 			return false;
 		}
 		if (elem instanceof GroupElement) {
 			for (var child : elem.getChildren())
-				if (indicateChangedState(child))
+				if (hasChanged(child))
 					return true;
 			return false;
 		}
@@ -139,21 +121,21 @@ public class RepositoryLabel {
 			if (isNew != elem.getChildren().isEmpty())
 				return true;
 			for (var child : elem.getChildren())
-				if (indicateChangedState(child))
+				if (hasChanged(child))
 					return true;
 			var isChanged = !repositoryId.equals(workspaceId);
 			return isChanged;
 		}
-		var isChanged = !isNew && !repositoryId.equals(workspaceId);
+		var hasChanged = !isNew && !repositoryId.equals(workspaceId);
 		if (elem instanceof CategoryElement) {
 			if (isNew != elem.getChildren().isEmpty())
 				return true;
 			for (var child : elem.getChildren())
-				if (indicateChangedState(child))
+				if (hasChanged(child))
 					return true;
-			return isChanged;
+			return hasChanged;
 		}
-		return isChanged;
+		return hasChanged;
 	}
 
 	public static Font getFont(INavigationElement<?> elem) {

@@ -9,19 +9,16 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.components.TextDropComponent;
-import org.openlca.app.db.Database;
+import org.openlca.app.components.ModelLink;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.SourceDao;
 import org.openlca.core.model.DQSystem;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.SocialAspect;
-import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.Source;
 
 class Dialog extends FormDialog {
 
-	private SocialAspect aspect;
-	private DQSystem system;
+	private final SocialAspect aspect;
+	private final DQSystem system;
 
 	public static int open(SocialAspect aspect, DQSystem system) {
 		if (aspect == null || aspect.indicator == null)
@@ -39,9 +36,9 @@ class Dialog extends FormDialog {
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID,
-				IDialogConstants.OK_LABEL, false);
+			IDialogConstants.OK_LABEL, false);
 		createButton(parent, IDialogConstants.CANCEL_ID,
-				IDialogConstants.CANCEL_LABEL, true);
+			IDialogConstants.CANCEL_LABEL, true);
 	}
 
 	@Override
@@ -66,9 +63,7 @@ class Dialog extends FormDialog {
 		Text t = UI.formText(body, tk, M.RawValue);
 		if (aspect.rawAmount != null)
 			t.setText(aspect.rawAmount);
-		t.addModifyListener(e -> {
-			aspect.rawAmount = t.getText();
-		});
+		t.addModifyListener(e -> aspect.rawAmount = t.getText());
 		String unit = aspect.indicator.unitOfMeasurement;
 		if (unit == null)
 			unit = "";
@@ -83,9 +78,8 @@ class Dialog extends FormDialog {
 		t.setText(Double.toString(aspect.activityValue));
 		t.addModifyListener(e -> {
 			try {
-				double d = Double.parseDouble(t.getText());
-				aspect.activityValue = d;
-			} catch (Exception ex) {
+				aspect.activityValue = Double.parseDouble(t.getText());
+			} catch (Exception ignored) {
 			}
 		});
 		String unit = "";
@@ -95,21 +89,10 @@ class Dialog extends FormDialog {
 	}
 
 	private void sourceRow(Composite body, FormToolkit tk) {
-		UI.formLabel(body, tk, M.Source);
-		TextDropComponent drop = new TextDropComponent(body,
-				tk, ModelType.SOURCE);
-		UI.gridData(drop, true, false);
-		if (aspect.source != null) {
-			drop.setContent(Descriptor.of(aspect.source));
-		}
-		drop.onChange(d -> {
-			if (d == null) {
-				aspect.source = null;
-			} else {
-				SourceDao dao = new SourceDao(Database.get());
-				aspect.source = dao.getForId(d.id);
-			}
-		});
+		ModelLink.of(Source.class)
+			.setModel(aspect.source)
+			.renderOn(body, tk, M.Source)
+			.onChange(source -> aspect.source = source);
 		UI.filler(body, tk);
 	}
 

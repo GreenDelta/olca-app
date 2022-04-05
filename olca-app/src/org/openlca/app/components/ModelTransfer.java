@@ -6,12 +6,14 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.dnd.ByteArrayTransfer;
+import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TransferData;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ActorDescriptor;
 import org.openlca.core.model.descriptors.CurrencyDescriptor;
 import org.openlca.core.model.descriptors.DQSystemDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.EpdDescriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -22,6 +24,7 @@ import org.openlca.core.model.descriptors.ParameterDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.ProjectDescriptor;
+import org.openlca.core.model.descriptors.ResultDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.model.descriptors.SocialIndicatorDescriptor;
 import org.openlca.core.model.descriptors.SourceDescriptor;
@@ -62,11 +65,11 @@ public final class ModelTransfer extends ByteArrayTransfer {
 	 * this ModelTransfer class.
 	 */
 	public static Descriptor getDescriptor(Object data) {
-		if (data instanceof Descriptor)
-			return (Descriptor) data;
+		if (data instanceof Descriptor d)
+			return d;
 		if (data instanceof Object[] objects) {
-			if (objects.length > 0 && (objects[0] instanceof Descriptor))
-				return (Descriptor) objects[0];
+			if (objects.length > 0 && (objects[0] instanceof Descriptor d))
+				return d;
 		}
 		return null;
 	}
@@ -77,13 +80,13 @@ public final class ModelTransfer extends ByteArrayTransfer {
 	 * ModelTransfer class.
 	 */
 	public static List<Descriptor> getDescriptors(Object data) {
-		if (data instanceof Descriptor)
-			return Collections.singletonList((Descriptor) data);
+		if (data instanceof Descriptor d)
+			return Collections.singletonList(d);
 		if (data instanceof Object[] objects) {
-			ArrayList<Descriptor> descriptors = new ArrayList<>();
-			for (Object object : objects) {
-				if (object instanceof Descriptor)
-					descriptors.add((Descriptor) object);
+			var descriptors = new ArrayList<Descriptor>();
+			for (var object : objects) {
+				if (object instanceof Descriptor d)
+					descriptors.add(d);
 			}
 			return descriptors;
 		}
@@ -92,12 +95,19 @@ public final class ModelTransfer extends ByteArrayTransfer {
 
 	@Override
 	protected int[] getTypeIds() {
-		return new int[] { ID };
+		return new int[]{ID};
 	}
 
 	@Override
 	protected String[] getTypeNames() {
-		return new String[] { NAME };
+		return new String[]{NAME};
+	}
+
+	public static Descriptor getDescriptor(DropTargetEvent event) {
+		if (event == null
+			|| !getInstance().isSupportedType(event.currentDataType))
+			return null;
+		return getDescriptor(event.data);
 	}
 
 	@Override
@@ -145,6 +155,7 @@ public final class ModelTransfer extends ByteArrayTransfer {
 			case CATEGORY -> gson.fromJson(e, RootDescriptor.class);
 			case CURRENCY -> gson.fromJson(e, CurrencyDescriptor.class);
 			case DQ_SYSTEM -> gson.fromJson(e, DQSystemDescriptor.class);
+			case EPD -> gson.fromJson(e, EpdDescriptor.class);
 			case FLOW -> gson.fromJson(e, FlowDescriptor.class);
 			case FLOW_PROPERTY -> gson.fromJson(e, FlowPropertyDescriptor.class);
 			case IMPACT_CATEGORY -> gson.fromJson(e, ImpactDescriptor.class);
@@ -155,6 +166,7 @@ public final class ModelTransfer extends ByteArrayTransfer {
 			case PROCESS -> gson.fromJson(e, ProcessDescriptor.class);
 			case PRODUCT_SYSTEM -> gson.fromJson(e, ProductSystemDescriptor.class);
 			case PROJECT -> gson.fromJson(e, ProjectDescriptor.class);
+			case RESULT -> gson.fromJson(e, ResultDescriptor.class);
 			case SOCIAL_INDICATOR -> gson.fromJson(e, SocialIndicatorDescriptor.class);
 			case SOURCE -> gson.fromJson(e, SourceDescriptor.class);
 			case UNIT -> gson.fromJson(e, UnitDescriptor.class);

@@ -61,10 +61,10 @@ public class InfoSection {
 		container = UI.sectionClient(section, tk, 3);
 
 		// name and library
-		Widgets.text(container, M.Name, "name", editor, tk)
+		ModelPage.text(container, M.Name, "name", editor, tk)
 				.setEditable(editor.isEditable());
 		if (entity.isFromLibrary()) {
-			Widgets.text(container, "Library", "library", editor, tk)
+			ModelPage.text(container, "Library", "library", editor, tk)
 					.setEditable(false);
 		}
 
@@ -90,7 +90,7 @@ public class InfoSection {
 		}
 
 		// description
-		Widgets.multiText(container, M.Description, "description", editor, tk)
+		ModelPage.multiText(container, M.Description, "description", editor, tk)
 			.setEditable(editor.isEditable());
 
 		// version

@@ -4,6 +4,10 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
@@ -18,6 +22,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
 public class ModelLink<T extends RootEntity> {
@@ -29,6 +34,7 @@ public class ModelLink<T extends RootEntity> {
 	private ImageHyperlink link;
 	private Consumer<T> onChange;
 	private T model;
+	private boolean editable = true;
 
 	private ModelLink(Class<T> type) {
 		this.db = Objects.requireNonNull(Database.get());
@@ -47,6 +53,15 @@ public class ModelLink<T extends RootEntity> {
 		return new ModelLink<>(type);
 	}
 
+	/**
+	 * Set if the model link is enabled or not. This has to be done before the
+	 * model links is rendered.
+	 */
+	public ModelLink<T> setEditable(boolean editable) {
+		this.editable = editable;
+		return this;
+	}
+
 	public ModelLink<T> onChange(Consumer<T> fn) {
 		this.onChange = fn;
 		return this;
@@ -62,21 +77,13 @@ public class ModelLink<T extends RootEntity> {
 		UI.gridLayout(comp, 3, 10, 0);
 
 		// the selection handler of this widget
-		Runnable doSelect = () -> {
-			var d = ModelSelector.select(modelType);
-			if (d == null)
-				return;
-			model = db.get(type, d.id);
-			updateLinkText();
-			if (onChange != null) {
-				onChange.accept(model);
-			}
-		};
+		Runnable doSelect = () -> select(ModelSelector.select(modelType));
 
 		// selection button
 		var btn = tk.createImageHyperlink(comp, SWT.BORDER);
 		btn.setToolTipText("Select a data set");
 		btn.setImage(Images.get(modelType));
+		btn.setEnabled(editable);
 		Controls.onClick(btn, $ -> doSelect.run());
 
 		// the link
@@ -84,13 +91,17 @@ public class ModelLink<T extends RootEntity> {
 		Controls.onClick(link, $ -> {
 			if (model != null) {
 				App.open(model);
-			} else {
+			} else if (editable) {
 				doSelect.run();
 			}
 		});
+		if (editable) {
+			addDropSupport(link);
+		}
 
 		// the delete button
 		var deleteBtn = tk.createImageHyperlink(comp, SWT.TOP);
+		deleteBtn.setEnabled(editable);
 		deleteBtn.setToolTipText(M.Remove);
 		deleteBtn.setHoverImage(Icon.DELETE.get());
 		deleteBtn.setImage(Icon.DELETE_DISABLED.get());
@@ -104,6 +115,35 @@ public class ModelLink<T extends RootEntity> {
 
 		updateLinkText();
 		return this;
+	}
+
+	private void addDropSupport(ImageHyperlink link) {
+		var transfer = ModelTransfer.getInstance();
+		var target = new DropTarget(
+			link, DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
+		target.setTransfer(transfer);
+		target.addDropListener(new DropTargetAdapter() {
+			@Override
+			public void dragEnter(DropTargetEvent event) {
+			}
+
+			@Override
+			public void drop(DropTargetEvent event) {
+				select(ModelTransfer.getDescriptor(event));
+			}
+		});
+	}
+
+	private void select(Descriptor d) {
+		if (d == null
+			|| d.type == null
+			|| !Objects.equals(d.type.getModelClass(), type))
+			return;
+		model = db.get(type, d.id);
+		updateLinkText();
+		if (onChange != null) {
+			onChange.accept(model);
+		}
 	}
 
 	/**

@@ -2,6 +2,8 @@ package org.openlca.app.db;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -58,13 +60,35 @@ public class Repository {
 		return repository;
 	}
 
-	public boolean isAhead(Commit commit) {
+	public boolean isAheadOf(Commit commit) {
 		var localCommitId = commits.resolve(Constants.LOCAL_BRANCH);
 		return commits.find()
 				.after(localCommitId)
 				.until(commit.id)
 				.all()
 				.contains(commit);
+	}
+
+	public List<Commit> historyOf(String ref) {
+		return commits.find().refs(ref).all();
+	}
+
+	public List<Commit> getAhead() {
+		return getAhead(historyOf(Constants.LOCAL_REF), historyOf(Constants.REMOTE_REF));
+	}
+
+	public List<Commit> getBehind() {
+		return getAhead(historyOf(Constants.REMOTE_REF), historyOf(Constants.LOCAL_REF));
+	}
+	
+	private static List<Commit> getAhead(List<Commit> left, List<Commit> right) {
+		var diff = new ArrayList<Commit>();
+		for (var i = left.size() - 1; i >= 0; i--) {
+			if (right.contains(left.get(i)))
+				return diff;
+			diff.add(left.get(i));
+		}
+		return diff;
 	}
 
 	public static void connect(IDatabase database) {

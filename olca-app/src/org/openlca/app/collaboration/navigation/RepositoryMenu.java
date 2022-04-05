@@ -30,8 +30,8 @@ public class RepositoryMenu {
 				new CommitAction(),
 				new PushAction(),
 				new FetchAction(),
-				new PullAction(),
-				new MergeAction());
+				new MergeAction(),
+				new PullAction());
 		added += NavigationMenu.addActions(selection, subMenu,
 				new ShowCommentsAction(),
 				new ShowInHistoryAction());

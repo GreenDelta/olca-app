@@ -4,15 +4,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.components.ModelLink;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.Actor;
 import org.openlca.core.model.Epd;
-import org.openlca.core.model.Source;
 
 public class EpdEditor extends ModelEditor<Epd> {
 
@@ -56,47 +53,14 @@ public class EpdEditor extends ModelEditor<Epd> {
 		}
 
 		private void referenceSection(Composite body, FormToolkit tk) {
-			var comp = UI.formSection(body, tk, "References", 2);
-			ModelLink.of(Actor.class)
-				.renderOn(comp, tk, "Manufacturer")
-				.setModel(epd().manufacturer)
-				.onChange(actor -> {
-					epd().manufacturer = actor;
-					editor.setDirty();
-				});
+			var comp = UI.formSection(body, tk, "References", 3);
+			modelLink(comp, "Manufacturer", "manufacturer");
+			modelLink(comp, "Program operator", "programOperator");
+			modelLink(comp, "PCR", "pcr");
+			modelLink(comp, "Verifier", "verifier");
 
-			ModelLink.of(Actor.class)
-				.renderOn(comp, tk, "Program operator")
-				.setModel(epd().programOperator)
-				.onChange(actor -> {
-					epd().programOperator = actor;
-					editor.setDirty();
-				});
-
-			ModelLink.of(Source.class)
-				.renderOn(comp, tk, "PCR")
-				.setModel(epd().pcr)
-				.onChange(source -> {
-					epd().pcr = source;
-					editor.setDirty();
-				});
-
-			ModelLink.of(Actor.class)
-				.renderOn(comp, tk, "Verifier")
-				.setModel(epd().verifier)
-				.onChange(actor -> {
-					epd().verifier = actor;
-					editor.setDirty();
-				});
-
-			// urn
 			UI.formLabel(comp, tk, "URN");
 			new UrnLink(editor).render(comp, tk);
 		}
-
-		private Epd epd() {
-			return getModel();
-		}
 	}
-
 }
