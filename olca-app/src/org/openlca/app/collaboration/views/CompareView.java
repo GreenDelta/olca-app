@@ -87,7 +87,7 @@ public class CompareView extends ViewPart {
 
 	private DiffNode buildNode(Commit commit, List<INavigationElement<?>> elements) {
 		try {
-			var isAhead = Repository.get().isAhead(commit);
+			var isAhead = Repository.get().isAheadOf(commit);
 			viewer.setDirection(isAhead ? Direction.RIGHT_TO_LEFT : Direction.LEFT_TO_RIGHT);
 			var head = Repository.get().commits.head();
 			var rDiffs = getDiffs(commit, head, isAhead);

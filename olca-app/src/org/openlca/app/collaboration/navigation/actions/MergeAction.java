@@ -28,6 +28,11 @@ public class MergeAction extends Action implements INavigationAction {
 	}
 
 	@Override
+	public boolean isEnabled() {
+		return !Repository.get().getAhead().isEmpty();
+	}
+
+	@Override
 	public void run() {
 		Database.getWorkspaceIdUpdater().disable();
 		var workspaceIds = Repository.get().workspaceIds;
@@ -56,7 +61,9 @@ public class MergeAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
-		return Repository.isConnected();
+		if (!Repository.isConnected())
+			return false;
+		return true;
 	}
 
 }
