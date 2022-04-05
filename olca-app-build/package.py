@@ -357,15 +357,15 @@ class MacDir:
             shutil.move(source, target)
 
         shutil.copyfile(
-            PROJECT_DIR / 'macos/Info.plist',
+            PROJECT_DIR / 'templates/Info.plist',
             app_dir / 'Contents/Info.plist')
 
         # create the ini file
         plugins_dir = eclipse_dir / 'plugins'
-        launcher_jar = next(plugins_dir.glob('*launcher*.jar'))
-        launcher_lib = next(plugins_dir.glob('**launcher.cocoa.macosx*'))
+        launcher_jar = next(plugins_dir.glob('*launcher*.jar')).name
+        launcher_lib = next(plugins_dir.glob('*launcher.cocoa.macosx*')).name
         Template.apply(
-            PROJECT_DIR / 'macos/openLCA.ini',
+            PROJECT_DIR / 'templates/openLCA_mac.ini',
             eclipse_dir / 'eclipse.ini',
             launcher_jar=launcher_jar,
             launcher_lib=launcher_lib)
@@ -403,3 +403,5 @@ if __name__ == '__main__':
     # main()
     build_dir = BuildDir(OsArch.MACOS_X64)
     MacDir.arrange(build_dir)
+    # JRE.extract_to(build_dir)
+    # NativeLib.extract_to(build_dir)

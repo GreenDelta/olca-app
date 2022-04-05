@@ -178,7 +178,7 @@ def pack_macos(version_date):
     os.makedirs(base + 'openLCA.app/Contents/Eclipse', exist_ok=True)
     os.makedirs(base + 'openLCA.app/Contents/MacOS', exist_ok=True)
 
-    shutil.copyfile('macos/Info.plist', base+'openLCA.app/Contents/Info.plist')
+    shutil.copyfile('templates/Info.plist', base + 'openLCA.app/Contents/Info.plist')
     shutil.move(base+"configuration", base + 'openLCA.app/Contents/Eclipse')
     shutil.move(base+"plugins", base + 'openLCA.app/Contents/Eclipse')
     shutil.move(base+".eclipseproduct", base + 'openLCA.app/Contents/Eclipse')
