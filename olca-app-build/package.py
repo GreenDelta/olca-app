@@ -3,6 +3,7 @@ import os
 import platform
 import shutil
 import subprocess
+import sys
 import urllib.request
 import zipfile
 
@@ -25,6 +26,12 @@ class OsArch(Enum):
 
     def is_mac(self) -> bool:
         return self == OsArch.MACOS_ARM or self == OsArch.MACOS_X64
+
+    def is_win(self) -> bool:
+        return self == OsArch.WINDOWS_X64
+
+    def is_linux(self) -> bool:
+        return self == OsArch.LINUX_X64
 
 
 @dataclass
@@ -199,6 +206,18 @@ class BuildDir:
         if not license_target.exists():
             shutil.copytree(resources / 'licenses', license_target)
 
+        # copy ini files
+        if self.osa.is_win():
+            Template.apply(
+                PROJECT_DIR / 'templates/openLCA_win.ini',
+                self.app_dir / 'openLCA.ini',
+                encoding='iso-8859-1', lang='en')
+        if self.osa.is_linux():
+            shutil.copy2(
+                PROJECT_DIR / 'templates/openLCA_linux.ini',
+                self.app_dir / 'openLCA.ini')
+
+        # build the package
         pack_name = f'openLCA_{self.osa.value}_{version.app_suffix}'
         print(f'  create package {pack_name}')
         pack = Build.dist_dir() / pack_name
@@ -376,6 +395,35 @@ class MacDir:
         os.remove(macos_dir / 'openLCA.ini')
 
 
+class Nsis:
+    VERSION = '2.51'
+
+    @staticmethod
+    def fetch() -> Path:
+        nsis = PROJECT_DIR / f'tools/nsis-{Nsis.VERSION}/NSIS.exe'
+        if nsis.exists():
+            return nsis
+        url = f'https://sourceforge.net/projects/nsis/files' \
+              f'/NSIS%202/{Nsis.VERSION}/nsis-{Nsis.VERSION}.zip/download'
+        print(f'  download NSIS from {url}')
+        nsis_zip = PROJECT_DIR / f'tools/nsis-{Nsis.VERSION}.zip'
+        urllib.request.urlretrieve(url, nsis_zip)
+        Zip.unzip(nsis_zip,  PROJECT_DIR / f'tools')
+        if not nsis.exists():
+            AssertionError(f'failed to fetch NSIS from {url}')
+        return nsis
+
+    @staticmethod
+    def run(build_dir: BuildDir):
+        if not build_dir.osa.is_win():
+            return
+        if '--winstaller' not in sys.argv:
+            print('  skip NSIS installer build')
+            return False
+        if platform.system().lower() != 'windows':
+            print('WARNING: NSIS installers can be only build on Windows')
+
+
 class Template:
 
     @staticmethod
@@ -401,7 +449,4 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    build_dir = BuildDir(OsArch.MACOS_X64)
-    MacDir.arrange(build_dir)
-    # JRE.extract_to(build_dir)
-    # NativeLib.extract_to(build_dir)
+    print(Nsis.fetch())
