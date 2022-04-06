@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.model;
+package org.openlca.app.editors.graphical.view;
 
 import org.eclipse.draw2d.BendpointConnectionRouter;
 import org.eclipse.draw2d.Connection;

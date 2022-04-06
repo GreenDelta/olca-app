@@ -10,6 +10,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
+import org.openlca.app.editors.graphical.view.ProcessFigure;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -269,7 +270,7 @@ public class ProcessNode extends Node {
 	 * Used to avoid removing the initial node while collapsing, should only be
 	 * called from within ProcessExpander.collapse
 	 */
-	void collapseLeft(ProcessNode initialNode) {
+	public void collapseLeft(ProcessNode initialNode) {
 		if (!isExpandedLeft())
 			return;
 		figure().getLeftExpander().collapse(initialNode);
@@ -279,7 +280,7 @@ public class ProcessNode extends Node {
 	 * Used to avoid removing the initial node while collapsing, should only be
 	 * called from within ProcessExpander.collapse
 	 */
-	void collapseRight(ProcessNode initialNode) {
+	public void collapseRight(ProcessNode initialNode) {
 		if (!isExpandedRight())
 			return;
 		figure().getRightExpander().collapse(initialNode);

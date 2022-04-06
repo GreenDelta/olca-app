@@ -10,6 +10,7 @@ import org.eclipse.gef.editpolicies.ComponentEditPolicy;
 import org.openlca.app.editors.graphical.layout.Animation;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
+import org.openlca.app.editors.graphical.view.ProductSystemFigure;
 
 class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 

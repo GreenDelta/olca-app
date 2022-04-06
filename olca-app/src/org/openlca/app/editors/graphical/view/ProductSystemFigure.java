@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.model;
+package org.openlca.app.editors.graphical.view;
 
 import java.util.List;
 
@@ -7,13 +7,14 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
+import org.openlca.app.editors.graphical.model.ProductSystemNode;
 
-class ProductSystemFigure extends Figure {
+public class ProductSystemFigure extends Figure {
 
 	private final ProductSystemNode node;
 	private final LineBorder border;
 
-	ProductSystemFigure(ProductSystemNode node) {
+	public ProductSystemFigure(ProductSystemNode node) {
 		this.node = node;
 		node.figure = this;
 		border = new LineBorder(1);

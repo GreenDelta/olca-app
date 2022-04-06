@@ -1,9 +1,11 @@
-package org.openlca.app.editors.graphical.model;
+package org.openlca.app.editors.graphical.view;
 
 import org.eclipse.draw2d.AbstractConnectionAnchor;
 import org.eclipse.draw2d.geometry.Point;
+import org.openlca.app.editors.graphical.model.ExchangeNode;
+import org.openlca.app.editors.graphical.model.ProcessNode;
 
-class LinkAnchor extends AbstractConnectionAnchor {
+public class LinkAnchor extends AbstractConnectionAnchor {
 
 	private final boolean forInput;
 	private final ProcessNode node;
@@ -12,7 +14,7 @@ class LinkAnchor extends AbstractConnectionAnchor {
 	 * Creates a link anchor for an output. The exchange node can be null if the
 	 * process is minimized.
 	 */
-	static LinkAnchor forOutput(ProcessNode p, ExchangeNode e) {
+	public static LinkAnchor forOutput(ProcessNode p, ExchangeNode e) {
 		if (p == null)
 			return null;
 		return new LinkAnchor(p, e, false);
@@ -22,7 +24,7 @@ class LinkAnchor extends AbstractConnectionAnchor {
 	 * Creates a link anchor for an output. The exchange node can be null if the
 	 * process is minimized.
 	 */
-	static LinkAnchor forInput(ProcessNode p, ExchangeNode e) {
+	public static LinkAnchor forInput(ProcessNode p, ExchangeNode e) {
 		if (p == null)
 			return null;
 		return new LinkAnchor(p, e, true);

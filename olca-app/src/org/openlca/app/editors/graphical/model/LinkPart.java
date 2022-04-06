@@ -17,6 +17,7 @@ import org.eclipse.gef.requests.GroupRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.command.DeleteLinkCommand;
+import org.openlca.app.editors.graphical.view.TreeConnectionRouter;
 
 class LinkPart extends AbstractConnectionEditPart {
 
@@ -51,8 +52,6 @@ class LinkPart extends AbstractConnectionEditPart {
 		getModel().figure = figure;
 		return figure;
 	}
-
-
 
 	@Override
 	protected void createEditPolicies() {

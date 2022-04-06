@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.SWT;
+import org.openlca.app.editors.graphical.view.IOFigure;
 
 class IOPart extends AppAbstractEditPart<IONode> {
 

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.model;
+package org.openlca.app.editors.graphical.view;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,17 +17,20 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
-import org.openlca.app.editors.graphical.model.ProcessExpander.Side;
+import org.openlca.app.editors.graphical.model.Link;
+import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.themes.Theme.Box;
+import org.openlca.app.editors.graphical.view.ProcessExpander.Side;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-class ProcessFigure extends Figure {
+public class ProcessFigure extends Figure {
 
-	static int MINIMUM_HEIGHT = 34;
+	public static final int MINIMUM_WIDTH = 250;
+	public static int MINIMUM_HEIGHT = 34;
 	static {
 		try {
 			var boldFont = UI.boldFont();
@@ -43,14 +46,12 @@ class ProcessFigure extends Figure {
 		}
 	}
 
-	static final int MINIMUM_WIDTH = 250;
-
 	final ProcessNode node;
 	private ProcessExpander leftExpander;
 	private ProcessExpander rightExpander;
 	private LineBorder border;
 
-	ProcessFigure(ProcessNode node) {
+	public ProcessFigure(ProcessNode node) {
 		this.node = node;
 		initializeFigure();
 		createHeader();
@@ -99,7 +100,7 @@ class ProcessFigure extends Figure {
 		setBorder(border);
 	}
 
-	void refresh() {
+	public void refresh() {
 
 		// refresh expanders
 		if (leftExpander != null) {
@@ -131,11 +132,11 @@ class ProcessFigure extends Figure {
 		super.paintFigure(g);
 	}
 
-	ProcessExpander getLeftExpander() {
+	public ProcessExpander getLeftExpander() {
 		return leftExpander;
 	}
 
-	ProcessExpander getRightExpander() {
+	public ProcessExpander getRightExpander() {
 		return rightExpander;
 	}
 
@@ -152,7 +153,7 @@ class ProcessFigure extends Figure {
 		return dim;
 	}
 
-	int getMinimumHeight() {
+	public int getMinimumHeight() {
 		return getSize().height;
 	}
 

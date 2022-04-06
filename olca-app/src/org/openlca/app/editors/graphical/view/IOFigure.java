@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.model;
+package org.openlca.app.editors.graphical.view;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,18 +11,20 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.swt.SWT;
+import org.openlca.app.editors.graphical.model.FlowButton;
+import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.themes.Theme.Box;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 
-class IOFigure extends Figure {
+public class IOFigure extends Figure {
 
 	private final ProcessNode node;
 	private final ExchangePanel inputPanel;
 	private final ExchangePanel outputPanel;
 
-	IOFigure(ProcessNode node) {
+	public IOFigure(ProcessNode node) {
 		this.node = node;
 		var layout = new GridLayout(1, true);
 		layout.horizontalSpacing = 4;

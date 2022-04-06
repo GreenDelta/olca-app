@@ -11,7 +11,18 @@ public class Link {
 	public ProcessNode outputNode;
 	public ProcessNode inputNode;
 
+	/**
+	 * @deprecated Link is the model and should not have a reference to the view
+	 * (EditPart)
+	 */
+	@Deprecated
 	public Connection figure;
+
+	/**
+	 * @deprecated Link is the model and should not have a reference to the
+	 * controller (EditPart)
+	 */
+	@Deprecated
 	LinkPart editPart;
 
 	/**
@@ -33,11 +44,19 @@ public class Link {
 		return null;
 	}
 
-	void refreshSourceAnchor() {
+	/**
+	 * @deprecated call methods on the EditPart directly
+	 */
+	@Deprecated
+	public void refreshSourceAnchor() {
 		editPart.refreshSourceAnchor();
 	}
 
-	void refreshTargetAnchor() {
+	/**
+	 * @deprecated call methods on the EditPart directly
+	 */
+	@Deprecated
+	public void refreshTargetAnchor() {
 		editPart.refreshTargetAnchor();
 	}
 
@@ -66,9 +85,8 @@ public class Link {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof Link))
+		if (!(obj instanceof Link other))
 			return false;
-		var other = (Link) obj;
 		return Objects.equals(processLink, other.processLink)
 					 && Objects.equals(outputNode, other.outputNode)
 					 && Objects.equals(inputNode, other.inputNode);

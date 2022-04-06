@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.model;
+package org.openlca.app.editors.graphical.view;
 
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;

@@ -14,6 +14,7 @@ import org.openlca.app.editors.graphical.command.Commands;
 import org.openlca.app.editors.graphical.command.DeleteProcessCommand;
 import org.openlca.app.editors.graphical.command.XYLayoutCommand;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
+import org.openlca.app.editors.graphical.view.ProcessFigure;
 
 public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 

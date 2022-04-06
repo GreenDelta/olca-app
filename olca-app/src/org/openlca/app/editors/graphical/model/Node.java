@@ -14,7 +14,14 @@ abstract class Node {
 
 	private Node parent;
 	private final List<Node> children = new ArrayList<>();
+
+	/**
+	 * @deprecated a Node represents a model and should not contain a reference
+	 * to a Figure; better move the figure to the corresponding EditPart
+	 */
+	@Deprecated
 	public IFigure figure;
+
 	AppAbstractEditPart<?> editPart;
 
 	Node(GraphEditor editor) {

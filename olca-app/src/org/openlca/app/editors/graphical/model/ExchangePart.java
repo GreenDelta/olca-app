@@ -9,6 +9,7 @@ import org.eclipse.gef.requests.SelectionRequest;
 import org.eclipse.gef.tools.ConnectionDragCreationTool;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.policy.CreateLinkPolicy;
+import org.openlca.app.editors.graphical.view.ExchangeFigure;
 
 class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 

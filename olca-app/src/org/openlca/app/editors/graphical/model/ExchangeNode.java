@@ -3,6 +3,7 @@ package org.openlca.app.editors.graphical.model;
 import java.util.Objects;
 
 import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.view.ExchangeFigure;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -61,6 +62,10 @@ public class ExchangeNode extends Node {
 		return exchange.isInput != node.exchange.isInput;
 	}
 
+	/**
+	 * @deprecated this method should go and called from the respective EditPart
+	 */
+	@Deprecated
 	public void setHighlighted(boolean value) {
 		((ExchangeFigure) figure).setHighlighted(value);
 	}

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.model;
+package org.openlca.app.editors.graphical.view;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
@@ -7,17 +7,18 @@ import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.Label;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.Descriptor;
 
-class ExchangeFigure extends Figure {
+public class ExchangeFigure extends Figure {
 
 	final ExchangeNode node;
 	private final Label label;
 
-	ExchangeFigure(ExchangeNode node) {
+	public ExchangeFigure(ExchangeNode node) {
 		this.node = node;
 		var layout = new GridLayout(1, true);
 		layout.marginWidth = 0;
@@ -53,7 +54,7 @@ class ExchangeFigure extends Figure {
 		return text;
 	}
 
-	void setHighlighted(boolean b) {
+	public void setHighlighted(boolean b) {
 		if (b) {
 			label.setFont(UI.boldFont());
 		} else {

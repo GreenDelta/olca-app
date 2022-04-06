@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.model;
+package org.openlca.app.editors.graphical.view;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,12 +8,15 @@ import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.editors.graphical.command.ExpansionCommand;
+import org.openlca.app.editors.graphical.model.Link;
+import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 
-class ProcessExpander extends ImageFigure {
+public class ProcessExpander extends ImageFigure {
 
 	private final ProcessNode node;
 	private final Side side;
@@ -51,7 +54,7 @@ class ProcessExpander extends ImageFigure {
 		return false;
 	}
 
-	void expand() {
+	public void expand() {
 		createNecessaryNodes();
 		setImage(Icon.MINUS.get());
 		expanded = true;
@@ -129,7 +132,7 @@ class ProcessExpander extends ImageFigure {
 		return node;
 	}
 
-	void collapse(ProcessNode initialNode) {
+	public void collapse(ProcessNode initialNode) {
 		if (isCollapsing)
 			return;
 		isCollapsing = true;
@@ -181,11 +184,11 @@ class ProcessExpander extends ImageFigure {
 			setImage(Icon.PLUS.get());
 	}
 
-	boolean isExpanded() {
+	public boolean isExpanded() {
 		return expanded;
 	}
 
-	void setExpanded(boolean value) {
+	public void setExpanded(boolean value) {
 		expanded = value;
 	}
 
