@@ -2,10 +2,8 @@ package org.openlca.app.editors.graphical.view;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.Label;
-import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeNode;
 import org.openlca.app.util.Labels;
@@ -29,7 +27,7 @@ public class ExchangeFigure extends Figure {
 			label.setFont(UI.boldFont());
 		}
 		setToolTip(new Label(tooltip()));
-		add(label, new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		add(label, GridPos.fillTop());
 	}
 
 	private String tooltip() {

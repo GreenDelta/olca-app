@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.model;
+package org.openlca.app.editors.graphical.view;
 
 import java.awt.Rectangle;
 
@@ -9,11 +9,12 @@ import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.Label;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.action.ExchangeAddAction;
+import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.util.Colors;
 
-public class FlowButton extends Clickable {
+public class AddFlowButton extends Clickable {
 
-	public FlowButton(boolean forInputs, ProcessNode node) {
+	public AddFlowButton(boolean forInputs, ProcessNode node) {
 		super(new FlowLabel(" + add flow "));
 		var layout = new GridLayout(1, true);
 		layout.marginHeight = 3;
