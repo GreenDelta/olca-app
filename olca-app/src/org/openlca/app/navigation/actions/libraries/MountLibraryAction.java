@@ -35,7 +35,6 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.library.Library;
-import org.openlca.core.library.LibraryImport;
 import org.openlca.core.library.LibraryPackage;
 import org.openlca.util.Strings;
 
@@ -112,10 +111,9 @@ public class MountLibraryAction extends Action implements INavigationAction {
 		var b = App.exec("Check library", () -> canMount(lib, db));
 		if (b == null || !b)
 			return false;
-		var imp = new LibraryImport(db, lib);
 		App.runWithProgress(
 			"Mounting library " + lib.id() +  " to " + db.getName(),
-			imp,
+			() -> lib.mountTo(db),
 			Navigator::refresh);
 		return true;
 	}

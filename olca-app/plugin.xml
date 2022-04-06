@@ -370,7 +370,7 @@
 		<editor
 			class="org.openlca.app.tools.libraries.LibraryInfoPage"
 			default="false"
-			icon="icons/model/flow.png"
+			icon="icons/library.png"
 			id="LibraryInfoPage"
 			name="Library">
 		</editor>
