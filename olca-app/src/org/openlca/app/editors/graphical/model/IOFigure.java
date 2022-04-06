@@ -11,14 +11,10 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.swt.SWT;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.themes.Theme.Box;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
-import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessType;
 
 class IOFigure extends Figure {
 
@@ -42,16 +38,10 @@ class IOFigure extends Figure {
 		add(new Header(forInputs), new GridData(SWT.FILL, SWT.TOP, true, false));
 		var panel = new ExchangePanel(node);
 		add(panel, new GridData(SWT.FILL, SWT.FILL, true, true));
-		var figure = new ExchangeFigure(node.getExchangeNodes().get(0));
-
-		// "+ add flow" button for unit processes that are not part of a library.
-		if (node.process.type == ModelType.PROCESS
-			&& node.process.library == null) {
-			var process = Database.get().get(Process.class, node.process.id);
-			if (process.processType == ProcessType.UNIT_PROCESS) {
-				add(new FlowButtonWrapper(figure, forInputs, node),
-					new GridData(SWT.FILL, SWT.TOP, true, false));
-			}
+		// "+ add flow" button
+		if (node.isEditable()) {
+				var gd = new GridData(SWT.FILL, SWT.TOP, true, false);
+				add(new FlowButtonWrapper(forInputs, node), gd);
 		}
 		return panel;
 	}
@@ -59,14 +49,12 @@ class IOFigure extends Figure {
 	@Override
 	public void add(IFigure figure, Object constraint, int index) {
 
-		if (!(figure instanceof ExchangeFigure)) {
+		if (!(figure instanceof ExchangeFigure ef)) {
 			super.add(figure, constraint, index);
 			return;
 		}
 
-		// delegate exchange figures to the respective input or
-		// output panel
-		var ef = (ExchangeFigure) figure;
+		// delegate exchange figures to the respective input or output panel
 		if (ef.node == null || ef.node.exchange == null)
 			return;
 		var exchange = ef.node.exchange;
@@ -135,39 +123,37 @@ class IOFigure extends Figure {
 		}
 	}
 
-	private static class ExchangeRow {
-
-		private final ImageFigure icon;
-		private final ExchangeFigure figure;
-		private final Label amountLabel;
-		private final Label unitLabel;
-
-		private ExchangeRow(ImageFigure icon, ExchangeFigure figure, Label amountLabel, Label unitLabel) {
-			this.icon = icon;
-			this.figure = figure;
-			this.amountLabel = amountLabel;
-			this.unitLabel = unitLabel;
-		}
+	private record ExchangeRow(
+		ExchangeFigure figure, Label amountLabel, Label unitLabel) {
 
 		static void create(ExchangeFigure figure, ExchangePanel panel) {
-			if (figure == null || panel == null || figure.node == null || figure.node.exchange == null)
+			if (figure == null
+				|| panel == null
+				|| figure.node == null
+				|| figure.node.exchange == null)
 				return;
 
 			var config = figure.node.config();
 			var flowType = figure.node.flowType();
 			var exchange = figure.node.exchange;
 
-			var icon = config.showFlowIcons ? add(panel, SWT.LEFT, new ImageFigure(Images.get(flowType))) : null;
-			add(panel, SWT.FILL, figure);
-			var amount = config.showFlowAmounts ? add(panel, SWT.RIGHT, new Label(Numbers.format(exchange.amount, 2)))
-				: null;
-			var unit = config.showFlowAmounts ? add(panel, SWT.LEFT, new Label(Labels.name(exchange.unit))) : null;
+			if (config.showFlowIcons) {
+				add(panel, SWT.LEFT, new ImageFigure(Images.get(flowType)));
+			}
 
-			var row = new ExchangeRow(icon, figure, amount, unit);
+			add(panel, SWT.FILL, figure);
+			var amount = config.showFlowAmounts
+				? add(panel, SWT.RIGHT, new Label(Numbers.format(exchange.amount, 2)))
+				: null;
+			var unit = config.showFlowAmounts
+				? add(panel, SWT.LEFT, new Label(Labels.name(exchange.unit)))
+				: null;
+			var row = new ExchangeRow(figure, amount, unit);
 			panel.rows.add(row);
 		}
 
-		private static <T extends Figure> T add(ExchangePanel panel, int hAlign, T figure) {
+		private static <T extends Figure> T add(
+			ExchangePanel panel, int hAlign, T figure) {
 			panel.add(figure, new GridData(hAlign, SWT.TOP, hAlign == SWT.FILL, false));
 			return figure;
 		}
@@ -184,17 +170,16 @@ class IOFigure extends Figure {
 
 	}
 
-	private class FlowButtonWrapper extends Figure {
-		private final FlowButton flowButton;
+	private static class FlowButtonWrapper extends Figure {
 
-		public FlowButtonWrapper(ExchangeFigure figure, boolean forInputs, ProcessNode node) {
-			flowButton = new FlowButton(figure, forInputs, node);
+		public FlowButtonWrapper(boolean forInputs, ProcessNode node) {
+			var button = new FlowButton(forInputs, node);
 			var layout = new GridLayout(1, true);
 			layout.marginHeight = 3;
 			layout.marginWidth = 5;
 			setLayoutManager(layout);
 			var alignment = forInputs ? SWT.LEFT : SWT.RIGHT;
-			add(flowButton, new GridData(alignment, SWT.TOP, true, false));
+			add(button, new GridData(alignment, SWT.TOP, true, false));
 		}
 	}
 }

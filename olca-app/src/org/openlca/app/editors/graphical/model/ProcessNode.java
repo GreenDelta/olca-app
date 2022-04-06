@@ -14,6 +14,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
+import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 
@@ -53,8 +54,11 @@ public class ProcessNode extends Node {
 			: null;
 	}
 
-	public boolean isWasteProcess() {
-		return parent().isWasteProcess(this);
+	public boolean isEditable() {
+		if (process instanceof ProcessDescriptor p) {
+			return !p.isFromLibrary() && p.processType == ProcessType.UNIT_PROCESS;
+		}
+		return false;
 	}
 
 	@Override

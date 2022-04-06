@@ -13,18 +13,18 @@ public class RoundBorder extends LineBorder {
 	}
 
 	@Override
-	public void paint(IFigure figure, Graphics graphics, Insets insets) {
-		graphics.setAntialias(SWT.ON);
+	public void paint(IFigure figure, Graphics g, Insets insets) {
+		g.setAntialias(SWT.ON);
 		tempRect.setBounds(getPaintRectangle(figure, insets));
 		if (getWidth() % 2 == 1) {
 			tempRect.width--;
 			tempRect.height--;
 		}
 		tempRect.shrink(getWidth() / 2, getWidth() / 2);
-		graphics.setLineWidth(getWidth());
-		graphics.setLineStyle(getStyle());
+		g.setLineWidth(getWidth());
+		g.setLineStyle(getStyle());
 		if (getColor() != null)
-			graphics.setForegroundColor(getColor());
-		graphics.drawRoundRectangle(tempRect, 15, 15);
+			g.setForegroundColor(getColor());
+		g.drawRoundRectangle(tempRect, 15, 15);
 	}
 }

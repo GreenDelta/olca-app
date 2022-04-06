@@ -7,6 +7,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ExchangeNode extends Node {
 
@@ -27,6 +28,21 @@ public class ExchangeNode extends Node {
 		return exchange == null || exchange.flow == null
 				? null
 				: exchange.flow.flowType;
+	}
+
+	public boolean isRefFlow() {
+		if (exchange == null)
+			return false;
+		var parent = parent();
+		if (parent == null)
+			return false;
+		if (parent.process instanceof ProcessDescriptor p) {
+			return p.quantitativeReference != null
+				&& p.quantitativeReference == exchange.id;
+		}
+		// TODO: product systems and results ...
+
+		return false;
 	}
 
 	@Override

@@ -11,7 +11,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 class ExchangeFigure extends Figure {
 
@@ -25,17 +24,11 @@ class ExchangeFigure extends Figure {
 		layout.marginHeight = 0;
 		setLayoutManager(layout);
 		label = new Label(node.getName());
-		highlightQuantitativeReference(node);
+		if (node.isRefFlow()) {
+			label.setFont(UI.boldFont());
+		}
 		setToolTip(new Label(tooltip()));
 		add(label, new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-	}
-
-	private void highlightQuantitativeReference(ExchangeNode exchangeNode) {
-		if (exchangeNode.parent().process instanceof ProcessDescriptor p
-		&& p.quantitativeReference != null) {
-			if (p.quantitativeReference == node.exchange.id)
-				setHighlighted(true);
-		}
 	}
 
 	private String tooltip() {
@@ -55,8 +48,8 @@ class ExchangeFigure extends Figure {
 				Descriptor.of(exchange.flow)) + "\n";
 		}
 		text += M.Amount + ": "
-						+ Numbers.format(exchange.amount)
-						+ " " + Labels.name(exchange.unit);
+			+ Numbers.format(exchange.amount)
+			+ " " + Labels.name(exchange.unit);
 		return text;
 	}
 
