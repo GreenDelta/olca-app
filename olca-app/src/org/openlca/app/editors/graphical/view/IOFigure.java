@@ -163,7 +163,6 @@ public class IOFigure extends Figure {
 				unit.setForegroundColor(color);
 			}
 		}
-
 	}
 
 	private static class ButtonMargin extends Figure {

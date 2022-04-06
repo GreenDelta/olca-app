@@ -22,7 +22,7 @@ public class ExchangeFigure extends Figure {
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		setLayoutManager(layout);
-		label = new Label(node.getName());
+		label = new Label(Labels.name(node.exchange.flow));
 		if (node.isRefFlow()) {
 			label.setFont(UI.boldFont());
 		}
@@ -31,24 +31,24 @@ public class ExchangeFigure extends Figure {
 	}
 
 	private String tooltip() {
-		var exchange = node.exchange;
-		if (exchange == null || exchange.flow == null)
+		var e = node.exchange;
+		if (e == null || e.flow == null)
 			return "";
 		var type = node.flowType();
 		var prefix = type == null
 			? "?"
 			: Labels.of(type);
-		if (exchange.isAvoided) {
+		if (e.isAvoided) {
 			prefix += " - avoided";
 		}
-		var text = prefix + ": " + node.getName() + "\n";
-		if (exchange.flow.category != null) {
+		var text = prefix + ": " + Labels.name(e.flow) + "\n";
+		if (e.flow.category != null) {
 			text += M.Category + ": " + Labels.getShortCategory(
-				Descriptor.of(exchange.flow)) + "\n";
+				Descriptor.of(e.flow)) + "\n";
 		}
 		text += M.Amount + ": "
-			+ Numbers.format(exchange.amount)
-			+ " " + Labels.name(exchange.unit);
+			+ Numbers.format(e.amount)
+			+ " " + Labels.name(e.unit);
 		return text;
 	}
 

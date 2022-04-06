@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.view.ExchangeFigure;
-import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
@@ -44,14 +43,6 @@ public class ExchangeNode extends Node {
 		// TODO: product systems and results ...
 
 		return false;
-	}
-
-	@Override
-	public String getName() {
-		if (exchange == null) {
-			return "";
-		}
-		return Labels.name(exchange.flow);
 	}
 
 	public boolean matches(ExchangeNode node) {

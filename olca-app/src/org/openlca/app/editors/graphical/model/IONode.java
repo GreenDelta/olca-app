@@ -107,11 +107,6 @@ public class IONode extends Node {
 	}
 
 	@Override
-	public String getName() {
-		return null;
-	}
-
-	@Override
 	@SuppressWarnings("unchecked")
 	public List<ExchangeNode> getChildren() {
 		return (List<ExchangeNode>) super.getChildren();

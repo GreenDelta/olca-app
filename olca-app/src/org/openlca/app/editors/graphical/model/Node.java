@@ -63,8 +63,6 @@ abstract class Node {
 		return children;
 	}
 
-	public abstract String getName();
-
 	public boolean isVisible() {
 		return figure != null && figure.isVisible();
 	}

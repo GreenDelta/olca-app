@@ -59,7 +59,7 @@ public class ProcessFigure extends Figure {
 	}
 
 	private void initializeFigure() {
-		setToolTip(new Label(node.getName()));
+		setToolTip(new Label(Labels.name(node.process)));
 		setForegroundColor(Colors.white());
 		var layout = new GridLayout(1, true);
 		layout.horizontalSpacing = 10;
@@ -82,15 +82,15 @@ public class ProcessFigure extends Figure {
 
 		// left expander
 		leftExpander = new ProcessExpander(node, Side.INPUT);
-		top.add(leftExpander, new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		top.add(leftExpander, GridPos.leftCenter());
 
 		// process icon and header
-		top.add(new ImageFigure(Images.get(node.process)), new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		top.add(new BoxHeader(node), new GridData(SWT.FILL, SWT.TOP, true, false));
+		top.add(new ImageFigure(Images.get(node.process)), GridPos.leftCenter());
+		top.add(new BoxHeader(node), GridPos.fillTop());
 
 		// right expander
 		rightExpander = new ProcessExpander(node, Side.OUTPUT);
-		top.add(rightExpander, new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		top.add(rightExpander, GridPos.rightCenter());
 
 		add(top, new GridData(SWT.FILL, SWT.FILL, true, false));
 
@@ -202,23 +202,16 @@ public class ProcessFigure extends Figure {
 		BoxHeader(ProcessNode node) {
 			this.node = node;
 			this.box = Box.of(node);
-			setToolTip(new Label(tooltipOf(node)));
+			var name = Labels.name(node.process);
+			setToolTip(new Label(name));
 			var layout = new GridLayout(1, true);
 			layout.marginHeight = 2;
 			layout.marginWidth = 10;
 			setLayoutManager(layout);
-			label = new Label(node.getName());
+			label = new Label(name);
 			var theme = node.config().theme();
 			label.setForegroundColor(theme.boxFontColor(box));
 			add(label, new GridData(SWT.LEFT, SWT.TOP, true, false));
-		}
-
-		String tooltipOf(ProcessNode node) {
-			if (node.process instanceof ProcessDescriptor) {
-				var d = (ProcessDescriptor) node.process;
-				return Labels.of(d.processType) + ": " + node.getName();
-			}
-			return M.ProductSystem + ": " + node.getName();
 		}
 
 		@Override

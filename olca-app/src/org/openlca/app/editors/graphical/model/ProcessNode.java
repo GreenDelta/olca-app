@@ -11,7 +11,6 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.view.ProcessFigure;
-import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
@@ -126,11 +125,6 @@ public class ProcessNode extends Node {
 			if (l.processLink.equals(link))
 				return l;
 		return null;
-	}
-
-	@Override
-	public String getName() {
-		return Labels.name(process);
 	}
 
 	public boolean isMinimized() {
@@ -336,8 +330,8 @@ public class ProcessNode extends Node {
 		String id = process != null
 			? Long.toString(process.id)
 			: "null";
-		return "ProcessNode [ id =" + id + " name = "
-			+ Labels.name(process) + " ]";
+		return "ProcessNode [ id =" + id + " content = "
+			+ process + " ]";
 	}
 
 }

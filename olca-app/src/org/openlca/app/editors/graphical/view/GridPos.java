@@ -12,8 +12,16 @@ class GridPos {
 		return new GridData(SWT.LEFT, SWT.TOP, false, false);
 	}
 
+	static GridData leftCenter() {
+		return new GridData(SWT.LEFT, SWT.CENTER, false, false);
+	}
+
 	static GridData rightTop() {
 		return new GridData(SWT.RIGHT, SWT.TOP, false, false);
+	}
+
+	static GridData rightCenter() {
+		return new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 	}
 
 	static GridData fillTop() {

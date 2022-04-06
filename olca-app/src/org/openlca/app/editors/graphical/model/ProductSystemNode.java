@@ -70,11 +70,6 @@ public class ProductSystemNode extends Node {
 		return null;
 	}
 
-	@Override
-	public String getName() {
-		return getProductSystem().name;
-	}
-
 	public void highlightMatchingExchanges(ExchangeNode toMatch) {
 		if (toMatch == null)
 			return;

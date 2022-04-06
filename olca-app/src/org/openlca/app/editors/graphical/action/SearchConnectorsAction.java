@@ -19,6 +19,7 @@ import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.search.ConnectionDialog;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Labels;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
@@ -74,16 +75,17 @@ class SearchConnectorsAction extends EditorAction {
 		private void fillMenu() {
 			if (menu == null)
 				return;
-			for (MenuItem item : menu.getItems())
+			for (var item : menu.getItems()) {
 				item.dispose();
+			}
 			boolean providers = type == PROVIDER;
-			for (ExchangeNode n : node.loadExchangeNodes()) {
+			for (var n : node.loadExchangeNodes()) {
 				if (n.exchange.isInput != providers)
 					continue;
-
-				MenuItem item = new MenuItem(menu, SWT.NONE);
-				item.setText(n.getName());
-				Controls.onSelect(item, (e) -> executeRequest(n));
+				var label = Labels.name(n.exchange.flow);
+				var item = new MenuItem(menu, SWT.NONE);
+				item.setText(label);
+				Controls.onSelect(item, $ -> executeRequest(n));
 			}
 		}
 
