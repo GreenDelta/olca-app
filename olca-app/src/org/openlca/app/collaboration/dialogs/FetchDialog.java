@@ -11,11 +11,11 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.util.ConflictResolutionMap;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.FetchViewer;
 import org.openlca.app.util.UI;
 import org.openlca.git.actions.ConflictResolver.ConflictResolution;
+import org.openlca.git.util.TypeRefIdMap;
 
 public class FetchDialog extends FormDialog {
 
@@ -76,15 +76,15 @@ public class FetchDialog extends FormDialog {
 		}
 	}
 
-	public ConflictResolutionMap getResolvedConflicts() {
+	public TypeRefIdMap<ConflictResolution> getResolvedConflicts() {
 		return viewer.getResolvedConflicts();
 	}
 
 	private void solveAll(ConflictResolution resolution) {
 		viewer.getResolvedConflicts().clear();
 		for (DiffNode node : viewer.getConflicts()) {
-			var ref = node.contentAsDiffResult().ref();
-			viewer.getResolvedConflicts().put(ref, resolution);
+			var r = node.contentAsDiffResult();
+			viewer.getResolvedConflicts().put(r.type, r.refId, resolution);
 		}
 		viewer.refresh();
 		getButton(OK).setEnabled(true);

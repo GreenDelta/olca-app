@@ -1,9 +1,7 @@
 package org.openlca.app.collaboration.dialogs;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
@@ -13,14 +11,13 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.util.TypeRefIdSet;
 import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffResult;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.DiffType;
-import org.openlca.git.model.Reference;
+import org.openlca.git.util.TypeRefIdSet;
 
 public class CommitReferenceDialog extends FormDialog {
 
@@ -50,19 +47,18 @@ public class CommitReferenceDialog extends FormDialog {
 		form.reflow(true);
 		viewer.setInput(Collections.singleton(node));
 		var initialSelection = getNewElements(node);
-		var map = new TypeRefIdSet(initialSelection);
-		viewer.setSelection(map);
+		viewer.setSelection(initialSelection);
 	}
 
-	private Set<Reference> getNewElements(DiffNode node) {
-		var newElements = new HashSet<Reference>();
+	private TypeRefIdSet getNewElements(DiffNode node) {
+		var newElements = new TypeRefIdSet();
 		var result = node.contentAsDiffResult();
-		if (result != null && result.local.type == DiffType.ADDED) {
-			newElements.add(result.ref());
+		if (result != null && result.leftDiffType == DiffType.ADDED) {
+			newElements.add(result.type, result.refId);
 		}
 		if (node.children == null)
 			return newElements;
-		node.children.forEach(child -> newElements.addAll(getNewElements(child)));
+		node.children.forEach(child -> getNewElements(child).forEach(newElements::add));
 		return newElements;
 	}
 

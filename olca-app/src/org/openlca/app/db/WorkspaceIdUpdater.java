@@ -37,7 +37,7 @@ public class WorkspaceIdUpdater {
 			return;
 		var workspaceIds = Repository.get().workspaceIds;
 		var path = workspaceIds.getPath(Cache.getPathCache(), descriptor);
-		workspaceIds.invalidate(path);
+		workspaceIds.remove(path);
 		if (inTransaction)
 			return;
 		flushObjectIdStore();

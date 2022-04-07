@@ -14,14 +14,14 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.util.TypeRefIdSet;
 import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
-import org.openlca.app.collaboration.viewers.diff.DiffResult;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
+import org.openlca.git.model.Change;
+import org.openlca.git.util.TypeRefIdSet;
 
 public class CommitDialog extends FormDialog {
 
@@ -140,9 +140,10 @@ public class CommitDialog extends FormDialog {
 		return message;
 	}
 
-	public List<DiffResult> getSelected() {
+	public List<Change> getSelected() {
 		return viewer.getChecked().stream()
 				.map(n -> n.contentAsDiffResult())
+				.map(d -> new Change(d.leftDiffType.toChangeType(), d.path))
 				.filter(r -> r != null)
 				.toList();
 	}

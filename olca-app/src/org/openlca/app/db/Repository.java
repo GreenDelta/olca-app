@@ -60,13 +60,8 @@ public class Repository {
 		return repository;
 	}
 
-	public boolean isAheadOf(Commit commit) {
-		var localCommitId = commits.resolve(Constants.LOCAL_BRANCH);
-		return commits.find()
-				.after(localCommitId)
-				.until(commit.id)
-				.all()
-				.contains(commit);
+	public boolean isAhead(Commit commit) {
+		return getAhead().contains(commit);
 	}
 
 	public List<Commit> historyOf(String ref) {

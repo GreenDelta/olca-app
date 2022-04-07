@@ -1,16 +1,14 @@
 package org.openlca.app.collaboration.api;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.openlca.app.collaboration.model.LibraryRestriction;
 import org.openlca.app.collaboration.util.Valid;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.collaboration.util.WebRequests.Type;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
-import org.openlca.git.model.Reference;
+import org.openlca.git.model.Change;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -27,7 +25,7 @@ class LibraryCheckInvocation {
 	String baseUrl;
 	String sessionId;
 	String repositoryId;
-	Collection<Reference> refs;
+	List<Change> changes;
 
 	/**
 	 * Retrieves the libraries for the given ref ids
@@ -38,10 +36,9 @@ class LibraryCheckInvocation {
 	 */
 	List<LibraryRestriction> execute() throws WebRequestException {
 		Valid.checkNotEmpty(baseUrl, "base url");
-		Valid.checkNotEmpty(refs, "refs");
+		Valid.checkNotEmpty(changes, "changes");
 		var url = baseUrl + PATH + "?group=" + repositoryId.split("/")[0] + "&name=" + repositoryId.split("/")[1];
-		var refIds = refs.stream().map(r -> r.refId).toList();
-		var response = WebRequests.call(Type.POST, url, sessionId, refIds);
+		var response = WebRequests.call(Type.POST, url, sessionId, changes.stream().map(c -> c.refId).toList());
 		if (response.getStatus() == Status.NO_CONTENT.getStatusCode())
 			return Collections.emptyList();
 		return mapResults(response);
@@ -49,10 +46,15 @@ class LibraryCheckInvocation {
 
 	private List<LibraryRestriction> mapResults(ClientResponse response) {
 		var entity = response.getEntity(String.class).trim();
-		var refMap = refs.stream().collect(Collectors.toMap(r -> r.refId, r -> r));
 		List<LibraryRestriction> list = new Gson().fromJson(entity, new TypeToken<List<LibraryRestriction>>() {
 		}.getType());
-		list.forEach(r -> r.ref = refMap.get(r.datasetRefId));
+		list.forEach(r -> {
+			var change = changes.stream()
+					.filter(c -> c.refId.equals(r.datasetRefId))
+					.findFirst().get();
+			r.modelType = change.type;
+			r.path = change.path;
+		});
 		return list;
 	}
 

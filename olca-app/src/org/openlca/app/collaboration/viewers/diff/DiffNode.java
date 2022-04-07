@@ -39,7 +39,7 @@ public class DiffNode {
 		if (isCategoryNode())
 			return ModelType.valueOf(content.toString().substring(0, content.toString().indexOf("/")));
 		if (content instanceof DiffResult result)
-			return result.ref().type;
+			return result.type;
 		return null;
 	}
 

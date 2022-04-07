@@ -65,6 +65,7 @@ public class HistoryView extends ViewPart {
 		Tables.bindColumnWidths(historyViewer.getViewer(), 0.1, 0.7, 0.1, 0.1);
 		historyViewer.addSelectionChangedListener((commit) -> {
 			referenceViewer.select(null);
+			// TODO this is wrong for merge commits
 			var diffs = Repository.isConnected() && commit != null
 					? Repository.get().diffs.find().withPrevious(commit.id).all()
 					: new ArrayList<Diff>();
@@ -117,7 +118,7 @@ public class HistoryView extends ViewPart {
 			if (!elem.isJsonObject())
 				continue;
 			var e = elem.getAsJsonObject();
-			var f = e.get("input");
+			var f = e.get("isInput");
 			var isInput = f.isJsonPrimitive() && f.getAsBoolean() == true;
 			if (isInput) {
 				inputs.add(elem);
@@ -158,8 +159,10 @@ public class HistoryView extends ViewPart {
 		public String getText(Object element) {
 			if (!(element instanceof Diff))
 				return null;
-			var data = (Diff) element;
-			return RefLabels.getFullName(data.ref());
+			var diff = (Diff) element;
+			if (diff.right != null)
+				return RefLabels.getName(diff.ref(), diff.right.objectId);
+			return RefLabels.getName(diff.ref(), diff.left.objectId);
 		}
 
 		@Override

@@ -1,49 +1,58 @@
 package org.openlca.app.collaboration.viewers.diff;
 
+import org.eclipse.jgit.lib.ObjectId;
+import org.openlca.git.model.Change;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
-import org.openlca.git.model.Reference;
+import org.openlca.git.model.ModelRef;
 
-public class DiffResult {
+public class DiffResult extends ModelRef {
 
-	public final Diff remote;
-	public final Diff local;
+	public final DiffType leftDiffType;
+	public final ObjectId leftObjectId;
+	public final DiffType rightDiffType;
+	public final ObjectId rightObjectId;
 
-	public DiffResult(Diff local, Diff remote) {
-		this.local = local;
-		this.remote = remote;
+	public DiffResult(Diff left, Diff right) {
+		super(right != null ? right.ref() : left.ref());
+		this.leftDiffType = left != null ? left.type : null;
+		this.leftObjectId = left != null && left.right != null ? left.right.objectId : null;
+		this.rightDiffType = right != null ? right.type : null;
+		this.rightObjectId = right != null && right.right != null ? left.right.objectId : null;
 	}
 
-	public Reference ref() {
-		return diff().ref();
-	}
-
-	public Diff diff() {
-		if (local != null)
-			return local;
-		return remote;
+	public DiffResult(Change change) {
+		super(change);
+		this.leftDiffType = DiffType.forChangeType(change.changeType);
+		this.leftObjectId = null;
+		this.rightDiffType = null;
+		this.rightObjectId = null;
 	}
 
 	public boolean noAction() {
-		if (local == null && remote == null)
+		if (leftDiffType == null && rightDiffType == null)
 			return true;
-		if (local == null || remote == null)
+		if (leftDiffType == null || rightDiffType == null)
 			return false;
-		if (local.type == DiffType.DELETED)
-			return remote.type == DiffType.DELETED;
-		return local.ref().equals(remote.ref());
+		if (leftDiffType == DiffType.DELETED)
+			return rightDiffType == DiffType.DELETED;
+		return hasEqualObjectId();
 	}
 
 	public boolean conflict() {
-		if (local == null || remote == null)
+		if (leftDiffType == null || rightDiffType == null)
 			return false;
-		switch (local.type) {
+		switch (leftDiffType) {
 		case ADDED, MODIFIED:
-			return !local.ref().equals(remote.ref());
+			return !hasEqualObjectId();
 		case DELETED:
-			return remote.type != DiffType.DELETED;
+			return rightDiffType != DiffType.DELETED;
 		}
 		return false;
+	}
+
+	private boolean hasEqualObjectId() {
+		return leftObjectId != null && rightObjectId != null && leftObjectId.equals(rightObjectId);
 	}
 
 }

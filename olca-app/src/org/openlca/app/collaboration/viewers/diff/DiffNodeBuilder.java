@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
-import org.openlca.git.model.Reference;
 import org.openlca.util.Strings;
 
 public class DiffNodeBuilder {
@@ -41,7 +40,7 @@ public class DiffNodeBuilder {
 	private void build(DiffResult result) {
 		if (nodes.containsKey(getKey(result)))
 			return;
-		if (!result.ref().type.isRoot())
+		if (!result.type.isRoot())
 			return;
 		if (result.noAction())
 			return;
@@ -49,10 +48,9 @@ public class DiffNodeBuilder {
 	}
 
 	private DiffNode createNode(DiffResult result) {
-		Reference ref = result.ref();
-		DiffNode parent = !Strings.nullOrEmpty(ref.category)
-				? getOrCreateCategoryNode(ref.type, ref.category)
-				: getOrCreateModelTypeNode(ref.type);
+		DiffNode parent = !Strings.nullOrEmpty(result.category)
+				? getOrCreateCategoryNode(result.type, result.category)
+				: getOrCreateModelTypeNode(result.type);
 		DiffNode node = new DiffNode(parent, result);
 		parent.children.add(node);
 		nodes.put(getKey(result), node);
@@ -86,7 +84,7 @@ public class DiffNodeBuilder {
 	}
 
 	private String getKey(DiffResult result) {
-		return result.ref().fullPath;
+		return result.path;
 	}
 
 }

@@ -27,7 +27,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitCommit;
 import org.openlca.git.actions.GitPush;
-import org.openlca.git.model.Diff;
+import org.openlca.git.model.Change;
 import org.openlca.git.util.DiffEntries;
 
 public class CommitAction extends Action implements INavigationAction {
@@ -48,31 +48,30 @@ public class CommitAction extends Action implements INavigationAction {
 	public boolean isEnabled() {
 		return RepositoryLabel.hasChanged(Navigator.findElement(Database.getActiveConfiguration()));
 	}
-	
+
 	@Override
 	public void run() {
 		try {
 			var committer = Repository.get().personIdent();
 			if (committer == null)
 				return;
-			var diffs = getWorkspaceDiffs();
-			var dialog = createCommitDialog(diffs);
+			var changes = getWorkspaceChanges();
+			var dialog = createCommitDialog(changes);
 			if (dialog == null)
 				return;
 			var dialogResult = dialog.open();
 			if (dialogResult == CommitDialog.CANCEL)
 				return;
-			var withReferences = new ReferenceCheck(Database.get()).run(dialog.getSelected(), diffs);
+			var withReferences = dialog.getSelected();
+			// new ReferenceCheck(Database.get()).run(dialog.getSelected(),
+			// changes);
 			if (withReferences == null)
 				return;
 			if (!checkLibraries(withReferences))
 				return;
-			var toCommit = withReferences.stream()
-					.map(r -> r.local)
-					.toList();
 			GitCommit.from(Database.get())
 					.to(Repository.get().git)
-					.diffs(toCommit)
+					.changes(withReferences)
 					.withMessage(dialog.getMessage())
 					.as(committer)
 					.update(Repository.get().workspaceIds)
@@ -95,17 +94,16 @@ public class CommitAction extends Action implements INavigationAction {
 		}
 	}
 
-	private List<Diff> getWorkspaceDiffs() throws IOException {
+	private List<Change> getWorkspaceChanges() throws IOException {
 		var commit = Repository.get().commits.head();
-		var leftCommitId = commit != null ? commit.id : null;
 		return DiffEntries.workspace(Repository.get().toConfig(), commit).stream()
-				.map(e -> new Diff(e, leftCommitId, null))
+				.map(Change::new)
 				.toList();
 	}
 
-	private CommitDialog createCommitDialog(List<Diff> diffs) {
-		var differences = diffs.stream()
-				.map(d -> new DiffResult(d, null))
+	private CommitDialog createCommitDialog(List<Change> changes) {
+		var differences = changes.stream()
+				.map(DiffResult::new)
 				.toList();
 		var node = new DiffNodeBuilder(Database.get()).build(differences);
 		if (node == null) {
@@ -117,14 +115,13 @@ public class CommitAction extends Action implements INavigationAction {
 		return dialog;
 	}
 
-	private boolean checkLibraries(List<DiffResult> result) {
+	private boolean checkLibraries(List<Change> changes) {
 		if (!CollaborationPreference.checkAgainstLibraries())
 			return true;
 		if (!Repository.get().isCollaborationServer())
 			return true;
-		var refs = result.stream().map(r -> r.local.ref()).toList();
 		try {
-			var restricted = Repository.get().client.performLibraryCheck(refs);
+			var restricted = Repository.get().client.performLibraryCheck(changes);
 			if (restricted.isEmpty())
 				return true;
 			var code = new LibraryRestrictionDialog(restricted).open();

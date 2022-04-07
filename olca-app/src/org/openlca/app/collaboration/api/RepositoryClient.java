@@ -2,7 +2,6 @@ package org.openlca.app.collaboration.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.openlca.app.collaboration.model.Announcement;
@@ -13,7 +12,7 @@ import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.collaboration.util.WebRequests.Type;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.core.model.ModelType;
-import org.openlca.git.model.Reference;
+import org.openlca.git.model.Change;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,13 +86,13 @@ public class RepositoryClient {
 		return result;
 	}
 
-	public List<LibraryRestriction> performLibraryCheck(Collection<Reference> refs) throws WebRequestException {
+	public List<LibraryRestriction> performLibraryCheck(List<Change> changes) throws WebRequestException {
 		var result = executeLoggedIn(() -> {
 			var invocation = new LibraryCheckInvocation();
 			invocation.baseUrl = config.apiUrl;
 			invocation.sessionId = sessionId;
 			invocation.repositoryId = config.repositoryId;
-			invocation.refs = refs;
+			invocation.changes = changes;
 			return invocation.execute();
 		});
 		if (result == null)

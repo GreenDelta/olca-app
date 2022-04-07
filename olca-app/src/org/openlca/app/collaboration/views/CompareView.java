@@ -31,6 +31,7 @@ import org.openlca.git.util.DiffEntries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO FIX ME
 public class CompareView extends ViewPart {
 
 	public final static String ID = "views.collaboration.compare";
@@ -87,7 +88,7 @@ public class CompareView extends ViewPart {
 
 	private DiffNode buildNode(Commit commit, List<INavigationElement<?>> elements) {
 		try {
-			var isAhead = Repository.get().isAheadOf(commit);
+			var isAhead = Repository.get().isAhead(commit);
 			viewer.setDirection(isAhead ? Direction.RIGHT_TO_LEFT : Direction.LEFT_TO_RIGHT);
 			var head = Repository.get().commits.head();
 			var rDiffs = getDiffs(commit, head, isAhead);
@@ -119,8 +120,7 @@ public class CompareView extends ViewPart {
 		var diffMap = new HashMap<String, Diff>();
 		var headId = head != null ? head.id : null;
 		var diffs = Repository.get().diffs.find()
-				.between(
-						isAhead ? headId : commit.id,
+				.between(isAhead ? headId : commit.id,
 						isAhead ? commit.id : headId)
 				.all();
 		for (var diff : diffs) {

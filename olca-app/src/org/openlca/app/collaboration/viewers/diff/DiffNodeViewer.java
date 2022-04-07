@@ -12,7 +12,6 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.collaboration.dialogs.JsonDiffDialog;
-import org.openlca.app.collaboration.util.ConflictResolutionMap;
 import org.openlca.app.collaboration.util.RefLabels;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
@@ -26,9 +25,8 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Version;
 import org.openlca.git.actions.ConflictResolver.ConflictResolution;
 import org.openlca.git.actions.ConflictResolver.ConflictResolutionType;
-import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
-import org.openlca.git.model.Reference;
+import org.openlca.git.util.TypeRefIdMap;
 
 abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
@@ -36,7 +34,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	private final boolean editMode;
 	private Direction direction;
 	private Runnable onMerge;
-	private ConflictResolutionMap resolvedConflicts = new ConflictResolutionMap();
+	private TypeRefIdMap<ConflictResolution> resolvedConflicts = new TypeRefIdMap<>();
 
 	DiffNodeViewer(Composite parent, boolean editMode) {
 		super(parent);
@@ -75,7 +73,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		this.onMerge = onMerge;
 	}
 
-	public ConflictResolutionMap getResolvedConflicts() {
+	public TypeRefIdMap<ConflictResolution> getResolvedConflicts() {
 		return resolvedConflicts;
 	}
 
@@ -87,9 +85,8 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		var node = createNode(diff);
 		var dialogResult = JsonDiffDialog.open(node, direction, editMode);
 		if (editMode && dialogResult != JsonDiffDialog.CANCEL) {
-			var ref = diff.diff().ref();
 			var resolution = toResolution(node, dialogResult);
-			resolvedConflicts.put(ref, resolution);
+			resolvedConflicts.put(diff.type, diff.refId, resolution);
 			if (onMerge != null) {
 				onMerge.run();
 			}
@@ -113,10 +110,12 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	private JsonNode createNode(DiffResult diff) {
 		if (diff == null)
 			return null;
-		var left = diff.local != null ? diff.local.right : diff.remote.left;
-		var right = diff.remote != null ? diff.remote.right : diff.local.left;
-		var leftJson = left != null ? RefJson.get(left) : null;
-		var rightJson = right != null ? RefJson.get(right) : null;
+		var leftJson = diff.leftDiffType != null && diff.leftDiffType != DiffType.DELETED
+				? RefJson.get(diff.type, diff.refId, diff.leftObjectId)
+				: null;
+		var rightJson = diff.rightDiffType != null && diff.rightDiffType != DiffType.DELETED
+				? RefJson.get(diff.type, diff.refId, diff.rightObjectId)
+				: null;
 		return new ModelNodeBuilder().build(leftJson, rightJson);
 	}
 
@@ -190,15 +189,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			if (node.isCategoryNode())
 				return node.contentAsString().substring(node.contentAsString().lastIndexOf("/") + 1);
 			DiffResult result = (DiffResult) node.content;
-			return getText(result);
-		}
-
-		private String getText(DiffResult diff) {
-			if (diff.remote != null)
-				return RefLabels.getName(diff.remote.ref());
-			if (diff.local != null)
-				return RefLabels.getName(diff.local.ref());
-			return RefLabels.getName(diff.ref());
+			return RefLabels.getName(result, result.rightObjectId != null ? result.rightObjectId : result.leftObjectId);
 		}
 
 		@Override
@@ -209,27 +200,25 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			if (node.isModelTypeNode() || node.isCategoryNode())
 				return Images.getForCategory(node.getModelType());
 			DiffResult diff = node.contentAsDiffResult();
-			Reference dataset = diff.ref();
 			Overlay overlay = getOverlay(diff);
-			return Images.get(dataset.type, overlay);
+			return Images.get(diff.type, overlay);
 		}
 
 		private Overlay getOverlay(DiffResult diff) {
 			if (diff.noAction())
 				return null;
-			var ref = diff.ref();
-			if (resolvedConflicts.contains(ref))
+			if (resolvedConflicts.contains(diff.type, diff.refId))
 				return getOverlayMerged(diff);
-			return getOverlay(diff.local, diff.remote);
+			return getOverlay(diff.leftDiffType, diff.rightDiffType);
 		}
 
-		private Overlay getOverlay(Diff prev, Diff next) {
+		private Overlay getOverlay(DiffType prev, DiffType next) {
 			if (prev == null && next == null)
 				return null;
 			if (prev == null)
-				return getOverlayLocal(next.type);
+				return getOverlayLocal(next);
 			if (next == null)
-				return getOverlayRemote(prev.type);
+				return getOverlayRemote(prev);
 			return Overlay.CONFLICT;
 		}
 
@@ -258,12 +247,12 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		}
 
 		private Overlay getOverlayMerged(DiffResult result) {
-			var resolution = resolvedConflicts.get(result.ref());
+			var resolution = resolvedConflicts.get(result.type, result.refId);
 			if (resolution != null && resolution.type != ConflictResolutionType.OVERWRITE_LOCAL)
 				return Overlay.MERGED;
-			if (result.remote.type == DiffType.DELETED)
+			if (result.rightDiffType == DiffType.DELETED)
 				return Overlay.DELETE_FROM_LOCAL;
-			if (result.local == null || result.local.type == DiffType.DELETED)
+			if (result.leftDiffType == null || result.leftDiffType == DiffType.DELETED)
 				return Overlay.ADD_TO_LOCAL;
 			return Overlay.MODIFY_IN_LOCAL;
 		}

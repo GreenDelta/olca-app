@@ -35,8 +35,9 @@ public class PullAction extends Action implements INavigationAction {
 	public void run() {
 		Database.getWorkspaceIdUpdater().disable();
 		try {
+			var repo = Repository.get();
 			var newCommits = Actions.run(GitFetch
-					.from(Repository.get().git)
+					.from(repo.git)
 					.authorizeWith(Actions.credentialsProvider()));
 			if (!newCommits.isEmpty()) {
 				new HistoryDialog("Fetched commits", newCommits).open();
@@ -44,13 +45,14 @@ public class PullAction extends Action implements INavigationAction {
 			var conflictResolutionMap = Conflicts.solve();
 			if (conflictResolutionMap == null)
 				return;
-			var imported = GitMerge
-					.from(Repository.get().git)
+			var changed = GitMerge
+					.from(repo.git)
 					.into(Database.get())
-					.update(Repository.get().workspaceIds)
+					.as(repo.personIdent())
+					.update(repo.workspaceIds)
 					.resolveConflictsWith(conflictResolutionMap)
 					.run();
-			if (imported.isEmpty()) {
+			if (!changed) {
 				MsgBox.info("No commits to fetch - Everything up to date");
 			}
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {

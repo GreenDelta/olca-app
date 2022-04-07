@@ -29,24 +29,26 @@ public class MergeAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return !Repository.get().getAhead().isEmpty();
+		return !Repository.get().getBehind().isEmpty();
 	}
 
 	@Override
 	public void run() {
 		Database.getWorkspaceIdUpdater().disable();
-		var workspaceIds = Repository.get().workspaceIds;
+		var repo = Repository.get();
+		var workspaceIds = repo.workspaceIds;
 		try {
 			var conflictResolutionMap = Conflicts.solve();
 			if (conflictResolutionMap == null)
 				return;
-			var imported = GitMerge
-					.from(Repository.get().git)
+			var changed = GitMerge
+					.from(repo.git)
 					.into(Database.get())
 					.update(workspaceIds)
+					.as(repo.personIdent())
 					.resolveConflictsWith(conflictResolutionMap)
 					.run();
-			if (imported.isEmpty()) {
+			if (!changed) {
 				MsgBox.info("No changes to merge");
 				return;
 			}

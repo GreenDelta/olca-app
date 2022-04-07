@@ -1,9 +1,8 @@
 package org.openlca.app.collaboration.navigation.actions;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
@@ -14,7 +13,6 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.ErrorReporter;
 
 public class DisconnectAction extends Action implements INavigationAction {
 
@@ -30,15 +28,10 @@ public class DisconnectAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		try {
-			Repository.disconnect();
-			var gitDir = RepositoryConfig.getGitDir(Database.get());
-			FileUtils.deleteDirectory(gitDir);
-		} catch (IOException e) {
-			ErrorReporter.on("failed to delete git directory", e);
-		} finally {
-			Actions.refresh();
-		}
+		Repository.disconnect();
+		var gitDir = RepositoryConfig.getGitDir(Database.get());
+		delete(gitDir);
+		Actions.refresh();
 	}
 
 	@Override
@@ -52,6 +45,18 @@ public class DisconnectAction extends Action implements INavigationAction {
 		if (!Database.isActive(elem.getContent()))
 			return false;
 		return Repository.isConnected();
+	}
+
+	public void delete(File file) {
+		if (!file.exists())
+			return;
+		if (!file.isDirectory()) {
+			file.delete();
+			return;
+		}
+		for (var child : file.listFiles()) {
+			delete(child);
+		}
 	}
 
 }

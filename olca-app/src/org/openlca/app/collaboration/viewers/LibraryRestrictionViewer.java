@@ -18,7 +18,6 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.git.model.Reference;
 import org.openlca.util.Strings;
 
 public class LibraryRestrictionViewer extends AbstractTableViewer<LibraryRestriction> {
@@ -57,7 +56,7 @@ public class LibraryRestrictionViewer extends AbstractTableViewer<LibraryRestric
 			var restriction = (LibraryRestriction) element;
 			switch (column) {
 			case 0:
-				return Images.get(restriction.ref.type);
+				return Images.get(restriction.modelType);
 			case 2:
 				return restriction.type == RestrictionType.FORBIDDEN
 						? Icon.ERROR.get()
@@ -72,7 +71,7 @@ public class LibraryRestrictionViewer extends AbstractTableViewer<LibraryRestric
 			var restriction = (LibraryRestriction) element;
 			switch (column) {
 			case 0:
-				return restriction.ref.fullPath;
+				return restriction.path;
 			case 1:
 				return restriction.library;
 			default:
@@ -92,14 +91,14 @@ public class LibraryRestrictionViewer extends AbstractTableViewer<LibraryRestric
 				return -1;
 			if (l1.type == RestrictionType.WARNING && l2.type == RestrictionType.FORBIDDEN)
 				return 1;
-			return compare(viewer, l1.ref, l2.ref);
+			return compare(viewer, l1, l2);
 		}
 
-		private int compare(Viewer viewer, Reference r1, Reference r2) {
-			var c = ModelTypeOrder.compare(r1.type, r2.type);
+		private int compare(Viewer viewer, LibraryRestriction l1, LibraryRestriction l2) {
+			var c = ModelTypeOrder.compare(l1.modelType, l2.modelType);
 			if (c != 0)
 				return c;
-			return Strings.compare(r1.fullPath, r2.fullPath);
+			return Strings.compare(l1.path, l2.path);
 		}
 	}
 }

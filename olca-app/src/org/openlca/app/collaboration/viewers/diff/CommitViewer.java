@@ -9,11 +9,10 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
-import org.openlca.app.collaboration.util.TypeRefIdSet;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.DiffType;
-import org.openlca.git.model.Reference;
+import org.openlca.git.util.TypeRefIdSet;
 
 public class CommitViewer extends DiffNodeViewer {
 
@@ -40,8 +39,8 @@ public class CommitViewer extends DiffNodeViewer {
 		for (var node : selected) {
 			if (!node.isModelNode())
 				continue;
-			var ref = node.contentAsDiffResult().ref();
-			var path = ref.type.name() + "/" + ref.category;
+			var result = node.contentAsDiffResult();
+			var path = result.type.name() + "/" + result.category;
 			if (expanded.contains(path))
 				continue;
 			expanded.add(path);
@@ -59,9 +58,9 @@ public class CommitViewer extends DiffNodeViewer {
 		for (var item : items) {
 			var node = (DiffNode) item.getData();
 			if (node != null && node.isModelNode()) {
-				Reference ref = node.contentAsDiffResult().ref();
+				var result = node.contentAsDiffResult();
 				// null is used as hack to select all
-				if (models == null || models.contains(ref))
+				if (models == null || models.contains(result.type, result.refId))
 					item.setChecked(true);
 			}
 			setChecked(models, item.getItems());
@@ -77,9 +76,9 @@ public class CommitViewer extends DiffNodeViewer {
 		for (var child : node.children) {
 			if (child.isModelNode() && child.hasChanged()) {
 				// TODO && child.getContent().local.tracked
-				var ref = child.contentAsDiffResult().ref();
+				var result = child.contentAsDiffResult();
 				// null is used as hack to select all
-				if (models == null || models.contains(ref))
+				if (models == null || models.contains(result.type, result.refId))
 					elements.add(child);
 			}
 			elements.addAll(findNodes(models, child));
@@ -103,7 +102,7 @@ public class CommitViewer extends DiffNodeViewer {
 			viewer.setChecked(node, false);
 		} else if (value) {
 			selected.add(node);
-		} else if (lockNewElements && result.local.type == DiffType.ADDED) {
+		} else if (lockNewElements && result.leftDiffType == DiffType.ADDED) {
 			viewer.setChecked(node, true);
 		} else {
 			selected.remove(node);

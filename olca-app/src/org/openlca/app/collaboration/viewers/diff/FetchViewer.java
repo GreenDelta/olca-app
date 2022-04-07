@@ -64,7 +64,7 @@ public class FetchViewer extends DiffNodeViewer {
 			DiffResult result = (DiffResult) node.content;
 			if (!result.conflict())
 				continue;
-			if (getResolvedConflicts().contains(result.ref()))
+			if (getResolvedConflicts().contains(result.type, result.refId))
 				continue;
 			conflicts.add(node);
 		}
