@@ -17,21 +17,23 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.io.ImportLogView;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Epd;
+import org.openlca.io.UnitMapping;
 import org.openlca.io.openepd.EpdDoc;
 import org.openlca.io.openepd.input.EpdImport;
-import org.openlca.io.openepd.input.ImportMapping;
+import org.openlca.io.openepd.input.ImpactMapping;
 
 public class ImportDialog extends FormDialog {
 
 	final IDatabase db;
 	final EpdDoc epdDoc;
-	final ImportMapping mapping;
+	final ImpactMapping mapping;
 	private final AtomicBoolean mappingChanged = new AtomicBoolean(false);
 
 	public static int show(EpdDoc doc) {
@@ -55,7 +57,7 @@ public class ImportDialog extends FormDialog {
 		super(UI.shell());
 		this.epdDoc = Objects.requireNonNull(epdDoc);
 		this.db = Objects.requireNonNull(db);
-		this.mapping = ImportMapping.init(epdDoc, db);
+		this.mapping = ImpactMapping.init(epdDoc, db);
 	}
 
 	void setMappingChanged() {
@@ -101,14 +103,18 @@ public class ImportDialog extends FormDialog {
 		// amount
 		var amountText = UI.formText(comp, tk, "Declared unit");
 		amountText.setEditable(false);
-		var quantity = mapping.quantity();
-		if (quantity.hasUnit()) {
-			Controls.set(amountText, quantity.amount() +
-				" " + quantity.unit().name);
-		} else {
-			Controls.set(amountText, quantity.amount() +
-				" ERROR! could not find matching unit in openLCA");
-		}
+		amountText.setText(getDeclaredUnit());
+	}
+
+	private String getDeclaredUnit() {
+		if (epdDoc.declaredUnit == null)
+			return "ERROR! no declared unit available";
+		var unit = epdDoc.declaredUnit.unit();
+		var uMap = UnitMapping.createDefault(db);
+		var u = uMap.getEntry(unit);
+		if (u == null)
+			return "ERROR! no matching unit for: " + unit;
+		return epdDoc.declaredUnit.amount() + " " + Labels.name(u.unit);
 	}
 
 	@Override

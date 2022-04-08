@@ -27,14 +27,14 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
-import org.openlca.io.openepd.input.ImportMapping;
+import org.openlca.io.openepd.input.ImpactMapping;
 import org.openlca.io.openepd.input.IndicatorKey;
 
 class ImpactSection {
 
 	private final ImportDialog dialog;
 	private final String methodCode;
-	private final ImportMapping mapping;
+	private final ImpactMapping mapping;
 	private TableViewer table;
 
 	private ImpactSection(ImportDialog dialog, String methodCode) {
