@@ -7,23 +7,39 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.EpdProduct;
 import org.openlca.core.model.Flow;
+import org.openlca.io.openepd.EpdConverter;
 
 public record EpdProductSection(EpdEditor editor) {
 
 	void render(Composite body, FormToolkit tk) {
 
 		var comp = UI.formSection(body, tk, "Declared product");
-		var flowLink = ModelLink.of(Flow.class)
+
+		// flow
+		ModelLink.of(Flow.class)
 			.renderOn(comp, tk, M.Flow)
-			.setModel(product().flow);
+			.setModel(product().flow)
+			.onChange(flow -> {
+				var product = product();
+				product.flow = flow;
+				product.property = flow != null
+					? flow.referenceFlowProperty
+					: null;
+				product.unit = flow != null
+					? flow.getReferenceUnit()
+					: null;
+				editor.emitEvent("product.changed");
+				editor.setDirty();
+			});
 
 		// amount
 		UI.formLabel(comp, M.Amount);
 		var amountComp = tk.createComposite(comp);
-		UI.gridLayout(amountComp, 2, 5, 0);
+		UI.gridLayout(amountComp, 3, 5, 0);
 		var amountText = tk.createText(amountComp, "", SWT.BORDER);
 		UI.gridData(amountText, false, false).widthHint = 100;
 		Controls.set(amountText, product().amount, amount -> {
@@ -33,20 +49,7 @@ public record EpdProductSection(EpdEditor editor) {
 
 		// unit
 		new UnitHandler(this).renderCombo(amountComp);
-
-		// on flow change
-		flowLink.onChange(flow -> {
-			var product = product();
-			product.flow = flow;
-			product.property = flow != null
-				? flow.referenceFlowProperty
-				: null;
-			product.unit = flow != null
-				? flow.getReferenceUnit()
-				: null;
-			editor.emitEvent("product.changed");
-			editor.setDirty();
-		});
+		new MassLabel(this).render(amountComp, tk);
 	}
 
 	private EpdProduct product() {
@@ -88,4 +91,30 @@ public record EpdProductSection(EpdEditor editor) {
 			combo.pack();
 		}
 	}
+
+	private record MassLabel(EpdProductSection section) {
+
+		void render(Composite comp, FormToolkit tk) {
+			var label = tk.createLabel(comp, "");
+
+			Runnable update = () -> {
+				var product = section.product();
+				var mass = EpdConverter.massInKgOf(product);
+				if (mass.isEmpty()) {
+					label.setText("");
+				} else {
+					var num = Numbers.format(mass.getAsDouble(), 2);
+					label.setText("\u2259 " + num + " kg");
+				}
+				label.pack();
+				comp.pack();
+			};
+
+			update.run();
+			var editor = section.editor;
+			editor.onEvent("product.changed", update);
+			editor.onEvent("unit.changed", update);
+		}
+	}
+
 }
