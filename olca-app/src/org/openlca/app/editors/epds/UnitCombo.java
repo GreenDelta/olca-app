@@ -96,11 +96,23 @@ class UnitCombo {
 	}
 
 	void clear() {
+		if (items.isEmpty())
+			return;
 		items.clear();
 		combo.clearSelection();
 		combo.setItems();
 	}
 
+	void pack() {
+		combo.pack();
+		var p = combo.getParent();
+		var i = 0;
+		while (i < 2 && p != null) {
+			p.layout(true);
+			i++;
+			p = p.getParent();
+		}
+	}
 
 	record Item(Unit unit, FlowPropertyFactor factor, boolean isRef) {
 

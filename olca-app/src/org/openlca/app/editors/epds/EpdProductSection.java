@@ -32,18 +32,7 @@ public record EpdProductSection(EpdEditor editor) {
 		});
 
 		// unit
-		var combo = new Combo(amountComp, SWT.READ_ONLY);
-		UI.gridData(combo, false, false).widthHint = 50;
-		var units = UnitCombo.of(combo);
-		if (product().flow != null) {
-			units.fill(product().flow);
-			units.select(product().unit, product().property);
-		}
-		units.listen(item -> {
-			product().property = item.property();
-			product().unit = item.unit();
-			editor.setDirty();
-		});
+		new UnitHandler(this).renderCombo(amountComp);
 
 		// on flow change
 		flowLink.onChange(flow -> {
@@ -55,11 +44,7 @@ public record EpdProductSection(EpdEditor editor) {
 			product.unit = flow != null
 				? flow.getReferenceUnit()
 				: null;
-			if (flow == null) {
-				units.clear();
-			} else {
-				units.fill(flow);
-			}
+			editor.emitEvent("product.changed");
 			editor.setDirty();
 		});
 	}
@@ -71,5 +56,36 @@ public record EpdProductSection(EpdEditor editor) {
 			epd.product.amount = 1;
 		}
 		return epd.product;
+	}
+
+	private record UnitHandler(EpdProductSection section) {
+
+		void renderCombo(Composite comp) {
+			var combo = new Combo(comp, SWT.READ_ONLY);
+			UI.gridData(combo, false, false);
+			var units = UnitCombo.of(combo);
+			update(units);
+
+			units.listen(item -> {
+				var product = section.product();
+				product.property = item.property();
+				product.unit = item.unit();
+				var editor = section.editor;
+				editor.emitEvent("unit.changed");
+				editor.setDirty();
+			});
+
+			section.editor.onEvent("product.changed", () -> update(units));
+		}
+
+		private void update(UnitCombo combo) {
+			combo.clear();
+			var p = section.product();
+			if (p != null && p.flow != null) {
+				combo.fill(p.flow);
+				combo.select(p.unit, p.property);
+			}
+			combo.pack();
+		}
 	}
 }
