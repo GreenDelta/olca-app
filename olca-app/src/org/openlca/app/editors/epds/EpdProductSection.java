@@ -7,7 +7,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.EpdProduct;
 import org.openlca.core.model.Flow;
@@ -44,6 +43,7 @@ public record EpdProductSection(EpdEditor editor) {
 		UI.gridData(amountText, false, false).widthHint = 100;
 		Controls.set(amountText, product().amount, amount -> {
 			product().amount = amount;
+			editor.emitEvent("amount.changed");
 			editor.setDirty();
 		});
 
@@ -103,8 +103,7 @@ public record EpdProductSection(EpdEditor editor) {
 				if (mass.isEmpty()) {
 					label.setText("");
 				} else {
-					var num = Numbers.format(mass.getAsDouble(), 2);
-					label.setText("\u2259 " + num + " kg");
+					label.setText("\u2259 " + mass.getAsDouble() + " kg");
 				}
 				label.pack();
 				comp.pack();
@@ -114,6 +113,7 @@ public record EpdProductSection(EpdEditor editor) {
 			var editor = section.editor;
 			editor.onEvent("product.changed", update);
 			editor.onEvent("unit.changed", update);
+			editor.onEvent("amount.changed", update);
 		}
 	}
 
