@@ -31,14 +31,14 @@ public class PushAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return !Repository.get().getAhead().isEmpty();
+		return !Repository.get().history.getAhead().isEmpty();
 	}
 	
 	@Override
 	public void run() {
 		try {
 			var result = Actions.run(GitPush
-					.to(Repository.get().git)
+					.from(Repository.get().git)
 					.authorizeWith(Actions.credentialsProvider()));
 			if (result.newCommits().isEmpty()) {
 				MsgBox.info("No commits to push - Everything up to date");

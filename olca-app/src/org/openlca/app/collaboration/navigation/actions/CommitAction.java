@@ -28,7 +28,6 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitCommit;
 import org.openlca.git.actions.GitPush;
 import org.openlca.git.model.Change;
-import org.openlca.git.util.DiffEntries;
 
 public class CommitAction extends Action implements INavigationAction {
 
@@ -55,7 +54,7 @@ public class CommitAction extends Action implements INavigationAction {
 			var committer = Repository.get().personIdent();
 			if (committer == null)
 				return;
-			var changes = getWorkspaceChanges();
+			var changes = Actions.getWorkspaceChanges();
 			var dialog = createCommitDialog(changes);
 			if (dialog == null)
 				return;
@@ -63,7 +62,7 @@ public class CommitAction extends Action implements INavigationAction {
 			if (dialogResult == CommitDialog.CANCEL)
 				return;
 			var withReferences = dialog.getSelected();
-			// new ReferenceCheck(Database.get()).run(dialog.getSelected(),
+			// TODO new ReferenceCheck(Database.get()).run(dialog.getSelected(),
 			// changes);
 			if (withReferences == null)
 				return;
@@ -79,7 +78,7 @@ public class CommitAction extends Action implements INavigationAction {
 			if (dialogResult != CommitDialog.COMMIT_AND_PUSH)
 				return;
 			var result = Actions.run(GitPush
-					.to(Repository.get().git)
+					.from(Repository.get().git)
 					.authorizeWith(Actions.credentialsProvider()));
 			if (result.status() == Status.REJECTED_NONFASTFORWARD) {
 				MsgBox.error("Rejected - Not up to date - Please merge remote changes to continue");
@@ -92,13 +91,6 @@ public class CommitAction extends Action implements INavigationAction {
 		} finally {
 			Actions.refresh();
 		}
-	}
-
-	private List<Change> getWorkspaceChanges() throws IOException {
-		var commit = Repository.get().commits.head();
-		return DiffEntries.workspace(Repository.get().toConfig(), commit).stream()
-				.map(Change::new)
-				.toList();
 	}
 
 	private CommitDialog createCommitDialog(List<Change> changes) {

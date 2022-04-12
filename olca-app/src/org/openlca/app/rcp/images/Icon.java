@@ -132,7 +132,10 @@ public enum Icon {
 	SEARCH("search.png"),
 	SIMAPRO_WIZARD("wizard/simapro.png"),
 	SIMULATE("calculation/simulate.png"),
-	SQL("sql.png"),
+	SQL("sql.png"),	
+	STASH("collaboration/stash.png"),
+	STASH_CREATE("collaboration/stash_create.png"),
+	STASH_APPLY("collaboration/stash_apply.png"),
 
 	UNDO("undo.png"),
 	UNDO_DISABLED("undo_disabled.png"),

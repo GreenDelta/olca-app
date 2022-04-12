@@ -31,7 +31,7 @@ public class FetchAction extends Action implements INavigationAction {
 	public void run() {
 		try {
 			var newCommits = Actions.run(GitFetch
-					.from(Repository.get().git)
+					.to(Repository.get().git)
 					.authorizeWith(Actions.credentialsProvider()));
 			if (newCommits.isEmpty()) {
 				MsgBox.info("No commits to fetch - Everything up to date");

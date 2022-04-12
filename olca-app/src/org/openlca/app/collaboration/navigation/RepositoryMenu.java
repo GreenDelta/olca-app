@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.actions.CommitAction;
 import org.openlca.app.collaboration.navigation.actions.ConnectAction;
@@ -16,6 +17,10 @@ import org.openlca.app.collaboration.navigation.actions.PullAction;
 import org.openlca.app.collaboration.navigation.actions.PushAction;
 import org.openlca.app.collaboration.navigation.actions.ShowCommentsAction;
 import org.openlca.app.collaboration.navigation.actions.ShowInHistoryAction;
+import org.openlca.app.collaboration.navigation.actions.StashApplyAction;
+import org.openlca.app.collaboration.navigation.actions.StashCreateAction;
+import org.openlca.app.collaboration.navigation.actions.StashDropAction;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.actions.NavigationMenu;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
@@ -32,20 +37,16 @@ public class RepositoryMenu {
 				new FetchAction(),
 				new MergeAction(),
 				new PullAction());
+		added += subMenu("Stash", Icon.STASH.descriptor(), selection, subMenu,
+				new StashCreateAction(),
+				new StashApplyAction(),
+				new StashDropAction());
 		added += NavigationMenu.addActions(selection, subMenu,
 				new ShowCommentsAction(),
 				new ShowInHistoryAction());
-		// compare sub menu
-		var compareMenu = new MenuManager(M.CompareWith);
-		compareMenu.setImageDescriptor(Icon.COMPARE_VIEW.descriptor());
-		var subAdded = NavigationMenu.addActions(selection, compareMenu,
+		added += subMenu(M.CompareWith, Icon.COMPARE_VIEW.descriptor(), selection, subMenu,
 				new OpenCompareViewAction(true),
 				new OpenCompareViewAction(false));
-		if (subAdded > 0) {
-			subMenu.add(compareMenu);
-			subMenu.add(new Separator());
-			added++;
-		}
 		added += NavigationMenu.addActions(selection, subMenu,
 				new DisconnectAction());
 		if (added == 0)
@@ -53,6 +54,28 @@ public class RepositoryMenu {
 		menu.add(new Separator());
 		menu.add(subMenu);
 		menu.add(new Separator());
+	}
+
+	private static int subMenu(String label, ImageDescriptor image, List<INavigationElement<?>> selection,
+			MenuManager parentMenu, INavigationAction... actions) {
+		var subMenu = new MenuManager(label) {
+
+			@Override
+			public boolean isEnabled() {
+				for (var action : actions)
+					if (action.isEnabled())
+						return true;
+				return false;
+			}
+
+		};
+		subMenu.setImageDescriptor(image);
+		var added = NavigationMenu.addActions(selection, subMenu, actions);
+		if (added == 0)
+			return 0;
+		parentMenu.add(subMenu);
+		parentMenu.add(new Separator());
+		return 1;
 	}
 
 }

@@ -2,8 +2,6 @@ package org.openlca.app.db;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -19,8 +17,7 @@ import org.openlca.git.find.Diffs;
 import org.openlca.git.find.Entries;
 import org.openlca.git.find.Ids;
 import org.openlca.git.find.References;
-import org.openlca.git.model.Commit;
-import org.openlca.git.util.Constants;
+import org.openlca.git.util.History;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +36,7 @@ public class Repository {
 	public final References references;
 	public final Diffs diffs;
 	public final Entries entries;
+	public final History history;
 
 	private Repository(IDatabase database, File gitDir) throws IOException {
 		git = new FileRepository(gitDir);
@@ -54,36 +52,11 @@ public class Repository {
 		diffs = Diffs.of(git);
 		entries = Entries.of(git);
 		ids = Ids.of(git);
+		history = History.of(git);
 	}
 
 	public static Repository get() {
 		return repository;
-	}
-
-	public boolean isAhead(Commit commit) {
-		return getAhead().contains(commit);
-	}
-
-	public List<Commit> historyOf(String ref) {
-		return commits.find().refs(ref).all();
-	}
-
-	public List<Commit> getAhead() {
-		return getAhead(historyOf(Constants.LOCAL_REF), historyOf(Constants.REMOTE_REF));
-	}
-
-	public List<Commit> getBehind() {
-		return getAhead(historyOf(Constants.REMOTE_REF), historyOf(Constants.LOCAL_REF));
-	}
-	
-	private static List<Commit> getAhead(List<Commit> left, List<Commit> right) {
-		var diff = new ArrayList<Commit>();
-		for (var i = left.size() - 1; i >= 0; i--) {
-			if (right.contains(left.get(i)))
-				return diff;
-			diff.add(left.get(i));
-		}
-		return diff;
 	}
 
 	public static void connect(IDatabase database) {

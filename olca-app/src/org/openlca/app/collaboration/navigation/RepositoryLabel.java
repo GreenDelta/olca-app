@@ -77,8 +77,8 @@ public class RepositoryLabel {
 		if (!Repository.isConnected())
 			return null;
 		var repository = Repository.get();
-		var ahead = repository.getAhead();
-		var behind = repository.getBehind();
+		var ahead = repository.history.getAhead();
+		var behind = repository.history.getBehind();
 		var text = " [" + repository.config.url();
 		if (!ahead.isEmpty()) {
 			text += " ↑" + ahead.size();

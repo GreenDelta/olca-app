@@ -21,40 +21,27 @@ import org.openlca.git.util.TypeRefIdMap;
 
 class Conflicts {
 
-	static InMemoryConflictResolver solve() throws IOException {
+	static InMemoryConflictResolver identifyAndSolve(Commit remoteCommit) throws IOException {
 		var commits = Repository.get().commits;
 		var localCommit = commits.get(commits.resolve(Constants.LOCAL_BRANCH));
-		var remoteCommit = commits.get(commits.resolve(Constants.REMOTE_BRANCH));
-		var localConflicts = solveConflictsBetweenLocalAndRemote(localCommit, remoteCommit);
-		var workspaceConflicts = solveConflictsBetweenMergedRemoteAndWorkspace();
-		return new InMemoryConflictResolver(remoteCommit, localConflicts, workspaceConflicts);
+		var conflicts = identify(localCommit, remoteCommit);
+		var solved = solve(conflicts);
+		return new InMemoryConflictResolver(remoteCommit, solved);
 	}
 
-	private static TypeRefIdMap<ConflictResolution> solveConflictsBetweenMergedRemoteAndWorkspace() throws IOException {
-		// TODO
-		// return DiffEntries.workspace(config, localCommit).stream()
-		// .map(d -> new Diff(d))
-		// .collect(Collectors.toList());
-		return new TypeRefIdMap<>();
-	}
-
-	private static TypeRefIdMap<ConflictResolution> solveConflictsBetweenLocalAndRemote(Commit localCommit,
-			Commit remoteCommit) throws IOException {
+	static List<DiffResult> identify(Commit localCommit, Commit remoteCommit) throws IOException {
 		if (localCommit == null)
-			return new TypeRefIdMap<>();
+			return new ArrayList<>();
 		var repo = Repository.get();
 		var head = repo.commits.head();
 		if (head != null && localCommit.id.equals(head.id))
-			return new TypeRefIdMap<>();
+			return new ArrayList<>();
 		var localChanges = diffsBetween(repo.git, head, localCommit);
 		var remoteChanges = diffsBetween(repo.git, head, remoteCommit);
-		var changes = conflictsOf(localChanges, remoteChanges);
-		if (changes.isEmpty())
-			return new TypeRefIdMap<>();
-		return solve(changes);
+		return conflictsOf(localChanges, remoteChanges);
 	}
 
-	private static TypeRefIdMap<ConflictResolution> solve(List<DiffResult> changes) {
+	static TypeRefIdMap<ConflictResolution> solve(List<DiffResult> changes) {
 		var node = new DiffNodeBuilder(Database.get()).build(changes);
 		var dialog = new FetchDialog(node);
 		if (dialog.open() == FetchDialog.CANCEL)

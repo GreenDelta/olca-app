@@ -1,10 +1,14 @@
 package org.openlca.app.collaboration.navigation.actions;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.ui.PlatformUI;
@@ -14,6 +18,9 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitRemoteAction;
+import org.openlca.git.model.Change;
+import org.openlca.git.model.Commit;
+import org.openlca.git.util.DiffEntries;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +55,18 @@ class Actions {
 		if (runner.exception != null)
 			throw runner.exception;
 		return runner.result;
+	}
+
+	static Commit getStashCommit(FileRepository git) throws GitAPIException {
+		var commits = Git.wrap(git).stashList().call();
+		if (commits == null || commits.isEmpty())
+			return null;
+		return new Commit(commits.iterator().next());
+	}
+
+	static List<Change> getWorkspaceChanges() throws IOException {
+		return DiffEntries.workspace(Repository.get().toConfig())
+				.stream().map(Change::new).toList();
 	}
 
 	private static class ProgressRunner<T> implements IRunnableWithProgress {
