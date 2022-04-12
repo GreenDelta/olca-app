@@ -97,10 +97,7 @@ public class Repository {
 	}
 
 	public GitConfig toConfig() {
-		var committer = personIdent();
-		if (committer == null)
-			return null;
-		return new GitConfig(Database.get(), Repository.get().workspaceIds, Repository.get().git, committer);
+		return new GitConfig(Database.get(), Repository.get().workspaceIds, Repository.get().git);
 	}
 
 }
