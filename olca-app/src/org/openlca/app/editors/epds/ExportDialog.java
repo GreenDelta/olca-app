@@ -28,10 +28,8 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.Epd;
 import org.openlca.io.openepd.Api;
 import org.openlca.io.openepd.Ec3CategoryTree;
-import org.openlca.io.openepd.Ec3Client;
 import org.openlca.io.openepd.EpdConverter;
 import org.openlca.io.openepd.EpdDoc;
-import org.openlca.io.openepd.EpdImpactResult;
 import org.openlca.io.openepd.EpdQuantity;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
@@ -132,81 +130,13 @@ class ExportDialog extends FormDialog {
 		if (!Question.ask(qTitle, qText))
 			return;
 
-		if (existingId == null) {
-			tryUploadNew(client);
-		} else {
-			tryUpdateExisting(client);
-		}
-	}
-
-	private void tryUploadNew(Ec3Client client) {
-		try {
-
-			var response = client.postEpd(epd.toJson());
-			var json = response.hasJson()
-				? response.json()
-				: null;
-
-			// check the response
-			if (response.isError()) {
-				if (json != null) {
-					JsonErrorDialog.show(
-						"The upload failed with the following error", json);
-				} else {
-					MsgBox.error("Upload failed", "Failed to upload EPD to EC3.");
-				}
-				return;
-			}
-
-			// extract the ID from the response
-			String id = null;
-			if (json != null && json.isJsonObject()) {
-				id = Json.getString(json.getAsJsonObject(), "id");
-			}
-			if (Strings.nullOrEmpty(id)) {
-				var error = "No ID returned from server.";
-				if (json != null) {
-					JsonErrorDialog.show(error, json);
-				} else {
-					MsgBox.error("Upload failed", error);
-				}
-				return;
-			}
-
-			state = ExportState.created(id);
-			super.okPressed();
-		} catch (Exception e) {
-			ErrorReporter.on("Failed to upload EPD", e);
-		}
-	}
-
-	private void tryUpdateExisting(Ec3Client client) {
-		try {
-			var r = client.getEpd(existingId);
-			if (r.isError() || !r.hasJson() || !r.json().isJsonObject()) {
-				MsgBox.error(
-					"Failed to get existing EPD",
-					"Failed to load EPD (id='" + existingId + "') from server.");
-				return;
-			}
-			var json = r.json().getAsJsonObject();
-			var impacts = EpdImpactResult.toJson(epd.impactResults);
-			json.add("impacts", impacts);
-			r = client.putEpd(existingId, json);
-			if (r.isError()) {
-				var error = "Failed to update EPD " + existingId;
-				if (r.hasJson()) {
-					JsonErrorDialog.show(error, r.json());
-				} else {
-					MsgBox.error("Upload failed", error);
-				}
-				return;
-			}
-			state = ExportState.updated(existingId);
-			super.okPressed();
-		} catch (Exception e) {
-			ErrorReporter.on("Failed to update EPD", e);
-		}
+		var upload = new Upload(client, epd);
+		state = existingId == null
+			? upload.newDraft()
+			: upload.update(existingId);
+		if (state.isError())
+			return;
+		super.okPressed();
 	}
 
 	@Override

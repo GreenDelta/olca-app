@@ -68,6 +68,10 @@ record ExportState(State state, String id) {
 		return state == State.CREATED && id != null;
 	}
 
+	boolean isError() {
+		return state == State.ERROR;
+	}
+
 	public void display() {
 		if (state == null)
 			return;
