@@ -54,11 +54,8 @@ record EpdModulesSection(EpdEditor editor) {
 				onAdd.run();
 				return;
 			}
-			var copy = mod.copy();
-			if (EpdModuleDialog.edit(editor.getModel(), copy)) {
-				mod.name = copy.name;
-				mod.result = copy.result;
-				table.refresh(true);
+			if (EpdModuleDialog.edit(editor.getModel(), mod)) {
+				table.setInput(modules());
 				editor.setDirty();
 			}
 		});

@@ -1,6 +1,6 @@
 package org.openlca.app.editors.epds;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,6 +31,11 @@ class EpdModuleDialog extends FormDialog {
 
 	private final Epd epd;
 	private final EpdModule module;
+
+	// if the dialog is in edit-mode, it works on a copy and this field
+// contains the original module then.
+	private final EpdModule origin;
+
 	private final String[] names = {
 		"A1A2A3", "A1", "A2", "A3", "A4", "A5", "B1", "B2toB7", "B2",
 		"B3", "B4", "B5", "B6", "B7", "C1", "C2", "C3", "C4", "D"};
@@ -39,7 +44,7 @@ class EpdModuleDialog extends FormDialog {
 		if (epd == null)
 			return Optional.empty();
 		var module = new EpdModule();
-		var dialog = new EpdModuleDialog(epd, module);
+		var dialog = new EpdModuleDialog(epd, module, null);
 		module.name = dialog.proposeName(epd);
 		int ret = dialog.open();
 		return ret == OK
@@ -47,15 +52,24 @@ class EpdModuleDialog extends FormDialog {
 			: Optional.empty();
 	}
 
-	public static boolean edit(Epd epd, EpdModule module) {
-		return module != null
-			&& new EpdModuleDialog(epd, module).open() == OK;
+	public static boolean edit(Epd epd, EpdModule origin) {
+		if (origin == null)
+			return false;
+		var copy = origin.copy();
+		var dialog = new EpdModuleDialog(epd, copy, origin);
+		if (dialog.open() != OK)
+			return false;
+		origin.name = copy.name;
+		origin.result = copy.result;
+		return true;
 	}
 
-	private EpdModuleDialog(Epd epd, EpdModule module) {
+	private EpdModuleDialog(
+		Epd epd, EpdModule module, EpdModule origin) {
 		super(UI.shell());
 		this.epd = epd;
 		this.module = module;
+		this.origin = origin;
 	}
 
 	@Override
@@ -81,7 +95,7 @@ class EpdModuleDialog extends FormDialog {
 		UI.formLabel(nameComp, tk, "Name:");
 		var nameCombo = new Combo(nameComp, SWT.BORDER);
 		UI.fillHorizontal(nameCombo);
-		nameCombo.setItems(unusedNames());
+		nameCombo.setItems(proposeNames());
 		if (module.name != null) {
 			nameCombo.setText(module.name);
 		}
@@ -100,16 +114,6 @@ class EpdModuleDialog extends FormDialog {
 		});
 	}
 
-	private String[] unusedNames() {
-		var used = epd.modules.stream()
-			.map(mod -> mod.name)
-			.filter(Strings::notEmpty)
-			.collect(Collectors.toSet());
-		return Arrays.stream(names)
-			.filter(n -> !used.contains(n))
-			.toArray(String[]::new);
-	}
-
 	@Override
 	protected void okPressed() {
 		// check that the module name is not empty
@@ -121,7 +125,8 @@ class EpdModuleDialog extends FormDialog {
 
 		// check that the module name is unique within the EPD
 		for (var other : epd.modules) {
-			if (Objects.equals(other, module))
+			if (Objects.equals(other, module)
+				|| Objects.equals(other, origin))
 				continue;
 			if (Strings.nullOrEqual(other.name, module.name)) {
 				MsgBox.error("Duplicate name",
@@ -131,6 +136,23 @@ class EpdModuleDialog extends FormDialog {
 		}
 
 		super.okPressed();
+	}
+
+	private String[] proposeNames() {
+		var used = epd.modules.stream()
+			.map(mod -> mod.name)
+			.filter(Strings::notEmpty)
+			.collect(Collectors.toSet());
+		var filtered = new ArrayList<String>();
+		if (origin != null && Strings.notEmpty(origin.name)) {
+			filtered.add(origin.name);
+		}
+		for (var name : names) {
+			if (used.contains(name))
+				continue;
+			filtered.add(name);
+		}
+		return filtered.toArray(String[]::new);
 	}
 
 	private String proposeName(Epd epd) {
