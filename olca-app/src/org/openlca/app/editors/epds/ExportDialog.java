@@ -311,10 +311,10 @@ class ExportDialog extends FormDialog {
 	record MassField(ExportDialog dialog) {
 
 		void render(Composite comp, FormToolkit tk) {
-			UI.formLabel(comp, tk, "Mass");
+			UI.formLabel(comp, tk, "Mass per declared unit");
 			var mass = dialog.epd.kgPerDeclaredUnit;
 			if (mass != null) {
-				var num = mass.amount() + " " + massUnit();
+				var num = mass.amount() + " kg";
 				UI.formLabel(comp, tk, num);
 				UI.filler(comp, tk);
 			} else {
@@ -322,15 +322,8 @@ class ExportDialog extends FormDialog {
 				UI.fillHorizontal(text);
 				update(text);
 				text.addModifyListener($ -> update(text));
-				UI.formLabel(comp, tk, massUnit());
+				UI.formLabel(comp, tk, "kg");
 			}
-		}
-
-		private String massUnit() {
-			var uDecl = dialog.epd.declaredUnit;
-			return uDecl != null
-				? "kg/" + uDecl.unit()
-				: "kg/??";
 		}
 
 		private void update(Text text) {

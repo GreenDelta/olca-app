@@ -37,10 +37,19 @@ record ExportState(State state, String id) {
 		 * User canceled the export or there as an error.
 		 */
 		CANCELED,
+
+		/**
+		 * Some unexpected error.
+		 */
+		ERROR,
 	}
 
 	static ExportState canceled() {
 		return new ExportState(State.CANCELED, null);
+	}
+
+	static ExportState error() {
+		return new ExportState(State.ERROR, null);
 	}
 
 	static ExportState created(String id) {
