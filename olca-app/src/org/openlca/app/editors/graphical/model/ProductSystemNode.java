@@ -12,6 +12,11 @@ import org.openlca.core.model.ProductSystem;
 
 import gnu.trove.set.hash.TLongHashSet;
 
+/**
+ * A {@link ProductSystemNode} contains a system of unit processes, library
+ * processes, results and/or product systems (represented by a
+ * {@link ProcessNode}).
+ */
 public class ProductSystemNode extends Node {
 
 	public final MutableProcessLinkSearchMap linkSearch;

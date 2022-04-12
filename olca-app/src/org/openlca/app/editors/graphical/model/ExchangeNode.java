@@ -9,6 +9,10 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
+/**
+ * A {@link ExchangeNode} represents a flow. It could be an input or an output
+ * flow.
+ */
 public class ExchangeNode extends Node {
 
 	public final Exchange exchange;

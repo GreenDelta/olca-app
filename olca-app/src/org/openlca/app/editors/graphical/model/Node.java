@@ -8,6 +8,9 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 
+/**
+ * An abstract class for the model elements of the model graph.
+ */
 abstract class Node {
 
 	public final GraphEditor editor;

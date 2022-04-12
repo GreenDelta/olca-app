@@ -12,6 +12,9 @@ import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
 import org.openlca.app.editors.graphical.view.ProductSystemFigure;
 
+/**
+ * Corresponding {@link org.eclipse.gef.EditPart} of {@link ProductSystemNode}.
+ */
 class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 
 	CommandStackChangedListener stackListener = new CommandStackChangedListener();

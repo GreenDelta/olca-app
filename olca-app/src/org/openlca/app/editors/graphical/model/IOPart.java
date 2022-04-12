@@ -7,6 +7,9 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.view.IOFigure;
 
+/**
+ * Corresponding {@link org.eclipse.gef.EditPart} of {@link IONode}.
+ */
 class IOPart extends AppAbstractEditPart<IONode> {
 
 	@Override

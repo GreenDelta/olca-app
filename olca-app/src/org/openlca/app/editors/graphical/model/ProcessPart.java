@@ -16,6 +16,9 @@ import org.openlca.app.editors.graphical.command.XYLayoutCommand;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
 import org.openlca.app.editors.graphical.view.ProcessFigure;
 
+/**
+ * Corresponding {@link org.eclipse.gef.EditPart} of {@link ProcessPart}.
+ */
 public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 
 	@Override
@@ -136,5 +139,5 @@ public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 		}
 		super.refreshChildren();
 	}
-	
+
 }

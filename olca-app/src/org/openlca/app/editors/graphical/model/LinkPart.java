@@ -19,6 +19,9 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.command.DeleteLinkCommand;
 import org.openlca.app.editors.graphical.view.TreeConnectionRouter;
 
+/**
+ * Corresponding {@link org.eclipse.gef.EditPart} of {@link Link}.
+ */
 class LinkPart extends AbstractConnectionEditPart {
 
 	@Override

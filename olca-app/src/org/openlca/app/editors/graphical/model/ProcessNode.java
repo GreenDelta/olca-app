@@ -22,6 +22,11 @@ import com.google.common.base.Objects;
 import org.openlca.core.model.descriptors.ResultDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
+/**
+ * A {@link ProcessNode} represents a unit process, a library process, a result
+ * or a product system with its list of input or output flows (see
+ * {@link IONode}).
+ */
 public class ProcessNode extends Node {
 
 	public final RootDescriptor process;
