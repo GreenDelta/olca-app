@@ -81,14 +81,17 @@ class ExportDialog extends FormDialog {
 		loginPanel = LoginPanel.create(body, tk);
 
 		// info section
-		var header = epd.productName;
-		if (epd.declaredUnit != null) {
-			var num = Numbers.format(epd.declaredUnit.amount(), 2)
-				+ " " + epd.declaredUnit.unit();
-			header = num + " " + header;
-		}
-		var infoSection = UI.section(body, tk, header);
-		var comp = UI.sectionClient(infoSection, tk, 3);
+		var comp = UI.formSection(body, tk, "Product information", 3);
+		UI.formLabel(comp, M.Product);
+		UI.formLabel(comp, epd.productName);
+		UI.filler(comp, tk);
+
+		UI.formLabel(comp, tk, "Declared unit");
+		UI.formLabel(comp, tk, epd.declaredUnit != null
+			? epd.declaredUnit.toString()
+			: "?");
+		UI.filler(comp, tk);
+
 
 		// kg per declared unit
 		if (epd.kgPerDeclaredUnit == null) {

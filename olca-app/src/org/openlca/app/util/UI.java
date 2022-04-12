@@ -417,13 +417,14 @@ public class UI {
 
 	public static Label formLabel(Composite comp, FormToolkit tk, String text) {
 		Label label;
+		var s = text != null ? text : "";
 		if (tk != null) {
-			label = tk.createLabel(comp, text, SWT.NONE);
+			label = tk.createLabel(comp, s, SWT.NONE);
 		} else {
 			label = new Label(comp, SWT.NONE);
-			label.setText(text);
+			label.setText(s);
 		}
-		GridData gd = gridData(label, false, false);
+		var gd = gridData(label, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
 		return label;
