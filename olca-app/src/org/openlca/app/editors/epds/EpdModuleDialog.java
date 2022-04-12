@@ -1,5 +1,10 @@
 package org.openlca.app.editors.epds;
 
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
@@ -9,17 +14,22 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.core.model.Epd;
 import org.openlca.core.model.EpdModule;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
+import org.openlca.util.Strings;
 
-import java.util.Optional;
-
+/**
+ * Edit an EPD module. Note that this dialog always works on a new module or
+ * a copy of an existing module.
+ */
 class EpdModuleDialog extends FormDialog {
 
+	private final Epd epd;
 	private final EpdModule module;
 	private final String[] names = {
 		"A1A2A3", "A1", "A2", "A3", "A4", "A5", "B1", "B2toB7", "B2",
@@ -29,7 +39,7 @@ class EpdModuleDialog extends FormDialog {
 		if (epd == null)
 			return Optional.empty();
 		var module = new EpdModule();
-		var dialog = new EpdModuleDialog(module);
+		var dialog = new EpdModuleDialog(epd, module);
 		module.name = dialog.proposeName(epd);
 		int ret = dialog.open();
 		return ret == OK
@@ -37,12 +47,14 @@ class EpdModuleDialog extends FormDialog {
 			: Optional.empty();
 	}
 
-	public static boolean edit(EpdModule module) {
-		return module != null && new EpdModuleDialog(module).open() == OK;
+	public static boolean edit(Epd epd, EpdModule module) {
+		return module != null
+			&& new EpdModuleDialog(epd, module).open() == OK;
 	}
 
-	private EpdModuleDialog(EpdModule module) {
+	private EpdModuleDialog(Epd epd, EpdModule module) {
 		super(UI.shell());
+		this.epd = epd;
 		this.module = module;
 	}
 
@@ -69,7 +81,7 @@ class EpdModuleDialog extends FormDialog {
 		UI.formLabel(nameComp, tk, "Name:");
 		var nameCombo = new Combo(nameComp, SWT.BORDER);
 		UI.fillHorizontal(nameCombo);
-		nameCombo.setItems(names);
+		nameCombo.setItems(unusedNames());
 		if (module.name != null) {
 			nameCombo.setText(module.name);
 		}
@@ -88,6 +100,39 @@ class EpdModuleDialog extends FormDialog {
 		});
 	}
 
+	private String[] unusedNames() {
+		var used = epd.modules.stream()
+			.map(mod -> mod.name)
+			.filter(Strings::notEmpty)
+			.collect(Collectors.toSet());
+		return Arrays.stream(names)
+			.filter(n -> !used.contains(n))
+			.toArray(String[]::new);
+	}
+
+	@Override
+	protected void okPressed() {
+		// check that the module name is not empty
+		if (Strings.nullOrEmpty(module.name)) {
+			MsgBox.error("Empty name",
+				"An empty name is not allowed for an EPD module.");
+			return;
+		}
+
+		// check that the module name is unique within the EPD
+		for (var other : epd.modules) {
+			if (Objects.equals(other, module))
+				continue;
+			if (Strings.nullOrEqual(other.name, module.name)) {
+				MsgBox.error("Duplicate name",
+					"A module " + module.name + " already exists.");
+				return;
+			}
+		}
+
+		super.okPressed();
+	}
+
 	private String proposeName(Epd epd) {
 		if (epd == null || epd.modules.isEmpty())
 			return names[0];
@@ -97,7 +142,7 @@ class EpdModuleDialog extends FormDialog {
 			for (var mod : epd.modules) {
 				if (mod.name == null)
 					continue;
-				if (name.toLowerCase().contains(s)) {
+				if (mod.name.toLowerCase().contains(s)) {
 					found = true;
 					break;
 				}
