@@ -2,12 +2,14 @@ package org.openlca.app.editors.epds;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.OptionalDouble;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -17,10 +19,10 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.tools.openepd.CategoryDialog;
 import org.openlca.app.tools.openepd.LoginPanel;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
-import org.openlca.app.util.Numbers;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Epd;
@@ -86,23 +88,13 @@ class ExportDialog extends FormDialog {
 		UI.formLabel(comp, epd.productName);
 		UI.filler(comp, tk);
 
+		// declared unit
 		UI.formLabel(comp, tk, "Declared unit");
 		UI.formLabel(comp, tk, epd.declaredUnit != null
 			? epd.declaredUnit.toString()
 			: "?");
 		UI.filler(comp, tk);
-
-
-		// kg per declared unit
-		if (epd.kgPerDeclaredUnit == null) {
-			epd.kgPerDeclaredUnit = new EpdQuantity(1, "kg");
-		}
-		Controls.set(UI.formText(comp, tk, "Mass per declared unit"),
-			epd.kgPerDeclaredUnit.amount(),
-			amount -> epd.kgPerDeclaredUnit = new EpdQuantity(amount, "kg"));
-		UI.formLabel(comp, "kg/" + (epd.declaredUnit != null
-			? epd.declaredUnit.unit()
-			: "?"));
+		new MassField(this).render(comp, tk);
 
 		// category link
 		UI.formLabel(comp, tk, M.Category);
@@ -243,6 +235,10 @@ class ExportDialog extends FormDialog {
 		}
 	}
 
+	private static File categoryCacheFile() {
+		return new File(Workspace.getDir(), ".ec3-categories");
+	}
+
 	private record CategoryLink(ExportDialog dialog) {
 
 		void render(Composite comp, FormToolkit tk) {
@@ -309,10 +305,57 @@ class ExportDialog extends FormDialog {
 			}
 			link.getParent().layout();
 		}
+
 	}
 
-	private static File categoryCacheFile() {
-		return new File(Workspace.getDir(), ".ec3-categories");
+	record MassField(ExportDialog dialog) {
+
+		void render(Composite comp, FormToolkit tk) {
+			UI.formLabel(comp, tk, "Mass");
+			var mass = dialog.epd.kgPerDeclaredUnit;
+			if (mass != null) {
+				var num = mass.amount() + " " + massUnit();
+				UI.formLabel(comp, tk, num);
+				UI.filler(comp, tk);
+			} else {
+				var text = tk.createText(comp, "", SWT.BORDER);
+				UI.fillHorizontal(text);
+				update(text);
+				text.addModifyListener($ -> update(text));
+				UI.formLabel(comp, tk, massUnit());
+			}
+		}
+
+		private String massUnit() {
+			var uDecl = dialog.epd.declaredUnit;
+			return uDecl != null
+				? "kg/" + uDecl.unit()
+				: "kg/??";
+		}
+
+		private void update(Text text) {
+			var mass = OptionalDouble.empty();
+			try {
+				var s = text.getText();
+				if (Strings.notEmpty(s)) {
+					var d = Double.parseDouble(s);
+					mass = OptionalDouble.of(d);
+				}
+			} catch (NumberFormatException ignored) {
+			}
+
+			var epd = dialog.epd;
+			if (mass.isPresent()) {
+				epd.kgPerDeclaredUnit = new EpdQuantity(
+					mass.getAsDouble(), "kg");
+				text.setBackground(Colors.white());
+				text.setToolTipText("");
+			} else {
+				epd.kgPerDeclaredUnit = null;
+				text.setBackground(Colors.errorColor());
+				text.setToolTipText("This field is requited.");
+			}
+		}
 	}
 
 }
