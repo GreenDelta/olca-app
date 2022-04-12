@@ -39,7 +39,6 @@ public class MergeAction extends Action implements INavigationAction {
 	public void run() {
 		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
-		var workspaceIds = repo.workspaceIds;
 		var commits = Commits.of(repo.git);
 		try {
 			if (!Actions.getWorkspaceChanges().isEmpty()) {
@@ -54,7 +53,7 @@ public class MergeAction extends Action implements INavigationAction {
 			var changed = GitMerge
 					.from(repo.git)
 					.into(Database.get())
-					.update(workspaceIds)
+					.update(repo.workspaceIds)
 					.as(repo.personIdent())
 					.resolveConflictsWith(conflictResolutionMap)
 					.run();

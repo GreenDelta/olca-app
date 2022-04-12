@@ -43,9 +43,11 @@ class Conflicts {
 
 	static TypeRefIdMap<ConflictResolution> solve(List<DiffResult> changes) {
 		var node = new DiffNodeBuilder(Database.get()).build(changes);
+		if (node == null)
+			return new TypeRefIdMap<>();
 		var dialog = new FetchDialog(node);
 		if (dialog.open() == FetchDialog.CANCEL)
-			return null;
+			return new TypeRefIdMap<>();
 		return dialog.getResolvedConflicts();
 	}
 

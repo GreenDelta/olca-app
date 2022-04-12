@@ -45,6 +45,11 @@ public class PullAction extends Action implements INavigationAction {
 			if (!newCommits.isEmpty()) {
 				new HistoryDialog("Fetched commits", newCommits).open();
 			}
+			if (!Actions.getWorkspaceChanges().isEmpty()) {
+				// TODO allow if not conflicting
+				// TODO offer different solutions (e.g. stash, discard, commit)
+				MsgBox.info("You can only merge into an unchanged database, please stash your changes first");
+			}
 			var remoteCommit = commits.get(commits.resolve(Constants.REMOTE_BRANCH));
 			var conflictResolutionMap = Conflicts.identifyAndSolve(remoteCommit);
 			if (conflictResolutionMap == null)
@@ -52,8 +57,8 @@ public class PullAction extends Action implements INavigationAction {
 			var changed = GitMerge
 					.from(repo.git)
 					.into(Database.get())
-					.as(repo.personIdent())
 					.update(repo.workspaceIds)
+					.as(repo.personIdent())
 					.resolveConflictsWith(conflictResolutionMap)
 					.run();
 			if (!changed) {
