@@ -50,14 +50,15 @@ public class ImportDialog extends FormDialog {
 				"An EPD with ID='" + epd.id + "' already exists in the database.");
 			return -1;
 		}
-		return new ImportDialog(doc, db).open();
+		var mapping = ImpactMappings.askCreate(db, doc);
+		return new ImportDialog(doc, db, mapping).open();
 	}
 
-	private ImportDialog(EpdDoc epdDoc, IDatabase db) {
+	private ImportDialog(EpdDoc epdDoc, IDatabase db, ImpactMapping mapping) {
 		super(UI.shell());
 		this.epdDoc = Objects.requireNonNull(epdDoc);
 		this.db = Objects.requireNonNull(db);
-		this.mapping = ImpactMapping.init(epdDoc, db);
+		this.mapping = mapping;
 	}
 
 	void setMappingChanged() {
