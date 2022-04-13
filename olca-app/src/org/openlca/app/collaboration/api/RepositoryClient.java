@@ -37,7 +37,6 @@ public class RepositoryClient {
 				return false;
 			return response.getEntity(String.class).startsWith("{\"id\":}");
 		} catch (WebRequestException e) {
-			log.warn("Could not connect to repository server " + config.serverUrl + ": " + e.getMessage());
 			return false;
 		}
 	}
