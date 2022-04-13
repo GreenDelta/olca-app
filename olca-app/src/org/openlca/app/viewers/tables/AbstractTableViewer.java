@@ -51,14 +51,18 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 	@Override
 	protected TableViewer createViewer(Composite parent) {
 		TableViewer viewer = Tables.createViewer(parent, getColumnHeaders(), getLabelProvider());
+		decorateViewer(viewer);
+		return viewer;
+	}
+
+	protected void decorateViewer(TableViewer viewer) {
 		createActions(viewer);
 		if (supports(OnDrop.class))
 			addDropSupport(viewer);
 		if (useColumnHeaders())
-			cellModifySupport = new ModifySupport<>(viewer);
-		return viewer;
+			cellModifySupport = new ModifySupport<>(viewer);		
 	}
-
+	
 	private void createActions(TableViewer viewer) {
 		actions = new ArrayList<>();
 		if (supports(OnAdd.class))

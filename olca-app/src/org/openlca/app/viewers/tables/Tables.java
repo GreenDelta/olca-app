@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -41,12 +42,12 @@ import org.openlca.util.Strings;
 public class Tables {
 
 	public static TableViewer createViewer(Composite parent, String... properties) {
-		return createViewer(parent, properties, null);
+		return createViewer(parent, properties, (IBaseLabelProvider) null);
 	}
 
 	/**
-	 * Creates a default table viewer with the given properties. The properties are
-	 * also used to create columns where each column label is the respective
+	 * Creates a default table viewer with the given properties. The properties
+	 * are also used to create columns where each column label is the respective
 	 * property of this column. The viewer is configured in the following way:
 	 * <ul>
 	 * <li>content provider = {@link ArrayContentProvider}
@@ -56,19 +57,31 @@ public class Tables {
 	 */
 	public static TableViewer createViewer(Composite parent, String[] properties,
 			IBaseLabelProvider labelProvider) {
-		var viewer = new TableViewer(parent,
-				SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
-		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		boolean hasColumns = properties != null && properties.length > 0;
-		Table table = viewer.getTable();
-		table.setLinesVisible(hasColumns);
-		table.setHeaderVisible(hasColumns);
+		var viewer = createViewer(parent, hasColumns);
 		if (hasColumns) {
-			createColumns(viewer, properties, labelProvider);
+			createColumns(viewer, properties, i -> labelProvider);
 		}
 		if (labelProvider != null) {
 			viewer.setLabelProvider(labelProvider);
 		}
+		return viewer;
+	}
+
+	public static TableViewer createViewer(Composite parent, String[] properties,
+			Function<Integer, IBaseLabelProvider> labelProviders) {
+		var viewer = createViewer(parent, true);
+		createColumns(viewer, properties, labelProviders);
+		return viewer;
+	}
+
+	private static TableViewer createViewer(Composite parent, boolean hasColumns) {
+		var viewer = new TableViewer(parent,
+				SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
+		viewer.setContentProvider(ArrayContentProvider.getInstance());
+		Table table = viewer.getTable();
+		table.setLinesVisible(hasColumns);
+		table.setHeaderVisible(hasColumns);
 		var data = UI.gridData(table, true, true);
 		data.minimumHeight = 120;
 		// workaround for this bug:
@@ -79,12 +92,15 @@ public class Tables {
 	}
 
 	private static void createColumns(TableViewer viewer, String[] labels,
-			IBaseLabelProvider labelProvider) {
+			Function<Integer, IBaseLabelProvider> labelProviders) {
+		var labelProvider = labelProviders != null ? labelProviders.apply(0) : null;
 		if (labelProvider instanceof CellLabelProvider) {
 			ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
 		}
 		viewer.setColumnProperties(labels);
-		for (var label : labels) {
+		for (var i = 0; i < labels.length; i++) {
+			var label = labels[i];
+			labelProvider = labelProviders != null ? labelProviders.apply(i) : null;
 			var c = new TableViewerColumn(viewer, SWT.NULL);
 			c.getColumn().setText(Strings.orEmpty(label));
 			if (labelProvider instanceof CellLabelProvider) {
@@ -153,8 +169,8 @@ public class Tables {
 	}
 
 	/**
-	 * Get the table item where the given event occurred. Returns null if the event
-	 * occurred in the empty table area.
+	 * Get the table item where the given event occurred. Returns null if the
+	 * event occurred in the empty table area.
 	 */
 	public static TableItem getItem(TableViewer viewer, MouseEvent event) {
 		if (viewer == null || event == null)
