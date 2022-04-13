@@ -45,6 +45,7 @@ public class MergeAction extends Action implements INavigationAction {
 				// TODO allow if not conflicting
 				// TODO offer different solutions (e.g. stash, discard, commit)
 				MsgBox.info("You can only merge into an unchanged database, please stash your changes first");
+				return;
 			}
 			var remoteCommit = commits.get(commits.resolve(Constants.REMOTE_BRANCH));
 			var conflictResolutionMap = Conflicts.identifyAndSolve(remoteCommit);
