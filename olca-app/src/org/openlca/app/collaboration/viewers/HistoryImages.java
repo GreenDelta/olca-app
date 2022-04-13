@@ -31,23 +31,21 @@ class HistoryImages {
 
 	private void initModel() {
 		Commit nextRight = null;
-		Commit nextLeft = null;
+		Commit prevRight = null;
 		for (var i = commits.size() - 1; i >= 0; i--) {
 			var commit = commits.get(i);
 			if (nextRight == null || !nextRight.equals(commit)) {
 				left.add(commit);
 			} else {
 				right.add(commit);
+				prevRight = commit;
 			}
 			var children = commits.stream().filter(c -> c.parentIds.contains(commit.id)).toList();
 			if (children.isEmpty())
 				continue;
-			var first = children.get(0);
 			var last = children.get(children.size() - 1);
-			if (children.size() > 1 || (children.size() == 1 && first.equals(nextRight) && first.equals(nextLeft))) {
+			if (children.size() == 2 || (prevRight != null && last.parentIds.contains(prevRight.id) && last.parentIds.size() == 1)) {
 				nextRight = last;
-			} else if (children.size() >= 1) {
-				nextLeft = first;
 			}
 		}
 	}
@@ -71,12 +69,11 @@ class HistoryImages {
 			return Icon.GIT_GRAPH_FIRST_BRANCH_START.get();
 		}
 		if (isLast()) {
-			if (isLeft(commit)) {
-				if (noOfParents == 1)
-					return Icon.GIT_GRAPH_LAST_LOCAL.get();
-				return Icon.GIT_GRAPH_LAST_BRANCH_END.get();
-			}
-			return Icon.GIT_GRAPH_LAST_REMOTE.get();
+			if (isRight(commit))
+				return Icon.GIT_GRAPH_LAST_REMOTE.get();
+			if (noOfParents == 1)
+				return Icon.GIT_GRAPH_LAST_LOCAL.get();
+			return Icon.GIT_GRAPH_LAST_BRANCH_END.get();
 		}
 		if (noOfParents == 2) {
 			if (noOfChildren == 1) {
@@ -91,14 +88,14 @@ class HistoryImages {
 		}
 		if (!inBranch)
 			return Icon.GIT_GRAPH_LOCAL.get();
-		if (isLeft(commit)) {
-			if (isLastLeft(commit))
-				return Icon.GIT_GRAPH_BRANCH_LOCAL_END.get();
-			return Icon.GIT_GRAPH_BRANCH_LOCAL.get();
+		if (isRight(commit)) {
+			if (isLastRight(commit) && !willMerge())
+				return Icon.GIT_GRAPH_BRANCH_REMOTE_END.get();
+			return Icon.GIT_GRAPH_BRANCH_REMOTE.get();
 		}
-		if (isLastRight(commit) && !willMerge())
-			return Icon.GIT_GRAPH_BRANCH_REMOTE_END.get();
-		return Icon.GIT_GRAPH_BRANCH_REMOTE.get();
+		if (isLastLeft(commit))
+			return Icon.GIT_GRAPH_BRANCH_LOCAL_END.get();
+		return Icon.GIT_GRAPH_BRANCH_LOCAL.get();
 	}
 
 	private boolean isLast() {
@@ -113,8 +110,8 @@ class HistoryImages {
 		return commits.size() == 1;
 	}
 
-	private boolean isLeft(Commit commit) {
-		return left.contains(commit);
+	private boolean isRight(Commit commit) {
+		return right.contains(commit);
 	}
 
 	private boolean isLastLeft(Commit commit) {
