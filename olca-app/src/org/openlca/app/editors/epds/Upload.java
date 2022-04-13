@@ -2,7 +2,6 @@ package org.openlca.app.editors.epds;
 
 import java.util.function.Supplier;
 
-import com.google.gson.JsonObject;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -15,6 +14,8 @@ import org.openlca.io.openepd.EpdDoc;
 import org.openlca.io.openepd.EpdImpactResult;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Strings;
+
+import com.google.gson.JsonObject;
 
 public record Upload(Ec3Client client, EpdDoc epd) {
 
@@ -52,6 +53,10 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 			json.addProperty("version", existing.version + 1);
 			var impacts = EpdImpactResult.toJson(epd.impactResults);
 			json.add("impacts", impacts);
+			if (json.has("plants")) {
+				// TODO: temporary workaround until is fixed in the EC3 API
+				json.remove("plants");
+			}
 			var resp = client.putEpd(id, json);
 			return resp.isError()
 				? error(resp, "Failed to update EPD " + id)
