@@ -49,6 +49,7 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 			}
 
 			// update the EPD on the server
+			json.addProperty("version", existing.version + 1);
 			var impacts = EpdImpactResult.toJson(epd.impactResults);
 			json.add("impacts", impacts);
 			var resp = client.putEpd(id, json);
@@ -63,6 +64,13 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 
 	ExportState newDraft() {
 		try {
+
+			// clear contact and PCR references
+			epd.manufacturer = null;
+			epd.programOperator = null;
+			epd.pcr = null;
+			epd.verifier = null;
+
 			var resp = client.postEpd(epd.toJson());
 			var json = jsonOf(resp);
 			if (resp.isError() || json == null)
