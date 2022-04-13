@@ -2,6 +2,7 @@ package org.openlca.app.wizards.io;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -48,7 +49,7 @@ import org.openlca.util.Strings;
 
 public class ImportLogView extends SimpleFormEditor {
 
-	private Set<Message> messages;
+	private Collection<Message> messages;
 
 	public static void open(ImportLog log) {
 		var id = Cache.getAppCache().put(log);
@@ -163,7 +164,7 @@ public class ImportLogView extends SimpleFormEditor {
 
 	private static class Filter {
 
-		private final Set<Message> messages;
+		private final Collection<Message> messages;
 
 		private TableViewer table;
 		private int maxCount = 1000;
@@ -171,9 +172,8 @@ public class ImportLogView extends SimpleFormEditor {
 		private ModelType type;
 		private final Set<State> states = EnumSet.noneOf(State.class);
 
-		Filter(Set<Message> messages) {
+		Filter(Collection<Message> messages) {
 			this.messages = messages;
-
 		}
 
 		void render(Composite body, FormToolkit tk) {
@@ -324,7 +324,7 @@ public class ImportLogView extends SimpleFormEditor {
 
 	private record TypeItem(ModelType type, int count) {
 
-		static List<TypeItem> allOf(Set<Message> messages) {
+		static List<TypeItem> allOf(Collection<Message> messages) {
 			var map = new EnumMap<ModelType, Integer>(ModelType.class);
 			for (var message : messages) {
 				var d = message.descriptor();
