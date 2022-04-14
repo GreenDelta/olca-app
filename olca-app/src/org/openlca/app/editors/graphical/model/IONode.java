@@ -2,14 +2,12 @@ package org.openlca.app.editors.graphical.model;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
-import org.openlca.core.model.Exchange;
-import org.openlca.core.model.FlowType;
+import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.Result;
 import org.openlca.util.Strings;
 
 /**
@@ -48,9 +46,14 @@ public class IONode extends Node {
 		List<Exchange> exchanges = switch (model.type) {
 			case PROCESS -> {
 				var process = Database.get().get(Process.class, model.id);
-				yield process == null
-					? Collections.emptyList()
-					: process.exchanges;
+				if (process == null)
+					yield Collections.emptyList();
+				else {
+					yield process.exchanges.stream()
+						.filter(e -> (e.isInput && node.shouldDisplayInputs())
+							|| (!e.isInput && node.shouldDisplayOutputs()))
+						.collect(Collectors.toList());
+				}
 			}
 			case PRODUCT_SYSTEM -> {
 				var system = Database.get().get(ProductSystem.class, model.id);
