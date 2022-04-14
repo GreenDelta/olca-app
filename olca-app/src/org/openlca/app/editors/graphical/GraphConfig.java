@@ -13,6 +13,7 @@ public class GraphConfig implements Copyable<GraphConfig> {
 	public boolean showFlowAmounts = true;
 	public boolean showElementaryFlows = false;
 	public boolean isRouted = true;
+	public boolean isProcessEditingEnabled = false;
 	private Theme theme = Themes.getDefault();
 
 	/**
@@ -44,6 +45,7 @@ public class GraphConfig implements Copyable<GraphConfig> {
 		other.showFlowIcons = showFlowIcons;
 		other.showFlowAmounts = showFlowAmounts;
 		other.showElementaryFlows = showElementaryFlows;
+		other.isProcessEditingEnabled = isProcessEditingEnabled;
 		other.theme = theme;
 		other.isRouted = isRouted;
 	}
@@ -54,6 +56,7 @@ public class GraphConfig implements Copyable<GraphConfig> {
 		clone.showFlowIcons = showFlowIcons;
 		clone.showFlowAmounts = showFlowAmounts;
 		clone.showElementaryFlows = showElementaryFlows;
+		clone.isProcessEditingEnabled = isProcessEditingEnabled;
 		clone.theme = theme;
 		clone.isRouted = isRouted;
 		return clone;
@@ -71,6 +74,8 @@ public class GraphConfig implements Copyable<GraphConfig> {
 			obj, "showElementaryFlows", false);
 		config.isRouted = Json.getBool(
 				obj, "isRouted", true);
+		config.isProcessEditingEnabled = Json.getBool(
+			obj, "isProcessEditingEnabled", false);
 		var themeID = Json.getString(obj, "theme");
 		config.theme(Themes.get(themeID));
 		return config;
@@ -82,6 +87,7 @@ public class GraphConfig implements Copyable<GraphConfig> {
 		obj.addProperty("showFlowAmounts", showFlowAmounts);
 		obj.addProperty("showElementaryFlows", showElementaryFlows);
 		obj.addProperty("isRouted", isRouted);
+		obj.addProperty("isProcessEditingEnabled", isProcessEditingEnabled);
 		obj.addProperty("theme", theme().file());
 		return obj;
 	}

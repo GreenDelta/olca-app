@@ -91,6 +91,14 @@ public class GraphSettingsAction extends Action {
 			amounts.setSelection(config.showFlowAmounts);
 			Controls.onSelect(amounts,
 					e -> config.showFlowAmounts = amounts.getSelection());
+
+			// edit mode
+			UI.filler(body, tk);
+			var isProcessEditingEnabled = tk.createButton(body, "Enable process editing", SWT.CHECK);
+			isProcessEditingEnabled.setSelection(config.isProcessEditingEnabled);
+			Controls.onSelect(isProcessEditingEnabled,
+				e -> config.isProcessEditingEnabled =
+					isProcessEditingEnabled.getSelection());
 		}
 
 		private void themeCombo(FormToolkit tk, Composite comp) {
