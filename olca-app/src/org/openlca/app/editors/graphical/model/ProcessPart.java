@@ -136,5 +136,5 @@ public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 		}
 		super.refreshChildren();
 	}
-	
+
 }

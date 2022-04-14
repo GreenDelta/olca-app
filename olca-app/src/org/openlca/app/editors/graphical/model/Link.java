@@ -5,6 +5,10 @@ import java.util.Objects;
 import org.eclipse.draw2d.Connection;
 import org.openlca.core.model.ProcessLink;
 
+/**
+ * A model of the connection between the output flow {@link ExchangeNode} of a
+ * {@link ProcessNode} to the input flow of another {@link ProcessNode}.
+ */
 public class Link {
 
 	public ProcessLink processLink;

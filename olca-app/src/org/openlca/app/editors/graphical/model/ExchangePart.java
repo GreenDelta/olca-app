@@ -11,6 +11,9 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.policy.CreateLinkPolicy;
 import org.openlca.app.editors.graphical.view.ExchangeFigure;
 
+/**
+ * Corresponding {@link org.eclipse.gef.EditPart} of {@link ExchangeNode}.
+ */
 class ExchangePart extends AbstractNodeEditPart<ExchangeNode> {
 
 	@Override

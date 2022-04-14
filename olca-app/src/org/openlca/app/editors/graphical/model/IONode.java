@@ -12,6 +12,10 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Result;
 import org.openlca.util.Strings;
 
+/**
+ * An {@link IONode} represents a list of exchanges to be displayed. Each
+ * exchange is represented by a {@link ExchangeNode}.
+ */
 public class IONode extends Node {
 
 	/**
