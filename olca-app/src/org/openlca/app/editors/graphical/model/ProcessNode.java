@@ -226,6 +226,37 @@ public class ProcessNode extends Node {
 		return getExchangeNodes();
 	}
 
+	public boolean shouldDisplayInputs() {
+		if (process == null)
+			return false;
+		if (!(process instanceof ProcessDescriptor p))
+			return parent().isWasteProcess(this);
+		else return parent().isWasteProcess(this)
+			|| (p.processType == ProcessType.UNIT_PROCESS && p.library == null);
+	}
+
+	public boolean shouldDisplayOutputs() {
+		if (process == null)
+			return false;
+		return !parent().isWasteProcess(this);
+	}
+
+	public boolean hasInputs() {
+		for (ExchangeNode exchangeNode : getExchangeNodes()){
+			if (exchangeNode.exchange.isInput)
+				return true;
+		}
+		return false;
+	}
+
+	public boolean hasOutputs() {
+		for (ExchangeNode exchangeNode : getExchangeNodes()){
+			if (!exchangeNode.exchange.isInput)
+				return true;
+		}
+		return false;
+	}
+
 	public Rectangle getBox() {
 		return box;
 	}
@@ -333,5 +364,4 @@ public class ProcessNode extends Node {
 		return "ProcessNode [ id =" + id + " content = "
 			+ process + " ]";
 	}
-
 }

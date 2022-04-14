@@ -31,17 +31,26 @@ public class IOFigure extends Figure {
 		layout.marginHeight = 5;
 		layout.marginWidth = 0;
 		setLayoutManager(layout);
-		inputPanel = initPanel(true);
-		outputPanel = initPanel(false);
+
+		// Inputs
+		inputPanel = node.hasInputs() ? initPanel(true) : null;
+		if (node.config().isProcessEditingEnable
+			&& node.isEditable()
+			&& node.shouldDisplayInputs())
+			add(new ButtonMargin(true, node), GridPos.fillTop());
+
+		//Outputs
+		outputPanel = node.hasOutputs() ? initPanel(false) : null;
+		if (node.config().isProcessEditingEnable
+			&& node.isEditable()
+			&& node.shouldDisplayOutputs())
+			add(new ButtonMargin(false, node), GridPos.fillTop());
 	}
 
 	private ExchangePanel initPanel(boolean forInputs) {
 		add(new Header(forInputs), GridPos.fillTop());
 		var panel = new ExchangePanel(node);
 		add(panel, GridPos.fill());
-		if (node.isEditable()) {
-			add(new ButtonMargin(forInputs, node), GridPos.fillTop());
-		}
 		return panel;
 	}
 
