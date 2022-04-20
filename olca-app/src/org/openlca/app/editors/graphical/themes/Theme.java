@@ -193,6 +193,7 @@ public class Theme {
 
 	public enum Box {
 		DEFAULT,
+		REFERENCE_PROCESS,
 		UNIT_PROCESS,
 		SYSTEM_PROCESS,
 		SUB_SYSTEM,
@@ -203,10 +204,11 @@ public class Theme {
 				return DEFAULT;
 			if (node.process.isFromLibrary())
 				return LIBRARY_PROCESS;
-			if (!(node.process instanceof ProcessDescriptor))
+			if (node.parent().isReferenceProcess(node))
+				return REFERENCE_PROCESS;
+			if (!(node.process instanceof ProcessDescriptor p))
 				return SUB_SYSTEM;
-			var process = (ProcessDescriptor) node.process;
-			return process.processType == ProcessType.UNIT_PROCESS
+			return p.processType == ProcessType.UNIT_PROCESS
 				? UNIT_PROCESS
 				: SYSTEM_PROCESS;
 		}

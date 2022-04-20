@@ -102,8 +102,10 @@ class Css {
   static Optional<Theme.Box> boxOf(CSSStyleRule rule) {
     if (!isBox(rule))
       return Optional.empty();
-    if (hasSelector(".unit-process", rule))
-      return Optional.of(Theme.Box.UNIT_PROCESS);
+		if (hasSelector(".reference-process", rule))
+			return Optional.of(Theme.Box.REFERENCE_PROCESS);
+		if (hasSelector(".unit-process", rule))
+			return Optional.of(Theme.Box.UNIT_PROCESS);
     if (hasSelector(".system-process", rule))
       return Optional.of(Theme.Box.SYSTEM_PROCESS);
     if (hasSelector(".library-process", rule))

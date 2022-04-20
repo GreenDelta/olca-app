@@ -8,6 +8,7 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.core.matrix.cache.FlowTable;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 
 import gnu.trove.set.hash.TLongHashSet;
@@ -17,14 +18,15 @@ public class ProductSystemNode extends Node {
 	public final MutableProcessLinkSearchMap linkSearch;
 	public final FlowTable flows = FlowTable.create(Database.get());
 	private final TLongHashSet wasteProcesses;
+	private final Process referenceProcess;
 
 	public ProductSystemNode(GraphEditor editor) {
 		super(editor);
 		var system = editor.getProductSystem();
 		this.linkSearch = new MutableProcessLinkSearchMap(system.processLinks);
-		var refProcess = system.referenceProcess;
-		if (refProcess != null) {
-			var refNode = ProcessNode.create(editor, refProcess.id);
+		referenceProcess = system.referenceProcess;
+		if (referenceProcess != null) {
+			var refNode = ProcessNode.create(editor, referenceProcess.id);
 			if (refNode != null) {
 				add(refNode);
 			}
@@ -42,6 +44,10 @@ public class ProductSystemNode extends Node {
 		return node != null
 					 && node.process != null
 					 && wasteProcesses.contains(node.process.id);
+	}
+
+	public boolean isReferenceProcess(ProcessNode node) {
+		return node != null && referenceProcess.id == node.process.id;
 	}
 
 	@SuppressWarnings("unchecked")
