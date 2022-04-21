@@ -3,19 +3,10 @@ package org.openlca.app.editors.graphical.view;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.GridData;
-import org.eclipse.draw2d.GridLayout;
-import org.eclipse.draw2d.ImageFigure;
-import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.LineBorder;
-import org.eclipse.draw2d.MouseEvent;
-import org.eclipse.draw2d.MouseListener;
+import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
-import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -25,10 +16,10 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ProcessFigure extends Figure {
 
+	private static final Dimension CORNER_DIMENSION = new Dimension(15, 15);
 	public static final int MINIMUM_WIDTH = 250;
 	public static int MINIMUM_HEIGHT = 34;
 	static {
@@ -49,7 +40,11 @@ public class ProcessFigure extends Figure {
 	final ProcessNode node;
 	private ProcessExpander leftExpander;
 	private ProcessExpander rightExpander;
+	private Figure processHeader;
 	private LineBorder border;
+	private LineBorder headerTopBorder;
+	private LineBorder headerFullBorder;
+	private GridLayout layout;
 
 	public ProcessFigure(ProcessNode node) {
 		this.node = node;
@@ -61,15 +56,36 @@ public class ProcessFigure extends Figure {
 	private void initializeFigure() {
 		setToolTip(new Label(Labels.name(node.process)));
 		setForegroundColor(Colors.white());
-		var layout = new GridLayout(1, true);
+		layout = new GridLayout(1, true);
 		layout.horizontalSpacing = 10;
 		layout.verticalSpacing = 0;
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
+		layout.marginHeight = 2;
+		layout.marginWidth = 2;
 		setLayoutManager(layout);
 	}
 
 	private void createHeader() {
+		var theme = node.config().theme();
+		var borderWidth = theme.boxBorderWidth(Box.of(node));
+		// TODO (francois): should be defined in CSS (with probably box.top).
+		var topBorderWidth = theme.boxBorderWidth(Box.of(node));
+
+		var arcDifference = new Dimension(
+			2 * layout.marginWidth + (borderWidth + topBorderWidth) / 2,
+			2 * layout.marginHeight + (borderWidth + topBorderWidth) / 2);
+
+		var boxCorners = Corners.fullRoundedCorners(CORNER_DIMENSION);
+		border = new RoundBorder(borderWidth, boxCorners);
+		setBorder(border);
+
+		var headerTopCorners = Corners.topRoundedCorners(
+			CORNER_DIMENSION.getShrinked(arcDifference));
+		headerTopBorder = new RoundBorder(borderWidth, headerTopCorners);
+		headerTopBorder.setColor(theme.boxBorderColor(Box.of(node)));
+		var headerFullCorners = Corners.fullRoundedCorners(
+			CORNER_DIMENSION.getShrinked(arcDifference));
+		headerFullBorder = new RoundBorder(borderWidth, headerFullCorners);
+		headerFullBorder.setColor(theme.boxBorderColor(Box.of(node)));
 
 		var layout = new GridLayout(4, false);
 		layout.horizontalSpacing = 5;
@@ -77,27 +93,25 @@ public class ProcessFigure extends Figure {
 		layout.marginHeight = 2;
 		layout.marginWidth = 0;
 
-		var top = new Figure();
-		top.setLayoutManager(layout);
+		processHeader = new Figure();
+		processHeader.setLayoutManager(layout);
 
 		// left expander
 		leftExpander = new ProcessExpander(node, Side.INPUT);
-		top.add(leftExpander, GridPos.leftCenter());
+		processHeader.add(leftExpander, GridPos.leftCenter());
 
 		// process icon and header
-		top.add(new ImageFigure(Images.get(node.process)), GridPos.leftCenter());
-		top.add(new BoxHeader(node), GridPos.fillTop());
+		processHeader.add(new ImageFigure(Images.get(node.process)), GridPos.leftCenter());
+		processHeader.add(new BoxHeader(node), GridPos.fillTop());
 
 		// right expander
 		rightExpander = new ProcessExpander(node, Side.OUTPUT);
-		top.add(rightExpander, GridPos.rightCenter());
+		processHeader.add(rightExpander, GridPos.rightCenter());
 
-		add(top, new GridData(SWT.FILL, SWT.FILL, true, false));
+		// header border
+		setHeaderBorder();
 
-		// box border
-		var theme = node.config().theme();
-		border = new RoundBorder(theme.boxBorderWidth(Box.of(node)));
-		setBorder(border);
+		add(processHeader, new GridData(SWT.FILL, SWT.FILL, true, false));
 	}
 
 	public void refresh() {
@@ -116,7 +130,18 @@ public class ProcessFigure extends Figure {
 			} else if (node.equals(link.outputNode)) {
 				link.refreshSourceAnchor();
 			}
+		}
 
+		// refresh the borders
+		setHeaderBorder();
+	}
+
+	private void setHeaderBorder() {
+		if (node.isMinimized()) {
+			processHeader.setBorder(null);
+		}
+		else {
+			processHeader.setBorder(headerTopBorder);
 		}
 	}
 

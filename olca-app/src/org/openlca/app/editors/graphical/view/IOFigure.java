@@ -64,8 +64,10 @@ public class IOFigure extends Figure {
 	private class Header extends Figure {
 
 		private final Label label;
+		private final boolean forInputs;
 
 		Header(boolean forInputs) {
+			this.forInputs = forInputs;
 			var layout = new GridLayout(1, true);
 			layout.marginHeight = 3;
 			layout.marginWidth = 5;
@@ -78,10 +80,12 @@ public class IOFigure extends Figure {
 		@Override
 		public void paint(Graphics g) {
 			var theme = node.config().theme();
-			var location = getLocation();
-			var size = getSize();
 			g.setForegroundColor(theme.boxBorderColor(Box.of(node)));
-			g.drawLine(location.x, location.y, location.x + size.width, location.y);
+			if (!forInputs) {
+				var location = getLocation();
+				var size = getSize();
+				g.drawLine(location.x, location.y, location.x + size.width, location.y);
+			}
 			g.restoreState();
 			label.setForegroundColor(theme.infoLabelColor());
 			super.paint(g);
