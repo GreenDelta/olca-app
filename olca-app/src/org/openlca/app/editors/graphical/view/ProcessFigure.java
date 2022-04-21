@@ -15,7 +15,6 @@ import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
-import org.openlca.app.M;
 import org.openlca.app.editors.graphical.command.ChangeStateCommand;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
@@ -25,7 +24,6 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ProcessFigure extends Figure {
 
@@ -75,7 +73,7 @@ public class ProcessFigure extends Figure {
 		layout.horizontalSpacing = 5;
 		layout.verticalSpacing = 0;
 		layout.marginHeight = 2;
-		layout.marginWidth = 0;
+		layout.marginWidth = 2;
 
 		var top = new Figure();
 		top.setLayoutManager(layout);

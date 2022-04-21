@@ -3,7 +3,8 @@ package org.openlca.app.editors.graphical.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.draw2d.ImageFigure;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.gef.commands.Command;
@@ -12,11 +13,12 @@ import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
-import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.editors.graphical.themes.Theme;
+import org.openlca.app.util.UI;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 
-public class ProcessExpander extends ImageFigure {
+public class ProcessExpander extends Label {
 
 	private final ProcessNode node;
 	private final Side side;
@@ -25,9 +27,10 @@ public class ProcessExpander extends ImageFigure {
 	private boolean isCollapsing;
 
 	ProcessExpander(ProcessNode node, Side side) {
+		super("⊕");
 		this.node = node;
 		this.side = side;
-		setImage(Icon.PLUS.get());
+		setFont(UI.boldFont());
 		setVisible(shouldBeVisible());
 		addMouseListener(new ExpansionListener());
 	}
@@ -56,7 +59,7 @@ public class ProcessExpander extends ImageFigure {
 
 	public void expand() {
 		createNecessaryNodes();
-		setImage(Icon.MINUS.get());
+		setText("⊖");
 		expanded = true;
 
 		// set expanded nodes visible
@@ -157,7 +160,7 @@ public class ProcessExpander extends ImageFigure {
 				continue;
 			node.parent().remove(otherNode);
 		}
-		setImage(Icon.PLUS.get());
+		setText("⊕");
 		isCollapsing = false;
 		expanded = false;
 	}
@@ -179,9 +182,9 @@ public class ProcessExpander extends ImageFigure {
 	void refresh() {
 		setVisible(shouldBeVisible());
 		if (expanded)
-			setImage(Icon.MINUS.get());
+			setText("⊖");
 		else
-			setImage(Icon.PLUS.get());
+			setText("⊕");
 	}
 
 	public boolean isExpanded() {
@@ -194,6 +197,16 @@ public class ProcessExpander extends ImageFigure {
 
 	enum Side {
 		INPUT, OUTPUT
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		var theme = node.config().theme();
+		var box = Theme.Box.of(node);
+		g.setForegroundColor(theme.boxBorderColor(box));
+		g.restoreState();
+		setForegroundColor(theme.boxFontColor(box));
+		super.paint(g);
 	}
 
 	private class ExpansionListener implements MouseListener {
@@ -224,5 +237,4 @@ public class ProcessExpander extends ImageFigure {
 		public void mouseReleased(MouseEvent me) {
 		}
 	}
-
 }
