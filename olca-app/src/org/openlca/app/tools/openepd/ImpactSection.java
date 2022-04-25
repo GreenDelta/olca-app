@@ -186,8 +186,13 @@ class ImpactSection {
 			if (!(obj instanceof IndicatorKey key))
 				return null;
 			var m = mapping.getIndicatorMapping(methodCode, key);
-			if (col == 2 && m.isEmpty())
+			if (col == 2 && m.isEmpty()) {
 				return Colors.linkBlue();
+			}
+			if (col == 3 && !m.isEmpty() &&
+				!Strings.nullOrEqual(m.indicator().code, key.code())) {
+				return Colors.systemColor(SWT.COLOR_RED);
+			}
 			if (col == 4 && !m.isEmpty() &&
 				!Strings.nullOrEqual(m.indicator().referenceUnit, key.unit())) {
 				return Colors.systemColor(SWT.COLOR_RED);
