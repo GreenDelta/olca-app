@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
@@ -29,6 +30,7 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.openepd.input.ImpactMapping;
 import org.openlca.io.openepd.input.IndicatorKey;
+import org.openlca.util.Strings;
 
 class ImpactSection {
 
@@ -181,12 +183,16 @@ class ImpactSection {
 
 		@Override
 		public Color getForeground(Object obj, int col) {
-			if (col != 2 || !(obj instanceof IndicatorKey key))
+			if (!(obj instanceof IndicatorKey key))
 				return null;
 			var m = mapping.getIndicatorMapping(methodCode, key);
-			return m.isEmpty()
-				? Colors.linkBlue()
-				: null;
+			if (col == 2 && m.isEmpty())
+				return Colors.linkBlue();
+			if (col == 4 && !m.isEmpty() &&
+				!Strings.nullOrEqual(m.indicator().referenceUnit, key.unit())) {
+				return Colors.systemColor(SWT.COLOR_RED);
+			}
+			return null;
 		}
 	}
 }
