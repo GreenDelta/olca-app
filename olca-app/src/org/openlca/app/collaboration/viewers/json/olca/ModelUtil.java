@@ -177,7 +177,7 @@ class ModelUtil {
 			if (property.equals("variants"))
 				return new String[] { "name", "productSystem.@id" };
 			if (property.equals("modules"))
-				return new String[] { "result.@id" };
+				return new String[] { "name", "result.@id" };
 			if (property.equals("parameterRedefs"))
 				return new String[] { "name", "context.@id" };
 			if (property.equals("parameters"))
