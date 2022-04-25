@@ -100,6 +100,7 @@ import org.openlca.core.database.Derby as Derby
 import org.openlca.core.database.config.DerbyConfig as DerbyConfig
 import org.openlca.core.model.descriptors.Descriptor as Descriptor
 import org.openlca.core.model.descriptors.DescriptorBuilder as DescriptorBuilder
+import org.openlca.core.model.Direction as Direction
 import org.openlca.util.Dirs as Dirs
 import org.openlca.io.DisplayValues as DisplayValues
 import org.openlca.util.Doubles as Doubles

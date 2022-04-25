@@ -80,7 +80,7 @@ public class NwResultPage extends FormPage {
 		var viewer = Tables.createViewer(comp, columns);
 		viewer.setLabelProvider(new Label());
 		Tables.bindColumnWidths(viewer, colWidths);
-		var items = Contributions.calculate(results, r -> r.value());
+		var items = Contributions.calculate(results, ImpactValue::value);
 		Contributions.sortDescending(items);
 		viewer.setInput(items);
 		Actions.bind(viewer, TableClipboard.onCopySelected(viewer));

@@ -2,6 +2,8 @@ package org.openlca.app.editors.epds;
 
 import java.util.function.Supplier;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -49,14 +51,23 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 					return ExportState.canceled();
 			}
 
-			// update the EPD on the server
+			// update the JSON object
 			json.addProperty("version", existing.version + 1);
 			var impacts = EpdImpactResult.toJson(epd.impactResults);
+			NullDiff.apply(json.get("impacts"), impacts);
 			json.add("impacts", impacts);
+			if (epd.declaredUnit != null) {
+				json.add("declared_unit", epd.declaredUnit.toJson());
+			}
+			if (epd.kgPerDeclaredUnit != null) {
+				json.add("kg_per_declared_unit", epd.kgPerDeclaredUnit.toJson());
+			}
 			if (json.has("plants")) {
 				// TODO: temporary workaround until is fixed in the EC3 API
 				json.remove("plants");
 			}
+
+			// update the EPD on the server
 			var resp = client.putEpd(id, json);
 			return resp.isError()
 				? error(resp, "Failed to update EPD " + id)
@@ -133,4 +144,36 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 		}
 		return ExportState.error();
 	}
+
+	/**
+	 * Set {@code null} explicitly for properties that where deleted in an update.
+	 */
+	private record NullDiff(JsonObject origin, JsonObject update) {
+
+		static void apply(JsonElement origin, JsonElement update) {
+			if (origin == null
+				|| !origin.isJsonObject()
+				|| update == null
+				|| !update.isJsonObject())
+				return;
+			new NullDiff(
+				origin.getAsJsonObject(),
+				update.getAsJsonObject())
+				.exec();
+		}
+
+		private void exec() {
+			for (var prop : origin.keySet()) {
+				var oProp = origin.get(prop);
+				var uProp = update.get(prop);
+				if (uProp == null || uProp.isJsonNull()) {
+					update.add(prop, JsonNull.INSTANCE);
+				} else {
+					NullDiff.apply(oProp, uProp);
+				}
+			}
+		}
+	}
+
 }
+
