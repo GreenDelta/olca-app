@@ -14,6 +14,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
@@ -61,6 +62,7 @@ class EpdModuleDialog extends FormDialog {
 			return false;
 		origin.name = copy.name;
 		origin.result = copy.result;
+		origin.multiplier = copy.multiplier;
 		return true;
 	}
 
@@ -87,13 +89,13 @@ class EpdModuleDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var body = UI.formBody(mForm.getForm(), tk);
+		var comp = tk.createComposite(body);
+		UI.fillHorizontal(comp);
+		UI.gridLayout(comp, 2, 10, 0);
 
 		// module name
-		var nameComp = tk.createComposite(body);
-		UI.fillHorizontal(nameComp);
-		UI.gridLayout(nameComp, 2, 10, 0);
-		UI.formLabel(nameComp, tk, "Name:");
-		var nameCombo = new Combo(nameComp, SWT.BORDER);
+		UI.formLabel(comp, tk, "Name:");
+		var nameCombo = new Combo(comp, SWT.BORDER);
 		UI.fillHorizontal(nameCombo);
 		nameCombo.setItems(proposeNames());
 		if (module.name != null) {
@@ -101,8 +103,12 @@ class EpdModuleDialog extends FormDialog {
 		}
 		nameCombo.addModifyListener($ -> module.name = nameCombo.getText());
 
+		// result multiplier
+		var factorText = UI.formText(comp, tk, "Result multiplier:");
+		Controls.set(factorText, module.multiplier, f -> module.multiplier = f);
+
 		// result tree
-		UI.formLabel(nameComp, tk, "Result:");
+		UI.formLabel(comp, tk, "Result:");
 		var tree = NavigationTree.forSingleSelection(body, ModelType.RESULT);
 		UI.gridData(tree.getTree(), true, true);
 		tree.addSelectionChangedListener(e -> {

@@ -6,12 +6,12 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
@@ -34,11 +34,20 @@ record EpdModulesSection(EpdEditor editor) {
 			"Module",
 			"Result",
 			"LCIA Method",
+			"Result multiplier",
 			"Quantitative reference");
-		table.setLabelProvider(new LabelProvider());
-		Tables.bindColumnWidths(table, 0.25, 0.25, 0.25, 0.25);
+		table.setLabelProvider(new LabelProvider(editor));
+		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 
-		// bind actions
+		bindActions(section, table);
+
+		// fill the table
+		var modules = modules();
+		modules.sort((m1, m2) -> Strings.compare(m1.name, m2.name));
+		table.setInput(modules);
+	}
+
+	private void bindActions(Section section, TableViewer table) {
 		var onAdd = Actions.onAdd(
 			() -> EpdModuleDialog.createNew(editor.getModel())
 				.ifPresent(module -> {
@@ -81,11 +90,6 @@ record EpdModulesSection(EpdEditor editor) {
 		Actions.bind(section, onAdd, onDelete);
 		Actions.bind(table, onAdd, onEdit, onOpenResult, onDelete);
 		Tables.onDoubleClick(table, $ -> onEdit.run());
-
-		// fill the table
-		var modules = modules();
-		modules.sort((m1, m2) -> Strings.compare(m1.name, m2.name));
-		table.setInput(modules);
 	}
 
 	private List<EpdModule> modules() {
@@ -125,11 +129,17 @@ record EpdModulesSection(EpdEditor editor) {
 	private static class LabelProvider extends BaseLabelProvider
 		implements ITableLabelProvider {
 
+		private final EpdEditor editor;
+
+		LabelProvider(EpdEditor editor) {
+			this.editor = editor;
+		}
+
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (col == 0)
-				return Images.get(ModelType.RESULT);
-			return null;
+			return col == 0
+				? Images.get(ModelType.RESULT)
+				: null;
 		}
 
 		@Override
@@ -142,17 +152,36 @@ record EpdModulesSection(EpdEditor editor) {
 				case 2 -> module.result != null
 					? Labels.name(module.result.impactMethod)
 					: null;
-				case 3 -> {
-					if (module.result == null
-						|| module.result.referenceFlow == null)
-						yield null;
-					var refFlow = module.result.referenceFlow;
-					yield Numbers.format(refFlow.amount, 2)
-						+ " " + Labels.name(refFlow.unit)
-						+ " " + Labels.name(refFlow.flow);
-				}
+				case 3 -> multiplier(module);
+				case 4 -> qRef(module);
 				default -> null;
 			};
+		}
+
+		private String multiplier(EpdModule module) {
+			var m = String.format("%.2f", module.multiplier);
+			if (module.result != null
+				&& module.result.referenceFlow != null
+				&& module.result.referenceFlow.unit != null) {
+				m += " [" + module.result.referenceFlow.unit.name;
+			}
+			var product = editor.getModel().product;
+			return product != null && product.unit != null
+				? String.format("%s / %.2f %s]", m, product.amount, product.unit.name)
+				: m + "]";
+		}
+
+		private String qRef(EpdModule module) {
+			if (module.result == null)
+				return "";
+			var refFlow = module.result.referenceFlow;
+			if (refFlow == null
+				|| refFlow.flow == null
+				|| refFlow.unit == null)
+				return "";
+			var amount = module.multiplier * refFlow.amount;
+			return String.format(
+				"%.2f %s - %s", amount, refFlow.unit.name, refFlow.flow.name);
 		}
 	}
 
