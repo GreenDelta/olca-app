@@ -35,7 +35,7 @@ record EpdModulesSection(EpdEditor editor) {
 			"Result",
 			"LCIA Method",
 			"Result multiplier",
-			"Quantitative reference");
+			"Reference flow");
 		table.setLabelProvider(new LabelProvider(editor));
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 
@@ -159,16 +159,19 @@ record EpdModulesSection(EpdEditor editor) {
 		}
 
 		private String multiplier(EpdModule module) {
-			var m = String.format("%.2f", module.multiplier);
-			if (module.result != null
-				&& module.result.referenceFlow != null
-				&& module.result.referenceFlow.unit != null) {
-				m += " [" + module.result.referenceFlow.unit.name;
-			}
+			var refFlow = module.result != null
+				? module.result.referenceFlow
+				: null;
 			var product = editor.getModel().product;
-			return product != null && product.unit != null
-				? String.format("%s / %.2f %s]", m, product.amount, product.unit.name)
-				: m + "]";
+			if (refFlow == null
+				|| refFlow.unit == null
+				|| product == null
+				|| product.unit == null)
+				return String.format("%.2f", module.multiplier);
+			return String.format("%.2f [%.2f %s / %.2f %s]",
+				module.multiplier,
+				refFlow.amount, refFlow.unit.name,
+				product.amount, product.unit.name);
 		}
 
 		private String qRef(EpdModule module) {

@@ -129,14 +129,15 @@ class EpdModuleDialog extends FormDialog {
 			return;
 		}
 
-		// check that the module name is unique within the EPD
+		// check that the module-result pair is unique within the EPD
 		for (var other : epd.modules) {
 			if (Objects.equals(other, module)
 				|| Objects.equals(other, origin))
 				continue;
-			if (Strings.nullOrEqual(other.name, module.name)) {
-				MsgBox.error("Duplicate name",
-					"A module " + module.name + " already exists.");
+			if (Strings.nullOrEqual(other.name, module.name)
+				&& Objects.equals(other.result, module.result)) {
+				MsgBox.error("Duplicate module",
+					"Module " + module.name + " already exists.");
 				return;
 			}
 		}
