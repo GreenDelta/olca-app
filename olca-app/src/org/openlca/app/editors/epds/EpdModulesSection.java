@@ -15,6 +15,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.math.ReferenceAmount;
 import org.openlca.core.model.EpdModule;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
@@ -22,7 +23,14 @@ import org.openlca.util.Strings;
 import java.util.List;
 import java.util.Objects;
 
-record EpdModulesSection(EpdEditor editor) {
+class EpdModulesSection {
+
+	private final EpdEditor editor;
+	private double lastRefAmount;
+
+	EpdModulesSection(EpdEditor editor) {
+		this.editor = editor;
+	}
 
 	void render(Composite body, FormToolkit tk) {
 
@@ -39,7 +47,11 @@ record EpdModulesSection(EpdEditor editor) {
 		table.setLabelProvider(new LabelProvider(editor));
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 
+		// bind actions
 		bindActions(section, table);
+		lastRefAmount = currentRefAmount();
+		editor.onEvent("amount.changed", () -> updateMultipliers(table));
+		editor.onEvent("unit.changed", () -> updateMultipliers(table));
 
 		// fill the table
 		var modules = modules();
@@ -126,6 +138,40 @@ record EpdModulesSection(EpdEditor editor) {
 		return null;
 	}
 
+	private void updateMultipliers(TableViewer table) {
+		var mods = modules();
+		if (mods.isEmpty())
+			return;
+		double refAmount = currentRefAmount();
+		double epsilon = 1e-10;
+		if (refAmount < epsilon)
+			return;
+		if (lastRefAmount < epsilon) {
+			lastRefAmount = refAmount;
+			return;
+		}
+		double f = refAmount / lastRefAmount;
+		if (Math.abs(1 - f) < epsilon)
+			return;
+
+		for (var mod : mods) {
+			mod.multiplier *= f;
+		}
+		lastRefAmount = refAmount;
+		table.setInput(mods);
+	}
+
+	private double currentRefAmount() {
+		var product = editor.getModel().product;
+		if (product == null
+			|| product.flow == null
+			|| product.property == null
+			|| product.unit == null)
+			return 0;
+		var prop = product.flow.getFactor(product.property);
+		return Math.abs(ReferenceAmount.get(product.amount, product.unit, prop));
+	}
+
 	private static class LabelProvider extends BaseLabelProvider
 		implements ITableLabelProvider {
 
@@ -168,7 +214,7 @@ record EpdModulesSection(EpdEditor editor) {
 				|| product == null
 				|| product.unit == null)
 				return String.format("%.2f", module.multiplier);
-			return String.format("%.2f [%.2f %s / %.2f %s]",
+			return String.format("%.2f * [%.2f %s / %.2f %s]",
 				module.multiplier,
 				refFlow.amount, refFlow.unit.name,
 				product.amount, product.unit.name);
