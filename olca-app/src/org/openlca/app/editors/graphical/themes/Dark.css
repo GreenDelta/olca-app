@@ -18,6 +18,13 @@
   border: 2px #ff79c6;  /* border width and color */
 }
 
+/* reference processes */
+.box .reference-process {
+  color: #f8f8f2;       /* font color */
+  background: #282A36;  /* background color */
+  border: 4px #ff79c6;  /* border width and color */
+}
+
 /* unit processes */
 .box .unit-process {
   color: #f8f8f2;       /* font color */

@@ -17,6 +17,13 @@
   border: 2px #800080;  /* border width and color */
 }
 
+/* reference processes */
+.box .reference-process {
+  color: #000000;       /* font color */
+  background: #fff5ff;  /* background color */
+  border: 3px #800080;  /* border width and color */
+}
+
 /* unit processes */
 .box .unit-process {
   color: #000000;       /* font color */
