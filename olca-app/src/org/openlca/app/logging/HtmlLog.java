@@ -27,7 +27,7 @@ class HtmlLog {
 		if (!(factory instanceof LoggerContext context))
 			return null;
 
-		var logDir = new File(Workspace.getDir(), "log");
+		var logDir = new File(Workspace.root(), "log");
 		if (!logDir.exists()) {
 			try {
 				Files.createDirectories(logDir.toPath());

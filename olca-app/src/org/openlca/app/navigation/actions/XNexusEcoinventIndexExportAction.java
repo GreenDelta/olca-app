@@ -24,6 +24,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.actions.XNexusIndexExportAction.IndexEntry;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
@@ -31,7 +32,6 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
-import org.openlca.core.DataDir;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.config.DatabaseConfig;
@@ -79,7 +79,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 					if (Database.get() != null && Database.get().getName().equals(e.database.name())) {
 						db = Database.get();
 					} else {
-						db = e.database.connect(DataDir.databases());
+						db = e.database.connect(Workspace.dbDir());
 					}
 					ProcessDao dao = new ProcessDao(db);
 					for (ProcessDescriptor descriptor : dao.getDescriptors()) {

@@ -57,7 +57,7 @@ public class NavigationRoot extends PlatformObject implements
 
 		// add a script folder if scripts are stored
 		// in the workspace
-		var scriptRoot = new File(Workspace.getDir(), "Scripts");
+		var scriptRoot = new File(Workspace.root(), "Scripts");
 		if (scriptRoot.exists() && !Dirs.isEmpty(scriptRoot)) {
 			childs.add(new ScriptElement(this, scriptRoot));
 		}

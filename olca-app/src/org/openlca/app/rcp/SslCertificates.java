@@ -15,8 +15,7 @@ class SslCertificates {
 
 	static void load() {
 		log.debug("Loading external ssl certificates");
-		File workspace = Workspace.getDir();
-		File certificates = new File(workspace, "ssl-certificates");
+		File certificates = new File(Workspace.root(), "ssl-certificates");
 		if (!certificates.exists() || !certificates.isDirectory()) {
 			log.debug("No certificates found in workspace");
 			return;

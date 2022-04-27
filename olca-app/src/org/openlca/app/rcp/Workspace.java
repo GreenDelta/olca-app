@@ -17,28 +17,32 @@ import org.openlca.core.library.LibraryDir;
  */
 public class Workspace {
 
-	private static File dir;
+	private static final DataDir dir = init();
 
 	/**
 	 * Get the workspace directory. Returns null if the workspace was not yet
 	 * initialized.
 	 */
-	public static File getDir() {
-		if (dir == null)
-			init();
-		return dir;
+	public static File root() {
+		return dir.root();
 	}
 
 	public static LibraryDir getLibraryDir() {
-		var libDir = new File(dir, "libraries");
-		return new LibraryDir(libDir);
+		return dir.getLibraryDir();
+	}
+
+	/**
+	 * Returns the folder where the databases are stored.
+	 */
+	public static File dbDir() {
+		return dir.getDatabasesDir();
 	}
 
 	/**
 	 * Initializes the workspace of the application. Should be called only once
 	 * when the application bundle starts.
 	 */
-	static File init() {
+	private static DataDir init() {
 		try {
 			Platform.getInstanceLocation().release();
 			File dir = getDirFromCommandLine();
@@ -47,34 +51,26 @@ public class Workspace {
 					? getFromUserHome()
 					: getFromInstallLocation();
 			}
-			DataDir.setRoot(dir);
 			URL workspaceUrl = new URL("file", null, dir.getAbsolutePath());
 			Platform.getInstanceLocation().set(workspaceUrl, true);
-			Workspace.dir = dir;
-			return dir;
+			return DataDir.get(dir);
 		} catch (Exception e) {
 			// no logging here as the logger is not yet configured
 			e.printStackTrace();
-			return null;
+			return DataDir.get();
 		}
 	}
 
 	private static File getFromUserHome() {
 		String prop = System.getProperty("user.home");
 		File userDir = new File(prop);
-		File dir = new File(userDir, Config.WORK_SPACE_FOLDER_NAME);
-		if (!dir.exists())
-			dir.mkdirs();
-		return dir;
+		return new File(userDir, Config.WORK_SPACE_FOLDER_NAME);
 	}
 
 	private static File getFromInstallLocation() throws Exception {
 		URI uri = Platform.getInstallLocation().getURL().toURI();
 		File installDir = new File(uri);
-		File dir = new File(installDir, Config.WORK_SPACE_FOLDER_NAME);
-		if (!dir.exists())
-			dir.mkdirs();
-		return dir;
+		return new File(installDir, Config.WORK_SPACE_FOLDER_NAME);
 	}
 
 	private static File getDirFromCommandLine() {

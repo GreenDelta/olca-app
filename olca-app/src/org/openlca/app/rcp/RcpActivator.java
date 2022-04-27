@@ -1,6 +1,5 @@
 package org.openlca.app.rcp;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -29,7 +28,7 @@ public class RcpActivator extends AbstractUIPlugin {
 
 	/**
 	 * Returns the shared instance
-	 * 
+	 *
 	 * @return the shared instance
 	 */
 	public static RcpActivator getDefault() {
@@ -38,7 +37,7 @@ public class RcpActivator extends AbstractUIPlugin {
 
 	/**
 	 * Returns the file found at the specified path as an input stream
-	 * 
+	 *
 	 * @param path
 	 *            The path to the file to load an input stream for (relative to
 	 *            the plugin)
@@ -57,7 +56,10 @@ public class RcpActivator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		File workspace = Workspace.init();
+		// initialize the openLCA workspace; releases the default location
+		// on initialization, thus, it is good to call this once at early
+		// as possible
+		var workspace = Workspace.root();
 		LoggerConfig.setUp();
 		log.info("start openLCA {}, install location={}, workspace={}",
 				App.getVersion(), App.getInstallLocation(), workspace);

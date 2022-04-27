@@ -12,7 +12,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
-import org.openlca.app.App;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
@@ -24,7 +23,7 @@ public class HtmlFolder {
 	private static final Logger log = LoggerFactory.getLogger(HtmlFolder.class);
 
 	public static File getDir(Bundle bundle) {
-		File htmlDir = new File(App.getWorkspace(), "html");
+		File htmlDir = new File(Workspace.root(), "html");
 		return new File(htmlDir, bundle.getSymbolicName());
 	}
 

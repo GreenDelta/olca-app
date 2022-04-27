@@ -4,10 +4,9 @@ import java.io.File;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.core.DataDir;
 import org.openlca.core.database.Derby;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.config.MySqlConfig;
 import org.openlca.io.olca.DatabaseImport;
 import org.zeroturnaround.zip.ZipUtil;
@@ -30,9 +29,9 @@ public class MySQLDatabaseExport implements Runnable {
 	@Override
 	public void run() {
 		try {
-			IDatabase sourceDb = config.connect(DataDir.databases());
+			var sourceDb = config.connect(Workspace.dbDir());
 			var targetDb = createTemporaryDb();
-			DatabaseImport io = new DatabaseImport(sourceDb, targetDb);
+			var io = new DatabaseImport(sourceDb, targetDb);
 			io.run();
 			sourceDb.close();
 			targetDb.close();

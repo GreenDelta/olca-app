@@ -17,6 +17,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.config.DerbyConfig;
@@ -49,8 +50,8 @@ public class DbRestoreAction extends Action implements INavigationAction {
 		if (zolca == null || !zolca.exists())
 			return;
 		try {
-			File dbFolder = new File(App.getWorkspace(),
-					Config.DATABASE_FOLDER_NAME);
+			File dbFolder = new File(
+					Workspace.root(), Config.DATABASE_FOLDER_NAME);
 			Files.createDirectories(dbFolder.toPath());
 			String dbName = getDatabaseName(zolca, dbFolder);
 			realImport(dbFolder, dbName, zolca);

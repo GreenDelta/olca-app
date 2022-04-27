@@ -33,7 +33,7 @@ public final class Themes {
 	}
 
 	public static List<Theme> loadFromWorkspace() {
-		var dir = new File(Workspace.getDir(), "graph-themes");
+		var dir = new File(Workspace.root(), "graph-themes");
 		return loadFrom(dir);
 	}
 

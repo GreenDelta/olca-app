@@ -68,8 +68,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			if (config == null)
 				return null;
 			if (config.isEmbedded()) {
-				File dbDir = new File(Workspace.getDir(), "databases");
-				File db = new File(dbDir, config.name());
+				File db = new File(Workspace.dbDir(), config.name());
 				if (db.isDirectory())
 					return db.getAbsolutePath();
 			}

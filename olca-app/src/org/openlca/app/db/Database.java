@@ -3,10 +3,9 @@ package org.openlca.app.db;
 import java.io.File;
 import java.util.Objects;
 
-import org.openlca.app.App;
 import org.openlca.app.navigation.CopyPaste;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.core.DataDir;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DatabaseConfigList;
@@ -36,7 +35,7 @@ public class Database {
 
 	public static IDatabase activate(DatabaseConfig config) {
 		try {
-			database = config.connect(DataDir.databases());
+			database = config.connect(Workspace.dbDir());
 			listener = new DatabaseListener();
 			database.addListener(listener);
 			Cache.create(database);
@@ -77,17 +76,15 @@ public class Database {
 	}
 
 	private static DatabaseConfigList loadConfigs() {
-		var workspace = App.getWorkspace();
-		var listFile = new File(workspace, "databases.json");
-		return !listFile.exists()
+		var file = new File(Workspace.root(), "databases.json");
+		return !file.exists()
 				? new DatabaseConfigList()
-				: DatabaseConfigList.read(listFile);
+				: DatabaseConfigList.read(file);
 	}
 
 	private static void saveConfig() {
-		File workspace = App.getWorkspace();
-		File listFile = new File(workspace, "databases.json");
-		configurations.write(listFile);
+		var file = new File(Workspace.root(), "databases.json");
+		configurations.write(file);
 	}
 
 	public static DatabaseConfigList getConfigurations() {

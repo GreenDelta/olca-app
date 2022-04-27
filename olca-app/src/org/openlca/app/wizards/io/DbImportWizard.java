@@ -17,11 +17,11 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
-import org.openlca.core.DataDir;
 import org.openlca.core.database.Derby;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.upgrades.Upgrades;
@@ -186,7 +186,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			try {
 				source = config.mode == config.FILE_MODE
 					? connectToFolder()
-					: config.databaseConfiguration.connect(DataDir.databases());
+					: config.databaseConfiguration.connect(Workspace.dbDir());
 			} catch (Exception e) {
 				log.error("Failed to connect to source database", e);
 				throw new InvocationTargetException(e);

@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.RcpActivator;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
 import org.python.util.PythonInterpreter;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ class Jython {
 	}
 
 	static void exec(String script) {
-		var pyDir = new File(App.getWorkspace(), "python");
+		var pyDir = new File(Workspace.root(), "python");
 		if (!folderInitialized.get()) {
 			initFolder(pyDir);
 			System.setProperty("python.path", pyDir.getAbsolutePath());

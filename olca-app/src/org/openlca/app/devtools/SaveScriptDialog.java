@@ -138,7 +138,7 @@ public class SaveScriptDialog extends FormDialog {
 	private File dir() throws Exception {
 		var db = Database.get();
 		if (asGlobal || db == null) {
-			var dir = new File(Workspace.getDir(), "Scripts");
+			var dir = new File(Workspace.root(), "Scripts");
 			Files.createDirectories(dir.toPath());
 			return dir;
 		}

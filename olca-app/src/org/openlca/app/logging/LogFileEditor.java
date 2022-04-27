@@ -35,7 +35,7 @@ public class LogFileEditor extends FormEditor {
 	}
 
 	private static List<File> logFiles() {
-		var logDir = new File(Workspace.getDir(), "log");
+		var logDir = new File(Workspace.root(), "log");
 		if (!logDir.exists())
 			return Collections.emptyList();
 		var files = logDir.listFiles();

@@ -1,14 +1,12 @@
 package org.openlca.app.tools.openepd;
 
+import java.io.File;
+import java.net.URI;
+
 import org.openlca.app.rcp.Workspace;
-import org.openlca.app.util.ErrorReporter;
 import org.openlca.io.openepd.Ec3Credentials;
 import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.net.URI;
-import java.nio.file.Files;
 
 public final class Ec3 {
 
@@ -48,16 +46,7 @@ public final class Ec3 {
 	}
 
 	private static File credentialsFile() {
-		var dir = Workspace.getDir();
-		if (!dir.exists()) {
-			try {
-				Files.createDirectories(dir.toPath());
-			} catch (Exception e) {
-				ErrorReporter.on(
-					"No write access in workspace; failed to create " + dir, e);
-			}
-		}
-		return new File(dir, ".ec3");
+		return new File(Workspace.root(), ".ec3");
 	}
 
 }

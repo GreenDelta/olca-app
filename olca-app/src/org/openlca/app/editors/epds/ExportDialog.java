@@ -166,7 +166,7 @@ class ExportDialog extends FormDialog {
 	}
 
 	private static File categoryCacheFile() {
-		return new File(Workspace.getDir(), ".ec3-categories");
+		return new File(Workspace.root(), ".ec3-categories");
 	}
 
 	private record CategoryLink(ExportDialog dialog) {

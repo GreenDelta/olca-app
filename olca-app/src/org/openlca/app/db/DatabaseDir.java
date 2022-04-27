@@ -2,7 +2,7 @@ package org.openlca.app.db;
 
 import java.io.File;
 
-import org.openlca.app.App;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.core.database.FileStore;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.RootEntity;
@@ -24,9 +24,7 @@ public class DatabaseDir {
 	}
 
 	public static File getRootFolder(String databaseName) {
-		File workspace = App.getWorkspace();
-		File dbFolder = new File(workspace, "databases");
-		return new File(dbFolder, databaseName);
+		return new File(Workspace.dbDir(), databaseName);
 	}
 
 	/**

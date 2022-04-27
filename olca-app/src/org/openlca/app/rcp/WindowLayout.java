@@ -80,7 +80,7 @@ public final class WindowLayout {
 		String sep = File.separator;
 		String path = ".metadata" + sep + ".plugins" + sep
 				+ "org.eclipse.e4.workbench";
-		File dir = new File(Workspace.getDir(), path);
+		File dir = new File(Workspace.root(), path);
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}

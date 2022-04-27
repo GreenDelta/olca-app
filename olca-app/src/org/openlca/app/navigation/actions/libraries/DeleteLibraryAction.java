@@ -13,10 +13,10 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
-import org.openlca.core.DataDir;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.library.Library;
 import org.openlca.util.Dirs;
@@ -108,7 +108,7 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 				var db = Database.get();
 				return db.getLibraries().contains(libID);
 			}
-			try (var db = config.connect(DataDir.databases())) {
+			try (var db = config.connect(Workspace.dbDir())) {
 				return db.getVersion() >= 10
 					&& db.getLibraries().contains(libID);
 			} catch (Exception e) {

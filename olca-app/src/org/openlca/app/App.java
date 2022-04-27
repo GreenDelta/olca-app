@@ -69,7 +69,7 @@ public class App {
 
 			// try to load the native libraries
 			try {
-				NativeLib.loadFrom(Workspace.getDir());
+				NativeLib.loadFrom(Workspace.root());
 				if (!NativeLib.isLoaded()) {
 					NativeLib.loadFrom(getInstallLocation());
 				}
@@ -277,11 +277,4 @@ public class App {
 		}
 	}
 
-	/**
-	 * Returns the workspace directory where databases and other resources are
-	 * stored (native libraries, HTML resources, etc.).
-	 */
-	public static File getWorkspace() {
-		return Workspace.getDir();
-	}
 }

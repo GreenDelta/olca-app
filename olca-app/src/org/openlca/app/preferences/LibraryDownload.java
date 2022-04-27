@@ -30,8 +30,8 @@ public class LibraryDownload {
 		var success = new AtomicBoolean(false);
 		App.runWithProgress("Download native libraries", () -> {
 			try {
-				NativeLib.download(Workspace.getDir(), Module.UMFPACK);
-				NativeLib.reloadFrom(Workspace.getDir());
+				NativeLib.download(Workspace.root(), Module.UMFPACK);
+				NativeLib.reloadFrom(Workspace.root());
 				success.set(true);
 			} catch (Exception e) {
 				var log = LoggerFactory.getLogger(LibraryDownload.class);
