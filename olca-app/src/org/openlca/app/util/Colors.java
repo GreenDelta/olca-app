@@ -164,6 +164,10 @@ public class Colors {
 		return systemColor(SWT.COLOR_BLACK);
 	}
 
+	public static Color red() {
+		return systemColor(SWT.COLOR_RED);
+	}
+
 	public static Color systemColor(int swtConstant) {
 		return display.getSystemColor(swtConstant);
 	}

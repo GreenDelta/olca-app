@@ -1,12 +1,12 @@
 package org.openlca.app.editors.epds;
 
-import java.util.function.Supplier;
-
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.openlca.app.App;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -25,7 +25,8 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 		try {
 
 			// fetch an existing EPD
-			var json = jsonOf(client.getEpd(id));
+			var json = App.exec("Get EPD",
+				() -> NullDiff.clearNulls(jsonOf(client.getEpd(id))));
 			if (json == null) {
 				var create = errorAsk("EPD does not exist",
 					"An EPD with this ID does not exist. " +
@@ -40,15 +41,6 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 			if (existing == null) {
 				MsgBox.error("Could not read EPD from server");
 				return ExportState.error();
-			}
-			var unitErr = checkUnitOf(existing);
-			if (unitErr != null) {
-				var doit = errorAsk(
-					"Different units",
-					"The declared unit of the EPD on EC3 is different: " + unitErr
-						+ ". Do you want to continue anyway and replace the results?");
-				if (!doit)
-					return ExportState.canceled();
 			}
 
 			// update the JSON object
@@ -68,7 +60,7 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 			}
 
 			// update the EPD on the server
-			var resp = client.putEpd(id, json);
+			var resp = App.exec("Upload EPD", () -> client.putEpd(id, json));
 			return resp.isError()
 				? error(resp, "Failed to update EPD " + id)
 				: ExportState.updated(id);
@@ -87,7 +79,7 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 			epd.pcr = null;
 			epd.verifier = null;
 
-			var resp = client.postEpd(epd.toJson());
+			var resp = App.exec("Upload EPD", () -> client.postEpd(epd.toJson()));
 			var json = jsonOf(resp);
 			if (resp.isError() || json == null)
 				return error(resp, "Failed to upload EPD to EC3.");
@@ -112,23 +104,6 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 			: null;
 	}
 
-	// Returns an error string when the declared units are not equal.
-	private String checkUnitOf(EpdDoc other) {
-		var a = epd.declaredUnit;
-		var b = other.declaredUnit;
-		Supplier<String> err = () -> {
-			var sa = a != null ? a.toString() : "#none";
-			var sb = b != null ? b.toString() : "#none";
-			return sa + " \u2260 " + sb;
-		};
-
-		if (a == null || b == null
-			|| (Math.abs(a.amount() - b.amount()) > 1e-3)
-			|| !Strings.nullOrEqual(a.unit(), b.unit()))
-			return err.get();
-		return null;
-	}
-
 	private boolean errorAsk(String title, String question) {
 		int r = MessageDialog.open(
 			MessageDialog.ERROR, UI.shell(), title, question, SWT.NONE,
@@ -150,6 +125,14 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 	 */
 	private record NullDiff(JsonObject origin, JsonObject update) {
 
+		static JsonObject clearNulls(JsonObject obj) {
+			if (obj == null)
+				return null;
+			var gson = new Gson();
+			var json = new Gson().toJson(obj);
+			return gson.fromJson(json, JsonObject.class);
+		}
+
 		static void apply(JsonElement origin, JsonElement update) {
 			if (origin == null
 				|| !origin.isJsonObject()
@@ -164,6 +147,8 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 
 		private void exec() {
 			for (var prop : origin.keySet()) {
+				if ("dist".equals(prop) || "rsd".equals(prop))
+					continue;
 				var oProp = origin.get(prop);
 				var uProp = update.get(prop);
 				if (uProp == null || uProp.isJsonNull()) {
