@@ -4,6 +4,12 @@ import java.util.List;
 
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
+/**
+ * An abstract part that will handle events management.
+ * @param <N>
+ *   Type of the model element linked by the extended {@link
+ *   org.eclipse.gef.EditPart}.
+ */
 abstract class AppAbstractEditPart<N extends Node> extends AbstractGraphicalEditPart {
 
 	@Override

@@ -60,6 +60,12 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
+/**
+ * A model graph consists in a {@link GraphicalEditor} that will display the
+ * model. That {@link GraphicalEditor} displays a
+ * {@link org.openlca.app.editors.graphical.model.ProductSystemNode} and a set
+ * of {@link org.openlca.app.editors.graphical.model.Link}s.
+ */
 public class GraphEditor extends GraphicalEditor {
 
 	public static final String ID = "editors.productsystem.graphical";
