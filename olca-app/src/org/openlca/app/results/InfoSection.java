@@ -10,6 +10,7 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
@@ -62,13 +63,11 @@ class InfoSection {
 		new Label(comp, SWT.NONE).setText(label);
 		var link = new ImageHyperlink(comp, SWT.TOP);
 		link.setForeground(Colors.linkBlue());
-		if (entity instanceof RootDescriptor) {
-			var d = (RootDescriptor) entity;
+		if (entity instanceof RootDescriptor d) {
 			link.setText(Labels.name(d));
 			link.setImage(Images.get(d));
 			Controls.onClick(link, e -> App.open(d));
-		} else if (entity instanceof RootEntity) {
-			var ce = (RootEntity) entity;
+		} else if (entity instanceof RootEntity ce) {
 			link.setText(Labels.name(ce));
 			link.setImage(Images.get(ce));
 			Controls.onClick(link, e -> App.open(ce));
@@ -77,17 +76,15 @@ class InfoSection {
 
 	private static void buttons(Composite comp, FormToolkit tk) {
 		tk.createLabel(comp, "");
-		Composite inner = tk.createComposite(comp);
+		var inner = tk.createComposite(comp);
 		UI.gridLayout(inner, 2, 5, 0);
-		Button excel = tk.createButton(inner,
-				M.ExportToExcel, SWT.NONE);
-		excel.setImage(Images.get(FileType.EXCEL));
-		Controls.onSelect(excel,
+		var excelBtn = tk.createButton(inner, M.ExportToExcel, SWT.NONE);
+		excelBtn.setImage(Images.get(FileType.EXCEL));
+		Controls.onSelect(excelBtn,
 				e -> new ExcelExportAction().run());
-		Button lci = tk.createButton(inner,
-				M.SaveAsLCIResult, SWT.NONE);
-		lci.setImage(Images.get(ProcessType.LCI_RESULT));
-		Controls.onSelect(lci, e -> {
+		var resultBtn = tk.createButton(inner, "Save result as ...", SWT.NONE);
+		resultBtn.setImage(Icon.SAVE_AS.get());
+		Controls.onSelect(resultBtn, e -> {
 			ResultEditor<?> editor = Editors.getActive();
 			if (editor == null)
 				return;
