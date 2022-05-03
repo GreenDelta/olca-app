@@ -27,18 +27,18 @@ public class NavigationComparator extends ViewerComparator {
 		// for elements of different types we have a defined type order
 		if (!Objects.equals(e1.getClass(), e2.getClass()))
 			return typeOrderOf(e1) - typeOrderOf(e2);
-		
+
 		// group elements have a predefined order
 		if (e1 instanceof GroupElement)
 			return 0;
-		
+
 		if (e1 instanceof ModelTypeElement && e2 instanceof ModelTypeElement) {
 			return ModelTypeOrder.compare(
-					((ModelTypeElement) e1).getContent(), 
+					((ModelTypeElement) e1).getContent(),
 					((ModelTypeElement) e2).getContent());
 		}
 
-		// for script elements folders come before files 
+		// for script elements folders come before files
 		if (e1 instanceof ScriptElement) {
 			var f1 = ((ScriptElement) e1).getContent();
 			var f2 = ((ScriptElement) e2).getContent();
@@ -52,15 +52,17 @@ public class NavigationComparator extends ViewerComparator {
 		String name1 = getLabel(viewer, e1);
 		String name2 = getLabel(viewer, e2);
 
-		// TODO: document why this here makes sense: (?)
-		// probably the status suffix when the database is
-		// connected to a repository?
-		if (e1 instanceof DatabaseElement && name1.contains(" "))
+		// when a database is connected to a repository, the navigation label
+		// contains the repository URL as suffix; we do not want to include
+		// that URL in this comparison
+		if (e1 instanceof DatabaseElement && name1.contains(" ")) {
 			name1 = name1.substring(0, name1.indexOf(" "));
-		if (e2 instanceof DatabaseElement && name2.contains(" "))
+		}
+		if (e2 instanceof DatabaseElement && name2.contains(" ")) {
 			name2 = name2.substring(0, name2.indexOf(" "));
+		}
 
-		return getComparator().compare(name1, name2);
+		return Strings.compare(name1, name2);
 	}
 
 	private int typeOrderOf(Object o) {
@@ -83,21 +85,22 @@ public class NavigationComparator extends ViewerComparator {
 		return 10;
 	}
 
-	private String getLabel(Viewer viewer, Object e1) {
-		if (!(viewer instanceof ContentViewer))
-			return e1.toString();
-		var prov = ((ContentViewer) viewer).getLabelProvider();
-		if (prov instanceof ILabelProvider) {
-			var lprov = (ILabelProvider) prov;
-			var label = lprov.getText(e1);
+	private String getLabel(Viewer viewer, Object obj) {
+		if (obj == null)
+			return "";
+		if (!(viewer instanceof ContentViewer cv))
+			return obj.toString();
+		var prov = cv.getLabelProvider();
+		if (prov instanceof ILabelProvider provider) {
+			var label = provider.getText(obj);
 			if (label == null)
 				return "";
-			String changed = RepositoryLabel.CHANGED_STATE;
-			if (label.startsWith(changed))
-				return label.substring(changed.length());
-			return label;
+			var changed = RepositoryLabel.CHANGED_STATE;
+			return label.startsWith(changed)
+				? label.substring(changed.length())
+				: label;
 		}
-		return e1.toString();
+		return obj.toString();
 	}
 
 }
