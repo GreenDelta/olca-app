@@ -15,8 +15,7 @@ import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
-import org.openlca.app.M;
-import org.openlca.app.editors.graphical.command.ChangeStateCommand;
+import org.openlca.app.editors.graphical.command.MinMaxCommand;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.themes.Theme.Box;
@@ -25,7 +24,6 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 public class ProcessFigure extends Figure {
 
@@ -181,7 +179,7 @@ public class ProcessFigure extends Figure {
 					Timer timer = new Timer();
 					timer.schedule(timerTask, 250);
 				} else {
-					ChangeStateCommand command = new ChangeStateCommand(node);
+					MinMaxCommand command = new MinMaxCommand(node);
 					node.parent().editor.getCommandStack().execute(command);
 				}
 			}

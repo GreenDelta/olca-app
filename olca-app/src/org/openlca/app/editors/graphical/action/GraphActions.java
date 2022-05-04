@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.action;
 
-import static org.openlca.app.editors.graphical.action.ChangeAllStateAction.MAXIMIZE;
-import static org.openlca.app.editors.graphical.action.ChangeAllStateAction.MINIMIZE;
+import static org.openlca.app.editors.graphical.action.MinMaxAllAction.MAXIMIZE;
+import static org.openlca.app.editors.graphical.action.MinMaxAllAction.MINIMIZE;
 import static org.openlca.app.editors.graphical.action.HideShowAction.HIDE;
 import static org.openlca.app.editors.graphical.action.HideShowAction.SHOW;
 import static org.openlca.app.editors.graphical.action.MassExpansionAction.COLLAPSE;
@@ -65,13 +65,13 @@ public class GraphActions {
 	}
 
 	public static IAction minimizeAll(GraphEditor editor) {
-		ChangeAllStateAction action = new ChangeAllStateAction(MINIMIZE);
+		MinMaxAllAction action = new MinMaxAllAction(MINIMIZE);
 		action.editor = editor;
 		return action;
 	}
 
 	public static IAction maximizeAll(GraphEditor editor) {
-		ChangeAllStateAction action = new ChangeAllStateAction(MAXIMIZE);
+		MinMaxAllAction action = new MinMaxAllAction(MAXIMIZE);
 		action.editor = editor;
 		return action;
 	}

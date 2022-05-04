@@ -4,12 +4,12 @@ import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 
-public class ChangeStateCommand extends Command {
+public class MinMaxCommand extends Command {
 
 	private final ProcessNode node;
 	private final boolean initiallyMinimized;
 
-	public ChangeStateCommand(ProcessNode node) {
+	public MinMaxCommand(ProcessNode node) {
 		this.node = node;
 		initiallyMinimized = node.isMinimized();
 	}
