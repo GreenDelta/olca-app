@@ -3,12 +3,12 @@ package org.openlca.app.db;
 import java.io.File;
 import java.util.UUID;
 
-import org.apache.commons.io.FileUtils;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.Derby;
 import org.openlca.core.database.config.MySqlConfig;
 import org.openlca.io.olca.DatabaseImport;
+import org.openlca.util.Dirs;
 import org.zeroturnaround.zip.ZipUtil;
 
 public class MySQLDatabaseExport implements Runnable {
@@ -36,7 +36,7 @@ public class MySQLDatabaseExport implements Runnable {
 			sourceDb.close();
 			targetDb.close();
 			ZipUtil.pack(targetDb.getDatabaseDirectory(), zolcaFile);
-			FileUtils.deleteDirectory(targetDb.getDatabaseDirectory());
+			Dirs.delete(targetDb.getDatabaseDirectory());
 			success = true;
 		} catch (Exception e) {
 			success = false;

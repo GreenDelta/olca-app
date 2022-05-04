@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
@@ -26,6 +25,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.config.MySqlConfig;
+import org.openlca.util.Dirs;
 
 /**
  * Deletes a database. Works only for local Derby databases; remote databases
@@ -99,10 +99,10 @@ public class DbDeleteAction extends Action implements INavigationAction {
 			Database.close();
 		File dbFolder = DatabaseDir.getRootFolder(config.name());
 		if (dbFolder.isDirectory())
-			FileUtils.deleteDirectory(dbFolder);
+			Dirs.delete(dbFolder);
 		File gitFolder = RepositoryConfig.getGitDir(config);
 		if (gitFolder.isDirectory())
-			FileUtils.deleteDirectory(gitFolder);
+			Dirs.delete(gitFolder);
 		if (config instanceof DerbyConfig)
 			Database.remove((DerbyConfig) config);
 		else if (config instanceof MySqlConfig)
