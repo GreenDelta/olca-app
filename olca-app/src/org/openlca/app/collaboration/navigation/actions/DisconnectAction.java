@@ -1,6 +1,5 @@
 package org.openlca.app.collaboration.navigation.actions;
 
-import java.io.File;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -13,6 +12,7 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.util.Dirs;
 
 public class DisconnectAction extends Action implements INavigationAction {
 
@@ -30,7 +30,7 @@ public class DisconnectAction extends Action implements INavigationAction {
 	public void run() {
 		Repository.disconnect();
 		var gitDir = RepositoryConfig.getGitDir(Database.get());
-		delete(gitDir);
+		Dirs.delete(gitDir);
 		Actions.refresh();
 	}
 
@@ -45,18 +45,6 @@ public class DisconnectAction extends Action implements INavigationAction {
 		if (!Database.isActive(elem.getContent()))
 			return false;
 		return Repository.isConnected();
-	}
-
-	public void delete(File file) {
-		if (!file.exists())
-			return;
-		if (!file.isDirectory()) {
-			file.delete();
-			return;
-		}
-		for (var child : file.listFiles()) {
-			delete(child);
-		}
 	}
 
 }

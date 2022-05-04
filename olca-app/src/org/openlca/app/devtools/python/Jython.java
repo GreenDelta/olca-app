@@ -6,13 +6,13 @@ import java.nio.file.Files;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.util.Dirs;
 import org.python.util.PythonInterpreter;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
@@ -84,7 +84,7 @@ class Jython {
 			// replace it with the current version of the
 			// packed Python (Jython) library
 			if (pyDir.exists()) {
-				FileUtils.deleteDirectory(pyDir);
+				Dirs.delete(pyDir);
 			}
 			Files.createDirectories(pyDir.toPath());
 			var pyJar = "libs/jython-standalone-2.7.2.jar";

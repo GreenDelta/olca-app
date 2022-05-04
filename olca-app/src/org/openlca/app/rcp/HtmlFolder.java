@@ -8,10 +8,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Objects;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.openlca.util.Dirs;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
@@ -77,7 +77,7 @@ public class HtmlFolder {
 			throws Exception {
 		File dir = getDir(bundle);
 		if (dir.exists())
-			FileUtils.deleteDirectory(dir);
+			Dirs.delete(dir);
 		dir.mkdirs();
 		writeVersion(bundle);
 		InputStream zipStream = FileLocator.openStream(bundle,

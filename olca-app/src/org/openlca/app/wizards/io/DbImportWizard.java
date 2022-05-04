@@ -4,7 +4,6 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -27,6 +26,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.upgrades.Upgrades;
 import org.openlca.core.database.upgrades.VersionState;
 import org.openlca.io.olca.DatabaseImport;
+import org.openlca.util.Dirs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
@@ -208,7 +208,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			source.close();
 			if (tempDbFolder != null) {
 				log.trace("delete temporary db-folder {}", tempDbFolder);
-				FileUtils.deleteDirectory(tempDbFolder);
+				Dirs.delete(tempDbFolder);
 			}
 		}
 	}
