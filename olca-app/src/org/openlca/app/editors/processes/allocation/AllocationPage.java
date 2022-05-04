@@ -58,7 +58,7 @@ public class AllocationPage extends ModelPage<Process> {
 		});
 		editor.onSaved(this::setTableInputs);
 	}
-	
+
 	/**
 	 * Update the given allocation factor with the given value. Returns true if it
 	 * was updated and false when the value is the same as before or invalid.
@@ -245,9 +245,8 @@ public class AllocationPage extends ModelPage<Process> {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Exchange))
+			if (!(obj instanceof Exchange e))
 				return null;
-			var e = (Exchange) obj;
 			switch (col) {
 			case 0:
 				return productText(e);
