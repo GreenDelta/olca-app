@@ -46,6 +46,7 @@ public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 		}
 	}
 
+
 	@Override
 	public ProductSystemPart getParent() {
 		return (ProductSystemPart) super.getParent();
