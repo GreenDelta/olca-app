@@ -29,7 +29,6 @@ public class ModifySupport<T> {
 
 	private Map<String, ICellModifier<T>> cellModifiers;
 	private CellEditor[] editors;
-	private String[] columnProperties;
 	private final ColumnViewer viewer;
 
 	public ModifySupport(ColumnViewer viewer) {
@@ -38,9 +37,11 @@ public class ModifySupport<T> {
 	}
 
 	private void initCellEditors() {
-		columnProperties = (String[]) viewer.getColumnProperties();
+		var props = viewer.getColumnProperties();
+		if (props == null)
+			return;
 		viewer.setCellModifier(new CellModifier());
-		editors = new CellEditor[columnProperties.length];
+		editors = new CellEditor[props.length];
 		this.cellModifiers = new HashMap<>();
 		viewer.setCellEditors(editors);
 	}
@@ -92,15 +93,16 @@ public class ModifySupport<T> {
 		int index = findIndex(property);
 		if (index == -1)
 			return this;
-		cellModifiers.put(columnProperties[index], modifier);
+		cellModifiers.put(property, modifier);
 		setEditor(modifier, index);
 		return this;
 	}
 
 	private int findIndex(String property) {
+		var props = viewer.getColumnProperties();
 		int index = -1;
-		for (int i = 0; i < columnProperties.length; i++) {
-			if (Objects.equals(columnProperties[i], property)) {
+		for (int i = 0; i < props.length; i++) {
+			if (Objects.equals(props[i], property)) {
 				index = i;
 				break;
 			}
@@ -118,23 +120,23 @@ public class ModifySupport<T> {
 
 	private void setEditor(ICellModifier<T> modifier, int index) {
 		switch (modifier.getCellEditingType()) {
-		case TEXTBOX:
-			if (modifier.getStyle() != SWT.NONE)
-				editors[index] = new TextCellEditor(getComponent(), modifier.getStyle());
-			else
-				editors[index] = new TextCellEditor(getComponent());
-			break;
-		case COMBOBOX:
-			editors[index] = new ComboEditor(getComponent(), new String[0]);
-			break;
-		case CHECKBOX:
-			if (modifier.getStyle() != SWT.NONE)
-				editors[index] = new CheckboxCellEditor(getComponent(), modifier.getStyle());
-			else
-				editors[index] = new CheckboxCellEditor(getComponent());
-			break;
-		default:
-			break;
+			case TEXTBOX:
+				if (modifier.getStyle() != SWT.NONE)
+					editors[index] = new TextCellEditor(getComponent(), modifier.getStyle());
+				else
+					editors[index] = new TextCellEditor(getComponent());
+				break;
+			case COMBOBOX:
+				editors[index] = new ComboEditor(getComponent(), new String[0]);
+				break;
+			case CHECKBOX:
+				if (modifier.getStyle() != SWT.NONE)
+					editors[index] = new CheckboxCellEditor(getComponent(), modifier.getStyle());
+				else
+					editors[index] = new CheckboxCellEditor(getComponent());
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -146,17 +148,19 @@ public class ModifySupport<T> {
 	}
 
 	private void refresh(T value) {
-		for (String property : cellModifiers.keySet()) {
-			ICellModifier<T> modifier = cellModifiers.get(property);
+		for (var property : cellModifiers.keySet()) {
+			var modifier = cellModifiers.get(property);
 			if (modifier.getCellEditingType() == CellEditingType.COMBOBOX) {
-				((ComboBoxCellEditor) getCellEditor(property))
-						.setItems(modifier.getStringValues(value));
+				var editor = getCellEditor(property);
+				if (editor instanceof ComboBoxCellEditor combo) {
+					combo.setItems(modifier.getStringValues(value));
+				}
 			}
 		}
 	}
 
 	private class CellModifier implements
-			org.eclipse.jface.viewers.ICellModifier {
+		org.eclipse.jface.viewers.ICellModifier {
 
 		@Override
 		@SuppressWarnings("unchecked")
@@ -184,26 +188,26 @@ public class ModifySupport<T> {
 
 		@SuppressWarnings("unchecked")
 		private Object getModifierValue(Object element,
-				ICellModifier<T> modifier) {
+			ICellModifier<T> modifier) {
 			T elem = (T) element;
 			Object value = modifier.getValue(elem);
 			switch (modifier.getCellEditingType()) {
-			case TEXTBOX:
-				return value != null ? value.toString() : "";
-			case COMBOBOX:
-				return getComboIndex(modifier, elem, value);
-			case CHECKBOX:
-				if (value instanceof Boolean)
-					return value;
-				else
-					return false;
-			default:
-				return element;
+				case TEXTBOX:
+					return value != null ? value.toString() : "";
+				case COMBOBOX:
+					return getComboIndex(modifier, elem, value);
+				case CHECKBOX:
+					if (value instanceof Boolean)
+						return value;
+					else
+						return false;
+				default:
+					return element;
 			}
 		}
 
 		private Object getComboIndex(ICellModifier<T> modifier, T elem,
-				Object value) {
+			Object value) {
 			refresh(elem);
 			Object[] values = modifier.getValues(elem);
 			if (values == null)
@@ -237,7 +241,7 @@ public class ModifySupport<T> {
 
 		@SuppressWarnings("unchecked")
 		private T setModifierValue(Object element, Object value,
-				ICellModifier<T> modifier) {
+			ICellModifier<T> modifier) {
 			T elem = (T) element;
 			switch (modifier.getCellEditingType()) {
 				case TEXTBOX -> modifier.modify(elem, value.toString());
@@ -250,7 +254,7 @@ public class ModifySupport<T> {
 		}
 
 		private void setComboValue(ICellModifier<T> modifier, T elem,
-				Object value) {
+			Object value) {
 			if (value instanceof Integer) {
 				int index = (int) value;
 				if (index == -1)
