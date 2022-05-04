@@ -1,8 +1,5 @@
 package org.openlca.app.editors.graphical.view;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.GridData;
@@ -10,12 +7,9 @@ import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LineBorder;
-import org.eclipse.draw2d.MouseEvent;
-import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
-import org.openlca.app.editors.graphical.command.MinMaxCommand;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.themes.Theme.Box;
@@ -53,7 +47,6 @@ public class ProcessFigure extends Figure {
 		this.node = node;
 		initializeFigure();
 		createHeader();
-		addMouseListener(new DoubleClickListener());
 	}
 
 	private void initializeFigure() {
@@ -153,42 +146,6 @@ public class ProcessFigure extends Figure {
 
 	public int getMinimumHeight() {
 		return getSize().height;
-	}
-
-	private class DoubleClickListener implements MouseListener {
-
-		private boolean firstClick = true;
-
-		@Override
-		public void mouseDoubleClicked(MouseEvent arg0) {
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			if (e.button == 1) {
-				if (firstClick) {
-					firstClick = false;
-					TimerTask timerTask = new TimerTask() {
-
-						@Override
-						public void run() {
-							firstClick = true;
-						}
-
-					};
-					Timer timer = new Timer();
-					timer.schedule(timerTask, 250);
-				} else {
-					MinMaxCommand command = new MinMaxCommand(node);
-					node.parent().editor.getCommandStack().execute(command);
-				}
-			}
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent me) {
-		}
-
 	}
 
 	private static class BoxHeader extends Figure {

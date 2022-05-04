@@ -6,14 +6,14 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
+import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.editpolicies.ComponentEditPolicy;
+import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
-import org.eclipse.gef.requests.GroupRequest;
 import org.openlca.app.editors.graphical.command.Commands;
-import org.openlca.app.editors.graphical.command.DeleteProcessCommand;
 import org.openlca.app.editors.graphical.command.XYLayoutCommand;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
+import org.openlca.app.editors.graphical.policy.ProcessEditPolicy;
 import org.openlca.app.editors.graphical.view.ProcessFigure;
 
 public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
@@ -34,12 +34,16 @@ public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 	@Override
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new LayoutPolicy());
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ComponentEditPolicy() {
-			@Override
-			protected Command createDeleteCommand(GroupRequest req) {
-				return new DeleteProcessCommand(getModel());
-			}
-		});
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ProcessEditPolicy());
+	}
+
+	@Override
+	public void performRequest(Request request) {
+		if (request.getType() == RequestConstants.REQ_OPEN) {
+			CommandStack stack = getViewer().getEditDomain().getCommandStack();
+			var command = getCommand(request);
+			stack.execute(command);
+		}
 	}
 
 	@Override
