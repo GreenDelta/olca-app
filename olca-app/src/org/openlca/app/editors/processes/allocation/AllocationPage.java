@@ -123,7 +123,6 @@ public class AllocationPage extends ModelPage<Process> {
 		createPhysicalEconomicSection(body);
 		createCausalSection(body);
 		form.reflow(true);
-		causalTable.setInitialInput();
 	}
 
 	private void createDefaultCombo(Composite comp) {

@@ -1,7 +1,7 @@
 package org.openlca.app.editors.processes.allocation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -11,7 +11,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
@@ -53,7 +52,6 @@ class CausalFactorTable {
 		this.page = page;
 		this.editor = page.editor;
 		this.withComments = editor.hasAnyComment("allocationFactors");
-		initColumns();
 	}
 
 	void render(Section section, FormToolkit tk) {
@@ -77,94 +75,61 @@ class CausalFactorTable {
 			return;
 		var products = Util.getProviderFlows(process());
 
-
-
-		List<Exchange> newProducts = new ArrayList<>(products);
-		List<Integer> removalIndices = new ArrayList<>();
-		for (int i = 0; i < columns.length; i++) {
-			Exchange product = columns[i].product;
-			if (products.contains(product))
-				newProducts.remove(product);
-			else
-				removalIndices.add(i);
-		}
-		for (int col : removalIndices)
-			removeColumn(col);
-		for (Exchange product : newProducts)
-			addColumn(product);
-
-		viewer.setInput(Util.getNonProviderFlows(process()));
-		createModifySupport();
-		viewer.refresh(true);
-	}
-
-	private void removeColumn(int col) {
-		Column[] newColumns = new Column[columns.length - 1];
-		System.arraycopy(columns, 0, newColumns, 0, col);
-		if ((col + 1) < columns.length)
-			System.arraycopy(columns, col + 1, newColumns, col,
-				newColumns.length - col);
-		columns = newColumns;
-		Table table = viewer.getTable();
-		table.getColumn(col + 4).dispose();
-		if (withComments) {
-			table.getColumn(col + 5).dispose();
-		}
-	}
-
-	private void addColumn(Exchange product) {
-		Column newColumn = new Column(product);
-		Table table = viewer.getTable();
-		var col = new TableColumn(table, SWT.VIRTUAL);
-		col.setText(newColumn.title());
-		col.setToolTipText(newColumn.title());
-		col.setWidth(80);
-		Column[] newColumns = new Column[columns.length + 1];
-		System.arraycopy(columns, 0, newColumns, 0, columns.length);
-		newColumns[columns.length] = newColumn;
-		columns = newColumns;
-		if (withComments) {
-			new TableColumn(table, SWT.VIRTUAL).setWidth(24);
-		}
-	}
-
-	private void initColumns() {
-		var products = Util.getProviderFlows(process());
-		columns = new Column[products.size()];
-		for (int i = 0; i < columns.length; i++) {
-			columns[i] = new Column(products.get(i));
-		}
-		Arrays.sort(columns);
-	}
-
-	void setInitialInput() {
-		viewer.setInput(Util.getNonProviderFlows(process()));
-	}
-
-	private void createModifySupport() {
-		if (!editor.isEditable())
-			return;
-		String[] keys = getColumnTitles();
-		for (int i = 0; i < columns.length; i++) {
-			int index = withComments ? 2 * i : i;
-			keys[index + 4] = columns[i].key;
-			if (withComments) {
-				keys[index + 5] = columns[i].key + "-comment";
+		// first test if we need to rebuild the columns
+		var needRebuild = products.size() != columns.size();
+		if (!needRebuild) {
+			for (var col : columns) {
+				if (!products.contains(col.product)) {
+					needRebuild = true;
+					break;
+				}
 			}
 		}
-		viewer.setColumnProperties(keys);
 
+		// rebuild the columns if required
+		if (needRebuild) {
 
-		for (int i = 0; i < columns.length; i++) {
-			int index = withComments ? 2 * i : i;
-			modifier.bind(keys[index + 4], columns[i]);
-
-			if (withComments) {
-				var product = columns[i].product;
-				modifier.bind(keys[index + 5], new CommentDialogModifier<>(editor.getComments(),
-					(e) -> CommentPaths.get(getFactor(product, e), product, e)));
+			// drop old columns
+			for (var old : columns) {
+				modifier.unbind(old.key);
+				if (withComments) {
+					modifier.unbind(old.key + "_comment");
+				}
+				old.dispose();
 			}
+
+			// add new columns
+			products.stream()
+				.sorted(Comparator.comparing(p -> Labels.name(p.flow)))
+				.map(Column::new)
+				.forEach(column -> {
+					columns.add(column);
+					modifier.bind(column.key, column);
+					if (withComments) {
+						modifier.bind(column.key + "_comment",
+							new CommentDialogModifier<>(
+								editor.getComments(), column::commentPathOf));
+					}
+				});
+
+			// update the viewer properties
+			var table = viewer.getTable();
+			var props = new String[table.getColumnCount()];
+			for (int i = 0; i < props.length; i++) {
+				var col = table.getColumn(i);
+				props[i] = col.getText();
+			}
+			for (var col : columns) {
+				props[col.idx] = col.key;
+				if (col.commentIdx > 0) {
+					props[col.commentIdx] = col.key + "_comment";
+				}
+			}
+			viewer.setColumnProperties(props);
 		}
+
+		// set the table
+		viewer.setInput(Util.getNonProviderFlows(process()));
 	}
 
 	private class FactorLabel extends LabelProvider implements
@@ -320,7 +285,5 @@ class CausalFactorTable {
 				? CommentPaths.get(factor, product, exchange)
 				: null;
 		}
-
 	}
-
 }
