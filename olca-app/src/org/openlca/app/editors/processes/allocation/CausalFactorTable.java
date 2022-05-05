@@ -43,12 +43,9 @@ class CausalFactorTable {
 
 	private final ProcessEditor editor;
 	private final AllocationPage page;
-
-	// When comments are available, each column has a respective comment column
-	// on the right-side
 	private final boolean withComments;
+	private final List<Column> columns = new ArrayList<>();
 
-	private Column[] columns;
 	private TableViewer viewer;
 
 	public CausalFactorTable(AllocationPage page) {
@@ -58,11 +55,40 @@ class CausalFactorTable {
 		initColumns();
 	}
 
+	void render(Section section, FormToolkit tk) {
+		var comp = UI.sectionClient(section, tk, 1);
+		var titles = getColumnTitles();
+		viewer = Tables.createViewer(comp, titles);
+		viewer.setLabelProvider(new FactorLabel());
+		var copy = TableClipboard.onCopySelected(viewer);
+		Actions.bind(viewer, copy);
+		Tables.bindColumnWidths(viewer, 0.2, 0.1, 0.1, 0.1);
+		var modifier = new ModifySupport<Exchange>(viewer);
+
+
+		Table table = viewer.getTable();
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			if (i < 4)
+				continue;
+			var col = table.getColumn(i);
+			if (withComments && i % 2 == 0) {
+				col.setWidth(24);
+			} else {
+				col.setWidth(80);
+				col.setToolTipText(titles[i]);
+			}
+		}
+		for (int i = 3; i < table.getColumnCount(); i++) {
+			viewer.getTable().getColumns()[i].setAlignment(SWT.RIGHT);
+		}
+
+	}
+
 	private Process process() {
 		return editor.getModel();
 	}
 
-	public void refresh() {
+	void refresh() {
 		List<Exchange> products = Util.getProviderFlows(process());
 		List<Exchange> newProducts = new ArrayList<>(products);
 		List<Integer> removalIndices = new ArrayList<>();
@@ -121,32 +147,6 @@ class CausalFactorTable {
 		Arrays.sort(columns);
 	}
 
-	public void render(Section section, FormToolkit tk) {
-		var comp = UI.sectionClient(section, tk, 1);
-		var titles = getColumnTitles();
-		viewer = Tables.createViewer(comp, titles);
-		viewer.setLabelProvider(new FactorLabel());
-		var copy = TableClipboard.onCopySelected(viewer);
-		Actions.bind(viewer, copy);
-		Tables.bindColumnWidths(viewer, 0.2, 0.1, 0.1, 0.1);
-		createModifySupport();
-		Table table = viewer.getTable();
-		for (int i = 0; i < table.getColumnCount(); i++) {
-			if (i < 4)
-				continue;
-			var col = table.getColumn(i);
-			if (withComments && i % 2 == 0) {
-				col.setWidth(24);
-			} else {
-				col.setWidth(80);
-				col.setToolTipText(titles[i]);
-			}
-		}
-		for (int i = 3; i < table.getColumnCount(); i++) {
-			viewer.getTable().getColumns()[i].setAlignment(SWT.RIGHT);
-		}
-	}
-
 	void setInitialInput() {
 		viewer.setInput(Util.getNonProviderFlows(process()));
 	}
@@ -164,7 +164,7 @@ class CausalFactorTable {
 		}
 		viewer.setColumnProperties(keys);
 
-		var modifier = new ModifySupport<Exchange>(viewer);
+
 
 		for (int i = 0; i < columns.length; i++) {
 			int index = withComments ? 2 * i : i;
@@ -252,7 +252,7 @@ class CausalFactorTable {
 						yield null;
 					var f = column.factorOf(exchange);
 					if (f == null)
-						yield "1";
+						yield "";
 					yield Strings.nullOrEmpty(f.formula)
 						? Double.toString(f.value)
 						: f.formula + " = " + f.value;
@@ -269,14 +269,47 @@ class CausalFactorTable {
 
 		private final Exchange product;
 		private final String key;
+		private final int idx;
+		private final int commentIdx;
 
 		public Column(Exchange product) {
 			this.product = Objects.requireNonNull(product);
 			key = UUID.randomUUID().toString();
+
+			// create the table column; if comments are active
+			// an additional comment column is created on the
+			// right side of the column
+			var table = viewer.getTable();
+			var col = new TableColumn(table, SWT.VIRTUAL);
+			col.setText(title());
+			col.setToolTipText(title());
+			col.setWidth(80);
+			idx = table.indexOf(col);
+			if (withComments) {
+				var commentCol = new TableColumn(table, SWT.VIRTUAL);
+				commentCol.setWidth(24);
+				commentIdx = table.indexOf(commentCol);
+			} else {
+				commentIdx = -1;
+			}
 		}
 
 		public String title() {
 			return Labels.name(product.flow);
+		}
+
+		void dispose() {
+			var table = viewer.getTable();
+			var col = table.getColumn(idx);
+			if (col != null) {
+				col.dispose();
+			}
+			if (commentIdx >= 0) {
+				var commentCol = table.getColumn(commentIdx);
+				if (commentCol != null) {
+					commentCol.dispose();
+				}
+			}
 		}
 
 		AllocationFactor factorOf(Exchange exchange) {
@@ -296,7 +329,7 @@ class CausalFactorTable {
 		protected String getText(Exchange exchange) {
 			var factor = factorOf(exchange);
 			if (factor == null)
-				return "1";
+				return "";
 			return Strings.nullOrEmpty(factor.formula)
 				? Double.toString(factor.value)
 				: factor.formula;
