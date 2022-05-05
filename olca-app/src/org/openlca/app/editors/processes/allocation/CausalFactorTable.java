@@ -113,9 +113,9 @@ class CausalFactorTable {
 				props[i] = col.getText();
 			}
 			for (var col : columns) {
-				props[col.idx] = col.key;
-				if (col.commentIdx > 0) {
-					props[col.commentIdx] = col.key + "_comment";
+				props[col.idx()] = col.key;
+				if (withComments && col.commentIdx() > 0) {
+					props[col.commentIdx()] = col.key + "_comment";
 				}
 			}
 			viewer.setColumnProperties(props);
@@ -148,9 +148,9 @@ class CausalFactorTable {
 				return Images.get(exchange.flow);
 
 			// comment images
-			if (col > 4) {
+			if (withComments && col > 4) {
 				for (var c : columns) {
-					if (c.commentIdx == col) {
+					if (c.commentIdx() == col) {
 						var factor = c.factorOf(exchange);
 						if (factor == null)
 							return null;
@@ -177,9 +177,9 @@ class CausalFactorTable {
 					+ exchange.unit.name;
 				default -> {
 					for (var c : columns) {
-						if (col == c.commentIdx)
+						if (withComments && col == c.commentIdx())
 							yield null;
-						if (col == c.idx) {
+						if (col == c.idx()) {
 							var f = c.factorOf(exchange);
 							if (f == null)
 								yield "";
@@ -198,8 +198,8 @@ class CausalFactorTable {
 
 		private final Exchange product;
 		private final String key;
-		private final int idx;
-		private final int commentIdx;
+		private final TableColumn _col;
+		private final TableColumn _commentCol;
 
 		public Column(Exchange product) {
 			this.product = Objects.requireNonNull(product);
@@ -209,35 +209,37 @@ class CausalFactorTable {
 			// an additional comment column is created on the
 			// right side of the column
 			var table = viewer.getTable();
-			var col = new TableColumn(table, SWT.VIRTUAL);
-			col.setText(title());
-			col.setToolTipText(title());
-			col.setWidth(80);
-			idx = table.indexOf(col);
+			_col = new TableColumn(table, SWT.VIRTUAL);
+			_col.setText(title());
+			_col.setToolTipText(title());
+			_col.setWidth(80);
+			_col.setAlignment(SWT.CENTER);
 			if (withComments) {
-				var commentCol = new TableColumn(table, SWT.VIRTUAL);
-				commentCol.setWidth(24);
-				commentIdx = table.indexOf(commentCol);
+				_commentCol = new TableColumn(table, SWT.VIRTUAL);
+				_commentCol.setWidth(24);
 			} else {
-				commentIdx = -1;
+				_commentCol = null;
 			}
 		}
 
-		public String title() {
+		int idx() {
+			return viewer.getTable().indexOf(_col);
+		}
+
+		int commentIdx() {
+			return _commentCol != null
+				? viewer.getTable().indexOf(_commentCol)
+				: -1;
+		}
+
+		String title() {
 			return Labels.name(product.flow);
 		}
 
 		void dispose() {
-			var table = viewer.getTable();
-			var col = table.getColumn(idx);
-			if (col != null) {
-				col.dispose();
-			}
-			if (commentIdx >= 0) {
-				var commentCol = table.getColumn(commentIdx);
-				if (commentCol != null) {
-					commentCol.dispose();
-				}
+			_col.dispose();
+			if (_commentCol != null) {
+				_commentCol.dispose();
 			}
 		}
 

@@ -175,8 +175,8 @@ public class AllocationPage extends ModelPage<Process> {
 		table.setColumnProperties(columns);
 		table.setLabelProvider(new FactorLabel());
 		table.setInput(Util.getProviderFlows(process()));
-		table.getTable().getColumns()[1].setAlignment(SWT.RIGHT);
-		table.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
+		table.getTable().getColumns()[1].setAlignment(SWT.CENTER);
+		table.getTable().getColumns()[2].setAlignment(SWT.CENTER);
 
 		if (!isEditable())
 			return;
