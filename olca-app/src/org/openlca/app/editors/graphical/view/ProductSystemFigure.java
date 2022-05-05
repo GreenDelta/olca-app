@@ -23,7 +23,7 @@ public class ProductSystemFigure extends Figure {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<ProcessFigure> getChildren() {
+	public List<NodeFigure> getChildren() {
 		return super.getChildren();
 	}
 
@@ -34,6 +34,7 @@ public class ProductSystemFigure extends Figure {
 
 	@Override
 	public void paint(Graphics g) {
+
 		var theme = node.config().theme();
 		border.setColor(theme.graphBackgroundColor());
 		g.pushState();

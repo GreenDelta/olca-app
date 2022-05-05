@@ -2,15 +2,22 @@ package org.openlca.app.editors.graphical.command;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.model.IONode;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProcessPart;
+import org.openlca.app.editors.graphical.model.ProductSystemPart;
 
 public class MinMaxCommand extends Command {
 
+	private final ProductSystemPart productSystemPart;
+	private final ProcessPart processPart;
 	private final ProcessNode node;
 	private final boolean initiallyMinimized;
 
-	public MinMaxCommand(ProcessNode node) {
-		this.node = node;
+	public MinMaxCommand(ProductSystemPart productSystemPart, ProcessPart processPart) {
+		this.productSystemPart = productSystemPart;
+		this.processPart = processPart;
+		this.node = processPart.getModel();
 		initiallyMinimized = node.isMinimized();
 	}
 
@@ -26,11 +33,23 @@ public class MinMaxCommand extends Command {
 
 	@Override
 	public void execute() {
-		if (node.isMinimized())
-			node.maximize();
-		else
-			node.minimize();
-		node.parent().editor.setDirty();
+		if (node.isMinimized()) {
+			node.setIsMinimized(false);
+			productSystemPart.resetChildEditPart(processPart);
+			if (node.getChildren().isEmpty()) {
+				node.add(new IONode(node));
+			}
+			node.refresh();
+		}
+		else {
+			node.setIsMinimized(true);
+			productSystemPart.resetChildEditPart(processPart);
+			if (!node.getChildren().isEmpty()) {
+				node.remove(node.getChildren().get(0));
+			}
+			node.refresh();
+		}
+		productSystemPart.getModel().editor.setDirty();
 	}
 
 	@Override

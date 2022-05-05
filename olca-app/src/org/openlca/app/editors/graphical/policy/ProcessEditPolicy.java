@@ -7,6 +7,8 @@ import org.eclipse.gef.requests.GroupRequest;
 import org.openlca.app.editors.graphical.command.DeleteProcessCommand;
 import org.openlca.app.editors.graphical.command.MinMaxCommand;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProcessPart;
+import org.openlca.app.editors.graphical.model.ProductSystemPart;
 
 public class ProcessEditPolicy extends ComponentEditPolicy {
 
@@ -18,7 +20,9 @@ public class ProcessEditPolicy extends ComponentEditPolicy {
 	}
 
 	private Command getMinMaxCommand() {
-		return new MinMaxCommand((ProcessNode) getHost().getModel());
+		var processPart = (ProcessPart) getHost();
+		var productSystemPart = (ProductSystemPart) getHost().getParent();
+		return new MinMaxCommand(productSystemPart, processPart);
 	}
 
 	@Override

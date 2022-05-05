@@ -31,8 +31,7 @@ public class DeleteProcessCommand extends Command {
 
 	@Override
 	public void execute() {
-		node.expandLeft();
-		node.expandRight();
+		node.expand();
 		if (node.links.size() > 0) {
 			linkCommand = new DeleteLinkCommand(
 					new ArrayList<>(node.links));

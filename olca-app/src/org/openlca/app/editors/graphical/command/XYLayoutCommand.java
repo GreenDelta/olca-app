@@ -32,7 +32,7 @@ public class XYLayoutCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		return target != null && oldBox != null;
+		return target != null && oldBox != null && !node.isMinimized();
 	}
 
 	@Override
@@ -49,9 +49,7 @@ public class XYLayoutCommand extends Command {
 	public void execute() {
 		oldBox = node.getBox();
 		var newBox = newBox();
-		if (node.isMinimized() && newBox.height > node.getMinimumHeight()) {
-			node.maximize();
-		}
+
 		// minimum height/width is different if node is maximized
 		if (newBox.height < node.getMinimumHeight())  {
 			newBox.height = node.getMinimumHeight();

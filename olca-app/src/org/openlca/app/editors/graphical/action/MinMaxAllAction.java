@@ -34,7 +34,9 @@ class MinMaxAllAction extends EditorAction {
 			boolean minimize = type == MINIMIZE;
 			if (node.isMinimized() == minimize)
 				continue;
-			MinMaxCommand newCommand = new MinMaxCommand(node);
+			var processPart = node.editPart();
+			var productSystemPart = processPart.getParent();
+			var newCommand = new MinMaxCommand(productSystemPart, processPart);
 			actualCommand = Commands.chain(newCommand, actualCommand);
 		}
 		if (actualCommand == null)

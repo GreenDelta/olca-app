@@ -12,7 +12,7 @@ import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
 import org.openlca.app.editors.graphical.view.ProductSystemFigure;
 
-class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
+public class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 
 	CommandStackChangedListener stackListener = new CommandStackChangedListener();
 
@@ -52,6 +52,13 @@ class ProductSystemPart extends AppAbstractEditPart<ProductSystemNode> {
 	@Override
 	public boolean isSelectable() {
 		return true;
+	}
+
+	public void resetChildEditPart(ProcessPart processPart) {
+		var index = getChildren().indexOf(processPart);
+		var newProcessPart = createChild(processPart.getModel());
+		removeChild(processPart);
+		addChild(newProcessPart, index);
 	}
 
 	private class CommandStackChangedListener implements CommandStackEventListener {

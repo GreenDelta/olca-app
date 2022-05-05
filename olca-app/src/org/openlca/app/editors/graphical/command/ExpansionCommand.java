@@ -3,35 +3,34 @@ package org.openlca.app.editors.graphical.command;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProcessNode.Side;
 
 public class ExpansionCommand extends Command {
 
 	private final static int EXPAND = 1;
 	private final static int COLLAPSE = 2;
-	private final static int LEFT = 1;
-	private final static int RIGHT = 2;
 
 	private final ProcessNode node;
-	private final int side;
+	private final Side side;
 	private final int type;
 
 	public static ExpansionCommand expandLeft(ProcessNode node) {
-		return new ExpansionCommand(node, EXPAND, LEFT);
+		return new ExpansionCommand(node, EXPAND, Side.INPUT);
 	}
 
 	public static ExpansionCommand expandRight(ProcessNode node) {
-		return new ExpansionCommand(node, EXPAND, RIGHT);
+		return new ExpansionCommand(node, EXPAND, Side.OUTPUT);
 	}
 
 	public static ExpansionCommand collapseLeft(ProcessNode node) {
-		return new ExpansionCommand(node, COLLAPSE, LEFT);
+		return new ExpansionCommand(node, COLLAPSE, Side.INPUT);
 	}
 
 	public static ExpansionCommand collapseRight(ProcessNode node) {
-		return new ExpansionCommand(node, COLLAPSE, RIGHT);
+		return new ExpansionCommand(node, COLLAPSE, Side.OUTPUT);
 	}
 
-	private ExpansionCommand(ProcessNode node, int type, int side) {
+	private ExpansionCommand(ProcessNode node, int type, Side side) {
 		this.node = node;
 		this.side = side;
 		this.type = type;
@@ -39,7 +38,7 @@ public class ExpansionCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		if (side != LEFT && side != RIGHT)
+		if (side != Side.INPUT && side != Side.OUTPUT)
 			return false;
 		return type == EXPAND || type == COLLAPSE;
 	}
@@ -52,15 +51,9 @@ public class ExpansionCommand extends Command {
 	@Override
 	public void execute() {
 		if (type == EXPAND) {
-			if (side == LEFT)
-				node.expandLeft();
-			else if (side == RIGHT)
-				node.expandRight();
+			node.expand(side);
 		} else if (type == COLLAPSE) {
-			if (side == LEFT)
-				node.collapseLeft();
-			else if (side == RIGHT)
-				node.collapseRight();
+			node.collapse(side);
 		}
 		node.layout();
 		node.parent().editor.setDirty();

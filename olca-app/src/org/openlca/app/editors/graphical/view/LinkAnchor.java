@@ -51,7 +51,7 @@ public class LinkAnchor extends AbstractConnectionAnchor {
 				? bounds.getLeft()
 				: bounds.getRight();
 		owner.translateToAbsolute(point);
-		if ((owner instanceof ProcessFigure)
+		if ((owner instanceof NodeFigure)
 				|| node.isMinimized()
 				|| !(owner instanceof ExchangeFigure))
 			return point;
@@ -64,7 +64,7 @@ public class LinkAnchor extends AbstractConnectionAnchor {
 		var process = owner.getParent();
 		int depth = 0; // just in case of cycles
 		while (process != null && depth < 100) {
-			if (process instanceof ProcessFigure)
+			if (process instanceof NodeFigure)
 				break;
 			process = process.getParent();
 			depth++;

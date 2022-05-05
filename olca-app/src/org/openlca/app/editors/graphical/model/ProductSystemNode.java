@@ -81,6 +81,14 @@ public class ProductSystemNode extends Node {
 		return null;
 	}
 
+	ProcessNode getOrCreateProcessNode(long processID) {
+		ProcessNode node = getProcessNode(processID);
+		if (node != null)
+			return node;
+		node = ProcessNode.create(editor, processID);
+		return node;
+	}
+
 	public void highlightMatchingExchanges(ExchangeNode toMatch) {
 		if (toMatch == null)
 			return;

@@ -8,6 +8,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProcessNode.Side;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
@@ -74,8 +75,8 @@ public final class GraphFile {
 		}
 
 		json.addProperty("minimized", node.isMinimized());
-		json.addProperty("expandedLeft", node.isExpandedLeft());
-		json.addProperty("expandedRight", node.isExpandedLeft());
+		json.addProperty("expandedLeft", node.isExpanded(Side.INPUT));
+		json.addProperty("expandedRight", node.isExpanded(Side.OUTPUT));
 		json.addProperty("marked", node.isMarked());
 		return json;
 	}

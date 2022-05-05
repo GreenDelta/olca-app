@@ -21,8 +21,12 @@ public class AppEditPartFactory implements EditPartFactory {
 	private EditPart editPartOf(Object model) {
 		if (model instanceof ProductSystemNode)
 			return new ProductSystemPart();
-		if (model instanceof ProcessNode)
-			return new ProcessPart();
+		if (model instanceof ProcessNode processNode)
+			if (processNode.isMinimized()) {
+				return new MinimizedNodeEditPart(); }
+			else {
+				return new MaximizedNodeEditPart();
+			}
 		if (model instanceof ExchangeNode)
 			return new ExchangePart();
 		if (model instanceof IONode)
@@ -31,5 +35,4 @@ public class AppEditPartFactory implements EditPartFactory {
 			return new LinkPart();
 		return null;
 	}
-
 }

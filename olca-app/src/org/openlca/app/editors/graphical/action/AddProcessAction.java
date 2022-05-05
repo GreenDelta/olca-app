@@ -205,13 +205,13 @@ public class AddProcessAction extends Action implements GraphAction {
 			// create the process node
 			var editor = systemNode.editor;
 			var processNode = new ProcessNode(editor, d);
+			processNode.setIsMinimized(false);
 			systemNode.add(processNode);
 			if (editor.getOutline() != null) {
 				editor.getOutline().refresh();
 			}
 
 			// set the node position
-			processNode.maximize();
 			if (location != null) {
 				var rect = new Rectangle(
 						location.x,

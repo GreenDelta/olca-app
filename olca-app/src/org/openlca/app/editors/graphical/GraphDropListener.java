@@ -52,12 +52,12 @@ class GraphDropListener extends DropTargetAdapter {
 				.map(d -> {
 					system.processes.add(d.id);
 					var node = new ProcessNode(editor, d);
+					node.setIsMinimized(false);
 					systemNode.add(node);
 					return node;
 				})
 				.forEach(node -> {
 					added.set(true);
-					node.maximize();
 					var rect = new Rectangle(
 							location.x,
 							location.y,

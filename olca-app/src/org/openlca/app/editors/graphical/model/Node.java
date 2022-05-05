@@ -11,7 +11,7 @@ import org.openlca.app.editors.graphical.GraphEditor;
 /**
  * An abstract class for the model elements of the model graph.
  */
-abstract class Node {
+public abstract class Node {
 
 	public final GraphEditor editor;
 

@@ -2,11 +2,8 @@ package org.openlca.app.editors.graphical.model;
 
 import java.util.List;
 
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.Request;
-import org.eclipse.gef.RequestConstants;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.*;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
@@ -14,21 +11,12 @@ import org.openlca.app.editors.graphical.command.Commands;
 import org.openlca.app.editors.graphical.command.XYLayoutCommand;
 import org.openlca.app.editors.graphical.policy.LayoutPolicy;
 import org.openlca.app.editors.graphical.policy.ProcessEditPolicy;
-import org.openlca.app.editors.graphical.view.ProcessFigure;
 
-public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
+public abstract class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 
 	@Override
 	protected void addChildVisual(EditPart childEditPart, int index) {
 		super.addChildVisual(childEditPart, getContentPane().getChildren().size());
-	}
-
-	@Override
-	protected IFigure createFigure() {
-		ProcessNode node = getModel();
-		ProcessFigure figure = new ProcessFigure(node);
-		node.setFigure(figure);
-		return figure;
 	}
 
 	@Override
@@ -45,7 +33,6 @@ public class ProcessPart extends AbstractNodeEditPart<ProcessNode> {
 			stack.execute(command);
 		}
 	}
-
 
 	@Override
 	public ProductSystemPart getParent() {

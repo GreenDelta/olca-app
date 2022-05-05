@@ -48,6 +48,7 @@ import org.openlca.app.editors.graphical.layout.LayoutType;
 import org.openlca.app.editors.graphical.model.AppEditPartFactory;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.ProcessNode.Side;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
 import org.openlca.app.editors.graphical.outline.OutlinePage;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
@@ -159,7 +160,8 @@ public class GraphEditor extends GraphicalEditor {
 			}
 			if (outNode == null)
 				continue;
-			if (!outNode.isExpandedRight() && !inNode.isExpandedLeft())
+			if (!outNode.isExpanded(Side.OUTPUT)
+				&& !inNode.isExpanded(Side.INPUT))
 				continue;
 			Link link = new Link();
 			link.outputNode = outNode;
@@ -272,8 +274,7 @@ public class GraphEditor extends GraphicalEditor {
 				var refNode = model.getProcessNode(
 						system.referenceProcess.id);
 				if (refNode != null) {
-					refNode.expandLeft();
-					refNode.expandRight();
+					refNode.expand();
 				}
 			}
 
@@ -383,8 +384,7 @@ public class GraphEditor extends GraphicalEditor {
 		viewer.deselectAll();
 		viewer.setContents(model);
 		for (var node : model.getChildren()) {
-			node.expandLeft();
-			node.expandRight();
+			node.expand();
 		}
 		getCommandStack().execute(
 			new LayoutCommand(this, LayoutType.TREE_LAYOUT));

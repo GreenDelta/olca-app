@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import org.eclipse.draw2d.Connection;
 import org.openlca.core.model.ProcessLink;
+import org.openlca.app.editors.graphical.model.ProcessNode.Side;
 
 /**
  * A model of the connection between the output flow {@link ExchangeNode} of a
@@ -111,7 +112,8 @@ public class Link {
 			figure.setVisible(false);
 			return;
 		}
-		if (inputNode.isExpandedLeft() || outputNode.isExpandedRight()) {
+		if (inputNode.isExpanded(Side.INPUT)
+			|| outputNode.isExpanded(Side.OUTPUT)) {
 			figure.setVisible(true);
 			return;
 		}

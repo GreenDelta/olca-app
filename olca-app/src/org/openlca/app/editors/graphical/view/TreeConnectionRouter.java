@@ -46,14 +46,14 @@ public class TreeConnectionRouter extends BendpointConnectionRouter {
 		conn.setPoints(points);
 	}
 
-	private ProcessFigure processOf(ConnectionAnchor anchor) {
+	private NodeFigure processOf(ConnectionAnchor anchor) {
 		if (anchor == null)
 			return null;
 		var figure = anchor.getOwner();
 		int depth = 0;  // just in case there are cycles
 		while (figure != null && depth < 100) {
-			if (figure instanceof ProcessFigure)
-				return (ProcessFigure) figure;
+			if (figure instanceof NodeFigure)
+				return (NodeFigure) figure;
 			figure = figure.getParent();
 			depth++;
 		}
