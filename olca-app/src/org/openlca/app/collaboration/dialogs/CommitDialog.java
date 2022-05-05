@@ -1,6 +1,5 @@
 package org.openlca.app.collaboration.dialogs;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,8 +15,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
-import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.Change;
@@ -29,7 +26,7 @@ public class CommitDialog extends FormDialog {
 	private DiffNode node;
 	private String message;
 	private CommitViewer viewer;
-	private Collection<INavigationElement<?>> initialSelection;
+	private TypeRefIdSet initialSelection;
 
 	public CommitDialog(DiffNode node) {
 		super(UI.shell());
@@ -37,7 +34,7 @@ public class CommitDialog extends FormDialog {
 		setBlockOnOpen(true);
 	}
 
-	public void setInitialSelection(Collection<INavigationElement<?>> initialSelection) {
+	public void setInitialSelection(TypeRefIdSet initialSelection) {
 		this.initialSelection = initialSelection;
 	}
 
@@ -58,24 +55,7 @@ public class CommitDialog extends FormDialog {
 		createModelViewer(body, toolkit);
 		form.reflow(true);
 		viewer.setInput(Collections.singleton(node));
-		viewer.setSelection(getSelection());
-	}
-
-	private TypeRefIdSet getSelection() {
-		if (initialSelection == null)
-			return null;
-		var map = new TypeRefIdSet();
-		initialSelection.forEach(element -> put(map, element));
-		return map;
-	}
-
-	private void put(TypeRefIdSet map, INavigationElement<?> element) {
-		if (element instanceof ModelElement e) {
-			var model = e.getContent();
-			map.add(model.type, model.refId);
-			return;
-		}
-		element.getChildren().forEach(child -> put(map, child));
+		viewer.setSelection(initialSelection);
 	}
 
 	private void createCommitMessage(Composite parent, FormToolkit toolkit) {

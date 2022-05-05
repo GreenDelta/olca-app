@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
@@ -18,6 +19,7 @@ import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.DiffResult;
+import org.openlca.app.collaboration.views.PathFilters;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
@@ -28,6 +30,9 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitCommit;
 import org.openlca.git.actions.GitPush;
 import org.openlca.git.model.Change;
+import org.openlca.git.model.ModelRef;
+import org.openlca.git.util.DiffEntries;
+import org.openlca.git.util.TypeRefIdSet;
 
 public class CommitAction extends Action implements INavigationAction {
 
@@ -51,10 +56,11 @@ public class CommitAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		try {
-			var committer = Repository.get().personIdent();
+			var repo = Repository.get();
+			var committer = repo.personIdent();
 			if (committer == null)
 				return;
-			var changes = Actions.getWorkspaceChanges();
+			var changes = DiffEntries.workspace(repo.toConfig());
 			var dialog = createCommitDialog(changes);
 			if (dialog == null)
 				return;
@@ -69,11 +75,11 @@ public class CommitAction extends Action implements INavigationAction {
 			if (!checkLibraries(withReferences))
 				return;
 			GitCommit.from(Database.get())
-					.to(Repository.get().git)
+					.to(repo.git)
 					.changes(withReferences)
 					.withMessage(dialog.getMessage())
 					.as(committer)
-					.update(Repository.get().workspaceIds)
+					.update(repo.workspaceIds)
 					.run();
 			if (dialogResult != CommitDialog.COMMIT_AND_PUSH)
 				return;
@@ -93,7 +99,7 @@ public class CommitAction extends Action implements INavigationAction {
 		}
 	}
 
-	private CommitDialog createCommitDialog(List<Change> changes) {
+	private CommitDialog createCommitDialog(List<DiffEntry> changes) {
 		var differences = changes.stream()
 				.map(DiffResult::new)
 				.toList();
@@ -103,8 +109,23 @@ public class CommitAction extends Action implements INavigationAction {
 			return null;
 		}
 		var dialog = new CommitDialog(node);
-		dialog.setInitialSelection(selection);
+		var paths = PathFilters.of(selection);
+		var initialSelection = new TypeRefIdSet();
+		changes.stream()
+				.map(ModelRef::new)
+				.filter(ref -> selectionContainsPath(paths, ref.path))
+				.forEach(ref -> initialSelection.add(ref.type, ref.refId));
+		dialog.setInitialSelection(initialSelection);
 		return dialog;
+	}
+
+	private boolean selectionContainsPath(List<String> paths, String path) {
+		if (paths.isEmpty())
+			return true;
+		for (var p : paths)
+			if (path.startsWith(p))
+				return true;
+		return false;
 	}
 
 	private boolean checkLibraries(List<Change> changes) {
