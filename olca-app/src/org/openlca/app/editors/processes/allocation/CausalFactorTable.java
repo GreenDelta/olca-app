@@ -47,6 +47,7 @@ class CausalFactorTable {
 	private final List<Column> columns = new ArrayList<>();
 
 	private TableViewer viewer;
+	private ModifySupport<Exchange> modifier;
 
 	public CausalFactorTable(AllocationPage page) {
 		this.page = page;
@@ -57,31 +58,14 @@ class CausalFactorTable {
 
 	void render(Section section, FormToolkit tk) {
 		var comp = UI.sectionClient(section, tk, 1);
-		var titles = getColumnTitles();
-		viewer = Tables.createViewer(comp, titles);
+		viewer = Tables.createViewer(comp,
+			M.Flow, M.Direction, M.Category, M.Amount);
 		viewer.setLabelProvider(new FactorLabel());
 		var copy = TableClipboard.onCopySelected(viewer);
 		Actions.bind(viewer, copy);
 		Tables.bindColumnWidths(viewer, 0.2, 0.1, 0.1, 0.1);
-		var modifier = new ModifySupport<Exchange>(viewer);
-
-
-		Table table = viewer.getTable();
-		for (int i = 0; i < table.getColumnCount(); i++) {
-			if (i < 4)
-				continue;
-			var col = table.getColumn(i);
-			if (withComments && i % 2 == 0) {
-				col.setWidth(24);
-			} else {
-				col.setWidth(80);
-				col.setToolTipText(titles[i]);
-			}
-		}
-		for (int i = 3; i < table.getColumnCount(); i++) {
-			viewer.getTable().getColumns()[i].setAlignment(SWT.RIGHT);
-		}
-
+		modifier = new ModifySupport<>(viewer);
+		refresh();
 	}
 
 	private Process process() {
@@ -89,7 +73,12 @@ class CausalFactorTable {
 	}
 
 	void refresh() {
-		List<Exchange> products = Util.getProviderFlows(process());
+		if (viewer == null)
+			return;
+		var products = Util.getProviderFlows(process());
+
+
+
 		List<Exchange> newProducts = new ArrayList<>(products);
 		List<Integer> removalIndices = new ArrayList<>();
 		for (int i = 0; i < columns.length; i++) {
@@ -103,6 +92,7 @@ class CausalFactorTable {
 			removeColumn(col);
 		for (Exchange product : newProducts)
 			addColumn(product);
+
 		viewer.setInput(Util.getNonProviderFlows(process()));
 		createModifySupport();
 		viewer.refresh(true);
@@ -165,7 +155,6 @@ class CausalFactorTable {
 		viewer.setColumnProperties(keys);
 
 
-
 		for (int i = 0; i < columns.length; i++) {
 			int index = withComments ? 2 * i : i;
 			modifier.bind(keys[index + 4], columns[i]);
@@ -176,34 +165,6 @@ class CausalFactorTable {
 					(e) -> CommentPaths.get(getFactor(product, e), product, e)));
 			}
 		}
-	}
-
-	private String[] getColumnTitles() {
-		boolean showComments = editor.hasAnyComment("allocationFactors");
-		int cols = showComments ? columns.length * 2 : columns.length;
-		String[] titles = new String[cols + 4];
-		titles[0] = M.Flow;
-		titles[1] = M.Direction;
-		titles[2] = M.Category;
-		titles[3] = M.Amount;
-		for (int i = 0; i < columns.length; i++) {
-			int index = showComments ? 2 * i : i;
-			titles[index + 4] = columns[i].title();
-			if (showComments) {
-				titles[index + 5] = "";
-			}
-		}
-		return titles;
-	}
-
-	private Column columnOf(int tableIdx) {
-		int idx = tableIdx - 4;
-		if (withComments) {
-			idx /= 2;
-		}
-		return idx >= 0 && idx < columns.length
-			? columns[idx]
-			: null;
 	}
 
 	private class FactorLabel extends LabelProvider implements
@@ -218,15 +179,18 @@ class CausalFactorTable {
 			if (col == 0)
 				return Images.get(exchange.flow);
 
-			if (isCommentColumn(col)) {
-				var column = columnOf(col);
-				if (column == null)
-					return null;
-				var factor = column.factorOf(exchange);
-				if (factor == null)
-					return null;
-				return Images.get(editor.getComments(),
-					CommentPaths.get(factor, column.product, exchange));
+			// comment images
+			if (col > 4) {
+				for (var c : columns) {
+					if (c.commentIdx == col) {
+						var factor = c.factorOf(exchange);
+						if (factor == null)
+							return null;
+						return Images.get(
+							editor.getComments(),
+							c.commentPathOf(exchange));
+					}
+				}
 			}
 			return null;
 		}
@@ -244,24 +208,21 @@ class CausalFactorTable {
 				case 3 -> Numbers.format(exchange.amount) + " "
 					+ exchange.unit.name;
 				default -> {
-					// factor value or formula
-					if (isCommentColumn(col))
-						yield null;
-					var column = columnOf(col);
-					if (column == null)
-						yield null;
-					var f = column.factorOf(exchange);
-					if (f == null)
-						yield "";
-					yield Strings.nullOrEmpty(f.formula)
-						? Double.toString(f.value)
-						: f.formula + " = " + f.value;
+					for (var c : columns) {
+						if (col == c.commentIdx)
+							yield null;
+						if (col == c.idx) {
+							var f = c.factorOf(exchange);
+							if (f == null)
+								yield "";
+							yield Strings.nullOrEmpty(f.formula)
+								? Double.toString(f.value)
+								: f.formula + " = " + f.value;
+						}
+					}
+					yield null;
 				}
 			};
-		}
-
-		private boolean isCommentColumn(int col) {
-			return withComments && col > 4 && col % 2 == 1;
 		}
 	}
 
@@ -337,7 +298,7 @@ class CausalFactorTable {
 
 		@Override
 		protected void setText(Exchange exchange, String text) {
-			var factor =factorOf(exchange);
+			var factor = factorOf(exchange);
 			boolean isNew = factor == null;
 			if (isNew) {
 				factor = new AllocationFactor();
@@ -352,6 +313,14 @@ class CausalFactorTable {
 				editor.setDirty(true);
 			}
 		}
+
+		String commentPathOf(Exchange exchange) {
+			var factor = factorOf(exchange);
+			return factor != null
+				? CommentPaths.get(factor, product, exchange)
+				: null;
+		}
+
 	}
 
 }
