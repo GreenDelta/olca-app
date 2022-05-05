@@ -1,5 +1,6 @@
 package org.openlca.app.viewers.tables.modify;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -28,7 +29,6 @@ import org.openlca.app.viewers.tables.modify.ICellModifier.CellEditingType;
 public class ModifySupport<T> {
 
 	private Map<String, ICellModifier<T>> cellModifiers;
-	private CellEditor[] editors;
 	private final ColumnViewer viewer;
 
 	public ModifySupport(ColumnViewer viewer) {
@@ -41,7 +41,7 @@ public class ModifySupport<T> {
 		if (props == null)
 			return;
 		viewer.setCellModifier(new CellModifier());
-		editors = new CellEditor[props.length];
+		var editors = new CellEditor[props.length];
 		this.cellModifiers = new HashMap<>();
 		viewer.setCellEditors(editors);
 	}
@@ -55,6 +55,7 @@ public class ModifySupport<T> {
 		int idx = findIndex(property);
 		if (idx == -1)
 			return this;
+		var editors = ensureEditors(idx);
 		editors[idx] = editor;
 		return this;
 	}
@@ -106,23 +107,23 @@ public class ModifySupport<T> {
 	public void unbind(String property) {
 		if (property == null)
 			return;
+		cellModifiers.remove(property);
 		var index = findIndex(property);
 		if (index < 0)
 			return;
-		editors[index] = null;
-		cellModifiers.remove(property);
+		var editors = viewer.getCellEditors();
+		if (editors != null && editors.length > index) {
+			editors[index] = null;
+		}
 	}
 
 	private int findIndex(String property) {
 		var props = viewer.getColumnProperties();
-		int index = -1;
 		for (int i = 0; i < props.length; i++) {
-			if (Objects.equals(props[i], property)) {
-				index = i;
-				break;
-			}
+			if (Objects.equals(props[i], property))
+				return i;
 		}
-		return index;
+		return -1;
 	}
 
 	private Composite getComponent() {
@@ -134,6 +135,7 @@ public class ModifySupport<T> {
 	}
 
 	private void setEditor(ICellModifier<T> modifier, int index) {
+		var editors = ensureEditors(index);
 		editors[index] = switch (modifier.getCellEditingType()) {
 			case TEXTBOX -> modifier.getStyle() != SWT.NONE
 				? new TextCellEditor(getComponent(), modifier.getStyle())
@@ -147,7 +149,10 @@ public class ModifySupport<T> {
 
 	private CellEditor getCellEditor(String property) {
 		int idx = findIndex(property);
-		return idx == -1 ? null : editors[idx];
+		if (idx < 0)
+			return null;
+		var editors = ensureEditors(idx);
+		return editors[idx];
 	}
 
 	private void refresh(T value) {
@@ -160,6 +165,20 @@ public class ModifySupport<T> {
 				}
 			}
 		}
+	}
+
+	private CellEditor[] ensureEditors(int withIdx) {
+		var editors = viewer.getCellEditors();
+		if (editors == null) {
+			editors = new CellEditor[withIdx + 1];
+			viewer.setCellEditors(editors);
+			return editors;
+		}
+		if (editors.length <= withIdx) {
+			editors = Arrays.copyOf(editors, withIdx + 1);
+			viewer.setCellEditors(editors);
+		}
+		return editors;
 	}
 
 	private class CellModifier implements

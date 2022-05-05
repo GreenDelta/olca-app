@@ -86,31 +86,24 @@ class CausalFactorTable {
 			}
 		}
 
-		// rebuild the columns if required
+		// rebuild the columns if required; order is important!
 		if (needRebuild) {
 
-			// drop old columns
+			// unbind and drop old columns
 			for (var old : columns) {
 				modifier.unbind(old.key);
 				if (withComments) {
 					modifier.unbind(old.key + "_comment");
 				}
-				old.dispose();
 			}
+			columns.forEach(Column::dispose);
+			columns.clear();
 
-			// add new columns
+			// create the new columns
 			products.stream()
 				.sorted(Comparator.comparing(p -> Labels.name(p.flow)))
 				.map(Column::new)
-				.forEach(column -> {
-					columns.add(column);
-					modifier.bind(column.key, column);
-					if (withComments) {
-						modifier.bind(column.key + "_comment",
-							new CommentDialogModifier<>(
-								editor.getComments(), column::commentPathOf));
-					}
-				});
+				.forEach(columns::add);
 
 			// update the viewer properties
 			var table = viewer.getTable();
@@ -126,6 +119,16 @@ class CausalFactorTable {
 				}
 			}
 			viewer.setColumnProperties(props);
+
+			// bind the new columns to the modifier
+			for (var column : columns) {
+				modifier.bind(column.key, column);
+				if (withComments) {
+					modifier.bind(column.key + "_comment",
+						new CommentDialogModifier<>(
+							editor.getComments(), column::commentPathOf));
+				}
+			}
 		}
 
 		// set the table
