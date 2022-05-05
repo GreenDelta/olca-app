@@ -14,6 +14,7 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.git.actions.GitStashCreate;
+import org.openlca.git.util.DiffEntries;
 
 public class StashCreateAction extends Action implements INavigationAction {
 
@@ -31,7 +32,7 @@ public class StashCreateAction extends Action implements INavigationAction {
 	public boolean isEnabled() {
 		try {
 			var repo = Repository.get();
-			if (Actions.getWorkspaceChanges().isEmpty())
+			if (DiffEntries.workspace(repo.toConfig()).isEmpty())
 				return false;
 			return Actions.getStashCommit(repo.git) == null;
 		} catch (IOException | GitAPIException e) {
