@@ -19,12 +19,6 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.core.database.config.DatabaseConfig;
 
-/**
- * known limitations: if a new model is created, the parent categories will be
- * marked as changed (correctly), if the new model is deleted the parent
- * categories will still be marked as changed (incorrectly), because we
- * invalidated the categories and dont calculate new tree ids
- */
 public class RepositoryLabel {
 
 	public static final String CHANGED_STATE = "> ";
