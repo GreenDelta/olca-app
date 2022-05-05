@@ -47,26 +47,4 @@ class Util {
 			return true;
 		return type == FlowType.WASTE_FLOW && e.isInput;
 	}
-
-	/**
-	 * Returns the causal factor for the given product output or waste input and
-	 * exchange. Returns {@code null} if no such factor exists.
-	 */
-	static AllocationFactor factorOf(
-		Process process, Exchange product, Exchange exchange) {
-		if (product == null
-			|| product.flow == null
-			|| exchange == null)
-			return null;
-		for (var factor : process.allocationFactors) {
-			if (factor.method != AllocationMethod.CAUSAL)
-				continue;
-			if (product.flow.id != factor.productId)
-				continue;
-			if (!Objects.equals(factor.exchange, exchange))
-				continue;
-			return factor;
-		}
-		return null;
-	}
 }

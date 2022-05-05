@@ -3,6 +3,7 @@ package org.openlca.app.editors.processes.allocation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -99,8 +100,8 @@ class CausalFactorTable {
 		Column newColumn = new Column(product);
 		Table table = viewer.getTable();
 		var col = new TableColumn(table, SWT.VIRTUAL);
-		col.setText(newColumn.getTitle());
-		col.setToolTipText(newColumn.getTitle());
+		col.setText(newColumn.title());
+		col.setToolTipText(newColumn.title());
 		col.setWidth(80);
 		Column[] newColumns = new Column[columns.length + 1];
 		System.arraycopy(columns, 0, newColumns, 0, columns.length);
@@ -167,7 +168,7 @@ class CausalFactorTable {
 
 		for (int i = 0; i < columns.length; i++) {
 			int index = withComments ? 2 * i : i;
-			modifier.bind(keys[index + 4], new ValueModifier(columns[i].product));
+			modifier.bind(keys[index + 4], columns[i]);
 
 			if (withComments) {
 				var product = columns[i].product;
@@ -187,7 +188,7 @@ class CausalFactorTable {
 		titles[3] = M.Amount;
 		for (int i = 0; i < columns.length; i++) {
 			int index = showComments ? 2 * i : i;
-			titles[index + 4] = columns[i].getTitle();
+			titles[index + 4] = columns[i].title();
 			if (showComments) {
 				titles[index + 5] = "";
 			}
@@ -195,18 +196,14 @@ class CausalFactorTable {
 		return titles;
 	}
 
-	private Exchange productOf(int col) {
-		int idx = (col - 4);
-		if (editor.hasAnyComment("allocationFactors")) {
+	private Column columnOf(int tableIdx) {
+		int idx = tableIdx - 4;
+		if (withComments) {
 			idx /= 2;
 		}
-		if (idx < 0 || idx > (columns.length - 1))
-			return null;
-		return columns[idx].product;
-	}
-
-	private boolean isCommentColumn(int col) {
-		return withComments && col > 4 && col % 2 == 1;
+		return idx >= 0 && idx < columns.length
+			? columns[idx]
+			: null;
 	}
 
 	private class FactorLabel extends LabelProvider implements
@@ -222,12 +219,14 @@ class CausalFactorTable {
 				return Images.get(exchange.flow);
 
 			if (isCommentColumn(col)) {
-				var product = productOf(col);
-				var factor = Util.factorOf(process(), productOf(col), exchange);
-				if (product == null || factor == null)
+				var column = columnOf(col);
+				if (column == null)
+					return null;
+				var factor = column.factorOf(exchange);
+				if (factor == null)
 					return null;
 				return Images.get(editor.getComments(),
-					CommentPaths.get(factor, product, exchange));
+					CommentPaths.get(factor, column.product, exchange));
 			}
 			return null;
 		}
@@ -244,55 +243,58 @@ class CausalFactorTable {
 				case 2 -> CategoryPath.getShort(exchange.flow.category);
 				case 3 -> Numbers.format(exchange.amount) + " "
 					+ exchange.unit.name;
-				default -> isCommentColumn(col)
-					? null
-					: getFactorLabel(exchange, col);
+				default -> {
+					// factor value or formula
+					if (isCommentColumn(col))
+						yield null;
+					var column = columnOf(col);
+					if (column == null)
+						yield null;
+					var f = column.factorOf(exchange);
+					if (f == null)
+						yield "1";
+					yield Strings.nullOrEmpty(f.formula)
+						? Double.toString(f.value)
+						: f.formula + " = " + f.value;
+				}
 			};
 		}
 
-		private String getFactorLabel(Exchange exchange, int col) {
-			var f = Util.factorOf(process(), productOf(col), exchange);
-			if (f == null)
-				return "1";
-			return Strings.nullOrEmpty(f.formula)
-				? Double.toString(f.value)
-				: f.formula + " = " + f.value;
+		private boolean isCommentColumn(int col) {
+			return withComments && col > 4 && col % 2 == 1;
 		}
 	}
 
-	private static class Column implements Comparable<Column> {
+	private class Column extends TextCellModifier<Exchange> {
 
 		private final Exchange product;
 		private final String key;
 
 		public Column(Exchange product) {
-			this.product = product;
+			this.product = Objects.requireNonNull(product);
 			key = UUID.randomUUID().toString();
 		}
 
-		public String getTitle() {
-			if (product == null || product.flow == null)
-				return "";
+		public String title() {
 			return Labels.name(product.flow);
 		}
 
-		@Override
-		public int compareTo(Column o) {
-			return Strings.compare(this.getTitle(), o.getTitle());
-		}
-	}
-
-	private class ValueModifier extends TextCellModifier<Exchange> {
-
-		private final Exchange product;
-
-		public ValueModifier(Exchange product) {
-			this.product = product;
+		AllocationFactor factorOf(Exchange exchange) {
+			if (exchange == null)
+				return null;
+			for (var factor : process().allocationFactors) {
+				if (factor.method != AllocationMethod.CAUSAL
+					|| product.flow.id != factor.productId)
+					continue;
+				if (Objects.equals(factor.exchange, exchange))
+					return factor;
+			}
+			return null;
 		}
 
 		@Override
 		protected String getText(Exchange exchange) {
-			var factor = Util.factorOf(process(), product, exchange);
+			var factor = factorOf(exchange);
 			if (factor == null)
 				return "1";
 			return Strings.nullOrEmpty(factor.formula)
@@ -302,7 +304,7 @@ class CausalFactorTable {
 
 		@Override
 		protected void setText(Exchange exchange, String text) {
-			var factor = Util.factorOf(process(), product, exchange);
+			var factor =factorOf(exchange);
 			boolean isNew = factor == null;
 			if (isNew) {
 				factor = new AllocationFactor();
