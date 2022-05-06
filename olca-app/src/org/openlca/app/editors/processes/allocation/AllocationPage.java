@@ -149,10 +149,10 @@ public class AllocationPage extends ModelPage<Process> {
 		var btn = tk.createButton(comp, M.CalculateDefaultValues, SWT.NONE);
 		btn.setImage(Icon.RUN.get());
 		Controls.onSelect(btn, e -> {
-			var setup = CalculationDialog.of(process());
-			if (setup.isEmpty())
+			var calc = CalculationDialog.of(process());
+			if (calc.isEmpty())
 				return;
-			setup.apply();
+			calc.run();
 			// AllocationSync.calculateDefaults(process());
 			table.refresh();
 			causalTable.refresh();

@@ -31,8 +31,8 @@ class CalculationDialog extends FormDialog {
 	private PropCombo economic;
 	private PropCombo causal;
 
-	static Factors.Calculation of(Process p) {
-		var calc = Factors.calculation(p);
+	static FactorCalculation of(Process p) {
+		var calc = FactorCalculation.of(p);
 		if (p == null)
 			return calc;
 		var props = Factors.allocationPropertiesOf(p);
@@ -82,7 +82,7 @@ class CalculationDialog extends FormDialog {
 	}
 
 	private record PropCombo(
-		Combo combo, AtomicReference<FlowProperty> selection) {
+		Combo combo, AtomicReference<FactorCalculation.Ref> selection) {
 
 		static PropCombo create(Composite comp, FormToolkit tk, String title) {
 			var combo = UI.formCombo(comp, tk, title);
@@ -109,19 +109,19 @@ class CalculationDialog extends FormDialog {
 				.toArray(String[]::new);
 			combo.setItems(items);
 			combo.select(0);
-			selection.set(props.get(0));
+			selection.set(FactorCalculation.Ref.of(props.get(0)));
 
 			// handle selection changes
 			Controls.onSelect(combo, $ -> {
 				var idx = combo.getSelectionIndex();
 				var prop = props.get(idx);
-				selection.set(prop);
+				selection.set(FactorCalculation.Ref.of(prop));
 			});
 
 			return this;
 		}
 
-		FlowProperty selected() {
+		FactorCalculation.Ref selected() {
 			return selection.get();
 		}
 	}

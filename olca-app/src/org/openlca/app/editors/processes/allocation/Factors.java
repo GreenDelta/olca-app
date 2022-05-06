@@ -81,49 +81,4 @@ final class Factors {
 			.collect(Collectors.toList());
 	}
 
-	static Calculation calculation(Process process) {
-		return new Calculation(process, new EnumMap<>(AllocationMethod.class));
-	}
-
-
-	record Calculation(
-		Process process, EnumMap<AllocationMethod, FlowProperty> map) {
-
-		boolean isEmpty() {
-			return process == null || map == null || map.isEmpty();
-		}
-
-		void apply() {
-			if (isEmpty())
-				return;
-
-			var techFlows = getProviderFlows(process);
-
-			for (var e : map.entrySet()) {
-				var method = e.getKey();
-				var prop = e.getValue();
-				if (method == null || prop == null)
-					continue;
-				process.allocationFactors
-					.removeIf(f -> f.method == method);
-				if (techFlows.size() < 2)
-					continue;
-
-
-			}
-		}
-
-		private void calc() {
-
-		}
-
-		void bind(AllocationMethod method, FlowProperty prop) {
-			if (method == null || prop == null)
-				return;
-			map.put(method, prop);
-		}
-	}
-
-	private record Factor (Exchange techFlow, double value) {};
-
 }
