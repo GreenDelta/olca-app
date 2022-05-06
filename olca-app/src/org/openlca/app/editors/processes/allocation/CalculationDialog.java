@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -13,6 +14,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.Process;
@@ -28,18 +30,25 @@ class CalculationDialog extends FormDialog {
 	private PropCombo economic;
 	private PropCombo causal;
 
-	static void show(Process p) {
+	static FactorCalculation.Setup of(Process p) {
+		var setup = FactorCalculation.setup(p);
 		if (p == null)
-			return;
-		var props = FactorCalculator.allocationPropertiesOf(p);
+			return setup;
+		var props = FactorCalculation.allocationPropertiesOf(p);
 		if (props.isEmpty()) {
 			MsgBox.error("No common allocation properties",
 				"There is no common flow property of the product" +
 					" outputs and waste inputs that could be used" +
 					" to calculate allocation factors.");
-			return;
+			return setup;
 		}
-		new CalculationDialog(props).open();
+		var dialog = new CalculationDialog(props);
+		if (dialog.open() != Window.OK)
+			return setup;
+		setup.bind(AllocationMethod.PHYSICAL, dialog.physical.selected());
+		setup.bind(AllocationMethod.ECONOMIC, dialog.economic.selected());
+		setup.bind(AllocationMethod.CAUSAL, dialog.causal.selected());
+		return setup;
 	}
 
 	private CalculationDialog(Set<FlowProperty> props) {

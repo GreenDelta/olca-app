@@ -149,11 +149,14 @@ public class AllocationPage extends ModelPage<Process> {
 		var btn = tk.createButton(comp, M.CalculateDefaultValues, SWT.NONE);
 		btn.setImage(Icon.RUN.get());
 		Controls.onSelect(btn, e -> {
-			CalculationDialog.show(process());
+			var setup = CalculationDialog.of(process());
+			if (setup.isEmpty())
+				return;
+			setup.apply();
 			// AllocationSync.calculateDefaults(process());
-			// table.refresh();
-			// causalTable.refresh();
-			// editor.setDirty(true);
+			table.refresh();
+			causalTable.refresh();
+			editor.setDirty(true);
 		});
 		btn.setEnabled(isEditable());
 	}
