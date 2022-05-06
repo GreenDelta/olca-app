@@ -113,9 +113,9 @@ public class AllocationPage extends ModelPage<Process> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
+	protected void createFormContent(IManagedForm mForm) {
 		var form = UI.formHeader(this);
-		tk = mform.getToolkit();
+		tk = mForm.getToolkit();
 		var body = UI.formBody(form, tk);
 		var comp = UI.formComposite(body, tk);
 		createDefaultCombo(comp);
@@ -149,10 +149,11 @@ public class AllocationPage extends ModelPage<Process> {
 		var btn = tk.createButton(comp, M.CalculateDefaultValues, SWT.NONE);
 		btn.setImage(Icon.RUN.get());
 		Controls.onSelect(btn, e -> {
-			AllocationSync.calculateDefaults(process());
-			table.refresh();
-			causalTable.refresh();
-			editor.setDirty(true);
+			CalculationDialog.show(process());
+			// AllocationSync.calculateDefaults(process());
+			// table.refresh();
+			// causalTable.refresh();
+			// editor.setDirty(true);
 		});
 		btn.setEnabled(isEditable());
 	}

@@ -406,7 +406,7 @@ public class UI {
 
 	public static Combo formCombo(Composite comp, FormToolkit tk, String label) {
 		formLabel(comp, tk, label);
-		Combo combo = new Combo(comp, SWT.READ_ONLY);
+		var combo = new Combo(comp, SWT.READ_ONLY);
 		gridData(combo, true, false);
 		return combo;
 	}
