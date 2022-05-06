@@ -3,18 +3,18 @@ package org.openlca.app.editors.graphical.action;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.command.ChangeStateCommand;
+import org.openlca.app.editors.graphical.command.MinMaxCommand;
 import org.openlca.app.editors.graphical.command.Commands;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.rcp.images.Icon;
 
-class ChangeAllStateAction extends EditorAction {
+class MinMaxAllAction extends EditorAction {
 
 	static final int MINIMIZE = 1;
 	static final int MAXIMIZE = 2;
 	private final int type;
 
-	ChangeAllStateAction(int type) {
+	MinMaxAllAction(int type) {
 		if (type == MINIMIZE) {
 			setId(ActionIds.MINIMIZE_ALL);
 			setText(M.MinimizeAll);
@@ -34,7 +34,7 @@ class ChangeAllStateAction extends EditorAction {
 			boolean minimize = type == MINIMIZE;
 			if (node.isMinimized() == minimize)
 				continue;
-			ChangeStateCommand newCommand = new ChangeStateCommand(node);
+			MinMaxCommand newCommand = new MinMaxCommand(node);
 			actualCommand = Commands.chain(newCommand, actualCommand);
 		}
 		if (actualCommand == null)
