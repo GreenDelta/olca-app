@@ -73,7 +73,7 @@ class CausalFactorTable {
 	void refresh() {
 		if (viewer == null)
 			return;
-		var products = Util.getProviderFlows(process());
+		var products = Factors.getProviderFlows(process());
 
 		// first test if we need to rebuild the columns
 		var needRebuild = products.size() != columns.size();
@@ -132,7 +132,7 @@ class CausalFactorTable {
 		}
 
 		// set the table
-		viewer.setInput(Util.getNonProviderFlows(process()));
+		viewer.setInput(Factors.getNonProviderFlows(process()));
 	}
 
 	private class FactorLabel extends LabelProvider implements

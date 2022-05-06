@@ -1,9 +1,9 @@
 package org.openlca.app.editors.processes.allocation;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Combo;
@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.AllocationMethod;
@@ -30,25 +31,25 @@ class CalculationDialog extends FormDialog {
 	private PropCombo economic;
 	private PropCombo causal;
 
-	static FactorCalculation.Setup of(Process p) {
-		var setup = FactorCalculation.setup(p);
+	static Factors.Calculation of(Process p) {
+		var calc = Factors.calculation(p);
 		if (p == null)
-			return setup;
-		var props = FactorCalculation.allocationPropertiesOf(p);
+			return calc;
+		var props = Factors.allocationPropertiesOf(p);
 		if (props.isEmpty()) {
 			MsgBox.error("No common allocation properties",
 				"There is no common flow property of the product" +
 					" outputs and waste inputs that could be used" +
 					" to calculate allocation factors.");
-			return setup;
+			return calc;
 		}
 		var dialog = new CalculationDialog(props);
 		if (dialog.open() != Window.OK)
-			return setup;
-		setup.bind(AllocationMethod.PHYSICAL, dialog.physical.selected());
-		setup.bind(AllocationMethod.ECONOMIC, dialog.economic.selected());
-		setup.bind(AllocationMethod.CAUSAL, dialog.causal.selected());
-		return setup;
+			return calc;
+		calc.bind(AllocationMethod.PHYSICAL, dialog.physical.selected());
+		calc.bind(AllocationMethod.ECONOMIC, dialog.economic.selected());
+		calc.bind(AllocationMethod.CAUSAL, dialog.causal.selected());
+		return calc;
 	}
 
 	private CalculationDialog(Set<FlowProperty> props) {
@@ -80,16 +81,19 @@ class CalculationDialog extends FormDialog {
 			.fill(props, FlowPropertyType.PHYSICAL);
 	}
 
-	private record PropCombo(Combo combo, List<FlowProperty> props) {
+	private record PropCombo(
+		Combo combo, AtomicReference<FlowProperty> selection) {
 
 		static PropCombo create(Composite comp, FormToolkit tk, String title) {
 			var combo = UI.formCombo(comp, tk, title);
 			UI.fillHorizontal(combo);
-			return new PropCombo(combo, new ArrayList<>());
+			return new PropCombo(combo, new AtomicReference<>());
 		}
 
-		PropCombo fill(Set<FlowProperty> common, FlowPropertyType prefType) {
-			props.addAll(common);
+		PropCombo fill(Set<FlowProperty> set, FlowPropertyType prefType) {
+
+			// sort properties into a list
+			var props = new ArrayList<>(set);
 			props.sort((p1, p2) -> {
 				var t1 = Objects.equals(p1.flowPropertyType, prefType);
 				var t2 = Objects.equals(p2.flowPropertyType, prefType);
@@ -97,18 +101,28 @@ class CalculationDialog extends FormDialog {
 					? t1 ? -1 : 1
 					: Strings.compare(p1.name, p2.name);
 			});
+
+			// fill the combo box
 			var items = props
 				.stream()
 				.map(p -> p.name)
 				.toArray(String[]::new);
 			combo.setItems(items);
 			combo.select(0);
+			selection.set(props.get(0));
+
+			// handle selection changes
+			Controls.onSelect(combo, $ -> {
+				var idx = combo.getSelectionIndex();
+				var prop = props.get(idx);
+				selection.set(prop);
+			});
+
 			return this;
 		}
 
 		FlowProperty selected() {
-			return props.get(combo.getSelectionIndex());
+			return selection.get();
 		}
 	}
-
 }

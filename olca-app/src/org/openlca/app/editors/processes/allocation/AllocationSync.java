@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.openlca.core.math.ReferenceAmount;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
@@ -45,7 +46,7 @@ class AllocationSync {
 
 	private void doCalc() {
 		AllocationCleanup.on(process);
-		List<Exchange> pFlows = Util.getProviderFlows(process);
+		List<Exchange> pFlows = Factors.getProviderFlows(process);
 		if (pFlows.size() < 2)
 			return;
 		List<F> physFactors = calcFactors(AllocationMethod.PHYSICAL, pFlows);
@@ -70,7 +71,7 @@ class AllocationSync {
 
 	private void setNewCausalValues(List<F> factors) {
 		for (F f : factors) {
-			for (Exchange e : Util.getNonProviderFlows(process)) {
+			for (Exchange e : Factors.getNonProviderFlows(process)) {
 				AllocationFactor factor = getCausalFactor(f.product, e);
 				if (factor == null)
 					continue;

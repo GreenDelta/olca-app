@@ -106,7 +106,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 	private void setTableInputs() {
 		if (table != null)
-			table.setInput(Util.getProviderFlows(process()));
+			table.setInput(Factors.getProviderFlows(process()));
 		if (causalTable != null) {
 			causalTable.refresh();
 		}
@@ -178,7 +178,7 @@ public class AllocationPage extends ModelPage<Process> {
 		}
 		table.setColumnProperties(columns);
 		table.setLabelProvider(new FactorLabel());
-		table.setInput(Util.getProviderFlows(process()));
+		table.setInput(Factors.getProviderFlows(process()));
 		table.getTable().getColumns()[1].setAlignment(SWT.CENTER);
 		table.getTable().getColumns()[2].setAlignment(SWT.CENTER);
 
@@ -338,7 +338,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 		@Override
 		public boolean canModify(Exchange element) {
-			return Util.getProviderFlows(process()).size() > 1;
+			return Factors.getProviderFlows(process()).size() > 1;
 		}
 	}
 }
