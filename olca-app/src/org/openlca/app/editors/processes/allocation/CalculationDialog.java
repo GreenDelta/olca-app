@@ -6,10 +6,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
@@ -32,9 +33,9 @@ import org.openlca.util.Strings;
 class CalculationDialog extends FormDialog {
 
 	private final Set<FlowProperty> props;
-	private PropCombo physical;
-	private PropCombo economic;
-	private PropCombo causal;
+	private Selector physical;
+	private Selector economic;
+	private Selector causal;
 
 	static List<AllocationRef> of(Process p) {
 		if (p == null)
@@ -79,34 +80,23 @@ class CalculationDialog extends FormDialog {
 		var comp = UI.formComposite(body, tk);
 		UI.fillHorizontal(comp);
 
-		physical = PropCombo.create(comp, tk, AllocationMethod.PHYSICAL)
-			.fill(props, FlowPropertyType.PHYSICAL);
-		economic = PropCombo.create(comp, tk, AllocationMethod.ECONOMIC)
-			.fill(props, FlowPropertyType.ECONOMIC);
-		causal = PropCombo.create(comp, tk, AllocationMethod.CAUSAL)
-			.fill(props, FlowPropertyType.PHYSICAL);
+		Function<AllocationMethod, Selector> selector =
+			method -> Selector.of(method, props).render(comp, tk);
+		physical = selector.apply(AllocationMethod.PHYSICAL);
+		economic = selector.apply(AllocationMethod.ECONOMIC);
+		causal = selector.apply(AllocationMethod.CAUSAL);
 	}
 
-	private record PropCombo(
-		Combo combo,
+	private record Selector(
 		AllocationMethod method,
-		AtomicReference<AllocationRef> selection) {
+		List<FlowProperty> props,
+		AtomicReference<AllocationRef> selection
+	) {
 
-		static PropCombo create(
-			Composite comp, FormToolkit tk, AllocationMethod method) {
-			var title = switch (method) {
-				case PHYSICAL -> "Physical allocation:";
-				case ECONOMIC -> "Economic allocation:";
-				default -> "Causal allocation:";
-			};
-			var combo = UI.formCombo(comp, tk, title);
-			UI.fillHorizontal(combo);
-			return new PropCombo(combo, method, new AtomicReference<>());
-		}
-
-		PropCombo fill(Set<FlowProperty> set, FlowPropertyType prefType) {
-
-			// sort properties into a list
+		static Selector of(AllocationMethod method, Set<FlowProperty> set) {
+			var prefType = method == AllocationMethod.ECONOMIC
+				? FlowPropertyType.ECONOMIC
+				: FlowPropertyType.PHYSICAL;
 			var props = new ArrayList<>(set);
 			props.sort((p1, p2) -> {
 				var t1 = Objects.equals(p1.flowPropertyType, prefType);
@@ -115,25 +105,51 @@ class CalculationDialog extends FormDialog {
 					? t1 ? -1 : 1
 					: Strings.compare(p1.name, p2.name);
 			});
+			var initial = AllocationRef.of(method, props.get(0));
+			return new Selector(method, props, new AtomicReference<>(initial));
+		}
 
-			// fill the combo box
+		Selector render(Composite comp, FormToolkit tk) {
+			var title = switch (method) {
+				case PHYSICAL -> "Physical allocation:";
+				case ECONOMIC -> "Economic allocation:";
+				default -> "Causal allocation:";
+			};
+
+			var combo = UI.formCombo(comp, tk, title);
+			UI.fillHorizontal(combo);
 			var items = props
 				.stream()
 				.map(p -> p.name)
 				.toArray(String[]::new);
 			combo.setItems(items);
 			combo.select(0);
-			selection.set(AllocationRef.of(method, props.get(0)));
-
-			// handle selection changes
 			Controls.onSelect(combo, $ -> {
 				var idx = combo.getSelectionIndex();
 				var prop = props.get(idx);
 				selection.set(AllocationRef.of(method, prop));
 			});
 
+			if (method == AllocationMethod.ECONOMIC) {
+				UI.filler(comp);
+				var check = tk.createButton(
+					comp, "Calculate from costs/revenues", SWT.CHECK);
+				Controls.onSelect(check, $ -> {
+					if (check.getSelection()) {
+						combo.setEnabled(false);
+						selection.set(AllocationRef.ofCosts(method));
+					} else {
+						combo.setEnabled(true);
+						var idx = combo.getSelectionIndex();
+						var prop = props.get(idx);
+						selection.set(AllocationRef.of(method, prop));
+					}
+				});
+			}
+
 			return this;
 		}
+
 
 		AllocationRef selected() {
 			return selection.get();
