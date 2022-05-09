@@ -1,9 +1,12 @@
 package org.openlca.app.editors.processes.allocation;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Combo;
@@ -19,6 +22,8 @@ import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.Process;
+import org.openlca.util.AllocationRef;
+import org.openlca.util.AllocationUtils;
 import org.openlca.util.Strings;
 
 /**
@@ -31,25 +36,26 @@ class CalculationDialog extends FormDialog {
 	private PropCombo economic;
 	private PropCombo causal;
 
-	static FactorCalculation of(Process p) {
-		var calc = FactorCalculation.of(p);
+	static List<AllocationRef> of(Process p) {
 		if (p == null)
-			return calc;
-		var props = Factors.allocationPropertiesOf(p);
+			return Collections.emptyList();
+		var props = AllocationUtils.allocationPropertiesOf(p);
 		if (props.isEmpty()) {
 			MsgBox.error("No common allocation properties",
 				"There is no common flow property of the product" +
 					" outputs and waste inputs that could be used" +
 					" to calculate allocation factors.");
-			return calc;
+			return Collections.emptyList();
 		}
 		var dialog = new CalculationDialog(props);
-		if (dialog.open() != Window.OK)
-			return calc;
-		calc.bind(AllocationMethod.PHYSICAL, dialog.physical.selected());
-		calc.bind(AllocationMethod.ECONOMIC, dialog.economic.selected());
-		calc.bind(AllocationMethod.CAUSAL, dialog.causal.selected());
-		return calc;
+		return dialog.open() != Window.OK
+			? Collections.emptyList()
+			: Stream.of(
+				dialog.physical.selected(),
+				dialog.economic.selected(),
+				dialog.causal.selected())
+			.filter(Objects::nonNull)
+			.toList();
 	}
 
 	private CalculationDialog(Set<FlowProperty> props) {
@@ -73,21 +79,29 @@ class CalculationDialog extends FormDialog {
 		var comp = UI.formComposite(body, tk);
 		UI.fillHorizontal(comp);
 
-		physical = PropCombo.create(comp, tk, "Physical allocation:")
+		physical = PropCombo.create(comp, tk, AllocationMethod.PHYSICAL)
 			.fill(props, FlowPropertyType.PHYSICAL);
-		economic = PropCombo.create(comp, tk, "Economic allocation:")
+		economic = PropCombo.create(comp, tk, AllocationMethod.ECONOMIC)
 			.fill(props, FlowPropertyType.ECONOMIC);
-		causal = PropCombo.create(comp, tk, "Causal allocation:")
+		causal = PropCombo.create(comp, tk, AllocationMethod.CAUSAL)
 			.fill(props, FlowPropertyType.PHYSICAL);
 	}
 
 	private record PropCombo(
-		Combo combo, AtomicReference<FactorCalculation.Ref> selection) {
+		Combo combo,
+		AllocationMethod method,
+		AtomicReference<AllocationRef> selection) {
 
-		static PropCombo create(Composite comp, FormToolkit tk, String title) {
+		static PropCombo create(
+			Composite comp, FormToolkit tk, AllocationMethod method) {
+			var title = switch (method) {
+				case PHYSICAL -> "Physical allocation:";
+				case ECONOMIC -> "Economic allocation:";
+				default -> "Causal allocation:";
+			};
 			var combo = UI.formCombo(comp, tk, title);
 			UI.fillHorizontal(combo);
-			return new PropCombo(combo, new AtomicReference<>());
+			return new PropCombo(combo, method, new AtomicReference<>());
 		}
 
 		PropCombo fill(Set<FlowProperty> set, FlowPropertyType prefType) {
@@ -109,19 +123,19 @@ class CalculationDialog extends FormDialog {
 				.toArray(String[]::new);
 			combo.setItems(items);
 			combo.select(0);
-			selection.set(FactorCalculation.Ref.of(props.get(0)));
+			selection.set(AllocationRef.of(method, props.get(0)));
 
 			// handle selection changes
 			Controls.onSelect(combo, $ -> {
 				var idx = combo.getSelectionIndex();
 				var prop = props.get(idx);
-				selection.set(FactorCalculation.Ref.of(prop));
+				selection.set(AllocationRef.of(method, prop));
 			});
 
 			return this;
 		}
 
-		FactorCalculation.Ref selected() {
+		AllocationRef selected() {
 			return selection.get();
 		}
 	}

@@ -20,7 +20,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
-import org.openlca.util.AllocationCleanup;
+import org.openlca.util.AllocationUtils;
 import org.slf4j.LoggerFactory;
 
 public class ProcessEditor extends ModelEditor<Process> {
@@ -87,7 +87,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		AllocationCleanup.on(getModel());
+		AllocationUtils.cleanup(getModel());
 		super.doSave(monitor);
 	}
 

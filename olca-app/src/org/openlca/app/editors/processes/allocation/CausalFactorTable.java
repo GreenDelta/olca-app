@@ -32,6 +32,7 @@ import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
 import org.openlca.io.CategoryPath;
+import org.openlca.util.AllocationUtils;
 import org.openlca.util.Strings;
 
 /**
@@ -73,7 +74,7 @@ class CausalFactorTable {
 	void refresh() {
 		if (viewer == null)
 			return;
-		var products = Factors.getProviderFlows(process());
+		var products = AllocationUtils.getProviderFlows(process());
 
 		// first test if we need to rebuild the columns
 		var needRebuild = products.size() != columns.size();
@@ -132,7 +133,7 @@ class CausalFactorTable {
 		}
 
 		// set the table
-		viewer.setInput(Factors.getNonProviderFlows(process()));
+		viewer.setInput(AllocationUtils.getNonProviderFlows(process()));
 	}
 
 	private class FactorLabel extends LabelProvider implements

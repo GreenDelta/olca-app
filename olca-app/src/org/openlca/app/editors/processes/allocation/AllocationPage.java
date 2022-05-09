@@ -36,6 +36,7 @@ import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
+import org.openlca.util.AllocationUtils;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,7 @@ public class AllocationPage extends ModelPage<Process> {
 		this.editor = editor;
 		editor.onEvent(ProcessEditor.EXCHANGES_CHANGED, () -> {
 			log.trace("update allocation page");
-			AllocationSync.updateFactors(process());
+			AllocationUtils.cleanup(process());
 			setTableInputs();
 		});
 		editor.onSaved(this::setTableInputs);
@@ -106,7 +107,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 	private void setTableInputs() {
 		if (table != null)
-			table.setInput(Factors.getProviderFlows(process()));
+			table.setInput(AllocationUtils.getProviderFlows(process()));
 		if (causalTable != null) {
 			causalTable.refresh();
 		}
@@ -149,11 +150,15 @@ public class AllocationPage extends ModelPage<Process> {
 		var btn = tk.createButton(comp, M.CalculateDefaultValues, SWT.NONE);
 		btn.setImage(Icon.RUN.get());
 		Controls.onSelect(btn, e -> {
-			var calc = CalculationDialog.of(process());
-			if (calc.isEmpty())
+			var refs = CalculationDialog.of(process());
+			if (refs.isEmpty())
 				return;
-			calc.run();
-			// AllocationSync.calculateDefaults(process());
+			var process = process();
+			process.allocationFactors.clear();
+			for (var ref : refs) {
+				var factors = ref.apply(process);
+				process.allocationFactors.addAll(factors);
+			}
 			table.refresh();
 			causalTable.refresh();
 			editor.setDirty(true);
@@ -178,7 +183,7 @@ public class AllocationPage extends ModelPage<Process> {
 		}
 		table.setColumnProperties(columns);
 		table.setLabelProvider(new FactorLabel());
-		table.setInput(Factors.getProviderFlows(process()));
+		table.setInput(AllocationUtils.getProviderFlows(process()));
 		table.getTable().getColumns()[1].setAlignment(SWT.CENTER);
 		table.getTable().getColumns()[2].setAlignment(SWT.CENTER);
 
@@ -338,7 +343,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 		@Override
 		public boolean canModify(Exchange element) {
-			return Factors.getProviderFlows(process()).size() > 1;
+			return AllocationUtils.getProviderFlows(process()).size() > 1;
 		}
 	}
 }
