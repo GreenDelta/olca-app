@@ -5,10 +5,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.eclipse.jface.viewers.ITableColorProvider;
+import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -23,6 +27,7 @@ import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
@@ -294,7 +299,44 @@ public class AllocationPage extends ModelPage<Process> {
 	}
 
 	private class FactorLabel extends LabelProvider implements
-		ITableLabelProvider {
+		ITableLabelProvider, ITableFontProvider, ITableColorProvider {
+
+		@Override
+		public Font getFont(Object obj, int col) {
+			if (!(obj instanceof Row row))
+				return null;
+			return row.isSum()
+				? UI.boldFont()
+				: null;
+		}
+
+		@Override
+		public Color getBackground(Object obj, int col) {
+			return null;
+		}
+
+		@Override
+		public Color getForeground(Object obj, int col) {
+			if (!(obj instanceof Row row))
+				return null;
+			if (!row.isSum())
+				return null;
+
+			AllocationMethod method = col == 1
+				? AllocationMethod.PHYSICAL
+				: null;
+			if ((withComments && col == 3)
+				|| (!withComments && col == 2)) {
+				method = AllocationMethod.ECONOMIC;
+			}
+			if (method == null)
+				return null;
+
+			var total = row.sumOf(method);
+			return Math.abs(total - 1) > 1e-4
+				? Colors.red()
+				: null;
+		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
