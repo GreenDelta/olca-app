@@ -18,10 +18,10 @@ public class ModelTypeFilter extends ViewerFilter {
 
 	@Override
 	public boolean select(Viewer viewer, Object parent, Object element) {
-		if (!(element instanceof ModelTypeElement))
-			return true;
 		if (types == null)
 			return false;
+		if (!(element instanceof ModelTypeElement))
+			return true;
 		ModelTypeElement e = (ModelTypeElement) element;
 		for (ModelType type : types) {
 			if (e.getContent() == type)

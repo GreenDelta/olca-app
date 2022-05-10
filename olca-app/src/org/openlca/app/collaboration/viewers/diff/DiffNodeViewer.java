@@ -2,8 +2,6 @@ package org.openlca.app.collaboration.viewers.diff;
 
 import java.time.Instant;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -38,19 +36,11 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	private final boolean editMode;
 	private Direction direction;
 	private Runnable onMerge;
-	private Map<ModelType, Map<String, String>> nameCache = new HashMap<>();
 	private TypeRefIdMap<ConflictResolution> resolvedConflicts = new TypeRefIdMap<>();
 
 	DiffNodeViewer(Composite parent, boolean editMode) {
 		super(parent);
 		this.editMode = editMode;
-		getViewer().setLabelProvider(new DiffNodeLabelProvider());
-	}
-
-	protected void configureViewer(TreeViewer viewer, boolean checkable) {
-		viewer.setContentProvider(new DiffNodeContentProvider());
-		viewer.setComparator(new DiffNodeComparator());
-		viewer.addDoubleClickListener(this::onDoubleClick);
 	}
 
 	@Override
@@ -82,7 +72,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		return resolvedConflicts;
 	}
 
-	private void onDoubleClick(DoubleClickEvent event) {
+	protected void onDoubleClick(DoubleClickEvent event) {
 		var selected = getSelected(event);
 		if (selected == null)
 			return;
@@ -138,7 +128,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		return selected;
 	}
 
-	private class DiffNodeContentProvider implements ITreeContentProvider {
+	protected class DiffNodeContentProvider implements ITreeContentProvider {
 
 		@Override
 		public Object[] getElements(Object inputElement) {
@@ -178,7 +168,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	}
 
-	private class DiffNodeLabelProvider extends org.eclipse.jface.viewers.LabelProvider {
+	protected class DiffNodeLabelProvider extends org.eclipse.jface.viewers.LabelProvider {
 
 		@Override
 		public String getText(Object element) {
@@ -192,21 +182,12 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			if (node.isCategoryNode())
 				return node.contentAsString().substring(node.contentAsString().lastIndexOf("/") + 1);
 			var result = (DiffResult) node.content;
-			var names = nameCache.computeIfAbsent(result.type, this::getLabels);
-			var name = names.get(result.refId);
-			if (name != null)
-				return name;
+			var descriptor = Daos.root(Database.get(), result.type).getDescriptorForRefId(result.refId);
+			if (descriptor != null)
+				return descriptor.name;
 			if (result.rightObjectId != null)
 				return Repository.get().datasets.getName(result.rightObjectId);
 			return Repository.get().datasets.getName(result.leftObjectId);
-		}
-
-		private Map<String, String> getLabels(ModelType type) {
-			var labels = new HashMap<String, String>();
-			for (var descriptor : Daos.root(Database.get(), type).getDescriptors()) {
-				labels.put(descriptor.refId, descriptor.name);
-			}
-			return labels;
 		}
 
 		@Override
@@ -268,7 +249,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	}
 
-	private class DiffNodeComparator extends ViewerComparator {
+	protected class DiffNodeComparator extends ViewerComparator {
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {

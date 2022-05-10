@@ -1,14 +1,12 @@
 package org.openlca.app.wizards.io;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -19,7 +17,6 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.NavigationComparator;
-import org.openlca.app.navigation.NavigationContentProvider;
 import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -30,17 +27,16 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.SelectionState;
+import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
+import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
 class ModelSelectionPage extends WizardPage {
 
 	private final ModelType[] types;
-	private SelectionState<INavigationElement<?>> selectionState;
-
+	private ModelContentProvider selectionProvider;
 	private File exportDestination;
-	private CheckboxTreeViewer viewer;
 	private boolean targetIsDir;
 	private String fileExtension;
 
@@ -74,7 +70,8 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	public List<RootDescriptor> getSelectedModels() {
-		return selectionState.selection.stream().map(element -> ((ModelElement) element).getContent()).toList();
+		return selectionProvider.getSelection().stream().map(element -> ((ModelElement) element).getContent())
+				.toList();
 	}
 
 	private void createTexts() {
@@ -87,7 +84,8 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	void checkCompletion() {
-		setPageComplete(exportDestination != null && selectionState.selection.size() > 0);
+		setPageComplete(exportDestination != null && selectionProvider != null
+				&& !selectionProvider.getSelection().isEmpty());
 	}
 
 	@Override
@@ -99,8 +97,7 @@ class ModelSelectionPage extends WizardPage {
 		bodyLayout.verticalSpacing = 10;
 		body.setLayout(bodyLayout);
 		createChooseTargetComposite(body);
-		Composite viewerComposite = createViewerComposite(body);
-		createViewer(viewerComposite);
+		createViewer(body);
 		setControl(body);
 		checkCompletion();
 	}
@@ -167,89 +164,69 @@ class ModelSelectionPage extends WizardPage {
 		return composite;
 	}
 
-	private void createViewer(Composite composite) {
-		viewer = new CheckboxTreeViewer(composite, SWT.VIRTUAL | SWT.MULTI
-				| SWT.BORDER);
-		viewer.setUseHashlookup(true);
-		viewer.getTree().setLayoutData(
-				new GridData(SWT.FILL, SWT.FILL, true, true));
-		viewer.setContentProvider(new NavigationContentProvider());
+	private void createViewer(Composite body) {
+		Composite viewerComposite = createViewerComposite(body);
+		selectionProvider = new ModelContentProvider();
+		selectionProvider.setSelection(getInitialSelection());
+		var viewer = CheckboxTreeViewers.create(viewerComposite, selectionProvider);
+		viewer.addFilter(new ModelTypeFilter(types));
 		viewer.setLabelProvider(new NavigationLabelProvider(false));
 		viewer.setComparator(new NavigationComparator());
-		viewer.addFilter(new ModelTypeFilter(types));
-		selectionState = new SelectionState<>(viewer) {
-
-			@Override
-			protected boolean isLeaf(INavigationElement<?> element) {
-				return element instanceof ModelElement;
-			}
-
-			@Override
-			protected List<INavigationElement<?>> getChildren(INavigationElement<?> element) {
-				return element.getChildren();
-			}
-
-			@Override
-			protected INavigationElement<?> getParent(INavigationElement<?> element) {
-				return element.getParent();
-			}
-
-			@Override
-			protected void checkCompletion() {
-				ModelSelectionPage.this.checkCompletion();
-			}
-		};
-		viewer.addCheckStateListener(selectionState);
-		registerInputHandler(composite);
-		ColumnViewerToolTipSupport.enableFor(viewer);
-	}
-
-	// We want to avoid a resizing of the import dialog when the user flips to
-	// this page. Thus, we set the input of the tree viewer after receiving the
-	// first paint event.
-	private void registerInputHandler(Composite composite) {
-		composite.addPaintListener(new PaintListener() {
-			private boolean init = false;
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				if (init) {
-					composite.removePaintListener(this);
-					return;
-				}
-				init = true;
-				setInitialInput();
-			}
+		CheckboxTreeViewers.registerInputHandler(viewerComposite, viewer, getInput(), () -> {
+			CheckboxTreeViewers.expandGrayed(viewer);
+			checkCompletion();
 		});
 	}
 
-	private void setInitialInput() {
-		var input = types != null && types.length == 1
+	private INavigationElement<?> getInput() {
+		return types != null && types.length == 1
 				? Navigator.findElement(types[0])
 				: Navigator.findElement(Database.getActiveConfiguration());
-		if (input == null)
-			return;
-		viewer.setInput(input);
+	}
 
+	private Set<INavigationElement<?>> getInitialSelection() {
 		// try to take the selection from the navigator
 		var navigator = Navigator.getInstance();
 		if (navigator == null)
-			return;
-		var filters = viewer.getFilters();
-		var selection = navigator.getAllSelected()
-				.stream()
-				.filter(elem -> {
-					for (var filter : filters) {
-						if (!filter.select(viewer, elem.getParent(), elem))
-							return false;
-					}
-					return true;
-				})
-				.toArray(INavigationElement<?>[]::new);
-		if (selection.length == 0)
-			return;
-
-		selectionState.setSelection(selection);
-		checkCompletion();
+			return new HashSet<>();
+		return new HashSet<>(Navigator.collect(navigator.getAllSelected(), elem -> {
+			if (elem instanceof ModelElement m && fitsType(m))
+				return elem;
+			return null;
+		}));
 	}
+
+	private boolean fitsType(ModelElement element) {
+		if (types == null || types.length == 0)
+			return true;
+		for (var type : types)
+			if (element.getContent().type == type)
+				return true;
+		return false;
+	}
+
+	private class ModelContentProvider extends TreeCheckStateContentProvider<INavigationElement<?>> {
+
+		@Override
+		protected List<INavigationElement<?>> childrenOf(INavigationElement<?> element) {
+			return element.getChildren();
+		}
+
+		@Override
+		protected INavigationElement<?> parentOf(INavigationElement<?> element) {
+			return element.getParent();
+		}
+
+		@Override
+		protected boolean isLeaf(INavigationElement<?> element) {
+			return element instanceof ModelElement;
+		}
+
+		@Override
+		protected void onCheckStateChanged() {
+			ModelSelectionPage.this.checkCompletion();
+		}
+
+	}
+
 }

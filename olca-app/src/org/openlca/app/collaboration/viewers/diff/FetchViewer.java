@@ -25,7 +25,10 @@ public class FetchViewer extends DiffNodeViewer {
 	@Override
 	protected TreeViewer createViewer(Composite parent) {
 		TreeViewer viewer = Trees.createViewer(parent);
-		configureViewer(viewer, false);
+		viewer.setLabelProvider(new DiffNodeLabelProvider());
+		viewer.setContentProvider(new DiffNodeContentProvider());
+		viewer.setComparator(new DiffNodeComparator());
+		viewer.addDoubleClickListener(this::onDoubleClick);
 		return viewer;
 	}
 

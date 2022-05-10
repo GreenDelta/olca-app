@@ -1,12 +1,9 @@
 package org.openlca.app.collaboration.dialogs;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -19,6 +16,7 @@ import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.git.model.Change;
 import org.openlca.git.util.TypeRefIdSet;
 
@@ -81,22 +79,10 @@ public class CommitDialog extends FormDialog {
 		UI.gridLayout(comp, 1);
 		section.setClient(comp);
 		viewer = new CommitViewer(comp, this::updateButton);
-		// We want to avoid a resizing of the import dialog when the user flips
-		// to this page. Thus, we set the input of the tree viewer after
-		// receiving the first paint event.
-		comp.addPaintListener(new PaintListener() {
-			private boolean init = false;
-
-			@Override
-			public void paintControl(PaintEvent e) {
-				if (init) {
-					comp.removePaintListener(this);
-					return;
-				}
-				init = true;
-				viewer.setInput(Collections.singleton(node));
-				viewer.setSelection(initialSelection);
-			}
+		viewer.setSelection(initialSelection, node);
+		CheckboxTreeViewers.registerInputHandler(comp, viewer.getViewer(), node, () -> {
+			CheckboxTreeViewers.expandGrayed(viewer.getViewer());
+			this.updateButton();
 		});
 	}
 

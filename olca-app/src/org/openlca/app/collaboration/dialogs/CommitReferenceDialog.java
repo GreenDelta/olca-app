@@ -1,6 +1,5 @@
 package org.openlca.app.collaboration.dialogs;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -16,6 +15,7 @@ import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffResult;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.util.TypeRefIdSet;
 
@@ -45,9 +45,6 @@ public class CommitReferenceDialog extends FormDialog {
 		UI.gridData(body, true, true);
 		createModelViewer(body, toolkit);
 		form.reflow(true);
-		viewer.setInput(Collections.singleton(node));
-		var initialSelection = getNewElements(node);
-		viewer.setSelection(initialSelection);
 	}
 
 	private TypeRefIdSet getNewElements(DiffNode node) {
@@ -65,6 +62,10 @@ public class CommitReferenceDialog extends FormDialog {
 	private void createModelViewer(Composite parent, FormToolkit toolkit) {
 		viewer = new CommitViewer(parent);
 		viewer.setLockNewElements(true);
+		viewer.setSelection(getNewElements(node), node);
+		CheckboxTreeViewers.registerInputHandler(parent, viewer.getViewer(), node, () -> {
+			CheckboxTreeViewers.expandGrayed(viewer.getViewer());
+		});
 	}
 
 	@Override
