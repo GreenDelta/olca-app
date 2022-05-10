@@ -2,6 +2,7 @@ package org.openlca.app.editors.processes.allocation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -35,11 +36,9 @@ import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
-import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.util.AllocationUtils;
 import org.openlca.util.Strings;
-import org.python.modules.itertools.product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +110,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 	private void setTableInputs() {
 		if (table != null) {
-			table.setInput(AllocationUtils.getProviderFlows(process()));
+			table.setInput(Row.all(this));
 		}
 		if (causalTable != null) {
 			causalTable.refresh();
@@ -182,7 +181,7 @@ public class AllocationPage extends ModelPage<Process> {
 		table = Tables.createViewer(comp, columns);
 		table.setColumnProperties(columns);
 		table.setLabelProvider(new FactorLabel());
-		table.setInput(AllocationUtils.getProviderFlows(process()));
+		table.setInput(Row.all(this));
 		table.getTable().getColumns()[1].setAlignment(SWT.CENTER);
 		table.getTable().getColumns()[2].setAlignment(SWT.CENTER);
 
@@ -191,7 +190,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 		// modifiers and actions
 		var copy = TableClipboard.onCopySelected(table);
-		var modifier = new ModifySupport<Exchange>(table)
+		var modifier = new ModifySupport<Row>(table)
 			.bind(M.Physical, new ValueModifier(AllocationMethod.PHYSICAL))
 			.bind(M.Economic, new ValueModifier(AllocationMethod.ECONOMIC));
 		if (withComments) {
@@ -207,11 +206,11 @@ public class AllocationPage extends ModelPage<Process> {
 
 	}
 
-	private CommentDialogModifier<Exchange> commentModifier(AllocationMethod method) {
-		Function<Exchange, String> path = (Exchange e) -> {
-			var factor = getFactor(e, method);
+	private CommentDialogModifier<Row> commentModifier(AllocationMethod method) {
+		Function<Row, String> path = row -> {
+			var factor = row.factorOf(method);
 			return factor != null
-				? CommentPaths.get(factor, e)
+				? CommentPaths.get(factor, row.product)
 				: null;
 		};
 		return new CommentDialogModifier<>(editor.getComments(), path);
@@ -229,37 +228,24 @@ public class AllocationPage extends ModelPage<Process> {
 		return editor.getModel();
 	}
 
-	private AllocationFactor getFactor(Exchange e, AllocationMethod m) {
-		if (e == null || e.flow == null || m == null)
-			return null;
-		for (var factor : process().allocationFactors) {
-			if (factor.method != m)
-				continue;
-			if (factor.productId != e.flow.id)
-				continue;
-			return factor;
-		}
-		return null;
-	}
+	private record Row(AllocationPage page, Exchange product) {
 
-	private record TableItem(AllocationPage page, Exchange product) {
-
-		static List<TableItem> all(AllocationPage page) {
+		static List<Row> all(AllocationPage page) {
 			var products = AllocationUtils.getProviderFlows(page.process());
-			var items = new ArrayList<TableItem>(products.size() + 1);
+			var rows = new ArrayList<Row>(products.size() + 1);
 			for (var p : products) {
-				var item = new TableItem(page, p);
-				items.add(item);
+				var item = new Row(page, p);
+				rows.add(item);
 			}
-			items.add(new TableItem(page, null));
-			items.sort((i1, i2) -> {
+			rows.add(new Row(page, null));
+			rows.sort((i1, i2) -> {
 				if (i1.isSum())
 					return 1;
 				if (i2.isSum())
 					return -1;
 				return Strings.compare(i1.label(), i2.label());
 			});
-			return items;
+			return rows;
 		}
 
 		boolean isSum() {
@@ -268,7 +254,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 		String label() {
 			if (isSum())
-				return "\u1D6BA"; // Sigma
+				return "\u03a3"; // Sigma
 			var name = Labels.name(product.flow);
 			return product.unit != null
 				? String.format("%s [%.2f %s]",
@@ -276,7 +262,34 @@ public class AllocationPage extends ModelPage<Process> {
 				: name;
 		}
 
+		AllocationFactor factorOf(AllocationMethod method) {
+			if (product == null || product.flow == null)
+				return null;
+			for (var factor : page.process().allocationFactors) {
+				if (factor.method == method
+					&& factor.productId == product.flow.id)
+					return factor;
+			}
+			return null;
+		}
 
+		String factorLabelOf(AllocationMethod method) {
+			if (isSum())
+				return Numbers.format(sumOf(method));
+			var factor = factorOf(method);
+			if (factor == null)
+				return "";
+			return Strings.nullOrEmpty(factor.formula)
+				? Double.toString(factor.value)
+				: factor.formula + " = " + factor.value;
+		}
+
+		double sumOf(AllocationMethod method) {
+			return page.process().allocationFactors.stream()
+				.filter(f -> Objects.equals(f.method, method))
+				.mapToDouble(f -> f.value)
+				.sum();
+		}
 
 	}
 
@@ -285,55 +298,45 @@ public class AllocationPage extends ModelPage<Process> {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof TableItem item))
+			if (!(obj instanceof Row row))
 				return null;
 			return switch (col) {
-				case 0 -> item.label();
-				case 1 -> getFactorLabel(e, AllocationMethod.PHYSICAL);
+				case 0 -> row.label();
+				case 1 -> row.factorLabelOf(AllocationMethod.PHYSICAL);
 				case 2 -> withComments
 					? null
-					: getFactorLabel(e, AllocationMethod.ECONOMIC);
+					: row.factorLabelOf(AllocationMethod.ECONOMIC);
 				case 3 -> withComments
-					? getFactorLabel(e, AllocationMethod.ECONOMIC)
+					? row.factorLabelOf(AllocationMethod.ECONOMIC)
 					: null;
 				default -> null;
 			};
 		}
 
-		private String getFactorLabel(Exchange e, AllocationMethod m) {
-			var f = getFactor(e, m);
-			if (f == null)
-				return "1";
-			return Strings.nullOrEmpty(f.formula)
-				? Double.toString(f.value)
-				: f.formula + " = " + f.value;
-		}
-
 		@Override
 		public Image getColumnImage(Object obj, int col) {
+			if (!(obj instanceof Row row))
+				return null;
+			if (row.isSum())
+				return null;
 			if (col == 0)
-				return Images.get(FlowType.PRODUCT_FLOW);
-			if (col == 2) {
-				Exchange exchange = (Exchange) obj;
-				var factor = getFactor(exchange, AllocationMethod.PHYSICAL);
+				return Images.get(row.product.flow);
+
+			if (withComments && (col == 2 || col == 4)) {
+				var method = col == 2
+					? AllocationMethod.PHYSICAL
+					: AllocationMethod.ECONOMIC;
+				var factor = row.factorOf(method);
 				if (factor == null)
 					return null;
-				String path = CommentPaths.get(factor, exchange);
-				return Images.get(editor.getComments(), path);
-			}
-			if (col == 4) {
-				var exchange = (Exchange) obj;
-				var factor = getFactor(exchange, AllocationMethod.ECONOMIC);
-				if (factor == null)
-					return null;
-				var path = CommentPaths.get(factor, exchange);
+				String path = CommentPaths.get(factor, row.product);
 				return Images.get(editor.getComments(), path);
 			}
 			return null;
 		}
 	}
 
-	private class ValueModifier extends TextCellModifier<Exchange> {
+	private class ValueModifier extends TextCellModifier<Row> {
 
 		private final AllocationMethod method;
 
@@ -342,8 +345,8 @@ public class AllocationPage extends ModelPage<Process> {
 		}
 
 		@Override
-		protected String getText(Exchange e) {
-			var factor = getFactor(e, method);
+		protected String getText(Row row) {
+			var factor = row.factorOf(method);
 			if (factor == null)
 				return "";
 			return Strings.nullOrEmpty(factor.formula)
@@ -352,25 +355,26 @@ public class AllocationPage extends ModelPage<Process> {
 		}
 
 		@Override
-		protected void setText(Exchange exchange, String text) {
-			var factor = getFactor(exchange, method);
+		protected void setText(Row row, String text) {
+			var factor = row.factorOf(method);
 			boolean isNew = factor == null;
 			if (isNew) {
 				factor = new AllocationFactor();
 				factor.method = method;
-				factor.productId = exchange.flow.id;
+				factor.productId = row.product.flow.id;
 			}
 			if (update(factor, text)) {
 				if (isNew) {
 					process().allocationFactors.add(factor);
 				}
+				table.refresh();
 				editor.setDirty(true);
 			}
 		}
 
 		@Override
-		public boolean canModify(Exchange element) {
-			return AllocationUtils.getProviderFlows(process()).size() > 1;
+		public boolean canModify(Row row) {
+			return !row.isSum() && row.product.flow != null;
 		}
 	}
 }
