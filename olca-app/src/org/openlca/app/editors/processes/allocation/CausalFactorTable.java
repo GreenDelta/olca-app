@@ -7,11 +7,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.eclipse.jface.viewers.ITableColorProvider;
+import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
@@ -21,6 +26,7 @@ import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -46,6 +52,7 @@ class CausalFactorTable {
 	private final AllocationPage page;
 	private final boolean withComments;
 	private final List<Column> columns = new ArrayList<>();
+	private SumColumn sumColumn;
 
 	private TableViewer viewer;
 	private ModifySupport<Exchange> modifier;
@@ -104,6 +111,7 @@ class CausalFactorTable {
 				.sorted(Comparator.comparing(p -> Labels.name(p.flow)))
 				.map(Column::new)
 				.forEach(columns::add);
+			sumColumn = SumColumn.addTo(viewer);
 
 			// update the viewer properties
 			var table = viewer.getTable();
@@ -136,6 +144,10 @@ class CausalFactorTable {
 	}
 
 	private void disposeColumns() {
+		if (sumColumn != null) {
+			sumColumn.dispose();
+			sumColumn = null;
+		}
 		if (columns.isEmpty())
 			return;
 		for (var old : columns) {
@@ -149,11 +161,35 @@ class CausalFactorTable {
 	}
 
 	private class FactorLabel extends LabelProvider implements
-		ITableLabelProvider {
+		ITableLabelProvider, ITableFontProvider, ITableColorProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int col) {
-			if (!(element instanceof Exchange exchange))
+		public Font getFont(Object obj, int col) {
+			return sumColumn != null && sumColumn.hasIndex(col)
+				? UI.boldFont()
+				: null;
+		}
+
+		@Override
+		public Color getBackground(Object obj, int col) {
+			return null;
+		}
+
+		@Override
+		public Color getForeground(Object obj, int col) {
+			if (sumColumn == null
+				|| !sumColumn.hasIndex(col)
+				|| !(obj instanceof Exchange exchange))
+				return null;
+			var sum = sumColumn.sumOf(exchange, process());
+			return Math.abs(sum - 1) > 1e-4
+				? Colors.red()
+				: null;
+		}
+
+		@Override
+		public Image getColumnImage(Object obj, int col) {
+			if (!(obj instanceof Exchange exchange))
 				return null;
 			if (exchange.flow == null)
 				return null;
@@ -189,6 +225,8 @@ class CausalFactorTable {
 				case 3 -> Numbers.format(exchange.amount) + " "
 					+ exchange.unit.name;
 				default -> {
+
+					// factors of columns
 					for (var c : columns) {
 						if (withComments && col == c.commentIdx())
 							yield null;
@@ -201,6 +239,12 @@ class CausalFactorTable {
 								: f.formula + " = " + f.value;
 						}
 					}
+
+					// sum column
+					if (sumColumn != null && sumColumn.hasIndex(col)) {
+						yield Numbers.format(sumColumn.sumOf(exchange, process()));
+					}
+
 					yield null;
 				}
 			};
@@ -303,6 +347,37 @@ class CausalFactorTable {
 			return factor != null
 				? CommentPaths.get(factor, product, exchange)
 				: null;
+		}
+	}
+
+	private record SumColumn(Table table, TableColumn col) {
+
+		static SumColumn addTo(TableViewer viewer) {
+			var table = viewer.getTable();
+			var col = new TableColumn(table, SWT.VIRTUAL);
+			col.setText("\u03a3");
+			col.setToolTipText("Sum of allocation factors");
+			col.setWidth(80);
+			col.setAlignment(SWT.CENTER);
+			return new SumColumn(table, col);
+		}
+
+		void dispose() {
+			col.dispose();
+		}
+
+		boolean hasIndex(int idx) {
+			return idx == table.indexOf(col);
+		}
+
+		double sumOf(Exchange exchange, Process process) {
+			if (exchange == null || process == null)
+				return 0;
+			return process.allocationFactors.stream()
+				.filter(f -> f.method == AllocationMethod.CAUSAL
+					&& Objects.equals(exchange, f.exchange))
+				.mapToDouble(f -> f.value)
+				.sum();
 		}
 	}
 }

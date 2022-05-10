@@ -38,8 +38,14 @@ class CalculationDialog extends FormDialog {
 	private Selector causal;
 
 	static List<AllocationRef> of(Process p) {
-		if (p == null)
+		var products = AllocationUtils.getProviderFlows(p);
+		if (products.size() < 2) {
+			MsgBox.error("Not a multi-functional process",
+				"Allocation factors cannot be calculated because " +
+					"this is not a process with multiple output " +
+					"products or waste inputs.");
 			return Collections.emptyList();
+		}
 		var props = AllocationUtils.allocationPropertiesOf(p);
 		if (props.isEmpty()) {
 			MsgBox.error("No common allocation properties",
@@ -48,6 +54,7 @@ class CalculationDialog extends FormDialog {
 					" to calculate allocation factors.");
 			return Collections.emptyList();
 		}
+
 		var dialog = new CalculationDialog(props);
 		return dialog.open() != Window.OK
 			? Collections.emptyList()
