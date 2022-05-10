@@ -24,7 +24,7 @@ public class PathFilters {
 		filterElements.stream()
 				.filter(e -> e instanceof GroupElement)
 				.forEach(e -> all.addAll(e.getChildren()));
-		return onlyRetainTopLevel(filterElements.stream()
+		return onlyRetainTopLevel(all.stream()
 				.map(PathFilters::getPath)
 				.filter(Strings::notEmpty)
 				.distinct()
@@ -36,8 +36,10 @@ public class PathFilters {
 			return null;
 		if (element instanceof ModelTypeElement e)
 			return e.getContent().name();
-		if (element instanceof CategoryElement e)
-			return e.getContent().modelType.name() + Strings.join(Categories.path(e.getContent().category), '/');
+		if (element instanceof CategoryElement e) {
+			var path = e.getContent().modelType.name() + "/" + Strings.join(Categories.path(e.getContent()), '/');
+			return path;
+		}
 		if (element instanceof ModelElement e)
 			return getPath(e.getParent()) + "/" + e.getContent().refId + ".json";
 		return null;

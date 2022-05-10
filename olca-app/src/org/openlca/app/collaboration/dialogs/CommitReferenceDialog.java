@@ -63,7 +63,8 @@ public class CommitReferenceDialog extends FormDialog {
 	}
 
 	private void createModelViewer(Composite parent, FormToolkit toolkit) {
-		viewer = new CommitViewer(parent, true);
+		viewer = new CommitViewer(parent);
+		viewer.setLockNewElements(true);
 	}
 
 	@Override

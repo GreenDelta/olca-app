@@ -2,6 +2,7 @@ package org.openlca.app.collaboration.viewers.diff;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
@@ -63,6 +64,26 @@ public class DiffNode {
 
 	public DiffResult contentAsDiffResult() {
 		return content instanceof DiffResult d ? d : null;
+	}
+
+	@Override
+	public final int hashCode() {
+		if (content == null)
+			return super.hashCode();
+		return parent == null
+				? content.hashCode()
+				: Objects.hash(content, parent);
+	}
+
+	@Override
+	public final boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof DiffNode))
+			return false;
+		var other = (DiffNode) o;
+		return Objects.equals(this.content, other.content)
+				&& Objects.equals(this.parent, other.parent);
 	}
 
 }

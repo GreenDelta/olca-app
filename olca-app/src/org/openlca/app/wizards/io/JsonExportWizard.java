@@ -18,7 +18,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Callback.Message;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.output.JsonExport;
 import org.slf4j.Logger;
@@ -65,10 +65,10 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 	private class Export implements IRunnableWithProgress {
 
 		private final File zipFile;
-		private final List<Descriptor> models;
+		private final List<RootDescriptor> models;
 		private final IDatabase database;
 
-		public Export(File zipFile, List<Descriptor> models,
+		public Export(File zipFile, List<RootDescriptor> models,
 				IDatabase database) {
 			this.zipFile = zipFile;
 			this.models = models;
