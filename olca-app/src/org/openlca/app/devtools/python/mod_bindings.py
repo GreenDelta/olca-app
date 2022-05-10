@@ -12,10 +12,11 @@ import org.openlca.jsonld.input.ActorReader as ActorReader
 import org.openlca.core.database.usage.ActorUseSearch as ActorUseSearch
 import org.openlca.proto.io.output.ActorWriter as ActorWriter
 import org.openlca.core.math.data_quality.AggregationType as AggregationType
-import org.openlca.util.AllocationCleanup as AllocationCleanup
 import org.openlca.core.model.AllocationFactor as AllocationFactor
 import org.openlca.core.matrix.AllocationIndex as AllocationIndex
 import org.openlca.core.model.AllocationMethod as AllocationMethod
+import org.openlca.util.AllocationRef as AllocationRef
+import org.openlca.util.AllocationUtils as AllocationUtils
 import org.openlca.expressions.functions.And as And
 import org.openlca.io.openepd.Api as Api
 import org.openlca.util.AutoTagger as AutoTagger
