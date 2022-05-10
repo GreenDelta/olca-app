@@ -14,7 +14,7 @@ import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.ecospold1.output.EcoSpold1Export;
 import org.openlca.io.ecospold1.output.ExportConfig;
 import org.slf4j.Logger;
@@ -79,7 +79,7 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 			return configPage.getConfig();
 	}
 
-	private void doExport(List<Descriptor> models,
+	private void doExport(List<RootDescriptor> models,
 			IProgressMonitor monitor, EcoSpold1Export export)
 			throws InterruptedException {
 		ProcessDao pDao = new ProcessDao(Database.get());

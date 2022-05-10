@@ -2,6 +2,8 @@ package org.openlca.app.collaboration.viewers.diff;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -12,15 +14,17 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.collaboration.dialogs.JsonDiffDialog;
-import org.openlca.app.collaboration.util.RefLabels;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.olca.ModelNodeBuilder;
+import org.openlca.app.db.Database;
+import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.AbstractViewer;
+import org.openlca.core.database.Daos;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Version;
 import org.openlca.git.actions.ConflictResolver.ConflictResolution;
@@ -34,6 +38,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	private final boolean editMode;
 	private Direction direction;
 	private Runnable onMerge;
+	private Map<ModelType, Map<String, String>> nameCache = new HashMap<>();
 	private TypeRefIdMap<ConflictResolution> resolvedConflicts = new TypeRefIdMap<>();
 
 	DiffNodeViewer(Composite parent, boolean editMode) {
@@ -100,7 +105,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		if (dialogResult == JsonDiffDialog.KEEP_LOCAL_MODEL || node.leftEqualsOriginal())
 			return ConflictResolution.keepLocal();
 		var merged = node.left.getAsJsonObject();
-		Version version = Version.fromString(node.right.getAsJsonObject().get("version").getAsString());
+		var version = Version.fromString(node.right.getAsJsonObject().get("version").getAsString());
 		version.incUpdate();
 		merged.addProperty("version", Version.asString(version.getValue()));
 		merged.addProperty("lastChange", Instant.now().toString());
@@ -124,11 +129,10 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			return null;
 		if (!(event.getSelection() instanceof IStructuredSelection))
 			return null;
-		IStructuredSelection selection = (IStructuredSelection) event
-				.getSelection();
+		var selection = (IStructuredSelection) event.getSelection();
 		if (selection.size() > 1)
 			return null;
-		DiffNode selected = (DiffNode) selection.getFirstElement();
+		var selected = (DiffNode) selection.getFirstElement();
 		if (selected.isModelTypeNode())
 			return null;
 		return selected;
@@ -138,28 +142,27 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 		@Override
 		public Object[] getElements(Object inputElement) {
-			Object[] elements = (Object[]) inputElement;
+			var elements = (Object[]) inputElement;
 			if (elements == null || elements.length == 0)
 				return new Object[0];
-			DiffNode node = (DiffNode) (elements)[0];
-			return node.children.toArray();
+			return getChildren(elements[0]);
 		}
 
 		@Override
 		public Object[] getChildren(Object parentElement) {
-			DiffNode node = (DiffNode) parentElement;
+			var node = (DiffNode) parentElement;
 			return node.children.toArray();
 		}
 
 		@Override
 		public Object getParent(Object element) {
-			DiffNode node = (DiffNode) element;
+			var node = (DiffNode) element;
 			return node.parent;
 		}
 
 		@Override
 		public boolean hasChildren(Object element) {
-			DiffNode node = (DiffNode) element;
+			var node = (DiffNode) element;
 			return !node.children.isEmpty();
 		}
 
@@ -181,26 +184,40 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		public String getText(Object element) {
 			if (element == null)
 				return null;
-			DiffNode node = (DiffNode) element;
+			var node = (DiffNode) element;
 			if (node.isDatabaseNode())
 				return node.contentAsDatabase().getName();
 			if (node.isModelTypeNode())
 				return Labels.plural(node.getModelType());
 			if (node.isCategoryNode())
 				return node.contentAsString().substring(node.contentAsString().lastIndexOf("/") + 1);
-			DiffResult result = (DiffResult) node.content;
-			return RefLabels.getName(result, result.rightObjectId != null ? result.rightObjectId : result.leftObjectId);
+			var result = (DiffResult) node.content;
+			var names = nameCache.computeIfAbsent(result.type, this::getLabels);
+			var name = names.get(result.refId);
+			if (name != null)
+				return name;
+			if (result.rightObjectId != null)
+				return Repository.get().datasets.getName(result.rightObjectId);
+			return Repository.get().datasets.getName(result.leftObjectId);
+		}
+
+		private Map<String, String> getLabels(ModelType type) {
+			var labels = new HashMap<String, String>();
+			for (var descriptor : Daos.root(Database.get(), type).getDescriptors()) {
+				labels.put(descriptor.refId, descriptor.name);
+			}
+			return labels;
 		}
 
 		@Override
 		public Image getImage(Object element) {
 			if (element == null)
 				return null;
-			DiffNode node = (DiffNode) element;
+			var node = (DiffNode) element;
 			if (node.isModelTypeNode() || node.isCategoryNode())
 				return Images.getForCategory(node.getModelType());
-			DiffResult diff = node.contentAsDiffResult();
-			Overlay overlay = getOverlay(diff);
+			var diff = node.contentAsDiffResult();
+			var overlay = getOverlay(diff);
 			return Images.get(diff.type, overlay);
 		}
 
@@ -223,27 +240,19 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		}
 
 		private Overlay getOverlayLocal(DiffType type) {
-			switch (type) {
-			case ADDED:
-				return Overlay.ADD_TO_LOCAL;
-			case MODIFIED:
-				return Overlay.MODIFY_IN_LOCAL;
-			case DELETED:
-				return Overlay.DELETE_FROM_LOCAL;
-			}
-			return null;
+			return switch (type) {
+				case ADDED -> Overlay.ADD_TO_LOCAL;
+				case MODIFIED -> Overlay.MODIFY_IN_LOCAL;
+				case DELETED -> Overlay.DELETE_FROM_LOCAL;
+			};
 		}
 
 		private Overlay getOverlayRemote(DiffType type) {
-			switch (type) {
-			case ADDED:
-				return Overlay.ADD_TO_REMOTE;
-			case MODIFIED:
-				return Overlay.MODIFY_IN_REMOTE;
-			case DELETED:
-				return Overlay.DELETE_FROM_REMOTE;
-			}
-			return null;
+			return switch (type) {
+				case ADDED -> Overlay.ADD_TO_REMOTE;
+				case MODIFIED -> Overlay.MODIFY_IN_REMOTE;
+				case DELETED -> Overlay.DELETE_FROM_REMOTE;
+			};
 		}
 
 		private Overlay getOverlayMerged(DiffResult result) {
@@ -263,8 +272,8 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			DiffNode node1 = (DiffNode) e1;
-			DiffNode node2 = (DiffNode) e2;
+			var node1 = (DiffNode) e1;
+			var node2 = (DiffNode) e2;
 			return compare(viewer, node1, node2);
 		}
 
@@ -275,8 +284,8 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		}
 
 		private int compareModelTypes(DiffNode node1, DiffNode node2) {
-			ModelType type1 = (ModelType) node1.content;
-			ModelType type2 = (ModelType) node2.content;
+			var type1 = (ModelType) node1.content;
+			var type2 = (ModelType) node2.content;
 			return ModelTypeOrder.compare(type1, type2);
 		}
 

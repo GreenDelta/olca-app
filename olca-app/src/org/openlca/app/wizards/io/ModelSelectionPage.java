@@ -1,8 +1,6 @@
 package org.openlca.app.wizards.io;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -32,13 +30,14 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.SelectionState;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 class ModelSelectionPage extends WizardPage {
 
 	private final ModelType[] types;
-	private final List<Descriptor> selectedModels = new ArrayList<>();
+	private SelectionState<INavigationElement<?>> selectionState;
 
 	private File exportDestination;
 	private CheckboxTreeViewer viewer;
@@ -56,7 +55,7 @@ class ModelSelectionPage extends WizardPage {
 	 * *.zip
 	 */
 	static ModelSelectionPage forFile(String extension,
-																		ModelType... types) {
+			ModelType... types) {
 		ModelSelectionPage page = new ModelSelectionPage(types);
 		page.targetIsDir = false;
 		page.fileExtension = extension;
@@ -74,22 +73,21 @@ class ModelSelectionPage extends WizardPage {
 		return exportDestination;
 	}
 
-	public List<Descriptor> getSelectedModels() {
-		return selectedModels;
+	public List<RootDescriptor> getSelectedModels() {
+		return selectionState.selection.stream().map(element -> ((ModelElement) element).getContent()).toList();
 	}
 
 	private void createTexts() {
 		var typeName = types == null || types.length != 1
-			? M.DataSets
-			: Labels.plural(types[0]);
+				? M.DataSets
+				: Labels.plural(types[0]);
 		setTitle(M.bind(M.Select, typeName));
 		var descr = M.bind(M.SelectObjectPage_Description, typeName);
 		setDescription(descr);
 	}
 
-
 	void checkCompletion() {
-		setPageComplete(exportDestination != null && selectedModels.size() > 0);
+		setPageComplete(exportDestination != null && selectionState.selection.size() > 0);
 	}
 
 	@Override
@@ -143,8 +141,8 @@ class ModelSelectionPage extends WizardPage {
 
 	private void selectTarget(Text text) {
 		exportDestination = targetIsDir
-			? FileChooser.selectFolder()
-			: FileChooser.forSavingFile(M.Export, defaultName());
+				? FileChooser.selectFolder()
+				: FileChooser.forSavingFile(M.Export, defaultName());
 		if (exportDestination == null)
 			return;
 		String path = exportDestination.getAbsolutePath();
@@ -171,15 +169,37 @@ class ModelSelectionPage extends WizardPage {
 
 	private void createViewer(Composite composite) {
 		viewer = new CheckboxTreeViewer(composite, SWT.VIRTUAL | SWT.MULTI
-			| SWT.BORDER);
+				| SWT.BORDER);
 		viewer.setUseHashlookup(true);
 		viewer.getTree().setLayoutData(
-			new GridData(SWT.FILL, SWT.FILL, true, true));
+				new GridData(SWT.FILL, SWT.FILL, true, true));
 		viewer.setContentProvider(new NavigationContentProvider());
 		viewer.setLabelProvider(new NavigationLabelProvider(false));
 		viewer.setComparator(new NavigationComparator());
 		viewer.addFilter(new ModelTypeFilter(types));
-		viewer.addCheckStateListener(new ModelSelectionState(this, viewer));
+		selectionState = new SelectionState<>(viewer) {
+
+			@Override
+			protected boolean isLeaf(INavigationElement<?> element) {
+				return element instanceof ModelElement;
+			}
+
+			@Override
+			protected List<INavigationElement<?>> getChildren(INavigationElement<?> element) {
+				return element.getChildren();
+			}
+
+			@Override
+			protected INavigationElement<?> getParent(INavigationElement<?> element) {
+				return element.getParent();
+			}
+
+			@Override
+			protected void checkCompletion() {
+				ModelSelectionPage.this.checkCompletion();
+			}
+		};
+		viewer.addCheckStateListener(selectionState);
 		registerInputHandler(composite);
 		ColumnViewerToolTipSupport.enableFor(viewer);
 	}
@@ -205,8 +225,8 @@ class ModelSelectionPage extends WizardPage {
 
 	private void setInitialInput() {
 		var input = types != null && types.length == 1
-			? Navigator.findElement(types[0])
-			: Navigator.findElement(Database.getActiveConfiguration());
+				? Navigator.findElement(types[0])
+				: Navigator.findElement(Database.getActiveConfiguration());
 		if (input == null)
 			return;
 		viewer.setInput(input);
@@ -217,41 +237,19 @@ class ModelSelectionPage extends WizardPage {
 			return;
 		var filters = viewer.getFilters();
 		var selection = navigator.getAllSelected()
-			.stream()
-			.filter(elem -> {
-				for (var filter : filters) {
-					if (!filter.select(viewer, elem.getParent(), elem))
-						return false;
-				}
-				return true;
-			})
-			.toArray(INavigationElement<?>[]::new);
+				.stream()
+				.filter(elem -> {
+					for (var filter : filters) {
+						if (!filter.select(viewer, elem.getParent(), elem))
+							return false;
+					}
+					return true;
+				})
+				.toArray(INavigationElement<?>[]::new);
 		if (selection.length == 0)
 			return;
 
-		// check the selected elements
-		viewer.setCheckedElements(selection);
-		var checkState = new ModelSelectionState(this, viewer);
-		for (var e : selection) {
-			if (e instanceof ModelElement) {
-				checkState.updateSelection((ModelElement) e, true);
-			}
-			checkState.updateChildren(e, true);
-			checkState.updateParent(e);
-		}
-
-		// expand the selection
-		var expanded = new HashSet<INavigationElement<?>>();
-		for (var elem : selection) {
-			expanded.add(elem);
-			var parent = elem.getParent();
-			while (parent != null) {
-				expanded.add(parent);
-				parent = parent.getParent();
-			}
-		}
-		viewer.setExpandedElements(expanded.toArray());
-
+		selectionState.setSelection(selection);
 		checkCompletion();
 	}
 }

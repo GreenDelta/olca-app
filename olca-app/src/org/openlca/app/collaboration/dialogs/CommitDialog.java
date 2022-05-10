@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -54,8 +56,6 @@ public class CommitDialog extends FormDialog {
 		createCommitMessage(body, toolkit);
 		createModelViewer(body, toolkit);
 		form.reflow(true);
-		viewer.setInput(Collections.singleton(node));
-		viewer.setSelection(initialSelection);
 	}
 
 	private void createCommitMessage(Composite parent, FormToolkit toolkit) {
@@ -80,8 +80,24 @@ public class CommitDialog extends FormDialog {
 		UI.gridData(comp, true, true);
 		UI.gridLayout(comp, 1);
 		section.setClient(comp);
-		viewer = new CommitViewer(comp, false);
-		viewer.getViewer().addCheckStateListener((e) -> updateButton());
+		viewer = new CommitViewer(comp, this::updateButton);
+		// We want to avoid a resizing of the import dialog when the user flips
+		// to this page. Thus, we set the input of the tree viewer after
+		// receiving the first paint event.
+		comp.addPaintListener(new PaintListener() {
+			private boolean init = false;
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				if (init) {
+					comp.removePaintListener(this);
+					return;
+				}
+				init = true;
+				viewer.setInput(Collections.singleton(node));
+				viewer.setSelection(initialSelection);
+			}
+		});
 	}
 
 	private void updateButton() {

@@ -15,7 +15,7 @@ import org.openlca.app.preferences.IoPreference;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.ilcd.ILCDExport;
 import org.openlca.io.ilcd.output.ExportConfig;
 
@@ -65,7 +65,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 	}
 
 	private void runExport(IProgressMonitor monitor, ExportConfig config,
-			List<Descriptor> descriptors) throws InvocationTargetException {
+			List<RootDescriptor> descriptors) throws InvocationTargetException {
 		monitor.beginTask(M.Export, descriptors.size());
 		int worked = 0;
 		ILCDExport export = new ILCDExport(config);

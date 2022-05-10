@@ -10,13 +10,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.util.ObjectIds;
-import org.openlca.app.collaboration.util.RefLabels;
 import org.openlca.app.collaboration.viewers.HistoryViewer;
 import org.openlca.app.collaboration.viewers.json.JsonDiffViewer;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.olca.ModelDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.olca.ModelLabelProvider;
 import org.openlca.app.collaboration.viewers.json.olca.ModelNodeBuilder;
+import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
@@ -156,13 +156,21 @@ public class HistoryView extends ViewPart {
 	private class ReferenceLabel extends BaseLabelProvider {
 
 		@Override
+		@SuppressWarnings("resource")
 		public String getText(Object element) {
 			if (!(element instanceof Diff))
 				return null;
 			var diff = (Diff) element;
-			if (diff.right != null)
-				return RefLabels.getName(diff.ref(), diff.right.objectId);
-			return RefLabels.getName(diff.ref(), diff.left.objectId);
+			var text = diff.ref().category;
+			if (!text.isEmpty()) {
+				text += "/";
+			}
+			if (diff.type == DiffType.DELETED) {
+				text += Repository.get().datasets.getName(diff.left.objectId);
+			} else {
+				text += Database.get().getDescriptor(diff.right.type.getModelClass(), diff.right.refId).name;
+			}
+			return text;
 		}
 
 		@Override
