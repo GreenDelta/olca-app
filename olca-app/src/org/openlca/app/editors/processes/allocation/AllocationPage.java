@@ -1,6 +1,7 @@
 package org.openlca.app.editors.processes.allocation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -76,7 +77,9 @@ public class AllocationPage extends ModelPage<Process> {
 		if (factor == null)
 			return false;
 		if (Strings.nullOrEmpty(value)) {
-			MsgBox.error(M.InvalidAllocationFactor, value + M.IsNotValidNumber);
+			MsgBox.error(
+					M.InvalidAllocationFactor,
+					"An empty value is not allowed");
 			return false;
 		}
 
@@ -156,7 +159,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 	private void createCalcButton(Composite comp, FormToolkit tk) {
 		UI.filler(comp, tk);
-		var btn = tk.createButton(comp, M.CalculateDefaultValues, SWT.NONE);
+		var btn = tk.createButton(comp, "Calculate factors", SWT.NONE);
 		btn.setImage(Icon.RUN.get());
 		Controls.onSelect(btn, e -> {
 			var refs = CalculationDialog.of(process());
@@ -237,12 +240,15 @@ public class AllocationPage extends ModelPage<Process> {
 
 		static List<Row> all(AllocationPage page) {
 			var products = AllocationUtils.getProviderFlows(page.process());
+			if (products.size() < 2)
+				return Collections.emptyList();
 			var rows = new ArrayList<Row>(products.size() + 1);
 			for (var p : products) {
 				var item = new Row(page, p);
 				rows.add(item);
 			}
 			rows.add(new Row(page, null));
+
 			rows.sort((i1, i2) -> {
 				if (i1.isSum())
 					return 1;

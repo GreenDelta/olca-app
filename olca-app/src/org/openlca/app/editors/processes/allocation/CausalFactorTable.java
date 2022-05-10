@@ -1,6 +1,7 @@
 package org.openlca.app.editors.processes.allocation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -76,6 +77,12 @@ class CausalFactorTable {
 			return;
 		var products = AllocationUtils.getProviderFlows(process());
 
+		if (products.size() < 2) {
+			disposeColumns();
+			viewer.setInput(Collections.emptyList());
+			return;
+		}
+
 		// first test if we need to rebuild the columns
 		var needRebuild = products.size() != columns.size();
 		if (!needRebuild) {
@@ -90,15 +97,7 @@ class CausalFactorTable {
 		// rebuild the columns if required; order is important!
 		if (needRebuild) {
 
-			// unbind and drop old columns
-			for (var old : columns) {
-				modifier.unbind(old.key);
-				if (withComments) {
-					modifier.unbind(old.key + "_comment");
-				}
-			}
-			columns.forEach(Column::dispose);
-			columns.clear();
+			disposeColumns();
 
 			// create the new columns
 			products.stream()
@@ -134,6 +133,19 @@ class CausalFactorTable {
 
 		// set the table
 		viewer.setInput(AllocationUtils.getNonProviderFlows(process()));
+	}
+
+	private void disposeColumns() {
+		if (columns.isEmpty())
+			return;
+		for (var old : columns) {
+			modifier.unbind(old.key);
+			if (withComments) {
+				modifier.unbind(old.key + "_comment");
+			}
+		}
+		columns.forEach(Column::dispose);
+		columns.clear();
 	}
 
 	private class FactorLabel extends LabelProvider implements
@@ -193,6 +205,7 @@ class CausalFactorTable {
 				}
 			};
 		}
+
 	}
 
 	private class Column extends TextCellModifier<Exchange> {
