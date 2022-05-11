@@ -4,10 +4,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.swt.dnd.ByteArrayTransfer;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.widgets.Control;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ActorDescriptor;
 import org.openlca.core.model.descriptors.CurrencyDescriptor;
@@ -47,16 +52,31 @@ public final class ModelTransfer extends ByteArrayTransfer {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private static final String NAME = "model_component_transfer";
 	private static final int ID = registerType(NAME);
-	private static ModelTransfer instance;
+	private static final ModelTransfer instance = new ModelTransfer();
 
 	private ModelTransfer() {
 	}
 
 	public static ModelTransfer getInstance() {
-		if (instance == null) {
-			instance = new ModelTransfer();
-		}
 		return instance;
+	}
+
+	public static void onDrop(
+		Control control, Consumer<List<? extends Descriptor>> fn) {
+		if (control == null || fn == null)
+			return;
+		var target = new DropTarget(
+			control, DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
+		target.setTransfer(instance);
+		target.addDropListener(new DropTargetAdapter(){
+			@Override
+			public void drop(DropTargetEvent e) {
+				var ds = getDescriptors(e.data);
+				if (!ds.isEmpty()) {
+					fn.accept(ds);
+				}
+			}
+		});
 	}
 
 	/**
