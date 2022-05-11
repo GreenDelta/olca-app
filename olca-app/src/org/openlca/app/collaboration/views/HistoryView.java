@@ -156,7 +156,6 @@ public class HistoryView extends ViewPart {
 	private class ReferenceLabel extends BaseLabelProvider {
 
 		@Override
-		@SuppressWarnings("resource")
 		public String getText(Object element) {
 			if (!(element instanceof Diff))
 				return null;
@@ -165,12 +164,11 @@ public class HistoryView extends ViewPart {
 			if (!text.isEmpty()) {
 				text += "/";
 			}
-			if (diff.type == DiffType.DELETED) {
-				text += Repository.get().datasets.getName(diff.left.objectId);
-			} else {
-				text += Database.get().getDescriptor(diff.right.type.getModelClass(), diff.right.refId).name;
-			}
-			return text;
+			var descriptor = Database.get().getDescriptor(diff.right.type.getModelClass(), diff.right.refId);
+			if (descriptor != null)
+				return text + descriptor.name;
+			var objectId = diff.left != null ? diff.left.objectId : diff.right.objectId;
+			return text + Repository.get().datasets.getName(objectId);
 		}
 
 		@Override
