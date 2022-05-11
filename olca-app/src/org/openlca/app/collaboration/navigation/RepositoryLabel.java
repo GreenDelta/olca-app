@@ -35,16 +35,16 @@ public class RepositoryLabel {
 
 	private static ObjectId getRepositoryId(INavigationElement<?> elem) {
 		if (elem instanceof DatabaseElement)
-			return Repository.get().ids.get("");
+			return Repository.get().workspaceIds.getHead("");
 		if (elem instanceof ModelTypeElement e)
-			return Repository.get().ids.get(e.getContent().name());
+			return Repository.get().workspaceIds.getHead(e.getContent().name());
 		if (elem instanceof CategoryElement e) {
 			var path = Repository.get().workspaceIds.getPath(e.getContent());
-			return Repository.get().ids.get(path);
+			return Repository.get().workspaceIds.getHead(path);
 		}
 		if (elem instanceof ModelElement e) {
 			var path = Repository.get().workspaceIds.getPath(Cache.getPathCache(), e.getContent());
-			return Repository.get().ids.get(path);
+			return Repository.get().workspaceIds.getHead(path);
 		}
 		return null;
 	}
