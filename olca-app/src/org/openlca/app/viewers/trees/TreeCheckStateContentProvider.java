@@ -10,23 +10,23 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 public abstract class TreeCheckStateContentProvider<T> implements ICheckStateProvider, ITreeContentProvider {
 
 	private Set<T> selection = new HashSet<>();
-	// viewer will first call isChecked and then isGrayed; avoiding to find
-	// out the state twice for performance reasons
-	private CheckState current;
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean isChecked(Object o) {
-		current = CheckState.UNCHECKED;
-		if (o == null)
-			return false;
-		var element = (T) o;
-		current = getSelection(element);
-		return current != CheckState.UNCHECKED;
+	public final boolean isChecked(Object element) {
+		return getCheckState((T) element) != CheckState.UNCHECKED;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public final boolean isGrayed(Object element) {
+		return getCheckState((T) element) == CheckState.GRAYED;
 	}
 
 	@SuppressWarnings("unchecked")
-	private CheckState getSelection(T element) {
+	private CheckState getCheckState(T element) {
+		if (element == null)
+			return CheckState.UNCHECKED;
 		if (isLeaf(element)) {
 			if (isSelected(element))
 				return CheckState.CHECKED;
@@ -37,7 +37,7 @@ public abstract class TreeCheckStateContentProvider<T> implements ICheckStatePro
 			return CheckState.UNCHECKED;
 		var checkedChildren = 0;
 		for (var child : children) {
-			var selection = getSelection((T) child);
+			var selection = getCheckState((T) child);
 			if (selection == CheckState.GRAYED)
 				return CheckState.GRAYED;
 			if (selection == CheckState.CHECKED) {
@@ -51,24 +51,13 @@ public abstract class TreeCheckStateContentProvider<T> implements ICheckStatePro
 		return CheckState.UNCHECKED;
 	}
 
-	@Override
-	public boolean isGrayed(Object element) {
-		return current == CheckState.GRAYED;
-	}
-
 	protected abstract boolean isLeaf(T element);
 
-	protected abstract List<T> childrenOf(T element);
-
-	protected abstract T parentOf(T element);
-
-	protected abstract void onCheckStateChanged();
-
-	protected boolean isSelected(T element) {
+	private boolean isSelected(T element) {
 		return selection.contains(element);
 	}
 
-	public void setSelection(Set<T> selection) {
+	public final void setSelection(Set<T> selection) {
 		this.selection = selection;
 	}
 
@@ -88,14 +77,13 @@ public abstract class TreeCheckStateContentProvider<T> implements ICheckStatePro
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public final Object getParent(Object element) {
-		return parentOf((T) element);
+	public final Object[] getElements(Object inputElement) {
+		return getChildren(inputElement);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Object[] getChildren(Object parentElement) {
+	public final Object[] getChildren(Object parentElement) {
 		var element = (T) parentElement;
 		if (isLeaf(element))
 			return new Object[0];
@@ -104,6 +92,8 @@ public abstract class TreeCheckStateContentProvider<T> implements ICheckStatePro
 				.filter(this::isOrContainsLeaf)
 				.toArray();
 	}
+
+	protected abstract List<T> childrenOf(T element);
 
 	private boolean isOrContainsLeaf(T element) {
 		if (isLeaf(element))
@@ -115,17 +105,24 @@ public abstract class TreeCheckStateContentProvider<T> implements ICheckStatePro
 	}
 
 	@Override
-	public Object[] getElements(Object inputElement) {
-		return getChildren(inputElement);
-	}
-
-	@Override
-	public boolean hasChildren(Object element) {
+	public final boolean hasChildren(Object element) {
 		return getChildren(element).length > 0;
 	}
 
-	public Set<T> getSelection() {
+	@Override
+	@SuppressWarnings("unchecked")
+	public final Object getParent(Object element) {
+		return parentOf((T) element);
+	}
+
+	protected abstract T parentOf(T element);
+
+	public final Set<T> getSelection() {
 		return selection;
+	}
+
+	protected void onCheckStateChanged() {
+		// subclasses may override
 	}
 
 	private enum CheckState {
