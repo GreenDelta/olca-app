@@ -6,15 +6,16 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.git.actions.GitStashCreate;
-import org.openlca.git.util.DiffEntries;
 
 public class StashCreateAction extends Action implements INavigationAction {
 
@@ -32,10 +33,10 @@ public class StashCreateAction extends Action implements INavigationAction {
 	public boolean isEnabled() {
 		try {
 			var repo = Repository.get();
-			if (DiffEntries.workspace(repo.toConfig()).isEmpty())
+			if (!RepositoryLabel.hasChanged(Navigator.findElement(Database.getActiveConfiguration())))
 				return false;
 			return Actions.getStashCommit(repo.git) == null;
-		} catch (IOException | GitAPIException e) {
+		} catch (GitAPIException e) {
 			return false;
 		}
 	}
