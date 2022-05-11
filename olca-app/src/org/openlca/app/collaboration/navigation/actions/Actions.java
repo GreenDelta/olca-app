@@ -1,5 +1,6 @@
 package org.openlca.app.collaboration.navigation.actions;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -15,6 +16,7 @@ import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.MsgBox;
+import org.openlca.git.actions.GitProgressAction;
 import org.openlca.git.actions.GitRemoteAction;
 import org.openlca.git.model.Commit;
 import org.openlca.util.Strings;
@@ -46,10 +48,23 @@ class Actions {
 	static <T> T run(GitRemoteAction<T> runnable)
 			throws InvocationTargetException, InterruptedException, GitAPIException {
 		var service = PlatformUI.getWorkbench().getProgressService();
-		var runner = new ProgressRunner<>(runnable);
+		var runner = new GitRemoteRunner<>(runnable);
 		service.run(true, false, runner::run);
 		if (runner.exception != null)
 			throw runner.exception;
+		return runner.result;
+	}
+
+	static <T> T run(GitProgressAction<T> runnable)
+			throws InvocationTargetException, InterruptedException, GitAPIException, IOException {
+		var service = PlatformUI.getWorkbench().getProgressService();
+		var runner = new GitProgressRunner<>(runnable);
+		service.run(true, false, runner::run);
+		if (runner.exception != null)
+			if (runner.exception instanceof GitAPIException e)
+				throw e;
+			else if (runner.exception instanceof IOException e)
+				throw e;
 		return runner.result;
 	}
 
@@ -60,20 +75,20 @@ class Actions {
 		return new Commit(commits.iterator().next());
 	}
 
-	private static class ProgressRunner<T> implements IRunnableWithProgress {
+	private static class GitRemoteRunner<T> implements IRunnableWithProgress {
 
 		private final GitRemoteAction<T> runnable;
 		private T result;
 		private GitAPIException exception;
 
-		private ProgressRunner(GitRemoteAction<T> runnable) {
+		private GitRemoteRunner(GitRemoteAction<T> runnable) {
 			this.runnable = runnable;
 		}
 
 		@Override
 		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 			try {
-				runnable.showProgressIn(wrapped(monitor));
+				runnable.withProgress(wrapped(monitor));
 				result = runnable.run();
 			} catch (GitAPIException e) {
 				exception = e;
@@ -112,6 +127,49 @@ class Actions {
 				public void beginTask(String title, int totalWork) {
 					monitor.beginTask(title, totalWork);
 				}
+			};
+		}
+
+	}
+
+	private static class GitProgressRunner<T> implements IRunnableWithProgress {
+
+		private final GitProgressAction<T> runnable;
+		private T result;
+		private Exception exception;
+
+		private GitProgressRunner(GitProgressAction<T> runnable) {
+			this.runnable = runnable;
+		}
+
+		@Override
+		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+			try {
+				runnable.withProgress(wrapped(monitor));
+				result = runnable.run();
+			} catch (GitAPIException | IOException e) {
+				exception = e;
+			}
+		}
+
+		private static org.openlca.git.util.ProgressMonitor wrapped(IProgressMonitor monitor) {
+			return new org.openlca.git.util.ProgressMonitor() {
+
+				@Override
+				public void beginTask(String name, int totalWork) {
+					monitor.beginTask(name, totalWork);
+				}
+
+				@Override
+				public void subTask(String name) {
+					monitor.subTask(name);
+				}
+				
+				@Override
+				public void worked(int work) {
+					monitor.worked(work);
+				}
+
 			};
 		}
 

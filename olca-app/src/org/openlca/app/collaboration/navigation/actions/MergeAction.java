@@ -1,6 +1,7 @@
 package org.openlca.app.collaboration.navigation.actions;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -52,18 +53,17 @@ public class MergeAction extends Action implements INavigationAction {
 			var conflictResolutionMap = Conflicts.identifyAndSolve(remoteCommit);
 			if (conflictResolutionMap == null)
 				return;
-			var changed = GitMerge
+			var changed = Actions.run(GitMerge
 					.from(repo.git)
 					.into(Database.get())
 					.update(repo.workspaceIds)
 					.as(repo.personIdent())
-					.resolveConflictsWith(conflictResolutionMap)
-					.run();
+					.resolveConflictsWith(conflictResolutionMap));
 			if (!changed) {
 				MsgBox.info("No changes to merge");
 				return;
 			}
-		} catch (IOException | GitAPIException e) {
+		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during git merge", e);
 		} finally {
 			Database.getWorkspaceIdUpdater().enable();

@@ -74,13 +74,12 @@ public class CommitAction extends Action implements INavigationAction {
 				return;
 			if (!checkLibraries(withReferences))
 				return;
-			GitCommit.from(Database.get())
+			Actions.run(GitCommit.from(Database.get())
 					.to(repo.git)
 					.changes(withReferences)
 					.withMessage(dialog.getMessage())
 					.as(committer)
-					.update(repo.workspaceIds)
-					.run();
+					.update(repo.workspaceIds));
 			if (dialogResult != CommitDialog.COMMIT_AND_PUSH)
 				return;
 			var result = Actions.run(GitPush

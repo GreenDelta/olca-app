@@ -1,6 +1,7 @@
 package org.openlca.app.collaboration.navigation.actions;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -46,12 +47,11 @@ public class StashCreateAction extends Action implements INavigationAction {
 		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
-			GitStashCreate.from(Database.get())
+			Actions.run(GitStashCreate.from(Database.get())
 					.to(repo.git)
 					.as(repo.personIdent())
-					.update(repo.workspaceIds)
-					.run();
-		} catch (IOException e) {
+					.update(repo.workspaceIds));
+		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error stashing changes", e);
 		} finally {
 			Database.getWorkspaceIdUpdater().enable();

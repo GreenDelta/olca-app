@@ -56,13 +56,12 @@ public class PullAction extends Action implements INavigationAction {
 			var conflictResolutionMap = Conflicts.identifyAndSolve(remoteCommit);
 			if (conflictResolutionMap == null)
 				return;
-			var changed = GitMerge
+			var changed = Actions.run(GitMerge
 					.from(repo.git)
 					.into(Database.get())
 					.update(repo.workspaceIds)
 					.as(repo.personIdent())
-					.resolveConflictsWith(conflictResolutionMap)
-					.run();
+					.resolveConflictsWith(conflictResolutionMap));
 			if (!changed) {
 				MsgBox.info("No commits to fetch - Everything up to date");
 			}
