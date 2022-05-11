@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelSelector;
+import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
@@ -156,18 +157,14 @@ class ProjectSetupPage extends ModelPage<Project> {
 				onOpen.run();
 			}
 		});
-		Tables.onDrop(table, descriptors -> {
-			if (descriptors != null) {
-				addVariants(descriptors);
-			}
-		});
+		ModelTransfer.onDrop(table.getTable(), this::addVariants);
 	}
 
 	private void addVariants(List<? extends Descriptor> descriptors) {
 		if (descriptors.isEmpty())
 			return;
 		for (var d : descriptors) {
-			if (d == null)
+			if (d == null || d.type != ModelType.PRODUCT_SYSTEM)
 				continue;
 			ProductSystemDao dao = new ProductSystemDao(database);
 			ProductSystem system = dao.getForId(d.id);

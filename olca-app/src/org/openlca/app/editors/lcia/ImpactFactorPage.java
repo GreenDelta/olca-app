@@ -18,6 +18,7 @@ import org.openlca.app.M;
 import org.openlca.app.components.DialogCellEditor;
 import org.openlca.app.components.FormulaCellEditor;
 import org.openlca.app.components.ModelSelector;
+import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
@@ -176,7 +177,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 		Actions.bind(viewer, add, remove, copy, paste);
 		Tables.onDeletePressed(viewer, _e -> onRemove());
-		Tables.onDrop(viewer, this::createFactors);
+		ModelTransfer.onDrop(viewer.getTable(), this::createFactors);
 		Actions.bind(section, add, remove, formulaSwitch);
 	}
 

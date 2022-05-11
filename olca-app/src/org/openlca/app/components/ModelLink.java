@@ -4,10 +4,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetAdapter;
-import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
@@ -96,7 +92,11 @@ public class ModelLink<T extends RootEntity> {
 			}
 		});
 		if (editable) {
-			addDropSupport(link);
+			ModelTransfer.onDrop(link, ds -> {
+				if (!ds.isEmpty()) {
+					select(ds.get(0));
+				}
+			});
 		}
 
 		// the delete button
@@ -115,23 +115,6 @@ public class ModelLink<T extends RootEntity> {
 
 		updateLinkText();
 		return this;
-	}
-
-	private void addDropSupport(ImageHyperlink link) {
-		var transfer = ModelTransfer.getInstance();
-		var target = new DropTarget(
-			link, DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
-		target.setTransfer(transfer);
-		target.addDropListener(new DropTargetAdapter() {
-			@Override
-			public void dragEnter(DropTargetEvent event) {
-			}
-
-			@Override
-			public void drop(DropTargetEvent event) {
-				select(ModelTransfer.getDescriptor(event));
-			}
-		});
 	}
 
 	private void select(Descriptor d) {

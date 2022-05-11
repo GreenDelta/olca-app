@@ -1,6 +1,5 @@
 package org.openlca.app.viewers.tables;
 
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Consumer;
@@ -14,10 +13,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetAdapter;
-import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -30,10 +25,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Comparator;
-import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
 /**
@@ -109,23 +102,6 @@ public class Tables {
 		}
 		for (TableColumn c : viewer.getTable().getColumns())
 			c.pack();
-	}
-
-	public static void onDrop(TableViewer table,
-			Consumer<List<Descriptor>> fn) {
-		var transfer = ModelTransfer.getInstance();
-		var target = new DropTarget(table.getTable(),
-				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
-		target.setTransfer(transfer);
-		target.addDropListener(new DropTargetAdapter() {
-			@Override
-			public void drop(DropTargetEvent event) {
-				if (!transfer.isSupportedType(event.currentDataType))
-					return;
-				var list = ModelTransfer.getDescriptors(event.data);
-				fn.accept(list);
-			}
-		});
 	}
 
 	public static void bindColumnWidths(TableViewer viewer, double... percents) {

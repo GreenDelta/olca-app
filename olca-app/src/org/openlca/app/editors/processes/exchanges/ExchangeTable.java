@@ -16,6 +16,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FormulaCellEditor;
 import org.openlca.app.components.ModelSelector;
+import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentAction;
@@ -98,7 +99,7 @@ class ExchangeTable {
 		label = new ExchangeLabel(editor);
 		viewer.setLabelProvider(label);
 		bindModifiers();
-		Tables.onDrop(viewer, this::add);
+		ModelTransfer.onDrop(viewer.getTable(), this::add);
 		viewer.addFilter(new Filter());
 		bindActions(section);
 		bindDoubleClick(viewer);

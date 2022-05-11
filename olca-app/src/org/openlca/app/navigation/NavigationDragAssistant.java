@@ -44,8 +44,7 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 			if (!(o instanceof ModelElement || o instanceof CategoryElement)) {
 				canBeDropped = false;
 			} else {
-				if (o instanceof ModelElement) {
-					var navElem = (ModelElement) o;
+				if (o instanceof ModelElement navElem) {
 					var comp = navElem.getContent();
 					if (comp != null)
 						components.add(comp);

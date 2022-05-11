@@ -1,6 +1,5 @@
 package org.openlca.app.viewers.trees;
 
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Consumer;
@@ -12,10 +11,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetAdapter;
-import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -25,14 +20,11 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
-import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Comparator;
-import org.openlca.core.model.descriptors.Descriptor;
 
 /**
  * A helper class for creating trees, tree viewers and related resources.
@@ -87,23 +79,6 @@ public class Trees {
 		}
 	}
 
-	public static void addDropSupport(TreeViewer tree,
-			Consumer<List<Descriptor>> handler) {
-		var transfer = ModelTransfer.getInstance();
-		var dropTarget = new DropTarget(tree.getTree(),
-			DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
-		dropTarget.setTransfer(transfer);
-		dropTarget.addDropListener(new DropTargetAdapter() {
-			@Override
-			public void drop(DropTargetEvent event) {
-				if (!transfer.isSupportedType(event.currentDataType))
-					return;
-				var list = ModelTransfer.getDescriptors(event.data);
-				handler.accept(list);
-			}
-		});
-	}
-
 	/**
 	 * Binds the given percentage values (values between 0 and 1) to the column
 	 * widths of the given tree
@@ -149,17 +124,6 @@ public class Trees {
 		return tree.getItem(new Point(event.x, event.y));
 	}
 
-	public static void onDeletePressed(TreeViewer viewer,
-			Consumer<Event> handler) {
-		if (viewer == null || viewer.getTree() == null || handler == null)
-			return;
-		viewer.getTree().addListener(SWT.KeyUp, (event) -> {
-			if (event.keyCode == SWT.DEL) {
-				handler.accept(event);
-			}
-		});
-	}
-
 	public static void addComparator(TreeViewer viewer, Comparator<?> comparator) {
 		Tree tree = viewer.getTree();
 		if (comparator.column >= tree.getColumnCount())
@@ -186,7 +150,7 @@ public class Trees {
 	// was resized before, and in those cases, don't resize the columns
 	// automatically.
 	private static class ColumnResizeListener extends ControlAdapter {
-		private TreeResizeListener depending;
+		private final TreeResizeListener depending;
 		private boolean enabled = true;
 		private boolean initialized;
 

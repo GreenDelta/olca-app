@@ -71,6 +71,8 @@ public final class ModelTransfer extends ByteArrayTransfer {
 		target.addDropListener(new DropTargetAdapter(){
 			@Override
 			public void drop(DropTargetEvent e) {
+				if (!instance.isSupportedType(e.currentDataType))
+					return;
 				var ds = getDescriptors(e.data);
 				if (!ds.isEmpty()) {
 					fn.accept(ds);
