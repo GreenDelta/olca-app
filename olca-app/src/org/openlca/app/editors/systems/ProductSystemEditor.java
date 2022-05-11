@@ -3,7 +3,7 @@ package org.openlca.app.editors.systems;
 import org.openlca.app.M;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
-import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graph.GraphEditor;
 import org.openlca.core.model.ProductSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
