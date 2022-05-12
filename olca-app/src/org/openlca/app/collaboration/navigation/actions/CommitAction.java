@@ -8,7 +8,6 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
@@ -29,9 +28,8 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitCommit;
 import org.openlca.git.actions.GitPush;
-import org.openlca.git.model.Change;
-import org.openlca.git.model.ModelRef;
-import org.openlca.git.util.DiffEntries;
+import org.openlca.git.model.Diff;
+import org.openlca.git.util.Diffs;
 import org.openlca.git.util.TypeRefIdSet;
 
 public class CommitAction extends Action implements INavigationAction {
@@ -60,8 +58,8 @@ public class CommitAction extends Action implements INavigationAction {
 			var committer = repo.personIdent();
 			if (committer == null)
 				return;
-			var changes = DiffEntries.workspace(repo.toConfig());
-			var dialog = createCommitDialog(changes);
+			var diffs = Diffs.workspace(repo.toConfig());
+			var dialog = createCommitDialog(diffs);
 			if (dialog == null)
 				return;
 			var dialogResult = dialog.open();
@@ -76,7 +74,7 @@ public class CommitAction extends Action implements INavigationAction {
 				return;
 			Actions.run(GitCommit.from(Database.get())
 					.to(repo.git)
-					.changes(withReferences)
+					.diffs(withReferences)
 					.withMessage(dialog.getMessage())
 					.as(committer)
 					.update(repo.workspaceIds));
@@ -98,9 +96,9 @@ public class CommitAction extends Action implements INavigationAction {
 		}
 	}
 
-	private CommitDialog createCommitDialog(List<DiffEntry> changes) {
-		var differences = changes.stream()
-				.map(DiffResult::new)
+	private CommitDialog createCommitDialog(List<Diff> diffs) {
+		var differences = diffs.stream()
+				.map(d -> new DiffResult(d, null))
 				.toList();
 		var node = new DiffNodeBuilder(Database.get()).build(differences);
 		if (node == null) {
@@ -110,8 +108,8 @@ public class CommitAction extends Action implements INavigationAction {
 		var dialog = new CommitDialog(node);
 		var paths = PathFilters.of(selection);
 		var initialSelection = new TypeRefIdSet();
-		changes.stream()
-				.map(ModelRef::new)
+		diffs.stream()
+				.map(d -> d.ref())
 				.filter(ref -> selectionContainsPath(paths, ref.path))
 				.forEach(ref -> initialSelection.add(ref.type, ref.refId));
 		dialog.setInitialSelection(initialSelection);
@@ -127,13 +125,13 @@ public class CommitAction extends Action implements INavigationAction {
 		return false;
 	}
 
-	private boolean checkLibraries(List<Change> changes) {
+	private boolean checkLibraries(List<Diff> diffs) {
 		if (!CollaborationPreference.checkAgainstLibraries())
 			return true;
 		if (!Repository.get().isCollaborationServer())
 			return true;
 		try {
-			var restricted = Repository.get().client.performLibraryCheck(changes);
+			var restricted = Repository.get().client.performLibraryCheck(diffs);
 			if (restricted.isEmpty())
 				return true;
 			var code = new LibraryRestrictionDialog(restricted).open();

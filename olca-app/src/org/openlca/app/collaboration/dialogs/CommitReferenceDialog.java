@@ -50,7 +50,7 @@ public class CommitReferenceDialog extends FormDialog {
 	private TypeRefIdSet getNewElements(DiffNode node) {
 		var newElements = new TypeRefIdSet();
 		var result = node.contentAsDiffResult();
-		if (result != null && result.leftDiffType == DiffType.ADDED) {
+		if (result != null && result.leftDiffType() == DiffType.ADDED) {
 			newElements.add(result.type, result.refId);
 		}
 		if (node.children == null)

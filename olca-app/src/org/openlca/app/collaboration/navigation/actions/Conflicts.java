@@ -3,9 +3,7 @@ package org.openlca.app.collaboration.navigation.actions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.openlca.app.collaboration.dialogs.FetchDialog;
 import org.openlca.app.collaboration.util.InMemoryConflictResolver;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
@@ -16,7 +14,7 @@ import org.openlca.git.actions.ConflictResolver.ConflictResolution;
 import org.openlca.git.model.Commit;
 import org.openlca.git.model.Diff;
 import org.openlca.git.util.Constants;
-import org.openlca.git.util.DiffEntries;
+import org.openlca.git.util.Diffs;
 import org.openlca.git.util.TypeRefIdMap;
 
 class Conflicts {
@@ -36,8 +34,8 @@ class Conflicts {
 		var head = repo.commits.head();
 		if (head != null && localCommit.id.equals(head.id))
 			return new ArrayList<>();
-		var localChanges = diffsBetween(repo.git, head, localCommit);
-		var remoteChanges = diffsBetween(repo.git, head, remoteCommit);
+		var localChanges = Diffs.between(repo.git, head, localCommit);
+		var remoteChanges = Diffs.between(repo.git, head, remoteCommit);
 		return conflictsOf(localChanges, remoteChanges);
 	}
 
@@ -49,12 +47,6 @@ class Conflicts {
 		if (dialog.open() == FetchDialog.CANCEL)
 			return new TypeRefIdMap<>();
 		return dialog.getResolvedConflicts();
-	}
-
-	private static List<Diff> diffsBetween(FileRepository repo, Commit left, Commit right) throws IOException {
-		return DiffEntries.between(repo, left, right).stream()
-				.map(d -> new Diff(d))
-				.collect(Collectors.toList());
 	}
 
 	private static List<DiffResult> conflictsOf(List<Diff> localChanges, List<Diff> remoteChanges) {

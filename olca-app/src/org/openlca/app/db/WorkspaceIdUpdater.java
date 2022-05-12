@@ -5,13 +5,11 @@ import java.util.Collections;
 
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.git.util.DiffEntries;
-import org.slf4j.Logger;
+import org.openlca.git.util.Diffs;
 import org.slf4j.LoggerFactory;
 
 public class WorkspaceIdUpdater {
 
-	private final static Logger log = LoggerFactory.getLogger(WorkspaceIdUpdater.class);
 	private boolean disabled;
 	private boolean inTransaction;
 
@@ -63,16 +61,12 @@ public class WorkspaceIdUpdater {
 			path += "/" + Cache.getPathCache().pathOf(id);
 		}
 		while (path != null) {
-			try {
-				var diffs = DiffEntries.workspace(repo.toConfig(), null, Collections.singletonList(path));
-				if (!diffs.isEmpty()) {
-					path = null;
-				} else {
-					workspaceIds.put(path, repo.ids.get(path));
-					path = path.contains("/") ? path.substring(0, path.lastIndexOf("/")) : null;
-				}
-			} catch (IOException e) {
-				log.error("Error restoring category id", e);
+			var diffs = Diffs.workspace(repo.toConfig(), null, Collections.singletonList(path));
+			if (!diffs.isEmpty()) {
+				path = null;
+			} else {
+				workspaceIds.put(path, repo.ids.get(path));
+				path = path.contains("/") ? path.substring(0, path.lastIndexOf("/")) : null;
 			}
 		}
 		if (inTransaction)

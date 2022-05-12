@@ -16,7 +16,7 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitStashApply;
-import org.openlca.git.util.DiffEntries;
+import org.openlca.git.util.Diffs;
 
 public class StashApplyAction extends Action implements INavigationAction {
 
@@ -45,7 +45,7 @@ public class StashApplyAction extends Action implements INavigationAction {
 		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
-			if (!DiffEntries.workspace(repo.toConfig()).isEmpty()) {
+			if (!Diffs.workspace(repo.toConfig()).isEmpty()) {
 				// TODO allow if not conflicting
 				MsgBox.info("You can only apply stashes to an unchanged database");
 			}

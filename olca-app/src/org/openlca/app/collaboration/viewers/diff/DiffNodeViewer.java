@@ -105,11 +105,11 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	private JsonNode createNode(DiffResult diff) {
 		if (diff == null)
 			return null;
-		var leftJson = diff.leftDiffType != null && diff.leftDiffType != DiffType.DELETED
-				? RefJson.get(diff.type, diff.refId, diff.leftObjectId)
+		var leftJson = diff.leftDiffType() != null && diff.leftDiffType() != DiffType.DELETED
+				? RefJson.get(diff.type, diff.refId, diff.leftObjectId())
 				: null;
-		var rightJson = diff.rightDiffType != null && diff.rightDiffType != DiffType.DELETED
-				? RefJson.get(diff.type, diff.refId, diff.rightObjectId)
+		var rightJson = diff.rightDiffType() != null && diff.rightDiffType() != DiffType.DELETED
+				? RefJson.get(diff.type, diff.refId, diff.rightObjectId())
 				: null;
 		return new ModelNodeBuilder().build(leftJson, rightJson);
 	}
@@ -185,9 +185,9 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			var descriptor = Daos.root(Database.get(), result.type).getDescriptorForRefId(result.refId);
 			if (descriptor != null)
 				return descriptor.name;
-			if (result.rightObjectId != null)
-				return Repository.get().datasets.getName(result.rightObjectId);
-			return Repository.get().datasets.getName(result.leftObjectId);
+			if (result.rightObjectId() != null)
+				return Repository.get().datasets.getName(result.rightObjectId());
+			return Repository.get().datasets.getName(result.leftObjectId());
 		}
 
 		@Override
@@ -207,7 +207,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 				return null;
 			if (resolvedConflicts.contains(diff.type, diff.refId))
 				return getOverlayMerged(diff);
-			return getOverlay(diff.leftDiffType, diff.rightDiffType);
+			return getOverlay(diff.leftDiffType(), diff.rightDiffType());
 		}
 
 		private Overlay getOverlay(DiffType prev, DiffType next) {
@@ -240,9 +240,9 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			var resolution = resolvedConflicts.get(result.type, result.refId);
 			if (resolution != null && resolution.type != ConflictResolutionType.OVERWRITE_LOCAL)
 				return Overlay.MERGED;
-			if (result.rightDiffType == DiffType.DELETED)
+			if (result.rightDiffType() == DiffType.DELETED)
 				return Overlay.DELETE_FROM_LOCAL;
-			if (result.leftDiffType == null || result.leftDiffType == DiffType.DELETED)
+			if (result.leftDiffType() == null || result.leftDiffType() == DiffType.DELETED)
 				return Overlay.ADD_TO_LOCAL;
 			return Overlay.MODIFY_IN_LOCAL;
 		}

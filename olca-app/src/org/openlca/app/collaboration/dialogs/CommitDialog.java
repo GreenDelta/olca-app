@@ -17,7 +17,7 @@ import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
-import org.openlca.git.model.Change;
+import org.openlca.git.model.Diff;
 import org.openlca.git.util.TypeRefIdSet;
 
 public class CommitDialog extends FormDialog {
@@ -122,11 +122,11 @@ public class CommitDialog extends FormDialog {
 		return message;
 	}
 
-	public List<Change> getSelected() {
+	public List<Diff> getSelected() {
 		return viewer.getChecked().stream()
 				.map(n -> n.contentAsDiffResult())
-				.map(d -> new Change(d.leftDiffType.toChangeType(), d.path))
-				.filter(r -> r != null)
+				.filter(r -> r.left != null)
+				.map(d -> d.left)
 				.toList();
 	}
 

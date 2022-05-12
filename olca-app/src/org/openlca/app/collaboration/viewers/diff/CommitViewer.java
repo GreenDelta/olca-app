@@ -118,7 +118,7 @@ public class CommitViewer extends DiffNodeViewer {
 			if (result == null || result.noAction()) {
 				// TODO || !result.local.tracked
 				getViewer().setChecked(element, false);
-			} else if (!checked && lockNewElements && result.leftDiffType == DiffType.ADDED) {
+			} else if (!checked && lockNewElements && result.leftDiffType() == DiffType.ADDED) {
 				getViewer().setChecked(element, true);
 			} else {
 				super.setSelection(element, checked);

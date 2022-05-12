@@ -12,7 +12,7 @@ import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.collaboration.util.WebRequests.Type;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.core.model.ModelType;
-import org.openlca.git.model.Change;
+import org.openlca.git.model.Diff;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,13 +85,13 @@ public class RepositoryClient {
 		return result;
 	}
 
-	public List<LibraryRestriction> performLibraryCheck(List<Change> changes) throws WebRequestException {
+	public List<LibraryRestriction> performLibraryCheck(List<Diff> diffs) throws WebRequestException {
 		var result = executeLoggedIn(() -> {
 			var invocation = new LibraryCheckInvocation();
 			invocation.baseUrl = config.apiUrl;
 			invocation.sessionId = sessionId;
 			invocation.repositoryId = config.repositoryId;
-			invocation.changes = changes;
+			invocation.diffs = diffs;
 			return invocation.execute();
 		});
 		if (result == null)
@@ -199,7 +199,6 @@ public class RepositoryClient {
 			try {
 				logout();
 			} catch (WebRequestException e) {
-				// TODO handle error
 				log.error("Error logging out from repository", e);
 			}
 		}

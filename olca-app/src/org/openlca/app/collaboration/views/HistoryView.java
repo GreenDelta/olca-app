@@ -28,6 +28,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Reference;
+import org.openlca.git.util.Diffs;
 import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
@@ -67,7 +68,7 @@ public class HistoryView extends ViewPart {
 			referenceViewer.select(null);
 			// TODO this is wrong for merge commits
 			var diffs = Repository.isConnected() && commit != null
-					? Repository.get().diffs.find().withPrevious(commit.id).all()
+					? Diffs.withPrevious(Repository.get().git, commit)
 					: new ArrayList<Diff>();
 			referenceViewer.setInput(diffs);
 		});

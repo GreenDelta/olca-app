@@ -18,7 +18,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitMerge;
 import org.openlca.git.find.Commits;
 import org.openlca.git.util.Constants;
-import org.openlca.git.util.DiffEntries;
+import org.openlca.git.util.Diffs;
 
 public class MergeAction extends Action implements INavigationAction {
 
@@ -43,7 +43,7 @@ public class MergeAction extends Action implements INavigationAction {
 		var repo = Repository.get();
 		var commits = Commits.of(repo.git);
 		try {
-			if (!DiffEntries.workspace(repo.toConfig()).isEmpty()) {
+			if (!Diffs.workspace(repo.toConfig()).isEmpty()) {
 				// TODO allow if not conflicting
 				// TODO offer different solutions (e.g. stash, discard, commit)
 				MsgBox.info("You can only merge into an unchanged database, please stash your changes first");
