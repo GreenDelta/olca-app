@@ -7,7 +7,7 @@ import java.util.List;
 import org.openlca.app.collaboration.dialogs.FetchDialog;
 import org.openlca.app.collaboration.util.InMemoryConflictResolver;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
-import org.openlca.app.collaboration.viewers.diff.DiffResult;
+import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.git.actions.ConflictResolver.ConflictResolution;
@@ -27,7 +27,7 @@ class Conflicts {
 		return new InMemoryConflictResolver(remoteCommit, solved);
 	}
 
-	static List<DiffResult> identify(Commit localCommit, Commit remoteCommit) throws IOException {
+	static List<TriDiff> identify(Commit localCommit, Commit remoteCommit) throws IOException {
 		if (localCommit == null)
 			return new ArrayList<>();
 		var repo = Repository.get();
@@ -39,7 +39,7 @@ class Conflicts {
 		return conflictsOf(localChanges, remoteChanges);
 	}
 
-	static TypeRefIdMap<ConflictResolution> solve(List<DiffResult> changes) {
+	static TypeRefIdMap<ConflictResolution> solve(List<TriDiff> changes) {
 		var node = new DiffNodeBuilder(Database.get()).build(changes);
 		if (node == null)
 			return new TypeRefIdMap<>();
@@ -49,25 +49,25 @@ class Conflicts {
 		return dialog.getResolvedConflicts();
 	}
 
-	private static List<DiffResult> conflictsOf(List<Diff> localChanges, List<Diff> remoteChanges) {
-		var conflicts = new ArrayList<DiffResult>();
+	private static List<TriDiff> conflictsOf(List<Diff> localChanges, List<Diff> remoteChanges) {
+		var conflicts = new ArrayList<TriDiff>();
 		new ArrayList<>(localChanges).forEach(local -> {
 			var remote = remoteChanges.stream()
-					.filter(r -> r.ref().type == local.ref().type && r.ref().refId.equals(local.ref().refId))
+					.filter(r -> r.type == local.type && r.refId.equals(local.refId))
 					.findFirst()
 					.orElse(null);
 			if (remote != null) {
-				conflicts.add(new DiffResult(local, remote));
+				conflicts.add(new TriDiff(local, remote));
 				localChanges.remove(local);
 			}
 		});
 		remoteChanges.forEach(remote -> {
 			var local = localChanges.stream()
-					.filter(l -> l.ref().type == remote.ref().type && l.ref().refId.equals(remote.ref().refId))
+					.filter(l -> l.type == remote.type && l.refId.equals(remote.refId))
 					.findFirst()
 					.orElse(null);
 			if (local != null) {
-				conflicts.add(new DiffResult(local, remote));
+				conflicts.add(new TriDiff(local, remote));
 			}
 		});
 		return conflicts;

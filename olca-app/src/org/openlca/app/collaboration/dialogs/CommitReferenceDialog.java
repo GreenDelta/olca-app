@@ -12,7 +12,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
-import org.openlca.app.collaboration.viewers.diff.DiffResult;
+import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
@@ -49,9 +49,9 @@ public class CommitReferenceDialog extends FormDialog {
 
 	private TypeRefIdSet getNewElements(DiffNode node) {
 		var newElements = new TypeRefIdSet();
-		var result = node.contentAsDiffResult();
-		if (result != null && result.leftDiffType() == DiffType.ADDED) {
-			newElements.add(result.type, result.refId);
+		var diff = node.contentAsTriDiff();
+		if (diff != null && diff.leftDiffType == DiffType.ADDED) {
+			newElements.add(diff.type, diff.refId);
 		}
 		if (node.children == null)
 			return newElements;
@@ -78,9 +78,9 @@ public class CommitReferenceDialog extends FormDialog {
 		createButton(parent, IDialogConstants.OK_ID, M.Commit, true);
 	}
 
-	public List<DiffResult> getSelected() {
+	public List<TriDiff> getSelected() {
 		return viewer.getChecked()
-				.stream().map(n -> n.contentAsDiffResult())
+				.stream().map(n -> n.contentAsTriDiff())
 				.toList();
 	}
 

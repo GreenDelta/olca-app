@@ -12,7 +12,7 @@ import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.collaboration.util.WebRequests.Type;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.core.model.ModelType;
-import org.openlca.git.model.Diff;
+import org.openlca.git.model.ModelRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,13 +85,13 @@ public class RepositoryClient {
 		return result;
 	}
 
-	public List<LibraryRestriction> performLibraryCheck(List<Diff> diffs) throws WebRequestException {
+	public List<LibraryRestriction> performLibraryCheck(List<ModelRef> refs) throws WebRequestException {
 		var result = executeLoggedIn(() -> {
 			var invocation = new LibraryCheckInvocation();
 			invocation.baseUrl = config.apiUrl;
 			invocation.sessionId = sessionId;
 			invocation.repositoryId = config.repositoryId;
-			invocation.diffs = diffs;
+			invocation.refs = refs;
 			return invocation.execute();
 		});
 		if (result == null)

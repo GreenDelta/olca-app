@@ -17,7 +17,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.collaboration.viewers.diff.CompareViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
-import org.openlca.app.collaboration.viewers.diff.DiffResult;
+import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
@@ -92,14 +92,14 @@ public class CompareView extends ViewPart {
 		var wsDiffs = new HashMap<String, Diff>();
 		var diffs = Diffs.workspace(Repository.get().toConfig(), commit, PathFilters.of(elements));
 		for (var diff : diffs) {
-			wsDiffs.put(diff.path(), diff);
+			wsDiffs.put(diff.path, diff);
 		}
 		var keys = new HashSet<String>();
 		keys.addAll(wsDiffs.keySet());
 		keys.addAll(rDiffs.keySet());
-		var differences = new HashMap<String, DiffResult>();
+		var differences = new HashMap<String, TriDiff>();
 		for (var key : keys) {
-			differences.put(key, new DiffResult(wsDiffs.get(key), rDiffs.get(key)));
+			differences.put(key, new TriDiff(wsDiffs.get(key), rDiffs.get(key)));
 		}
 		return new DiffNodeBuilder(Database.get()).build(differences.values());
 	}
@@ -110,7 +110,7 @@ public class CompareView extends ViewPart {
 				isAhead ? head : commit,
 				isAhead ? commit : head);
 		for (var diff : diffs) {
-			diffMap.put(diff.path(), diff);
+			diffMap.put(diff.path, diff);
 		}
 		return diffMap;
 	}

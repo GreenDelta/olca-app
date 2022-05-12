@@ -72,7 +72,7 @@ public class CommitViewer extends DiffNodeViewer {
 		Set<DiffNode> nodes = new HashSet<>();
 		for (var child : node.children) {
 			if (child.isModelNode()) {
-				var d = child.contentAsDiffResult();
+				var d = child.contentAsTriDiff();
 				if (models == null || models.contains(d.type, d.refId)) {
 					nodes.add(child);
 				}
@@ -114,11 +114,11 @@ public class CommitViewer extends DiffNodeViewer {
 				super.setSelection(element, checked);
 				return;
 			}
-			var result = element.contentAsDiffResult();
-			if (result == null || result.noAction()) {
-				// TODO || !result.local.tracked
+			var diff = element.contentAsTriDiff();
+			if (diff == null || diff.noAction()) {
+				// TODO || !diff.left.tracked
 				getViewer().setChecked(element, false);
-			} else if (!checked && lockNewElements && result.leftDiffType() == DiffType.ADDED) {
+			} else if (!checked && lockNewElements && diff.leftDiffType == DiffType.ADDED) {
 				getViewer().setChecked(element, true);
 			} else {
 				super.setSelection(element, checked);

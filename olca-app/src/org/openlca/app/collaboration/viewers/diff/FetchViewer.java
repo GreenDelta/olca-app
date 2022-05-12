@@ -64,10 +64,10 @@ public class FetchViewer extends DiffNodeViewer {
 			nodes.addAll(node.children);
 			if (!node.isModelNode())
 				continue;
-			DiffResult result = (DiffResult) node.content;
-			if (!result.conflict())
+			TriDiff diff = (TriDiff) node.content;
+			if (!diff.conflict())
 				continue;
-			if (getResolvedConflicts().contains(result.type, result.refId))
+			if (getResolvedConflicts().contains(diff.type, diff.refId))
 				continue;
 			conflicts.add(node);
 		}

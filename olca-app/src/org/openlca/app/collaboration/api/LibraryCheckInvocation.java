@@ -8,7 +8,7 @@ import org.openlca.app.collaboration.util.Valid;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.collaboration.util.WebRequests.Type;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
-import org.openlca.git.model.Diff;
+import org.openlca.git.model.ModelRef;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -25,7 +25,7 @@ class LibraryCheckInvocation {
 	String baseUrl;
 	String sessionId;
 	String repositoryId;
-	List<Diff> diffs;
+	List<ModelRef> refs;
 
 	/**
 	 * Retrieves the libraries for the given ref ids
@@ -36,9 +36,9 @@ class LibraryCheckInvocation {
 	 */
 	List<LibraryRestriction> execute() throws WebRequestException {
 		Valid.checkNotEmpty(baseUrl, "base url");
-		Valid.checkNotEmpty(diffs, "changes");
+		Valid.checkNotEmpty(refs, "refs");
 		var url = baseUrl + PATH + "?group=" + repositoryId.split("/")[0] + "&name=" + repositoryId.split("/")[1];
-		var response = WebRequests.call(Type.POST, url, sessionId, diffs.stream().map(d -> d.ref().refId).toList());
+		var response = WebRequests.call(Type.POST, url, sessionId, refs.stream().map(d -> d.refId).toList());
 		if (response.getStatus() == Status.NO_CONTENT.getStatusCode())
 			return Collections.emptyList();
 		return mapResults(response);
@@ -49,10 +49,9 @@ class LibraryCheckInvocation {
 		List<LibraryRestriction> list = new Gson().fromJson(entity, new TypeToken<List<LibraryRestriction>>() {
 		}.getType());
 		list.forEach(r -> {
-			var diff = diffs.stream()
-					.filter(d -> d.ref().refId.equals(r.datasetRefId))
+			var ref = refs.stream()
+					.filter(d -> d.refId.equals(r.datasetRefId))
 					.findFirst().get();
-			var ref = diff.ref();
 			r.modelType = ref.type;
 			r.path = ref.path;
 		});

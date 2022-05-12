@@ -31,7 +31,7 @@ public class DiffNode {
 	}
 
 	boolean isModelNode() {
-		return content instanceof DiffResult;
+		return content instanceof TriDiff;
 	}
 
 	ModelType getModelType() {
@@ -39,15 +39,15 @@ public class DiffNode {
 			return (ModelType) content;
 		if (isCategoryNode())
 			return ModelType.valueOf(content.toString().substring(0, content.toString().indexOf("/")));
-		if (content instanceof DiffResult result)
-			return result.type;
+		if (content instanceof TriDiff diff)
+			return diff.type;
 		return null;
 	}
 
 	boolean hasChanged() {
 		if (!isModelNode())
 			return false;
-		return !contentAsDiffResult().noAction();
+		return !contentAsTriDiff().noAction();
 	}
 
 	IDatabase contentAsDatabase() {
@@ -62,8 +62,8 @@ public class DiffNode {
 		return content instanceof String s ? s : null;
 	}
 
-	public DiffResult contentAsDiffResult() {
-		return content instanceof DiffResult d ? d : null;
+	public TriDiff contentAsTriDiff() {
+		return content instanceof TriDiff d ? d : null;
 	}
 
 	@Override

@@ -83,7 +83,7 @@ public class FetchDialog extends FormDialog {
 	private void solveAll(ConflictResolution resolution) {
 		viewer.getResolvedConflicts().clear();
 		for (DiffNode node : viewer.getConflicts()) {
-			var r = node.contentAsDiffResult();
+			var r = node.contentAsTriDiff();
 			viewer.getResolvedConflicts().put(r.type, r.refId, resolution);
 		}
 		viewer.refresh();

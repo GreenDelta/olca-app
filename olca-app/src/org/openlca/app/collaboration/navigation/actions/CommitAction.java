@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -12,12 +13,9 @@ import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
-import org.openlca.app.collaboration.dialogs.LibraryRestrictionDialog;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
-import org.openlca.app.collaboration.preferences.CollaborationPreference;
-import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
-import org.openlca.app.collaboration.viewers.diff.DiffResult;
+import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.collaboration.views.PathFilters;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
@@ -28,6 +26,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitCommit;
 import org.openlca.git.actions.GitPush;
+import org.openlca.git.model.Change;
 import org.openlca.git.model.Diff;
 import org.openlca.git.util.Diffs;
 import org.openlca.git.util.TypeRefIdSet;
@@ -70,11 +69,11 @@ public class CommitAction extends Action implements INavigationAction {
 			// changes);
 			if (withReferences == null)
 				return;
-			if (!checkLibraries(withReferences))
-				return;
+//			if (!checkLibraries(withReferences))
+//				return;
 			Actions.run(GitCommit.from(Database.get())
 					.to(repo.git)
-					.diffs(withReferences)
+					.changes(withReferences.stream().map(d -> new Change(d.leftDiffType, d)).collect(Collectors.toList()))
 					.withMessage(dialog.getMessage())
 					.as(committer)
 					.update(repo.workspaceIds));
@@ -98,7 +97,7 @@ public class CommitAction extends Action implements INavigationAction {
 
 	private CommitDialog createCommitDialog(List<Diff> diffs) {
 		var differences = diffs.stream()
-				.map(d -> new DiffResult(d, null))
+				.map(d -> new TriDiff(d, null))
 				.toList();
 		var node = new DiffNodeBuilder(Database.get()).build(differences);
 		if (node == null) {
@@ -109,7 +108,6 @@ public class CommitAction extends Action implements INavigationAction {
 		var paths = PathFilters.of(selection);
 		var initialSelection = new TypeRefIdSet();
 		diffs.stream()
-				.map(d -> d.ref())
 				.filter(ref -> selectionContainsPath(paths, ref.path))
 				.forEach(ref -> initialSelection.add(ref.type, ref.refId));
 		dialog.setInitialSelection(initialSelection);
@@ -125,22 +123,22 @@ public class CommitAction extends Action implements INavigationAction {
 		return false;
 	}
 
-	private boolean checkLibraries(List<Diff> diffs) {
-		if (!CollaborationPreference.checkAgainstLibraries())
-			return true;
-		if (!Repository.get().isCollaborationServer())
-			return true;
-		try {
-			var restricted = Repository.get().client.performLibraryCheck(diffs);
-			if (restricted.isEmpty())
-				return true;
-			var code = new LibraryRestrictionDialog(restricted).open();
-			return code == LibraryRestrictionDialog.OK;
-		} catch (WebRequestException e) {
-			Actions.handleException("Error performing library check", e);
-			return false;
-		}
-	}
+//	private boolean checkLibraries(List<ModelRef> refs) {
+//		if (!CollaborationPreference.checkAgainstLibraries())
+//			return true;
+//		if (!Repository.get().isCollaborationServer())
+//			return true;
+//		try {
+//			var restricted = Repository.get().client.performLibraryCheck(refs);
+//			if (restricted.isEmpty())
+//				return true;
+//			var code = new LibraryRestrictionDialog(restricted).open();
+//			return code == LibraryRestrictionDialog.OK;
+//		} catch (WebRequestException e) {
+//			Actions.handleException("Error performing library check", e);
+//			return false;
+//		}
+//	}
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {

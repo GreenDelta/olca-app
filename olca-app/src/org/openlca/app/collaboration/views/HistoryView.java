@@ -3,6 +3,8 @@ package org.openlca.app.collaboration.views;
 import java.util.ArrayList;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jgit.diff.DiffEntry.Side;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Image;
@@ -87,8 +89,8 @@ public class HistoryView extends ViewPart {
 				diffViewer.setInput(null);
 				return;
 			}
-			var currentElement = getJson(diff.right);
-			var previousElement = getJson(diff.left);
+			var currentElement = getJson(diff.toReference(Side.NEW));
+			var previousElement = getJson(diff.toReference(Side.OLD));
 			var node = new ModelNodeBuilder().build(currentElement, previousElement);
 			diffViewer.setInput(node);
 		});
@@ -161,14 +163,14 @@ public class HistoryView extends ViewPart {
 			if (!(element instanceof Diff))
 				return null;
 			var diff = (Diff) element;
-			var text = diff.ref().category;
+			var text = diff.category;
 			if (!text.isEmpty()) {
 				text += "/";
 			}
-			var descriptor = Database.get().getDescriptor(diff.right.type.getModelClass(), diff.right.refId);
+			var descriptor = Database.get().getDescriptor(diff.type.getModelClass(), diff.refId);
 			if (descriptor != null)
 				return text + descriptor.name;
-			var objectId = diff.left != null ? diff.left.objectId : diff.right.objectId;
+			var objectId = ObjectId.zeroId().equals(diff.oldObjectId) ? diff.newObjectId : diff.oldObjectId;
 			return text + Repository.get().datasets.getName(objectId);
 		}
 
@@ -178,12 +180,12 @@ public class HistoryView extends ViewPart {
 				return null;
 			var data = (Diff) element;
 			Overlay overlay = null;
-			if (data.type == DiffType.ADDED) {
+			if (data.diffType == DiffType.ADDED) {
 				overlay = Overlay.ADDED;
-			} else if (data.type == DiffType.DELETED) {
+			} else if (data.diffType == DiffType.DELETED) {
 				overlay = Overlay.DELETED;
 			}
-			return Images.get(data.ref().type, overlay);
+			return Images.get(data.type, overlay);
 		}
 
 	}

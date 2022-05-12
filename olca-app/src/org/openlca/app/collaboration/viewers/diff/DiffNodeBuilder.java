@@ -11,49 +11,49 @@ import org.openlca.util.Strings;
 public class DiffNodeBuilder {
 
 	private final Map<String, DiffNode> nodes = new HashMap<>();
-	private final Map<String, DiffResult> results = new HashMap<>();
+	private final Map<String, TriDiff> diffs = new HashMap<>();
 	private final String database;
 
 	public DiffNodeBuilder(IDatabase database) {
 		this.database = database.getName();
 	}
 
-	public DiffNode build(Collection<DiffResult> diffs) {
+	public DiffNode build(Collection<TriDiff> diffs) {
 		if (!init(diffs))
 			return null;
 		DiffNode root = new DiffNode(null, database);
 		nodes.put(null, root);
-		for (DiffResult result : this.results.values()) {
-			build(result);
+		for (TriDiff diff : this.diffs.values()) {
+			build(diff);
 		}
 		return root;
 	}
 
-	private boolean init(Collection<DiffResult> diffs) {
-		for (DiffResult result : diffs) {
-			this.results.put(getKey(result), result);
+	private boolean init(Collection<TriDiff> diffs) {
+		for (TriDiff result : diffs) {
+			this.diffs.put(getKey(result), result);
 		}
 		nodes.clear();
-		return this.results.size() != 0;
+		return this.diffs.size() != 0;
 	}
 
-	private void build(DiffResult result) {
-		if (nodes.containsKey(getKey(result)))
+	private void build(TriDiff diff) {
+		if (nodes.containsKey(getKey(diff)))
 			return;
-		if (!result.type.isRoot())
+		if (!diff.type.isRoot())
 			return;
-		if (result.noAction())
+		if (diff.noAction())
 			return;
-		createNode(result);
+		createNode(diff);
 	}
 
-	private DiffNode createNode(DiffResult result) {
-		DiffNode parent = !Strings.nullOrEmpty(result.category)
-				? getOrCreateCategoryNode(result.type, result.category)
-				: getOrCreateModelTypeNode(result.type);
-		DiffNode node = new DiffNode(parent, result);
+	private DiffNode createNode(TriDiff diff) {
+		DiffNode parent = !Strings.nullOrEmpty(diff.category)
+				? getOrCreateCategoryNode(diff.type, diff.category)
+				: getOrCreateModelTypeNode(diff.type);
+		DiffNode node = new DiffNode(parent, diff);
 		parent.children.add(node);
-		nodes.put(getKey(result), node);
+		nodes.put(getKey(diff), node);
 		return node;
 	}
 
@@ -83,8 +83,8 @@ public class DiffNodeBuilder {
 		return typeNode;
 	}
 
-	private String getKey(DiffResult result) {
-		return result.path;
+	private String getKey(TriDiff diff) {
+		return diff.path;
 	}
 
 }

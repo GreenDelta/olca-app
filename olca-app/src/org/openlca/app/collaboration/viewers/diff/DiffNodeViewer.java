@@ -76,7 +76,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		var selected = getSelected(event);
 		if (selected == null)
 			return;
-		var diff = selected.contentAsDiffResult();
+		var diff = selected.contentAsTriDiff();
 		var node = createNode(diff);
 		var dialogResult = JsonDiffDialog.open(node, direction, editMode);
 		if (editMode && dialogResult != JsonDiffDialog.CANCEL) {
@@ -102,14 +102,14 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		return ConflictResolution.merge(merged);
 	}
 
-	private JsonNode createNode(DiffResult diff) {
+	private JsonNode createNode(TriDiff diff) {
 		if (diff == null)
 			return null;
-		var leftJson = diff.leftDiffType() != null && diff.leftDiffType() != DiffType.DELETED
-				? RefJson.get(diff.type, diff.refId, diff.leftObjectId())
+		var leftJson = diff.leftDiffType != null && diff.leftDiffType != DiffType.DELETED
+				? RefJson.get(diff.type, diff.refId, diff.leftNewObjectId)
 				: null;
-		var rightJson = diff.rightDiffType() != null && diff.rightDiffType() != DiffType.DELETED
-				? RefJson.get(diff.type, diff.refId, diff.rightObjectId())
+		var rightJson = diff.rightDiffType != null && diff.rightDiffType != DiffType.DELETED
+				? RefJson.get(diff.type, diff.refId, diff.rightNewObjectId)
 				: null;
 		return new ModelNodeBuilder().build(leftJson, rightJson);
 	}
@@ -181,13 +181,13 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 				return Labels.plural(node.getModelType());
 			if (node.isCategoryNode())
 				return node.contentAsString().substring(node.contentAsString().lastIndexOf("/") + 1);
-			var result = (DiffResult) node.content;
-			var descriptor = Daos.root(Database.get(), result.type).getDescriptorForRefId(result.refId);
+			var diff = (TriDiff) node.content;
+			var descriptor = Daos.root(Database.get(), diff.type).getDescriptorForRefId(diff.refId);
 			if (descriptor != null)
 				return descriptor.name;
-			if (result.rightObjectId() != null)
-				return Repository.get().datasets.getName(result.rightObjectId());
-			return Repository.get().datasets.getName(result.leftObjectId());
+			if (diff.rightNewObjectId != null)
+				return Repository.get().datasets.getName(diff.rightNewObjectId);
+			return Repository.get().datasets.getName(diff.leftNewObjectId);
 		}
 
 		@Override
@@ -197,17 +197,17 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			var node = (DiffNode) element;
 			if (node.isModelTypeNode() || node.isCategoryNode())
 				return Images.getForCategory(node.getModelType());
-			var diff = node.contentAsDiffResult();
+			var diff = node.contentAsTriDiff();
 			var overlay = getOverlay(diff);
 			return Images.get(diff.type, overlay);
 		}
 
-		private Overlay getOverlay(DiffResult diff) {
+		private Overlay getOverlay(TriDiff diff) {
 			if (diff.noAction())
 				return null;
 			if (resolvedConflicts.contains(diff.type, diff.refId))
 				return getOverlayMerged(diff);
-			return getOverlay(diff.leftDiffType(), diff.rightDiffType());
+			return getOverlay(diff.leftDiffType, diff.rightDiffType);
 		}
 
 		private Overlay getOverlay(DiffType prev, DiffType next) {
@@ -236,13 +236,13 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			};
 		}
 
-		private Overlay getOverlayMerged(DiffResult result) {
+		private Overlay getOverlayMerged(TriDiff result) {
 			var resolution = resolvedConflicts.get(result.type, result.refId);
 			if (resolution != null && resolution.type != ConflictResolutionType.OVERWRITE_LOCAL)
 				return Overlay.MERGED;
-			if (result.rightDiffType() == DiffType.DELETED)
+			if (result.rightDiffType == DiffType.DELETED)
 				return Overlay.DELETE_FROM_LOCAL;
-			if (result.leftDiffType() == null || result.leftDiffType() == DiffType.DELETED)
+			if (result.leftDiffType == null || result.leftDiffType == DiffType.DELETED)
 				return Overlay.ADD_TO_LOCAL;
 			return Overlay.MODIFY_IN_LOCAL;
 		}
