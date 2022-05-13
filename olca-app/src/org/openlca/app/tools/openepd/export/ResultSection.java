@@ -1,17 +1,26 @@
 package org.openlca.app.tools.openepd.export;
 
+import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
+import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ModelType;
+import org.openlca.io.openepd.Vocab.Indicator;
+import org.openlca.io.openepd.Vocab.Method;
 
 import java.util.Arrays;
 
@@ -24,9 +33,47 @@ record ResultSection(ResultModel model) {
 		var section = UI.section(body, tk, title);
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk, 1);
+		createCombo(comp, tk);
+		createTable(comp);
+	}
 
-		// TODO: method column
+	private void createCombo(Composite parent, FormToolkit tk) {
+		var comp = UI.formComposite(parent, tk);
+		var combo = UI.formCombo(comp, tk, "openEPD LCIA Method");
+		var methods = Method.values();
+		var items = new String[methods.length];
+		int selectionIdx = -1;
+		Method selected = null;
+		double score = 0;
+		for (int i = 0; i < methods.length; i++) {
+			var method = methods[i];
+			items[i] = method.code();
+			if (method == Method.UNKNOWN_LCIA
+				&& selected == null) {
+				selectionIdx = i;
+				selected = method;
+				continue;
+			}
+			if (model.method != null) {
+				var s = method.matchScoreOf(model.method.name);
+				if (s > score) {
+					selectionIdx = i;
+					selected = method;
+					score = s;
+				}
+			}
+		}
 
+		model.epdMethod = selected;
+		combo.setItems(items);
+		combo.select(selectionIdx);
+		Controls.onSelect(combo, $ -> {
+			var idx = combo.getSelectionIndex();
+			model.epdMethod = methods[idx];
+		});
+	}
+
+	private void createTable(Composite parent) {
 		var columns = new String[5 + model.scopes.size()];
 		columns[0] = "Indicator";
 		columns[1] = "Unit";
@@ -36,7 +83,7 @@ record ResultSection(ResultModel model) {
 		for (int i = 0; i < model.scopes.size(); i++) {
 			columns[i + 5] = model.scopes.get(i);
 		}
-		var table = Tables.createViewer(comp, columns);
+		var table = Tables.createViewer(parent, columns);
 		table.setLabelProvider(new TableLabel());
 		var widths = new double[columns.length];
 		widths[0] = 0.2;
@@ -44,8 +91,8 @@ record ResultSection(ResultModel model) {
 		widths[2] = 0.1;
 		widths[3] = 0.1;
 		widths[4] = 0.1;
-		Arrays.fill(widths, 5, columns.length, 
-				.4 / (model.scopes.size()));
+		Arrays.fill(widths, 5, columns.length,
+			.4 / (model.scopes.size()));
 		Tables.bindColumnWidths(table, widths);
 		for (int i = 4; i < columns.length; i++) {
 			table.getTable()
@@ -53,10 +100,33 @@ record ResultSection(ResultModel model) {
 				.setAlignment(SWT.CENTER);
 		}
 		table.setInput(model.rows);
+
+		var modifier = new ModifySupport<ResultRow>(table)
+			.bind("Factor", new FactorColumn())
+			.bind("openEPD Indicator", new IndicatorColumn());
+		for (var scope : model.scopes) {
+			modifier.bind(scope, new ScopeColumn(scope));
+		}
 	}
 
 	private class TableLabel extends LabelProvider
-		implements ITableLabelProvider {
+		implements ITableLabelProvider, ITableColorProvider {
+
+		@Override
+		public Color getForeground(Object obj, int col) {
+			if (!(obj instanceof ResultRow row))
+				return null;
+			if (col == 1 || col == 3 || col == 4) {
+				if (row.epdIndicator != null && row.unitMatch == null)
+					return Colors.fromHex("#ff5722");
+			}
+			return null;
+		}
+
+		@Override
+		public Color getBackground(Object obj, int col) {
+			return null;
+		}
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
@@ -69,16 +139,15 @@ record ResultSection(ResultModel model) {
 		public String getColumnText(Object obj, int col) {
 			if (!(obj instanceof ResultRow row))
 				return null;
+			var epdInd = row.epdIndicator;
 			return switch (col) {
 				case 0 -> Labels.name(row.indicator);
 				case 1 -> row.indicator.referenceUnit;
-				case 2 -> row.epdIndicator != null
-					? row.epdIndicator.code()
+				case 2 -> epdInd != null ? epdInd.code() : " - ";
+				case 3 -> epdInd != null ? epdInd.unit() : " - ";
+				case 4 -> epdInd != null
+					? Double.toString(row.factor)
 					: " - ";
-				case 3 -> row.epdIndicator != null
-					? row.epdIndicator.unit()
-					: " - ";
-				case 4 -> Double.toString(row.factor);
 				default -> {
 					int idx = col - 5;
 					if (idx < 0 || idx >= model.scopes.size())
@@ -93,4 +162,74 @@ record ResultSection(ResultModel model) {
 		}
 	}
 
+	private static class FactorColumn extends DoubleCellModifier<ResultRow> {
+
+		@Override
+		public Double getDouble(ResultRow row) {
+			return row.factor;
+		}
+
+		@Override
+		public void setDouble(ResultRow row, Double value) {
+			row.factor = value != null
+				? value
+				: 1.0;
+		}
+	}
+
+	private static class ScopeColumn extends DoubleCellModifier<ResultRow> {
+
+		private final String scope;
+
+		ScopeColumn(String scope) {
+			this.scope = scope;
+		}
+
+		@Override
+		public Double getDouble(ResultRow row) {
+			return row.values.get(scope);
+		}
+
+		@Override
+		public void setDouble(ResultRow row, Double value) {
+			row.values.put(scope, value);
+		}
+	}
+
+	private static class IndicatorColumn
+		extends ComboBoxCellModifier<ResultRow, Indicator> {
+
+		@Override
+		protected Indicator[] getItems(ResultRow row) {
+			return Indicator.values();
+		}
+
+		@Override
+		protected Indicator getItem(ResultRow row) {
+			return row.epdIndicator;
+		}
+
+		@Override
+		protected String getText(Indicator i) {
+			return i != null ? i.code() : "";
+		}
+
+		@Override
+		protected void setItem(ResultRow row, Indicator i) {
+			if (row == null)
+				return;
+			if (i == null) {
+				row.epdIndicator = null;
+				row.unitMatch = null;
+				row.factor = 1.0;
+				return;
+			}
+			row.epdIndicator = i;
+			row.unitMatch = i.unitMatchOf(row.indicator.referenceUnit)
+				.orElse(null);
+			row.factor = row.unitMatch != null
+				? row.unitMatch.factor()
+				: 1;
+		}
+	}
 }
