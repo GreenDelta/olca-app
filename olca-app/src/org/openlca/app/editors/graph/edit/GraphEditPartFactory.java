@@ -2,8 +2,9 @@ package org.openlca.app.editors.graph.edit;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
-import org.openlca.app.editors.graph.model.GraphModel;
-import org.openlca.app.editors.graph.model.IOPanel;
+import org.openlca.app.editors.graph.model.ExchangeItem;
+import org.openlca.app.editors.graph.model.Graph;
+import org.openlca.app.editors.graph.model.IOPane;
 import org.openlca.app.editors.graph.model.Node;
 
 /**
@@ -15,20 +16,24 @@ public class GraphEditPartFactory implements EditPartFactory {
 	@Override
 	public EditPart createEditPart(EditPart context, Object model) {
 		var part = editPartOf(model);
-		if (part == null)
+		if (part == null) {
 			return null;
+		}
 		part.setModel(model);
 		return part;
 	}
 
 	private EditPart editPartOf(Object model) {
-		System.out.printf("Creating %s EditPart%n", model);
-		if (model instanceof GraphModel)
+		if (model instanceof Graph)
 			return new GraphEditPart();
-		if (model instanceof Node)
-			return new NodeEditPart();
-		if (model instanceof IOPanel)
-			return new IOPanelEditPart();
+		if (model instanceof Node node)
+			if (node.isMinimized())
+				return new NodeEditPart.Minimized();
+			else return new NodeEditPart.Maximized();
+		if (model instanceof IOPane)
+			return new IOPaneEditPart();
+		if (model instanceof ExchangeItem)
+			return new ExchangeItemEditPart();
 		return null;
 	}
 

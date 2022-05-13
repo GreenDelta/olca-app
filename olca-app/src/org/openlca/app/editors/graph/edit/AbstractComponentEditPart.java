@@ -1,13 +1,13 @@
 package org.openlca.app.editors.graph.edit;
 
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.openlca.app.editors.graph.model.GraphComponent;
+
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
-import org.openlca.app.editors.graph.model.ConnectableModelElement;
-
-
-abstract class AbstractGraphEditPart<N extends ConnectableModelElement> extends
+public abstract class AbstractComponentEditPart<N extends GraphComponent> extends
 	AbstractGraphicalEditPart implements PropertyChangeListener {
 
 	/**
@@ -39,7 +39,14 @@ abstract class AbstractGraphEditPart<N extends ConnectableModelElement> extends
 	}
 
 	@Override
-	protected final List<? extends ConnectableModelElement> getModelChildren() {
+	protected List<? extends GraphComponent> getModelChildren() {
 		return getModel().getChildren();
+	}
+
+	public void resetChildEditPart(EditPart childEditPart) {
+		var index = getChildren().indexOf(childEditPart);
+		var newNodeEditPart = createChild(childEditPart.getModel());
+		removeChild(childEditPart);
+		addChild(newNodeEditPart, index);
 	}
 }

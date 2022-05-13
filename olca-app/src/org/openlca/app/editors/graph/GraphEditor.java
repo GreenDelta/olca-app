@@ -1,10 +1,13 @@
 package org.openlca.app.editors.graph;
 
+import java.util.EventObject;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.*;
 import org.eclipse.gef.*;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
+import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.actions.*;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.jface.action.IAction;
@@ -14,23 +17,31 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.graph.edit.GraphEditPartFactory;
-import org.openlca.app.editors.graph.model.GraphModel;
-import org.openlca.app.editors.graph.model.IOPanel;
-import org.openlca.app.editors.graph.model.Node;
-import org.openlca.app.editors.graphical.GraphicalEditorInput;
+import org.openlca.app.editors.graph.model.Graph;
+import org.openlca.app.editors.graph.model.GraphFactory;
+import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
+import org.openlca.core.model.ProductSystem;
 
-import java.util.EventObject;
-
+/**
+ * A {@link GraphEditor} is the starting point of the graphical interface of a
+ * product system. It creates an <code>Editor</code> containing a single
+ * <code>GraphicalViewer</code> as its control.
+ * The <code>GraphModel</code>  is the head of the model to be further
+ * displayed.
+ */
 public class GraphEditor extends GraphicalEditor {
 
-
 	private final ProductSystemEditor systemEditor;
-	private GraphModel graphModel = new GraphModel();
+	private Graph graph = new Graph();
 
 	public static final double[] ZOOM_LEVELS = new double[] {
 		0.01, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0 };
+
+	// TODO: save this in the same way like the layout is currently stored
+	public final GraphConfig config = new GraphConfig();
+	private final GraphFactory graphFactory = new GraphFactory(config);
 
 	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
@@ -40,9 +51,9 @@ public class GraphEditor extends GraphicalEditor {
 	public void init(IEditorSite site, IEditorInput input)
 		throws PartInitException {
 		setEditDomain(new DefaultEditDomain(this));
-		if (input instanceof GraphicalEditorInput ginp) {
-			if (ginp.getDescriptor() != null) {
-				setPartName(Labels.name(ginp.getDescriptor()));
+		if (input instanceof GraphicalEditorInput graphInput) {
+			if (graphInput.descriptor() != null) {
+				setPartName(Labels.name(graphInput.descriptor()));
 			}
 		}
 		super.init(site, input);
@@ -52,12 +63,28 @@ public class GraphEditor extends GraphicalEditor {
 	protected void initializeGraphicalViewer() {
 		var viewer = getGraphicalViewer();
 
-		// TODO
-		//		GraphDropListener.on(this, viewer);
-		//		viewer.getEditDomain().setActiveTool(
-		//			new PanningSelectionTool());
+		GraphDropListener.on(this);
+		// TODO Implement a PanningSelectionTool without pressing SpaceBar and
+		//  Selection while pressing Ctrl.
+		viewer.getEditDomain().setActiveTool(new PanningSelectionTool());
 
-		viewer.setContents(getGraphModel());
+		viewer.setContents(getModel());
+
+		// TODO load the graph settings
+		//		var fileApplied = GraphFile.apply(this);
+		//		if (!fileApplied) {
+		//			// no saved settings applied =>
+		//			// try to find a good configuration
+		//			var system = systemEditor.getModel();
+		//			if (system.referenceProcess != null) {
+		//				var refNode = model.getProcessNode(
+		//					system.referenceProcess.id);
+		//				if (refNode != null) {
+		//					refNode.expandLeft();
+		//					refNode.expandRight();
+		//				}
+		//			}
+		//		}
 	}
 
 	@Override
@@ -105,7 +132,7 @@ public class GraphEditor extends GraphicalEditor {
 		ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(
 			ZoomManager.class.toString());
 		if (manager != null)
-			manager.setZoom(getGraphModel().getZoom());
+			manager.setZoom(getModel().getZoom());
 		// Scroll-wheel Zoom
 		getGraphicalViewer().setProperty(
 			MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1),
@@ -114,13 +141,25 @@ public class GraphEditor extends GraphicalEditor {
 
 	@Override
 	protected void setInput(IEditorInput input) {
-		var node = new Node("Node 1");
-		node.addChild(new IOPanel(true));
-		graphModel.addChild(node);
-		graphModel.addChild(new Node("Node 2"));
-		graphModel.addChild(new Node("Node 3"));
-		graphModel.addChild(new Node("Node 4"));
-		setPartName("Testing");
+		//TODO
+	}
+
+	@Override
+	public GraphicalViewer getGraphicalViewer() {
+		return super.getGraphicalViewer();
+	}
+
+	public void setDirty() {
+		systemEditor.setDirty(true);
+	}
+
+	@Override
+	public boolean isDirty() {
+		return systemEditor.isDirty();
+	}
+
+	public ProductSystem getProductSystem() {
+		return systemEditor.getModel();
 	}
 
 	@Override
@@ -129,12 +168,16 @@ public class GraphEditor extends GraphicalEditor {
 		super.commandStackChanged(event);
 	}
 
-	protected GraphModel getGraphModel() {
-		return graphModel;
+	public Graph getModel() {
+		return graph;
 	}
 
-	public void setGraphModel(GraphModel model) {
-		graphModel = model;
+	public GraphFactory getGraphFactory() {
+		return graphFactory;
+	}
+
+	public void setGraphModel(Graph model) {
+		graph = model;
 	}
 
 	public ZoomManager getZoomManager() {

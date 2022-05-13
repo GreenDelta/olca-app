@@ -2,16 +2,11 @@ package org.openlca.app.editors.graph.edit;
 
 import org.eclipse.draw2d.*;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
-import org.openlca.app.editors.graph.model.ConnectableModelElement;
-import org.openlca.app.editors.graph.model.GraphModel;
-import org.openlca.app.editors.graph.model.ModelElement;
-import org.openlca.app.editors.graph.model.Node;
+import org.openlca.app.editors.graph.model.GraphComponent;
+import org.openlca.app.editors.graph.model.Graph;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.List;
 
 /**
  * EditPart for the GraphModel instance.
@@ -26,30 +21,7 @@ import java.util.List;
  * be notified of property changes in the corresponding model element.
  * </p>
  */
-public class GraphEditPart extends AbstractGraphicalEditPart implements
-	PropertyChangeListener {
-
-		/**
-		 * Upon activation, attach to the model element as a property change
-		 * listener.
-		 */
-		public void activate() {
-			if (!isActive()) {
-				super.activate();
-				getGraphModel().addPropertyChangeListener(this);
-			}
-		}
-
-	/**
-	 * Upon deactivation, detach from the model element as a property change
-	 * listener.
-	 */
-	public void deactivate() {
-		if (isActive()) {
-			super.deactivate();
-			getGraphModel().removePropertyChangeListener(this);
-		}
-	}
+public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 
 		protected void createEditPolicies() {
 			// Disallows the removal of this edit part.
@@ -61,27 +33,15 @@ public class GraphEditPart extends AbstractGraphicalEditPart implements
 		}
 
 		protected IFigure createFigure() {
-		System.out.println("Creating GraphModel figure.");
 			Figure f = new FreeformLayer();
 			f.setBorder(new MarginBorder(3));
 			f.setLayoutManager(new FreeformLayout());
 			return f;
 		}
 
-	private GraphModel getGraphModel() {
-			return (GraphModel) getModel();
-		}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected List<Node> getModelChildren() {
-		return (List<Node>) getGraphModel().getChildren();
-	}
-
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
-		System.out.println("In GraphEditPart.propertyChange with: " + prop);
-		if (ConnectableModelElement.CHILDREN_PROP.equals(prop))
+		if (GraphComponent.CHILDREN_PROP.equals(prop))
 			refreshChildren();
 		}
 

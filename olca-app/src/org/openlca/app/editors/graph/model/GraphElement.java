@@ -1,9 +1,7 @@
 package org.openlca.app.editors.graph.model;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.Arrays;
 
 /**
  * Abstract prototype of a model element.
@@ -14,13 +12,11 @@ import java.util.Arrays;
  * <li>property-change support (used to notify edit parts of model changes),</li>
  * <li>...</li>
  */
-abstract public class ModelElement {
+abstract public class GraphElement {
 
 	protected PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 
-
 	public void addPropertyChangeListener(PropertyChangeListener l) {
-		System.out.println("Adding property listener " + l);
 		listeners.addPropertyChangeListener(l);
 	}
 
@@ -41,7 +37,6 @@ abstract public class ModelElement {
 	 */
 	protected void firePropertyChange(String prop, Object oldValue,
 																		Object newValue) {
-		System.out.printf("Firing %s property change for %s", prop, Arrays.toString(listeners.getPropertyChangeListeners()));
 		listeners.firePropertyChange(prop, oldValue, newValue);
 	}
 

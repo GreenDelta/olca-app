@@ -1,41 +1,45 @@
 package org.openlca.app.editors.graph.model;
 
 import org.eclipse.draw2d.geometry.Dimension;
+import org.openlca.app.M;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class Node extends ConnectableModelElement {
+/**
+ * A {@link Node} represents a unit process, a library process, a result
+ * or a product system with its list of input or output flows (see
+ * {@link IOPane}).
+ */
+public class Node extends MinMaxGraphComponent {
 
-	public static final String MINIMIZED_PROP = "minimized";
+	private static final Dimension DEFAULT_MINIMIZED_SIZE = new Dimension(250, 40);
+	private static final Dimension DEFAULT_MAXIMIZED_SIZE = new Dimension(250, 300);
 
-	private static final Dimension DEFAULT_SIZE = new Dimension(250, 34);
+	private final RootDescriptor descriptor;
 
-	private boolean minimized = true;
-	private String name;
-
-	public Node(String name) {
-		size.width = DEFAULT_SIZE.width;
-		size.height = DEFAULT_SIZE.height;
-		location.x = 20;
-		location.y = 20;
-		this.name = name;
-		System.out.println("Creating " + this);
+	public Node(RootDescriptor descriptor) {
+		this.descriptor = descriptor;
+		setSize(isMinimized() ? DEFAULT_MINIMIZED_SIZE : DEFAULT_MAXIMIZED_SIZE);
 	}
 
-	public boolean isMinimized() {
-		return minimized;
+	public RootDescriptor getDescriptor() {
+		return descriptor;
 	}
 
-	public void setMinimized(boolean value) {
-		if (minimized == value)
-			return;
-		minimized = value;
-		firePropertyChange(MINIMIZED_PROP, null, minimized); //$NON-NLS-1$
+	@Override
+	protected Dimension getMinimizedSize() {
+		return DEFAULT_MINIMIZED_SIZE;
+	}
+
+	@Override
+	protected Dimension getMaximizedSize() {
+		return DEFAULT_MAXIMIZED_SIZE;
 	}
 
 	public String toString() {
-		return "Node: " + name;
+		var prefix = isMinimized() ? M.Minimize : M.Maximize;
+		return prefix + descriptor.name;
 	}
 
 }

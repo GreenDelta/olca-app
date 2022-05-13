@@ -1,9 +1,12 @@
 package org.openlca.app.editors.graph.model;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class GraphModel extends ConnectableModelElement {
+/**
+ * A {@link Graph} renders a system of unit processes, library
+ * processes, results and/or product systems (represented by a
+ * {@link Node}).
+ */
+public class Graph extends GraphComponent {
 
 	public static String ID_ROUTER = "router"; //$NON-NLS-1$
 

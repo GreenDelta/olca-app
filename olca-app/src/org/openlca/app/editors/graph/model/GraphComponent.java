@@ -6,12 +6,12 @@ import org.eclipse.draw2d.geometry.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract public class ConnectableModelElement extends ModelElement {
+abstract public class GraphComponent extends GraphElement {
 
 	public static final String CHILDREN_PROP = "children", INPUTS_PROP = "inputs",
 		OUTPUTS_PROP = "outputs", SIZE_PROP = "size", LOCATION_PROP = "location";
 
-	protected List<ConnectableModelElement> children = new ArrayList<>();
+	protected List<GraphComponent> children = new ArrayList<>();
 
 	protected Point location = new Point(0, 0);
 	protected Dimension size = new Dimension(-1, -1);
@@ -29,25 +29,25 @@ abstract public class ConnectableModelElement extends ModelElement {
 		if (location.equals(p))
 			return;
 		location = p;
-		firePropertyChange(LOCATION_PROP, null, location); //$NON-NLS-1$
+		firePropertyChange(LOCATION_PROP, null, location);
 	}
 
 	public void setSize(Dimension d) {
 		if (size.equals(d))
 			return;
 		size = d;
-		firePropertyChange(SIZE_PROP, null, size); //$NON-NLS-1$
+		firePropertyChange(SIZE_PROP, null, size);
 	}
 
 	protected void fireStructureChange(String prop, Object child) {
 		firePropertyChange(prop, null, child);
 	}
 
-	public void addChild(ConnectableModelElement child) {
+	public void addChild(GraphComponent child) {
 		addChild(child, -1);
 	}
 
-	public void addChild(ConnectableModelElement child, int index) {
+	public void addChild(GraphComponent child, int index) {
 		if (index >= 0)
 			children.add(index, child);
 		else
@@ -55,12 +55,12 @@ abstract public class ConnectableModelElement extends ModelElement {
 		firePropertyChange(CHILDREN_PROP, index, child);
 	}
 
-	public void removeChild(ConnectableModelElement child) {
+	public void removeChild(GraphComponent child) {
 		children.remove(child);
 		firePropertyChange(CHILDREN_PROP, child, null);
 	}
 
-	public List<? extends ConnectableModelElement> getChildren() {
+	public List<? extends GraphComponent> getChildren() {
 		return children;
 	}
 
