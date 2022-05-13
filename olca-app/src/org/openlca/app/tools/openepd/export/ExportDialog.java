@@ -37,7 +37,8 @@ import org.openlca.util.Strings;
 
 public class ExportDialog extends FormDialog {
 
-	private final EpdDoc epd;
+	private final Epd epd;
+	private final EpdDoc doc;
 	private final String existingId;
 
 	private Ec3CategoryTree categories;
@@ -54,11 +55,12 @@ public class ExportDialog extends FormDialog {
 			: ExportState.canceled();
 	}
 
-	private ExportDialog(Epd model) {
+	private ExportDialog(Epd epd) {
 		super(UI.shell());
-		this.epd = EpdConverter.toEpdDoc(model);
-		this.existingId = model.urn != null && model.urn.startsWith("openEPD:")
-			? model.urn.substring(8)
+		this.epd = epd;
+		this.doc = EpdConverter.toEpdDoc(epd);
+		this.existingId = epd.urn != null && epd.urn.startsWith("openEPD:")
+			? epd.urn.substring(8)
 			: null;
 		this.categories = Ec3CategoryTree.fromFile(categoryCacheFile());
 	}
@@ -83,13 +85,13 @@ public class ExportDialog extends FormDialog {
 		// info section
 		var comp = UI.formSection(body, tk, "Product information", 3);
 		UI.formLabel(comp, M.Product);
-		UI.formLabel(comp, epd.productName);
+		UI.formLabel(comp, doc.productName);
 		UI.filler(comp, tk);
 
 		// declared unit
 		UI.formLabel(comp, tk, "Declared unit");
-		UI.formLabel(comp, tk, epd.declaredUnit != null
-			? epd.declaredUnit.toString()
+		UI.formLabel(comp, tk, doc.declaredUnit != null
+			? doc.declaredUnit.toString()
 			: "?");
 		UI.filler(comp, tk);
 		new MassField(this).render(comp, tk);
@@ -100,9 +102,14 @@ public class ExportDialog extends FormDialog {
 		UI.filler(comp, tk);
 
 		// result sections
-		for (var result : epd.impactResults) {
+		for (var result : doc.impactResults) {
 			new ExportResultSection(result).render(body, tk);
 		}
+
+		ResultModel.allOf(epd).forEach(model -> {
+			new ResultSection(model).render(body, tk);
+		});
+		mForm.reflow(true);
 	}
 
 	@Override
@@ -130,7 +137,7 @@ public class ExportDialog extends FormDialog {
 		if (!Question.ask(qTitle, qText))
 			return;
 
-		var upload = new Upload(client, epd);
+		var upload = new Upload(client, doc);
 		state = existingId == null
 			? upload.newDraft()
 			: upload.update(existingId);
@@ -151,9 +158,9 @@ public class ExportDialog extends FormDialog {
 		}
 
 		// save as file
-		var json = epd.toJson();
+		var json = doc.toJson();
 		var file = FileChooser.forSavingFile(
-			"Save openEPD document", epd.productName + ".json");
+			"Save openEPD document", doc.productName + ".json");
 		if (file == null)
 			return;
 		try {
@@ -193,7 +200,7 @@ public class ExportDialog extends FormDialog {
 		}
 
 		String getPath() {
-			for (var c : dialog.epd.productClasses) {
+			for (var c : dialog.doc.productClasses) {
 				if (Objects.equals(c.first, "io.cqd.ec3")) {
 					return c.second;
 				}
@@ -220,7 +227,7 @@ public class ExportDialog extends FormDialog {
 		}
 
 		void setPath(String path) {
-			var classes = dialog.epd.productClasses;
+			var classes = dialog.doc.productClasses;
 			classes.clear();
 			if (Strings.nullOrEmpty(path))
 				return;
@@ -242,7 +249,7 @@ public class ExportDialog extends FormDialog {
 
 		void render(Composite comp, FormToolkit tk) {
 			UI.formLabel(comp, tk, "Mass per declared unit");
-			var mass = dialog.epd.kgPerDeclaredUnit;
+			var mass = dialog.doc.kgPerDeclaredUnit;
 			if (mass != null) {
 				var num = mass.amount() + " kg";
 				UI.formLabel(comp, tk, num);
@@ -267,7 +274,7 @@ public class ExportDialog extends FormDialog {
 			} catch (NumberFormatException ignored) {
 			}
 
-			var epd = dialog.epd;
+			var epd = dialog.doc;
 			if (mass.isPresent()) {
 				epd.kgPerDeclaredUnit = new EpdQuantity(
 					mass.getAsDouble(), "kg");
