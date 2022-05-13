@@ -1,4 +1,4 @@
-package org.openlca.app.editors.epds;
+package org.openlca.app.tools.openepd.export;
 
 import java.io.File;
 import java.util.Objects;
@@ -35,7 +35,7 @@ import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
 import org.openlca.util.Strings;
 
-class ExportDialog extends FormDialog {
+public class ExportDialog extends FormDialog {
 
 	private final EpdDoc epd;
 	private final String existingId;
@@ -44,7 +44,7 @@ class ExportDialog extends FormDialog {
 	private LoginPanel loginPanel;
 	private ExportState state;
 
-	static ExportState of(Epd model) {
+	public static ExportState of(Epd model) {
 		if (model == null)
 			return ExportState.canceled();
 		var dialog = new ExportDialog(model);

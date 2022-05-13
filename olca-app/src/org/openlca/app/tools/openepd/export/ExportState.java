@@ -1,4 +1,4 @@
-package org.openlca.app.editors.epds;
+package org.openlca.app.tools.openepd.export;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
@@ -15,9 +15,9 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 
-record ExportState(State state, String id) {
+public record ExportState(State state, String id) {
 
-	enum State {
+	public enum State {
 		/**
 		 * Saved as local file.
 		 */
@@ -64,7 +64,7 @@ record ExportState(State state, String id) {
 		return new ExportState(State.FILE, file);
 	}
 
-	boolean isCreated() {
+	public boolean isCreated() {
 		return state == State.CREATED && id != null;
 	}
 

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.epds;
+package org.openlca.app.tools.openepd.export;
 
 import java.util.ArrayList;
 import java.util.Arrays;
