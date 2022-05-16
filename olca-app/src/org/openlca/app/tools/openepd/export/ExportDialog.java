@@ -106,7 +106,7 @@ public class ExportDialog extends FormDialog {
 			new ExportResultSection(result).render(body, tk);
 		}
 
-		ResultModel.allOf(epd).forEach(model -> {
+		MappingModel.allOf(epd).forEach(model -> {
 			new ResultSection(model).render(body, tk);
 		});
 		mForm.reflow(true);

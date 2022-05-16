@@ -1,5 +1,11 @@
 package org.openlca.app.tools.openepd.export;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
+
 import org.openlca.core.model.Epd;
 import org.openlca.core.model.EpdModule;
 import org.openlca.core.model.ImpactCategory;
@@ -9,30 +15,44 @@ import org.openlca.io.openepd.Vocab.Indicator;
 import org.openlca.io.openepd.Vocab.UnitMatch;
 import org.openlca.util.Strings;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Supplier;
+public class MappingModel {
 
-class ResultModel {
-	// The openLCA LCIA method; can be `null`.
-	final ImpactMethod method;
+	private ImpactMethod method;
+	private Vocab.Method epdMethod;
 
-	// The assigned openEPD method.
-	Vocab.Method epdMethod;
+	private final List<String> scopes = new ArrayList<>();
+	private final List<MappingRow> rows = new ArrayList<>();
 
-	final List<String> scopes = new ArrayList<>();
-	final List<ResultRow> rows = new ArrayList<>();
-
-	ResultModel(ImpactMethod method) {
-		this.method = method;
+	public ImpactMethod method() {
+		return method;
 	}
 
-	static List<ResultModel> allOf(Epd epd) {
+	public MappingModel method(ImpactMethod method) {
+		this.method = method;
+		return this;
+	}
+
+	public Vocab.Method epdMethod() {
+		return epdMethod;
+	}
+
+	public MappingModel epdMethod(Vocab.Method epdMethod) {
+		this.epdMethod = epdMethod;
+		return this;
+	}
+
+	public List<String> scopes() {
+		return scopes;
+	}
+
+	public List<MappingRow> rows() {
+		return rows;
+	}
+
+	static List<MappingModel> allOf(Epd epd) {
 
 		// create models and their rows
-		var models = new ArrayList<ResultModel>();
+		var models = new ArrayList<MappingModel>();
 		for (var mod : epd.modules) {
 			var model = of(mod, models);
 			if (model == null)
@@ -57,14 +77,14 @@ class ResultModel {
 		return models;
 	}
 
-	private static ResultModel of(EpdModule mod, List<ResultModel> models) {
+	private static MappingModel of(EpdModule mod, List<MappingModel> models) {
 		if (mod == null
 			|| Strings.nullOrEmpty(mod.name)
 			|| mod.result == null
 			|| mod.result.impactResults.isEmpty())
 			return null;
 		var method = mod.result.impactMethod;
-		ResultModel model = null;
+		MappingModel model = null;
 		for (var existing : models) {
 			if (Objects.equals(method, existing.method)) {
 				model = existing;
@@ -72,8 +92,7 @@ class ResultModel {
 			}
 		}
 		if (model == null) {
-			model = new ResultModel(method);
-			models.add(model);
+			models.add(new MappingModel().method(method));
 		}
 		if (!model.scopes.contains(mod.name)) {
 			model.scopes.add(mod.name);
@@ -81,12 +100,12 @@ class ResultModel {
 		return model;
 	}
 
-	private static ResultRow rowOf(ImpactCategory indicator, ResultModel model) {
+	private static MappingRow rowOf(ImpactCategory indicator, MappingModel model) {
 		for (var row : model.rows) {
 			if (Objects.equals(indicator, row.indicator))
 				return row;
 		}
-		var row = new ResultRow(indicator);
+		var row = new MappingRow(indicator);
 		model.rows.add(row);
 		return row;
 	}
@@ -126,7 +145,7 @@ class ResultModel {
 
 	private record Match(
 		Vocab.Indicator indicator,
-		ResultRow row,
+		MappingRow row,
 		UnitMatch unitMatch,
 		double score) {
 
@@ -136,11 +155,11 @@ class ResultModel {
 			return _empty;
 		}
 
-		static Match of(ResultRow row) {
+		static Match of(MappingRow row) {
 			return of(row.epdIndicator, row);
 		}
 
-		static Match of(Vocab.Indicator indicator, ResultRow row) {
+		static Match of(Vocab.Indicator indicator, MappingRow row) {
 			if (indicator == null || row == null)
 				return empty();
 			var refUnit = row.indicator.referenceUnit;

@@ -6,7 +6,7 @@ import org.openlca.io.openepd.Vocab;
 import java.util.HashMap;
 import java.util.Map;
 
-class ResultRow {
+class MappingRow {
 	final ImpactCategory indicator;
 	final Map<String, Double> values = new HashMap<>();
 
@@ -14,7 +14,7 @@ class ResultRow {
 	Vocab.UnitMatch unitMatch;
 	double factor = 1.0;
 
-	ResultRow(ImpactCategory indicator) {
+	MappingRow(ImpactCategory indicator) {
 		this.indicator = indicator;
 	}
 

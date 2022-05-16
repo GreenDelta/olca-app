@@ -24,11 +24,11 @@ import org.openlca.io.openepd.Vocab.Method;
 
 import java.util.Arrays;
 
-record ResultSection(ResultModel model) {
+record ResultSection(MappingModel model) {
 
 	void render(Composite body, FormToolkit tk) {
-		var title = model.method != null
-			? "Results: " + Labels.name(model.method)
+		var title = model.method() != null
+			? "Results: " + Labels.name(model.method())
 			: "Results";
 		var section = UI.section(body, tk, title);
 		UI.gridData(section, true, true);
@@ -54,8 +54,8 @@ record ResultSection(ResultModel model) {
 				selected = method;
 				continue;
 			}
-			if (model.method != null) {
-				var s = method.matchScoreOf(model.method.name);
+			if (model.method() != null) {
+				var s = method.matchScoreOf(model.method().name);
 				if (s > score) {
 					selectionIdx = i;
 					selected = method;
@@ -64,24 +64,24 @@ record ResultSection(ResultModel model) {
 			}
 		}
 
-		model.epdMethod = selected;
+		model.epdMethod(selected);
 		combo.setItems(items);
 		combo.select(selectionIdx);
 		Controls.onSelect(combo, $ -> {
 			var idx = combo.getSelectionIndex();
-			model.epdMethod = methods[idx];
+			model.epdMethod(methods[idx]);
 		});
 	}
 
 	private void createTable(Composite parent) {
-		var columns = new String[5 + model.scopes.size()];
+		var columns = new String[5 + model.scopes().size()];
 		columns[0] = "Indicator";
 		columns[1] = "Unit";
 		columns[2] = "openEPD Indicator";
 		columns[3] = "openEPD Unit";
 		columns[4] = "Factor";
-		for (int i = 0; i < model.scopes.size(); i++) {
-			columns[i + 5] = model.scopes.get(i);
+		for (int i = 0; i < model.scopes().size(); i++) {
+			columns[i + 5] = model.scopes().get(i);
 		}
 		var table = Tables.createViewer(parent, columns);
 		table.setLabelProvider(new TableLabel());
@@ -92,19 +92,19 @@ record ResultSection(ResultModel model) {
 		widths[3] = 0.1;
 		widths[4] = 0.1;
 		Arrays.fill(widths, 5, columns.length,
-			.4 / (model.scopes.size()));
+			.4 / (model.scopes().size()));
 		Tables.bindColumnWidths(table, widths);
 		for (int i = 4; i < columns.length; i++) {
 			table.getTable()
 				.getColumn(i)
 				.setAlignment(SWT.CENTER);
 		}
-		table.setInput(model.rows);
+		table.setInput(model.rows());
 
-		var modifier = new ModifySupport<ResultRow>(table)
+		var modifier = new ModifySupport<MappingRow>(table)
 			.bind("Factor", new FactorColumn())
 			.bind("openEPD Indicator", new IndicatorColumn());
-		for (var scope : model.scopes) {
+		for (var scope : model.scopes()) {
 			modifier.bind(scope, new ScopeColumn(scope));
 		}
 	}
@@ -114,7 +114,7 @@ record ResultSection(ResultModel model) {
 
 		@Override
 		public Color getForeground(Object obj, int col) {
-			if (!(obj instanceof ResultRow row))
+			if (!(obj instanceof MappingRow row))
 				return null;
 			if (col == 1 || col == 3 || col == 4) {
 				if (row.epdIndicator != null && row.unitMatch == null)
@@ -137,7 +137,7 @@ record ResultSection(ResultModel model) {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ResultRow row))
+			if (!(obj instanceof MappingRow row))
 				return null;
 			var epdInd = row.epdIndicator;
 			return switch (col) {
@@ -150,9 +150,9 @@ record ResultSection(ResultModel model) {
 					: " - ";
 				default -> {
 					int idx = col - 5;
-					if (idx < 0 || idx >= model.scopes.size())
+					if (idx < 0 || idx >= model.scopes().size())
 						yield " - ";
-					var scope = model.scopes.get(idx);
+					var scope = model.scopes().get(idx);
 					var value = row.values.get(scope);
 					yield value == null
 						? " - "
@@ -162,22 +162,22 @@ record ResultSection(ResultModel model) {
 		}
 	}
 
-	private static class FactorColumn extends DoubleCellModifier<ResultRow> {
+	private static class FactorColumn extends DoubleCellModifier<MappingRow> {
 
 		@Override
-		public Double getDouble(ResultRow row) {
+		public Double getDouble(MappingRow row) {
 			return row.factor;
 		}
 
 		@Override
-		public void setDouble(ResultRow row, Double value) {
+		public void setDouble(MappingRow row, Double value) {
 			row.factor = value != null
 				? value
 				: 1.0;
 		}
 	}
 
-	private static class ScopeColumn extends DoubleCellModifier<ResultRow> {
+	private static class ScopeColumn extends DoubleCellModifier<MappingRow> {
 
 		private final String scope;
 
@@ -186,26 +186,26 @@ record ResultSection(ResultModel model) {
 		}
 
 		@Override
-		public Double getDouble(ResultRow row) {
+		public Double getDouble(MappingRow row) {
 			return row.values.get(scope);
 		}
 
 		@Override
-		public void setDouble(ResultRow row, Double value) {
+		public void setDouble(MappingRow row, Double value) {
 			row.values.put(scope, value);
 		}
 	}
 
 	private static class IndicatorColumn
-		extends ComboBoxCellModifier<ResultRow, Indicator> {
+		extends ComboBoxCellModifier<MappingRow, Indicator> {
 
 		@Override
-		protected Indicator[] getItems(ResultRow row) {
+		protected Indicator[] getItems(MappingRow row) {
 			return Indicator.values();
 		}
 
 		@Override
-		protected Indicator getItem(ResultRow row) {
+		protected Indicator getItem(MappingRow row) {
 			return row.epdIndicator;
 		}
 
@@ -215,7 +215,7 @@ record ResultSection(ResultModel model) {
 		}
 
 		@Override
-		protected void setItem(ResultRow row, Indicator i) {
+		protected void setItem(MappingRow row, Indicator i) {
 			if (row == null)
 				return;
 			if (i == null) {
