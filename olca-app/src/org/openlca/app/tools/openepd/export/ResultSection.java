@@ -117,7 +117,7 @@ record ResultSection(MappingModel model) {
 			if (!(obj instanceof MappingRow row))
 				return null;
 			if (col == 1 || col == 3 || col == 4) {
-				if (row.epdIndicator != null && row.unitMatch == null)
+				if (row.epdIndicator() != null && row.unit() == null)
 					return Colors.fromHex("#ff5722");
 			}
 			return null;
@@ -139,24 +139,26 @@ record ResultSection(MappingModel model) {
 		public String getColumnText(Object obj, int col) {
 			if (!(obj instanceof MappingRow row))
 				return null;
-			var epdInd = row.epdIndicator;
+			var epdInd = row.epdIndicator();
 			return switch (col) {
-				case 0 -> Labels.name(row.indicator);
-				case 1 -> row.indicator.referenceUnit;
+				case 0 -> Labels.name(row.indicator());
+				case 1 -> row.indicator() != null
+					? row.indicator().referenceUnit
+					: null;
 				case 2 -> epdInd != null ? epdInd.code() : " - ";
 				case 3 -> epdInd != null ? epdInd.unit() : " - ";
 				case 4 -> epdInd != null
-					? Double.toString(row.factor)
+					? Double.toString(row.factor())
 					: " - ";
 				default -> {
 					int idx = col - 5;
 					if (idx < 0 || idx >= model.scopes().size())
 						yield " - ";
 					var scope = model.scopes().get(idx);
-					var value = row.values.get(scope);
+					var value = row.values().get(scope);
 					yield value == null
 						? " - "
-						: Numbers.format(value * row.factor);
+						: Numbers.format(value * row.factor());
 				}
 			};
 		}
@@ -166,14 +168,12 @@ record ResultSection(MappingModel model) {
 
 		@Override
 		public Double getDouble(MappingRow row) {
-			return row.factor;
+			return row.factor();
 		}
 
 		@Override
 		public void setDouble(MappingRow row, Double value) {
-			row.factor = value != null
-				? value
-				: 1.0;
+			row.factor(value != null ? value : 1.0);
 		}
 	}
 
@@ -187,12 +187,12 @@ record ResultSection(MappingModel model) {
 
 		@Override
 		public Double getDouble(MappingRow row) {
-			return row.values.get(scope);
+			return row.values().get(scope);
 		}
 
 		@Override
 		public void setDouble(MappingRow row, Double value) {
-			row.values.put(scope, value);
+			row.values().put(scope, value);
 		}
 	}
 
@@ -206,7 +206,7 @@ record ResultSection(MappingModel model) {
 
 		@Override
 		protected Indicator getItem(MappingRow row) {
-			return row.epdIndicator;
+			return row.epdIndicator();
 		}
 
 		@Override
@@ -219,17 +219,20 @@ record ResultSection(MappingModel model) {
 			if (row == null)
 				return;
 			if (i == null) {
-				row.epdIndicator = null;
-				row.unitMatch = null;
-				row.factor = 1.0;
+				row.epdIndicator(null)
+					.unit(null)
+					.factor(1.0);
 				return;
 			}
-			row.epdIndicator = i;
-			row.unitMatch = i.unitMatchOf(row.indicator.referenceUnit)
-				.orElse(null);
-			row.factor = row.unitMatch != null
-				? row.unitMatch.factor()
-				: 1;
+			var unit = row.indicator() != null
+				? i.unitMatchOf(row.indicator().referenceUnit).orElse(null)
+				: null;
+			var factor = unit != null
+				? unit.factor()
+				: 1.0;
+			row.epdIndicator(i)
+				.unit(unit)
+				.factor(factor);
 		}
 	}
 }
