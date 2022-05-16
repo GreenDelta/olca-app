@@ -14,6 +14,7 @@ import org.openlca.io.openepd.Ec3Client;
 import org.openlca.io.openepd.Ec3Response;
 import org.openlca.io.openepd.EpdDoc;
 import org.openlca.io.openepd.EpdImpactResult;
+import org.openlca.io.openepd.EpdIndicatorResult;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Strings;
 
@@ -37,27 +38,14 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 			}
 
 			// check the unit of an existing EPD
-			var existing = EpdDoc.fromJson(json).orElse(null);
-			if (existing == null) {
+			var oldDoc = EpdDoc.fromJson(json).orElse(null);
+			if (oldDoc == null) {
 				MsgBox.error("Could not read EPD from server");
 				return ExportState.error();
 			}
 
 			// update the JSON object
-			json.addProperty("version", existing.version + 1);
-			var impacts = EpdImpactResult.toJson(epd.impactResults);
-			NullDiff.apply(json.get("impacts"), impacts);
-			json.add("impacts", impacts);
-			if (epd.declaredUnit != null) {
-				json.add("declared_unit", epd.declaredUnit.toJson());
-			}
-			if (epd.kgPerDeclaredUnit != null) {
-				json.add("kg_per_declared_unit", epd.kgPerDeclaredUnit.toJson());
-			}
-			if (json.has("plants")) {
-				// TODO: temporary workaround until is fixed in the EC3 API
-				json.remove("plants");
-			}
+			update(json, oldDoc);
 
 			// update the EPD on the server
 			var resp = App.exec("Upload EPD", () -> client.putEpd(id, json));
@@ -67,6 +55,36 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to update EPD: " + id, e);
 			return ExportState.error();
+		}
+	}
+
+	private void update(JsonObject json, EpdDoc oldDoc) {
+
+		// increment version
+		json.addProperty("version", oldDoc.version + 1);
+
+		// declared unit
+		if (epd.declaredUnit != null) {
+			json.add("declared_unit", epd.declaredUnit.toJson());
+		}
+		if (epd.kgPerDeclaredUnit != null) {
+			json.add("kg_per_declared_unit", epd.kgPerDeclaredUnit.toJson());
+		}
+
+		// indicator results
+		var impacts = EpdImpactResult.toJson(epd.impactResults);
+		NullDiff.apply(json.get("impacts"), impacts);
+		json.add("impacts", impacts);
+		var resources = EpdIndicatorResult.toJson(epd.resourceUses);
+		NullDiff.apply(json.get("resource_uses"), resources);
+		json.add("resource_uses", resources);
+		var outputs = EpdIndicatorResult.toJson(epd.outputFlows);
+		NullDiff.apply(json.get("output_flows"), outputs);
+		json.add("output_flows", outputs);
+
+		if (json.has("plants")) {
+			// TODO: temporary workaround until is fixed in the EC3 API
+			json.remove("plants");
 		}
 	}
 

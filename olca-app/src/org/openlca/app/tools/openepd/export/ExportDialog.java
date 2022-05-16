@@ -1,6 +1,7 @@
 package org.openlca.app.tools.openepd.export;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 import java.util.OptionalDouble;
 
@@ -37,9 +38,9 @@ import org.openlca.util.Strings;
 
 public class ExportDialog extends FormDialog {
 
-	private final Epd epd;
 	private final EpdDoc doc;
 	private final String existingId;
+	private final List<MappingModel> mappings;
 
 	private Ec3CategoryTree categories;
 	private LoginPanel loginPanel;
@@ -57,7 +58,7 @@ public class ExportDialog extends FormDialog {
 
 	private ExportDialog(Epd epd) {
 		super(UI.shell());
-		this.epd = epd;
+		this.mappings = MappingModel.allOf(epd);
 		this.doc = EpdConverter.toEpdDoc(epd);
 		this.existingId = epd.urn != null && epd.urn.startsWith("openEPD:")
 			? epd.urn.substring(8)
@@ -106,9 +107,7 @@ public class ExportDialog extends FormDialog {
 			new ExportResultSection(result).render(body, tk);
 		}
 
-		MappingModel.allOf(epd).forEach(model -> {
-			new ResultSection(model).render(body, tk);
-		});
+		mappings.forEach(model -> new MappingSection(model).render(body, tk));
 		mForm.reflow(true);
 	}
 
@@ -137,6 +136,7 @@ public class ExportDialog extends FormDialog {
 		if (!Question.ask(qTitle, qText))
 			return;
 
+		MappedResult.of(mappings).applyOn(doc);
 		var upload = new Upload(client, doc);
 		state = existingId == null
 			? upload.newDraft()
@@ -158,6 +158,7 @@ public class ExportDialog extends FormDialog {
 		}
 
 		// save as file
+		MappedResult.of(mappings).applyOn(doc);
 		var json = doc.toJson();
 		var file = FileChooser.forSavingFile(
 			"Save openEPD document", doc.productName + ".json");

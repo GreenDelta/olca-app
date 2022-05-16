@@ -24,7 +24,7 @@ import org.openlca.io.openepd.Vocab.Method;
 
 import java.util.Arrays;
 
-record ResultSection(MappingModel model) {
+record MappingSection(MappingModel model) {
 
 	void render(Composite body, FormToolkit tk) {
 		var title = model.method() != null

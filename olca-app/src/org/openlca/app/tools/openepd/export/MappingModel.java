@@ -15,6 +15,10 @@ public class MappingModel {
 	private final List<String> scopes = new ArrayList<>();
 	private final List<MappingRow> rows = new ArrayList<>();
 
+	public static List<MappingModel> allOf(Epd epd) {
+		return MappingBuilder.buildFrom(epd);
+	}
+
 	public ImpactMethod method() {
 		return method;
 	}
@@ -39,10 +43,6 @@ public class MappingModel {
 
 	public List<MappingRow> rows() {
 		return rows;
-	}
-
-	public static List<MappingModel> allOf(Epd epd) {
-		return MappingBuilder.buildFrom(epd);
 	}
 
 }

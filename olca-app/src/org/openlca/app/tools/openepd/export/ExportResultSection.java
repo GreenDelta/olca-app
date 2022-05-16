@@ -31,7 +31,7 @@ class ExportResultSection {
 	ExportResultSection(EpdImpactResult result) {
 		this.result = result;
 		var mods = new HashSet<String>();
-		result.indicatorResults()
+		result.results()
 			.forEach(i -> i.values().forEach(s -> mods.add(s.scope())));
 		this.mods = mods.stream().sorted().toArray(String[]::new);
 	}
@@ -40,7 +40,7 @@ class ExportResultSection {
 		var section = UI.section(body, tk, "Results: " + result.method());
 		var comp = UI.sectionClient(section, tk, 1);
 
-		var items = Item.allOf(result.indicatorResults(), mods);
+		var items = Item.allOf(result.results(), mods);
 		if (Item.hasNonEpdItems(items)) {
 			var error = UI.formLabel(comp, tk,
 				"Some indicator codes and/or units " +
