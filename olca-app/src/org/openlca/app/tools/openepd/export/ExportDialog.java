@@ -103,10 +103,6 @@ public class ExportDialog extends FormDialog {
 		UI.filler(comp, tk);
 
 		// result sections
-		for (var result : doc.impactResults) {
-			new ExportResultSection(result).render(body, tk);
-		}
-
 		mappings.forEach(model -> new MappingSection(model).render(body, tk));
 		mForm.reflow(true);
 	}

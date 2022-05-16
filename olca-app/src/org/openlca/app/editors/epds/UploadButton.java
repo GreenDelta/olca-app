@@ -22,16 +22,12 @@ record UploadButton(EpdEditor editor) {
 		update(btn);
 		btn.setImage(Icon.BUILDING.get());
 		Controls.onSelect(btn, $ -> {
-			
-			/*
 			var check = EpdConverter.validate(epd());
 			if (check.hasError()) {
 				MsgBox.error("Validation error",
 					"EPD cannot be converted to an openEPD document: " + check.error());
 				return;
 			}
-			*/
-			
 			var state = ExportDialog.of(epd());
 			if (state.isCreated()) {
 				epd().urn = "openEPD:" + state.id();
