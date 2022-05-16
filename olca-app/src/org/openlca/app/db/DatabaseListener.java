@@ -29,19 +29,22 @@ class DatabaseListener implements IDatabaseListener {
 	@Override
 	public void modelDeleted(Descriptor descriptor) {
 		if (descriptor instanceof RootDescriptor d) {
-			var workspaceIds = Repository.get().workspaceIds;
-			ObjectId previousId = null;
-			if (d.category != null) {
-				var path = workspaceIds.getPath(Cache.getPathCache(), d);
-				previousId = workspaceIds.get(path);
-			} else {
-				previousId = workspaceIds.get(descriptor.type);
-			}
+			var previousId = getPreviousId(d);
 			workspaceIdsUpdater.remove(d);
 			if (previousId != null && previousId.equals(ObjectId.zeroId())) {
 				workspaceIdsUpdater.restoreParents(d.type, d.category);
 			}
 		}
+	}
+
+	private ObjectId getPreviousId(RootDescriptor d) {
+		if (!Repository.isConnected())
+			return null;
+		var workspaceIds = Repository.get().workspaceIds;
+		if (d.category == null || d.category == 0d)
+			return workspaceIds.get(d.type);
+		var path = workspaceIds.getPath(Cache.getPathCache(), d);
+		return workspaceIds.get(path);
 	}
 
 }
