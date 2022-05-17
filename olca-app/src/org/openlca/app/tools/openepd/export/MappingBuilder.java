@@ -30,7 +30,7 @@ class MappingBuilder {
 				if (indicator == null)
 					continue;
 				var row = rowOf(indicator, model);
-				row.values().put(mod.name, mod.multiplier * impact.amount);
+				row.values().put(scopeOf(mod), mod.multiplier * impact.amount);
 			}
 		}
 
@@ -67,10 +67,20 @@ class MappingBuilder {
 			model = new MappingModel().method(method);
 			models.add(model);
 		}
-		if (!model.scopes().contains(mod.name)) {
-			model.scopes().add(mod.name);
+		var scope = scopeOf(mod);
+		if (!model.scopes().contains(scope)) {
+			model.scopes().add(scope);
 		}
 		return model;
+	}
+
+	private static String scopeOf(EpdModule mod) {
+		if (mod == null || mod.name == null)
+			return "?";
+		var scope = Vocab.findScope(mod.name);
+		return scope.isPresent()
+			? scope.get().code()
+			: mod.name;
 	}
 
 	private static MappingRow rowOf(ImpactCategory indicator, MappingModel model) {
