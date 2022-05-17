@@ -12,14 +12,10 @@ import org.eclipse.gef.ui.actions.*;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.SWT;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.*;
 import org.openlca.app.editors.graph.edit.GraphEditPartFactory;
 import org.openlca.app.editors.graph.model.Graph;
 import org.openlca.app.editors.graph.model.GraphFactory;
-import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ProductSystem;
@@ -34,14 +30,14 @@ import org.openlca.core.model.ProductSystem;
 public class GraphEditor extends GraphicalEditor {
 
 	private final ProductSystemEditor systemEditor;
-	private Graph graph = new Graph();
+	private Graph graph;
 
 	public static final double[] ZOOM_LEVELS = new double[] {
 		0.01, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0 };
 
 	// TODO: save this in the same way like the layout is currently stored
 	public final GraphConfig config = new GraphConfig();
-	private final GraphFactory graphFactory = new GraphFactory(config);
+	private final GraphFactory graphFactory = new GraphFactory(this);
 
 	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
@@ -64,27 +60,11 @@ public class GraphEditor extends GraphicalEditor {
 		var viewer = getGraphicalViewer();
 
 		GraphDropListener.on(this);
-		// TODO Implement a PanningSelectionTool without pressing SpaceBar and
+		// TODO (francois) Implement a PanningSelectionTool without pressing SpaceBar and
 		//  Selection while pressing Ctrl.
 		viewer.getEditDomain().setActiveTool(new PanningSelectionTool());
 
 		viewer.setContents(getModel());
-
-		// TODO load the graph settings
-		//		var fileApplied = GraphFile.apply(this);
-		//		if (!fileApplied) {
-		//			// no saved settings applied =>
-		//			// try to find a good configuration
-		//			var system = systemEditor.getModel();
-		//			if (system.referenceProcess != null) {
-		//				var refNode = model.getProcessNode(
-		//					system.referenceProcess.id);
-		//				if (refNode != null) {
-		//					refNode.expandLeft();
-		//					refNode.expandRight();
-		//				}
-		//			}
-		//		}
 	}
 
 	@Override
@@ -123,8 +103,9 @@ public class GraphEditor extends GraphicalEditor {
 		viewer.setEditPartFactory(new GraphEditPartFactory());
 
 		loadProperties();
+		loadConfig();
 
-		// TODO Might some activate control listener.
+		// TODO Might need some activate control listener.
 	}
 
 	protected void loadProperties() {
@@ -139,9 +120,18 @@ public class GraphEditor extends GraphicalEditor {
 			MouseWheelZoomHandler.SINGLETON);
 	}
 
+	protected void loadConfig() {
+		// read GraphConfig object from file
+		var config = GraphFile.getGraphConfig(this);
+		if (config != null)
+			config.copyTo(this.config);
+	}
+
 	@Override
 	protected void setInput(IEditorInput input) {
-		//TODO
+		super.setInput(input);
+		var array = GraphFile.getLayouts(this);
+		graph = getGraphFactory().createGraph(this, array);
 	}
 
 	@Override

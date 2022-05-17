@@ -3,6 +3,8 @@ package org.openlca.app.editors.graph.model;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+import org.openlca.app.editors.graph.GraphEditor;
+
 /**
  * Abstract prototype of a model element.
  * <p>
@@ -15,6 +17,11 @@ import java.beans.PropertyChangeSupport;
 abstract public class GraphElement {
 
 	protected PropertyChangeSupport listeners = new PropertyChangeSupport(this);
+	protected final GraphEditor editor;
+
+	GraphElement(GraphEditor editor) {
+		this.editor = editor;
+	}
 
 	public void addPropertyChangeListener(PropertyChangeListener l) {
 		listeners.addPropertyChangeListener(l);

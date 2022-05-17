@@ -1,11 +1,13 @@
 package org.openlca.app.editors.graph;
 
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.openlca.app.components.ModelTransfer;
+import org.openlca.app.editors.graph.layouts.NodeLayoutInfo;
 import org.openlca.app.editors.graph.model.Node;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
@@ -36,6 +38,7 @@ class GraphDropListener extends DropTargetAdapter {
 
 		var graphModel = editor.getModel();
 		var productSystem = editor.getProductSystem();
+		var graphFactory = editor.getGraphFactory();
 		var location = editor.getGraphicalViewer()
 				.getControl()
 				.toControl(e.x, e.y);
@@ -51,14 +54,14 @@ class GraphDropListener extends DropTargetAdapter {
 				.map(d -> (RootDescriptor) d)
 				.map(d -> {
 					productSystem.processes.add(d.id);
-					var node = editor.getGraphFactory().createNode(d);
+					var info = new NodeLayoutInfo(new Point(location.x, location.y),
+						new Dimension(-1, -1), true, false, false);
+					var node = graphFactory.createNode(d, info);
 					graphModel.addChild(node);
 					return node;
 				})
 				.forEach(node -> {
 					added.set(true);
-					node.setLocation(new Point(location.x, location.y));
-					// TODO Implement maximize()?
 				});
 
 		// update the editor

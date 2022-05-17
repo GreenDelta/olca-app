@@ -9,8 +9,8 @@ import org.openlca.core.model.descriptors.Descriptor;
 
 import java.util.Objects;
 
-public record GraphicalEditorInput(
-	Descriptor descriptor) implements IEditorInput {
+public record GraphicalEditorInput(Descriptor descriptor)
+	implements IEditorInput {
 
 	@Override
 	public boolean equals(Object obj) {

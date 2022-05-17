@@ -33,7 +33,7 @@ public class IOPaneFigure extends Figure {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<ExchangeItemFigure> getChildren() {
+	public List<ExchangeFigure> getChildren() {
 		return super.getChildren();
 	}
 

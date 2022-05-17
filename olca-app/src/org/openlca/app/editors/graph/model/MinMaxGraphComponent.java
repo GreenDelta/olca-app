@@ -1,10 +1,15 @@
 package org.openlca.app.editors.graph.model;
 
 import org.eclipse.draw2d.geometry.Dimension;
+import org.openlca.app.editors.graph.GraphEditor;
 
 public abstract class MinMaxGraphComponent extends GraphComponent {
 
-	private boolean minimized = false;
+	private boolean minimized = true;
+
+	MinMaxGraphComponent(GraphEditor editor) {
+		super(editor);
+	}
 
 	public boolean isMinimized() {
 		return minimized;
@@ -26,4 +31,5 @@ public abstract class MinMaxGraphComponent extends GraphComponent {
 
 	protected abstract Dimension getMaximizedSize();
 
+	public abstract void addChildren();
 }

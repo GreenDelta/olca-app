@@ -2,6 +2,8 @@ package org.openlca.app.editors.graph.edit;
 
 
 import java.beans.PropertyChangeEvent;
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -59,7 +61,7 @@ abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 		@Override
 		protected IFigure createFigure() {
 			var model = getModel();
-			return new MaximizedNodeFigure(model.getDescriptor());
+			return new MaximizedNodeFigure(model.descriptor);
 		}
 
 		@Override
@@ -74,7 +76,12 @@ abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 		@Override
 		protected IFigure createFigure() {
 			var model = getModel();
-			return new MinimizedNodeFigure(model.getDescriptor());
+			return new MinimizedNodeFigure(model.descriptor);
+		}
+
+		@Override
+		protected List<? extends GraphComponent> getModelChildren() {
+			return Collections.emptyList();
 		}
 
 	}

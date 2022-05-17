@@ -37,10 +37,23 @@ public class MinMaxCommand extends Command {
 	}
 
 	@Override
+	public boolean canRedo() {
+		return true;
+	}
+
+	@Override
 	public void execute() {
 		child.setMinimized(minimize);
+		if (!minimize) {
+			child.addChildren();
+		}
 		var parentEditPart = (AbstractComponentEditPart<?>) childEditPart.getParent();
 		parentEditPart.resetChildEditPart(childEditPart);
+
+	}
+
+	public void undo() {
+		execute();
 	}
 
 }

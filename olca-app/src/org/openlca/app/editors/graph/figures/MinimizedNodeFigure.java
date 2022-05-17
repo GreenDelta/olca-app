@@ -11,7 +11,6 @@ import org.openlca.core.model.descriptors.RootDescriptor;
 public class MinimizedNodeFigure extends Figure {
 
 	private final RootDescriptor descriptor;
-	private final Figure contentPane = new Figure();
 
 	private LayoutManager layout;
 
@@ -32,9 +31,6 @@ public class MinimizedNodeFigure extends Figure {
 		headerBorder.setColor(ColorConstants.black);
 		header.setBorder(headerBorder);
 		add(header, new GridData(SWT.FILL, SWT.FILL, true, false));
-
-		contentPane.setLayoutManager(new GridLayout(1, false));
-		add(contentPane);
 
 		setOpaque(true);
 	}
