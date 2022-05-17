@@ -21,8 +21,10 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.openepd.Vocab.Indicator;
 import org.openlca.io.openepd.Vocab.Method;
+import org.openlca.util.Strings;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 record MappingSection(MappingModel model) {
 
@@ -145,7 +147,9 @@ record MappingSection(MappingModel model) {
 				case 1 -> row.indicator() != null
 					? row.indicator().referenceUnit
 					: null;
-				case 2 -> epdInd != null ? epdInd.code() : " - ";
+				case 2 -> epdInd != null
+					? epdInd.code() + " - " + epdInd.description()
+					: " - ";
 				case 3 -> epdInd != null ? epdInd.unit() : " - ";
 				case 4 -> epdInd != null
 					? Double.toString(row.factor())
@@ -201,7 +205,21 @@ record MappingSection(MappingModel model) {
 
 		@Override
 		protected Indicator[] getItems(MappingRow row) {
-			return Indicator.values();
+			return Stream.concat(
+					Stream.of((Indicator) null),
+					Stream.of(Indicator.values()))
+				.sorted((i1, i2) -> {
+						if (i1 == null && i2 == null)
+							return 0;
+						if (i1 == null)
+							return -1;
+						if (i2 == null)
+							return 1;
+						return i1.type() != i2.type()
+							? i1.type().ordinal() - i2.type().ordinal()
+							: Strings.compare(i1.code(), i2.code());
+					}
+				).toArray(Indicator[]::new);
 		}
 
 		@Override
@@ -211,7 +229,9 @@ record MappingSection(MappingModel model) {
 
 		@Override
 		protected String getText(Indicator i) {
-			return i != null ? i.code() : "";
+			return i == null
+				? ""
+				: i.code() + " - " + i.description();
 		}
 
 		@Override

@@ -140,7 +140,9 @@ class MappingBuilder {
 				.orElse(null);
 			if (unitMatch == null)
 				return empty();
-			var score = indicator.matchScoreOf(row.indicator().name);
+			var score = Objects.equals(indicator.code(), row.indicator().code)
+				? 1.0
+				: indicator.matchScoreOf(row.indicator().name);
 			if (score < 1e-4)
 				return empty();
 			return new Match(indicator, row, unitMatch, score);
