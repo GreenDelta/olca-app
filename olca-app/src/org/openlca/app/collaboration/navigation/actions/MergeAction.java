@@ -18,7 +18,6 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitMerge;
 import org.openlca.git.find.Commits;
 import org.openlca.git.util.Constants;
-import org.openlca.git.util.Diffs;
 
 public class MergeAction extends Action implements INavigationAction {
 
@@ -43,22 +42,16 @@ public class MergeAction extends Action implements INavigationAction {
 		var repo = Repository.get();
 		var commits = Commits.of(repo.git);
 		try {
-			if (!Diffs.workspace(repo.toConfig()).isEmpty()) {
-				// TODO allow if not conflicting
-				// TODO offer different solutions (e.g. stash, discard, commit)
-				MsgBox.info("You can only merge into an unchanged database, please stash your changes first");
-				return;
-			}
 			var remoteCommit = commits.get(commits.resolve(Constants.REMOTE_BRANCH));
-			var conflictResolutionMap = Conflicts.identifyAndSolve(remoteCommit);
-			if (conflictResolutionMap == null)
+			var conflictResolver = Conflicts.resolve(remoteCommit, false);
+			if (conflictResolver == null)
 				return;
 			var changed = Actions.run(GitMerge
 					.from(repo.git)
 					.into(Database.get())
 					.update(repo.workspaceIds)
 					.as(repo.personIdent())
-					.resolveConflictsWith(conflictResolutionMap));
+					.resolveConflictsWith(conflictResolver));
 			if (!changed) {
 				MsgBox.info("No changes to merge");
 				return;
