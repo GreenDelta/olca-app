@@ -164,7 +164,7 @@ class Actions {
 				public void subTask(String name) {
 					monitor.subTask(name);
 				}
-				
+
 				@Override
 				public void worked(int work) {
 					monitor.worked(work);

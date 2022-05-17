@@ -20,7 +20,7 @@ public class InMemoryCredentialSupplier implements CredentialSupplier {
 	@Override
 	public String password() {
 		if (password == null) {
-			password = Input.promptString("Enter password", "Please enter your password to proceed", "");
+			password = Input.promptPassword("Enter password", "Please enter your password to proceed", "");
 		}
 		return password;
 	}

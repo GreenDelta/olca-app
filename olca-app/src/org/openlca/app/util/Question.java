@@ -51,4 +51,9 @@ public class Question {
 			return IDialogConstants.NO_TO_ALL_ID;
 		return IDialogConstants.CANCEL_ID;
 	}
+	
+	public static int ask(String title, String message, String[] answers) {
+		return new MessageDialog(UI.shell(), title, null, message, MessageDialog.QUESTION, answers, 0).open();
+	}
+	
 }
