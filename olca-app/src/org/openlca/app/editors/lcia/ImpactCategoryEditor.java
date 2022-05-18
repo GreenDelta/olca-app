@@ -13,7 +13,6 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.components.ModelLink;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
@@ -36,9 +35,9 @@ import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.database.usage.UsageSearch;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.Direction;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Source;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.io.CategoryPath;
@@ -120,40 +119,37 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 			var info = new InfoSection(getEditor()).render(body, tk);
 			var comp = info.composite();
 
-			// source
-			ModelLink.of(Source.class)
-				.renderOn(comp, tk, M.Source)
-				.setModel(getModel().source)
-				.onChange(source -> {
-					var impact = getModel();
-					impact.source = source;
-					getEditor().setDirty();
-				});
-			UI.filler(comp, tk);
+			// source, code, reference unit
+			modelLink(comp, M.Source, "source");
+			text(comp, "Code", "code");
+			text(comp, M.ReferenceUnit, "referenceUnit");
 
-			// code
-			var codeText = UI.formText(comp, tk, "Code");
-			Controls.set(codeText, getModel().code, code -> {
-				getModel().code = code;
+			// impact direction
+			var combo = UI.formCombo(comp, tk, "Impact direction");
+			combo.setItems("Unspecified", M.Input, M.Output);
+			UI.gridData(combo, false, false).widthHint = 150;
+			var dir = getModel().direction;
+			combo.select(dir != null
+				? dir == Direction.INPUT ? 1 : 2
+				: 0);
+			Controls.onSelect(combo, $ -> {
+				var idx = combo.getSelectionIndex();
+				getModel().direction = switch (idx) {
+					case 1 -> Direction.INPUT;
+					case 2 -> Direction.OUTPUT;
+					default -> null;
+				};
 				getEditor().setDirty();
 			});
-			UI.filler(comp, tk);
 
-			// reference unit
-			var unitText = UI.formText(comp, tk, M.ReferenceUnit);
-			Controls.set(unitText, getModel().referenceUnit, unit -> {
-				getModel().referenceUnit = unit;
-				getEditor().setDirty();
-			});
-			UI.filler(comp, tk);
-
-			createUsedTable(tk, body);
+			// usage
+			createUsageTable(tk, body);
 
 			body.setFocus();
 			form.reflow(true);
 		}
 
-		private void createUsedTable(FormToolkit tk, Composite body) {
+		private void createUsageTable(FormToolkit tk, Composite body) {
 			var section = UI.section(body, tk,
 				"Used in impact assessment methods");
 			UI.gridData(section, true, true);
