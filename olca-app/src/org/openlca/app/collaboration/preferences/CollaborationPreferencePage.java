@@ -13,7 +13,7 @@ import org.openlca.app.util.UI;
 public class CollaborationPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
 	public static final String ID = "preferencepages.collaboration";
-	private Button libraryCheckBox;
+	private Button restrictionsCheckBox;
 	private Button referenceCheckBox;
 	private Button commentCheckBox;
 
@@ -28,16 +28,16 @@ public class CollaborationPreferencePage extends PreferencePage implements IWork
 		UI.gridLayout(body, 1);
 		var general = new Composite(body, SWT.NONE);
 		UI.gridLayout(general, 2, 0, 0);
-		createLibraryCheckBox(general);
+		createRestrictionsCheckBox(general);
 		createReferenceCheckBox(general);
 		createCommentCheckBox(general);
 		return body;
 	}
 
-	private void createLibraryCheckBox(Composite parent) {
-		libraryCheckBox = UI.formCheckBox(parent, M.CheckAgainstLibraries);
-		UI.gridData(libraryCheckBox, true, false).horizontalIndent = 5;
-		libraryCheckBox.setSelection(CollaborationPreference.checkAgainstLibraries());
+	private void createRestrictionsCheckBox(Composite parent) {
+		restrictionsCheckBox = UI.formCheckBox(parent, "Check restrictions before commit");
+		UI.gridData(restrictionsCheckBox, true, false).horizontalIndent = 5;
+		restrictionsCheckBox.setSelection(CollaborationPreference.checkRestrictions());
 	}
 
 	private void createReferenceCheckBox(Composite parent) {
@@ -55,7 +55,7 @@ public class CollaborationPreferencePage extends PreferencePage implements IWork
 	@Override
 	public boolean performOk() {
 		var store = CollaborationPreference.getStore();
-		store.setValue(CollaborationPreference.CHECK_AGAINST_LIBRARIES, libraryCheckBox.getSelection());
+		store.setValue(CollaborationPreference.CHECK_RESTRICTIONS, restrictionsCheckBox.getSelection());
 		store.setValue(CollaborationPreference.CHECK_REFERENCES, referenceCheckBox.getSelection());
 		store.setValue(CollaborationPreference.DISPLAY_COMMENTS, commentCheckBox.getSelection());
 		return true;

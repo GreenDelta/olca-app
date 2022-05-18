@@ -13,7 +13,10 @@ import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
+import org.openlca.app.collaboration.dialogs.RestrictionDialog;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
+import org.openlca.app.collaboration.preferences.CollaborationPreference;
+import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.collaboration.views.PathFilters;
@@ -69,11 +72,12 @@ public class CommitAction extends Action implements INavigationAction {
 			// changes);
 			if (withReferences == null)
 				return;
-//			if (!checkLibraries(withReferences))
-//				return;
+			if (!checkRestrictions(withReferences))
+				return;
 			Actions.run(GitCommit.from(Database.get())
 					.to(repo.git)
-					.changes(withReferences.stream().map(d -> new Change(d.leftDiffType, d)).collect(Collectors.toList()))
+					.changes(withReferences.stream().map(d -> new Change(d.leftDiffType, d))
+							.collect(Collectors.toList()))
 					.withMessage(dialog.getMessage())
 					.as(committer)
 					.update(repo.workspaceIds));
@@ -123,22 +127,22 @@ public class CommitAction extends Action implements INavigationAction {
 		return false;
 	}
 
-//	private boolean checkLibraries(List<ModelRef> refs) {
-//		if (!CollaborationPreference.checkAgainstLibraries())
-//			return true;
-//		if (!Repository.get().isCollaborationServer())
-//			return true;
-//		try {
-//			var restricted = Repository.get().client.performLibraryCheck(refs);
-//			if (restricted.isEmpty())
-//				return true;
-//			var code = new LibraryRestrictionDialog(restricted).open();
-//			return code == LibraryRestrictionDialog.OK;
-//		} catch (WebRequestException e) {
-//			Actions.handleException("Error performing library check", e);
-//			return false;
-//		}
-//	}
+	private boolean checkRestrictions(List<TriDiff> refs) {
+		if (!CollaborationPreference.checkRestrictions())
+			return true;
+		if (!Repository.get().isCollaborationServer())
+			return true;
+		try {
+			var restricted = Repository.get().client.checkRestrictions(refs);
+			if (restricted.isEmpty())
+				return true;
+			var code = new RestrictionDialog(restricted).open();
+			return code == RestrictionDialog.OK;
+		} catch (WebRequestException e) {
+			Actions.handleException("Error performing restriction check", e);
+			return false;
+		}
+	}
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {

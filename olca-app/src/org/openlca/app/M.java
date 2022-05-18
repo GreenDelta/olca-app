@@ -96,7 +96,6 @@ public class M extends NLS {
 	public static String Causal;
 	public static String CausalAllocation;
 	public static String Change;
-	public static String CheckAgainstLibraries;
 	public static String CheckLinkingProperties;
 	public static String CheckingAgainstLibraries;
 	public static String CheckingOutCommit;
@@ -478,8 +477,6 @@ public class M extends NLS {
 	public static String LCIAChecks;
 	public static String LciaResultTable;
 	public static String LibgfortanInfo;
-	public static String Library;
-	public static String LibraryDataSets;
 	public static String Line;
 	public static String LinkingProperties;
 	public static String LoadingRepositoryList;
@@ -711,7 +708,6 @@ public class M extends NLS {
 	public static String RebuildIndex;
 	public static String RebuildingIndex;
 	public static String RecalculateQuestion;
-	public static String RecognizedLibraryDatasetsDescription;
 	public static String ReconnectProcesslink;
 	public static String Reference;
 	public static String ReferenceCurrency;
@@ -752,6 +748,7 @@ public class M extends NLS {
 	public static String ResetSelection;
 	public static String Resize;
 	public static String RestoreDatabase;
+	public static String Restriction;
 	public static String Result;
 	public static String Results;
 	public static String ResultsOf;

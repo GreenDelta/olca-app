@@ -9,17 +9,16 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.openlca.app.M;
-import org.openlca.app.collaboration.model.LibraryRestriction;
-import org.openlca.app.collaboration.model.LibraryRestriction.RestrictionType;
-import org.openlca.app.collaboration.viewers.LibraryRestrictionViewer;
+import org.openlca.app.collaboration.model.Restriction;
+import org.openlca.app.collaboration.model.Restriction.RestrictionType;
+import org.openlca.app.collaboration.viewers.RestrictionViewer;
 import org.openlca.app.util.UI;
 
-public class LibraryRestrictionDialog extends FormDialog {
+public class RestrictionDialog extends FormDialog {
 
-	private final List<LibraryRestriction> restrictions;
+	private final List<Restriction> restrictions;
 
-	public LibraryRestrictionDialog(List<LibraryRestriction> restrictions) {
+	public RestrictionDialog(List<Restriction> restrictions) {
 		super(UI.shell());
 		this.restrictions = restrictions;
 		setBlockOnOpen(true);
@@ -37,16 +36,16 @@ public class LibraryRestrictionDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(mform, M.LibraryDataSets);
+		var form = UI.formHeader(mform, "Restricted data sets");
 		var toolkit = mform.getToolkit();
 		var body = form.getBody();
 		body.setLayout(new GridLayout());
 		toolkit.paintBordersFor(body);
 		UI.gridData(body, true, true);
-		var description = M.RecognizedLibraryDatasetsDescription;
+		var description = "Some of the selected data sets were identified as restricted data sets (e.g. may underlie license restrictions). If you are allowed to commit changes to these data sets, they are marked with a yellow warning sign, otherwise with a red forbidden sign.";
 		var label = toolkit.createLabel(body, description, SWT.WRAP);
 		UI.gridData(label, true, false).widthHint = 750;
-		var viewer = new LibraryRestrictionViewer(body);
+		var viewer = new RestrictionViewer(body);
 		form.reflow(true);
 		viewer.setInput(restrictions);
 	}

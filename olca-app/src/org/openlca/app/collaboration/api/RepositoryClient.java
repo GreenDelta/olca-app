@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.openlca.app.collaboration.model.Announcement;
 import org.openlca.app.collaboration.model.Comment;
-import org.openlca.app.collaboration.model.LibraryRestriction;
+import org.openlca.app.collaboration.model.Restriction;
 import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.collaboration.util.WebRequests.Type;
@@ -85,9 +85,9 @@ public class RepositoryClient {
 		return result;
 	}
 
-	public List<LibraryRestriction> performLibraryCheck(List<ModelRef> refs) throws WebRequestException {
+	public List<Restriction> checkRestrictions(List<? extends ModelRef> refs) throws WebRequestException {
 		var result = executeLoggedIn(() -> {
-			var invocation = new LibraryCheckInvocation();
+			var invocation = new RestrictionCheckInvocation();
 			invocation.baseUrl = config.apiUrl;
 			invocation.sessionId = sessionId;
 			invocation.repositoryId = config.repositoryId;

@@ -2,17 +2,17 @@ package org.openlca.app.collaboration.model;
 
 import org.openlca.core.model.ModelType;
 
-public class LibraryRestriction {
+public class Restriction {
 
 	public final String datasetRefId;
-	public final String library;
+	public final String name;
 	public final RestrictionType type;
 	public ModelType modelType;
 	public String path;
 
-	public LibraryRestriction(String datasetRefId, String library, RestrictionType type) {
+	public Restriction(String datasetRefId, String name, RestrictionType type) {
 		this.datasetRefId = datasetRefId;
-		this.library = library;
+		this.name = name;
 		this.type = type;
 	}
 

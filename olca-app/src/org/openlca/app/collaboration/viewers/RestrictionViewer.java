@@ -11,8 +11,8 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.model.LibraryRestriction;
-import org.openlca.app.collaboration.model.LibraryRestriction.RestrictionType;
+import org.openlca.app.collaboration.model.Restriction;
+import org.openlca.app.collaboration.model.Restriction.RestrictionType;
 import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -20,9 +20,9 @@ import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.util.Strings;
 
-public class LibraryRestrictionViewer extends AbstractTableViewer<LibraryRestriction> {
+public class RestrictionViewer extends AbstractTableViewer<Restriction> {
 
-	public LibraryRestrictionViewer(Composite parent) {
+	public RestrictionViewer(Composite parent) {
 		super(parent);
 	}
 
@@ -30,30 +30,30 @@ public class LibraryRestrictionViewer extends AbstractTableViewer<LibraryRestric
 	protected TableViewer createViewer(Composite parent) {
 		var viewer = super.createViewer(parent);
 		Tables.bindColumnWidths(viewer, 0.7, 0.25, 0.05);
-		viewer.setComparator(new LibraryComparator());
+		viewer.setComparator(new RestrictionComparator());
 		return viewer;
 	}
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { M.DataSet, M.Library, "" };
+		return new String[] { M.DataSet, M.Restriction, "" };
 	}
 
 	@Override
 	protected IBaseLabelProvider getLabelProvider() {
-		return new LibraryLabelProvider();
+		return new RestrictionLabelProvider();
 	}
 
 	@Override
-	public void setInput(Collection<LibraryRestriction> collection) {
+	public void setInput(Collection<Restriction> collection) {
 		super.setInput(collection);
 	}
 
-	private class LibraryLabelProvider extends LabelProvider implements ITableLabelProvider {
+	private class RestrictionLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object element, int column) {
-			var restriction = (LibraryRestriction) element;
+			var restriction = (Restriction) element;
 			switch (column) {
 			case 0:
 				return Images.get(restriction.modelType);
@@ -68,12 +68,12 @@ public class LibraryRestrictionViewer extends AbstractTableViewer<LibraryRestric
 
 		@Override
 		public String getColumnText(Object element, int column) {
-			var restriction = (LibraryRestriction) element;
+			var restriction = (Restriction) element;
 			switch (column) {
 			case 0:
 				return restriction.path;
 			case 1:
-				return restriction.library;
+				return restriction.name;
 			default:
 				return null;
 			}
@@ -81,12 +81,12 @@ public class LibraryRestrictionViewer extends AbstractTableViewer<LibraryRestric
 
 	}
 
-	private class LibraryComparator extends ViewerComparator {
+	private class RestrictionComparator extends ViewerComparator {
 
 		@Override
 		public int compare(Viewer viewer, Object o1, Object o2) {
-			var l1 = (LibraryRestriction) o1;
-			var l2 = (LibraryRestriction) o2;
+			var l1 = (Restriction) o1;
+			var l2 = (Restriction) o2;
 			if (l1.type == RestrictionType.FORBIDDEN && l2.type == RestrictionType.WARNING)
 				return -1;
 			if (l1.type == RestrictionType.WARNING && l2.type == RestrictionType.FORBIDDEN)
@@ -94,7 +94,7 @@ public class LibraryRestrictionViewer extends AbstractTableViewer<LibraryRestric
 			return compare(viewer, l1, l2);
 		}
 
-		private int compare(Viewer viewer, LibraryRestriction l1, LibraryRestriction l2) {
+		private int compare(Viewer viewer, Restriction l1, Restriction l2) {
 			var c = ModelTypeOrder.compare(l1.modelType, l2.modelType);
 			if (c != 0)
 				return c;

@@ -6,20 +6,20 @@ import org.openlca.app.rcp.RcpActivator;
 
 public class CollaborationPreference extends AbstractPreferenceInitializer {
 
-	public static final String CHECK_AGAINST_LIBRARIES = "olca-collaboration-check-against-libraries";
+	public static final String CHECK_RESTRICTIONS = "olca-collaboration-check-restrictions";
 	public static final String CHECK_REFERENCES = "olca-collaboration-check-references";
 	public static final String DISPLAY_COMMENTS = "olca-collaboration-display-comments";
 
 	@Override
 	public void initializeDefaultPreferences() {
 		var store = getStore();
-		store.setDefault(CHECK_AGAINST_LIBRARIES, true);
+		store.setDefault(CHECK_RESTRICTIONS, true);
 		store.setDefault(CHECK_REFERENCES, true);
 		store.setDefault(DISPLAY_COMMENTS, false);
 	}
 
-	public static boolean checkAgainstLibraries() {
-		return is(CHECK_AGAINST_LIBRARIES);
+	public static boolean checkRestrictions() {
+		return is(CHECK_RESTRICTIONS);
 	}
 
 	public static boolean commentsEnabled() {
