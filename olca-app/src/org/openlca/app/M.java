@@ -97,7 +97,6 @@ public class M extends NLS {
 	public static String CausalAllocation;
 	public static String Change;
 	public static String CheckLinkingProperties;
-	public static String CheckingAgainstLibraries;
 	public static String CheckingOutCommit;
 	public static String Checkout;
 	public static String ChooseDirectory;
