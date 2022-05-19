@@ -3,13 +3,13 @@ package org.openlca.app.collaboration.viewers.diff;
 import org.eclipse.jgit.lib.ObjectId;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
-import org.openlca.git.model.ModelRef;
+import org.openlca.git.model.Reference;
 
 /**
  * Used to compare three states of the same ModelRef, e.g. HEAD state, workspace
  * state and remote state of a model.<br>
  */
-public class TriDiff extends ModelRef {
+public class TriDiff extends Reference {
 
 	public final DiffType leftDiffType;
 	public final ObjectId leftNewObjectId;
@@ -17,13 +17,17 @@ public class TriDiff extends ModelRef {
 	public final ObjectId rightNewObjectId;
 
 	public TriDiff(Diff left, Diff right) {
-		super(right != null ? right : left);
+		super(any(left, right).path, any(left, right).oldCommitId, any(left, right).oldObjectId);
 		this.leftDiffType = left != null ? left.diffType : null;
 		this.leftNewObjectId = left != null ? left.newObjectId : ObjectId.zeroId();
 		this.rightDiffType = right != null ? right.diffType : null;
 		this.rightNewObjectId = right != null ? right.newObjectId : ObjectId.zeroId();
 	}
-
+	
+	private static Diff any(Diff left, Diff right) {
+		return right != null ? right : left;
+	}
+	
 	public boolean noAction() {
 		if (leftDiffType == null && rightDiffType == null)
 			return true;

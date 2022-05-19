@@ -110,7 +110,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 				: null;
 		var rightJson = diff.rightDiffType != null && diff.rightDiffType != DiffType.DELETED
 				? RefJson.get(diff.type, diff.refId, diff.rightNewObjectId)
-				: null;
+				: RefJson.get(diff.type, diff.refId, diff.objectId);
 		return new ModelNodeBuilder().build(leftJson, rightJson);
 	}
 
