@@ -19,7 +19,7 @@ import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.config.MySqlConfig;
 
-class DatabaseWizardPage extends WizardPage {
+public class DatabaseWizardPage extends WizardPage {
 
 	private Text nameText;
 	private StackLayout stackLayout;
@@ -130,19 +130,19 @@ class DatabaseWizardPage extends WizardPage {
 		if (content == null)
 			return null;
 		switch (content) {
-		case EMPTY:
-			return M.EmptyDatabase;
-		case UNITS:
-			return M.UnitsAndFlowProperties;
-		case FLOWS:
-			return M.CompleteReferenceData;
-		default:
-			return null;
+			case EMPTY:
+				return M.EmptyDatabase;
+			case UNITS:
+				return M.UnitsAndFlowProperties;
+			case FLOWS:
+				return M.CompleteReferenceData;
+			default:
+				return null;
 		}
 	}
 
 	private void validateInput() {
-		boolean valid = validateName(nameText.getText());
+		boolean valid = _validateName(nameText.getText());
 		if (!valid)
 			return;
 		if (buttonLocal.getSelection()) {
@@ -178,16 +178,22 @@ class DatabaseWizardPage extends WizardPage {
 		return false;
 	}
 
-	private boolean validateName(String name) {
-		if (name == null || name.length() < 4)
-			error(M.NewDatabase_NameToShort);
-		else if (!DbUtils.isValidName(name))
-			error(M.NewDatabase_InvalidName);
-		else if (Database.getConfigurations().nameExists(name))
-			error(M.NewDatabase_AlreadyExists);
-		else
+	private boolean _validateName(String name) {
+		var error = validateName(name);
+		if (error == null)
 			return true;
+		error(error);
 		return false;
+	}
+
+	public static String validateName(String name) {
+		if (name == null || name.length() < 4)
+			return M.NewDatabase_NameToShort;
+		if (!DbUtils.isValidName(name))
+			return M.NewDatabase_InvalidName;
+		if (Database.getConfigurations().nameExists(name))
+			return M.NewDatabase_AlreadyExists;
+		return null;
 	}
 
 	private void error(String string) {

@@ -9,6 +9,7 @@ import org.openlca.app.collaboration.api.RepositoryConfig;
 import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
+import org.openlca.app.db.DatabaseWizardPage;
 import org.openlca.app.db.DbTemplate;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -39,7 +40,7 @@ public class CloneAction extends Action implements INavigationAction {
 	public ImageDescriptor getImageDescriptor() {
 		return Icon.CLONE.descriptor();
 	}
-	
+
 	@Override
 	public void run() {
 		var url = Input.promptString("Import a Git repository", "Please enter the Git URL to import from", "");
@@ -96,10 +97,11 @@ public class CloneAction extends Action implements INavigationAction {
 		var dir = DatabaseDir.getRootFolder(name);
 		if (!dir.exists())
 			return dir;
-		// TODO validate
-		name = Input.promptString("Import a Git repository",
-				"A database with the name " + name + " already exists",
-				name);
+		name = Input.prompt("Import a Git repository",
+				"Please enter a name for the database",
+				name,
+				v -> v,
+				DatabaseWizardPage::validateName);
 		if (Strings.nullOrEmpty(name))
 			return null;
 		return getDbDir(name);

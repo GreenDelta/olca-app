@@ -38,7 +38,7 @@ public class Input {
 				(v) -> v == null ? "" : null);
 	}
 
-	private static <T> T prompt(String title, String message, String defaultValue, Function<String, T> converter,
+	public static <T> T prompt(String title, String message, String defaultValue, Function<String, T> converter,
 			IInputValidator validator) {
 		var dialog = new InputDialog(UI.shell(), title, message, defaultValue, validator);
 		if (dialog.open() != IDialogConstants.OK_ID)
