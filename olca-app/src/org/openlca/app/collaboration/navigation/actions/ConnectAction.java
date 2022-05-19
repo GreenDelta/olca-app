@@ -24,7 +24,7 @@ public class ConnectAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var url = Input.promptString("Connect to git repository", "Please enter the git URL to connect to", "");
+		var url = Input.promptString("Connect to Git repository", "Please enter the Git URL to connect to", "");
 		if (Strings.nullOrEmpty(url))
 			return;
 		try {

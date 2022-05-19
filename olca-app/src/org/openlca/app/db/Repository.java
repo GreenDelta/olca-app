@@ -56,17 +56,19 @@ public class Repository {
 		return repository;
 	}
 
-	public static void connect(IDatabase database) {
+	public static Repository connect(IDatabase database) {
 		if (isConnected()) {
 			disconnect();
 		}
 		try {
 			var gitDir = RepositoryConfig.getGitDir(database);
 			if (!gitDir.exists() || !gitDir.isDirectory() || gitDir.listFiles().length == 0)
-				return;
+				return null;
 			repository = new Repository(database, gitDir);
+			return repository;
 		} catch (IOException e) {
-			log.error("Error opening git repo", e);
+			log.error("Error opening Git repo", e);
+			return null;
 		}
 	}
 

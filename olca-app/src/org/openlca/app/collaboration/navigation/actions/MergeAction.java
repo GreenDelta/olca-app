@@ -57,7 +57,7 @@ public class MergeAction extends Action implements INavigationAction {
 				return;
 			}
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
-			Actions.handleException("Error during git merge", e);
+			Actions.handleException("Error during Git merge", e);
 		} finally {
 			Database.getWorkspaceIdUpdater().enable();
 			Cache.evictAll();

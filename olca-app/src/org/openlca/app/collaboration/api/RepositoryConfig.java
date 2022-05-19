@@ -53,7 +53,7 @@ public class RepositoryConfig {
 			}
 			return null;
 		} catch (Exception e) {
-			log.error("Error loading git config", e);
+			log.error("Error loading Git config", e);
 			return null;
 		}
 	}

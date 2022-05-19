@@ -19,6 +19,7 @@ public enum Icon {
 	CHART("chart.png"),
 	CHECK_FALSE("check_false.gif"),
 	CHECK_TRUE("check_true.gif"),
+	CLONE("collaboration/clone.png"),
 	COLLAPSE("collapse.png"),
 	COMMENT("collaboration/comment.png"),
 	COMMENTS_VIEW("collaboration/comments_view.png"),

@@ -16,6 +16,7 @@ import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.RepositoryMenu;
+import org.openlca.app.collaboration.navigation.actions.CloneAction;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.navigation.actions.db.DbCloseAction;
@@ -174,7 +175,8 @@ public class NavigationMenu extends CommonActionProvider {
 				M.File,
 				Icon.FILE.descriptor(),
 				() -> new FileImport().run()));
-
+		// Git clone
+		menu.add(new CloneAction());
 		// open the generic import dialog
 		menu.add(Actions.create(M.Other + "...", icon, () -> {
 			try {

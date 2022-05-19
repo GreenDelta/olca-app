@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import org.openlca.app.rcp.RcpActivator;
 import org.zeroturnaround.zip.ZipUtil;
 
-enum DbTemplate {
+public enum DbTemplate {
 
 	EMPTY("db_templates/empty.zolca"),
 
