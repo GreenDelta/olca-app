@@ -96,7 +96,7 @@ class Conflicts {
 		var workspaceConflicts = Conflicts.withWorkspace(commit);
 		if (workspaceConflicts.isEmpty())
 			return resolve(commit, Conflicts.withLocalHistory(commit));
-		var answers = Arrays.asList("Cancel", "Discard changes");
+		var answers = new ArrayList<>(Arrays.asList("Cancel", "Discard changes"));
 		if (!stashCommit) {
 			answers.add("Stash changes");
 		}
@@ -123,11 +123,14 @@ class Conflicts {
 				return false;
 			GitStashDrop.from(repo.git).run();
 		}
-		Actions.run(GitStashCreate.from(Database.get())
+		var stashCreate = GitStashCreate.from(Database.get())
 				.to(repo.git)
 				.as(repo.personIdent())
-				.update(repo.workspaceIds)
-				.discard());
+				.update(repo.workspaceIds);
+		if (discard) {
+			stashCreate = stashCreate.discard();
+		}
+		Actions.run(stashCreate);
 		return true;
 	}
 
