@@ -37,9 +37,12 @@ public class PushAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		try {
+			var credentials = Actions.credentialsProvider();
+			if (credentials == null)
+				return;
 			var result = Actions.run(GitPush
 					.from(Repository.get().git)
-					.authorizeWith(Actions.credentialsProvider()));
+					.authorizeWith(credentials));
 			if (result.newCommits().isEmpty()) {
 				MsgBox.info("No commits to push - Everything up to date");
 			} else if (result.status() == Status.REJECTED_NONFASTFORWARD) {

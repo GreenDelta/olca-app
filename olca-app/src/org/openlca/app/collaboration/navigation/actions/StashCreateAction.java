@@ -47,9 +47,10 @@ public class StashCreateAction extends Action implements INavigationAction {
 		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
+			var committer = repo.promptCommitter();
 			Actions.run(GitStashCreate.from(Database.get())
 					.to(repo.git)
-					.as(repo.personIdent())
+					.as(committer)
 					.update(repo.workspaceIds));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error stashing changes", e);

@@ -44,7 +44,9 @@ public class RepositoryClient {
 	private boolean login() throws WebRequestException {
 		var invocation = new LoginInvocation();
 		invocation.baseUrl = config.apiUrl;
-		invocation.credentials = config.credentials;
+		invocation.credentials = BasicCredentials.prompt();
+		if (invocation.credentials == null)
+			return false;
 		sessionId = invocation.execute();
 		return sessionId != null;
 	}
@@ -169,7 +171,7 @@ public class RepositoryClient {
 	}
 
 	private <T> T executeLoggedIn(InvocationWithResult<T> runnable) throws WebRequestException {
-		if (sessionId == null && config.credentials != null)
+		if (sessionId == null)
 			try {
 				if (!login())
 					return null;
@@ -182,7 +184,7 @@ public class RepositoryClient {
 		try {
 			return runnable.run();
 		} catch (WebRequestException e) {
-			if (e.getErrorCode() == Status.UNAUTHORIZED.getStatusCode() && config.credentials != null) {
+			if (e.getErrorCode() == Status.UNAUTHORIZED.getStatusCode()) {
 				login();
 				return runnable.run();
 			} else {

@@ -39,10 +39,15 @@ class Actions {
 	}
 
 	static UsernamePasswordCredentialsProvider credentialsProvider() {
-		var c = Repository.get().config.credentials;
+		var c = Repository.get().promptCredentials();
 		if (c == null || Strings.nullOrEmpty(c.username()) || Strings.nullOrEmpty(c.password()))
 			return null;
-		return new UsernamePasswordCredentialsProvider(c.username(), c.password());
+		var token = c.token();
+		var password = c.password();
+		if (token != null) {
+			password += "&token=" + token;
+		}
+		return new UsernamePasswordCredentialsProvider(c.username(), password);
 	}
 
 	static <T> T run(GitRemoteAction<T> runnable)

@@ -57,9 +57,10 @@ public class CommitAction extends Action implements INavigationAction {
 	public void run() {
 		try {
 			var repo = Repository.get();
-			var committer = repo.personIdent();
+			var committer = repo.promptCommitter();
 			if (committer == null)
 				return;
+			var credentials = Actions.credentialsProvider();
 			var diffs = Diffs.workspace(repo.toConfig());
 			var dialog = createCommitDialog(diffs);
 			if (dialog == null)
@@ -85,7 +86,7 @@ public class CommitAction extends Action implements INavigationAction {
 				return;
 			var result = Actions.run(GitPush
 					.from(Repository.get().git)
-					.authorizeWith(Actions.credentialsProvider()));
+					.authorizeWith(credentials));
 			if (result.status() == Status.REJECTED_NONFASTFORWARD) {
 				MsgBox.error("Rejected - Not up to date - Please merge remote changes to continue");
 			} else {

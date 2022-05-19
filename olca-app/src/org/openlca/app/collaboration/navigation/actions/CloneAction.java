@@ -54,6 +54,9 @@ public class CloneAction extends Action implements INavigationAction {
 			dbDir = getDbDir(dbName);
 			if (dbDir == null)
 				return;
+			var credentials = Actions.credentialsProvider();
+			if (credentials == null)
+				return;
 			config = new DerbyConfig();
 			config.name(dbDir.getName());
 			DbTemplate.EMPTY.extract(dbDir);
@@ -67,14 +70,13 @@ public class CloneAction extends Action implements INavigationAction {
 			var repo = Repository.connect(db);
 			var newCommits = Actions.run(GitFetch
 					.to(repo.git)
-					.authorizeWith(Actions.credentialsProvider()));
+					.authorizeWith(credentials));
 			if (newCommits.isEmpty())
 				return;
 			Actions.run(GitMerge
 					.from(repo.git)
 					.into(Database.get())
-					.update(repo.workspaceIds)
-					.as(repo.personIdent()));
+					.update(repo.workspaceIds));
 			Announcements.check();
 		} catch (Exception e) {
 			try {

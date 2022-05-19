@@ -5,9 +5,10 @@ import java.io.IOException;
 
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.PersonIdent;
-import org.openlca.app.collaboration.api.InMemoryCredentialSupplier;
+import org.openlca.app.collaboration.api.BasicCredentials;
 import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.collaboration.api.RepositoryConfig;
+import org.openlca.app.util.Input;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.GitConfig;
 import org.openlca.git.ObjectIdStore;
@@ -35,10 +36,11 @@ public class Repository {
 	public final References references;
 	public final Entries entries;
 	public final History history;
+	public PersonIdent user;
 
 	private Repository(IDatabase database, File gitDir) throws IOException {
 		git = new FileRepository(gitDir);
-		config = RepositoryConfig.of(git, new InMemoryCredentialSupplier());
+		config = RepositoryConfig.of(git);
 		client = RepositoryClient.isCollaborationServer(config)
 				? new RepositoryClient(config)
 				: null;
@@ -83,20 +85,31 @@ public class Repository {
 		repository = null;
 	}
 
-	public PersonIdent personIdent() {
-		// TODO
-		var username = config.credentials.username();
-		if (Strings.nullOrEmpty(username))
-			return null;
-		return new PersonIdent(username, username + "@email.com");
-	}
-
 	public boolean isCollaborationServer() {
 		return client != null;
 	}
 
 	public GitConfig toConfig() {
 		return new GitConfig(Database.get(), Repository.get().workspaceIds, Repository.get().git);
+	}
+
+	public PersonIdent promptCommitter() {
+		if (user != null)
+			return user;
+		var username = Input.promptString("Committer", "Please enter your username", "");
+		if (Strings.nullOrEmpty(username))
+			return null;
+		// TODO
+		user = new PersonIdent(username, username + "@email.com");
+		return user;
+	}
+
+	public BasicCredentials promptCredentials() {
+		var credentials = BasicCredentials.prompt();
+		if (credentials == null)
+			return null;
+		user = new PersonIdent(credentials.username(), credentials.username() + "@email.com");
+		return credentials;
 	}
 
 }

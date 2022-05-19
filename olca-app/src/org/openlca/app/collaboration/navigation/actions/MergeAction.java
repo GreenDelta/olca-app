@@ -42,15 +42,18 @@ public class MergeAction extends Action implements INavigationAction {
 		var repo = Repository.get();
 		var commits = Commits.of(repo.git);
 		try {
+			var committer = repo.promptCommitter();
+			if (committer == null)
+				return;
 			var remoteCommit = commits.get(commits.resolve(Constants.REMOTE_BRANCH));
-			var conflictResolver = Conflicts.resolve(remoteCommit, false);
+			var conflictResolver = Conflicts.resolve(remoteCommit, committer, false);
 			if (conflictResolver == null)
 				return;
 			var changed = Actions.run(GitMerge
 					.from(repo.git)
 					.into(Database.get())
 					.update(repo.workspaceIds)
-					.as(repo.personIdent())
+					.as(committer)
 					.resolveConflictsWith(conflictResolver));
 			if (!changed) {
 				MsgBox.info("No changes to merge");

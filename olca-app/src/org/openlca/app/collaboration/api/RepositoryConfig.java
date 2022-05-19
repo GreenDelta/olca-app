@@ -18,17 +18,15 @@ public class RepositoryConfig {
 	public final String serverUrl;
 	public final String repositoryId;
 	public final String apiUrl;
-	public final CredentialSupplier credentials;
 
-	private RepositoryConfig(String serverUrl, String repositoryId, CredentialSupplier credentials) {
+	private RepositoryConfig(String serverUrl, String repositoryId) {
 		this.serverUrl = serverUrl;
 		this.repositoryId = repositoryId;
 		this.apiUrl = serverUrl + "/ws";
-		this.credentials = credentials;
 	}
 
 	@SuppressWarnings("resource")
-	public static RepositoryConfig of(FileRepository repo, CredentialSupplier credentialSupplier) {
+	public static RepositoryConfig of(FileRepository repo) {
 		try {
 			var configs = new Git(repo).remoteList().call();
 			var config = configs.stream()
@@ -43,13 +41,13 @@ public class RepositoryConfig {
 				var splitIndex = url.lastIndexOf(":");
 				var serverUrl = url.substring(0, splitIndex);
 				var repositoryId = url.substring(splitIndex + 1);
-				return new RepositoryConfig(serverUrl, repositoryId, credentialSupplier);
+				return new RepositoryConfig(serverUrl, repositoryId);
 			}
 			if (url.startsWith("http")) {
 				var splitIndex = url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
 				var serverUrl = url.substring(0, splitIndex);
 				var repositoryId = url.substring(splitIndex + 1);
-				return new RepositoryConfig(serverUrl, repositoryId, credentialSupplier);
+				return new RepositoryConfig(serverUrl, repositoryId);
 			}
 			return null;
 		} catch (Exception e) {

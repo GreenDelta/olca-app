@@ -17,7 +17,7 @@ class LoginInvocation {
 
 	private static final String PATH = "/public/login";
 	String baseUrl;
-	CredentialSupplier credentials;
+	BasicCredentials credentials;
 
 	/**
 	 * Login with the specified credentials

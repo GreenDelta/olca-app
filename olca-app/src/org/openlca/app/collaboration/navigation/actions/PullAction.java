@@ -39,21 +39,27 @@ public class PullAction extends Action implements INavigationAction {
 		var repo = Repository.get();
 		var commits = Commits.of(repo.git);
 		try {
+			var committer = repo.promptCommitter();
+			if (committer == null)
+				return;
+			var credentials = Actions.credentialsProvider();
+			if (credentials == null)
+				return;
 			var newCommits = Actions.run(GitFetch
 					.to(repo.git)
-					.authorizeWith(Actions.credentialsProvider()));
+					.authorizeWith(credentials));
 			if (!newCommits.isEmpty()) {
 				new HistoryDialog("Fetched commits", newCommits).open();
 			}
 			var remoteCommit = commits.get(commits.resolve(Constants.REMOTE_BRANCH));
-			var conflictResolver = Conflicts.resolve(remoteCommit, false);
+			var conflictResolver = Conflicts.resolve(remoteCommit, committer, false);
 			if (conflictResolver == null)
 				return;
 			var changed = Actions.run(GitMerge
 					.from(repo.git)
 					.into(Database.get())
 					.update(repo.workspaceIds)
-					.as(repo.personIdent())
+					.as(committer)
 					.resolveConflictsWith(conflictResolver));
 			if (!changed) {
 				MsgBox.info("No commits to fetch - Everything up to date");
