@@ -24,17 +24,21 @@ import org.openlca.core.library.LibraryExport;
 import org.openlca.core.library.LibraryInfo;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.DQSystem;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.Version;
 import org.openlca.util.Databases;
+import org.openlca.util.Strings;
 
 public class LibraryExportDialog extends FormDialog {
 
+	private final Props props;
 	private final Config config;
 
-	private LibraryExportDialog(Config config) {
+	private LibraryExportDialog(Props props) {
 		super(UI.shell());
-		this.config = config;
-		config.name = config.db.getName();
+		this.props = props;
+		this.config = new Config();
+		config.name = props.db.getName();
 		config.version = "1.0";
 		config.allocation = AllocationMethod.NONE;
 	}
@@ -48,16 +52,16 @@ public class LibraryExportDialog extends FormDialog {
 			return;
 		}
 		try {
-			var config = App.exec(
+			var props = App.exec(
 				"Collect database properties...",
-				() -> Config.of(db));
-			if (!config.dbHasInventory) {
-				MsgBox.error("No inventory data",
-					"The library export of databases without inventory data" +
-						" is not supported yet.");
+				() -> Props.of(db));
+			if (props.hasLibraryProcesses) {
+				MsgBox.error("Contains library processes",
+					"The database is already connected to a process library. Libraries" +
+						" with dependencies to process libraries are not supported.");
 				return;
 			}
-			new LibraryExportDialog(config).open();
+			new LibraryExportDialog(props).open();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to open library export dialog", e);
 		}
@@ -85,12 +89,15 @@ public class LibraryExportDialog extends FormDialog {
 		version.addModifyListener(_e ->
 			config.version = Version.format(version.getText()));
 
-		UI.formLabel(body, tk, M.AllocationMethod);
-		var allocCombo = new AllocationCombo(
-			body, AllocationMethod.values());
-		allocCombo.select(config.allocation);
-		allocCombo.addSelectionChangedListener(
-			m -> config.allocation = m);
+		// allocation method
+		if (props.hasInventory) {
+			UI.formLabel(body, tk, M.AllocationMethod);
+			var allocCombo = new AllocationCombo(
+				body, AllocationMethod.values());
+			allocCombo.select(config.allocation);
+			allocCombo.addSelectionChangedListener(
+				m -> config.allocation = m);
+		}
 
 		BiFunction<String, Consumer<Boolean>, Button> check =
 			(label, onClick) -> {
@@ -101,31 +108,26 @@ public class LibraryExportDialog extends FormDialog {
 				return button;
 			};
 
-		if (config.dbHasImpacts) {
-			check.apply(
-					"With LCIA data",
-					b -> config.withImpacts = b)
-				.setSelection(config.withImpacts);
-		}
-
-		if (config.dbHasUncertainties) {
+		// uncertainty check
+		if (props.hasUncertainty) {
 			check.apply(
 					"With uncertainty distributions",
 					b -> config.withUncertainties = b)
 				.setSelection(config.withUncertainties);
 		}
 
+		// regionalization check
 		check.apply(
 				"Regionalized",
 				b -> config.regionalized = b)
 			.setSelection(config.regionalized);
 
-		// data quality values
-		if (config.dbDQSystem != null) {
+		// data quality check
+		if (props.hasInventory && props.flowDqs != null) {
 			var dqCheck = check.apply(
-				"With data quality values (" + config.dbDQSystem.name + ")",
+				"With data quality values (" + props.flowDqs.name + ")",
 				b -> config.dqSystem = b
-					? config.dbDQSystem
+					? props.flowDqs
 					: null);
 			dqCheck.setSelection(config.dqSystem != null);
 			dqCheck.setEnabled(false); // disabled for now
@@ -144,9 +146,8 @@ public class LibraryExportDialog extends FormDialog {
 		}
 		var exportDir = new File(libDir.folder(), id);
 		super.okPressed();
-		var export = new LibraryExport(config.db, exportDir)
+		var export = new LibraryExport(props.db, exportDir)
 			.withConfig(info)
-			.withImpacts(config.withImpacts)
 			.withAllocation(config.allocation)
 			.withUncertainties(config.withUncertainties);
 		App.runWithProgress(
@@ -156,41 +157,45 @@ public class LibraryExportDialog extends FormDialog {
 	}
 
 	private static class Config {
-
-		private final IDatabase db;
-
-		// database properties that indicate
-		// which configuration options we
-		// can provide
-		final boolean dbHasInventory;
-		final boolean dbHasImpacts;
-		final boolean dbHasUncertainties;
-		final DQSystem dbDQSystem;
-
 		String name;
 		String version;
 		AllocationMethod allocation;
 		boolean regionalized;
-		boolean withImpacts;
 		boolean withUncertainties;
 		DQSystem dqSystem;
-
-		private Config(IDatabase db) {
-			this.db = db;
-			this.dbHasInventory = Databases.hasInventoryData(db);
-			this.dbHasImpacts = Databases.hasImpactData(db);
-			this.dbHasUncertainties = Databases.hasUncertaintyData(db);
-			this.dbDQSystem = Databases.getCommonFlowDQS(db).orElse(null);
-		}
-
-		static Config of(IDatabase db) {
-			return new Config(db);
-		}
 
 		LibraryInfo toInfo() {
 			return LibraryInfo.of(name)
 				.version(version)
 				.isRegionalized(regionalized);
+		}
+	}
+
+	private record Props(
+		IDatabase db,
+		boolean hasLibraryProcesses,
+		boolean hasInventory,
+		boolean hasUncertainty,
+		DQSystem flowDqs
+	) {
+		static Props of(IDatabase db) {
+			boolean hasLibraryProcesses = false;
+			boolean hasInventory = false;
+			for (var d : db.getDescriptors(Process.class)) {
+				hasInventory = true;
+				if (Strings.notEmpty(d.library)) {
+					hasLibraryProcesses = true;
+					break;
+				}
+			}
+
+			if (hasLibraryProcesses)
+				return new Props(db, true, true, false, null);
+
+			return new Props(db, false,
+				hasInventory,
+				Databases.hasUncertaintyData(db),
+				Databases.getCommonFlowDQS(db).orElse(null));
 		}
 	}
 }
