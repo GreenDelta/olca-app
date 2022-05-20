@@ -14,6 +14,7 @@ public abstract class AbstractComponentEditPart<N extends GraphComponent> extend
 	 * Upon activation, attach to the model element as a property change
 	 * listener.
 	 */
+	@Override
 	public void activate() {
 		if (!isActive()) {
 			super.activate();
@@ -25,6 +26,7 @@ public abstract class AbstractComponentEditPart<N extends GraphComponent> extend
 	 * Upon deactivation, detach from the model element as a property change
 	 * listener.
 	 */
+	@Override
 	public void deactivate() {
 		if (isActive()) {
 			super.deactivate();

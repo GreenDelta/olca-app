@@ -1,9 +1,13 @@
 package org.openlca.app.editors.graph.model;
 
 import org.openlca.app.editors.graph.GraphEditor;
+import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+
+import java.util.Objects;
 
 public class ExchangeItem extends GraphComponent {
 
@@ -41,14 +45,52 @@ public class ExchangeItem extends GraphComponent {
 		return false;
 	}
 
-	public Node getNode() {
-		return (Node) getParent().getParent();
+	public Graph getGraph() {
+		return getIOPane().getGraph();
 	}
 
-	public Graph getGraph() {return (Graph) getNode().getParent();}
+	public IOPane getIOPane() {
+		return (IOPane) getParent();
+	}
+
+	public Node getNode() {
+		return getIOPane().getNode();
+	}
 
 	public Exchange getExchange() {
 		return exchange;
+	}
+
+	/**
+	 * Returns true if this exchange is connected.
+	 */
+	public boolean isConnected() {
+		var node = getNode();
+		if (node == null || node.descriptor == null || exchange == null)
+			return false;
+		var linkSearch = node.getGraph().linkSearch;
+		var links = linkSearch.getConnectionLinks(node.descriptor.id);
+		for (ProcessLink link : links) {
+			if (link.exchangeId == exchange.id)
+				return true;
+		}
+		return false;
+	}
+
+	public boolean matches(ExchangeItem exchangeItem) {
+		if (exchangeItem == null
+			|| this.exchange == null
+			|| exchangeItem.exchange == null)
+			return false;
+		if (!Objects.equals(exchange.flow, exchangeItem.exchange.flow))
+			return false;
+		return exchange.isInput != exchangeItem.exchange.isInput;
+	}
+
+	public String toString() {
+		var name = Labels.name(exchange.flow);
+		return "ExchangeItem("
+			+ name.substring(0, Math.min(name.length(), 20)) + ")";
 	}
 
 }

@@ -8,20 +8,14 @@ import org.openlca.app.editors.graph.GraphEditor;
 /**
  * Abstract prototype of a model element.
  * <p>
- * This class provides features necessary for all model elements, like:
+ * This class provides features necessary for all model elements:
  * </p>
  * <ul>
  * <li>property-change support (used to notify edit parts of model changes),</li>
- * <li>...</li>
  */
 abstract public class GraphElement {
 
 	protected PropertyChangeSupport listeners = new PropertyChangeSupport(this);
-	protected final GraphEditor editor;
-
-	GraphElement(GraphEditor editor) {
-		this.editor = editor;
-	}
 
 	public void addPropertyChangeListener(PropertyChangeListener l) {
 		listeners.addPropertyChangeListener(l);
@@ -45,9 +39,6 @@ abstract public class GraphElement {
 	protected void firePropertyChange(String prop, Object oldValue,
 																		Object newValue) {
 		listeners.firePropertyChange(prop, oldValue, newValue);
-	}
-
-	public void update() {
 	}
 
 }

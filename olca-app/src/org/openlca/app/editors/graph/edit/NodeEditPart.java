@@ -17,14 +17,11 @@ import org.openlca.app.editors.graph.figures.MinimizedNodeFigure;
 import org.openlca.app.editors.graph.model.GraphComponent;
 import org.openlca.app.editors.graph.model.Node;
 
-
 abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 
 	@Override
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new MinMaxComponentEditPolicy());
-		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-			new NodeGraphicalEditPolicy());
 	}
 
 	@Override
@@ -33,10 +30,7 @@ abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 		if (GraphComponent.SIZE_PROP.equals(prop)
 			|| GraphComponent.LOCATION_PROP.equals(prop))
 			refreshVisuals();
-		else if (GraphComponent.INPUTS_PROP.equals(prop))
-			refreshSourceConnections();
-		else if (GraphComponent.OUTPUTS_PROP.equals(prop))
-			refreshTargetConnections();
+		else super.propertyChange(evt);
 	}
 
 	@Override
@@ -60,8 +54,7 @@ abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 
 		@Override
 		protected IFigure createFigure() {
-			var model = getModel();
-			return new MaximizedNodeFigure(model.descriptor);
+			return new MaximizedNodeFigure(getModel());
 		}
 
 		@Override
@@ -75,8 +68,7 @@ abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 
 		@Override
 		protected IFigure createFigure() {
-			var model = getModel();
-			return new MinimizedNodeFigure(model.descriptor);
+			return new MinimizedNodeFigure(getModel());
 		}
 
 		@Override

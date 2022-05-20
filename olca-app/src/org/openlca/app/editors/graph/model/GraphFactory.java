@@ -7,7 +7,6 @@ import java.util.Objects;
 
 import com.google.gson.JsonArray;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.graph.GraphConfig;
 import org.openlca.app.editors.graph.GraphEditor;
 import org.openlca.app.editors.graph.GraphFile;
 import org.openlca.app.editors.graph.layouts.NodeLayoutInfo;
@@ -138,50 +137,78 @@ public class GraphFactory {
 		};
 	}
 
-    public Graph createGraph(GraphEditor editor, JsonArray array) {
-			if (array == null)
-				return createGraph(editor);
-
-			var graph = new Graph(editor);
-
-			var system = editor.getProductSystem();
-			var referenceProcess = system.referenceProcess;
-
-			// Create the reference node.
-			if (referenceProcess != null) {
-				var refNodeInfo = getNodeInfo(array, referenceProcess.refId);
-				var descriptor = getDescriptor(referenceProcess.id);
-				var refNode = createNode(descriptor, refNodeInfo);
-				if (refNode != null) {
-					graph.addChild(refNode);
-				}
+	public void createNecessaryLinks(Graph graph, Node node) {
+		var linkSearch = graph.linkSearch;
+		long id = node.descriptor.id;
+		for (ProcessLink pLink : linkSearch.getLinks(id)) {
+			boolean isProvider = pLink.providerId == id;
+			long otherID = isProvider ? pLink.processId : pLink.providerId;
+			var otherNode = graph.getProcessNode(otherID);
+			if (otherNode == null)
+				continue;
+			Node outNode = null;
+			Node inNode = null;
+			FlowType type = graph.flows.type(pLink.flowId);
+			if (type == FlowType.PRODUCT_FLOW) {
+				outNode = isProvider ? node : otherNode;
+				inNode = isProvider ? otherNode : node;
+			} else if (type == FlowType.WASTE_FLOW) {
+				outNode = isProvider ? otherNode : node;
+				inNode = isProvider ? node : otherNode;
 			}
-
-			// Create other nodes.
-			for (var elem : array) {
-				if (!elem.isJsonObject())
-					continue;
-				var obj = elem.getAsJsonObject();
-				var info = GraphFile.toInfo(obj);
-				if (info == null)
-					continue;
-
-				// The reference should not be created again.
-				if (referenceProcess != null
-					&& Objects.equals(info.id, referenceProcess.refId))
-					continue;
-
-				var descriptor = getDescriptor(info.id);
-				var node = createNode(descriptor, info);
-				if (node == null)
-					continue;
-				graph.addChild(node);
-
-				// TODO Create links
-				//			editor.createNecessaryLinks(node);
-			}
-			return graph;
+			if (outNode == null)
+				continue;
+			// TODO Expander
+			//			if (!outNode.isExpandedRight() && !inNode.isExpandedLeft())
+			//				continue;
+			System.out.printf("Creating nodes link: %s -> %s\n", inNode, outNode);
+			new Link(pLink, inNode, outNode);
 		}
+	}
+
+	public Graph createGraph(GraphEditor editor, JsonArray array) {
+		if (array == null)
+			return createGraph(editor);
+
+		var graph = new Graph(editor);
+
+		var system = editor.getProductSystem();
+		var referenceProcess = system.referenceProcess;
+
+		// Create the reference node.
+		if (referenceProcess != null) {
+			var refNodeInfo = getNodeInfo(array, referenceProcess.refId);
+			var descriptor = getDescriptor(referenceProcess.id);
+			var refNode = createNode(descriptor, refNodeInfo);
+			if (refNode != null) {
+				graph.addChild(refNode);
+			}
+		}
+
+		// Create other nodes.
+		for (var elem : array) {
+			if (!elem.isJsonObject())
+				continue;
+			var obj = elem.getAsJsonObject();
+			var info = GraphFile.toInfo(obj);
+			if (info == null)
+				continue;
+
+			// The reference should not be created again.
+			if (referenceProcess != null
+				&& Objects.equals(info.id, referenceProcess.refId))
+				continue;
+
+			var descriptor = getDescriptor(info.id);
+			var node = createNode(descriptor, info);
+			if (node == null)
+				continue;
+			graph.addChild(node);
+
+			createNecessaryLinks(graph, node);
+		}
+		return graph;
+	}
 
 	private Graph createGraph(GraphEditor editor) {
 		// No saved settings applied => try to find a good configuration

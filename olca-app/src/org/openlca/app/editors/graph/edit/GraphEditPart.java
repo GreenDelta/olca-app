@@ -3,10 +3,13 @@ package org.openlca.app.editors.graph.edit;
 import org.eclipse.draw2d.*;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
+import org.openlca.app.editors.graph.GraphConfig;
 import org.openlca.app.editors.graph.model.GraphComponent;
 import org.openlca.app.editors.graph.model.Graph;
 
 import java.beans.PropertyChangeEvent;
+
+import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
 
 /**
  * EditPart for the GraphModel instance.
@@ -23,26 +26,67 @@ import java.beans.PropertyChangeEvent;
  */
 public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 
-		protected void createEditPolicies() {
-			// Disallows the removal of this edit part.
-			installEditPolicy(EditPolicy.COMPONENT_ROLE,
-				new RootComponentEditPolicy());
-			// Handles constraint changes (e.g. moving and/or resizing) of model
-			// elements within the graph and creation of new model elements.
-			installEditPolicy(EditPolicy.LAYOUT_ROLE, new GraphXYLayoutEditPolicy());
+	/**
+	 * Upon activation, attach to the GraphConfig element as a property change
+	 * listener.
+	 */
+	@Override
+	public void activate() {
+		if (!isActive()) {
+			super.activate();
+			getModel().getConfig().addPropertyChangeListener(this);
 		}
+	}
 
-		protected IFigure createFigure() {
-			Figure f = new FreeformLayer();
-			f.setBorder(new MarginBorder(3));
-			f.setLayoutManager(new FreeformLayout());
-			return f;
+	/**
+	 * Upon deactivation, detach from the GraphConfig element as a property change
+	 * listener.
+	 */
+	@Override
+	public void deactivate() {
+		if (isActive()) {
+			super.deactivate();
+			getModel().getConfig().removePropertyChangeListener(this);
 		}
+	}
 
+	@Override
+	protected void createEditPolicies() {
+		// Disallows the removal of this edit part.
+		installEditPolicy(EditPolicy.COMPONENT_ROLE,
+			new RootComponentEditPolicy());
+		// Handles constraint changes (e.g. moving and/or resizing) of model
+		// elements within the graph and creation of new model elements.
+		installEditPolicy(EditPolicy.LAYOUT_ROLE, new GraphXYLayoutEditPolicy());
+	}
+
+	@Override
+	protected IFigure createFigure() {
+		Figure f = new FreeformLayer();
+		f.setBorder(new MarginBorder(3));
+		f.setLayoutManager(new FreeformLayout());
+		return f;
+	}
+
+	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
 		if (GraphComponent.CHILDREN_PROP.equals(prop))
 			refreshChildren();
+		else if (GraphConfig.CONFIG_PROP.equals(prop)) {
+			refresh();
 		}
+	}
+
+	@Override
+	protected void refreshVisuals() {
+		var cLayer = (ConnectionLayer) getLayer(CONNECTION_LAYER);
+		var connectionRouter = getModel().getConfig().isRouted
+					// TODO ? new TreeConnectionRouter()
+					? new ManhattanConnectionRouter()
+					: ConnectionRouter.NULL;
+		cLayer.setConnectionRouter(connectionRouter);
+		super.refreshVisuals();
+	}
 
 }

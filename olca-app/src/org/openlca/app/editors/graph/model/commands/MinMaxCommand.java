@@ -4,6 +4,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graph.edit.AbstractComponentEditPart;
+import org.openlca.app.editors.graph.model.GraphFactory;
 import org.openlca.app.editors.graph.model.MinMaxGraphComponent;
 
 public class MinMaxCommand extends Command {
@@ -44,12 +45,13 @@ public class MinMaxCommand extends Command {
 	@Override
 	public void execute() {
 		child.setMinimized(minimize);
-		if (!minimize) {
+		if (!minimize)
 			child.addChildren();
-		}
+		child.updateLinks();
+		if (minimize)
+			child.removeChildren();
 		var parentEditPart = (AbstractComponentEditPart<?>) childEditPart.getParent();
 		parentEditPart.resetChildEditPart(childEditPart);
-
 	}
 
 	public void undo() {

@@ -3,6 +3,8 @@ package org.openlca.app.editors.graph.model;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.openlca.app.editors.graph.GraphEditor;
 
+import java.util.ArrayList;
+
 public abstract class MinMaxGraphComponent extends GraphComponent {
 
 	private boolean minimized = true;
@@ -32,4 +34,18 @@ public abstract class MinMaxGraphComponent extends GraphComponent {
 	protected abstract Dimension getMaximizedSize();
 
 	public abstract void addChildren();
+
+	public void removeChildren() {
+		var children = new ArrayList<>(getChildren());
+		for (var child : children)
+			removeChild(child);
+	}
+
+	public void updateLinks() {
+		System.out.printf("Updating links of %s: %s\n", this, getAllLinks());
+		for (Link link : getAllLinks()) {
+			link.reconnect(link.getSource(), link.getTarget());
+		}
+	}
+
 }

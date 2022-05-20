@@ -35,7 +35,7 @@ public class GraphEditor extends GraphicalEditor {
 	public static final double[] ZOOM_LEVELS = new double[] {
 		0.01, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0 };
 
-	// TODO: save this in the same way like the layout is currently stored
+	// TODO: save this in the same way as the layout is currently stored
 	public final GraphConfig config = new GraphConfig();
 	private final GraphFactory graphFactory = new GraphFactory(this);
 
@@ -94,6 +94,11 @@ public class GraphEditor extends GraphicalEditor {
 		getActionRegistry().registerAction(zoomIn);
 		getActionRegistry().registerAction(zoomOut);
 		// TODO Add delete action
+
+		ContextMenuProvider provider = new GraphContextMenuProvider(viewer,
+			getActionRegistry());
+		viewer.setContextMenu(provider);
+
 //		keyHandler.put(KeyStroke.getPressed(SWT.DEL, 127, 0), delete);
 		keyHandler.put(KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0), zoomIn);
 		keyHandler.put(KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0), zoomOut);

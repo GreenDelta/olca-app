@@ -3,6 +3,7 @@ package org.openlca.app.editors.graph.model;
 
 import gnu.trove.set.hash.TLongHashSet;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.graph.GraphConfig;
 import org.openlca.app.editors.graph.GraphEditor;
 import org.openlca.app.editors.graph.search.MutableProcessLinkSearchMap;
 import org.openlca.core.matrix.cache.FlowTable;
@@ -11,7 +12,6 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A {@link Graph} renders a system of unit processes, library
@@ -20,9 +20,6 @@ import java.util.Objects;
  */
 public class Graph extends GraphComponent {
 
-	public static String ID_ROUTER = "router"; //$NON-NLS-1$
-
-	protected Integer connectionRouter = null;
 	private double zoom = 1.0;
 
 	public final MutableProcessLinkSearchMap linkSearch;
@@ -45,11 +42,16 @@ public class Graph extends GraphComponent {
 		}
 	}
 
-	public Integer getConnectionRouter() {
-		// TODO
-		//		if (connectionRouter == null)
-		//			connectionRouter = ROUTER_MANUAL;
-		return connectionRouter;
+	public Node getProcessNode(long id) {
+		for (var node : getChildren()) {
+			if (node.descriptor != null && node.descriptor.id == id)
+				return node;
+		}
+		return null;
+	}
+
+	public boolean isReferenceProcess(Node node) {
+		return node != null && referenceProcess.id == node.descriptor.id;
 	}
 
 	public double getZoom() {
@@ -58,12 +60,6 @@ public class Graph extends GraphComponent {
 
 	public void setZoom(double zoom) {
 		this.zoom = zoom;
-	}
-
-	public void setConnectionRouter(Integer router) {
-		Integer oldConnectionRouter = connectionRouter;
-		connectionRouter = router;
-		firePropertyChange(ID_ROUTER, oldConnectionRouter, connectionRouter);
 	}
 
 	@SuppressWarnings("unchecked")

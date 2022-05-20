@@ -22,26 +22,29 @@ public class ExchangeFigure extends Figure {
 		this.exchangeItem = exchangeItem;
 		this.exchange = exchangeItem.exchange;
 
+		var theme = exchangeItem.getGraph().getConfig().getTheme();
+
 		var layout = new GridLayout(4, false);
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		setLayoutManager(layout);
 
 		var image = new ImageFigure(Images.get(exchange.flow));
-		add(image, new GridData(SWT.LEAD, SWT.TOP, false, false));
+		add(image, new GridData(SWT.LEAD, SWT.CENTER, false, false));
 
 		label = new Label(Labels.name(exchange.flow));
 		if (exchangeItem.isRefFlow()) {
 			label.setFont(UI.boldFont());
 		}
-		label.setForegroundColor(ColorConstants.black);
-		add(label, new GridData(SWT.FILL, SWT.TOP, true, false));
+		label.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
+		add(label, new GridData(SWT.LEAD, SWT.CENTER, true, false));
+
 		var amount = new Label(Numbers.format(exchange.amount));
 		amount.setForegroundColor(ColorConstants.black);
-		add(amount, new GridData(SWT.TRAIL, SWT.TOP, true, false));
+		add(amount, new GridData(SWT.TRAIL, SWT.CENTER, false, false));
 		var unit = new Label(Labels.name(exchange.unit));
 		unit.setForegroundColor(ColorConstants.black);
-		add(unit, new GridData(SWT.LEAD, SWT.TOP, true, false));
+		add(unit, new GridData(SWT.LEAD, SWT.CENTER, false, false));
 
 		setToolTip(new Label(tooltip()));
 	}
@@ -74,5 +77,12 @@ public class ExchangeFigure extends Figure {
 			label.setFont(null);
 		}
 	}
+
+	public String toString() {
+		var name = Labels.name(exchange.flow);
+		return "ExchangeFigure("
+			+ name.substring(0, Math.min(name.length(), 20)) + ")";
+	}
+
 
 }

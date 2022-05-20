@@ -2,6 +2,7 @@ package org.openlca.app.editors.graph.model;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.openlca.app.editors.graph.GraphConfig;
 import org.openlca.app.editors.graph.GraphEditor;
 
 import java.util.ArrayList;
@@ -9,17 +10,22 @@ import java.util.List;
 
 abstract public class GraphComponent extends GraphElement {
 
-	public static final String CHILDREN_PROP = "children", INPUTS_PROP = "inputs",
-		OUTPUTS_PROP = "outputs", SIZE_PROP = "size", LOCATION_PROP = "location";
+	public static final String CHILDREN_PROP = "children", TARGET_CONNECTIONS_PROP = "targets",
+		SOURCE_CONNECTIONS_PROP = "sources", SIZE_PROP = "size", LOCATION_PROP = "location";
+
+	public final GraphEditor editor;
 
 	protected List<GraphComponent> children = new ArrayList<>();
 	private GraphComponent parent;
+
+	private List<Link> sourceConnections = new ArrayList<>();
+	private List<Link> targetConnections = new ArrayList<>();
 
 	protected Point location = new Point(0, 0);
 	protected Dimension size = new Dimension(-1, -1);
 
 	GraphComponent(GraphEditor editor) {
-		super(editor);
+		this.editor = editor;
 	}
 
 
@@ -45,10 +51,6 @@ abstract public class GraphComponent extends GraphElement {
 		firePropertyChange(SIZE_PROP, null, size);
 	}
 
-	protected void fireStructureChange(String prop, Object child) {
-		firePropertyChange(prop, null, child);
-	}
-
 	public void addChild(GraphComponent child) {
 		addChild(child, -1);
 	}
@@ -70,6 +72,10 @@ abstract public class GraphComponent extends GraphElement {
 		return parent;
 	}
 
+	public GraphConfig getConfig() {
+		return editor.config;
+	}
+
 	public void removeChild(GraphComponent child) {
 		children.remove(child);
 		firePropertyChange(CHILDREN_PROP, child, null);
@@ -77,6 +83,53 @@ abstract public class GraphComponent extends GraphElement {
 
 	public List<? extends GraphComponent> getChildren() {
 		return children;
+	}
+
+	void addConnection(Link link) {
+		if (link == null || targetConnections.contains(link) || sourceConnections.contains(link))
+			return;
+		if (link.getTarget() == this) {
+			targetConnections.add(link);
+			firePropertyChange(TARGET_CONNECTIONS_PROP, null, link);
+		} else if (link.getSource() == this) {
+			sourceConnections.add(link);
+			firePropertyChange(SOURCE_CONNECTIONS_PROP, null, link);
+		}
+	}
+
+	void removeConnection(Link link) {
+		if (link == null) {
+			return;
+		}
+		if (link.getTarget() == this) {
+			targetConnections.remove(link);
+			firePropertyChange(TARGET_CONNECTIONS_PROP, link, null);
+		}
+		else if (link.getSource() == this) {
+			sourceConnections.remove(link);
+			firePropertyChange(SOURCE_CONNECTIONS_PROP, link, null);
+		}
+	}
+
+	public List<Link> getTargetConnections() {
+		return targetConnections;
+	}
+
+	public List<Link> getSourceConnections() {
+		return sourceConnections;
+	}
+
+	/**
+	 * Retrieve the links from this and its children.
+	 */
+	public List<Link> getAllLinks() {
+		List<Link> links = new ArrayList<>();
+		links.addAll(getTargetConnections());
+		links.addAll(getSourceConnections());
+		for (var child : getChildren()) {
+			links.addAll(child.getAllLinks());
+		}
+		return links;
 	}
 
 }

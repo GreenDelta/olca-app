@@ -8,11 +8,11 @@ import org.openlca.app.editors.graph.figures.IOPaneFigure;
 import org.openlca.app.editors.graph.model.IOPane;
 import org.openlca.app.editors.graph.model.GraphComponent;
 
-public class IOPaneEditPart extends AbstractNodeEditPart<IOPane> {
+public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
 
 	@Override
 	protected IFigure createFigure() {
-		return new IOPaneFigure();
+		return new IOPaneFigure(getModel());
 	}
 
 	@Override

@@ -8,20 +8,20 @@ class GridPos {
 	private GridPos() {
 	}
 
-	static GridData leftTop() {
-		return new GridData(SWT.LEFT, SWT.TOP, false, false);
+	static GridData leadTop() {
+		return new GridData(SWT.LEAD, SWT.TOP, false, false);
 	}
 
-	static GridData leftCenter() {
-		return new GridData(SWT.LEFT, SWT.CENTER, false, false);
+	static GridData leadCenter() {
+		return new GridData(SWT.LEAD, SWT.CENTER, false, false);
 	}
 
-	static GridData rightTop() {
-		return new GridData(SWT.RIGHT, SWT.TOP, false, false);
+	static GridData trailTop() {
+		return new GridData(SWT.TRAIL, SWT.TOP, false, false);
 	}
 
-	static GridData rightCenter() {
-		return new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+	static GridData trailCenter() {
+		return new GridData(SWT.TRAIL, SWT.CENTER, false, false);
 	}
 
 	static GridData fillTop() {
