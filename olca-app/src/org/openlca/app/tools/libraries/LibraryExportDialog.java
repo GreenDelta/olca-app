@@ -14,6 +14,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -25,7 +26,6 @@ import org.openlca.core.library.LibraryInfo;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.Version;
 import org.openlca.util.Databases;
 import org.openlca.util.Strings;
 
@@ -86,8 +86,19 @@ public class LibraryExportDialog extends FormDialog {
 
 		var version = UI.formText(body, tk, M.Version);
 		version.setText(config.version);
-		version.addModifyListener(_e ->
-			config.version = Version.format(version.getText()));
+		version.addModifyListener(_e -> {
+				var text = version.getText();
+				config.version = text;
+				var formatOk = text.matches("\\d+(?:\\.\\d+)?(?:\\.\\d+)?");
+				if (formatOk) {
+					version.setBackground(Colors.white());
+					version.setToolTipText("");
+				} else {
+					version.setBackground(Colors.errorColor());
+					version.setToolTipText("Not a valid library version");
+				}
+			}
+		);
 
 		// allocation method
 		if (props.hasInventory) {
