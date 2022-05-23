@@ -1,8 +1,8 @@
 package org.openlca.app.navigation.actions.libraries;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.action.Action;
@@ -15,12 +15,12 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.library.Library;
 import org.openlca.util.Dirs;
-import org.slf4j.LoggerFactory;
 
 public class DeleteLibraryAction extends Action implements INavigationAction {
 
@@ -68,19 +68,25 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 		// ask and delete the library
 		boolean b = Question.ask("Delete library?",
 			"Do you really want to delete the library? " +
-			"Make sure that you have a backup of it.");
+				"Make sure that you have a backup of it.");
 		if (!b)
 			return;
 
 		// check that it is not used
-		var config = App.exec(
+		var usage = App.exec(
 			"Check if library is used ...",
-			() -> isUsed(lib));
-		if (config.isPresent()) {
+			() -> Usage.find(lib));
+		if (usage.isPresent()) {
+			var u = usage.get();
+			if (u.isError()) {
+				ErrorReporter.on(
+					"Failed to check usage of library '"
+						+ lib.id() + "'", u.error);
+				return;
+			}
 			MsgBox.info("Cannot delete library",
 				"We cannot delete library " + lib.id() +
-				" as it is still used in database " +
-				config.get().name() + ".");
+					" as it is used in " + u.label());
 			return;
 		}
 
@@ -89,40 +95,82 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 		Navigator.refresh();
 	}
 
-	/**
-	 * Returns the first database where the given library is used.
-	 * An empty option is returned if the library is not used in
-	 * any of the databases in the database folder.
-	 */
-	private Optional<DatabaseConfig> isUsed(Library lib) {
-		if (lib == null)
-			return Optional.empty();
-		var log = LoggerFactory.getLogger(getClass());
-		var libID = lib.id();
+	private enum UsageType {
+		DATABASE, LIBRARY
+	}
 
-		Predicate<DatabaseConfig> isUsedIn = config -> {
+	private record Usage(String name, UsageType type, String error) {
+
+		private static Usage db(DatabaseConfig config) {
+			return new Usage(config.name(), UsageType.DATABASE, null);
+		}
+
+		private static Usage lib(Library lib) {
+			return new Usage(lib.id(), UsageType.LIBRARY, null);
+		}
+
+		static Optional<Usage> find(Library lib) {
+
+			// first check in other libraries (this is fast)
+			var usage = Workspace.getLibraryDir()
+				.getLibraries()
+				.stream()
+				.filter(other -> !Objects.equals(other, lib))
+				.map(other -> Usage.of(other, lib))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.findAny();
+			if (usage.isPresent())
+				return usage;
+
+			// then check in databases
+			var configs = Database.getConfigurations();
+			return Stream.concat(
+					configs.getDerbyConfigs().stream(),
+					configs.getMySqlConfigs().stream())
+				.parallel()
+				.map(config -> Usage.of(config, lib))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.findAny();
+		}
+
+		static Optional<Usage> of(DatabaseConfig config, Library lib) {
 			if (config == null)
-				return false;
-			log.info("Check usage of {} in {}", libID, config.name());
+				return Optional.empty();
 			if (Database.isActive(config)) {
 				var db = Database.get();
-				return db.getLibraries().contains(libID);
+				return db.getLibraries().contains(lib.id())
+					? Optional.of(Usage.db(config))
+					: Optional.empty();
 			}
 			try (var db = config.connect(Workspace.dbDir())) {
-				return db.getVersion() >= 10
-					&& db.getLibraries().contains(libID);
+				return db.getVersion() >= 10 && db.getLibraries().contains(lib.id())
+					? Optional.of(Usage.db(config))
+					: Optional.empty();
 			} catch (Exception e) {
-				throw new RuntimeException(
-					"Failed to check library usage in database " + config.name());
+				var usage = new Usage(
+					config.name(), UsageType.DATABASE, e.getMessage());
+				return Optional.of(usage);
 			}
-		};
+		}
 
-		var configs = Database.getConfigurations();
-		return Stream.concat(
-			configs.getDerbyConfigs().stream(),
-			configs.getMySqlConfigs().stream())
-			.parallel()
-			.filter(isUsedIn)
-			.findAny();
+		static Optional<Usage> of(Library other, Library lib) {
+			if (Objects.equals(other, lib))
+				return Optional.empty();
+			return other.getDirectDependencies().contains(lib)
+				? Optional.of(Usage.lib(other))
+				: Optional.empty();
+		}
+
+		boolean isError() {
+			return error != null;
+		}
+
+		String label() {
+			return type == UsageType.DATABASE
+				? "database " + name
+				: "library " + name;
+		}
 	}
 }
