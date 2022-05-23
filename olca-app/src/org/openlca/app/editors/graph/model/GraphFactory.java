@@ -16,6 +16,9 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
+import static org.openlca.app.editors.graph.model.GraphComponent.INPUT_PROP;
+import static org.openlca.app.editors.graph.model.GraphComponent.OUTPUT_PROP;
+
 /**
  * This class provides methods to initialize the model objects before drawing
  * any figures.
@@ -34,7 +37,16 @@ public class GraphFactory {
 		if (descriptor == null || descriptor.type == null)
 			return null;
 
-		return applyInfo(new Node(descriptor, editor), info);
+		var node = applyInfo(new Node(descriptor, editor), info);
+
+		// A Node (MinMaxGraphComponent) `minimized` attribute is by default true.
+		if (!node.isMinimized()) {
+			var panes = createIOPanes(node.descriptor);
+			node.addChild(panes.get(INPUT_PROP), 0);
+			node.addChild(panes.get(OUTPUT_PROP), 1);
+		}
+
+		return node;
 	}
 
 	/**
@@ -45,26 +57,20 @@ public class GraphFactory {
 		if (node == null || (info == null))
 			return node;
 
-		// A Node (MinMaxGraphComponent) `minimized` attribute is by default true.
-		if (!info.minimized) {
-			node.setMinimized(false);
-			var panes = createIOPanes(node.descriptor);
-			node.addChild(panes.get("input"), 0);
-			node.addChild(panes.get("output"), 1);
-		}
-
+		node.setMinimized(info.minimized);
 		node.setSize(info.box.getSize());
 		node.setLocation(info.box.getLocation());
 
-		// TODO Expanders!
+//		node.setExpanded(Node.Side.INPUT, info.expandedLeft);
+//		node.setExpanded(Node.Side.OUTPUT, info.expandedRight);
 
 		return node;
 	}
 
 	public HashMap<String, IOPane> createIOPanes(RootDescriptor descriptor) {
 		var panes = new HashMap<String, IOPane>();
-		panes.put("input", new IOPane(editor, true));
-		panes.put("output", new IOPane(editor, false));
+		panes.put(INPUT_PROP, new IOPane(editor, true));
+		panes.put(OUTPUT_PROP, new IOPane(editor, false));
 
 		var exchanges = getExchanges(descriptor);
 
@@ -73,7 +79,7 @@ public class GraphFactory {
 			.filter(e -> {
 				if (e.flow == null)
 					return false;
-				return editor.config.showElementaryFlows
+				return editor.config.showElementaryFlows()
 					|| e.flow.flowType != FlowType.ELEMENTARY_FLOW;
 			})
 			.sorted((e1, e2) -> {
@@ -86,7 +92,7 @@ public class GraphFactory {
 				return Strings.compare(name1, name2);
 			})
 			.forEach(e -> {
-				var key = e.isInput ? "input" : "output";
+				var key = e.isInput ? INPUT_PROP : OUTPUT_PROP;
 				panes.get(key).addChild(new ExchangeItem(editor, e));
 			});
 
@@ -158,10 +164,10 @@ public class GraphFactory {
 			}
 			if (outNode == null)
 				continue;
-			// TODO Expander
-			//			if (!outNode.isExpandedRight() && !inNode.isExpandedLeft())
-			//				continue;
-			System.out.printf("Creating nodes link: %s -> %s\n", inNode, outNode);
+			// TODO
+//			if (!outNode.isExpanded(Node.Side.INPUT)
+//				&& !inNode.isExpanded(Node.Side.OUTPUT))
+//				continue;
 			new Link(pLink, inNode, outNode);
 		}
 	}
@@ -222,9 +228,7 @@ public class GraphFactory {
 			var refNode = createNode(descriptor, null);
 			if (refNode != null) {
 				graph.addChild(refNode);
-				// TODO Expanders
-				//		refNode.expandLeft();
-				//		refNode.expandRight();
+				refNode.expand();
 			}
 		}
 		return graph;

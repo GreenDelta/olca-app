@@ -4,8 +4,11 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.openlca.app.editors.graph.model.GraphComponent;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+
+import static org.openlca.app.editors.graph.model.GraphComponent.CHILDREN_PROP;
 
 public abstract class AbstractComponentEditPart<N extends GraphComponent> extends
 	AbstractGraphicalEditPart implements PropertyChangeListener {
@@ -31,6 +34,14 @@ public abstract class AbstractComponentEditPart<N extends GraphComponent> extend
 		if (isActive()) {
 			super.deactivate();
 			getModel().removePropertyChangeListener(this);
+		}
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		String prop = evt.getPropertyName();
+		if (CHILDREN_PROP.equals(prop)) {
+			refreshChildren();
 		}
 	}
 

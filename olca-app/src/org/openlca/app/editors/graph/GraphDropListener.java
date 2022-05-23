@@ -55,7 +55,7 @@ class GraphDropListener extends DropTargetAdapter {
 				.map(d -> {
 					productSystem.processes.add(d.id);
 					var info = new NodeLayoutInfo(new Point(location.x, location.y),
-						new Dimension(-1, -1), true, false, false);
+						null, true, false, false);
 					var node = graphFactory.createNode(d, info);
 					graphModel.addChild(node);
 					return node;

@@ -18,9 +18,9 @@ public abstract class MinMaxGraphComponent extends GraphComponent {
 	}
 
 	/**
-	 * This method does not implement a notification for the listener. Any change
-	 * of <code>minimized</code> have to go through the
-	 * <code>MinMaxCommand</code>.
+	 * This method does not implement a notification for the listener as any
+	 * changes of <code>minimized</code> have to be done ahead of figure painting
+	 * (via <code>GraphFactory</code>) or through the <code>MinMaxCommand</code>.
 	 */
 	public void setMinimized(boolean value) {
 		if (minimized == value)
@@ -42,7 +42,6 @@ public abstract class MinMaxGraphComponent extends GraphComponent {
 	}
 
 	public void updateLinks() {
-		System.out.printf("Updating links of %s: %s\n", this, getAllLinks());
 		for (Link link : getAllLinks()) {
 			link.reconnect(link.getSource(), link.getTarget());
 		}

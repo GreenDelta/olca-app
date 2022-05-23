@@ -38,13 +38,20 @@ public class NodeSetConstraintCommand extends Command {
 		this.node = node;
 		this.request = req;
 		this.newBounds = newBounds.getCopy();
-		setLabel("move / resize");
+		Object type = request.getType();
+		if (RequestConstants.REQ_RESIZE_CHILDREN.equals(type)
+		|| RequestConstants.REQ_RESIZE.equals(type))
+			setLabel("Resize");
+		else if (RequestConstants.REQ_MOVE_CHILDREN.equals(type)
+		|| RequestConstants.REQ_MOVE.equals(type))
+			setLabel("Move");
+		else setLabel("");
 	}
 
 	@Override
 	public boolean canExecute() {
 		Object type = request.getType();
-		if (node.isMinimized() & RequestConstants.REQ_RESIZE_CHILDREN.equals(type))
+		if (node.isMinimized() && RequestConstants.REQ_RESIZE_CHILDREN.equals(type))
 			return false;
 		return (RequestConstants.REQ_MOVE.equals(type)
 			|| RequestConstants.REQ_MOVE_CHILDREN.equals(type)

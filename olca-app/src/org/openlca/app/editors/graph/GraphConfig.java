@@ -11,11 +11,9 @@ public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 
 	public static final String CONFIG_PROP = "theme";
 
-	public boolean showFlowIcons = true;
-	public boolean showFlowAmounts = true;
-	public boolean showElementaryFlows = false;
-	public boolean isRouted = true;
-	public boolean isProcessEditingEnabled = false;
+	private boolean showElementaryFlows = false;
+	private boolean isRouted = true;
+	private boolean isProcessEditingEnabled = false;
 	private Theme theme = Themes.getDefault();
 
 	/**
@@ -45,8 +43,6 @@ public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 	public void copyTo(GraphConfig other) {
 		if (other == null)
 			return;
-		other.showFlowIcons = showFlowIcons;
-		other.showFlowAmounts = showFlowAmounts;
 		other.showElementaryFlows = showElementaryFlows;
 		other.isProcessEditingEnabled = isProcessEditingEnabled;
 		other.theme = theme;
@@ -57,8 +53,6 @@ public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 	@Override
 	public GraphConfig copy() {
 		var clone = new GraphConfig();
-		clone.showFlowIcons = showFlowIcons;
-		clone.showFlowAmounts = showFlowAmounts;
 		clone.showElementaryFlows = showElementaryFlows;
 		clone.isProcessEditingEnabled = isProcessEditingEnabled;
 		clone.theme = theme;
@@ -70,10 +64,6 @@ public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 		var config = new GraphConfig();
 		if (obj == null)
 			return config;
-		config.showFlowIcons = Json.getBool(
-			obj, "showFlowIcons", false);
-		config.showFlowAmounts = Json.getBool(
-			obj, "showFlowAmounts", false);
 		config.showElementaryFlows = Json.getBool(
 			obj, "showElementaryFlows", false);
 		config.isRouted = Json.getBool(
@@ -87,12 +77,44 @@ public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 
 	public JsonObject toJson() {
 		var obj = new JsonObject();
-		obj.addProperty("showFlowIcons", showFlowIcons);
-		obj.addProperty("showFlowAmounts", showFlowAmounts);
 		obj.addProperty("showElementaryFlows", showElementaryFlows);
 		obj.addProperty("isRouted", isRouted);
 		obj.addProperty("isProcessEditingEnabled", isProcessEditingEnabled);
 		obj.addProperty("theme", getTheme().file());
 		return obj;
 	}
+
+	public void setShowElementaryFlows(boolean showElementaryFlows) {
+		if (showElementaryFlows == this.showElementaryFlows)
+			return;
+		this.showElementaryFlows = showElementaryFlows;
+		firePropertyChange(CONFIG_PROP, null, this);
+	}
+
+	public void setRouted(boolean routed) {
+		if (routed == this.isRouted)
+			return;
+		isRouted = routed;
+		firePropertyChange(CONFIG_PROP, null, this);
+	}
+
+	public void setProcessEditingEnabled(boolean processEditingEnabled) {
+		if (processEditingEnabled == this.isProcessEditingEnabled)
+			return;
+		isProcessEditingEnabled = processEditingEnabled;
+		firePropertyChange(CONFIG_PROP, null, this);
+	}
+
+	public boolean showElementaryFlows() {
+		return showElementaryFlows;
+	}
+
+	public boolean isRouted() {
+		return isRouted;
+	}
+
+	public boolean isProcessEditingEnabled() {
+		return isProcessEditingEnabled;
+	}
+
 }

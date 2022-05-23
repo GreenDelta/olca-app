@@ -37,8 +37,6 @@ public class Link extends GraphElement {
 		source = adaptComponent(newSource, true);
 		target = adaptComponent(newTarget, false);
 
-		System.out.printf("source: %s\n", source);
-		System.out.printf("target: %s\n\n", target);
 		reconnect();
 	}
 
@@ -52,7 +50,6 @@ public class Link extends GraphElement {
 				ExchangeItem newComponent = isSource
 					? node.getOutput(processLink)
 					: node.getInput(processLink);
-				System.out.printf("The Node is maximised getting an ExchangeItem %s\n", newComponent);
 				return newComponent != null ? newComponent : component;
 			}
 			else return component;

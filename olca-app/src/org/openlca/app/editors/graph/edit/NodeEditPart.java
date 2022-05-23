@@ -7,11 +7,9 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.GraphicalEditPart;
-import org.eclipse.gef.Request;
-import org.eclipse.gef.RequestConstants;
+import org.eclipse.gef.*;
 import org.eclipse.gef.commands.CommandStack;
+import org.openlca.app.editors.graph.figures.GridPos;
 import org.openlca.app.editors.graph.figures.MaximizedNodeFigure;
 import org.openlca.app.editors.graph.figures.MinimizedNodeFigure;
 import org.openlca.app.editors.graph.model.GraphComponent;
@@ -60,6 +58,12 @@ abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 		@Override
 		public IFigure getContentPane() {
 			return ((MaximizedNodeFigure) getFigure()).getContentPane();
+		}
+
+		@Override
+		protected void addChildVisual(EditPart childEditPart, int index) {
+			IFigure child = ((GraphicalEditPart) childEditPart).getFigure();
+			getContentPane().add(child, GridPos.fillTop(), index);
 		}
 
 	}

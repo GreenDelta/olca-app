@@ -38,7 +38,6 @@ public class CreateLinkCommand extends Command {
 		processLink = getProcessLink();
 		system.processLinks.add(processLink);
 		graph.linkSearch.put(processLink);
-		System.out.printf("Creating link in CreateLinkCommand: input: %s output: %s\n", target, source);
 		link = new Link(processLink, target, source);
 		graph.editor.setDirty();
 	}

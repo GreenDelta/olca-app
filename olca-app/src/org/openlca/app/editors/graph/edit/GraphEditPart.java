@@ -4,7 +4,7 @@ import org.eclipse.draw2d.*;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.openlca.app.editors.graph.GraphConfig;
-import org.openlca.app.editors.graph.model.GraphComponent;
+import org.openlca.app.editors.graph.layouts.TreeConnectionRouter;
 import org.openlca.app.editors.graph.model.Graph;
 
 import java.beans.PropertyChangeEvent;
@@ -71,19 +71,17 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
-		if (GraphComponent.CHILDREN_PROP.equals(prop))
-			refreshChildren();
-		else if (GraphConfig.CONFIG_PROP.equals(prop)) {
+		if (GraphConfig.CONFIG_PROP.equals(prop)) {
 			refresh();
 		}
+		else super.propertyChange(evt);
 	}
 
 	@Override
 	protected void refreshVisuals() {
 		var cLayer = (ConnectionLayer) getLayer(CONNECTION_LAYER);
-		var connectionRouter = getModel().getConfig().isRouted
-					// TODO ? new TreeConnectionRouter()
-					? new ManhattanConnectionRouter()
+		var connectionRouter = getModel().getConfig().isRouted()
+					? new TreeConnectionRouter()
 					: ConnectionRouter.NULL;
 		cLayer.setConnectionRouter(connectionRouter);
 		super.refreshVisuals();

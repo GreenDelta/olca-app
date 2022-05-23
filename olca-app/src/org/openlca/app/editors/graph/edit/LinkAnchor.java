@@ -18,7 +18,6 @@ public class LinkAnchor extends AbstractConnectionAnchor {
 	@Override
 	public Point getLocation(Point ref) {
 		var owner = getOwner();
-		System.out.printf("In getLocation, owner: %s\n", owner);
 		if (owner == null)
 			return ref;
 
@@ -36,8 +35,8 @@ public class LinkAnchor extends AbstractConnectionAnchor {
 		// for exchanges, we move the anchor to the
 		// left or right side of the surrounding
 		// process box
-		else if (owner instanceof ExchangeFigure) {
-			var nodeFigure = owner.getParent().getParent();
+		else if (owner instanceof ExchangeFigure exchangeFigure) {
+			var nodeFigure = getNodeOwner();
 
 			if (nodeFigure == null)
 				return point;
@@ -50,12 +49,18 @@ public class LinkAnchor extends AbstractConnectionAnchor {
 				? outerBounds.getLeft()
 				: outerBounds.getRight();
 			nodeFigure.translateToAbsolute(outer);
-			System.out.printf("    oldpoint: %s\n", point);
 			point.x = outer.x;
-			System.out.printf("    newpoint: %s\n", point);
 			return point;
 		}
 		else return point;
+	}
+
+	public NodeFigure getNodeOwner() {
+		if (getOwner() instanceof NodeFigure nodeFigure)
+			return nodeFigure;
+		else if (getOwner() instanceof ExchangeFigure exchangeFigure)
+			return exchangeFigure.getNodeFigure();
+		else return null;
 	}
 
 }

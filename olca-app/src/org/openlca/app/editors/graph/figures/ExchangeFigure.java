@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graph.figures;
 
 import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graph.model.ExchangeItem;
@@ -13,8 +14,9 @@ import org.openlca.core.model.descriptors.Descriptor;
 
 public class ExchangeFigure extends Figure {
 
-	private ExchangeItem exchangeItem;
-	private Exchange exchange;
+	private final Integer UNIT_ACCURACY = 2;
+	public ExchangeItem exchangeItem;
+	private final Exchange exchange;
 	private final Label label;
 
 
@@ -30,7 +32,7 @@ public class ExchangeFigure extends Figure {
 		setLayoutManager(layout);
 
 		var image = new ImageFigure(Images.get(exchange.flow));
-		add(image, new GridData(SWT.LEAD, SWT.CENTER, false, false));
+		add(image, GridPos.leadCenter());
 
 		label = new Label(Labels.name(exchange.flow));
 		if (exchangeItem.isRefFlow()) {
@@ -39,12 +41,17 @@ public class ExchangeFigure extends Figure {
 		label.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		add(label, new GridData(SWT.LEAD, SWT.CENTER, true, false));
 
-		var amount = new Label(Numbers.format(exchange.amount));
-		amount.setForegroundColor(ColorConstants.black);
-		add(amount, new GridData(SWT.TRAIL, SWT.CENTER, false, false));
-		var unit = new Label(Labels.name(exchange.unit));
-		unit.setForegroundColor(ColorConstants.black);
-		add(unit, new GridData(SWT.LEAD, SWT.CENTER, false, false));
+		var amountLabel = new Label(Numbers.format(exchange.amount, UNIT_ACCURACY));
+		amountLabel.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
+		amountLabel.setLabelAlignment(PositionConstants.RIGHT);
+		var amountPrefSize = getAmountLabelSize();
+		add(amountLabel, new GridData(amountPrefSize.width, amountPrefSize.height));
+
+		var unitLabel = new Label(Labels.name(exchange.unit));
+		unitLabel.setLabelAlignment(PositionConstants.LEFT);
+		var unitPrefSize = getUnitLabelSize();
+		unitLabel.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
+		add(unitLabel, new GridData(unitPrefSize.width, unitPrefSize.height));
 
 		setToolTip(new Label(tooltip()));
 	}
@@ -78,11 +85,43 @@ public class ExchangeFigure extends Figure {
 		}
 	}
 
+	public Dimension getAmountLabelSize() {
+		var size = new Dimension();
+		for (ExchangeItem item : exchangeItem.getIOPane().getExchangesItems()) {
+			var amountText = Numbers.format(item.exchange.amount, UNIT_ACCURACY);
+			var amount = new Label(amountText);
+			var preferredSize = amount.getPreferredSize(SWT.DEFAULT, SWT.DEFAULT);
+			size.width = Math.max(preferredSize.width, size.width);
+			size.height = Math.max(preferredSize.height, size.height);
+		}
+		return size;
+	}
+
+	public Dimension getUnitLabelSize() {
+		var size = new Dimension();
+		for (ExchangeItem item : exchangeItem.getIOPane().getExchangesItems()) {
+			var unit = new Label(Labels.name(item.exchange.unit));
+			var preferredSize = unit.getPreferredSize(SWT.DEFAULT, SWT.DEFAULT);
+			size.width = Math.max(preferredSize.width, size.width);
+			size.height = Math.max(preferredSize.height, size.height);
+		}
+		return size;
+	}
+
+	public IOPaneFigure getIOPaneFigure() {
+		// The parent of an ExchangeFigure is IOPaneFigure.contentPane.
+		return (IOPaneFigure) super.getParent().getParent();
+	}
+
+	public NodeFigure getNodeFigure() {
+		// The parent of an ExchangeFigure is IOPaneFigure.contentPane.
+		return getIOPaneFigure().getNodeFigure();
+	}
+
 	public String toString() {
 		var name = Labels.name(exchange.flow);
 		return "ExchangeFigure("
 			+ name.substring(0, Math.min(name.length(), 20)) + ")";
 	}
-
 
 }

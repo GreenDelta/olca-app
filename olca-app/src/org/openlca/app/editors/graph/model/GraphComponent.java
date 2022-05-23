@@ -10,8 +10,14 @@ import java.util.List;
 
 abstract public class GraphComponent extends GraphElement {
 
-	public static final String CHILDREN_PROP = "children", TARGET_CONNECTIONS_PROP = "targets",
-		SOURCE_CONNECTIONS_PROP = "sources", SIZE_PROP = "size", LOCATION_PROP = "location";
+	public static final String
+		CHILDREN_PROP = "children",
+		TARGET_CONNECTIONS_PROP = "targets",
+		SOURCE_CONNECTIONS_PROP = "sources",
+		SIZE_PROP = "size",
+		LOCATION_PROP = "location",
+		INPUT_PROP = "input",
+		OUTPUT_PROP = "output";
 
 	public final GraphEditor editor;
 

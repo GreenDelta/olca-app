@@ -1,19 +1,26 @@
-/*
-package org.openlca.app.editors.graph.figures;
+package org.openlca.app.editors.graph.layouts;
 
 import org.eclipse.draw2d.BendpointConnectionRouter;
 import org.eclipse.draw2d.Connection;
-import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.geometry.PointList;
+import org.openlca.app.editors.graph.edit.LinkAnchor;
 
 public class TreeConnectionRouter extends BendpointConnectionRouter {
+
+	public static int H_SPACE = 25;
+	public static int V_SPACE = 25;
 
 	@Override
 	public void route(Connection conn) {
 		super.route(conn);
 
-		var source = processOf(conn.getSourceAnchor());
-		var target = processOf(conn.getTargetAnchor());
+		var source = (conn.getSourceAnchor() instanceof LinkAnchor)
+			? ((LinkAnchor) conn.getSourceAnchor()).getNodeOwner()
+			: null;
+		var target = (conn.getTargetAnchor() instanceof LinkAnchor)
+			? ((LinkAnchor) conn.getTargetAnchor()).getNodeOwner()
+			: null;
+
 		if (source == null || target == null)
 			return;
 		var points = new PointList();
@@ -25,34 +32,20 @@ public class TreeConnectionRouter extends BendpointConnectionRouter {
 		var lastPoint = conn.getPoints().getLastPoint();
 
 		if (targetLoc.x < sourceLoc.x + source.getSize().width
-				|| targetLoc.x > sourceLoc.x + source.getSize().width + LayoutManager.H_SPACE + target.getSize().width
+				|| targetLoc.x > sourceLoc.x + source.getSize().width + H_SPACE + target.getSize().width
 				|| target == source) {
-			points.addPoint(firstPoint.getTranslated(LayoutManager.H_SPACE / 2, 0));
+			points.addPoint(firstPoint.getTranslated(H_SPACE / 2, 0));
 			int y1 = Math.max(sourceLoc.y, targetLoc.y);
-			y1 -= LayoutManager.V_SPACE / 2;
-			points.addPoint(firstPoint.getTranslated(LayoutManager.H_SPACE / 2, 0).x, y1);
-			points.addPoint(lastPoint.getTranslated(-LayoutManager.H_SPACE / 2, 0).x, y1);
-			points.addPoint(lastPoint.getTranslated(-LayoutManager.H_SPACE / 2, 0));
+			y1 -= V_SPACE / 2;
+			points.addPoint(firstPoint.getTranslated(H_SPACE / 2, 0).x, y1);
+			points.addPoint(lastPoint.getTranslated(-H_SPACE / 2, 0).x, y1);
+			points.addPoint(lastPoint.getTranslated(-H_SPACE / 2, 0));
 		} else {
-			points.addPoint(firstPoint.getTranslated(LayoutManager.H_SPACE / 2, 0));
-			points.addPoint(firstPoint.getTranslated(LayoutManager.H_SPACE / 2, 0).x, lastPoint.y);
+			points.addPoint(firstPoint.getTranslated(H_SPACE / 2, 0));
+			points.addPoint(firstPoint.getTranslated(H_SPACE / 2, 0).x, lastPoint.y);
 		}
 		points.addPoint(lastPoint);
 		conn.setPoints(points);
 	}
 
-	private NodeFigure processOf(ConnectionAnchor anchor) {
-		if (anchor == null)
-			return null;
-		var figure = anchor.getOwner();
-		int depth = 0;  // just in case there are cycles
-		while (figure != null && depth < 100) {
-			if (figure instanceof NodeFigure)
-				return (NodeFigure) figure;
-			figure = figure.getParent();
-			depth++;
-		}
-		return null;
-	}
 }
-*/

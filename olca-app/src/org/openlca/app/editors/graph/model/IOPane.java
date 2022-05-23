@@ -1,10 +1,14 @@
 package org.openlca.app.editors.graph.model;
 
-import org.openlca.app.editors.graph.GraphEditor;
-import org.openlca.app.editors.graphical.model.ExchangeNode;
-import org.openlca.core.model.descriptors.RootDescriptor;
-
 import java.util.List;
+
+import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.swt.SWT;
+import org.openlca.app.editors.graph.GraphEditor;
+import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
+
 
 /**
  * An {@link IOPane} represents a list of exchanges to be displayed. Each
@@ -12,15 +16,15 @@ import java.util.List;
  */
 public class IOPane extends GraphComponent {
 
-	private final boolean isInput;
+	private final boolean forInputs;
 
-	public IOPane(GraphEditor editor, boolean isInput) {
+	public IOPane(GraphEditor editor, boolean forInputs) {
 		super(editor);
-		this.isInput = isInput;
+		this.forInputs = forInputs;
 	}
 
-	public boolean getIsInput() {
-		return isInput;
+	public boolean isForInputs() {
+		return forInputs;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -34,6 +38,11 @@ public class IOPane extends GraphComponent {
 
 	public Graph getGraph() {
 		return getNode().getGraph();
+	}
+
+	public String toString() {
+		var label = forInputs ? "input" : "output";
+		return "IOPane(" + label + ")";
 	}
 
 }

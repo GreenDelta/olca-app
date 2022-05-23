@@ -61,38 +61,23 @@ public class GraphSettingsAction extends Action {
 			// routed check
 			UI.filler(body, tk);
 			var routed = tk.createButton(body, "Routed connections", SWT.CHECK);
-			routed.setSelection(config.isRouted);
+			routed.setSelection(config.isRouted());
 			Controls.onSelect(routed,
-					e -> config.isRouted = routed.getSelection());
-
-			// show icons
-			UI.filler(body, tk);
-			var icons = tk.createButton(body, "Show flow icons", SWT.CHECK);
-			icons.setSelection(config.showFlowIcons);
-			Controls.onSelect(icons,
-					e -> config.showFlowIcons = icons.getSelection());
+					e -> config.setRouted(routed.getSelection()));
 
 			// show elementary flows
 			UI.filler(body, tk);
 			var elems = tk.createButton(body, "Show elementary flows", SWT.CHECK);
-			elems.setSelection(config.showElementaryFlows);
+			elems.setSelection(config.showElementaryFlows());
 			Controls.onSelect(elems,
-					e -> config.showElementaryFlows = elems.getSelection());
-
-			// show amounts
-			UI.filler(body, tk);
-			var amounts = tk.createButton(body, "Show flow amounts", SWT.CHECK);
-			amounts.setSelection(config.showFlowAmounts);
-			Controls.onSelect(amounts,
-					e -> config.showFlowAmounts = amounts.getSelection());
+					e -> config.setShowElementaryFlows(elems.getSelection()));
 
 			// edit mode
 			UI.filler(body, tk);
 			var isProcessEditingEnabled = tk.createButton(body, "Enable process editing", SWT.CHECK);
-			isProcessEditingEnabled.setSelection(config.isProcessEditingEnabled);
+			isProcessEditingEnabled.setSelection(config.isProcessEditingEnabled());
 			Controls.onSelect(isProcessEditingEnabled,
-				e -> config.isProcessEditingEnabled =
-					isProcessEditingEnabled.getSelection());
+				e -> config.setProcessEditingEnabled(isProcessEditingEnabled.getSelection()));
 		}
 
 		private void themeCombo(FormToolkit tk, Composite comp) {

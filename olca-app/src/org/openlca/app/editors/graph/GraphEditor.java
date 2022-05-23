@@ -1,6 +1,8 @@
 package org.openlca.app.editors.graph;
 
+import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.*;
@@ -11,6 +13,7 @@ import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.actions.*;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.*;
 import org.openlca.app.editors.graph.edit.GraphEditPartFactory;
@@ -31,6 +34,11 @@ public class GraphEditor extends GraphicalEditor {
 
 	private final ProductSystemEditor systemEditor;
 	private Graph graph;
+	private ISelection selection;
+
+	// TODO: we may do not need this later when we build our
+	//  context menu more selection specific.
+	private final List<String> updateActions = new ArrayList<>();
 
 	public static final double[] ZOOM_LEVELS = new double[] {
 		0.01, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0 };
@@ -88,29 +96,56 @@ public class GraphEditor extends GraphicalEditor {
 			MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
 			MouseWheelZoomHandler.SINGLETON);
 
+		viewer.setRootEditPart(root);
+
+		var actions = configureActions();
 		var keyHandler = new KeyHandler();
-		IAction zoomIn = new ZoomInAction(root.getZoomManager());
-		IAction zoomOut = new ZoomOutAction(root.getZoomManager());
-		getActionRegistry().registerAction(zoomIn);
-		getActionRegistry().registerAction(zoomOut);
-		// TODO Add delete action
+		IAction delete = actions.getAction(org.eclipse.ui.actions.ActionFactory.DELETE.getId());
+		IAction zoomIn = actions.getAction(GEFActionConstants.ZOOM_IN);
+		IAction zoomOut = actions.getAction(GEFActionConstants.ZOOM_OUT);
+		keyHandler.put(KeyStroke.getPressed(SWT.DEL, 127, 0), delete);
+		keyHandler.put(KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0), zoomIn);
+		keyHandler.put(KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0), zoomOut);
+		viewer.setKeyHandler(keyHandler);
 
 		ContextMenuProvider provider = new GraphContextMenuProvider(viewer,
 			getActionRegistry());
 		viewer.setContextMenu(provider);
 
-//		keyHandler.put(KeyStroke.getPressed(SWT.DEL, 127, 0), delete);
-		keyHandler.put(KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0), zoomIn);
-		keyHandler.put(KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0), zoomOut);
-		viewer.setKeyHandler(keyHandler);
-
-		viewer.setRootEditPart(root);
 		viewer.setEditPartFactory(new GraphEditPartFactory());
 
 		loadProperties();
 		loadConfig();
 
 		// TODO Might need some activate control listener.
+	}
+
+
+	private ActionRegistry configureActions() {
+		var delete = new DeleteAction((IWorkbenchPart) this) {
+			@Override
+			protected ISelection getSelection() {
+				return getSite()
+					.getWorkbenchWindow()
+					.getSelectionService()
+					.getSelection();
+			}
+		};
+
+		var actions = new IAction[] {
+			new ZoomInAction(getZoomManager()),
+			new ZoomOutAction(getZoomManager()),
+			delete,
+		};
+
+		var registry = getActionRegistry();
+		for (var action : actions) {
+			registry.registerAction(action);
+			if (action instanceof UpdateAction) {
+				updateActions.add(action.getId());
+			}
+		}
+		return registry;
 	}
 
 	protected void loadProperties() {
@@ -142,6 +177,10 @@ public class GraphEditor extends GraphicalEditor {
 	@Override
 	public GraphicalViewer getGraphicalViewer() {
 		return super.getGraphicalViewer();
+	}
+
+	public ISelection getSelection() {
+		return selection;
 	}
 
 	public void setDirty() {
@@ -186,6 +225,12 @@ public class GraphEditor extends GraphicalEditor {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 
+	}
+
+	@Override
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+		this.selection = selection;
+		updateActions(updateActions);
 	}
 
 	public Object getAdapter(Class type) {

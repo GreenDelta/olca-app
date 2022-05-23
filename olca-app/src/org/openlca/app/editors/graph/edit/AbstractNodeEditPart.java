@@ -25,6 +25,7 @@ abstract class AbstractNodeEditPart<N extends GraphComponent> extends
 		else if (GraphComponent.SOURCE_CONNECTIONS_PROP.equals(prop)) {
 			refreshSourceConnections();
 		}
+		else super.propertyChange(evt);
 	}
 
 	@Override

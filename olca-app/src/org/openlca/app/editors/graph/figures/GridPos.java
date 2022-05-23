@@ -3,7 +3,7 @@ package org.openlca.app.editors.graph.figures;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.swt.SWT;
 
-class GridPos {
+public class GridPos {
 
 	private GridPos() {
 	}
@@ -24,7 +24,7 @@ class GridPos {
 		return new GridData(SWT.TRAIL, SWT.CENTER, false, false);
 	}
 
-	static GridData fillTop() {
+	public static GridData fillTop() {
 		return new GridData(SWT.FILL, SWT.TOP, true, false);
 	}
 

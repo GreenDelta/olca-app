@@ -1,12 +1,8 @@
 package org.openlca.app.editors.graph.figures;
 
 import org.eclipse.draw2d.*;
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graph.model.Node;
 import org.openlca.app.editors.graph.themes.Theme;
-import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 
 public class MinimizedNodeFigure extends NodeFigure {
@@ -24,12 +20,9 @@ public class MinimizedNodeFigure extends NodeFigure {
 		layout.verticalSpacing = 0;
 		setLayoutManager(layout);
 
-		setToolTip(new Label(name));
-		setForegroundColor(theme.boxFontColor(box));
-
 		var header = new NodeHeader();
 		var roundedCorners = RoundBorder.Corners
-			.fullRoundedCorners(new Dimension(ARC_SIZE, ARC_SIZE));
+			.fullRoundedCorners(HEADER_ARC_SIZE);
 		var headerBorder = new RoundBorder(theme.boxBorderWidth(box), roundedCorners);
 		headerBorder.setColor(theme.boxBorderColor(box));
 		header.setBorder(headerBorder);
