@@ -21,10 +21,10 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NwSetDao;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.NwSet;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.model.descriptors.NwSetDescriptor;
 
 class CalculationSetupSection {
 
@@ -163,14 +163,13 @@ class CalculationSetupSection {
 		methodCombo.select(Descriptor.of(project.impactMethod));
 
 		// normalisation and weighting sets
-		var nws = new ArrayList<NwSetDescriptor>();
-		NwSetDescriptor selected = null;
+		var nws = new ArrayList<NwSet>();
+		NwSet selected = null;
 		for (var nwSet : project.impactMethod.nwSets) {
-			var d = Descriptor.of(nwSet);
-			nws.add(d);
+			nws.add(nwSet);
 			if (project.nwSet != null
 					&& project.nwSet.id == nwSet.id) {
-				selected = d;
+				selected = nwSet;
 			}
 		}
 		nwSetCombo.setInput(nws);

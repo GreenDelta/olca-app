@@ -156,7 +156,7 @@ class CalculationWizardPage extends WizardPage {
 			nwViewer.setInput(Descriptor.of(method));
 		}
 		if (setup.calcSetup.nwSet() != null) {
-			nwViewer.select(Descriptor.of(setup.calcSetup.nwSet()));
+			nwViewer.select(setup.calcSetup.nwSet());
 		}
 		nwViewer.addSelectionChangedListener(setup::setNwSet);
 	}

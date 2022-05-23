@@ -15,7 +15,6 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.NwSet;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.util.ProductSystems;
 import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
@@ -73,17 +72,14 @@ class Setup {
 		calcSetup.withImpactMethod(db.get(ImpactMethod.class, method.id));
 	}
 
-	void setNwSet(NwSetDescriptor nwSet) {
+	void setNwSet(NwSet nwSet) {
 		calcSetup.withNwSet(null);
 		if (nwSet == null)
 			return;
 		var method = calcSetup.impactMethod();
 		if (method == null)
 			return;
-		calcSetup.withNwSet(method.nwSets.stream()
-			.filter(n -> n.id == nwSet.id)
-			.findAny()
-			.orElse(null));
+		calcSetup.withNwSet(nwSet);
 	}
 
 	/**

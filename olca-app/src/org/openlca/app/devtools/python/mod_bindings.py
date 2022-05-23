@@ -219,6 +219,7 @@ import org.openlca.jsonld.input.ImpactCategoryReader as ImpactCategoryReader
 import org.openlca.core.database.usage.ImpactCategoryUseSearch as ImpactCategoryUseSearch
 import org.openlca.proto.io.output.ImpactCategoryWriter as ImpactCategoryWriter
 import org.openlca.core.model.descriptors.ImpactDescriptor as ImpactDescriptor
+import org.openlca.util.ImpactDirections as ImpactDirections
 import org.openlca.core.model.ImpactFactor as ImpactFactor
 import org.openlca.ipc.handlers.ImpactHandler as ImpactHandler
 import org.openlca.io.ilcd.input.ImpactImport as ImpactImport
