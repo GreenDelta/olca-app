@@ -6,7 +6,8 @@ import org.openlca.app.util.Input;
 public record BasicCredentials(String username, String password, Integer token) {
 
 	public static BasicCredentials prompt() {
-		var username = Repository.get().user != null ? Repository.get().user.getName()
+		var username = Repository.get() != null && Repository.get().user != null
+				? Repository.get().user.getName()
 				: Input.promptString("Username", "Please enter your username", "");
 		if (username == null)
 			return null;

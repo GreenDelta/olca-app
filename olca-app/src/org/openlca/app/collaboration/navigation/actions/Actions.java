@@ -39,7 +39,7 @@ class Actions {
 	}
 
 	static UsernamePasswordCredentialsProvider credentialsProvider() {
-		var c = Repository.get().promptCredentials();
+		var c = Repository.promptCredentials();
 		if (c == null || Strings.nullOrEmpty(c.username()) || Strings.nullOrEmpty(c.password()))
 			return null;
 		var token = c.token();

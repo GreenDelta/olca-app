@@ -7,6 +7,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.collaboration.api.RepositoryConfig;
 import org.openlca.app.collaboration.util.Announcements;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DatabaseWizardPage;
@@ -75,7 +76,7 @@ public class CloneAction extends Action implements INavigationAction {
 				return;
 			Actions.run(GitMerge
 					.from(repo.git)
-					.into(Database.get())
+					.into(db)
 					.update(repo.workspaceIds));
 			Announcements.check();
 		} catch (Exception e) {
@@ -91,6 +92,7 @@ public class CloneAction extends Action implements INavigationAction {
 			}
 			Actions.handleException("Error importing repository", e);
 		} finally {
+			Cache.evictAll();
 			Actions.refresh();
 		}
 	}
