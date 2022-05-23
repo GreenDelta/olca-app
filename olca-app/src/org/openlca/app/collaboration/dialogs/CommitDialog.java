@@ -23,14 +23,16 @@ import org.openlca.git.util.TypeRefIdSet;
 public class CommitDialog extends FormDialog {
 
 	public static final int COMMIT_AND_PUSH = 2;
-	private DiffNode node;
+	private final boolean canPush;
+	private final DiffNode node;
 	private String message;
 	private CommitViewer viewer;
 	private TypeRefIdSet initialSelection;
 
-	public CommitDialog(DiffNode node) {
+	public CommitDialog(DiffNode node, boolean canPush) {
 		super(UI.shell());
 		this.node = node;
+		this.canPush = canPush;
 		setBlockOnOpen(true);
 	}
 
@@ -91,17 +93,21 @@ public class CommitDialog extends FormDialog {
 		if (message == null || message.isEmpty()) {
 			enabled = false;
 		}
-		getButton(COMMIT_AND_PUSH).setEnabled(enabled);
+		if (canPush) {
+			getButton(COMMIT_AND_PUSH).setEnabled(enabled);
+		}
 		getButton(IDialogConstants.OK_ID).setEnabled(enabled);
 	}
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-		var commitAndPush = createButton(parent, COMMIT_AND_PUSH, M.CommitAndPush, false);
-		commitAndPush.setEnabled(false);
-		commitAndPush.setImage(Icon.PUSH.get());
-		setButtonLayoutData(commitAndPush);
+		if (canPush) {
+			var commitAndPush = createButton(parent, COMMIT_AND_PUSH, M.CommitAndPush, false);
+			commitAndPush.setEnabled(false);
+			commitAndPush.setImage(Icon.PUSH.get());
+			setButtonLayoutData(commitAndPush);
+		}
 		var commit = createButton(parent, IDialogConstants.OK_ID, M.Commit, true);
 		commit.setEnabled(false);
 		commit.setImage(Icon.COMMIT.get());

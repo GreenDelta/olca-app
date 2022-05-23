@@ -14,6 +14,7 @@ import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Question;
 import org.openlca.git.actions.ConflictResolver.ConflictResolution;
 import org.openlca.git.actions.GitStashCreate;
@@ -85,7 +86,7 @@ class Conflicts {
 			return null;
 		return dialog.getResolvedConflicts();
 	}
-	
+
 	private static InMemoryConflictResolver resolve(Commit commit, List<TriDiff> conflicts) {
 		var solved = solve(conflicts);
 		if (solved == null)
@@ -93,11 +94,12 @@ class Conflicts {
 		return new InMemoryConflictResolver(commit, solved);
 	}
 
-	static InMemoryConflictResolver resolve(Commit commit, PersonIdent person, boolean stashCommit) throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
+	static InMemoryConflictResolver resolve(Commit commit, PersonIdent person, boolean stashCommit)
+			throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
 		var workspaceConflicts = Conflicts.withWorkspace(commit);
 		if (workspaceConflicts.isEmpty())
 			return resolve(commit, Conflicts.withLocalHistory(commit));
-		var answers = new ArrayList<>(Arrays.asList("Cancel", "Discard changes"));
+		var answers = new ArrayList<>(Arrays.asList("Cancel", "Discard changes", "Commit changes"));
 		if (!stashCommit) {
 			answers.add("Stash changes");
 		}
@@ -108,12 +110,24 @@ class Conflicts {
 			return null;
 		if (result == 1 && !handleStash(person, true))
 			return null;
-		if (result == 2 && !handleStash(person, false))
+		if (result == 2)
+			return commitAllChanges(commit, person, stashCommit);
+		if (result == 3 && !handleStash(person, false))
 			return null;
 		return resolve(commit, Conflicts.withLocalHistory(commit));
 	}
 
-	private static boolean handleStash(PersonIdent person, boolean discard) throws GitAPIException, IOException, InvocationTargetException, InterruptedException {
+	private static InMemoryConflictResolver commitAllChanges(Commit commit, PersonIdent person, boolean stashCommit)
+			throws InvocationTargetException, IOException, GitAPIException, InterruptedException {
+		var commitAction = new CommitAction();
+		commitAction.accept(Arrays.asList(Navigator.findElement(Database.getActiveConfiguration())));
+		if (!commitAction.doRun(false))
+			return null;
+		return resolve(commit, person, stashCommit);
+	}
+
+	private static boolean handleStash(PersonIdent person, boolean discard)
+			throws GitAPIException, IOException, InvocationTargetException, InterruptedException {
 		var repo = Repository.get();
 		if (!discard && Actions.getStashCommit(repo.git) != null) {
 			var answers = Arrays.asList("Cancel", "Discard existing stash");

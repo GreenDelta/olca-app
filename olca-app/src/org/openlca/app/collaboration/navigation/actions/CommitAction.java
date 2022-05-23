@@ -55,26 +55,30 @@ public class CommitAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
+		doRun(true);
+	}
+
+	boolean doRun(boolean canPush) {
 		try {
 			var repo = Repository.get();
 			var committer = repo.promptCommitter();
 			if (committer == null)
-				return;
+				return false;
 			var credentials = Actions.credentialsProvider();
 			var diffs = Diffs.workspace(repo.toConfig());
-			var dialog = createCommitDialog(diffs);
+			var dialog = createCommitDialog(diffs, canPush);
 			if (dialog == null)
-				return;
+				return false;
 			var dialogResult = dialog.open();
 			if (dialogResult == CommitDialog.CANCEL)
-				return;
+				return false;
 			var withReferences = dialog.getSelected();
 			// TODO new ReferenceCheck(Database.get()).run(dialog.getSelected(),
 			// changes);
 			if (withReferences == null)
-				return;
+				return false;
 			if (!checkRestrictions(withReferences))
-				return;
+				return false;
 			Actions.run(GitCommit.from(Database.get())
 					.to(repo.git)
 					.changes(withReferences.stream().map(d -> new Change(d.leftDiffType, d))
@@ -83,24 +87,27 @@ public class CommitAction extends Action implements INavigationAction {
 					.as(committer)
 					.update(repo.workspaceIds));
 			if (dialogResult != CommitDialog.COMMIT_AND_PUSH)
-				return;
+				return true;
 			var result = Actions.run(GitPush
 					.from(Repository.get().git)
 					.authorizeWith(credentials));
 			if (result.status() == Status.REJECTED_NONFASTFORWARD) {
 				MsgBox.error("Rejected - Not up to date - Please merge remote changes to continue");
+				return false;
 			} else {
 				Collections.reverse(result.newCommits());
 				new HistoryDialog("Pushed commits", result.newCommits()).open();
+				return true;
 			}
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during commit", e);
+			return false;
 		} finally {
 			Actions.refresh();
 		}
 	}
 
-	private CommitDialog createCommitDialog(List<Diff> diffs) {
+	private CommitDialog createCommitDialog(List<Diff> diffs, boolean canPush) {
 		var differences = diffs.stream()
 				.map(d -> new TriDiff(d, null))
 				.toList();
@@ -109,7 +116,7 @@ public class CommitAction extends Action implements INavigationAction {
 			MsgBox.info("No changes to commit");
 			return null;
 		}
-		var dialog = new CommitDialog(node);
+		var dialog = new CommitDialog(node, canPush);
 		var paths = PathFilters.of(selection);
 		var initialSelection = new TypeRefIdSet();
 		diffs.stream()
