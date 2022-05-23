@@ -104,11 +104,13 @@ public class Repository {
 		return user;
 	}
 
-	public BasicCredentials promptCredentials() {
+	public static BasicCredentials promptCredentials() {
 		var credentials = BasicCredentials.prompt();
 		if (credentials == null)
 			return null;
-		user = new PersonIdent(credentials.username(), credentials.username() + "@email.com");
+		if (repository != null) {
+			repository.user = new PersonIdent(credentials.username(), credentials.username() + "@email.com");
+		}
 		return credentials;
 	}
 

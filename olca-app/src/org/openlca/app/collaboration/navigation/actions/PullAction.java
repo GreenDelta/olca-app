@@ -18,7 +18,6 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitFetch;
 import org.openlca.git.actions.GitMerge;
-import org.openlca.git.find.Commits;
 import org.openlca.git.util.Constants;
 
 public class PullAction extends Action implements INavigationAction {
@@ -37,7 +36,6 @@ public class PullAction extends Action implements INavigationAction {
 	public void run() {
 		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
-		var commits = Commits.of(repo.git);
 		try {
 			var committer = repo.promptCommitter();
 			if (committer == null)
@@ -51,8 +49,7 @@ public class PullAction extends Action implements INavigationAction {
 			if (!newCommits.isEmpty()) {
 				new HistoryDialog("Fetched commits", newCommits).open();
 			}
-			var remoteCommit = commits.get(commits.resolve(Constants.REMOTE_BRANCH));
-			var conflictResolver = Conflicts.resolve(remoteCommit, committer, false);
+			var conflictResolver = Conflicts.resolve(Constants.REMOTE_REF, committer, false);
 			if (conflictResolver == null)
 				return;
 			var changed = Actions.run(GitMerge

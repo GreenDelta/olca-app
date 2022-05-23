@@ -27,27 +27,26 @@ import org.openlca.git.util.TypeRefIdMap;
 
 class Conflicts {
 
-	static List<TriDiff> withLocalHistory(Commit commit) throws IOException {
-		var commits = Repository.get().commits;
-		var localCommit = commits.get(commits.resolve(Constants.LOCAL_BRANCH));
+	private static List<TriDiff> withLocalHistory(Commit commit, Commit commonParent) throws IOException {
+		var repo = Repository.get();
+		var localCommit = repo.commits.get(repo.commits.resolve(Constants.LOCAL_BRANCH));
 		if (localCommit == null)
 			return new ArrayList<>();
-		var repo = Repository.get();
-		var head = repo.commits.head();
-		if (head != null && localCommit.id.equals(head.id))
+		var localChanges = Diffs.between(repo.git, commonParent, localCommit);
+		if (localChanges.isEmpty())
 			return new ArrayList<>();
-		var localChanges = Diffs.between(repo.git, head, localCommit);
-		var remoteChanges = Diffs.between(repo.git, head, commit);
+		var remoteChanges = Diffs.between(repo.git, commonParent, commit);
+		if (remoteChanges.isEmpty())
+			return new ArrayList<>();
 		return between(localChanges, remoteChanges);
 	}
 
-	static List<TriDiff> withWorkspace(Commit remoteCommit) throws IOException {
+	private static List<TriDiff> withWorkspace(Commit commit, Commit commonParent) throws IOException {
 		var repo = Repository.get();
-		var head = repo.commits.head();
 		var workspaceChanges = Diffs.workspace(repo.toConfig());
 		if (workspaceChanges.isEmpty())
 			return new ArrayList<>();
-		var remoteChanges = Diffs.between(repo.git, head, remoteCommit);
+		var remoteChanges = Diffs.between(repo.git, commonParent, commit);
 		return between(workspaceChanges, remoteChanges);
 	}
 
@@ -94,11 +93,14 @@ class Conflicts {
 		return new InMemoryConflictResolver(commit, solved);
 	}
 
-	static InMemoryConflictResolver resolve(Commit commit, PersonIdent person, boolean stashCommit)
+	static InMemoryConflictResolver resolve(String ref, PersonIdent person, boolean stashCommit)
 			throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
-		var workspaceConflicts = Conflicts.withWorkspace(commit);
+		var repo = Repository.get();
+		var commit = repo.commits.find().refs(ref).latest();
+		var commonParent = repo.history.commonParentOf(Constants.LOCAL_REF, ref);
+		var workspaceConflicts = Conflicts.withWorkspace(commit, commonParent);
 		if (workspaceConflicts.isEmpty())
-			return resolve(commit, Conflicts.withLocalHistory(commit));
+			return resolve(commit, Conflicts.withLocalHistory(commit, commonParent));
 		var answers = new ArrayList<>(Arrays.asList("Cancel", "Discard changes", "Commit changes"));
 		if (!stashCommit) {
 			answers.add("Stash changes");
@@ -111,19 +113,19 @@ class Conflicts {
 		if (result == 1 && !handleStash(person, true))
 			return null;
 		if (result == 2)
-			return commitAllChanges(commit, person, stashCommit);
+			return commitAllChanges(ref, person, stashCommit);
 		if (result == 3 && !handleStash(person, false))
 			return null;
-		return resolve(commit, Conflicts.withLocalHistory(commit));
+		return resolve(commit, Conflicts.withLocalHistory(commit, commonParent));
 	}
 
-	private static InMemoryConflictResolver commitAllChanges(Commit commit, PersonIdent person, boolean stashCommit)
+	private static InMemoryConflictResolver commitAllChanges(String ref, PersonIdent person, boolean stashCommit)
 			throws InvocationTargetException, IOException, GitAPIException, InterruptedException {
 		var commitAction = new CommitAction();
 		commitAction.accept(Arrays.asList(Navigator.findElement(Database.getActiveConfiguration())));
 		if (!commitAction.doRun(false))
 			return null;
-		return resolve(commit, person, stashCommit);
+		return resolve(ref, person, stashCommit);
 	}
 
 	private static boolean handleStash(PersonIdent person, boolean discard)
