@@ -271,11 +271,13 @@ import org.openlca.core.library.LibMatrix as LibMatrix
 import org.openlca.core.library.LibProcess as LibProcess
 import org.openlca.core.library.LibTechIndex as LibTechIndex
 import org.openlca.core.library.LibTechItem as LibTechItem
+import org.openlca.core.library.Libraries as Libraries
 import org.openlca.core.library.Library as Library
 import org.openlca.core.library.LibraryDir as LibraryDir
 import org.openlca.core.library.LibraryExport as LibraryExport
 import org.openlca.core.library.LibraryInfo as LibraryInfo
 import org.openlca.core.library.LibraryPackage as LibraryPackage
+import org.openlca.core.library.LibraryReplacement as LibraryReplacement
 import org.openlca.geo.geojson.LineString as LineString
 import org.openlca.core.matrix.linking.LinkingConfig as LinkingConfig
 import org.openlca.core.matrix.linking.LinkingInfo as LinkingInfo
@@ -333,6 +335,7 @@ import org.openlca.util.OS as OS
 import org.openlca.expressions.OpExponentiation as OpExponentiation
 import org.openlca.expressions.functions.Or as Or
 import org.openlca.proto.io.output.Out as Out
+import org.openlca.jsonld.PackageInfo as PackageInfo
 import org.openlca.util.Pair as Pair
 import org.openlca.core.model.Parameter as Parameter
 import org.openlca.core.database.ParameterDao as ParameterDao
@@ -513,6 +516,7 @@ import org.openlca.core.database.validation.Validation as Validation
 import org.openlca.expressions.VariableFunction as VariableFunction
 import org.openlca.core.model.Version as Version
 import org.openlca.core.database.upgrades.VersionState as VersionState
+import org.openlca.io.openepd.Vocab as Vocab
 import org.openlca.io.ecospold2.input.WasteFlows as WasteFlows
 import org.openlca.geo.calc.WebMercator as WebMercator
 import org.openlca.text.WordBuffer as WordBuffer
