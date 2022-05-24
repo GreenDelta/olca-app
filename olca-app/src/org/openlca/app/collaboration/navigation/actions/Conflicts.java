@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
-import org.openlca.app.collaboration.dialogs.FetchDialog;
+import org.openlca.app.collaboration.dialogs.MergeDialog;
 import org.openlca.app.collaboration.util.InMemoryConflictResolver;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
@@ -145,8 +145,8 @@ class Conflicts {
 		var node = new DiffNodeBuilder(Database.get()).build(conflicts);
 		if (node == null)
 			return new TypeRefIdMap<>();
-		var dialog = new FetchDialog(node);
-		if (dialog.open() == FetchDialog.CANCEL)
+		var dialog = new MergeDialog(node);
+		if (dialog.open() == MergeDialog.CANCEL)
 			return null;
 		return dialog.getResolvedConflicts();
 	}

@@ -11,7 +11,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.collaboration.dialogs.JsonDiffDialog;
+import org.openlca.app.collaboration.dialogs.JsonCompareDialog;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.olca.ModelNodeBuilder;
@@ -33,14 +33,14 @@ import org.openlca.git.util.TypeRefIdMap;
 abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	DiffNode root;
-	private final boolean editMode;
+	private final boolean canMerge;
 	private Direction direction;
 	private Runnable onMerge;
 	private TypeRefIdMap<ConflictResolution> resolvedConflicts = new TypeRefIdMap<>();
 
 	DiffNodeViewer(Composite parent, boolean editMode) {
 		super(parent);
-		this.editMode = editMode;
+		this.canMerge = editMode;
 	}
 
 	@Override
@@ -78,8 +78,10 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			return;
 		var diff = selected.contentAsTriDiff();
 		var node = createNode(diff);
-		var dialogResult = JsonDiffDialog.open(node, direction, editMode);
-		if (editMode && dialogResult != JsonDiffDialog.CANCEL) {
+		var dialogResult = canMerge 
+				? JsonCompareDialog.openMerge(node, direction)
+				: JsonCompareDialog.openComparison(node, direction);
+		if (canMerge && dialogResult != JsonCompareDialog.CANCEL) {
 			var resolution = toResolution(node, dialogResult);
 			resolvedConflicts.put(diff.type, diff.refId, resolution);
 			if (onMerge != null) {
@@ -90,10 +92,10 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	}
 
 	private ConflictResolution toResolution(JsonNode node, int dialogResult) {
-		if (dialogResult == JsonDiffDialog.OVERWRITE_LOCAL || node.hasEqualValues())
-			return ConflictResolution.overwriteLocal();
-		if (dialogResult == JsonDiffDialog.KEEP_LOCAL_MODEL || node.leftEqualsOriginal())
-			return ConflictResolution.keepLocal();
+		if (dialogResult == JsonCompareDialog.OVERWRITE || node.hasEqualValues())
+			return ConflictResolution.overwrite();
+		if (dialogResult == JsonCompareDialog.KEEP || node.leftEqualsOriginal())
+			return ConflictResolution.keep();
 		var merged = node.left.getAsJsonObject();
 		var version = Version.fromString(node.right.getAsJsonObject().get("version").getAsString());
 		version.incUpdate();
@@ -238,7 +240,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 		private Overlay getOverlayMerged(TriDiff result) {
 			var resolution = resolvedConflicts.get(result.type, result.refId);
-			if (resolution != null && resolution.type != ConflictResolutionType.OVERWRITE_LOCAL)
+			if (resolution != null && resolution.type != ConflictResolutionType.OVERWRITE)
 				return Overlay.MERGED;
 			if (result.rightDiffType == DiffType.DELETED)
 				return Overlay.DELETE_FROM_LOCAL;

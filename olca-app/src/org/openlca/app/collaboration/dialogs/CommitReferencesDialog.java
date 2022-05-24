@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -19,13 +18,13 @@ import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.util.TypeRefIdSet;
 
-public class CommitReferenceDialog extends FormDialog {
+public class CommitReferencesDialog extends FormDialog {
 
 	private CommitViewer viewer;
 	private DiffNode node;
 	private boolean isStashCommit;
 
-	public CommitReferenceDialog(DiffNode node, boolean isStashCommit) {
+	public CommitReferencesDialog(DiffNode node, boolean isStashCommit) {
 		super(UI.shell());
 		setBlockOnOpen(true);
 		this.node = node;
@@ -41,10 +40,7 @@ public class CommitReferenceDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mform) {
 		var form = UI.formHeader(mform, M.CommitReferenceNotice);
 		var toolkit = mform.getToolkit();
-		var body = form.getBody();
-		body.setLayout(new GridLayout());
-		toolkit.paintBordersFor(body);
-		UI.gridData(body, true, true);
+		var body = UI.formBody(form, toolkit);
 		createModelViewer(body, toolkit);
 		form.reflow(true);
 	}

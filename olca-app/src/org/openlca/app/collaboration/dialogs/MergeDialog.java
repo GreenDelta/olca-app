@@ -3,28 +3,25 @@ package org.openlca.app.collaboration.dialogs;
 import java.util.Collections;
 
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
-import org.openlca.app.collaboration.viewers.diff.FetchViewer;
+import org.openlca.app.collaboration.viewers.diff.MergeViewer;
 import org.openlca.app.util.UI;
 import org.openlca.git.actions.ConflictResolver.ConflictResolution;
 import org.openlca.git.util.TypeRefIdMap;
 
-public class FetchDialog extends FormDialog {
+public class MergeDialog extends FormDialog {
 
 	private DiffNode rootNode;
-	private FetchViewer viewer;
-	private static final int OVERWRITE_LOCAL = 2;
-	private static final int KEEP_LOCAL = 3;
+	private MergeViewer viewer;
+	private static final int OVERWRITE = 2;
+	private static final int KEEP = 3;
 
-	public FetchDialog(DiffNode rootNode) {
+	public MergeDialog(DiffNode rootNode) {
 		super(UI.shell());
 		this.rootNode = rootNode;
 		setBlockOnOpen(true);
@@ -37,13 +34,10 @@ public class FetchDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, M.Diff);
-		FormToolkit toolkit = mform.getToolkit();
-		Composite body = form.getBody();
-		body.setLayout(new GridLayout());
-		toolkit.paintBordersFor(body);
-		UI.gridData(body, true, true);
-		viewer = new FetchViewer(body);
+		var form = UI.formHeader(mform, M.Merge);
+		var toolkit = mform.getToolkit();
+		var body = UI.formBody(form, toolkit);
+		viewer = new MergeViewer(body);
 		form.reflow(true);
 		viewer.setInput(Collections.singletonList(rootNode));
 		viewer.setOnMerge(() -> getButton(OK).setEnabled(!viewer.hasConflicts()));
@@ -60,17 +54,17 @@ public class FetchDialog extends FormDialog {
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, OVERWRITE_LOCAL, M.DiscardLocalChanges, false);
-		createButton(parent, KEEP_LOCAL, M.OverwriteRemoteChanges, false);
+		createButton(parent, OVERWRITE, M.OverwriteLocalChanges, false);
+		createButton(parent, KEEP, M.OverwriteRemoteChanges, false);
 		super.createButtonsForButtonBar(parent);
 	}
 
 	@Override
 	protected void buttonPressed(int buttonId) {
-		if (buttonId == OVERWRITE_LOCAL) {
-			solveAll(ConflictResolution.overwriteLocal());
-		} else if (buttonId == KEEP_LOCAL) {
-			solveAll(ConflictResolution.keepLocal());
+		if (buttonId == OVERWRITE) {
+			solveAll(ConflictResolution.overwrite());
+		} else if (buttonId == KEEP) {
+			solveAll(ConflictResolution.keep());
 		} else {
 			super.buttonPressed(buttonId);
 		}
@@ -88,8 +82,8 @@ public class FetchDialog extends FormDialog {
 		}
 		viewer.refresh();
 		getButton(OK).setEnabled(true);
-		getButton(OVERWRITE_LOCAL).setEnabled(false);
-		getButton(KEEP_LOCAL).setEnabled(false);
+		getButton(OVERWRITE).setEnabled(false);
+		getButton(KEEP).setEnabled(false);
 	}
 
 }

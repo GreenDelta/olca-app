@@ -10,31 +10,31 @@ import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.label.IJsonNodeLabelProvider;
 import org.openlca.app.util.UI;
 
-public class JsonDiffViewer extends Composite {
+public class JsonCompareViewer extends Composite {
 
 	private final FormToolkit toolkit;
 	private JsonNode root;
-	private final boolean editMode;
+	private final boolean canMerge;
 	private final Direction direction;
 	private JsonViewer leftTree;
 	private JsonViewer rightTree;
 	private String localLabel = M.LocalModel;
 	private String remoteLabel = M.RemoteModel;
 
-	public static JsonDiffViewer forEditing(Composite parent, FormToolkit toolkit, JsonNode root, Direction direction) {
-		return new JsonDiffViewer(parent, toolkit, root, direction, true);
+	public static JsonCompareViewer forMerging(Composite parent, FormToolkit toolkit, JsonNode root, Direction direction) {
+		return new JsonCompareViewer(parent, toolkit, root, direction, true);
 	}
 
-	public static JsonDiffViewer forViewing(Composite parent, FormToolkit toolkit, JsonNode root, Direction direction) {
-		return new JsonDiffViewer(parent, toolkit, root, direction, false);
+	public static JsonCompareViewer forComparison(Composite parent, FormToolkit toolkit, JsonNode root, Direction direction) {
+		return new JsonCompareViewer(parent, toolkit, root, direction, false);
 	}
 
-	private JsonDiffViewer(Composite parent, FormToolkit toolkit, JsonNode root, Direction direction,
-			boolean editMode) {
+	private JsonCompareViewer(Composite parent, FormToolkit toolkit, JsonNode root, Direction direction,
+			boolean canMerge) {
 		super(parent, SWT.NONE);
 		this.toolkit = toolkit;
 		this.root = root;
-		this.editMode = editMode;
+		this.canMerge = canMerge;
 		this.direction = direction;
 	}
 
@@ -46,7 +46,7 @@ public class JsonDiffViewer extends Composite {
 	public void initialize(IJsonNodeLabelProvider labelProvider, IDependencyResolver dependencyResolver) {
 		UI.gridLayout(this, 1, 0, 0);
 		MenuBar menu = null;
-		if (editMode && root != null && root.left != null && root.right != null) {
+		if (canMerge && root != null && root.left != null && root.right != null) {
 			menu = new MenuBar(this, root);
 		}
 		createTreeParts(labelProvider);

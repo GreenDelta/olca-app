@@ -10,9 +10,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.viewers.trees.Trees;
 
-public class FetchViewer extends DiffNodeViewer {
+public class MergeViewer extends DiffNodeViewer {
 
-	public FetchViewer(Composite parent) {
+	public MergeViewer(Composite parent) {
 		super(parent, true);
 		super.setDirection(Direction.RIGHT_TO_LEFT);
 	}

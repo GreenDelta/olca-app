@@ -13,7 +13,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.util.ObjectIds;
 import org.openlca.app.collaboration.viewers.HistoryViewer;
-import org.openlca.app.collaboration.viewers.json.JsonDiffViewer;
+import org.openlca.app.collaboration.viewers.json.JsonCompareViewer;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.olca.ModelDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.olca.ModelLabelProvider;
@@ -43,7 +43,7 @@ public class HistoryView extends ViewPart {
 	private static HistoryView instance;
 	private HistoryViewer historyViewer;
 	private AbstractTableViewer<Diff> referenceViewer;
-	private JsonDiffViewer diffViewer;
+	private JsonCompareViewer diffViewer;
 	private Gson gson = new Gson();
 
 	public HistoryView() {
@@ -97,7 +97,7 @@ public class HistoryView extends ViewPart {
 	}
 
 	private void createDiffViewer(Composite parent) {
-		diffViewer = JsonDiffViewer.forViewing(parent, null, null, Direction.LEFT_TO_RIGHT);
+		diffViewer = JsonCompareViewer.forComparison(parent, null, null, Direction.LEFT_TO_RIGHT);
 		diffViewer.setLabels(M.SelectedCommit, M.PreviousCommit);
 		diffViewer.initialize(new ModelLabelProvider(), ModelDependencyResolver.INSTANCE);
 	}

@@ -3,7 +3,7 @@ package org.openlca.app.collaboration.navigation.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.app.collaboration.dialogs.CommitReferenceDialog;
+import org.openlca.app.collaboration.dialogs.CommitReferencesDialog;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
@@ -25,8 +25,8 @@ class ReferenceCheck {
 		if (references.isEmpty())
 			return selection;
 		var node = new DiffNodeBuilder(database).build(references);
-		var dialog = new CommitReferenceDialog(node, stashCommit);
-		if (dialog.open() != CommitReferenceDialog.OK)
+		var dialog = new CommitReferencesDialog(node, stashCommit);
+		if (dialog.open() != CommitReferencesDialog.OK)
 			return null;
 		var selected = dialog.getSelected();
 		if (selected.isEmpty())

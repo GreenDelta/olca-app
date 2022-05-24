@@ -8,7 +8,6 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -37,11 +36,7 @@ public class HistoryDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var form = UI.formHeader(mform, title);
-		var toolkit = mform.getToolkit();
-		var body = form.getBody();
-		body.setLayout(new GridLayout());
-		toolkit.paintBordersFor(body);
-		UI.gridData(body, true, true);
+		var body = UI.formBody(form, mform.getToolkit());
 		var viewer = new AbstractTableViewer<Commit>(body) {
 			@Override
 			protected IBaseLabelProvider getLabelProvider() {

@@ -1,4 +1,4 @@
-package org.openlca.app.collaboration.views;
+package org.openlca.app.collaboration.util;
 
 import java.util.ArrayList;
 import java.util.List;

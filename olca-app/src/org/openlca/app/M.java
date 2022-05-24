@@ -238,7 +238,7 @@ public class M extends NLS {
 	public static String DeleteCategoryQuestion;
 	public static String DeleteDatabase;
 	public static String DeleteFile;
-	public static String DeleteLocalModel;
+	public static String DeleteLocalDataset;
 	public static String DeleteProcess;
 	public static String DeleteProcesslink;
 	public static String DeleteReportSectionQuestion;
@@ -249,14 +249,12 @@ public class M extends NLS {
 	public static String DependentParameters;
 	public static String Description;
 	public static String DeveloperTools;
-	public static String Diff;
 	public static String Direct;
 	public static String DirectContribution;
 	public static String DirectContributionsFlowResultsOverview;
 	public static String DirectContributionsImpactCategoryResultsOverview;
 	public static String Direction;
 	public static String Disabled;
-	public static String DiscardLocalChanges;
 	public static String Disconnect;
 	public static String Display;
 	public static String DontShowSmallerThen;
@@ -322,7 +320,6 @@ public class M extends NLS {
 	public static String Factors;
 	public static String FailedToLoadFlowProperty;
 	public static String Fetch;
-	public static String FetchRemoteModel;
 	public static String FetchingChanges;
 	public static String FetchingCommits;
 	public static String FetchingData;
@@ -416,6 +413,7 @@ public class M extends NLS {
 	public static String ImportEcoSpoldGeographies;
 	public static String ImportILCD;
 	public static String ImportKMLGeographies;
+	public static String ImportRemoteDataset;
 	public static String ImportingKMLData;
 	public static String ImportingXMLData;
 	public static String IncludeCostCalculation;
@@ -459,8 +457,8 @@ public class M extends NLS {
 	public static String IsReference;
 	public static String IsWithCosts;
 	public static String IsWithRegionalization;
-	public static String KeepLocalModel;
-	public static String KeepModelDeleted;
+	public static String KeepLocalDataset;
+	public static String KeepDatasetDeleted;
 	public static String KmlEditor;
 	public static String LCCAddedValuesTable;
 	public static String LCCNetcostsTable;
@@ -625,6 +623,7 @@ public class M extends NLS {
 	public static String Output;
 	public static String OutputResults;
 	public static String Outputs;
+	public static String OverwriteLocalChanges;
 	public static String OverwriteRemoteChanges;
 	public static String OverwriteFile;
 	public static String OverwriteFileQuestion;

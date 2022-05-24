@@ -51,10 +51,7 @@ public class CommitDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mform) {
 		var form = UI.formHeader(mform, M.CommitChangesToRepository);
 		var toolkit = mform.getToolkit();
-		var body = form.getBody();
-		body.setLayout(new GridLayout());
-		toolkit.paintBordersFor(body);
-		UI.gridData(body, true, true);
+		var body = UI.formBody(form, toolkit);
 		createCommitMessage(body, toolkit);
 		createModelViewer(body, toolkit);
 		form.reflow(true);
