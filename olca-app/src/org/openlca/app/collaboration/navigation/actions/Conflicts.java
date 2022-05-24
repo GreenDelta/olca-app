@@ -27,6 +27,41 @@ import org.openlca.git.util.TypeRefIdMap;
 
 class Conflicts {
 
+	static InMemoryConflictResolver resolve(String ref, PersonIdent person, boolean stashCommit)
+			throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
+		var repo = Repository.get();
+		var commit = repo.commits.find().refs(ref).latest();
+		var commonParent = repo.history.commonParentOf(Constants.LOCAL_REF, ref);
+		var workspaceConflicts = Conflicts.withWorkspace(commit, commonParent);
+		if (workspaceConflicts.isEmpty())
+			return resolve(commit, Conflicts.withLocalHistory(commit, commonParent));
+		var answers = new ArrayList<>(Arrays.asList("Cancel", "Discard changes", "Commit changes"));
+		if (!stashCommit) {
+			answers.add("Stash changes");
+		}
+		var result = Question.ask("Handle conflicts",
+				"There are conflicts with uncommited changes, how do you want to proceed?",
+				answers.toArray(new String[answers.size()]));
+		if (result == 0)
+			return null;
+		if (result == 1 && !stashChanges(person, true))
+			return null;
+		if (result == 2)
+			return commitChanges(ref, person, stashCommit);
+		if (result == 3 && !stashChanges(person, false))
+			return null;
+		return resolve(commit, Conflicts.withLocalHistory(commit, commonParent));
+	}
+
+	private static List<TriDiff> withWorkspace(Commit commit, Commit commonParent) throws IOException {
+		var repo = Repository.get();
+		var workspaceChanges = Diffs.workspace(repo.toConfig());
+		if (workspaceChanges.isEmpty())
+			return new ArrayList<>();
+		var remoteChanges = Diffs.between(repo.git, commonParent, commit);
+		return between(workspaceChanges, remoteChanges);
+	}
+
 	private static List<TriDiff> withLocalHistory(Commit commit, Commit commonParent) throws IOException {
 		var repo = Repository.get();
 		var localCommit = repo.commits.get(repo.commits.resolve(Constants.LOCAL_BRANCH));
@@ -41,16 +76,7 @@ class Conflicts {
 		return between(localChanges, remoteChanges);
 	}
 
-	private static List<TriDiff> withWorkspace(Commit commit, Commit commonParent) throws IOException {
-		var repo = Repository.get();
-		var workspaceChanges = Diffs.workspace(repo.toConfig());
-		if (workspaceChanges.isEmpty())
-			return new ArrayList<>();
-		var remoteChanges = Diffs.between(repo.git, commonParent, commit);
-		return between(workspaceChanges, remoteChanges);
-	}
-
-	static List<TriDiff> between(List<Diff> localChanges, List<Diff> remoteChanges) {
+	private static List<TriDiff> between(List<Diff> localChanges, List<Diff> remoteChanges) {
 		var conflicts = new ArrayList<TriDiff>();
 		new ArrayList<>(localChanges).forEach(local -> {
 			var remote = remoteChanges.stream()
@@ -74,52 +100,7 @@ class Conflicts {
 		return conflicts;
 	}
 
-	private static TypeRefIdMap<ConflictResolution> solve(List<TriDiff> conflicts) {
-		if (conflicts.isEmpty())
-			return new TypeRefIdMap<>();
-		var node = new DiffNodeBuilder(Database.get()).build(conflicts);
-		if (node == null)
-			return new TypeRefIdMap<>();
-		var dialog = new FetchDialog(node);
-		if (dialog.open() == FetchDialog.CANCEL)
-			return null;
-		return dialog.getResolvedConflicts();
-	}
-
-	private static InMemoryConflictResolver resolve(Commit commit, List<TriDiff> conflicts) {
-		var solved = solve(conflicts);
-		if (solved == null)
-			return null;
-		return new InMemoryConflictResolver(commit, solved);
-	}
-
-	static InMemoryConflictResolver resolve(String ref, PersonIdent person, boolean stashCommit)
-			throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
-		var repo = Repository.get();
-		var commit = repo.commits.find().refs(ref).latest();
-		var commonParent = repo.history.commonParentOf(Constants.LOCAL_REF, ref);
-		var workspaceConflicts = Conflicts.withWorkspace(commit, commonParent);
-		if (workspaceConflicts.isEmpty())
-			return resolve(commit, Conflicts.withLocalHistory(commit, commonParent));
-		var answers = new ArrayList<>(Arrays.asList("Cancel", "Discard changes", "Commit changes"));
-		if (!stashCommit) {
-			answers.add("Stash changes");
-		}
-		var result = Question.ask("Handle conflicts",
-				"There are conflicts with changes in your current workspace, how do you want to resolve these?",
-				answers.toArray(new String[answers.size()]));
-		if (result == 0)
-			return null;
-		if (result == 1 && !handleStash(person, true))
-			return null;
-		if (result == 2)
-			return commitAllChanges(ref, person, stashCommit);
-		if (result == 3 && !handleStash(person, false))
-			return null;
-		return resolve(commit, Conflicts.withLocalHistory(commit, commonParent));
-	}
-
-	private static InMemoryConflictResolver commitAllChanges(String ref, PersonIdent person, boolean stashCommit)
+	private static InMemoryConflictResolver commitChanges(String ref, PersonIdent person, boolean stashCommit)
 			throws InvocationTargetException, IOException, GitAPIException, InterruptedException {
 		var commitAction = new CommitAction();
 		commitAction.accept(Arrays.asList(Navigator.findElement(Database.getActiveConfiguration())));
@@ -128,7 +109,7 @@ class Conflicts {
 		return resolve(ref, person, stashCommit);
 	}
 
-	private static boolean handleStash(PersonIdent person, boolean discard)
+	private static boolean stashChanges(PersonIdent person, boolean discard)
 			throws GitAPIException, IOException, InvocationTargetException, InterruptedException {
 		var repo = Repository.get();
 		if (!discard && Actions.getStashCommit(repo.git) != null) {
@@ -149,6 +130,25 @@ class Conflicts {
 		}
 		Actions.run(stashCreate);
 		return true;
+	}
+
+	private static InMemoryConflictResolver resolve(Commit commit, List<TriDiff> conflicts) {
+		var solved = solve(conflicts);
+		if (solved == null)
+			return null;
+		return new InMemoryConflictResolver(commit, solved);
+	}
+
+	private static TypeRefIdMap<ConflictResolution> solve(List<TriDiff> conflicts) {
+		if (conflicts.isEmpty())
+			return new TypeRefIdMap<>();
+		var node = new DiffNodeBuilder(Database.get()).build(conflicts);
+		if (node == null)
+			return new TypeRefIdMap<>();
+		var dialog = new FetchDialog(node);
+		if (dialog.open() == FetchDialog.CANCEL)
+			return null;
+		return dialog.getResolvedConflicts();
 	}
 
 }

@@ -18,14 +18,14 @@ class ReferenceCheck {
 		this.database = database;
 	}
 
-	List<TriDiff> run(List<TriDiff> selection, List<Diff> diffs) {
+	List<TriDiff> run(List<TriDiff> selection, List<Diff> diffs, boolean stashCommit) {
 		if (!CollaborationPreference.checkReferences())
 			return selection;
 		var references = collect(selection, diffs);
 		if (references.isEmpty())
 			return selection;
 		var node = new DiffNodeBuilder(database).build(references);
-		var dialog = new CommitReferenceDialog(node);
+		var dialog = new CommitReferenceDialog(node, stashCommit);
 		if (dialog.open() != CommitReferenceDialog.OK)
 			return null;
 		var selected = dialog.getSelected();

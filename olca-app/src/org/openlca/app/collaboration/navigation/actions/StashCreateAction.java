@@ -3,6 +3,7 @@ package org.openlca.app.collaboration.navigation.actions;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -13,12 +14,14 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
-import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.git.actions.GitStashCreate;
+import org.openlca.git.model.Change;
 
 public class StashCreateAction extends Action implements INavigationAction {
+
+	private List<INavigationElement<?>> selection;
 
 	@Override
 	public String getText() {
@@ -47,10 +50,16 @@ public class StashCreateAction extends Action implements INavigationAction {
 		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
+			var input = Datasets.select(selection, false, false);
+			if (input == null)
+				return;
 			var committer = repo.promptCommitter();
 			Actions.run(GitStashCreate.from(Database.get())
 					.to(repo.git)
 					.as(committer)
+					.changes(input.datasets().stream()
+							.map(d -> new Change(d.leftDiffType, d))
+							.collect(Collectors.toList()))
 					.update(repo.workspaceIds));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error stashing changes", e);
@@ -62,10 +71,11 @@ public class StashCreateAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
+	public boolean accept(List<INavigationElement<?>> selection) {
 		if (!Repository.isConnected())
 			return false;
-		return elements.size() == 1 && elements.get(0) instanceof DatabaseElement;
+		this.selection = selection;
+		return true;
 	}
 
 }

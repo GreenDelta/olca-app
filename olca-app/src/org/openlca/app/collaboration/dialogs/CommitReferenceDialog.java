@@ -23,11 +23,13 @@ public class CommitReferenceDialog extends FormDialog {
 
 	private CommitViewer viewer;
 	private DiffNode node;
+	private boolean isStashCommit;
 
-	public CommitReferenceDialog(DiffNode node) {
+	public CommitReferenceDialog(DiffNode node, boolean isStashCommit) {
 		super(UI.shell());
 		setBlockOnOpen(true);
 		this.node = node;
+		this.isStashCommit = isStashCommit;
 	}
 
 	@Override
@@ -75,7 +77,7 @@ public class CommitReferenceDialog extends FormDialog {
 			viewer.selectAll();
 		});
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-		createButton(parent, IDialogConstants.OK_ID, M.Commit, true);
+		createButton(parent, IDialogConstants.OK_ID, isStashCommit ? "Stash" : M.Commit, true);
 	}
 
 	public List<TriDiff> getSelected() {

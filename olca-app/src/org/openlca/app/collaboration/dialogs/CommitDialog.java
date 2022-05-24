@@ -25,14 +25,16 @@ public class CommitDialog extends FormDialog {
 	public static final int COMMIT_AND_PUSH = 2;
 	private final boolean canPush;
 	private final DiffNode node;
+	private final boolean isStashCommit;
 	private String message;
 	private CommitViewer viewer;
 	private TypeRefIdSet initialSelection;
 
-	public CommitDialog(DiffNode node, boolean canPush) {
+	public CommitDialog(DiffNode node, boolean canPush, boolean isStashCommit) {
 		super(UI.shell());
 		this.node = node;
 		this.canPush = canPush;
+		this.isStashCommit = isStashCommit;
 		setBlockOnOpen(true);
 	}
 
@@ -108,7 +110,7 @@ public class CommitDialog extends FormDialog {
 			commitAndPush.setImage(Icon.PUSH.get());
 			setButtonLayoutData(commitAndPush);
 		}
-		var commit = createButton(parent, IDialogConstants.OK_ID, M.Commit, true);
+		var commit = createButton(parent, IDialogConstants.OK_ID, isStashCommit ? "Stash" : M.Commit, true);
 		commit.setEnabled(false);
 		commit.setImage(Icon.COMMIT.get());
 		setButtonLayoutData(commit);
