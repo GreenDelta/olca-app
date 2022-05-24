@@ -5,15 +5,14 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.api.RepositoryConfig;
+import org.openlca.app.collaboration.dialogs.ConnectDialog;
 import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.util.Input;
 import org.openlca.git.actions.GitInit;
-import org.openlca.util.Strings;
 
 public class ConnectAction extends Action implements INavigationAction {
 
@@ -24,9 +23,10 @@ public class ConnectAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var url = Input.promptString("Connect to Git repository", "Please enter the Git URL to connect to", "");
-		if (Strings.nullOrEmpty(url))
+		var dialog = new ConnectDialog();
+		if (dialog.open() == ConnectDialog.CANCEL)
 			return;
+		var url = dialog.url();
 		try {
 			var gitDir = RepositoryConfig.getGitDir(Database.get());
 			GitInit.in(gitDir).remoteUrl(url).run();

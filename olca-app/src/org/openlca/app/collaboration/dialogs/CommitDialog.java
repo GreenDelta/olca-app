@@ -68,7 +68,7 @@ public class CommitDialog extends FormDialog {
 		gd.heightHint = 150;
 		commitText.addModifyListener((event) -> {
 			message = commitText.getText();
-			updateButton();
+			updateButtons();
 		});
 	}
 
@@ -79,15 +79,15 @@ public class CommitDialog extends FormDialog {
 		UI.gridData(comp, true, true);
 		UI.gridLayout(comp, 1);
 		section.setClient(comp);
-		viewer = new CommitViewer(comp, this::updateButton);
+		viewer = new CommitViewer(comp, this::updateButtons);
 		viewer.setSelection(initialSelection, node);
 		CheckboxTreeViewers.registerInputHandler(comp, viewer.getViewer(), node, () -> {
 			CheckboxTreeViewers.expandGrayed(viewer.getViewer());
-			this.updateButton();
+			this.updateButtons();
 		});
 	}
 
-	private void updateButton() {
+	private void updateButtons() {
 		var enabled = viewer.hasChecked();
 		if (message == null || message.isEmpty()) {
 			enabled = false;
