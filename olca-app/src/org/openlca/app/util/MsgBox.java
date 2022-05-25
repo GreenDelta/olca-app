@@ -61,29 +61,32 @@ public class MsgBox {
 
 		@Override
 		public IStatus runInUIThread(IProgressMonitor monitor) {
-			Display display = getDisplay();
-			if (display == null)
-				return Status.CANCEL_STATUS;
-			Shell shell = display.getActiveShell();
-			if (shell == null)
-				shell = new Shell(display);
+			var shell = UI.shell();
+			if (shell == null) {
+				Display display = getDisplay();
+				if (display == null)
+					return Status.CANCEL_STATUS;
+				shell = display.getActiveShell();
+				if (shell == null)
+					shell = new Shell(display);
+			}
 			openBox(shell);
 			return Status.OK_STATUS;
 		}
 
 		private void openBox(Shell shell) {
 			switch (type) {
-			case ERROR:
-				MessageDialog.openError(shell, title, message);
-				break;
-			case WARNING:
-				MessageDialog.openWarning(shell, title, message);
-				break;
-			case INFO:
-				MessageDialog.openInformation(shell, title, message);
-				break;
-			default:
-				break;
+				case ERROR:
+					MessageDialog.openError(shell, title, message);
+					break;
+				case WARNING:
+					MessageDialog.openWarning(shell, title, message);
+					break;
+				case INFO:
+					MessageDialog.openInformation(shell, title, message);
+					break;
+				default:
+					break;
 			}
 		}
 	}
