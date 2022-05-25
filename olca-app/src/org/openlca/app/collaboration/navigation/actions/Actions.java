@@ -7,10 +7,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ProgressMonitor;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.db.Repository;
@@ -38,26 +40,44 @@ class Actions {
 		MsgBox.error(e.getMessage());
 	}
 
-	static UsernamePasswordCredentialsProvider credentialsProvider() {
-		var c = Repository.promptCredentials();
-		if (c == null || Strings.nullOrEmpty(c.username()) || Strings.nullOrEmpty(c.password()))
-			return null;
-		var token = c.token();
-		var password = c.password();
-		if (token != null) {
-			password += "&token=" + token;
-		}
-		return new UsernamePasswordCredentialsProvider(c.username(), password);
-	}
-
-	static <T> T run(GitRemoteAction<T> runnable)
+	static <T> T run(GitCredentialsProvider credentials, GitRemoteAction<T> runnable)
 			throws InvocationTargetException, InterruptedException, GitAPIException {
+		runnable.authorizeWith(credentials);
 		var service = PlatformUI.getWorkbench().getProgressService();
 		var runner = new GitRemoteRunner<>(runnable);
 		service.run(true, false, runner::run);
-		if (runner.exception != null)
+		var repo = Repository.get();
+		if (runner.exception == null) {
+			if (Strings.nullOrEmpty(credentials.token)) {
+				repo.setUseTwoFactorAuth(false);
+			}
+			return runner.result;
+		}
+		if (!(runner.exception instanceof TransportException))
 			throw runner.exception;
-		return runner.result;
+		var m = runner.exception.getMessage();
+		var notAuthorized = m.endsWith("not authorized");
+		var tokenRequired = m.endsWith("400 null");
+		var notPermitted = m.contains("not permitted on");
+		if (notPermitted) {
+			if (Strings.nullOrEmpty(credentials.token)) {
+				repo.setUseTwoFactorAuth(false);
+			}
+			repo.invalidateCredentials();
+			throw new TransportException("You do not have sufficient access to this repository");
+		}
+		if (!notAuthorized && !tokenRequired)
+			throw runner.exception;
+		if (notAuthorized) {
+			repo.invalidateCredentials();
+			credentials = AuthenticationDialog.promptCredentials();
+		} else if (tokenRequired) {
+			repo.setUseTwoFactorAuth(true);
+			credentials = AuthenticationDialog.promptToken();
+		}
+		if (credentials == null)
+			return null;
+		return run(credentials, runnable);
 	}
 
 	static <T> T run(GitProgressAction<T> runnable)

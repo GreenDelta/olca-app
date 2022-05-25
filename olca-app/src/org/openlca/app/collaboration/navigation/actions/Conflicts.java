@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.PersonIdent;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.MergeDialog;
 import org.openlca.app.collaboration.util.InMemoryConflictResolver;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
@@ -27,7 +27,7 @@ import org.openlca.git.util.TypeRefIdMap;
 
 class Conflicts {
 
-	static InMemoryConflictResolver resolve(String ref, PersonIdent person, boolean stashCommit)
+	static InMemoryConflictResolver resolve(String ref, boolean stashCommit)
 			throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
 		var repo = Repository.get();
 		var commit = repo.commits.find().refs(ref).latest();
@@ -44,11 +44,11 @@ class Conflicts {
 				answers.toArray(new String[answers.size()]));
 		if (result == 0)
 			return null;
-		if (result == 1 && !stashChanges(person, true))
+		if (result == 1 && !stashChanges(true))
 			return null;
 		if (result == 2)
-			return commitChanges(ref, person, stashCommit);
-		if (result == 3 && !stashChanges(person, false))
+			return commitChanges(ref, stashCommit);
+		if (result == 3 && !stashChanges(false))
 			return null;
 		return resolve(commit, Conflicts.withLocalHistory(commit, commonParent));
 	}
@@ -100,16 +100,16 @@ class Conflicts {
 		return conflicts;
 	}
 
-	private static InMemoryConflictResolver commitChanges(String ref, PersonIdent person, boolean stashCommit)
+	private static InMemoryConflictResolver commitChanges(String ref, boolean stashCommit)
 			throws InvocationTargetException, IOException, GitAPIException, InterruptedException {
 		var commitAction = new CommitAction();
 		commitAction.accept(Arrays.asList(Navigator.findElement(Database.getActiveConfiguration())));
 		if (!commitAction.doRun(false))
 			return null;
-		return resolve(ref, person, stashCommit);
+		return resolve(ref, stashCommit);
 	}
 
-	private static boolean stashChanges(PersonIdent person, boolean discard)
+	private static boolean stashChanges(boolean discard)
 			throws GitAPIException, IOException, InvocationTargetException, InterruptedException {
 		var repo = Repository.get();
 		if (!discard && Actions.getStashCommit(repo.git) != null) {
@@ -121,9 +121,10 @@ class Conflicts {
 				return false;
 			GitStashDrop.from(repo.git).run();
 		}
+		var user = AuthenticationDialog.promptUser();
 		var stashCreate = GitStashCreate.from(Database.get())
 				.to(repo.git)
-				.as(person)
+				.as(user)
 				.update(repo.workspaceIds);
 		if (discard) {
 			stashCreate = stashCreate.discard();

@@ -76,7 +76,7 @@ public class UI {
 	 * given browser.
 	 */
 	public static void bindFunction(Browser browser, String name,
-		Function<Object[], Object> fn) {
+			Function<Object[], Object> fn) {
 		if (browser == null || name == null || fn == null)
 			return;
 		BrowserFunction func = new BrowserFunction(browser, name) {
@@ -103,7 +103,7 @@ public class UI {
 		Shell shell = null;
 		try {
 			IWorkbenchWindow wb = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow();
+					.getActiveWorkbenchWindow();
 			if (wb != null) {
 				shell = wb.getShell();
 			}
@@ -123,32 +123,32 @@ public class UI {
 		if (shell != null)
 			return shell;
 		return display != null
-			? new Shell(display)
-			: new Shell();
+				? new Shell(display)
+				: new Shell();
 	}
 
 	public static Point initialSizeOf(
-		IShellProvider dialog, int maxWidth, int maxHeight) {
+			IShellProvider dialog, int maxWidth, int maxHeight) {
 		if (dialog == null)
 			return new Point(maxWidth, maxHeight);
 		var displaySize = dialog.getShell().getDisplay().getBounds();
 		int width = displaySize.x > 0 && displaySize.x < maxWidth
-			? displaySize.x
-			: maxWidth;
+				? displaySize.x
+				: maxWidth;
 		int height = displaySize.y > 0 && displaySize.y < maxHeight
-			? displaySize.y
-			: maxHeight;
+				? displaySize.y
+				: maxHeight;
 		return new Point(width, height);
 	}
 
 	public static Font boldFont() {
 		return JFaceResources.getFontRegistry().getBold(
-			JFaceResources.DEFAULT_FONT);
+				JFaceResources.DEFAULT_FONT);
 	}
 
 	public static Font italicFont() {
 		return JFaceResources.getFontRegistry().getItalic(
-			JFaceResources.DEFAULT_FONT);
+				JFaceResources.DEFAULT_FONT);
 	}
 
 	public static Font defaultFont() {
@@ -167,11 +167,11 @@ public class UI {
 		int hStyle = hFill ? SWT.FILL : SWT.LEFT;
 		int vStyle = vFill ? SWT.FILL : SWT.CENTER;
 		var data = new GridData(hStyle, vStyle, hFill, vFill);
-		if (hFill && (
-			control instanceof Text
+		if (hFill && (control instanceof Text
 				|| control instanceof Table
 				|| control instanceof Tree)) {
-			// fix for this bug: https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997#c4
+			// fix for this bug:
+			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997#c4
 			data.widthHint = 1;
 		}
 		control.setLayoutData(data);
@@ -202,11 +202,11 @@ public class UI {
 	}
 
 	public static ScrolledForm formHeader(
-		IManagedForm mform, String title, Image image) {
+			IManagedForm mform, String title, Image image) {
 		var form = mform.getForm();
 		var tk = mform.getToolkit();
 		tk.getHyperlinkGroup().setHyperlinkUnderlineMode(
-			HyperlinkSettings.UNDERLINE_HOVER);
+				HyperlinkSettings.UNDERLINE_HOVER);
 		if (title != null) {
 			form.setText(title);
 		}
@@ -218,22 +218,38 @@ public class UI {
 		return form;
 	}
 
+	public static Composite formWizardHeader(IManagedForm mform, FormToolkit toolkit, String title,
+			String description) {
+		var form = UI.formHeader(mform, title);
+		var body = form.getBody();
+		UI.gridLayout(body, 1, 0, 0);
+		toolkit.paintBordersFor(body);
+		UI.gridData(body, true, false);
+		var descriptionComposite = toolkit.createComposite(body);
+		UI.gridLayout(descriptionComposite, 1).marginTop = 0;
+		UI.gridData(descriptionComposite, true, false);
+		UI.formLabel(descriptionComposite, toolkit, description);
+		var separator = new Label(body, SWT.HORIZONTAL | SWT.SEPARATOR);
+		separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		return body;
+	}
+
 	public static Composite formSection(
-		Composite parent, FormToolkit tk, String label) {
+			Composite parent, FormToolkit tk, String label) {
 		return formSection(parent, tk, label, 2);
 	}
 
 	public static Composite formSection(Composite parent, FormToolkit tk,
-		String label, int columns) {
+			String label, int columns) {
 		Section section = section(parent, tk, label);
 		return sectionClient(section, tk, columns);
 	}
 
 	public static Section section(Composite comp, FormToolkit tk, String title) {
 		var s = tk.createSection(comp, ExpandableComposite.TITLE_BAR
-			| ExpandableComposite.FOCUS_TITLE
-			| ExpandableComposite.EXPANDED
-			| ExpandableComposite.TWISTIE);
+				| ExpandableComposite.FOCUS_TITLE
+				| ExpandableComposite.EXPANDED
+				| ExpandableComposite.TWISTIE);
 		gridData(s, true, false);
 		s.setText(title);
 		// s.setTitleBarBackground(Colors.get(214, 214, 255));
@@ -245,16 +261,16 @@ public class UI {
 	}
 
 	/**
-	 * Creates a composite and sets it as section client of the given section. The
-	 * created composite gets a 2-column grid-layout.
+	 * Creates a composite and sets it as section client of the given section.
+	 * The created composite gets a 2-column grid-layout.
 	 */
 	public static Composite sectionClient(Section section, FormToolkit toolkit) {
 		return sectionClient(section, toolkit, 2);
 	}
 
 	/**
-	 * Creates a composite and sets it as section client of the given section. The
-	 * created composite gets a n-column grid-layout.
+	 * Creates a composite and sets it as section client of the given section.
+	 * The created composite gets a n-column grid-layout.
 	 */
 	public static Composite sectionClient(Section section, FormToolkit tk, int columns) {
 		var composite = tk.createComposite(section);
@@ -284,7 +300,7 @@ public class UI {
 	}
 
 	public static GridLayout gridLayout(Composite composite, int columns,
-		int spacing, int margin) {
+			int spacing, int margin) {
 		var layout = new GridLayout(columns, false);
 		layout.verticalSpacing = spacing;
 		layout.marginWidth = margin;
@@ -334,8 +350,8 @@ public class UI {
 
 	public static Button formCheckbox(Composite parent, FormToolkit toolkit) {
 		var button = toolkit != null
-			? toolkit.createButton(parent, null, SWT.CHECK)
-			: new Button(parent, SWT.CHECK);
+				? toolkit.createButton(parent, null, SWT.CHECK)
+				: new Button(parent, SWT.CHECK);
 		var gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		button.setLayoutData(gd);
 		return button;
@@ -362,17 +378,17 @@ public class UI {
 	}
 
 	public static Text formText(Composite parent, FormToolkit toolkit,
-		String label) {
+			String label) {
 		return formText(parent, toolkit, label, SWT.BORDER);
 	}
 
 	public static Text formText(Composite parent, FormToolkit tk,
-		String label, int flags) {
+			String label, int flags) {
 		if (label != null)
 			formLabel(parent, tk, label);
 		Text text = tk != null
-			? tk.createText(parent, null, flags)
-			: new Text(parent, flags);
+				? tk.createText(parent, null, flags)
+				: new Text(parent, flags);
 		fillHorizontal(text);
 		return text;
 	}
@@ -392,8 +408,8 @@ public class UI {
 
 	public static Text formMultiText(Composite comp, FormToolkit tk, int heightHint) {
 		Text text = tk != null
-			? tk.createText(comp, null, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI)
-			: new Text(comp, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
+				? tk.createText(comp, null, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI)
+				: new Text(comp, SWT.BORDER | SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
 		GridData gd = fillHorizontal(text);
 		gd.minimumHeight = heightHint;
 		gd.heightHint = heightHint;

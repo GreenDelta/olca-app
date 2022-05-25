@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.model.Announcement;
 import org.openlca.app.collaboration.model.Comment;
 import org.openlca.app.collaboration.model.Restriction;
@@ -35,7 +36,8 @@ public class RepositoryClient {
 			var response = WebRequests.call(Type.GET, config.apiUrl + "/public", null, null);
 			if (response.getStatus() != Status.OK.getStatusCode())
 				return false;
-			return response.getEntity(String.class).startsWith("{\"id\":}");
+			var result = response.getEntity(String.class);
+			return result.startsWith("{\"id\":}");
 		} catch (WebRequestException e) {
 			return false;
 		}
@@ -44,7 +46,7 @@ public class RepositoryClient {
 	private boolean login() throws WebRequestException {
 		var invocation = new LoginInvocation();
 		invocation.baseUrl = config.apiUrl;
-		invocation.credentials = BasicCredentials.prompt();
+		invocation.credentials = AuthenticationDialog.promptCredentials();
 		if (invocation.credentials == null)
 			return false;
 		sessionId = invocation.execute();

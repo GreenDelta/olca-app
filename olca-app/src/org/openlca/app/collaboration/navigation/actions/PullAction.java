@@ -8,6 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -37,26 +38,24 @@ public class PullAction extends Action implements INavigationAction {
 		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
-			var committer = repo.promptCommitter();
-			if (committer == null)
-				return;
-			var credentials = Actions.credentialsProvider();
+			var credentials = AuthenticationDialog.promptCredentials();
 			if (credentials == null)
 				return;
-			var newCommits = Actions.run(GitFetch
-					.to(repo.git)
-					.authorizeWith(credentials));
+			var newCommits = Actions.run(credentials,
+					GitFetch.to(repo.git));
+			if (newCommits == null)
+				return;
 			if (!newCommits.isEmpty()) {
 				new HistoryDialog("Fetched commits", newCommits).open();
 			}
-			var conflictResolver = Conflicts.resolve(Constants.REMOTE_REF, committer, false);
+			var conflictResolver = Conflicts.resolve(Constants.REMOTE_REF, false);
 			if (conflictResolver == null)
 				return;
 			var changed = Actions.run(GitMerge
 					.from(repo.git)
 					.into(Database.get())
 					.update(repo.workspaceIds)
-					.as(committer)
+					.as(credentials.ident)
 					.resolveConflictsWith(conflictResolver));
 			if (!changed) {
 				MsgBox.info("No commits to fetch - Everything up to date");

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -50,13 +51,15 @@ public class StashCreateAction extends Action implements INavigationAction {
 		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
-			var input = Datasets.select(selection, false, false);
+			var input = Datasets.select(selection, false, true);
 			if (input == null)
 				return;
-			var committer = repo.promptCommitter();
+			var user = AuthenticationDialog.promptUser();
+			if (user == null)
+				return;
 			Actions.run(GitStashCreate.from(Database.get())
 					.to(repo.git)
-					.as(committer)
+					.as(user)
 					.changes(input.datasets().stream()
 							.map(d -> new Change(d.leftDiffType, d))
 							.collect(Collectors.toList()))

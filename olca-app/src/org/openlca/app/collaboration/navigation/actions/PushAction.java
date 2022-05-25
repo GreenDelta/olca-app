@@ -9,6 +9,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -33,16 +34,17 @@ public class PushAction extends Action implements INavigationAction {
 	public boolean isEnabled() {
 		return !Repository.get().history.getAhead().isEmpty();
 	}
-	
+
 	@Override
 	public void run() {
 		try {
-			var credentials = Actions.credentialsProvider();
+			var credentials = AuthenticationDialog.promptCredentials();
 			if (credentials == null)
 				return;
-			var result = Actions.run(GitPush
-					.from(Repository.get().git)
-					.authorizeWith(credentials));
+			var result = Actions.run(credentials,
+					GitPush.from(Repository.get().git));
+			if (result == null)
+				return;
 			if (result.newCommits().isEmpty()) {
 				MsgBox.info("No commits to push - Everything up to date");
 			} else if (result.status() == Status.REJECTED_NONFASTFORWARD) {

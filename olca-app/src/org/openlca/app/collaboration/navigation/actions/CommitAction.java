@@ -11,6 +11,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
@@ -52,25 +53,27 @@ public class CommitAction extends Action implements INavigationAction {
 	boolean doRun(boolean canPush) {
 		try {
 			var repo = Repository.get();
-			var input = Datasets.select(selection, canPush, true);
-			if (input == null)
+			var input = Datasets.select(selection, canPush, false);
+			if (input == null || input.action() == CommitDialog.CANCEL)
 				return false;
-			var committer = repo.promptCommitter();
-			if (committer == null)
+			var doPush = input.action() == CommitDialog.COMMIT_AND_PUSH;
+			var credentials = doPush ? AuthenticationDialog.promptCredentials() : null;
+			var user = doPush ? credentials.ident : AuthenticationDialog.promptUser();
+			if (credentials == null && user == null)
 				return false;
-			var credentials = Actions.credentialsProvider();
 			Actions.run(GitCommit.from(Database.get())
 					.to(repo.git)
 					.changes(input.datasets().stream().map(d -> new Change(d.leftDiffType, d))
 							.collect(Collectors.toList()))
 					.withMessage(input.message())
-					.as(committer)
+					.as(user)
 					.update(repo.workspaceIds));
 			if (input.action() != CommitDialog.COMMIT_AND_PUSH)
 				return true;
-			var result = Actions.run(GitPush
-					.from(Repository.get().git)
-					.authorizeWith(credentials));
+			var result = Actions.run(credentials,
+					GitPush.from(Repository.get().git));
+			if (result == null)
+				return false;
 			if (result.status() == Status.REJECTED_NONFASTFORWARD) {
 				MsgBox.error("Rejected - Not up to date - Please merge remote changes to continue");
 				return false;

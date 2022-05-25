@@ -7,6 +7,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -30,12 +31,13 @@ public class FetchAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		try {
-			var credentials = Actions.credentialsProvider();
+			var credentials = AuthenticationDialog.promptCredentials();
 			if (credentials == null)
 				return;
-			var newCommits = Actions.run(GitFetch
-					.to(Repository.get().git)
-					.authorizeWith(credentials));
+			var newCommits = Actions.run(credentials,
+					GitFetch.to(Repository.get().git));
+			if (newCommits == null)
+				return;
 			if (newCommits.isEmpty()) {
 				MsgBox.info("No commits to fetch - Everything up to date");
 			} else {

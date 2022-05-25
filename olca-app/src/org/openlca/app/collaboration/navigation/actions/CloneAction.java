@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.collaboration.api.RepositoryConfig;
+import org.openlca.app.collaboration.dialogs.ConnectDialog;
 import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -44,9 +45,10 @@ public class CloneAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var url = Input.promptString("Import a Git repository", "Please enter the Git URL to import from", "");
-		if (Strings.nullOrEmpty(url))
+		var dialog = new ConnectDialog().withPassword();
+		if (dialog.open() == ConnectDialog.CANCEL)
 			return;
+		var url = dialog.url();
 		File dbDir = null;
 		File gitDir = null;
 		DerbyConfig config = null;
@@ -54,9 +56,6 @@ public class CloneAction extends Action implements INavigationAction {
 			var dbName = url.substring(url.lastIndexOf("/") + 1);
 			dbDir = getDbDir(dbName);
 			if (dbDir == null)
-				return;
-			var credentials = Actions.credentialsProvider();
-			if (credentials == null)
 				return;
 			config = new DerbyConfig();
 			config.name(dbDir.getName());
@@ -69,10 +68,10 @@ public class CloneAction extends Action implements INavigationAction {
 			gitDir = RepositoryConfig.getGitDir(db);
 			GitInit.in(gitDir).remoteUrl(url).run();
 			var repo = Repository.connect(db);
-			var newCommits = Actions.run(GitFetch
-					.to(repo.git)
-					.authorizeWith(credentials));
-			if (newCommits.isEmpty())
+			repo.setUser(dialog.user());
+			var newCommits = Actions.run(dialog.credentials(),
+					GitFetch.to(repo.git));
+			if (newCommits == null || newCommits.isEmpty())
 				return;
 			Actions.run(GitMerge
 					.from(repo.git)

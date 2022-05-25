@@ -18,6 +18,7 @@ import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.core.database.config.DatabaseConfig;
+import org.openlca.util.Strings;
 
 public class RepositoryLabel {
 
@@ -70,10 +71,15 @@ public class RepositoryLabel {
 			return null;
 		if (!Repository.isConnected())
 			return null;
-		var repository = Repository.get();
-		var ahead = repository.history.getAhead();
-		var behind = repository.history.getBehind();
-		var text = " [" + repository.config.url();
+		var repo = Repository.get();
+		var ahead = repo.history.getAhead();
+		var behind = repo.history.getBehind();
+		var user = repo.user();
+		var text = " [";
+		if (!Strings.nullOrEmpty(user)) {
+			text += user + "@";
+		}
+		text += repo.config.url();
 		if (!ahead.isEmpty()) {
 			text += " ↑" + ahead.size();
 		}

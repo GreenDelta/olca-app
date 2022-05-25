@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.jgit.internal.storage.file.FileRepository;
-import org.eclipse.jgit.lib.PersonIdent;
-import org.openlca.app.collaboration.api.BasicCredentials;
 import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.collaboration.api.RepositoryConfig;
-import org.openlca.app.util.Input;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.GitConfig;
 import org.openlca.git.ObjectIdStore;
@@ -18,7 +15,6 @@ import org.openlca.git.find.Entries;
 import org.openlca.git.find.Ids;
 import org.openlca.git.find.References;
 import org.openlca.git.util.History;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +32,7 @@ public class Repository {
 	public final References references;
 	public final Entries entries;
 	public final History history;
-	public PersonIdent user;
+	private String password;
 
 	private Repository(IDatabase database, File gitDir) throws IOException {
 		git = new FileRepository(gitDir);
@@ -93,25 +89,44 @@ public class Repository {
 		return new GitConfig(Database.get(), Repository.get().workspaceIds, Repository.get().git);
 	}
 
-	public PersonIdent promptCommitter() {
-		if (user != null)
-			return user;
-		var username = Input.promptString("Committer", "Please enter your username", "");
-		if (Strings.nullOrEmpty(username))
-			return null;
-		// TODO
-		user = new PersonIdent(username, username + "@email.com");
-		return user;
+	public String user() {
+		return git.getConfig().getString("user", null, "name");
 	}
 
-	public static BasicCredentials promptCredentials() {
-		var credentials = BasicCredentials.prompt();
-		if (credentials == null)
-			return null;
-		if (repository != null) {
-			repository.user = new PersonIdent(credentials.username(), credentials.username() + "@email.com");
+	public void setUser(String user) {
+		if (!user.equals(user())) {
+			setUseTwoFactorAuth(false);
 		}
-		return credentials;
+		setUserConfigValue("name", user);
+	}
+
+	public String password() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void invalidateCredentials() {
+		this.password = null;
+	}
+
+	public boolean useTwoFactorAuth() {
+		return git.getConfig().getBoolean("user", null, "useTwoFactorAuth", false);
+	}
+
+	public void setUseTwoFactorAuth(boolean value) {
+		setUserConfigValue("useTwoFactorAuth", Boolean.toString(value));
+	}
+
+	private void setUserConfigValue(String name, String value) {
+		git.getConfig().setString("user", null, name, value);
+		try {
+			git.getConfig().save();
+		} catch (IOException e) {
+			log.error("Error saving Git config", e);
+		}
 	}
 
 }

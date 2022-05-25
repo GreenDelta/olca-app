@@ -5,50 +5,47 @@ import java.net.URL;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
 
 public class ConnectDialog extends FormDialog {
 
 	private String url;
-	private AuthenticationGroup authentication;
+	private AuthenticationGroup auth = new AuthenticationGroup();
+	private boolean withPassword;
 
 	public ConnectDialog() {
 		super(UI.shell());
 		setBlockOnOpen(true);
 	}
 
+	public ConnectDialog withPassword() {
+		this.withPassword = true;
+		return this;
+	}
+
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(mform, "Connect Git repository");
-		var formBody = form.getBody();
-		createHeader(formBody, mform.getToolkit());
+	protected void createFormContent(IManagedForm form) {
+		var formBody = UI.formWizardHeader(form, form.getToolkit(),
+				"Connect Git repository",
+				"Enter the location of the Git repository.");
 		var body = new Composite(formBody, SWT.NONE);
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;
 		createLocationGroup(body);
-		authentication = AuthenticationGroup.create(body, this::updateButtons);
-		form.reflow(true);
-	}
-
-	private void createHeader(Composite formBody, FormToolkit toolkit) {
-		UI.gridLayout(formBody, 1, 0, 0);
-		toolkit.paintBordersFor(formBody);
-		UI.gridData(formBody, true, false);
-		var descriptionComposite = toolkit.createComposite(formBody);
-		UI.gridLayout(descriptionComposite, 1).marginTop = 0;
-		UI.gridData(descriptionComposite, true, false);
-		UI.formLabel(descriptionComposite, toolkit, "Enter the location of the Git repository.");
-		var separator = new Label(formBody, SWT.HORIZONTAL | SWT.SEPARATOR);
-		separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		if (withPassword) {
+			auth.withPassword();
+		}
+		auth.withUser()
+				.onChange(this::updateButtons)
+				.render(body, SWT.NONE);
+		form.getForm().reflow(true);
 	}
 
 	private void createLocationGroup(Composite parent) {
@@ -79,8 +76,8 @@ public class ConnectDialog extends FormDialog {
 
 	private void updateButtons() {
 		var enabled = !Strings.nullOrEmpty(url)
-				&& !Strings.nullOrEmpty(authentication.user())
-				&& !Strings.nullOrEmpty(authentication.password());
+				&& !Strings.nullOrEmpty(auth.user())
+				&& (!withPassword || !Strings.nullOrEmpty(auth.password()));
 		getButton(IDialogConstants.OK_ID).setEnabled(enabled);
 	}
 
@@ -96,10 +93,14 @@ public class ConnectDialog extends FormDialog {
 		return url;
 	}
 
-	public AuthenticationGroup authentication() {
-		return authentication;
+	public String user() {
+		return auth.user();
 	}
 	
+	public GitCredentialsProvider credentials() {
+		return new GitCredentialsProvider(auth.user(), auth.password());
+	}
+
 	private static class UrlParts {
 
 		private final String protocol;
