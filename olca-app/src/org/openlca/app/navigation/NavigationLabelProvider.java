@@ -5,7 +5,6 @@ import java.io.File;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMemento;
@@ -84,38 +83,38 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			var category = Cache.getEntityCache().get(
 					Category.class, descriptor.category);
 			return category != null
-				? String.join(" / ", Categories.path(category)) + " / " + name
-				: name;
+					? String.join(" / ", Categories.path(category)) + " / " + name
+					: name;
 		}
 
 		// for categories show the full path
 		if (obj instanceof CategoryElement elem) {
 			var category = elem.getContent();
 			return category != null
-				? String.join(" / ", Categories.path(category))
-				: null;
+					? String.join(" / ", Categories.path(category))
+					: null;
 		}
 
 		// for script files and folders show the full file path
 		if (obj instanceof ScriptElement elem) {
 			var file = elem.getContent();
 			return file != null
-				? file.getAbsolutePath()
-				: null;
+					? file.getAbsolutePath()
+					: null;
 		}
 
 		// libraries
 		if (obj instanceof LibraryDirElement elem) {
 			var libDir = elem.getContent();
 			return libDir != null
-				? libDir.folder().getAbsolutePath()
-				: null;
+					? libDir.folder().getAbsolutePath()
+					: null;
 		}
 		if (obj instanceof LibraryElement elem) {
 			var lib = elem.getContent();
 			return lib != null
-				? lib.folder().getAbsolutePath()
-				: null;
+					? lib.folder().getAbsolutePath()
+					: null;
 		}
 
 		return getText(obj);
@@ -228,23 +227,9 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 	public Font getFont(Object elem) {
 		if (!(elem instanceof INavigationElement<?>))
 			return null;
-		if (elem instanceof DatabaseElement dbElem) {
-			if (Database.isActive(dbElem.getContent()))
-				return UI.boldFont();
-			return null;
-		}
-		if (!indicateRepositoryState)
-			return null;
-		return RepositoryLabel.getFont((INavigationElement<?>) elem);
-	}
-
-	@Override
-	public Color getForeground(Object elem) {
-		if (!(elem instanceof INavigationElement<?>))
-			return null;
-		if (!indicateRepositoryState)
-			return null;
-		return RepositoryLabel.getForeground((INavigationElement<?>) elem);
+		if (elem instanceof DatabaseElement dbElem && Database.isActive(dbElem.getContent()))
+			return UI.boldFont();
+		return null;
 	}
 
 	@Override

@@ -116,7 +116,6 @@ public class CommitViewer extends DiffNodeViewer {
 			}
 			var diff = element.contentAsTriDiff();
 			if (diff == null || diff.noAction()) {
-				// TODO || !diff.left.tracked
 				getViewer().setChecked(element, false);
 			} else if (!checked && lockNewElements && diff.leftDiffType == DiffType.ADDED) {
 				getViewer().setChecked(element, true);

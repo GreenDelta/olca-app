@@ -1,8 +1,6 @@
 package org.openlca.app.collaboration.navigation;
 
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.collaboration.util.ObjectIds;
 import org.openlca.app.db.Cache;
@@ -25,6 +23,8 @@ public class RepositoryLabel {
 	public static final String CHANGED_STATE = "> ";
 
 	public static Image getWithOverlay(INavigationElement<?> elem) {
+		if (elem.getLibrary().isPresent())
+			return null;
 		if (!Repository.isConnected())
 			return null;
 		if (elem instanceof CategoryElement e && isZero(getRepositoryId(e)))
@@ -96,6 +96,8 @@ public class RepositoryLabel {
 	}
 
 	public static boolean hasChanged(INavigationElement<?> elem) {
+		if (elem.getLibrary().isPresent())
+			return false;
 		if (!Repository.isConnected())
 			return false;
 		if (elem instanceof NavigationRoot)
@@ -136,18 +138,6 @@ public class RepositoryLabel {
 			return hasChanged;
 		}
 		return hasChanged;
-	}
-
-	public static Font getFont(INavigationElement<?> elem) {
-		// if (!isTracked(elem))
-		// return UI.italicFont();
-		return null;
-	}
-
-	public static Color getForeground(INavigationElement<?> elem) {
-		// if (!isTracked(elem))
-		// return Colors.get(85, 85, 85);
-		return null;
 	}
 
 }
