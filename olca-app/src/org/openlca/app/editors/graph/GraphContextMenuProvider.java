@@ -7,6 +7,7 @@ import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.ui.actions.ActionFactory;
+import org.openlca.app.editors.graph.actions.ActionIds;
 
 public class GraphContextMenuProvider  extends ContextMenuProvider {
 
@@ -26,5 +27,9 @@ public class GraphContextMenuProvider  extends ContextMenuProvider {
 
 		action = actionRegistry.getAction(ActionFactory.UNDO.getId());
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, action);
+		action = actionRegistry.getAction(ActionFactory.REDO.getId());
+		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, action);
+
+		menu.add(actionRegistry.getAction(ActionIds.LAYOUT_TREE));
 	}
 }

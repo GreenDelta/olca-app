@@ -78,13 +78,6 @@ public class GraphActions {
 //		return action;
 //	}
 //
-//	public static IAction show(GraphEditor editor, TreeViewer viewer) {
-//		return new HideShowAction(editor, viewer, SHOW);
-//	}
-//
-//	public static IAction hide(GraphEditor editor, TreeViewer viewer) {
-//		return new HideShowAction(editor, viewer, HIDE);
-//	}
 //
 //	public static IAction openMiniatureView(GraphEditor editor) {
 //		OpenMiniatureViewAction action = new OpenMiniatureViewAction();

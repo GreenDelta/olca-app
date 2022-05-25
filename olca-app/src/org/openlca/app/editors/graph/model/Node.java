@@ -27,13 +27,15 @@ public class Node extends MinMaxGraphComponent {
 	public static final Dimension DEFAULT_MAXIMIZED_SIZE = new Dimension(250, -1);
 
 	public final RootDescriptor descriptor;
-	private ProcessExpander inputProcessExpander;
-	private ProcessExpander outputProcessExpander;
+	private final ProcessExpander inputProcessExpander;
+	private final ProcessExpander outputProcessExpander;
 
 	public Node(RootDescriptor descriptor, GraphEditor editor) {
 		super(editor);
 		this.descriptor = descriptor;
 		setSize(isMinimized() ? DEFAULT_MINIMIZED_SIZE : DEFAULT_MAXIMIZED_SIZE);
+		inputProcessExpander = new ProcessExpander(Side.INPUT);
+		outputProcessExpander = new ProcessExpander(Side.OUTPUT);
 	}
 
 	public ExchangeItem getOutput(ProcessLink link) {
@@ -264,15 +266,6 @@ public class Node extends MinMaxGraphComponent {
 		private void expand() {
 			createNecessaryNodes();
 			expanded = true;
-
-			// set expanded nodes visible
-			List<Node> nodes = new ArrayList<>();
-			for (Link link : getAllLinks()) {
-				Node match = getMatchingNode(link);
-				if (match == null || nodes.contains(match))
-					continue;
-				nodes.add(match);
-			}
 		}
 
 		private void collapse(Node initialNode) {
@@ -323,26 +316,12 @@ public class Node extends MinMaxGraphComponent {
 				} else if (isOutputNode(type, isProvider)) {
 					outNode = Node.this;
 					inNode = graph.getOrCreateProcessNode(otherID);
-					graph.addChild(outNode);
+					graph.addChild(inNode);
 				} else {
 					continue;
 				}
 				new Link(pLink, inNode, outNode);
 			}
-		}
-
-		private Node getMatchingNode(Link link) {
-			var source = link.getSourceNode();
-			var target = link.getTargetNode();
-			if (side == Side.INPUT)
-				if (target.equals(Node.this))
-					if (!source.equals(Node.this))
-						return source;
-			if (side == Side.OUTPUT)
-				if (source.equals(Node.this))
-					if (!target.equals(Node.this))
-						return target;
-			return null;
 		}
 
 		private boolean isInputNode(FlowType type, boolean isProvider) {

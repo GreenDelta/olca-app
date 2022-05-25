@@ -56,8 +56,7 @@ public class NodeSetConstraintCommand extends Command {
 		return (RequestConstants.REQ_MOVE.equals(type)
 			|| RequestConstants.REQ_MOVE_CHILDREN.equals(type)
 			|| RequestConstants.REQ_RESIZE.equals(type)
-			|| RequestConstants.REQ_RESIZE_CHILDREN
-			.equals(type));
+			|| RequestConstants.REQ_RESIZE_CHILDREN.equals(type));
 	}
 
 	@Override

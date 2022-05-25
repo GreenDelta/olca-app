@@ -4,18 +4,36 @@ import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.parts.ScrollableThumbnail;
+import org.eclipse.draw2d.parts.Thumbnail;
 import org.eclipse.gef.*;
+import org.eclipse.gef.dnd.TemplateTransferDropTargetListener;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.actions.*;
+import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.*;
+import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.part.IPageSite;
+import org.eclipse.ui.part.PageBook;
+import org.openlca.app.editors.graph.actions.LayoutAction;
 import org.openlca.app.editors.graph.edit.GraphEditPartFactory;
 import org.openlca.app.editors.graph.model.Graph;
 import org.openlca.app.editors.graph.model.GraphFactory;
@@ -135,6 +153,7 @@ public class GraphEditor extends GraphicalEditor {
 		var actions = new IAction[] {
 			new ZoomInAction(getZoomManager()),
 			new ZoomOutAction(getZoomManager()),
+			new LayoutAction(this),
 			delete,
 		};
 
