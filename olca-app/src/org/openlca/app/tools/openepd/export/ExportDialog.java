@@ -32,6 +32,8 @@ import org.openlca.io.openepd.Ec3CategoryTree;
 import org.openlca.io.openepd.EpdConverter;
 import org.openlca.io.openepd.EpdDoc;
 import org.openlca.io.openepd.EpdQuantity;
+import org.openlca.io.openepd.mapping.MappedResult;
+import org.openlca.io.openepd.mapping.MappingModel;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
 import org.openlca.util.Strings;

@@ -19,8 +19,10 @@ import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ModelType;
-import org.openlca.io.openepd.Vocab.Indicator;
-import org.openlca.io.openepd.Vocab.Method;
+import org.openlca.io.openepd.mapping.MappingModel;
+import org.openlca.io.openepd.mapping.MappingRow;
+import org.openlca.io.openepd.mapping.Vocab.Indicator;
+import org.openlca.io.openepd.mapping.Vocab.Method;
 import org.openlca.util.Strings;
 
 import java.util.Arrays;
