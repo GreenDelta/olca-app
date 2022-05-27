@@ -1,11 +1,8 @@
 package org.openlca.app.editors.processes.exchanges;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.processes.ProcessEditor;
@@ -33,57 +30,57 @@ class ProviderCombo extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 	public boolean canModify(Exchange e) {
 		if (e == null || e.flow == null)
 			return false;
-		FlowType type = e.flow.flowType;
-		if (e.isInput)
-			return type == FlowType.PRODUCT_FLOW;
-		else
-			return type == FlowType.WASTE_FLOW;
+		var type = e.flow.flowType;
+		return e.isInput
+			? type == FlowType.PRODUCT_FLOW
+			: type == FlowType.WASTE_FLOW;
 	}
 
 	@Override
 	protected ProcessDescriptor[] getItems(Exchange e) {
-		if (e.flow == null)
+		var providerIds = getProviderIds(e);
+		if (providerIds.isEmpty())
 			return new ProcessDescriptor[0];
-		Set<Long> providerIds = getProcessIds(e);
-		Collection<ProcessDescriptor> list = cache.getAll(
-				ProcessDescriptor.class, providerIds).values();
-		ProcessDescriptor[] providers = list.toArray(
-				new ProcessDescriptor[list.size()]);
-		Arrays.sort(providers, (p1, p2) -> Strings.compare(
-				Labels.name(p1), Labels.name(p2)));
-		return providers;
+		var providers = cache.getAll(ProcessDescriptor.class, providerIds)
+			.values().stream()
+			.sorted((p1, p2) -> Strings.compare(Labels.name(p1), Labels.name(p2)))
+			.toList();
+		var array = new ProcessDescriptor[providers.size() + 1];
+		for (int i = 0; i < providers.size(); i++) {
+			array[i + 1] = providers.get(i);
+		}
+		return array;
 	}
 
 	@Override
 	protected ProcessDescriptor getItem(Exchange e) {
-		if (e.defaultProviderId == 0)
-			return null;
-		return cache.get(ProcessDescriptor.class, e.defaultProviderId);
+		return e.defaultProviderId != 0
+			? cache.get(ProcessDescriptor.class, e.defaultProviderId)
+			: null;
 	}
 
 	@Override
 	protected String getText(ProcessDescriptor d) {
-		if (d == null)
-			return M.None;
-		return Labels.name(d);
+		return d != null
+			? Labels.name(d)
+			: "";
 	}
 
 	@Override
 	protected void setItem(Exchange e, ProcessDescriptor d) {
-		if (d == null)
-			e.defaultProviderId = 0;
-		else
-			e.defaultProviderId = d.id;
+		long next = d != null ? d.id : 0L;
+		if (next == e.defaultProviderId)
+			return;
+		e.defaultProviderId = next;
 		editor.setDirty(true);
 	}
 
-	private Set<Long> getProcessIds(Exchange e) {
+	private Set<Long> getProviderIds(Exchange e) {
 		if (e == null || e.flow == null)
 			return Collections.emptySet();
-		FlowDao dao = new FlowDao(db);
-		if (e.isInput)
-			return dao.getWhereOutput(e.flow.id);
-		else
-			return dao.getWhereInput(e.flow.id);
+		var dao = new FlowDao(db);
+		return e.isInput
+			? dao.getWhereOutput(e.flow.id)
+			: dao.getWhereInput(e.flow.id);
 	}
 }

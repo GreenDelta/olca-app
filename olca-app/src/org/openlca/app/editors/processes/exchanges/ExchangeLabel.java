@@ -19,7 +19,6 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
@@ -50,9 +49,13 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 				: Images.get(e.flow);
 			case 3 -> Images.get(ModelType.UNIT);
 			case 6 -> getAvoidedCheck(e);
-			case 7 -> e.defaultProviderId != 0
-				? Images.get(ModelType.PROCESS)
-				: null;
+			case 7 -> {
+				if (e.defaultProviderId == 0)
+					yield null;
+				var d = Cache.getEntityCache().get(
+					ProcessDescriptor.class, e.defaultProviderId);
+				yield d != null ? Images.get(d) : null;
+			}
 			case 10 -> Images.get(editor.getComments(), CommentPaths.get(e));
 			default -> null;
 		};
@@ -111,28 +114,26 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 	private String getDefaultProvider(Exchange e) {
 		if (e.defaultProviderId == 0)
 			return null;
-		EntityCache cache = Cache.getEntityCache();
-		ProcessDescriptor p = cache.get(ProcessDescriptor.class,
-			e.defaultProviderId);
-		if (p == null)
-			return null;
-		return Labels.name(p);
+		var cache = Cache.getEntityCache();
+		var p = cache.get(ProcessDescriptor.class, e.defaultProviderId);
+		return p != null
+			? Labels.name(p)
+			: null;
 	}
 
 	private String getAmountText(Exchange e) {
-		if (!showFormulas || e.formula == null) {
-			return Numbers.format(e.amount);
-		}
-		return e.formula;
+		return !showFormulas || e.formula == null
+			? Numbers.format(e.amount)
+			: e.formula;
 	}
 
 	private String getCostValue(Exchange e) {
 		if (e == null || e.costs == null)
 			return null;
-		String unit = e.currency == null ? "" : " " + e.currency.code;
-		if (showFormulas && e.costFormula != null)
-			return e.costFormula + unit;
-		return Numbers.format(e.costs) + unit;
+		var unit = e.currency == null ? "" : " " + e.currency.code;
+		return showFormulas && e.costFormula != null
+			? e.costFormula + unit
+			: Numbers.format(e.costs) + unit;
 	}
 
 	@Override
