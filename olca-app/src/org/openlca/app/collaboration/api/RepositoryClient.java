@@ -1,7 +1,7 @@
 package org.openlca.app.collaboration.api;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
@@ -9,8 +9,6 @@ import org.openlca.app.collaboration.model.Announcement;
 import org.openlca.app.collaboration.model.Comment;
 import org.openlca.app.collaboration.model.Restriction;
 import org.openlca.app.collaboration.util.Comments;
-import org.openlca.app.collaboration.util.WebRequests;
-import org.openlca.app.collaboration.util.WebRequests.Type;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.core.model.ModelType;
 import org.openlca.git.model.ModelRef;
@@ -31,13 +29,10 @@ public class RepositoryClient {
 	}
 
 	public static boolean isCollaborationServer(RepositoryConfig config) {
+		var invocation = new ServerCheckInvocation();
+		invocation.baseUrl = config.apiUrl;
 		try {
-			// TODO find a better way
-			var response = WebRequests.call(Type.GET, config.apiUrl + "/public", null, null);
-			if (response.getStatus() != Status.OK.getStatusCode())
-				return false;
-			var result = response.getEntity(String.class);
-			return result.startsWith("{\"id\":}");
+			return invocation.execute();
 		} catch (WebRequestException e) {
 			return false;
 		}
@@ -56,123 +51,47 @@ public class RepositoryClient {
 	public void logout() throws WebRequestException {
 		if (sessionId == null)
 			return;
-		var invocation = new LogoutInvocation();
-		invocation.baseUrl = config.apiUrl;
-		invocation.sessionId = sessionId;
 		try {
-			invocation.execute();
+			new LogoutInvocation().execute();
 		} catch (WebRequestException e) {
-			if (e.getErrorCode() != Status.UNAUTHORIZED.getStatusCode())
-				if (e.getErrorCode() != Status.CONFLICT.getStatusCode())
-					throw e;
+			if (e.getErrorCode() != Status.UNAUTHORIZED.getStatusCode()
+					&& e.getErrorCode() != Status.CONFLICT.getStatusCode())
+				throw e;
 		}
 		sessionId = null;
 	}
 
+	public File downloadLibrary(String library) throws WebRequestException {
+		return executeLoggedIn(new LibraryDownloadInvocation(library));
+	}
+
 	public boolean hasAccess() throws WebRequestException {
-		var result = executeLoggedIn(() -> {
-			var invocation = new CheckAccessInvocation();
-			invocation.baseUrl = config.apiUrl;
-			invocation.sessionId = sessionId;
-			invocation.repositoryId = config.repositoryId;
-			try {
-				invocation.execute();
-				return true;
-			} catch (WebRequestException e) {
-				if (e.getErrorCode() == Status.FORBIDDEN.getStatusCode())
-					return false;
-				throw e;
-			}
-		});
-		if (result == null)
-			return false;
-		return result;
+		return executeLoggedIn(new CheckAccessInvocation(config.repositoryId));
 	}
 
 	public List<Restriction> checkRestrictions(List<? extends ModelRef> refs) throws WebRequestException {
-		var result = executeLoggedIn(() -> {
-			var invocation = new RestrictionCheckInvocation();
-			invocation.baseUrl = config.apiUrl;
-			invocation.sessionId = sessionId;
-			invocation.repositoryId = config.repositoryId;
-			invocation.refs = refs;
-			return invocation.execute();
-		});
-		if (result == null)
-			return new ArrayList<>();
-		return result;
+		return executeLoggedIn(new RestrictionCheckInvocation(config.repositoryId, refs));
 	}
 
 	public List<Comment> getAllComments() throws WebRequestException {
-		try {
-			return executeLoggedIn(() -> {
-				var invocation = new CommentsInvocation();
-				invocation.baseUrl = config.apiUrl;
-				invocation.sessionId = sessionId;
-				invocation.repositoryId = config.repositoryId;
-				return invocation.execute();
-			});
-		} catch (WebRequestException e) {
-			if (e.isConnectException())
-				return new ArrayList<>();
-			throw e;
-		}
+		return executeLoggedIn(new CommentsInvocation(config.repositoryId));
 	}
 
 	public Comments getComments(ModelType type, String refId) throws WebRequestException {
-		try {
-			return executeLoggedIn(() -> {
-				var invocation = new CommentsInvocation();
-				invocation.baseUrl = config.apiUrl;
-				invocation.sessionId = sessionId;
-				invocation.repositoryId = config.repositoryId;
-				invocation.type = type;
-				invocation.refId = refId;
-				return new Comments(invocation.execute());
-			});
-		} catch (WebRequestException e) {
-			if (e.isConnectException())
-				return new Comments(new ArrayList<>());
-			throw e;
-		}
+		return new Comments(executeLoggedIn(new CommentsInvocation(config.repositoryId, type, refId)));
 	}
 
 	public List<String> listRepositories() throws WebRequestException {
-		return executeLoggedIn(() -> {
-			var invocation = new ListRepositoriesInvocation();
-			invocation.baseUrl = config.apiUrl;
-			invocation.sessionId = sessionId;
-			return invocation.execute();
-		});
+		return executeLoggedIn(new ListRepositoriesInvocation());
 	}
-
-	// TODO migrate to new search api
-	// public SearchResult<DsEntry> search(String query, int page, int pageSize,
-	// ModelType type)
-	// throws WebRequestException {
-	// return executeLoggedIn(() -> {
-	// SearchInvocation invocation = new SearchInvocation();
-	// invocation.baseUrl = config.baseUrl;
-	// invocation.sessionId = sessionId;
-	// invocation.query = query;
-	// invocation.page = page;
-	// invocation.pageSize = pageSize;
-	// invocation.type = type;
-	// invocation.repositoryId = getConfig().repositoryId;
-	// return invocation.execute();
-	// });
-	// }
 
 	public Announcement getAnnouncement() throws WebRequestException {
-		return executeLoggedIn(() -> {
-			var invocation = new AnnouncementInvocation();
-			invocation.baseUrl = config.apiUrl;
-			invocation.sessionId = sessionId;
-			return invocation.execute();
-		});
+		return executeLoggedIn(new AnnouncementInvocation());
 	}
 
-	private <T> T executeLoggedIn(InvocationWithResult<T> runnable) throws WebRequestException {
+	private <T> T executeLoggedIn(Invocation<?, T> invocation) throws WebRequestException {
+		invocation.baseUrl = config.apiUrl;
+		invocation.sessionId = sessionId;
 		if (sessionId == null)
 			try {
 				if (!login())
@@ -184,11 +103,11 @@ public class RepositoryClient {
 				throw e;
 			}
 		try {
-			return runnable.run();
+			return invocation.execute();
 		} catch (WebRequestException e) {
 			if (e.getErrorCode() == Status.UNAUTHORIZED.getStatusCode()) {
 				login();
-				return runnable.run();
+				return invocation.execute();
 			} else {
 				if (e.isConnectException()) {
 					log.warn("Could not connect to repository server " + config.serverUrl + ", " + e.getMessage());
@@ -199,18 +118,13 @@ public class RepositoryClient {
 	}
 
 	public void close() {
-		if (sessionId != null) {
-			try {
-				logout();
-			} catch (WebRequestException e) {
-				log.error("Error logging out from repository", e);
-			}
+		if (sessionId == null)
+			return;
+		try {
+			logout();
+		} catch (WebRequestException e) {
+			log.error("Error logging out from repository", e);
 		}
-
-	}
-
-	private interface InvocationWithResult<T> {
-		public T run() throws WebRequestException;
 	}
 
 }

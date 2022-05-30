@@ -19,17 +19,10 @@ import com.sun.jersey.api.client.ClientResponse.Status;
  */
 class LoginInvocation {
 
-	private static final String PATH = "/public/login";
+	private static final String PATH = "public/login";
 	String baseUrl;
 	GitCredentialsProvider credentials;
 
-	/**
-	 * Login with the specified credentials
-	 * 
-	 * @throws WebRequestException
-	 *             if the credentials were invalid or the user is already logged
-	 *             in
-	 */
 	String execute() throws WebRequestException {
 		var response = _execute(credentials.token);
 		if (response.getStatus() != Status.OK.getStatusCode())
@@ -55,7 +48,7 @@ class LoginInvocation {
 		Valid.checkNotEmpty(baseUrl, "base url");
 		Valid.checkNotEmpty(credentials.user, "username");
 		Valid.checkNotEmpty(credentials.password, "password");
-		var url = baseUrl + PATH;
+		var url = baseUrl + "/" + PATH;
 		var data = new HashMap<String, String>();
 		data.put("username", credentials.user);
 		data.put("password", credentials.password);
