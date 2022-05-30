@@ -17,7 +17,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.devtools.SaveScriptDialog;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.db.DbRestoreAction;
-import org.openlca.app.navigation.actions.libraries.MountLibraryAction;
+import org.openlca.app.navigation.actions.libraries.AddLibraryAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.ImportDialog;
 import org.openlca.app.util.Controls;
@@ -102,7 +102,7 @@ public class FileImport {
 			case GEO_JSON -> GeoJsonImportWizard.of(file);
 			case ILCD_ZIP -> ILCDImportWizard.of(file);
 			case JSON_LD_ZIP -> JsonImportWizard.of(file);
-			case LIBRARY_PACKAGE -> MountLibraryAction.run(file);
+			case LIBRARY_PACKAGE -> AddLibraryAction.run(file);
 			case MAPPING_CSV -> importMappingFile(file);
 			case SIMAPRO_CSV -> SimaProCsvImportWizard.of(file);
 			case ZOLCA -> importZOLCA(file);

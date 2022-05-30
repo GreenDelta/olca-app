@@ -29,7 +29,7 @@ import org.openlca.app.navigation.actions.db.DbRestoreAction;
 import org.openlca.app.navigation.actions.db.DbValidationAction;
 import org.openlca.app.navigation.actions.libraries.DeleteLibraryAction;
 import org.openlca.app.navigation.actions.libraries.ExportLibraryAction;
-import org.openlca.app.navigation.actions.libraries.MountLibraryAction;
+import org.openlca.app.navigation.actions.libraries.AddLibraryAction;
 import org.openlca.app.navigation.actions.libraries.OpenLibraryAction;
 import org.openlca.app.navigation.actions.libraries.UseLibraryCategoryAction;
 import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
@@ -89,7 +89,7 @@ public class NavigationMenu extends CommonActionProvider {
 				new DbRenameAction(),
 				new DbDeleteAction(),
 				new DbCloseAction(),
-				new MountLibraryAction());
+				new AddLibraryAction());
 
 		// dev. extensions
 		if (App.runsInDevMode()) {
