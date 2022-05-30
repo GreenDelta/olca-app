@@ -6,8 +6,6 @@ package org.openlca.app.preferences;
  */
 public enum FeatureFlag {
 
-	LIBRARIES("Enable libraries"),
-
 	TAG_RESULTS("Enable contributions by tags in result views"),
 
 	MATRIX_IMAGE_EXPORT("Enable matrix image export");

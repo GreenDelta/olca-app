@@ -36,7 +36,6 @@ import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.ExportAction;
 import org.openlca.app.navigation.actions.NavigationMenu;
-import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.libraries.LibraryExportDialog;
@@ -167,10 +166,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		mappings.add(Actions.create("Open file", MappingTool::openFile));
 
 		// library export
-		if (FeatureFlag.LIBRARIES.isEnabled()) {
-			menu.add(Actions.create(
-				"Library export (experimental)", LibraryExportDialog::show));
-		}
+		menu.add(Actions.create(
+			"Library export (experimental)", LibraryExportDialog::show));
 
 		// openEPD
 		menu.add(Actions.create("Get EPDs from EC3",

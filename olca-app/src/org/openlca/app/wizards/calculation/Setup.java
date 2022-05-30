@@ -1,7 +1,6 @@
 package org.openlca.app.wizards.calculation;
 
 import org.openlca.app.db.Database;
-import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.preferences.Preferences;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.math.data_quality.AggregationType;
@@ -31,8 +30,7 @@ class Setup {
 		var system = target.isProductSystem()
 			? target.asProductSystem()
 			: null;
-		hasLibraries = FeatureFlag.LIBRARIES.isEnabled()
-			&& system != null
+		hasLibraries = system != null
 			&& ProductSystems.hasLibraryLinks(system, db);
 
 		calcSetup = CalculationSetup.contributions(target);

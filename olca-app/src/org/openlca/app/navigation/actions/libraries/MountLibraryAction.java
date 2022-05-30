@@ -25,7 +25,6 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
@@ -47,8 +46,6 @@ public class MountLibraryAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
-		if (!FeatureFlag.LIBRARIES.isEnabled())
-			return false;
 		if (selection.size() != 1)
 			return false;
 		return selection.get(0) instanceof DatabaseElement e
