@@ -13,7 +13,7 @@ import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graph.model.*;
 import org.openlca.app.editors.graph.model.commands.CreateLinkCommand;
 
-abstract class AbstractNodeEditPart<N extends GraphComponent> extends
+public abstract class AbstractNodeEditPart<N extends GraphComponent> extends
 	AbstractComponentEditPart<N> implements NodeEditPart {
 
 	@Override

@@ -24,8 +24,8 @@ abstract public class GraphComponent extends GraphElement {
 	protected List<GraphComponent> children = new ArrayList<>();
 	private GraphComponent parent;
 
-	private List<Link> sourceConnections = new ArrayList<>();
-	private List<Link> targetConnections = new ArrayList<>();
+	private final List<Link> sourceConnections = new ArrayList<>();
+	private final List<Link> targetConnections = new ArrayList<>();
 
 	protected Point location = new Point(0, 0);
 	protected Dimension size = new Dimension(-1, -1);
@@ -51,6 +51,8 @@ abstract public class GraphComponent extends GraphElement {
 	}
 
 	public void setSize(Dimension d) {
+		if (d == null)
+			return;
 		if (size.equals(d))
 			return;
 		size = d;
@@ -82,9 +84,19 @@ abstract public class GraphComponent extends GraphElement {
 		return editor.config;
 	}
 
-	public void removeChild(GraphComponent child) {
-		children.remove(child);
-		firePropertyChange(CHILDREN_PROP, child, null);
+	/**
+	 * Remove a component from this graph.
+	 *
+	 * @param child
+	 *            a non-null component instance;
+	 * @return true, if the component was removed, false otherwise
+	 */
+	public boolean removeChild(GraphComponent child) {
+		if (child != null && children.remove(child)) {
+			firePropertyChange(CHILDREN_PROP, null, child);
+			return true;
+		}
+		return false;
 	}
 
 	public List<? extends GraphComponent> getChildren() {
@@ -118,11 +130,11 @@ abstract public class GraphComponent extends GraphElement {
 	}
 
 	public List<Link> getTargetConnections() {
-		return targetConnections;
+		return new ArrayList<>(targetConnections);
 	}
 
 	public List<Link> getSourceConnections() {
-		return sourceConnections;
+		return new ArrayList<>(sourceConnections);
 	}
 
 	/**

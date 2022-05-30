@@ -4,9 +4,15 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.eclipse.draw2d.*;
+import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
+import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
+import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
+import org.eclipse.gef.requests.GroupRequest;
 import org.openlca.app.editors.graph.model.Link;
 import org.openlca.app.editors.graph.GraphEditor;
+import org.openlca.app.editors.graph.model.commands.DeleteLinkCommand;
 
 public class LinkEditPart extends AbstractConnectionEditPart
 	implements PropertyChangeListener {
@@ -62,7 +68,15 @@ public class LinkEditPart extends AbstractConnectionEditPart
 
 	@Override
 	protected void createEditPolicies() {
-
+		installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE,
+			new ConnectionEndpointEditPolicy());
+		installEditPolicy(
+			EditPolicy.CONNECTION_ROLE, new ConnectionEditPolicy() {
+				@Override
+				protected Command getDeleteCommand(GroupRequest req) {
+					return new DeleteLinkCommand(getModel());
+				}
+			});
 	}
 
 	@Override

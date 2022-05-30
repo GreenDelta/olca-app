@@ -10,6 +10,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.graph.GraphEditor;
 import org.openlca.app.editors.graph.GraphFile;
 import org.openlca.app.editors.graph.layouts.NodeLayoutInfo;
+import org.openlca.app.editors.graph.layouts.TreeLayoutProcessor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
@@ -168,7 +169,7 @@ public class GraphFactory {
 //			if (!outNode.isExpanded(Node.Side.INPUT)
 //				&& !inNode.isExpanded(Node.Side.OUTPUT))
 //				continue;
-			new Link(pLink, inNode, outNode);
+			new Link(pLink, outNode, inNode);
 		}
 	}
 
@@ -229,6 +230,7 @@ public class GraphFactory {
 			if (refNode != null) {
 				graph.addChild(refNode);
 				refNode.expand();
+				initLocation(graph);
 			}
 		}
 		return graph;
@@ -276,4 +278,14 @@ public class GraphFactory {
 		}
 		return null;
 	}
+
+	static void initLocation(Graph graph) {
+		var layoutProcessor = new TreeLayoutProcessor(graph);
+		var map = layoutProcessor.getMoveDeltas();
+		for (Node node : graph.getChildren()) {
+			var delta = map.get(node);
+			node.setLocation(node.getLocation().getTranslated(delta));
+		}
+	}
+
 }

@@ -45,7 +45,7 @@ import org.openlca.app.editors.graphical.action.LayoutMenuAction;
 import org.openlca.app.editors.graphical.command.LayoutCommand;
 import org.openlca.app.editors.graphical.layout.LayoutManager;
 import org.openlca.app.editors.graphical.layout.LayoutType;
-import org.openlca.app.editors.graphical.model.AppEditPartFactory;
+import org.openlca.app.editors.graphical.model.GraphEditPartFactory;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.ProcessNode;
 import org.openlca.app.editors.graphical.model.ProductSystemNode;
@@ -174,7 +174,7 @@ public class GraphEditor extends GraphicalEditor {
 		model = new ProductSystemNode(this);
 		super.configureGraphicalViewer();
 		var viewer = getGraphicalViewer();
-		viewer.setEditPartFactory(new AppEditPartFactory());
+		viewer.setEditPartFactory(new GraphEditPartFactory());
 		viewer.setRootEditPart(new ScalableRootEditPart());
 		var actions = configureActions();
 		var keyHandler = new KeyHandler();

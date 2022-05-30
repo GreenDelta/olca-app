@@ -7,7 +7,7 @@ import org.eclipse.gef.EditPartFactory;
  * A class that handles appropriate object creation (the {@link EditPart}s)
  * depending on what is to be obtained, no matter what is the object class.
  */
-public class AppEditPartFactory implements EditPartFactory {
+public class GraphEditPartFactory implements EditPartFactory {
 
 	@Override
 	public EditPart createEditPart(EditPart context, Object model) {

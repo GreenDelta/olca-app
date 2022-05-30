@@ -17,7 +17,7 @@ public class Link extends GraphElement {
 	/** True, if the connection is attached to its endpoints. */
 	private boolean isConnected;
 
-	public Link(ProcessLink pLink, GraphComponent target, GraphComponent source) {
+	public Link(ProcessLink pLink, GraphComponent source, GraphComponent target) {
 		processLink = pLink;
 		reconnect(source, target);
 	}
@@ -28,10 +28,6 @@ public class Link extends GraphElement {
 	 * output.
 	 */
 	public void reconnect(GraphComponent newSource, GraphComponent newTarget) {
-		if (newTarget == null || newSource == null) {
-			throw new IllegalArgumentException();
-		}
-
 		disconnect();
 
 		source = adaptComponent(newSource, true);
@@ -61,7 +57,7 @@ public class Link extends GraphElement {
 	}
 
 	/**
-	 * Disconnect this connection from the shapes it is attached to.
+	 * Disconnect this link from the component it is attached to.
 	 */
 	public void disconnect() {
 		if (isConnected) {

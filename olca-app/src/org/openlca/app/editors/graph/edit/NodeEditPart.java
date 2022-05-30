@@ -12,21 +12,27 @@ import org.eclipse.gef.commands.CommandStack;
 import org.openlca.app.editors.graph.figures.GridPos;
 import org.openlca.app.editors.graph.figures.MaximizedNodeFigure;
 import org.openlca.app.editors.graph.figures.MinimizedNodeFigure;
+import org.openlca.app.editors.graph.figures.NodeFigure;
 import org.openlca.app.editors.graph.model.GraphComponent;
 import org.openlca.app.editors.graph.model.Node;
+import org.openlca.app.editors.graph.requests.ExpansionRequest;
+
+import static org.openlca.app.editors.graph.model.Node.Side.INPUT;
+import static org.openlca.app.editors.graph.model.Node.Side.OUTPUT;
 
 abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 
 	@Override
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new MinMaxComponentEditPolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NodeEditPolicy());
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
 		if (GraphComponent.SIZE_PROP.equals(prop)
-			|| GraphComponent.LOCATION_PROP.equals(prop))
+			|| GraphComponent.LOCATION_PROP.equals(prop)
+			|| Node.EXPANSION_PROP.equals(prop))
 			refreshVisuals();
 		else super.propertyChange(evt);
 	}
@@ -48,11 +54,25 @@ abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 			getFigure(), bounds);
 	}
 
+	protected void addButtonActionListener(NodeFigure figure) {
+		figure.inputExpandButton.addActionListener($ -> {
+			var command = getCommand(new ExpansionRequest(getModel(), INPUT));
+			getViewer().getEditDomain().getCommandStack().execute(command);
+		});
+
+		figure.outputExpandButton.addActionListener($ -> {
+			var command = getCommand(new ExpansionRequest(getModel(), OUTPUT));
+			getViewer().getEditDomain().getCommandStack().execute(command);
+		});
+	}
+
 	public static class Maximized extends NodeEditPart {
 
 		@Override
 		protected IFigure createFigure() {
-			return new MaximizedNodeFigure(getModel());
+			var figure = new MaximizedNodeFigure(getModel());
+			addButtonActionListener(figure);
+			return figure;
 		}
 
 		@Override
@@ -72,7 +92,9 @@ abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 
 		@Override
 		protected IFigure createFigure() {
-			return new MinimizedNodeFigure(getModel());
+			var figure = new MinimizedNodeFigure(getModel());
+			addButtonActionListener(figure);
+			return figure;
 		}
 
 		@Override

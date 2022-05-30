@@ -32,11 +32,12 @@ class GraphDropListener extends DropTargetAdapter {
 
 	@Override
 	public void drop(DropTargetEvent e) {
+		System.out.println("In drop");
 		var transfer = ModelTransfer.getInstance();
 		if (!transfer.isSupportedType(e.currentDataType))
 			return;
 
-		var graphModel = editor.getModel();
+		var graph = editor.getModel();
 		var productSystem = editor.getProductSystem();
 		var graphFactory = editor.getGraphFactory();
 		var location = editor.getGraphicalViewer()
@@ -45,19 +46,25 @@ class GraphDropListener extends DropTargetAdapter {
 
 		var added = new AtomicBoolean(false);
 		ModelTransfer.getDescriptors(e.data)
-				.stream()
-				.filter(d -> d instanceof RootDescriptor
-						&& !productSystem.processes.contains(d.id)
-						&& (d.type == ModelType.PROCESS
-						|| d.type == ModelType.PRODUCT_SYSTEM
-						|| d.type == ModelType.RESULT))
-				.map(d -> (RootDescriptor) d)
-				.map(d -> {
+			.stream()
+			.peek(d -> System.out.println("!productSystem.processes.contains(d.id)" + !productSystem.processes.contains(d.id)))
+			.filter(d -> d instanceof RootDescriptor
+				&& !productSystem.processes.contains(d.id)
+				&& (d.type == ModelType.PROCESS
+				|| d.type == ModelType.PRODUCT_SYSTEM
+				|| d.type == ModelType.RESULT))
+			.map(d -> {
+				System.out.println("Her1e");
+				return (RootDescriptor) d;
+			})
+			.map(d -> {
+				System.out.println("Here");
 					productSystem.processes.add(d.id);
 					var info = new NodeLayoutInfo(new Point(location.x, location.y),
 						null, true, false, false);
 					var node = graphFactory.createNode(d, info);
-					graphModel.addChild(node);
+					System.out.println("Add node" + node);
+					graph.addChild(node);
 					return node;
 				})
 				.forEach(node -> {

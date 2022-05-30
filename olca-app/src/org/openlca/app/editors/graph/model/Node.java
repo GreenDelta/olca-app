@@ -23,19 +23,19 @@ import java.util.List;
  */
 public class Node extends MinMaxGraphComponent {
 
+	public static final String EXPANSION_PROP = "expansion";
+
 	public static final Dimension DEFAULT_MINIMIZED_SIZE = new Dimension(250, 25);
 	public static final Dimension DEFAULT_MAXIMIZED_SIZE = new Dimension(250, -1);
 
 	public final RootDescriptor descriptor;
-	private final ProcessExpander inputProcessExpander;
-	private final ProcessExpander outputProcessExpander;
+	private final Expander inputExpander = new Expander(Side.INPUT);
+	private final Expander outputExpander = new Expander(Side.OUTPUT);
 
 	public Node(RootDescriptor descriptor, GraphEditor editor) {
 		super(editor);
 		this.descriptor = descriptor;
 		setSize(isMinimized() ? DEFAULT_MINIMIZED_SIZE : DEFAULT_MAXIMIZED_SIZE);
-		inputProcessExpander = new ProcessExpander(Side.INPUT);
-		outputProcessExpander = new ProcessExpander(Side.OUTPUT);
 	}
 
 	public ExchangeItem getOutput(ProcessLink link) {
@@ -97,6 +97,10 @@ public class Node extends MinMaxGraphComponent {
 		addChild(panes.get(OUTPUT_PROP), 1);
 	}
 
+	public Graph getGraph() {
+		return (Graph) getParent();
+	}
+
 	@SuppressWarnings("unchecked")
 	public HashMap<String, IOPane> getIOPanes() {
 		HashMap<String, IOPane> map = new HashMap<>();
@@ -122,10 +126,6 @@ public class Node extends MinMaxGraphComponent {
 		return list;
 	}
 
-	public Graph getGraph() {
-		return (Graph) getParent();
-	}
-
 	public boolean isEditable() {
 		if (descriptor instanceof ProcessDescriptor p) {
 			return !p.isFromLibrary() && p.processType == ProcessType.UNIT_PROCESS;
@@ -133,10 +133,10 @@ public class Node extends MinMaxGraphComponent {
 		return false;
 	}
 
-	public ProcessExpander processExpanderOf(Side side) {
+	public Expander expanderOf(Side side) {
 		return side.equals(Side.INPUT)
-			? inputProcessExpander
-			: outputProcessExpander;
+			? inputExpander
+			: outputExpander;
 	}
 
 	public void collapse() {
@@ -147,45 +147,45 @@ public class Node extends MinMaxGraphComponent {
 	public void collapse(Side side) {
 		if (!isExpanded(side))
 			return;
-		processExpanderOf(side).collapse(this);
+		expanderOf(side).collapse(this);
 	}
 
 	/**
 	 * Used to avoid removing the initial node while collapsing, should only be
-	 * called from within ProcessExpander.collapse
+	 * called from within Expander.collapse
 	 */
 	public void collapse(Side side, Node initialNode) {
 		if (!isExpanded(side))
 			return;
-		processExpanderOf(side).collapse(initialNode);
+		expanderOf(side).collapse(initialNode);
 	}
 
 	public void expand() {
 		for (Side side: Side.values())
-			if (processExpanderOf(side) != null)
+			if (expanderOf(side) != null)
 				expand(side);
 	}
 
 	public void setExpanded(Side side, boolean value) {
 		if (side == null)
 			return;
-		processExpanderOf(side).setExpanded(value);
+		expanderOf(side).setExpanded(value);
 	}
 
 	public void expand(Side side) {
-		processExpanderOf(side).expand();
+		expanderOf(side).expand();
 	}
 
 	public boolean isExpanded(Side side) {
-		if (processExpanderOf(side) == null)
+		if (expanderOf(side) == null)
 			return false;
-		else return processExpanderOf(side).isExpanded();
+		else return expanderOf(side).isExpanded();
 	}
 
-	public boolean shouldProcessExpanderBeVisible(Side side) {
-		if (processExpanderOf(side) == null)
+	public boolean shouldExpanderBeVisible(Side side) {
+		if (expanderOf(side) == null)
 			return false;
-		else return processExpanderOf(side).shouldBeVisible();
+		else return expanderOf(side).canExpand();
 	}
 
 
@@ -200,14 +200,14 @@ public class Node extends MinMaxGraphComponent {
 		INPUT, OUTPUT
 	}
 
-	private class ProcessExpander {
+	private class Expander {
 
 		private final Side side;
 		private boolean expanded;
 		// isCollapsing is used to prevent endless recursion in collapse()
 		private boolean isCollapsing;
 
-		private ProcessExpander(Side side) {
+		private Expander(Side side) {
 			this.side = side;
 		}
 
@@ -216,10 +216,13 @@ public class Node extends MinMaxGraphComponent {
 		}
 
 		public void setExpanded(boolean value) {
-			expanded = value;
+			if (value != expanded) {
+				expanded = value;
+				firePropertyChange(EXPANSION_PROP, null, value);
+			}
 		}
 
-		public boolean shouldBeVisible() {
+		public boolean canExpand() {
 			var graph = getGraph();
 			MutableProcessLinkSearchMap linkSearch = graph.linkSearch;
 			long processId = descriptor.id;
@@ -241,31 +244,9 @@ public class Node extends MinMaxGraphComponent {
 			return false;
 		}
 
-		static boolean canExpand(Node node, Side side) {
-			var graph = node.getGraph();
-			MutableProcessLinkSearchMap linkSearch = graph.linkSearch;
-			long processId = node.descriptor.id;
-			for (ProcessLink link : linkSearch.getLinks(processId)) {
-				FlowType type = graph.flows.type(link.flowId);
-				boolean isProvider = link.providerId == processId;
-				if (side == Side.INPUT) {
-					if (type == FlowType.PRODUCT_FLOW && !isProvider)
-						return true;
-					if (type == FlowType.WASTE_FLOW && isProvider)
-						return true;
-				} else if (side == Side.OUTPUT) {
-					if (type == FlowType.PRODUCT_FLOW && isProvider)
-						return true;
-					if (type == FlowType.WASTE_FLOW && !isProvider)
-						return true;
-				}
-			}
-			return false;
-		}
-
 		private void expand() {
 			createNecessaryNodes();
-			expanded = true;
+			setExpanded(true);
 		}
 
 		private void collapse(Node initialNode) {
@@ -294,7 +275,7 @@ public class Node extends MinMaxGraphComponent {
 				getGraph().removeChild(otherNode);
 			}
 			isCollapsing = false;
-			expanded = false;
+			setExpanded(false);
 		}
 
 		private void createNecessaryNodes() {
@@ -311,17 +292,34 @@ public class Node extends MinMaxGraphComponent {
 				Node inNode;
 				if (isInputNode(type, isProvider)) {
 					inNode = Node.this;
-					outNode = graph.getOrCreateProcessNode(otherID);
-					graph.addChild(outNode);
+					outNode = createNode(otherID);
 				} else if (isOutputNode(type, isProvider)) {
 					outNode = Node.this;
-					inNode = graph.getOrCreateProcessNode(otherID);
-					graph.addChild(inNode);
+					inNode = createNode(otherID);
 				} else {
 					continue;
 				}
-				new Link(pLink, inNode, outNode);
+				new Link(pLink, outNode, inNode);
 			}
+		}
+
+		/**
+		 * Create, if necessary, a node using the <code>GraphFactory</code>.
+		 * @return Return the existent or the newly created <code>Node</code> for
+		 * convenience.
+		 */
+		private Node createNode(long id) {
+			var graph = getGraph();
+
+			// Checking if the node already exists.
+			var node = graph.getProcessNode(id);
+			if (node != null)
+				return node;
+
+			var descriptor = GraphFactory.getDescriptor(id);
+			node = editor.getGraphFactory().createNode(descriptor, null);
+			graph.addChild(node);
+			return node;
 		}
 
 		private boolean isInputNode(FlowType type, boolean isProvider) {

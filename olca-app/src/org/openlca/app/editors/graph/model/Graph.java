@@ -56,6 +56,7 @@ public class Graph extends GraphComponent {
 
 	public Node getOrCreateProcessNode(long processID) {
 		var node = getProcessNode(processID);
+		System.out.println("Getting node: " + processID + " is " + node);
 		if (node != null)
 			return node;
 		var descriptor = GraphFactory.getDescriptor(processID);

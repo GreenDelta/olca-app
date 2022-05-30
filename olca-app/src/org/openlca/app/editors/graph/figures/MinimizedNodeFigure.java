@@ -9,7 +9,6 @@ public class MinimizedNodeFigure extends NodeFigure {
 
 	public MinimizedNodeFigure(Node node) {
 		super(node);
-		var name = Labels.name(node.descriptor);
 		var theme = node.getConfig().getTheme();
 		var box = Theme.Box.of(node);
 

@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graph.actions;
 
 import org.eclipse.gef.NodeEditPart;
+import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
@@ -16,6 +17,7 @@ import static org.eclipse.gef.RequestConstants.REQ_MOVE_CHILDREN;
 
 public class LayoutAction extends SelectionAction {
 
+	public static final String REQ_LAYOUT = "layout";
 	private final GraphEditor graphEditor;
 
 	public LayoutAction(GraphEditor part) {
@@ -40,23 +42,10 @@ public class LayoutAction extends SelectionAction {
 	}
 
 	private Command getCommand() {
+		var request = new Request(REQ_LAYOUT);
 		var registry = graphEditor.getGraphicalViewer().getEditPartRegistry();
 		var graphEditPart = (GraphEditPart) registry.get(graphEditor.getModel());
-
-		CompoundCommand cc = new CompoundCommand();
-		cc.setLabel(NLS.bind(M.LayoutAs, M.Tree));
-
-		var layoutProcessor = new TreeLayoutProcessor(graphEditor.getModel());
-		var mapNodeToMoveDelta = layoutProcessor.getMoveDeltas();
-
-		for (Node node : graphEditor.getModel().getChildren()) {
-			var part = (NodeEditPart) registry.get(node);
-			var request = new ChangeBoundsRequest(REQ_MOVE_CHILDREN);
-			request.setEditParts(part);
-			request.setMoveDelta(mapNodeToMoveDelta.get(node));
-			cc.add(graphEditPart.getCommand(request));
-		}
-		return cc;
+		return graphEditPart.getCommand(request);
 	}
 
 }

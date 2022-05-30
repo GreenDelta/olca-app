@@ -9,13 +9,21 @@ import org.openlca.app.editors.graph.themes.Theme;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 
+import static org.openlca.app.editors.graph.model.Node.Side.INPUT;
+import static org.openlca.app.editors.graph.model.Node.Side.OUTPUT;
+
 public class NodeFigure extends Figure {
 
 	final Node node;
 	public final static Dimension HEADER_ARC_SIZE = new Dimension(15, 15);
+	public final PlusMinusButton inputExpandButton;
+	public final PlusMinusButton outputExpandButton;
 
 	public NodeFigure(Node node) {
 		this.node = node;
+		inputExpandButton = new PlusMinusButton(node, INPUT);
+		outputExpandButton = new PlusMinusButton(node, OUTPUT);
+
 		var name = Labels.name(node.descriptor);
 
 		setToolTip(new Label(name));
@@ -32,9 +40,7 @@ public class NodeFigure extends Figure {
 			layout.marginWidth = 0;
 			setLayoutManager(layout);
 
-			var button1 = new ProcessExpanderButton();
-			button1.setEnabled(true);
-			add(button1, new GridData(SWT.LEAD, SWT.CENTER, false, true));
+			add(inputExpandButton, new GridData(SWT.LEAD, SWT.CENTER, false, true));
 
 			add(new ImageFigure(Images.get(node.descriptor)), new GridData(SWT.LEAD, SWT.CENTER, false, true));
 
@@ -42,9 +48,7 @@ public class NodeFigure extends Figure {
 			label.setForegroundColor(theme.boxFontColor(box));
 			add(label, new GridData(SWT.LEAD, SWT.CENTER, true, true));
 
-			var button = new ProcessExpanderButton();
-			button.setEnabled(true);
-			add(button, new GridData(SWT.TRAIL, SWT.CENTER, false, true));
+			add(outputExpandButton, new GridData(SWT.TRAIL, SWT.CENTER, false, true));
 
 			setBackgroundColor(theme.boxBackgroundColor(box));
 			setOpaque(true);

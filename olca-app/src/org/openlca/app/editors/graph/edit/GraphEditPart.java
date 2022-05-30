@@ -8,6 +8,7 @@ import org.openlca.app.editors.graph.layouts.TreeConnectionRouter;
 import org.openlca.app.editors.graph.model.Graph;
 
 import java.beans.PropertyChangeEvent;
+import java.util.List;
 
 import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
 
@@ -85,6 +86,12 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 					: ConnectionRouter.NULL;
 		cLayer.setConnectionRouter(connectionRouter);
 		super.refreshVisuals();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<NodeEditPart> getChildren() {
+		return (List<NodeEditPart>) super.getChildren();
 	}
 
 }

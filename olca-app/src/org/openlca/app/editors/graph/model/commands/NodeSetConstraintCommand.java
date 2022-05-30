@@ -41,10 +41,10 @@ public class NodeSetConstraintCommand extends Command {
 		Object type = request.getType();
 		if (RequestConstants.REQ_RESIZE_CHILDREN.equals(type)
 		|| RequestConstants.REQ_RESIZE.equals(type))
-			setLabel("Resize");
+			setLabel("resize node");
 		else if (RequestConstants.REQ_MOVE_CHILDREN.equals(type)
 		|| RequestConstants.REQ_MOVE.equals(type))
-			setLabel("Move");
+			setLabel("move node");
 		else setLabel("");
 	}
 
