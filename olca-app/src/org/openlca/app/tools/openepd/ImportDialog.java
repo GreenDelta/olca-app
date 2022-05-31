@@ -27,13 +27,13 @@ import org.openlca.core.model.Epd;
 import org.openlca.io.UnitMapping;
 import org.openlca.io.openepd.EpdDoc;
 import org.openlca.io.openepd.input.EpdImport;
-import org.openlca.io.openepd.input.ImpactMapping;
+import org.openlca.io.openepd.mapping.MappingModel;
 
 public class ImportDialog extends FormDialog {
 
 	final IDatabase db;
 	final EpdDoc epdDoc;
-	final ImpactMapping mapping;
+	final MappingModel mapping;
 	private final AtomicBoolean mappingChanged = new AtomicBoolean(false);
 
 	public static int show(EpdDoc doc) {
@@ -54,7 +54,7 @@ public class ImportDialog extends FormDialog {
 		return new ImportDialog(doc, db, mapping).open();
 	}
 
-	private ImportDialog(EpdDoc epdDoc, IDatabase db, ImpactMapping mapping) {
+	private ImportDialog(EpdDoc epdDoc, IDatabase db, MappingModel mapping) {
 		super(UI.shell());
 		this.epdDoc = Objects.requireNonNull(epdDoc);
 		this.db = Objects.requireNonNull(db);

@@ -30,13 +30,14 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.openepd.input.ImpactMapping;
 import org.openlca.io.openepd.input.IndicatorKey;
+import org.openlca.io.openepd.mapping.MappingModel;
 import org.openlca.util.Strings;
 
 class ImpactSection {
 
 	private final ImportDialog dialog;
 	private final String methodCode;
-	private final ImpactMapping mapping;
+	private final MappingModel mapping;
 	private TableViewer table;
 
 	private ImpactSection(ImportDialog dialog, String methodCode) {

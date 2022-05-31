@@ -103,7 +103,7 @@ record MappingSection(MethodMapping model) {
 				.getColumn(i)
 				.setAlignment(SWT.CENTER);
 		}
-		table.setInput(model.rows());
+		table.setInput(model.entries());
 
 		var modifier = new ModifySupport<IndicatorMapping>(table)
 			.bind("Factor", new FactorColumn())

@@ -9,58 +9,64 @@ import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.openepd.EpdDoc;
-import org.openlca.io.openepd.input.ImpactMapping;
+import org.openlca.io.openepd.mapping.MappingModel;
 
 record ImpactMappings(IDatabase db, EpdDoc doc) {
 
-	static ImpactMapping askCreate(IDatabase db, EpdDoc doc) {
+	static MappingModel askCreate(IDatabase db, EpdDoc doc) {
 		return new ImpactMappings(db, doc).runCheck();
 	}
 
-	private ImpactMapping runCheck() {
+	private MappingModel runCheck() {
 
 		// create and check default mapping
-		var mapping = ImpactMapping.init(doc, db);
-		var candidates = new HashSet<String>();
-		for (var e : mapping.map().entrySet()) {
-			var m = e.getValue();
-			if (m.isEmpty()) {
-				candidates.add(e.getKey());
+		var mapping = MappingModel.initFrom(doc, db);
+		var unmapped = new HashSet<String>();
+		for (var m : mapping.mappings()) {
+			if (m.epdMethod() == null)
+				continue;
+			if (m.method() == null) {
+				unmapped.add(m.epdMethod().code());
 			}
 		}
-		if (candidates.isEmpty())
+		if (unmapped.isEmpty())
 			return mapping;
 
 		// ask to create
 		var q = "The EPD data set contains one or more unknown LCIA methods: "
-			+ String.join(", ", candidates) + ". Do you want to create default"
+			+ String.join(", ", unmapped) + ". Do you want to create default"
 			+ "LCIA methods and indicators?";
 		if (!Question.ask("Create default LCIA method(s)?", q))
 			return mapping;
 
 		var methodCategory = CategoryDao.sync(
 			db, ModelType.IMPACT_METHOD, "openEPD");
-		for (var code : candidates) {
-			var m = mapping.getMethodMapping(code);
-			var method = ImpactMethod.of(code);
-			method.code = code;
+		for (var m : mapping.mappings()) {
+			if (m.epdMethod() == null || m.method() != null)
+				continue;
+			var methodCode = m.epdMethod().code();
+			var method = ImpactMethod.of(methodCode);
+			method.code = methodCode;
 			method.category = methodCategory;
 			var indicatorCategory = CategoryDao.sync(
-				db, ModelType.IMPACT_CATEGORY, "openEPD", code);
-			for (var im : m.indicatorMappings()) {
-				if (im.code() == null)
+				db, ModelType.IMPACT_CATEGORY, "openEPD", methodCode);
+			for (var entry : m.entries()) {
+				if (entry.epdIndicator() == null)
 					continue;
+				var impactCode = entry.epdIndicator().code();
 				var impact = ImpactCategory.of(
-					code + " - " + im.code().toUpperCase(), im.unit());
-				impact.code = im.code();
+					impactCode.toUpperCase(),
+					entry.epdIndicator().unit());
+				impact.code = impactCode;
 				impact.category = indicatorCategory;
 				impact = db.insert(impact);
 				method.impactCategories.add(impact);
+				entry.indicator(impact);
 			}
-			db.insert(method);
+			m.method(db.insert(method));
 		}
 
-		return ImpactMapping.init(doc, db);
+		return mapping;
 	}
 
 }
