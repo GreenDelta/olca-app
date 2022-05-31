@@ -9,11 +9,11 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.api.RepositoryConfig;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
+import org.openlca.app.db.Repository;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -100,7 +100,7 @@ public class DbDeleteAction extends Action implements INavigationAction {
 		File dbFolder = DatabaseDir.getRootFolder(config.name());
 		if (dbFolder.isDirectory())
 			Dirs.delete(dbFolder);
-		File gitFolder = RepositoryConfig.getGitDir(config);
+		File gitFolder = Repository.gitDir(config.name());
 		if (gitFolder.isDirectory())
 			Dirs.delete(gitFolder);
 		if (config instanceof DerbyConfig)

@@ -13,13 +13,13 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.api.RepositoryConfig;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.MySQLDatabaseExport;
+import org.openlca.app.db.Repository;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -124,7 +124,7 @@ public class DbExportAction extends Action implements INavigationAction {
 
 	private boolean exclude(String relativePath) {
 		return relativePath.startsWith(
-				DatabaseDir.FILE_STORAGE + File.separator + RepositoryConfig.GIT_DIR);
+				DatabaseDir.FILE_STORAGE + File.separator + Repository.GIT_DIR);
 	}
 
 	private void updateUI(File zip, boolean active) {

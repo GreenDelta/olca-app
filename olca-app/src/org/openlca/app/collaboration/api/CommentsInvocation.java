@@ -57,6 +57,8 @@ class CommentsInvocation extends Invocation<Map<String, Object>, List<Comment>> 
 
 	@Override
 	protected List<Comment> process(Map<String, Object> data) {
+		if (data == null)
+			return new ArrayList<>();
 		var field = type != null && refId != null ? "comments" : "data";
 		return parseComments(data.get(field));
 	}

@@ -48,6 +48,9 @@ public class PullAction extends Action implements INavigationAction {
 			if (!newCommits.isEmpty()) {
 				new HistoryDialog("Fetched commits", newCommits).open();
 			}
+			var libraryResolver = WorkspaceLibraryResolver.forRemote(repo.git);
+			if (libraryResolver == null)
+				return;
 			var conflictResolver = Conflicts.resolve(Constants.REMOTE_REF, false);
 			if (conflictResolver == null)
 				return;
@@ -56,9 +59,14 @@ public class PullAction extends Action implements INavigationAction {
 					.into(Database.get())
 					.update(repo.workspaceIds)
 					.as(credentials.ident)
-					.resolveConflictsWith(conflictResolver));
-			if (!changed) {
+					.resolveConflictsWith(conflictResolver)
+					.resolveLibrariesWith(libraryResolver));
+			if (changed == null || changed)
+				return;
+			if (newCommits.isEmpty()) {
 				MsgBox.info("No commits to fetch - Everything up to date");
+			} else {
+				MsgBox.info("No changes to merge");
 			}
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error pulling data", e);

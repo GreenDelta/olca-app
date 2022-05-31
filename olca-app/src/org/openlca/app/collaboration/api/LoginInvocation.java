@@ -30,13 +30,13 @@ class LoginInvocation {
 		var result = response.getEntity(String.class);
 		var repo = Repository.get();
 		if ("tokenRequired".equals(result)) {
-			repo.setUseTwoFactorAuth(true);
+			repo.useTwoFactorAuth(true);
 			var auth = AuthenticationDialog.promptToken();
 			if (auth == null)
 				return null;
 			response = _execute(auth.token);
 		} else if (Strings.nullOrEmpty(credentials.token)) {
-			repo.setUseTwoFactorAuth(false);
+			repo.useTwoFactorAuth(false);
 		}
 		for (var cookie : response.getCookies())
 			if (cookie.getName().equals("JSESSIONID"))

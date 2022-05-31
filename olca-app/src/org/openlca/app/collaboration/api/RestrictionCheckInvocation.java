@@ -20,7 +20,7 @@ class RestrictionCheckInvocation extends Invocation<List<Restriction>, List<Rest
 
 	RestrictionCheckInvocation(String repositoryId, List<? extends ModelRef> refs) {
 		super(Type.POST, "restrictions", new TypeToken<List<Restriction>>() {
-		}.getType());
+		});
 		this.repositoryId = repositoryId;
 		this.refs = refs;
 	}
@@ -38,16 +38,13 @@ class RestrictionCheckInvocation extends Invocation<List<Restriction>, List<Rest
 
 	@Override
 	protected Object data() {
-		return refs.stream().map(d -> d.refId);
-	}
-
-	@Override
-	protected List<Restriction> defaultValue() {
-		return new ArrayList<Restriction>();
+		return refs.stream().map(d -> d.refId).toList();
 	}
 
 	@Override
 	protected List<Restriction> process(List<Restriction> restrictions) {
+		if (restrictions == null)
+			return new ArrayList<>();
 		restrictions.forEach(r -> {
 			var ref = refs.stream()
 					.filter(d -> d.refId.equals(r.datasetRefId))

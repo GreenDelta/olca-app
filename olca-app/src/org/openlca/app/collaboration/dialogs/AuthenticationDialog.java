@@ -41,7 +41,7 @@ public class AuthenticationDialog extends FormDialog {
 		password = auth.password();
 		var token = auth.token();
 		repo.setUser(user);
-		repo.setPassword(password);
+		repo.password(password);
 		return new GitCredentialsProvider(user, password, token);
 	}
 

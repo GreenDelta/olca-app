@@ -10,12 +10,12 @@ public class ServerCheckInvocation extends Invocation<Map<String, Integer>, Bool
 
 	protected ServerCheckInvocation() {
 		super(Type.GET, "public", new TypeToken<Map<String, Integer>>() {
-		}.getType());
+		});
 	}
 
 	@Override
 	protected Boolean process(Map<String, Integer> currentUser) {
-		return currentUser.get("id") == 0;
+		return currentUser != null && currentUser.get("id") == 0;
 	}
 
 }

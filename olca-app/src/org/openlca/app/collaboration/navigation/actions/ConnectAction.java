@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.api.RepositoryConfig;
 import org.openlca.app.collaboration.dialogs.ConnectDialog;
 import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.db.Database;
@@ -28,9 +27,9 @@ public class ConnectAction extends Action implements INavigationAction {
 			return;
 		var url = dialog.url();
 		try {
-			var gitDir = RepositoryConfig.getGitDir(Database.get());
+			var gitDir = Repository.gitDir(Database.get().getName());
 			GitInit.in(gitDir).remoteUrl(url).run();
-			var repo = Repository.connect(Database.get());
+			var repo = Repository.initialize(Database.get());
 			repo.setUser(dialog.user());
 			Announcements.check();
 		} catch (Exception e) {

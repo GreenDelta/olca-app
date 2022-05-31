@@ -9,25 +9,30 @@ import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.sun.jersey.api.client.ClientResponse.Status;
 
 abstract class Invocation<E, T> {
 
 	private final Type type;
 	private final String path;
+	private final TypeToken<E> entityType;
 	private final Class<E> entityClass;
 	protected String baseUrl;
 	protected String sessionId;
 
-	@SuppressWarnings("unchecked")
-	protected Invocation(Type type, String path, java.lang.reflect.Type classType) {
-		this(type, path, (Class<E>) classType);
+	protected Invocation(Type type, String path, TypeToken<E> entityType) {
+		this.type = type;
+		this.path = path;
+		this.entityClass = null;
+		this.entityType = entityType;
 	}
 
 	protected Invocation(Type type, String path, Class<E> entityClass) {
 		this.type = type;
 		this.path = path;
 		this.entityClass = entityClass;
+		this.entityType = null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -42,18 +47,21 @@ abstract class Invocation<E, T> {
 		try {
 			var response = WebRequests.call(type, url, sessionId, data());
 			if (response.getStatus() == Status.NO_CONTENT.getStatusCode())
-				return null;
-			if (InputStream.class.isAssignableFrom(entityClass))
+				return process(null);
+			if (entityClass != null && InputStream.class.isAssignableFrom(entityClass))
 				return process((E) response.getEntityInputStream());
 			var string = response.getEntity(String.class);
 			if (Strings.nullOrEmpty(string))
-				return defaultValue();
-			if (entityClass == null || entityClass == String.class)
+				return process(null);
+			if (entityType == null && (entityClass == null || entityClass == String.class))
 				return process((E) string);
-			return process(new Gson().fromJson(string, entityClass));
+			if (entityType == null)
+				return process(new Gson().fromJson(string, entityClass));
+			return process(new Gson().fromJson(string, entityType.getType()));
 		} catch (WebRequestException e) {
-			handleError(e);
-			return null;
+			if (e.getErrorCode() == Status.NOT_FOUND.getStatusCode())
+				return null;
+			return handleError(e);
 		}
 	}
 
@@ -71,11 +79,6 @@ abstract class Invocation<E, T> {
 		return null;
 	}
 
-	protected T defaultValue() {
-		// subclasses may override
-		return null;
-	}
-
 	@SuppressWarnings("unchecked")
 	protected T process(E response) {
 		// subclasses may override
@@ -84,7 +87,7 @@ abstract class Invocation<E, T> {
 
 	protected T handleError(WebRequestException e) throws WebRequestException {
 		// subclasses may override
-		return null;
+		throw e;
 	}
 
 }

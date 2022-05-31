@@ -20,7 +20,7 @@ class CheckAccessInvocation extends Invocation<Map<String, Integer>, Boolean> {
 
 	CheckAccessInvocation(String repositoryId) {
 		super(Type.GET, "repository/meta", new TypeToken<Map<String, Integer>>() {
-		}.getType());
+		});
 		this.repositoryId = repositoryId;
 	}
 
@@ -37,6 +37,8 @@ class CheckAccessInvocation extends Invocation<Map<String, Integer>, Boolean> {
 	@Override
 	protected Boolean process(Map<String, Integer> meta) {
 		var currentVersion = SchemaVersion.current().value();
+		if (meta == null)
+			throw new RuntimeException("Unknown schema version, does not match current version " + currentVersion);
 		var version = meta.get("schemaVersion");
 		if (currentVersion != version)
 			throw new RuntimeException(

@@ -1,7 +1,7 @@
 package org.openlca.app.collaboration.api;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
@@ -21,34 +21,97 @@ public class RepositoryClient {
 
 	private static final Logger log = LoggerFactory.getLogger(RepositoryClient.class);
 	public static final String API_VERSION = "2.0.0";
-	public final RepositoryConfig config;
+	private final String serverUrl;
+	private final String apiUrl;
+	private final String repositoryId;
 	private String sessionId;
 
-	public RepositoryClient(RepositoryConfig config) throws IOException {
-		this.config = config;
+	public RepositoryClient(String serverUrl, String repositoryId) throws IOException {
+		this.serverUrl = serverUrl;
+		this.apiUrl = serverUrl + "/ws";
+		this.repositoryId = repositoryId;
 	}
 
-	public static boolean isCollaborationServer(RepositoryConfig config) {
+	public boolean isCollaborationServer() throws WebRequestException {
 		var invocation = new ServerCheckInvocation();
-		invocation.baseUrl = config.apiUrl;
+		invocation.baseUrl = apiUrl;
+		return invocation.execute();
+	}
+
+	public Announcement getAnnouncement() throws WebRequestException {
+		var invocation = new AnnouncementInvocation();
+		invocation.baseUrl = apiUrl;
+		return invocation.execute();
+	}
+
+	public InputStream downloadLibrary(String library) throws WebRequestException {
+		return executeLoggedIn(new LibraryDownloadInvocation(library));
+	}
+
+	public boolean hasAccess() throws WebRequestException {
+		return executeLoggedIn(new CheckAccessInvocation(repositoryId));
+	}
+
+	public List<Restriction> checkRestrictions(List<? extends ModelRef> refs) throws WebRequestException {
+		return executeLoggedIn(new RestrictionCheckInvocation(repositoryId, refs));
+	}
+
+	public List<Comment> getAllComments() throws WebRequestException {
+		return executeLoggedIn(new CommentsInvocation(repositoryId));
+	}
+
+	public Comments getComments(ModelType type, String refId) throws WebRequestException {
+		return new Comments(executeLoggedIn(new CommentsInvocation(repositoryId, type, refId)));
+	}
+
+	private <T> T executeLoggedIn(Invocation<?, T> invocation) throws WebRequestException {
+		invocation.baseUrl = apiUrl;
+		if (sessionId == null && !login())
+			return null;
+		invocation.sessionId = sessionId;
 		try {
 			return invocation.execute();
 		} catch (WebRequestException e) {
-			return false;
+			if (e.getErrorCode() == Status.UNAUTHORIZED.getStatusCode()) {
+				if (!login())
+					return null;
+				invocation.sessionId = sessionId;
+				return invocation.execute();
+			} else if (e.isConnectException()) {
+				log.warn("Could not connect to repository server " + serverUrl + ", " + e.getMessage());
+				return null;
+			}
+			throw e;
 		}
 	}
 
 	private boolean login() throws WebRequestException {
 		var invocation = new LoginInvocation();
-		invocation.baseUrl = config.apiUrl;
+		invocation.baseUrl = apiUrl;
 		invocation.credentials = AuthenticationDialog.promptCredentials();
 		if (invocation.credentials == null)
 			return false;
-		sessionId = invocation.execute();
+		try {
+			sessionId = invocation.execute();
+		} catch (WebRequestException e) {
+			if (e.isConnectException()) {
+				log.warn("Could not connect to repository server " + serverUrl + ", " + e.getMessage());
+				return false;
+			}
+			throw e;
+		}
 		return sessionId != null;
 	}
 
-	public void logout() throws WebRequestException {
+	public void close() {
+		try {
+			logout();
+		} catch (WebRequestException e) {
+			log.error("Error logging out from repository", e);
+		}
+	}
+
+	private void logout() throws WebRequestException {
 		if (sessionId == null)
 			return;
 		try {
@@ -60,71 +123,4 @@ public class RepositoryClient {
 		}
 		sessionId = null;
 	}
-
-	public File downloadLibrary(String library) throws WebRequestException {
-		return executeLoggedIn(new LibraryDownloadInvocation(library));
-	}
-
-	public boolean hasAccess() throws WebRequestException {
-		return executeLoggedIn(new CheckAccessInvocation(config.repositoryId));
-	}
-
-	public List<Restriction> checkRestrictions(List<? extends ModelRef> refs) throws WebRequestException {
-		return executeLoggedIn(new RestrictionCheckInvocation(config.repositoryId, refs));
-	}
-
-	public List<Comment> getAllComments() throws WebRequestException {
-		return executeLoggedIn(new CommentsInvocation(config.repositoryId));
-	}
-
-	public Comments getComments(ModelType type, String refId) throws WebRequestException {
-		return new Comments(executeLoggedIn(new CommentsInvocation(config.repositoryId, type, refId)));
-	}
-
-	public List<String> listRepositories() throws WebRequestException {
-		return executeLoggedIn(new ListRepositoriesInvocation());
-	}
-
-	public Announcement getAnnouncement() throws WebRequestException {
-		return executeLoggedIn(new AnnouncementInvocation());
-	}
-
-	private <T> T executeLoggedIn(Invocation<?, T> invocation) throws WebRequestException {
-		invocation.baseUrl = config.apiUrl;
-		invocation.sessionId = sessionId;
-		if (sessionId == null)
-			try {
-				if (!login())
-					return null;
-			} catch (WebRequestException e) {
-				if (e.isConnectException()) {
-					log.warn("Could not connect to repository server " + config.serverUrl + ", " + e.getMessage());
-				}
-				throw e;
-			}
-		try {
-			return invocation.execute();
-		} catch (WebRequestException e) {
-			if (e.getErrorCode() == Status.UNAUTHORIZED.getStatusCode()) {
-				login();
-				return invocation.execute();
-			} else {
-				if (e.isConnectException()) {
-					log.warn("Could not connect to repository server " + config.serverUrl + ", " + e.getMessage());
-				}
-				throw e;
-			}
-		}
-	}
-
-	public void close() {
-		if (sessionId == null)
-			return;
-		try {
-			logout();
-		} catch (WebRequestException e) {
-			log.error("Error logging out from repository", e);
-		}
-	}
-
 }
