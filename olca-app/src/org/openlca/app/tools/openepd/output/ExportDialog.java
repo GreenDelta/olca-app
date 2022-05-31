@@ -1,4 +1,4 @@
-package org.openlca.app.tools.openepd.export;
+package org.openlca.app.tools.openepd.output;
 
 import java.io.File;
 import java.util.List;

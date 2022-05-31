@@ -1,4 +1,4 @@
-package org.openlca.app.tools.openepd;
+package org.openlca.app.tools.openepd.input;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;

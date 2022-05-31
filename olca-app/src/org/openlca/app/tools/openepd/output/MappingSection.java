@@ -1,4 +1,4 @@
-package org.openlca.app.tools.openepd.export;
+package org.openlca.app.tools.openepd.output;
 
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;

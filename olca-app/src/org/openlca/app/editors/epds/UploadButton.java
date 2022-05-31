@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.openepd.export.ExportDialog;
+import org.openlca.app.tools.openepd.output.ExportDialog;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.Epd;

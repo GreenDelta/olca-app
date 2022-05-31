@@ -1,4 +1,4 @@
-package org.openlca.app.tools.openepd.export;
+package org.openlca.app.tools.openepd.output;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
