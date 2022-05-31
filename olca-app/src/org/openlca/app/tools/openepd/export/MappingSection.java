@@ -19,8 +19,8 @@ import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ModelType;
-import org.openlca.io.openepd.mapping.MappingModel;
-import org.openlca.io.openepd.mapping.MappingRow;
+import org.openlca.io.openepd.mapping.IndicatorMapping;
+import org.openlca.io.openepd.mapping.MethodMapping;
 import org.openlca.io.openepd.mapping.Vocab.Indicator;
 import org.openlca.io.openepd.mapping.Vocab.Method;
 import org.openlca.util.Strings;
@@ -28,7 +28,7 @@ import org.openlca.util.Strings;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-record MappingSection(MappingModel model) {
+record MappingSection(MethodMapping model) {
 
 	void render(Composite body, FormToolkit tk) {
 		var title = model.method() != null
@@ -105,7 +105,7 @@ record MappingSection(MappingModel model) {
 		}
 		table.setInput(model.rows());
 
-		var modifier = new ModifySupport<MappingRow>(table)
+		var modifier = new ModifySupport<IndicatorMapping>(table)
 			.bind("Factor", new FactorColumn())
 			.bind("openEPD Indicator", new IndicatorColumn());
 		for (var scope : model.scopes()) {
@@ -118,7 +118,7 @@ record MappingSection(MappingModel model) {
 
 		@Override
 		public Color getForeground(Object obj, int col) {
-			if (!(obj instanceof MappingRow row))
+			if (!(obj instanceof IndicatorMapping row))
 				return null;
 			if (col == 1 || col == 3 || col == 4) {
 				if (row.epdIndicator() != null && row.unit() == null)
@@ -141,7 +141,7 @@ record MappingSection(MappingModel model) {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof MappingRow row))
+			if (!(obj instanceof IndicatorMapping row))
 				return null;
 			var epdInd = row.epdIndicator();
 			return switch (col) {
@@ -170,20 +170,20 @@ record MappingSection(MappingModel model) {
 		}
 	}
 
-	private static class FactorColumn extends DoubleCellModifier<MappingRow> {
+	private static class FactorColumn extends DoubleCellModifier<IndicatorMapping> {
 
 		@Override
-		public Double getDouble(MappingRow row) {
+		public Double getDouble(IndicatorMapping row) {
 			return row.factor();
 		}
 
 		@Override
-		public void setDouble(MappingRow row, Double value) {
+		public void setDouble(IndicatorMapping row, Double value) {
 			row.factor(value != null ? value : 1.0);
 		}
 	}
 
-	private static class ScopeColumn extends DoubleCellModifier<MappingRow> {
+	private static class ScopeColumn extends DoubleCellModifier<IndicatorMapping> {
 
 		private final String scope;
 
@@ -192,21 +192,21 @@ record MappingSection(MappingModel model) {
 		}
 
 		@Override
-		public Double getDouble(MappingRow row) {
+		public Double getDouble(IndicatorMapping row) {
 			return row.values().get(scope);
 		}
 
 		@Override
-		public void setDouble(MappingRow row, Double value) {
+		public void setDouble(IndicatorMapping row, Double value) {
 			row.values().put(scope, value);
 		}
 	}
 
 	private static class IndicatorColumn
-		extends ComboBoxCellModifier<MappingRow, Indicator> {
+		extends ComboBoxCellModifier<IndicatorMapping, Indicator> {
 
 		@Override
-		protected Indicator[] getItems(MappingRow row) {
+		protected Indicator[] getItems(IndicatorMapping row) {
 			return Stream.concat(
 					Stream.of((Indicator) null),
 					Stream.of(Indicator.values()))
@@ -225,7 +225,7 @@ record MappingSection(MappingModel model) {
 		}
 
 		@Override
-		protected Indicator getItem(MappingRow row) {
+		protected Indicator getItem(IndicatorMapping row) {
 			return row.epdIndicator();
 		}
 
@@ -237,7 +237,7 @@ record MappingSection(MappingModel model) {
 		}
 
 		@Override
-		protected void setItem(MappingRow row, Indicator i) {
+		protected void setItem(IndicatorMapping row, Indicator i) {
 			if (row == null)
 				return;
 			if (i == null) {
