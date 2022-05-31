@@ -70,9 +70,7 @@ public class Repository {
 	}
 
 	public static Repository open(IDatabase database) {
-		if (isConnected()) {
-			disconnect();
-		}
+		close();
 		var gitDir = gitDir(database.getName());
 		if (!gitDir.exists() || !gitDir.isDirectory() || gitDir.listFiles().length == 0)
 			return null;
@@ -106,9 +104,10 @@ public class Repository {
 		return repository != null;
 	}
 
-	public static void disconnect() {
+	public static void close() {
 		if (repository == null)
 			return;
+		repository.client.close();
 		repository.git.close();
 		repository = null;
 	}

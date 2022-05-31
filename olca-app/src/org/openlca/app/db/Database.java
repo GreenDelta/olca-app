@@ -70,9 +70,7 @@ public class Database {
 		database = null;
 		listener = null;
 		config = null;
-		if (Repository.get() != null) {
-			Repository.disconnect();
-		}
+		Repository.close();
 	}
 
 	private static DatabaseConfigList loadConfigs() {
