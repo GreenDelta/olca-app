@@ -45,7 +45,7 @@ public class ImportDialog extends FormDialog {
 		var epd = db.get(Epd.class, doc.id);
 		if (epd != null) {
 			MsgBox.error("EPD already exists",
-				"An EPD with ID='" + epd.id + "' already exists in the database.");
+				"An EPD with ID=" + epd.refId + " already exists in the database.");
 			return -1;
 		}
 		var mapping = ImpactMappings.askCreate(db, doc);

@@ -51,17 +51,19 @@ record ImpactMappings(IDatabase db, EpdDoc doc) {
 			var indicatorCategory = CategoryDao.sync(
 				db, ModelType.IMPACT_CATEGORY, "openEPD", methodCode);
 			for (var entry : m.entries()) {
-				if (entry.epdIndicator() == null)
+				var epdInd = entry.epdIndicator();
+				if (epdInd == null)
 					continue;
-				var impactCode = entry.epdIndicator().code();
 				var impact = ImpactCategory.of(
-					impactCode.toUpperCase(),
-					entry.epdIndicator().unit());
-				impact.code = impactCode;
+					epdInd.code().toUpperCase(),
+					epdInd.unit());
+				impact.description = epdInd.description();
+				impact.code = epdInd.code();
 				impact.category = indicatorCategory;
 				impact = db.insert(impact);
 				method.impactCategories.add(impact);
 				entry.indicator(impact);
+				entry.unit(epdInd.unitMatchOf(epdInd.unit()).orElse(null));
 			}
 			m.method(db.insert(method));
 		}

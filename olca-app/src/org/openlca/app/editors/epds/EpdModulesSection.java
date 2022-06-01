@@ -44,7 +44,7 @@ class EpdModulesSection {
 			"LCIA Method",
 			"Result multiplier",
 			"Reference flow");
-		table.setLabelProvider(new LabelProvider(editor));
+		table.setLabelProvider(new LabelProvider());
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 
 		// bind actions
@@ -175,12 +175,6 @@ class EpdModulesSection {
 	private static class LabelProvider extends BaseLabelProvider
 		implements ITableLabelProvider {
 
-		private final EpdEditor editor;
-
-		LabelProvider(EpdEditor editor) {
-			this.editor = editor;
-		}
-
 		@Override
 		public Image getColumnImage(Object obj, int col) {
 			return col == 0
@@ -198,26 +192,10 @@ class EpdModulesSection {
 				case 2 -> module.result != null
 					? Labels.name(module.result.impactMethod)
 					: null;
-				case 3 -> multiplier(module);
+				case 3 -> Double.toString(module.multiplier);
 				case 4 -> qRef(module);
 				default -> null;
 			};
-		}
-
-		private String multiplier(EpdModule module) {
-			var refFlow = module.result != null
-				? module.result.referenceFlow
-				: null;
-			var product = editor.getModel().product;
-			if (refFlow == null
-				|| refFlow.unit == null
-				|| product == null
-				|| product.unit == null)
-				return String.format("%.2f", module.multiplier);
-			return String.format("%.2f * [%.2f %s / %.2f %s]",
-				module.multiplier,
-				refFlow.amount, refFlow.unit.name,
-				product.amount, product.unit.name);
 		}
 
 		private String qRef(EpdModule module) {
