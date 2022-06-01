@@ -1,25 +1,19 @@
 package org.openlca.app.tools.openepd;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Objects;
 import java.util.stream.Stream;
 
-import org.eclipse.jface.viewers.ITableColorProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.Numbers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
-import org.openlca.core.model.ModelType;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.io.openepd.io.IndicatorMapping;
 import org.openlca.io.openepd.io.MethodMapping;
 import org.openlca.io.openepd.io.Vocab;
@@ -44,7 +38,7 @@ public record MappingTable(
 
 	public TableViewer create(Composite parent) {
 		var table = Tables.createViewer(parent, headers());
-		table.setLabelProvider(new TableLabel());
+		table.setLabelProvider(MappingLabel.of(this));
 		Tables.bindColumnWidths(table, widths());
 		for (int i = 4; i < columnCount(); i++) {
 			table.getTable()
@@ -53,9 +47,14 @@ public record MappingTable(
 		}
 		table.setInput(mapping.entries());
 
+		// bind modifiers
 		var modifier = new ModifySupport<IndicatorMapping>(table)
-			.bind("Factor", new FactorColumn())
-			.bind("openEPD Indicator", new EpdIndicatorColumn());
+			.bind("Factor", new FactorColumn());
+		if (isForImport) {
+			modifier.bind("Indicator", new IndicatorColumn());
+		} else {
+			modifier.bind("openEPD Indicator", new EpdIndicatorColumn());
+		}
 		for (var scope : mapping.scopes()) {
 			modifier.bind(scope, new ScopeColumn(scope));
 		}
@@ -94,63 +93,6 @@ public record MappingTable(
 		return widths;
 	}
 
-	private class TableLabel extends LabelProvider
-		implements ITableLabelProvider, ITableColorProvider {
-
-		@Override
-		public Color getForeground(Object obj, int col) {
-			if (!(obj instanceof IndicatorMapping row))
-				return null;
-			if (col == 1 || col == 3 || col == 4) {
-				if (row.epdIndicator() != null && row.unit() == null)
-					return Colors.fromHex("#ff5722");
-			}
-			return null;
-		}
-
-		@Override
-		public Color getBackground(Object obj, int col) {
-			return null;
-		}
-
-		@Override
-		public Image getColumnImage(Object obj, int col) {
-			return col == 0
-				? Images.get(ModelType.IMPACT_CATEGORY)
-				: null;
-		}
-
-		@Override
-		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof IndicatorMapping row))
-				return null;
-			var epdInd = row.epdIndicator();
-			return switch (col) {
-				case 0 -> Labels.name(row.indicator());
-				case 1 -> row.indicator() != null
-					? row.indicator().referenceUnit
-					: null;
-				case 2 -> epdInd != null
-					? epdInd.code() + " - " + epdInd.description()
-					: " - ";
-				case 3 -> epdInd != null ? epdInd.unit() : " - ";
-				case 4 -> epdInd != null
-					? Double.toString(row.factor())
-					: " - ";
-				default -> {
-					int idx = col - 5;
-					if (idx < 0 || idx >= mapping.scopes().size())
-						yield " - ";
-					var scope = mapping.scopes().get(idx);
-					var value = row.values().get(scope);
-					yield value == null
-						? " - "
-						: Numbers.format(value * row.factor());
-				}
-			};
-		}
-	}
-
 	private static class FactorColumn extends DoubleCellModifier<IndicatorMapping> {
 
 		@Override
@@ -180,6 +122,57 @@ public record MappingTable(
 		@Override
 		public void setDouble(IndicatorMapping row, Double value) {
 			row.values().put(scope, value);
+		}
+	}
+
+	private class IndicatorColumn extends
+		ComboBoxCellModifier<IndicatorMapping, ImpactCategory> {
+
+		@Override
+		protected ImpactCategory[] getItems(IndicatorMapping row) {
+			var method = mapping.method();
+			if (method == null)
+				return new ImpactCategory[0];
+			var impacts = method.impactCategories;
+			impacts.sort(Comparator.comparing(Labels::name));
+			var array = new ImpactCategory[impacts.size() + 1];
+			for (int i = 0; i < impacts.size(); i++) {
+				array[i + 1] = impacts.get(i);
+			}
+			return array;
+		}
+
+		@Override
+		protected ImpactCategory getItem(IndicatorMapping row) {
+			return row.indicator();
+		}
+
+		@Override
+		protected String getText(ImpactCategory impact) {
+			return Labels.name(impact);
+		}
+
+		@Override
+		protected void setItem(IndicatorMapping row, ImpactCategory impact) {
+			if (Objects.equals(impact, row.indicator()))
+				return;
+			var epdInd = row.epdIndicator();
+			if (epdInd == null)
+				return;
+
+			if (impact == null) {
+				row.indicator(null)
+					.unit(null)
+					.factor(1);
+				return;
+			}
+
+			var unit = epdInd.unitMatchOf(impact.referenceUnit).orElse(null);
+			row.indicator(impact)
+				.unit(unit)
+				.factor(unit != null
+					? 1 / unit.factor()
+					: 1);
 		}
 	}
 

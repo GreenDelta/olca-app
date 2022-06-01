@@ -8,13 +8,11 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jface.viewers.ITableColorProvider;
-import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -110,60 +108,11 @@ class ImpactSection {
 		table.setInput(mapping.entries());
 
 		new ModifySupport<IndicatorMapping>(table)
-			.bind("openLCA indicator", new ImpactModifier());
+			.bind("openLCA indicator", new IndicatorColumn());
 		table.setInput(mapping.entries());
 	}
 
-	private class ImpactModifier extends
-		ComboBoxCellModifier<IndicatorMapping, ImpactCategory> {
 
-		@Override
-		protected ImpactCategory[] getItems(IndicatorMapping row) {
-			var method = mapping.method();
-			if (method == null)
-				return new ImpactCategory[0];
-			var impacts = method.impactCategories;
-			impacts.sort(Comparator.comparing(Labels::name));
-			var array = new ImpactCategory[impacts.size() + 1];
-			for (int i = 0; i < impacts.size(); i++) {
-				array[i + 1] = impacts.get(i);
-			}
-			return array;
-		}
-
-		@Override
-		protected ImpactCategory getItem(IndicatorMapping row) {
-			return row.indicator();
-		}
-
-		@Override
-		protected String getText(ImpactCategory impact) {
-			return Labels.name(impact);
-		}
-
-		@Override
-		protected void setItem(IndicatorMapping row, ImpactCategory impact) {
-			if (Objects.equals(impact, row.indicator()))
-				return;
-			var epdInd = row.epdIndicator();
-			if (epdInd == null)
-				return;
-
-			if (impact == null) {
-				row.indicator(null)
-					.unit(null)
-					.factor(1);
-				return;
-			}
-
-			var unit = epdInd.unitMatchOf(impact.referenceUnit).orElse(null);
-			row.indicator(impact)
-				.unit(unit)
-				.factor(unit != null
-					? 1 / unit.factor()
-					: 1);
-		}
-	}
 
 	private class MappingLabel extends LabelProvider
 		implements ITableLabelProvider, ITableColorProvider {
