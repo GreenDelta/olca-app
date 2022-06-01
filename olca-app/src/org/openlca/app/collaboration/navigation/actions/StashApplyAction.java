@@ -44,6 +44,9 @@ public class StashApplyAction extends Action implements INavigationAction {
 		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
+			var libraryResolver = WorkspaceLibraryResolver.forStash(repo.git);
+			if (libraryResolver == null)
+				return;
 			var conflictResolver = Conflicts.resolve(Constants.R_STASH, true);
 			if (conflictResolver == null)
 				return;

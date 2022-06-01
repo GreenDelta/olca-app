@@ -3,7 +3,6 @@ package org.openlca.app.navigation.actions.libraries;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -25,30 +24,27 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ImpactCategoryDao;
-import org.openlca.core.database.ProcessDao;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryPackage;
+import org.openlca.core.library.MountCheck;
 import org.openlca.util.Strings;
 
-public class MountLibraryAction extends Action implements INavigationAction {
+public class AddLibraryAction extends Action implements INavigationAction {
 
-	public MountLibraryAction() {
+	public AddLibraryAction() {
 		setText("Add a library");
 		setImageDescriptor(Icon.DATABASE.descriptor());
 	}
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
-		if (!FeatureFlag.LIBRARIES.isEnabled())
-			return false;
 		if (selection.size() != 1)
 			return false;
 		return selection.get(0) instanceof DatabaseElement e
@@ -108,11 +104,10 @@ public class MountLibraryAction extends Action implements INavigationAction {
 	private static boolean mount(Library lib, IDatabase db) {
 		if (lib == null || db == null)
 			return false;
-		var b = App.exec("Check library", () -> canMount(lib, db));
-		if (b == null || !b)
+		if (!canMount(lib, db))
 			return false;
 		App.runWithProgress(
-			"Mounting library " + lib.id() +  " to " + db.getName(),
+			"Mounting library " + lib.id() + " to " + db.getName(),
 			() -> lib.mountTo(db),
 			Navigator::refresh);
 		return true;
@@ -124,41 +119,52 @@ public class MountLibraryAction extends Action implements INavigationAction {
 			return false;
 		}
 		if (db.getLibraries().contains(lib.id())) {
-			MsgBox.error("Library " + lib.id() + " is already mounted.");
+			MsgBox.error("Library " + lib.id() + " is already present.");
 			return false;
+		}
+		var state = App.exec("Check library", () -> MountCheck.check(db, lib));
+		if (state.isError()) {
+			ErrorReporter.on("Failed to check library", state.error());
+			return false;
+		}
+		return state.isUsed()
+			? ForceMountQuestion.ask()
+			: state.isOk();
+	}
+
+	private static class ForceMountQuestion extends FormDialog {
+
+		private boolean forceMount = false;
+
+		static boolean ask() {
+			var q = new ForceMountQuestion();
+			q.open();
+			return q.forceMount;
 		}
 
-		// check that the library processes are not present
-		var processes = new ProcessDao(db).getDescriptors()
-			.stream()
-			.collect(Collectors.toMap(d -> d.refId, d -> d));
-		var techIdx = lib.getProductIndex();
-		for (int i = 0; i < techIdx.getProductCount(); i++) {
-			var product = techIdx.getProduct(i);
-			var refID = product.getProcess().getId();
-			var d = processes.get(refID);
-			if (d == null)
-				continue;
-			MsgBox.error("The library processes are already " +
-				"contained in this database.");
-			return false;
+		ForceMountQuestion() {
+			super(UI.shell());
 		}
 
-		// check that the library impacts are not present
-		var impacts = new ImpactCategoryDao(db).getDescriptors()
-			.stream()
-			.collect(Collectors.toMap(d -> d.refId, d -> d));
-		var impactIdx = lib.getImpactIndex();
-		for (int i = 0; i < impactIdx.getImpactCount(); i++) {
-			var impact = impactIdx.getImpact(i);
-			var d = impacts.get(impact.getImpact().getId());
-			if (d == null)
-				continue;
-			MsgBox.error("The library impacts are already " +
-				"contained in this database.");
-			return false;
+		@Override
+		protected void configureShell(Shell newShell) {
+			super.configureShell(newShell);
+			newShell.setText("Data conflicts");
+			newShell.setImage(Icon.ERROR.get());
 		}
-		return true;
+
+		@Override
+		protected void createFormContent(IManagedForm mForm) {
+			var tk = mForm.getToolkit();
+			var body = UI.formBody(mForm.getForm(), tk);
+			UI.gridLayout(body, 1);
+			var text = tk.createFormText(body, false);
+			text.setText("There are data sets that are contained" +
+				" in the database and the library.", false, false);
+			var check = tk.createButton(body, "Convert data sets in database to " +
+				"library data sets (experimental)", SWT.CHECK);
+			Controls.onSelect(check, $ -> forceMount = check.getSelection());
+		}
 	}
 
 	private static class Dialog extends FormDialog {

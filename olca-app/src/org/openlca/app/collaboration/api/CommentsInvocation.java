@@ -7,54 +7,67 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.Response.Status;
-
 import org.openlca.app.collaboration.model.Comment;
 import org.openlca.app.collaboration.util.Valid;
-import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.collaboration.util.WebRequests.Type;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.core.model.ModelType;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sun.jersey.api.client.ClientResponse.Status;
 
 /**
  * Invokes a web service call to retrieve comments of a dataset from a
  * repository
  */
-class CommentsInvocation {
+class CommentsInvocation extends Invocation<Map<String, Object>, List<Comment>> {
 
-	private static final String PATH = "/comment/";
-	String baseUrl;
-	String sessionId;
-	String repositoryId;
-	ModelType type;
-	String refId;
+	private final String repositoryId;
+	private final ModelType type;
+	private final String refId;
 
-	List<Comment> execute() throws WebRequestException {
-		Valid.checkNotEmpty(baseUrl, "base url");
+	CommentsInvocation(String repositoryId) {
+		this(repositoryId, null, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	CommentsInvocation(String repositoryId, ModelType type, String refId) {
+		super(Type.GET, "comment", (Class<Map<String, Object>>) new TypeToken<Map<String, Object>>() {
+		}.getType());
+		this.repositoryId = repositoryId;
+		this.type = type;
+		this.refId = refId;
+	}
+
+	@Override
+	protected void checkValidity() {
 		Valid.checkNotEmpty(repositoryId, "repository id");
-		var url = baseUrl + PATH + repositoryId;
-		var forDataset = type != null && refId != null;
-		if (forDataset) {
-			url += "/" + type.name() + "/" + refId;
+	}
+
+	@Override
+	protected String query() {
+		var query = "/" + repositoryId;
+		if (type != null && refId != null) {
+			query += "/" + type.name() + "/" + refId;
 		} else {
-			url += "?includeReplies=true";
+			query += "?includeReplies=true";
 		}
-		try {
-			var response = WebRequests.call(Type.GET, url, sessionId);
-			Map<String, Object> data = new Gson().fromJson(
-					response.getEntity(String.class),
-					new TypeToken<Map<String, Object>>() {
-					}.getType());
-			var field = forDataset ? "comments" : "data";
-			return parseComments(data.get(field));
-		} catch (WebRequestException e) {
-			if (e.getErrorCode() == Status.SERVICE_UNAVAILABLE.getStatusCode())
-				return new ArrayList<>();
-			throw e;
-		}
+		return query;
+	}
+
+	@Override
+	protected List<Comment> process(Map<String, Object> data) {
+		if (data == null)
+			return new ArrayList<>();
+		var field = type != null && refId != null ? "comments" : "data";
+		return parseComments(data.get(field));
+	}
+
+	@Override
+	protected List<Comment> handleError(WebRequestException e) throws WebRequestException {
+		if (e.isConnectException() || e.getErrorCode() == Status.SERVICE_UNAVAILABLE.getStatusCode())
+			return new ArrayList<>();
+		throw e;
 	}
 
 	private List<Comment> parseComments(Object value) {

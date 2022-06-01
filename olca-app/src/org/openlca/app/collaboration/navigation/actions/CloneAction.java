@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.openlca.app.collaboration.api.RepositoryConfig;
 import org.openlca.app.collaboration.dialogs.ConnectDialog;
 import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.db.Cache;
@@ -65,9 +64,9 @@ public class CloneAction extends Action implements INavigationAction {
 				return;
 			Upgrades.on(db);
 			Database.register((DerbyConfig) config);
-			gitDir = RepositoryConfig.getGitDir(db);
+			gitDir = Repository.gitDir(db.getName());
 			GitInit.in(gitDir).remoteUrl(url).run();
-			var repo = Repository.connect(db);
+			var repo = Repository.initialize(db);
 			repo.setUser(dialog.user());
 			var newCommits = Actions.run(dialog.credentials(),
 					GitFetch.to(repo.git));

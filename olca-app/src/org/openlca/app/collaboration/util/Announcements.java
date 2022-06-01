@@ -10,17 +10,18 @@ import com.sun.jersey.api.client.ClientResponse.Status;
 public class Announcements {
 
 	public static void check() {
-		if (!Repository.isConnected() || !Repository.get().isCollaborationServer())
+		var repo = Repository.get();
+		if (!Repository.isConnected() || !repo.isCollaborationServer())
 			return;
 		try {
-			var client = Repository.get().client;
+			var client = repo.client;
 			var announcement = client.getAnnouncement();
 			if (announcement == null || announcement.message() == null || announcement.message().isEmpty())
 				return;
-			if (CollaborationPreference.didReadAnnouncement(client.config.serverUrl, announcement.id()))
+			if (CollaborationPreference.didReadAnnouncement(repo.serverUrl, announcement.id()))
 				return;
 			MsgBox.error("LCA Collaboration Server announcement", announcement.message());
-			CollaborationPreference.markAnnouncementAsRead(client.config.serverUrl, announcement.id());
+			CollaborationPreference.markAnnouncementAsRead(repo.serverUrl, announcement.id());
 		} catch (WebRequestException e) {
 			// ignore, older servers don't provide announcement resource
 			if (e.getErrorCode() == Status.NOT_FOUND.getStatusCode())

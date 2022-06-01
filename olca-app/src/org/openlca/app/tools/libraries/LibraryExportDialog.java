@@ -5,6 +5,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
@@ -25,6 +26,7 @@ import org.openlca.core.library.LibraryExport;
 import org.openlca.core.library.LibraryInfo;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.DQSystem;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Process;
 import org.openlca.util.Databases;
 import org.openlca.util.Strings;
@@ -71,6 +73,22 @@ public class LibraryExportDialog extends FormDialog {
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		newShell.setText("Create a library");
+	}
+
+	@Override
+	protected Point getInitialSize() {
+		int height = 350;
+		boolean[] adds = {
+			props.hasInventory,
+			props.hasUncertainty,
+			props.hasInventory || props.hasImpacts,
+			props.hasInventory && props.flowDqs != null
+		};
+		for (var ignored : adds) {
+			height += 25;
+		}
+		UI.initialSizeOf(this, 600, height);
+		return super.getInitialSize();
 	}
 
 	@Override
@@ -128,10 +146,12 @@ public class LibraryExportDialog extends FormDialog {
 		}
 
 		// regionalization check
-		check.apply(
-				"Regionalized",
-				b -> config.regionalized = b)
-			.setSelection(config.regionalized);
+		if (props.hasInventory || props.hasImpacts) {
+			check.apply(
+					"Regionalized",
+					b -> config.regionalized = b)
+				.setSelection(config.regionalized);
+		}
 
 		// data quality check
 		if (props.hasInventory && props.flowDqs != null) {
@@ -186,6 +206,7 @@ public class LibraryExportDialog extends FormDialog {
 		IDatabase db,
 		boolean hasLibraryProcesses,
 		boolean hasInventory,
+		boolean hasImpacts,
 		boolean hasUncertainty,
 		DQSystem flowDqs
 	) {
@@ -199,12 +220,22 @@ public class LibraryExportDialog extends FormDialog {
 					break;
 				}
 			}
+			boolean hasImpacts = false;
+			for (var d : db.getDescriptors(ImpactCategory.class)) {
+				if (Strings.nullOrEmpty(d.library)) {
+					hasImpacts = true;
+					break;
+				}
+			}
 
 			if (hasLibraryProcesses)
-				return new Props(db, true, true, false, null);
+				return new Props(db, true, true, hasImpacts, false, null);
 
-			return new Props(db, false,
+			return new Props(
+				db,
+				false,
 				hasInventory,
+				hasImpacts,
 				Databases.hasUncertaintyData(db),
 				Databases.getCommonFlowDQS(db).orElse(null));
 		}

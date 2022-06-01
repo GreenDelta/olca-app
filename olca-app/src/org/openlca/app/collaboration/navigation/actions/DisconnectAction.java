@@ -5,7 +5,6 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.api.RepositoryConfig;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -28,8 +27,8 @@ public class DisconnectAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		Repository.disconnect();
-		var gitDir = RepositoryConfig.getGitDir(Database.get());
+		Repository.close();
+		var gitDir = Repository.gitDir(Database.get().getName());
 		Dirs.delete(gitDir);
 		Actions.refresh();
 	}

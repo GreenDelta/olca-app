@@ -49,7 +49,7 @@ class Actions {
 		var repo = Repository.get();
 		if (runner.exception == null) {
 			if (Strings.nullOrEmpty(credentials.token)) {
-				repo.setUseTwoFactorAuth(false);
+				repo.useTwoFactorAuth(false);
 			}
 			return runner.result;
 		}
@@ -61,7 +61,7 @@ class Actions {
 		var notPermitted = m.contains("not permitted on");
 		if (notPermitted) {
 			if (Strings.nullOrEmpty(credentials.token)) {
-				repo.setUseTwoFactorAuth(false);
+				repo.useTwoFactorAuth(false);
 			}
 			repo.invalidateCredentials();
 			throw new TransportException("You do not have sufficient access to this repository");
@@ -70,9 +70,9 @@ class Actions {
 			throw runner.exception;
 		if (notAuthorized) {
 			repo.invalidateCredentials();
-			credentials = AuthenticationDialog.promptCredentials();
+			credentials = AuthenticationDialog.forcePromptCredentials();
 		} else if (tokenRequired) {
-			repo.setUseTwoFactorAuth(true);
+			repo.useTwoFactorAuth(true);
 			credentials = AuthenticationDialog.promptToken();
 		}
 		if (credentials == null)

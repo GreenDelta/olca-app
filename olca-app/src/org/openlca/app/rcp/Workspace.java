@@ -3,6 +3,7 @@ package org.openlca.app.rcp;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 
 import org.eclipse.core.runtime.Platform;
 import org.openlca.app.AppArg;
@@ -75,15 +76,20 @@ public class Workspace {
 
 	private static File getDirFromCommandLine() {
 		try {
-			String path = AppArg.DATA_DIR.getValue();
+			var path = AppArg.DATA_DIR.getValue();
 			if (path == null)
 				return null;
-			File file = new File(path);
-			if (file.canWrite() && file.isDirectory())
-				return file;
+			var dir = new File(path);
+			if (!dir.exists()) {
+				Files.createDirectories(dir.toPath());
+			}
+			if (dir.isDirectory() && dir.canWrite())
+				return dir;
+			// no logging here as the logger is not yet configured
+			System.err.println("cannot switch workspace; " +
+				"not a writeable folder: " + dir);
 			return null;
 		} catch (Exception e) {
-			// no logging here as the logger is not yet configured
 			e.printStackTrace();
 			return null;
 		}
