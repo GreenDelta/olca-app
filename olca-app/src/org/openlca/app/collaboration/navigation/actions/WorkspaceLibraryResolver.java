@@ -123,7 +123,7 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 		}
 		return App.exec("Extract library", () -> {
 			LibraryPackage.unzip(file, libDir);
-			return resolve(info.toId());
+			return resolve(info.name());
 		});
 	}
 

@@ -15,7 +15,6 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -41,7 +40,6 @@ public class LibraryExportDialog extends FormDialog {
 		this.props = props;
 		this.config = new Config();
 		config.name = props.db.getName();
-		config.version = "1.0";
 		config.allocation = AllocationMethod.NONE;
 	}
 
@@ -102,22 +100,6 @@ public class LibraryExportDialog extends FormDialog {
 		name.addModifyListener(_e ->
 			config.name = name.getText().trim());
 
-		var version = UI.formText(body, tk, M.Version);
-		version.setText(config.version);
-		version.addModifyListener(_e -> {
-				var text = version.getText();
-				config.version = text;
-				var formatOk = text.matches("\\d+(?:\\.\\d+)?(?:\\.\\d+)?");
-				if (formatOk) {
-					version.setBackground(Colors.white());
-					version.setToolTipText("");
-				} else {
-					version.setBackground(Colors.errorColor());
-					version.setToolTipText("Not a valid library version");
-				}
-			}
-		);
-
 		// allocation method
 		if (props.hasInventory) {
 			UI.formLabel(body, tk, M.AllocationMethod);
@@ -169,7 +151,7 @@ public class LibraryExportDialog extends FormDialog {
 	protected void okPressed() {
 		var libDir = Workspace.getLibraryDir();
 		var info = config.toInfo();
-		var id = info.toId();
+		var id = info.name();
 		if (libDir.hasLibrary(id)) {
 			MsgBox.error("Library " + id + " already exists",
 				"A library with this name and version already exists");
@@ -189,7 +171,6 @@ public class LibraryExportDialog extends FormDialog {
 
 	private static class Config {
 		String name;
-		String version;
 		AllocationMethod allocation;
 		boolean regionalized;
 		boolean withUncertainties;
@@ -197,7 +178,6 @@ public class LibraryExportDialog extends FormDialog {
 
 		LibraryInfo toInfo() {
 			return LibraryInfo.of(name)
-				.version(version)
 				.isRegionalized(regionalized);
 		}
 	}

@@ -40,7 +40,7 @@ public class ExportLibraryAction extends Action implements INavigationAction {
 		if (library == null)
 			return;
 		var target = FileChooser.forSavingFile(
-				M.Export, library.id() + ".zip");
+				M.Export, library.name() + ".zip");
 		if (target == null)
 			return;
 		try {
@@ -51,7 +51,7 @@ public class ExportLibraryAction extends Action implements INavigationAction {
 					+ target.getName()));
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to export library "
-				+ library.id() + " to file "
+				+ library.name() + " to file "
 				+ target.getName(), e);
 		}
 	}

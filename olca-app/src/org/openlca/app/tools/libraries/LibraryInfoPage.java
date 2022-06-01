@@ -32,7 +32,7 @@ public class LibraryInfoPage extends SimpleFormEditor {
 			return;
 		var info = library.getInfo();
 		var input = new SimpleEditorInput(
-			library.id(), info.name() + " " + info.version());
+			library.name(), info.name());
 		Editors.open(input, "LibraryInfoPage");
 	}
 
@@ -73,12 +73,6 @@ public class LibraryInfoPage extends SimpleFormEditor {
 			name.setEditable(false);
 			if (info.name() != null) {
 				name.setText(info.name());
-			}
-
-			var version = UI.formText(comp, tk, M.Version);
-			version.setEditable(false);
-			if (info.version() != null) {
-				version.setText(info.version());
 			}
 
 			var description = UI.formMultiText(comp, tk, M.Description);

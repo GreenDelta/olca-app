@@ -81,11 +81,11 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 			if (u.isError()) {
 				ErrorReporter.on(
 					"Failed to check usage of library '"
-						+ lib.id() + "'", u.error);
+						+ lib.name() + "'", u.error);
 				return;
 			}
 			MsgBox.info("Cannot delete library",
-				"We cannot delete library " + lib.id() +
+				"We cannot delete library " + lib.name() +
 					" as it is used in " + u.label());
 			return;
 		}
@@ -106,7 +106,7 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 		}
 
 		private static Usage lib(Library lib) {
-			return new Usage(lib.id(), UsageType.LIBRARY, null);
+			return new Usage(lib.name(), UsageType.LIBRARY, null);
 		}
 
 		static Optional<Usage> find(Library lib) {
@@ -140,12 +140,12 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 				return Optional.empty();
 			if (Database.isActive(config)) {
 				var db = Database.get();
-				return db.getLibraries().contains(lib.id())
+				return db.getLibraries().contains(lib.name())
 					? Optional.of(Usage.db(config))
 					: Optional.empty();
 			}
 			try (var db = config.connect(Workspace.dbDir())) {
-				return db.getVersion() >= 10 && db.getLibraries().contains(lib.id())
+				return db.getVersion() >= 10 && db.getLibraries().contains(lib.name())
 					? Optional.of(Usage.db(config))
 					: Optional.empty();
 			} catch (Exception e) {

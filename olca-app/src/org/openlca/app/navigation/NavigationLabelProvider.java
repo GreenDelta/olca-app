@@ -210,7 +210,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (content instanceof LibraryDir)
 			return "Libraries";
 		if (content instanceof Library lib) {
-			return lib.id();
+			return lib.name();
 		}
 		if (elem instanceof MappingDirElement)
 			return "Mapping files";

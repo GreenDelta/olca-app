@@ -79,11 +79,8 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			return null;
 		}
 
-		var id = Strings.notEmpty(info.version())
-			? info.name() + " " + info.version()
-			: info.name();
-
 		// check if it already exists
+		var id = info.name();
 		var libDir = Workspace.getLibraryDir();
 		if (libDir.hasLibrary(id)) {
 			MsgBox.error("A library " + id + " already exists.");
@@ -107,7 +104,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 		if (!canMount(lib, db))
 			return false;
 		App.runWithProgress(
-			"Mounting library " + lib.id() + " to " + db.getName(),
+			"Mounting library " + lib.name() + " to " + db.getName(),
 			() -> lib.mountTo(db),
 			Navigator::refresh);
 		return true;
@@ -118,8 +115,8 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			MsgBox.error("Library does not exist in workspace.");
 			return false;
 		}
-		if (db.getLibraries().contains(lib.id())) {
-			MsgBox.error("Library " + lib.id() + " is already present.");
+		if (db.getLibraries().contains(lib.name())) {
+			MsgBox.error("Library " + lib.name() + " is already present.");
 			return false;
 		}
 		var state = App.exec("Check library", () -> MountCheck.check(db, lib));
@@ -230,11 +227,11 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			var libs = Workspace.getLibraryDir()
 				.getLibraries()
 				.stream()
-				.filter(lib -> !dbLibs.contains(lib.id()))
-				.sorted((l1, l2) -> Strings.compare(l1.id(), l2.id()))
+				.filter(lib -> !dbLibs.contains(lib.name()))
+				.sorted((l1, l2) -> Strings.compare(l1.name(), l2.name()))
 				.toArray(Library[]::new);
 			var items = Arrays.stream(libs)
-				.map(Library::id)
+				.map(Library::name)
 				.toArray(String[]::new);
 
 			// create an fill the combo box

@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
 import org.openlca.app.db.Database;
 import org.openlca.core.database.Daos;
 import org.openlca.core.library.Library;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
-
-import javax.annotation.Nullable;
 
 /**
  * Basic implementation of a navigation element which manages an internal cache
@@ -94,7 +94,7 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 			return false;
 		return Strings.nullOrEmpty(d.library)
 			? lib == null
-			: lib != null && Strings.nullOrEqual(d.library, lib.id());
+			: lib != null && Strings.nullOrEqual(d.library, lib.name());
 	}
 
 	/**
@@ -104,7 +104,7 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 	static boolean hasElementsOf(Category category, Library library) {
 		if (category == null || library == null)
 			return false;
-		var libId = library.id();
+		var libId = library.name();
 		if (Strings.nullOrEqual(category.library, libId))
 			return true;
 		for (var child : category.childCategories) {
