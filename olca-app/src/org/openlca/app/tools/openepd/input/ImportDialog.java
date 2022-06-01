@@ -1,7 +1,6 @@
-package org.openlca.app.tools.openepd;
+package org.openlca.app.tools.openepd.input;
 
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -26,15 +25,14 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Epd;
 import org.openlca.io.UnitMapping;
 import org.openlca.io.openepd.EpdDoc;
-import org.openlca.io.openepd.input.EpdImport;
-import org.openlca.io.openepd.input.ImpactMapping;
+import org.openlca.io.openepd.io.EpdImport;
+import org.openlca.io.openepd.io.MappingModel;
 
 public class ImportDialog extends FormDialog {
 
 	final IDatabase db;
 	final EpdDoc epdDoc;
-	final ImpactMapping mapping;
-	private final AtomicBoolean mappingChanged = new AtomicBoolean(false);
+	final MappingModel mapping;
 
 	public static int show(EpdDoc doc) {
 		if (doc == null)
@@ -47,22 +45,18 @@ public class ImportDialog extends FormDialog {
 		var epd = db.get(Epd.class, doc.id);
 		if (epd != null) {
 			MsgBox.error("EPD already exists",
-				"An EPD with ID='" + epd.id + "' already exists in the database.");
+				"An EPD with ID=" + epd.refId + " already exists in the database.");
 			return -1;
 		}
 		var mapping = ImpactMappings.askCreate(db, doc);
 		return new ImportDialog(doc, db, mapping).open();
 	}
 
-	private ImportDialog(EpdDoc epdDoc, IDatabase db, ImpactMapping mapping) {
+	private ImportDialog(EpdDoc epdDoc, IDatabase db, MappingModel mapping) {
 		super(UI.shell());
 		this.epdDoc = Objects.requireNonNull(epdDoc);
 		this.db = Objects.requireNonNull(db);
 		this.mapping = mapping;
-	}
-
-	void setMappingChanged() {
-		mappingChanged.set(true);
 	}
 
 	@Override
@@ -81,7 +75,7 @@ public class ImportDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.formBody(mForm.getForm(), tk);
 		createProductSection(body, tk);
-		ImpactSection.initAllOf(this)
+		MappingSection.initAllOf(this)
 			.forEach(section -> section.render(body, tk));
 	}
 
@@ -129,15 +123,6 @@ public class ImportDialog extends FormDialog {
 					"Do you want to continue?");
 			if (!b) {
 				return;
-			}
-		}
-
-		if (mappingChanged.get()) {
-			boolean b = Question.ask("Save indicator mappings?",
-				"Should the assigned mapping codes of the LCIA" +
-					" methods and indicators be saved in the database?");
-			if (b) {
-				mapping.persistIn(db);
 			}
 		}
 

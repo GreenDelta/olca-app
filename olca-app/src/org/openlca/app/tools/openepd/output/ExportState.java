@@ -1,4 +1,4 @@
-package org.openlca.app.tools.openepd.export;
+package org.openlca.app.tools.openepd.output;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
