@@ -28,11 +28,11 @@ public record MappingTable(
 		this(mapping, isForImport, mapping.scopes().size() + 5);
 	}
 
-	public MappingTable forImport(MethodMapping mapping) {
+	public static MappingTable forImport(MethodMapping mapping) {
 		return new MappingTable(mapping, true);
 	}
 
-	public MappingTable forExport(MethodMapping mapping) {
+	public static MappingTable forExport(MethodMapping mapping) {
 		return new MappingTable(mapping, false);
 	}
 
