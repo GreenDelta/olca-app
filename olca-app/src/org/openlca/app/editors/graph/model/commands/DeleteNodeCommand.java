@@ -7,16 +7,14 @@ import org.openlca.app.editors.graph.model.Graph;
 import org.openlca.app.editors.graph.model.Link;
 import org.openlca.app.editors.graph.model.Node;
 
-public class NodeDeleteCommand extends Command {
+public class DeleteNodeCommand extends Command {
 	/** Node to remove. */
 	private final Node child;
 	/** Graph to remove from. */
 	private final Graph parent;
 
-	/** Holds a copy of the outgoing connections of child. */
-	private List<Link> sourceConnections;
-	/** Holds a copy of the incoming connections of child. */
-	private List<Link> targetConnections;
+	/** Holds a copy of all the links of the child and sub-child. */
+	private List<Link> links;
 	/** True, if child was removed from its parent. */
 	private boolean wasRemoved;
 
@@ -30,7 +28,7 @@ public class NodeDeleteCommand extends Command {
 	 * @throws IllegalArgumentException
 	 *             if any parameter is null
 	 */
-	public NodeDeleteCommand(Graph parent, Node child) {
+	public DeleteNodeCommand(Graph parent, Node child) {
 		if (parent == null || child == null) {
 			throw new IllegalArgumentException();
 		}
@@ -55,8 +53,7 @@ public class NodeDeleteCommand extends Command {
 	@Override
 	public void execute() {
 		// store a copy of incoming & outgoing links before proceeding
-		sourceConnections = child.getSourceConnections();
-		targetConnections = child.getTargetConnections();
+		links = child.getAllLinks();
 		redo();
 	}
 
@@ -66,8 +63,7 @@ public class NodeDeleteCommand extends Command {
 		parent.getProductSystem().processes.remove(child.descriptor.id);
 		wasRemoved = parent.removeChild(child);
 		if (wasRemoved) {
-			removeConnections(sourceConnections);
-			removeConnections(targetConnections);
+			removeConnections(links);
 		}
 		parent.editor.setDirty();
 	}
@@ -96,8 +92,7 @@ public class NodeDeleteCommand extends Command {
 		// add the child and reconnect its links
 		parent.getProductSystem().processes.add(child.descriptor.id);
 		parent.addChild(child);
-		addConnections(sourceConnections);
-		addConnections(targetConnections);
+		addConnections(links);
 	}
 
 }

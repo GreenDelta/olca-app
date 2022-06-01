@@ -6,7 +6,7 @@ import org.eclipse.gef.requests.GroupRequest;
 import org.openlca.app.editors.graph.model.Graph;
 import org.openlca.app.editors.graph.model.Node;
 import org.openlca.app.editors.graph.model.commands.ExpansionCommand;
-import org.openlca.app.editors.graph.model.commands.NodeDeleteCommand;
+import org.openlca.app.editors.graph.model.commands.DeleteNodeCommand;
 import org.openlca.app.editors.graph.requests.ExpansionRequest;
 
 public class NodeEditPolicy extends MinMaxComponentEditPolicy {
@@ -30,7 +30,7 @@ public class NodeEditPolicy extends MinMaxComponentEditPolicy {
 		var parent = getHost().getParent().getModel();
 		var child = getHost().getModel();
 		if (parent instanceof Graph graph && child instanceof Node node) {
-			return new NodeDeleteCommand(graph, node);
+			return new DeleteNodeCommand(graph, node);
 		}
 		return super.createDeleteCommand(req);
 	}

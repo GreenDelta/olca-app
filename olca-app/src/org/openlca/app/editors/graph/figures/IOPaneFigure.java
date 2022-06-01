@@ -14,6 +14,7 @@ public class IOPaneFigure extends Figure {
 
 	private final Figure contentPane = new Figure();
 	private final IOPane pane;
+	public final AddExchangeButton addExchangeButton = new AddExchangeButton();
 
 	public IOPaneFigure(IOPane pane) {
 		this.pane = pane;
@@ -21,10 +22,8 @@ public class IOPaneFigure extends Figure {
 		var box = Theme.Box.of(pane.getNode());
 
 		var layout = new GridLayout(1, false);
-		layout.marginHeight = 0;
 		layout.marginWidth = 0;
 		layout.horizontalSpacing = 0;
-		layout.verticalSpacing = 0;
 		setLayoutManager(layout);
 
 		if (!pane.getExchangesItems().isEmpty() || pane.getNode().isEditable()) {
@@ -33,12 +32,13 @@ public class IOPaneFigure extends Figure {
 
 			var contentPaneLayout = new GridLayout(1, false);
 			contentPaneLayout.marginHeight = 0;
-			contentPaneLayout.marginWidth = 0;
+			contentPaneLayout.marginWidth = 2;
 			contentPane.setLayoutManager(contentPaneLayout);
 			add(contentPane, GridPos.fill());
 
 			if (pane.getNode().isEditable()) {
-				add(new ButtonMargin(pane.isForInputs(), pane.getNode()), GridPos.fillTop());
+				var alignment = pane.isForInputs() ? SWT.LEAD : SWT.TRAIL;
+				add(addExchangeButton, new GridData(alignment, SWT.BOTTOM, false, false));
 			}
 
 			setToolTip(new Label(pane.isForInputs() ? "Input flows" : "Output flows"));
@@ -72,14 +72,15 @@ public class IOPaneFigure extends Figure {
 
 		Header() {
 			var layout = new GridLayout(1, false);
-			layout.marginHeight = 0;
-			layout.marginWidth = 0;
+			layout.marginHeight = 4;
+			layout.marginWidth = 2;
 			setLayoutManager(layout);
 
 			var theme = pane.getConfig().getTheme();
-			Label label = new Label(pane.isForInputs() ? ">> input flows" : "output flows >>");
+			Label label = new Label(
+				pane.isForInputs() ? ">> input flows" : "output flows >>");
 			label.setForegroundColor(theme.infoLabelColor());
-			var alignment = pane.isForInputs() ? SWT.LEFT : SWT.RIGHT;
+			var alignment = pane.isForInputs() ? SWT.LEAD : SWT.TRAIL;
 			add(label, new GridData(alignment, SWT.TOP, true, false));
 		}
 
@@ -93,25 +94,12 @@ public class IOPaneFigure extends Figure {
 					var location = getLocation();
 					var size = getNodeFigure().getSize();
 					g.setForegroundColor(theme.boxBorderColor(box));
-					g.drawLine(location.x, location.y, location.x + size.width, location.y);
+					g.drawLine(location.x, location.y,
+						location.x + size.width, location.y);
 					g.restoreState();
 				}
 			}
 			super.paint(g);
-		}
-
-	}
-
-	private static class ButtonMargin extends Figure {
-
-		public ButtonMargin(boolean forInputs, Node node) {
-			var button = new AddFlowButton(forInputs, node);
-			var layout = new GridLayout(1, true);
-			layout.marginHeight = 3;
-			layout.marginWidth = 5;
-			setLayoutManager(layout);
-			var alignment = forInputs ? SWT.LEFT : SWT.RIGHT;
-			add(button, new GridData(alignment, SWT.TOP, true, false));
 		}
 
 	}

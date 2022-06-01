@@ -47,7 +47,7 @@ public class MaximizedNodeFigure extends NodeFigure {
 
 		var contentPaneLayout = new GridLayout(1, false);
 		contentPaneLayout.marginHeight = 0;
-		contentPaneLayout.marginWidth = 0;
+		contentPaneLayout.marginWidth = 4;
 		contentPaneLayout.horizontalSpacing = 0;
 		contentPaneLayout.verticalSpacing = 0;
 		contentPane.setLayoutManager(contentPaneLayout);

@@ -11,7 +11,7 @@ import org.openlca.app.editors.graph.actions.ActionIds;
 
 public class GraphContextMenuProvider  extends ContextMenuProvider {
 
-	private ActionRegistry actionRegistry;
+	private final ActionRegistry actionRegistry;
 
 	public GraphContextMenuProvider(EditPartViewer viewer,
 																	ActionRegistry registry) {
@@ -30,6 +30,22 @@ public class GraphContextMenuProvider  extends ContextMenuProvider {
 		action = actionRegistry.getAction(ActionFactory.REDO.getId());
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, action);
 
-		menu.add(actionRegistry.getAction(ActionIds.LAYOUT_TREE));
+		action = actionRegistry.getAction(ActionIds.ADD_PROCESS);
+		if (action.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+
+		action = actionRegistry.getAction(ActionIds.ADD_INPUT_EXCHANGE);
+		if (action.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+		action = actionRegistry.getAction(ActionIds.ADD_OUTPUT_EXCHANGE);
+		if (action.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+
+		action = actionRegistry.getAction(ActionFactory.DELETE.getId());
+		if (action.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+
+		action = actionRegistry.getAction(ActionIds.LAYOUT_TREE);
+		menu.appendToGroup(GEFActionConstants.GROUP_REST, action);
 	}
 }

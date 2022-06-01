@@ -2,6 +2,10 @@ package org.openlca.app.editors.graph.actions;
 
 public interface ActionIds {
 
+	String ADD_PROCESS = "graph.actions.AddProcessAction";
+	String ADD_INPUT_EXCHANGE = "graph.actions.AddExchangeAction.Input";
+	String ADD_OUTPUT_EXCHANGE = "graph.actions.AddExchangeAction.Output";
+
 	String BUILD_NEXT_TIER = "graph.actions.BuildNextTierAction";
 	String BUILD_SUPPLY_CHAIN = "graph.actions.BuildSupplyChainAction";
 	String BUILD_SUPPLY_CHAIN_MENU = "graph.actions.BuildSupplyChainMenuAction";

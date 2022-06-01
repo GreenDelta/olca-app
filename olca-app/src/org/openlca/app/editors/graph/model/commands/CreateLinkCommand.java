@@ -128,4 +128,5 @@ public class CreateLinkCommand extends Command {
 		else if (!exchangeItem.isConnected())
 			source = exchangeItem;
 	}
+
 }

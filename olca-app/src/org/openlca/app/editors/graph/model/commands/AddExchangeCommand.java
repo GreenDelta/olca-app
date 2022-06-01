@@ -1,6 +1,6 @@
-package org.openlca.app.editors.graph.actions;
+package org.openlca.app.editors.graph.model.commands;
 
-import org.eclipse.jface.action.Action;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
@@ -13,13 +13,11 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graph.GraphEditor;
-import org.openlca.app.editors.graph.model.GraphFactory;
-import org.openlca.app.editors.graph.model.Node;
+import org.openlca.app.editors.graph.model.IOPane;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.ModelElement;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
@@ -27,55 +25,45 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.combo.FlowPropertyCombo;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.*;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
 import static org.openlca.app.editors.graph.model.GraphComponent.INPUT_PROP;
 import static org.openlca.app.editors.graph.model.GraphComponent.OUTPUT_PROP;
+import static org.openlca.app.editors.graph.model.commands.ExchangeEditDialog.open;
 
-public class ExchangeAddAction extends Action implements GraphAction {
+public class AddExchangeCommand extends Command {
 
 	private final IDatabase db = Database.get();
+	private final IOPane pane;
 	private final boolean forInput;
-	private Node node;
+	private final GraphEditor editor;
 
-	public static ExchangeAddAction forInput() {
-		return new ExchangeAddAction(true);
-	}
-
-	public static ExchangeAddAction forOutput() {
-		return new ExchangeAddAction(false);
-	}
-
-	private ExchangeAddAction(boolean forInput) {
+	public AddExchangeCommand(IOPane pane, boolean forInput) {
+		this.pane = pane;
 		this.forInput = forInput;
-		setId("AddFlowAction");
-		setText(forInput ? "Add input" : "Add output");
-		setImageDescriptor(Images.descriptor(ModelType.FLOW));
+		this.editor = pane.editor;
 	}
 
 	@Override
-	public boolean accepts(GraphEditor editor) {
-		var processes = GraphActions.allSelectedOf(editor, Node.class);
-		if (processes.size() != 1)
-			return false;
-		var node = processes.get(0);
-		if (node.descriptor == null
-			|| node.descriptor.isFromLibrary()
-			|| node.descriptor.type != ModelType.PROCESS)
-			return false;
-		this.node = node;
-		return true;
+	public boolean canExecute() {
+		return pane.getNode().isEditable();
 	}
 
 	@Override
-	public void run() {
-		runOn(this.node);
+	public boolean canUndo() {
+		// TODO (francois) Implement undo.
+		return false;
 	}
 
-	public void runOn(Node node) {
+	@Override
+	public void execute() {
+		var node = pane.getNode();
 		if (node == null)
 			return;
 		var d = node.descriptor;
@@ -95,14 +83,13 @@ public class ExchangeAddAction extends Action implements GraphAction {
 		var exchange = forInput
 			? process.input(flow, 1.0)
 			: process.output(flow, 1.0);
-		ExchangeEditDialog.open(exchange);
+		open(exchange);
 		db.update(process);
 
-		// if an elementary flow was added, make sure
-		// that our graph shows elementary flows
-		// note that we need to do this, before we
-		// create the IONode in order to avoid recreation
-		// of that node later
+		// If an elementary flow was added, make sure that our graph shows
+		// elementary flow.
+		// Note that we need to do this, before we create the IOPane in order to
+		// avoid recreation of that node later.
 		var editor = node.editor;
 		if (flow.flowType == FlowType.ELEMENTARY_FLOW) {
 			editor.config.setShowElementaryFlows(true);
@@ -115,7 +102,7 @@ public class ExchangeAddAction extends Action implements GraphAction {
 			panes.get(forInput ? INPUT_PROP : OUTPUT_PROP), forInput ? 0 : 1);
 	}
 
-	private class Dialog extends FormDialog {
+	class Dialog extends FormDialog {
 
 		final int _CREATE = 8;
 		final int _SELECT = 16;
@@ -133,9 +120,9 @@ public class ExchangeAddAction extends Action implements GraphAction {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm mform) {
-			var tk = mform.getToolkit();
-			var body = UI.formBody(mform.getForm(), tk);
+		protected void createFormContent(IManagedForm managedForm) {
+			var tk = managedForm.getToolkit();
+			var body = UI.formBody(managedForm.getForm(), tk);
 			UI.gridLayout(body, 1);
 
 			// create new text
@@ -277,9 +264,11 @@ public class ExchangeAddAction extends Action implements GraphAction {
 				? FlowType.PRODUCT_FLOW
 				: this.type;
 			var flow = db.insert(Flow.of(name, type, prop));
-			node.editor.getModel().flows.reload(db);
+			editor.getModel().flows.reload(db);
 			Navigator.refresh();
 			return flow;
 		}
+
 	}
+
 }

@@ -38,6 +38,8 @@ public class NodeSetConstraintCommand extends Command {
 		this.node = node;
 		this.request = req;
 		this.newBounds = newBounds.getCopy();
+		// The height of a minimized or maximized node cannot be changed.
+		this.newBounds.height = node.getSize().height;
 		Object type = request.getType();
 		if (RequestConstants.REQ_RESIZE_CHILDREN.equals(type)
 		|| RequestConstants.REQ_RESIZE.equals(type))
@@ -51,7 +53,9 @@ public class NodeSetConstraintCommand extends Command {
 	@Override
 	public boolean canExecute() {
 		Object type = request.getType();
-		if (node.isMinimized() && RequestConstants.REQ_RESIZE_CHILDREN.equals(type))
+		// The height of a minimized or maximized node cannot be changed.
+		if (RequestConstants.REQ_RESIZE_CHILDREN.equals(type)
+			&& node.getSize().width == newBounds.width)
 			return false;
 		return (RequestConstants.REQ_MOVE.equals(type)
 			|| RequestConstants.REQ_MOVE_CHILDREN.equals(type)

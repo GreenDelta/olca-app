@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graph.actions;
+package org.openlca.app.editors.graph.model.commands;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;

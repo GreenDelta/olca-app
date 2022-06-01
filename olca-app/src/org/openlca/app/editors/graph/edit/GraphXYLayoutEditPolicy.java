@@ -27,7 +27,12 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 		return super.getCommand(request);
 	}
 
-		@Override
+	@Override
+	protected Command getCreateCommand(CreateRequest request) {
+		return null;
+	}
+
+	@Override
 	protected Command createChangeConstraintCommand(
 		ChangeBoundsRequest request, EditPart child, Object constraint) {
 		if (child instanceof NodeEditPart && constraint instanceof Rectangle) {
@@ -54,26 +59,7 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 			request.setMoveDelta(mapNodeToMoveDelta.get(part.getModel()));
 			cc.add(getCommand(request));
 		}
-		return cc;
-	}
-
-	@Override
-	protected Command getCreateCommand(CreateRequest request) {
-		return null;
-
-		// TODO Create command
-		//			@Override
-		//			protected Command getCreateCommand(CreateRequest request) {
-		//				Object childClass = request.getNewObjectType();
-		//				if (childClass == EllipticalShape.class
-		//					|| childClass == RectangularShape.class) {
-		//					// return a command that can add a Shape to a ShapesDiagram
-		//					return new ShapeCreateCommand((Shape) request.getNewObject(),
-		//						(ShapesDiagram) getHost().getModel(),
-		//						(Rectangle) getConstraintFor(request));
-		//				}
-		//				return null;
-		//			}
+		return cc.unwrap();
 	}
 
 }

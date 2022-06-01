@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graph.model;
 
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.M;
 import org.openlca.app.editors.graph.GraphEditor;
 import org.openlca.app.editors.graph.search.MutableProcessLinkSearchMap;
@@ -27,8 +28,9 @@ public class Node extends MinMaxGraphComponent {
 
 	public static final Dimension DEFAULT_MINIMIZED_SIZE = new Dimension(250, 25);
 	public static final Dimension DEFAULT_MAXIMIZED_SIZE = new Dimension(250, -1);
+	public static final Point DEFAULT_LOCATION = new Point(20, 20);
 
-	public final RootDescriptor descriptor;
+    public final RootDescriptor descriptor;
 	private final Expander inputExpander = new Expander(Side.INPUT);
 	private final Expander outputExpander = new Expander(Side.OUTPUT);
 
@@ -212,6 +214,8 @@ public class Node extends MinMaxGraphComponent {
 		}
 
 		public boolean isExpanded() {
+			// TODO (francois) Add a mechanism to detect if every side links are
+			//  deleted or added.
 			return expanded;
 		}
 

@@ -2,7 +2,6 @@ package org.openlca.app.editors.graph;
 
 import java.util.ArrayList;
 import java.util.EventObject;
-import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.*;
@@ -12,10 +11,14 @@ import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.actions.*;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
+import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.*;
+import org.eclipse.ui.actions.ActionFactory;
+import org.openlca.app.editors.graph.actions.AddExchangeAction;
+import org.openlca.app.editors.graph.actions.AddProcessAction;
 import org.openlca.app.editors.graph.actions.LayoutAction;
 import org.openlca.app.editors.graph.edit.GraphEditPartFactory;
 import org.openlca.app.editors.graph.model.Graph;
@@ -33,13 +36,12 @@ import org.openlca.core.model.ProductSystem;
  */
 public class GraphEditor extends GraphicalEditor {
 
+	public static final String ID = "editors.graphical";
+
+	private KeyHandler sharedKeyHandler;
+
 	private final ProductSystemEditor systemEditor;
 	private Graph graph;
-	private ISelection selection;
-
-	// TODO: we may do not need this later when we build our
-	//  context menu more selection specific.
-	private final List<String> updateActions = new ArrayList<>();
 
 	public static final double[] ZOOM_LEVELS = new double[] {
 		0.01, 0.1, 0.2, 0.4, 0.8, 1.0, 1.6, 2.0, 3.0, 5.0, 10.0 };
@@ -69,6 +71,7 @@ public class GraphEditor extends GraphicalEditor {
 		var viewer = getGraphicalViewer();
 
 		GraphDropListener.on(this);
+
 		// TODO (francois) Implement a PanningSelectionTool without pressing SpaceBar and
 		//  Selection while pressing Ctrl.
 		viewer.getEditDomain().setActiveTool(new PanningSelectionTool());
@@ -92,22 +95,24 @@ public class GraphEditor extends GraphicalEditor {
 
 		var zoom = root.getZoomManager();
 		zoom.setZoomLevels(ZOOM_LEVELS);
+		var zoomLevels = new ArrayList<String>(3);
+		zoomLevels.add(ZoomManager.FIT_ALL);
+		zoomLevels.add(ZoomManager.FIT_WIDTH);
+		zoomLevels.add(ZoomManager.FIT_HEIGHT);
+		root.getZoomManager().setZoomLevelContributions(zoomLevels);
 		zoom.setZoomAnimationStyle(ZoomManager.ANIMATE_ZOOM_IN_OUT);
 		viewer.setProperty(
 			MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
 			MouseWheelZoomHandler.SINGLETON);
+		var zoomIn = new ZoomInAction(root.getZoomManager());
+		var zoomOut = new ZoomOutAction(root.getZoomManager());
+		getActionRegistry().registerAction(zoomIn);
+		getActionRegistry().registerAction(zoomOut);
+//		getSite().getKeyBindingService().registerAction(zoomIn);
+//		getSite().getKeyBindingService().registerAction(zoomOut);
 
 		viewer.setRootEditPart(root);
-
-		var actions = configureActions();
-		var keyHandler = new KeyHandler();
-		IAction delete = actions.getAction(org.eclipse.ui.actions.ActionFactory.DELETE.getId());
-		IAction zoomIn = actions.getAction(GEFActionConstants.ZOOM_IN);
-		IAction zoomOut = actions.getAction(GEFActionConstants.ZOOM_OUT);
-		keyHandler.put(KeyStroke.getPressed(SWT.DEL, 127, 0), delete);
-		keyHandler.put(KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0), zoomIn);
-		keyHandler.put(KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0), zoomOut);
-		viewer.setKeyHandler(keyHandler);
+		viewer.setKeyHandler(getCommonKeyHandler());
 
 		ContextMenuProvider provider = new GraphContextMenuProvider(viewer,
 			getActionRegistry());
@@ -119,33 +124,60 @@ public class GraphEditor extends GraphicalEditor {
 		loadConfig();
 	}
 
-
-	private ActionRegistry configureActions() {
-		var delete = new DeleteAction((IWorkbenchPart) this) {
-			@Override
-			protected ISelection getSelection() {
-				return getSite()
-					.getWorkbenchWindow()
-					.getSelectionService()
-					.getSelection();
-			}
-		};
-
-		var actions = new IAction[] {
-			new ZoomInAction(getZoomManager()),
-			new ZoomOutAction(getZoomManager()),
-			new LayoutAction(this),
-			delete,
-		};
-
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void createActions() {
+		super.createActions();
 		var registry = getActionRegistry();
-		for (var action : actions) {
-			registry.registerAction(action);
-			if (action instanceof UpdateAction) {
-				updateActions.add(action.getId());
-			}
+		var selectionActions = getSelectionActions();
+		IAction action;
+
+		action = new MatchSizeAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new MatchWidthAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new MatchHeightAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new LayoutAction(this);
+		registry.registerAction(action);
+
+		action = new AddProcessAction(this);
+		registry.registerAction(action);
+
+		action = new AddExchangeAction(this, true);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new AddExchangeAction(this, false);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+	}
+
+	/**
+	 * Returns the KeyHandler with common bindings for both the Outline (if it
+	 * exists) and Graphical Views. For example, delete is a common action.
+	 */
+	protected KeyHandler getCommonKeyHandler() {
+		if (sharedKeyHandler == null) {
+			sharedKeyHandler = new KeyHandler();
+			var registry = getActionRegistry();
+			sharedKeyHandler.put(
+				KeyStroke.getPressed(SWT.DEL, 127, 0),
+				registry.getAction(ActionFactory.DELETE.getId()));
+			sharedKeyHandler.put(
+				KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0),
+				registry.getAction(GEFActionConstants.ZOOM_IN));
+			sharedKeyHandler.put(
+				KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0),
+				registry.getAction(GEFActionConstants.ZOOM_OUT));
 		}
-		return registry;
+		return sharedKeyHandler;
 	}
 
 	protected void loadProperties() {
@@ -167,6 +199,20 @@ public class GraphEditor extends GraphicalEditor {
 			config.copyTo(this.config);
 	}
 
+	/**
+	 * The <code>selectionChanged</code> method of <code>GraphicalEditor</code> is
+	 * overridden due to the update made on <code>getActiveEditor()</code> that
+	 * now return a multi-page editor.
+	 * @param part      the workbench part containing the selection
+	 * @param selection the current selection. This may be <code>null</code> if
+	 *                  <code>INullSelectionListener</code> is implemented.
+	 */
+	@Override
+	public void selectionChanged(IWorkbenchPart part, ISelection selection)	{
+		if (getSite().getWorkbenchWindow().getActivePage().getActiveEditor().equals(this.systemEditor))
+			updateActions(getSelectionActions());
+	}
+
 	@Override
 	protected void setInput(IEditorInput input) {
 		super.setInput(input);
@@ -177,10 +223,6 @@ public class GraphEditor extends GraphicalEditor {
 	@Override
 	public GraphicalViewer getGraphicalViewer() {
 		return super.getGraphicalViewer();
-	}
-
-	public ISelection getSelection() {
-		return selection;
 	}
 
 	public void setDirty() {
@@ -210,10 +252,6 @@ public class GraphEditor extends GraphicalEditor {
 		return graphFactory;
 	}
 
-	public void setGraphModel(Graph model) {
-		graph = model;
-	}
-
 	public ZoomManager getZoomManager() {
 		return getRootEditPart().getZoomManager();
 	}
@@ -227,18 +265,11 @@ public class GraphEditor extends GraphicalEditor {
 
 	}
 
-	@Override
-	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		this.selection = selection;
-		updateActions(updateActions);
-	}
-
 	public Object getAdapter(Class type) {
 		if (type == ZoomManager.class)
-			return ((ScalableFreeformRootEditPart) getGraphicalViewer()
-				.getRootEditPart())
-				.getZoomManager();
+			return getZoomManager();
 
 		return super.getAdapter(type);
 	}
+
 }

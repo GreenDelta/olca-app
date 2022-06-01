@@ -6,22 +6,27 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.Request;
 import org.openlca.app.editors.graph.figures.GridPos;
 import org.openlca.app.editors.graph.figures.IOPaneFigure;
-import org.openlca.app.editors.graph.figures.NodeFigure;
 import org.openlca.app.editors.graph.model.IOPane;
 import org.openlca.app.editors.graph.model.GraphComponent;
+
+import static org.openlca.app.editors.graph.actions.AddExchangeAction.REQ_ADD_INPUT_EXCHANGE;
+import static org.openlca.app.editors.graph.actions.AddExchangeAction.REQ_ADD_OUTPUT_EXCHANGE;
 
 public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
 
 	@Override
 	protected IFigure createFigure() {
-		return new IOPaneFigure(getModel());
+		var figure = new IOPaneFigure(getModel());
+		addButtonActionListener(figure);
+		return figure;
 	}
 
 	@Override
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new MinMaxComponentEditPolicy());
+		installEditPolicy(EditPolicy.CONTAINER_ROLE, new IOPaneEditPolicy());
 	}
 
 	@Override
@@ -53,6 +58,16 @@ public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
 	@Override
 	public NodeEditPart getParent() {
 		return (NodeEditPart) super.getParent();
+	}
+
+	protected void addButtonActionListener(IOPaneFigure figure) {
+		figure.addExchangeButton.addActionListener($ -> {
+			var request = getModel().isForInputs()
+				? new Request(REQ_ADD_INPUT_EXCHANGE)
+				: new Request(REQ_ADD_OUTPUT_EXCHANGE);
+			var command = getCommand(request);
+			getViewer().getEditDomain().getCommandStack().execute(command);
+		});
 	}
 
 }

@@ -54,16 +54,6 @@ public class Graph extends GraphComponent {
 		return node != null && referenceProcess.id == node.descriptor.id;
 	}
 
-	public Node getOrCreateProcessNode(long processID) {
-		var node = getProcessNode(processID);
-		System.out.println("Getting node: " + processID + " is " + node);
-		if (node != null)
-			return node;
-		var descriptor = GraphFactory.getDescriptor(processID);
-		node = editor.getGraphFactory().createNode(descriptor, null);
-		return node;
-	}
-
 	public double getZoom() {
 		return zoom;
 	}

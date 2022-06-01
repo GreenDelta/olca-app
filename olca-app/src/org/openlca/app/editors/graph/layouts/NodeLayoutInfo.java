@@ -23,12 +23,19 @@ public class NodeLayoutInfo {
 
 	public NodeLayoutInfo(Point location, Dimension size, boolean minimized,
 												boolean expandedLeft, boolean expandedRight) {
-		this.box = size == null
-			? new Rectangle(location, Node.DEFAULT_MINIMIZED_SIZE)
-			: new Rectangle(location, size);
+		this.box = new Rectangle(
+			location == null ? Node.DEFAULT_LOCATION : location,
+			size == null ? Node.DEFAULT_MINIMIZED_SIZE : size);
 		this.minimized = minimized;
 		this.expandedLeft = expandedLeft;
 		this.expandedRight = expandedRight;
+	}
+
+	public NodeLayoutInfo(org.eclipse.swt.graphics.Point location, Dimension size,
+												boolean minimized, boolean expandedLeft,
+												boolean expandedRight) {
+		this(new Point(location.x, location.y), size, minimized, expandedLeft,
+			expandedRight);
 	}
 
 }

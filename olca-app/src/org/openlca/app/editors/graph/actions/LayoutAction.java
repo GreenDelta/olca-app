@@ -1,21 +1,15 @@
 package org.openlca.app.editors.graph.actions;
 
-import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.CompoundCommand;
-import org.eclipse.gef.requests.ChangeBoundsRequest;
-import org.eclipse.gef.ui.actions.SelectionAction;
+import org.eclipse.gef.internal.InternalImages;
+import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.editors.graph.GraphEditor;
 import org.openlca.app.editors.graph.edit.GraphEditPart;
-import org.openlca.app.editors.graph.layouts.TreeLayoutProcessor;
-import org.openlca.app.editors.graph.model.Node;
 
-import static org.eclipse.gef.RequestConstants.REQ_MOVE_CHILDREN;
-
-public class LayoutAction extends SelectionAction {
+public class LayoutAction extends WorkbenchPartAction {
 
 	public static final String REQ_LAYOUT = "layout";
 	private final GraphEditor graphEditor;
@@ -25,6 +19,8 @@ public class LayoutAction extends SelectionAction {
 		graphEditor = part;
 		setText(NLS.bind(M.LayoutAs, M.Tree));
 		setId(ActionIds.LAYOUT_TREE);
+		setImageDescriptor(InternalImages.DESC_HORZ_ALIGN_LEFT);
+		setDisabledImageDescriptor(InternalImages.DESC_HORZ_ALIGN_LEFT_DIS);
 	}
 
 	@Override
@@ -34,11 +30,10 @@ public class LayoutAction extends SelectionAction {
 
 	@Override
 	protected boolean calculateEnabled() {
-		return canPerformAction();
-	}
-
-	private boolean canPerformAction() {
-		return true;
+		var cmd = getCommand();
+		if (cmd == null)
+			return false;
+		return cmd.canExecute();
 	}
 
 	private Command getCommand() {

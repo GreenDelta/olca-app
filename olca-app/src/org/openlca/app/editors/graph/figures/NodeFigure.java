@@ -36,8 +36,8 @@ public class NodeFigure extends Figure {
 			var box = Theme.Box.of(node);
 
 			GridLayout layout = new GridLayout(4, false);
-			layout.marginHeight = 0;
-			layout.marginWidth = 0;
+			layout.marginHeight = 2;
+			layout.marginWidth = 3;
 			setLayoutManager(layout);
 
 			add(inputExpandButton, new GridData(SWT.LEAD, SWT.CENTER, false, true));
