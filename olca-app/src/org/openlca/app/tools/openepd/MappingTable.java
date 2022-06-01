@@ -1,4 +1,4 @@
-package org.openlca.app.tools.openepd.output;
+package org.openlca.app.tools.openepd;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -6,17 +6,15 @@ import java.util.stream.Stream;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
-import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
-import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
@@ -24,81 +22,31 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.openepd.io.IndicatorMapping;
 import org.openlca.io.openepd.io.MethodMapping;
-import org.openlca.io.openepd.io.Vocab.Indicator;
-import org.openlca.io.openepd.io.Vocab.Method;
+import org.openlca.io.openepd.io.Vocab;
 import org.openlca.util.Strings;
 
-record MappingSection(MethodMapping mapping) {
+public record MappingTable(
+	MethodMapping mapping,
+	boolean isForImport,
+	int columnCount) {
 
-	void render(Composite body, FormToolkit tk) {
-		var title = mapping.method() != null
-			? "Results: " + Labels.name(mapping.method())
-			: "Results";
-		var section = UI.section(body, tk, title);
-		UI.gridData(section, true, true);
-		var comp = UI.sectionClient(section, tk, 1);
-		createCombo(comp, tk);
-		createTable(comp);
+	private MappingTable(MethodMapping mapping, boolean isForImport) {
+		this(mapping, isForImport, mapping.scopes().size() + 5);
 	}
 
-	private void createCombo(Composite parent, FormToolkit tk) {
-		var comp = UI.formComposite(parent, tk);
-		var combo = UI.formCombo(comp, tk, "openEPD LCIA Method");
-		var methods = Method.values();
-		var items = new String[methods.length];
-		int selectionIdx = -1;
-		Method selected = null;
-		double score = 0;
-		for (int i = 0; i < methods.length; i++) {
-			var method = methods[i];
-			items[i] = method.code();
-			if (method == Method.UNKNOWN_LCIA
-				&& selected == null) {
-				selectionIdx = i;
-				selected = method;
-				continue;
-			}
-			if (mapping.method() != null) {
-				var s = method.matchScoreOf(mapping.method().name);
-				if (s > score) {
-					selectionIdx = i;
-					selected = method;
-					score = s;
-				}
-			}
-		}
-
-		mapping.epdMethod(selected);
-		combo.setItems(items);
-		combo.select(selectionIdx);
-		Controls.onSelect(combo, $ -> {
-			var idx = combo.getSelectionIndex();
-			mapping.epdMethod(methods[idx]);
-		});
+	public MappingTable forImport(MethodMapping mapping) {
+		return new MappingTable(mapping, true);
 	}
 
-	private void createTable(Composite parent) {
-		var columns = new String[5 + mapping.scopes().size()];
-		columns[0] = "Indicator";
-		columns[1] = "Unit";
-		columns[2] = "openEPD Indicator";
-		columns[3] = "openEPD Unit";
-		columns[4] = "Factor";
-		for (int i = 0; i < mapping.scopes().size(); i++) {
-			columns[i + 5] = mapping.scopes().get(i);
-		}
-		var table = Tables.createViewer(parent, columns);
+	public MappingTable forExport(MethodMapping mapping) {
+		return new MappingTable(mapping, false);
+	}
+
+	public TableViewer create(Composite parent) {
+		var table = Tables.createViewer(parent, headers());
 		table.setLabelProvider(new TableLabel());
-		var widths = new double[columns.length];
-		widths[0] = 0.2;
-		widths[1] = 0.1;
-		widths[2] = 0.1;
-		widths[3] = 0.1;
-		widths[4] = 0.1;
-		Arrays.fill(widths, 5, columns.length,
-			.4 / (mapping.scopes().size()));
-		Tables.bindColumnWidths(table, widths);
-		for (int i = 4; i < columns.length; i++) {
+		Tables.bindColumnWidths(table, widths());
+		for (int i = 4; i < columnCount(); i++) {
 			table.getTable()
 				.getColumn(i)
 				.setAlignment(SWT.CENTER);
@@ -107,10 +55,43 @@ record MappingSection(MethodMapping mapping) {
 
 		var modifier = new ModifySupport<IndicatorMapping>(table)
 			.bind("Factor", new FactorColumn())
-			.bind("openEPD Indicator", new IndicatorColumn());
+			.bind("openEPD Indicator", new EpdIndicatorColumn());
 		for (var scope : mapping.scopes()) {
 			modifier.bind(scope, new ScopeColumn(scope));
 		}
+		return table;
+	}
+
+	private String[] headers() {
+		var columns = new String[columnCount()];
+		if (isForImport) {
+			columns[0] = "openEPD Indicator";
+			columns[1] = "openEPD Unit";
+			columns[2] = "Indicator";
+			columns[3] = "Unit";
+		} else {
+			columns[0] = "Indicator";
+			columns[1] = "Unit";
+			columns[2] = "openEPD Indicator";
+			columns[3] = "openEPD Unit";
+		}
+		columns[4] = "Factor";
+		for (int i = 0; i < mapping.scopes().size(); i++) {
+			columns[i + 5] = mapping.scopes().get(i);
+		}
+		return columns;
+	}
+
+	private double[] widths() {
+		var widths = new double[columnCount];
+		widths[0] = isForImport ? 0.1 : 0.2;
+		widths[1] = 0.1;
+		widths[2] = isForImport ? 0.2 : 0.1;
+		widths[3] = 0.1;
+		widths[4] = 0.1;
+		Arrays.fill(widths, 5, columnCount,
+			.4 / (mapping.scopes().size()));
+		return widths;
 	}
 
 	private class TableLabel extends LabelProvider
@@ -202,14 +183,14 @@ record MappingSection(MethodMapping mapping) {
 		}
 	}
 
-	private static class IndicatorColumn
-		extends ComboBoxCellModifier<IndicatorMapping, Indicator> {
+	private static class EpdIndicatorColumn
+		extends ComboBoxCellModifier<IndicatorMapping, Vocab.Indicator> {
 
 		@Override
-		protected Indicator[] getItems(IndicatorMapping row) {
+		protected Vocab.Indicator[] getItems(IndicatorMapping row) {
 			return Stream.concat(
-					Stream.of((Indicator) null),
-					Stream.of(Indicator.values()))
+					Stream.of((Vocab.Indicator) null),
+					Stream.of(Vocab.Indicator.values()))
 				.sorted((i1, i2) -> {
 						if (i1 == null && i2 == null)
 							return 0;
@@ -221,23 +202,23 @@ record MappingSection(MethodMapping mapping) {
 							? i1.type().ordinal() - i2.type().ordinal()
 							: Strings.compare(i1.code(), i2.code());
 					}
-				).toArray(Indicator[]::new);
+				).toArray(Vocab.Indicator[]::new);
 		}
 
 		@Override
-		protected Indicator getItem(IndicatorMapping row) {
+		protected Vocab.Indicator getItem(IndicatorMapping row) {
 			return row.epdIndicator();
 		}
 
 		@Override
-		protected String getText(Indicator i) {
+		protected String getText(Vocab.Indicator i) {
 			return i == null
 				? ""
 				: i.code() + " - " + i.description();
 		}
 
 		@Override
-		protected void setItem(IndicatorMapping row, Indicator i) {
+		protected void setItem(IndicatorMapping row, Vocab.Indicator i) {
 			if (row == null)
 				return;
 			if (i == null) {

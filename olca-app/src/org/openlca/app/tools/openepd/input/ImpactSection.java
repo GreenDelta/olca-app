@@ -1,9 +1,11 @@
 package org.openlca.app.tools.openepd.input;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
@@ -28,35 +30,34 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
-import org.openlca.io.openepd.input.ImpactMapping;
-import org.openlca.io.openepd.input.IndicatorKey;
-import org.openlca.io.openepd.mapping.MappingModel;
+import org.openlca.io.openepd.io.IndicatorMapping;
+import org.openlca.io.openepd.io.MethodMapping;
 import org.openlca.util.Strings;
 
 class ImpactSection {
 
 	private final ImportDialog dialog;
-	private final String methodCode;
-	private final MappingModel mapping;
+	private final MethodMapping mapping;
 	private TableViewer table;
 
-	private ImpactSection(ImportDialog dialog, String methodCode) {
+	private ImpactSection(ImportDialog dialog, MethodMapping mapping) {
 		this.dialog = dialog;
-		this.methodCode = methodCode;
-		this.mapping = dialog.mapping;
+		this.mapping = mapping;
 	}
 
 	static List<ImpactSection> initAllOf(ImportDialog dialog) {
 		if (dialog == null)
 			return Collections.emptyList();
-		return dialog.mapping.methodCodes()
+		return dialog.mapping.mappings()
 			.stream()
-			.map(code -> new ImpactSection(dialog, code))
+			.filter(mapping -> mapping.epdMethod() != null)
+			.map(mapping -> new ImpactSection(dialog, mapping))
 			.toList();
 	}
 
 	void render(Composite body, FormToolkit tk) {
-		var section = UI.section(body, tk, "openEPD method: " + methodCode);
+		var section = UI.section(body, tk,
+			"openEPD method: " + mapping.epdMethod());
 		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 		var top = tk.createComposite(comp);
@@ -70,39 +71,58 @@ class ImpactSection {
 		var withNull = new ArrayList<ImpactMethod>(methods.size() + 1);
 		withNull.add(null);
 		withNull.addAll(methods);
-		var current = mapping.getMethodMapping(methodCode);
 		EntityCombo.of(combo, withNull)
-			.select(current.method())
+			.select(mapping.method())
 			.onSelected(method -> {
-				var next = mapping.swapMethod(methodCode, method);
-				if (table != null) {
-					table.setInput(next.keys());
-				}
-				dialog.setMappingChanged();
+				mapping.remapWith(method);
+				table.setInput(mapping.entries());
 			});
 
-		table = Tables.createViewer(comp,
-			"openEPD Code",
-			"openEPD unit",
-			"openLCA indicator",
-			"openLCA code",
-			"openLCA unit");
-		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
+		createTable(comp);
+	}
+
+	private void createTable(Composite comp) {
+		var columns = new String[5 + mapping.scopes().size()];
+		columns[0] = "openEPD Indicator";
+		columns[1] = "openEPD Unit";
+		columns[2] = "Indicator";
+		columns[3] = "Unit";
+		columns[4] = "Factor";
+		for (int i = 0; i < mapping.scopes().size(); i++) {
+			columns[i + 5] = mapping.scopes().get(i);
+		}
+		table = Tables.createViewer(comp, columns);
 		table.setLabelProvider(new MappingLabel());
-		new ModifySupport<IndicatorKey>(table)
+		var widths = new double[columns.length];
+		widths[0] = 0.1;
+		widths[1] = 0.1;
+		widths[2] = 0.2;
+		widths[3] = 0.1;
+		widths[4] = 0.1;
+		Arrays.fill(widths, 5, columns.length,
+			.4 / (mapping.scopes().size()));
+		Tables.bindColumnWidths(table,widths);
+		for (int i = 4; i < columns.length; i++) {
+			table.getTable()
+				.getColumn(i)
+				.setAlignment(SWT.CENTER);
+		}
+		table.setInput(mapping.entries());
+
+		new ModifySupport<IndicatorMapping>(table)
 			.bind("openLCA indicator", new ImpactModifier());
-		table.setInput(current.keys());
+		table.setInput(mapping.entries());
 	}
 
 	private class ImpactModifier extends
-		ComboBoxCellModifier<IndicatorKey, ImpactCategory> {
+		ComboBoxCellModifier<IndicatorMapping, ImpactCategory> {
 
 		@Override
-		protected ImpactCategory[] getItems(IndicatorKey key) {
-			var m = mapping.getMethodMapping(methodCode);
-			if (m.isEmpty())
+		protected ImpactCategory[] getItems(IndicatorMapping row) {
+			var method = mapping.method();
+			if (method == null)
 				return new ImpactCategory[0];
-			var impacts = m.method().impactCategories;
+			var impacts = method.impactCategories;
 			impacts.sort(Comparator.comparing(Labels::name));
 			var array = new ImpactCategory[impacts.size() + 1];
 			for (int i = 0; i < impacts.size(); i++) {
@@ -112,9 +132,8 @@ class ImpactSection {
 		}
 
 		@Override
-		protected ImpactCategory getItem(IndicatorKey key) {
-			var m = mapping.getIndicatorMapping(methodCode, key);
-			return m.indicator();
+		protected ImpactCategory getItem(IndicatorMapping row) {
+			return row.indicator();
 		}
 
 		@Override
@@ -123,24 +142,40 @@ class ImpactSection {
 		}
 
 		@Override
-		protected void setItem(IndicatorKey key, ImpactCategory impact) {
-			mapping.swapIndicator(methodCode, key, impact);
-			dialog.setMappingChanged();
+		protected void setItem(IndicatorMapping row, ImpactCategory impact) {
+			if (Objects.equals(impact, row.indicator()))
+				return;
+			var epdInd = row.epdIndicator();
+			if (epdInd == null)
+				return;
+
+			if (impact == null) {
+				row.indicator(null)
+					.unit(null)
+					.factor(1);
+				return;
+			}
+
+			var unit = epdInd.unitMatchOf(impact.referenceUnit).orElse(null);
+			row.indicator(impact)
+				.unit(unit)
+				.factor(unit != null
+					? 1 / unit.factor()
+					: 1);
 		}
 	}
 
 	private class MappingLabel extends LabelProvider
-		implements ITableLabelProvider, ITableFontProvider, ITableColorProvider {
+		implements ITableLabelProvider, ITableColorProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof IndicatorKey key))
+			if (!(obj instanceof IndicatorMapping m))
 				return null;
-			var m = mapping.getIndicatorMapping(methodCode, key);
 			return switch (col) {
 				case 0, 1 -> Icon.BUILDING.get();
 				case 2 -> Images.get(ModelType.IMPACT_CATEGORY);
-				default -> m.isEmpty()
+				default -> m.indicator() != null
 					? null
 					: Images.get(ModelType.IMPACT_CATEGORY);
 			};
@@ -148,33 +183,27 @@ class ImpactSection {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof IndicatorKey key))
+			if (!(obj instanceof IndicatorMapping m))
 				return null;
-			var m = mapping.getIndicatorMapping(methodCode, key);
+			var epdInd = m.epdIndicator();
 			return switch (col) {
-				case 0 -> key.code();
-				case 1 -> key.unit();
-				case 2 -> !m.isEmpty()
+				case 0 -> epdInd != null
+					? epdInd.code() + " - " + epdInd.name()
+					: null;
+				case 1 -> epdInd != null
+					? epdInd.unit()
+					: null;
+				case 2 -> m.indicator() != null
 					? Labels.name(m.indicator())
-					: "select an indicator";
+					: " - ";
 				case 3 -> !m.isEmpty()
 					? m.indicator().code
 					: null;
-				case 4 -> !m.isEmpty()
+				case 4 -> m.indicator() != null
 					? m.indicator().referenceUnit
 					: null;
 				default -> null;
 			};
-		}
-
-		@Override
-		public Font getFont(Object obj, int col) {
-			if (col != 2 || !(obj instanceof IndicatorKey key))
-				return null;
-			var m = mapping.getIndicatorMapping(methodCode, key);
-			return m.isEmpty()
-				? UI.italicFont()
-				: null;
 		}
 
 		@Override

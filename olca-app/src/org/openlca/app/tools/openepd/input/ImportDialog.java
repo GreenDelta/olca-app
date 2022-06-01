@@ -1,7 +1,6 @@
 package org.openlca.app.tools.openepd.input;
 
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -26,15 +25,14 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Epd;
 import org.openlca.io.UnitMapping;
 import org.openlca.io.openepd.EpdDoc;
-import org.openlca.io.openepd.input.EpdImport;
-import org.openlca.io.openepd.mapping.MappingModel;
+import org.openlca.io.openepd.io.EpdImport;
+import org.openlca.io.openepd.io.MappingModel;
 
 public class ImportDialog extends FormDialog {
 
 	final IDatabase db;
 	final EpdDoc epdDoc;
 	final MappingModel mapping;
-	private final AtomicBoolean mappingChanged = new AtomicBoolean(false);
 
 	public static int show(EpdDoc doc) {
 		if (doc == null)
@@ -59,10 +57,6 @@ public class ImportDialog extends FormDialog {
 		this.epdDoc = Objects.requireNonNull(epdDoc);
 		this.db = Objects.requireNonNull(db);
 		this.mapping = mapping;
-	}
-
-	void setMappingChanged() {
-		mappingChanged.set(true);
 	}
 
 	@Override
@@ -129,15 +123,6 @@ public class ImportDialog extends FormDialog {
 					"Do you want to continue?");
 			if (!b) {
 				return;
-			}
-		}
-
-		if (mappingChanged.get()) {
-			boolean b = Question.ask("Save indicator mappings?",
-				"Should the assigned mapping codes of the LCIA" +
-					" methods and indicators be saved in the database?");
-			if (b) {
-				mapping.persistIn(db);
 			}
 		}
 

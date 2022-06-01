@@ -9,7 +9,7 @@ import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.openepd.EpdDoc;
-import org.openlca.io.openepd.mapping.MappingModel;
+import org.openlca.io.openepd.io.MappingModel;
 
 record ImpactMappings(IDatabase db, EpdDoc doc) {
 
