@@ -15,24 +15,24 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.io.openepd.io.MethodMapping;
 
-class ImpactSection {
+class MappingSection {
 
 	private final ImportDialog dialog;
 	private final MethodMapping mapping;
 	private TableViewer table;
 
-	private ImpactSection(ImportDialog dialog, MethodMapping mapping) {
+	private MappingSection(ImportDialog dialog, MethodMapping mapping) {
 		this.dialog = dialog;
 		this.mapping = mapping;
 	}
 
-	static List<ImpactSection> initAllOf(ImportDialog dialog) {
+	static List<MappingSection> initAllOf(ImportDialog dialog) {
 		if (dialog == null)
 			return Collections.emptyList();
 		return dialog.mapping.mappings()
 			.stream()
 			.filter(mapping -> mapping.epdMethod() != null)
-			.map(mapping -> new ImpactSection(dialog, mapping))
+			.map(mapping -> new MappingSection(dialog, mapping))
 			.toList();
 	}
 

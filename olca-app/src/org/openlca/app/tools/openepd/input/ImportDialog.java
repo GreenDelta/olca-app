@@ -75,7 +75,7 @@ public class ImportDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.formBody(mForm.getForm(), tk);
 		createProductSection(body, tk);
-		ImpactSection.initAllOf(this)
+		MappingSection.initAllOf(this)
 			.forEach(section -> section.render(body, tk));
 	}
 
