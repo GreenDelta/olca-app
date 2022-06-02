@@ -20,8 +20,11 @@ public class ExchangeEditPart extends AbstractNodeEditPart<ExchangeItem> {
 
 	@Override
 	protected void createEditPolicies() {
+		installEditPolicy(EditPolicy.COMPONENT_ROLE,
+			new GraphComponentEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
 			new ExchangeItemEditPolicy());
+		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, new ExchangeSelectionEditPolicy());
 	}
 
 	@Override

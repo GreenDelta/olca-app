@@ -6,7 +6,7 @@ import org.eclipse.jface.action.*;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.actions.ActionFactory;
 
-public class GraphActionBarContributor extends ActionBarContributor{
+public class NotWorkingGraphActionBarContributor extends ActionBarContributor {
 
 	@Override
 	protected void buildActions() {

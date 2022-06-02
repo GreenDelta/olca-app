@@ -8,10 +8,10 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graph.edit.GraphEditPart;
 import org.openlca.app.editors.graph.model.Node;
 
-import static org.openlca.app.editors.graph.actions.LayoutAction.REQ_LAYOUT;
 import static org.openlca.app.editors.graph.model.Node.Side;
 import static org.openlca.app.editors.graph.model.Node.Side.INPUT;
 import static org.openlca.app.editors.graph.model.Node.Side.OUTPUT;
+import static org.openlca.app.editors.graph.requests.GraphRequestConstants.REQ_LAYOUT;
 
 public class ExpansionCommand extends Command {
 
@@ -34,11 +34,6 @@ public class ExpansionCommand extends Command {
 	@Override
 	public boolean canUndo() {
 		return false;
-	}
-
-	@Override
-	public boolean canRedo() {
-		return true;
 	}
 
 	@Override

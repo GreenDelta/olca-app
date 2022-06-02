@@ -1,20 +1,24 @@
 package org.openlca.app.editors.graph.actions;
 
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.openlca.app.editors.graph.GraphEditor;
+import org.openlca.app.editors.graph.edit.ExchangeEditPart;
 import org.openlca.app.editors.graph.edit.IOPaneEditPart;
+import org.openlca.app.editors.graph.model.IOPane;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.core.model.*;
+
+import static org.openlca.app.editors.graph.requests.GraphRequestConstants.REQ_ADD_INPUT_EXCHANGE;
+import static org.openlca.app.editors.graph.requests.GraphRequestConstants.REQ_ADD_OUTPUT_EXCHANGE;
 
 
 public class AddExchangeAction extends SelectionAction {
 
-	public static final String REQ_ADD_INPUT_EXCHANGE = "add_input_exchange";
-	public static final String REQ_ADD_OUTPUT_EXCHANGE = "add_output_exchange";
 	private final boolean forInput;
 	Request request;
 
@@ -36,18 +40,10 @@ public class AddExchangeAction extends SelectionAction {
 
 	@Override
 	protected boolean calculateEnabled() {
-		if (getSelectedObjects().isEmpty())
+		var command = getCommand();
+		if (command == null)
 			return false;
-		var parts = getSelectedObjects();
-		for (Object o : parts) {
-			if (!(o instanceof EditPart part))
-				return false;
-			if (!(part instanceof IOPaneEditPart paneEditPart))
-				return false;
-			if (paneEditPart.getModel().isForInputs() != forInput)
-				return false;
-		}
-		return getCommand().canExecute();
+		return command.canExecute();
 	}
 
 	@Override
@@ -56,16 +52,28 @@ public class AddExchangeAction extends SelectionAction {
 	}
 
 	private Command getCommand() {
-		var editparts = getSelectedObjects();
+		if (getSelectedObjects().isEmpty())
+			return null;
+
 		CompoundCommand cc = new CompoundCommand();
 		cc.setDebugLabel("Add " + (forInput ? "input" : "output") + " exchange");
-		for (Object editpart : editparts) {
-			var paneEditPart = (IOPaneEditPart) editpart;
+
+		var parts = getSelectedObjects();
+		for (Object o : parts) {
+			var pane = o instanceof IOPaneEditPart paneEditPart
+				? paneEditPart.getModel()
+				: o instanceof ExchangeEditPart exchangeEditPart
+				? exchangeEditPart.getModel().getIOPane()
+				: null;
+			if (pane == null || pane.isForInputs() != forInput)
+				return null;
+			var viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(
+				GraphicalViewer.class);
+			var registry = viewer.getEditPartRegistry();
+			var paneEditPart = (IOPaneEditPart) registry.get(pane);
 			cc.add(paneEditPart.getCommand(request));
-		}
+			}
 		return cc.unwrap();
-
 	}
-
 
 }

@@ -82,12 +82,12 @@ public class Node extends MinMaxGraphComponent {
 
 	@Override
 	protected Dimension getMinimizedSize() {
-		return DEFAULT_MINIMIZED_SIZE;
+		return new Dimension(getSize().width, DEFAULT_MINIMIZED_SIZE.height);
 	}
 
 	@Override
 	protected Dimension getMaximizedSize() {
-		return DEFAULT_MAXIMIZED_SIZE;
+		return new Dimension(getSize().width, DEFAULT_MAXIMIZED_SIZE.height);
 	}
 
 	@Override
@@ -130,7 +130,9 @@ public class Node extends MinMaxGraphComponent {
 
 	public boolean isEditable() {
 		if (descriptor instanceof ProcessDescriptor p) {
-			return !p.isFromLibrary() && p.processType == ProcessType.UNIT_PROCESS;
+			return !p.isFromLibrary()
+				&& p.processType == ProcessType.UNIT_PROCESS
+				&& editor.config.isNodeEditingEnabled();
 		}
 		return false;
 	}

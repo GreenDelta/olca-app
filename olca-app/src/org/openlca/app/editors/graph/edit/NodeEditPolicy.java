@@ -25,14 +25,4 @@ public class NodeEditPolicy extends MinMaxComponentEditPolicy {
 		return command;
 	}
 
-	@Override
-	protected Command createDeleteCommand(GroupRequest req) {
-		var parent = getHost().getParent().getModel();
-		var child = getHost().getModel();
-		if (parent instanceof Graph graph && child instanceof Node node) {
-			return new DeleteNodeCommand(graph, node);
-		}
-		return super.createDeleteCommand(req);
-	}
-
 }

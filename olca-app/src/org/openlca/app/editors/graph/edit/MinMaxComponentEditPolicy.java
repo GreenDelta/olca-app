@@ -6,7 +6,7 @@ import org.eclipse.gef.editpolicies.ComponentEditPolicy;
 import org.openlca.app.editors.graph.model.MinMaxGraphComponent;
 import org.openlca.app.editors.graph.model.commands.MinMaxCommand;
 
-public class MinMaxComponentEditPolicy extends ComponentEditPolicy {
+public class MinMaxComponentEditPolicy extends GraphComponentEditPolicy {
 
 	@Override
 	public Command getCommand(Request request) {

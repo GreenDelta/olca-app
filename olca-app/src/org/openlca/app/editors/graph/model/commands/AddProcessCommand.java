@@ -1,5 +1,6 @@
 package org.openlca.app.editors.graph.model.commands;
 
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -13,7 +14,6 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graph.GraphEditor;
-import org.openlca.app.editors.graph.actions.AddProcessAction;
 import org.openlca.app.editors.graph.layouts.NodeLayoutInfo;
 import org.openlca.app.editors.graph.model.Graph;
 import org.openlca.app.navigation.ModelTextFilter;
@@ -199,7 +199,8 @@ public class AddProcessCommand extends Command {
 			system.processes.add(d.id);
 
 			// create the process node
-			var viewer = editor.getGraphicalViewer();
+			var viewer = (GraphicalViewer) editor.getAdapter(
+				GraphicalViewer.class);
 			var location = viewer.getControl().toControl(cursorLocation);
 			var info = new NodeLayoutInfo(location, null, true, false, false);
 			var node = editor.getGraphFactory().createNode(d, info);

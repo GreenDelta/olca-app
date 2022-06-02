@@ -7,10 +7,11 @@ import org.eclipse.gef.requests.CreateRequest;
 import org.openlca.app.editors.graph.model.IOPane;
 import org.openlca.app.editors.graph.model.commands.AddExchangeCommand;
 
-import static org.openlca.app.editors.graph.actions.AddExchangeAction.REQ_ADD_INPUT_EXCHANGE;
-import static org.openlca.app.editors.graph.actions.AddExchangeAction.REQ_ADD_OUTPUT_EXCHANGE;
+import static org.openlca.app.editors.graph.requests.GraphRequestConstants.REQ_ADD_INPUT_EXCHANGE;
+import static org.openlca.app.editors.graph.requests.GraphRequestConstants.REQ_ADD_OUTPUT_EXCHANGE;
 
-public class IOPaneEditPolicy extends ContainerEditPolicy {
+
+public class IOPaneContainerEditPolicy extends ContainerEditPolicy {
 
 	@Override
 	public Command getCommand(Request request) {

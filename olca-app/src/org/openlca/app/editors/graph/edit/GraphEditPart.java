@@ -1,13 +1,18 @@
 package org.openlca.app.editors.graph.edit;
 
 import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.openlca.app.editors.graph.GraphConfig;
+import org.openlca.app.editors.graph.GraphFile;
 import org.openlca.app.editors.graph.layouts.TreeConnectionRouter;
 import org.openlca.app.editors.graph.model.Graph;
+import org.openlca.app.editors.graph.model.GraphFactory;
+import org.openlca.jsonld.Json;
 
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
@@ -65,7 +70,20 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 
 	@Override
 	protected IFigure createFigure() {
-		Figure f = new FreeformLayer();
+		var f = new FreeformLayer() {
+
+			@Override
+			public void paint(Graphics g) {
+				var theme = getModel().getConfig().getTheme();
+				g.pushState();
+				g.setBackgroundColor(theme.graphBackgroundColor());
+				g.fillRectangle(new Rectangle(getLocation(), getSize()));
+				g.popState();
+				super.paint(g);
+			}
+
+		};
+
 		f.setBorder(new MarginBorder(3));
 		f.setLayoutManager(new FreeformLayout());
 		return f;

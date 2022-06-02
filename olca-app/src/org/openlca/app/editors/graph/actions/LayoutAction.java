@@ -1,5 +1,6 @@
 package org.openlca.app.editors.graph.actions;
 
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.internal.InternalImages;
@@ -8,10 +9,12 @@ import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.editors.graph.GraphEditor;
 import org.openlca.app.editors.graph.edit.GraphEditPart;
+import org.openlca.app.rcp.images.Icon;
+
+import static org.openlca.app.editors.graph.requests.GraphRequestConstants.REQ_LAYOUT;
 
 public class LayoutAction extends WorkbenchPartAction {
 
-	public static final String REQ_LAYOUT = "layout";
 	private final GraphEditor graphEditor;
 
 	public LayoutAction(GraphEditor part) {
@@ -19,8 +22,7 @@ public class LayoutAction extends WorkbenchPartAction {
 		graphEditor = part;
 		setText(NLS.bind(M.LayoutAs, M.Tree));
 		setId(ActionIds.LAYOUT_TREE);
-		setImageDescriptor(InternalImages.DESC_HORZ_ALIGN_LEFT);
-		setDisabledImageDescriptor(InternalImages.DESC_HORZ_ALIGN_LEFT_DIS);
+		setImageDescriptor(Icon.LAYOUT.descriptor());
 	}
 
 	@Override
@@ -38,7 +40,9 @@ public class LayoutAction extends WorkbenchPartAction {
 
 	private Command getCommand() {
 		var request = new Request(REQ_LAYOUT);
-		var registry = graphEditor.getGraphicalViewer().getEditPartRegistry();
+		var viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(
+			GraphicalViewer.class);
+		var registry = viewer.getEditPartRegistry();
 		var graphEditPart = (GraphEditPart) registry.get(graphEditor.getModel());
 		return graphEditPart.getCommand(request);
 	}

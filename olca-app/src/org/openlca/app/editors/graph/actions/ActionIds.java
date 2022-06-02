@@ -10,6 +10,9 @@ public interface ActionIds {
 	String BUILD_SUPPLY_CHAIN = "graph.actions.BuildSupplyChainAction";
 	String BUILD_SUPPLY_CHAIN_MENU = "graph.actions.BuildSupplyChainMenuAction";
 
+	String EDIT_EXCHANGE = "graph.actions.EditExchangeAction";
+	String EDIT_GRAPH_CONFIG = "graph.actions.EditGraphSettingsAction";
+
 	String MINIMIZE_ALL = "graph.actions.ChangeAllStateAction.MINIMIZE";
 	String MAXIMIZE_ALL = "graph.actions.ChangeAllStateAction.MAXIMIZE";
 	String EXPAND_ALL = "graph.actions.ExpansionAction.EXPAND";

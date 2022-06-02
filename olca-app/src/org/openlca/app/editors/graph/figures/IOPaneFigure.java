@@ -32,7 +32,7 @@ public class IOPaneFigure extends Figure {
 
 			var contentPaneLayout = new GridLayout(1, false);
 			contentPaneLayout.marginHeight = 0;
-			contentPaneLayout.marginWidth = 2;
+			contentPaneLayout.marginWidth = 0;
 			contentPane.setLayoutManager(contentPaneLayout);
 			add(contentPane, GridPos.fill());
 

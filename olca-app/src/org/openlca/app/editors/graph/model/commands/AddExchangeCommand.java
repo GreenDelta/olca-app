@@ -35,7 +35,7 @@ import org.openlca.util.Strings;
 
 import static org.openlca.app.editors.graph.model.GraphComponent.INPUT_PROP;
 import static org.openlca.app.editors.graph.model.GraphComponent.OUTPUT_PROP;
-import static org.openlca.app.editors.graph.model.commands.ExchangeEditDialog.open;
+import static org.openlca.app.editors.graph.model.commands.EditExchangeDialog.open;
 
 public class AddExchangeCommand extends Command {
 
@@ -63,6 +63,11 @@ public class AddExchangeCommand extends Command {
 
 	@Override
 	public void execute() {
+		redo();
+	}
+
+	@Override
+	public void redo() {
 		var node = pane.getNode();
 		if (node == null)
 			return;

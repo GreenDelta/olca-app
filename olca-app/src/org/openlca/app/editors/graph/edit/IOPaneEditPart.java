@@ -7,13 +7,14 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
+import org.openlca.app.editors.graph.GraphConfig;
 import org.openlca.app.editors.graph.figures.GridPos;
 import org.openlca.app.editors.graph.figures.IOPaneFigure;
 import org.openlca.app.editors.graph.model.IOPane;
 import org.openlca.app.editors.graph.model.GraphComponent;
 
-import static org.openlca.app.editors.graph.actions.AddExchangeAction.REQ_ADD_INPUT_EXCHANGE;
-import static org.openlca.app.editors.graph.actions.AddExchangeAction.REQ_ADD_OUTPUT_EXCHANGE;
+import static org.openlca.app.editors.graph.requests.GraphRequestConstants.REQ_ADD_INPUT_EXCHANGE;
+import static org.openlca.app.editors.graph.requests.GraphRequestConstants.REQ_ADD_OUTPUT_EXCHANGE;
 
 public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
 
@@ -26,7 +27,8 @@ public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
 
 	@Override
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.CONTAINER_ROLE, new IOPaneEditPolicy());
+		installEditPolicy(EditPolicy.CONTAINER_ROLE,
+			new IOPaneContainerEditPolicy());
 	}
 
 	@Override

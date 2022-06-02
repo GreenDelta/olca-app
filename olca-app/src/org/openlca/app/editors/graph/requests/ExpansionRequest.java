@@ -3,9 +3,9 @@ package org.openlca.app.editors.graph.requests;
 import org.eclipse.gef.Request;
 import org.openlca.app.editors.graph.model.Node;
 
-public class ExpansionRequest extends Request {
+import static org.openlca.app.editors.graph.requests.GraphRequestConstants.REQ_EXPANSION;
 
-	public static String REQ_EXPANSION = "collapse";
+public class ExpansionRequest extends Request {
 
 	private final Node node;
 	private final Node.Side side;

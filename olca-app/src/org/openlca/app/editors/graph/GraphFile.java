@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.graph.layouts.NodeLayoutInfo;
+import org.openlca.app.editors.graph.model.Graph;
 import org.openlca.app.editors.graph.model.Node;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.jsonld.Json;
@@ -22,33 +23,35 @@ public final class GraphFile {
 	}
 
 	public static void save(GraphEditor editor) {
-		var root = editor != null
+		var graph = editor != null
 				? editor.getModel()
 				: null;
-		if (root == null)
+		if (graph == null)
 			return;
+		var rootObj = createJsonArray(editor, graph);
 		try {
-
-			// add config
-			var rootObj = new JsonObject();
-			rootObj.add("config", editor.config.toJson());
-
-			// add node infos
-			var file = file(editor.getProductSystem());
-			var nodeArray = new JsonArray();
-			for (var node : root.getChildren()) {
-				var nodeObj = toJson(node);
-				if (nodeObj != null) {
-					nodeArray.add(nodeObj);
-				}
-			}
-			rootObj.add("nodes", nodeArray);
-
-			Json.write(rootObj, file);
+			Json.write(rootObj, file(editor.getProductSystem()));
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(GraphFile.class);
 			log.error("Failed to save layout", e);
 		}
+	}
+
+	public static JsonObject createJsonArray(GraphEditor editor, Graph graph) {
+		// add config
+		var rootObj = new JsonObject();
+		rootObj.add("config", editor.config.toJson());
+
+		// add node info's
+		var nodeArray = new JsonArray();
+		for (var node : graph.getChildren()) {
+			var nodeObj = toJson(node);
+			if (nodeObj != null) {
+				nodeArray.add(nodeObj);
+			}
+		}
+		rootObj.add("nodes", nodeArray);
+		return rootObj;
 	}
 
 	private static JsonObject toJson(Node node) {

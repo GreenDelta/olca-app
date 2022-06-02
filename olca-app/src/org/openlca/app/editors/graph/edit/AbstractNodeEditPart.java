@@ -122,4 +122,5 @@ public abstract class AbstractNodeEditPart<N extends GraphComponent> extends
 		var itemEditPart = (ExchangeEditPart) editPartRegistry.get(item);
 		return itemEditPart.getFigure();
 	}
+
 }

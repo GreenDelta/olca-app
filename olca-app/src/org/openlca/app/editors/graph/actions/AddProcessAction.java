@@ -1,17 +1,19 @@
 package org.openlca.app.editors.graph.actions;
 
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
+import org.eclipse.ui.internal.navigator.CommonViewerSiteIViewSiteDelegate;
 import org.openlca.app.editors.graph.GraphEditor;
 import org.openlca.app.editors.graph.model.Graph;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.core.model.ModelType;
 
-public class AddProcessAction extends WorkbenchPartAction {
+import static org.openlca.app.editors.graph.requests.GraphRequestConstants.REQ_ADD_PROCESS;
 
-	public static final String REQ_ADD_PROCESS = "add_process";
+public class AddProcessAction extends WorkbenchPartAction {
 
 	private final Graph graph;
 	private final GraphEditor editor;
@@ -34,12 +36,19 @@ public class AddProcessAction extends WorkbenchPartAction {
 
 	@Override
 	protected boolean calculateEnabled() {
+		var command = getCommand();
+		if (command == null)
+			return false;
 		return getCommand().canExecute();
 	}
 
 	private Command getCommand() {
-		var registry = editor.getGraphicalViewer().getEditPartRegistry();
+		var viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(
+			GraphicalViewer.class);
+		var registry = viewer.getEditPartRegistry();
 		var graphEditPart = (EditPart) registry.get(graph);
+		if (graphEditPart == null)
+			return null;
 		return graphEditPart.getCommand(new Request(REQ_ADD_PROCESS));
 	}
 

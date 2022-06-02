@@ -27,6 +27,7 @@ public abstract class MinMaxGraphComponent extends GraphComponent {
 			return;
 		minimized = value;
 		setSize(value ? getMinimizedSize() : getMaximizedSize());
+
 	}
 
 	protected abstract Dimension getMinimizedSize();

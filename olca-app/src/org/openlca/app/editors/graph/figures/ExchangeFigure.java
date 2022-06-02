@@ -1,6 +1,9 @@
 package org.openlca.app.editors.graph.figures;
 
 import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.GridLayout;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
@@ -9,6 +12,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.util.Colors;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.descriptors.Descriptor;
 
@@ -18,7 +22,7 @@ public class ExchangeFigure extends Figure {
 	public ExchangeItem exchangeItem;
 	private final Exchange exchange;
 	private final Label label;
-
+	private boolean selected;
 
 	public ExchangeFigure(ExchangeItem exchangeItem) {
 		this.exchangeItem = exchangeItem;
@@ -30,6 +34,27 @@ public class ExchangeFigure extends Figure {
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		setLayoutManager(layout);
+
+		var border = new LineBorder(1);
+		setBorder(border);
+
+		addMouseMotionListener(new MouseMotionListener.Stub() {
+
+			@Override
+			public void mouseEntered(MouseEvent me) {
+				var figure = (IFigure) me.getSource();
+				((LineBorder) figure.getBorder()).setColor(Colors.gray());
+				figure.repaint();
+			}
+
+			@Override
+			public void mouseExited(MouseEvent me) {
+				final IFigure figure = (IFigure) me.getSource();
+				((LineBorder) figure.getBorder()).setColor(Colors.white());
+				figure.repaint();
+			}
+
+		});
 
 		var image = new ImageFigure(Images.get(exchange.flow));
 		add(image, GridPos.leadCenter());
@@ -77,12 +102,32 @@ public class ExchangeFigure extends Figure {
 		return text;
 	}
 
-	public void setHighlighted(boolean b) {
-		if (b) {
-			label.setFont(UI.boldFont());
-		} else {
-			label.setFont(null);
+	@Override
+	protected void paintFigure(Graphics g) {
+		if (selected) {
+			g.pushState();
+			g.setBackgroundColor(Colors.gray());
+			g.fillRectangle(getBounds());
+			g.popState();
+			g.setForegroundColor(ColorConstants.white);
 		}
+		super.paintFigure(g);
+	}
+
+	public void setHighlighted(boolean b) {
+		if (b) label.setFont(UI.boldFont());
+		else label.setFont(null);
+	}
+
+	/**
+	 * Sets the selection state of this ExchangeFigure
+	 *
+	 * @param b
+	 *            true will cause the figure to appear selected
+	 */
+	public void setSelected(boolean b) {
+		selected = b;
+		repaint();
 	}
 
 	public Dimension getAmountLabelSize() {

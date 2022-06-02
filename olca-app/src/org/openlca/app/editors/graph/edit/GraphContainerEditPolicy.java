@@ -7,7 +7,7 @@ import org.eclipse.gef.requests.CreateRequest;
 import org.openlca.app.editors.graph.model.Graph;
 import org.openlca.app.editors.graph.model.commands.AddProcessCommand;
 
-import static org.openlca.app.editors.graph.actions.AddProcessAction.REQ_ADD_PROCESS;
+import static org.openlca.app.editors.graph.requests.GraphRequestConstants.REQ_ADD_PROCESS;
 
 public class GraphContainerEditPolicy extends ContainerEditPolicy {
 

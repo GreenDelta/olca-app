@@ -9,11 +9,11 @@ import org.openlca.jsonld.Json;
 
 public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 
-	public static final String CONFIG_PROP = "theme";
+	public static final String CONFIG_PROP = "config";
 
 	private boolean showElementaryFlows = false;
 	private boolean isRouted = true;
-	private boolean isProcessEditingEnabled = false;
+	private boolean isNodeEditingEnabled = false;
 	private Theme theme = Themes.getDefault();
 
 	/**
@@ -44,7 +44,7 @@ public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 		if (other == null)
 			return;
 		other.showElementaryFlows = showElementaryFlows;
-		other.isProcessEditingEnabled = isProcessEditingEnabled;
+		other.isNodeEditingEnabled = isNodeEditingEnabled;
 		other.theme = theme;
 		other.isRouted = isRouted;
 		other.firePropertyChange(CONFIG_PROP, null, this);
@@ -54,7 +54,7 @@ public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 	public GraphConfig copy() {
 		var clone = new GraphConfig();
 		clone.showElementaryFlows = showElementaryFlows;
-		clone.isProcessEditingEnabled = isProcessEditingEnabled;
+		clone.isNodeEditingEnabled = isNodeEditingEnabled;
 		clone.theme = theme;
 		clone.isRouted = isRouted;
 		return clone;
@@ -68,8 +68,8 @@ public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 			obj, "showElementaryFlows", false);
 		config.isRouted = Json.getBool(
 				obj, "isRouted", true);
-		config.isProcessEditingEnabled = Json.getBool(
-			obj, "isProcessEditingEnabled", false);
+		config.isNodeEditingEnabled = Json.getBool(
+			obj, "isNodeEditingEnabled", false);
 		var themeID = Json.getString(obj, "theme");
 		config.setTheme(Themes.get(themeID));
 		return config;
@@ -79,7 +79,7 @@ public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 		var obj = new JsonObject();
 		obj.addProperty("showElementaryFlows", showElementaryFlows);
 		obj.addProperty("isRouted", isRouted);
-		obj.addProperty("isProcessEditingEnabled", isProcessEditingEnabled);
+		obj.addProperty("isNodeEditingEnabled", isNodeEditingEnabled);
 		obj.addProperty("theme", getTheme().file());
 		return obj;
 	}
@@ -98,10 +98,10 @@ public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 		firePropertyChange(CONFIG_PROP, null, this);
 	}
 
-	public void setProcessEditingEnabled(boolean processEditingEnabled) {
-		if (processEditingEnabled == this.isProcessEditingEnabled)
+	public void setNodeEditingEnabled(boolean nodeEditingEnabled) {
+		if (nodeEditingEnabled == this.isNodeEditingEnabled)
 			return;
-		isProcessEditingEnabled = processEditingEnabled;
+		isNodeEditingEnabled = nodeEditingEnabled;
 		firePropertyChange(CONFIG_PROP, null, this);
 	}
 
@@ -113,8 +113,8 @@ public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 		return isRouted;
 	}
 
-	public boolean isProcessEditingEnabled() {
-		return isProcessEditingEnabled;
+	public boolean isNodeEditingEnabled() {
+		return isNodeEditingEnabled;
 	}
 
 }

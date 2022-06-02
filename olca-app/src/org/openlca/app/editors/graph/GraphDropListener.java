@@ -2,6 +2,7 @@ package org.openlca.app.editors.graph;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
@@ -23,7 +24,7 @@ class GraphDropListener extends DropTargetAdapter {
 	}
 
 	static void on(GraphEditor editor) {
-		var viewer = editor.getGraphicalViewer();
+		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
 		var target = new DropTarget(viewer.getControl(),
 				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
 		target.setTransfer(ModelTransfer.getInstance());
@@ -39,9 +40,8 @@ class GraphDropListener extends DropTargetAdapter {
 		var graph = editor.getModel();
 		var productSystem = editor.getProductSystem();
 		var graphFactory = editor.getGraphFactory();
-		var location = editor.getGraphicalViewer()
-				.getControl()
-				.toControl(e.x, e.y);
+		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
+		var location = viewer.getControl().toControl(e.x, e.y);
 
 		var added = new AtomicBoolean(false);
 		ModelTransfer.getDescriptors(e.data)

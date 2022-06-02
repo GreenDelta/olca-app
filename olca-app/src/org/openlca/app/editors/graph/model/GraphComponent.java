@@ -1,5 +1,6 @@
 package org.openlca.app.editors.graph.model;
 
+import org.checkerframework.checker.units.qual.A;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.editors.graph.GraphConfig;
@@ -72,6 +73,11 @@ abstract public class GraphComponent extends GraphElement {
 		firePropertyChange(CHILDREN_PROP, index, child);
 	}
 
+
+	public void addChildren(List<Node> children) {
+		for (var child : children) addChild(child);
+	}
+
 	public void setParent(GraphComponent parent) {
 		this.parent = parent;
 	}
@@ -85,7 +91,7 @@ abstract public class GraphComponent extends GraphElement {
 	}
 
 	/**
-	 * Remove a component from this graph.
+	 * Remove a child from this.
 	 *
 	 * @param child
 	 *            a non-null component instance;
@@ -97,6 +103,11 @@ abstract public class GraphComponent extends GraphElement {
 			return true;
 		}
 		return false;
+	}
+
+	public void removeAllChildren() {
+		var children = new ArrayList<>(getChildren());
+		for (var child : children) removeChild(child);
 	}
 
 	public List<? extends GraphComponent> getChildren() {
@@ -144,6 +155,7 @@ abstract public class GraphComponent extends GraphElement {
 		List<Link> links = new ArrayList<>();
 		links.addAll(getTargetConnections());
 		links.addAll(getSourceConnections());
+		// An ExchangeItem simply does not have children.
 		for (var child : getChildren()) {
 			links.addAll(child.getAllLinks());
 		}

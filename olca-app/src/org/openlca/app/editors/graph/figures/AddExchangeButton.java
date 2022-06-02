@@ -23,8 +23,8 @@ public class AddExchangeButton extends Clickable {
 
 		private AddExchangeButtonFigure(String text) {
 			var layout = new GridLayout(1, true);
-			layout.marginHeight = 3;
-			layout.marginWidth = 8;
+			layout.marginHeight = 2;
+			layout.marginWidth = 6;
 			setLayoutManager(layout);
 			setBackgroundColor(Colors.get(135, 76, 63));
 			add(new Label(text), new GridData(SWT.CENTER, SWT.CENTER, false, false));

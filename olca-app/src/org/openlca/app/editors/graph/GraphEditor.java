@@ -11,21 +11,19 @@ import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.actions.*;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
-import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.*;
 import org.eclipse.ui.actions.ActionFactory;
-import org.openlca.app.editors.graph.actions.AddExchangeAction;
-import org.openlca.app.editors.graph.actions.AddProcessAction;
-import org.openlca.app.editors.graph.actions.LayoutAction;
+import org.openlca.app.editors.graph.actions.*;
 import org.openlca.app.editors.graph.edit.GraphEditPartFactory;
 import org.openlca.app.editors.graph.model.Graph;
 import org.openlca.app.editors.graph.model.GraphFactory;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.jsonld.Json;
 
 /**
  * A {@link GraphEditor} is the starting point of the graphical interface of a
@@ -157,6 +155,13 @@ public class GraphEditor extends GraphicalEditor {
 		action = new AddExchangeAction(this, false);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
+
+		action = new EditExchangeAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new EditGraphConfigAction(this);
+		registry.registerAction(action);
 	}
 
 	/**
@@ -201,15 +206,16 @@ public class GraphEditor extends GraphicalEditor {
 
 	/**
 	 * The <code>selectionChanged</code> method of <code>GraphicalEditor</code> is
-	 * overridden due to the update made on <code>getActiveEditor()</code> that
-	 * now return a multi-page editor.
+	 * overridden due to the fact that this <code>GraphicalEditor</code> us part
+	 * of a multipage editor.
 	 * @param part      the workbench part containing the selection
 	 * @param selection the current selection. This may be <code>null</code> if
 	 *                  <code>INullSelectionListener</code> is implemented.
 	 */
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection)	{
-		if (getSite().getWorkbenchWindow().getActivePage().getActiveEditor().equals(this.systemEditor))
+		var activePage = getSite().getWorkbenchWindow().getActivePage();
+		if (activePage.getActiveEditor().equals(this.systemEditor))
 			updateActions(getSelectionActions());
 	}
 
@@ -218,11 +224,6 @@ public class GraphEditor extends GraphicalEditor {
 		super.setInput(input);
 		var array = GraphFile.getLayouts(this);
 		graph = getGraphFactory().createGraph(this, array);
-	}
-
-	@Override
-	public GraphicalViewer getGraphicalViewer() {
-		return super.getGraphicalViewer();
 	}
 
 	public void setDirty() {

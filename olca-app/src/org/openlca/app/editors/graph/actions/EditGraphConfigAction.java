@@ -1,6 +1,9 @@
 package org.openlca.app.editors.graph.actions;
 
-import org.eclipse.jface.action.Action;
+import java.util.Objects;
+
+import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -12,20 +15,21 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.editors.graph.GraphConfig;
 import org.openlca.app.editors.graph.GraphEditor;
+import org.openlca.app.editors.graph.GraphFile;
 import org.openlca.app.editors.graph.themes.Themes;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.jsonld.Json;
 
-import java.util.Objects;
-
-public class GraphSettingsAction extends Action {
+public class EditGraphConfigAction extends WorkbenchPartAction {
 
 	private final GraphEditor editor;
 
-	public GraphSettingsAction(GraphEditor editor) {
-		this.editor = editor;
-		setId("GraphSettingsAction");
+	public EditGraphConfigAction(GraphEditor part) {
+		super(part);
+		this.editor = part;
+		setId(ActionIds.EDIT_GRAPH_CONFIG);
 		setText(M.Settings);
 		setImageDescriptor(Icon.PREFERENCES.descriptor());
 	}
@@ -38,7 +42,22 @@ public class GraphSettingsAction extends Action {
 		if (new Dialog(config).open() != Window.OK)
 			return;
 		config.copyTo(editor.config);
+
+		// Resetting all the nodes with the new config.
+		var rootObj = GraphFile.createJsonArray(editor, editor.getModel());
+		var array = Json.getArray(rootObj, "nodes");
+		var newGraph = editor.getGraphFactory().createGraph(editor, array);
+		editor.getModel().removeAllChildren();
+		editor.getModel().addChildren(newGraph.getChildren());
+		// TODO (francois) Find another way to avoid flushing the CommandStack.
+		((CommandStack) editor.getAdapter(CommandStack.class)).flush();
+
 		editor.setDirty();
+	}
+
+	@Override
+	protected boolean calculateEnabled() {
+		return true;
 	}
 
 	private static class Dialog extends FormDialog {
@@ -52,9 +71,9 @@ public class GraphSettingsAction extends Action {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm mform) {
-			var tk = mform.getToolkit();
-			var body = UI.formBody(mform.getForm(), tk);
+		protected void createFormContent(IManagedForm managedForm) {
+			var tk = managedForm.getToolkit();
+			var body = UI.formBody(managedForm.getForm(), tk);
 			UI.gridLayout(body, 2);
 			themeCombo(tk, body);
 
@@ -67,17 +86,20 @@ public class GraphSettingsAction extends Action {
 
 			// show elementary flows
 			UI.filler(body, tk);
-			var elems = tk.createButton(body, "Show elementary flows", SWT.CHECK);
+			var elems = tk.createButton(
+				body, "Show elementary flows", SWT.CHECK);
 			elems.setSelection(config.showElementaryFlows());
 			Controls.onSelect(elems,
 					e -> config.setShowElementaryFlows(elems.getSelection()));
 
 			// edit mode
 			UI.filler(body, tk);
-			var isProcessEditingEnabled = tk.createButton(body, "Enable process editing", SWT.CHECK);
-			isProcessEditingEnabled.setSelection(config.isProcessEditingEnabled());
-			Controls.onSelect(isProcessEditingEnabled,
-				e -> config.setProcessEditingEnabled(isProcessEditingEnabled.getSelection()));
+			var isNodeEditingEnabled = tk.createButton(
+				body, "Enable process editing", SWT.CHECK);
+			isNodeEditingEnabled.setSelection(config.isNodeEditingEnabled());
+			Controls.onSelect(isNodeEditingEnabled,
+				e -> config.setNodeEditingEnabled(
+					isNodeEditingEnabled.getSelection()));
 		}
 
 		private void themeCombo(FormToolkit tk, Composite comp) {
@@ -118,4 +140,5 @@ public class GraphSettingsAction extends Action {
 			newShell.setText(M.Settings);
 		}
 	}
+
 }

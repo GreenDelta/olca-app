@@ -14,6 +14,7 @@ import org.openlca.app.editors.graph.figures.MaximizedNodeFigure;
 import org.openlca.app.editors.graph.figures.MinimizedNodeFigure;
 import org.openlca.app.editors.graph.figures.NodeFigure;
 import org.openlca.app.editors.graph.model.GraphComponent;
+import org.openlca.app.editors.graph.model.IOPane;
 import org.openlca.app.editors.graph.model.Node;
 import org.openlca.app.editors.graph.requests.ExpansionRequest;
 
@@ -52,6 +53,7 @@ abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 			getModel().getSize());
 		((GraphicalEditPart) getParent()).setLayoutConstraint(this,
 			getFigure(), bounds);
+		super.refreshVisuals();
 	}
 
 	protected void addButtonActionListener(NodeFigure figure) {

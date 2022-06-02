@@ -38,11 +38,6 @@ public class MinMaxCommand extends Command {
 	}
 
 	@Override
-	public boolean canRedo() {
-		return true;
-	}
-
-	@Override
 	public void execute() {
 		child.setMinimized(minimize);
 		if (!minimize)
