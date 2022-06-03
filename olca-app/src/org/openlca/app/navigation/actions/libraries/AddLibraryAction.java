@@ -33,7 +33,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryPackage;
-import org.openlca.core.library.MountCheck;
 import org.openlca.util.Strings;
 
 public class AddLibraryAction extends Action implements INavigationAction {
