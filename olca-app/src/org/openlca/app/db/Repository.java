@@ -56,7 +56,7 @@ public class Repository {
 		}
 		client = new RepositoryClient(serverUrl, repositoryId);
 		var storeFile = new File(gitDir, "object-id.store");
-		workspaceIds = ObjectIdStore.open(storeFile);
+		workspaceIds = ObjectIdStore.fromFile(storeFile);
 		commits = Commits.of(git);
 		datasets = Datasets.of(git);
 		references = References.of(git);
