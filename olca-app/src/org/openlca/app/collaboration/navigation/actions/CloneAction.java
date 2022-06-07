@@ -72,10 +72,14 @@ public class CloneAction extends Action implements INavigationAction {
 					GitFetch.to(repo.git));
 			if (newCommits == null || newCommits.isEmpty())
 				return;
+			var libraryResolver = WorkspaceLibraryResolver.forRemote(repo.git);
+			if (libraryResolver == null)
+				return;
 			Actions.run(GitMerge
 					.from(repo.git)
 					.into(db)
-					.update(repo.workspaceIds));
+					.update(repo.workspaceIds)
+					.resolveLibrariesWith(libraryResolver));
 			Announcements.check();
 		} catch (Exception e) {
 			try {
