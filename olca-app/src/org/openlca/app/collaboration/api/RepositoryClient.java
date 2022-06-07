@@ -117,7 +117,10 @@ public class RepositoryClient {
 		if (sessionId == null)
 			return;
 		try {
-			new LogoutInvocation().execute();
+			var invocation = new LogoutInvocation();
+			invocation.baseUrl = apiUrl;
+			invocation.sessionId = sessionId;
+			invocation.execute();
 		} catch (WebRequestException e) {
 			if (e.getErrorCode() != Status.UNAUTHORIZED.getStatusCode()
 					&& e.getErrorCode() != Status.CONFLICT.getStatusCode())

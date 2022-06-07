@@ -30,10 +30,9 @@ class CommentsInvocation extends Invocation<Map<String, Object>, List<Comment>> 
 		this(repositoryId, null, null);
 	}
 
-	@SuppressWarnings("unchecked")
 	CommentsInvocation(String repositoryId, ModelType type, String refId) {
-		super(Type.GET, "comment", (Class<Map<String, Object>>) new TypeToken<Map<String, Object>>() {
-		}.getType());
+		super(Type.GET, "comment", new TypeToken<Map<String, Object>>() {
+		});
 		this.repositoryId = repositoryId;
 		this.type = type;
 		this.refId = refId;

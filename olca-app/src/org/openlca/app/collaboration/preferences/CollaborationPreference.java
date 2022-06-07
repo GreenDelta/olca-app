@@ -15,7 +15,7 @@ public class CollaborationPreference extends AbstractPreferenceInitializer {
 		var store = getStore();
 		store.setDefault(CHECK_RESTRICTIONS, false);
 		store.setDefault(CHECK_REFERENCES, false);
-		store.setDefault(DISPLAY_COMMENTS, true);
+		store.setDefault(DISPLAY_COMMENTS, false);
 	}
 
 	public static boolean checkRestrictions() {
