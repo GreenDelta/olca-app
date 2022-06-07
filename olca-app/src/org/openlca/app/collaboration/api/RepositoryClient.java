@@ -35,7 +35,10 @@ public class RepositoryClient {
 	public boolean isCollaborationServer() throws WebRequestException {
 		var invocation = new ServerCheckInvocation();
 		invocation.baseUrl = apiUrl;
-		return invocation.execute();
+		var result = invocation.execute();
+		if (result != null)
+			return result;
+		return false;
 	}
 
 	public Announcement getAnnouncement() throws WebRequestException {
