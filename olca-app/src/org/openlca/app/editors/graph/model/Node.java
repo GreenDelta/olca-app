@@ -128,6 +128,13 @@ public class Node extends MinMaxGraphComponent {
 		return list;
 	}
 
+	public Link getLink(ProcessLink link) {
+		for (var l : getAllLinks())
+			if (l.processLink.equals(link))
+				return l;
+		return null;
+	}
+
 	public boolean isEditable() {
 		if (descriptor instanceof ProcessDescriptor p) {
 			return !p.isFromLibrary()

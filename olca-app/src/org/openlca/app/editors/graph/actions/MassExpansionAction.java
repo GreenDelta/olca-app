@@ -7,7 +7,6 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.StackAction;
-import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.editors.graph.GraphEditor;
@@ -105,8 +104,9 @@ public class MassExpansionAction extends StackAction {
 				var stack = (CommandStack) editor.getAdapter(CommandStack.class);
 				stack.execute(layoutCommand);
 			}
+			// Disposing the CommandStack to avoid having a strange undo/redo history.
+			getCommandStack().dispose();
 		}
-		System.out.println("Number of nodes: " + editor.getModel().getChildren().size());
 	}
 
 }

@@ -12,21 +12,26 @@ import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.actions.*;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.*;
 import org.eclipse.ui.actions.ActionFactory;
+import org.openlca.app.M;
 import org.openlca.app.editors.graph.actions.*;
 import org.openlca.app.editors.graph.edit.GraphEditPartFactory;
 import org.openlca.app.editors.graph.model.Graph;
 import org.openlca.app.editors.graph.model.GraphFactory;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Question;
+import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.jsonld.Json;
 
 import static org.openlca.app.editors.graph.actions.MassExpansionAction.COLLAPSE;
 import static org.openlca.app.editors.graph.actions.MassExpansionAction.EXPAND;
+import static org.openlca.app.editors.graph.actions.SearchConnectorsAction.PROVIDER;
+import static org.openlca.app.editors.graph.actions.SearchConnectorsAction.RECIPIENTS;
 import static org.openlca.app.editors.graph.model.commands.MinMaxCommand.MAXIMIZE;
 import static org.openlca.app.editors.graph.model.commands.MinMaxCommand.MINIMIZE;
 
@@ -55,6 +60,7 @@ public class GraphEditor extends GraphicalEditor {
 
 	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
+		editor.onSaved(() -> GraphFile.save(this));
 	}
 
 	@Override
@@ -202,6 +208,31 @@ public class GraphEditor extends GraphicalEditor {
 //		action = new RemoveAllConnectionsAction(this);
 //		registry.registerAction(action);
 //		selectionActions.add(action.getId());
+
+		action = new BuildSupplyChainMenuAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new BuildNextTierAction();
+		registry.registerAction(action);
+
+		action = new BuildSupplyChainAction();
+		registry.registerAction(action);
+
+		action = new RemoveSupplyChainAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new LinkUpdateAction(this);
+		registry.registerAction(action);
+
+		action = new SearchConnectorsAction(this, PROVIDER);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new SearchConnectorsAction(this, RECIPIENTS);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
 	}
 
 	/**
@@ -303,7 +334,25 @@ public class GraphEditor extends GraphicalEditor {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		systemEditor.doSave(monitor);
+	}
 
+	public boolean promptSaveIfNecessary() throws Exception {
+		if (!isDirty())
+			return true;
+		String question = M.SystemSaveProceedQuestion;
+		if (Question.ask(M.Save + "?", question)) {
+			new ProgressMonitorDialog(UI.shell()).run(
+				false, false, systemEditor::doSave);
+			return true;
+		}
+		return false;
+	}
+
+	public void updateModel(IProgressMonitor monitor) {
+		monitor.beginTask(M.UpdatingProductSystem, IProgressMonitor.UNKNOWN);
+		systemEditor.updateModel();
+		monitor.done();
 	}
 
 	public Object getAdapter(Class type) {

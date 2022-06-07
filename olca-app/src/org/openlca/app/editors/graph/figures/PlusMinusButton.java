@@ -4,6 +4,7 @@ import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graph.model.Node;
 import org.openlca.app.editors.graph.themes.Theme;
 
@@ -39,6 +40,8 @@ public class PlusMinusButton extends Clickable {
 
 		@Override
 		public void paintFigure(Graphics g) {
+			g.setAntialias(SWT.ON);
+
 			var theme = node.getConfig().getTheme();
 			var box = Theme.Box.of(node);
 

@@ -12,7 +12,7 @@ public class AddExchangeButton extends Clickable {
 	private static final Integer ARC_SIZE = 5;
 
 	public AddExchangeButton() {
-		super(new AddExchangeButtonFigure("⊕ add flow"));
+		super(new AddExchangeButtonFigure("+ add flow"));
 		var layout = new GridLayout(1, true);
 		layout.marginHeight = 2;
 		layout.marginWidth = 2;

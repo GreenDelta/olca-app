@@ -78,6 +78,26 @@ public class GraphContextMenuProvider  extends ContextMenuProvider {
 //			ActionIds.REMOVE_ALL_CONNECTIONS);
 //		if (removeConnections.isEnabled())
 //			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, removeConnections);
+
+		var buildSupplyChainMenu = actionRegistry.getAction(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
+		if (buildSupplyChainMenu.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, buildSupplyChainMenu);
+
+		var removeSupplyChain = actionRegistry.getAction(ActionIds.REMOVE_SUPPLY_CHAIN);
+		if (removeSupplyChain.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, removeSupplyChain);
+
+		var linkUpdate = actionRegistry.getAction(ActionIds.LINK_UPDATE);
+		if (linkUpdate.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, linkUpdate);
+
+		var searchProviders = actionRegistry.getAction(ActionIds.SEARCH_PROVIDERS);
+		if (searchProviders.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, searchProviders);
+
+		var searchRecipients = actionRegistry.getAction(ActionIds.SEARCH_RECIPIENTS);
+		if (searchRecipients.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, searchRecipients);
 	}
 
 	private void addViewActions(IMenuManager menu) {
