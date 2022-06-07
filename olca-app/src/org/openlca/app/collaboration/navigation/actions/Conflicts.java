@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
@@ -24,6 +25,8 @@ import org.openlca.git.model.Diff;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.Diffs;
 import org.openlca.git.util.TypeRefIdMap;
+
+import com.google.common.base.Predicates;
 
 class Conflicts {
 
@@ -79,25 +82,25 @@ class Conflicts {
 	private static List<TriDiff> between(List<Diff> localChanges, List<Diff> remoteChanges) {
 		var conflicts = new ArrayList<TriDiff>();
 		new ArrayList<>(localChanges).forEach(local -> {
-			var remote = remoteChanges.stream()
-					.filter(r -> r.type == local.type && r.refId.equals(local.refId))
-					.findFirst()
-					.orElse(null);
-			if (remote != null) {
-				conflicts.add(new TriDiff(local, remote));
+			var conflict = findConflict(local, remoteChanges);
+			if (conflict != null) {
 				localChanges.remove(local);
+				conflicts.add(conflict);
 			}
 		});
-		remoteChanges.forEach(remote -> {
-			var local = localChanges.stream()
-					.filter(l -> l.type == remote.type && l.refId.equals(remote.refId))
-					.findFirst()
-					.orElse(null);
-			if (local != null) {
-				conflicts.add(new TriDiff(local, remote));
-			}
-		});
+		remoteChanges.stream()
+				.map(remote -> findConflict(remote, localChanges))
+				.filter(Predicates.notNull())
+				.forEach(conflicts::add);
 		return conflicts;
+	}
+
+	private static TriDiff findConflict(Diff element, List<Diff> others) {
+		return others.stream()
+				.filter(e -> e.path.equals(element.path))
+				.findFirst()
+				.map(e -> new TriDiff(element, e))
+				.orElse(null);
 	}
 
 	private static InMemoryConflictResolver commitChanges(String ref, boolean stashCommit)
@@ -137,6 +140,9 @@ class Conflicts {
 		var solved = solve(conflicts);
 		if (solved == null)
 			return null;
+		conflicts.stream()
+				.filter(Predicate.not(TriDiff::conflict))
+				.forEach(conflict -> solved.put(conflict.type, conflict.refId, ConflictResolution.keep()));
 		return new InMemoryConflictResolver(commit, solved);
 	}
 
@@ -144,7 +150,7 @@ class Conflicts {
 		if (conflicts.isEmpty())
 			return new TypeRefIdMap<>();
 		var node = new DiffNodeBuilder(Database.get()).build(conflicts);
-		if (node == null)
+		if (node == null || node.children.isEmpty())
 			return new TypeRefIdMap<>();
 		var dialog = new MergeDialog(node);
 		if (dialog.open() == MergeDialog.CANCEL)

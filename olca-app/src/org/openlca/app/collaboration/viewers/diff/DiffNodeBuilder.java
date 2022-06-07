@@ -21,7 +21,7 @@ public class DiffNodeBuilder {
 	public DiffNode build(Collection<TriDiff> diffs) {
 		if (!init(diffs))
 			return null;
-		DiffNode root = new DiffNode(null, database);
+		var root = new DiffNode(null, database);
 		nodes.put(null, root);
 		for (TriDiff diff : this.diffs.values()) {
 			build(diff);
@@ -30,7 +30,7 @@ public class DiffNodeBuilder {
 	}
 
 	private boolean init(Collection<TriDiff> diffs) {
-		for (TriDiff result : diffs) {
+		for (var result : diffs) {
 			this.diffs.put(getKey(result), result);
 		}
 		nodes.clear();
@@ -48,21 +48,21 @@ public class DiffNodeBuilder {
 	}
 
 	private DiffNode createNode(TriDiff diff) {
-		DiffNode parent = !Strings.nullOrEmpty(diff.category)
+		var parent = !Strings.nullOrEmpty(diff.category)
 				? getOrCreateCategoryNode(diff.type, diff.category)
 				: getOrCreateModelTypeNode(diff.type);
-		DiffNode node = new DiffNode(parent, diff);
+		var node = new DiffNode(parent, diff);
 		parent.children.add(node);
 		nodes.put(getKey(diff), node);
 		return node;
 	}
 
 	private DiffNode getOrCreateCategoryNode(ModelType type, String category) {
-		String categoryPath = type.name() + "/" + category;
-		DiffNode categoryNode = nodes.get(categoryPath);
+		var categoryPath = type.name() + "/" + category;
+		var categoryNode = nodes.get(categoryPath);
 		if (categoryNode != null)
 			return categoryNode;
-		DiffNode parent = category.contains("/")
+		var parent = category.contains("/")
 				? getOrCreateCategoryNode(type, category.substring(0, category.lastIndexOf("/")))
 				: getOrCreateModelTypeNode(type);
 		categoryNode = new DiffNode(parent, categoryPath);
@@ -73,10 +73,10 @@ public class DiffNodeBuilder {
 	}
 
 	private DiffNode getOrCreateModelTypeNode(ModelType type) {
-		DiffNode typeNode = nodes.get(type.name());
+		var typeNode = nodes.get(type.name());
 		if (typeNode != null)
 			return typeNode;
-		DiffNode root = nodes.get(null);
+		var root = nodes.get(null);
 		typeNode = new DiffNode(root, type);
 		root.children.add(typeNode);
 		nodes.put(type.name(), typeNode);

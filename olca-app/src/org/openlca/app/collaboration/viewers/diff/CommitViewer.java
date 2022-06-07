@@ -69,7 +69,7 @@ public class CommitViewer extends DiffNodeViewer {
 
 	// if models is null, select all
 	private Set<DiffNode> collectChildren(TypeRefIdSet models, DiffNode node) {
-		Set<DiffNode> nodes = new HashSet<>();
+		var nodes = new HashSet<DiffNode>();
 		for (var child : node.children) {
 			if (child.isModelNode()) {
 				var d = child.contentAsTriDiff();

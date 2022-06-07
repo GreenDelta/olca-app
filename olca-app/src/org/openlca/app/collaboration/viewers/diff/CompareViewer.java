@@ -12,7 +12,7 @@ public class CompareViewer extends DiffNodeViewer {
 
 	@Override
 	protected TreeViewer createViewer(Composite parent) {
-		TreeViewer viewer = Trees.createViewer(parent);
+		var viewer = Trees.createViewer(parent);
 		viewer.setLabelProvider(new DiffNodeLabelProvider());
 		viewer.setContentProvider(new DiffNodeContentProvider());
 		viewer.setComparator(new DiffNodeComparator());
