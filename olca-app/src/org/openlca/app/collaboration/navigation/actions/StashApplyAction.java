@@ -53,7 +53,8 @@ public class StashApplyAction extends Action implements INavigationAction {
 			Actions.run(GitStashApply.from(repo.git)
 					.to(Database.get())
 					.update(repo.workspaceIds)
-					.resolveConflictsWith(conflictResolver));
+					.resolveConflictsWith(conflictResolver)
+					.resolveLibrariesWith(libraryResolver));
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error stashing changes", e);
 		} finally {
