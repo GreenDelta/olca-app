@@ -1,6 +1,5 @@
 package org.openlca.app.editors.graph.actions;
 
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
@@ -9,7 +8,6 @@ import org.eclipse.gef.ui.actions.SelectionAction;
 import org.openlca.app.editors.graph.GraphEditor;
 import org.openlca.app.editors.graph.edit.ExchangeEditPart;
 import org.openlca.app.editors.graph.edit.IOPaneEditPart;
-import org.openlca.app.editors.graph.model.IOPane;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.core.model.*;
 

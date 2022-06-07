@@ -14,14 +14,14 @@ import org.openlca.app.editors.graph.figures.MaximizedNodeFigure;
 import org.openlca.app.editors.graph.figures.MinimizedNodeFigure;
 import org.openlca.app.editors.graph.figures.NodeFigure;
 import org.openlca.app.editors.graph.model.GraphComponent;
-import org.openlca.app.editors.graph.model.IOPane;
 import org.openlca.app.editors.graph.model.Node;
 import org.openlca.app.editors.graph.requests.ExpansionRequest;
 
 import static org.openlca.app.editors.graph.model.Node.Side.INPUT;
 import static org.openlca.app.editors.graph.model.Node.Side.OUTPUT;
+import static org.openlca.app.editors.graph.requests.GraphRequestConstants.REQ_LAYOUT;
 
-abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
+public abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 
 	@Override
 	protected void createEditPolicies() {
@@ -60,11 +60,29 @@ abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 		figure.inputExpandButton.addActionListener($ -> {
 			var command = getCommand(new ExpansionRequest(getModel(), INPUT));
 			getViewer().getEditDomain().getCommandStack().execute(command);
+
+			// The layout command has to be executed after creating or deleting the
+			// nodes, hence cannot be executed within a CompoundCommand.
+			var layoutCommand = getParent().getCommand(new Request(REQ_LAYOUT));
+			if (layoutCommand.canExecute()) {
+				var stack = (CommandStack) getModel().editor
+					.getAdapter(CommandStack.class);
+				stack.execute(layoutCommand);
+			}
 		});
 
 		figure.outputExpandButton.addActionListener($ -> {
 			var command = getCommand(new ExpansionRequest(getModel(), OUTPUT));
 			getViewer().getEditDomain().getCommandStack().execute(command);
+
+			// The layout command has to be executed after creating or deleting the
+			// nodes, hence cannot be executed within a CompoundCommand.
+			var layoutCommand = getParent().getCommand(new Request(REQ_LAYOUT));
+			if (layoutCommand.canExecute()) {
+				var stack = (CommandStack) getModel().editor
+					.getAdapter(CommandStack.class);
+				stack.execute(layoutCommand);
+			}
 		});
 	}
 

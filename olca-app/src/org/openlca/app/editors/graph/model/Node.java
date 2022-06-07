@@ -137,18 +137,18 @@ public class Node extends MinMaxGraphComponent {
 		return false;
 	}
 
-	public Expander expanderOf(Side side) {
-		return side.equals(Side.INPUT)
+	public Expander expanderOf(int side) {
+		return side == Side.INPUT
 			? inputExpander
 			: outputExpander;
 	}
 
 	public void collapse() {
-		for (Side side: Side.values())
-			collapse(side);
+		collapse(Side.INPUT);
+		collapse(Side.OUTPUT);
 	}
 
-	public void collapse(Side side) {
+	public void collapse(int side) {
 		if (!isExpanded(side))
 			return;
 		expanderOf(side).collapse(this);
@@ -158,35 +158,32 @@ public class Node extends MinMaxGraphComponent {
 	 * Used to avoid removing the initial node while collapsing, should only be
 	 * called from within Expander.collapse
 	 */
-	public void collapse(Side side, Node initialNode) {
+	public void collapse(int side, Node initialNode) {
 		if (!isExpanded(side))
 			return;
 		expanderOf(side).collapse(initialNode);
 	}
 
 	public void expand() {
-		for (Side side: Side.values())
-			if (expanderOf(side) != null)
-				expand(side);
+		expand(Side.INPUT);
+		expand(Side.OUTPUT);
 	}
 
-	public void setExpanded(Side side, boolean value) {
-		if (side == null)
-			return;
+	public void setExpanded(int side, boolean value) {
 		expanderOf(side).setExpanded(value);
 	}
 
-	public void expand(Side side) {
+	public void expand(int side) {
 		expanderOf(side).expand();
 	}
 
-	public boolean isExpanded(Side side) {
+	public boolean isExpanded(int side) {
 		if (expanderOf(side) == null)
 			return false;
 		else return expanderOf(side).isExpanded();
 	}
 
-	public boolean shouldExpanderBeVisible(Side side) {
+	public boolean shouldExpanderBeVisible(int side) {
 		if (expanderOf(side) == null)
 			return false;
 		else return expanderOf(side).canExpand();
@@ -200,18 +197,19 @@ public class Node extends MinMaxGraphComponent {
 			+ name.substring(0, Math.min(name.length(), 20)) + ")";
 	}
 
-	public enum Side {
-		INPUT, OUTPUT
+	public record Side() {
+		public static int INPUT = 1;
+		public static int OUTPUT = 2;
 	}
 
 	private class Expander {
 
-		private final Side side;
+		private final int side;
 		private boolean expanded;
 		// isCollapsing is used to prevent endless recursion in collapse()
 		private boolean isCollapsing;
 
-		private Expander(Side side) {
+		private Expander(int side) {
 			this.side = side;
 		}
 
@@ -318,7 +316,7 @@ public class Node extends MinMaxGraphComponent {
 			var graph = getGraph();
 
 			// Checking if the node already exists.
-			var node = graph.getProcessNode(id);
+			var node = graph.getNode(id);
 			if (node != null)
 				return node;
 

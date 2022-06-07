@@ -57,7 +57,7 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 		var graph = graphEditPart.getModel();
 
 		CompoundCommand cc = new CompoundCommand();
-		cc.setLabel(NLS.bind(M.LayoutAs, M.Tree));
+		cc.setLabel(NLS.bind(M.LayoutAs.toLowerCase(), M.Tree));
 
 		var layoutProcessor = new TreeLayoutProcessor(graph);
 		var mapNodeToMoveDelta = layoutProcessor.getMoveDeltas();

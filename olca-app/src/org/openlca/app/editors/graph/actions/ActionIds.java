@@ -19,8 +19,10 @@ public interface ActionIds {
 	String COLLAPSE_ALL = "graph.actions.ExpansionAction.COLLAPSE";
 	String LAYOUT_TREE = "graph.actions.LayoutAction.TREE_LAYOUT";
 	String OPEN_MINIATURE_VIEW = "graph.actions.OpenMiniatureViewAction";
+	String OPEN_EDITOR = "graph.actions.OpenEditorAction";
 	String REMOVE_ALL_CONNECTIONS = "graph.actions.RemoveAllConnectionsAction";
 	String REMOVE_SUPPLY_CHAIN = "graph.actions.RemoveSupplyChainAction";
+	String SAVE_IMAGE = "graph.actions.SaveImageAction";
 	String SEARCH_PROVIDERS = "graph.actions.SearchConnectorsAction.PROVIDERS";
 	String SEARCH_RECIPIENTS = "graph.actions.SearchConnectorsAction.RECIPIENTS";
 	String SHOW_OUTLINE = "graph.actions.ShowOutlineAction";

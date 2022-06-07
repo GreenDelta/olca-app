@@ -1,34 +1,30 @@
 package org.openlca.app.editors.graph.model.commands;
 
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.CommandStack;
 import org.openlca.app.M;
-import org.openlca.app.editors.graph.edit.GraphEditPart;
 import org.openlca.app.editors.graph.model.Node;
 
-import static org.openlca.app.editors.graph.model.Node.Side;
 import static org.openlca.app.editors.graph.model.Node.Side.INPUT;
 import static org.openlca.app.editors.graph.model.Node.Side.OUTPUT;
-import static org.openlca.app.editors.graph.requests.GraphRequestConstants.REQ_LAYOUT;
 
 public class ExpansionCommand extends Command {
 
 	private final Node node;
-	private final Side side;
+	private final int side;
 	private final boolean isExpand;
-	private GraphEditPart graphEditPart;
 
-	public ExpansionCommand(Node node, Side side) {
+	public ExpansionCommand(Node node, int side,
+													boolean isExpand) {
 		this.node = node;
 		this.side = side;
-		this.isExpand = !node.isExpanded(side);
+		this.isExpand = isExpand;
 	}
+
 
 	@Override
 	public boolean canExecute() {
-		return side == INPUT || side == OUTPUT;
+		return node.isExpanded(side) != isExpand
+			&& (side == INPUT || side == OUTPUT);
 	}
 
 	@Override
@@ -46,12 +42,6 @@ public class ExpansionCommand extends Command {
 		if (isExpand) node.expand(side);
 		else node.collapse(side);
 
-		// The layout command has to be executed after creating or deleting the
-		// nodes, hence cannot be executed within a CompoundCommand.
-		var command = graphEditPart.getCommand(new Request(REQ_LAYOUT));
-		if (command.canExecute())
-			command.execute();
-
 		node.editor.setDirty();
 	}
 
@@ -67,7 +57,4 @@ public class ExpansionCommand extends Command {
 		else return M.Collapse;
 	}
 
-	public void setParent(EditPart parent) {
-		graphEditPart = (GraphEditPart) parent;
-	}
 }

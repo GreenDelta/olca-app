@@ -1,6 +1,5 @@
 package org.openlca.app.editors.graph;
 
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.swt.dnd.DND;
@@ -9,7 +8,6 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.editors.graph.layouts.NodeLayoutInfo;
-import org.openlca.app.editors.graph.model.Node;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
 

@@ -33,16 +33,18 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.util.Strings;
 
-class ProductSystemInfoPage extends ModelPage<ProductSystem> {
+public class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 
+	public static final String ID = "ProductSystemInfoPage";
 	private ExchangeViewer productViewer;
 	private FlowPropertyFactorViewer propertyViewer;
 	private UnitCombo unitViewer;
 	private Text targetAmountText;
 	private ScrolledForm form;
 
+
 	ProductSystemInfoPage(ProductSystemEditor editor) {
-		super(editor, "ProductSystemInfoPage", M.GeneralInformation);
+		super(editor, ID, M.GeneralInformation);
 	}
 
 	@Override

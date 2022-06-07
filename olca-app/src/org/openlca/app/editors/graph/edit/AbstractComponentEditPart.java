@@ -56,6 +56,13 @@ public abstract class AbstractComponentEditPart<N extends GraphComponent> extend
 		return getModel().getChildren();
 	}
 
+	/**
+	 * Reset a child by cloning, removing and adding a new version of it. This
+	 * method is useful when, for the same model class, the EditPart class
+	 * differs.
+	 *
+	 * @param childEditPart The child EditPart to be reset.
+	 */
 	public void resetChildEditPart(EditPart childEditPart) {
 		var index = getChildren().indexOf(childEditPart);
 		var newNodeEditPart = createChild(childEditPart.getModel());

@@ -25,6 +25,11 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.jsonld.Json;
 
+import static org.openlca.app.editors.graph.actions.MassExpansionAction.COLLAPSE;
+import static org.openlca.app.editors.graph.actions.MassExpansionAction.EXPAND;
+import static org.openlca.app.editors.graph.model.commands.MinMaxCommand.MAXIMIZE;
+import static org.openlca.app.editors.graph.model.commands.MinMaxCommand.MINIMIZE;
+
 /**
  * A {@link GraphEditor} is the starting point of the graphical interface of a
  * product system. It creates an <code>Editor</code> containing a single
@@ -34,7 +39,7 @@ import org.openlca.jsonld.Json;
  */
 public class GraphEditor extends GraphicalEditor {
 
-	public static final String ID = "editors.graphical";
+	public static final String ID = "GraphicalEditor";
 
 	private KeyHandler sharedKeyHandler;
 
@@ -128,6 +133,7 @@ public class GraphEditor extends GraphicalEditor {
 		super.createActions();
 		var registry = getActionRegistry();
 		var selectionActions = getSelectionActions();
+		var stackActions = getStackActions();
 		IAction action;
 
 		action = new MatchSizeAction(this);
@@ -141,6 +147,17 @@ public class GraphEditor extends GraphicalEditor {
 		action = new MatchHeightAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
+
+		action = new LayoutAction(this);
+		registry.registerAction(action);
+
+		action = new MinMaxAllAction(this, MINIMIZE);
+		registry.registerAction(action);
+		stackActions.add(action.getId());
+
+		action = new MinMaxAllAction(this, MAXIMIZE);
+		registry.registerAction(action);
+		stackActions.add(action.getId());
 
 		action = new LayoutAction(this);
 		registry.registerAction(action);
@@ -162,6 +179,29 @@ public class GraphEditor extends GraphicalEditor {
 
 		action = new EditGraphConfigAction(this);
 		registry.registerAction(action);
+
+		action = new OpenEditorAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new OpenMiniatureViewAction(this);
+		registry.registerAction(action);
+
+		action = new SaveImageAction(this);
+		registry.registerAction(action);
+
+		action = new MassExpansionAction(this, EXPAND);
+		registry.registerAction(action);
+		stackActions.add(action.getId());
+
+		action = new MassExpansionAction(this, COLLAPSE);
+		registry.registerAction(action);
+		stackActions.add(action.getId());
+
+		// TODO (francois) Too slow.
+//		action = new RemoveAllConnectionsAction(this);
+//		registry.registerAction(action);
+//		selectionActions.add(action.getId());
 	}
 
 	/**
@@ -273,4 +313,7 @@ public class GraphEditor extends GraphicalEditor {
 		return super.getAdapter(type);
 	}
 
+	public ProductSystemEditor getProductSystemEditor() {
+		return systemEditor;
+	}
 }

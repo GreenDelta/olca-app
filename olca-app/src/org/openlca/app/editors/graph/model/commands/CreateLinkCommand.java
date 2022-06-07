@@ -98,10 +98,10 @@ public class CreateLinkCommand extends Command {
 		var graph = getGraph();
 		if (graph == null)
 			return;
-		var outputNode = graph.getProcessNode(
+		var outputNode = graph.getNode(
 				link.getSourceNode().descriptor.id);
 		source = outputNode.getOutput(link.processLink);
-		var inProc = graph.getProcessNode(
+		var inProc = graph.getNode(
 				link.getTargetNode().descriptor.id);
 		target = inProc.getInput(link.processLink);
 	}

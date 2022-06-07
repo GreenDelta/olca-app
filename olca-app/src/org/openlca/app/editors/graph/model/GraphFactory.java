@@ -150,7 +150,7 @@ public class GraphFactory {
 		for (ProcessLink pLink : linkSearch.getLinks(id)) {
 			boolean isProvider = pLink.providerId == id;
 			long otherID = isProvider ? pLink.processId : pLink.providerId;
-			var otherNode = graph.getProcessNode(otherID);
+			var otherNode = graph.getNode(otherID);
 			if (otherNode == null)
 				continue;
 			Node outNode = null;
@@ -230,7 +230,7 @@ public class GraphFactory {
 			if (refNode != null) {
 				graph.addChild(refNode);
 				refNode.expand();
-				initLocation(graph);
+				initializeLocation(graph);
 			}
 		}
 		return graph;
@@ -279,7 +279,7 @@ public class GraphFactory {
 		return null;
 	}
 
-	static void initLocation(Graph graph) {
+	static void initializeLocation(Graph graph) {
 		var layoutProcessor = new TreeLayoutProcessor(graph);
 		var map = layoutProcessor.getMoveDeltas();
 		for (Node node : graph.getChildren()) {

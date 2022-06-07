@@ -100,7 +100,7 @@ public class TreeLayoutProcessor {
 
 	private void prepare(Graph graph) {
 		for (long processId : graph.getProductSystem().processes)
-			if (graph.getProcessNode(processId) == null)
+			if (graph.getNode(processId) == null)
 				containing.put(processId, 1);
 	}
 

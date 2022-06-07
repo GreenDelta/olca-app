@@ -2,27 +2,50 @@ package org.openlca.app.editors.graph.edit;
 
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.requests.GroupRequest;
-import org.openlca.app.editors.graph.model.Graph;
+import org.eclipse.gef.commands.CompoundCommand;
 import org.openlca.app.editors.graph.model.Node;
 import org.openlca.app.editors.graph.model.commands.ExpansionCommand;
-import org.openlca.app.editors.graph.model.commands.DeleteNodeCommand;
 import org.openlca.app.editors.graph.requests.ExpansionRequest;
+
+import java.util.Objects;
+
+import static org.openlca.app.editors.graph.model.Node.Side.INPUT;
+import static org.openlca.app.editors.graph.model.Node.Side.OUTPUT;
+import static org.openlca.app.editors.graph.requests.GraphRequestConstants.*;
 
 public class NodeEditPolicy extends MinMaxComponentEditPolicy {
 
 	@Override
 	public Command getCommand(Request request) {
 		if (request instanceof ExpansionRequest req) {
-			return getExpansionCommand(req.getNode(), req.getSide());
+			if (req.getType() == REQ_EXPAND_OR_COLLAPSE) {
+				var type = req.getNode().isExpanded(req.getSide())
+					? REQ_COLLAPSE : REQ_EXPAND;
+				return getExpansionCommand(req.getNode(), req.getSide(), type);
+			}
+			if (req.getType() == REQ_EXPAND)
+				return getExpansionCommand(req.getNode(), req.getSide(), REQ_EXPAND);
+			if (req.getType() == REQ_COLLAPSE)
+				return getExpansionCommand(req.getNode(), req.getSide(), REQ_COLLAPSE);
 		}
 		return super.getCommand(request);
 	}
 
-	private Command getExpansionCommand(Node node, Node.Side side) {
-		var command = new ExpansionCommand(node, side);
-		command.setParent(getHost().getParent());
-		return command;
+	private Command getExpansionCommand(Node node, int side, String type) {
+		var cc = new CompoundCommand();
+		var isExpand = Objects.equals(type, REQ_EXPAND);
+
+		if (side == (INPUT | OUTPUT)) {
+			if (node.isExpanded(INPUT) != isExpand)
+				cc.add(new ExpansionCommand(node, INPUT, isExpand));
+			if (node.isExpanded(OUTPUT) != isExpand)
+				cc.add(new ExpansionCommand(node, OUTPUT, isExpand));
+		} else if ((side == INPUT) || (side == OUTPUT))
+			if (node.isExpanded(side) != isExpand)
+				cc.add(new ExpansionCommand(node, side, isExpand));
+		else return null;
+
+		return cc.unwrap();
 	}
 
 }

@@ -11,15 +11,34 @@ public class GraphRequestConstants implements RequestConstants {
 	public static String REQ_EDIT = "edit";
 
 	/**
-	 * Indicates that the edit of an element should be performed through an edit
-	 * page.
+	 * Indicates the expansion of a node from one side or another.
 	 */
-	public static String REQ_EXPANSION = "collapse";
+	public static String REQ_EXPAND = "expand";
+
+	/**
+	 * Indicates the collapse of a node from one side or another.
+	 */
+	public static String REQ_COLLAPSE = "collapse";
+
+	/**
+	 * Indicates the expansion or the collapse of a node from one side or another.
+	 */
+	public static String REQ_EXPAND_OR_COLLAPSE = "expand_or_collapse";
 
 	/**
 	 * Indicates that the Graph diagram should be layout as a tree.
 	 */
 	public static String REQ_LAYOUT = "layout";
+
+	/**
+	 * Indicates that a component should be minimized.
+	 */
+	public static String REQ_MIN = "min_all";
+
+	/**
+	 * Indicates that a component should be maximized.
+	 */
+	public static String REQ_MAX = "max_all";
 
 	/**
 	 * Indicates the addition of an ExchangeItem in the input IOPane.

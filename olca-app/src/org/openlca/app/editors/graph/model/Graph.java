@@ -3,7 +3,6 @@ package org.openlca.app.editors.graph.model;
 
 import gnu.trove.set.hash.TLongHashSet;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.graph.GraphConfig;
 import org.openlca.app.editors.graph.GraphEditor;
 import org.openlca.app.editors.graph.search.MutableProcessLinkSearchMap;
 import org.openlca.core.matrix.cache.FlowTable;
@@ -42,12 +41,16 @@ public class Graph extends GraphComponent {
 		}
 	}
 
-	public Node getProcessNode(long id) {
+	public Node getNode(long id) {
 		for (var node : getChildren()) {
 			if (node.descriptor != null && node.descriptor.id == id)
 				return node;
 		}
 		return null;
+	}
+
+	public Node getReferenceNode() {
+		return getNode(referenceProcess.id);
 	}
 
 	public boolean isReferenceProcess(Node node) {

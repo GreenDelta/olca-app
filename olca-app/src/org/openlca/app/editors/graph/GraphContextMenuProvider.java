@@ -24,6 +24,14 @@ public class GraphContextMenuProvider  extends ContextMenuProvider {
 	public void buildContextMenu(IMenuManager menu) {
 		GEFActionConstants.addStandardActionGroups(menu);
 
+		addUndoActions(menu);
+		addEditActions(menu);
+		addViewActions(menu);
+		addSaveActions(menu);
+		addRestActions(menu);
+	}
+
+	private void addUndoActions(IMenuManager menu) {
 		var undo = actionRegistry.getAction(ActionFactory.UNDO.getId());
 		undo.setImageDescriptor(Icon.UNDO.descriptor());
 		undo.setDisabledImageDescriptor(Icon.UNDO_DISABLED.descriptor());
@@ -33,24 +41,26 @@ public class GraphContextMenuProvider  extends ContextMenuProvider {
 		redo.setImageDescriptor(Icon.REDO.descriptor());
 		redo.setDisabledImageDescriptor(Icon.REDO_DISABLED.descriptor());
 		menu.appendToGroup(GEFActionConstants.GROUP_UNDO, redo);
+	}
 
-		var add_process = actionRegistry.getAction(ActionIds.ADD_PROCESS);
-		if (add_process.isEnabled())
-			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, add_process);
+	private void addEditActions(IMenuManager menu) {
+		var addProcess = actionRegistry.getAction(ActionIds.ADD_PROCESS);
+		if (addProcess.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, addProcess);
 
-		var add_input_exchange = actionRegistry.getAction(
+		var addInputExchange = actionRegistry.getAction(
 			ActionIds.ADD_INPUT_EXCHANGE);
-		if (add_input_exchange.isEnabled())
-			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, add_input_exchange);
+		if (addInputExchange.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, addInputExchange);
 
-		var add_output_exchange = actionRegistry.getAction(
+		var addOutputExchange = actionRegistry.getAction(
 			ActionIds.ADD_OUTPUT_EXCHANGE);
-		if (add_output_exchange.isEnabled())
-			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, add_output_exchange);
+		if (addOutputExchange.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, addOutputExchange);
 
-		var edit_exchange = actionRegistry.getAction(ActionIds.EDIT_EXCHANGE);
-		if (edit_exchange.isEnabled())
-			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, edit_exchange);
+		var editExchange = actionRegistry.getAction(ActionIds.EDIT_EXCHANGE);
+		if (editExchange.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, editExchange);
 
 		var delete = actionRegistry.getAction(ActionFactory.DELETE.getId());
 		delete.setText(M.Delete);
@@ -59,10 +69,45 @@ public class GraphContextMenuProvider  extends ContextMenuProvider {
 		if (delete.isEnabled())
 			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, delete);
 
-		var layout = actionRegistry.getAction(ActionIds.LAYOUT_TREE);
-		menu.appendToGroup(GEFActionConstants.GROUP_REST, layout);
+		var openEditor = actionRegistry.getAction(ActionIds.OPEN_EDITOR);
+		if (openEditor.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, openEditor);
 
+		// TODO (francois) Too slow...
+//		var removeConnections = actionRegistry.getAction(
+//			ActionIds.REMOVE_ALL_CONNECTIONS);
+//		if (removeConnections.isEnabled())
+//			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, removeConnections);
+	}
+
+	private void addViewActions(IMenuManager menu) {
+		var layout = actionRegistry.getAction(ActionIds.LAYOUT_TREE);
+		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, layout);
+
+		var minAll = actionRegistry.getAction(ActionIds.MINIMIZE_ALL);
+		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, minAll);
+
+		var maxAll = actionRegistry.getAction(ActionIds.MAXIMIZE_ALL);
+		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, maxAll);
+
+		var expandAll = actionRegistry.getAction(ActionIds.EXPAND_ALL);
+		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, expandAll);
+
+		var collapseAll = actionRegistry.getAction(ActionIds.COLLAPSE_ALL);
+		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, collapseAll);
+
+		var openMiniature = actionRegistry.getAction(ActionIds.OPEN_MINIATURE_VIEW);
+		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, openMiniature);
+	}
+
+	private void addSaveActions(IMenuManager menu) {
+		var saveImage = actionRegistry.getAction(ActionIds.SAVE_IMAGE);
+		menu.appendToGroup(GEFActionConstants.GROUP_SAVE, saveImage);
+	}
+
+	private void addRestActions(IMenuManager menu) {
 		var settings = actionRegistry.getAction(ActionIds.EDIT_GRAPH_CONFIG);
 		menu.appendToGroup(GEFActionConstants.GROUP_REST, settings);
 	}
+
 }

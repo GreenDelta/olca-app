@@ -5,7 +5,6 @@ import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
-import org.eclipse.ui.internal.navigator.CommonViewerSiteIViewSiteDelegate;
 import org.openlca.app.editors.graph.GraphEditor;
 import org.openlca.app.editors.graph.model.Graph;
 import org.openlca.app.rcp.images.Images;
@@ -39,7 +38,7 @@ public class AddProcessAction extends WorkbenchPartAction {
 		var command = getCommand();
 		if (command == null)
 			return false;
-		return getCommand().canExecute();
+		return command.canExecute();
 	}
 
 	private Command getCommand() {

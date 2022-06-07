@@ -4,6 +4,8 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
+import org.eclipse.osgi.util.NLS;
+import org.openlca.app.M;
 import org.openlca.app.editors.graph.model.Node;
 
 public class NodeSetConstraintCommand extends Command {
@@ -42,10 +44,10 @@ public class NodeSetConstraintCommand extends Command {
 		Object type = request.getType();
 		if (RequestConstants.REQ_RESIZE_CHILDREN.equals(type)
 		|| RequestConstants.REQ_RESIZE.equals(type))
-			setLabel("resize node");
+			setLabel(M.Resize);
 		else if (RequestConstants.REQ_MOVE_CHILDREN.equals(type)
 		|| RequestConstants.REQ_MOVE.equals(type))
-			setLabel("move node");
+			setLabel(M.Move);
 		else setLabel("");
 	}
 
