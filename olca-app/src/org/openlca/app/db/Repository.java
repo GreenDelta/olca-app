@@ -37,7 +37,7 @@ public class Repository {
 	public final Ids ids;
 	public final References references;
 	public final Entries entries;
-	public final History history;
+	public final History localHistory;
 	private String password;
 
 	private Repository(IDatabase database, File gitDir) throws IOException {
@@ -62,7 +62,7 @@ public class Repository {
 		references = References.of(git);
 		entries = Entries.of(git);
 		ids = Ids.of(git);
-		history = History.of(git);
+		localHistory = History.localOf(git);
 	}
 
 	public static Repository get() {

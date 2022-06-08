@@ -17,6 +17,7 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitMerge;
+import org.openlca.git.util.Constants;
 
 public class MergeAction extends Action implements INavigationAction {
 
@@ -32,7 +33,7 @@ public class MergeAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return !Repository.get().history.getBehind().isEmpty();
+		return !Repository.get().localHistory.getBehindOf(Constants.REMOTE_REF).isEmpty();
 	}
 
 	@Override
@@ -46,7 +47,7 @@ public class MergeAction extends Action implements INavigationAction {
 			var resolutionMap = ConflictResolutionMap.forRemote();
 			if (resolutionMap == null)
 				return;
-			var user = !repo.history.getAhead().isEmpty()
+			var user = !repo.localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty()
 					? AuthenticationDialog.promptUser()
 					: null;
 			var changed = Actions.run(GitMerge

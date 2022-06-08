@@ -2,15 +2,10 @@ package org.openlca.app.collaboration.views;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IViewReference;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -25,7 +20,7 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.Commit;
-import org.openlca.git.model.Diff;
+import org.openlca.git.util.Constants;
 import org.openlca.git.util.Diffs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,13 +34,13 @@ public class CompareView extends ViewPart {
 	private DiffNode input;
 
 	public static void clear() {
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		var page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		if (page == null)
 			return;
-		for (IViewReference viewRef : page.getViewReferences()) {
+		for (var viewRef : page.getViewReferences()) {
 			if (!ID.equals(viewRef.getId()))
 				continue;
-			CompareView view = (CompareView) viewRef.getView(false);
+			var view = (CompareView) viewRef.getView(false);
 			if (view == null)
 				return;
 			view.input = null;
@@ -55,7 +50,7 @@ public class CompareView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		Composite body = new Composite(parent, SWT.NONE);
+		var body = new Composite(parent, SWT.NONE);
 		UI.gridLayout(body, 1, 0, 0);
 		viewer = new CompareViewer(body);
 	}
@@ -66,10 +61,10 @@ public class CompareView extends ViewPart {
 
 	public static void update(Commit commit, List<INavigationElement<?>> elements) {
 		try {
-			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			var page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			if (page == null)
 				return;
-			CompareView view = (CompareView) page.showView(ID);
+			var view = (CompareView) page.showView(ID);
 			view.doUpdate(commit, elements);
 		} catch (PartInitException e) {
 			log.error("Error compare view", e);
@@ -86,34 +81,12 @@ public class CompareView extends ViewPart {
 	}
 
 	private DiffNode buildNode(Commit commit, List<INavigationElement<?>> elements) {
-		var isAhead = Repository.get().history.isAhead(commit);
+		var isAhead = Repository.get().localHistory.isAheadOf(commit, Constants.REMOTE_REF);
 		viewer.setDirection(isAhead ? Direction.RIGHT_TO_LEFT : Direction.LEFT_TO_RIGHT);
-		var head = Repository.get().commits.head();
-		var rDiffs = getDiffs(commit, head, isAhead);
-		var wsDiffs = new HashMap<String, Diff>();
-		var diffs = Diffs.workspace(Repository.get().toConfig(), commit, PathFilters.of(elements));
-		for (var diff : diffs) {
-			wsDiffs.put(diff.path, diff);
-		}
-		var keys = new HashSet<String>();
-		keys.addAll(wsDiffs.keySet());
-		keys.addAll(rDiffs.keySet());
-		var differences = new HashMap<String, TriDiff>();
-		for (var key : keys) {
-			differences.put(key, new TriDiff(wsDiffs.get(key), rDiffs.get(key)));
-		}
-		return new DiffNodeBuilder(Database.get()).build(differences.values());
-	}
-
-	private Map<String, Diff> getDiffs(Commit commit, Commit head, boolean isAhead) {
-		var diffMap = new HashMap<String, Diff>();
-		var diffs = Diffs.between(Repository.get().git,
-				isAhead ? head : commit,
-				isAhead ? commit : head);
-		for (var diff : diffs) {
-			diffMap.put(diff.path, diff);
-		}
-		return diffMap;
+		var diffs = Diffs.workspace(Repository.get().toConfig(), commit, PathFilters.of(elements)).stream()
+				.map(d -> new TriDiff(d, null))
+				.toList();
+		return new DiffNodeBuilder(Database.get()).build(diffs);
 	}
 
 	@Override

@@ -61,7 +61,7 @@ class ConflictResolutionMap implements ConflictResolver {
 			throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
 		var repo = Repository.get();
 		var commit = repo.commits.find().refs(ref).latest();
-		var commonParent = repo.history.commonParentOf(Constants.LOCAL_REF, ref);
+		var commonParent = repo.localHistory.commonParentOf(ref);
 		var workspaceConflicts = workspaceDiffs(commit, commonParent);
 		if (workspaceConflicts.isEmpty())
 			return resolve(commit, localDiffs(commit, commonParent));
