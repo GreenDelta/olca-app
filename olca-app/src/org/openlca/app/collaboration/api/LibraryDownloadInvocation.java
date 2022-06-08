@@ -1,10 +1,9 @@
 package org.openlca.app.collaboration.api;
 
 import java.io.InputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 import org.openlca.app.collaboration.util.Valid;
+import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.collaboration.util.WebRequests.Type;
 
 class LibraryDownloadInvocation extends Invocation<InputStream, InputStream> {
@@ -23,7 +22,7 @@ class LibraryDownloadInvocation extends Invocation<InputStream, InputStream> {
 
 	@Override
 	protected String query() {
-		return "/" + URLEncoder.encode(library, StandardCharsets.UTF_8);
+		return "/" + WebRequests.encodeQuery(library);
 	}
 
 }
