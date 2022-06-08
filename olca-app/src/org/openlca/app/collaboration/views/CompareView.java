@@ -20,12 +20,10 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.Commit;
-import org.openlca.git.util.Constants;
 import org.openlca.git.util.Diffs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO FIX ME
 public class CompareView extends ViewPart {
 
 	public final static String ID = "views.collaboration.compare";
@@ -81,7 +79,7 @@ public class CompareView extends ViewPart {
 	}
 
 	private DiffNode buildNode(Commit commit, List<INavigationElement<?>> elements) {
-		var isAhead = Repository.get().localHistory.isAheadOf(commit, Constants.REMOTE_REF);
+		var isAhead = Repository.get().localHistory.contains(commit);
 		viewer.setDirection(isAhead ? Direction.RIGHT_TO_LEFT : Direction.LEFT_TO_RIGHT);
 		var diffs = Diffs.workspace(Repository.get().toConfig(), commit, PathFilters.of(elements)).stream()
 				.map(d -> new TriDiff(d, null))
