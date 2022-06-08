@@ -39,7 +39,7 @@ public class AuthenticationDialog extends FormDialog {
 		if (useTwoFactorAuth) {
 			auth.withToken();
 		}
-		if (!Strings.nullOrEmpty(user) && !Strings.nullOrEmpty(password)) {
+		if (!Strings.nullOrEmpty(user) && !Strings.nullOrEmpty(password) && !forceAll) {
 			if (!useTwoFactorAuth)
 				return new GitCredentialsProvider(user, password);
 			if (!forceAll)

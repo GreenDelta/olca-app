@@ -103,6 +103,9 @@ public class RepositoryClient {
 				log.warn("Could not connect to repository server " + serverUrl + ", " + e.getMessage());
 				return false;
 			}
+			if (e.getErrorCode() == Status.UNAUTHORIZED.getStatusCode()
+					|| e.getErrorCode() == Status.FORBIDDEN.getStatusCode())
+				return login(true);
 			throw e;
 		}
 		return sessionId != null;
