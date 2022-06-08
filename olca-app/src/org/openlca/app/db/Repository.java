@@ -137,7 +137,7 @@ public class Repository {
 		return git.getConfig().getString("user", null, "name");
 	}
 
-	public void setUser(String user) {
+	public void user(String user) {
 		if (!user.equals(user())) {
 			useTwoFactorAuth(false);
 		}

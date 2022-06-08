@@ -30,7 +30,7 @@ public class ConnectAction extends Action implements INavigationAction {
 			var gitDir = Repository.gitDir(Database.get().getName());
 			GitInit.in(gitDir).remoteUrl(url).run();
 			var repo = Repository.initialize(Database.get());
-			repo.setUser(dialog.user());
+			repo.user(dialog.user());
 			Announcements.check();
 		} catch (Exception e) {
 			Actions.handleException("Error connecting to repository", e);
