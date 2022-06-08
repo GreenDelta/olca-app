@@ -1,8 +1,5 @@
 package org.openlca.app.editors.graphical.search;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -14,11 +11,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.graphical.model.ExchangeNode;
+import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.RootDescriptor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConnectionDialog extends Dialog {
 
@@ -38,10 +38,10 @@ public class ConnectionDialog extends Dialog {
 	private final List<Candidate> candidates;
 	TableViewer viewer;
 
-	public ConnectionDialog(ExchangeNode enode) {
+	public ConnectionDialog(ExchangeItem exchangeItem) {
 		super(UI.shell());
 		setBlockOnOpen(true);
-		exchange = new ModelExchange(enode);
+		exchange = new ModelExchange(exchangeItem);
 		candidates = exchange.searchCandidates(Database.get());
 	}
 

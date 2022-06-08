@@ -1,102 +1,300 @@
 package org.openlca.app.editors.graphical;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.EventObject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.draw2d.ConnectionLayer;
-import org.eclipse.draw2d.ConnectionRouter;
-import org.eclipse.draw2d.Layer;
-import org.eclipse.draw2d.LayeredPane;
-import org.eclipse.draw2d.StackLayout;
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.gef.DefaultEditDomain;
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.GraphicalViewer;
-import org.eclipse.gef.KeyHandler;
-import org.eclipse.gef.KeyStroke;
-import org.eclipse.gef.MouseWheelHandler;
-import org.eclipse.gef.MouseWheelZoomHandler;
-import org.eclipse.gef.commands.CommandStack;
-import org.eclipse.gef.editparts.ScalableRootEditPart;
+import org.eclipse.draw2d.*;
+import org.eclipse.gef.*;
+import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.tools.PanningSelectionTool;
-import org.eclipse.gef.ui.actions.ActionRegistry;
-import org.eclipse.gef.ui.actions.DeleteAction;
-import org.eclipse.gef.ui.actions.GEFActionConstants;
-import org.eclipse.gef.ui.actions.UpdateAction;
-import org.eclipse.gef.ui.actions.ZoomInAction;
-import org.eclipse.gef.ui.actions.ZoomOutAction;
+import org.eclipse.gef.ui.actions.*;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.eclipse.ui.*;
+import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.action.BuildSupplyChainMenuAction;
-import org.openlca.app.editors.graphical.action.GraphActions;
-import org.openlca.app.editors.graphical.action.LayoutMenuAction;
-import org.openlca.app.editors.graphical.command.LayoutCommand;
-import org.openlca.app.editors.graphical.layout.LayoutManager;
-import org.openlca.app.editors.graphical.layout.LayoutType;
-import org.openlca.app.editors.graphical.model.GraphEditPartFactory;
-import org.openlca.app.editors.graphical.model.Link;
-import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.app.editors.graphical.outline.OutlinePage;
-import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
-import org.openlca.app.editors.graphical.view.TreeConnectionRouter;
+import org.openlca.app.editors.graphical.actions.*;
+import org.openlca.app.editors.graphical.edit.GraphEditPartFactory;
+import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.editors.graphical.model.GraphFactory;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
+import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
+import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
+import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.PROVIDER;
+import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.RECIPIENTS;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
+
 /**
- * A model graph consists in a {@link GraphicalEditor} that will display the
- * model. That {@link GraphicalEditor} displays a
- * {@link org.openlca.app.editors.graphical.model.ProductSystemNode} and a set
- * of {@link org.openlca.app.editors.graphical.model.Link}s.
+ * A {@link GraphEditor} is the starting point of the graphical interface of a
+ * product system. It creates an <code>Editor</code> containing a single
+ * <code>GraphicalViewer</code> as its control.
+ * The <code>GraphModel</code>  is the head of the model to be further
+ * displayed.
  */
 public class GraphEditor extends GraphicalEditor {
 
-	public static final String ID = "editors.productsystem.graphical";
-	public static final double[] ZOOM_LEVELS = new double[] {
-			0.01, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0 };
+	public static final String ID = "GraphicalEditor";
 
-	// TODO: save this in the same way like the layout is currently stored
-	public final GraphConfig config = new GraphConfig();
+	private KeyHandler sharedKeyHandler;
 
 	private final ProductSystemEditor systemEditor;
-	private final LayoutType layoutType = LayoutType.TREE_LAYOUT;
+	private Graph graph;
 
-	private ProductSystemNode model;
-	private OutlinePage outline;
-	private ISelection selection;
+	public static final double[] ZOOM_LEVELS = new double[] {
+		0.01, 0.1, 0.2, 0.4, 0.8, 1.0, 1.6, 2.0, 3.0, 5.0, 10.0 };
 
-	// TODO: we may do not need this later when we build our
-	// context menu more selection specific.
-	private final List<String> updateActions = new ArrayList<>();
+	// TODO: save this in the same way as the layout is currently stored
+	public final GraphConfig config = new GraphConfig();
+	private final GraphFactory graphFactory = new GraphFactory(this);
 
 	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
 		editor.onSaved(() -> GraphFile.save(this));
 	}
 
-	public ProductSystemEditor systemEditor() {
-		return systemEditor;
+	@Override
+	public void init(IEditorSite site, IEditorInput input)
+		throws PartInitException {
+		setEditDomain(new DefaultEditDomain(this));
+		if (input instanceof GraphicalEditorInput graphInput) {
+			if (graphInput.descriptor() != null) {
+				setPartName(Labels.name(graphInput.descriptor()));
+			}
+		}
+		super.init(site, input);
 	}
 
-	public ProductSystem getProductSystem() {
-		return systemEditor.getModel();
+	@Override
+	protected void initializeGraphicalViewer() {
+		var viewer = getGraphicalViewer();
+
+		GraphDropListener.on(this);
+
+		// TODO (francois) Implement a PanningSelectionTool without pressing SpaceBar and
+		//  Selection while pressing Ctrl.
+		viewer.getEditDomain().setActiveTool(new PanningSelectionTool());
+
+		viewer.setContents(getModel());
+	}
+
+	@Override
+	protected void configureGraphicalViewer() {
+		super.configureGraphicalViewer();
+		var viewer = getGraphicalViewer();
+
+		ScalableFreeformRootEditPart root = new ScalableFreeformRootEditPart();
+
+		// set clipping strategy for connection layer
+		ConnectionLayer connectionLayer = (ConnectionLayer) root
+			.getLayer(LayerConstants.CONNECTION_LAYER);
+		connectionLayer
+			.setClippingStrategy(new ViewportAwareConnectionLayerClippingStrategy(
+				connectionLayer));
+
+		var zoom = root.getZoomManager();
+		zoom.setZoomLevels(ZOOM_LEVELS);
+		var zoomLevels = new ArrayList<String>(3);
+		zoomLevels.add(ZoomManager.FIT_ALL);
+		zoomLevels.add(ZoomManager.FIT_WIDTH);
+		zoomLevels.add(ZoomManager.FIT_HEIGHT);
+		root.getZoomManager().setZoomLevelContributions(zoomLevels);
+		zoom.setZoomAnimationStyle(ZoomManager.ANIMATE_ZOOM_IN_OUT);
+		viewer.setProperty(
+			MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
+			MouseWheelZoomHandler.SINGLETON);
+		var zoomIn = new ZoomInAction(root.getZoomManager());
+		var zoomOut = new ZoomOutAction(root.getZoomManager());
+		getActionRegistry().registerAction(zoomIn);
+		getActionRegistry().registerAction(zoomOut);
+//		getSite().getKeyBindingService().registerAction(zoomIn);
+//		getSite().getKeyBindingService().registerAction(zoomOut);
+
+		viewer.setRootEditPart(root);
+		viewer.setKeyHandler(getCommonKeyHandler());
+
+		ContextMenuProvider provider = new GraphContextMenuProvider(viewer,
+			getActionRegistry());
+		viewer.setContextMenu(provider);
+
+		viewer.setEditPartFactory(new GraphEditPartFactory());
+
+		loadProperties();
+		loadConfig();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void createActions() {
+		super.createActions();
+		var registry = getActionRegistry();
+		var selectionActions = getSelectionActions();
+		var stackActions = getStackActions();
+		IAction action;
+
+		action = new MatchSizeAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new MatchWidthAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new MatchHeightAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new LayoutAction(this);
+		registry.registerAction(action);
+
+		action = new MinMaxAllAction(this, MINIMIZE);
+		registry.registerAction(action);
+		stackActions.add(action.getId());
+
+		action = new MinMaxAllAction(this, MAXIMIZE);
+		registry.registerAction(action);
+		stackActions.add(action.getId());
+
+		action = new LayoutAction(this);
+		registry.registerAction(action);
+
+		action = new AddProcessAction(this);
+		registry.registerAction(action);
+
+		action = new AddExchangeAction(this, true);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new AddExchangeAction(this, false);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new EditExchangeAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new EditGraphConfigAction(this);
+		registry.registerAction(action);
+
+		action = new OpenEditorAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new OpenMiniatureViewAction(this);
+		registry.registerAction(action);
+
+		action = new SaveImageAction(this);
+		registry.registerAction(action);
+
+		action = new MassExpansionAction(this, EXPAND);
+		registry.registerAction(action);
+		stackActions.add(action.getId());
+
+		action = new MassExpansionAction(this, COLLAPSE);
+		registry.registerAction(action);
+		stackActions.add(action.getId());
+
+		// TODO (francois) Too slow.
+//		action = new RemoveAllConnectionsAction(this);
+//		registry.registerAction(action);
+//		selectionActions.add(action.getId());
+
+		action = new BuildSupplyChainMenuAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new BuildNextTierAction();
+		registry.registerAction(action);
+
+		action = new BuildSupplyChainAction();
+		registry.registerAction(action);
+
+		action = new RemoveSupplyChainAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new LinkUpdateAction(this);
+		registry.registerAction(action);
+
+		action = new SearchConnectorsAction(this, PROVIDER);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new SearchConnectorsAction(this, RECIPIENTS);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+	}
+
+	/**
+	 * Returns the KeyHandler with common bindings for both the Outline (if it
+	 * exists) and Graphical Views. For example, delete is a common action.
+	 */
+	protected KeyHandler getCommonKeyHandler() {
+		if (sharedKeyHandler == null) {
+			sharedKeyHandler = new KeyHandler();
+			var registry = getActionRegistry();
+			sharedKeyHandler.put(
+				KeyStroke.getPressed(SWT.DEL, 127, 0),
+				registry.getAction(ActionFactory.DELETE.getId()));
+			sharedKeyHandler.put(
+				KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0),
+				registry.getAction(GEFActionConstants.ZOOM_IN));
+			sharedKeyHandler.put(
+				KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0),
+				registry.getAction(GEFActionConstants.ZOOM_OUT));
+		}
+		return sharedKeyHandler;
+	}
+
+	protected void loadProperties() {
+		// Zoom
+		ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(
+			ZoomManager.class.toString());
+		if (manager != null)
+			manager.setZoom(getModel().getZoom());
+		// Scroll-wheel Zoom
+		getGraphicalViewer().setProperty(
+			MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1),
+			MouseWheelZoomHandler.SINGLETON);
+	}
+
+	protected void loadConfig() {
+		// read GraphConfig object from file
+		var config = GraphFile.getGraphConfig(this);
+		if (config != null)
+			config.copyTo(this.config);
+	}
+
+	/**
+	 * The <code>selectionChanged</code> method of <code>GraphicalEditor</code> is
+	 * overridden due to the fact that this <code>GraphicalEditor</code> us part
+	 * of a multipage editor.
+	 * @param part      the workbench part containing the selection
+	 * @param selection the current selection. This may be <code>null</code> if
+	 *                  <code>INullSelectionListener</code> is implemented.
+	 */
+	@Override
+	public void selectionChanged(IWorkbenchPart part, ISelection selection)	{
+		var activePage = getSite().getWorkbenchWindow().getActivePage();
+		if (activePage.getActiveEditor().equals(this.systemEditor))
+			updateActions(getSelectionActions());
+	}
+
+	@Override
+	protected void setInput(IEditorInput input) {
+		super.setInput(input);
+		var array = GraphFile.getLayouts(this);
+		graph = getGraphFactory().createGraph(this, array);
 	}
 
 	public void setDirty() {
@@ -108,21 +306,35 @@ public class GraphEditor extends GraphicalEditor {
 		return systemEditor.isDirty();
 	}
 
-	public ISelection getSelection() {
-		return selection;
+	public ProductSystem getProductSystem() {
+		return systemEditor.getModel();
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
-		setEditDomain(new DefaultEditDomain(this));
-		if (input instanceof GraphicalEditorInput) {
-			var ginp = (GraphicalEditorInput) input;
-			if (ginp.getDescriptor() != null) {
-				setPartName(Labels.name(ginp.getDescriptor()));
-			}
-		}
-		super.init(site, input);
+	public void commandStackChanged(EventObject event) {
+		firePropertyChange(IEditorPart.PROP_DIRTY);
+		super.commandStackChanged(event);
+	}
+
+	public Graph getModel() {
+		return graph;
+	}
+
+	public GraphFactory getGraphFactory() {
+		return graphFactory;
+	}
+
+	public ZoomManager getZoomManager() {
+		return getRootEditPart().getZoomManager();
+	}
+
+	private ScalableFreeformRootEditPart getRootEditPart() {
+		return (ScalableFreeformRootEditPart) getGraphicalViewer().getRootEditPart();
+	}
+
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+		systemEditor.doSave(monitor);
 	}
 
 	public boolean promptSaveIfNecessary() throws Exception {
@@ -131,171 +343,10 @@ public class GraphEditor extends GraphicalEditor {
 		String question = M.SystemSaveProceedQuestion;
 		if (Question.ask(M.Save + "?", question)) {
 			new ProgressMonitorDialog(UI.shell()).run(
-					false, false, systemEditor::doSave);
+				false, false, systemEditor::doSave);
 			return true;
 		}
 		return false;
-	}
-
-	public void createNecessaryLinks(ProcessNode node) {
-		MutableProcessLinkSearchMap linkSearch = node.parent().linkSearch;
-		ProductSystemNode sysNode = node.parent();
-		long id = node.process.id;
-		for (ProcessLink pLink : linkSearch.getLinks(id)) {
-			boolean isProvider = pLink.providerId == id;
-			long otherID = isProvider ? pLink.processId : pLink.providerId;
-			ProcessNode otherNode = model.getProcessNode(otherID);
-			if (otherNode == null)
-				continue;
-			ProcessNode outNode = null;
-			ProcessNode inNode = null;
-			FlowType type = sysNode.flows.type(pLink.flowId);
-			if (type == FlowType.PRODUCT_FLOW) {
-				outNode = isProvider ? node : otherNode;
-				inNode = isProvider ? otherNode : node;
-			} else if (type == FlowType.WASTE_FLOW) {
-				outNode = isProvider ? otherNode : node;
-				inNode = isProvider ? node : otherNode;
-			}
-			if (outNode == null)
-				continue;
-			if (!outNode.isExpandedRight() && !inNode.isExpandedLeft())
-				continue;
-			Link link = new Link();
-			link.outputNode = outNode;
-			link.inputNode = inNode;
-			link.processLink = pLink;
-			link.link();
-		}
-	}
-
-	@Override
-	protected void configureGraphicalViewer() {
-		model = new ProductSystemNode(this);
-		super.configureGraphicalViewer();
-		var viewer = getGraphicalViewer();
-		viewer.setEditPartFactory(new GraphEditPartFactory());
-		viewer.setRootEditPart(new ScalableRootEditPart());
-		var actions = configureActions();
-		var keyHandler = new KeyHandler();
-		IAction delete = actions.getAction(org.eclipse.ui.actions.ActionFactory.DELETE.getId());
-		IAction zoomIn = actions.getAction(GEFActionConstants.ZOOM_IN);
-		IAction zoomOut = actions.getAction(GEFActionConstants.ZOOM_OUT);
-		keyHandler.put(KeyStroke.getPressed(SWT.DEL, 127, 0), delete);
-		keyHandler.put(KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0), zoomIn);
-		keyHandler.put(KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0), zoomOut);
-		viewer.setKeyHandler(keyHandler);
-		new MenuProvider(this, getActionRegistry());
-	}
-
-	private ActionRegistry configureActions() {
-		var delete = new DeleteAction((IWorkbenchPart) this) {
-			@Override
-			protected ISelection getSelection() {
-				return getSite()
-						.getWorkbenchWindow()
-						.getSelectionService()
-						.getSelection();
-			}
-		};
-
-		var actions = new IAction[] {
-				new BuildSupplyChainMenuAction(this),
-				GraphActions.removeSupplyChain(this),
-				GraphActions.removeAllConnections(this),
-				GraphActions.expandAll(this),
-				GraphActions.collapseAll(this),
-				GraphActions.maximizeAll(this),
-				GraphActions.minimizeAll(this),
-				new LayoutMenuAction(this),
-				GraphActions.searchProviders(this),
-				GraphActions.searchRecipients(this),
-				GraphActions.openMiniatureView(this),
-				GraphActions.showOutline(),
-				new ZoomInAction(getZoomManager()),
-				new ZoomOutAction(getZoomManager()),
-				delete,
-		};
-
-		var registry = getActionRegistry();
-		for (var action : actions) {
-			registry.registerAction(action);
-			if (action instanceof UpdateAction) {
-				updateActions.add(action.getId());
-			}
-		}
-		return registry;
-	}
-
-	@Override
-	protected void initializeGraphicalViewer() {
-		var viewer = getGraphicalViewer();
-		viewer.setRootEditPart(new ScalableRootEditPart() {
-
-			@Override
-			protected LayeredPane createPrintableLayers() {
-				var pane = new LayeredPane();
-
-				var models = new Layer();
-				models.setOpaque(false);
-				models.setLayoutManager(new StackLayout());
-				pane.add(models, PRIMARY_LAYER);
-
-				// add the connection layer on top of the
-				// model layer
-				var connections = new ConnectionLayer();
-				connections.setPreferredSize(new Dimension(5, 5));
-				pane.add(connections, CONNECTION_LAYER);
-
-				return pane;
-			}
-		});
-
-		GraphDropListener.on(this);
-		viewer.getEditDomain().setActiveTool(
-				new PanningSelectionTool());
-		viewer.setContents(model);
-		var zoom = getZoomManager();
-		zoom.setZoomLevels(ZOOM_LEVELS);
-		zoom.setZoomAnimationStyle(ZoomManager.ANIMATE_ZOOM_IN_OUT);
-		viewer.setProperty(
-				MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
-				MouseWheelZoomHandler.SINGLETON);
-
-		// load the graph settings
-		var fileApplied = GraphFile.apply(this);
-		if (!fileApplied) {
-			// no saved settings applied =>
-			// try to find a good configuration
-			var system = systemEditor.getModel();
-			if (system.referenceProcess != null) {
-				var refNode = model.getProcessNode(
-						system.referenceProcess.id);
-				if (refNode != null) {
-					refNode.expandLeft();
-					refNode.expandRight();
-				}
-			}
-
-			// initialize the tree layout
-			if (model != null && model.figure != null) {
-				var layout = model.figure.getLayoutManager();
-				if (layout instanceof LayoutManager) {
-					((LayoutManager) layout).layout(
-							model.figure, LayoutType.TREE_LAYOUT);
-				}
-			}
-		}
-	}
-
-	@Override
-	public GraphicalViewer getGraphicalViewer() {
-		return super.getGraphicalViewer();
-	}
-
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-		systemEditor.doSave(monitor);
 	}
 
 	public void updateModel(IProgressMonitor monitor) {
@@ -304,150 +355,14 @@ public class GraphEditor extends GraphicalEditor {
 		monitor.done();
 	}
 
-	@Override
-	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class type) {
 		if (type == ZoomManager.class)
-			return ((ScalableRootEditPart) getGraphicalViewer()
-				.getRootEditPart())
-				.getZoomManager();
-		if (type == IContentOutlinePage.class) {
-			outline = new OutlinePage(model);
-			outline.setEditDomain(getEditDomain());
-			outline.setSelectionSynchronizer(getSelectionSynchronizer());
-			return outline;
-		}
+			return getZoomManager();
+
 		return super.getAdapter(type);
 	}
 
-	@Override
-	public CommandStack getCommandStack() {
-		var stack = super.getCommandStack();
-		if (stack == null) {
-			stack = new CommandStack();
-		}
-		return stack;
-	}
-
-	public LayoutType getLayoutType() {
-		return layoutType;
-	}
-
-	public ProductSystemNode getModel() {
-		return model;
-	}
-
-	public OutlinePage getOutline() {
-		return outline;
-	}
-
-	public ZoomManager getZoomManager() {
-		return getRootEditPart().getZoomManager();
-	}
-
-	private ScalableRootEditPart getRootEditPart() {
-		return (ScalableRootEditPart) getGraphicalViewer().getRootEditPart();
-	}
-
-	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
-	}
-
-	/**
-	 * Expands all process nodes in the graphical editor.
-	 */
-	public void expand() {
-		model = new ProductSystemNode(this);
-		var system = getProductSystem();
-
-		// create the process nodes
-		var ref = system.referenceProcess;
-		for (var id : system.processes) {
-			if (id == null)
-				continue;
-			// skip the reference process as this
-			// was already added
-			if (ref != null && ref.id == id)
-				continue;
-			var node = ProcessNode.create(this, id);
-			if (node != null) {
-				model.add(node);
-			}
-		}
-
-		// set the viewer content and expand the nodes
-		var viewer = getGraphicalViewer();
-		if (viewer == null)
-			return;
-		viewer.deselectAll();
-		viewer.setContents(model);
-		for (var node : model.getChildren()) {
-			node.expandLeft();
-			node.expandRight();
-		}
-		getCommandStack().execute(
-			new LayoutCommand(this, LayoutType.TREE_LAYOUT));
-	}
-
-	/**
-	 * Collapse all process nodes in the editor. Only the reference process will be
-	 * added.
-	 */
-	public void collapse() {
-		model = new ProductSystemNode(this);
-		var viewer = getGraphicalViewer();
-		if (viewer == null)
-			return;
-		viewer.deselectAll();
-		viewer.setContents(model);
-		getCommandStack().execute(
-			new LayoutCommand(this, LayoutType.TREE_LAYOUT));
-	}
-
-	/**
-	 * Calls refresh on all created edit parts.
-	 */
-	public void refresh() {
-		var viewer = getGraphicalViewer();
-		if (viewer == null)
-			return;
-		var queue = new ArrayDeque<EditPart>();
-		queue.add(viewer.getRootEditPart());
-		while (!queue.isEmpty()) {
-			var part = queue.poll();
-			part.refresh();
-			for (var child : part.getChildren()) {
-				if (child instanceof EditPart) {
-					queue.add((EditPart) child);
-				}
-			}
-		}
-	}
-
-	@Override
-	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		this.selection = selection;
-		updateActions(updateActions);
-	}
-
-	@Override
-	public void setFocus() {
-		if (getGraphicalViewer() == null)
-			return;
-		if (getGraphicalViewer().getControl() == null)
-			return;
-		super.setFocus();
-	}
-
-	public void route() {
-		var router = config.isRouted
-				? TreeConnectionRouter.instance
-				: ConnectionRouter.NULL;
-		for (var node : model.getChildren()) {
-			for (var link : node.links) {
-				link.figure.setConnectionRouter(router);
-			}
-		}
+	public ProductSystemEditor getProductSystemEditor() {
+		return systemEditor;
 	}
 }

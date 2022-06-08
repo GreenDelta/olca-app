@@ -1,20 +1,15 @@
 package org.openlca.app.editors.graphical.themes;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.function.IntFunction;
-import java.util.function.ToIntFunction;
-
 import com.helger.css.decl.CSSStyleRule;
 import com.helger.css.decl.CascadingStyleSheet;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.util.Colors;
 import org.openlca.core.model.FlowType;
+
+import java.util.*;
+import java.util.function.IntFunction;
+import java.util.function.ToIntFunction;
 
 class Css {
 
