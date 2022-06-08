@@ -27,7 +27,8 @@ class Datasets {
 		var dialogResult = dialog.open();
 		if (dialogResult == CommitDialog.CANCEL)
 			return null;
-		var withReferences = new ReferenceCheck(Database.get()).run(dialog.getSelected(), diffs, isStashCommit);
+		var withReferences = new ReferenceCheck(Database.get())
+				.run(dialog.getSelected(), diffs, isStashCommit);
 		if (withReferences == null)
 			return null;
 		if (!checkRestrictions(withReferences))

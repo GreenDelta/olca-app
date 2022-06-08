@@ -10,12 +10,11 @@ import java.nio.file.StandardCopyOption;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.eclipse.jgit.lib.Repository;
 import org.openlca.app.App;
 import org.openlca.app.collaboration.dialogs.LibraryDialog;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Repository;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.library.Library;
@@ -38,7 +37,8 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 		this.libDir = Workspace.getLibraryDir();
 	}
 
-	static WorkspaceLibraryResolver forRemote(FileRepository git) {
+	static WorkspaceLibraryResolver forRemote() {
+		var git = org.openlca.app.db.Repository.get().git;
 		var commits = Commits.of(git);
 		var commit = commits.get(commits.resolve(Constants.REMOTE_BRANCH));
 		if (commit == null)
@@ -49,7 +49,8 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 		return resolver;
 	}
 
-	static WorkspaceLibraryResolver forStash(FileRepository git) throws GitAPIException {
+	static WorkspaceLibraryResolver forStash() throws GitAPIException {
+		var git = org.openlca.app.db.Repository.get().git;
 		var commits = Git.wrap(git).stashList().call();
 		if (commits == null || commits.isEmpty())
 			return null;
@@ -61,7 +62,7 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 	}
 
 	// init before resolve is called in GitMerge, to avoid invalid thread access
-	private boolean init(FileRepository git, Commit commit) {
+	private boolean init(Repository git, Commit commit) {
 		var info = Repositories.infoOf(git, commit);
 		if (info == null)
 			return false;
@@ -105,7 +106,7 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 	}
 
 	private Library importFromCollaborationServer(String newLib, LibraryDir libDir) throws IOException {
-		var repo = Repository.get();
+		var repo = org.openlca.app.db.Repository.get();
 		if (!repo.isCollaborationServer())
 			return null;
 		try {

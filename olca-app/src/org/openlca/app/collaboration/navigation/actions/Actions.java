@@ -8,14 +8,13 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.TransportException;
-import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ProgressMonitor;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
-import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitProgressAction;
@@ -46,7 +45,7 @@ class Actions {
 		var service = PlatformUI.getWorkbench().getProgressService();
 		var runner = new GitRemoteRunner<>(runnable);
 		service.run(true, false, runner::run);
-		var repo = Repository.get();
+		var repo = org.openlca.app.db.Repository.get();
 		if (runner.exception == null) {
 			if (Strings.nullOrEmpty(credentials.token)) {
 				repo.useTwoFactorAuth(false);
@@ -93,7 +92,7 @@ class Actions {
 		return runner.result;
 	}
 
-	static Commit getStashCommit(FileRepository git) throws GitAPIException {
+	static Commit getStashCommit(Repository git) throws GitAPIException {
 		var commits = Git.wrap(git).stashList().call();
 		if (commits == null || commits.isEmpty())
 			return null;

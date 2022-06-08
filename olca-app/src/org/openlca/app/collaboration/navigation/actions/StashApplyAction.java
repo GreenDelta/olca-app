@@ -7,7 +7,6 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Constants;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
@@ -44,10 +43,10 @@ public class StashApplyAction extends Action implements INavigationAction {
 		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
-			var libraryResolver = WorkspaceLibraryResolver.forStash(repo.git);
+			var libraryResolver = WorkspaceLibraryResolver.forStash();
 			if (libraryResolver == null)
 				return;
-			var conflictResolver = Conflicts.resolve(Constants.R_STASH, true);
+			var conflictResolver = ConflictResolutionMap.forStash();
 			if (conflictResolver == null)
 				return;
 			Actions.run(GitStashApply.from(repo.git)

@@ -77,8 +77,8 @@ public class CommitReferencesDialog extends FormDialog {
 	}
 
 	public List<TriDiff> getSelected() {
-		return viewer.getChecked()
-				.stream().map(n -> n.contentAsTriDiff())
+		return viewer.getChecked().stream()
+				.map(DiffNode::contentAsTriDiff)
 				.toList();
 	}
 

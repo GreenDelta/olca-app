@@ -61,10 +61,12 @@ public class CommitAction extends Action implements INavigationAction {
 			var user = doPush ? credentials.ident : AuthenticationDialog.promptUser();
 			if (credentials == null && user == null)
 				return false;
+			var changes = input.datasets().stream()
+					.map(d -> new Change(d.leftDiffType, d))
+					.collect(Collectors.toList());
 			Actions.run(GitCommit.from(Database.get())
 					.to(repo.git)
-					.changes(input.datasets().stream().map(d -> new Change(d.leftDiffType, d))
-							.collect(Collectors.toList()))
+					.changes(changes)
 					.withMessage(input.message())
 					.as(user)
 					.update(repo.workspaceIds));
@@ -77,11 +79,10 @@ public class CommitAction extends Action implements INavigationAction {
 			if (result.status() == Status.REJECTED_NONFASTFORWARD) {
 				MsgBox.error("Rejected - Not up to date - Please merge remote changes to continue");
 				return false;
-			} else {
-				Collections.reverse(result.newCommits());
-				new HistoryDialog("Pushed commits", result.newCommits()).open();
-				return true;
 			}
+			Collections.reverse(result.newCommits());
+			new HistoryDialog("Pushed commits", result.newCommits()).open();
+			return true;
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during commit", e);
 			return false;

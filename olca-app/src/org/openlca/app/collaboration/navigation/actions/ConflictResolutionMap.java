@@ -10,34 +10,61 @@ import java.util.function.Predicate;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.MergeDialog;
-import org.openlca.app.collaboration.util.InMemoryConflictResolver;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Question;
-import org.openlca.git.actions.ConflictResolver.ConflictResolution;
+import org.openlca.git.actions.ConflictResolver;
 import org.openlca.git.actions.GitStashCreate;
 import org.openlca.git.actions.GitStashDrop;
 import org.openlca.git.model.Commit;
 import org.openlca.git.model.Diff;
+import org.openlca.git.model.ModelRef;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.Diffs;
 import org.openlca.git.util.TypeRefIdMap;
 
 import com.google.common.base.Predicates;
+import com.google.gson.JsonObject;
 
-class Conflicts {
+class ConflictResolutionMap implements ConflictResolver {
 
-	static InMemoryConflictResolver resolve(String ref, boolean stashCommit)
+	private final TypeRefIdMap<ConflictResolution> resolutions;
+
+	ConflictResolutionMap(Commit remoteCommit, TypeRefIdMap<ConflictResolution> resolutions) {
+		this.resolutions = resolutions;
+	}
+
+	@Override
+	public boolean isConflict(ModelRef ref) {
+		return resolutions.contains(ref.type, ref.refId);
+	}
+
+	@Override
+	public ConflictResolution resolveConflict(ModelRef ref, JsonObject remote) {
+		return resolutions.get(ref.type, ref.refId);
+	}
+
+	static ConflictResolutionMap forRemote()
+			throws InvocationTargetException, IOException, GitAPIException, InterruptedException {
+		return resolve(Constants.REMOTE_REF, false);
+	}
+
+	static ConflictResolutionMap forStash()
+			throws InvocationTargetException, IOException, GitAPIException, InterruptedException {
+		return resolve(org.eclipse.jgit.lib.Constants.R_STASH, true);
+	}
+
+	private static ConflictResolutionMap resolve(String ref, boolean stashCommit)
 			throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
 		var repo = Repository.get();
 		var commit = repo.commits.find().refs(ref).latest();
 		var commonParent = repo.history.commonParentOf(Constants.LOCAL_REF, ref);
-		var workspaceConflicts = Conflicts.withWorkspace(commit, commonParent);
+		var workspaceConflicts = workspaceDiffs(commit, commonParent);
 		if (workspaceConflicts.isEmpty())
-			return resolve(commit, Conflicts.withLocalHistory(commit, commonParent));
+			return resolve(commit, localDiffs(commit, commonParent));
 		var answers = new ArrayList<>(Arrays.asList("Cancel", "Discard changes", "Commit changes"));
 		if (!stashCommit) {
 			answers.add("Stash changes");
@@ -53,10 +80,10 @@ class Conflicts {
 			return commitChanges(ref, stashCommit);
 		if (result == 3 && !stashChanges(false))
 			return null;
-		return resolve(commit, Conflicts.withLocalHistory(commit, commonParent));
+		return resolve(commit, localDiffs(commit, commonParent));
 	}
 
-	private static List<TriDiff> withWorkspace(Commit commit, Commit commonParent) throws IOException {
+	private static List<TriDiff> workspaceDiffs(Commit commit, Commit commonParent) throws IOException {
 		var repo = Repository.get();
 		var workspaceChanges = Diffs.workspace(repo.toConfig());
 		if (workspaceChanges.isEmpty())
@@ -65,7 +92,7 @@ class Conflicts {
 		return between(workspaceChanges, remoteChanges);
 	}
 
-	private static List<TriDiff> withLocalHistory(Commit commit, Commit commonParent) throws IOException {
+	private static List<TriDiff> localDiffs(Commit commit, Commit commonParent) throws IOException {
 		var repo = Repository.get();
 		var localCommit = repo.commits.get(repo.commits.resolve(Constants.LOCAL_BRANCH));
 		if (localCommit == null)
@@ -103,7 +130,7 @@ class Conflicts {
 				.orElse(null);
 	}
 
-	private static InMemoryConflictResolver commitChanges(String ref, boolean stashCommit)
+	private static ConflictResolutionMap commitChanges(String ref, boolean stashCommit)
 			throws InvocationTargetException, IOException, GitAPIException, InterruptedException {
 		var commitAction = new CommitAction();
 		commitAction.accept(Arrays.asList(Navigator.findElement(Database.getActiveConfiguration())));
@@ -136,14 +163,14 @@ class Conflicts {
 		return true;
 	}
 
-	private static InMemoryConflictResolver resolve(Commit commit, List<TriDiff> conflicts) {
+	private static ConflictResolutionMap resolve(Commit commit, List<TriDiff> conflicts) {
 		var solved = solve(conflicts);
 		if (solved == null)
 			return null;
 		conflicts.stream()
 				.filter(Predicate.not(TriDiff::conflict))
 				.forEach(conflict -> solved.put(conflict.type, conflict.refId, ConflictResolution.keep()));
-		return new InMemoryConflictResolver(commit, solved);
+		return new ConflictResolutionMap(commit, solved);
 	}
 
 	private static TypeRefIdMap<ConflictResolution> solve(List<TriDiff> conflicts) {

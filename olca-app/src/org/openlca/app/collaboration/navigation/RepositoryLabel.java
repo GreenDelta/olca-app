@@ -2,7 +2,6 @@ package org.openlca.app.collaboration.navigation;
 
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.collaboration.util.ObjectIds;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
@@ -47,7 +46,7 @@ public class RepositoryLabel {
 			var path = Repository.get().workspaceIds.getPath(Cache.getPathCache(), e.getContent());
 			return Repository.get().workspaceIds.getHead(path);
 		}
-		return null;
+		return ObjectId.zeroId();
 	}
 
 	private static ObjectId getWorkspaceId(INavigationElement<?> elem) {
@@ -59,11 +58,11 @@ public class RepositoryLabel {
 			return Repository.get().workspaceIds.get(e.getContent());
 		if (elem instanceof ModelElement e)
 			return Repository.get().workspaceIds.get(Cache.getPathCache(), e.getContent());
-		return null;
+		return ObjectId.zeroId();
 	}
 
 	private static boolean isZero(ObjectId id) {
-		return ObjectIds.nullOrZero(id);
+		return ObjectId.zeroId().equals(id);
 	}
 
 	public static String getRepositoryText(DatabaseConfig dbConfig) {

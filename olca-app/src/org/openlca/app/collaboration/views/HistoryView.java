@@ -11,7 +11,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.util.ObjectIds;
 import org.openlca.app.collaboration.viewers.HistoryViewer;
 import org.openlca.app.collaboration.viewers.json.JsonCompareViewer;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
@@ -68,7 +67,6 @@ public class HistoryView extends ViewPart {
 		Tables.bindColumnWidths(historyViewer.getViewer(), 0.1, 0.7, 0.1, 0.1);
 		historyViewer.addSelectionChangedListener((commit) -> {
 			referenceViewer.select(null);
-			// TODO this is wrong for merge commits
 			var diffs = Repository.isConnected() && commit != null
 					? Diffs.withPrevious(Repository.get().git, commit)
 					: new ArrayList<Diff>();
@@ -103,7 +101,7 @@ public class HistoryView extends ViewPart {
 	}
 
 	private JsonObject getJson(Reference ref) {
-		if (ref == null || ObjectIds.nullOrZero(ref.objectId))
+		if (ref == null || ObjectId.zeroId().equals(ref.objectId))
 			return null;
 		var datasets = Repository.get().datasets;
 		var json = datasets.get(ref.objectId);

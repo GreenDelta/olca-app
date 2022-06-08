@@ -76,10 +76,9 @@ public class MergeDialog extends FormDialog {
 
 	private void solveAll(ConflictResolution resolution) {
 		viewer.getResolvedConflicts().clear();
-		for (DiffNode node : viewer.getConflicts()) {
-			var r = node.contentAsTriDiff();
-			viewer.getResolvedConflicts().put(r.type, r.refId, resolution);
-		}
+		viewer.getConflicts().stream()
+				.map(DiffNode::contentAsTriDiff)
+				.forEach(d -> viewer.getResolvedConflicts().put(d.type, d.refId, resolution));
 		viewer.refresh();
 		getButton(OK).setEnabled(true);
 		getButton(OVERWRITE).setEnabled(false);
