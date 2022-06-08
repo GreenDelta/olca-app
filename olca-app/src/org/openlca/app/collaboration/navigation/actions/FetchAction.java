@@ -21,7 +21,7 @@ import org.openlca.git.util.Constants;
 public class FetchAction extends Action implements INavigationAction {
 
 	private static final String NOTHING_TO_FETCH = "Remote does not have " + Constants.LOCAL_REF
-			+ " available for fetch";
+			+ " available for fetch.";
 
 	@Override
 	public String getText() {
@@ -51,8 +51,9 @@ public class FetchAction extends Action implements INavigationAction {
 		} catch (GitAPIException | InvocationTargetException | InterruptedException e) {
 			if (e instanceof TransportException && NOTHING_TO_FETCH.equals(e.getMessage())) {
 				MsgBox.info("No commits to fetch - Everything up to date");
+			} else {
+				Actions.handleException("Error fetching from remote", e);
 			}
-			Actions.handleException("Error fetching from remote", e);
 		} finally {
 			Actions.refresh();
 		}
