@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.JsonCompareDialog;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
@@ -34,12 +35,20 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	DiffNode root;
 	private final boolean canMerge;
+	private final String leftLabel;
+	private final String rightLabel;
 	private Direction direction;
 	private Runnable onMerge;
 	private TypeRefIdMap<ConflictResolution> resolvedConflicts = new TypeRefIdMap<>();
 
 	DiffNodeViewer(Composite parent, boolean editMode) {
+		this(parent, M.LocalModel, M.RemoteModel, editMode);
+	}
+
+	DiffNodeViewer(Composite parent, String leftLabel, String rightLabel, boolean editMode) {
 		super(parent);
+		this.leftLabel = leftLabel;
+		this.rightLabel = rightLabel;
 		this.canMerge = editMode;
 	}
 
@@ -78,9 +87,11 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			return;
 		var diff = selected.contentAsTriDiff();
 		var node = createNode(diff);
-		var dialogResult = canMerge 
-				? JsonCompareDialog.openMerge(node, direction)
-				: JsonCompareDialog.openComparison(node, direction);
+		var dialog = canMerge 
+				? JsonCompareDialog.forMerging(node, direction)
+				: JsonCompareDialog.forComparison(node, direction);
+		dialog.setViewerLabels(leftLabel, rightLabel);
+		var dialogResult = dialog.open();
 		if (canMerge && dialogResult != JsonCompareDialog.CANCEL) {
 			var resolution = toResolution(node, dialogResult);
 			resolvedConflicts.put(diff.type, diff.refId, resolution);

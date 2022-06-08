@@ -42,7 +42,6 @@ public class HistoryViewer extends AbstractTableViewer<Commit> {
 	@Override
 	protected List<Action> getAdditionalActions() {
 		var actions = new ArrayList<Action>();
-		// actions.add(new CheckoutAction(this)); // TODO
 		actions.add(new OpenCompareViewAction());
 		return actions;
 	}
@@ -77,7 +76,7 @@ public class HistoryViewer extends AbstractTableViewer<Commit> {
 
 		@Override
 		public String getText() {
-			return M.Compare;
+			return "Compare with workspace";
 		}
 
 		@Override

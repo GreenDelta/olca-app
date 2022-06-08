@@ -7,7 +7,7 @@ import org.openlca.app.viewers.trees.Trees;
 public class CompareViewer extends DiffNodeViewer {
 
 	public CompareViewer(Composite parent) {
-		super(parent, false);
+		super(parent, "Workspace", "Selected commit", false);
 	}
 
 	@Override

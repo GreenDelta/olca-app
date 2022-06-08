@@ -30,24 +30,26 @@ public class JsonCompareDialog extends FormDialog {
 	private IDependencyResolver dependencyResolver;
 	private String title;
 	private Image logo;
+	private String leftLabel;
+	private String rightLabel;
 
-	public static int openComparison(JsonNode node, Direction direction) {
-		return open(node, direction, false);
+	public static JsonCompareDialog forComparison(JsonNode node, Direction direction) {
+		return create(node, direction, false);
 	}
 
-	public static int openMerge(JsonNode node, Direction direction) {
-		return open(node, direction, true);
+	public static JsonCompareDialog forMerging(JsonNode node, Direction direction) {
+		return create(node, direction, true);
 	}
 
-	private static int open(JsonNode node, Direction direction, boolean canMerge) {
+	private static JsonCompareDialog create(JsonNode node, Direction direction, boolean canMerge) {
 		if (node == null)
-			return IDialogConstants.CANCEL_ID;
+			return null;
 		var dialog = new JsonCompareDialog(node, direction, canMerge);
 		dialog.setTitle(Json.getName(node.element()));
 		dialog.setLogo(Images.get(Json.getModelType(node.element())));
 		dialog.setDependencyResolver(ModelDependencyResolver.INSTANCE);
 		dialog.setLabelProvider(new ModelLabelProvider());
-		return dialog.open();
+		return dialog;
 	}
 
 	private JsonCompareDialog(JsonNode root, Direction direction, boolean canMerge) {
@@ -73,11 +75,17 @@ public class JsonCompareDialog extends FormDialog {
 		viewer = canMerge
 				? JsonCompareViewer.forMerging(body, toolkit, root, direction)
 				: JsonCompareViewer.forComparison(body, toolkit, root, direction);
+		viewer.setLabels(leftLabel, rightLabel);
 		viewer.initialize(labelProvider, dependencyResolver);
 		UI.gridData(viewer, true, true);
 		form.reflow(true);
 	}
 
+	public void setViewerLabels(String left, String right) {
+		this.leftLabel = left;
+		this.rightLabel = right;
+	}
+	
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		var hasLeft = root.left != null;
