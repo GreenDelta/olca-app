@@ -1,6 +1,7 @@
 package org.openlca.app.collaboration.dialogs;
 
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -127,10 +128,10 @@ public class CommitDialog extends FormDialog {
 		return message;
 	}
 
-	public List<TriDiff> getSelected() {
+	public Set<TriDiff> getSelected() {
 		return viewer.getChecked().stream()
 				.map(n -> n.contentAsTriDiff())
-				.toList();
+				.collect(Collectors.toSet());
 	}
 
 }

@@ -2,6 +2,7 @@ package org.openlca.app.collaboration.api;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
@@ -55,7 +56,7 @@ public class RepositoryClient {
 		return executeLoggedIn(new CheckAccessInvocation(repositoryId));
 	}
 
-	public List<Restriction> checkRestrictions(List<? extends ModelRef> refs) throws WebRequestException {
+	public List<Restriction> checkRestrictions(Collection<? extends ModelRef> refs) throws WebRequestException {
 		return executeLoggedIn(new RestrictionCheckInvocation(repositoryId, refs));
 	}
 

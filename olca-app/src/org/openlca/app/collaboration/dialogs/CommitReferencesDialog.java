@@ -53,7 +53,8 @@ public class CommitReferencesDialog extends FormDialog {
 		}
 		if (node.children == null)
 			return newElements;
-		node.children.forEach(child -> getNewElements(child).forEach(pair -> newElements.add(pair)));
+		node.children.forEach(child -> getNewElements(child)
+				.forEach(newElements::add));
 		return newElements;
 	}
 

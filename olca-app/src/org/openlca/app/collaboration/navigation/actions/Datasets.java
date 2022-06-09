@@ -1,6 +1,7 @@
 package org.openlca.app.collaboration.navigation.actions;
 
 import java.util.List;
+import java.util.Set;
 
 import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.dialogs.RestrictionDialog;
@@ -27,8 +28,9 @@ class Datasets {
 		var dialogResult = dialog.open();
 		if (dialogResult == CommitDialog.CANCEL)
 			return null;
-		var withReferences = new ReferenceCheck(Database.get(), diffs)
-				.run(dialog.getSelected(), isStashCommit);
+		var withReferences = isStashCommit
+				? ReferenceCheck.forStash(Database.get(), diffs, dialog.getSelected())
+				: ReferenceCheck.forRemote(Database.get(), diffs, dialog.getSelected());
 		if (withReferences == null)
 			return null;
 		if (!checkRestrictions(withReferences))
@@ -51,7 +53,7 @@ class Datasets {
 		var initialSelection = new TypeRefIdSet();
 		diffs.stream()
 				.filter(ref -> selectionContainsPath(paths, ref.path))
-				.forEach(ref -> initialSelection.add(ref));
+				.forEach(initialSelection::add);
 		dialog.setInitialSelection(initialSelection);
 		return dialog;
 	}
@@ -65,7 +67,7 @@ class Datasets {
 		return false;
 	}
 
-	private static boolean checkRestrictions(List<TriDiff> refs) {
+	private static boolean checkRestrictions(Set<TriDiff> refs) {
 		if (!CollaborationPreference.checkRestrictions())
 			return true;
 		if (!Repository.get().isCollaborationServer())
@@ -82,7 +84,7 @@ class Datasets {
 		}
 	}
 
-	static record DialogResult(int action, String message, List<TriDiff> datasets) {
+	static record DialogResult(int action, String message, Set<TriDiff> datasets) {
 	}
 
 }

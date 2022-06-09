@@ -1,6 +1,7 @@
 package org.openlca.app.collaboration.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.openlca.app.collaboration.model.Restriction;
@@ -16,9 +17,9 @@ import com.google.gson.reflect.TypeToken;
 class RestrictionCheckInvocation extends Invocation<List<Restriction>, List<Restriction>> {
 
 	private final String repositoryId;
-	private final List<? extends ModelRef> refs;
+	private final Collection<? extends ModelRef> refs;
 
-	RestrictionCheckInvocation(String repositoryId, List<? extends ModelRef> refs) {
+	RestrictionCheckInvocation(String repositoryId, Collection<? extends ModelRef> refs) {
 		super(Type.POST, "restrictions", new TypeToken<List<Restriction>>() {
 		});
 		this.repositoryId = repositoryId;
