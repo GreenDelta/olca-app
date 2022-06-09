@@ -74,7 +74,7 @@ public class CommitViewer extends DiffNodeViewer {
 		for (var child : node.children) {
 			if (child.isModelNode()) {
 				var d = child.contentAsTriDiff();
-				if (models == null || models.contains(d.type, d.refId)) {
+				if (models == null || models.contains(d)) {
 					nodes.add(child);
 				}
 			} else {

@@ -67,7 +67,7 @@ public class MergeViewer extends DiffNodeViewer {
 			var diff = (TriDiff) node.content;
 			if (!diff.conflict())
 				continue;
-			if (getResolvedConflicts().contains(diff.type, diff.refId))
+			if (getResolvedConflicts().contains(diff))
 				continue;
 			conflicts.add(node);
 		}

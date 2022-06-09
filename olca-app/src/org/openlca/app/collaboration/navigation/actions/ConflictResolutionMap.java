@@ -39,12 +39,12 @@ class ConflictResolutionMap implements ConflictResolver {
 
 	@Override
 	public boolean isConflict(ModelRef ref) {
-		return resolutions.contains(ref.type, ref.refId);
+		return resolutions.contains(ref);
 	}
 
 	@Override
 	public ConflictResolution resolveConflict(ModelRef ref, JsonObject remote) {
-		return resolutions.get(ref.type, ref.refId);
+		return resolutions.get(ref);
 	}
 
 	static ConflictResolutionMap forRemote()
@@ -169,7 +169,7 @@ class ConflictResolutionMap implements ConflictResolver {
 			return null;
 		conflicts.stream()
 				.filter(Predicate.not(TriDiff::conflict))
-				.forEach(conflict -> solved.put(conflict.type, conflict.refId, ConflictResolution.keep()));
+				.forEach(conflict -> solved.put(conflict, ConflictResolution.keep()));
 		return new ConflictResolutionMap(commit, solved);
 	}
 

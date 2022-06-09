@@ -27,8 +27,8 @@ class Datasets {
 		var dialogResult = dialog.open();
 		if (dialogResult == CommitDialog.CANCEL)
 			return null;
-		var withReferences = new ReferenceCheck(Database.get())
-				.run(dialog.getSelected(), diffs, isStashCommit);
+		var withReferences = new ReferenceCheck(Database.get(), diffs)
+				.run(dialog.getSelected(), isStashCommit);
 		if (withReferences == null)
 			return null;
 		if (!checkRestrictions(withReferences))
@@ -51,7 +51,7 @@ class Datasets {
 		var initialSelection = new TypeRefIdSet();
 		diffs.stream()
 				.filter(ref -> selectionContainsPath(paths, ref.path))
-				.forEach(ref -> initialSelection.add(ref.type, ref.refId));
+				.forEach(ref -> initialSelection.add(ref));
 		dialog.setInitialSelection(initialSelection);
 		return dialog;
 	}

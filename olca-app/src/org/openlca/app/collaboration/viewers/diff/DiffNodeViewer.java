@@ -94,7 +94,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		var dialogResult = dialog.open();
 		if (canMerge && dialogResult != JsonCompareDialog.CANCEL) {
 			var resolution = toResolution(node, dialogResult);
-			resolvedConflicts.put(diff.type, diff.refId, resolution);
+			resolvedConflicts.put(diff, resolution);
 			if (onMerge != null) {
 				onMerge.run();
 			}
@@ -218,7 +218,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		private Overlay getOverlay(TriDiff diff) {
 			if (diff.noAction())
 				return null;
-			if (resolvedConflicts.contains(diff.type, diff.refId))
+			if (resolvedConflicts.contains(diff))
 				return getOverlayMerged(diff);
 			return getOverlay(diff.leftDiffType, diff.rightDiffType);
 		}
@@ -250,7 +250,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		}
 
 		private Overlay getOverlayMerged(TriDiff result) {
-			var resolution = resolvedConflicts.get(result.type, result.refId);
+			var resolution = resolvedConflicts.get(result);
 			if (resolution != null && resolution.type != ConflictResolutionType.OVERWRITE)
 				return Overlay.MERGED;
 			if (result.rightDiffType == DiffType.DELETED)
