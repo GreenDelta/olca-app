@@ -50,16 +50,19 @@ public class PullAction extends Action implements INavigationAction {
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
 				return;
-			var resolutionMap = ConflictResolutionMap.forRemote();
-			if (resolutionMap == null)
+			var conflictResult = ConflictResolutionMap.forRemote();
+			if (conflictResult == null)
 				return;
 			var changed = Actions.run(GitMerge
 					.from(repo.git)
 					.into(Database.get())
 					.update(repo.workspaceIds)
 					.as(credentials.ident)
-					.resolveConflictsWith(resolutionMap)
+					.resolveConflictsWith(conflictResult.resolutions())
 					.resolveLibrariesWith(libraryResolver));
+			if (changed != null && conflictResult.stashedChanges()) {
+				Actions.askApplyStash();
+			}
 			if (changed == null || changed)
 				return;
 			if (newCommits.isEmpty()) {

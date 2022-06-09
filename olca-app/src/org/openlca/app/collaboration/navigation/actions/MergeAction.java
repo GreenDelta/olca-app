@@ -44,8 +44,8 @@ public class MergeAction extends Action implements INavigationAction {
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
 				return;
-			var resolutionMap = ConflictResolutionMap.forRemote();
-			if (resolutionMap == null)
+			var conflictResult = ConflictResolutionMap.forRemote();
+			if (conflictResult.resolutions() == null)
 				return;
 			var user = !repo.localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty()
 					? AuthenticationDialog.promptUser()
@@ -55,8 +55,11 @@ public class MergeAction extends Action implements INavigationAction {
 					.into(Database.get())
 					.update(repo.workspaceIds)
 					.as(user)
-					.resolveConflictsWith(resolutionMap)
+					.resolveConflictsWith(conflictResult.resolutions())
 					.resolveLibrariesWith(libraryResolver));
+			if (changed != null && conflictResult.stashedChanges()) {
+				Actions.askApplyStash();
+			}
 			if (changed == null || changed)
 				return;
 			MsgBox.info("No changes to merge");

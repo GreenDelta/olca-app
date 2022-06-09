@@ -47,24 +47,24 @@ class ConflictResolutionMap implements ConflictResolver {
 		return resolutions.get(ref);
 	}
 
-	static ConflictResolutionMap forRemote()
+	static ConflictResult forRemote()
 			throws InvocationTargetException, IOException, GitAPIException, InterruptedException {
 		return resolve(Constants.REMOTE_REF, false);
 	}
 
-	static ConflictResolutionMap forStash()
+	static ConflictResult forStash()
 			throws InvocationTargetException, IOException, GitAPIException, InterruptedException {
 		return resolve(org.eclipse.jgit.lib.Constants.R_STASH, true);
 	}
 
-	private static ConflictResolutionMap resolve(String ref, boolean stashCommit)
+	private static ConflictResult resolve(String ref, boolean stashCommit)
 			throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
 		var repo = Repository.get();
 		var commit = repo.commits.find().refs(ref).latest();
 		var commonParent = repo.localHistory.commonParentOf(ref);
 		var workspaceConflicts = workspaceDiffs(commit, commonParent);
 		if (workspaceConflicts.isEmpty())
-			return resolve(commit, localDiffs(commit, commonParent));
+			return new ConflictResult(resolve(commit, localDiffs(commit, commonParent)), true);
 		var answers = new ArrayList<>(Arrays.asList("Cancel", "Discard changes", "Commit changes"));
 		if (!stashCommit) {
 			answers.add("Stash changes");
@@ -77,10 +77,10 @@ class ConflictResolutionMap implements ConflictResolver {
 		if (result == 1 && !stashChanges(true))
 			return null;
 		if (result == 2)
-			return commitChanges(ref, stashCommit);
+			return new ConflictResult(commitChanges(ref, stashCommit), false);
 		if (result == 3 && !stashChanges(false))
 			return null;
-		return resolve(commit, localDiffs(commit, commonParent));
+		return new ConflictResult(resolve(commit, localDiffs(commit, commonParent)), true);
 	}
 
 	private static List<TriDiff> workspaceDiffs(Commit commit, Commit commonParent) throws IOException {
@@ -136,7 +136,7 @@ class ConflictResolutionMap implements ConflictResolver {
 		commitAction.accept(Arrays.asList(Navigator.findElement(Database.getActiveConfiguration())));
 		if (!commitAction.doRun(false))
 			return null;
-		return resolve(ref, stashCommit);
+		return resolve(ref, stashCommit).resolutions;
 	}
 
 	private static boolean stashChanges(boolean discard)
@@ -183,6 +183,10 @@ class ConflictResolutionMap implements ConflictResolver {
 		if (dialog.open() == MergeDialog.CANCEL)
 			return null;
 		return dialog.getResolvedConflicts();
+	}
+
+	record ConflictResult(ConflictResolutionMap resolutions, boolean stashedChanges) {
+
 	}
 
 }

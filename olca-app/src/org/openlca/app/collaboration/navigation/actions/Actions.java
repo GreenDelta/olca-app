@@ -2,6 +2,7 @@ package org.openlca.app.collaboration.navigation.actions;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -15,10 +16,13 @@ import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
+import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Question;
 import org.openlca.git.actions.GitProgressAction;
 import org.openlca.git.actions.GitRemoteAction;
+import org.openlca.git.actions.GitStashApply;
 import org.openlca.git.model.Commit;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -97,6 +101,31 @@ class Actions {
 		if (commits == null || commits.isEmpty())
 			return null;
 		return new Commit(commits.iterator().next());
+	}
+
+	static void askApplyStash() throws InvocationTargetException, GitAPIException, IOException, InterruptedException {
+		var answers = Arrays.asList("No", "Yes");
+		var result = Question.ask("Apply stashed changes",
+				"Do you want to apply the changes you stashed before the commit?",
+				answers.toArray(new String[answers.size()]));
+		if (result == 0)
+			return;
+		applyStash();
+	}
+
+	static void applyStash() throws GitAPIException, InvocationTargetException, IOException, InterruptedException {
+		var repo = org.openlca.app.db.Repository.get();
+		var libraryResolver = WorkspaceLibraryResolver.forStash();
+		if (libraryResolver == null)
+			return;
+		var conflictResult = ConflictResolutionMap.forStash();
+		if (conflictResult == null)
+			return;
+		Actions.run(GitStashApply.from(repo.git)
+				.to(Database.get())
+				.update(repo.workspaceIds)
+				.resolveConflictsWith(conflictResult.resolutions())
+				.resolveLibrariesWith(libraryResolver));
 	}
 
 	private static class GitRemoteRunner<T> implements IRunnableWithProgress {
