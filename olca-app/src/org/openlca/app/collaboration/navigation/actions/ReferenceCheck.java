@@ -3,6 +3,7 @@ package org.openlca.app.collaboration.navigation.actions;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,7 +68,14 @@ class ReferenceCheck {
 
 	private Set<TriDiff> collect() {
 		var referenced = new TypeRefIdSet();
-		selection.forEach(selected -> referenced.addAll(collect(selected)));
+		var stack = new Stack<TypeRefIdPair>();
+		selection.forEach(selected -> stack.add(selected));
+		while (!stack.isEmpty()) {
+			var next = stack.pop();
+			var collected = collect(next);
+			referenced.addAll(collected);
+			stack.addAll(collected);
+		}
 		return diffs.values().stream()
 				.filter(referenced::contains)
 				.map(diff -> new TriDiff(diff, null))
@@ -80,16 +88,10 @@ class ReferenceCheck {
 			return referenced;
 		visited.add(pair);
 		filter(references.getReferences(pair))
-				.forEach(ref -> {
-					referenced.add(ref);
-					referenced.addAll(collect(ref));
-				});
+				.forEach(referenced::add);
 		filter(references.getUsages(pair))
 				.filter(ref -> diffs.get(ref).diffType != DiffType.ADDED)
-				.forEach(ref -> {
-					referenced.add(ref);
-					referenced.addAll(collect(ref));
-				});
+				.forEach(referenced::add);
 		return referenced;
 	}
 
