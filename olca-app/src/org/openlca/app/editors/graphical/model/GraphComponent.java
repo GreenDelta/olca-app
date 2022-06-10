@@ -8,6 +8,16 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Abstract prototype of a model component.
+ * <p>
+	 * This class provides features necessary for all model components:
+	 * </p>
+	 * <ul>
+	 * <li>management of size and location,</li>
+	 * <li>support for adding and removing children,</li>
+	 * <li>methods for connections with other <code>GraphComponents</code>,</li>
+ */
 abstract public class GraphComponent extends GraphElement {
 
 	public static final String
