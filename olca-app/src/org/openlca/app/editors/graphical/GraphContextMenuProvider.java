@@ -24,7 +24,8 @@ public class GraphContextMenuProvider  extends ContextMenuProvider {
 	public void buildContextMenu(IMenuManager menu) {
 		GEFActionConstants.addStandardActionGroups(menu);
 
-		addUndoActions(menu);
+		// TODO (francois) Reactivate UndoActions when every action is undoable.
+		//		addUndoActions(menu);
 		addEditActions(menu);
 		addViewActions(menu);
 		addSaveActions(menu);
