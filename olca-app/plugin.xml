@@ -254,8 +254,8 @@
 			class="org.openlca.app.editors.graphical.GraphEditor"
 			default="false"
 			icon="icons/model/product_system.png"
-			id="editors.productsystem.graphical"
-			name="Product system graphical editor">
+			id="editors.graphical"
+			name="Graphical editor">
 		</editor>
 		<editor
 			id="SearchPage"

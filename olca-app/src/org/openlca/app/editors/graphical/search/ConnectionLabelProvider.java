@@ -9,7 +9,7 @@ import org.openlca.app.util.Labels;
 
 class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
 
-	private ConnectionDialog dialog;
+	private final ConnectionDialog dialog;
 
 	ConnectionLabelProvider(ConnectionDialog dialog) {
 		this.dialog = dialog;
@@ -17,9 +17,8 @@ class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelPr
 
 	@Override
 	public Image getColumnImage(Object obj, int col) {
-		if (!(obj instanceof Candidate))
+		if (!(obj instanceof Candidate con))
 			return null;
-		Candidate con = (Candidate) obj;
 		switch (col) {
 		case 0:
 			return Images.get(con.process);
@@ -54,9 +53,8 @@ class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelPr
 
 	@Override
 	public String getColumnText(Object obj, int col) {
-		if (!(obj instanceof Candidate))
+		if (!(obj instanceof Candidate con))
 			return null;
-		Candidate con = (Candidate) obj;
 		switch (col) {
 		case 0:
 			return Labels.name(con.process);

@@ -1,16 +1,7 @@
 package org.openlca.app.editors.graphical.search;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-import org.openlca.app.editors.graphical.model.ExchangeNode;
-import org.openlca.app.editors.graphical.model.ProductSystemNode;
+import org.openlca.app.editors.graphical.model.ExchangeItem;
+import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
@@ -23,6 +14,8 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * Describes the exchange that is already in the product system model and for
@@ -42,16 +35,16 @@ class ModelExchange {
 	 */
 	final boolean isConnected;
 
-	private ProductSystemNode sysNode;
+	private Graph graph;
 
-	ModelExchange(ExchangeNode enode) {
-		exchange = enode.exchange;
-		process = enode.parent().process;
-		sysNode = enode.parent().parent();
+	ModelExchange(ExchangeItem exchangeItem) {
+		exchange = exchangeItem.exchange;
+		process = exchangeItem.getNode().descriptor;
+		graph = exchangeItem.getGraph();
 		if (isProvider()) {
 			isConnected = false;
 		} else {
-			isConnected = sysNode.linkSearch
+			isConnected = graph.linkSearch
 					.getConnectionLinks(process.id)
 					.stream()
 					.anyMatch(link -> link.exchangeId == exchange.id);
@@ -134,11 +127,11 @@ class ModelExchange {
 				continue;
 			var c = new Candidate(p);
 			c.exchangeId = e.first();
-			c.processExists = sysNode.getProductSystem().processes.contains(p.id);
+			c.processExists = graph.getProductSystem().processes.contains(p.id);
 			c.isDefaultProvider = !isProvider()
 					&& this.exchange.defaultProviderId == p.id;
 			if (isProvider()) {
-				c.isConnected = sysNode.linkSearch
+				c.isConnected = graph.linkSearch
 						.getConnectionLinks(c.process.id)
 						.stream()
 						.anyMatch(link -> link.exchangeId == c.exchangeId);
