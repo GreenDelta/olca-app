@@ -60,8 +60,8 @@ public class PlusMinusButton extends Clickable {
 			g.drawOval(r);
 
 			// Drawing the line(s) inside the circle with some marge.
-			r.translate(LINE_WIDTH, LINE_WIDTH);
-			r.setSize(SIZE.getShrinked(LINE_WIDTH * 4, LINE_WIDTH * 4));
+			r.translate(LINE_WIDTH * 3, LINE_WIDTH * 3);
+			r.setSize(SIZE.getShrinked(LINE_WIDTH * 8, LINE_WIDTH * 8));
 
 			g.drawLine(r.getLeft(), r.getRight());
 			if (!node.isExpanded(side))

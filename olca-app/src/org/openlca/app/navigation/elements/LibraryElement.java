@@ -22,8 +22,8 @@ public class LibraryElement extends NavigationElement<Library> {
 
 	/**
 	 * Constructs a library element that only contains models of the given type.
-	 * Such elements are used in model selection dialogs and behave a bit different
-	 * than library elements in the normal navigation.
+	 * Such elements are used in model selection dialogs and behave a bit
+	 * differently than library elements in the normal navigation.
 	 */
 	public static LibraryElement of(Library library, ModelType only) {
 		var elem = new LibraryElement(null, library);
@@ -41,11 +41,9 @@ public class LibraryElement extends NavigationElement<Library> {
 				.getChildren()
 				.stream()
 				.map(elem -> {
-					if (elem instanceof ModelElement) {
-						var me = (ModelElement) elem;
+					if (elem instanceof ModelElement me) {
 						return new ModelElement(this, me.getContent());
-					} else if (elem instanceof CategoryElement) {
-						var ce = (CategoryElement) elem;
+					} else if (elem instanceof CategoryElement ce) {
 						return new CategoryElement(this, ce.getContent());
 					}
 					return null;
@@ -87,8 +85,7 @@ public class LibraryElement extends NavigationElement<Library> {
 	public Optional<IDatabase> getDatabase() {
 		var parent = getParent();
 		while (parent != null) {
-			if (parent instanceof DatabaseElement) {
-				var dbElem = (DatabaseElement) parent;
+			if (parent instanceof DatabaseElement dbElem) {
 				var config = dbElem.getContent();
 				return Database.isActive(config)
 					? Optional.of(Database.get())
