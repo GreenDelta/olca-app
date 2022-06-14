@@ -3,14 +3,20 @@ package org.openlca.app.navigation.actions.libraries;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.App;
+import org.openlca.app.db.Database;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -18,6 +24,7 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.MountAction;
+import org.openlca.core.library.Mounter;
 import org.openlca.core.library.PreMountCheck;
 import org.openlca.core.library.PreMountState;
 
@@ -26,7 +33,6 @@ class MountLibraryDialog extends FormDialog {
 	private final Library library;
 	private final PreMountCheck.Result checkResult;
 	private final List<Section> sections = new ArrayList<>();
-
 
 	static void show(Library library, PreMountCheck.Result checkResult) {
 		if (checkResult.isError()) {
@@ -48,6 +54,16 @@ class MountLibraryDialog extends FormDialog {
 			if (!b)
 				return;
 		}
+
+		var dialog = new MountLibraryDialog(library, checkResult);
+		if (dialog.open() != Window.OK)
+			return;
+
+		App.run("Add library " + library.name() + " ...",
+			() -> Mounter.of(Database.get(), library)
+				.apply(dialog.collectActions())
+				.run(),
+			Navigator::refresh);
 	}
 
 	private MountLibraryDialog(Library library, PreMountCheck.Result checkResult) {
@@ -62,7 +78,7 @@ class MountLibraryDialog extends FormDialog {
 			var state = libState.second;
 			stateMap.computeIfAbsent(state, s -> new ArrayList<>()).add(lib);
 		}
-		var stateOrder = new PreMountState[] {
+		var stateOrder = new PreMountState[]{
 			PreMountState.NEW,
 			PreMountState.PRESENT,
 			PreMountState.TAG_CONFLICT,
@@ -70,10 +86,21 @@ class MountLibraryDialog extends FormDialog {
 		};
 		for (var state : stateOrder) {
 			var libs = stateMap.get(state);
-			if (libs.isEmpty())
+			if (libs == null || libs.isEmpty())
 				continue;
 			sections.add(Section.of(state, libs));
 		}
+	}
+
+	private Map<Library, MountAction> collectActions() {
+		var actions = new HashMap<Library, MountAction>();
+		for (var section : sections) {
+			var action = section.selectedAction;
+			for (var lib : section.libraries) {
+				actions.put(lib, action);
+			}
+		}
+		return actions;
 	}
 
 	@Override
@@ -101,7 +128,7 @@ class MountLibraryDialog extends FormDialog {
 			return new Section(state, libraries);
 		}
 
-		Section render(Composite parent, FormToolkit tk) {
+		void render(Composite parent, FormToolkit tk) {
 			var group = new Group(parent, SWT.NONE);
 			tk.adapt(group);
 			group.setText(title());
@@ -112,7 +139,6 @@ class MountLibraryDialog extends FormDialog {
 			tk.createFormText(group, false)
 				.setText(libraryList(), true, false);
 			createCombo(tk, group);
-			return this;
 		}
 
 		private void createCombo(FormToolkit tk, Group group) {
@@ -167,7 +193,7 @@ class MountLibraryDialog extends FormDialog {
 			for (var lib : libraries) {
 				text.append("<li>")
 					.append(lib.name())
-					.append("<li>");
+					.append("</li>");
 			}
 			return text + "</ul>";
 		}

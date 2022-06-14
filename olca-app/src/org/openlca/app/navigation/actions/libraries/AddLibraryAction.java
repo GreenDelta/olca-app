@@ -33,6 +33,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryPackage;
+import org.openlca.core.library.PreMountCheck;
 import org.openlca.util.Strings;
 
 public class AddLibraryAction extends Action implements INavigationAction {
@@ -97,70 +98,22 @@ public class AddLibraryAction extends Action implements INavigationAction {
 		return libDir.getLibrary(id).orElse(null);
 	}
 
-	private static boolean mount(Library lib, IDatabase db) {
-		if (lib == null || db == null)
-			return false;
-		if (!canMount(lib, db))
-			return false;
-		App.runWithProgress(
-			"Mounting library " + lib.name() + " to " + db.getName(),
-			() -> lib.mountTo(db),
-			Navigator::refresh);
-		return true;
-	}
-
-	private static boolean canMount(Library lib, IDatabase db) {
+	private static void mount(Library lib, IDatabase db) {
 		if (lib == null) {
 			MsgBox.error("Library does not exist in workspace.");
-			return false;
+			return;
 		}
 		if (db.getLibraries().contains(lib.name())) {
 			MsgBox.error("Library " + lib.name() + " is already present.");
-			return false;
+			return;
 		}
-		var state = App.exec("Check library", () -> MountCheck.check(db, lib));
-		if (state.isError()) {
-			ErrorReporter.on("Failed to check library", state.error());
-			return false;
+		var checkResult = App.exec(
+			"Check library", () -> PreMountCheck.check(db, lib));
+		if (checkResult.isError()) {
+			ErrorReporter.on("Failed to check library", checkResult.error());
+			return;
 		}
-		return state.isUsed()
-			? ForceMountQuestion.ask()
-			: state.isOk();
-	}
-
-	private static class ForceMountQuestion extends FormDialog {
-
-		private boolean forceMount = false;
-
-		static boolean ask() {
-			var q = new ForceMountQuestion();
-			q.open();
-			return q.forceMount;
-		}
-
-		ForceMountQuestion() {
-			super(UI.shell());
-		}
-
-		@Override
-		protected void configureShell(Shell newShell) {
-			super.configureShell(newShell);
-			newShell.setText("Data conflicts");
-			newShell.setImage(Icon.ERROR.get());
-		}
-
-		@Override
-		protected void createFormContent(IManagedForm mForm) {
-			var tk = mForm.getToolkit();
-			var body = UI.formBody(mForm.getForm(), tk);
-			UI.gridLayout(body, 1);
-			var text = tk.createFormText(body, false);
-			text.setText("There are data sets that are contained" +
-				" in the database and the library.", false, false);
-			var check = tk.createButton(body, "Convert data sets in database to " +
-				"library data sets (experimental)", SWT.CHECK);
-			Controls.onSelect(check, $ -> forceMount = check.getSelection());
-		}
+		MountLibraryDialog.show(lib, checkResult);
 	}
 
 	private static class Dialog extends FormDialog {
@@ -290,9 +243,8 @@ public class AddLibraryAction extends Action implements INavigationAction {
 				: extract(externalFile);
 			if (lib == null)
 				return;
-			if (mount(lib, db)) {
-				super.okPressed();
-			}
+			super.okPressed();
+			mount(lib, db);
 		}
 	}
 
@@ -348,9 +300,8 @@ public class AddLibraryAction extends Action implements INavigationAction {
 				super.okPressed();
 				return;
 			}
-			if (mount(info, Database.get())) {
-				super.okPressed();
-			}
+			super.okPressed();
+			mount(info, Database.get());
 		}
 	}
 }
