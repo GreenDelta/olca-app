@@ -17,6 +17,7 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitPush;
+import org.openlca.git.util.Constants;
 
 public class PushAction extends Action implements INavigationAction {
 
@@ -32,7 +33,7 @@ public class PushAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return !Repository.get().history.getAhead().isEmpty();
+		return !Repository.get().localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty();
 	}
 
 	@Override

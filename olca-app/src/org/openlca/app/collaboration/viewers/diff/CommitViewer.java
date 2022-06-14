@@ -7,6 +7,7 @@ import java.util.Set;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
@@ -26,7 +27,7 @@ public class CommitViewer extends DiffNodeViewer {
 	}
 
 	public CommitViewer(Composite parent, Runnable onCheckStateChanged) {
-		super(parent, false);
+		super(parent, "Workspace", M.LocalModel, false);
 		super.setDirection(Direction.LEFT_TO_RIGHT);
 		this.onCheckStateChanged = onCheckStateChanged;
 	}
@@ -69,11 +70,11 @@ public class CommitViewer extends DiffNodeViewer {
 
 	// if models is null, select all
 	private Set<DiffNode> collectChildren(TypeRefIdSet models, DiffNode node) {
-		Set<DiffNode> nodes = new HashSet<>();
+		var nodes = new HashSet<DiffNode>();
 		for (var child : node.children) {
 			if (child.isModelNode()) {
 				var d = child.contentAsTriDiff();
-				if (models == null || models.contains(d.type, d.refId)) {
+				if (models == null || models.contains(d)) {
 					nodes.add(child);
 				}
 			} else {

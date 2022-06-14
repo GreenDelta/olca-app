@@ -39,7 +39,7 @@ public class AuthenticationDialog extends FormDialog {
 		if (useTwoFactorAuth) {
 			auth.withToken();
 		}
-		if (!Strings.nullOrEmpty(user) && !Strings.nullOrEmpty(password)) {
+		if (!Strings.nullOrEmpty(user) && !Strings.nullOrEmpty(password) && !forceAll) {
 			if (!useTwoFactorAuth)
 				return new GitCredentialsProvider(user, password);
 			if (!forceAll)
@@ -52,7 +52,7 @@ public class AuthenticationDialog extends FormDialog {
 		user = auth.user();
 		password = auth.password();
 		var token = auth.token();
-		repo.setUser(user);
+		repo.user(user);
 		repo.password(password);
 		return new GitCredentialsProvider(user, password, token);
 	}
@@ -68,7 +68,7 @@ public class AuthenticationDialog extends FormDialog {
 		if (dialog.open() == AuthenticationDialog.CANCEL)
 			return null;
 		user = auth.user();
-		repo.setUser(user);
+		repo.user(user);
 		return new PersonIdent(user, "");
 	}
 

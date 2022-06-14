@@ -49,11 +49,12 @@ public class CommitReferencesDialog extends FormDialog {
 		var newElements = new TypeRefIdSet();
 		var diff = node.contentAsTriDiff();
 		if (diff != null && diff.leftDiffType == DiffType.ADDED) {
-			newElements.add(diff.type, diff.refId);
+			newElements.add(diff);
 		}
 		if (node.children == null)
 			return newElements;
-		node.children.forEach(child -> getNewElements(child).forEach(newElements::add));
+		node.children.forEach(child -> getNewElements(child)
+				.forEach(newElements::add));
 		return newElements;
 	}
 
@@ -77,8 +78,8 @@ public class CommitReferencesDialog extends FormDialog {
 	}
 
 	public List<TriDiff> getSelected() {
-		return viewer.getChecked()
-				.stream().map(n -> n.contentAsTriDiff())
+		return viewer.getChecked().stream()
+				.map(DiffNode::contentAsTriDiff)
 				.toList();
 	}
 

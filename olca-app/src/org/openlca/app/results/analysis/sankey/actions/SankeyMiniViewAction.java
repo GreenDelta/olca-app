@@ -26,7 +26,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.action.ActionIds;
+import org.openlca.app.editors.graphical.actions.ActionIds;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyDiagram;
 import org.openlca.app.util.Controls;

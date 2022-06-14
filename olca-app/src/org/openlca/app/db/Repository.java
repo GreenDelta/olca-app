@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
 public class Repository {
 
 	private static final Logger log = LoggerFactory.getLogger(Repository.class);
-	private static Repository repository;
+	private static Repository current;
 	public static final String GIT_DIR = "repositories";
-	public final FileRepository git;
+	public final org.eclipse.jgit.lib.Repository git;
 	public final String serverUrl;
 	public final String repositoryId;
 	public final RepositoryClient client;
@@ -37,7 +37,7 @@ public class Repository {
 	public final Ids ids;
 	public final References references;
 	public final Entries entries;
-	public final History history;
+	public final History localHistory;
 	private String password;
 
 	private Repository(IDatabase database, File gitDir) throws IOException {
@@ -56,17 +56,17 @@ public class Repository {
 		}
 		client = new RepositoryClient(serverUrl, repositoryId);
 		var storeFile = new File(gitDir, "object-id.store");
-		workspaceIds = ObjectIdStore.open(storeFile);
+		workspaceIds = ObjectIdStore.fromFile(storeFile);
 		commits = Commits.of(git);
 		datasets = Datasets.of(git);
 		references = References.of(git);
 		entries = Entries.of(git);
 		ids = Ids.of(git);
-		history = History.of(git);
+		localHistory = History.localOf(git);
 	}
 
 	public static Repository get() {
-		return repository;
+		return current;
 	}
 
 	public static Repository open(IDatabase database) {
@@ -75,8 +75,8 @@ public class Repository {
 		if (!gitDir.exists() || !gitDir.isDirectory() || gitDir.listFiles().length == 0)
 			return null;
 		try {
-			repository = new Repository(database, gitDir);
-			return repository;
+			current = new Repository(database, gitDir);
+			return current;
 		} catch (IOException e) {
 			log.error("Error opening Git repo", e);
 			return null;
@@ -85,14 +85,14 @@ public class Repository {
 
 	public static Repository initialize(IDatabase database) {
 		open(database);
-		if (repository == null)
+		if (current == null)
 			return null;
 		try {
-			repository.isCollaborationServer(repository.client.isCollaborationServer());
+			current.isCollaborationServer(current.client.isCollaborationServer());
 		} catch (WebRequestException e) {
-			repository.isCollaborationServer(false);
+			current.isCollaborationServer(false);
 		}
-		return repository;
+		return current;
 	}
 
 	public static File gitDir(String databaseName) {
@@ -101,18 +101,18 @@ public class Repository {
 	}
 
 	public static boolean isConnected() {
-		return repository != null;
+		return current != null;
 	}
 
 	public static void close() {
-		if (repository == null)
+		if (current == null)
 			return;
-		repository.client.close();
-		repository.git.close();
-		repository = null;
+		current.client.close();
+		current.git.close();
+		current = null;
 	}
 
-	private static String url(FileRepository repo) {
+	private static String url(org.eclipse.jgit.lib.Repository repo) {
 		try (var git = new Git(repo)) {
 			var configs = git.remoteList().call();
 			var config = configs.stream()
@@ -137,7 +137,7 @@ public class Repository {
 		return git.getConfig().getString("user", null, "name");
 	}
 
-	public void setUser(String user) {
+	public void user(String user) {
 		if (!user.equals(user())) {
 			useTwoFactorAuth(false);
 		}

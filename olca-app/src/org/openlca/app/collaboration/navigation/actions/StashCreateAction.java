@@ -57,12 +57,13 @@ public class StashCreateAction extends Action implements INavigationAction {
 			var user = AuthenticationDialog.promptUser();
 			if (user == null)
 				return;
+			var changes = input.datasets().stream()
+					.map(d -> new Change(d.leftDiffType, d))
+					.collect(Collectors.toList());
 			Actions.run(GitStashCreate.from(Database.get())
 					.to(repo.git)
 					.as(user)
-					.changes(input.datasets().stream()
-							.map(d -> new Change(d.leftDiffType, d))
-							.collect(Collectors.toList()))
+					.changes(changes)
 					.update(repo.workspaceIds));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error stashing changes", e);

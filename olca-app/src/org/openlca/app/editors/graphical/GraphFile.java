@@ -1,24 +1,17 @@
 package org.openlca.app.editors.graphical;
 
 import java.io.File;
-import java.util.List;
-import java.util.function.Function;
-
-import org.openlca.app.db.Database;
-import org.openlca.app.db.DatabaseDir;
-import org.openlca.app.editors.graphical.layout.NodeLayoutInfo;
-import org.openlca.app.editors.graphical.model.ProcessNode;
-import org.openlca.app.editors.graphical.model.ProductSystemNode;
-import org.openlca.core.model.Process;
-import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.Result;
-import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.jsonld.Json;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.openlca.app.db.DatabaseDir;
+import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
+import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.core.model.ProductSystem;
+import org.openlca.jsonld.Json;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * We save the current layout and some settings in an external file of the
@@ -30,148 +23,103 @@ public final class GraphFile {
 	}
 
 	public static void save(GraphEditor editor) {
-		var root = editor != null
+		var graph = editor != null
 				? editor.getModel()
 				: null;
-		if (root == null)
+		if (graph == null)
 			return;
+		var rootObj = createJsonArray(editor, graph);
 		try {
-
-			// add config
-			var rootObj = new JsonObject();
-			rootObj.add("config", editor.config.toJson());
-
-			// add node infos
-			var file = file(root.getProductSystem());
-			var nodeArray = new JsonArray();
-			for (var node : root.getChildren()) {
-				var nodeObj = toJson(node);
-				if (nodeObj != null) {
-					nodeArray.add(nodeObj);
-				}
-			}
-			rootObj.add("nodes", nodeArray);
-
-			Json.write(rootObj, file);
+			Json.write(rootObj, file(editor.getProductSystem()));
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(GraphFile.class);
 			log.error("Failed to save layout", e);
 		}
 	}
 
-	private static JsonObject toJson(ProcessNode node) {
-		if (node == null || node.process == null)
+	public static JsonObject createJsonArray(GraphEditor editor, Graph graph) {
+		// add config
+		var rootObj = new JsonObject();
+		rootObj.add("config", editor.config.toJson());
+
+		// add node info's
+		var nodeArray = new JsonArray();
+		for (var node : graph.getChildren()) {
+			var nodeObj = toJson(node);
+			if (nodeObj != null) {
+				nodeArray.add(nodeObj);
+			}
+		}
+		rootObj.add("nodes", nodeArray);
+		return rootObj;
+	}
+
+	private static JsonObject toJson(Node node) {
+		if (node == null || node.descriptor == null)
 			return null;
 		var json = new JsonObject();
-		json.addProperty("id", node.process.refId);
+		json.addProperty("id", node.descriptor.refId);
 
-		var box = node.getBox();
-		if (box != null) {
-			json.addProperty("x", box.x);
-			json.addProperty("y",  box.y);
-			json.addProperty("width",  box.width);
-			json.addProperty("height",  box.height);
+		var size = node.getSize();
+		if (size != null) {
+			json.addProperty("width",  size.width);
+			json.addProperty("height",  size.height);
+		}
+		var location = node.getLocation();
+		if (location != null) {
+			json.addProperty("x", location.x);
+			json.addProperty("y",  location.y);
 		}
 
 		json.addProperty("minimized", node.isMinimized());
-		json.addProperty("expandedLeft", node.isExpandedLeft());
-		json.addProperty("expandedRight", node.isExpandedLeft());
-		json.addProperty("marked", node.isMarked());
+		// TODO
+		//		json.addProperty("expandedLeft", node.isExpandedLeft());
+		//		json.addProperty("expandedRight", node.isExpandedLeft());
+		//		json.addProperty("marked", node.isMarked());
+
 		return json;
 	}
 
-	public static boolean apply(GraphEditor editor) {
-		if (editor == null)
-			return false;
-		var root = editor.getModel();
-		if (root == null || root.getProductSystem() == null)
-			return false;
+	public static GraphConfig getGraphConfig(GraphEditor editor) {
 		try {
-
-			// read JSON object from file
-			var file = file(root.getProductSystem());
+			var file = GraphFile.file(editor.getProductSystem());
 			if (!file.exists())
-				return false;
+				return null;
 			var rootObj = Json.readObject(file)
-					.orElse(null);
+				.orElse(null);
 			if (rootObj == null)
-				return false;
+				return null;
 
 			// apply graph config
-			var config = GraphConfig.fromJson(
-					Json.getObject(rootObj, "config"));
-			config.copyTo(editor.config);
+			return GraphConfig.fromJson(
+				Json.getObject(rootObj, "config"));
+		} catch (Exception e) {
+			var log = LoggerFactory.getLogger(GraphFile.class);
+			log.error("Failed to load config", e);
+			return null;
+		}
+	}
 
-			// apply node infos
-			var nodeArray = Json.getArray(rootObj, "nodes");
-			applyNodes(nodeArray, root);
+	public static JsonArray getLayouts(GraphEditor editor) {
+		try {
+			// read JSON object from file
+			var file = file(editor.getProductSystem());
+			if (!file.exists())
+				return null;
+			var rootObj = Json.readObject(file).orElse(null);
+			if (rootObj == null)
+				return null;
 
-			return true;
+			// apply node info's
+			return Json.getArray(rootObj, "nodes");
 		} catch (Exception e) {
 			var log = LoggerFactory.getLogger(GraphFile.class);
 			log.error("Failed to load layout", e);
-			return false;
-		}
-	}
-
-	private static void applyNodes(JsonArray array, ProductSystemNode root) {
-		if (array == null || root == null)
-			return;
-
-		Function<String, RootDescriptor> provider = refId -> {
-			var db = Database.get();
-			if (db == null)
-				return null;
-			for (var c : List.of(Process.class, ProductSystem.class, Result.class)) {
-				if (db.getDescriptor(c, refId) instanceof RootDescriptor d)
-					return d;
-			}
 			return null;
-		};
-
-		for (var elem : array) {
-			if (!elem.isJsonObject())
-				continue;
-			var obj = elem.getAsJsonObject();
-			var info = toInfo(obj);
-			if (info == null)
-				continue;
-
-			var node = root.getProcessNode(info.id);
-			if (node != null) {
-				node.apply(info);
-				continue;
-			}
-
-			// we changed the ID to a string in openLCA v2; to be a bit
-			// backwards compatible we try the long ID too
-			try {
-				var id = Long.parseLong(info.id);
-				node = root.getProcessNode(id);
-				if (node != null) {
-					node.apply(info);
-					continue;
-				}
-				node = ProcessNode.create(root.editor, id);
-			} catch (Exception ignored) {
-			}
-
-			if (node == null) {
-				var p = provider.apply(info.id);
-				if (p != null) {
-					node = new ProcessNode(root.editor, p);
-				}
-			}
-			if (node == null)
-				continue;
-
-			root.add(node);
-			node.apply(info);
-			root.editor.createNecessaryLinks(node);
 		}
 	}
 
-	private static NodeLayoutInfo toInfo(JsonObject obj) {
+	public static NodeLayoutInfo toInfo(JsonObject obj) {
 		if (obj == null)
 			return null;
 		var info = new NodeLayoutInfo();
@@ -183,11 +131,10 @@ public final class GraphFile {
 		info.minimized = Json.getBool(obj, "minimized", false);
 		info.expandedLeft = Json.getBool(obj, "expandedLeft", false);
 		info.expandedRight = Json.getBool(obj, "expandedRight", false);
-		info.marked = Json.getBool(obj, "marked", false);
 		return info;
 	}
 
-	private static File file(ProductSystem system) {
+	public static File file(ProductSystem system) {
 		File dir = DatabaseDir.getDir(system);
 		if (!dir.exists()) {
 			if (!dir.mkdirs()) {

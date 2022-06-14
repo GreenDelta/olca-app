@@ -34,7 +34,7 @@ public class OpenCompareViewAction extends Action implements INavigationAction {
 		if (compareWithHead) {
 			commit = Repository.get().commits.head();
 		} else {
-			SelectCommitDialog dialog = new SelectCommitDialog();
+			var dialog = new SelectCommitDialog();
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return;
 			commit = dialog.getSelection();

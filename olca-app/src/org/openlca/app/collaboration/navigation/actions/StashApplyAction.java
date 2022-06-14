@@ -7,7 +7,6 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Constants;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
@@ -15,7 +14,6 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.git.actions.GitStashApply;
 
 public class StashApplyAction extends Action implements INavigationAction {
 
@@ -42,20 +40,10 @@ public class StashApplyAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		Database.getWorkspaceIdUpdater().disable();
-		var repo = Repository.get();
 		try {
-			var libraryResolver = WorkspaceLibraryResolver.forStash(repo.git);
-			if (libraryResolver == null)
-				return;
-			var conflictResolver = Conflicts.resolve(Constants.R_STASH, true);
-			if (conflictResolver == null)
-				return;
-			Actions.run(GitStashApply.from(repo.git)
-					.to(Database.get())
-					.update(repo.workspaceIds)
-					.resolveConflictsWith(conflictResolver));
+			Actions.applyStash();
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
-			Actions.handleException("Error stashing changes", e);
+			Actions.handleException("Error applying stashed changes", e);
 		} finally {
 			Database.getWorkspaceIdUpdater().enable();
 			Cache.evictAll();

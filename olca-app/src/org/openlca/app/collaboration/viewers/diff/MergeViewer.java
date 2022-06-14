@@ -24,7 +24,7 @@ public class MergeViewer extends DiffNodeViewer {
 
 	@Override
 	protected TreeViewer createViewer(Composite parent) {
-		TreeViewer viewer = Trees.createViewer(parent);
+		var viewer = Trees.createViewer(parent);
 		viewer.setLabelProvider(new DiffNodeLabelProvider());
 		viewer.setContentProvider(new DiffNodeContentProvider());
 		viewer.setComparator(new DiffNodeComparator());
@@ -45,8 +45,8 @@ public class MergeViewer extends DiffNodeViewer {
 	}
 
 	private void revealConflicts() {
-		List<DiffNode> conflicts = getConflicts();
-		for (DiffNode conflict : conflicts) {
+		var conflicts = getConflicts();
+		for (var conflict : conflicts) {
 			getViewer().reveal(conflict);
 		}
 	}
@@ -56,18 +56,18 @@ public class MergeViewer extends DiffNodeViewer {
 	}
 
 	public List<DiffNode> getConflicts() {
-		List<DiffNode> conflicts = new ArrayList<>();
-		Stack<DiffNode> nodes = new Stack<>();
+		var conflicts = new ArrayList<DiffNode>();
+		var nodes = new Stack<DiffNode>();
 		nodes.addAll(root.children);
 		while (!nodes.isEmpty()) {
-			DiffNode node = nodes.pop();
+			var node = nodes.pop();
 			nodes.addAll(node.children);
 			if (!node.isModelNode())
 				continue;
-			TriDiff diff = (TriDiff) node.content;
+			var diff = (TriDiff) node.content;
 			if (!diff.conflict())
 				continue;
-			if (getResolvedConflicts().contains(diff.type, diff.refId))
+			if (getResolvedConflicts().contains(diff))
 				continue;
 			conflicts.add(node);
 		}

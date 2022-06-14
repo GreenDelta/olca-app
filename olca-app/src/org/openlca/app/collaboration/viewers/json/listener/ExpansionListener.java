@@ -27,7 +27,6 @@ public class ExpansionListener implements ITreeViewerListener {
 
 	private void setExpanded(Tree source, Object element, boolean value) {
 		counterpart.setExpandedState(element, value);
-		// TODO fix issue
 		ScrollListener.onChange(source, counterpart.getTree());
 	}
 }

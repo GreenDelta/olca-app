@@ -55,13 +55,13 @@ public class ConnectDialog extends FormDialog {
 		UI.gridData(group, true, false);
 		var urlText = UI.formText(group, "URL:");
 		var protocolText = UI.formText(group, "Protocol:");
-		protocolText.setEditable(false);
+		protocolText.setEnabled(false);
 		var hostText = UI.formText(group, "Host:");
-		hostText.setEditable(false);
+		hostText.setEnabled(false);
 		var portText = UI.formText(group, "Port:");
-		portText.setEditable(false);
+		portText.setEnabled(false);
 		var pathText = UI.formText(group, "Repository path:");
-		pathText.setEditable(false);
+		pathText.setEnabled(false);
 		urlText.addModifyListener(e -> {
 			var text = urlText.getText();
 			var url = new UrlParts(text);

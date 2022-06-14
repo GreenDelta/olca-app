@@ -4,16 +4,15 @@ import java.io.File;
 import java.util.EnumMap;
 import java.util.Optional;
 
+import com.helger.css.decl.CSSStyleRule;
+import com.helger.css.reader.CSSReader;
+import com.helger.css.reader.CSSReaderSettings;
 import org.eclipse.swt.graphics.Color;
-import org.openlca.app.editors.graphical.model.ProcessNode;
+import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.util.Colors;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-
-import com.helger.css.decl.CSSStyleRule;
-import com.helger.css.reader.CSSReader;
-import com.helger.css.reader.CSSReaderSettings;
 
 public class Theme {
 
@@ -199,14 +198,14 @@ public class Theme {
 		SUB_SYSTEM,
 		LIBRARY_PROCESS;
 
-		public static Box of(ProcessNode node) {
-			if (node == null || node.process == null)
+		public static Box of(Node node) {
+			if (node == null || node.descriptor == null)
 				return DEFAULT;
-			if (node.process.isFromLibrary())
+			if (node.descriptor.isFromLibrary())
 				return LIBRARY_PROCESS;
-			if (node.parent().isReferenceProcess(node))
+			if (node.getGraph().isReferenceProcess(node))
 				return REFERENCE_PROCESS;
-			if (!(node.process instanceof ProcessDescriptor p))
+			if (!(node.descriptor instanceof ProcessDescriptor p))
 				return SUB_SYSTEM;
 			return p.processType == ProcessType.UNIT_PROCESS
 				? UNIT_PROCESS

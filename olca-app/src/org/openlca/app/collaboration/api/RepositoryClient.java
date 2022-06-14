@@ -2,6 +2,7 @@ package org.openlca.app.collaboration.api;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
@@ -35,7 +36,10 @@ public class RepositoryClient {
 	public boolean isCollaborationServer() throws WebRequestException {
 		var invocation = new ServerCheckInvocation();
 		invocation.baseUrl = apiUrl;
-		return invocation.execute();
+		var result = invocation.execute();
+		if (result != null)
+			return result;
+		return false;
 	}
 
 	public Announcement getAnnouncement() throws WebRequestException {
@@ -52,7 +56,7 @@ public class RepositoryClient {
 		return executeLoggedIn(new CheckAccessInvocation(repositoryId));
 	}
 
-	public List<Restriction> checkRestrictions(List<? extends ModelRef> refs) throws WebRequestException {
+	public List<Restriction> checkRestrictions(Collection<? extends ModelRef> refs) throws WebRequestException {
 		return executeLoggedIn(new RestrictionCheckInvocation(repositoryId, refs));
 	}
 
@@ -100,6 +104,9 @@ public class RepositoryClient {
 				log.warn("Could not connect to repository server " + serverUrl + ", " + e.getMessage());
 				return false;
 			}
+			if (e.getErrorCode() == Status.UNAUTHORIZED.getStatusCode()
+					|| e.getErrorCode() == Status.FORBIDDEN.getStatusCode())
+				return login(true);
 			throw e;
 		}
 		return sessionId != null;
@@ -117,7 +124,10 @@ public class RepositoryClient {
 		if (sessionId == null)
 			return;
 		try {
-			new LogoutInvocation().execute();
+			var invocation = new LogoutInvocation();
+			invocation.baseUrl = apiUrl;
+			invocation.sessionId = sessionId;
+			invocation.execute();
 		} catch (WebRequestException e) {
 			if (e.getErrorCode() != Status.UNAUTHORIZED.getStatusCode()
 					&& e.getErrorCode() != Status.CONFLICT.getStatusCode())

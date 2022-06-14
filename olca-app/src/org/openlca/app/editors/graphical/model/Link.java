@@ -1,121 +1,144 @@
 package org.openlca.app.editors.graphical.model;
 
-import java.util.Objects;
-
-import org.eclipse.draw2d.Connection;
 import org.openlca.core.model.ProcessLink;
 
 /**
- * A model of the connection between the output flow {@link ExchangeNode} of a
- * {@link ProcessNode} to the input flow of another {@link ProcessNode}.
+ * A model of the connection between two Node objects. The output and the input
+ * can be defined by a Node, an IOPane or a ExchangeItem depending on the status
+ * of the connection owner (minimized or maximized).
  */
-public class Link {
+public class Link extends GraphElement {
 
 	public ProcessLink processLink;
-	public ProcessNode outputNode;
-	public ProcessNode inputNode;
-
 	/**
-	 * @deprecated Link is the model and should not have a reference to the view
-	 * (EditPart)
+	 * The source and the target can be a Node, an IOPane or a ExchangeItem.
 	 */
-	@Deprecated
-	public Connection figure;
+	protected GraphComponent source, target;
+	/** True, if the connection is attached to its endpoints. */
+	private boolean isConnected;
+
+	public Link(ProcessLink pLink, GraphComponent source, GraphComponent target) {
+		processLink = pLink;
+		reconnect(source, target);
+	}
 
 	/**
-	 * @deprecated Link is the model and should not have a reference to the
-	 * controller (EditPart)
+	 * Reconnect to a different input and/or output GraphComponent. The link will
+	 * disconnect from its current attachments and reconnect to the new input and
+	 * output.
 	 */
-	@Deprecated
-	LinkPart editPart;
+	public void reconnect(GraphComponent newSource, GraphComponent newTarget) {
+		disconnect();
+
+		source = adaptComponent(newSource, true);
+		target = adaptComponent(newTarget, false);
+
+		reconnect();
+	}
 
 	/**
-	 * Returns the provider node of the link which is the output node in case
-	 * of a production process and the input link in case of a waste treatment
+	 * Getting the deepest representation (in the model tree) of the component.
+	 */
+	private GraphComponent adaptComponent(
+		GraphComponent component, boolean isSource) {
+		if (component instanceof Node node) {
+			if (!node.isMinimized()) {
+				ExchangeItem newComponent = isSource
+					? node.getOutput(processLink)
+					: node.getInput(processLink);
+				return newComponent != null ? newComponent : component;
+			}
+			else return component;
+		}
+		if (component instanceof ExchangeItem item)
+			if (item.getNode().isMinimized())
+				return item.getNode();
+		return component;
+	}
+
+	/**
+	 * Disconnect this link from the component it is attached to.
+	 */
+	public void disconnect() {
+		if (isConnected) {
+			target.removeConnection(this);
+			source.removeConnection(this);
+			isConnected = false;
+		}
+	}
+
+	/**
+	 * Reconnect this Link. The connection will reconnect with the Nodes it was
+	 * previously attached to.
+	 */
+	public void reconnect() {
+		if (!isConnected) {
+			target.addConnection(this);
+			source.addConnection(this);
+			isConnected = true;
+		}
+	}
+
+	/**
+	 * Returns the provider node of the link which is the source node in case
+	 * of a production process and the target node in case of a waste treatment
 	 * process.
 	 */
-	public ProcessNode provider() {
+	public Node provider() {
 		if (processLink == null)
 			return null;
-		if (outputNode != null
-				&& outputNode.process != null
-				&& outputNode.process.id == processLink.providerId)
-			return outputNode;
-		if (inputNode != null
-				&& inputNode.process != null
-				&& inputNode.process.id == processLink.providerId)
-			return inputNode;
+		var sourceNode = getSourceNode();
+		if (sourceNode != null
+			&& sourceNode.descriptor != null
+			&& sourceNode.descriptor.id == processLink.providerId)
+			return sourceNode;
+		var targetNode = getTargetNode();
+		if (targetNode != null
+			&& targetNode.descriptor != null
+			&& targetNode.descriptor.id == processLink.providerId)
+			return targetNode;
 		return null;
 	}
 
-	/**
-	 * @deprecated call methods on the EditPart directly
-	 */
-	@Deprecated
-	public void refreshSourceAnchor() {
-		editPart.refreshSourceAnchor();
+	public Node getSourceNode() {
+		if (source instanceof Node node)
+			return node;
+		else if (source instanceof IOPane pane)
+			return pane.getNode();
+		else if (source instanceof ExchangeItem item)
+			return item.getNode();
+		return null;
 	}
 
-	/**
-	 * @deprecated call methods on the EditPart directly
-	 */
-	@Deprecated
-	public void refreshTargetAnchor() {
-		editPart.refreshTargetAnchor();
+	public Node getTargetNode() {
+		if (target instanceof Node node)
+			return node;
+		else if (target instanceof IOPane pane)
+			return pane.getNode();
+		else if (target instanceof ExchangeItem item)
+			return item.getNode();
+		return null;
 	}
 
-	void setSelected(int value) {
-		editPart.setSelected(value);
+	public void setProcessLink(ProcessLink link) {
+		processLink = link;
+		firePropertyChange("processLink", null, source);
 	}
 
-	public void link() {
-		outputNode.add(this);
-		inputNode.add(this);
-		outputNode.editPart().refreshSourceConnections();
-		inputNode.editPart().refreshTargetConnections();
-		outputNode.refresh();
-		inputNode.refresh();
+	public ProcessLink getProcessLink() {
+		return processLink;
 	}
 
-	public void unlink() {
-		editPart.setSelected(0);
-		outputNode.remove(this);
-		inputNode.remove(this);
-		outputNode.editPart().refreshSourceConnections();
-		inputNode.editPart().refreshTargetConnections();
-		outputNode.refresh();
-		inputNode.refresh();
+	public GraphComponent getTarget() {
+		return target;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Link other))
-			return false;
-		return Objects.equals(processLink, other.processLink)
-					 && Objects.equals(outputNode, other.outputNode)
-					 && Objects.equals(inputNode, other.inputNode);
+	public GraphComponent getSource() {
+		return source;
 	}
 
-	public boolean isVisible() {
-		return figure != null && figure.isVisible();
-	}
-
-	/**
-	 * A link is visible when the respective processes are visible and at least
-	 * one of the processes is expanded on the respective site.
-	 */
-	public void updateVisibility() {
-		if (figure == null)
-			return;
-		if (!inputNode.isVisible() || !outputNode.isVisible()) {
-			figure.setVisible(false);
-			return;
-		}
-		if (inputNode.isExpandedLeft() || outputNode.isExpandedRight()) {
-			figure.setVisible(true);
-			return;
-		}
-		figure.setVisible(false);
+	public String toString() {
+		return "Link(" + getSource() + " -> " + getTarget() + ")";
 	}
 
 }

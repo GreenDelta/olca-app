@@ -6,15 +6,15 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.eclipse.jgit.lib.Repository;
 import org.openlca.app.App;
 import org.openlca.app.collaboration.dialogs.LibraryDialog;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Repository;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.library.Library;
@@ -25,16 +25,20 @@ import org.openlca.git.find.Commits;
 import org.openlca.git.model.Commit;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.Repositories;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class WorkspaceLibraryResolver implements LibraryResolver {
 
+	private static final Logger log = LoggerFactory.getLogger(WorkspaceLibraryResolver.class);
 	private final LibraryDir libDir;
 
 	private WorkspaceLibraryResolver() {
 		this.libDir = Workspace.getLibraryDir();
 	}
 
-	static WorkspaceLibraryResolver forRemote(FileRepository git) {
+	static WorkspaceLibraryResolver forRemote() {
+		var git = org.openlca.app.db.Repository.get().git;
 		var commits = Commits.of(git);
 		var commit = commits.get(commits.resolve(Constants.REMOTE_BRANCH));
 		if (commit == null)
@@ -45,7 +49,8 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 		return resolver;
 	}
 
-	static WorkspaceLibraryResolver forStash(FileRepository git) throws GitAPIException {
+	static WorkspaceLibraryResolver forStash() throws GitAPIException {
+		var git = org.openlca.app.db.Repository.get().git;
 		var commits = Git.wrap(git).stashList().call();
 		if (commits == null || commits.isEmpty())
 			return null;
@@ -57,7 +62,7 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 	}
 
 	// init before resolve is called in GitMerge, to avoid invalid thread access
-	private boolean init(FileRepository git, Commit commit) {
+	private boolean init(Repository git, Commit commit) {
 		var info = Repositories.infoOf(git, commit);
 		if (info == null)
 			return false;
@@ -89,9 +94,11 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 			if (dialog.open() != LibraryDialog.OK)
 				return null;
 			if (dialog.isFileSelected())
-				return importFromFile(new File(dialog.getLocation()), libDir);
+				return App.exec("Extracting library " + newLib,
+						() -> importFromFile(new File(dialog.getLocation()), libDir));
 			try (var stream = new URL(dialog.getLocation()).openStream()) {
-				return importFromStream(stream, libDir);
+				return App.exec("Downloading and extracting library " + newLib,
+						() -> importFromStream(stream, libDir));
 			}
 		} catch (IOException e) {
 			return null;
@@ -99,14 +106,15 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 	}
 
 	private Library importFromCollaborationServer(String newLib, LibraryDir libDir) throws IOException {
-		var repo = Repository.get();
+		var repo = org.openlca.app.db.Repository.get();
 		if (!repo.isCollaborationServer())
 			return null;
 		try {
 			var stream = repo.client.downloadLibrary(newLib);
 			if (stream == null)
 				return null;
-			return importFromStream(stream, libDir);
+			return App.exec("Downloading and extracting library " + newLib,
+					() -> importFromStream(stream, libDir));
 		} catch (WebRequestException e) {
 			Actions.handleException("Error downloading library " + newLib, e);
 			return null;
@@ -121,21 +129,29 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 			MsgBox.error(file.getName() + " is not a valid library package.");
 			return null;
 		}
-		return App.exec("Extract library", () -> {
-			LibraryPackage.unzip(file, libDir);
-			return resolve(info.name());
-		});
+		LibraryPackage.unzip(file, libDir);
+		return resolve(info.toId());
 	}
 
-	private Library importFromStream(InputStream stream, LibraryDir libDir) throws IOException {
+	private Library importFromStream(InputStream stream, LibraryDir libDir) {
 		var file = (Path) null;
+		var library = (Library) null;
 		try {
 			file = Files.createTempFile("olca-library", ".zip");
-			Files.copy(stream, file);
-			return importFromFile(file.toFile(), libDir);
+			Files.copy(stream, file, StandardCopyOption.REPLACE_EXISTING);
+			library = importFromFile(file.toFile(), libDir);
+			return library;
+		} catch (IOException e) {
+			log.error("Error copying library from stream", e);
+			return null;
 		} finally {
 			if (file != null && file.toFile().exists()) {
-				Files.delete(file);
+				try {
+					Files.delete(file);
+				} catch (IOException e) {
+					log.trace("Error deleting tmp file", e);
+					return library;
+				}
 			}
 		}
 	}

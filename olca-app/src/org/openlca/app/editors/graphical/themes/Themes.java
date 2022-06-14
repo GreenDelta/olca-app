@@ -1,5 +1,8 @@
 package org.openlca.app.editors.graphical.themes;
 
+import org.openlca.app.rcp.Workspace;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -7,9 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import org.openlca.app.rcp.Workspace;
-import org.slf4j.LoggerFactory;
 
 public final class Themes {
 

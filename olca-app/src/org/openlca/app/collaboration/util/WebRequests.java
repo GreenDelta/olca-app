@@ -3,6 +3,8 @@ package org.openlca.app.collaboration.util;
 import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
@@ -32,6 +34,14 @@ public class WebRequests {
 	static {
 	}
 
+	public static String encodeQuery(String query) {
+		try {
+			return new URI(null, null, query, null, null).toString();
+		} catch (URISyntaxException e) {
+			return query;
+		}
+	}
+
 	public static ClientResponse call(Type type, String url, String sessionId) throws WebRequestException {
 		return call(type, url, sessionId, null);
 	}
@@ -55,16 +65,16 @@ public class WebRequests {
 
 	private static ClientResponse call(Type type, Builder builder) {
 		switch (type) {
-		case GET:
-			return builder.get(ClientResponse.class);
-		case POST:
-			return builder.post(ClientResponse.class);
-		case PUT:
-			return builder.put(ClientResponse.class);
-		case DELETE:
-			return builder.delete(ClientResponse.class);
-		default:
-			return null;
+			case GET:
+				return builder.get(ClientResponse.class);
+			case POST:
+				return builder.post(ClientResponse.class);
+			case PUT:
+				return builder.put(ClientResponse.class);
+			case DELETE:
+				return builder.delete(ClientResponse.class);
+			default:
+				return null;
 		}
 	}
 

@@ -3,7 +3,6 @@ package org.openlca.app.collaboration.viewers.json;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.json.content.IDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.label.Direction;
@@ -18,8 +17,8 @@ public class JsonCompareViewer extends Composite {
 	private final Direction direction;
 	private JsonViewer leftTree;
 	private JsonViewer rightTree;
-	private String localLabel = M.LocalModel;
-	private String remoteLabel = M.RemoteModel;
+	private String localLabel;
+	private String remoteLabel;
 
 	public static JsonCompareViewer forMerging(Composite parent, FormToolkit toolkit, JsonNode root, Direction direction) {
 		return new JsonCompareViewer(parent, toolkit, root, direction, true);
