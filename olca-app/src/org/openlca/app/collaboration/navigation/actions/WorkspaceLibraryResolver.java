@@ -130,7 +130,7 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 			return null;
 		}
 		LibraryPackage.unzip(file, libDir);
-		return resolve(info.toId());
+		return resolve(info.name());
 	}
 
 	private Library importFromStream(InputStream stream, LibraryDir libDir) {
