@@ -13,6 +13,8 @@ import org.openlca.app.util.Colors;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.ProductSystemDescriptor;
+import org.openlca.core.model.descriptors.ResultDescriptor;
 
 public class Theme {
 
@@ -196,7 +198,8 @@ public class Theme {
 		UNIT_PROCESS,
 		SYSTEM_PROCESS,
 		SUB_SYSTEM,
-		LIBRARY_PROCESS;
+		LIBRARY_PROCESS,
+		RESULT;
 
 		public static Box of(Node node) {
 			if (node == null || node.descriptor == null)
@@ -205,11 +208,15 @@ public class Theme {
 				return LIBRARY_PROCESS;
 			if (node.getGraph().isReferenceProcess(node))
 				return REFERENCE_PROCESS;
-			if (!(node.descriptor instanceof ProcessDescriptor p))
+			if (node.descriptor instanceof ProcessDescriptor p)
+				return p.processType == ProcessType.UNIT_PROCESS
+					? UNIT_PROCESS
+					: SYSTEM_PROCESS;
+			if (node.descriptor instanceof ResultDescriptor)
+				return RESULT;
+			if (node.descriptor instanceof ProductSystemDescriptor)
 				return SUB_SYSTEM;
-			return p.processType == ProcessType.UNIT_PROCESS
-				? UNIT_PROCESS
-				: SYSTEM_PROCESS;
+			return DEFAULT;
 		}
 	}
 

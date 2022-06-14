@@ -224,7 +224,6 @@ import org.openlca.core.model.ImpactFactor as ImpactFactor
 import org.openlca.ipc.handlers.ImpactHandler as ImpactHandler
 import org.openlca.io.ilcd.input.ImpactImport as ImpactImport
 import org.openlca.core.matrix.index.ImpactIndex as ImpactIndex
-import org.openlca.io.openepd.input.ImpactMapping as ImpactMapping
 import org.openlca.core.model.ImpactMethod as ImpactMethod
 import org.openlca.core.database.ImpactMethodDao as ImpactMethodDao
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor as ImpactMethodDescriptor
@@ -241,8 +240,7 @@ import org.openlca.proto.io.input.In as In
 import org.openlca.proto.io.InMemoryProtoStore as InMemoryProtoStore
 import org.openlca.core.library.IndexFormat as IndexFormat
 import org.openlca.core.matrix.IndexedMatrix as IndexedMatrix
-import org.openlca.io.openepd.input.IndicatorKey as IndicatorKey
-import org.openlca.io.openepd.input.IndicatorMapping as IndicatorMapping
+import org.openlca.io.openepd.io.IndicatorMapping as IndicatorMapping
 import org.openlca.io.xls.results.InfoSheet as InfoSheet
 import org.openlca.expressions.InterpreterException as InterpreterException
 import org.openlca.geo.calc.IntersectionCalculator as IntersectionCalculator
@@ -278,7 +276,6 @@ import org.openlca.core.library.LibraryDir as LibraryDir
 import org.openlca.core.library.LibraryExport as LibraryExport
 import org.openlca.core.library.LibraryInfo as LibraryInfo
 import org.openlca.core.library.LibraryPackage as LibraryPackage
-import org.openlca.core.library.LibraryReplacement as LibraryReplacement
 import org.openlca.geo.geojson.LineString as LineString
 import org.openlca.core.matrix.linking.LinkingConfig as LinkingConfig
 import org.openlca.core.matrix.linking.LinkingInfo as LinkingInfo
@@ -291,8 +288,10 @@ import org.openlca.proto.io.output.LocationWriter as LocationWriter
 import org.openlca.core.matrix.index.LongPair as LongPair
 import org.openlca.ipc.Main as Main
 import org.openlca.io.maps.MapFactor as MapFactor
+import org.openlca.io.openepd.io.MappedExportResult as MappedExportResult
 import org.openlca.core.model.MappingFile as MappingFile
 import org.openlca.core.database.MappingFileDao as MappingFileDao
+import org.openlca.io.openepd.io.MappingModel as MappingModel
 import org.openlca.io.maps.MappingStatus as MappingStatus
 import org.openlca.io.maps.Maps as Maps
 import org.openlca.core.matrix.io.MarketFormatWriter as MarketFormatWriter
@@ -310,12 +309,14 @@ import org.openlca.core.math.MatrixRowSorter as MatrixRowSorter
 import org.openlca.jsonld.MemStore as MemStore
 import org.openlca.proto.io.Messages as Messages
 import org.openlca.io.ecospold2.input.MethodImport as MethodImport
-import org.openlca.io.openepd.input.MethodMapping as MethodMapping
+import org.openlca.io.openepd.io.MethodMapping as MethodMapping
 import org.openlca.ipc.handlers.ModelHandler as ModelHandler
 import org.openlca.io.ilcd.input.models.ModelImport as ModelImport
 import org.openlca.jsonld.ModelPath as ModelPath
 import org.openlca.core.model.ModelType as ModelType
 import org.openlca.geo.calc.Mollweide as Mollweide
+import org.openlca.core.library.MountAction as MountAction
+import org.openlca.core.library.Mounter as Mounter
 import org.openlca.geo.geojson.MultiLineString as MultiLineString
 import org.openlca.geo.geojson.MultiPoint as MultiPoint
 import org.openlca.geo.geojson.MultiPolygon as MultiPolygon
@@ -360,6 +361,8 @@ import org.openlca.text.PhraseParser as PhraseParser
 import org.openlca.text.PhraseSimilarity as PhraseSimilarity
 import org.openlca.geo.geojson.Point as Point
 import org.openlca.geo.geojson.Polygon as Polygon
+import org.openlca.core.library.PreMountCheck as PreMountCheck
+import org.openlca.core.library.PreMountState as PreMountState
 import org.openlca.geo.calc.PrecisionReduction as PrecisionReduction
 import org.openlca.core.model.Process as Process
 import org.openlca.core.database.ProcessDao as ProcessDao
@@ -373,6 +376,7 @@ import org.openlca.core.results.ProcessGrouping as ProcessGrouping
 import org.openlca.io.ilcd.input.ProcessImport as ProcessImport
 import org.openlca.core.model.ProcessLink as ProcessLink
 import org.openlca.core.matrix.ProcessLinkSearchMap as ProcessLinkSearchMap
+import org.openlca.jsonld.input.ProcessReader as ProcessReader
 import org.openlca.core.database.references.ProcessReferenceSearch as ProcessReferenceSearch
 import org.openlca.core.matrix.cache.ProcessTable as ProcessTable
 import org.openlca.core.model.ProcessType as ProcessType
@@ -517,7 +521,7 @@ import org.openlca.core.database.validation.Validation as Validation
 import org.openlca.expressions.VariableFunction as VariableFunction
 import org.openlca.core.model.Version as Version
 import org.openlca.core.database.upgrades.VersionState as VersionState
-import org.openlca.io.openepd.Vocab as Vocab
+import org.openlca.io.openepd.io.Vocab as Vocab
 import org.openlca.io.ecospold2.input.WasteFlows as WasteFlows
 import org.openlca.geo.calc.WebMercator as WebMercator
 import org.openlca.text.WordBuffer as WordBuffer

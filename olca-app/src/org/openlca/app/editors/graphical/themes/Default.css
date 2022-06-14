@@ -42,7 +42,7 @@
 .box .library-process {
   color: #000000;       /* font color */
   background: #ffffff;  /* background color */
-  border: 3px #ff9700;  /* border width and color */
+  border: 3px #999999;  /* border width and color */
 }
 
 /* sub-systems */
@@ -52,6 +52,12 @@
   border: 3px #125985;  /* border width and color */
 }
 
+/* results */
+.box .result {
+  color: #000000;       /* font color */
+  background: #ffffff;  /* background color */
+  border: 3px #eda211;  /* border width and color */
+}
 
 /* -- process links -- */
 

@@ -107,6 +107,8 @@ class Css {
       return Optional.of(Theme.Box.LIBRARY_PROCESS);
     if (hasSelector(".sub-system", rule))
       return Optional.of(Theme.Box.SUB_SYSTEM);
+		if (hasSelector(".result", rule))
+			return Optional.of(Theme.Box.RESULT);
     return Optional.of(Theme.Box.DEFAULT);
   }
 
