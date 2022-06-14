@@ -31,6 +31,7 @@ import org.openlca.app.wizards.io.EcoSpold2ImportWizard;
 import org.openlca.app.wizards.io.ExcelImportWizard;
 import org.openlca.app.wizards.io.GeoJsonImportWizard;
 import org.openlca.app.wizards.io.ILCDImportWizard;
+import org.openlca.app.wizards.io.ImportLibraryDialog;
 import org.openlca.app.wizards.io.JsonImportWizard;
 import org.openlca.app.wizards.io.SimaProCsvImportWizard;
 import org.openlca.core.database.IDatabase;
@@ -102,7 +103,7 @@ public class FileImport {
 			case GEO_JSON -> GeoJsonImportWizard.of(file);
 			case ILCD_ZIP -> ILCDImportWizard.of(file);
 			case JSON_LD_ZIP -> JsonImportWizard.of(file);
-			case LIBRARY_PACKAGE -> AddLibraryAction.run(file);
+			case LIBRARY_PACKAGE -> ImportLibraryDialog.open(file);
 			case MAPPING_CSV -> importMappingFile(file);
 			case SIMAPRO_CSV -> SimaProCsvImportWizard.of(file);
 			case ZOLCA -> importZOLCA(file);

@@ -270,9 +270,9 @@ public class AddLibraryAction extends Action implements INavigationAction {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm mform) {
-			var tk = mform.getToolkit();
-			var body = UI.formBody(mform.getForm(), tk);
+		protected void createFormContent(IManagedForm mForm) {
+			var tk = mForm.getToolkit();
+			var body = UI.formBody(mForm.getForm(), tk);
 			UI.gridLayout(body, 1);
 
 			var workspaceCheck = tk.createButton(

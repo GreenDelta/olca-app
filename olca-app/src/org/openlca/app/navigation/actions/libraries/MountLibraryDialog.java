@@ -11,6 +11,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -31,7 +32,6 @@ import org.openlca.core.library.PreMountState;
 class MountLibraryDialog extends FormDialog {
 
 	private final Library library;
-	private final PreMountCheck.Result checkResult;
 	private final List<Section> sections = new ArrayList<>();
 
 	static void show(Library library, PreMountCheck.Result checkResult) {
@@ -59,7 +59,7 @@ class MountLibraryDialog extends FormDialog {
 		if (dialog.open() != Window.OK)
 			return;
 
-		App.run("Add library " + library.name() + " ...",
+		App.runWithProgress("Add library " + library.name() + " ...",
 			() -> Mounter.of(Database.get(), library)
 				.apply(dialog.collectActions())
 				.run(),
@@ -69,7 +69,6 @@ class MountLibraryDialog extends FormDialog {
 	private MountLibraryDialog(Library library, PreMountCheck.Result checkResult) {
 		super(UI.shell());
 		this.library = library;
-		this.checkResult = checkResult;
 
 		// create the dialog sections for the states in the check-result
 		var stateMap = new EnumMap<PreMountState, List<Library>>(PreMountState.class);
@@ -101,6 +100,12 @@ class MountLibraryDialog extends FormDialog {
 			}
 		}
 		return actions;
+	}
+
+	@Override
+	protected void configureShell(Shell newShell) {
+		super.configureShell(newShell);
+		newShell.setText("Add library " + library.name());
 	}
 
 	@Override
