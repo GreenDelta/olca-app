@@ -64,7 +64,7 @@ class ConflictResolutionMap implements ConflictResolver {
 		var commonParent = repo.localHistory.commonParentOf(ref);
 		var workspaceConflicts = workspaceDiffs(commit, commonParent);
 		if (workspaceConflicts.isEmpty())
-			return new ConflictResult(resolve(commit, localDiffs(commit, commonParent)), true);
+			return new ConflictResult(resolve(commit, localDiffs(commit, commonParent)), false);
 		var answers = new ArrayList<>(Arrays.asList("Cancel", "Discard changes", "Commit changes"));
 		if (!stashCommit) {
 			answers.add("Stash changes");
