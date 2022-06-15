@@ -61,7 +61,7 @@ public class WorkspaceIdUpdater {
 			path += "/" + Cache.getPathCache().pathOf(id);
 		}
 		while (path != null) {
-			var diffs = Diffs.workspace(repo.toConfig(), null, Collections.singletonList(path));
+			var diffs = Diffs.of(repo.git).filter(Collections.singletonList(path)).with(Database.get(), workspaceIds);
 			if (!diffs.isEmpty()) {
 				path = null;
 			} else {

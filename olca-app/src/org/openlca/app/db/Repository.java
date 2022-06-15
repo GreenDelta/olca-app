@@ -10,7 +10,6 @@ import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.core.database.IDatabase;
-import org.openlca.git.GitConfig;
 import org.openlca.git.ObjectIdStore;
 import org.openlca.git.find.Commits;
 import org.openlca.git.find.Datasets;
@@ -127,10 +126,6 @@ public class Repository {
 			log.error("Error reading Git config", e);
 			return null;
 		}
-	}
-
-	public GitConfig toConfig() {
-		return new GitConfig(Database.get(), Repository.get().workspaceIds, Repository.get().git);
 	}
 
 	public String user() {

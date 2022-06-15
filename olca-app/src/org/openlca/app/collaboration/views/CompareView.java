@@ -79,9 +79,12 @@ public class CompareView extends ViewPart {
 	}
 
 	private DiffNode buildNode(Commit commit, List<INavigationElement<?>> elements) {
-		var isAhead = Repository.get().localHistory.contains(commit);
+		var repo = Repository.get();
+		var isAhead = repo.localHistory.contains(commit);
 		viewer.setDirection(isAhead ? Direction.RIGHT_TO_LEFT : Direction.LEFT_TO_RIGHT);
-		var diffs = Diffs.workspace(Repository.get().toConfig(), commit, PathFilters.of(elements)).stream()
+		var diffs = Diffs.of(repo.git, commit)
+				.filter(PathFilters.of(elements))
+				.with(Database.get(), repo.workspaceIds).stream()
 				.map(d -> new TriDiff(d, null))
 				.toList();
 		return new DiffNodeBuilder(Database.get()).build(diffs);

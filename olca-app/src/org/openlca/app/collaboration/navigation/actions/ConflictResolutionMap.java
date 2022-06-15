@@ -85,10 +85,10 @@ class ConflictResolutionMap implements ConflictResolver {
 
 	private static List<TriDiff> workspaceDiffs(Commit commit, Commit commonParent) throws IOException {
 		var repo = Repository.get();
-		var workspaceChanges = Diffs.workspace(repo.toConfig());
+		var workspaceChanges = Diffs.of(repo.git).with(Database.get(), repo.workspaceIds);
 		if (workspaceChanges.isEmpty())
 			return new ArrayList<>();
-		var remoteChanges = Diffs.between(repo.git, commonParent, commit);
+		var remoteChanges = Diffs.of(repo.git, commonParent).with(commit);
 		return between(workspaceChanges, remoteChanges);
 	}
 
@@ -97,10 +97,10 @@ class ConflictResolutionMap implements ConflictResolver {
 		var localCommit = repo.commits.get(repo.commits.resolve(Constants.LOCAL_BRANCH));
 		if (localCommit == null)
 			return new ArrayList<>();
-		var localChanges = Diffs.between(repo.git, commonParent, localCommit);
+		var localChanges = Diffs.of(repo.git, commonParent).with(localCommit);
 		if (localChanges.isEmpty())
 			return new ArrayList<>();
-		var remoteChanges = Diffs.between(repo.git, commonParent, commit);
+		var remoteChanges = Diffs.of(repo.git, commonParent).with(commit);
 		if (remoteChanges.isEmpty())
 			return new ArrayList<>();
 		return between(localChanges, remoteChanges);

@@ -21,7 +21,8 @@ import org.openlca.git.util.TypeRefIdSet;
 class Datasets {
 
 	static DialogResult select(List<INavigationElement<?>> selection, boolean canPush, boolean isStashCommit) {
-		var diffs = Diffs.workspace(Repository.get().toConfig());
+		var repo = Repository.get();
+		var diffs = Diffs.of(repo.git).with(Database.get(), repo.workspaceIds);
 		var dialog = createCommitDialog(selection, diffs, canPush, isStashCommit);
 		if (dialog == null)
 			return null;

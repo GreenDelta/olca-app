@@ -68,7 +68,7 @@ public class HistoryView extends ViewPart {
 		historyViewer.addSelectionChangedListener((commit) -> {
 			referenceViewer.select(null);
 			var diffs = Repository.isConnected() && commit != null
-					? Diffs.withPrevious(Repository.get().git, commit)
+					? Diffs.of(Repository.get().git, commit).withPreviousCommit()
 					: new ArrayList<Diff>();
 			referenceViewer.setInput(diffs);
 		});
