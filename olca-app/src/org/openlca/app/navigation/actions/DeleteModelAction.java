@@ -34,7 +34,7 @@ import org.openlca.core.model.descriptors.RootDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DeleteModelAction extends Action implements INavigationAction {
+public class DeleteModelAction extends Action implements INavigationAction {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private final List<ModelElement> models = new ArrayList<>();
@@ -49,11 +49,11 @@ class DeleteModelAction extends Action implements INavigationAction {
 			return false;
 		for (var elem : elements) {
 			if (elem instanceof CategoryElement) {
-				if(!elem.getLibrary().isEmpty())
+				if(elem.getLibrary().isPresent())
 					continue;
 				categories.add((CategoryElement) elem);
 			} else if (elem instanceof ModelElement) {
-				if(!elem.getLibrary().isEmpty())
+				if(elem.getLibrary().isPresent())
 					continue;
 				models.add((ModelElement) elem);
 			}

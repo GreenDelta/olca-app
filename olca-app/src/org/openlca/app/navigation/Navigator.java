@@ -9,11 +9,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IViewPart;
@@ -25,8 +28,14 @@ import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.actions.DeleteMappingAction;
+import org.openlca.app.navigation.actions.DeleteModelAction;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.actions.OpenMappingAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
+import org.openlca.app.navigation.actions.db.DbDeleteAction;
+import org.openlca.app.navigation.actions.libraries.DeleteLibraryAction;
+import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -89,6 +98,28 @@ public class Navigator extends CommonNavigator {
 			} else if (elem instanceof MappingFileElement) {
 				var mapping = ((MappingFileElement) elem).getContent();
 				OpenMappingAction.run(mapping);
+			}
+		});
+
+		// bind delete key
+		viewer.getTree().addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent event) {
+				if (event.character == SWT.DEL && event.stateMask == 0) {
+					var selection = viewer.getSelection();
+					if (selection.isEmpty())
+						return;
+					List<INavigationElement<?>> elems = Selections.allOf(selection);
+					Stream.of(
+						new DbDeleteAction(),
+						new DeleteLibraryAction(),
+						new DeleteModelAction(),
+						new DeleteMappingAction(),
+						new DeleteScriptAction())
+						.filter((INavigationAction a) -> a.accept(elems))
+						.findFirst()
+						.ifPresent(INavigationAction::run);
+				}
 			}
 		});
 	}
