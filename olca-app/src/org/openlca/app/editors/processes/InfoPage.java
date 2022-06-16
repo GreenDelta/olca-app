@@ -110,14 +110,17 @@ class InfoPage extends ModelPage<Process> {
 
 			widget.addSelectionListener(Controls.onSelect(_e -> {
 				var process = getModel();
-				var date = new GregorianCalendar(
-					widget.getYear(),
-					widget.getMonth(),
-					widget.getDay()).getTime();
+				var selected = new GregorianCalendar(
+					widget.getYear(), widget.getMonth(), widget.getDay()).getTime();
+				var date = isStart
+					? process.documentation.validFrom
+					: process.documentation.validUntil;
+				if (Objects.equals(date, selected))
+					return;
 				if (isStart) {
-					process.documentation.validFrom = date;
+					process.documentation.validFrom = selected;
 				} else {
-					process.documentation.validUntil = date;
+					process.documentation.validUntil = selected;
 				}
 				getEditor().setDirty(true);
 			}));
@@ -127,7 +130,7 @@ class InfoPage extends ModelPage<Process> {
 		tk.createLabel(comp, M.StartDate, SWT.NONE);
 		var startBox = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);
 		startBox.setEnabled(isEditable());
-		UI.gridData(startBox, false, false).widthHint = 150;
+		UI.gridData(startBox, false, false).minimumWidth = 150;
 		new CommentControl(comp, tk, "documentation.validFrom", getComments());
 		setTime.accept(startBox, true);
 
@@ -135,7 +138,7 @@ class InfoPage extends ModelPage<Process> {
 		tk.createLabel(comp, M.EndDate, SWT.NONE);
 		var endBox = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);
 		endBox.setEnabled(isEditable());
-		UI.gridData(endBox, false, false).widthHint = 150;
+		UI.gridData(endBox, false, false).minimumWidth = 150;
 		new CommentControl(comp, tk, "documentation.validUntil", getComments());
 		setTime.accept(endBox, false);
 
