@@ -13,15 +13,12 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.ModelType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CurrencyEditor extends ModelEditor<Currency> {
-
-	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public CurrencyEditor() {
 		super(Currency.class);
@@ -33,7 +30,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 			addPage(new Page());
 			addCommentPage();
 		} catch (Exception e) {
-			log.error("failed to add page", e);
+			ErrorReporter.on("failed to add page", e);
 		}
 	}
 

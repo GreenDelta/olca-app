@@ -8,19 +8,17 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.database.usage.ParameterUsageTree;
 import org.openlca.core.model.Parameter;
 import org.openlca.util.Parameters;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GlobalParameterEditor extends ModelEditor<Parameter> {
 
 	public static String ID = "editors.parameter";
-	private final Logger log = LoggerFactory.getLogger(getClass());
 	private GlobalParameterInfoPage infoPage;
 
 	public GlobalParameterEditor() {
@@ -33,7 +31,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 			addPage(infoPage = new GlobalParameterInfoPage(this));
 			addCommentPage();
 		} catch (Exception e) {
-			log.error("failed to add page", e);
+			ErrorReporter.on("failed to add page", e);
 		}
 	}
 

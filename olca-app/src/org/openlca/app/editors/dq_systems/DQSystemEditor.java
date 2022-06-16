@@ -1,6 +1,7 @@
 package org.openlca.app.editors.dq_systems;
 
 import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.model.DQSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +9,6 @@ import org.slf4j.LoggerFactory;
 public class DQSystemEditor extends ModelEditor<DQSystem> {
 
 	public static String ID = "editors.dqsystem";
-	private Logger log = LoggerFactory.getLogger(getClass());
 	private DQSystemInfoPage infoPage;
 
 	public DQSystemEditor() {
@@ -21,7 +21,7 @@ public class DQSystemEditor extends ModelEditor<DQSystem> {
 			addPage(infoPage = new DQSystemInfoPage(this));
 			addCommentPage();
 		} catch (Exception e) {
-			log.error("failed to add page", e);
+			ErrorReporter.on("Failed to init editor");
 		}
 	}
 

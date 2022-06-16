@@ -4,9 +4,8 @@ import org.openlca.app.M;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.model.ProductSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 
@@ -29,8 +28,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 			addPage(new StatisticsPage(this));
 			addCommentPage();
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to add page", e);
+			ErrorReporter.on("failed to add page", e);
 		}
 	}
 

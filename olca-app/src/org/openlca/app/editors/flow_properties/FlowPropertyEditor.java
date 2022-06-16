@@ -1,9 +1,8 @@
 package org.openlca.app.editors.flow_properties;
 
 import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.model.FlowProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Form editor for editing flow properties
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 public class FlowPropertyEditor extends ModelEditor<FlowProperty> {
 
 	public static String ID = "editors.flowproperty";
-	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public FlowPropertyEditor() {
 		super(FlowProperty.class);
@@ -23,7 +21,7 @@ public class FlowPropertyEditor extends ModelEditor<FlowProperty> {
 			addPage(new FlowPropertyInfoPage(this));
 			addCommentPage();
 		} catch (Exception e) {
-			log.error("failed to add page", e);
+			ErrorReporter.on("failed to add page", e);
 		}
 	}
 

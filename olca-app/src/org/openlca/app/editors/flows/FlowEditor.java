@@ -4,15 +4,13 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FlowEditor extends ModelEditor<Flow> {
 
 	public static String ID = "editors.flow";
-	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public FlowEditor() {
 		super(Flow.class);
@@ -33,7 +31,7 @@ public class FlowEditor extends ModelEditor<Flow> {
 			}
 			addCommentPage();
 		} catch (Exception e) {
-			log.error("failed to add page", e);
+			ErrorReporter.on("failed to add page", e);
 		}
 	}
 

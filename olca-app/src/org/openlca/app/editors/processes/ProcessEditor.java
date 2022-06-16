@@ -16,12 +16,12 @@ import org.openlca.app.editors.processes.allocation.AllocationPage;
 import org.openlca.app.editors.processes.exchanges.ProcessExchangePage;
 import org.openlca.app.editors.processes.social.SocialAspectsPage;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.util.AllocationUtils;
-import org.slf4j.LoggerFactory;
 
 public class ProcessEditor extends ModelEditor<Process> {
 
@@ -104,8 +104,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 			addPage(new ImpactPage(this));
 			addCommentPage();
 		} catch (Exception e) {
-			var log = LoggerFactory.getLogger(getClass());
-			log.error("failed to add page", e);
+			ErrorReporter.on("failed to add page", e);
 		}
 	}
 }

@@ -33,7 +33,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Version;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class ModelEditor<T extends RootEntity>
@@ -45,7 +44,6 @@ public abstract class ModelEditor<T extends RootEntity>
 	 */
 	public static final String ON_SAVED = "event.on.saved";
 
-	private final Logger log = LoggerFactory.getLogger(getClass());
 	private final Class<T> modelClass;
 	private final List<EventHandler> eventHandlers = new ArrayList<>();
 	private final DataBinding binding = new DataBinding(this);
@@ -117,7 +115,6 @@ public abstract class ModelEditor<T extends RootEntity>
 	public void init(IEditorSite site, IEditorInput input)
 		throws PartInitException {
 		super.init(site, input);
-		log.trace("open " + modelClass.getSimpleName() + " editor {}", input);
 		ModelEditorInput i = (ModelEditorInput) input;
 		setPartName(input.getName());
 		setTitleImage(Images.get(i.getDescriptor()));
@@ -127,7 +124,7 @@ public abstract class ModelEditor<T extends RootEntity>
 			loadComments(i.getDescriptor().type,
 				i.getDescriptor().refId);
 		} catch (Exception e) {
-			log.error("failed to load " + modelClass.getSimpleName()
+			ErrorReporter.on("failed to load " + modelClass.getSimpleName()
 				+ " from editor input", e);
 		}
 	}
@@ -140,7 +137,7 @@ public abstract class ModelEditor<T extends RootEntity>
 		try {
 			comments = Repository.get().client.getComments(type, refId);
 		} catch (WebRequestException e) {
-			log.error("Error loading comments from repository", e);
+			ErrorReporter.on("Error loading comments from repository", e);
 		}
 	}
 

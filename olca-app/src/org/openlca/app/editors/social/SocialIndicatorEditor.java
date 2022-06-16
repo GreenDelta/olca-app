@@ -3,13 +3,13 @@ package org.openlca.app.editors.social;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentControl;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowPropertyCombo;
 import org.openlca.app.viewers.combo.UnitCombo;
@@ -17,13 +17,10 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.SocialIndicator;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 
 	public static String ID = "editors.socialindicator";
-	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public SocialIndicatorEditor() {
 		super(SocialIndicator.class);
@@ -35,16 +32,14 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 			addPage(new Page());
 			addCommentPage();
 		} catch (Exception e) {
-			log.error("failed to add page", e);
+			ErrorReporter.on("failed to add page", e);
 		}
 	}
 
 	private class Page extends ModelPage<SocialIndicator> {
 
-		private SocialIndicatorEditor editor;
-		private FlowPropertyCombo quantityCombo;
+		private final SocialIndicatorEditor editor;
 		private UnitCombo unitCombo;
-		private ScrolledForm form;
 
 		Page() {
 			super(SocialIndicatorEditor.this, "SocialIndicatorPage", M.GeneralInformation);
@@ -52,11 +47,11 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm managedForm) {
-			form = UI.formHeader(this);
-			FormToolkit toolkit = managedForm.getToolkit();
-			Composite body = UI.formBody(form, toolkit);
-			InfoSection infoSection = new InfoSection(getEditor());
+		protected void createFormContent(IManagedForm mForm) {
+			var form = UI.formHeader(this);
+			var toolkit = mForm.getToolkit();
+			var body = UI.formBody(form, toolkit);
+			var infoSection = new InfoSection(getEditor());
 			infoSection.render(body, toolkit);
 			createAdditionalInfo(body, toolkit);
 			createActivitySection(toolkit, body);
@@ -79,7 +74,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 
 		private void createQuantityCombo(FormToolkit tk, Composite comp) {
 			UI.formLabel(comp, tk, M.Quantity);
-			quantityCombo = new FlowPropertyCombo(comp);
+			FlowPropertyCombo quantityCombo = new FlowPropertyCombo(comp);
 			quantityCombo.setInput(Database.get());
 			FlowProperty aq = getModel().activityQuantity;
 			if (aq != null) {
