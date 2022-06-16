@@ -2,11 +2,14 @@ package org.openlca.app.editors.graphical.model;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.layouts.GraphFreeformLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Abstract prototype of a model component.
@@ -37,8 +40,8 @@ abstract public class GraphComponent extends GraphElement {
 	private final List<Link> sourceConnections = new ArrayList<>();
 	private final List<Link> targetConnections = new ArrayList<>();
 
-	protected Point location = new Point(0, 0);
-	protected Dimension size = new Dimension(-1, -1);
+	protected Point location;
+	protected Dimension size = new Dimension(SWT.DEFAULT, SWT.DEFAULT);
 
 	GraphComponent(GraphEditor editor) {
 		this.editor = editor;
@@ -54,16 +57,14 @@ abstract public class GraphComponent extends GraphElement {
 	}
 
 	public void setLocation(Point p) {
-		if (location.equals(p))
+		if (p == null || Objects.equals(location, p))
 			return;
 		location = p;
 		firePropertyChange(LOCATION_PROP, null, location);
 	}
 
 	public void setSize(Dimension d) {
-		if (d == null)
-			return;
-		if (size.equals(d))
+		if (d == null || size.equals(d))
 			return;
 		size = d;
 		firePropertyChange(SIZE_PROP, null, size);

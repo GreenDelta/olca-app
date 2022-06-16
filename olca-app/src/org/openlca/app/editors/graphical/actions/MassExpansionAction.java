@@ -17,6 +17,16 @@ import org.openlca.app.util.Question;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
+/**
+ * <p>
+ * This action is of two type:
+ * 	<ul>
+ * 	  <li>Expand all the extremity nodes of the supply chain (the first providers and the
+ *    last recipients).</li>
+ *    <li>Collapse all the input and output side of the reference node.</li>
+ *  </ul>
+ * </p>
+ */
 public class MassExpansionAction extends StackAction {
 
 	static final int NODE_LIMITATION = 250;
@@ -30,7 +40,7 @@ public class MassExpansionAction extends StackAction {
 		editor = part;
 		if (type == EXPAND) {
 			setId(ActionIds.EXPAND_ALL);
-			setText(M.ExpandAll + " && " + NLS.bind(M.LayoutAs, M.Tree));
+			setText(M.ExpandAll);
 			setImageDescriptor(Icon.EXPAND.descriptor());
 		} else if (type == COLLAPSE) {
 			setId(ActionIds.COLLAPSE_ALL);
@@ -88,25 +98,7 @@ public class MassExpansionAction extends StackAction {
 		var doIt = type == COLLAPSE || count < NODE_LIMITATION || Question.ask(
 			M.ExpandAll, M.ExpandAll + ": " + count + " " + M.Processes);
 
-		if (doIt) {
-			execute(getCommand());
-
-			// The layout command has to be executed after creating or deleting the
-			// nodes, hence cannot be executed within a CompoundCommand.
-			var view = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
-			if (view == null) {
-				return;
-			}
-			var graphEditPart = (EditPart) view.getEditPartRegistry()
-				.get(editor.getModel());
-			var layoutCommand = graphEditPart.getCommand(new Request(REQ_LAYOUT));
-			if (layoutCommand.canExecute()) {
-				var stack = (CommandStack) editor.getAdapter(CommandStack.class);
-				stack.execute(layoutCommand);
-			}
-			// Disposing the CommandStack to avoid having a strange undo/redo history.
-			getCommandStack().dispose();
-		}
+		if (doIt)	execute(getCommand());
 	}
 
 }

@@ -49,8 +49,7 @@ public abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 
 	@Override
 	protected void refreshVisuals() {
-		var bounds = new Rectangle(getModel().getLocation(),
-			getModel().getSize());
+		var bounds = new Rectangle(getModel().getLocation(), getModel().getSize());
 		((GraphicalEditPart) getParent()).setLayoutConstraint(this,
 			getFigure(), bounds);
 		super.refreshVisuals();
@@ -60,30 +59,17 @@ public abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 		figure.inputExpandButton.addActionListener($ -> {
 			var command = getCommand(new ExpansionRequest(getModel(), INPUT));
 			getViewer().getEditDomain().getCommandStack().execute(command);
-
-			// The layout command has to be executed after creating or deleting the
-			// nodes, hence cannot be executed within a CompoundCommand.
-			var layoutCommand = getParent().getCommand(new Request(REQ_LAYOUT));
-			if (layoutCommand.canExecute()) {
-				var stack = (CommandStack) getModel().editor
-					.getAdapter(CommandStack.class);
-				stack.execute(layoutCommand);
-			}
 		});
 
 		figure.outputExpandButton.addActionListener($ -> {
 			var command = getCommand(new ExpansionRequest(getModel(), OUTPUT));
 			getViewer().getEditDomain().getCommandStack().execute(command);
-
-			// The layout command has to be executed after creating or deleting the
-			// nodes, hence cannot be executed within a CompoundCommand.
-			var layoutCommand = getParent().getCommand(new Request(REQ_LAYOUT));
-			if (layoutCommand.canExecute()) {
-				var stack = (CommandStack) getModel().editor
-					.getAdapter(CommandStack.class);
-				stack.execute(layoutCommand);
-			}
 		});
+	}
+
+	@Override
+	public NodeFigure getFigure() {
+		return (NodeFigure) super.getFigure();
 	}
 
 	public static class Maximized extends NodeEditPart {

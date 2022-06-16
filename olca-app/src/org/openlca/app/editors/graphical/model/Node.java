@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.model;
 
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.openlca.app.editors.graphical.layouts.GraphFreeformLayout.DEFAULT_LOCATION;
+
 /**
  * A {@link Node} represents a unit process, a library process, a result
  * or a product system with its list of input or output flows (see
@@ -26,9 +28,8 @@ public class Node extends MinMaxGraphComponent {
 
 	public static final String EXPANSION_PROP = "expansion";
 
-	public static final Dimension DEFAULT_MINIMIZED_SIZE = new Dimension(250, 25);
-	public static final Dimension DEFAULT_MAXIMIZED_SIZE = new Dimension(250, -1);
-	public static final Point DEFAULT_LOCATION = new Point(20, 20);
+	public static final Dimension DEFAULT_SIZE =
+		new Dimension(250, SWT.DEFAULT);
 
 	public final RootDescriptor descriptor;
 	private final Expander inputExpander = new Expander(Side.INPUT);
@@ -37,7 +38,8 @@ public class Node extends MinMaxGraphComponent {
 	public Node(RootDescriptor descriptor, GraphEditor editor) {
 		super(editor);
 		this.descriptor = descriptor;
-		setSize(isMinimized() ? DEFAULT_MINIMIZED_SIZE : DEFAULT_MAXIMIZED_SIZE);
+		setLocation(DEFAULT_LOCATION);
+		setSize(DEFAULT_SIZE);
 	}
 
 	public ExchangeItem getOutput(ProcessLink link) {
@@ -82,12 +84,12 @@ public class Node extends MinMaxGraphComponent {
 
 	@Override
 	protected Dimension getMinimizedSize() {
-		return new Dimension(getSize().width, DEFAULT_MINIMIZED_SIZE.height);
+		return new Dimension(getSize().width, DEFAULT_SIZE.height);
 	}
 
 	@Override
 	protected Dimension getMaximizedSize() {
-		return new Dimension(getSize().width, DEFAULT_MAXIMIZED_SIZE.height);
+		return new Dimension(getSize().width, DEFAULT_SIZE.height);
 	}
 
 	@Override

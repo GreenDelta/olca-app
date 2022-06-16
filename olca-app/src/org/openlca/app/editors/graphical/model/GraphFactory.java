@@ -10,7 +10,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
-import org.openlca.app.editors.graphical.layouts.TreeLayoutProcessor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
@@ -59,11 +58,11 @@ public class GraphFactory {
 			return node;
 
 		node.setMinimized(info.minimized);
-		node.setSize(info.box.getSize());
-		node.setLocation(info.box.getLocation());
+		node.setSize(info.size);
+		node.setLocation(info.location);
 
-//		node.setExpanded(Node.Side.INPUT, info.expandedLeft);
-//		node.setExpanded(Node.Side.OUTPUT, info.expandedRight);
+		node.setExpanded(Node.Side.INPUT, info.expandedLeft);
+		node.setExpanded(Node.Side.OUTPUT, info.expandedRight);
 
 		return node;
 	}
@@ -230,7 +229,6 @@ public class GraphFactory {
 			if (refNode != null) {
 				graph.addChild(refNode);
 				refNode.expand();
-				initializeLocation(graph);
 			}
 		}
 		return graph;
@@ -277,15 +275,6 @@ public class GraphFactory {
 				return d;
 		}
 		return null;
-	}
-
-	static void initializeLocation(Graph graph) {
-		var layoutProcessor = new TreeLayoutProcessor(graph);
-		var map = layoutProcessor.getMoveDeltas();
-		for (Node node : graph.getChildren()) {
-			var delta = map.get(node);
-			node.setLocation(node.getLocation().getTranslated(delta));
-		}
 	}
 
 }
