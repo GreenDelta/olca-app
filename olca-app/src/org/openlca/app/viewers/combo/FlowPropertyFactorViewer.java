@@ -22,7 +22,7 @@ public class FlowPropertyFactorViewer extends
 
 	public void setInput(Flow flow) {
 		List<FlowPropertyFactor> factors = flow.flowPropertyFactors;
-		setInput(factors.toArray(new FlowPropertyFactor[factors.size()]));
+		setInput(factors.toArray(new FlowPropertyFactor[0]));
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class FlowPropertyFactorViewer extends
 		return new FactorLabelProvider();
 	}
 
-	private class FactorLabelProvider extends BaseLabelProvider implements
+	private static class FactorLabelProvider extends BaseLabelProvider implements
 			ILabelProvider {
 
 		@Override
@@ -45,12 +45,9 @@ public class FlowPropertyFactorViewer extends
 
 		@Override
 		public String getText(Object element) {
-			if (!(element instanceof FlowPropertyFactor))
+			if (!(element instanceof FlowPropertyFactor factor))
 				return null;
-			FlowPropertyFactor factor = (FlowPropertyFactor) element;
 			return factor.flowProperty.name;
 		}
-
 	}
-
 }

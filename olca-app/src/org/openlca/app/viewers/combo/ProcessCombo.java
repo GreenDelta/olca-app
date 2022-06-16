@@ -46,24 +46,22 @@ public class ProcessCombo extends AbstractComboViewer<ProcessDescriptor> {
 		return ProcessDescriptor.class;
 	}
 
-	private class ProcessLabelProvider extends BaseLabelProvider
+	private static class ProcessLabelProvider extends BaseLabelProvider
 			implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof ProcessDescriptor))
+			if (!(obj instanceof ProcessDescriptor p))
 				return null;
 			if (col == 1)
 				return Images.get(ModelType.LOCATION);
-			ProcessDescriptor p = (ProcessDescriptor) obj;
 			return Images.get(p);
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ProcessDescriptor))
+			if (!(obj instanceof ProcessDescriptor p))
 				return null;
-			ProcessDescriptor p = (ProcessDescriptor) obj;
 			switch (col) {
 			case 0:
 				return p.name;
