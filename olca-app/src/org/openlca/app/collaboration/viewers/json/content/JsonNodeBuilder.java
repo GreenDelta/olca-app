@@ -5,9 +5,9 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.openlca.app.collaboration.util.Json;
 import org.openlca.app.collaboration.util.Json.ElementFinder;
-import org.openlca.app.collaboration.viewers.json.Side;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -28,43 +28,43 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 		return node;
 	}
 
-	private void build(JsonNode node, JsonElement left, JsonElement right) {
-		if (left != null) {
-			build(node, left, right, Side.LOCAL);
-		} else if (right != null) {
-			build(node, left, right, Side.REMOTE);
+	private void build(JsonNode node, JsonElement leftValue, JsonElement rightValue) {
+		if (leftValue != null) {
+			build(node, leftValue, rightValue, Side.OLD);
+		} else if (rightValue != null) {
+			build(node, leftValue, rightValue, Side.NEW);
 		}
 	}
 
-	private void build(JsonNode node, JsonElement left, JsonElement right, Side side) {
-		var toCheck = side == Side.LOCAL ? left : right;
+	private void build(JsonNode node, JsonElement leftValue, JsonElement rightValue, Side side) {
+		var toCheck = side == Side.OLD ? leftValue : rightValue;
 		if (toCheck.isJsonObject()) {
-			build(node, Json.toJsonObject(left), Json.toJsonObject(right));
+			build(node, Json.toJsonObject(leftValue), Json.toJsonObject(rightValue));
 		}
 		if (toCheck.isJsonArray()) {
-			build(node, Json.toJsonArray(left), Json.toJsonArray(right));
+			build(node, Json.toJsonArray(leftValue), Json.toJsonArray(rightValue));
 		}
 	}
 
-	private void build(JsonNode node, JsonObject left, JsonObject right) {
+	private void build(JsonNode node, JsonObject leftValue, JsonObject rightValue) {
 		var added = new HashSet<String>();
-		if (left != null) {
-			buildChildren(node, left, right, added, Side.LOCAL);
+		if (leftValue != null) {
+			buildChildren(node, leftValue, rightValue, added, Side.OLD);
 		}
-		if (right != null) {
-			buildChildren(node, right, left, added, Side.REMOTE);
+		if (rightValue != null) {
+			buildChildren(node, rightValue, leftValue, added, Side.NEW);
 		}
 	}
 
 	private void buildChildren(JsonNode node, JsonObject json, JsonObject other, Set<String> added, Side side) {
 		json.entrySet().stream()
-				.filter(child -> side == Side.LOCAL || !added.contains(child.getKey()))
+				.filter(child -> side == Side.OLD || !added.contains(child.getKey()))
 				.forEach(child -> {
 					JsonElement otherValue = null;
 					if (other != null) {
 						otherValue = other.get(child.getKey());
 					}
-					if (side == Side.LOCAL) {
+					if (side == Side.OLD) {
 						build(node, child.getKey(), child.getValue(), otherValue);
 						added.add(child.getKey());
 					} else {
@@ -73,15 +73,15 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 				});
 	}
 
-	private void build(JsonNode node, JsonArray left, JsonArray right) {
+	private void build(JsonNode node, JsonArray leftValue, JsonArray rightValue) {
 		if (isReadOnly(node))
 			return;
 		var added = new HashSet<Integer>();
-		if (left != null) {
-			buildChildren(node, left, right, Side.LOCAL, added);
+		if (leftValue != null) {
+			buildChildren(node, leftValue, rightValue, Side.OLD, added);
 		}
-		if (right != null) {
-			buildChildren(node, right, left, Side.REMOTE, added);
+		if (rightValue != null) {
+			buildChildren(node, rightValue, leftValue, Side.NEW, added);
 		}
 	}
 
@@ -89,21 +89,21 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 		var count = 0;
 		var counter = node.children.size() + 1;
 		for (var value : array) {
-			if (side == Side.REMOTE && added.contains(count++))
+			if (side == Side.OLD && added.contains(count++))
 				continue;
 			JsonElement otherValue = null;
 			var index = elementFinder.find(node.property, value, otherArray, added);
-			if (side == Side.LOCAL && index != -1) {
+			if (side == Side.NEW && index != -1) {
 				otherValue = otherArray.get(index);
 				added.add(index);
 			}
-			var left = side == Side.LOCAL ? value : otherValue;
-			var right = side == Side.LOCAL ? otherValue : value;
+			var leftValue = side == Side.OLD ? value : otherValue;
+			var rightValue = side == Side.NEW ? otherValue : value;
 			var property = Integer.toString(counter++);
 			var childNode = isReadOnly(node)
-					? JsonNode.createReadOnly(node, property, left, right, elementFinder)
-					: JsonNode.createEditable(node, property, left, right, elementFinder);
-			build(childNode, left, right);
+					? JsonNode.createReadOnly(node, property, leftValue, rightValue, elementFinder)
+					: JsonNode.createEditable(node, property, leftValue, rightValue, elementFinder);
+			build(childNode, leftValue, rightValue);
 			node.children.add(childNode);
 		}
 	}

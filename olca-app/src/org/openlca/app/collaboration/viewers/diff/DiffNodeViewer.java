@@ -11,10 +11,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.JsonCompareDialog;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
-import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.olca.ModelNodeBuilder;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
@@ -31,25 +29,18 @@ import org.openlca.git.actions.ConflictResolver.ConflictResolutionType;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.util.TypeRefIdMap;
 
+import com.google.gson.JsonObject;
+
 abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	DiffNode root;
 	private final boolean canMerge;
-	private final String leftLabel;
-	private final String rightLabel;
-	private Direction direction;
 	private Runnable onMerge;
 	private TypeRefIdMap<ConflictResolution> resolvedConflicts = new TypeRefIdMap<>();
 
-	DiffNodeViewer(Composite parent, boolean editMode) {
-		this(parent, M.LocalModel, M.RemoteModel, editMode);
-	}
-
-	DiffNodeViewer(Composite parent, String leftLabel, String rightLabel, boolean editMode) {
+	DiffNodeViewer(Composite parent, boolean canMerge) {
 		super(parent);
-		this.leftLabel = leftLabel;
-		this.rightLabel = rightLabel;
-		this.canMerge = editMode;
+		this.canMerge = canMerge;
 	}
 
 	@Override
@@ -69,10 +60,6 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		super.setInput(input);
 	}
 
-	public void setDirection(Direction direction) {
-		this.direction = direction;
-	}
-
 	public void setOnMerge(Runnable onMerge) {
 		this.onMerge = onMerge;
 	}
@@ -87,10 +74,9 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			return;
 		var diff = selected.contentAsTriDiff();
 		var node = createNode(diff);
-		var dialog = canMerge 
-				? JsonCompareDialog.forMerging(node, direction)
-				: JsonCompareDialog.forComparison(node, direction);
-		dialog.setViewerLabels(leftLabel, rightLabel);
+		var dialog = canMerge
+				? JsonCompareDialog.forMerging(node)
+				: JsonCompareDialog.forComparison(node);
 		var dialogResult = dialog.open();
 		if (canMerge && dialogResult != JsonCompareDialog.CANCEL) {
 			var resolution = toResolution(node, dialogResult);
@@ -118,13 +104,25 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	private JsonNode createNode(TriDiff diff) {
 		if (diff == null)
 			return null;
-		var leftJson = diff.leftDiffType != null && diff.leftDiffType != DiffType.DELETED
-				? RefJson.get(diff.type, diff.refId, diff.leftNewObjectId)
-				: null;
-		var rightJson = diff.rightDiffType != null && diff.rightDiffType != DiffType.DELETED
-				? RefJson.get(diff.type, diff.refId, diff.rightNewObjectId)
-				: RefJson.get(diff.type, diff.refId, diff.objectId);
+		var leftJson = getLeft(diff);
+		var rightJson = getRight(diff);
 		return new ModelNodeBuilder().build(leftJson, rightJson);
+	}
+
+	private JsonObject getLeft(TriDiff diff) {
+		if (diff.leftDiffType == DiffType.DELETED)
+			return null;
+		if (diff.rightDiffType == null)
+			return RefJson.get(diff.type, diff.refId, diff.objectId);
+		return RefJson.get(diff.type, diff.refId, diff.leftNewObjectId);
+	}
+
+	private JsonObject getRight(TriDiff diff) {
+		if (diff.rightDiffType == DiffType.DELETED)
+			return null;
+		if (diff.rightDiffType == null)
+			return RefJson.get(diff.type, diff.refId, diff.leftNewObjectId);
+		return RefJson.get(diff.type, diff.refId, diff.rightNewObjectId);
 	}
 
 	private DiffNode getSelected(DoubleClickEvent event) {

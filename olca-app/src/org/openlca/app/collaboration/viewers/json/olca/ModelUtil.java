@@ -4,9 +4,9 @@ import static org.openlca.app.collaboration.util.Json.getString;
 
 import java.util.Arrays;
 
+import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.openlca.app.collaboration.util.Json;
 import org.openlca.app.collaboration.util.Json.ElementFinder;
-import org.openlca.app.collaboration.viewers.json.Side;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Uncertainty;

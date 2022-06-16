@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.openlca.app.collaboration.util.Json;
 import org.openlca.app.collaboration.util.Json.ElementFinder;
-import org.openlca.app.collaboration.viewers.json.Side;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -52,7 +52,7 @@ public class JsonNode {
 	}
 
 	public JsonElement element(Side side) {
-		if (side == Side.LOCAL)
+		if (side == Side.OLD)
 			return left;
 		return right;
 	}

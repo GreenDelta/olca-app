@@ -1,7 +1,7 @@
 package org.openlca.app.collaboration.viewers.json.label;
 
+import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.collaboration.viewers.json.Side;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 
 public interface IJsonNodeLabelProvider {

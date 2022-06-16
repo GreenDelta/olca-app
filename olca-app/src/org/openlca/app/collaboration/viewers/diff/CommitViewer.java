@@ -7,8 +7,6 @@ import java.util.Set;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.M;
-import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
 import org.openlca.git.model.DiffType;
@@ -27,8 +25,7 @@ public class CommitViewer extends DiffNodeViewer {
 	}
 
 	public CommitViewer(Composite parent, Runnable onCheckStateChanged) {
-		super(parent, "Workspace", M.LocalModel, false);
-		super.setDirection(Direction.LEFT_TO_RIGHT);
+		super(parent, false);
 		this.onCheckStateChanged = onCheckStateChanged;
 	}
 
@@ -50,11 +47,6 @@ public class CommitViewer extends DiffNodeViewer {
 
 	public void setLockNewElements(boolean value) {
 		this.lockNewElements = value;
-	}
-
-	@Override
-	public final void setDirection(Direction direction) {
-		throw new UnsupportedOperationException("Can't change commit direction");
 	}
 
 	public void setSelection(TypeRefIdSet initialSelection, DiffNode root) {
@@ -124,7 +116,7 @@ public class CommitViewer extends DiffNodeViewer {
 				super.setSelection(element, checked);
 			}
 		}
-		
+
 		@Override
 		protected void onCheckStateChanged() {
 			if (onCheckStateChanged != null) {

@@ -3,7 +3,7 @@ package org.openlca.app.collaboration.viewers.json.label;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.openlca.app.collaboration.viewers.json.Side;
+import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 
 public class JsonLabelProvider extends StyledCellLabelProvider {
@@ -32,7 +32,7 @@ public class JsonLabelProvider extends StyledCellLabelProvider {
 
 	private StyledString getStyledText(JsonNode node) {
 		var text = nodeLabelProvider.getText(node, side);
-		var otherText = nodeLabelProvider.getText(node, side.getOther());
+		var otherText = nodeLabelProvider.getText(node, side == Side.NEW ? Side.OLD : Side.NEW);
 		text = adjustMultiline(node, text, otherText);
 		var styled = new StyledString(text);
 		style.applyTo(styled, node);

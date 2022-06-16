@@ -14,7 +14,6 @@ import org.openlca.app.collaboration.viewers.diff.CompareViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
-import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -81,13 +80,15 @@ public class CompareView extends ViewPart {
 	private DiffNode buildNode(Commit commit, List<INavigationElement<?>> elements) {
 		var repo = Repository.get();
 		var isAhead = repo.localHistory.contains(commit);
-		viewer.setDirection(isAhead ? Direction.RIGHT_TO_LEFT : Direction.LEFT_TO_RIGHT);
 		var diffs = Diffs.of(repo.git, commit)
-				.filter(PathFilters.of(elements))
-				.with(Database.get(), repo.workspaceIds).stream()
+				.filter(PathFilters.of(elements));
+		var workspaceDiffs = isAhead
+				? diffs.with(Database.get(), repo.workspaceIds)
+				: diffs.withReverse(Database.get(), repo.workspaceIds);
+		var triDiffs = workspaceDiffs.stream()
 				.map(d -> new TriDiff(d, null))
 				.toList();
-		return new DiffNodeBuilder(Database.get()).build(diffs);
+		return new DiffNodeBuilder(Database.get()).build(triDiffs);
 	}
 
 	@Override

@@ -63,8 +63,12 @@ class ConflictResolutionMap implements ConflictResolver {
 		var commit = repo.commits.find().refs(ref).latest();
 		var commonParent = repo.localHistory.commonParentOf(ref);
 		var workspaceConflicts = workspaceDiffs(commit, commonParent);
-		if (workspaceConflicts.isEmpty())
-			return new ConflictResult(resolve(commit, localDiffs(commit, commonParent)), false);
+		if (workspaceConflicts.isEmpty()) {
+			var resolved = resolve(commit, localDiffs(commit, commonParent));
+			if (resolved == null)
+				return null;
+			return new ConflictResult(resolved, false);
+		}
 		var answers = new ArrayList<>(Arrays.asList("Cancel", "Discard changes", "Commit changes"));
 		if (!stashCommit) {
 			answers.add("Stash changes");
@@ -76,8 +80,12 @@ class ConflictResolutionMap implements ConflictResolver {
 			return null;
 		if (result == 1 && !stashChanges(true))
 			return null;
-		if (result == 2)
-			return new ConflictResult(commitChanges(ref, stashCommit), false);
+		if (result == 2) {
+			var resolved = commitChanges(ref, stashCommit);
+			if (resolved == null)
+				return null;
+			return new ConflictResult(resolved, false);
+		}
 		if (result == 3 && !stashChanges(false))
 			return null;
 		return new ConflictResult(resolve(commit, localDiffs(commit, commonParent)), true);

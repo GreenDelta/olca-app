@@ -53,7 +53,9 @@ public class CommitDialog extends FormDialog {
 		var form = UI.formHeader(mform, M.CommitChangesToRepository);
 		var toolkit = mform.getToolkit();
 		var body = UI.formBody(form, toolkit);
-		createCommitMessage(body, toolkit);
+		if (!isStashCommit) {
+			createCommitMessage(body, toolkit);
+		}
 		createModelViewer(body, toolkit);
 		form.reflow(true);
 	}
@@ -90,7 +92,7 @@ public class CommitDialog extends FormDialog {
 
 	private void updateButtons() {
 		var enabled = viewer.hasChecked();
-		if (message == null || message.isEmpty()) {
+		if (!isStashCommit && (message == null || message.isEmpty())) {
 			enabled = false;
 		}
 		if (canPush) {

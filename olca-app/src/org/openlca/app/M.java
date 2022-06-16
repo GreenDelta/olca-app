@@ -479,7 +479,6 @@ public class M extends NLS {
 	public static String LoadingRepositoryList;
 	public static String Local;
 	public static String LocalDatabase;
-	public static String LocalModel;
 	public static String Location;
 	public static String Locations;
 	public static String LogFile;
@@ -663,7 +662,6 @@ public class M extends NLS {
 	public static String PreferDefaultProviders;
 	public static String PreferredProcessType;
 	public static String Preparing;
-	public static String PreviousCommit;
 	public static String Price;
 	public static String Process;
 	public static String ProcessContributionChart;
@@ -722,7 +720,6 @@ public class M extends NLS {
 	public static String Reload;
 	public static String Remote;
 	public static String RemoteDatabase;
-	public static String RemoteModel;
 	public static String Remove;
 	public static String RemoveConnections;
 	public static String RemoveIndicator;
@@ -810,7 +807,6 @@ public class M extends NLS {
 	public static String SelectRepository;
 	public static String SelectTheExportFile;
 	public static String SelectTheParameterYouWantToReferTo;
-	public static String SelectedCommit;
 	public static String SelectedParameterWasAlreadyAdded;
 	public static String Semicolon;
 	public static String ServerConfigurations;

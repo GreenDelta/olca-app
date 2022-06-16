@@ -2,8 +2,8 @@ package org.openlca.app.collaboration.viewers.json.olca;
 
 import java.text.DateFormat;
 
+import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.viewers.json.Side;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.util.Labels;
 import org.openlca.jsonld.Json;

@@ -1,8 +1,8 @@
 package org.openlca.app.collaboration.viewers.json.olca;
 
+import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.collaboration.util.Json;
-import org.openlca.app.collaboration.viewers.json.Side;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.label.IJsonNodeLabelProvider;
 import org.openlca.app.rcp.images.Images;
@@ -52,7 +52,7 @@ public class ModelLabelProvider implements IJsonNodeLabelProvider {
 
 	private boolean showPropertyOnly(JsonNode node, Side side) {
 		var element = node.element(side);
-		var otherElement = node.element(side.getOther());
+		var otherElement = node.element(side == Side.NEW ? Side.OLD : Side.NEW);
 		var isArrayElement = node.parent.element().isJsonArray();
 		if (element == null || element.isJsonNull())
 			if (otherElement == null || otherElement.isJsonArray())

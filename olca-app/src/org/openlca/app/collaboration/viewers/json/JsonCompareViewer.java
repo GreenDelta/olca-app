@@ -1,11 +1,11 @@
 package org.openlca.app.collaboration.viewers.json;
 
+import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.collaboration.viewers.json.content.IDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
-import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.label.IJsonNodeLabelProvider;
 import org.openlca.app.util.UI;
 
@@ -14,32 +14,22 @@ public class JsonCompareViewer extends Composite {
 	private final FormToolkit toolkit;
 	private JsonNode root;
 	private final boolean canMerge;
-	private final Direction direction;
 	private JsonViewer leftTree;
 	private JsonViewer rightTree;
-	private String localLabel;
-	private String remoteLabel;
 
-	public static JsonCompareViewer forMerging(Composite parent, FormToolkit toolkit, JsonNode root, Direction direction) {
-		return new JsonCompareViewer(parent, toolkit, root, direction, true);
+	public static JsonCompareViewer forMerging(Composite parent, FormToolkit toolkit, JsonNode root) {
+		return new JsonCompareViewer(parent, toolkit, root, true);
 	}
 
-	public static JsonCompareViewer forComparison(Composite parent, FormToolkit toolkit, JsonNode root, Direction direction) {
-		return new JsonCompareViewer(parent, toolkit, root, direction, false);
+	public static JsonCompareViewer forComparison(Composite parent, FormToolkit toolkit, JsonNode root) {
+		return new JsonCompareViewer(parent, toolkit, root, false);
 	}
 
-	private JsonCompareViewer(Composite parent, FormToolkit toolkit, JsonNode root, Direction direction,
-			boolean canMerge) {
+	private JsonCompareViewer(Composite parent, FormToolkit toolkit, JsonNode root, boolean canMerge) {
 		super(parent, SWT.NONE);
 		this.toolkit = toolkit;
 		this.root = root;
 		this.canMerge = canMerge;
-		this.direction = direction;
-	}
-
-	public void setLabels(String local, String remote) {
-		this.localLabel = local;
-		this.remoteLabel = remote;
 	}
 
 	public void initialize(IJsonNodeLabelProvider labelProvider, IDependencyResolver dependencyResolver) {
@@ -80,8 +70,8 @@ public class JsonCompareViewer extends Composite {
 		var layout = UI.gridLayout(comp, 2, 0, 0);
 		layout.makeColumnsEqualWidth = true;
 		UI.gridData(comp, true, true).widthHint = 1;
-		leftTree = createTree(comp, localLabel, Side.LOCAL);
-		rightTree = createTree(comp, remoteLabel, Side.REMOTE);
+		leftTree = createTree(comp, Side.OLD);
+		rightTree = createTree(comp, Side.NEW);
 		leftTree.setCounterpart(rightTree);
 		rightTree.setCounterpart(leftTree);
 		leftTree.setLabelProvider(labelProvider);
@@ -91,12 +81,12 @@ public class JsonCompareViewer extends Composite {
 		}
 	}
 
-	private JsonViewer createTree(Composite container, String label, Side side) {
+	private JsonViewer createTree(Composite container, Side side) {
 		var composite = UI.formComposite(container, toolkit);
 		UI.gridLayout(composite, 1, 0, 0);
 		UI.gridData(composite, true, true);
-		UI.formLabel(composite, toolkit, label);
-		return new JsonViewer(composite, side, direction);
+		UI.formLabel(composite, toolkit, side == Side.OLD ? "Existing or previous model" : "Updated model");
+		return new JsonViewer(composite, side);
 	}
 
 }

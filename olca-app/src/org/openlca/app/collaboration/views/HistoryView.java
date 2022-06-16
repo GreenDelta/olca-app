@@ -10,10 +10,8 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
-import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.HistoryViewer;
 import org.openlca.app.collaboration.viewers.json.JsonCompareViewer;
-import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.olca.ModelDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.olca.ModelLabelProvider;
 import org.openlca.app.collaboration.viewers.json.olca.ModelNodeBuilder;
@@ -87,16 +85,15 @@ public class HistoryView extends ViewPart {
 				diffViewer.setInput(null);
 				return;
 			}
-			var currentElement = getJson(diff.toReference(Side.NEW));
 			var previousElement = getJson(diff.toReference(Side.OLD));
-			var node = new ModelNodeBuilder().build(currentElement, previousElement);
+			var currentElement = getJson(diff.toReference(Side.NEW));
+			var node = new ModelNodeBuilder().build(previousElement, currentElement);
 			diffViewer.setInput(node);
 		});
 	}
 
 	private void createDiffViewer(Composite parent) {
-		diffViewer = JsonCompareViewer.forComparison(parent, null, null, Direction.LEFT_TO_RIGHT);
-		diffViewer.setLabels(M.SelectedCommit, M.PreviousCommit);
+		diffViewer = JsonCompareViewer.forComparison(parent, null, null);
 		diffViewer.initialize(new ModelLabelProvider(), ModelDependencyResolver.INSTANCE);
 	}
 

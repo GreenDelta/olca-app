@@ -11,7 +11,6 @@ import org.openlca.app.collaboration.util.Json;
 import org.openlca.app.collaboration.viewers.json.JsonCompareViewer;
 import org.openlca.app.collaboration.viewers.json.content.IDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
-import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.label.IJsonNodeLabelProvider;
 import org.openlca.app.collaboration.viewers.json.olca.ModelDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.olca.ModelLabelProvider;
@@ -24,27 +23,24 @@ public class JsonCompareDialog extends FormDialog {
 	public final static int OVERWRITE = 3;
 	private final JsonNode root;
 	private final boolean canMerge;
-	private final Direction direction;
 	private JsonCompareViewer viewer;
 	private IJsonNodeLabelProvider labelProvider;
 	private IDependencyResolver dependencyResolver;
 	private String title;
 	private Image logo;
-	private String leftLabel;
-	private String rightLabel;
 
-	public static JsonCompareDialog forComparison(JsonNode node, Direction direction) {
-		return create(node, direction, false);
+	public static JsonCompareDialog forComparison(JsonNode node) {
+		return create(node, false);
 	}
 
-	public static JsonCompareDialog forMerging(JsonNode node, Direction direction) {
-		return create(node, direction, true);
+	public static JsonCompareDialog forMerging(JsonNode node) {
+		return create(node, true);
 	}
 
-	private static JsonCompareDialog create(JsonNode node, Direction direction, boolean canMerge) {
+	private static JsonCompareDialog create(JsonNode node, boolean canMerge) {
 		if (node == null)
 			return null;
-		var dialog = new JsonCompareDialog(node, direction, canMerge);
+		var dialog = new JsonCompareDialog(node, canMerge);
 		dialog.setTitle(Json.getName(node.element()));
 		dialog.setLogo(Images.get(Json.getModelType(node.element())));
 		dialog.setDependencyResolver(ModelDependencyResolver.INSTANCE);
@@ -52,10 +48,9 @@ public class JsonCompareDialog extends FormDialog {
 		return dialog;
 	}
 
-	private JsonCompareDialog(JsonNode root, Direction direction, boolean canMerge) {
+	private JsonCompareDialog(JsonNode root, boolean canMerge) {
 		super(UI.shell());
 		this.root = root;
-		this.direction = direction;
 		this.canMerge = canMerge;
 		setBlockOnOpen(true);
 	}
@@ -73,19 +68,13 @@ public class JsonCompareDialog extends FormDialog {
 		var toolkit = mform.getToolkit();
 		var body = UI.formBody(form, toolkit);
 		viewer = canMerge
-				? JsonCompareViewer.forMerging(body, toolkit, root, direction)
-				: JsonCompareViewer.forComparison(body, toolkit, root, direction);
-		viewer.setLabels(leftLabel, rightLabel);
+				? JsonCompareViewer.forMerging(body, toolkit, root)
+				: JsonCompareViewer.forComparison(body, toolkit, root);
 		viewer.initialize(labelProvider, dependencyResolver);
 		UI.gridData(viewer, true, true);
 		form.reflow(true);
 	}
 
-	public void setViewerLabels(String left, String right) {
-		this.leftLabel = left;
-		this.rightLabel = right;
-	}
-	
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		var hasLeft = root.left != null;

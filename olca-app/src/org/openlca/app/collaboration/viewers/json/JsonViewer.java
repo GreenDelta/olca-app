@@ -5,12 +5,12 @@ import java.util.List;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.collaboration.dialogs.TextDiffDialog;
 import org.openlca.app.collaboration.viewers.json.content.JsonContentProvider;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
-import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.collaboration.viewers.json.label.IJsonNodeLabelProvider;
 import org.openlca.app.collaboration.viewers.json.label.JsonLabelProvider;
 import org.openlca.app.collaboration.viewers.json.listener.ExpansionListener;
@@ -23,12 +23,10 @@ import org.openlca.app.viewers.Viewers;
 public class JsonViewer extends AbstractViewer<JsonNode, TreeViewer> {
 
 	private Side side;
-	private Direction direction;
 
-	public JsonViewer(Composite parent, Side side, Direction direction) {
+	public JsonViewer(Composite parent, Side side) {
 		super(parent, side);
 		this.side = side;
-		this.direction = direction;
 	}
 
 	@Override
@@ -53,7 +51,7 @@ public class JsonViewer extends AbstractViewer<JsonNode, TreeViewer> {
 		var viewer = new TreeViewer(parent, SWT.MULTI | SWT.NO_FOCUS | SWT.HIDE_SELECTION | SWT.BORDER);
 		viewer.setContentProvider(new JsonContentProvider());
 		var tree = viewer.getTree();
-		if (viewerParameters[0] == Side.LOCAL) {
+		if (viewerParameters[0] == Side.OLD) {
 			tree.getVerticalBar().setVisible(false);
 		}
 		UI.gridData(tree, true, true);
@@ -66,7 +64,7 @@ public class JsonViewer extends AbstractViewer<JsonNode, TreeViewer> {
 		var node = (JsonNode) sel.getFirstElement();
 		if (!node.element().isJsonPrimitive())
 			return;
-		new TextDiffDialog(node, direction).open();
+		new TextDiffDialog(node).open();
 	}
 
 	public List<JsonNode> getSelection() {

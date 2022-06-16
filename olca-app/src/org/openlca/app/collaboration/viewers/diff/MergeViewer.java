@@ -7,19 +7,12 @@ import java.util.Stack;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.collaboration.viewers.json.label.Direction;
 import org.openlca.app.viewers.trees.Trees;
 
 public class MergeViewer extends DiffNodeViewer {
 
 	public MergeViewer(Composite parent) {
 		super(parent, true);
-		super.setDirection(Direction.RIGHT_TO_LEFT);
-	}
-
-	@Override
-	public final void setDirection(Direction direction) {
-		throw new UnsupportedOperationException("Can't change fetch direction");
 	}
 
 	@Override

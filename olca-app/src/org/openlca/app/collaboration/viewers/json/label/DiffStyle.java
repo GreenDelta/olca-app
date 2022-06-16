@@ -3,7 +3,7 @@ package org.openlca.app.collaboration.viewers.json.label;
 import java.util.LinkedList;
 
 import org.eclipse.jface.viewers.StyledString;
-import org.openlca.app.collaboration.viewers.json.Side;
+import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.openlca.app.collaboration.viewers.json.label.DiffMatchPatch.Diff;
 import org.openlca.app.collaboration.viewers.json.label.DiffMatchPatch.Operation;
 import org.openlca.app.util.Colors;
@@ -14,14 +14,14 @@ public class DiffStyle {
 	private ColorStyler insertStyler = new ColorStyler().background(Colors.get(230, 255, 230));
 	private ColorStyler defaultStyler = new ColorStyler().background(Colors.get(240, 240, 240));
 
-	public void applyTo(StyledString styled, String otherText, Side side, Direction action) {
+	public void applyTo(StyledString styled, String otherText, Side side) {
 		var text = styled.getString();
 		if (text.isEmpty())
 			return;
 		styled.setStyle(0, text.length(), defaultStyler);
-		var diffs = getDiffs(text, otherText, side, action);
-		boolean showDelete = doShowDelete(side, action);
-		boolean showInsert = doShowInsert(side, action);
+		var diffs = getDiffs(text, otherText, side);
+		boolean showDelete = side == Side.OLD;
+		boolean showInsert = side == Side.NEW;
 		int index = 0;
 		for (var diff : diffs) {
 			if (showDelete && diff.operation == Operation.DELETE) {
@@ -36,30 +36,16 @@ public class DiffStyle {
 		}
 	}
 
-	private LinkedList<Diff> getDiffs(String text, String otherText, Side side, Direction action) {
+	private LinkedList<Diff> getDiffs(String text, String otherText, Side side) {
 		LinkedList<Diff> diffs = null;
 		var dmp = new DiffMatchPatch();
-		if (side == Side.LOCAL && action == Direction.RIGHT_TO_LEFT) {
-			diffs = dmp.diff_main(text, otherText);
-		} else if (side == Side.REMOTE && action == Direction.LEFT_TO_RIGHT) {
+		if (side == Side.OLD) {
 			diffs = dmp.diff_main(text, otherText);
 		} else {
 			diffs = dmp.diff_main(otherText, text);
 		}
 		dmp.diff_cleanupSemantic(diffs);
 		return diffs;
-	}
-
-	private boolean doShowDelete(Side side, Direction action) {
-		if (action == Direction.LEFT_TO_RIGHT)
-			return side == Side.REMOTE;
-		return side == Side.LOCAL;
-	}
-
-	private boolean doShowInsert(Side side, Direction action) {
-		if (action == Direction.LEFT_TO_RIGHT)
-			return side == Side.LOCAL;
-		return side == Side.REMOTE;
 	}
 
 }
