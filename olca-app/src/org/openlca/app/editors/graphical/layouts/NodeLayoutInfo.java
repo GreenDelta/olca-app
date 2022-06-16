@@ -12,20 +12,20 @@ public class NodeLayoutInfo {
 	 */
 	public String id;
 
-	public final Rectangle box;
+	public Point location;
+	public Dimension size;
 	public boolean minimized;
 	public boolean expandedLeft;
 	public boolean expandedRight;
 
 	public NodeLayoutInfo() {
-		this.box = new Rectangle();
+
 	}
 
 	public NodeLayoutInfo(Point location, Dimension size, boolean minimized,
 												boolean expandedLeft, boolean expandedRight) {
-		this.box = new Rectangle(
-			location == null ? Node.DEFAULT_LOCATION : location,
-			size == null ? Node.DEFAULT_MINIMIZED_SIZE : size);
+		this.location = location;
+		this.size = size == null ? Node.DEFAULT_SIZE : size;
 		this.minimized = minimized;
 		this.expandedLeft = expandedLeft;
 		this.expandedRight = expandedRight;
@@ -37,5 +37,4 @@ public class NodeLayoutInfo {
 		this(new Point(location.x, location.y), size, minimized, expandedLeft,
 			expandedRight);
 	}
-
 }

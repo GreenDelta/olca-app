@@ -1,9 +1,12 @@
 package org.openlca.app.editors.graphical;
 
+import java.awt.*;
 import java.io.File;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.model.Graph;
@@ -124,11 +127,13 @@ public final class GraphFile {
 			return null;
 		var info = new NodeLayoutInfo();
 		info.id = Json.getString(obj, "id");
-		info.box.x = Json.getInt(obj, "x", 0);
-		info.box.y = Json.getInt(obj, "y", 0);
-		info.box.width = Json.getInt(obj, "width", 175);
-		info.box.height = Json.getInt(obj, "height", 25);
 		info.minimized = Json.getBool(obj, "minimized", false);
+		info.location = new Point(
+			Json.getInt(obj, "x", Integer.MAX_VALUE),
+			Json.getInt(obj, "y", Integer.MAX_VALUE));
+		info.size = new Dimension(
+			Json.getInt(obj, "width", Node.DEFAULT_SIZE.width),
+			Json.getInt(obj, "height", Node.DEFAULT_SIZE.height));
 		info.expandedLeft = Json.getBool(obj, "expandedLeft", false);
 		info.expandedRight = Json.getBool(obj, "expandedRight", false);
 		return info;

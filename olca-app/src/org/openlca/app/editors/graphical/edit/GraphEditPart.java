@@ -5,6 +5,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.openlca.app.editors.graphical.GraphConfig;
+import org.openlca.app.editors.graphical.layouts.GraphFreeformLayout;
 import org.openlca.app.editors.graphical.layouts.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.model.Graph;
 
@@ -81,7 +82,7 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 		};
 
 		f.setBorder(new MarginBorder(3));
-		f.setLayoutManager(new FreeformLayout());
+		f.setLayoutManager(new GraphFreeformLayout(this));
 		return f;
 	}
 
@@ -108,6 +109,12 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 	@SuppressWarnings("unchecked")
 	public List<NodeEditPart> getChildren() {
 		return (List<NodeEditPart>) super.getChildren();
+	}
+
+	public NodeEditPart getReferenceNodeEditPart() {
+		for (var child : getChildren())
+			if (getModel().isReferenceProcess(child.getModel())) return child;
+		return null;
 	}
 
 }
