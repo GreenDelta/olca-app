@@ -90,9 +90,8 @@ class FlowInfoPage extends ModelPage<Flow> {
 					.getNewWizardRegistry()
 					.findWizard("wizards.new.process")
 					.createWizard();
-			if (!(w instanceof ProcessWizard))
+			if (!(w instanceof ProcessWizard wizard))
 				return;
-			ProcessWizard wizard = (ProcessWizard) w;
 			wizard.setRefFlow(flow);
 			var dialog = new WizardDialog(UI.shell(), wizard);
 			if (dialog.open() == Window.OK) {
