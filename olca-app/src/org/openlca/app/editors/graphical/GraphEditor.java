@@ -121,7 +121,7 @@ public class GraphEditor extends GraphicalEditor {
 //		getSite().getKeyBindingService().registerAction(zoomOut);
 
 		viewer.setRootEditPart(root);
-		viewer.setKeyHandler(getCommonKeyHandler());
+		viewer.setKeyHandler(createGraphKeyHandler());
 
 		ContextMenuProvider provider = new GraphContextMenuProvider(viewer,
 			getActionRegistry());
@@ -246,14 +246,28 @@ public class GraphEditor extends GraphicalEditor {
 			sharedKeyHandler.put(
 				KeyStroke.getPressed(SWT.DEL, 127, 0),
 				registry.getAction(ActionFactory.DELETE.getId()));
-			sharedKeyHandler.put(
-				KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0),
-				registry.getAction(GEFActionConstants.ZOOM_IN));
-			sharedKeyHandler.put(
-				KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0),
-				registry.getAction(GEFActionConstants.ZOOM_OUT));
 		}
 		return sharedKeyHandler;
+	}
+
+	protected KeyHandler createGraphKeyHandler() {
+		var keyHandler = new GraphKeyHandler(getGraphicalViewer());
+		keyHandler.setParent(getCommonKeyHandler());
+
+		var registry = getActionRegistry();
+		keyHandler.put(
+			KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0),
+			registry.getAction(GEFActionConstants.ZOOM_IN));
+		keyHandler.put(
+			KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0),
+			registry.getAction(GEFActionConstants.ZOOM_OUT));
+		keyHandler.put(
+			KeyStroke.getPressed('+', 43, SWT.MOD1),
+			registry.getAction(GEFActionConstants.ZOOM_IN));
+		keyHandler.put(
+			KeyStroke.getPressed('-', 45, SWT.MOD1),
+			registry.getAction(GEFActionConstants.ZOOM_OUT));
+		return keyHandler;
 	}
 
 	protected void loadProperties() {
