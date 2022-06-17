@@ -272,14 +272,9 @@ public class GraphEditor extends GraphicalEditor {
 
 	protected void loadProperties() {
 		// Zoom
-		ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(
-			ZoomManager.class.toString());
+		var manager = getZoomManager();
 		if (manager != null)
 			manager.setZoom(getModel().getZoom());
-		// Scroll-wheel Zoom
-		getGraphicalViewer().setProperty(
-			MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1),
-			MouseWheelZoomHandler.SINGLETON);
 	}
 
 	protected void loadConfig() {
