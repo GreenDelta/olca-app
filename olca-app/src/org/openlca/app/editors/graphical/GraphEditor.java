@@ -4,8 +4,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.ViewportAwareConnectionLayerClippingStrategy;
 import org.eclipse.gef.*;
-import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
-import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.actions.*;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
@@ -17,9 +15,14 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.actions.*;
+import org.openlca.app.editors.graphical.actions.ZoomInAction;
+import org.openlca.app.editors.graphical.actions.ZoomOutAction;
 import org.openlca.app.editors.graphical.edit.GraphEditPartFactory;
+import org.openlca.app.editors.graphical.edit.GraphScalableFreeformRootEditPart;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
+import org.openlca.app.editors.graphical.zoom.GraphMouseWheelZoomHandler;
+import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
@@ -100,7 +103,7 @@ public class GraphEditor extends GraphicalEditor {
 		super.configureGraphicalViewer();
 		var viewer = getGraphicalViewer();
 
-		ScalableFreeformRootEditPart root = new ScalableFreeformRootEditPart();
+		var root = new GraphScalableFreeformRootEditPart(viewer);
 
 		// set clipping strategy for connection layer
 		ConnectionLayer connectionLayer = (ConnectionLayer) root
@@ -112,14 +115,11 @@ public class GraphEditor extends GraphicalEditor {
 		var zoom = root.getZoomManager();
 		zoom.setZoomLevels(ZOOM_LEVELS);
 		var zoomLevels = new ArrayList<String>(3);
-		zoomLevels.add(ZoomManager.FIT_ALL);
-		zoomLevels.add(ZoomManager.FIT_WIDTH);
-		zoomLevels.add(ZoomManager.FIT_HEIGHT);
+		zoomLevels.add(GraphZoomManager.FIT_ALL);
+		zoomLevels.add(GraphZoomManager.FIT_WIDTH);
+		zoomLevels.add(GraphZoomManager.FIT_HEIGHT);
 		root.getZoomManager().setZoomLevelContributions(zoomLevels);
-		zoom.setZoomAnimationStyle(ZoomManager.ANIMATE_ZOOM_IN_OUT);
-		viewer.setProperty(
-			MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
-			MouseWheelZoomHandler.SINGLETON);
+		zoom.setZoomAnimationStyle(GraphZoomManager.ANIMATE_ZOOM_IN_OUT);
 		var zoomIn = new ZoomInAction(root.getZoomManager());
 		var zoomOut = new ZoomOutAction(root.getZoomManager());
 		getActionRegistry().registerAction(zoomIn);
@@ -282,6 +282,9 @@ public class GraphEditor extends GraphicalEditor {
 		var manager = getZoomManager();
 		if (manager != null)
 			manager.setZoom(getModel().getZoom());
+		getGraphicalViewer().setProperty(
+			MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
+			GraphMouseWheelZoomHandler.SINGLETON);
 	}
 
 	protected void loadConfig() {
@@ -340,12 +343,12 @@ public class GraphEditor extends GraphicalEditor {
 		return graphFactory;
 	}
 
-	public ZoomManager getZoomManager() {
+	public GraphZoomManager getZoomManager() {
 		return getRootEditPart().getZoomManager();
 	}
 
-	private ScalableFreeformRootEditPart getRootEditPart() {
-		return (ScalableFreeformRootEditPart) getGraphicalViewer().getRootEditPart();
+	private GraphScalableFreeformRootEditPart getRootEditPart() {
+		return (GraphScalableFreeformRootEditPart) getGraphicalViewer().getRootEditPart();
 	}
 
 	@Override
@@ -372,7 +375,7 @@ public class GraphEditor extends GraphicalEditor {
 	}
 
 	public Object getAdapter(Class type) {
-		if (type == ZoomManager.class)
+		if (type == GraphZoomManager.class)
 			return getZoomManager();
 
 		return super.getAdapter(type);
