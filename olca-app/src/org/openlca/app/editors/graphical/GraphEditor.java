@@ -1,10 +1,8 @@
 package org.openlca.app.editors.graphical;
 
-import java.util.ArrayList;
-import java.util.EventObject;
-
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.ConnectionLayer;
+import org.eclipse.draw2d.ViewportAwareConnectionLayerClippingStrategy;
 import org.eclipse.gef.*;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
@@ -28,6 +26,9 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
 
+import java.util.ArrayList;
+import java.util.EventObject;
+
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
 import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.PROVIDER;
@@ -47,12 +48,18 @@ public class GraphEditor extends GraphicalEditor {
 	public static final String ID = "GraphicalEditor";
 
 	private KeyHandler sharedKeyHandler;
-
 	private final ProductSystemEditor systemEditor;
 	private Graph graph;
 
-	public static final double[] ZOOM_LEVELS = new double[] {
-		0.01, 0.1, 0.2, 0.4, 0.8, 1.0, 1.6, 2.0, 3.0, 5.0, 10.0 };
+	// Set zoom levels from 0.1 to 3.0 with an incrementing factor of 5%.
+	private static final int ZOOM_LEVELS_NUMBER =
+		(int) Math.ceil(Math.log(3.0/0.1) / Math.log(1.05));
+	public static final double[] ZOOM_LEVELS = new double[ZOOM_LEVELS_NUMBER];
+	static {
+		for (int i = 0; i < ZOOM_LEVELS_NUMBER; i++) {
+			ZOOM_LEVELS[i] = Math.pow(1.05, i) * 0.1;
+		}
+	}
 
 	// TODO: save this in the same way as the layout is currently stored
 	public final GraphConfig config = new GraphConfig();
@@ -374,4 +381,5 @@ public class GraphEditor extends GraphicalEditor {
 	public ProductSystemEditor getProductSystemEditor() {
 		return systemEditor;
 	}
+
 }
