@@ -36,6 +36,7 @@ import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.ReferenceAmount;
+import org.openlca.core.matrix.Demand;
 import org.openlca.core.matrix.ImpactBuilder;
 import org.openlca.core.matrix.MatrixData;
 import org.openlca.core.matrix.ParameterTable;
@@ -169,7 +170,7 @@ class ImpactPage extends ModelPage<Process> {
 		// create a virtual demand of 1.0
 		var refProduct = TechFlow.of(getModel());
 		data.techIndex = new TechIndex(refProduct);
-		data.techIndex.setDemand(1.0);
+		data.demand = Demand.of(refProduct, 1.0);
 		data.techMatrix = JavaMatrix.of(
 				new double[][] { { 1.0 } });
 
