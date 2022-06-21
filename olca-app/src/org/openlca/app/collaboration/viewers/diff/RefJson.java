@@ -1,6 +1,7 @@
 package org.openlca.app.collaboration.viewers.diff;
 
 import org.eclipse.jgit.lib.ObjectId;
+import org.openlca.app.collaboration.util.Json;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.core.database.Daos;
@@ -70,6 +71,24 @@ class RefJson {
 		json.remove(arrayProperty);
 		json.add(property1, inputs);
 		json.add(property2, outputs);
+	}
+
+	static void joinSplitFields(JsonObject json) {
+		var type = Json.getModelType(json);
+		if (type == ModelType.PROCESS) {
+			join(json, "exchanges", "inputs", "outputs");
+		} else if (type == ModelType.RESULT) {
+			join(json, "flowResults", "inputResults", "outputResults");
+		}
+	}
+
+	private static void join(JsonObject json, String arrayProperty, String... joinProperties) {
+		var joined = new JsonArray();
+		for (var joinProperty : joinProperties) {
+			var toJoin = json.getAsJsonArray(joinProperty);
+			joined.addAll(toJoin);
+		}
+		json.add(arrayProperty, joined);
 	}
 
 }

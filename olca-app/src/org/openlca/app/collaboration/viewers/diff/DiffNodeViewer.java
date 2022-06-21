@@ -94,6 +94,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		if (dialogResult == JsonCompareDialog.KEEP || node.leftEqualsOriginal())
 			return ConflictResolution.keep();
 		var merged = node.left.getAsJsonObject();
+		RefJson.joinSplitFields(merged);
 		var version = Version.fromString(node.right.getAsJsonObject().get("version").getAsString());
 		version.incUpdate();
 		merged.addProperty("version", Version.asString(version.getValue()));
