@@ -1,10 +1,10 @@
 package org.openlca.app.editors.graphical.actions;
 
-import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.ui.actions.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.actions.ActionFactory;
+import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
 
 public class NotWorkingGraphActionBarContributor extends ActionBarContributor {
 
@@ -38,8 +38,8 @@ public class NotWorkingGraphActionBarContributor extends ActionBarContributor {
 		tbm.add(getAction(GEFActionConstants.MATCH_HEIGHT));
 
 		tbm.add(new Separator());
-		String[] zoomStrings = new String[] { ZoomManager.FIT_ALL,
-			ZoomManager.FIT_HEIGHT, ZoomManager.FIT_WIDTH };
+		String[] zoomStrings = new String[] { GraphZoomManager.FIT_ALL,
+			GraphZoomManager.FIT_HEIGHT, GraphZoomManager.FIT_WIDTH };
 		tbm.add(new ZoomComboContributionItem(getPage(), zoomStrings));
 	}
 
