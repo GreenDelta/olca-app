@@ -89,16 +89,16 @@ public abstract class JsonNodeBuilder implements Comparator<JsonNode> {
 		var count = 0;
 		var counter = node.children.size() + 1;
 		for (var value : array) {
-			if (side == Side.OLD && added.contains(count++))
+			if (side == Side.NEW && added.contains(count++))
 				continue;
 			JsonElement otherValue = null;
 			var index = elementFinder.find(node.property, value, otherArray, added);
-			if (side == Side.NEW && index != -1) {
+			if (side == Side.OLD && index != -1) {
 				otherValue = otherArray.get(index);
 				added.add(index);
 			}
 			var leftValue = side == Side.OLD ? value : otherValue;
-			var rightValue = side == Side.NEW ? otherValue : value;
+			var rightValue = side == Side.OLD ? otherValue : value;
 			var property = Integer.toString(counter++);
 			var childNode = isReadOnly(node)
 					? JsonNode.createReadOnly(node, property, leftValue, rightValue, elementFinder)

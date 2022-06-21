@@ -45,7 +45,7 @@ public class MergeAction extends Action implements INavigationAction {
 			if (libraryResolver == null)
 				return;
 			var conflictResult = ConflictResolutionMap.forRemote();
-			if (conflictResult.resolutions() == null)
+			if (conflictResult == null)
 				return;
 			var user = !repo.localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty()
 					? AuthenticationDialog.promptUser()

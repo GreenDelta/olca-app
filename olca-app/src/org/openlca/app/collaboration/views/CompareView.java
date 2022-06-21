@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
-import org.openlca.app.collaboration.util.PathFilters;
 import org.openlca.app.collaboration.viewers.diff.CompareViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
@@ -19,6 +18,7 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.Commit;
+import org.openlca.git.util.Constants;
 import org.openlca.git.util.Diffs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,22 +73,51 @@ public class CompareView extends ViewPart {
 			viewer.setInput(new ArrayList<>());
 			return;
 		}
-		input = buildNode(commit, elements);
+		input = new DiffNodeBuilder(Database.get()).build(getDiffs(commit, elements));
 		viewer.setInput(input != null ? Collections.singleton(input) : new ArrayList<>());
 	}
 
-	private DiffNode buildNode(Commit commit, List<INavigationElement<?>> elements) {
+	private List<TriDiff> getDiffs(Commit commit, List<INavigationElement<?>> elements) {
 		var repo = Repository.get();
-		var isAhead = repo.localHistory.contains(commit);
-		var diffs = Diffs.of(repo.git, commit)
-				.filter(PathFilters.of(elements));
-		var workspaceDiffs = isAhead
-				? diffs.with(Database.get(), repo.workspaceIds)
-				: diffs.withReverse(Database.get(), repo.workspaceIds);
-		var triDiffs = workspaceDiffs.stream()
-				.map(d -> new TriDiff(d, null))
+		var localHistory = repo.commits.find().refs(Constants.LOCAL_REF).all();
+		if (localHistory.contains(commit)) {
+			var diffs = Diffs.of(repo.git, commit).with(Database.get(), repo.workspaceIds);
+			return diffs.stream()
+					.map(local -> new TriDiff(local, null))
+					.toList();
+		}
+		var localCommit = getCommonParent(localHistory, commit);
+		var remoteDiffs = Diffs.of(repo.git, localCommit).with(commit);
+		var diffs = new ArrayList<TriDiff>();
+		var localDiffs = Diffs.of(repo.git, localCommit).with(Database.get(), repo.workspaceIds);
+		localDiffs.forEach(local -> {
+			var remote = remoteDiffs.stream()
+					.filter(e -> e.path.equals(local.path))
+					.findFirst()
+					.orElse(null);
+			if (remote != null) {
+				remoteDiffs.remove(remote);
+			}
+			diffs.add(new TriDiff(local, remote));
+		});
+		remoteDiffs.forEach(remote -> diffs.add(new TriDiff(remote, null)));
+		return diffs;
+	}
+
+	private Commit getCommonParent(List<Commit> localHistory, Commit commit) {
+		if (localHistory.isEmpty())
+			return null;
+		if (localHistory.contains(commit))
+			return commit;
+		var other = Repository.get().commits.find().refs(Constants.REMOTE_REF).until(commit.id).all();
+		if (other.isEmpty())
+			return null;
+		var commonHistory = other.stream()
+				.filter(localHistory::contains)
 				.toList();
-		return new DiffNodeBuilder(Database.get()).build(triDiffs);
+		if (commonHistory.isEmpty())
+			return null;
+		return commonHistory.get(commonHistory.size() - 1);
 	}
 
 	@Override

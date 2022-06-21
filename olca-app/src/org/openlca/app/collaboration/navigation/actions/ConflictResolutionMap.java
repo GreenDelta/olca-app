@@ -88,7 +88,10 @@ class ConflictResolutionMap implements ConflictResolver {
 		}
 		if (result == 3 && !stashChanges(false))
 			return null;
-		return new ConflictResult(resolve(commit, localDiffs(commit, commonParent)), true);
+		var resolved = resolve(commit, localDiffs(commit, commonParent));
+		if (resolved == null)
+			return null;
+		return new ConflictResult(resolved, result == 3);
 	}
 
 	private static List<TriDiff> workspaceDiffs(Commit commit, Commit commonParent) throws IOException {

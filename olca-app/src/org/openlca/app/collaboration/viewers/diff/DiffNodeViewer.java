@@ -110,18 +110,24 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	}
 
 	private JsonObject getLeft(TriDiff diff) {
+		if (diff.rightDiffType == null) {
+			if (diff.leftDiffType == DiffType.ADDED)
+				return null;
+			return RefJson.get(diff.type, diff.refId, diff.objectId);
+		}
 		if (diff.leftDiffType == DiffType.DELETED)
 			return null;
-		if (diff.rightDiffType == null)
-			return RefJson.get(diff.type, diff.refId, diff.objectId);
 		return RefJson.get(diff.type, diff.refId, diff.leftNewObjectId);
 	}
 
 	private JsonObject getRight(TriDiff diff) {
+		if (diff.rightDiffType == null) {
+			if (diff.leftDiffType == DiffType.DELETED)
+				return null;
+			return RefJson.get(diff.type, diff.refId, diff.leftNewObjectId);
+		}
 		if (diff.rightDiffType == DiffType.DELETED)
 			return null;
-		if (diff.rightDiffType == null)
-			return RefJson.get(diff.type, diff.refId, diff.leftNewObjectId);
 		return RefJson.get(diff.type, diff.refId, diff.rightNewObjectId);
 	}
 
