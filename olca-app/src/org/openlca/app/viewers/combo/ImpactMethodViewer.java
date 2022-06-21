@@ -101,27 +101,25 @@ public class ImpactMethodViewer extends
 
 		@Override
 		public Image getColumnImage(Object o, int col) {
-			if (!(o instanceof ImpactMethodDescriptor))
+			if (!(o instanceof ImpactMethodDescriptor method))
 				return null;
-			var impact = (ImpactMethodDescriptor) o;
 			if (col == 0)
-				return Images.get(impact);
-			if (col == 1 && impact.category != null)
+				return Images.get(method);
+			if (col == 1 && method.category != null)
 				return Images.getForCategory(ModelType.IMPACT_METHOD);
 			return null;
 		}
 
 		@Override
 		public String getColumnText(Object o, int col) {
-			if (!(o instanceof ImpactMethodDescriptor))
+			if (!(o instanceof ImpactMethodDescriptor method))
 				return null;
-			var impact = (ImpactMethodDescriptor) o;
 			if (col == 0)
-				return Labels.name(impact);
-			if (col != 1 || impact.category == null)
+				return Labels.name(method);
+			if (col != 1 || method.category == null)
 				return null;
 			var cache = Cache.getEntityCache();
-			var category = cache.get(Category.class, impact.category);
+			var category = cache.get(Category.class, method.category);
 			return category == null
 					? null
 					: CategoryPath.getFull(category);

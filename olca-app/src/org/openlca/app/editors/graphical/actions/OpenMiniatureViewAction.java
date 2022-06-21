@@ -6,14 +6,13 @@ import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.parts.ScrollableThumbnail;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.LayerConstants;
-import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
-import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -24,6 +23,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.edit.GraphScalableFreeformRootEditPart;
+import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -35,7 +36,7 @@ public class OpenMiniatureViewAction extends WorkbenchPartAction {
 	private IFigure figure;
 	private Viewport port;
 	private MiniView window;
-	private ZoomManager zoomManager;
+	private GraphZoomManager zoomManager;
 
 	public OpenMiniatureViewAction(GraphEditor part) {
 		super(part);
@@ -54,7 +55,8 @@ public class OpenMiniatureViewAction extends WorkbenchPartAction {
 			window.refresh();
 	}
 
-	private void update(Viewport port, IFigure figure, Control control, ZoomManager zoomManager) {
+	private void update(Viewport port, IFigure figure, Control control,
+											GraphZoomManager zoomManager) {
 		this.port = port;
 		this.figure = figure;
 		this.control = control;
@@ -142,6 +144,10 @@ public class OpenMiniatureViewAction extends WorkbenchPartAction {
 			control.addDisposeListener(disposeListener);
 			return super.createContents(parent);
 		}
+		@Override
+		protected Point getInitialSize() {
+			return UI.initialSizeOf(this, 600, 350);
+		}
 
 		@Override
 		protected boolean showTopSeperator() {
@@ -160,8 +166,8 @@ public class OpenMiniatureViewAction extends WorkbenchPartAction {
 		return (Viewport) getRootEditPart().getFigure();
 	}
 
-	private ScalableFreeformRootEditPart getRootEditPart() {
+	private GraphScalableFreeformRootEditPart getRootEditPart() {
 		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
-		return (ScalableFreeformRootEditPart) viewer.getRootEditPart();
+		return (GraphScalableFreeformRootEditPart) viewer.getRootEditPart();
 	}
 }

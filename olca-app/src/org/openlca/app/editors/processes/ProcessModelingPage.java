@@ -3,7 +3,6 @@ package org.openlca.app.editors.processes;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
@@ -25,13 +24,13 @@ class ProcessModelingPage extends ModelPage<Process> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(this);
-		toolkit = managedForm.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
+	protected void createFormContent(IManagedForm mForm) {
+		var form = UI.formHeader(this);
+		toolkit = mForm.getToolkit();
+		var body = UI.formBody(form, toolkit);
 		createModelingSection(body);
 		createDataSourceSection(body);
-		createEvaluationSection(body);
+		createReviewSection(body);
 		createSourcesSection(body);
 		body.setFocus();
 		form.reflow(true);
@@ -59,7 +58,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 		multiText(comp, M.DataCollectionPeriod, "documentation.dataCollectionPeriod", 40);
 	}
 
-	private void createEvaluationSection(Composite parent) {
+	private void createReviewSection(Composite parent) {
 		var comp = UI.formSection(parent, toolkit, M.ProcessEvaluationAndValidation, 3);
 		modelLink(comp, M.Reviewer, "documentation.reviewer");
 		multiText(comp, M.DataSetOtherEvaluation, "documentation.reviewDetails", 40);

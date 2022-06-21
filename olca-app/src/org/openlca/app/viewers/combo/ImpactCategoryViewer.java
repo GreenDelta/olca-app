@@ -69,13 +69,11 @@ public class ImpactCategoryViewer extends AbstractComboViewer<ImpactDescriptor> 
 		@Override
 		public String getColumnText(Object element, int column) {
 			var category = (ImpactDescriptor) element;
-			switch (column) {
-			case 0:
-				return Labels.name(category);
-			case 1:
-				return category.referenceUnit;
-			}
-			return "";
+			return switch (column) {
+				case 0 -> Labels.name(category);
+				case 1 -> category.referenceUnit;
+				default -> "";
+			};
 		}
 
 	}
@@ -84,15 +82,13 @@ public class ImpactCategoryViewer extends AbstractComboViewer<ImpactDescriptor> 
 
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			if (!(e1 instanceof ImpactDescriptor)) {
+			if (!(e1 instanceof ImpactDescriptor i1)) {
 				if (e2 != null)
 					return -1;
 				return 0;
 			}
-			if (!(e2 instanceof ImpactDescriptor))
+			if (!(e2 instanceof ImpactDescriptor i2))
 				return 1;
-			var i1 = (ImpactDescriptor) e1;
-			var i2 = (ImpactDescriptor) e2;
 			int c = Strings.compare(i1.name, i2.name);
 			if (c != 0)
 				return c;

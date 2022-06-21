@@ -5,7 +5,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -14,13 +13,11 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
-import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.combo.LocationViewer;
 import org.openlca.app.wizards.ProcessWizard;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
@@ -59,17 +56,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 		text(comp, M.CASNumber, "casNumber");
 		text(comp, M.Formula, "formula");
 		text(comp, M.Synonyms, "synonyms");
-		createLocationViewer(comp);
-	}
-
-	private void createLocationViewer(Composite comp) {
-		new Label(comp, SWT.NONE).setText(M.Location);
-		var viewer = new LocationViewer(comp);
-		viewer.setNullable(true);
-		viewer.setInput(Database.get());
-		getBinding().onModel(this::getModel, "location", viewer);
-		viewer.setEnabled(isEditable());
-		new CommentControl(comp, getToolkit(), "location", getComments());
+		modelLink(comp, M.Location, "location");
 	}
 
 	private void processButton(InfoSection infoSection) {
@@ -90,9 +77,8 @@ class FlowInfoPage extends ModelPage<Flow> {
 					.getNewWizardRegistry()
 					.findWizard("wizards.new.process")
 					.createWizard();
-			if (!(w instanceof ProcessWizard))
+			if (!(w instanceof ProcessWizard wizard))
 				return;
-			ProcessWizard wizard = (ProcessWizard) w;
 			wizard.setRefFlow(flow);
 			var dialog = new WizardDialog(UI.shell(), wizard);
 			if (dialog.open() == Window.OK) {

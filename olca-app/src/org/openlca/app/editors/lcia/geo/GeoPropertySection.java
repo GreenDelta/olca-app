@@ -151,26 +151,19 @@ class GeoPropertySection {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof GeoProperty))
+			if (!(obj instanceof GeoProperty p))
 				return null;
-			GeoProperty p = (GeoProperty) obj;
-			switch (col) {
-			case 0:
-				return p.name;
-			case 1:
-				return p.identifier;
-			case 2:
-				return Numbers.format(p.defaultValue);
-			case 3:
-				return "[" + Numbers.format(p.min)
-						+ ", " + Numbers.format(p.max) + "]";
-			case 4:
-				return p.aggregation == null
-						? GeoAggregation.WEIGHTED_AVERAGE.toString()
-						: p.aggregation.toString();
-			default:
-				return null;
-			}
+			return switch (col) {
+				case 0 -> p.name;
+				case 1 -> p.identifier;
+				case 2 -> Numbers.format(p.defaultValue);
+				case 3 -> "[" + Numbers.format(p.min)
+					+ ", " + Numbers.format(p.max) + "]";
+				case 4 -> p.aggregation == null
+					? GeoAggregation.WEIGHTED_AVERAGE.toString()
+					: p.aggregation.toString();
+				default -> null;
+			};
 		}
 	}
 }

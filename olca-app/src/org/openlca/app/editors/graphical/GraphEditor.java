@@ -1,13 +1,9 @@
 package org.openlca.app.editors.graphical;
 
-import java.util.ArrayList;
-import java.util.EventObject;
-
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.ConnectionLayer;
+import org.eclipse.draw2d.ViewportAwareConnectionLayerClippingStrategy;
 import org.eclipse.gef.*;
-import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
-import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.actions.*;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
@@ -19,14 +15,22 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.actions.*;
+import org.openlca.app.editors.graphical.actions.ZoomInAction;
+import org.openlca.app.editors.graphical.actions.ZoomOutAction;
 import org.openlca.app.editors.graphical.edit.GraphEditPartFactory;
+import org.openlca.app.editors.graphical.edit.GraphScalableFreeformRootEditPart;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
+import org.openlca.app.editors.graphical.zoom.GraphMouseWheelZoomHandler;
+import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
+
+import java.util.ArrayList;
+import java.util.EventObject;
 
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
@@ -47,12 +51,18 @@ public class GraphEditor extends GraphicalEditor {
 	public static final String ID = "GraphicalEditor";
 
 	private KeyHandler sharedKeyHandler;
-
 	private final ProductSystemEditor systemEditor;
 	private Graph graph;
 
-	public static final double[] ZOOM_LEVELS = new double[] {
-		0.01, 0.1, 0.2, 0.4, 0.8, 1.0, 1.6, 2.0, 3.0, 5.0, 10.0 };
+	// Set zoom levels from 0.1 to 3.0 with an incrementing factor of 5%.
+	private static final int ZOOM_LEVELS_NUMBER =
+		(int) Math.ceil(Math.log(3.0/0.1) / Math.log(1.05));
+	public static final double[] ZOOM_LEVELS = new double[ZOOM_LEVELS_NUMBER];
+	static {
+		for (int i = 0; i < ZOOM_LEVELS_NUMBER; i++) {
+			ZOOM_LEVELS[i] = Math.pow(1.05, i) * 0.1;
+		}
+	}
 
 	// TODO: save this in the same way as the layout is currently stored
 	public final GraphConfig config = new GraphConfig();
@@ -93,7 +103,7 @@ public class GraphEditor extends GraphicalEditor {
 		super.configureGraphicalViewer();
 		var viewer = getGraphicalViewer();
 
-		ScalableFreeformRootEditPart root = new ScalableFreeformRootEditPart();
+		var root = new GraphScalableFreeformRootEditPart(viewer);
 
 		// set clipping strategy for connection layer
 		ConnectionLayer connectionLayer = (ConnectionLayer) root
@@ -105,14 +115,11 @@ public class GraphEditor extends GraphicalEditor {
 		var zoom = root.getZoomManager();
 		zoom.setZoomLevels(ZOOM_LEVELS);
 		var zoomLevels = new ArrayList<String>(3);
-		zoomLevels.add(ZoomManager.FIT_ALL);
-		zoomLevels.add(ZoomManager.FIT_WIDTH);
-		zoomLevels.add(ZoomManager.FIT_HEIGHT);
+		zoomLevels.add(GraphZoomManager.FIT_ALL);
+		zoomLevels.add(GraphZoomManager.FIT_WIDTH);
+		zoomLevels.add(GraphZoomManager.FIT_HEIGHT);
 		root.getZoomManager().setZoomLevelContributions(zoomLevels);
-		zoom.setZoomAnimationStyle(ZoomManager.ANIMATE_ZOOM_IN_OUT);
-		viewer.setProperty(
-			MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
-			MouseWheelZoomHandler.SINGLETON);
+		zoom.setZoomAnimationStyle(GraphZoomManager.ANIMATE_ZOOM_IN_OUT);
 		var zoomIn = new ZoomInAction(root.getZoomManager());
 		var zoomOut = new ZoomOutAction(root.getZoomManager());
 		getActionRegistry().registerAction(zoomIn);
@@ -121,7 +128,7 @@ public class GraphEditor extends GraphicalEditor {
 //		getSite().getKeyBindingService().registerAction(zoomOut);
 
 		viewer.setRootEditPart(root);
-		viewer.setKeyHandler(getCommonKeyHandler());
+		viewer.setKeyHandler(createGraphKeyHandler());
 
 		ContextMenuProvider provider = new GraphContextMenuProvider(viewer,
 			getActionRegistry());
@@ -246,26 +253,38 @@ public class GraphEditor extends GraphicalEditor {
 			sharedKeyHandler.put(
 				KeyStroke.getPressed(SWT.DEL, 127, 0),
 				registry.getAction(ActionFactory.DELETE.getId()));
-			sharedKeyHandler.put(
-				KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0),
-				registry.getAction(GEFActionConstants.ZOOM_IN));
-			sharedKeyHandler.put(
-				KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0),
-				registry.getAction(GEFActionConstants.ZOOM_OUT));
 		}
 		return sharedKeyHandler;
 	}
 
+	protected KeyHandler createGraphKeyHandler() {
+		var keyHandler = new GraphKeyHandler(getGraphicalViewer());
+		keyHandler.setParent(getCommonKeyHandler());
+
+		var registry = getActionRegistry();
+		keyHandler.put(
+			KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0),
+			registry.getAction(GEFActionConstants.ZOOM_IN));
+		keyHandler.put(
+			KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0),
+			registry.getAction(GEFActionConstants.ZOOM_OUT));
+		keyHandler.put(
+			KeyStroke.getPressed('+', 43, SWT.MOD1),
+			registry.getAction(GEFActionConstants.ZOOM_IN));
+		keyHandler.put(
+			KeyStroke.getPressed('-', 45, SWT.MOD1),
+			registry.getAction(GEFActionConstants.ZOOM_OUT));
+		return keyHandler;
+	}
+
 	protected void loadProperties() {
 		// Zoom
-		ZoomManager manager = (ZoomManager) getGraphicalViewer().getProperty(
-			ZoomManager.class.toString());
+		var manager = getZoomManager();
 		if (manager != null)
 			manager.setZoom(getModel().getZoom());
-		// Scroll-wheel Zoom
 		getGraphicalViewer().setProperty(
-			MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1),
-			MouseWheelZoomHandler.SINGLETON);
+			MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
+			GraphMouseWheelZoomHandler.SINGLETON);
 	}
 
 	protected void loadConfig() {
@@ -324,12 +343,12 @@ public class GraphEditor extends GraphicalEditor {
 		return graphFactory;
 	}
 
-	public ZoomManager getZoomManager() {
+	public GraphZoomManager getZoomManager() {
 		return getRootEditPart().getZoomManager();
 	}
 
-	private ScalableFreeformRootEditPart getRootEditPart() {
-		return (ScalableFreeformRootEditPart) getGraphicalViewer().getRootEditPart();
+	private GraphScalableFreeformRootEditPart getRootEditPart() {
+		return (GraphScalableFreeformRootEditPart) getGraphicalViewer().getRootEditPart();
 	}
 
 	@Override
@@ -356,7 +375,7 @@ public class GraphEditor extends GraphicalEditor {
 	}
 
 	public Object getAdapter(Class type) {
-		if (type == ZoomManager.class)
+		if (type == GraphZoomManager.class)
 			return getZoomManager();
 
 		return super.getAdapter(type);
@@ -365,4 +384,5 @@ public class GraphEditor extends GraphicalEditor {
 	public ProductSystemEditor getProductSystemEditor() {
 		return systemEditor;
 	}
+
 }

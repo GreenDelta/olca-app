@@ -8,6 +8,7 @@ import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.layouts.GraphFreeformLayout;
 import org.openlca.app.editors.graphical.layouts.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;
@@ -81,7 +82,7 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 
 		};
 
-		f.setBorder(new MarginBorder(3));
+		f.setBorder(new MarginBorder(8000));
 		f.setLayoutManager(new GraphFreeformLayout(this));
 		return f;
 	}
