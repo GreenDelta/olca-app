@@ -23,7 +23,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.edit.GraphScalableFreeformRootEditPart;
+import org.openlca.app.editors.graphical.edit.GraphRoot;
 import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
@@ -166,8 +166,8 @@ public class OpenMiniatureViewAction extends WorkbenchPartAction {
 		return (Viewport) getRootEditPart().getFigure();
 	}
 
-	private GraphScalableFreeformRootEditPart getRootEditPart() {
+	private GraphRoot getRootEditPart() {
 		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
-		return (GraphScalableFreeformRootEditPart) viewer.getRootEditPart();
+		return (GraphRoot) viewer.getRootEditPart();
 	}
 }

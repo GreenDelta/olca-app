@@ -11,7 +11,7 @@ import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
  * {@link org.eclipse.gef.editparts.ScalableFreeformRootEditPart} to have the
  * ability to use our own GraphZoomManager.</i>
  */
-public class GraphScalableFreeformRootEditPart extends
+public class GraphRoot extends
 	FreeformGraphicalRootEditPart {
 
 	private ScalableFreeformLayeredPane scaledLayers;
@@ -20,22 +20,21 @@ public class GraphScalableFreeformRootEditPart extends
 	/**
 	 * Constructor for GraphScalableFreeformRootEditPart
 	 */
-	public GraphScalableFreeformRootEditPart(EditPartViewer viewer) {
+	public GraphRoot(EditPartViewer viewer) {
 		zoomManager = createZoomManager(viewer,
 			(ScalableFigure) getScaledLayers(), ((Viewport) getFigure()));
 	}
 
 	/**
 	 * Responsible for creating a {@link GraphZoomManager} to be used by this
-	 * {@link org.openlca.app.editors.graphical.edit.GraphScalableFreeformRootEditPart}.
+	 * {@link GraphRoot}.
 	 *
 	 * @return A new {@link GraphZoomManager} bound to the given
 	 *         {@link ScalableFigure} and {@link Viewport}.
 	 * @since 3.10
 	 */
 	protected GraphZoomManager createZoomManager(EditPartViewer viewer,
-																							 ScalableFigure scalableFigure,
-																							 Viewport viewport) {
+	  ScalableFigure scalableFigure, Viewport viewport) {
 		return new GraphZoomManager(viewer, scalableFigure, viewport);
 	}
 
@@ -91,7 +90,8 @@ public class GraphScalableFreeformRootEditPart extends
 	@Override
 	protected void register() {
 		super.register();
-		getViewer().setProperty(GraphZoomManager.class.toString(), getZoomManager());
+		getViewer().setProperty(GraphZoomManager.class.toString(),
+			getZoomManager());
 	}
 
 	@Override
