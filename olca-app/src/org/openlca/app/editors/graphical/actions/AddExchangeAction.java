@@ -5,6 +5,8 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.SelectionAction;
+import org.eclipse.osgi.util.NLS;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.editors.graphical.edit.IOPaneEditPart;
@@ -29,10 +31,7 @@ public class AddExchangeAction extends SelectionAction {
 		setId(forInput
 			?	ActionIds.ADD_INPUT_EXCHANGE
 			: ActionIds.ADD_OUTPUT_EXCHANGE);
-		// TODO (francois) NLS.bind does not seem to work.
-		//		var name = NLS.bind(forInput ? M.Input : M.Output, M.Flow);
-		//		setText(NLS.bind(M.Add, name));
-		setText("Add " + (forInput ? "input" : "ouput") + " flow");
+		setText(forInput ? M.AddInputFlow : M.AddOutputFlow);
 		setImageDescriptor(Images.descriptor(ModelType.FLOW));
 	}
 

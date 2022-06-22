@@ -4,6 +4,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.SelectionAction;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.rcp.images.Icon;
@@ -15,9 +16,7 @@ public class EditExchangeAction extends SelectionAction {
 	public EditExchangeAction(GraphEditor part) {
 		super(part);
 		setId(ActionIds.EDIT_EXCHANGE);
-		// TODO (francois) NLS.bind does not seem to work.
-		//		setText(NLS.bind(M.Edit, M.Flow));
-		setText("Edit flow");
+		setText(M.EditFlow);
 		setImageDescriptor(Icon.EDIT.descriptor());
 	}
 

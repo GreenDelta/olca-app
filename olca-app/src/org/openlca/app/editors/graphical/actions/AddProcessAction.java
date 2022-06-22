@@ -50,9 +50,7 @@ public class AddProcessAction extends WorkbenchPartAction {
 		editor = part;
 		graph = part.getModel();
 		setId(ActionIds.ADD_PROCESS);
-		// TODO (francois) NLS.bind does not seem to work.
-		//		setText(NLS.bind(M.Add, M.Process));
-		setText("Add process");
+		setText(M.AddProcess);
 		setImageDescriptor(Images.descriptor(ModelType.PROCESS));
 	}
 

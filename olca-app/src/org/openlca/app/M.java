@@ -25,8 +25,11 @@ public class M extends NLS {
 	public static String Actors;
 	public static String Add;
 	public static String AddIndicator;
+	public static String AddInputFlow;
 	public static String AddNewChildCategory;
 	public static String AddNewRepository;
+	public static String AddOutputFlow;
+	public static String AddProcess;
 	public static String AddScore;
 	public static String AddSection;
 	public static String AddToMethodParameters;
@@ -268,6 +271,7 @@ public class M extends NLS {
 	public static String EcoSpoldConfiguration;
 	public static String Economic;
 	public static String Edit;
+	public static String EditFlow;
 	public static String ElementaryFlow;
 	public static String Email;
 	public static String EmptyDatabase;
