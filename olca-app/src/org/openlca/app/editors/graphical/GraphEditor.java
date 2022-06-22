@@ -18,7 +18,7 @@ import org.openlca.app.editors.graphical.actions.*;
 import org.openlca.app.editors.graphical.actions.ZoomInAction;
 import org.openlca.app.editors.graphical.actions.ZoomOutAction;
 import org.openlca.app.editors.graphical.edit.GraphEditPartFactory;
-import org.openlca.app.editors.graphical.edit.GraphScalableFreeformRootEditPart;
+import org.openlca.app.editors.graphical.edit.GraphRoot;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
 import org.openlca.app.editors.graphical.zoom.GraphMouseWheelZoomHandler;
@@ -103,7 +103,7 @@ public class GraphEditor extends GraphicalEditor {
 		super.configureGraphicalViewer();
 		var viewer = getGraphicalViewer();
 
-		var root = new GraphScalableFreeformRootEditPart(viewer);
+		var root = new GraphRoot(viewer);
 
 		// set clipping strategy for connection layer
 		ConnectionLayer connectionLayer = (ConnectionLayer) root
@@ -347,8 +347,8 @@ public class GraphEditor extends GraphicalEditor {
 		return getRootEditPart().getZoomManager();
 	}
 
-	private GraphScalableFreeformRootEditPart getRootEditPart() {
-		return (GraphScalableFreeformRootEditPart) getGraphicalViewer().getRootEditPart();
+	private GraphRoot getRootEditPart() {
+		return (GraphRoot) getGraphicalViewer().getRootEditPart();
 	}
 
 	@Override

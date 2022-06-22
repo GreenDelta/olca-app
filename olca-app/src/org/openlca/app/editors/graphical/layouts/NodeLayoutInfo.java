@@ -2,8 +2,9 @@ package org.openlca.app.editors.graphical.layouts;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.editors.graphical.model.Node;
+
+import static org.openlca.app.editors.graphical.layouts.GraphFreeformLayout.DEFAULT_LOCATION;
 
 public class NodeLayoutInfo {
 
@@ -24,7 +25,7 @@ public class NodeLayoutInfo {
 
 	public NodeLayoutInfo(Point location, Dimension size, boolean minimized,
 												boolean expandedLeft, boolean expandedRight) {
-		this.location = location;
+		this.location = location == null ? DEFAULT_LOCATION : location;
 		this.size = size == null ? Node.DEFAULT_SIZE : size;
 		this.minimized = minimized;
 		this.expandedLeft = expandedLeft;

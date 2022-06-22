@@ -50,10 +50,4 @@ public class GraphRequestConstants implements RequestConstants {
 	 */
 	public static String REQ_ADD_OUTPUT_EXCHANGE = "add_output_exchange";
 
-	/**
-	 * Indicates the addition of a Node in the Graph.
-	 */
-	public static String REQ_ADD_PROCESS = "add_process";
-
-
 }
