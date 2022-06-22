@@ -5,6 +5,7 @@ import com.ibm.icu.text.NumberFormat;
 import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.SharedMessages;
@@ -341,8 +342,10 @@ public class GraphZoomManager {
 	 *            the new zoom level
 	 */
 	protected void primSetZoom(double zoom) {
-		Point cursorLocation = new Point(viewer.getControl()
-			.toControl(Display.getCurrent().getCursorLocation()));
+		var cursorInViewport = new PrecisionPoint(
+			new Point(viewer.getControl().toControl(
+				Display.getCurrent().getCursorLocation())));
+
 		double prevZoom = this.zoom;
 		this.zoom = zoom;
 
@@ -351,15 +354,16 @@ public class GraphZoomManager {
 		getViewport().validate();
 
 		// Translate the viewport to keep the same cursor location in the pane.
-		var p = getViewport().getViewLocation();
-		var cursorInPane = getViewport().getViewLocation()
-			.getTranslated(cursorLocation);
-		var newCursorInPane = cursorInPane.getScaled(zoom / prevZoom);
-		var translation = newCursorInPane.getTranslated(cursorInPane.negate());
+		var viewportLocation = new PrecisionPoint(getViewport().getViewLocation());
+		var cursorInOldPane = (PrecisionPoint) viewportLocation.translate(cursorInViewport);
+		var factor = zoom / prevZoom;
+		var cursorInNewPane = (PrecisionPoint) cursorInOldPane.getPreciseCopy().scale(factor, factor);
+		System.out.println("cursorInNewPane: " + cursorInNewPane);
+		var translation = cursorInNewPane.getDifference(cursorInOldPane);
+		System.out.println("translation: " + translation);
 
-		p.x += translation.x;
-		p.y += translation.y;
-		setViewLocation(p);
+		var p = getViewport().getViewLocation();
+		setViewLocation(p.translate(translation));
 	}
 
 	/**
