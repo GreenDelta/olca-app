@@ -1,6 +1,5 @@
 package org.openlca.app.collaboration.viewers.diff;
 
-import java.time.Instant;
 import java.util.Collection;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -23,7 +22,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Version;
 import org.openlca.git.actions.ConflictResolver.ConflictResolution;
 import org.openlca.git.actions.ConflictResolver.ConflictResolutionType;
 import org.openlca.git.model.DiffType;
@@ -93,12 +91,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			return ConflictResolution.overwrite();
 		if (dialogResult == JsonCompareDialog.KEEP || node.leftEqualsOriginal())
 			return ConflictResolution.keep();
-		var merged = node.left.getAsJsonObject();
-		RefJson.joinSplitFields(merged);
-		var version = Version.fromString(node.right.getAsJsonObject().get("version").getAsString());
-		version.incUpdate();
-		merged.addProperty("version", Version.asString(version.getValue()));
-		merged.addProperty("lastChange", Instant.now().toString());
+		var merged = RefJson.getMergedData(node);
 		return ConflictResolution.merge(merged);
 	}
 

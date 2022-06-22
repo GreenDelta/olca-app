@@ -181,6 +181,22 @@ public class Json {
 		}
 	}
 
+	public static Integer getInt(JsonElement element, String property, Integer defaultValue) {
+		var value = getValue(element, property);
+		if (!value.isJsonPrimitive())
+			return defaultValue;
+		var primitive = value.getAsJsonPrimitive();
+		if (primitive.isNumber())
+			return primitive.getAsInt();
+		if (!primitive.isString())
+			return defaultValue;
+		try {
+			return Integer.parseInt(primitive.getAsString());
+		} catch (NumberFormatException e) {
+			return defaultValue;
+		}
+	}
+
 	private static JsonElement getValue(JsonElement element, String property) {
 		if (element == null)
 			return null;

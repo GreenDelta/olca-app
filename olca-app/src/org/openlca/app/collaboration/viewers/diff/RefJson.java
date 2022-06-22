@@ -1,12 +1,16 @@
 package org.openlca.app.collaboration.viewers.diff;
 
+import java.time.Instant;
+
 import org.eclipse.jgit.lib.ObjectId;
 import org.openlca.app.collaboration.util.Json;
+import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.Version;
 import org.openlca.jsonld.output.JsonExport;
 
 import com.google.gson.Gson;
@@ -73,8 +77,19 @@ class RefJson {
 		json.add(property2, outputs);
 	}
 
-	static void joinSplitFields(JsonObject json) {
-		var type = Json.getModelType(json);
+	static JsonObject getMergedData(JsonNode node) {
+		var merged = node.left.getAsJsonObject();
+		var remote = node.right.getAsJsonObject();
+		var type = Json.getModelType(merged);
+		joinSplitFields(merged, type);
+		if (type == ModelType.PROCESS) {
+			correctLastInternalId(merged, remote);
+		}
+		updateVersion(merged, remote);
+		return merged;
+	}
+
+	private static void joinSplitFields(JsonObject json, ModelType type) {
 		if (type == ModelType.PROCESS) {
 			join(json, "exchanges", "inputs", "outputs");
 		} else if (type == ModelType.RESULT) {
@@ -89,6 +104,21 @@ class RefJson {
 			joined.addAll(toJoin);
 		}
 		json.add(arrayProperty, joined);
+	}
+
+	private static void updateVersion(JsonObject merged, JsonObject remote) {
+		var version = Version.fromString(remote.get("version").getAsString());
+		version.incUpdate();
+		merged.addProperty("version", Version.asString(version.getValue()));
+		merged.addProperty("lastChange", Instant.now().toString());
+	}
+
+	private static void correctLastInternalId(JsonObject merged, JsonObject remote) {
+		var mergedLastId = Json.getInt(merged, "lastInternalId", 0);
+		var remoteLastId = Json.getInt(remote, "lastInternalId", 0);
+		if (remoteLastId > mergedLastId) {
+			merged.addProperty("lastInternalId", remoteLastId);
+		}		
 	}
 
 }
