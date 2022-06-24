@@ -68,6 +68,8 @@ public class AddExchangeAction extends SelectionAction {
 				GraphicalViewer.class);
 			var registry = viewer.getEditPartRegistry();
 			var paneEditPart = (IOPaneEditPart) registry.get(pane);
+			if (paneEditPart == null)
+				continue;
 			cc.add(paneEditPart.getCommand(request));
 			}
 		return cc.unwrap();
