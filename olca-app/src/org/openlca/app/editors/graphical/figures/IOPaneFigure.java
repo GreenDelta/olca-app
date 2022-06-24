@@ -3,10 +3,13 @@ package org.openlca.app.editors.graphical.figures;
 import java.util.List;
 
 import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
+import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.editors.graphical.themes.Theme;
 
+import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredAmountLabelSize;
 import static org.openlca.app.editors.graphical.model.GraphComponent.INPUT_PROP;
 
 public class IOPaneFigure extends Figure {
@@ -14,6 +17,8 @@ public class IOPaneFigure extends Figure {
 	private final Figure contentPane = new Figure();
 	private final IOPane pane;
 	public final AddExchangeButton addExchangeButton = new AddExchangeButton();
+	private Dimension amountLabelSize;
+	private Dimension unitLabelSize;
 
 	public IOPaneFigure(IOPane pane) {
 		this.pane = pane;
@@ -65,6 +70,60 @@ public class IOPaneFigure extends Figure {
 	@Override
 	public List<ExchangeFigure> getChildren() {
 		return super.getChildren();
+	}
+
+	public Dimension getAmountLabelSize() {
+		if (amountLabelSize == null) {
+			for (ExchangeItem item : pane.getExchangesItems()) {
+				var preferredSize = getPreferredAmountLabelSize(item);
+				setAmountLabelSize(preferredSize, false);
+			}
+		}
+		return amountLabelSize;
+	}
+
+	public void setAmountLabelSize(Dimension size, boolean isRemoval) {
+		if (amountLabelSize == null) {
+			amountLabelSize = size;
+			return;
+		}
+
+		var newSize = new Dimension();
+		if (isRemoval) {
+			newSize.width = Math.min(amountLabelSize.width, size.width);
+			newSize.height = Math.min(amountLabelSize.height, size.height);
+		} else {
+			newSize.width = Math.max(amountLabelSize.width, size.width);
+			newSize.height = Math.max(amountLabelSize.height, size.height);
+		}
+		amountLabelSize = newSize;
+	}
+
+	public Dimension getUnitLabelSize() {
+		if (unitLabelSize == null) {
+			for (ExchangeItem item : pane.getExchangesItems()) {
+				var preferredSize = getPreferredAmountLabelSize(item);
+				setUnitLabelSize(preferredSize, false);
+			}
+		}
+		return unitLabelSize;
+	}
+
+	public void setUnitLabelSize(Dimension size, boolean isRemoval) {
+		if (unitLabelSize == null) {
+			unitLabelSize = size;
+			return;
+		}
+
+		var newSize = new Dimension();
+		if (isRemoval) {
+			newSize.width = Math.min(unitLabelSize.width, size.width);
+			newSize.height = Math.min(unitLabelSize.height, size.height);
+		} else {
+			newSize.width = Math.max(unitLabelSize.width, size.width);
+			newSize.height = Math.max(unitLabelSize.height, size.height);
+		}
+		unitLabelSize = newSize;
 	}
 
 	private class Header extends Figure {

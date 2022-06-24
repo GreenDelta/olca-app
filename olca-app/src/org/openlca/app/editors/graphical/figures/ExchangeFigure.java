@@ -18,17 +18,15 @@ import org.openlca.core.model.descriptors.Descriptor;
 
 public class ExchangeFigure extends Figure {
 
-	private final Integer UNIT_ACCURACY = 2;
+	private static final Integer UNIT_ACCURACY = 2;
 	public ExchangeItem exchangeItem;
 	private final Exchange exchange;
-	private final Label label;
+	private Label label;
 	private boolean selected;
 
 	public ExchangeFigure(ExchangeItem exchangeItem) {
 		this.exchangeItem = exchangeItem;
 		this.exchange = exchangeItem.exchange;
-
-		var theme = exchangeItem.getGraph().getConfig().getTheme();
 
 		var layout = new GridLayout(4, false);
 		layout.marginWidth = 0;
@@ -56,6 +54,12 @@ public class ExchangeFigure extends Figure {
 
 		});
 
+		setToolTip(new Label(tooltip()));
+	}
+
+	public void setChildren(IOPaneFigure paneFigure) {
+		var theme = exchangeItem.getGraph().getConfig().getTheme();
+
 		var image = new ImageFigure(Images.get(exchange.flow));
 		add(image, GridPos.leadCenter());
 
@@ -69,16 +73,14 @@ public class ExchangeFigure extends Figure {
 		var amountLabel = new Label(Numbers.format(exchange.amount, UNIT_ACCURACY));
 		amountLabel.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		amountLabel.setLabelAlignment(PositionConstants.RIGHT);
-		var amountPrefSize = getAmountLabelSize();
+		var amountPrefSize = paneFigure.getAmountLabelSize();
 		add(amountLabel, new GridData(amountPrefSize.width, amountPrefSize.height));
 
 		var unitLabel = new Label(Labels.name(exchange.unit));
 		unitLabel.setLabelAlignment(PositionConstants.LEFT);
-		var unitPrefSize = getUnitLabelSize();
+		var unitPrefSize = paneFigure.getUnitLabelSize();
 		unitLabel.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		add(unitLabel, new GridData(unitPrefSize.width, unitPrefSize.height));
-
-		setToolTip(new Label(tooltip()));
 	}
 
 	private String tooltip() {
@@ -130,27 +132,15 @@ public class ExchangeFigure extends Figure {
 		repaint();
 	}
 
-	public Dimension getAmountLabelSize() {
-		var size = new Dimension();
-		for (ExchangeItem item : exchangeItem.getIOPane().getExchangesItems()) {
-			var amountText = Numbers.format(item.exchange.amount, UNIT_ACCURACY);
-			var amount = new Label(amountText);
-			var preferredSize = amount.getPreferredSize(SWT.DEFAULT, SWT.DEFAULT);
-			size.width = Math.max(preferredSize.width, size.width);
-			size.height = Math.max(preferredSize.height, size.height);
-		}
-		return size;
+	public static Dimension getPreferredAmountLabelSize(ExchangeItem item) {
+		var amountText = Numbers.format(item.exchange.amount, UNIT_ACCURACY);
+		var amount = new Label(amountText);
+		return amount.getPreferredSize(SWT.DEFAULT, SWT.DEFAULT);
 	}
 
-	public Dimension getUnitLabelSize() {
-		var size = new Dimension();
-		for (ExchangeItem item : exchangeItem.getIOPane().getExchangesItems()) {
-			var unit = new Label(Labels.name(item.exchange.unit));
-			var preferredSize = unit.getPreferredSize(SWT.DEFAULT, SWT.DEFAULT);
-			size.width = Math.max(preferredSize.width, size.width);
-			size.height = Math.max(preferredSize.height, size.height);
-		}
-		return size;
+	public static Dimension getPreferredUnitLabelSize(ExchangeItem item) {
+		var unit = new Label(Labels.name(item.exchange.unit));
+		return unit.getPreferredSize(SWT.DEFAULT, SWT.DEFAULT);
 	}
 
 	public IOPaneFigure getIOPaneFigure() {

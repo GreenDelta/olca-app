@@ -109,7 +109,7 @@ abstract public class GraphComponent extends GraphElement {
 	 */
 	public boolean removeChild(GraphComponent child) {
 		if (child != null && children.remove(child)) {
-			firePropertyChange(CHILDREN_PROP, null, child);
+			firePropertyChange(CHILDREN_PROP, child, null);
 			return true;
 		}
 		return false;
