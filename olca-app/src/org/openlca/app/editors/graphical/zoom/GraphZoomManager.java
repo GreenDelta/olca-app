@@ -358,9 +358,7 @@ public class GraphZoomManager {
 		var cursorInOldPane = (PrecisionPoint) viewportLocation.translate(cursorInViewport);
 		var factor = zoom / prevZoom;
 		var cursorInNewPane = (PrecisionPoint) cursorInOldPane.getPreciseCopy().scale(factor, factor);
-		System.out.println("cursorInNewPane: " + cursorInNewPane);
 		var translation = cursorInNewPane.getDifference(cursorInOldPane);
-		System.out.println("translation: " + translation);
 
 		var p = getViewport().getViewLocation();
 		setViewLocation(p.translate(translation));
