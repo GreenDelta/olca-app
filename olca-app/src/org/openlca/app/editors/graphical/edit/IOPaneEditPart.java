@@ -9,9 +9,13 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.openlca.app.editors.graphical.figures.GridPos;
 import org.openlca.app.editors.graphical.figures.IOPaneFigure;
+import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.editors.graphical.model.GraphComponent;
 
+import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredAmountLabelSize;
+import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredUnitLabelSize;
+import static org.openlca.app.editors.graphical.model.GraphComponent.CHILDREN_PROP;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_INPUT_EXCHANGE;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_OUTPUT_EXCHANGE;
 
@@ -36,8 +40,24 @@ public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
 		if (GraphComponent.SIZE_PROP.equals(prop)
 			|| GraphComponent.LOCATION_PROP.equals(prop)) {
 			refreshVisuals();
+		} else if (CHILDREN_PROP.equals(prop)) {
+			setLabelSizes(evt);
+			refreshChildren();
+		} else super.propertyChange(evt);
+	}
+
+	private void setLabelSizes(PropertyChangeEvent evt) {
+		// Case of the removal of a child.
+		if (evt.getNewValue() == null) {
+			if (evt.getOldValue() instanceof ExchangeItem item) {
+				getFigure().setAmountLabelSize(getPreferredAmountLabelSize(item), true);
+				getFigure().setUnitLabelSize(getPreferredUnitLabelSize(item), true);
+			}
 		}
-		else super.propertyChange(evt);
+		else if (evt.getNewValue() instanceof ExchangeItem item) {
+			getFigure().setAmountLabelSize(getPreferredAmountLabelSize(item), false);
+			getFigure().setUnitLabelSize(getPreferredUnitLabelSize(item), false);
+		}
 	}
 
 	@Override

@@ -15,7 +15,9 @@ public class ExchangeEditPart extends AbstractNodeEditPart<ExchangeItem> {
 
 	@Override
 	protected IFigure createFigure() {
-		return new ExchangeFigure(getModel());
+		var figure = new ExchangeFigure(getModel());
+		figure.setChildren(((IOPaneEditPart) getParent()).getFigure());
+		return figure;
 	}
 
 	@Override
