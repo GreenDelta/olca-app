@@ -10,7 +10,6 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
-import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.git.actions.GitStashDrop;
@@ -54,9 +53,7 @@ public class StashDropAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
-		if (!Repository.isConnected())
-			return false;
-		return elements.size() == 1 && elements.get(0) instanceof DatabaseElement;
+		return Repository.isConnected();
 	}
 
 }

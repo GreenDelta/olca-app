@@ -63,9 +63,7 @@ public class PushAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
-		if (!Repository.isConnected())
-			return false;
-		return true;
+		return Repository.isConnected();
 	}
 
 }

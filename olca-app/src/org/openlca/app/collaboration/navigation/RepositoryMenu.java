@@ -9,6 +9,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.actions.CommitAction;
 import org.openlca.app.collaboration.navigation.actions.ConnectAction;
+import org.openlca.app.collaboration.navigation.actions.DiscardAction;
 import org.openlca.app.collaboration.navigation.actions.DisconnectAction;
 import org.openlca.app.collaboration.navigation.actions.FetchAction;
 import org.openlca.app.collaboration.navigation.actions.MergeAction;
@@ -28,31 +29,35 @@ import org.openlca.app.rcp.images.Icon;
 public class RepositoryMenu {
 
 	public static void add(List<INavigationElement<?>> selection, IMenuManager menu) {
-		var subMenu = new MenuManager(M.Repository);
-		subMenu.setImageDescriptor(Icon.REPOSITORY.descriptor());
-		var added = NavigationMenu.addActions(selection, subMenu,
+		var repoMenu = new MenuManager(M.Repository);
+		repoMenu.setImageDescriptor(Icon.REPOSITORY.descriptor());
+		var added = NavigationMenu.addActions(selection, repoMenu,
 				new ConnectAction(),
 				new CommitAction(),
 				new PushAction(),
 				new FetchAction(),
 				new MergeAction(),
 				new PullAction());
-		added += subMenu("Stash", Icon.STASH.descriptor(), selection, subMenu,
+		added += subMenu("Stash", Icon.STASH.descriptor(), selection, repoMenu,
 				new StashCreateAction(),
 				new StashApplyAction(),
 				new StashDropAction());
-		added += NavigationMenu.addActions(selection, subMenu,
+		added += NavigationMenu.addActions(selection, repoMenu,
+				new DiscardAction());
+		repoMenu.add(new Separator());
+		added += NavigationMenu.addActions(selection, repoMenu,
 				new ShowCommentsAction(),
 				new ShowInHistoryAction());
-		added += subMenu(M.CompareWith, Icon.COMPARE_VIEW.descriptor(), selection, subMenu,
+		added += subMenu(M.CompareWith, Icon.COMPARE_VIEW.descriptor(), selection, repoMenu,
 				new OpenCompareViewAction(true),
 				new OpenCompareViewAction(false));
-		added += NavigationMenu.addActions(selection, subMenu,
+		repoMenu.add(new Separator());
+		added += NavigationMenu.addActions(selection, repoMenu,
 				new DisconnectAction());
 		if (added == 0)
 			return;
 		menu.add(new Separator());
-		menu.add(subMenu);
+		menu.add(repoMenu);
 		menu.add(new Separator());
 	}
 
@@ -74,7 +79,6 @@ public class RepositoryMenu {
 		if (added == 0)
 			return 0;
 		parentMenu.add(subMenu);
-		parentMenu.add(new Separator());
 		return 1;
 	}
 

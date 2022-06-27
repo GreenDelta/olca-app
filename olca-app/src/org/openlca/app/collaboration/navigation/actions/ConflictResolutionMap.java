@@ -162,13 +162,14 @@ class ConflictResolutionMap implements ConflictResolver {
 				return false;
 			GitStashDrop.from(repo.git).run();
 		}
-		var user = AuthenticationDialog.promptUser();
 		var stashCreate = GitStashCreate.from(Database.get())
 				.to(repo.git)
-				.as(user)
 				.update(repo.workspaceIds);
 		if (discard) {
 			stashCreate = stashCreate.discard();
+		} else {
+			var user = AuthenticationDialog.promptUser();
+			stashCreate = stashCreate.as(user);
 		}
 		Actions.run(stashCreate);
 		return true;
