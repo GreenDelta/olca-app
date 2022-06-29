@@ -24,6 +24,8 @@ import org.openlca.core.database.BaseDao as BaseDao
 import org.openlca.core.results.BaseResult as BaseResult
 import org.openlca.util.BinUtils as BinUtils
 import org.openlca.core.database.BlockFetch as BlockFetch
+import org.openlca.core.results.providers.libblocks.BlockInversionSolver as BlockInversionSolver
+import org.openlca.core.results.providers.libblocks.BlockTechIndex as BlockTechIndex
 import org.openlca.geo.calc.Bounds as Bounds
 import org.openlca.core.matrix.format.ByteMatrixBuffer as ByteMatrixBuffer
 import org.openlca.core.matrix.format.CSCByteMatrix as CSCByteMatrix
@@ -94,6 +96,7 @@ import org.openlca.core.io.DbEntityResolver as DbEntityResolver
 import org.openlca.core.library.DbLibrarySwap as DbLibrarySwap
 import org.openlca.core.database.DbUtils as DbUtils
 import org.openlca.core.matrix.linking.DefaultProcessLinker as DefaultProcessLinker
+import org.openlca.core.matrix.Demand as Demand
 import org.openlca.core.matrix.format.DenseByteMatrix as DenseByteMatrix
 import org.openlca.core.matrix.solvers.DenseFactorization as DenseFactorization
 import org.openlca.core.matrix.format.DenseMatrix as DenseMatrix
@@ -246,6 +249,8 @@ import org.openlca.expressions.InterpreterException as InterpreterException
 import org.openlca.geo.calc.IntersectionCalculator as IntersectionCalculator
 import org.openlca.core.matrix.InventoryBuilder as InventoryBuilder
 import org.openlca.ipc.handlers.InventoryHandler as InventoryHandler
+import org.openlca.core.results.providers.InversionResult as InversionResult
+import org.openlca.core.results.providers.InversionResultProvider as InversionResultProvider
 import org.openlca.io.ecospold2.input.IsicCategoryTreeSync as IsicCategoryTreeSync
 import org.openlca.core.database.validation.Issue as Issue
 import org.openlca.validation.Item as Item
@@ -272,6 +277,7 @@ import org.openlca.core.library.LibTechIndex as LibTechIndex
 import org.openlca.core.library.LibTechItem as LibTechItem
 import org.openlca.core.library.Libraries as Libraries
 import org.openlca.core.library.Library as Library
+import org.openlca.core.results.providers.LibraryCache as LibraryCache
 import org.openlca.core.library.LibraryDir as LibraryDir
 import org.openlca.core.library.LibraryExport as LibraryExport
 import org.openlca.core.library.LibraryInfo as LibraryInfo
