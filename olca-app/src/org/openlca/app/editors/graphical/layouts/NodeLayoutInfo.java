@@ -19,9 +19,7 @@ public class NodeLayoutInfo {
 	public boolean expandedLeft;
 	public boolean expandedRight;
 
-	public NodeLayoutInfo() {
-
-	}
+	public NodeLayoutInfo() {}
 
 	public NodeLayoutInfo(Point location, Dimension size, boolean minimized,
 												boolean expandedLeft, boolean expandedRight) {
@@ -38,4 +36,5 @@ public class NodeLayoutInfo {
 		this(new Point(location.x, location.y), size, minimized, expandedLeft,
 			expandedRight);
 	}
+
 }
