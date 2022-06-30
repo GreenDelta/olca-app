@@ -15,6 +15,7 @@ public interface ActionIds {
 
 	String EDIT_EXCHANGE = "graph.actions.EditExchangeAction";
 	String EDIT_GRAPH_CONFIG = "graph.actions.EditGraphSettingsAction";
+	String FOCUS = "graph.actions.FocusAction";
 	String LAYOUT_TREE = "graph.actions.LayoutAction.TREE_LAYOUT";
 	String LINK_UPDATE = "graph.actions.LinkUpdateAction";
 

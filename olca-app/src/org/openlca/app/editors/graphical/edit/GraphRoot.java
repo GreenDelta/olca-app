@@ -53,6 +53,7 @@ public class GraphRoot extends
 	 */
 	protected ScalableFreeformLayeredPane createScaledLayers() {
 		ScalableFreeformLayeredPane layers = new ScalableFreeformLayeredPane();
+		layers.setBorder(new MarginBorder(8000));
 		layers.add(createGridLayer(), GRID_LAYER);
 		layers.add(getPrintableLayers(), PRINTABLE_LAYERS);
 		layers.add(new FeedbackLayer(), SCALED_FEEDBACK_LAYER);

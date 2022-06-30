@@ -320,6 +320,8 @@ public class M extends NLS {
 	public static String ExternalFile;
 	public static String ExternalSource;
 	public static String ExternalSourceChange;
+
+	// F
 	public static String Factor;
 	public static String Factors;
 	public static String FailedToLoadFlowProperty;
@@ -346,6 +348,7 @@ public class M extends NLS {
 	public static String FlowSchema;
 	public static String FlowType;
 	public static String Flows;
+	public static String Focus;
 	public static String Folder;
 	public static String Formula;
 	public static String FormulaEvaluationFailed;
@@ -960,7 +963,7 @@ public class M extends NLS {
 	public static String Yes;
 	public static String ZipCode;
 
-	private static Map<String, String> map;
+    private static Map<String, String> map;
 
 	static {
 		NLS.initializeMessages("org.openlca.app.messages", M.class);
