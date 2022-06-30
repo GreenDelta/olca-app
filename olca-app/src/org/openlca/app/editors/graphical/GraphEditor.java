@@ -32,6 +32,7 @@ import org.openlca.core.model.ProductSystem;
 import java.util.ArrayList;
 import java.util.EventObject;
 
+import static org.eclipse.gef.LayerConstants.*;
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
 import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.PROVIDER;
@@ -240,6 +241,9 @@ public class GraphEditor extends GraphicalEditor {
 		action = new SearchConnectorsAction(this, RECIPIENTS);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
+
+		action = new FocusAction(this);
+		registry.registerAction(action);
 	}
 
 	/**
