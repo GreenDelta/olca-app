@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -20,6 +22,7 @@ import org.openlca.app.navigation.NavigationComparator;
 import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.LibraryDirElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.preferences.Preferences;
@@ -169,6 +172,7 @@ class ModelSelectionPage extends WizardPage {
 		selectionProvider = new ModelContentProvider();
 		selectionProvider.setSelection(getInitialSelection());
 		var viewer = CheckboxTreeViewers.create(viewerComposite, selectionProvider);
+		viewer.addFilter(new LibraryFilter());
 		viewer.addFilter(new ModelTypeFilter(types));
 		viewer.setLabelProvider(new NavigationLabelProvider(false));
 		viewer.setComparator(new NavigationComparator());
@@ -189,11 +193,9 @@ class ModelSelectionPage extends WizardPage {
 		var navigator = Navigator.getInstance();
 		if (navigator == null)
 			return new HashSet<>();
-		return new HashSet<>(Navigator.collect(navigator.getAllSelected(), elem -> {
-			if (elem instanceof ModelElement m && fitsType(m))
-				return elem;
-			return null;
-		}));
+		return new HashSet<>(Navigator.collect(navigator.getAllSelected(),
+				elem -> !(elem instanceof LibraryDirElement),
+				elem -> elem instanceof ModelElement m && fitsType(m) ? elem : null));
 	}
 
 	private boolean fitsType(ModelElement element) {
@@ -225,6 +227,15 @@ class ModelSelectionPage extends WizardPage {
 		@Override
 		protected void onCheckStateChanged() {
 			ModelSelectionPage.this.checkCompletion();
+		}
+
+	}
+
+	private class LibraryFilter extends ViewerFilter {
+
+		@Override
+		public boolean select(Viewer viewer, Object parentElement, Object element) {
+			return !(element instanceof LibraryDirElement);
 		}
 
 	}

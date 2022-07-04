@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -111,14 +112,14 @@ public class Navigator extends CommonNavigator {
 						return;
 					List<INavigationElement<?>> elems = Selections.allOf(selection);
 					Stream.of(
-						new DbDeleteAction(),
-						new DeleteLibraryAction(),
-						new DeleteModelAction(),
-						new DeleteMappingAction(),
-						new DeleteScriptAction())
-						.filter((INavigationAction a) -> a.accept(elems))
-						.findFirst()
-						.ifPresent(INavigationAction::run);
+							new DbDeleteAction(),
+							new DeleteLibraryAction(),
+							new DeleteModelAction(),
+							new DeleteMappingAction(),
+							new DeleteScriptAction())
+							.filter((INavigationAction a) -> a.accept(elems))
+							.findFirst()
+							.ifPresent(INavigationAction::run);
 				}
 			}
 		});
@@ -298,7 +299,7 @@ public class Navigator extends CommonNavigator {
 
 	public static Set<RootDescriptor> collectDescriptors(
 			Collection<INavigationElement<?>> elements) {
-		return collect(elements, e -> {
+		return collect(elements, null, e -> {
 			if (!(e instanceof ModelElement))
 				return null;
 			return ((ModelElement) e).getContent();
@@ -310,14 +311,17 @@ public class Navigator extends CommonNavigator {
 	 * null in the unwrap function
 	 */
 	public static <T> Set<T> collect(Collection<INavigationElement<?>> elements,
+			Predicate<INavigationElement<?>> filter,
 			Function<INavigationElement<?>, T> unwrap) {
 		Set<T> set = new HashSet<>();
 		for (INavigationElement<?> element : elements) {
+			if (filter != null && !filter.test(element))
+				continue;
 			T content = unwrap.apply(element);
 			if (content != null) {
 				set.add(content);
 			}
-			set.addAll(collect(element.getChildren(), unwrap));
+			set.addAll(collect(element.getChildren(), filter, unwrap));
 		}
 		return set;
 	}
