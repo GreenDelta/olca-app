@@ -14,18 +14,19 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.editpolicies.XYLayoutEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-import org.eclipse.osgi.util.NLS;
-import org.openlca.app.M;
-import org.openlca.app.editors.graphical.layouts.GraphFreeformLayout;
+import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.commands.CreateNodeCommand;
+import org.openlca.app.editors.graphical.model.commands.EditConfigCommand;
 import org.openlca.app.editors.graphical.model.commands.LayoutCommand;
 import org.openlca.app.editors.graphical.model.commands.NodeSetConstraintCommand;
 import org.openlca.app.editors.graphical.requests.GraphRequest;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
+import static org.openlca.app.editors.graphical.actions.EditGraphConfigAction.KEY_CONFIG;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
 
 public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 
@@ -35,6 +36,8 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 			return new LayoutCommand((Graph) getHost().getModel());
 		if (REQ_CREATE.equals(request.getType()))
 			return getCreateCommand((GraphRequest) request);
+		if (REQ_EDIT_CONFIG.equals(request.getType()))
+			return getEditConfigCommand(request);
 		return super.getCommand(request);
 	}
 
@@ -106,6 +109,11 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 
 		translateFromAbsoluteToLayoutRelative(locationAndSize);
 		return getConstraintFor(request, null, locationAndSize);
+	}
+
+	private Command getEditConfigCommand(Request request) {
+		var newConfig = (GraphConfig) request.getExtendedData().get(KEY_CONFIG);
+		return new EditConfigCommand((Graph) getHost().getModel(), newConfig);
 	}
 
 }
