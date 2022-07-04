@@ -50,4 +50,10 @@ public class GraphRequestConstants implements RequestConstants {
 	 */
 	public static String REQ_ADD_OUTPUT_EXCHANGE = "add_output_exchange";
 
+	/**
+	 * Indicate that all the children of Graph should be reset in order to apply
+	 * the new config.
+	 */
+	public static String REQ_EDIT_CONFIG = "edit_config";
+
 }

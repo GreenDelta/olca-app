@@ -1,8 +1,10 @@
 package org.openlca.app.editors.graphical.actions;
 
+import java.util.HashMap;
 import java.util.Objects;
 
-import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -15,16 +17,20 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.themes.Themes;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
-import org.openlca.jsonld.Json;
+
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 public class EditGraphConfigAction extends WorkbenchPartAction {
 
+	public static final String KEY_CONFIG = "config";
+
 	private final GraphEditor editor;
+	private GraphConfig config;
 
 	public EditGraphConfigAction(GraphEditor part) {
 		super(part);
@@ -38,21 +44,25 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 	public void run() {
 		if (editor == null)
 			return;
-		var config = GraphConfig.from(editor.config);
+		config = GraphConfig.from(editor.config);
 		if (new Dialog(config).open() != Window.OK)
 			return;
-		config.copyTo(editor.config);
 
-		// Resetting all the nodes with the new config.
-		var rootObj = GraphFile.createJsonArray(editor, editor.getModel());
-		var array = Json.getArray(rootObj, "nodes");
-		var newGraph = editor.getGraphFactory().createGraph(editor, array);
-		editor.getModel().removeAllChildren();
-		editor.getModel().addChildren(newGraph.getChildren());
-		// TODO (francois) Find another way to avoid flushing the CommandStack.
-		((CommandStack) editor.getAdapter(CommandStack.class)).flush();
+		if (!config.equals(editor.config)) {
+			if (getCommand().canExecute()) getCommand().execute();
+			else Popup.info("Failed to apply the new settings");
 
-		editor.setDirty();
+			editor.setDirty();
+		}
+	}
+
+	private Command getCommand() {
+		var graphEditPart = editor.getRootEditPart().getContents();
+		var request = new Request(REQ_EDIT_CONFIG);
+		var data = new HashMap<String, Object>();
+		data.put(KEY_CONFIG, config);
+		request.setExtendedData(data);
+		return graphEditPart.getCommand(request);
 	}
 
 	@Override
