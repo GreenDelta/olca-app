@@ -8,6 +8,7 @@ import org.openlca.app.db.DatabaseWizard;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.LibraryDirElement;
 import org.openlca.app.rcp.images.Images;
 
 /**
@@ -25,7 +26,7 @@ public class DbCreateAction extends Action implements INavigationAction {
 		if (selection.isEmpty())
 			return true;
 		var first = selection.get(0);
-		return first instanceof DatabaseElement;
+		return first instanceof DatabaseElement || first instanceof LibraryDirElement;
 	}
 
 	@Override
