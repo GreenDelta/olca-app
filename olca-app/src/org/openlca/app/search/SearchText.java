@@ -163,6 +163,8 @@ public class SearchText extends WorkbenchWindowControlContribution {
 				return M.SearchInProductSystems;
 			case IMPACT_METHOD:
 				return M.SearchInLCIAMethods;
+			case IMPACT_CATEGORY:
+				return M.SearchInLCIACategories;
 			case PROCESS:
 				return M.SearchInProcesses;
 			case FLOW:

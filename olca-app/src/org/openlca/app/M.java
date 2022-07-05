@@ -780,6 +780,7 @@ public class M extends NLS {
 	public static String SearchInDataQualitySystems;
 	public static String SearchInFlowProperties;
 	public static String SearchInFlows;
+	public static String SearchInLCIACategories;
 	public static String SearchInLCIAMethods;
 	public static String SearchInLocations;
 	public static String SearchInParameters;
