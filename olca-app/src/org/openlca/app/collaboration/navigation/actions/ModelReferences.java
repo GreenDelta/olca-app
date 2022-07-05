@@ -167,8 +167,6 @@ class ModelReferences {
 	private void scanImpactMethods() {
 		scanTable("tbl_impact_methods", true,
 				new ModelField(ModelType.IMPACT_METHOD, "id"),
-				new ModelField(ModelType.ACTOR, "f_author"),
-				new ModelField(ModelType.ACTOR, "f_generator"),
 				new ModelField(ModelType.SOURCE, "f_source"));
 		scanTable("tbl_source_links", false,
 				new ModelField(ModelType.IMPACT_METHOD, "f_owner"),
