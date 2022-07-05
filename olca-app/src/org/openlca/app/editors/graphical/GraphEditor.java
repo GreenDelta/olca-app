@@ -316,7 +316,7 @@ public class GraphEditor extends GraphicalEditor {
 	protected void setInput(IEditorInput input) {
 		super.setInput(input);
 		var array = GraphFile.getLayouts(this);
-		graph = getGraphFactory().createGraph(this, array);
+		setModel(getGraphFactory().createGraph(this, array));
 	}
 
 	public void setDirty() {
@@ -336,6 +336,10 @@ public class GraphEditor extends GraphicalEditor {
 	public void commandStackChanged(EventObject event) {
 		firePropertyChange(IEditorPart.PROP_DIRTY);
 		super.commandStackChanged(event);
+	}
+
+	public void setModel(Graph model) {
+		graph = model;
 	}
 
 	public Graph getModel() {
