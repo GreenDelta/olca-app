@@ -102,6 +102,9 @@ public class GraphContextMenuProvider  extends ContextMenuProvider {
 	}
 
 	private void addViewActions(IMenuManager menu) {
+		var focus = actionRegistry.getAction(ActionIds.FOCUS);
+		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, focus);
+
 		var layout = actionRegistry.getAction(ActionIds.LAYOUT_TREE);
 		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, layout);
 

@@ -8,7 +8,6 @@ import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.layouts.GraphFreeformLayout;
 import org.openlca.app.editors.graphical.layouts.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;

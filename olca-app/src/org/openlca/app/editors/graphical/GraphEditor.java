@@ -240,6 +240,9 @@ public class GraphEditor extends GraphicalEditor {
 		action = new SearchConnectorsAction(this, RECIPIENTS);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
+
+		action = new FocusAction(this);
+		registry.registerAction(action);
 	}
 
 	/**
@@ -347,7 +350,7 @@ public class GraphEditor extends GraphicalEditor {
 		return getRootEditPart().getZoomManager();
 	}
 
-	private GraphRoot getRootEditPart() {
+	public GraphRoot getRootEditPart() {
 		return (GraphRoot) getGraphicalViewer().getRootEditPart();
 	}
 

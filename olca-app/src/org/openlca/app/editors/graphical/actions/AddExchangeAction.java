@@ -5,7 +5,6 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.SelectionAction;
-import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
@@ -67,11 +66,10 @@ public class AddExchangeAction extends SelectionAction {
 			var viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(
 				GraphicalViewer.class);
 			var registry = viewer.getEditPartRegistry();
-			var paneEditPart = (IOPaneEditPart) registry.get(pane);
-			if (paneEditPart == null)
-				continue;
-			cc.add(paneEditPart.getCommand(request));
+			if (registry.get(pane) instanceof IOPaneEditPart paneEditPart) {
+				cc.add(paneEditPart.getCommand(request));
 			}
+		}
 		return cc.unwrap();
 	}
 

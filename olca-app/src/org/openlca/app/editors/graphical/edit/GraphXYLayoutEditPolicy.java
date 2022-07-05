@@ -14,26 +14,30 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.editpolicies.XYLayoutEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-import org.eclipse.osgi.util.NLS;
-import org.openlca.app.M;
-import org.openlca.app.editors.graphical.layouts.GraphFreeformLayout;
+import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.commands.CreateNodeCommand;
+import org.openlca.app.editors.graphical.model.commands.EditConfigCommand;
+import org.openlca.app.editors.graphical.model.commands.LayoutCommand;
 import org.openlca.app.editors.graphical.model.commands.NodeSetConstraintCommand;
 import org.openlca.app.editors.graphical.requests.GraphRequest;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
+import static org.openlca.app.editors.graphical.actions.EditGraphConfigAction.KEY_CONFIG;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
 
 public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 
 	@Override
 	public Command getCommand(Request request) {
 		if (REQ_LAYOUT.equals(request.getType()))
-			return getLayoutCommand();
+			return new LayoutCommand((Graph) getHost().getModel());
 		if (REQ_CREATE.equals(request.getType()))
 			return getCreateCommand((GraphRequest) request);
+		if (REQ_EDIT_CONFIG.equals(request.getType()))
+			return getEditConfigCommand(request);
 		return super.getCommand(request);
 	}
 
@@ -80,28 +84,6 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 		return policy;
 	}
 
-	protected Command getLayoutCommand() {
-		var graphEditPart = (GraphEditPart) getHost();
-		var layoutManager = (GraphFreeformLayout) graphEditPart.getFigure()
-			.getLayoutManager();
-
-		CompoundCommand cc = new CompoundCommand();
-		cc.setLabel(NLS.bind(M.LayoutAs.toLowerCase(), M.Tree));
-
-		var mapNodeToLocation = layoutManager.layoutProcessor.getNodeLocations();
-
-		for (NodeEditPart part : graphEditPart.getChildren()) {
-			var request = new ChangeBoundsRequest(REQ_MOVE_CHILDREN);
-			request.setEditParts(part);
-			var newLoc = mapNodeToLocation.get(part.getFigure());
-			var oldLoc = part.getFigure().getLocation();
-			var moveDelta = newLoc.getTranslated(oldLoc.getNegated());
-			request.setMoveDelta(moveDelta);
-			cc.add(getCommand(request));
-		}
-		return cc.unwrap();
-	}
-
 	/**
 	 * Generates a draw2d constraint for the given <code>GraphRequest</code>.
 	 *
@@ -127,6 +109,11 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 
 		translateFromAbsoluteToLayoutRelative(locationAndSize);
 		return getConstraintFor(request, null, locationAndSize);
+	}
+
+	private Command getEditConfigCommand(Request request) {
+		var newConfig = (GraphConfig) request.getExtendedData().get(KEY_CONFIG);
+		return new EditConfigCommand((Graph) getHost().getModel(), newConfig);
 	}
 
 }

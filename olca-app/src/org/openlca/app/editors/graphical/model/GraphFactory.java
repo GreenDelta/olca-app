@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.google.gson.JsonArray;
+import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.GraphFile;
@@ -225,7 +226,8 @@ public class GraphFactory {
 
 		if (referenceProcess != null) {
 			var descriptor = getDescriptor(referenceProcess.id);
-			var refNode = createNode(descriptor, null);
+			var info = new NodeLayoutInfo((Point) null, null, false, false, false);
+			var refNode = createNode(descriptor, info);
 			if (refNode != null) {
 				graph.addChild(refNode);
 				refNode.expand();
