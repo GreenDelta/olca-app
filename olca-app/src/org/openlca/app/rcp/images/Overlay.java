@@ -9,6 +9,7 @@ public enum Overlay {
 	DELETED("overlay/collaboration/deleted.png"),
 	DELETE_FROM_LOCAL("overlay/collaboration/delete_local.png"),
 	DELETE_FROM_REMOTE("overlay/collaboration/delete_remote.png"),
+	LIBRARY("overlay/library.png"),
 	MERGED("overlay/collaboration/merged.png"),
 	MODIFY_IN_LOCAL("overlay/collaboration/modify_local.png"),
 	MODIFY_IN_REMOTE("overlay/collaboration/modify_remote.png"),
@@ -16,7 +17,7 @@ public enum Overlay {
 
 	final String fileName;
 
-	private Overlay(String fileName) {
+	Overlay(String fileName) {
 		this.fileName = fileName;
 	}
 

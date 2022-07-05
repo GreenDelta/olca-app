@@ -42,12 +42,6 @@ class ImageManager {
 		return image;
 	}
 
-	static Image get(Icon icon, Overlay overlay) {
-		if (icon == null || overlay == null)
-			return null;
-		return get(icon.fileName, overlay.fileName);
-	}
-
 	static Image get(ModelIcon icon, Overlay overlay) {
 		if (icon == null || overlay == null)
 			return null;
@@ -61,7 +55,7 @@ class ImageManager {
 		Image withOverlay = registry.get(id);
 		if (withOverlay != null && !withOverlay.isDisposed())
 			return withOverlay;
-		DecorationOverlayIcon withIcon = new DecorationOverlayIcon(
+		var withIcon = new DecorationOverlayIcon(
 				get(filename), descriptor(overlay), IDecoration.BOTTOM_RIGHT);
 		withOverlay = withIcon.createImage();
 		registry.put(id, withOverlay);
