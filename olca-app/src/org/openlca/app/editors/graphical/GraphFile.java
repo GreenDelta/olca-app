@@ -16,6 +16,9 @@ import org.openlca.jsonld.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
+import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
+
 /**
  * We save the current layout and some settings in an external file of the
  * database folder.
@@ -75,10 +78,8 @@ public final class GraphFile {
 		}
 
 		json.addProperty("minimized", node.isMinimized());
-		// TODO
-		//		json.addProperty("expandedLeft", node.isExpandedLeft());
-		//		json.addProperty("expandedRight", node.isExpandedLeft());
-		//		json.addProperty("marked", node.isMarked());
+		json.addProperty("expandedLeft", node.isExpanded(INPUT));
+		json.addProperty("expandedRight", node.isExpanded(OUTPUT));
 
 		return json;
 	}
