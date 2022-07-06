@@ -48,14 +48,14 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		if (elements == null)
 			return false;
 		for (var elem : elements) {
-			if (elem instanceof CategoryElement) {
-				if(elem.getLibrary().isPresent())
+			if (elem.getLibrary().isPresent())
+				continue;
+			if (elem instanceof CategoryElement catElem) {
+				categories.add(catElem);
+			} else if (elem instanceof ModelElement modElem) {
+				if (modElem.isFromLibrary())
 					continue;
-				categories.add((CategoryElement) elem);
-			} else if (elem instanceof ModelElement) {
-				if(elem.getLibrary().isPresent())
-					continue;
-				models.add((ModelElement) elem);
+				models.add(modElem);
 			}
 		}
 		return !models.isEmpty() || !categories.isEmpty();
