@@ -168,7 +168,7 @@ class ConflictResolutionMap implements ConflictResolver {
 		if (discard) {
 			stashCreate = stashCreate.discard();
 		} else {
-			var user = AuthenticationDialog.promptUser();
+			var user = AuthenticationDialog.promptUser(repo);
 			stashCreate = stashCreate.as(user);
 		}
 		Actions.run(stashCreate);

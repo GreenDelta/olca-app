@@ -30,7 +30,7 @@ public enum Icon {
 	COPY("copy.png"),
 	COPY_ALL_CHANGES("collaboration/copy_all.png"),
 	COPY_SELECTED_CHANGE("collaboration/copy_selected.png"),
-	CLOUD_LOGO("collaboration/logo.png"),
+	COLLABORATION_SERVER_LOGO("collaboration/logo.png"),
 	CUT("cut.png"),
 
 	DATABASE("model/database.png"),

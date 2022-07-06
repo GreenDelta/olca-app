@@ -48,7 +48,7 @@ public class MergeAction extends Action implements INavigationAction {
 			if (conflictResult == null)
 				return;
 			var user = !repo.localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty()
-					? AuthenticationDialog.promptUser()
+					? AuthenticationDialog.promptUser(repo)
 					: null;
 			var changed = Actions.run(GitMerge
 					.from(repo.git)

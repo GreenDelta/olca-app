@@ -197,7 +197,39 @@ public class Json {
 		}
 	}
 
-	private static JsonElement getValue(JsonElement element, String property) {
+	public static Long getLong(JsonElement element, String property, Long defaultValue) {
+		var value = getValue(element, property);
+		if (!value.isJsonPrimitive())
+			return defaultValue;
+		var primitive = value.getAsJsonPrimitive();
+		if (primitive.isNumber())
+			return primitive.getAsLong();
+		if (!primitive.isString())
+			return defaultValue;
+		try {
+			return Long.parseLong(primitive.getAsString());
+		} catch (NumberFormatException e) {
+			return defaultValue;
+		}
+	}
+
+	public static Boolean getBoolean(JsonElement element, String property, Boolean defaultValue) {
+		var value = getValue(element, property);
+		if (!value.isJsonPrimitive())
+			return defaultValue;
+		var primitive = value.getAsJsonPrimitive();
+		if (primitive.isNumber())
+			return primitive.getAsBoolean();
+		if (!primitive.isString())
+			return defaultValue;
+		try {
+			return Boolean.parseBoolean(primitive.getAsString());
+		} catch (NumberFormatException e) {
+			return defaultValue;
+		}
+	}
+
+	public static JsonElement getValue(JsonElement element, String property) {
 		if (element == null)
 			return null;
 		if (!element.isJsonObject())
@@ -267,14 +299,10 @@ public class Json {
 	}
 
 	public static ModelType getModelType(JsonElement element) {
-		if (element == null)
-			return null;
-		if (!element.isJsonObject())
-			return null;
-		var type = element.getAsJsonObject().get("@type");
+		var type = getValue(element, "@id");
 		if (type == null)
 			return null;
-		for (ModelType mType : ModelType.values())
+		for (var mType : ModelType.values())
 			if (mType != ModelType.UNKNOWN && mType.getModelClass().getSimpleName().equals(type.getAsString()))
 				return mType;
 		return null;

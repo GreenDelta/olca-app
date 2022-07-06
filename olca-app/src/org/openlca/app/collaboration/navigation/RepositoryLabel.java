@@ -79,7 +79,7 @@ public class RepositoryLabel {
 		if (!Strings.nullOrEmpty(user)) {
 			text += user + "@";
 		}
-		text += repo.serverUrl + "/" + repo.repositoryId;
+		text += repo.client.serverUrl + "/" + repo.client.repositoryId;
 		if (!ahead.isEmpty()) {
 			text += " ↑" + ahead.size();
 		}

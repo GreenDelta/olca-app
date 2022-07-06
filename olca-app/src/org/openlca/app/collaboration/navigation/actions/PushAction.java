@@ -38,12 +38,13 @@ public class PushAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
+		var repo = Repository.get();
 		try {
-			var credentials = AuthenticationDialog.promptCredentials();
+			var credentials = AuthenticationDialog.promptCredentials(repo);
 			if (credentials == null)
 				return;
 			var result = Actions.run(credentials,
-					GitPush.from(Repository.get().git));
+					GitPush.from(repo.git));
 			if (result == null)
 				return;
 			if (result.newCommits().isEmpty()) {

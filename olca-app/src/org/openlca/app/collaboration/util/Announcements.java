@@ -18,10 +18,10 @@ public class Announcements {
 			var announcement = client.getAnnouncement();
 			if (announcement == null || announcement.message() == null || announcement.message().isEmpty())
 				return;
-			if (CollaborationPreference.didReadAnnouncement(repo.serverUrl, announcement.id()))
+			if (CollaborationPreference.didReadAnnouncement(repo.client.serverUrl, announcement.id()))
 				return;
 			MsgBox.error("LCA Collaboration Server announcement", announcement.message());
-			CollaborationPreference.markAnnouncementAsRead(repo.serverUrl, announcement.id());
+			CollaborationPreference.markAnnouncementAsRead(repo.client.serverUrl, announcement.id());
 		} catch (WebRequestException e) {
 			// ignore, older servers don't provide announcement resource
 			if (e.getErrorCode() == Status.NOT_FOUND.getStatusCode())

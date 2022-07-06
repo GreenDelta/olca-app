@@ -264,7 +264,14 @@
 			default="false"
 			name="%SearchResults">
 		</editor>
-		<editor
+      <editor
+            id="SearchView"
+            class="org.openlca.app.collaboration.search.SearchView"
+            icon="icons/search.png"
+            default="false"
+            name="CS Search results">
+      </editor>
+     <editor
 			id="ParameterUsagePage"
 			class="org.openlca.app.search.ParameterUsagePage"
 			icon="icons/link.png"

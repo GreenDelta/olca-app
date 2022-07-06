@@ -31,11 +31,11 @@ class LoginInvocation {
 		var repo = Repository.get();
 		if ("tokenRequired".equals(result)) {
 			repo.useTwoFactorAuth(true);
-			var auth = AuthenticationDialog.promptToken();
+			var auth = AuthenticationDialog.promptToken(credentials.user, credentials.password);
 			if (auth == null)
 				return null;
 			response = _execute(auth.token);
-		} else if (Strings.nullOrEmpty(credentials.token)) {
+		} else if (Strings.nullOrEmpty(credentials.token) && repo != null) {
 			repo.useTwoFactorAuth(false);
 		}
 		for (var cookie : response.getCookies())

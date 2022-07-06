@@ -57,8 +57,8 @@ public class CommitAction extends Action implements INavigationAction {
 			if (input == null || input.action() == CommitDialog.CANCEL)
 				return false;
 			var doPush = input.action() == CommitDialog.COMMIT_AND_PUSH;
-			var credentials = doPush ? AuthenticationDialog.promptCredentials() : null;
-			var user = doPush ? credentials.ident : AuthenticationDialog.promptUser();
+			var credentials = doPush ? AuthenticationDialog.promptCredentials(repo) : null;
+			var user = doPush ? credentials.ident : AuthenticationDialog.promptUser(repo);
 			if (credentials == null && user == null)
 				return false;
 			var changes = input.datasets().stream()

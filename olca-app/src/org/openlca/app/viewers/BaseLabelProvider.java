@@ -13,6 +13,7 @@ import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.RefEntity;
@@ -34,6 +35,8 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 			return Images.get((FlowType) element);
 		if (element instanceof ProcessType)
 			return Images.get((ProcessType) element);
+		if (element instanceof ModelType)
+			return Images.get((ModelType) element);
 		if (element instanceof Group)
 			return Images.get((Group) element);
 		if (element instanceof GroupType)
@@ -67,6 +70,8 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 			return Labels.of((FlowType) enumValue);
 		if (enumValue instanceof ProcessType)
 			return Labels.of((ProcessType) enumValue);
+		if (enumValue instanceof ModelType)
+			return Labels.of((ModelType) enumValue);
 		if (enumValue instanceof UncertaintyType)
 			return Labels.of((UncertaintyType) enumValue);
 		if (enumValue != null)

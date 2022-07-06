@@ -73,10 +73,10 @@ class Actions {
 			throw runner.exception;
 		if (notAuthorized) {
 			repo.invalidateCredentials();
-			credentials = AuthenticationDialog.forcePromptCredentials();
+			credentials = AuthenticationDialog.forcePromptCredentials(repo);
 		} else if (tokenRequired) {
 			repo.useTwoFactorAuth(true);
-			credentials = AuthenticationDialog.promptToken();
+			credentials = AuthenticationDialog.promptToken(repo);
 		}
 		if (credentials == null)
 			return null;

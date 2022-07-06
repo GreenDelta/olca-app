@@ -37,7 +37,7 @@ public class PullAction extends Action implements INavigationAction {
 		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
-			var credentials = AuthenticationDialog.promptCredentials();
+			var credentials = AuthenticationDialog.promptCredentials(repo);
 			if (credentials == null)
 				return;
 			var newCommits = Actions.run(credentials,

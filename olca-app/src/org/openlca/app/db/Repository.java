@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.rcp.Workspace;
@@ -27,8 +28,6 @@ public class Repository {
 	private static Repository current;
 	public static final String GIT_DIR = "repositories";
 	public final org.eclipse.jgit.lib.Repository git;
-	public final String serverUrl;
-	public final String repositoryId;
 	public final RepositoryClient client;
 	public final ObjectIdStore workspaceIds;
 	public final Commits commits;
@@ -41,19 +40,7 @@ public class Repository {
 
 	private Repository(IDatabase database, File gitDir) throws IOException {
 		git = new FileRepository(gitDir);
-		var url = url(git);
-		if (url.startsWith("git@")) {
-			var splitIndex = url.lastIndexOf(":");
-			serverUrl = url.substring(0, splitIndex);
-			repositoryId = url.substring(splitIndex + 1);
-		} else if (url.startsWith("http")) {
-			var splitIndex = url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
-			serverUrl = url.substring(0, splitIndex);
-			repositoryId = url.substring(splitIndex + 1);
-		} else {
-			throw new IllegalArgumentException("Unsupported protocol");
-		}
-		client = new RepositoryClient(serverUrl, repositoryId);
+		client = client(git);
 		var storeFile = new File(gitDir, "object-id.store");
 		workspaceIds = ObjectIdStore.fromFile(storeFile);
 		commits = Commits.of(git);
@@ -99,6 +86,22 @@ public class Repository {
 		return new File(repos, databaseName);
 	}
 
+	public static RepositoryClient client(org.eclipse.jgit.lib.Repository git) throws IOException {
+		var url = url(git);
+		if (url.startsWith("git@")) {
+			var splitIndex = url.lastIndexOf(":");
+			var serverUrl = url.substring(0, splitIndex);
+			var repositoryId = url.substring(splitIndex + 1);
+			return new RepositoryClient(serverUrl, repositoryId);
+		} else if (url.startsWith("http")) {
+			var splitIndex = url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
+			var serverUrl = url.substring(0, splitIndex);
+			var repositoryId = url.substring(splitIndex + 1);
+			return new RepositoryClient(serverUrl, repositoryId);
+		}
+		throw new IllegalArgumentException("Unsupported protocol");
+	}
+
 	public static boolean isConnected() {
 		return current != null;
 	}
@@ -128,8 +131,12 @@ public class Repository {
 		}
 	}
 
+	public static String user(StoredConfig config) {
+		return config.getString("user", null, "name");
+	}
+
 	public String user() {
-		return git.getConfig().getString("user", null, "name");
+		return user(git.getConfig());
 	}
 
 	public void user(String user) {
@@ -161,8 +168,12 @@ public class Repository {
 		saveConfig();
 	}
 
+	public static boolean isCollaborationServer(StoredConfig config) {
+		return config.getBoolean("remote", "origin", "isCollaborationServer", false);
+	}
+
 	public boolean isCollaborationServer() {
-		return git.getConfig().getBoolean("remote", "origin", "isCollaborationServer", false);
+		return isCollaborationServer(git.getConfig());
 	}
 
 	public void isCollaborationServer(boolean value) {

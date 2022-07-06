@@ -1,26 +1,24 @@
 package org.openlca.app.collaboration.api;
 
-import java.util.Map;
-
+import org.openlca.app.collaboration.util.Json;
 import org.openlca.app.collaboration.util.Valid;
 import org.openlca.app.collaboration.util.WebRequests.Type;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.jsonld.SchemaVersion;
 
 import com.google.common.base.Strings;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonObject;
 import com.sun.jersey.api.client.ClientResponse.Status;
 
 /**
  * Invokes a webservice call to check access to the specified repository
  */
-class CheckAccessInvocation extends Invocation<Map<String, Integer>, Boolean> {
+class CheckAccessInvocation extends Invocation<JsonObject, Boolean> {
 
 	private final String repositoryId;
 
 	CheckAccessInvocation(String repositoryId) {
-		super(Type.GET, "repository/meta", new TypeToken<Map<String, Integer>>() {
-		});
+		super(Type.GET, "repository/meta", JsonObject.class);
 		this.repositoryId = repositoryId;
 	}
 
@@ -35,11 +33,11 @@ class CheckAccessInvocation extends Invocation<Map<String, Integer>, Boolean> {
 	}
 
 	@Override
-	protected Boolean process(Map<String, Integer> meta) {
+	protected Boolean process(JsonObject meta) {
 		var currentVersion = SchemaVersion.current().value();
 		if (meta == null)
 			throw new RuntimeException("Unknown schema version, does not match current version " + currentVersion);
-		var version = meta.get("schemaVersion");
+		var version = Json.getInt(meta, "schemaVersion", 0);
 		if (currentVersion != version)
 			throw new RuntimeException(
 					"Schema version " + version + " does not match current version " + currentVersion);

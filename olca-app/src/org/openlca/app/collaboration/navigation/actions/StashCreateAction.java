@@ -54,7 +54,7 @@ public class StashCreateAction extends Action implements INavigationAction {
 			var input = Datasets.select(selection, false, true);
 			if (input == null)
 				return;
-			var user = AuthenticationDialog.promptUser();
+			var user = AuthenticationDialog.promptUser(repo);
 			if (user == null)
 				return;
 			var changes = input.datasets().stream()
