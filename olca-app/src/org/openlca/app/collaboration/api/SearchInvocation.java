@@ -35,8 +35,7 @@ public class SearchInvocation extends Invocation<JsonObject, SearchResult> {
 	protected String query() {
 		var query = "?page=" + page
 				+ "&pageSize=" + pageSize
-				+ "&repositoryId=" + repositoryId
-				+ "&latest=true";
+				+ "&repositoryId=" + repositoryId;
 		if (!Strings.nullOrEmpty(this.query)) {
 			query += "&query=" + WebRequests.encodeQuery(this.query);
 		}
