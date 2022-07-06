@@ -60,6 +60,15 @@ public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 		return clone;
 	}
 
+	public boolean equals(GraphConfig other) {
+		if (other == null)
+			return false;
+		return showElementaryFlows == other.showElementaryFlows
+			&& isNodeEditingEnabled == other.isNodeEditingEnabled
+			&& theme.equals(other.theme)
+			&& isRouted == other.isRouted;
+	}
+
 	public static GraphConfig fromJson(JsonObject obj) {
 		var config = new GraphConfig();
 		if (obj == null)
@@ -67,7 +76,7 @@ public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
 		config.showElementaryFlows = Json.getBool(
 			obj, "showElementaryFlows", false);
 		config.isRouted = Json.getBool(
-				obj, "isRouted", true);
+			obj, "isRouted", true);
 		config.isNodeEditingEnabled = Json.getBool(
 			obj, "isNodeEditingEnabled", false);
 		var themeID = Json.getString(obj, "theme");

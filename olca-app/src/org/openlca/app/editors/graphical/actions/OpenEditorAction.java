@@ -22,7 +22,6 @@ public class OpenEditorAction extends SelectionAction {
 		super(part);
 		editor = part;
 		setId(ActionIds.OPEN_EDITOR);
-		setText(M.OpenInEditor);
 		setImageDescriptor(Icon.FOLDER.descriptor());
 	}
 
@@ -32,11 +31,25 @@ public class OpenEditorAction extends SelectionAction {
 		if (objects.size() != 1)
 			return false;
 		object = objects.get(0);
+		setText(M.OpenInEditor + ": " + getObjectName());
+
 		return ((object instanceof GraphEditPart)
 			|| (NodeEditPart.class.isAssignableFrom(object.getClass()))
 			|| (object instanceof ExchangeEditPart));
 	}
 
+	protected String getObjectName() {
+		if (object == null)
+			return "";
+
+		if (object instanceof GraphEditPart)
+			return M.ProductSystem;
+		else if (NodeEditPart.class.isAssignableFrom(object.getClass()))
+			return M.Process;
+		else if (object instanceof ExchangeEditPart)
+			return M.Flow;
+		else return "";
+	}
 
 	@Override
 	public void run() {

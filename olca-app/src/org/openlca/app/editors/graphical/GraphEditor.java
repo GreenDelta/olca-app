@@ -388,4 +388,9 @@ public class GraphEditor extends GraphicalEditor {
 		return systemEditor;
 	}
 
+	public void focusOnReferenceNode() {
+		var action = getActionRegistry().getAction(ActionIds.FOCUS);
+		if (action.isEnabled()) action.run();
+	}
+
 }
