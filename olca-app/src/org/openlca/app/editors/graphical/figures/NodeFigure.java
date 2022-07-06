@@ -2,7 +2,6 @@ package org.openlca.app.editors.graphical.figures;
 
 import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.Node;
@@ -19,7 +18,6 @@ public class NodeFigure extends Figure {
 	public final static Dimension HEADER_ARC_SIZE = new Dimension(15, 15);
 	public final PlusMinusButton inputExpandButton;
 	public final PlusMinusButton outputExpandButton;
-	private Point prefLocation;
 
 	public NodeFigure(Node node) {
 		this.node = node;

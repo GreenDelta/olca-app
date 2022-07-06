@@ -1,15 +1,14 @@
 package org.openlca.app.editors.graphical.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.layouts.GraphFreeformLayout;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Abstract prototype of a model component.
