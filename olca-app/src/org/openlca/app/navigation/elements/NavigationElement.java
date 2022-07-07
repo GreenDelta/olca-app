@@ -91,4 +91,5 @@ abstract class NavigationElement<T> implements INavigationElement<T> {
 		return Objects.equals(this.content, other.content)
 			&& Objects.equals(this.parent, other.parent);
 	}
+
 }

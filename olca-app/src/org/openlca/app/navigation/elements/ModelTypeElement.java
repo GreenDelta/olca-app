@@ -25,9 +25,19 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 		var lib = getLibrary().orElse(null);
 
 		// add root categories
-		for (var root : new CategoryDao(db).getRootCategories(type)) {
-			if (lib == null || CategoryElement.hasLibraryContent(root, lib)) {
-				list.add(new CategoryElement(this, root));
+		if (lib == null) {
+			new CategoryDao(db).getRootCategories(type)
+				.stream()
+				.map(root -> new CategoryElement(this, root))
+				.forEach(list::add);
+		} else {
+			var test = DatabaseElement.categoryTesterOf(this);
+			if (test != null) {
+				new CategoryDao(db).getRootCategories(type)
+					.stream()
+					.filter(root -> test.hasLibraryContent(root, lib))
+					.map(root -> new CategoryElement(this, root))
+					.forEach(list::add);
 			}
 		}
 
