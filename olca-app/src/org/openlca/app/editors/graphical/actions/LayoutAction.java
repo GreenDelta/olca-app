@@ -15,6 +15,7 @@ import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.R
 public class LayoutAction extends WorkbenchPartAction {
 
 	private final GraphEditor editor;
+	private Command command;
 
 	public LayoutAction(GraphEditor part) {
 		super(part);
@@ -26,12 +27,12 @@ public class LayoutAction extends WorkbenchPartAction {
 
 	@Override
 	public void run() {
-		execute(getCommand());
+		execute(command);
 	}
 
 	@Override
 	protected boolean calculateEnabled() {
-		var command = getCommand();
+		command = getCommand();
 		if (command == null)
 			return false;
 		return command.canExecute();
