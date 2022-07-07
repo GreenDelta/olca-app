@@ -27,11 +27,10 @@ import org.openlca.app.navigation.actions.db.DbExportAction;
 import org.openlca.app.navigation.actions.db.DbRenameAction;
 import org.openlca.app.navigation.actions.db.DbRestoreAction;
 import org.openlca.app.navigation.actions.db.DbValidationAction;
+import org.openlca.app.navigation.actions.libraries.AddLibraryAction;
 import org.openlca.app.navigation.actions.libraries.DeleteLibraryAction;
 import org.openlca.app.navigation.actions.libraries.ExportLibraryAction;
-import org.openlca.app.navigation.actions.libraries.AddLibraryAction;
 import org.openlca.app.navigation.actions.libraries.OpenLibraryAction;
-import org.openlca.app.navigation.actions.libraries.UseLibraryCategoryAction;
 import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
 import org.openlca.app.navigation.actions.scripts.ExportScriptAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
@@ -128,8 +127,7 @@ public class NavigationMenu extends CommonActionProvider {
 		// category actions
 		addActions(selection, menu,
 				new CreateCategoryAction(),
-				new RenameAction(),
-				new UseLibraryCategoryAction());
+				new RenameAction());
 
 		addIOMenu(selection, menu);
 		RepositoryMenu.add(selection, menu);
