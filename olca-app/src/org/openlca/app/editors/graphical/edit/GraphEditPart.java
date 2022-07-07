@@ -115,4 +115,8 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 		return null;
 	}
 
+	public String toString() {
+		return "GraphEditPart";
+	}
+
 }

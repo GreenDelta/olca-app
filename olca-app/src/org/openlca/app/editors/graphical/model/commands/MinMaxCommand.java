@@ -6,6 +6,7 @@ import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.edit.AbstractComponentEditPart;
 import org.openlca.app.editors.graphical.model.MinMaxGraphComponent;
+import org.openlca.app.editors.graphical.model.Node;
 
 public class MinMaxCommand extends Command {
 
