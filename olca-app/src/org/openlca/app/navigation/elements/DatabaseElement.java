@@ -34,14 +34,14 @@ public class DatabaseElement extends NavigationElement<DatabaseConfig> {
 		list.add(new ModelTypeElement(this, ModelType.EPD));
 		list.add(new ModelTypeElement(this, ModelType.RESULT));
 
-		list.add(new GroupElement(this, g(M.IndicatorsAndParameters,
+		list.add(new GroupElement(this, Group.of(M.IndicatorsAndParameters,
 				GroupType.INDICATORS,
 				ModelType.IMPACT_METHOD,
 				ModelType.IMPACT_CATEGORY,
 				ModelType.DQ_SYSTEM,
 				ModelType.SOCIAL_INDICATOR,
 				ModelType.PARAMETER)));
-		list.add(new GroupElement(this, g(M.BackgroundData,
+		list.add(new GroupElement(this, Group.of(M.BackgroundData,
 				GroupType.BACKGROUND_DATA,
 				ModelType.FLOW_PROPERTY,
 				ModelType.UNIT_GROUP,
@@ -54,10 +54,6 @@ public class DatabaseElement extends NavigationElement<DatabaseConfig> {
 		addScriptElements(list);
 
 		return list;
-	}
-
-	private Group g(String label, GroupType type, ModelType... types) {
-		return new Group(label, type, types);
 	}
 
 	private void addLibraryElements(List<INavigationElement<?>> list) {

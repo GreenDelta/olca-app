@@ -2,6 +2,7 @@ package org.openlca.app.navigation.elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.openlca.app.db.Database;
@@ -19,19 +20,25 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 	protected List<INavigationElement<?>> queryChilds() {
 		var type = getContent();
 		var db = Database.get();
+
 		var list = new ArrayList<INavigationElement<?>>();
+		var lib = getLibrary().orElse(null);
 
 		// add root categories
-		new CategoryDao(db)
-			.getRootCategories(type)
-			.forEach(category -> list.add(new CategoryElement(this, category)));
+		for (var root : new CategoryDao(db).getRootCategories(type)) {
+			if (lib == null || CategoryElement.hasLibraryContent(root, lib)) {
+				list.add(new CategoryElement(this, root));
+			}
+		}
 
 		// models without category
 		var dao = Daos.root(Database.get(), type);
 		if (dao == null)
 			return list;
 		for (var d : dao.getDescriptors(Optional.empty())) {
-			list.add(new ModelElement(this, d));
+			if (lib == null || Objects.equals(lib, d.library)) {
+				list.add(new ModelElement(this, d));
+			}
 		}
 		return list;
 	}

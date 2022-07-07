@@ -17,15 +17,18 @@ public class Group {
 		this.types = types;
 	}
 
+	static Group of(String label, GroupType type, ModelType... types) {
+		return new Group(label, type, types);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
 		if (obj == this)
 			return true;
-		if (!(obj instanceof Group))
+		if (!(obj instanceof Group other))
 			return false;
-		Group other = (Group) obj;
 		return Strings.nullOrEqual(this.label, other.label);
 	}
 

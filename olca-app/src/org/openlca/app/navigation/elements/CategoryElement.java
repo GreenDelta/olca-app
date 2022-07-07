@@ -38,11 +38,15 @@ public class CategoryElement extends NavigationElement<Category> {
 		var category = getContent();
 		if (category == null)
 			return Collections.emptyList();
+
+		var lib = getLibrary().orElse(null);
 		var list = new ArrayList<INavigationElement<?>>();
 
 		// child categories
 		for (var child : category.childCategories) {
-			list.add(new CategoryElement(this, child));
+			if (lib == null || hasLibraryContent(child, lib)) {
+				list.add(new CategoryElement(this, child));
+			}
 		}
 
 		// models in this category
@@ -50,7 +54,9 @@ public class CategoryElement extends NavigationElement<Category> {
 		if (dao == null)
 			return list;
 		for (var d : dao.getDescriptors(Optional.of(category))) {
-			list.add(new ModelElement(this, d));
+			if (lib == null || lib.equals(d.library)) {
+				list.add(new ModelElement(this, d));
+			}
 		}
 		return list;
 	}
