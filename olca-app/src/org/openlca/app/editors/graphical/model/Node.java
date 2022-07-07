@@ -200,9 +200,10 @@ public class Node extends MinMaxGraphComponent {
 
 
 	public String toString() {
+		var editable = isEditable() ? "E-" : "";
 		var prefix = isMinimized() ? M.Minimize : M.Maximize;
 		var name = Labels.name(descriptor);
-		return "Node[" + prefix + "]("
+		return editable + "Node[" + prefix + "]("
 			+ name.substring(0, Math.min(name.length(), 20)) + ")";
 	}
 

@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical.figures;
 import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
-import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.themes.Theme;
 import org.openlca.app.rcp.images.Images;
@@ -57,10 +56,7 @@ public class NodeFigure extends Figure {
 	}
 
 	public String toString() {
-		var prefix = node.isMinimized() ? M.Minimize : M.Maximize;
-		var name = Labels.name(node.descriptor);
-		return "NodeFigure[" + prefix + "]("
-			+ name.substring(0, Math.min(name.length(), 20)) + ")";
+		return "Figure of " + node;
 	}
 
 }

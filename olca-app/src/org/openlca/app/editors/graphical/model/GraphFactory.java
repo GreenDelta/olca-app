@@ -165,10 +165,6 @@ public class GraphFactory {
 			}
 			if (outNode == null)
 				continue;
-			// TODO
-//			if (!outNode.isExpanded(Node.Side.INPUT)
-//				&& !inNode.isExpanded(Node.Side.OUTPUT))
-//				continue;
 			new Link(pLink, outNode, inNode);
 		}
 	}
