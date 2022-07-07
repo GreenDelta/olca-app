@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.openlca.app.editors.graphical.layouts.GraphFreeformLayout.DEFAULT_LOCATION;
+import static org.openlca.app.editors.graphical.layouts.GraphLayout.DEFAULT_LOCATION;
 
 /**
  * A {@link Node} represents a unit process, a library process, a result
