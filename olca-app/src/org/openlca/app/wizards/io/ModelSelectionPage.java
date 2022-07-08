@@ -21,9 +21,12 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.NavigationComparator;
 import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryDirElement;
 import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.preferences.Preferences;
 import org.openlca.app.util.Colors;
@@ -53,9 +56,8 @@ class ModelSelectionPage extends WizardPage {
 	 * For the file extension please use only the extension, e.g. zip instead of
 	 * *.zip
 	 */
-	static ModelSelectionPage forFile(String extension,
-			ModelType... types) {
-		ModelSelectionPage page = new ModelSelectionPage(types);
+	static ModelSelectionPage forFile(String extension, ModelType... types) {
+		var page = new ModelSelectionPage(types);
 		page.targetIsDir = false;
 		page.fileExtension = extension;
 		return page;
@@ -73,21 +75,26 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	public List<RootDescriptor> getSelectedModels() {
-		return selectionProvider.getSelection().stream().map(element -> ((ModelElement) element).getContent())
-				.toList();
+		return selectionProvider.getSelection()
+			.stream()
+			.filter(elem -> elem instanceof ModelElement)
+			.map(elem -> ((ModelElement) elem).getContent())
+			.toList();
 	}
 
 	private void createTexts() {
 		var typeName = types == null || types.length != 1
-				? M.DataSets
-				: Labels.plural(types[0]);
+			? M.DataSets
+			: Labels.plural(types[0]);
 		setTitle(M.bind(M.Select, typeName));
 		var descr = M.bind(M.SelectObjectPage_Description, typeName);
 		setDescription(descr);
 	}
 
 	void checkCompletion() {
-		setPageComplete(exportDestination != null && selectionProvider != null
+		setPageComplete(
+			exportDestination != null
+				&& selectionProvider != null
 				&& !selectionProvider.getSelection().isEmpty());
 	}
 
@@ -141,8 +148,8 @@ class ModelSelectionPage extends WizardPage {
 
 	private void selectTarget(Text text) {
 		exportDestination = targetIsDir
-				? FileChooser.selectFolder()
-				: FileChooser.forSavingFile(M.Export, defaultName());
+			? FileChooser.selectFolder()
+			: FileChooser.forSavingFile(M.Export, defaultName());
 		if (exportDestination == null)
 			return;
 		String path = exportDestination.getAbsolutePath();
@@ -168,15 +175,15 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	private void createViewer(Composite body) {
-		Composite viewerComposite = createViewerComposite(body);
+		var comp = createViewerComposite(body);
 		selectionProvider = new ModelContentProvider();
 		selectionProvider.setSelection(getInitialSelection());
-		var viewer = CheckboxTreeViewers.create(viewerComposite, selectionProvider);
+		var viewer = CheckboxTreeViewers.create(comp, selectionProvider);
 		viewer.addFilter(new LibraryFilter());
 		viewer.addFilter(new ModelTypeFilter(types));
 		viewer.setLabelProvider(new NavigationLabelProvider(false));
 		viewer.setComparator(new NavigationComparator());
-		CheckboxTreeViewers.registerInputHandler(viewerComposite, viewer, getInput(), () -> {
+		CheckboxTreeViewers.registerInputHandler(comp, viewer, getInput(), () -> {
 			CheckboxTreeViewers.expandGrayed(viewer);
 			checkCompletion();
 		});
@@ -184,8 +191,8 @@ class ModelSelectionPage extends WizardPage {
 
 	private INavigationElement<?> getInput() {
 		return types != null && types.length == 1
-				? Navigator.findElement(types[0])
-				: Navigator.findElement(Database.getActiveConfiguration());
+			? Navigator.findElement(types[0])
+			: Navigator.findElement(Database.getActiveConfiguration());
 	}
 
 	private Set<INavigationElement<?>> getInitialSelection() {
@@ -194,8 +201,8 @@ class ModelSelectionPage extends WizardPage {
 		if (navigator == null)
 			return new HashSet<>();
 		return new HashSet<>(Navigator.collect(navigator.getAllSelected(),
-				elem -> !(elem instanceof LibraryDirElement),
-				elem -> elem instanceof ModelElement m && fitsType(m) ? elem : null));
+			elem -> !(elem instanceof LibraryDirElement),
+			elem -> elem instanceof ModelElement m && fitsType(m) ? elem : null));
 	}
 
 	private boolean fitsType(ModelElement element) {
@@ -207,7 +214,8 @@ class ModelSelectionPage extends WizardPage {
 		return false;
 	}
 
-	private class ModelContentProvider extends TreeCheckStateContentProvider<INavigationElement<?>> {
+	private class ModelContentProvider extends
+		TreeCheckStateContentProvider<INavigationElement<?>> {
 
 		@Override
 		protected List<INavigationElement<?>> childrenOf(INavigationElement<?> element) {
@@ -231,11 +239,25 @@ class ModelSelectionPage extends WizardPage {
 
 	}
 
-	private class LibraryFilter extends ViewerFilter {
+	private static class LibraryFilter extends ViewerFilter {
 
 		@Override
 		public boolean select(Viewer viewer, Object parentElement, Object element) {
-			return !(element instanceof LibraryDirElement);
+			if (element instanceof LibraryDirElement)
+				return false;
+			if (element instanceof CategoryElement e)
+				return e.hasNonLibraryContent();
+			if (element instanceof ModelElement e)
+				return !e.isFromLibrary();
+			if (element instanceof INavigationElement<?> e) {
+				for (var c : e.getChildren()) {
+					if (select(viewer, element, c)) {
+						return true;
+					}
+				}
+				return false;
+			}
+			return true;
 		}
 
 	}
