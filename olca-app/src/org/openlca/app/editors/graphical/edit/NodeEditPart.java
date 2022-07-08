@@ -32,9 +32,10 @@ public abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
 		if (GraphComponent.SIZE_PROP.equals(prop)
-			|| GraphComponent.LOCATION_PROP.equals(prop)
-			|| Node.EXPANSION_PROP.equals(prop))
+			|| GraphComponent.LOCATION_PROP.equals(prop))
 			refreshVisuals();
+		else if (Node.EXPANSION_PROP.equals(prop))
+			refreshChildren();
 		else super.propertyChange(evt);
 	}
 
@@ -70,6 +71,11 @@ public abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 	@Override
 	public NodeFigure getFigure() {
 		return (NodeFigure) super.getFigure();
+	}
+
+	@Override
+	public String toString() {
+		return "EditPart of " + getModel();
 	}
 
 	public static class Maximized extends NodeEditPart {

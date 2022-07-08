@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical.model.commands;
 
 import java.util.List;
 
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
@@ -9,23 +10,22 @@ import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.jsonld.Json;
 
 public class EditConfigCommand extends Command {
 
 	private final Graph graph;
 	private final GraphEditor editor;
-	/** Stores the new nodes. */
-	private List<Node> newChildren;
-	/** Stores the old nodes. */
-	private final List<Node> oldChildren;
+	private final GraphicalViewer viewer;
 	private final GraphConfig oldConfig;
 	private final GraphConfig newConfig;
+	/** Stores the new graph. */
+	private Graph newGraph;
+	/** Stores the old graph. */
+	private final Graph oldGraph;
 
 	/**
-	 * Create a command that can reset the location of all the nodes to force a
-	 * complete relayout.
+	 * Create a command that can reset the Graph model to use the new config.
 	 */
 	public EditConfigCommand(Graph graph, GraphConfig newConfig) {
 		if (graph == null) {
@@ -33,7 +33,8 @@ public class EditConfigCommand extends Command {
 		}
 		this.graph = graph;
 		this.editor = graph.editor;
-		this.oldChildren = graph.getChildren();
+		this.viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
+		this.oldGraph = graph;
 		this.oldConfig = graph.getConfig();
 		this.newConfig = newConfig;
 
@@ -51,22 +52,24 @@ public class EditConfigCommand extends Command {
 		// Create new nodes with the new config.
 		var rootObj = GraphFile.createJsonArray(editor, editor.getModel());
 		var array = Json.getArray(rootObj, "nodes");
-		var newGraph = editor.getGraphFactory().createGraph(editor, array);
-		newChildren = newGraph.getChildren();
-		redo();
+		newGraph = editor.getGraphFactory().createGraph(editor, array);
+
+		editor.setModel(newGraph);
+		viewer.setContents(newGraph);
 	}
 
 	@Override
 	public void redo() {
-		editor.getModel().removeAllChildren();
-		editor.getModel().addChildren(newChildren);
+		newConfig.copyTo(editor.config);
+		editor.setModel(newGraph);
+		viewer.setContents(newGraph);
 	}
 
 	@Override
 	public void undo() {
 		oldConfig.copyTo(editor.config);
-		editor.getModel().removeAllChildren();
-		editor.getModel().addChildren(oldChildren);
+		editor.setModel(oldGraph);
+		viewer.setContents(oldGraph);
 	}
 
 }

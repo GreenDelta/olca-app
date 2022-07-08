@@ -6,12 +6,11 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Tree;
 import org.openlca.app.editors.graphical.edit.GraphEditPart;
 import org.openlca.app.editors.graphical.figures.NodeFigure;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
+import org.openlca.app.editors.graphical.search.LinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ import java.util.Map;
  * that the figure has been moved by the user. The figure is thus laid out as a
  * classical XYLayout figure.
  */
-public class GraphFreeformLayout extends FreeformLayout {
+public class GraphLayout extends FreeformLayout {
 
 	/** Integer.MAX_VALUE is used as a default value with the limited risk of
 	 * having a figure in that area of the canvas.
@@ -41,7 +40,7 @@ public class GraphFreeformLayout extends FreeformLayout {
 
 	private Map<NodeFigure, Point> mapFigureToLocation;
 
-	public GraphFreeformLayout(GraphEditPart graphEditPart) {
+	public GraphLayout(GraphEditPart graphEditPart) {
 		this.graphEditPart = graphEditPart;
 		this.graph = graphEditPart.getModel();
 	}
@@ -104,7 +103,7 @@ public class GraphFreeformLayout extends FreeformLayout {
 		private final Map<Integer, Integer> heights = new HashMap<>();
 		private final Map<Integer, Integer> widths = new HashMap<>();
 		private final Map<Point, Long> locations = new HashMap<>();
-		private MutableProcessLinkSearchMap linkSearch;
+		private LinkSearchMap linkSearch;
 
 		private void applyLayout(Vertex vertex, int addition, int actualDepth) {
 			int x = actualDepth;

@@ -10,6 +10,7 @@ import java.beans.PropertyChangeSupport;
  * </p>
  * <ul>
  * <li>property-change support (used to notify edit parts of model changes),</li>
+ * </ul>
  */
 abstract public class GraphElement {
 

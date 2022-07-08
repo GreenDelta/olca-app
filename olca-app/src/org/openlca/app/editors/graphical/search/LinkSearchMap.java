@@ -13,10 +13,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This is a data structure for searching a set of existing process links by
+ * This is a data structure for searching a set of existing links by
  * provider and recipient processes.
  */
-public class ProcessLinkSearchMap {
+public class LinkSearchMap {
 
 	/**
 	 * A map process-ID -> process links, where the process is a provider means
@@ -32,7 +32,7 @@ public class ProcessLinkSearchMap {
 
 	ArrayList<ProcessLink> data;
 
-	public ProcessLinkSearchMap(Collection<ProcessLink> links) {
+	public LinkSearchMap(Collection<ProcessLink> links) {
 		providerIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1L);
 		connectionIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1L);
 		data = new ArrayList<>(links);
@@ -74,6 +74,24 @@ public class ProcessLinkSearchMap {
 	}
 
 	/**
+	 * Returns all the links where the processes with the given IDs are either
+	 * provider or connected with a provider.
+	 */
+	public List<ProcessLink> getLinks(List<Long> processIds) {
+		TIntHashSet intSet = new TIntHashSet(
+			Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
+		for (long processId : processIds) {
+			TIntArrayList list = providerIndex.get(processId);
+			if (list != null)
+				intSet.addAll(list);
+			list = connectionIndex.get(processId);
+			if (list != null)
+				intSet.addAll(list);
+		}
+		return getLinks(intSet.iterator());
+	}
+
+	/**
 	 * Returns all links where the process with the given ID is connected (has
 	 * an product input or waste output).
 	 */
@@ -106,4 +124,49 @@ public class ProcessLinkSearchMap {
 		}
 		return links;
 	}
+
+	public void put(ProcessLink link) {
+		int index = remove(link);
+		if (index == -1)
+			index = getAvailableIndex();
+		if (index < data.size())
+			data.set(index, link);
+		else
+			data.add(link);
+		index(link.providerId, index, providerIndex);
+		index(link.processId, index, connectionIndex);
+	}
+
+	private int getAvailableIndex() {
+		for (int index = 0; index < data.size(); index++)
+			if (data.get(index) == null) // previously removed link
+				return index;
+		return data.size();
+	}
+
+	public void removeAll(Collection<ProcessLink> links) {
+		for (ProcessLink link : links)
+			remove(link);
+	}
+
+	public int remove(ProcessLink link) {
+		int index = data.indexOf(link);
+		if (index < 0)
+			return -1;
+		data.set(index, null);
+		remove(link.providerId, index, providerIndex);
+		remove(link.processId, index, connectionIndex);
+		return index;
+	}
+
+	private void remove(long id, int index,
+											TLongObjectHashMap<TIntArrayList> map) {
+		TIntArrayList list = map.get(id);
+		if (list == null)
+			return;
+		list.remove(index);
+		if (list.size() == 0)
+			map.remove(id);
+	}
+
 }

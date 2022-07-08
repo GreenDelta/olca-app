@@ -6,6 +6,7 @@ import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.edit.AbstractComponentEditPart;
 import org.openlca.app.editors.graphical.model.MinMaxGraphComponent;
+import org.openlca.app.editors.graphical.model.Node;
 
 public class MinMaxCommand extends Command {
 
@@ -42,14 +43,20 @@ public class MinMaxCommand extends Command {
 
 	@Override
 	public void redo() {
+		// Update model
 		child.setMinimized(!child.isMinimized());
 
 		if (!child.isMinimized())
 			child.addChildren();
-		child.updateLinks();
-		if (child.isMinimized())
-			child.removeChildren();
 
+		// Note that links are reconnected AFTER creating the children if the
+		// command is maximizing and BEFORE if the command is minimizing.
+		child.reconnectLinks();
+
+		if (child.isMinimized())
+			child.removeAllChildren();
+
+		// Update the EditPart.
 		var viewer = (GraphicalViewer) child.editor
 			.getAdapter(GraphicalViewer.class);
 		var registry = viewer.getEditPartRegistry();
@@ -57,6 +64,10 @@ public class MinMaxCommand extends Command {
 		var parentEditPart = (AbstractComponentEditPart<?>) childEditPart
 			.getParent();
 		parentEditPart.resetChildEditPart(childEditPart);
+
+		// Expand if the command is maximizing and if the MinMaxComponent is a Node.
+		if (child instanceof Node node && !node.isMinimized())
+			node.expand();
 	}
 
 	public void undo() {

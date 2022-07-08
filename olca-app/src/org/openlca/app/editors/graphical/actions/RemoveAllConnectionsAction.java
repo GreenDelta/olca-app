@@ -10,7 +10,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.Link;
-import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
+import org.openlca.app.editors.graphical.search.LinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ public class RemoveAllConnectionsAction extends SelectionAction {
 			// create new link search to avoid problems with missing entries before
 			// ConnectionLink.unlink is called
 			List<ProcessLink> pLinks = editor.getProductSystem().processLinks;
-			var linkSearch = new MutableProcessLinkSearchMap(pLinks);
+			var linkSearch = new LinkSearchMap(pLinks);
 			List<ProcessLink> processLinks = linkSearch.getLinks(node.descriptor.id);
 			for (ProcessLink link : processLinks)
 				linkSearch.remove(link);

@@ -79,17 +79,11 @@ public class LinkEditPart extends AbstractConnectionEditPart
 			});
 	}
 
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-
-	}
-
-	private GraphEditor getEditor() {
-		return getModel().getSource().editor;
-	}
-
 	public Link getModel() {
 		return (Link) super.getModel();
 	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {}
 
 }

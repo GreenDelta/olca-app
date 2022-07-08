@@ -1,16 +1,17 @@
 package org.openlca.app.editors.graphical.model;
 
+import java.util.ArrayList;
+import java.util.List;
 
 import gnu.trove.set.hash.TLongHashSet;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
+import org.openlca.app.editors.graphical.search.LinkSearchMap;
 import org.openlca.core.matrix.cache.FlowTable;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 
-import java.util.List;
 
 /**
  * A {@link Graph} renders a system of unit processes, library
@@ -21,7 +22,7 @@ public class Graph extends GraphComponent {
 
 	private double zoom = 1.0;
 
-	public final MutableProcessLinkSearchMap linkSearch;
+	public final LinkSearchMap linkSearch;
 	public final FlowTable flows = FlowTable.create(Database.get());
 	private final TLongHashSet wasteProcesses;
 	private final Process referenceProcess;
@@ -29,7 +30,7 @@ public class Graph extends GraphComponent {
 	public Graph(GraphEditor editor) {
 		super(editor);
 		var system = editor.getProductSystem();
-		this.linkSearch = new MutableProcessLinkSearchMap(system.processLinks);
+		this.linkSearch = new LinkSearchMap(system.processLinks);
 		referenceProcess = system.referenceProcess;
 
 		wasteProcesses = new TLongHashSet();
@@ -69,6 +70,14 @@ public class Graph extends GraphComponent {
 	@Override
 	public List<Node> getChildren() {
 		return (List<Node>) super.getChildren();
+	}
+
+	public List<Long> getChildrenIds() {
+		var ids = new ArrayList<Long>();
+		for (var node : getChildren()) {
+			ids.add(node.descriptor.id);
+		}
+		return ids;
 	}
 
 	public ProductSystem getProductSystem() {

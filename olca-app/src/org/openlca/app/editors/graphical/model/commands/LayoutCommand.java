@@ -9,7 +9,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.Node;
 
-import static org.openlca.app.editors.graphical.layouts.GraphFreeformLayout.DEFAULT_LOCATION;
+import static org.openlca.app.editors.graphical.layouts.GraphLayout.DEFAULT_LOCATION;
 
 public class LayoutCommand extends Command {
 

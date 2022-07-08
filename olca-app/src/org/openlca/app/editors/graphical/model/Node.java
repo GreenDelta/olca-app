@@ -4,7 +4,6 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.openlca.app.editors.graphical.layouts.GraphFreeformLayout.DEFAULT_LOCATION;
+import static org.openlca.app.editors.graphical.layouts.GraphLayout.DEFAULT_LOCATION;
 
 /**
  * A {@link Node} represents a unit process, a library process, a result
@@ -200,9 +199,10 @@ public class Node extends MinMaxGraphComponent {
 
 
 	public String toString() {
+		var editable = isEditable() ? "E-" : "";
 		var prefix = isMinimized() ? M.Minimize : M.Maximize;
 		var name = Labels.name(descriptor);
-		return "Node[" + prefix + "]("
+		return editable + "Node[" + prefix + "]("
 			+ name.substring(0, Math.min(name.length(), 20)) + ")";
 	}
 
@@ -237,7 +237,7 @@ public class Node extends MinMaxGraphComponent {
 
 		public boolean canExpand() {
 			var graph = getGraph();
-			MutableProcessLinkSearchMap linkSearch = graph.linkSearch;
+			var linkSearch = graph.linkSearch;
 			long processId = descriptor.id;
 			for (ProcessLink link : linkSearch.getLinks(processId)) {
 				FlowType type = graph.flows.type(link.flowId);
@@ -309,6 +309,9 @@ public class Node extends MinMaxGraphComponent {
 				} else if (isOutputNode(type, isProvider)) {
 					outNode = Node.this;
 					inNode = createNode(otherID);
+				} else if (processID == otherID) {  // self loop
+					inNode = Node.this;
+					outNode = Node.this;
 				} else {
 					continue;
 				}
