@@ -10,7 +10,7 @@ import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.Link;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
+import org.openlca.app.editors.graphical.search.LinkSearchMap;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
@@ -26,7 +26,7 @@ public class RemoveSupplyChainAction extends SelectionAction {
 	private final Set<ProcessLink> links = new HashSet<>();
 	private final Set<Long> processIds = new HashSet<>();
 	// only used in collectSupplyChain
-	private MutableProcessLinkSearchMap linkSearch;
+	private LinkSearchMap linkSearch;
 
 	public RemoveSupplyChainAction(GraphEditor part) {
 		super(part);
@@ -51,7 +51,7 @@ public class RemoveSupplyChainAction extends SelectionAction {
 			processIds.remove(refId);
 			links.addAll(system.processLinks);
 		} else {
-			linkSearch = new MutableProcessLinkSearchMap(
+			linkSearch = new LinkSearchMap(
 					system.processLinks);
 			collectSupplyChain(node.descriptor.id);
 		}

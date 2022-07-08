@@ -36,13 +36,7 @@ public abstract class MinMaxGraphComponent extends GraphComponent {
 
 	public abstract void addChildren();
 
-	public void removeChildren() {
-		var children = new ArrayList<>(getChildren());
-		for (var child : children)
-			removeChild(child);
-	}
-
-	public void updateLinks() {
+	public void reconnectLinks() {
 		for (Link link : getAllLinks()) {
 			link.reconnect(link.getSource(), link.getTarget());
 		}

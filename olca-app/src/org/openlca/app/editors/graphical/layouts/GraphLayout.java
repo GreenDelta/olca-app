@@ -10,7 +10,7 @@ import org.openlca.app.editors.graphical.edit.GraphEditPart;
 import org.openlca.app.editors.graphical.figures.NodeFigure;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
+import org.openlca.app.editors.graphical.search.LinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 
 import java.util.ArrayList;
@@ -103,7 +103,7 @@ public class GraphLayout extends FreeformLayout {
 		private final Map<Integer, Integer> heights = new HashMap<>();
 		private final Map<Integer, Integer> widths = new HashMap<>();
 		private final Map<Point, Long> locations = new HashMap<>();
-		private MutableProcessLinkSearchMap linkSearch;
+		private LinkSearchMap linkSearch;
 
 		private void applyLayout(Vertex vertex, int addition, int actualDepth) {
 			int x = actualDepth;

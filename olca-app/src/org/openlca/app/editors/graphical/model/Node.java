@@ -4,7 +4,6 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.search.MutableProcessLinkSearchMap;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -238,7 +237,7 @@ public class Node extends MinMaxGraphComponent {
 
 		public boolean canExpand() {
 			var graph = getGraph();
-			MutableProcessLinkSearchMap linkSearch = graph.linkSearch;
+			var linkSearch = graph.linkSearch;
 			long processId = descriptor.id;
 			for (ProcessLink link : linkSearch.getLinks(processId)) {
 				FlowType type = graph.flows.type(link.flowId);
