@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -158,17 +159,40 @@ abstract public class GraphComponent extends GraphElement {
 	}
 
 	/**
+	 * Create a list of Links with the target connections of this, its children
+	 * and grandchildren to get all target connections. If this is an
+	 * ExchangeItem, it simply returns its target connections.
+	 * @return List of all the target connections.
+	 */
+	public List<Link> getAllTargetConnections() {
+		var links = new LinkedHashSet<>(getTargetConnections());
+		for (var child : getChildren()) {
+			links.addAll(child.getAllTargetConnections());
+		}
+		return new ArrayList<>(links);
+	}
+
+	/**
+	 * Create a list of Links with the source connections of this, its children
+	 * and grandchildren to get all source connections. If this is an
+	 * ExchangeItem, it simply returns its source connections.
+	 * @return List of all the source connections.
+	 */
+	public List<Link> getAllSourceConnections() {
+		var links = new LinkedHashSet<>(getSourceConnections());
+		for (var child : getChildren()) {
+			links.addAll(child.getAllSourceConnections());
+		}
+		return new ArrayList<>(links);
+	}
+
+	/**
 	 * Retrieve the links from this and its children.
 	 */
 	public List<Link> getAllLinks() {
-		List<Link> links = new ArrayList<>();
-		links.addAll(getTargetConnections());
-		links.addAll(getSourceConnections());
-		// An ExchangeItem simply does not have children.
-		for (var child : getChildren()) {
-			links.addAll(child.getAllLinks());
-		}
-		return links;
+		var links = new LinkedHashSet<>(getAllSourceConnections());
+		links.addAll(getAllTargetConnections());
+		return new ArrayList<>(links);
 	}
 
 }
