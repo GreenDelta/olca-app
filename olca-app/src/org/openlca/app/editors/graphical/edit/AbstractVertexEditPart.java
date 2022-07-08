@@ -13,7 +13,14 @@ import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graphical.model.*;
 import org.openlca.app.editors.graphical.model.commands.CreateLinkCommand;
 
-public abstract class AbstractNodeEditPart<N extends GraphComponent> extends
+/**
+ * This class abstract the creation of a graph component that can be linked with
+ * <code>Link</code>s. Usually called AbstractNodeEditPart, we reserve that name
+ * to the EditPart of a <code>Node</code>.
+ *
+ * @param <N> The type of the model element.
+ */
+public abstract class AbstractVertexEditPart<N extends GraphComponent> extends
 	AbstractComponentEditPart<N> implements NodeEditPart {
 
 	@Override

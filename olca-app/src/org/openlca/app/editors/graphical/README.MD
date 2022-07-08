@@ -75,7 +75,7 @@ The graphical editor `EditParts` classes inherit from:
 `GraphComponent`,
  - `AbstractGraphicalEditPart`: ties model to their figures,
  - `AbstractComponentEditPart`: provides tools to listen to models' changes,
- - `AbstractNodeEditPart`: supplies with connection management methods.
+ - `AbstractVertexEditPart`: supplies with connection management methods.
 
 <p align="center">
   <img src=https://share.greendelta.com/index.php/s/oPObw8TzvuutMeR/download

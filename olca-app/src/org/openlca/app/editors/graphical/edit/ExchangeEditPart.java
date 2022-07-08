@@ -11,7 +11,7 @@ import org.openlca.app.editors.graphical.model.ExchangeItem;
 
 import java.beans.PropertyChangeEvent;
 
-public class ExchangeEditPart extends AbstractNodeEditPart<ExchangeItem> {
+public class ExchangeEditPart extends AbstractVertexEditPart<ExchangeItem> {
 
 	@Override
 	protected IFigure createFigure() {
