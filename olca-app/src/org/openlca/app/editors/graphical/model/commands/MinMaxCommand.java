@@ -43,14 +43,20 @@ public class MinMaxCommand extends Command {
 
 	@Override
 	public void redo() {
+		// Update model
 		child.setMinimized(!child.isMinimized());
 
 		if (!child.isMinimized())
 			child.addChildren();
-		child.updateLinks();
-		if (child.isMinimized())
-			child.removeChildren();
 
+		// Note that links are reconnected AFTER creating the children if the
+		// command is maximizing and BEFORE if the command is minimizing.
+		child.reconnectLinks();
+
+		if (child.isMinimized())
+			child.removeAllChildren();
+
+		// Update the EditPart.
 		var viewer = (GraphicalViewer) child.editor
 			.getAdapter(GraphicalViewer.class);
 		var registry = viewer.getEditPartRegistry();

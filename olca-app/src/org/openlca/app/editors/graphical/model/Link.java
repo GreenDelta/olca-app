@@ -39,8 +39,8 @@ public class Link extends GraphElement {
 	/**
 	 * Getting the deepest representation (in the model tree) of the component.
 	 */
-	private GraphComponent adaptComponent(
-		GraphComponent component, boolean isSource) {
+	private GraphComponent adaptComponent(GraphComponent component,
+		boolean isSource) {
 		if (component instanceof Node node) {
 			if (!node.isMinimized()) {
 				ExchangeItem newComponent = isSource
