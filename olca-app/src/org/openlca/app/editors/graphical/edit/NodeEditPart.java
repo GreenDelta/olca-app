@@ -20,7 +20,7 @@ import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
 import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
 
-public abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
+public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 
 	@Override
 	protected void createEditPolicies() {
