@@ -49,7 +49,6 @@ import org.openlca.app.tools.libraries.LibraryInfoPage;
 import org.openlca.app.util.Colors;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
-import org.openlca.core.model.descriptors.RootDescriptor;
 
 import com.google.common.base.Objects;
 
@@ -200,12 +199,11 @@ public class Navigator extends CommonNavigator {
 	 */
 	private static void setRefreshedExpansion(CommonViewer viewer,
 			Object[] oldExpansion) {
-		List<INavigationElement<?>> newExpanded = new ArrayList<>();
-		for (Object expandedElem : oldExpansion) {
-			if (!(expandedElem instanceof INavigationElement))
+		var newExpanded = new ArrayList<INavigationElement<?>>();
+		for (var expandedElem : oldExpansion) {
+			if (!(expandedElem instanceof INavigationElement<?> oldElem))
 				continue;
-			INavigationElement<?> oldElem = (INavigationElement<?>) expandedElem;
-			INavigationElement<?> newElem = findElement(oldElem.getContent());
+			var newElem = findElement(oldElem.getContent());
 			if (newElem != null)
 				newExpanded.add(newElem);
 		}
@@ -297,15 +295,6 @@ public class Navigator extends CommonNavigator {
 		return Viewers.getAllSelected(getNavigationViewer());
 	}
 
-	public static Set<RootDescriptor> collectDescriptors(
-			Collection<INavigationElement<?>> elements) {
-		return collect(elements, null, e -> {
-			if (!(e instanceof ModelElement))
-				return null;
-			return ((ModelElement) e).getContent();
-		});
-	}
-
 	/**
 	 * Collects content from the navigation elements, to skip an element return
 	 * null in the unwrap function
@@ -338,9 +327,8 @@ public class Navigator extends CommonNavigator {
 		if (viewer == null || content == null)
 			return null;
 		var cp = viewer.getContentProvider();
-		if (!(cp instanceof NavigationContentProvider))
+		if (!(cp instanceof NavigationContentProvider provider))
 			return null;
-		var provider = (NavigationContentProvider) cp;
 		var roots = provider.getElements(viewer.getInput());
 		if (roots == null)
 			return null;
@@ -352,8 +340,7 @@ public class Navigator extends CommonNavigator {
 		}
 		while (!queue.isEmpty()) {
 			var obj = queue.poll();
-			if (obj instanceof INavigationElement) {
-				var elem = (INavigationElement<?>) obj;
+			if (obj instanceof INavigationElement<?> elem) {
 				if (Objects.equal(content, elem.getContent()))
 					return (INavigationElement<T>) elem;
 			}

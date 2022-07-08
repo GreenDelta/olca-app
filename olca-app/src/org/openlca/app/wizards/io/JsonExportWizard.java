@@ -108,17 +108,11 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 				if (message == null)
 					return;
 				switch (message.type) {
-				case Message.INFO:
-					log.trace("{}: {}", data, message.text);
-					break;
-				case Message.WARN:
-					log.warn("{}: {}", data, message.text);
-					break;
-				case Message.ERROR:
-					log.error("{}: {}", data, message.text);
-					break;
-				default:
-					break;
+					case Message.INFO -> log.trace("{}: {}", data, message.text);
+					case Message.WARN -> log.warn("{}: {}", data, message.text);
+					case Message.ERROR -> log.error("{}: {}", data, message.text);
+					default -> {
+					}
 				}
 			});
 		}

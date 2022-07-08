@@ -10,14 +10,51 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.ModelType;
+import org.openlca.util.CategoryContentTest;
 import org.openlca.util.Dirs;
 
-/** Navigation element for databases. */
+/**
+ * Navigation element for databases.
+ */
 public class DatabaseElement extends NavigationElement<DatabaseConfig> {
 
+	private CategoryContentTest _categoryContentTest;
+
 	public DatabaseElement(INavigationElement<?> parent,
-			DatabaseConfig config) {
+		DatabaseConfig config) {
 		super(parent, config);
+	}
+
+	private CategoryContentTest categoryContentTest() {
+		if (_categoryContentTest != null)
+			return _categoryContentTest;
+		var config = getContent();
+		if (Database.isActive(config)) {
+			_categoryContentTest = new CategoryContentTest(Database.get());
+			return _categoryContentTest;
+		}
+		return null;
+	}
+
+	static CategoryContentTest categoryTesterOf(INavigationElement<?> elem) {
+		if (elem instanceof DatabaseElement dbElem)
+			return dbElem.categoryContentTest();
+		return elem != null
+			? categoryTesterOf(elem.getParent())
+			: null;
+	}
+
+	@Override
+	public void update() {
+		super.update();
+		if (_categoryContentTest == null)
+			return;
+		var config = getContent();
+		if (Database.isActive(config)) {
+			_categoryContentTest.clearCache();
+		} else {
+			_categoryContentTest = null;
+		}
 	}
 
 	@Override
@@ -34,30 +71,26 @@ public class DatabaseElement extends NavigationElement<DatabaseConfig> {
 		list.add(new ModelTypeElement(this, ModelType.EPD));
 		list.add(new ModelTypeElement(this, ModelType.RESULT));
 
-		list.add(new GroupElement(this, g(M.IndicatorsAndParameters,
-				GroupType.INDICATORS,
-				ModelType.IMPACT_METHOD,
-				ModelType.IMPACT_CATEGORY,
-				ModelType.DQ_SYSTEM,
-				ModelType.SOCIAL_INDICATOR,
-				ModelType.PARAMETER)));
-		list.add(new GroupElement(this, g(M.BackgroundData,
-				GroupType.BACKGROUND_DATA,
-				ModelType.FLOW_PROPERTY,
-				ModelType.UNIT_GROUP,
-				ModelType.CURRENCY,
-				ModelType.ACTOR,
-				ModelType.SOURCE,
-				ModelType.LOCATION)));
+		list.add(new GroupElement(this, Group.of(M.IndicatorsAndParameters,
+			GroupType.INDICATORS,
+			ModelType.IMPACT_METHOD,
+			ModelType.IMPACT_CATEGORY,
+			ModelType.DQ_SYSTEM,
+			ModelType.SOCIAL_INDICATOR,
+			ModelType.PARAMETER)));
+		list.add(new GroupElement(this, Group.of(M.BackgroundData,
+			GroupType.BACKGROUND_DATA,
+			ModelType.FLOW_PROPERTY,
+			ModelType.UNIT_GROUP,
+			ModelType.CURRENCY,
+			ModelType.ACTOR,
+			ModelType.SOURCE,
+			ModelType.LOCATION)));
 
 		addLibraryElements(list);
 		addScriptElements(list);
 
 		return list;
-	}
-
-	private Group g(String label, GroupType type, ModelType... types) {
-		return new Group(label, type, types);
 	}
 
 	private void addLibraryElements(List<INavigationElement<?>> list) {

@@ -17,6 +17,11 @@ public class ModelElement extends NavigationElement<RootDescriptor> {
 		return Collections.emptyList();
 	}
 
+	public boolean isFromLibrary() {
+		var content = getContent();
+		return content != null && content.isFromLibrary();
+	}
+
 	@Override
 	public void update() {
 		var content = getContent();

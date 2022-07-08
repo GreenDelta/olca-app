@@ -42,10 +42,17 @@ class RenameAction extends Action implements INavigationAction {
 			return false;
 		var first = selection.get(0);
 		if (!(first instanceof ModelElement
-				|| first instanceof CategoryElement))
+			|| first instanceof CategoryElement)
+			|| first.getLibrary().isPresent())
 			return false;
-		if (first.getLibrary().isPresent())
-			return false;
+		if (first instanceof ModelElement e) {
+			if (e.isFromLibrary())
+				return false;
+		}
+		if (first instanceof CategoryElement e) {
+			if (e.hasLibraryContent())
+				return false;
+		}
 		this.element = first;
 		return true;
 	}
@@ -58,18 +65,18 @@ class RenameAction extends Action implements INavigationAction {
 			var d = ((ModelElement) element).getContent();
 			if (d.type == ModelType.PARAMETER) {
 				var param = new ParameterDao(Database.get())
-						.getForId(d.id);
+					.getForId(d.id);
 				RenameParameterDialog.open(param);
 				return;
 			}
 		}
 
 		var name = element instanceof CategoryElement
-				? ((CategoryElement) element).getContent().name
-				: ((ModelElement) element).getContent().name;
+			? ((CategoryElement) element).getContent().name
+			: ((ModelElement) element).getContent().name;
 
 		var dialog = new InputDialog(UI.shell(), M.Rename,
-				M.PleaseEnterANewName, name, null);
+			M.PleaseEnterANewName, name, null);
 		if (dialog.open() != Window.OK)
 			return;
 		var newName = dialog.getValue();
@@ -97,9 +104,9 @@ class RenameAction extends Action implements INavigationAction {
 
 	@SuppressWarnings("unchecked")
 	private <T extends RootEntity> void doUpdate(
-			RootDescriptor d, String newName) {
+		RootDescriptor d, String newName) {
 		var dao = (RootEntityDao<T, ?>) Daos.root(
-				Database.get(), d.type);
+			Database.get(), d.type);
 		T entity = dao.getForId(d.id);
 		entity.name = newName.trim();
 		dao.update(entity);

@@ -9,7 +9,6 @@ import org.openlca.app.db.Database;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.descriptors.Descriptor;
 
 /**
  * Represents categories in the navigation tree.
@@ -33,14 +32,22 @@ public class CategoryElement extends NavigationElement<Category> {
 		var category = getContent();
 		if (category == null)
 			return Collections.emptyList();
+
 		var lib = getLibrary().orElse(null);
 		var list = new ArrayList<INavigationElement<?>>();
 
 		// child categories
-		for (var child : category.childCategories) {
-			if (matches(Descriptor.of(child), lib)
-					|| (lib != null && hasElementsOf(child, lib))) {
-				list.add(new CategoryElement(this, child));
+		if (lib == null) {
+			category.childCategories.stream()
+				.map(c -> new CategoryElement(this, c))
+				.forEach(list::add);
+		} else {
+			var test = DatabaseElement.categoryTesterOf(this);
+			if (test != null) {
+				category.childCategories.stream()
+					.filter(c -> test.hasLibraryContent(c, lib))
+					.map(c -> new CategoryElement(this, c))
+					.forEach(list::add);
 			}
 		}
 
@@ -49,11 +56,38 @@ public class CategoryElement extends NavigationElement<Category> {
 		if (dao == null)
 			return list;
 		for (var d : dao.getDescriptors(Optional.of(category))) {
-			if (matches(d, lib)) {
+			if (lib == null || lib.equals(d.library)) {
 				list.add(new ModelElement(this, d));
 			}
 		}
 		return list;
+	}
+
+	/**
+	 * Returns {@code true} if the category of this element or a child category
+	 * of it contain model elements from a library.
+	 */
+	public boolean hasLibraryContent() {
+		var test = DatabaseElement.categoryTesterOf(this);
+		return test != null && test.hasLibraryContent(getContent());
+	}
+
+	/**
+	 * Returns {@code true} if the category of this element or a child category
+	 * of it contain model elements from the given library.
+	 */
+	public boolean hasLibraryContent(String library) {
+		var test = DatabaseElement.categoryTesterOf(this);
+		return test != null && test.hasLibraryContent(getContent(), library);
+	}
+
+	/**
+	 * Returns {@code true} if the category of this element or a child category
+	 * of it contain model elements that do not belong to a library.
+	 */
+	public boolean hasNonLibraryContent() {
+		var test = DatabaseElement.categoryTesterOf(this);
+		return test != null && test.hasNonLibraryContent(getContent());
 	}
 
 }

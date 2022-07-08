@@ -1,7 +1,6 @@
 package org.openlca.app.navigation;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.core.model.ModelType;
 
@@ -58,33 +56,20 @@ public class NavigationTree {
 			return Collections.emptyList();
 		var queue = new ArrayDeque<INavigationElement<?>>();
 		queue.add(root);
-		var coll = new ArrayList<INavigationElement<?>>();
+		ModelTypeElement elem = null;
 		while (!queue.isEmpty()) {
 			var next = queue.poll();
-			if (next instanceof ModelTypeElement elem) {
-				if (elem.getContent() == type) {
-					var lib = elem.getLibrary();
-					coll.add(lib.isPresent()
-							? LibraryElement.of(lib.get(), type)
-							: elem);
+			if (next instanceof ModelTypeElement e) {
+				if (e.getContent() == type) {
+					elem = e;
+					break;
 				}
 				continue;
 			}
 			queue.addAll(next.getChildren());
 		}
-
-		// if there is only one element in the collection and
-		// if it is a model type element, return the content
-		// of that element, otherwise we have active libraries
-		// in the tree and we want to show the content of these
-		// libraries in a structured way
-
-		if (coll.size() != 1)
-			return coll;
-		var first = coll.get(0);
-		return first instanceof ModelTypeElement
-				? first.getChildren()
-				: coll;
+		return elem == null
+			? Collections.emptyList()
+			: elem.getChildren();
 	}
-
 }

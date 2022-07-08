@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
@@ -14,43 +13,13 @@ import org.openlca.core.model.ModelType;
 
 public class LibraryElement extends NavigationElement<Library> {
 
-	private ModelType only;
-
 	LibraryElement(INavigationElement<?> parent, Library library) {
 		super(parent, library);
-	}
-
-	/**
-	 * Constructs a library element that only contains models of the given type.
-	 * Such elements are used in model selection dialogs and behave a bit
-	 * differently than library elements in the normal navigation.
-	 */
-	public static LibraryElement of(Library library, ModelType only) {
-		var elem = new LibraryElement(null, library);
-		elem.only = only;
-		return elem;
+		setLibrary(library.name());
 	}
 
 	@Override
 	protected List<INavigationElement<?>> queryChilds() {
-		if (only != null) {
-			// setting the correct parent is important here
-			// because otherwise tree selections etc. may
-			// do not work correctly.
-			return new ModelTypeElement(this, only)
-				.getChildren()
-				.stream()
-				.map(elem -> {
-					if (elem instanceof ModelElement me) {
-						return new ModelElement(this, me.getContent());
-					} else if (elem instanceof CategoryElement ce) {
-						return new CategoryElement(this, ce.getContent());
-					}
-					return null;
-				})
-				.collect(Collectors.toList());
-		}
-
 		var db = getDatabase();
 		if (db.isEmpty())
 			return Collections.emptyList();
