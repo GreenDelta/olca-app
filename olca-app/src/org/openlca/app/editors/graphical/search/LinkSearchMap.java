@@ -74,6 +74,24 @@ public class LinkSearchMap {
 	}
 
 	/**
+	 * Returns all the links where the processes with the given IDs are either
+	 * provider or connected with a provider.
+	 */
+	public List<ProcessLink> getLinks(List<Long> processIds) {
+		TIntHashSet intSet = new TIntHashSet(
+			Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
+		for (long processId : processIds) {
+			TIntArrayList list = providerIndex.get(processId);
+			if (list != null)
+				intSet.addAll(list);
+			list = connectionIndex.get(processId);
+			if (list != null)
+				intSet.addAll(list);
+		}
+		return getLinks(intSet.iterator());
+	}
+
+	/**
 	 * Returns all links where the process with the given ID is connected (has
 	 * an product input or waste output).
 	 */

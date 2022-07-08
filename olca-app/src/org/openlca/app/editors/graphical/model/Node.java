@@ -309,6 +309,9 @@ public class Node extends MinMaxGraphComponent {
 				} else if (isOutputNode(type, isProvider)) {
 					outNode = Node.this;
 					inNode = createNode(otherID);
+				} else if (processID == otherID) {  // self loop
+					inNode = Node.this;
+					outNode = Node.this;
 				} else {
 					continue;
 				}

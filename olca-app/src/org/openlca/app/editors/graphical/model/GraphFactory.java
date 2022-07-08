@@ -144,26 +144,21 @@ public class GraphFactory {
 		};
 	}
 
-	public void createNecessaryLinks(Graph graph, Node node) {
+	public static void createNecessaryLinks(Graph graph) {
 		var linkSearch = graph.linkSearch;
-		long id = node.descriptor.id;
-		for (ProcessLink pLink : linkSearch.getLinks(id)) {
-			boolean isProvider = pLink.providerId == id;
-			long otherID = isProvider ? pLink.processId : pLink.providerId;
-			var otherNode = graph.getNode(otherID);
-			if (otherNode == null)
+		for (ProcessLink pLink : linkSearch.getLinks(graph.getChildrenIds())) {
+			var providerNode = graph.getNode(pLink.providerId);
+			var consumerNode = graph.getNode(pLink.processId);
+			if (providerNode == null || consumerNode == null)
 				continue;
-			Node outNode = null;
-			Node inNode = null;
 			FlowType type = graph.flows.type(pLink.flowId);
-			if (type == FlowType.PRODUCT_FLOW) {
-				outNode = isProvider ? node : otherNode;
-				inNode = isProvider ? otherNode : node;
-			} else if (type == FlowType.WASTE_FLOW) {
-				outNode = isProvider ? otherNode : node;
-				inNode = isProvider ? node : otherNode;
-			}
-			if (outNode == null)
+			var outNode = type == FlowType.PRODUCT_FLOW ? providerNode
+				: type == FlowType.WASTE_FLOW ? consumerNode
+				: null;
+			var inNode = type == FlowType.PRODUCT_FLOW ? consumerNode
+				: type == FlowType.WASTE_FLOW ? providerNode
+				: null;
+			if (inNode == null)
 				continue;
 			new Link(pLink, outNode, inNode);
 		}
@@ -207,9 +202,9 @@ public class GraphFactory {
 			if (node == null)
 				continue;
 			graph.addChild(node);
-
-			createNecessaryLinks(graph, node);
 		}
+
+		createNecessaryLinks(graph);
 		return graph;
 	}
 
