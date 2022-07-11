@@ -22,11 +22,9 @@ import org.openlca.app.navigation.NavigationComparator;
 import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.CategoryElement;
-import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryDirElement;
 import org.openlca.app.navigation.elements.ModelElement;
-import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.preferences.Preferences;
 import org.openlca.app.util.Colors;
@@ -181,7 +179,7 @@ class ModelSelectionPage extends WizardPage {
 		var viewer = CheckboxTreeViewers.create(comp, selectionProvider);
 		viewer.addFilter(new LibraryFilter());
 		viewer.addFilter(new ModelTypeFilter(types));
-		viewer.setLabelProvider(new NavigationLabelProvider(false));
+		viewer.setLabelProvider(NavigationLabelProvider.withoutRepositoryState());
 		viewer.setComparator(new NavigationComparator());
 		CheckboxTreeViewers.registerInputHandler(comp, viewer, getInput(), () -> {
 			CheckboxTreeViewers.expandGrayed(viewer);

@@ -42,7 +42,7 @@ public class NavigationTree {
 	private static TreeViewer createViewer(Composite parent, int selection) {
 		var viewer = new TreeViewer(parent, SWT.BORDER | selection);
 		viewer.setContentProvider(new NavigationContentProvider());
-		viewer.setLabelProvider(new NavigationLabelProvider(false));
+		viewer.setLabelProvider(NavigationLabelProvider.withoutRepositoryState());
 		viewer.setComparator(new NavigationComparator());
 		ColumnViewerToolTipSupport.enableFor(viewer);
 		return viewer;

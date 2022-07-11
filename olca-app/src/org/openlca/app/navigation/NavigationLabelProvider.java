@@ -50,8 +50,12 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		this(true);
 	}
 
-	public NavigationLabelProvider(boolean indicateRepositoryState) {
+	private NavigationLabelProvider(boolean indicateRepositoryState) {
 		this.indicateRepositoryState = indicateRepositoryState;
+	}
+
+	public static NavigationLabelProvider withoutRepositoryState() {
+		return new NavigationLabelProvider(false);
 	}
 
 	@Override
@@ -85,9 +89,12 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 				return name;
 			var category = Cache.getEntityCache().get(
 				Category.class, descriptor.category);
-			return category != null
+			var text = category != null
 				? String.join(" / ", Categories.path(category)) + " / " + name
 				: name;
+			return descriptor.isFromLibrary()
+				? descriptor.library + ": " + text
+				: text;
 		}
 
 		// for categories show the full path
@@ -236,10 +243,9 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (elem instanceof DatabaseElement dbElem
 			&& Database.isActive(dbElem.getContent()))
 			return UI.boldFont();
-		if (elem instanceof ModelElement modElem
-			&& modElem.getContent().isFromLibrary())
-			return UI.italicFont();
-		return null;
+		return isFromLibrary(elem)
+			? UI.italicFont()
+			: null;
 	}
 
 	@Override
@@ -266,9 +272,17 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 
 	@Override
 	public Color getForeground(Object obj) {
-		if (obj instanceof ModelElement modElem
-			&& modElem.getContent().isFromLibrary())
-			return Colors.get(55, 71, 79);
-		return null;
+		return isFromLibrary(obj)
+			? Colors.get(55, 71, 79)
+			: null;
 	}
+
+	private boolean isFromLibrary(Object obj) {
+		if (obj instanceof ModelElement e)
+			return e.isFromLibrary();
+		if (obj instanceof CategoryElement e)
+			return e.hasLibraryContent();
+		return false;
+	}
+
 }

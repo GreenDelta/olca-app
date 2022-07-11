@@ -49,7 +49,7 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 			SWT.VIRTUAL | SWT.MULTI | SWT.BORDER);
 		tree.setUseHashlookup(true);
 		tree.setContentProvider(new NavigationContentProvider());
-		tree.setLabelProvider(new NavigationLabelProvider(false));
+		tree.setLabelProvider(NavigationLabelProvider.withoutRepositoryState());
 		tree.setComparator(new NavigationComparator());
 		tree.addFilter(new ModelTypeFilter(types));
 		tree.addCheckStateListener(this);
