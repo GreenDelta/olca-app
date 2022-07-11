@@ -32,7 +32,7 @@ public class AuthenticationDialog extends FormDialog {
 
 	public static GitCredentialsProvider promptCredentials(Repository repo) {
 		var url = repo.client.serverUrl + "/" + repo.client.repositoryId;
-		return promptCredentials(repo, url, true);
+		return promptCredentials(repo, url, false);
 	}
 
 	public static GitCredentialsProvider forcePromptCredentials(String url) {
