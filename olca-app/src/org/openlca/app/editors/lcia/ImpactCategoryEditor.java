@@ -22,12 +22,12 @@ import org.openlca.app.editors.lcia.geo.GeoPage;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
 import org.openlca.app.editors.parameters.ParameterPage;
-import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.LibraryUtil;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
@@ -38,7 +38,6 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.Direction;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
@@ -64,18 +63,9 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 		// evalFormulas() takes quite long; we skip this here
 		parameterSupport = new ParameterChangeSupport();
 		parameterSupport.onEvaluation(this::evalFormulas);
-
 		var impact = getModel();
 		if (impact.isFromLibrary()) {
-			var lib = Workspace.getLibraryDir()
-				.getLibrary(impact.library)
-				.orElse(null);
-			if (lib != null) {
-				var factors = lib.getImpactFactors(
-					Descriptor.of(impact),
-					Database.get());
-				impact.impactFactors.addAll(factors);
-			}
+			LibraryUtil.fillFactorsOf(impact);
 		}
 	}
 

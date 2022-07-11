@@ -12,14 +12,15 @@ import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
+import org.openlca.app.util.LibraryUtil;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CopyPaste {
 
@@ -59,7 +60,7 @@ public class CopyPaste {
 
 	public static boolean isSupported(INavigationElement<?> elem) {
 		if (!(elem instanceof ModelElement)
-				&& !(elem instanceof CategoryElement))
+			&& !(elem instanceof CategoryElement))
 			return false;
 		return elem.getLibrary().isEmpty();
 	}
@@ -182,23 +183,18 @@ public class CopyPaste {
 			else if (element instanceof ModelElement)
 				move((ModelElement) element, category);
 		} else if (currentAction == Action.COPY) {
-			if (element instanceof CategoryElement)
+			if (element instanceof CategoryElement) {
 				copy((CategoryElement) element, category);
-			else if (element instanceof ModelElement)
-				copy((ModelElement) element, category);
+			} else if (element instanceof ModelElement modElem) {
+				copyTo(modElem, getCategory(category));
+			}
 		}
 	}
 
-	private static void copy(ModelElement element, INavigationElement<?> categoryElement) {
-		RootEntity copy = copy(element);
-		if (copy == null)
-			return;
-		copy.category = getCategory(categoryElement);
-		insert(copy);
-	}
-
 	private static Category getCategory(INavigationElement<?> element) {
-		return element instanceof CategoryElement ? ((CategoryElement) element).getContent() : null;
+		return element instanceof CategoryElement catElem
+			? catElem.getContent()
+			: null;
 	}
 
 	private static void move(CategoryElement element, INavigationElement<?> categoryElement) {
@@ -249,53 +245,48 @@ public class CopyPaste {
 		elements.add(element);
 		while (!elements.isEmpty()) {
 			CategoryElement current = elements.poll();
-			Category copy = current.getContent().copy();
-			copy.childCategories.clear();
-			copy.category = parent;
+			Category catCopy = current.getContent().copy();
+			catCopy.childCategories.clear();
+			catCopy.category = parent;
 			if (parent == null)
-				copy = new CategoryDao(Database.get()).insert(copy);
+				catCopy = Database.get().insert(catCopy);
 			else {
-				parent.childCategories.add(copy);
-				copy = new CategoryDao(Database.get()).update(parent);
+				parent.childCategories.add(catCopy);
+				catCopy = Database.get().update(parent);
 			}
 			for (INavigationElement<?> child : current.getChildren())
-				if (child instanceof CategoryElement)
-					elements.add((CategoryElement) child);
-				else {
-					RootEntity modelCopy = copy((ModelElement) child);
-					modelCopy.category = copy;
-					insert(modelCopy);
+				if (child instanceof CategoryElement catElem)
+					elements.add(catElem);
+				else if (child instanceof ModelElement modElem) {
+					copyTo(modElem, catCopy);
 				}
-			parent = copy;
+			parent = catCopy;
 		}
 	}
 
-	private static RootEntity copy(ModelElement element) {
-		var descriptor = element.getContent();
-		var dao = Daos.root(Database.get(), descriptor.type);
-		var entity = dao.getForId(descriptor.id);
-		var copy = cloneIt(entity);
-		if (copy != null)
-			copy.name = copy.name + " (copy)";
-		return copy;
-	}
-
-	private static RootEntity cloneIt(RootEntity entity) {
-		try {
-			RootEntity clone = (RootEntity) entity.copy();
-			DatabaseDir.copyDir(entity, clone);
-			return clone;
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(CopyPaste.class);
-			log.error("failed to clone " + entity, e);
-			return null;
+	private static void copyTo(ModelElement e, Category category) {
+		var d = e.getContent();
+		if (d == null)
+			return;
+		var dao = Daos.root(Database.get(), d.type);
+		if (dao == null)
+			return;
+		var entity = dao.getForId(d.id);
+		if (entity == null)
+			return;
+		if (entity.isFromLibrary()) {
+			if (entity instanceof Process p) {
+				LibraryUtil.fillExchangesOf(p);
+			} else if (entity instanceof ImpactCategory i) {
+				LibraryUtil.fillFactorsOf(i);
+			}
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T extends RootEntity> void insert(T entity) {
-		Class<T> clazz = (Class<T>) entity.getClass();
-		Daos.base(Database.get(), clazz).insert(entity);
+		var copy = (RootEntity) entity.copy();
+		copy.library = null;
+		copy.category = category;
+		copy.name = copy.name + " (copy)";
+		DatabaseDir.copyDir(entity, copy);
+		Database.get().insert(copy);
 	}
 
 	public static boolean cacheIsEmpty() {
