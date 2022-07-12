@@ -185,7 +185,7 @@ public class SimaProCsvProvider implements IProvider {
 
 		static FlowInfo of(ElementaryFlowType type, Quantities quantities) {
 			var info = new FlowInfo(FlowType.ELEMENTARY_FLOW, quantities);
-			info.compartment = type.compartment();
+			info.compartment = type.exchangeHeader();
 			return info;
 		}
 
@@ -208,15 +208,11 @@ public class SimaProCsvProvider implements IProvider {
 		}
 
 		String key() {
-			var q = quantities.propertyOf(unit);
-			var quantity = q == null
-				? ""
-				: q.name;
 			return switch (flowType) {
-				case PRODUCT_FLOW ->  KeyGen.toPath("product", name, quantity);
-				case WASTE_FLOW ->  KeyGen.toPath("waste", name, quantity);
+				case PRODUCT_FLOW ->  KeyGen.toPath("product", name, unit);
+				case WASTE_FLOW ->  KeyGen.toPath("waste", name, unit);
 				case ELEMENTARY_FLOW -> KeyGen.toPath(
-					"elementary flow", compartment, subCompartment, name, quantity);
+					"elementary flow", compartment, subCompartment, name, unit);
 			};
 		}
 

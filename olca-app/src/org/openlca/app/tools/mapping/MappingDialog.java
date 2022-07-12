@@ -53,7 +53,7 @@ class MappingDialog extends FormDialog {
 		// the dialog works on a copy of the entry; only if
 		// the user clicks on OK, the changes are applied
 		var copy = entry.copy();
-		var dialog = new MappingDialog(tool, entry.copy());
+		var dialog = new MappingDialog(tool, copy);
 		int state = dialog.open();
 		if (state != OK)
 			return state;
