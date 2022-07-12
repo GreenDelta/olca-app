@@ -22,20 +22,20 @@ public class BlockLevelLayout {
 		if (sankey.root == null)
 			return;
 		var nodeMap = new HashMap<TechFlow, Tree>();
-		Function<Sankey.Node, Tree> mapFn = sankeyNode -> {
-			return nodeMap.computeIfAbsent(sankeyNode.product, product -> {
+		Function<Sankey.Node, Tree> mapFn = sankeyNode ->
+			nodeMap.computeIfAbsent(sankeyNode.product, product -> {
 				var processNode = editor.createdNodes.get(product);
 				return processNode == null
-						? null
-						: new Tree(processNode);
+					? null
+					: new Tree(processNode);
 			});
-		};
 
 		var root = mapFn.apply(sankey.root);
 		if (root == null)
 			return;
 		var expanded = new HashSet<TechFlow>();
 		var added = new HashSet<TechFlow>();
+		added.add(sankey.root.product);
 		sankey.traverse(n -> {
 			if (expanded.contains(n.product))
 				return;
@@ -76,7 +76,7 @@ public class BlockLevelLayout {
 			int x = totalWidth / 2 - width / 2;
 			for (var node : level) {
 				node.node.setLayoutConstraints(new Rectangle(
-						x, y, nodeSize.width, nodeSize.height));
+					x, y, nodeSize.width, nodeSize.height));
 				x += nodeSize.width + hspace;
 			}
 		}
@@ -100,8 +100,8 @@ public class BlockLevelLayout {
 			}
 
 			var childLevels = childs.stream()
-					.map(Tree::levels)
-					.collect(Collectors.toList());
+				.map(Tree::levels)
+				.toList();
 			int len = 1;
 			for (var cl : childLevels) {
 				len = Math.max(len, cl.length + 1);
@@ -116,8 +116,8 @@ public class BlockLevelLayout {
 						levels[pos] = cl[i];
 					} else {
 						levels[pos] = (List<Tree>) Stream
-								.concat(levels[pos].stream(), cl[i].stream())
-								.collect(Collectors.toList());
+							.concat(levels[pos].stream(), cl[i].stream())
+							.collect(Collectors.toList());
 					}
 				}
 			}
