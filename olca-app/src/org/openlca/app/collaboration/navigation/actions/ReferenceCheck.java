@@ -40,16 +40,18 @@ class ReferenceCheck {
 	}
 
 	static Set<TriDiff> forRemote(IDatabase database, List<Diff> all, Set<TriDiff> input) {
+		if (!CollaborationPreference.checkReferences())
+			return input;
 		return new ReferenceCheck(database, all, input).run(false);
 	}
 
 	static Set<TriDiff> forStash(IDatabase database, List<Diff> all, Set<TriDiff> input) {
+		if (!CollaborationPreference.checkReferences())
+			return input;
 		return new ReferenceCheck(database, all, input).run(true);
 	}
 
 	private Set<TriDiff> run(boolean stashCommit) {
-		if (!CollaborationPreference.checkReferences())
-			return input;
 		var references = collect();
 		if (references.isEmpty())
 			return input;
