@@ -13,6 +13,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
@@ -96,15 +97,11 @@ public class AddExchangeCommand extends Command {
 		// Note that we need to do this, before we create the IOPane in order to
 		// avoid recreation of that node later.
 		var editor = node.editor;
-		if (flow.flowType == FlowType.ELEMENTARY_FLOW) {
+		if (flow.flowType == FlowType.ELEMENTARY_FLOW)
 			editor.config.setShowElementaryFlows(true);
-		}
 
 		var ioPane = forInput ? node.getInputIOPane() : node.getOutputIOPane();
-		node.removeChild(ioPane);
-		var panes = editor.getGraphFactory().createIOPanes(node.descriptor);
-		node.addChild(
-			panes.get(forInput ? INPUT_PROP : OUTPUT_PROP), forInput ? 0 : 1);
+		ioPane.addChild(new ExchangeItem(editor, exchange));
 	}
 
 	class Dialog extends FormDialog {
