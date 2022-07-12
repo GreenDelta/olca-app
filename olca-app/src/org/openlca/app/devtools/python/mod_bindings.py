@@ -42,6 +42,7 @@ import org.openlca.core.model.CalculationType as CalculationType
 import org.openlca.ipc.handlers.Calculator as Calculator
 import org.openlca.util.Categories as Categories
 import org.openlca.core.model.Category as Category
+import org.openlca.util.CategoryContentTest as CategoryContentTest
 import org.openlca.core.database.CategoryDao as CategoryDao
 import org.openlca.core.model.descriptors.CategoryDescriptor as CategoryDescriptor
 import org.openlca.io.CategoryPair as CategoryPair

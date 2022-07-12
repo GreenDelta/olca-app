@@ -11,12 +11,14 @@ from subprocess import call
 
 def main():
     if os.name == 'posix':
+        call(['mvn', 'clean'], cwd='./olca-app')
         call('./update_modules.sh')
         call(['mvn', 'package'], cwd='./olca-refdata')
         call(['npm', 'install'], cwd='./olca-app-html')
         call(['npm', 'run', 'build'], cwd='./olca-app-html')
         call(['node', 'gen-jython-bindings.js'])
     else:
+        call('mvn.cmd clean', cwd='./olca-app')
         call('update_modules.bat')
         call('mvn.cmd package', cwd='./olca-refdata')
         call('npm.cmd install', cwd='./olca-app-html')
