@@ -74,7 +74,8 @@ public class MassExpansionAction extends StackAction {
 
 			var editPart = (EditPart) viewer.getEditPartRegistry().get(referenceNode);
 			var request = new ExpansionRequest(referenceNode, REQ_COLLAPSE);
-			cc.add(editPart.getCommand(request));
+			if (editPart != null)
+				cc.add(editPart.getCommand(request));
 		}
 
 		else if (type == EXPAND) {
@@ -83,7 +84,8 @@ public class MassExpansionAction extends StackAction {
 					|| !node.isExpanded(Node.Side.OUTPUT)) {
 					var editPart = (EditPart) viewer.getEditPartRegistry().get(node);
 					var request = new ExpansionRequest(node, REQ_EXPAND);
-					cc.add(editPart.getCommand(request));
+					if (editPart != null)
+						cc.add(editPart.getCommand(request));
 				}
 			}
 		}
