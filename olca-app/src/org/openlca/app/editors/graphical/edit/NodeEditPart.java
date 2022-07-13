@@ -15,11 +15,10 @@ import org.openlca.app.editors.graphical.figures.MinimizedNodeFigure;
 import org.openlca.app.editors.graphical.figures.NodeFigure;
 import org.openlca.app.editors.graphical.model.GraphComponent;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.editors.graphical.requests.ExpansionRequest;
+import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 
 import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
 import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
 
 public abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 
@@ -32,10 +31,9 @@ public abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
 		if (GraphComponent.SIZE_PROP.equals(prop)
-			|| GraphComponent.LOCATION_PROP.equals(prop))
+			|| GraphComponent.LOCATION_PROP.equals(prop)
+		  || Node.EXPANDED_PROP.equals(prop))
 			refreshVisuals();
-		else if (Node.EXPANSION_PROP.equals(prop))
-			refreshChildren();
 		else super.propertyChange(evt);
 	}
 
@@ -44,7 +42,9 @@ public abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 		if (request.getType() == RequestConstants.REQ_OPEN) {
 			CommandStack stack = getViewer().getEditDomain().getCommandStack();
 			var command = getCommand(request);
-			stack.execute(command);
+			if (command != null && command.canExecute()) {
+				stack.execute(command);
+			}
 		}
 	}
 
@@ -58,13 +58,14 @@ public abstract class NodeEditPart extends AbstractNodeEditPart<Node> {
 
 	protected void addButtonActionListener(NodeFigure figure) {
 		figure.inputExpandButton.addActionListener($ -> {
-			var command = getCommand(new ExpansionRequest(getModel(), INPUT));
-			getViewer().getEditDomain().getCommandStack().execute(command);
+			var command = getCommand(new ExpandCollapseRequest(getModel(), INPUT));
+			if (command.canExecute())
+				getViewer().getEditDomain().getCommandStack().execute(command);
 		});
-
 		figure.outputExpandButton.addActionListener($ -> {
-			var command = getCommand(new ExpansionRequest(getModel(), OUTPUT));
-			getViewer().getEditDomain().getCommandStack().execute(command);
+			var command = getCommand(new ExpandCollapseRequest(getModel(), OUTPUT));
+			if (command.canExecute())
+				getViewer().getEditDomain().getCommandStack().execute(command);
 		});
 	}
 

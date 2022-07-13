@@ -6,6 +6,9 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.themes.Theme;
+import org.openlca.app.util.Colors;
+
+import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
 
 public class PlusMinusButton extends Clickable {
 
@@ -13,8 +16,8 @@ public class PlusMinusButton extends Clickable {
 
 	public PlusMinusButton(Node node, int side) {
 		setContents(icon = new PlusMinusFigure(node, side));
-		setEnabled(node.shouldExpanderBeVisible(side));
-		setVisible(node.shouldExpanderBeVisible(side));
+		setVisible(node.canExpandOrCollapse(side));
+		setEnabled(node.isButtonEnabled(side));
 	}
 
 	public static class PlusMinusFigure extends Figure {
@@ -44,11 +47,14 @@ public class PlusMinusButton extends Clickable {
 			var theme = node.getConfig().getTheme();
 			var box = Theme.Box.of(node);
 
-			setEnabled(node.shouldExpanderBeVisible(side));
-			setVisible(node.shouldExpanderBeVisible(side));
+			setEnabled(node.isButtonEnabled(side));
+			setVisible(node.canExpandOrCollapse(side));
 
 			// Painting
-			g.setForegroundColor(theme.boxBorderColor(box));
+			if (isEnabled())
+				g.setForegroundColor(theme.boxBorderColor(box));
+			else
+				g.setForegroundColor(Colors.gray());
 			g.setLineWidth(LINE_WIDTH);
 			Rectangle r = getBounds().getCopy();
 

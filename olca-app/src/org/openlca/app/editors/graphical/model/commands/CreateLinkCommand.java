@@ -9,6 +9,10 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
+import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
+import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
+
+
 public class CreateLinkCommand extends Command {
 
 	public final long flowId;
@@ -39,6 +43,8 @@ public class CreateLinkCommand extends Command {
 		system.processLinks.add(processLink);
 		graph.linkSearch.put(processLink);
 		link = new Link(processLink, source, target);
+		link.getTargetNode().updateIsExpanded(INPUT);
+		link.getSourceNode().updateIsExpanded(OUTPUT);
 		graph.editor.setDirty();
 	}
 
@@ -113,6 +119,8 @@ public class CreateLinkCommand extends Command {
 			return;
 		ProductSystem system = graph.getProductSystem();
 		link.disconnect();
+		link.getTargetNode().updateIsExpanded(INPUT);
+		link.getSourceNode().updateIsExpanded(OUTPUT);
 		system.processLinks.remove(processLink);
 		graph.linkSearch.remove(processLink);
 		graph.editor.setDirty();

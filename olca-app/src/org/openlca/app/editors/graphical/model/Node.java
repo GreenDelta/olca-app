@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.openlca.app.editors.graphical.layouts.GraphLayout.DEFAULT_LOCATION;
+import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
+import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
 
 /**
  * A {@link Node} represents a unit process, a library process, a result
@@ -25,14 +27,21 @@ import static org.openlca.app.editors.graphical.layouts.GraphLayout.DEFAULT_LOCA
  */
 public class Node extends MinMaxGraphComponent {
 
-	public static final String EXPANSION_PROP = "expansion";
+	public static final String EXPANDED_PROP = "expanded";
 
 	public static final Dimension DEFAULT_SIZE =
 		new Dimension(250, SWT.DEFAULT);
 
 	public final RootDescriptor descriptor;
-	private final Expander inputExpander = new Expander(Side.INPUT);
-	private final Expander outputExpander = new Expander(Side.OUTPUT);
+
+	/** Define if the input or this output side is expanded.
+	 * 0: not expanded, 1: input expanded, 2: output expanded, 3: both
+	 * expanded */
+	public int isExpanded;
+	/** Helper variable when exploring graph in CollapseCommand */
+	public boolean isCollapsing;
+	/** Helper variable when exploring graph in isChainingReferenceNode */
+	public boolean wasExplored;
 
 	public Node(RootDescriptor descriptor, GraphEditor editor) {
 		super(editor);
@@ -81,6 +90,18 @@ public class Node extends MinMaxGraphComponent {
 		return null;
 	}
 
+	public static boolean isInput(FlowType type, boolean isProvider) {
+		if (isProvider && type == FlowType.WASTE_FLOW)
+			return true; // waste input
+		return !isProvider && type == FlowType.PRODUCT_FLOW; // product input
+	}
+
+	public static  boolean isOutput(FlowType type, boolean isProvider) {
+		if (isProvider && type == FlowType.PRODUCT_FLOW)
+			return true; // product output
+		return !isProvider && type == FlowType.WASTE_FLOW; // waste output
+	}
+
 	@Override
 	protected Dimension getMinimizedSize() {
 		return new Dimension(getSize().width, DEFAULT_SIZE.height);
@@ -107,9 +128,9 @@ public class Node extends MinMaxGraphComponent {
 	@SuppressWarnings("unchecked")
 	public HashMap<String, IOPane> getIOPanes() {
 		HashMap<String, IOPane> map = new HashMap<>();
-		for (IOPane pane : (List<IOPane>) super.getChildren()) {
-			map.put(pane.isForInputs() ? INPUT_PROP : OUTPUT_PROP, pane);
-		}
+		for (var child : getChildren())
+			if (child instanceof IOPane pane)
+				map.put(pane.isForInputs() ? INPUT_PROP : OUTPUT_PROP, pane);
 		return map;
 	}
 
@@ -145,58 +166,136 @@ public class Node extends MinMaxGraphComponent {
 		return false;
 	}
 
-	public Expander expanderOf(int side) {
-		return side == Side.INPUT
-			? inputExpander
-			: outputExpander;
-	}
-
-	public void collapse() {
-		collapse(Side.INPUT);
-		collapse(Side.OUTPUT);
-	}
-
-	public void collapse(int side) {
-		if (!isExpanded(side))
-			return;
-		expanderOf(side).collapse(this);
-	}
-
-	/**
-	 * Used to avoid removing the initial node while collapsing, should only be
-	 * called from within Expander.collapse
-	 */
-	public void collapse(int side, Node initialNode) {
-		if (!isExpanded(side))
-			return;
-		expanderOf(side).collapse(initialNode);
-	}
-
-	public void expand() {
-		expand(Side.INPUT);
-		expand(Side.OUTPUT);
+	public boolean isExpanded(int side) {
+		var bitPosition = side == Side.INPUT ? 1 : 2;
+		return ((isExpanded >> bitPosition) & 1) == 1;
 	}
 
 	public void setExpanded(int side, boolean value) {
-		expanderOf(side).setExpanded(value);
+		var oldIsExpanded = isExpanded;
+		var bitPosition = side == Side.INPUT ? 1 : 2;
+		if (value)
+			isExpanded |= 1 << bitPosition;
+		else
+			isExpanded &= ~(1 << bitPosition);
+		if (oldIsExpanded != isExpanded)
+			firePropertyChange(EXPANDED_PROP, oldIsExpanded, isExpanded);
 	}
 
-	public void expand(int side) {
-		expanderOf(side).expand();
+	/**
+	 * isExpanded can be set manually with a quick bit operation when expanding
+	 * or collapsing the node. However, it is sometime necessary that the Node
+	 * updates itself its status when it is not know out of the box.
+	 */
+	public void updateIsExpanded(int side) {
+		var sourceNodeIds = getAllTargetConnections().stream()
+			.map(c -> c.getSourceNode().descriptor.id)
+			.toList();
+		var targetNodeIds = getAllSourceConnections().stream()
+			.map(c -> c.getTargetNode().descriptor.id)
+			.toList();
+
+		for (var pLink : getGraph().linkSearch.getLinks(descriptor.id)) {
+			FlowType type = getGraph().flows.type(pLink.flowId);
+			if (type == null || type == FlowType.ELEMENTARY_FLOW)
+				continue;
+
+			boolean isProvider = descriptor.id == pLink.providerId;
+			long otherID = isProvider ? pLink.processId : pLink.providerId;
+
+			if (side == INPUT && isInput(type, isProvider)) {
+				if (!sourceNodeIds.contains(otherID)) {
+					setExpanded(side, false);
+					return;
+				}
+			} else if (side == OUTPUT && isOutput(type, isProvider)) {
+				if (!targetNodeIds.contains(otherID)) {
+					setExpanded(side, false);
+					return;
+				}
+			} else if (this.descriptor.id == otherID) {  // self loop
+				if (!sourceNodeIds.contains(this.descriptor.id)
+					|| !targetNodeIds.contains(this.descriptor.id)) {
+					setExpanded(side, false);
+					return;
+				}
+			}
+		}
+		setExpanded(side, true);
 	}
 
-	public boolean isExpanded(int side) {
-		if (expanderOf(side) == null)
+	/**
+	 * Return true if the node as any of its inputs or outputs is linked in the
+	 * product system.
+	 */
+	public boolean canExpandOrCollapse(int side) {
+		var linkSearch = getGraph().linkSearch;
+		long processId = descriptor.id;
+
+		for (ProcessLink link : linkSearch.getLinks(processId)) {
+			FlowType type = getGraph().flows.type(link.flowId);
+			boolean isProvider = link.providerId == processId;
+
+			if (side == INPUT) {
+				if (type == FlowType.PRODUCT_FLOW && !isProvider)
+					return true;
+				if (type == FlowType.WASTE_FLOW && isProvider)
+					return true;
+			} else if (side == OUTPUT) {
+				if (type == FlowType.PRODUCT_FLOW && isProvider)
+					return true;
+				if (type == FlowType.WASTE_FLOW && !isProvider)
+					return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isButtonEnabled(int side) {
+		if (!canExpandOrCollapse(side))
 			return false;
-		else return expanderOf(side).isExpanded();
+		if (!isExpanded(side))
+			return true;
+		else if (this == getGraph().getReferenceNode())
+			return true;
+		else
+			return !isOnlyChainingReferenceNode(side);
 	}
 
-	public boolean shouldExpanderBeVisible(int side) {
-		if (expanderOf(side) == null)
+	/**
+	 * Recursively check if this node's outputs or inputs only chain to the
+	 * reference node.
+	 * Returns false is the initial node is the reference.
+	 */
+	public boolean isOnlyChainingReferenceNode(int side) {
+		if (wasExplored)
 			return false;
-		else return expanderOf(side).canExpand();
-	}
+		else if (this == getGraph().getReferenceNode())
+			// The reference node is explored if and only if it is the initial node
+			// (see the condition in the for loop).
+			return false;
+		wasExplored = true;
 
+		var links = side == INPUT
+			? getAllTargetConnections()
+			: getAllSourceConnections();
+		if (links.isEmpty()) {
+			wasExplored = false;
+			return false;
+		}
+
+		var isOnlyChainingReferenceNode = true;
+		for (var link : links) {
+			var otherNode = side == INPUT
+				? link.getSourceNode()
+				: link.getTargetNode();
+			if (otherNode != getGraph().getReferenceNode()
+			&& !otherNode.isOnlyChainingReferenceNode(side))
+				isOnlyChainingReferenceNode = false;
+		}
+		wasExplored = false;
+		return isOnlyChainingReferenceNode;
+	}
 
 	public String toString() {
 		var editable = isEditable() ? "E-" : "";
@@ -209,151 +308,6 @@ public class Node extends MinMaxGraphComponent {
 	public record Side() {
 		public static int INPUT = 1;
 		public static int OUTPUT = 2;
-	}
-
-	private class Expander {
-
-		private final int side;
-		private boolean expanded;
-		// isCollapsing is used to prevent endless recursion in collapse()
-		private boolean isCollapsing;
-
-		private Expander(int side) {
-			this.side = side;
-		}
-
-		public boolean isExpanded() {
-			// TODO (francois) Add a mechanism to detect if every side links are
-			//  deleted or added.
-			return expanded;
-		}
-
-		public void setExpanded(boolean value) {
-			if (value != expanded) {
-				expanded = value;
-				firePropertyChange(EXPANSION_PROP, null, value);
-			}
-		}
-
-		public boolean canExpand() {
-			var graph = getGraph();
-			var linkSearch = graph.linkSearch;
-			long processId = descriptor.id;
-			for (ProcessLink link : linkSearch.getLinks(processId)) {
-				FlowType type = graph.flows.type(link.flowId);
-				boolean isProvider = link.providerId == processId;
-				if (side == Side.INPUT) {
-					if (type == FlowType.PRODUCT_FLOW && !isProvider)
-						return true;
-					if (type == FlowType.WASTE_FLOW && isProvider)
-						return true;
-				} else if (side == Side.OUTPUT) {
-					if (type == FlowType.PRODUCT_FLOW && isProvider)
-						return true;
-					if (type == FlowType.WASTE_FLOW && !isProvider)
-						return true;
-				}
-			}
-			return false;
-		}
-
-		private void expand() {
-			createNecessaryNodes();
-			setExpanded(true);
-		}
-
-		private void collapse(Node initialNode) {
-			if (isCollapsing)
-				return;
-			isCollapsing = true;
-			// need to copy the links otherwise we get a
-			// concurrent modification exception
-			var links = getAllLinks().toArray(new Link[0]);
-			for (var link : links) {
-				var thisNode = side == Side.INPUT
-					? link.getTargetNode()
-					: link.getSourceNode();
-				var otherNode = side == Side.INPUT
-					? link.getSourceNode()
-					: link.getTargetNode();
-				if (!thisNode.equals(Node.this))
-					continue;
-				link.disconnect();
-				otherNode.collapse(Side.INPUT, initialNode);
-				otherNode.collapse(Side.OUTPUT, initialNode);
-				if (otherNode.equals(initialNode))
-					continue;
-				if (!otherNode.getAllLinks().isEmpty())
-					continue;
-				getGraph().removeChild(otherNode);
-			}
-			isCollapsing = false;
-			setExpanded(false);
-		}
-
-		private void createNecessaryNodes() {
-			var graph = getGraph();
-			long processID = descriptor.id;
-			List<ProcessLink> links = graph.linkSearch.getLinks(processID);
-			for (ProcessLink pLink : links) {
-				FlowType type = graph.flows.type(pLink.flowId);
-				if (type == null || type == FlowType.ELEMENTARY_FLOW)
-					continue;
-				boolean isProvider = processID == pLink.providerId;
-				long otherID = isProvider ? pLink.processId : pLink.providerId;
-				Node outNode;
-				Node inNode;
-				if (isInputNode(type, isProvider)) {
-					inNode = Node.this;
-					outNode = createNode(otherID);
-				} else if (isOutputNode(type, isProvider)) {
-					outNode = Node.this;
-					inNode = createNode(otherID);
-				} else if (processID == otherID) {  // self loop
-					inNode = Node.this;
-					outNode = Node.this;
-				} else {
-					continue;
-				}
-				new Link(pLink, outNode, inNode);
-			}
-		}
-
-		/**
-		 * Create, if necessary, a node using the <code>GraphFactory</code>.
-		 * @return Return the existent or the newly created <code>Node</code> for
-		 * convenience.
-		 */
-		private Node createNode(long id) {
-			var graph = getGraph();
-
-			// Checking if the node already exists.
-			var node = graph.getNode(id);
-			if (node != null)
-				return node;
-
-			var descriptor = GraphFactory.getDescriptor(id);
-			node = editor.getGraphFactory().createNode(descriptor, null);
-			graph.addChild(node);
-			return node;
-		}
-
-		private boolean isInputNode(FlowType type, boolean isProvider) {
-			if (side != Side.INPUT)
-				return false;
-			if (isProvider && type == FlowType.WASTE_FLOW)
-				return true; // waste input
-			return !isProvider && type == FlowType.PRODUCT_FLOW; // product input
-		}
-
-		private boolean isOutputNode(FlowType type, boolean isProvider) {
-			if (side != Side.OUTPUT)
-				return false;
-			if (isProvider && type == FlowType.PRODUCT_FLOW)
-				return true; // product output
-			return !isProvider && type == FlowType.WASTE_FLOW; // waste output
-		}
-
 	}
 
 }

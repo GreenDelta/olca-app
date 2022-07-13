@@ -19,12 +19,10 @@ public abstract class AbstractNodeEditPart<N extends GraphComponent> extends
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
-		if (GraphComponent.TARGET_CONNECTIONS_PROP.equals(prop)) {
+		if (GraphComponent.TARGET_CONNECTIONS_PROP.equals(prop))
 			refreshTargetConnections();
-		}
-		else if (GraphComponent.SOURCE_CONNECTIONS_PROP.equals(prop)) {
+		else if (GraphComponent.SOURCE_CONNECTIONS_PROP.equals(prop))
 			refreshSourceConnections();
-		}
 		else super.propertyChange(evt);
 	}
 
