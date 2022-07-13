@@ -20,10 +20,6 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
@@ -51,6 +47,9 @@ import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
 
 import com.google.common.base.Objects;
+import org.openlca.core.model.Category;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.Descriptor;
 
 public class Navigator extends CommonNavigator {
 
@@ -67,7 +66,7 @@ public class Navigator extends CommonNavigator {
 	protected CommonViewer createCommonViewer(Composite aParent) {
 		var viewer = super.createCommonViewer(aParent);
 		viewer.getTree().setBackground(
-				Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
+			Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
 		return viewer;
 	}
 
@@ -116,9 +115,9 @@ public class Navigator extends CommonNavigator {
 							new DeleteModelAction(),
 							new DeleteMappingAction(),
 							new DeleteScriptAction())
-							.filter((INavigationAction a) -> a.accept(elems))
-							.findFirst()
-							.ifPresent(INavigationAction::run);
+						.filter((INavigationAction a) -> a.accept(elems))
+						.findFirst()
+						.ifPresent(INavigationAction::run);
 				}
 			}
 		});
@@ -135,11 +134,11 @@ public class Navigator extends CommonNavigator {
 	 * Refresh the navigation view if it is available.
 	 */
 	public static void refresh() {
-		CommonViewer viewer = getNavigationViewer();
-		NavigationRoot root = getNavigationRoot();
+		var viewer = getNavigationViewer();
+		var root = getNavigationRoot();
 		if (viewer == null || root == null)
 			return;
-		Object[] oldExpansion = viewer.getExpandedElements();
+		var oldExpansion = viewer.getExpandedElements();
 		root.update();
 		viewer.refresh();
 		setRefreshedExpansion(viewer, oldExpansion);
@@ -149,20 +148,53 @@ public class Navigator extends CommonNavigator {
 	 * Refreshes the content *under* the given element.
 	 */
 	public static void refresh(INavigationElement<?> element) {
-		CommonViewer viewer = getNavigationViewer();
+		var viewer = getNavigationViewer();
 		if (viewer == null || element == null)
 			return;
 		element.update();
 		Object[] oldExpansion = viewer.getExpandedElements();
 		viewer.refresh(element);
 		updateLabels(viewer, element);
-		if (oldExpansion == null)
-			return;
 		setRefreshedExpansion(viewer, oldExpansion);
+
+		// clear the category content cache for the respective model type
+		var modelType = modelTypeOf(element);
+		if (modelType == null)
+			return;
+		var dbElem = databaseElementOf(element);
+		if (dbElem == null)
+			return;
+		var contentTest = dbElem.categoryContentTest();
+		if (contentTest != null) {
+			contentTest.clearCacheOf(modelType);
+		}
+	}
+
+	private static ModelType modelTypeOf(INavigationElement<?> elem) {
+		var content = elem.getContent();
+		if (content == null)
+			return null;
+		if (content instanceof ModelType t)
+			return t;
+		if (content instanceof Descriptor d)
+			return d.type;
+		if (content instanceof Category c)
+			return c.modelType;
+		return null;
+	}
+
+	private static DatabaseElement databaseElementOf(INavigationElement<?> elem) {
+		var e = elem;
+		while (e != null) {
+			if (e instanceof DatabaseElement dbe)
+				return dbe;
+			e = e.getParent();
+		}
+		return null;
 	}
 
 	private static void updateLabels(CommonViewer viewer,
-			INavigationElement<?> element) {
+	                                 INavigationElement<?> element) {
 		TreeItem item = findItem(viewer, element);
 		if (item == null)
 			return;
@@ -173,7 +205,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static TreeItem findItem(CommonViewer viewer,
-			INavigationElement<?> element) {
+	                                 INavigationElement<?> element) {
 		Stack<TreeItem> items = new Stack<>();
 		items.addAll(Arrays.asList(viewer.getTree().getItems()));
 		while (!items.empty()) {
@@ -186,7 +218,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static boolean itemEqualsElement(TreeItem item,
-			INavigationElement<?> element) {
+	                                         INavigationElement<?> element) {
 		INavigationElement<?> data = (INavigationElement<?>) item.getData();
 		if (data == null)
 			return false;
@@ -197,15 +229,18 @@ public class Navigator extends CommonNavigator {
 	 * Expands the elements in the viewer that have the same content as in the
 	 * elements of the <code>oldExpansion</code> array.
 	 */
-	private static void setRefreshedExpansion(CommonViewer viewer,
-			Object[] oldExpansion) {
+	private static void setRefreshedExpansion(
+		CommonViewer viewer, Object[] oldExpansion) {
+		if (viewer == null || oldExpansion == null)
+			return;
 		var newExpanded = new ArrayList<INavigationElement<?>>();
-		for (var expandedElem : oldExpansion) {
-			if (!(expandedElem instanceof INavigationElement<?> oldElem))
+		for (var e : oldExpansion) {
+			if (!(e instanceof INavigationElement<?> oldElem))
 				continue;
 			var newElem = findElement(oldElem.getContent());
-			if (newElem != null)
+			if (newElem != null) {
 				newExpanded.add(newElem);
+			}
 		}
 		viewer.setExpandedElements(newExpanded.toArray());
 	}
@@ -239,19 +274,19 @@ public class Navigator extends CommonNavigator {
 	 * instance available.
 	 */
 	public static Navigator getInstance() {
-		IWorkbench workbench = PlatformUI.getWorkbench();
+		var workbench = PlatformUI.getWorkbench();
 		if (workbench == null)
 			return null;
-		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+		var window = workbench.getActiveWorkbenchWindow();
 		if (window == null)
 			return null;
-		IWorkbenchPage page = window.getActivePage();
+		var page = window.getActivePage();
 		if (page == null)
 			return null;
-		IViewPart part = page.findView(ID);
-		if (part instanceof Navigator)
-			return (Navigator) part;
-		return null;
+		var part = page.findView(ID);
+		return part instanceof Navigator navi
+			? navi
+			: null;
 	}
 
 	/**
@@ -259,11 +294,10 @@ public class Navigator extends CommonNavigator {
 	 * available.
 	 */
 	public static NavigationRoot getNavigationRoot() {
-		NavigationRoot root = null;
-		Navigator navigator = getInstance();
-		if (navigator != null)
-			root = navigator.getRoot();
-		return root;
+		var navigator = getInstance();
+		return navigator != null
+			? navigator.getRoot()
+			: null;
 	}
 
 	/**
@@ -287,8 +321,8 @@ public class Navigator extends CommonNavigator {
 	public INavigationElement<?> getFirstSelected() {
 		var all = getAllSelected();
 		return all.isEmpty()
-				? null
-				: all.get(0);
+			? null
+			: all.get(0);
 	}
 
 	public List<INavigationElement<?>> getAllSelected() {
@@ -300,8 +334,8 @@ public class Navigator extends CommonNavigator {
 	 * null in the unwrap function
 	 */
 	public static <T> Set<T> collect(Collection<INavigationElement<?>> elements,
-			Predicate<INavigationElement<?>> filter,
-			Function<INavigationElement<?>, T> unwrap) {
+	                                 Predicate<INavigationElement<?>> filter,
+	                                 Function<INavigationElement<?>, T> unwrap) {
 		Set<T> set = new HashSet<>();
 		for (INavigationElement<?> element : elements) {
 			if (filter != null && !filter.test(element))

@@ -57,7 +57,7 @@ class ProviderRow {
 		// select a file as provider
 		Controls.onClick(fileLink, e -> {
 			File file = FileChooser.openFile()
-				.withExtensions("*.zip", "*.csv")
+				.withExtensions("*.zip;*.csv;*.CSV")
 				.withTitle("Open a flow source")
 				.select()
 				.orElse(null);

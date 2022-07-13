@@ -17,9 +17,8 @@ public class NavigationLinkHelper implements ILinkHelper {
 
 	@Override
 	public IStructuredSelection findSelection(IEditorInput input) {
-		if (!(input instanceof ModelEditorInput))
+		if (!(input instanceof ModelEditorInput mInput))
 			return new StructuredSelection();
-		var mInput = (ModelEditorInput) input;
 		var elem = Navigator.findElement(mInput.getDescriptor());
 		return elem == null
 				? new StructuredSelection()
@@ -28,16 +27,14 @@ public class NavigationLinkHelper implements ILinkHelper {
 
 	@Override
 	public void activateEditor(IWorkbenchPage page, IStructuredSelection selection) {
-		if (!(selection.getFirstElement() instanceof ModelElement))
+		if (!(selection.getFirstElement() instanceof ModelElement elem))
 			return;
-		ModelElement element = (ModelElement) selection.getFirstElement();
 		for (IEditorReference ref : Editors.getReferences()) {
 			try {
-				if (!(ref.getEditorInput() instanceof ModelEditorInput))
+				if (!(ref.getEditorInput() instanceof ModelEditorInput input))
 					continue;
-				ModelEditorInput input = (ModelEditorInput) ref.getEditorInput();
-				if (element.getContent().equals(input.getDescriptor())) {
-					App.open(element.getContent());
+				if (elem.getContent().equals(input.getDescriptor())) {
+					App.open(elem.getContent());
 				}
 			} catch (PartInitException e) {
 				var log = LoggerFactory.getLogger(getClass());

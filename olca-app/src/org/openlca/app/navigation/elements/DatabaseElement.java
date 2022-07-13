@@ -25,7 +25,7 @@ public class DatabaseElement extends NavigationElement<DatabaseConfig> {
 		super(parent, config);
 	}
 
-	private CategoryContentTest categoryContentTest() {
+	public CategoryContentTest categoryContentTest() {
 		if (_categoryContentTest != null)
 			return _categoryContentTest;
 		var config = getContent();

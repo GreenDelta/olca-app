@@ -126,8 +126,8 @@ public class CopyPaste {
 			return;
 		for (INavigationElement<?> element : cache) {
 			paste(element, element.getParent());
-			INavigationElement<?> root = Navigator.findElement(getModelType(element));
-			Navigator.refresh(root);
+			var modelRoot = Navigator.findElement(getModelType(element));
+			Navigator.refresh(modelRoot);
 		}
 	}
 
