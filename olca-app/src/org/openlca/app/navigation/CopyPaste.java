@@ -60,7 +60,7 @@ public class CopyPaste {
 
 	public static boolean isSupported(INavigationElement<?> elem) {
 		if (!(elem instanceof ModelElement)
-			&& !(elem instanceof CategoryElement))
+				&& !(elem instanceof CategoryElement))
 			return false;
 		return elem.getLibrary().isEmpty();
 	}
@@ -193,8 +193,8 @@ public class CopyPaste {
 
 	private static Category getCategory(INavigationElement<?> element) {
 		return element instanceof CategoryElement catElem
-			? catElem.getContent()
-			: null;
+				? catElem.getContent()
+				: null;
 	}
 
 	private static void move(CategoryElement element, INavigationElement<?> categoryElement) {
@@ -246,13 +246,20 @@ public class CopyPaste {
 		while (!elements.isEmpty()) {
 			CategoryElement current = elements.poll();
 			Category catCopy = current.getContent().copy();
+			catCopy.name = catCopy.name + " (copy)";
 			catCopy.childCategories.clear();
 			catCopy.category = parent;
 			if (parent == null)
 				catCopy = Database.get().insert(catCopy);
 			else {
 				parent.childCategories.add(catCopy);
-				catCopy = Database.get().update(parent);
+				parent = Database.get().update(parent);
+				for (var child : parent.childCategories) {
+					if (child.name.equals(catCopy.name)) {
+						catCopy = child;
+						break;
+					}
+				}
 			}
 			for (INavigationElement<?> child : current.getChildren())
 				if (child instanceof CategoryElement catElem)
