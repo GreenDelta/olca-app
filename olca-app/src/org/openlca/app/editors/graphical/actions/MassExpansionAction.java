@@ -2,16 +2,13 @@ package org.openlca.app.editors.graphical.actions;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
-import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.StackAction;
-import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.editors.graphical.requests.ExpansionRequest;
+import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
 
@@ -73,7 +70,7 @@ public class MassExpansionAction extends StackAction {
 			var referenceNode = editor.getModel().getReferenceNode();
 
 			var editPart = (EditPart) viewer.getEditPartRegistry().get(referenceNode);
-			var request = new ExpansionRequest(referenceNode, REQ_COLLAPSE);
+			var request = new ExpandCollapseRequest(referenceNode, REQ_COLLAPSE);
 			if (editPart != null)
 				cc.add(editPart.getCommand(request));
 		}
@@ -83,7 +80,7 @@ public class MassExpansionAction extends StackAction {
 				if (!node.isExpanded(Node.Side.INPUT)
 					|| !node.isExpanded(Node.Side.OUTPUT)) {
 					var editPart = (EditPart) viewer.getEditPartRegistry().get(node);
-					var request = new ExpansionRequest(node, REQ_EXPAND);
+					var request = new ExpandCollapseRequest(node, REQ_EXPAND);
 					if (editPart != null)
 						cc.add(editPart.getCommand(request));
 				}

@@ -64,10 +64,6 @@ public class MinMaxCommand extends Command {
 		var parentEditPart = (AbstractComponentEditPart<?>) childEditPart
 			.getParent();
 		parentEditPart.resetChildEditPart(childEditPart);
-
-		// Expand if the command is maximizing and if the MinMaxComponent is a Node.
-		if (child instanceof Node node && !node.isMinimized())
-			node.expand();
 	}
 
 	public void undo() {

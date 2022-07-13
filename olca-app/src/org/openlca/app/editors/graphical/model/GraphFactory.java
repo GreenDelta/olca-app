@@ -1,9 +1,6 @@
 package org.openlca.app.editors.graphical.model;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import com.google.gson.JsonArray;
 import org.eclipse.draw2d.geometry.Point;
@@ -11,6 +8,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
+import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
@@ -19,6 +17,8 @@ import org.openlca.util.Strings;
 
 import static org.openlca.app.editors.graphical.model.GraphComponent.INPUT_PROP;
 import static org.openlca.app.editors.graphical.model.GraphComponent.OUTPUT_PROP;
+import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
+import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
 
 /**
  * This class provides methods to initialize the model objects before drawing
@@ -62,8 +62,8 @@ public class GraphFactory {
 		node.setSize(info.size);
 		node.setLocation(info.location);
 
-		node.setExpanded(Node.Side.INPUT, info.expandedLeft);
-		node.setExpanded(Node.Side.OUTPUT, info.expandedRight);
+		node.setExpanded(INPUT, info.expandedLeft);
+		node.setExpanded(OUTPUT, info.expandedRight);
 
 		return node;
 	}
@@ -221,7 +221,11 @@ public class GraphFactory {
 			var refNode = createNode(descriptor, info);
 			if (refNode != null) {
 				graph.addChild(refNode);
-				refNode.expand();
+				for (var side : Arrays.asList(INPUT, OUTPUT)) {
+					var command = new ExpandCommand(refNode, side);
+					if (command.canExecute())
+						command.execute();
+				}
 			}
 		}
 		return graph;
@@ -248,7 +252,7 @@ public class GraphFactory {
 		return getNodeInfo(array, String.valueOf(id));
 	}
 
-	static RootDescriptor getDescriptor(long id) {
+	public static RootDescriptor getDescriptor(long id) {
 		var db = Database.get();
 		if (db == null)
 			return null;
