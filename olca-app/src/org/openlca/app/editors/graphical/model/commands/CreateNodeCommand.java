@@ -52,7 +52,7 @@ public class CreateNodeCommand extends Command {
 		var size = (new Dimension(-1, -1)).equals(constraint.getSize())
 			? Node.DEFAULT_SIZE
 			: constraint.getSize();
-		var info = new NodeLayoutInfo(location, size, true, false, false);
+		var info = new NodeLayoutInfo(location, size, false, false, false);
 		node = graph.editor.getGraphFactory().createNode(descriptor, info);
 		if (this.index > 0)
 			this.graph.addChild(node, this.index);
