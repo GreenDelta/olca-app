@@ -125,12 +125,12 @@ abstract public class GraphComponent extends GraphElement {
 	}
 
 	void addConnection(Link link) {
-		if (link == null || targetConnections.contains(link) || sourceConnections.contains(link))
+		if (link == null)
 			return;
-		if (link.getTarget() == this) {
+		if (link.getTarget() == this && !targetConnections.contains(link)) {
 			targetConnections.add(link);
 			firePropertyChange(TARGET_CONNECTIONS_PROP, null, link);
-		} else if (link.getSource() == this) {
+		} else if (link.getSource() == this && !sourceConnections.contains(link)) {
 			sourceConnections.add(link);
 			firePropertyChange(SOURCE_CONNECTIONS_PROP, null, link);
 		}
