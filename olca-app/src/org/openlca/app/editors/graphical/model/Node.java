@@ -264,7 +264,7 @@ public class Node extends MinMaxGraphComponent {
 
 	/**
 	 * Recursively check if this node's outputs or inputs only chain to the
-	 * reference node.
+	 * reference node (self-loop are not considered).
 	 * Returns false is the initial node is the reference.
 	 */
 	public boolean isOnlyChainingReferenceNode(int side) {
@@ -286,6 +286,8 @@ public class Node extends MinMaxGraphComponent {
 
 		var isOnlyChainingReferenceNode = true;
 		for (var link : links) {
+			if (link.isSelfLoop())
+				continue;
 			var otherNode = side == INPUT
 				? link.getSourceNode()
 				: link.getTargetNode();
@@ -295,6 +297,44 @@ public class Node extends MinMaxGraphComponent {
 		}
 		wasExplored = false;
 		return isOnlyChainingReferenceNode;
+	}
+
+	/**
+	 * Recursively check if any of this node's outputs or inputs chain to the
+	 * reference node (self-loop are not considered).
+	 * Returns false is the initial node is the reference.
+	 */
+	public boolean isChainingReferenceNode(int side) {
+		if (wasExplored)
+			return false;
+		else if (this == getGraph().getReferenceNode())
+			// The reference node is explored if and only if it is the initial node
+			// (see the condition in the for loop).
+			return false;
+		wasExplored = true;
+
+		var links = side == INPUT
+			? getAllTargetConnections()
+			: getAllSourceConnections();
+		if (links.isEmpty()) {
+			wasExplored = false;
+			return false;
+		}
+
+		for (var link : links) {
+			if (link.isSelfLoop())
+				continue;
+			var otherNode = side == INPUT
+				? link.getSourceNode()
+				: link.getTargetNode();
+			if (otherNode == getGraph().getReferenceNode()
+				|| otherNode.isChainingReferenceNode(side)) {
+				wasExplored = false;
+				return true;
+			}
+		}
+		wasExplored = false;
+		return false;
 	}
 
 	public String toString() {

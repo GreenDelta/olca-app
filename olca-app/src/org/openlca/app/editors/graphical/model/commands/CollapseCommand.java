@@ -38,37 +38,63 @@ public class CollapseCommand extends Command {
 
 	@Override
 	public void redo() {
-		collapse(host);
+		collapse(host, side);
 		host.setExpanded(side, false);
 	}
 
-	private void collapse(Node node) {
+	/**
+	 * Recursively collapses all the input or output nodes connected to the given
+	 * node.
+	 * This method does not collapse:
+	 *  - the reference node,
+	 *  - nodes that are chained to the reference node.
+	 */
+	private void collapse(Node node, int side) {
+		System.out.println("Collapse " + node + " " + (side == INPUT ? "input" : "output"));
 		if (node.isCollapsing)
 			return;
 		node.isCollapsing = true;
 
 		// It is needed to copy the links otherwise we get a concurrent modification
 		// exception
-		var links = node.getAllLinks().toArray(new Link[0]);
+		var links = side == INPUT
+			? node.getAllTargetConnections().toArray(new Link[0])
+			: node.getAllSourceConnections().toArray(new Link[0]);
+		System.out.println("Links:");
+		for (var link : links) {
+			System.out.println("-" + link);
+		}
 
 		for (var link : links) {
+			System.out.println(" -> " + link);
 			var thisNode = side == INPUT
 				? link.getTargetNode()
 				: link.getSourceNode();
 			var otherNode = side == INPUT
 				? link.getSourceNode()
 				: link.getTargetNode();
-			if (!thisNode.equals(node))
+
+			if (!thisNode.equals(node)  // wrong link
+				|| otherNode.equals(host))  // double link
 				continue;
 
+			if (host != host.getGraph().getReferenceNode()
+				&& (otherNode.isChainingReferenceNode(side)
+				|| otherNode == host.getGraph().getReferenceNode()))
+				continue;
+
+			System.out.println("    disconnecting " + link);
+
 			link.disconnect();
-			collapse(otherNode);
-			collapse(otherNode);
+			collapse(otherNode, INPUT);
+			collapse(otherNode, OUTPUT);
 			if (otherNode.equals(host)) { // self-loop
 				host.setExpanded(side == INPUT ? OUTPUT : INPUT, false);
 			}
-			if (!otherNode.getAllLinks().isEmpty())
+			var linkStream = otherNode.getAllLinks().stream();
+			if (!linkStream.filter(l -> !l.isSelfLoop()).toList().isEmpty())
 				continue;
+			System.out.println("    removing " + otherNode);
 			host.getGraph().removeChild(otherNode);
 		}
 		node.isCollapsing = false;

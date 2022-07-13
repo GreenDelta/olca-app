@@ -52,9 +52,16 @@ public class ExpandCommand extends Command {
 		long processID = host.descriptor.id;
 		List<ProcessLink> links = graph.linkSearch.getLinks(processID);
 
+		var oldLinks = side == INPUT
+			? host.getAllTargetConnections()
+			: host.getAllSourceConnections();
+		var oldPLinks = oldLinks.stream().map(l -> l.processLink).toList();
+
 		for (ProcessLink pLink : links) {
 			FlowType type = graph.flows.type(pLink.flowId);
-			if (type == null || type == FlowType.ELEMENTARY_FLOW)
+			if (type == null
+				|| type == FlowType.ELEMENTARY_FLOW  // elementary flow cannot be linked
+				|| oldPLinks.contains(pLink))  // no need to recreate
 				continue;
 
 			boolean isProvider = processID == pLink.providerId;
@@ -74,6 +81,7 @@ public class ExpandCommand extends Command {
 				continue;
 			}
 			new Link(pLink, outNode, inNode);
+			// Update the node's expanded state on the other side in case of loops.
 			graph.getNode(otherID).updateIsExpanded(side == INPUT ? OUTPUT : INPUT);
 		}
 		host.setExpanded(side, true);

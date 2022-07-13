@@ -137,6 +137,10 @@ public class Link extends GraphElement {
 		return source;
 	}
 
+	public boolean isSelfLoop() {
+		return getSourceNode() == getTargetNode();
+	}
+
 	public String toString() {
 		return "Link(" + getSource() + " -> " + getTarget() + ")";
 	}
