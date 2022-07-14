@@ -19,7 +19,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.util.TypeRefIdMap;
-import org.openlca.git.util.TypeRefIdPair;
+import org.openlca.git.util.TypedRefId;
 import org.openlca.git.util.TypeRefIdSet;
 
 class ReferenceCheck {
@@ -70,7 +70,7 @@ class ReferenceCheck {
 
 	private Set<TriDiff> collect() {
 		var referenced = new TypeRefIdSet();
-		var stack = new Stack<TypeRefIdPair>();
+		var stack = new Stack<TypedRefId>();
 		selection.forEach(selected -> stack.add(selected));
 		while (!stack.isEmpty()) {
 			var next = stack.pop();
@@ -84,7 +84,7 @@ class ReferenceCheck {
 				.collect(Collectors.toSet());
 	}
 
-	private Set<ModelReference> collect(TypeRefIdPair pair) {
+	private Set<ModelReference> collect(TypedRefId pair) {
 		var referenced = new HashSet<ModelReference>();
 		if (visited.contains(pair))
 			return referenced;

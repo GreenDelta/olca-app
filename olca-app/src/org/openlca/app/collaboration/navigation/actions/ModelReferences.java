@@ -14,7 +14,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.ModelType;
 import org.openlca.git.util.TypeRefIdMap;
-import org.openlca.git.util.TypeRefIdPair;
+import org.openlca.git.util.TypedRefId;
 import org.openlca.util.Strings;
 
 class ModelReferences {
@@ -37,22 +37,22 @@ class ModelReferences {
 		return refs;
 	}
 
-	public Set<ModelReference> get(TypeRefIdPair pair) {
+	public Set<ModelReference> get(TypedRefId pair) {
 		var refs = new HashSet<ModelReference>();
 		refs.addAll(getReferences(pair));
 		refs.addAll(getUsages(pair));
 		return refs;
 	}
 
-	public Set<ModelReference> getReferences(TypeRefIdPair pair) {
+	public Set<ModelReference> getReferences(TypedRefId pair) {
 		return get(references, pair);
 	}
 
-	public Set<ModelReference> getUsages(TypeRefIdPair pair) {
+	public Set<ModelReference> getUsages(TypedRefId pair) {
 		return get(usages, pair);
 	}
 
-	private Set<ModelReference> get(ReferenceMap map, TypeRefIdPair pair) {
+	private Set<ModelReference> get(ReferenceMap map, TypedRefId pair) {
 		var refs = new HashSet<ModelReference>();
 		var typeMap = map.get(pair.type);
 		if (typeMap == null)
@@ -350,7 +350,7 @@ class ModelReferences {
 	}
 
 	private void putRefId(ModelType type, long id, String refId) {
-		refIdToId.put(new TypeRefIdPair(type, refId), id);
+		refIdToId.put(new TypedRefId(type, refId), id);
 		idToRefId.computeIfAbsent(type, t -> new HashMap<>()).put(id, refId);
 	}
 
@@ -372,7 +372,7 @@ class ModelReferences {
 
 	}
 
-	public class ModelReference extends TypeRefIdPair {
+	public class ModelReference extends TypedRefId {
 
 		public final long id;
 

@@ -16,7 +16,7 @@ import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Repository;
 import org.openlca.core.model.ModelType;
 import org.openlca.git.model.ModelRef;
-import org.openlca.git.util.TypeRefIdPair;
+import org.openlca.git.util.TypedRefId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +76,7 @@ public class RepositoryClient {
 		return executeLoggedIn(new ListRepositoriesInvocation());
 	}
 
-	public void downloadJson(Collection<? extends TypeRefIdPair> requestedData, File toFile)
+	public void downloadJson(Collection<? extends TypedRefId> requestedData, File toFile)
 			throws WebRequestException {
 		var token = executeLoggedIn(new DownloadJsonPrepareInvocation(repositoryId, requestedData));
 		executeLoggedIn(new DownloadJsonInvocation(token, toFile));

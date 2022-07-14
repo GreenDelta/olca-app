@@ -38,7 +38,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.model.ModelType;
-import org.openlca.git.util.TypeRefIdPair;
+import org.openlca.git.util.TypedRefId;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.input.JsonImport;
 import org.slf4j.Logger;
@@ -238,7 +238,7 @@ class SearchPage extends FormPage {
 		}
 		var b = (Button) e.widget;
 		var data = (Dataset) b.getData();
-		var requestData = Collections.singleton(new TypeRefIdPair(data.type(), data.refId()));
+		var requestData = Collections.singleton(new TypedRefId(data.type(), data.refId()));
 		App.runWithProgress(M.DownloadingData, () -> {
 			File tmp = null;
 			ZipStore store = null;
