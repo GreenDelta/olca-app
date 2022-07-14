@@ -74,7 +74,7 @@ public class ExpandCommand extends Command {
 			} else if (side == OUTPUT && isOutput(type, isProvider)) {
 				outNode = host;
 				inNode = getOrCreateNode(otherID);
-			} else if (processID == otherID) {  // self loop
+			} else if (processID == otherID) {  // close loop
 				inNode = host;
 				outNode = host;
 			} else {

@@ -50,7 +50,6 @@ public class CollapseCommand extends Command {
 	 *  - nodes that are chained to the reference node.
 	 */
 	private void collapse(Node node, int side) {
-		System.out.println("Collapse " + node + " " + (side == INPUT ? "input" : "output"));
 		if (node.isCollapsing)
 			return;
 		node.isCollapsing = true;
@@ -60,13 +59,8 @@ public class CollapseCommand extends Command {
 		var links = side == INPUT
 			? node.getAllTargetConnections().toArray(new Link[0])
 			: node.getAllSourceConnections().toArray(new Link[0]);
-		System.out.println("Links:");
-		for (var link : links) {
-			System.out.println("-" + link);
-		}
 
 		for (var link : links) {
-			System.out.println(" -> " + link);
 			var thisNode = side == INPUT
 				? link.getTargetNode()
 				: link.getSourceNode();
@@ -83,18 +77,18 @@ public class CollapseCommand extends Command {
 				|| otherNode == host.getGraph().getReferenceNode()))
 				continue;
 
-			System.out.println("    disconnecting " + link);
-
 			link.disconnect();
 			collapse(otherNode, INPUT);
 			collapse(otherNode, OUTPUT);
-			if (otherNode.equals(host)) { // self-loop
+
+			if (link.isCloseLoop()) { // close loop
 				host.setExpanded(side == INPUT ? OUTPUT : INPUT, false);
 			}
+
 			var linkStream = otherNode.getAllLinks().stream();
-			if (!linkStream.filter(l -> !l.isSelfLoop()).toList().isEmpty())
+			if (!linkStream.filter(l -> !l.isCloseLoop()).toList().isEmpty())
 				continue;
-			System.out.println("    removing " + otherNode);
+
 			host.getGraph().removeChild(otherNode);
 		}
 		node.isCollapsing = false;
