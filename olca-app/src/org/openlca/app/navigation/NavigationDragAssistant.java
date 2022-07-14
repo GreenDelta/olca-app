@@ -19,27 +19,26 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 	public void dragStart(DragSourceEvent event, IStructuredSelection selection) {
 		event.doit = true;
 		for (var o : selection) {
-			if (o instanceof ModelElement modElem) {
-				if (!modElem.isFromLibrary())
-					continue;
-			}
+			// only forbid category dragging, model elements will be checked on
+			// drop in NavigationDropAssistent, to still allow e.g. dropping
+			// processes in inputs/outputs table, etc.
 			if (o instanceof CategoryElement catElem) {
-				if (!catElem.hasLibraryContent())
-					continue;
+				if (catElem.hasLibraryContent()) {
+					event.doit = false;
+					break;
+				}
 			}
-			event.doit = false;
-			break;
 		}
 	}
 
 	@Override
 	public Transfer[] getSupportedTransferTypes() {
-		return new Transfer[]{ModelTransfer.getInstance()};
+		return new Transfer[] { ModelTransfer.getInstance() };
 	}
 
 	@Override
 	public boolean setDragData(DragSourceEvent anEvent,
-		IStructuredSelection aSelection) {
+			IStructuredSelection aSelection) {
 		boolean canBeDropped = true;
 		Iterator<?> it = aSelection.iterator();
 		List<Descriptor> components = new ArrayList<>();

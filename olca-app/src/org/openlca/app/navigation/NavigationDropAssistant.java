@@ -36,26 +36,36 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 				.findView(Navigator.ID);
 		DropTarget dropTarget = (DropTarget) dropTargetEvent.getSource();
 		INavigationElement<?> targetElement = (INavigationElement<?>) target;
-		if (dropTarget.getControl() == navigator.getCommonViewer().getTree())
+		if (dropTarget.getControl() == navigator.getCommonViewer().getTree()) {
 			doIt(dropTargetEvent, targetElement);
+		}
 		return null;
 	}
 
-	private void doIt(DropTargetEvent event, INavigationElement<?> targetElement) {
+	private List<INavigationElement<?>> getElements(DropTargetEvent event, INavigationElement<?> targetElement) {
 		List<INavigationElement<?>> elements = new ArrayList<>();
 		IStructuredSelection selection = (IStructuredSelection) event.data;
-		for (Object o : selection.toArray())
-			if ((o instanceof ModelElement || o instanceof CategoryElement)
-					&& !Objects.equal(o, targetElement))
-				elements.add((INavigationElement<?>) o);
-		if (CopyPaste.canMove(elements, targetElement)) {
-			boolean copy = (event.detail & DND.DROP_COPY) == DND.DROP_COPY;
-			if (copy)
-				CopyPaste.copy(elements);
-			else
-				CopyPaste.cut(elements);
-			CopyPaste.pasteTo(targetElement);
+		for (Object o : selection.toArray()) {
+			if (!(o instanceof ModelElement || o instanceof CategoryElement))
+				continue;
+			if (Objects.equal(o, targetElement))
+				continue;
+			elements.add((INavigationElement<?>) o);
 		}
+		return elements;
+	}
+
+	private void doIt(DropTargetEvent event, INavigationElement<?> targetElement) {
+		var elements = getElements(event, targetElement);
+		if (!CopyPaste.canMove(elements, targetElement))
+			return;
+		boolean copy = (event.detail & DND.DROP_COPY) == DND.DROP_COPY;
+		if (copy) {
+			CopyPaste.copy(elements);
+		} else {
+			CopyPaste.cut(elements);
+		}
+		CopyPaste.pasteTo(targetElement);
 	}
 
 	@Override
