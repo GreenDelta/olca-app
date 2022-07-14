@@ -137,7 +137,7 @@ public class Link extends GraphElement {
 		return source;
 	}
 
-	public boolean isSelfLoop() {
+	public boolean isCloseLoop() {
 		return getSourceNode() == getTargetNode();
 	}
 

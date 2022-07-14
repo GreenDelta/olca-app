@@ -213,7 +213,7 @@ public class Node extends MinMaxGraphComponent {
 					setExpanded(side, false);
 					return;
 				}
-			} else if (this.descriptor.id == otherID) {  // self loop
+			} else if (this.descriptor.id == otherID) {  // close loop
 				if (!sourceNodeIds.contains(this.descriptor.id)
 					|| !targetNodeIds.contains(this.descriptor.id)) {
 					setExpanded(side, false);
@@ -264,7 +264,7 @@ public class Node extends MinMaxGraphComponent {
 
 	/**
 	 * Recursively check if this node's outputs or inputs only chain to the
-	 * reference node (self-loop are not considered).
+	 * reference node (close loop are not considered).
 	 * Returns false is the initial node is the reference.
 	 */
 	public boolean isOnlyChainingReferenceNode(int side) {
@@ -286,7 +286,7 @@ public class Node extends MinMaxGraphComponent {
 
 		var isOnlyChainingReferenceNode = true;
 		for (var link : links) {
-			if (link.isSelfLoop())
+			if (link.isCloseLoop())
 				continue;
 			var otherNode = side == INPUT
 				? link.getSourceNode()
@@ -301,7 +301,7 @@ public class Node extends MinMaxGraphComponent {
 
 	/**
 	 * Recursively check if any of this node's outputs or inputs chain to the
-	 * reference node (self-loop are not considered).
+	 * reference node (close loop are not considered).
 	 * Returns false is the initial node is the reference.
 	 */
 	public boolean isChainingReferenceNode(int side) {
@@ -322,7 +322,7 @@ public class Node extends MinMaxGraphComponent {
 		}
 
 		for (var link : links) {
-			if (link.isSelfLoop())
+			if (link.isCloseLoop())
 				continue;
 			var otherNode = side == INPUT
 				? link.getSourceNode()
