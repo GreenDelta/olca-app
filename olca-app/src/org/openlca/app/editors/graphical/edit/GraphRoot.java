@@ -79,6 +79,18 @@ public class GraphRoot extends
 	}
 
 	/**
+	 * Override the original to be able to inverse the addition of the connection
+	 * and primary layer.
+	 */
+	@Override
+	protected LayeredPane createPrintableLayers() {
+		FreeformLayeredPane layeredPane = new FreeformLayeredPane();
+		layeredPane.add(new ConnectionLayer(), CONNECTION_LAYER);
+		layeredPane.add(new FreeformLayer(), PRIMARY_LAYER);
+		return layeredPane;
+	}
+
+	/**
 	 * Returns the zoomManager.
 	 *
 	 * @return GraphZoomManager

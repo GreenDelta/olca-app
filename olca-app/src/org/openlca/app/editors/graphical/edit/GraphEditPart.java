@@ -65,20 +65,10 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 
 	@Override
 	protected IFigure createFigure() {
-		var f = new FreeformLayer() {
+		var theme = getModel().getConfig().getTheme();
+		getViewer().getControl().setBackground(theme.graphBackgroundColor());
 
-			@Override
-			public void paint(Graphics g) {
-				var theme = getModel().getConfig().getTheme();
-				g.pushState();
-				g.setBackgroundColor(theme.graphBackgroundColor());
-				g.fillRectangle(new Rectangle(getLocation(), getSize()));
-				g.popState();
-				super.paint(g);
-			}
-
-		};
-
+		var f = new FreeformLayer();
 		f.setBorder(new MarginBorder(8000));
 		f.setLayoutManager(new GraphLayout(this));
 		return f;
