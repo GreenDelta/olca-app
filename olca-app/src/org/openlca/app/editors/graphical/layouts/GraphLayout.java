@@ -177,6 +177,30 @@ public class GraphLayout extends FreeformLayout {
 	 * Algorithm for General Trees</a>,</li>
 	 * <li><a href="https://github.com/prefuse/Prefuse/blob/master/src/prefuse/action/layout/graph/NodeLinkTreeLayout.java">Prefuse on Github</a>.</li>
 	 * </ul>
+	 *
+	 * The product system being a graph, the tree algorithm is not enough to lay
+	 * out every linked nodes of it. For that purpose, a node can have a
+	 * mistletoe. A mistletoe is a branch of the tree that does not expand in the
+	 * direction. For example, a provider of the reference node can also be the
+	 * provider of a node that does not chain with the reference node.
+	 * To better understand how the algorithm works, let's take a reference
+	 * node (A), two providers (B and C) and a secondary recipient of B (D).
+	 * To expand the node B, the providers B and C are shifted from a depth of 2
+	 * to a depth of 3.
+	 * <pre>
+	 *
+	 *                       2     1      3     2     1
+	 *                       B ━┓         B ━━━ D ━┓
+	 *                          ┣━ A  =>           ┣━ A
+	 *                       C ━┛         C ━━━━━━━┛
+	 *</pre>
+	 * The node B has a mistletoe D. In order to determine the depths of the nodes
+	 * of the main tree, the mistletoes' depths should be computed (first walks
+	 * of the mistletoes). Then the position of each subtree of the main tree are
+	 * determined by the first and second walk. Once, the positions of each node
+	 * of the main tree are determined, the final positions of the apex are thus
+	 * fixed such that the final positions of the mistletoes can be computed
+	 * (second walks of the mistletoe).
 	 */
 	public class TreeLayout {
 
@@ -253,11 +277,11 @@ public class GraphLayout extends FreeformLayout {
 		}
 
 		public void run() {
-
 			// Set the locations of the apex vertex.
 			setApexLocation();
 
-			// Do the first pass of the mistletoes to determine the total level sizes.
+			// Do the first passes of the mistletoes to determine the total level
+			// sizes.
 			firstWalkMistletoes(apexVertex, 1);
 
 			// Do the first pass  of the main tree (assign preliminary y-coordinate).
@@ -278,6 +302,10 @@ public class GraphLayout extends FreeformLayout {
 				var apex = vertex.mistletoe.apexVertex;
 				vertex.mistletoe.setApexLocation();
 				vertex.mistletoe.secondWalk(apex, null, -apex.prelim, 0);
+
+				// Once, the position of the apex is determined, the second walks on the
+				// mistletoes of the mistletoe are run.
+				vertex.mistletoe.secondWalkMistletoes(apex);
 			}
 
 			for (var child : vertex.children) {
@@ -309,8 +337,13 @@ public class GraphLayout extends FreeformLayout {
 
 		private void firstWalkMistletoes(Vertex vertex, int depth) {
 			if (vertex != apexVertex && vertex.mistletoe != null) {
+				// First walks on the mistletoes of the mistletoe.
+				vertex.mistletoe.firstWalkMistletoes(vertex.mistletoe.apexVertex, 1);
+
+				// First walk on the mistletoe.
 				vertex.mistletoe.firstWalk(vertex.mistletoe.apexVertex, 0, 1);
-				mistletoeSizes.set(depth, vertex.mistletoe.determineLevels());
+				mistletoeSizes.set(depth, Math.max(
+					mistletoeSizes.get(depth), vertex.mistletoe.determineLevels()));
 			}
 
 			for (var child : vertex.children) {
