@@ -5,6 +5,7 @@ import java.util.*;
 import com.google.gson.JsonArray;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
@@ -227,6 +228,15 @@ public class GraphFactory {
 						command.execute();
 				}
 			}
+		}
+
+		// Set the graph settings to edit mode if the reference node has no output.
+		var outputPane = graph.getReferenceNode().getOutputIOPane();
+		if (outputPane.getChildren().isEmpty()) {
+			var config = editor.config.copy();
+			config.setNodeEditingEnabled(true);
+			config.setShowElementaryFlows(true);
+			config.copyTo(editor.config);
 		}
 		return graph;
 	}
