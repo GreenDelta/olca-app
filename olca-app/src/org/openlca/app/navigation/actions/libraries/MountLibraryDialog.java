@@ -1,6 +1,5 @@
 package org.openlca.app.navigation.actions.libraries;
 
-
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -17,17 +16,23 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.Daos;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.MountAction;
 import org.openlca.core.library.Mounter;
 import org.openlca.core.library.PreMountCheck;
 import org.openlca.core.library.PreMountState;
+import org.openlca.core.model.ModelType;
+import org.openlca.git.util.TypeRefIdMap;
+import org.openlca.util.Categories;
+import org.openlca.util.Strings;
 
 class MountLibraryDialog extends FormDialog {
 
@@ -37,20 +42,20 @@ class MountLibraryDialog extends FormDialog {
 	static void show(Library library, PreMountCheck.Result checkResult) {
 		if (checkResult.isError()) {
 			ErrorReporter.on(
-				"Failed to check library: " + library,
-				checkResult.error());
+					"Failed to check library: " + library,
+					checkResult.error());
 			return;
 		}
 		var state = checkResult.getState(library).orElse(null);
 		if (state == null) {
 			MsgBox.info(
-				"No libraries to add",
-				"Found no libraries that could be added.");
+					"No libraries to add",
+					"Found no libraries that could be added.");
 			return;
 		}
 		if (state == PreMountState.PRESENT) {
 			var b = Question.ask("Library already present",
-				"The library was already added to the database. Continue anyhow?");
+					"The library was already added to the database. Continue anyhow?");
 			if (!b)
 				return;
 		}
@@ -58,12 +63,46 @@ class MountLibraryDialog extends FormDialog {
 		var dialog = new MountLibraryDialog(library, checkResult);
 		if (dialog.open() != Window.OK)
 			return;
-
+		Database.getWorkspaceIdUpdater().disable();
+		var previousTags = getCurrentTags();
 		App.runWithProgress("Add library " + library.name() + " ...",
-			() -> Mounter.of(Database.get(), library)
-				.apply(dialog.collectActions())
-				.run(),
-			Navigator::refresh);
+				() -> Mounter.of(Database.get(), library)
+						.apply(dialog.collectActions())
+						.run(),
+				() -> {
+					Database.getWorkspaceIdUpdater().enable();
+					updateWorkspaceIds(previousTags);
+					Navigator.refresh();
+				});
+	}
+
+	private static TypeRefIdMap<String> getCurrentTags() {
+		var tags = new TypeRefIdMap<String>();
+		for (var type : ModelType.values()) {
+			if (!type.isRoot())
+				continue;
+			Database.get().getDescriptors(type.getModelClass()).forEach(d -> {
+				if (!Strings.nullOrEmpty(d.library)) {
+					tags.put(type, d.refId, d.library);
+				}
+			});
+		}
+		return tags;
+	}
+
+	private static void updateWorkspaceIds(TypeRefIdMap<String> previousTags) {
+		if (!Repository.isConnected())
+			return;
+		var pathBuilder = Categories.pathsOf(Database.get());
+		for (var type : ModelType.values()) {
+			if (!type.isRoot())
+				continue;
+			Daos.root(Database.get(), type).getDescriptors().forEach(d -> {
+				if (!Strings.nullOrEmpty(d.library) && !previousTags.contains(type, d.refId)) {
+					Repository.get().workspaceIds.remove(pathBuilder, d);
+				}
+			});
+		}
 	}
 
 	private MountLibraryDialog(Library library, PreMountCheck.Result checkResult) {
@@ -77,11 +116,11 @@ class MountLibraryDialog extends FormDialog {
 			var state = libState.second;
 			stateMap.computeIfAbsent(state, s -> new ArrayList<>()).add(lib);
 		}
-		var stateOrder = new PreMountState[]{
-			PreMountState.NEW,
-			PreMountState.PRESENT,
-			PreMountState.TAG_CONFLICT,
-			PreMountState.CONFLICT,
+		var stateOrder = new PreMountState[] {
+				PreMountState.NEW,
+				PreMountState.PRESENT,
+				PreMountState.TAG_CONFLICT,
+				PreMountState.CONFLICT,
 		};
 		for (var state : stateOrder) {
 			var libs = stateMap.get(state);
@@ -140,9 +179,9 @@ class MountLibraryDialog extends FormDialog {
 			UI.gridData(group, true, false);
 			UI.gridLayout(group, 1);
 			tk.createFormText(group, false)
-				.setText(info(), false, false);
+					.setText(info(), false, false);
 			tk.createFormText(group, false)
-				.setText(libraryList(), true, false);
+					.setText(libraryList(), true, false);
 			createCombo(tk, group);
 		}
 
@@ -186,10 +225,10 @@ class MountLibraryDialog extends FormDialog {
 				case NEW -> "The following libraries will be added to the database:";
 				case PRESENT -> "The following libraries are already present:";
 				case TAG_CONFLICT -> "The data sets of these libraries are already"
-					+ " present in the database but under a different or no library tag:";
+						+ " present in the database but under a different or no library tag:";
 				case CONFLICT -> "The data sets of these libraries are partly present,"
-					+ " have different library tags, or have other data conflicts. The"
-					+ " data sets in the database will be updated.";
+						+ " have different library tags, or have other data conflicts. The"
+						+ " data sets in the database will be updated.";
 			};
 		}
 
@@ -197,8 +236,8 @@ class MountLibraryDialog extends FormDialog {
 			var text = new StringBuilder("<ul>");
 			for (var lib : libraries) {
 				text.append("<li>")
-					.append(lib.name())
-					.append("</li>");
+						.append(lib.name())
+						.append("</li>");
 			}
 			return text + "</ul>";
 		}

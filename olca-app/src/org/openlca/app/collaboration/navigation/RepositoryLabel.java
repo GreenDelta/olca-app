@@ -7,7 +7,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
-import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
@@ -23,15 +22,13 @@ public class RepositoryLabel {
 	public static final String CHANGED_STATE = "> ";
 
 	public static Image getWithOverlay(INavigationElement<?> elem) {
-		if (elem.getLibrary().isPresent())
+		if (!(elem instanceof ModelElement e)
+				|| !Repository.isConnected()
+				|| elem.getLibrary().isPresent()
+				|| e.isFromLibrary()
+				|| !isZero(getRepositoryId(elem)))
 			return null;
-		if (!Repository.isConnected())
-			return null;
-		if (elem instanceof CategoryElement e && isZero(getRepositoryId(e)))
-			return Images.getForCategory(e.getContent().modelType, Overlay.ADDED);
-		if (elem instanceof ModelElement e && isZero(getRepositoryId(e)))
-			return Images.get(e.getContent().type, Overlay.ADDED);
-		return null;
+		return Images.get(e.getContent().type, Overlay.ADDED);
 	}
 
 	private static ObjectId getRepositoryId(INavigationElement<?> elem) {
@@ -90,9 +87,13 @@ public class RepositoryLabel {
 	}
 
 	public static String getStateIndicator(INavigationElement<?> elem) {
-		if (hasChanged(elem))
-			return CHANGED_STATE;
-		return null;
+		if (!hasChanged(elem))
+			return null;
+		// if (!hasNonLibraryContent(elem))
+		// return null;
+		if (elem instanceof ModelElement && isZero(getRepositoryId(elem)))
+			return null;
+		return CHANGED_STATE;
 	}
 
 	public static boolean hasChanged(INavigationElement<?> elem) {
@@ -102,42 +103,28 @@ public class RepositoryLabel {
 			return false;
 		if (elem instanceof NavigationRoot)
 			return false;
-		if (elem instanceof DatabaseElement e) {
-			if (!Database.isActive(e.getContent()))
-				return false;
-			for (var child : elem.getChildren())
-				if (hasChanged(child))
-					return true;
+		if (elem instanceof DatabaseElement e && !Database.isActive(e.getContent()))
 			return false;
-		}
-		if (elem instanceof GroupElement) {
-			for (var child : elem.getChildren())
-				if (hasChanged(child))
-					return true;
-			return false;
-		}
 		var repositoryId = getRepositoryId(elem);
 		var workspaceId = getWorkspaceId(elem);
 		var isNew = isZero(repositoryId);
-		if (elem instanceof ModelTypeElement) {
-			if (isNew != elem.getChildren().isEmpty())
+		if (isNew) {
+			if (elem instanceof ModelElement m && !m.isFromLibrary())
 				return true;
-			for (var child : elem.getChildren())
-				if (hasChanged(child))
-					return true;
-			var isChanged = !repositoryId.equals(workspaceId);
-			return isChanged;
+			if (elem instanceof CategoryElement) {
+				for (var child : elem.getChildren())
+					if (hasChanged(child))
+						return true;
+				return false;
+			}
 		}
-		var hasChanged = !isNew && !repositoryId.equals(workspaceId);
-		if (elem instanceof CategoryElement) {
-			if (isNew != elem.getChildren().isEmpty())
+		var hasChanged = !repositoryId.equals(workspaceId);
+		if (!isNew && hasChanged)
+			return true;
+		for (var child : elem.getChildren())
+			if (hasChanged(child))
 				return true;
-			for (var child : elem.getChildren())
-				if (hasChanged(child))
-					return true;
-			return hasChanged;
-		}
-		return hasChanged;
+		return false;
 	}
 
 }
