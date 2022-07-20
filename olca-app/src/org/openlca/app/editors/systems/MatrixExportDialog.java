@@ -28,6 +28,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.matrix.Demand;
 import org.openlca.core.matrix.MatrixData;
 import org.openlca.core.matrix.index.ImpactIndex;
 import org.openlca.core.matrix.index.TechIndex;
@@ -257,6 +258,10 @@ public class MatrixExportDialog extends FormDialog {
 				.withCosts(withCosts)
 				.withRegionalization(regionalized)
 				.withUncertainties(withUncertainties);
+			
+			if (system != null) {
+				config.withDemand(Demand.of(system));
+			}
 
 			if (impactMethod != null) {
 				config.withImpacts(ImpactIndex.of(impactMethod));

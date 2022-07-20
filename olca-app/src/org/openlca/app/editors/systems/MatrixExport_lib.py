@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import csv
 import os
-from typing import Iterator, List, Tuple
+from typing import Iterator, List
 
 import numpy
 import numpy.linalg
@@ -24,38 +24,34 @@ class TechEntry:
         self.index = -1
         self.process_id = ''
         self.process_name = ''
-        self.process_type = ''
-        self.process_location = ''
         self.process_category = ''
+        self.process_location = ''
         self.flow_id = ''
         self.flow_name = ''
-        self.flow_type = ''
-        self.flow_location = ''
         self.flow_category = ''
         self.flow_unit = ''
+        self.flow_type = ''
 
     @staticmethod
-    def _from_csv(index: int, row: List[str]) -> TechEntry:
+    def _from_csv(row: List[str]) -> TechEntry:
         e = TechEntry()
-        e.index = index
-        e.process_id = row[0]
-        e.process_name = row[1]
-        e.process_type = row[2]
-        e.process_location = row[3]
-        e.process_category = row[4]
+        e.index = int(row[0])
+        e.process_id = row[1]
+        e.process_name = row[2]
+        e.process_category = row[3]
+        e.process_location = row[4]
         e.flow_id = row[5]
         e.flow_name = row[6]
-        e.flow_type = row[7]
-        e.flow_location = row[8]
-        e.flow_category = row[9]
-        e.flow_unit = row[10]
+        e.flow_category = row[7]
+        e.flow_unit = row[8]
+        e.flow_type = row[9]
         return e
 
     @staticmethod
     def index_of(file_path: str) -> List[TechEntry]:
         index = []
-        for (i, row) in _csv_rows_of(file_path):
-            index.append(TechEntry._from_csv(i, row))
+        for row in _csv_rows_of(file_path):
+            index.append(TechEntry._from_csv(row))
         return index
 
 
@@ -68,28 +64,32 @@ class FlowEntry:
         self.index = -1
         self.flow_id = ''
         self.flow_name = ''
-        self.flow_type = ''
         self.flow_category = ''
         self.flow_unit = ''
-        self.location = ''
+        self.flow_type = ''
+        self.location_id = ''
+        self.location_name = ''
+        self.location_code = ''
 
     @staticmethod
-    def _from_csv(index: int, row: List[str]) -> FlowEntry:
+    def _from_csv(row: List[str]) -> FlowEntry:
         e = FlowEntry()
-        e.index = index
-        e.flow_id = row[0]
-        e.flow_name = row[1]
-        e.flow_type = row[2]
+        e.index = int(row[0])
+        e.flow_id = row[1]
+        e.flow_name = row[2]
         e.flow_category = row[3]
         e.flow_unit = row[4]
-        e.location = row[5]
+        e.flow_type = row[5]
+        e.location_id = row[6]
+        e.location_name = row[7]
+        e.location_code = row[8]
         return e
 
     @staticmethod
     def index_of(file_path: str) -> List[FlowEntry]:
         index = []
-        for (i, row) in _csv_rows_of(file_path):
-            index.append(FlowEntry._from_csv(i, row))
+        for row in _csv_rows_of(file_path):
+            index.append(FlowEntry._from_csv(row))
         return index
 
 
@@ -106,19 +106,19 @@ class ImpactEntry:
         self.impact_unit = ''
 
     @staticmethod
-    def _from_csv(index: int, row: List[str]) -> ImpactEntry:
+    def _from_csv(row: List[str]) -> ImpactEntry:
         e = ImpactEntry()
-        e.index = index
-        e.impact_id = row[0]
-        e.impact_name = row[1]
-        e.impact_unit = row[2]
+        e.index = int(row[0])
+        e.impact_id = row[1]
+        e.impact_name = row[2]
+        e.impact_unit = row[3]
         return e
 
     @staticmethod
     def index_of(file_path: str) -> List[ImpactEntry]:
         index = []
-        for (i, row) in _csv_rows_of(file_path):
-            index.append(ImpactEntry._from_csv(i, row))
+        for row in _csv_rows_of(file_path):
+            index.append(ImpactEntry._from_csv(row))
         return index
 
 
@@ -128,14 +128,12 @@ def matrix_of(file_path: str):
     return numpy.load(file_path)
 
 
-def _csv_rows_of(f: str) -> Iterator[Tuple[int, List[str]]]:
+def _csv_rows_of(f: str) -> Iterator[List[str]]:
     with open(f, 'r', encoding='utf-8') as stream:
         reader = csv.reader(stream)
         next(reader)  # skip header
-        i = -1
         for row in reader:
-            i += 1
-            yield (i, row)
+            yield row
 
 
 class ExportFolder:
