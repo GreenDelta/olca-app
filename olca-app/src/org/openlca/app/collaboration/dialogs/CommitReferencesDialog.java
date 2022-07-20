@@ -60,8 +60,9 @@ public class CommitReferencesDialog extends FormDialog {
 
 	private void createModelViewer(Composite parent, FormToolkit toolkit) {
 		viewer = new CommitViewer(parent);
-		viewer.setLockNewElements(true);
-		viewer.setSelection(getNewElements(node), node);
+		var newElements = getNewElements(node);
+		viewer.setLockedElements(newElements);
+		viewer.setSelection(newElements, node);
 		CheckboxTreeViewers.registerInputHandler(parent, viewer.getViewer(), node, () -> {
 			CheckboxTreeViewers.expandGrayed(viewer.getViewer());
 		});

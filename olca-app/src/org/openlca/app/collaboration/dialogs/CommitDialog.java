@@ -30,7 +30,8 @@ public class CommitDialog extends FormDialog {
 	private String message;
 	private CommitViewer viewer;
 	private TypeRefIdSet initialSelection;
-
+	private TypeRefIdSet newLibraryDatasets;
+	
 	public CommitDialog(DiffNode node, boolean canPush, boolean isStashCommit) {
 		super(UI.shell());
 		this.node = node;
@@ -41,6 +42,10 @@ public class CommitDialog extends FormDialog {
 
 	public void setInitialSelection(TypeRefIdSet initialSelection) {
 		this.initialSelection = initialSelection;
+	}
+
+	public void setNewLibraryDatasets(TypeRefIdSet newLibraryDatasets) {
+		this.newLibraryDatasets = newLibraryDatasets;
 	}
 
 	@Override
@@ -84,6 +89,7 @@ public class CommitDialog extends FormDialog {
 		section.setClient(comp);
 		viewer = new CommitViewer(comp, this::updateButtons);
 		viewer.setSelection(initialSelection, node);
+		viewer.setLockedElements(newLibraryDatasets);
 		CheckboxTreeViewers.registerInputHandler(comp, viewer.getViewer(), node, () -> {
 			CheckboxTreeViewers.expandGrayed(viewer.getViewer());
 			this.updateButtons();

@@ -9,14 +9,13 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
-import org.openlca.git.model.DiffType;
 import org.openlca.git.util.TypeRefIdSet;
 
 public class CommitViewer extends DiffNodeViewer {
 
-	// The option lockNewElements will prevent the user to uncheck "NEW"
-	// elements, used in ReferencesResultDialog
-	private boolean lockNewElements;
+	// The option lockedElements will prevent the user to uncheck certain
+	// elements
+	private TypeRefIdSet lockedElements;
 	private DiffNodeCheckedContentProvider selectionProvider;
 	private final Runnable onCheckStateChanged;
 
@@ -45,8 +44,8 @@ public class CommitViewer extends DiffNodeViewer {
 		return (CheckboxTreeViewer) super.getViewer();
 	}
 
-	public void setLockNewElements(boolean value) {
-		this.lockNewElements = value;
+	public void setLockedElements(TypeRefIdSet value) {
+		this.lockedElements = value;
 	}
 
 	public void setSelection(TypeRefIdSet initialSelection, DiffNode root) {
@@ -110,7 +109,7 @@ public class CommitViewer extends DiffNodeViewer {
 			var diff = element.contentAsTriDiff();
 			if (diff == null || diff.noAction()) {
 				getViewer().setChecked(element, false);
-			} else if (!checked && lockNewElements && diff.leftDiffType == DiffType.ADDED) {
+			} else if (!checked && lockedElements.contains(diff)) {
 				getViewer().setChecked(element, true);
 			} else {
 				super.setSelection(element, checked);

@@ -14,9 +14,12 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.MsgBox;
+import org.openlca.core.database.Daos;
 import org.openlca.git.model.Diff;
 import org.openlca.git.util.Diffs;
 import org.openlca.git.util.TypeRefIdSet;
+import org.openlca.git.util.TypedRefId;
+import org.openlca.util.Strings;
 
 class Datasets {
 
@@ -51,12 +54,27 @@ class Datasets {
 		}
 		var dialog = new CommitDialog(node, canPush, isStashCommit);
 		var paths = PathFilters.of(selection);
+		var newLibraryDatasets = determineLibraryDatasets(diffs);
 		var initialSelection = new TypeRefIdSet();
 		diffs.stream()
-				.filter(ref -> selectionContainsPath(paths, ref.path))
+				.filter(ref -> selectionContainsPath(paths, ref.path) || newLibraryDatasets.contains(ref))
 				.forEach(initialSelection::add);
 		dialog.setInitialSelection(initialSelection);
+		dialog.setNewLibraryDatasets(newLibraryDatasets);
 		return dialog;
+	}
+
+	private static TypeRefIdSet determineLibraryDatasets(List<Diff> diffs) {
+		var all = new TypeRefIdSet();
+		diffs.forEach(all::add);
+		var fromLibrary = new TypeRefIdSet();
+		all.types().forEach(type -> {
+			fromLibrary.addAll(Daos.root(Database.get(), type).getDescriptors().stream()
+					.filter(d -> !Strings.nullOrEmpty(d.library))
+					.map(d -> new TypedRefId(d.type, d.refId))
+					.filter(all::contains).toList());
+		});
+		return fromLibrary;
 	}
 
 	private static boolean selectionContainsPath(List<String> paths, String path) {
