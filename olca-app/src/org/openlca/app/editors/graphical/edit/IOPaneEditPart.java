@@ -43,6 +43,7 @@ public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
 		} else if (CHILDREN_PROP.equals(prop)) {
 			setLabelSizes(evt);
 			refreshChildren();
+			refreshChildrenConstraints();
 		} else super.propertyChange(evt);
 	}
 
@@ -58,6 +59,13 @@ public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
 			getFigure().setAmountLabelSize(getPreferredAmountLabelSize(item), false);
 			getFigure().setUnitLabelSize(getPreferredUnitLabelSize(item), false);
 		}
+	}
+
+	private void refreshChildrenConstraints() {
+		for (var child : getChildren())
+			if (child instanceof ExchangeEditPart part)
+				part.refreshConstraints();
+
 	}
 
 	@Override

@@ -88,15 +88,14 @@ public class IOPaneFigure extends Figure {
 			return;
 		}
 
-		var newSize = new Dimension();
 		if (isRemoval) {
-			newSize.width = Math.min(amountLabelSize.width, size.width);
-			newSize.height = Math.min(amountLabelSize.height, size.height);
+			amountLabelSize = null;
 		} else {
+			var newSize = new Dimension();
 			newSize.width = Math.max(amountLabelSize.width, size.width);
 			newSize.height = Math.max(amountLabelSize.height, size.height);
+			amountLabelSize = newSize;
 		}
-		amountLabelSize = newSize;
 	}
 
 	public Dimension getUnitLabelSize() {
@@ -115,15 +114,15 @@ public class IOPaneFigure extends Figure {
 			return;
 		}
 
-		var newSize = new Dimension();
 		if (isRemoval) {
-			newSize.width = Math.min(unitLabelSize.width, size.width);
-			newSize.height = Math.min(unitLabelSize.height, size.height);
+			// Resetting the variable such that it is computed again when getting it.
+			unitLabelSize = null;
 		} else {
+			var newSize = new Dimension();
 			newSize.width = Math.max(unitLabelSize.width, size.width);
 			newSize.height = Math.max(unitLabelSize.height, size.height);
+			unitLabelSize = newSize;
 		}
-		unitLabelSize = newSize;
 	}
 
 	private class Header extends Figure {
