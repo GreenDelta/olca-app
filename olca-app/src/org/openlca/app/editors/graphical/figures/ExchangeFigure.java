@@ -22,7 +22,10 @@ public class ExchangeFigure extends Figure {
 	public ExchangeItem exchangeItem;
 	private final Exchange exchange;
 	private Label label;
+	private Label amountLabel;
+	private Label unitLabel;
 	private boolean selected;
+	private IOPaneFigure paneFigure;
 
 	public ExchangeFigure(ExchangeItem exchangeItem) {
 		this.exchangeItem = exchangeItem;
@@ -58,6 +61,7 @@ public class ExchangeFigure extends Figure {
 	}
 
 	public void setChildren(IOPaneFigure paneFigure) {
+		this.paneFigure = paneFigure;
 		var theme = exchangeItem.getGraph().getConfig().getTheme();
 
 		var image = new ImageFigure(Images.get(exchange.flow));
@@ -70,17 +74,18 @@ public class ExchangeFigure extends Figure {
 		label.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		add(label, new GridData(SWT.LEAD, SWT.CENTER, true, false));
 
-		var amountLabel = new Label(Numbers.format(exchange.amount, UNIT_ACCURACY));
+		amountLabel = new Label(Numbers.format(exchange.amount, UNIT_ACCURACY));
 		amountLabel.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		amountLabel.setLabelAlignment(PositionConstants.RIGHT);
-		var amountPrefSize = paneFigure.getAmountLabelSize();
-		add(amountLabel, new GridData(amountPrefSize.width, amountPrefSize.height));
+		add(amountLabel);
 
-		var unitLabel = new Label(Labels.name(exchange.unit));
+		unitLabel = new Label(Labels.name(exchange.unit));
 		unitLabel.setLabelAlignment(PositionConstants.LEFT);
 		var unitPrefSize = paneFigure.getUnitLabelSize();
 		unitLabel.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
-		add(unitLabel, new GridData(unitPrefSize.width, unitPrefSize.height));
+		add(unitLabel);
+
+		setChildrenConstraints();
 	}
 
 	private String tooltip() {
@@ -151,6 +156,15 @@ public class ExchangeFigure extends Figure {
 	public NodeFigure getNodeFigure() {
 		// The parent of an ExchangeFigure is IOPaneFigure.contentPane.
 		return getIOPaneFigure().getNodeFigure();
+	}
+
+	public void setChildrenConstraints() {
+		var amountPrefSize = paneFigure.getAmountLabelSize();
+		setConstraint(amountLabel,
+			new GridData(amountPrefSize.width, amountPrefSize.height));
+		var unitPrefSize = paneFigure.getUnitLabelSize();
+		setConstraint(unitLabel,
+			new GridData(unitPrefSize.width, unitPrefSize.height));
 	}
 
 	public String toString() {

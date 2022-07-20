@@ -43,4 +43,9 @@ public class ExchangeEditPart extends AbstractVertexEditPart<ExchangeItem> {
 		return new ConnectionDragCreationTool();
 	}
 
+	public void refreshConstraints() {
+		((ExchangeFigure) getFigure()).setChildrenConstraints();
+		getFigure().revalidate();
+	}
+
 }

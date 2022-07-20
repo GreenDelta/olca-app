@@ -9,27 +9,25 @@ import org.openlca.core.model.Process;
 
 import java.util.Objects;
 
-import static org.openlca.app.editors.graphical.model.GraphComponent.INPUT_PROP;
-import static org.openlca.app.editors.graphical.model.GraphComponent.OUTPUT_PROP;
-
 public class EditExchangeCommand extends Command {
 
-	private final ExchangeItem exchangeItem;
+	private final ExchangeItem oldExchangeItem;
+	private ExchangeItem newExchangeItem;
 	private final IDatabase db = Database.get();
 	private final Process process;
 	private final Node node;
 
 	public EditExchangeCommand(ExchangeItem exchangeItem) {
-		this.exchangeItem = exchangeItem;
+		this.oldExchangeItem = exchangeItem;
 		this.node = exchangeItem.getNode();
 		process = db.get(Process.class, node.descriptor.id);
 	}
 
 	@Override
 	public boolean canExecute() {
-		var node = exchangeItem.getNode();
-		return exchangeItem.exchange != null
-			&& exchangeItem.exchange.flow != null
+		var node = oldExchangeItem.getNode();
+		return oldExchangeItem.exchange != null
+			&& oldExchangeItem.exchange.flow != null
 			&& node != null
 			&& node.descriptor != null
 			&& node.isEditable();
@@ -37,21 +35,15 @@ public class EditExchangeCommand extends Command {
 
 	@Override
 	public boolean canUndo() {
-		// TODO (francois) Implement undo.
-		return false;
+		return true;
 	}
 
 	@Override
 	public void execute() {
-		redo();
-	}
-
-	@Override
-	public void redo() {
 		if (process == null)
 			return;
 		var exchange = process.exchanges.stream()
-			.filter(e -> Objects.equals(e, exchangeItem.exchange))
+			.filter(e -> Objects.equals(e, oldExchangeItem.exchange))
 			.findFirst()
 			.orElse(null);
 		if (exchange == null)
@@ -60,12 +52,38 @@ public class EditExchangeCommand extends Command {
 			return;
 		db.update(process);
 
-		var forInput = exchangeItem.getIOPane().isForInputs();
+		newExchangeItem = new ExchangeItem(node.getGraph().editor, exchange);
+		redo();
+	}
+
+	@Override
+	public void redo() {
+		updateExchangeItem(oldExchangeItem, newExchangeItem);
+	}
+
+	@Override
+	public void undo() {
+		updateExchangeItem(newExchangeItem, oldExchangeItem);
+	}
+
+	private void updateExchangeItem(ExchangeItem oldValue, ExchangeItem newValue) {
+		var forInput = oldValue.getIOPane().isForInputs();
 		var ioPane = forInput ? node.getInputIOPane() : node.getOutputIOPane();
-		node.removeChild(ioPane);
-		var panes = node.editor.getGraphFactory().createIOPanes(node.descriptor);
-		node.addChild(
-			panes.get(forInput ? INPUT_PROP : OUTPUT_PROP), forInput ? 0 : 1);
+
+		var sourceLink = oldValue.getSourceConnections();
+		var targetLink = oldValue.getTargetConnections();
+
+		// Disconnecting the links before removing pane's child.
+		for (var link : oldValue.getAllLinks())
+			link.disconnect();
+
+		ioPane.removeChild(oldValue);
+		ioPane.addChild(newValue);
+
+		for (var link : sourceLink)
+			link.reconnect(newValue, link.getTarget());
+		for (var link : targetLink)
+			link.reconnect(link.getSource(), newValue);
 	}
 
 }
