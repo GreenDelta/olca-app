@@ -87,6 +87,17 @@ public class ExchangeItem extends GraphComponent {
 		return exchange.isInput != exchangeItem.exchange.isInput;
 	}
 
+	public boolean canBeReferenceFlow() {
+		System.out.println("canBeReferenceFlow: " + this);
+		System.out.println("getIOPane().isForInputs(): " + getIOPane().isForInputs());
+		if (exchange == null || exchange.flow == null)
+			return false;
+		var flowType = exchange.flow.flowType;
+		System.out.println("flowType == FlowType.WASTE_FLOW" + (flowType == FlowType.WASTE_FLOW));
+		return getIOPane().isForInputs() == (flowType == FlowType.WASTE_FLOW)
+			|| !getIOPane().isForInputs() == (flowType == FlowType.PRODUCT_FLOW);
+	}
+
 	public String toString() {
 		var name = Labels.name(exchange.flow);
 		return "ExchangeItem("

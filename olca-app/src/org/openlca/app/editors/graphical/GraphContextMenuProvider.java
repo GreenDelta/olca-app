@@ -59,6 +59,10 @@ public class GraphContextMenuProvider  extends ContextMenuProvider {
 		if (addOutputExchange.isEnabled())
 			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, addOutputExchange);
 
+		var setReference = actionRegistry.getAction(ActionIds.SET_REFERENCE);
+		if (setReference.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, setReference);
+
 		var editExchange = actionRegistry.getAction(ActionIds.EDIT_EXCHANGE);
 		if (editExchange.isEnabled())
 			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, editExchange);

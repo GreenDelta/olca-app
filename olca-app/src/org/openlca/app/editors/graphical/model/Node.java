@@ -32,7 +32,7 @@ public class Node extends MinMaxGraphComponent {
 	public static final Dimension DEFAULT_SIZE =
 		new Dimension(250, SWT.DEFAULT);
 
-	public final RootDescriptor descriptor;
+	public RootDescriptor descriptor;
 
 	/** Define if the input or this output side is expanded.
 	 * 0: not expanded, 1: input expanded, 2: output expanded, 3: both
@@ -336,6 +336,29 @@ public class Node extends MinMaxGraphComponent {
 		wasExplored = false;
 		return false;
 	}
+
+	public void setDescriptor(RootDescriptor d) {
+		if (d == null)
+			return;
+		descriptor = d;
+	}
+
+	public ExchangeItem getRefExchangeItem() {
+		for (var item : getExchangeItems())
+			if (item.isRefFlow())
+				return item;
+		return null;
+	}
+
+	public ExchangeItem getExchangeItem(Exchange exchange) {
+		for (var child : getChildren()) {
+			if (child instanceof ExchangeItem item)
+				if (item.exchange == exchange)
+					return item;
+		}
+		return null;
+	}
+
 
 	public String toString() {
 		var editable = isEditable() ? "E-" : "";

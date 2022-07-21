@@ -68,9 +68,6 @@ public class ExchangeFigure extends Figure {
 		add(image, GridPos.leadCenter());
 
 		label = new Label(Labels.name(exchange.flow));
-		if (exchangeItem.isRefFlow()) {
-			label.setFont(UI.boldFont());
-		}
 		label.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		add(label, new GridData(SWT.LEAD, SWT.CENTER, true, false));
 
@@ -81,7 +78,6 @@ public class ExchangeFigure extends Figure {
 
 		unitLabel = new Label(Labels.name(exchange.unit));
 		unitLabel.setLabelAlignment(PositionConstants.LEFT);
-		var unitPrefSize = paneFigure.getUnitLabelSize();
 		unitLabel.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		add(unitLabel);
 
@@ -111,13 +107,18 @@ public class ExchangeFigure extends Figure {
 
 	@Override
 	protected void paintFigure(Graphics g) {
+		g.pushState();
+
 		if (selected) {
-			g.pushState();
 			g.setBackgroundColor(Colors.gray());
 			g.fillRectangle(getBounds());
-			g.popState();
-			g.setForegroundColor(ColorConstants.white);
 		}
+		if (exchangeItem.isRefFlow())
+			label.setFont(UI.boldFont());
+
+		g.setForegroundColor(ColorConstants.white);
+		g.popState();
+
 		super.paintFigure(g);
 	}
 

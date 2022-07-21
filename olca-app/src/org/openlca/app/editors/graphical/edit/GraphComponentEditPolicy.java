@@ -11,8 +11,10 @@ import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.commands.DeleteExchangeCommand;
 import org.openlca.app.editors.graphical.model.commands.DeleteNodeCommand;
 import org.openlca.app.editors.graphical.model.commands.EditExchangeCommand;
+import org.openlca.app.editors.graphical.model.commands.SetReferenceCommand;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_SET_REFERENCE;
 
 public class GraphComponentEditPolicy extends ComponentEditPolicy {
 
@@ -21,7 +23,11 @@ public class GraphComponentEditPolicy extends ComponentEditPolicy {
 		var child = getHost().getModel();
 		if (REQ_EDIT.equals(request.getType())) {
 			if (child instanceof ExchangeItem exchangeItem)
-				return getEditExchangeEditCommand(exchangeItem);
+				return getEditExchangeCommand(exchangeItem);
+		}
+		if (REQ_SET_REFERENCE.equals(request.getType())) {
+			if (child instanceof ExchangeItem exchangeItem)
+				return getSetReferenceCommand(exchangeItem);
 		}
 		return super.getCommand(request);
 	}
@@ -39,8 +45,13 @@ public class GraphComponentEditPolicy extends ComponentEditPolicy {
 		return super.createDeleteCommand(req);
 	}
 
-	protected Command getEditExchangeEditCommand(ExchangeItem exchangeItem) {
+	protected Command getEditExchangeCommand(ExchangeItem exchangeItem) {
 		return new EditExchangeCommand(exchangeItem);
 	}
+
+	protected Command getSetReferenceCommand(ExchangeItem exchangeItem) {
+		return new SetReferenceCommand(exchangeItem);
+	}
+
 
 }
