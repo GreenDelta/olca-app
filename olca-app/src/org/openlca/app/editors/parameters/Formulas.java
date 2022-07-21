@@ -10,7 +10,6 @@ import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterizedEntity;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.Uncertainty;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.expressions.Scope;
 import org.openlca.util.Strings;
@@ -70,7 +69,6 @@ public class Formulas {
 				if (Strings.notEmpty(e.formula)) {
 					e.amount = eval(e.formula, scope);
 				}
-				eval(e.uncertainty, scope);
 				if (Strings.notEmpty(e.costFormula)) {
 					e.costs = eval(e.costFormula, scope);
 				}
@@ -86,15 +84,14 @@ public class Formulas {
 		return errors;
 	}
 
-	private List<String> eval(ImpactCategory c) {
+	private List<String> eval(ImpactCategory impact) {
 		try {
-			var s = createScope(db, c);
-			evalParams(c.parameters, s);
-			for (var f : c.impactFactors) {
-				if (Strings.notEmpty(f.formula)) {
-					f.value = eval(f.formula, s);
+			var scope = createScope(db, impact);
+			evalParams(impact.parameters, scope);
+			for (var factor : impact.impactFactors) {
+				if (Strings.notEmpty(factor.formula)) {
+					factor.value = eval(factor.formula, scope);
 				}
-				eval(f.uncertainty, s);
 			}
 		} catch (Exception e) {
 			log.warn("unexpected error in formula evaluation", e);
@@ -107,20 +104,6 @@ public class Formulas {
 			if (param.isInputParameter)
 				continue;
 			param.value = eval(param.formula, s);
-		}
-	}
-
-	private void eval(Uncertainty u, Scope s) {
-		if (u == null)
-			return;
-		if (Strings.notEmpty(u.formula1)) {
-			u.parameter1 = eval(u.formula1, s);
-		}
-		if (Strings.notEmpty(u.formula2)) {
-			u.parameter2 = eval(u.formula2, s);
-		}
-		if (Strings.notEmpty(u.formula3)) {
-			u.parameter3 = eval(u.formula3, s);
 		}
 	}
 

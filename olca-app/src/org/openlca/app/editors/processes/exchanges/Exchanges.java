@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Utility methods for the exchange tables.
- *
  */
 class Exchanges {
 
@@ -42,14 +41,14 @@ class Exchanges {
 		String sql = null;
 		if (d.type == ModelType.PROCESS) {
 			sql = "select e.f_flow from tbl_processes p "
-					+ "inner join tbl_exchanges e on "
-					+ "p.f_quantitative_reference = e.id "
-					+ "where p.id = " + d.id;
+				+ "inner join tbl_exchanges e on "
+				+ "p.f_quantitative_reference = e.id "
+				+ "where p.id = " + d.id;
 		} else if (d.type == ModelType.PRODUCT_SYSTEM) {
 			sql = "select e.f_flow from tbl_product_systems s "
-					+ "inner join tbl_exchanges e on "
-					+ "s.f_reference_exchange = e.id "
-					+ "where s.id = " + d.id;
+				+ "inner join tbl_exchanges e on "
+				+ "s.f_reference_exchange = e.id "
+				+ "where s.id = " + d.id;
 		}
 		if (sql == null)
 			return -1L;
@@ -80,7 +79,7 @@ class Exchanges {
 	/**
 	 * Checks if the given exchanges can be removed from the process. The exchanges
 	 * cannot be removed and a corresponding error message is displayed when:
-	 * 
+	 *
 	 * <li>one of the given exchanges is the reference flow of the process
 	 * <li>at least one of the exchanges is used in a product system
 	 * <li>at least one of the exchanges is needed as default provider link
@@ -91,16 +90,16 @@ class Exchanges {
 
 		// check reference flow
 		if (p.quantitativeReference != null
-				&& exchanges.contains(p.quantitativeReference)) {
+			&& exchanges.contains(p.quantitativeReference)) {
 			MsgBox.error(M.CannotDeleteRefFlow, M.CannotDeleteRefFlowMessage);
 			return false;
 		}
 
 		// collect product and waste flows
 		List<Exchange> techFlows = exchanges.stream()
-				.filter(e -> e.flow != null
-						&& e.flow.flowType != FlowType.ELEMENTARY_FLOW)
-				.collect(Collectors.toList());
+			.filter(e -> e.flow != null
+				&& e.flow.flowType != FlowType.ELEMENTARY_FLOW)
+			.collect(Collectors.toList());
 		if (techFlows.isEmpty())
 			return true;
 
@@ -113,15 +112,14 @@ class Exchanges {
 
 		// check provider links
 		List<Exchange> providers = techFlows.stream()
-				.filter(e -> (e.isInput && e.flow.flowType == FlowType.WASTE_FLOW)
-						|| (!e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW))
-				.collect(Collectors.toList());
+			.filter(e -> (e.isInput && e.flow.flowType == FlowType.WASTE_FLOW)
+				|| (!e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW)).toList();
 		if (providers.isEmpty())
 			return true;
 		for (Exchange provider : providers) {
 			String query = "select f_owner from tbl_exchanges where "
-					+ "f_default_provider = " + p.id + " and "
-					+ "f_flow = " + provider.flow.id + "";
+				+ "f_default_provider = " + p.id + " and "
+				+ "f_flow = " + provider.flow.id + "";
 			IDatabase db = Database.get();
 			AtomicReference<ProcessDescriptor> ref = new AtomicReference<>();
 			try {
@@ -146,20 +144,21 @@ class Exchanges {
 			// that there is no other exchange with the same flow and direction
 			// that can fulfill this role (and that is not in the list of
 			// exchanges to be deleted).
-			boolean ok = p.exchanges.stream().filter(e -> e.id != provider.id
+			boolean ok = p.exchanges.stream().anyMatch(e ->
+				e.id != provider.id
 					&& e.isInput == provider.isInput
 					&& e.flow != null
 					&& e.flow.id == provider.flow.id
-					&& !exchanges.contains(e)).findAny().isPresent();
+					&& !exchanges.contains(e));
 			if (ok)
 				continue;
 
 			MsgBox.error("Flow used as default provider",
-					"This process is linked as default provider with flow `"
-							+ Strings.cut(Labels.name(provider.flow), 75)
-							+ "` in process `"
-							+ Strings.cut(Labels.name(ref.get()), 75)
-							+ "`.");
+				"This process is linked as default provider with flow `"
+					+ Strings.cut(Labels.name(provider.flow), 75)
+					+ "` in process `"
+					+ Strings.cut(Labels.name(ref.get()), 75)
+					+ "`.");
 			return false;
 		}
 

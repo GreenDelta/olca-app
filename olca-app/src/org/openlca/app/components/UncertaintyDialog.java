@@ -1,6 +1,7 @@
 package org.openlca.app.components;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
@@ -65,8 +66,8 @@ public class UncertaintyDialog extends Dialog {
 	public static Optional<Uncertainty> open(@Nullable Uncertainty init) {
 		var dialog = new UncertaintyDialog(UI.shell(), init);
 		if (dialog.open() != OK
-				|| dialog.uncertainty == null
-				|| dialog.uncertainty.distributionType == null)
+			|| dialog.uncertainty == null
+			|| dialog.uncertainty.distributionType == null)
 			return Optional.empty();
 		return Optional.of(dialog.uncertainty);
 	}
@@ -105,30 +106,17 @@ public class UncertaintyDialog extends Dialog {
 
 	private NumberGenerator makeGenerator() {
 		Uncertainty u = selectedPanel.fetchUncertainty();
-		switch (u.distributionType) {
-			case LOG_NORMAL:
-				return NumberGenerator.logNormal(
-					u.parameter1,
-					u.parameter2);
-			case NONE:
-				return NumberGenerator.discrete(
-					u.parameter1);
-			case NORMAL:
-				return NumberGenerator.normal(
-					u.parameter1,
-					u.parameter2);
-			case TRIANGLE:
-				return NumberGenerator.triangular(
-					u.parameter1,
-					u.parameter2,
-					u.parameter3);
-			case UNIFORM:
-				return NumberGenerator.uniform(
-					u.parameter1,
-					u.parameter2);
-			default:
-				return NumberGenerator.discrete(1);
-		}
+		return switch (u.distributionType) {
+			case LOG_NORMAL -> NumberGenerator.logNormal(
+				u.parameter1, u.parameter2);
+			case NONE -> NumberGenerator.discrete(u.parameter1);
+			case NORMAL -> NumberGenerator.normal(
+				u.parameter1, u.parameter2);
+			case TRIANGLE -> NumberGenerator.triangular(
+				u.parameter1, u.parameter2, u.parameter3);
+			case UNIFORM -> NumberGenerator.uniform(
+				u.parameter1, u.parameter2);
+		};
 	}
 
 	@Override
@@ -161,7 +149,7 @@ public class UncertaintyDialog extends Dialog {
 			UncertaintyType type = types[i];
 			items[i] = Labels.of(type);
 			if (uncertainty != null
-					&& uncertainty.distributionType == type)
+				&& uncertainty.distributionType == type)
 				idx = i;
 		}
 		combo.setItems(items);
@@ -235,75 +223,46 @@ public class UncertaintyDialog extends Dialog {
 		}
 
 		private String initialValue(int param) {
-			switch (param) {
-				case 1:
-					return initialValue(_uncertainty.parameter1,
-						_uncertainty.formula1);
-				case 2:
-					return initialValue(_uncertainty.parameter2,
-						_uncertainty.formula2);
-				case 3:
-					return initialValue(_uncertainty.parameter3,
-						_uncertainty.formula3);
-				default:
-					return "";
-			}
+			Function<Double, String> str = d -> d != null
+				? d.toString()
+				: "";
+			return switch (param) {
+				case 1 -> str.apply(_uncertainty.parameter1);
+				case 2 -> str.apply(_uncertainty.parameter2);
+				case 3 -> str.apply(_uncertainty.parameter3);
+				default -> "";
+			};
 
-		}
-
-		private String initialValue(Double value, String formula) {
-			if (formula != null && !formula.isEmpty())
-				return formula;
-			if (value == null)
-				return "";
-			else
-				return Double.toString(value);
 		}
 
 		private String[] getLabels() {
-			switch (_uncertainty.distributionType) {
-				case LOG_NORMAL:
-					return new String[]{M.GeometricMean, M.GeometricStandardDeviation};
-				case NORMAL:
-					return new String[]{M.Mean, M.StandardDeviation};
-				case TRIANGLE:
-					return new String[]{M.Minimum, M.Mode, M.Maximum};
-				case UNIFORM:
-					return new String[]{M.Minimum, M.Maximum};
-				default:
-					return new String[0];
-			}
+			return switch (_uncertainty.distributionType) {
+				case LOG_NORMAL ->
+					new String[]{M.GeometricMean, M.GeometricStandardDeviation};
+				case NORMAL -> new String[]{M.Mean, M.StandardDeviation};
+				case TRIANGLE -> new String[]{M.Minimum, M.Mode, M.Maximum};
+				case UNIFORM -> new String[]{M.Minimum, M.Maximum};
+				default -> new String[0];
+			};
 		}
 
 		private Uncertainty createUncertainty(UncertaintyType type) {
-			switch (type) {
-				case LOG_NORMAL:
-					return Uncertainty.logNormal(defaultMean, 1);
-				case NONE:
-					return Uncertainty.none(defaultMean);
-				case NORMAL:
-					return Uncertainty.normal(defaultMean, 1);
-				case TRIANGLE:
-					return Uncertainty.triangle(defaultMean, defaultMean,
-						defaultMean);
-				case UNIFORM:
-					return Uncertainty.uniform(defaultMean, defaultMean);
-				default:
-					return null;
-			}
+			return switch (type) {
+				case LOG_NORMAL -> Uncertainty.logNormal(defaultMean, 1);
+				case NONE -> Uncertainty.none(defaultMean);
+				case NORMAL -> Uncertainty.normal(defaultMean, 1);
+				case TRIANGLE -> Uncertainty.triangle(defaultMean, defaultMean,
+					defaultMean);
+				case UNIFORM -> Uncertainty.uniform(defaultMean, defaultMean);
+			};
 		}
 
 		private boolean hasParameter(int parameter) {
-			switch (_uncertainty.distributionType) {
-				case LOG_NORMAL:
-				case NORMAL:
-				case UNIFORM:
-					return parameter == 1 || parameter == 2;
-				case TRIANGLE:
-					return parameter == 1 || parameter == 2 || parameter == 3;
-				default:
-					return false;
-			}
+			return switch (_uncertainty.distributionType) {
+				case LOG_NORMAL, NORMAL, UNIFORM -> parameter == 1 || parameter == 2;
+				case TRIANGLE -> parameter == 1 || parameter == 2 || parameter == 3;
+				default -> false;
+			};
 		}
 
 		Uncertainty fetchUncertainty() {
@@ -323,17 +282,11 @@ public class UncertaintyDialog extends Dialog {
 
 		private void set(int param, double val) {
 			switch (param) {
-				case 1:
-					_uncertainty.parameter1 = val;
-					break;
-				case 2:
-					_uncertainty.parameter2 = val;
-					break;
-				case 3:
-					_uncertainty.parameter3 = val;
-					break;
-				default:
-					break;
+				case 1 -> _uncertainty.parameter1 = val;
+				case 2 -> _uncertainty.parameter2 = val;
+				case 3 -> _uncertainty.parameter3 = val;
+				default -> {
+				}
 			}
 		}
 	}
