@@ -13,6 +13,7 @@ import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
@@ -99,6 +100,32 @@ public class GraphFactory {
 			});
 
 		return panes;
+	}
+
+	/**
+	 * Update an old ExchangeItem with a new one by removing the old one, updating
+	 * the node descriptor and adding the new one.
+	 */
+	public static void updateExchangeItem(Node node, RootDescriptor descriptor,
+		ExchangeItem oldValue, ExchangeItem newValue) {
+		var ioPane = oldValue.getIOPane();
+
+		var sourceLink = oldValue.getSourceConnections();
+		var targetLink = oldValue.getTargetConnections();
+
+		// Disconnecting the links before removing pane's child.
+		for (var link : oldValue.getAllLinks())
+			link.disconnect();
+
+		var index = ioPane.getChildren().indexOf(oldValue);
+		ioPane.removeChild(oldValue);
+		node.setDescriptor(descriptor);
+		ioPane.addChild(newValue, index);
+
+		for (var link : sourceLink)
+			link.reconnect(newValue, link.getTarget());
+		for (var link : targetLink)
+			link.reconnect(link.getSource(), newValue);
 	}
 
 	private List<Exchange> getExchanges(RootDescriptor descriptor) {

@@ -243,6 +243,10 @@ public class GraphEditor extends GraphicalEditor {
 
 		action = new FocusAction(this);
 		registry.registerAction(action);
+
+		action = new SetReferenceAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
 	}
 
 	/**
