@@ -14,8 +14,11 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static org.openlca.app.editors.processes.exchanges.Exchanges.canRemove;
 
 public class DeleteExchangeCommand extends Command {
 
@@ -83,6 +86,11 @@ public class DeleteExchangeCommand extends Command {
 	public void redo() {
 		// remove the child and disconnect its links
 		if (exchange == null)
+			return;
+
+		var exchanges = new ArrayList<Exchange>();
+		exchanges.add(exchange);
+		if (!canRemove(process, exchanges))
 			return;
 
 		// check that the exchange is not used in other models

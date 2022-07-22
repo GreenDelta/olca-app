@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Utility methods for the exchange tables.
  */
-class Exchanges {
+public class Exchanges {
 
 	/**
 	 * Get the ID of the reference flow of the given descriptor.
@@ -84,7 +84,7 @@ class Exchanges {
 	 * <li>at least one of the exchanges is used in a product system
 	 * <li>at least one of the exchanges is needed as default provider link
 	 */
-	static boolean canRemove(Process p, List<Exchange> exchanges) {
+	public static boolean canRemove(Process p, List<Exchange> exchanges) {
 		if (p == null || exchanges == null)
 			return false;
 
