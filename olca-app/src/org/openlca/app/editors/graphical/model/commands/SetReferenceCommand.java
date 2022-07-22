@@ -32,9 +32,6 @@ public class SetReferenceCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		System.out.println("child.conBeRef: " + child.canBeReferenceFlow());
-		System.out.println("!child.isRefFlow(): " + !child.isRefFlow());
-
 		return child.canBeReferenceFlow()
 			&& !child.isRefFlow()
 			&& node != null
