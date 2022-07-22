@@ -65,6 +65,8 @@ public class EditExchangeCommand extends Command {
 		db.update(process);
 		var descriptor = Descriptor.of(process);
 		updateExchangeItem(node, descriptor, oldExchangeItem, newExchangeItem);
+
+		node.editor.setDirty();
 	}
 
 	@Override

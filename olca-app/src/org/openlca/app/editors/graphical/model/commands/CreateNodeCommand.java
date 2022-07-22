@@ -67,6 +67,8 @@ public class CreateNodeCommand extends Command {
 		system.processes.remove(descriptor.id);
 		// Remove the node from the graph's children.
 		this.graph.removeChild(node);
+
+		editor.setDirty();
 	}
 
 }

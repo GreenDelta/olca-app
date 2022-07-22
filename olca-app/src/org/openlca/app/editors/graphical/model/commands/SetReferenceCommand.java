@@ -58,6 +58,7 @@ public class SetReferenceCommand extends Command {
 			return;
 
 		update(child, oldRefExchange);
+		child.editor.setDirty();
 	}
 
 	@Override
@@ -70,6 +71,8 @@ public class SetReferenceCommand extends Command {
 		var oldRefExchangeItem = node.getExchangeItem(oldRefExchange);
 		var oldExchange = getExchange(process, oldRefExchangeItem);
 		update(oldRefExchangeItem, oldExchange);
+
+		child.editor.setDirty();
 	}
 
 	private void update(ExchangeItem newRefExchangeItem, Exchange oldRefExchange) {

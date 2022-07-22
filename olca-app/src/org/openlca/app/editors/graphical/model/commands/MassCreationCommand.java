@@ -64,7 +64,6 @@ public class MassCreationCommand extends Command {
 			oldConstraints.put(node, bounds);
 		}
 
-		// TODO (francois) layout
 		graph.editor.setDirty();
 	}
 

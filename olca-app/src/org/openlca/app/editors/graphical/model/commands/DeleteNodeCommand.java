@@ -93,6 +93,8 @@ public class DeleteNodeCommand extends Command {
 		parent.getProductSystem().processes.add(child.descriptor.id);
 		parent.addChild(child);
 		addConnections(links);
+
+		parent.editor.setDirty();
 	}
 
 }

@@ -40,6 +40,7 @@ public class CollapseCommand extends Command {
 	public void redo() {
 		collapse(host, side);
 		host.setExpanded(side, false);
+		host.editor.setDirty();
 	}
 
 	/**

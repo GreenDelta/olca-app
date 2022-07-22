@@ -153,6 +153,8 @@ public class DeleteExchangeCommand extends Command {
 		parent.addChild(child);
 
 		addConnections(links);
+
+		node.editor.setDirty();
 	}
 
 }
