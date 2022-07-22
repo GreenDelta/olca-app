@@ -38,20 +38,24 @@ public class ReconnectLinkCommand extends Command {
 
 	@Override
 	public void execute() {
-		Graph graph = sourceNode.getGraph();
+		var graph = sourceNode.getGraph();
+
 		oldLink.disconnect();
 		graph.getProductSystem().processLinks.remove(oldLink.processLink);
 		graph.linkSearch.remove(oldLink.processLink);
+
 		var processLink = new ProcessLink();
 		processLink.providerId = sourceNode.descriptor.id;
 		processLink.setProviderType(sourceNode.descriptor.type);
 		processLink.flowId = oldLink.processLink.flowId;
 		processLink.processId = targetItem.getNode().descriptor.id;
 		processLink.exchangeId = targetItem.exchange.id;
+
 		graph.getProductSystem().processLinks.add(processLink);
 		graph.linkSearch.put(processLink);
 		link.setProcessLink(processLink);
 		link.reconnect(targetItem, sourceNode);
+
 		graph.editor.setDirty();
 	}
 
@@ -62,27 +66,32 @@ public class ReconnectLinkCommand extends Command {
 
 	@Override
 	public void redo() {
-		Graph graph = sourceNode.getGraph();
-		ProductSystem system = graph.getProductSystem();
+		var graph = sourceNode.getGraph();
+		var system = graph.getProductSystem();
+
 		oldLink.disconnect();
+
 		system.processLinks.remove(oldLink.processLink);
 		graph.linkSearch.remove(oldLink.processLink);
 		system.processLinks.add(link.processLink);
 		graph.linkSearch.put(link.processLink);
 		link.reconnect();
+
 		graph.editor.setDirty();
 	}
 
 	@Override
 	public void undo() {
-		Graph graph = sourceNode.getGraph();
-		ProductSystem system = graph.getProductSystem();
+		var graph = sourceNode.getGraph();
+		var system = graph.getProductSystem();
 		link.disconnect();
+
 		system.processLinks.remove(link.processLink);
 		graph.linkSearch.remove(link.processLink);
 		system.processLinks.add(oldLink.processLink);
 		graph.linkSearch.put(oldLink.processLink);
 		oldLink.reconnect();
+
 		graph.editor.setDirty();
 	}
 

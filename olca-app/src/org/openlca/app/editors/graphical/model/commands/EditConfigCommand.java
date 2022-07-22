@@ -56,6 +56,8 @@ public class EditConfigCommand extends Command {
 
 		editor.setModel(newGraph);
 		viewer.setContents(newGraph);
+
+		editor.setDirty();
 	}
 
 	@Override
@@ -63,6 +65,8 @@ public class EditConfigCommand extends Command {
 		newConfig.copyTo(editor.config);
 		editor.setModel(newGraph);
 		viewer.setContents(newGraph);
+
+		editor.setDirty();
 	}
 
 	@Override
@@ -70,6 +74,8 @@ public class EditConfigCommand extends Command {
 		oldConfig.copyTo(editor.config);
 		editor.setModel(oldGraph);
 		viewer.setContents(oldGraph);
+
+		editor.setDirty();
 	}
 
 }

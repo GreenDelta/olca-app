@@ -46,6 +46,8 @@ public class LayoutCommand extends Command {
 	public void redo() {
 		for (var child : graph.getChildren())
 			child.setLocation(DEFAULT_LOCATION);
+
+		graph.editor.setDirty();
 	}
 
 	@Override
@@ -53,6 +55,8 @@ public class LayoutCommand extends Command {
 		for (var child : graph.getChildren()) {
 			child.setLocation(oldLocations.get(child));
 		}
+
+		graph.editor.setDirty();
 	}
 
 }

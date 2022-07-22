@@ -102,6 +102,8 @@ public class AddExchangeCommand extends Command {
 
 		var ioPane = forInput ? node.getInputIOPane() : node.getOutputIOPane();
 		ioPane.addChild(new ExchangeItem(editor, exchange));
+
+		editor.setDirty();
 	}
 
 	class Dialog extends FormDialog {

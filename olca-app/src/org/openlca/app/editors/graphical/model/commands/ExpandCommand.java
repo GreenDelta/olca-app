@@ -85,6 +85,8 @@ public class ExpandCommand extends Command {
 			graph.getNode(otherID).updateIsExpanded(side == INPUT ? OUTPUT : INPUT);
 		}
 		host.setExpanded(side, true);
+
+		editor.setDirty();
 	}
 
 	/**
