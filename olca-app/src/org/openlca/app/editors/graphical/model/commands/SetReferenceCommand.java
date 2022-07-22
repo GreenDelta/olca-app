@@ -75,6 +75,8 @@ public class SetReferenceCommand extends Command {
 	private void update(ExchangeItem newRefExchangeItem, Exchange oldRefExchange) {
 		var process = db.get(Process.class, node.descriptor.id);
 		var newRefExchange = getExchange(process, newRefExchangeItem);
+		if (newRefExchange == null)
+			return;
 		process.quantitativeReference = newRefExchange;
 		db.update(process);
 
@@ -93,7 +95,7 @@ public class SetReferenceCommand extends Command {
 		if (process == null)
 			return null;
 		return process.exchanges.stream()
-			.filter(e -> Objects.equals(e, item.exchange))
+			.filter(e -> Objects.equals(e.id, item.exchange.id))
 			.findFirst()
 			.orElse(null);
 	}
