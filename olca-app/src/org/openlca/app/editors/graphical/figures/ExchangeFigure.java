@@ -8,6 +8,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
+import org.openlca.app.editors.graphical.themes.Theme;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -19,6 +20,7 @@ import org.openlca.core.model.descriptors.Descriptor;
 public class ExchangeFigure extends Figure {
 
 	private static final Integer UNIT_ACCURACY = 2;
+	private final Theme theme;
 	public ExchangeItem exchangeItem;
 	private final Exchange exchange;
 	private Label label;
@@ -30,6 +32,7 @@ public class ExchangeFigure extends Figure {
 	public ExchangeFigure(ExchangeItem exchangeItem) {
 		this.exchangeItem = exchangeItem;
 		this.exchange = exchangeItem.exchange;
+		this.theme = exchangeItem.getGraph().getConfig().getTheme();
 
 		var layout = new GridLayout(4, false);
 		layout.marginWidth = 0;
@@ -51,7 +54,8 @@ public class ExchangeFigure extends Figure {
 			@Override
 			public void mouseExited(MouseEvent me) {
 				final IFigure figure = (IFigure) me.getSource();
-				((LineBorder) figure.getBorder()).setColor(Colors.white());
+				var backgroundColor = theme.graphBackgroundColor();
+				((LineBorder) figure.getBorder()).setColor(backgroundColor);
 				figure.repaint();
 			}
 
@@ -62,7 +66,6 @@ public class ExchangeFigure extends Figure {
 
 	public void setChildren(IOPaneFigure paneFigure) {
 		this.paneFigure = paneFigure;
-		var theme = exchangeItem.getGraph().getConfig().getTheme();
 
 		var image = new ImageFigure(Images.get(exchange.flow));
 		add(image, GridPos.leadCenter());
