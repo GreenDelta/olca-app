@@ -21,8 +21,8 @@ import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.Contributions;
+import org.openlca.core.results.FullResult;
 import org.openlca.core.results.GroupingContribution;
 import org.openlca.core.results.ProcessGrouping;
 
@@ -33,14 +33,14 @@ class GroupResultSection {
 	private int resultType = 0;
 
 	private final List<ProcessGrouping> groups;
-	private final ContributionResult result;
+	private final FullResult result;
 
 	private ResultFlowCombo flowViewer;
 	private ImpactCategoryViewer impactViewer;
 	private GroupResultTable table;
 
 	public GroupResultSection(
-			List<ProcessGrouping> groups, ContributionResult result) {
+			List<ProcessGrouping> groups, FullResult result) {
 		this.groups = groups;
 		this.result = result;
 	}

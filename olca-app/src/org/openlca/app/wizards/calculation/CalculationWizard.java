@@ -125,15 +125,11 @@ public class CalculationWizard extends Wizard {
 			return;
 		}
 
-		boolean upstream = setup.hasType(CalculationType.UPSTREAM_ANALYSIS);
-
 		// run the calculation
 		log.trace("run calculation");
 		var calc = new SystemCalculator(Database.get())
 			.withLibraryDir(Workspace.getLibraryDir());
-		var result = upstream
-			? calc.calculateFull(setup.calcSetup)
-			: calc.calculateContributions(setup.calcSetup);
+		var result = calc.calculateFull(setup.calcSetup);
 
 		// check storage and DQ calculation
 		DQResult dqResult = null;

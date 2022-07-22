@@ -31,7 +31,7 @@ import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.FullResult;
 import org.openlca.util.Strings;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -118,9 +118,8 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 	@Override
 	public Image getColumnImage(Object obj, int col) {
-		if (!(obj instanceof Contribution[]) || absMax == 0)
+		if (!(obj instanceof Contribution[] row) || absMax == 0)
 			return null;
-		var row = (Contribution[]) obj;
 		if (row.length <= col || row[col] == null)
 			return null;
 		var cell = row[col];
@@ -142,9 +141,8 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 	@Override
 	public String getColumnText(Object obj, int col) {
-		if (!(obj instanceof Contribution[]))
+		if (!(obj instanceof Contribution[] row))
 			return null;
-		var row = (Contribution[]) obj;
 		if (row.length <= col || row[col] == null)
 			return null;
 		var cell = row[col];
@@ -183,7 +181,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 	 * Creates for each variant a column of cells with the contribution values
 	 * of that variant.
 	 */
-	private void updateCells(ToDoubleBiFunction<ContributionResult, TechFlow> fn) {
+	private void updateCells(ToDoubleBiFunction<FullResult, TechFlow> fn) {
 		var cells = new ArrayList<List<Contribution>>();
 		for (var variant : variants) {
 			var map = new HashMap<RootDescriptor, Double>();

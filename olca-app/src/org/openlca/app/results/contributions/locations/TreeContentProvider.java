@@ -15,11 +15,11 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.FullResult;
 
 class TreeContentProvider implements ITreeContentProvider {
 
-	private final ContributionResult result;
+	private final FullResult result;
 	private final LocationPage page;
 
 	public TreeContentProvider(LocationPage page) {
@@ -33,8 +33,7 @@ class TreeContentProvider implements ITreeContentProvider {
 			return new Object[0];
 		if (obj instanceof Object[])
 			return (Object[]) obj;
-		if (obj instanceof Collection) {
-			Collection<?> coll = (Collection<?>) obj;
+		if (obj instanceof Collection<?> coll) {
 			return coll.toArray();
 		}
 		return new Object[0];
@@ -42,19 +41,17 @@ class TreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object[] getChildren(Object obj) {
-		if (!(obj instanceof Contribution))
+		if (!(obj instanceof Contribution<?> c))
 			return null;
-		Contribution<?> c = (Contribution<?>) obj;
 
 		// calculated contributions are cached
 		if (c.childs != null && !c.childs.isEmpty())
 			return c.childs.toArray();
 
 		// leaf of the contribution tree
-		if (!(c.item instanceof Location))
+		if (!(c.item instanceof Location loc))
 			return null;
 
-		Location loc = (Location) c.item;
 		Object selection = page.getSelection();
 		Stream<Contribution<?>> stream = null;
 		if (selection instanceof FlowDescriptor) {
@@ -83,9 +80,8 @@ class TreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public boolean hasChildren(Object obj) {
-		if (!(obj instanceof Contribution))
+		if (!(obj instanceof Contribution<?> c))
 			return false;
-		Contribution<?> c = (Contribution<?>) obj;
 		if (c.childs != null && !c.childs.isEmpty())
 			return false;
 		return c.item instanceof Location;
@@ -191,9 +187,8 @@ class TreeContentProvider implements ITreeContentProvider {
 	private List<ProcessDescriptor> processes(Location loc) {
 		List<ProcessDescriptor> list = new ArrayList<>();
 		result.techIndex().each((i, product) -> {
-			if (!(product.provider() instanceof ProcessDescriptor))
+			if (!(product.provider() instanceof ProcessDescriptor process))
 				return;
-			var process = (ProcessDescriptor) product.provider();
 			if (loc == null && process.location == null) {
 				list.add(process);
 				return;

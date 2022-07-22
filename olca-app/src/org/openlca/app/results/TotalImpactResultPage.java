@@ -39,12 +39,12 @@ import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.FullResult;
 
 public class TotalImpactResultPage extends FormPage {
 
 	private final CalculationSetup setup;
-	private final ContributionResult result;
+	private final FullResult result;
 	private final DQResult dqResult;
 
 	private FormToolkit toolkit;

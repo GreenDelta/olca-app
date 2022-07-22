@@ -47,7 +47,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessGroup;
 import org.openlca.core.model.ProcessGroupSet;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.FullResult;
 import org.openlca.core.results.ProcessGrouping;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class GroupPage extends FormPage {
 
 	List<ProcessGrouping> groups;
 	ProcessGroupSet groupSet;
-	ContributionResult result;
+	FullResult result;
 
 	private TableViewer groupViewer;
 	private TableViewer processViewer;
@@ -69,14 +69,14 @@ public class GroupPage extends FormPage {
 	private Section groupingSection;
 	private final CalculationSetup setup;
 
-	public GroupPage(FormEditor editor, ContributionResult result, CalculationSetup setup) {
+	public GroupPage(FormEditor editor, FullResult result, CalculationSetup setup) {
 		super(editor, "analysis.GroupPage", M.Grouping);
 		this.result = result;
 		this.setup = setup;
 		initGroups(result);
 	}
 
-	private void initGroups(ContributionResult result) {
+	private void initGroups(FullResult result) {
 		groups = new ArrayList<>();
 		ProcessGrouping restGroup = new ProcessGrouping();
 		restGroup.name = M.Other;

@@ -55,8 +55,8 @@ import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.ContributionResult;
-import org.openlca.core.results.providers.EagerResultProvider;
+import org.openlca.core.results.FullResult;
+import org.openlca.core.results.providers.ResultProviders;
 import org.openlca.core.results.providers.SolverContext;
 import org.openlca.util.Strings;
 
@@ -65,7 +65,7 @@ class ImpactPage extends ModelPage<Process> {
 	private ImpactMethodViewer combo;
 	private Button zeroCheck;
 	private TreeViewer tree;
-	private ContributionResult result;
+	private FullResult result;
 
 	ImpactPage(ProcessEditor editor) {
 		super(editor, "ProcessImpactPage", M.ImpactAnalysis);
@@ -163,7 +163,7 @@ class ImpactPage extends ModelPage<Process> {
 		tree.setInput(cons);
 	}
 
-	private ContributionResult compute() {
+	private FullResult compute() {
 
 		var data = new MatrixData();
 
@@ -188,8 +188,8 @@ class ImpactPage extends ModelPage<Process> {
 		}
 		if (elemFlows.isEmpty()) {
 			// return an empty result if there are no elementary flows
-			var provider = EagerResultProvider.create(SolverContext.of(data));
-			return new ContributionResult(provider);
+			var provider = ResultProviders.solve(SolverContext.of(data));
+			return new FullResult(provider);
 		}
 
 		// create the flow index and B matrix / vector
@@ -227,9 +227,8 @@ class ImpactPage extends ModelPage<Process> {
 				.build().impactMatrix;
 
 		// create the result
-		var provider = EagerResultProvider.create(SolverContext.of(data));
-		var result = new ContributionResult(provider);
-		return result;
+		var provider = ResultProviders.solve(SolverContext.of(data));
+		return new FullResult(provider);
 	}
 
 	private class Content extends ArrayContentProvider

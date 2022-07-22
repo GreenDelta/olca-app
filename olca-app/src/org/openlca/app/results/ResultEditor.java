@@ -12,31 +12,26 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
-import org.openlca.core.results.ContributionResult;
 import org.openlca.core.results.FullResult;
 import org.openlca.core.results.ResultItemView;
 
-public abstract class ResultEditor<T extends ContributionResult>
-		extends FormEditor {
+public abstract class ResultEditor<T extends FullResult> extends FormEditor {
 
 	public T result;
 	public CalculationSetup setup;
 	public DQResult dqResult;
 	public ResultItemView resultItems;
 
-	public static void open(CalculationSetup setup, ContributionResult result) {
+	public static void open(CalculationSetup setup, FullResult result) {
 		open(setup, result, null);
 	}
 
 	public static void open(
-			CalculationSetup setup, ContributionResult result, DQResult dqResult) {
+			CalculationSetup setup, FullResult result, DQResult dqResult) {
 		var input = ResultEditorInput
 				.create(setup, result)
 				.with(dqResult);
-		var id = result instanceof FullResult
-				? AnalyzeEditor.ID
-				: QuickResultEditor.ID;
-		Editors.open(input, id);
+		Editors.open(input, AnalyzeEditor.ID);
 	}
 
 	@Override
@@ -76,8 +71,7 @@ public abstract class ResultEditor<T extends ContributionResult>
 			this.setupKey = setupKey;
 		}
 
-		static ResultEditorInput create(
-				CalculationSetup setup, ContributionResult result) {
+		static ResultEditorInput create(CalculationSetup setup, FullResult result) {
 			if (setup == null)
 				return null;
 			var name = Labels.name(setup.target());

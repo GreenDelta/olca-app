@@ -4,25 +4,25 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.FullResult;
 
 class TreeModel implements ITreeContentProvider {
 
 	List<ProviderItem> providers;
 	List<CategoryItem> categories;
 
-	private final ContributionResult result;
+	private final FullResult result;
 	private final Costs costs;
 	private final Object[] empty = new Object[0];
 
-	TreeModel(ContributionResult result, Costs costs) {
+	TreeModel(FullResult result, Costs costs) {
 		this.result = result;
 		this.costs = costs;
 	}
 
 	@Override
 	public Object[] getElements(Object input) {
-		if (!(input instanceof ContributionResult))
+		if (!(input instanceof FullResult))
 			return empty;
 		providers = ProviderItem.allOf(result, costs);
 		if (providers.size() < 20) {

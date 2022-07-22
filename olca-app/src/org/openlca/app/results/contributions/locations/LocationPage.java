@@ -36,7 +36,7 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.FullResult;
 import org.openlca.core.results.LocationResult;
 
 /**
@@ -45,7 +45,7 @@ import org.openlca.core.results.LocationResult;
  */
 public class LocationPage extends FormPage {
 
-	final ContributionResult result;
+	final FullResult result;
 	private final LocationResult locations;
 	private final CalculationSetup setup;
 
@@ -59,7 +59,7 @@ public class LocationPage extends FormPage {
 	double cutoff = 0.01;
 
 	public LocationPage(FormEditor editor,
-			ContributionResult result, CalculationSetup setup) {
+	                    FullResult result, CalculationSetup setup) {
 		super(editor, "analysis.MapPage", M.Locations);
 		this.setup = setup;
 		this.result = result;
@@ -139,8 +139,7 @@ public class LocationPage extends FormPage {
 			Object obj = Viewers.getFirstSelected(tree);
 			if (obj == null)
 				return;
-			if (obj instanceof Contribution) {
-				Contribution<?> c = (Contribution<?>) obj;
+			if (obj instanceof Contribution<?> c) {
 				if (c.item instanceof RootDescriptor) {
 					App.open((RootDescriptor) c.item);
 				} else if (c.item instanceof RootEntity) {
@@ -164,18 +163,15 @@ public class LocationPage extends FormPage {
 
 	private void onSelected(Object obj) {
 		label.update(obj);
-		if (obj instanceof FlowDescriptor) {
-			FlowDescriptor f = (FlowDescriptor) obj;
+		if (obj instanceof FlowDescriptor f) {
 			update(locations.getContributions(f));
 			return;
 		}
-		if (obj instanceof ImpactDescriptor) {
-			var i = (ImpactDescriptor) obj;
+		if (obj instanceof ImpactDescriptor i) {
 			update(locations.getContributions(i));
 			return;
 		}
-		if (obj instanceof CostResultDescriptor) {
-			var c = (CostResultDescriptor) obj;
+		if (obj instanceof CostResultDescriptor c) {
 			if (c.forAddedValue) {
 				update(locations.getAddedValueContributions());
 			} else {

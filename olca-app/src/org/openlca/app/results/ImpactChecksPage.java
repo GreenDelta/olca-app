@@ -31,7 +31,7 @@ import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.FullResult;
 
 /**
  * Shows flows that are not covered by the LCIA categories of the LCIA method of
@@ -39,7 +39,7 @@ import org.openlca.core.results.ContributionResult;
  */
 public class ImpactChecksPage extends FormPage {
 
-	private final ContributionResult result;
+	private final FullResult result;
 
 	private TreeViewer tree;
 

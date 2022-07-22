@@ -32,7 +32,7 @@ import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.FullResult;
 
 /**
  * Shows the inventory result with process contributions.
@@ -40,7 +40,7 @@ import org.openlca.core.results.ContributionResult;
 public class InventoryPage extends FormPage {
 
 	private final CalculationSetup setup;
-	private final ContributionResult result;
+	private final FullResult result;
 	private final DQResult dqResult;
 
 	private FormToolkit toolkit;

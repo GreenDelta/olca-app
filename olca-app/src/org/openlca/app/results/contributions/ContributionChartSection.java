@@ -20,7 +20,7 @@ import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.ContributionResult;
+import org.openlca.core.results.FullResult;
 
 /**
  * Chart section of the first page in the analysis editor. Can contain flow or
@@ -32,7 +32,7 @@ public class ContributionChartSection {
 	private String sectionTitle = "";
 	private String selectionName = "";
 
-	private final ContributionResult result;
+	private final FullResult result;
 	private AbstractViewer<?, TableComboViewer> itemViewer;
 	private ContributionChart chart;
 
