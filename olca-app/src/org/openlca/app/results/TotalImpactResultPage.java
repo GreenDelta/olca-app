@@ -39,13 +39,13 @@ import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 
 public class TotalImpactResultPage extends FormPage {
 
-	private final ResultEditor<?> editor;
+	private final ResultEditor editor;
 	private final CalculationSetup setup;
-	private final FullResult result;
+	private final LcaResult result;
 	private final DQResult dqResult;
 
 	private FormToolkit toolkit;
@@ -54,7 +54,7 @@ public class TotalImpactResultPage extends FormPage {
 
 	private boolean subgroupByProcesses = true;
 
-	public TotalImpactResultPage(ResultEditor<?> editor) {
+	public TotalImpactResultPage(ResultEditor editor) {
 		super(editor, "ImpactTreePage", M.ImpactAnalysis);
 		this.editor = editor;
 		this.result = editor.result;

@@ -26,7 +26,7 @@ public class ExcelExportAction extends Action {
 
 	@Override
 	public void run() {
-		ResultEditor<?> editor = Editors.getActive();
+		ResultEditor editor = Editors.getActive();
 		if (editor == null) {
 			log.error("unexpected error: the product system editor is not active");
 			return;
@@ -34,7 +34,7 @@ public class ExcelExportAction extends Action {
 		runExport(editor);
 	}
 
-	private void runExport(ResultEditor<?> editor) {
+	private void runExport(ResultEditor editor) {
 		String fileName = Labels.name(editor.setup.target())
 				.replaceAll("[^A-Za-z\\d]", "_") + ".xlsx";
 		var file = FileChooser.forSavingFile(M.Export, fileName);

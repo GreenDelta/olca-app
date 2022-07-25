@@ -37,7 +37,7 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 
 /**
@@ -47,7 +47,7 @@ public class ProcessResultPage extends FormPage {
 
 	private final Map<Long, ProcessDescriptor> processes = new HashMap<>();
 	private final CalculationSetup setup;
-	private final FullResult result;
+	private final LcaResult result;
 	private final ResultItemOrder items;
 	private final ResultProvider flowResult;
 	private final ResultProvider impactResult;
@@ -73,7 +73,7 @@ public class ProcessResultPage extends FormPage {
 			M.ImpactCategory, M.UpstreamInclDirect,
 			M.Direct, M.Unit};
 
-	public ProcessResultPage(ResultEditor<?> editor) {
+	public ProcessResultPage(ResultEditor editor) {
 		super(editor, ProcessResultPage.class.getName(), M.ProcessResults);
 		this.result = editor.result;
 		this.setup = editor.setup;
@@ -333,10 +333,10 @@ public class ProcessResultPage extends FormPage {
 
 	private static class ResultProvider {
 
-		private final FullResult result;
+		private final LcaResult result;
 		private RootDescriptor process;
 
-		public ResultProvider(FullResult result) {
+		public ResultProvider(LcaResult result) {
 			this.process = result.demand().techFlow().provider();
 			this.result = result;
 		}

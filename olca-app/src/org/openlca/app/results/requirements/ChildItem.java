@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.openlca.app.util.Labels;
 import org.openlca.core.matrix.index.TechFlow;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 
 class ChildItem implements Item {
 
@@ -21,7 +21,7 @@ class ChildItem implements Item {
 		this.product = product;
 	}
 
-	static List<ChildItem> allOf(ProviderItem parent, FullResult result) {
+	static List<ChildItem> allOf(ProviderItem parent, LcaResult result) {
 		if (parent == null || result == null)
 			return Collections.emptyList();
 

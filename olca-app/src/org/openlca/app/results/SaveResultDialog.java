@@ -28,19 +28,19 @@ import org.openlca.util.Results;
 
 public class SaveResultDialog extends FormDialog {
 
-	private final ResultEditor<?> editor;
+	private final ResultEditor editor;
 	private Text nameText;
 	private Button resultRadio;
 	private Button processRadio;
 	private Button metaCheck;
 
-	public static void open(ResultEditor<?> editor) {
+	public static void open(ResultEditor editor) {
 		if (editor == null)
 			return;
 		new SaveResultDialog(editor).open();
 	}
 
-	private SaveResultDialog(ResultEditor<?> editor) {
+	private SaveResultDialog(ResultEditor editor) {
 		super(UI.shell());
 		this.editor = editor;
 	}
@@ -113,11 +113,11 @@ public class SaveResultDialog extends FormDialog {
 	private static class Exec {
 
 		final String name;
-		final ResultEditor<?> editor;
+		final ResultEditor editor;
 		boolean createProcess;
 		boolean withMetaData;
 
-		Exec(String name, ResultEditor<?> editor) {
+		Exec(String name, ResultEditor editor) {
 			this.name = name;
 			this.editor = editor;
 		}

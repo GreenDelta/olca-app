@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GroupPage extends FormPage {
 
-	final ResultEditor<?> editor;
+	final ResultEditor editor;
 
 	List<ProcessGrouping> groups;
 	ProcessGroupSet groupSet;
@@ -66,7 +66,7 @@ public class GroupPage extends FormPage {
 	private GroupResultSection resultSection;
 	private Section groupingSection;
 
-	public GroupPage(ResultEditor<?> editor) {
+	public GroupPage(ResultEditor editor) {
 		super(editor, "analysis.GroupPage", M.Grouping);
 		this.editor = editor;
 		initGroups();

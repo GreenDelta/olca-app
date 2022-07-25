@@ -28,6 +28,7 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.matrix.index.EnviFlow;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
 
@@ -36,11 +37,11 @@ import org.openlca.core.results.Contribution;
  */
 public class InventoryPage extends FormPage {
 
-	private final ResultEditor<?> editor;
+	private final ResultEditor editor;
 
 	private FormToolkit toolkit;
 
-	public InventoryPage(ResultEditor<?> editor) {
+	public InventoryPage(ResultEditor editor) {
 		super(editor, "InventoryPage", M.InventoryResults);
 		this.editor = editor;
 	}
@@ -255,7 +256,7 @@ public class InventoryPage extends FormPage {
 	}
 
 	private record FlowContribution(
-			Contribution<RootDescriptor> item,
+			Contribution<TechFlow> item,
 			EnviFlow flow) {
 
 	}

@@ -7,7 +7,7 @@ import java.util.List;
 import org.openlca.app.util.Labels;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 
 class ProviderItem implements Item {
 
@@ -24,7 +24,7 @@ class ProviderItem implements Item {
 
 	}
 
-	static List<ProviderItem> allOf(FullResult result, Costs costs) {
+	static List<ProviderItem> allOf(LcaResult result, Costs costs) {
 		if (result == null || result.techIndex() == null)
 			return Collections.emptyList();
 

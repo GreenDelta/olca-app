@@ -15,11 +15,11 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 
 class TreeContentProvider implements ITreeContentProvider {
 
-	private final FullResult result;
+	private final LcaResult result;
 	private final LocationPage page;
 
 	public TreeContentProvider(LocationPage page) {

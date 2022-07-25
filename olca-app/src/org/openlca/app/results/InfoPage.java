@@ -13,9 +13,9 @@ import org.openlca.app.util.UI;
  */
 public class InfoPage extends FormPage {
 
-	private final ResultEditor<?> editor;
+	private final ResultEditor editor;
 
-	public InfoPage(ResultEditor<?> editor) {
+	public InfoPage(ResultEditor editor) {
 		super(editor, "AnalyzeInfoPage", M.GeneralInformation);
 		this.editor = editor;
 	}

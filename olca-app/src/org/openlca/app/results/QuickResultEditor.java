@@ -11,12 +11,12 @@ import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QuickResultEditor extends ResultEditor<FullResult> {
+public class QuickResultEditor extends ResultEditor {
 
 	public static String ID = "QuickResultEditor";
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -30,7 +30,7 @@ public class QuickResultEditor extends ResultEditor<FullResult> {
 			setup = Cache.getAppCache().remove(input.setupKey,
 					CalculationSetup.class);
 			result = Cache.getAppCache().remove(
-					input.resultKey, FullResult.class);
+					input.resultKey, LcaResult.class);
 			items = ResultItemOrder.of(result);
 			Sort.sort(items);
 			if (input.dqResultKey != null) {

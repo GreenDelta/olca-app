@@ -18,14 +18,14 @@ import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.app.util.Labels;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.slf4j.LoggerFactory;
 
 /**
  * View for the analysis results of a product system.
  */
-public class AnalyzeEditor extends ResultEditor<FullResult> {
+public class AnalyzeEditor extends ResultEditor {
 
 	public static final String ID = "editors.analyze";
 
@@ -37,7 +37,7 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 			throws PartInitException {
 		super.init(site, iInput);
 		var inp = (ResultEditorInput) iInput;
-		result = Cache.getAppCache().remove(inp.resultKey, FullResult.class);
+		result = Cache.getAppCache().remove(inp.resultKey, LcaResult.class);
 		if (inp.dqResultKey != null) {
 			dqResult = Cache.getAppCache().remove(inp.dqResultKey, DQResult.class);
 		}

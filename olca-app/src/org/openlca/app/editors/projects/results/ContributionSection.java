@@ -31,7 +31,7 @@ import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 import org.openlca.util.Strings;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -181,7 +181,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 	 * Creates for each variant a column of cells with the contribution values
 	 * of that variant.
 	 */
-	private void updateCells(ToDoubleBiFunction<FullResult, TechFlow> fn) {
+	private void updateCells(ToDoubleBiFunction<LcaResult, TechFlow> fn) {
 		var cells = new ArrayList<List<Contribution>>();
 		for (var variant : variants) {
 			var map = new HashMap<RootDescriptor, Double>();

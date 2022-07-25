@@ -21,20 +21,20 @@ import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.index.TechFlow;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 
 /**
  * The total requirements section that is shown on the TotalFlowResultPage.
  */
 public class TotalRequirementsSection {
 
-	private final FullResult result;
+	private final LcaResult result;
 	private final DQResult dqResult;
 	private final Costs costs;
 
 	TreeViewer tree;
 
-	public TotalRequirementsSection(FullResult result, DQResult dqResult) {
+	public TotalRequirementsSection(LcaResult result, DQResult dqResult) {
 		this.result = result;
 		costs = !result.hasCosts()
 			? Costs.NONE

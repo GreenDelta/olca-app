@@ -23,16 +23,15 @@ import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.core.results.SimpleResult;
 
 public class DQInfoSection {
 
-	private final ResultEditor<?> editor;
+	private final ResultEditor editor;
 	private final DQResult dqResult;
 	private final FormToolkit toolkit;
 
 	public DQInfoSection(Composite parent, FormToolkit toolkit,
-			ResultEditor<?> editor) {
+			ResultEditor editor) {
 		this.editor = editor;
 		this.dqResult = editor.dqResult;
 		this.toolkit = toolkit;

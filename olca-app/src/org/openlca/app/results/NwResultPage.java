@@ -25,16 +25,16 @@ import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.Contributions;
 import org.openlca.core.results.ImpactValue;
-import org.openlca.core.results.SimpleResult;
+import org.openlca.core.results.LcaResult;
 
 public class NwResultPage extends FormPage {
 
-	private final SimpleResult result;
+	private final LcaResult result;
 	private final CalculationSetup setup;
 	private Composite body;
 	private FormToolkit toolkit;
 
-	public NwResultPage(FormEditor editor, SimpleResult result, CalculationSetup setup) {
+	public NwResultPage(FormEditor editor, LcaResult result, CalculationSetup setup) {
 		super(editor, "NwResultPage", M.NormalizationWeighting);
 		this.result = result;
 		this.setup = setup;

@@ -28,11 +28,11 @@ import org.openlca.core.results.TagResult;
 
 public class TagResultPage extends FormPage {
 
-	private final ResultEditor<?> editor;
+	private final ResultEditor editor;
 	private final List<TagResult> tagResults;
 	private TableViewer table;
 
-	public TagResultPage(ResultEditor<?> editor) {
+	public TagResultPage(ResultEditor editor) {
 		super(editor, "TagResultPage", "Tags");
 		this.editor = editor;
 		this.tagResults = new ArrayList<>();

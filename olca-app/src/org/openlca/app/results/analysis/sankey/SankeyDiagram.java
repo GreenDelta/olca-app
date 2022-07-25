@@ -34,7 +34,7 @@ import org.openlca.app.results.analysis.sankey.model.SankeyEditPartFactory;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.Sankey;
 import org.openlca.util.Strings;
@@ -43,7 +43,7 @@ public class SankeyDiagram extends GraphicalEditor {
 
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 	public final DQResult dqResult;
-	public final FullResult result;
+	public final LcaResult result;
 	public final ResultItemOrder items;
 
 	public Sankey<?> sankey;
@@ -57,7 +57,7 @@ public class SankeyDiagram extends GraphicalEditor {
 	public final Map<TechFlow, ProcessNode> createdNodes = new HashMap<>();
 	private final RootEntity calculationTarget;
 
-	public SankeyDiagram(ResultEditor<FullResult> parent) {
+	public SankeyDiagram(ResultEditor parent) {
 		this.dqResult = parent.dqResult;
 		this.result = parent.result;
 		this.items = parent.items;

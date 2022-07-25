@@ -12,22 +12,22 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 
-public abstract class ResultEditor<T extends FullResult> extends FormEditor {
+public abstract class ResultEditor extends FormEditor {
 
-	public T result;
+	public LcaResult result;
 	public CalculationSetup setup;
 	public DQResult dqResult;
 	public ResultItemOrder items;
 
-	public static void open(CalculationSetup setup, FullResult result) {
+	public static void open(CalculationSetup setup, LcaResult result) {
 		open(setup, result, null);
 	}
 
 	public static void open(
-			CalculationSetup setup, FullResult result, DQResult dqResult) {
+			CalculationSetup setup, LcaResult result, DQResult dqResult) {
 		var input = ResultEditorInput
 				.create(setup, result)
 				.with(dqResult);
@@ -71,7 +71,7 @@ public abstract class ResultEditor<T extends FullResult> extends FormEditor {
 			this.setupKey = setupKey;
 		}
 
-		static ResultEditorInput create(CalculationSetup setup, FullResult result) {
+		static ResultEditorInput create(CalculationSetup setup, LcaResult result) {
 			if (setup == null)
 				return null;
 			var name = Labels.name(setup.target());

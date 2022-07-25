@@ -20,8 +20,8 @@ import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.FullResult;
 import org.openlca.core.results.IResult;
+import org.openlca.core.results.LcaResult;
 
 public class Images {
 
@@ -159,10 +159,11 @@ public class Images {
 		return null;
 	}
 
+	// TODO: remove this, we only have LcaResult now
 	public static Image get(IResult result) {
 		if (result == null)
 			return null;
-		if (result instanceof FullResult)
+		if (result instanceof LcaResult)
 			return Icon.ANALYSIS_RESULT.get();
 		return Icon.QUICK_RESULT.get();
 	}

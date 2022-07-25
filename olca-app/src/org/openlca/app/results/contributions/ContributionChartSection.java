@@ -20,7 +20,7 @@ import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 
 /**
@@ -29,7 +29,7 @@ import org.openlca.core.results.ResultItemOrder;
  */
 public class ContributionChartSection {
 
-	private final FullResult result;
+	private final LcaResult result;
 	private final ResultItemOrder items;
 	private final boolean forFlows;
 	private String sectionTitle = "";
@@ -38,21 +38,21 @@ public class ContributionChartSection {
 	private AbstractViewer<?, TableComboViewer> itemViewer;
 	private ContributionChart chart;
 
-	public static ContributionChartSection forFlows(ResultEditor<?> editor) {
+	public static ContributionChartSection forFlows(ResultEditor editor) {
 		var s = new ContributionChartSection(editor, true);
 		s.sectionTitle = M.DirectContributionsFlowResultsOverview;
 		s.selectionName = M.Flow;
 		return s;
 	}
 
-	public static ContributionChartSection forImpacts(ResultEditor<?> editor) {
+	public static ContributionChartSection forImpacts(ResultEditor editor) {
 		var s = new ContributionChartSection(editor, false);
 		s.sectionTitle = M.DirectContributionsImpactCategoryResultsOverview;
 		s.selectionName = M.ImpactCategory;
 		return s;
 	}
 
-	private ContributionChartSection(ResultEditor<?> editor, boolean forFlows) {
+	private ContributionChartSection(ResultEditor editor, boolean forFlows) {
 		this.result = editor.result;
 		this.items = editor.items;
 		this.forFlows = forFlows;

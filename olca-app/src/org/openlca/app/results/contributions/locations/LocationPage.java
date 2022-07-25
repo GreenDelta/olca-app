@@ -29,7 +29,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
-import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -44,7 +43,7 @@ import org.openlca.core.results.LocationResult;
  */
 public class LocationPage extends FormPage {
 
-	final ResultEditor<?> editor;
+	final ResultEditor editor;
 	private final LocationResult locations;
 
 	private Combo combos;

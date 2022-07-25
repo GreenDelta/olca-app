@@ -33,14 +33,14 @@ class GroupResultSection {
 	private int resultType = 0;
 
 	private final List<ProcessGrouping> groups;
-	private final ResultEditor<?> editor;
+	private final ResultEditor editor;
 
 	private ResultFlowCombo flowViewer;
 	private ImpactCategoryViewer impactViewer;
 	private GroupResultTable table;
 
 	public GroupResultSection(
-			List<ProcessGrouping> groups, ResultEditor<?> editor) {
+			List<ProcessGrouping> groups, ResultEditor editor) {
 		this.groups = groups;
 		this.editor = editor;
 	}

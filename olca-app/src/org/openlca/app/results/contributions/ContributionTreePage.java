@@ -30,14 +30,14 @@ import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
 
 public class ContributionTreePage extends FormPage {
 
-	private final FullResult result;
+	private final LcaResult result;
 	private final CalculationSetup setup;
 	private final ResultItemOrder items;
 

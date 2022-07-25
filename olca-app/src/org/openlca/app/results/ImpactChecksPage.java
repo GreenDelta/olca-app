@@ -30,7 +30,7 @@ import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.FullResult;
+import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 
 /**
@@ -39,12 +39,12 @@ import org.openlca.core.results.ResultItemOrder;
  */
 public class ImpactChecksPage extends FormPage {
 
-	private final FullResult result;
+	private final LcaResult result;
 	private final ResultItemOrder items;
 
 	private TreeViewer tree;
 
-	public ImpactChecksPage(ResultEditor<?> editor) {
+	public ImpactChecksPage(ResultEditor editor) {
 		super(editor, "ImpactChecksPage", M.LCIAChecks);
 		this.result = editor.result;
 		this.items = editor.items;

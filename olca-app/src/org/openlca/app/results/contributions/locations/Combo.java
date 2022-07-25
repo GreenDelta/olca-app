@@ -42,7 +42,7 @@ class Combo {
 	private ImpactCategoryViewer impactCombo;
 	private CostResultViewer costCombo;
 
-	public static Builder on(ResultEditor<?> editor) {
+	public static Builder on(ResultEditor editor) {
 		Combo c = new Combo();
 		c.flows = new ArrayList<>();
 		var items = editor.items;

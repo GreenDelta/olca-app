@@ -83,7 +83,7 @@ class InfoSection {
 		var resultBtn = tk.createButton(inner, "Save result as ...", SWT.NONE);
 		resultBtn.setImage(Icon.SAVE_AS.get());
 		Controls.onSelect(resultBtn, e -> {
-			ResultEditor<?> editor = Editors.getActive();
+			ResultEditor editor = Editors.getActive();
 			if (editor == null)
 				return;
 			SaveResultDialog.open(editor);
