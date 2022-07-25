@@ -15,7 +15,6 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.results.ResultEditor;
-import org.openlca.app.results.Sort;
 import org.openlca.app.results.simulation.SimulationEditor;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -140,8 +139,6 @@ public class CalculationWizard extends Wizard {
 		}
 
 		// sort and open the editor
-		log.trace("sort result items");
-		Sort.sort(result);
 		log.trace("calculation done; open editor");
 		ResultEditor.open(setup.calcSetup, result, dqResult);
 	}

@@ -31,7 +31,7 @@ import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.FullResult;
-import org.openlca.core.results.ResultItemView;
+import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
 
@@ -39,7 +39,7 @@ public class ContributionTreePage extends FormPage {
 
 	private final FullResult result;
 	private final CalculationSetup setup;
-	private final ResultItemView resultItems;
+	private final ResultItemOrder items;
 
 	private TreeViewer tree;
 	private Object selection;
@@ -49,7 +49,7 @@ public class ContributionTreePage extends FormPage {
 		super(editor, "analysis.ContributionTreePage", M.ContributionTree);
 		this.result = editor.result;
 		this.setup = editor.setup;
-		this.resultItems = editor.resultItems;
+		this.items = editor.items;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class ContributionTreePage extends FormPage {
 		Composite comp = tk.createComposite(body);
 		UI.gridLayout(comp, 2);
 		var selector = ResultItemSelector
-			.on(resultItems)
+			.on(items)
 			.withSelectionHandler(new SelectionHandler())
 			.create(comp, tk);
 		Composite treeComp = tk.createComposite(body);

@@ -39,24 +39,20 @@ import org.openlca.core.results.FullResult;
  */
 public class InventoryPage extends FormPage {
 
-	private final CalculationSetup setup;
-	private final FullResult result;
-	private final DQResult dqResult;
+	private final ResultEditor<?> editor;
 
 	private FormToolkit toolkit;
 
 	public InventoryPage(ResultEditor<?> editor) {
 		super(editor, "InventoryPage", M.InventoryResults);
-		this.result = editor.result;
-		this.setup = editor.setup;
-		this.dqResult = editor.dqResult;
+		this.editor = editor;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var form = UI.formHeader(mform,
-			Labels.name(setup.target()),
-			Images.get(result));
+				Labels.name(editor.setup.target()),
+				Images.get(editor.result));
 		toolkit = mform.getToolkit();
 		var body = UI.formBody(form, toolkit);
 		var sash = new SashForm(body, SWT.VERTICAL);
@@ -64,7 +60,8 @@ public class InventoryPage extends FormPage {
 		toolkit.adapt(sash);
 		var inputTree = createTree(sash, true);
 		var outputTree = createTree(sash, false);
-		var reqSection = new TotalRequirementsSection(result, dqResult);
+		var reqSection = new TotalRequirementsSection(
+				editor.result, editor.dqResult);
 		reqSection.create(sash, toolkit);
 		form.reflow(true);
 		fillTrees(inputTree, outputTree);
@@ -74,7 +71,7 @@ public class InventoryPage extends FormPage {
 	private void fillTrees(TreeViewer inputTree, TreeViewer outputTree) {
 		var inFlows = new ArrayList<EnviFlow>();
 		var outFlows = new ArrayList<EnviFlow>();
-		for (var flow : result.getFlows()) {
+		for (var flow : editor.items.enviFlows()) {
 			if (flow.isVirtual())
 				continue;
 			var list = flow.isInput() ? inFlows : outFlows;
@@ -88,26 +85,26 @@ public class InventoryPage extends FormPage {
 
 		// create section and cutoff combo
 		var section = UI.section(parent, toolkit,
-			forInputs ? M.Inputs : M.Outputs);
+				forInputs ? M.Inputs : M.Outputs);
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, toolkit, 1);
 		var spinner = ContributionCutoff.create(comp, toolkit);
 
 		// create the tree
 		String[] headers = new String[]{
-			M.Name, M.Category, M.SubCategory, M.Amount, M.Unit};
-		if (DQUI.displayExchangeQuality(dqResult)) {
+				M.Name, M.Category, M.SubCategory, M.Amount, M.Unit};
+		if (DQUI.displayExchangeQuality(editor.dqResult)) {
 			headers = DQUI.appendTableHeaders(
-				headers, dqResult.setup.exchangeSystem);
+					headers, editor.dqResult.setup.exchangeSystem);
 		}
 		var label = new Label();
 		var viewer = Trees.createViewer(comp, headers, label);
 		viewer.setContentProvider(new ContentProvider());
 		createColumnSorters(viewer, label);
 		double[] widths = {.4, .2, .2, .15, .05};
-		if (DQUI.displayExchangeQuality(dqResult)) {
+		if (DQUI.displayExchangeQuality(editor.dqResult)) {
 			widths = DQUI.adjustTableWidths(
-				widths, dqResult.setup.exchangeSystem);
+					widths, editor.dqResult.setup.exchangeSystem);
 		}
 		viewer.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(viewer.getTree(), DQUI.MIN_COL_WIDTH, widths);
@@ -131,8 +128,8 @@ public class InventoryPage extends FormPage {
 	private void createColumnSorters(TreeViewer viewer, Label label) {
 		Viewers.sortByLabels(viewer, label, 0, 1, 2, 4);
 		Viewers.sortByDouble(viewer, this::getAmount, 3);
-		if (DQUI.displayExchangeQuality(dqResult)) {
-			int len = dqResult.setup.exchangeSystem.indicators.size();
+		if (DQUI.displayExchangeQuality(editor.dqResult)) {
+			int len = editor.dqResult.setup.exchangeSystem.indicators.size();
 			for (int i = 0; i < len; i++) {
 				Viewers.sortByDouble(viewer, label, i + 5);
 			}
@@ -140,7 +137,7 @@ public class InventoryPage extends FormPage {
 	}
 
 	private class ContentProvider extends ArrayContentProvider
-		implements ITreeContentProvider, CutoffContentProvider {
+			implements ITreeContentProvider, CutoffContentProvider {
 
 		private double cutoff;
 
@@ -149,19 +146,20 @@ public class InventoryPage extends FormPage {
 			if (!(e instanceof EnviFlow flow))
 				return null;
 			double cutoffValue = Math.abs(getAmount(flow) * this.cutoff);
-			return result.getProcessContributions(flow).stream()
-				.filter(i -> i.amount != 0)
-				.filter(i -> Math.abs(i.amount) >= cutoffValue)
-				.sorted((i1, i2) -> -Double.compare(i1.amount, i2.amount))
-				.map(i -> new FlowContribution(i, flow))
-				.toArray();
+			return editor.result.getProcessContributions(flow)
+					.stream()
+					.filter(i -> i.amount != 0)
+					.filter(i -> Math.abs(i.amount) >= cutoffValue)
+					.sorted((i1, i2) -> -Double.compare(i1.amount, i2.amount))
+					.map(i -> new FlowContribution(i, flow))
+					.toArray();
 		}
 
 		@Override
 		public Object getParent(Object e) {
 			return e instanceof FlowContribution f
-				? f.flow
-				: null;
+					? f.flow
+					: null;
 		}
 
 		@Override
@@ -180,9 +178,9 @@ public class InventoryPage extends FormPage {
 		private final ContributionImage img = new ContributionImage();
 
 		Label() {
-			super(dqResult, dqResult != null
-				? dqResult.setup.exchangeSystem
-				: null, 5);
+			super(editor.dqResult, editor.dqResult != null
+					? editor.dqResult.setup.exchangeSystem
+					: null, 5);
 		}
 
 		@Override
@@ -243,16 +241,16 @@ public class InventoryPage extends FormPage {
 		@Override
 		protected int[] getQuality(Object obj) {
 			if (obj instanceof EnviFlow f)
-				return dqResult.get(f);
+				return editor.dqResult.get(f);
 			if (obj instanceof FlowContribution c)
-				return dqResult.get(c.item.item, c.flow);
+				return editor.dqResult.get(c.item.item, c.flow);
 			return null;
 		}
 	}
 
 	private double getAmount(Object o) {
 		if (o instanceof EnviFlow e) {
-			return result.getTotalFlowResult(e);
+			return editor.result.getTotalFlowResult(e);
 		} else if (o instanceof FlowContribution c) {
 			return c.item.amount;
 		}
@@ -260,8 +258,8 @@ public class InventoryPage extends FormPage {
 	}
 
 	private record FlowContribution(
-		Contribution<RootDescriptor> item,
-		EnviFlow flow) {
+			Contribution<RootDescriptor> item,
+			EnviFlow flow) {
 
 	}
 

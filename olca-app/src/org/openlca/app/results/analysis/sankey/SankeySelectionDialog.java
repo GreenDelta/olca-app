@@ -13,18 +13,18 @@ import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.ResultItemView;
+import org.openlca.core.results.ResultItemOrder;
 
 public class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 
-	private final ResultItemView resultItems;
+	private final ResultItemOrder items;
 	public double cutoff;
 	public int maxCount;
 	public Object selection;
 
 	public SankeySelectionDialog(SankeyDiagram editor) {
 		super(UI.shell());
-		this.resultItems = editor.resultItems;
+		this.items = editor.items;
 		this.selection = editor.selection;
 		this.cutoff = editor.cutoff;
 		this.maxCount = editor.maxCount;
@@ -36,7 +36,7 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 		var form = UI.formHeader(mform, M.SettingsForTheSankeyDiagram);
 		var body = UI.formBody(form, tk);
 		UI.gridLayout(body, 2);
-		ResultItemSelector.on(resultItems)
+		ResultItemSelector.on(items)
 				.withSelectionHandler(this)
 				.withSelection(selection)
 				.create(body, tk);
@@ -54,9 +54,7 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 		spinner.setMaximum(100000);
 		spinner.setDigits(3);
 		spinner.setSelection((int) (cutoff * 100000));
-		spinner.addModifyListener(e -> {
-			cutoff = spinner.getSelection() / 100000d;
-		});
+		spinner.addModifyListener(e -> cutoff = spinner.getSelection() / 100000d);
 		tk.adapt(spinner);
 		tk.createLabel(inner, "%");
 	}
@@ -68,12 +66,10 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 		var spinner = new Spinner(inner, SWT.BORDER);
 		spinner.setIncrement(10);
 		spinner.setMinimum(1);
-		spinner.setMaximum(resultItems.techFlows().size());
+		spinner.setMaximum(items.techFlows().size());
 		spinner.setDigits(0);
 		spinner.setSelection(maxCount);
-		spinner.addModifyListener(e -> {
-			maxCount = spinner.getSelection();
-		});
+		spinner.addModifyListener(e -> maxCount = spinner.getSelection());
 		tk.adapt(spinner);
 		tk.createLabel(inner, "");
 	}

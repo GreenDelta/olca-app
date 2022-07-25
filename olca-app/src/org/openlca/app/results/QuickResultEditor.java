@@ -12,7 +12,7 @@ import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.FullResult;
-import org.openlca.core.results.ResultItemView;
+import org.openlca.core.results.ResultItemOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +31,8 @@ public class QuickResultEditor extends ResultEditor<FullResult> {
 					CalculationSetup.class);
 			result = Cache.getAppCache().remove(
 					input.resultKey, FullResult.class);
-			resultItems = ResultItemView.of(result);
-			Sort.sort(resultItems);
+			items = ResultItemOrder.of(result);
+			Sort.sort(items);
 			if (input.dqResultKey != null) {
 				dqResult = Cache.getAppCache().remove(
 					input.dqResultKey, DQResult.class);
@@ -55,8 +55,8 @@ public class QuickResultEditor extends ResultEditor<FullResult> {
 			if (result.hasImpacts() && setup.nwSet() != null) {
 				addPage(new NwResultPage(this, result, setup));
 			}
-			addPage(new LocationPage(this, result, setup));
-			addPage(new GroupPage(this, result, setup));
+			addPage(new LocationPage(this));
+			addPage(new GroupPage(this));
 			if (result.hasImpacts()) {
 				addPage(new ImpactChecksPage(this));
 			}

@@ -19,7 +19,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.FullResult;
-import org.openlca.core.results.ResultItemView;
+import org.openlca.core.results.ResultItemOrder;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -36,15 +36,14 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 	public void init(IEditorSite site, IEditorInput iInput)
 			throws PartInitException {
 		super.init(site, iInput);
-		ResultEditorInput inp = (ResultEditorInput) iInput;
+		var inp = (ResultEditorInput) iInput;
 		result = Cache.getAppCache().remove(inp.resultKey, FullResult.class);
 		if (inp.dqResultKey != null) {
-			dqResult = Cache.getAppCache().remove(
-					inp.dqResultKey, DQResult.class);
+			dqResult = Cache.getAppCache().remove(inp.dqResultKey, DQResult.class);
 		}
 		setup = Cache.getAppCache().remove(inp.setupKey, CalculationSetup.class);
-		resultItems = ResultItemView.of(result);
-		Sort.sort(resultItems);
+		items = ResultItemOrder.of(result);
+		Sort.sort(items);
 		String name = M.AnalysisResultOf + " " + Labels.name(setup.target());
 		setPartName(name);
 	}
@@ -58,10 +57,10 @@ public class AnalyzeEditor extends ResultEditor<FullResult> {
 				addPage(new TotalImpactResultPage(this));
 			if (result.hasImpacts() && setup.nwSet() != null)
 				addPage(new NwResultPage(this, result, setup));
-			addPage(new ProcessResultPage(this, result, setup));
+			addPage(new ProcessResultPage(this));
 			addPage(new ContributionTreePage(this));
-			addPage(new GroupPage(this, result, setup));
-			addPage(new LocationPage(this, result, setup));
+			addPage(new GroupPage(this));
+			addPage(new LocationPage(this));
 			diagram = new SankeyDiagram(this);
 			diagramIndex = addPage(diagram, getEditorInput());
 			setPageText(diagramIndex, M.SankeyDiagram);

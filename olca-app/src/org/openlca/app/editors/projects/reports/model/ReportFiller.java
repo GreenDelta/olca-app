@@ -10,7 +10,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ProjectResult;
-import org.openlca.core.results.ResultItemView;
+import org.openlca.core.results.ResultItemOrder;
 import org.openlca.util.Strings;
 
 class ReportFiller {
@@ -19,7 +19,7 @@ class ReportFiller {
   private final IDatabase db;
   private final Project project;
   private final ProjectResult result;
-  private final ResultItemView items;
+  private final ResultItemOrder items;
 
   private ReportFiller(ProjectResultData data) {
     this.data = data;

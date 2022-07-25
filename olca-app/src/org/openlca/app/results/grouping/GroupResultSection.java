@@ -12,6 +12,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ResultFlowCombo;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.contributions.ContributionChart;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -22,7 +23,6 @@ import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.Contributions;
-import org.openlca.core.results.FullResult;
 import org.openlca.core.results.GroupingContribution;
 import org.openlca.core.results.ProcessGrouping;
 
@@ -33,16 +33,16 @@ class GroupResultSection {
 	private int resultType = 0;
 
 	private final List<ProcessGrouping> groups;
-	private final FullResult result;
+	private final ResultEditor<?> editor;
 
 	private ResultFlowCombo flowViewer;
 	private ImpactCategoryViewer impactViewer;
 	private GroupResultTable table;
 
 	public GroupResultSection(
-			List<ProcessGrouping> groups, FullResult result) {
+			List<ProcessGrouping> groups, ResultEditor<?> editor) {
 		this.groups = groups;
-		this.result = result;
+		this.editor = editor;
 	}
 
 	public void update() {
@@ -69,7 +69,7 @@ class GroupResultSection {
 	}
 
 	private List<Contribution<ProcessGrouping>> calculate(Object o) {
-		GroupingContribution calc = new GroupingContribution(result, groups);
+		var calc = new GroupingContribution(editor.result, groups);
 		if (o instanceof EnviFlow)
 			return calc.calculate((EnviFlow) o);
 		if (o instanceof ImpactDescriptor)
@@ -99,7 +99,7 @@ class GroupResultSection {
 		UI.gridData(composite, true, false);
 		UI.gridLayout(composite, 2);
 		createFlowViewer(toolkit, composite);
-		if (result.hasImpacts())
+		if (editor.result.hasImpacts())
 			createImpact(toolkit, composite);
 	}
 
@@ -107,7 +107,7 @@ class GroupResultSection {
 		Button flowsCheck = toolkit.createButton(parent, M.Flows, SWT.RADIO);
 		flowsCheck.setSelection(true);
 		flowViewer = new ResultFlowCombo(parent);
-		var flows = result.getFlows();
+		var flows = editor.items.enviFlows();
 		flowViewer.setInput(flows);
 		flowViewer.addSelectionChangedListener(e -> update());
 		if (flows.size() > 0) {
@@ -120,7 +120,7 @@ class GroupResultSection {
 		Button impactCheck = toolkit.createButton(parent, M.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(parent);
 		impactViewer.setEnabled(false);
-		List<ImpactDescriptor> impacts = result.getImpacts();
+		var impacts = editor.items.impacts();
 		impactViewer.setInput(impacts);
 		impactViewer.addSelectionChangedListener((e) -> update());
 		if (impacts.size() > 0) {

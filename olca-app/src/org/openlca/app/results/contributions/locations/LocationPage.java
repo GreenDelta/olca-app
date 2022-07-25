@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -21,6 +20,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.CostResultDescriptor;
@@ -36,7 +36,6 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.FullResult;
 import org.openlca.core.results.LocationResult;
 
 /**
@@ -45,9 +44,8 @@ import org.openlca.core.results.LocationResult;
  */
 public class LocationPage extends FormPage {
 
-	final FullResult result;
+	final ResultEditor<?> editor;
 	private final LocationResult locations;
-	private final CalculationSetup setup;
 
 	private Combo combos;
 	private TreeViewer tree;
@@ -58,12 +56,10 @@ public class LocationPage extends FormPage {
 	boolean skipZeros = true;
 	double cutoff = 0.01;
 
-	public LocationPage(FormEditor editor,
-	                    FullResult result, CalculationSetup setup) {
+	public LocationPage(ResultEditor editor) {
 		super(editor, "analysis.MapPage", M.Locations);
-		this.setup = setup;
-		this.result = result;
-		this.locations = new LocationResult(result, Database.get());
+		this.editor = editor;
+		this.locations = new LocationResult(editor.result, Database.get());
 	}
 
 	public Object getSelection() {
@@ -73,8 +69,8 @@ public class LocationPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-				Labels.name(setup.target()),
-				Images.get(result));
+				Labels.name(editor.setup.target()),
+				Images.get(editor.result));
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		createCombos(body, tk);
@@ -93,10 +89,12 @@ public class LocationPage extends FormPage {
 		UI.gridLayout(outer, 2, 5, 0);
 		Composite comboComp = tk.createComposite(outer);
 		UI.gridLayout(comboComp, 2);
-		combos = Combo.on(result)
+		combos = Combo.on(editor)
 				.onSelected(this::onSelected)
-				.withSelection(result.getFlows().iterator().next())
 				.create(comboComp, tk);
+		if (editor.items.enviFlows().size() > 0) {
+			combos.selectWithEvent(editor.items.enviFlows().get(0));
+		}
 
 		Composite cutoffComp = tk.createComposite(outer);
 		UI.gridLayout(cutoffComp, 1, 0, 0);

@@ -15,13 +15,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
@@ -38,6 +38,7 @@ import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.FullResult;
+import org.openlca.core.results.ResultItemOrder;
 
 /**
  * Shows the single and upstream results of the processes in an analysis result.
@@ -47,6 +48,7 @@ public class ProcessResultPage extends FormPage {
 	private final Map<Long, ProcessDescriptor> processes = new HashMap<>();
 	private final CalculationSetup setup;
 	private final FullResult result;
+	private final ResultItemOrder items;
 	private final ResultProvider flowResult;
 	private final ResultProvider impactResult;
 	private final ContributionImage image = new ContributionImage();
@@ -63,22 +65,22 @@ public class ProcessResultPage extends FormPage {
 	private double impactCutOff = 0.01;
 
 	private final static String[] EXCHANGE_COLUMN_LABELS = {
-		M.Contribution,
-		M.Flow, M.UpstreamInclDirect, M.Direct,
-		M.Unit};
+			M.Contribution,
+			M.Flow, M.UpstreamInclDirect, M.Direct,
+			M.Unit};
 	private final static String[] IMPACT_COLUMN_LABELS = {
-		M.Contribution,
-		M.ImpactCategory, M.UpstreamInclDirect,
-		M.Direct, M.Unit};
+			M.Contribution,
+			M.ImpactCategory, M.UpstreamInclDirect,
+			M.Direct, M.Unit};
 
-	public ProcessResultPage(FormEditor editor,
-													 FullResult result, CalculationSetup setup) {
+	public ProcessResultPage(ResultEditor<?> editor) {
 		super(editor, ProcessResultPage.class.getName(), M.ProcessResults);
-		this.result = result;
-		this.setup = setup;
-		for (var desc : result.getProcesses()) {
-			if (desc instanceof ProcessDescriptor) {
-				processes.put(desc.id, (ProcessDescriptor) desc);
+		this.result = editor.result;
+		this.setup = editor.setup;
+		this.items = editor.items;
+		for (var desc : items.processes()) {
+			if (desc instanceof ProcessDescriptor p) {
+				processes.put(desc.id, p);
 			}
 		}
 		this.flowResult = new ResultProvider(result);
@@ -95,8 +97,8 @@ public class ProcessResultPage extends FormPage {
 	protected void createFormContent(IManagedForm mForm) {
 		toolkit = mForm.getToolkit();
 		var form = UI.formHeader(mForm,
-			Labels.name(setup.target()),
-			Images.get(result));
+				Labels.name(setup.target()),
+				Images.get(result));
 		var body = UI.formBody(form, toolkit);
 		if (result.hasEnviFlows()) {
 			createFlowSection(body);
@@ -116,14 +118,14 @@ public class ProcessResultPage extends FormPage {
 		flowProcessViewer.select(p);
 		if (result.hasImpacts()) {
 			impactProcessCombo.select(p);
-			impactTable.setInput(result.getImpacts());
+			impactTable.setInput(items.impacts());
 		}
 	}
 
 	private void fillFlows(TableViewer table) {
 		boolean input = table == inputTable;
 		var list = new ArrayList<EnviFlow>();
-		for (var f : result.getFlows()) {
+		for (var f : items.enviFlows()) {
 			if (!f.isVirtual() && f.isInput() == input) {
 				list.add(f);
 			}
@@ -133,7 +135,7 @@ public class ProcessResultPage extends FormPage {
 
 	private void createFlowSection(Composite parent) {
 		var section = UI.section(parent, toolkit,
-			M.FlowContributionsToProcessResults);
+				M.FlowContributionsToProcessResults);
 		UI.gridData(section, true, true);
 		Composite comp = toolkit.createComposite(section);
 		section.setClient(comp);
@@ -187,7 +189,7 @@ public class ProcessResultPage extends FormPage {
 
 	private void createImpactSection(Composite parent) {
 		Section section = UI.section(parent, toolkit,
-			M.ImpactAssessmentResults);
+				M.ImpactAssessmentResults);
 		UI.gridData(section, true, true);
 		Composite composite = toolkit.createComposite(section);
 		section.setClient(composite);
@@ -250,7 +252,7 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	private class FlowLabel extends BaseLabelProvider implements
-		ITableLabelProvider {
+			ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object o, int col) {
@@ -279,13 +281,13 @@ public class ProcessResultPage extends FormPage {
 				return "";
 			String name = flow.name;
 			return flow.category != null
-				? name + " (" + Labels.getShortCategory(flow) + ")"
-				: name;
+					? name + " (" + Labels.getShortCategory(flow) + ")"
+					: name;
 		}
 	}
 
 	private class ImpactLabel extends BaseLabelProvider implements
-		ITableLabelProvider {
+			ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object o, int col) {
@@ -323,8 +325,8 @@ public class ProcessResultPage extends FormPage {
 			if (cutoff == 0)
 				return true;
 			double c = forFlow
-				? flowResult.getUpstreamContribution((EnviFlow) o)
-				: impactResult.getUpstreamContribution((ImpactDescriptor) o);
+					? flowResult.getUpstreamContribution((EnviFlow) o)
+					: impactResult.getUpstreamContribution((ImpactDescriptor) o);
 			return c * 100 > cutoff;
 		}
 	}

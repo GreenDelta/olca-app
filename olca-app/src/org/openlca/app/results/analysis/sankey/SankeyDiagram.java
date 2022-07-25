@@ -35,7 +35,7 @@ import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.results.FullResult;
-import org.openlca.core.results.ResultItemView;
+import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.Sankey;
 import org.openlca.util.Strings;
 
@@ -44,7 +44,7 @@ public class SankeyDiagram extends GraphicalEditor {
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 	public final DQResult dqResult;
 	public final FullResult result;
-	public final ResultItemView resultItems;
+	public final ResultItemOrder items;
 
 	public Sankey<?> sankey;
 	public ProductSystemNode node;
@@ -60,7 +60,7 @@ public class SankeyDiagram extends GraphicalEditor {
 	public SankeyDiagram(ResultEditor<FullResult> parent) {
 		this.dqResult = parent.dqResult;
 		this.result = parent.result;
-		this.resultItems = parent.resultItems;
+		this.items = parent.items;
 		calculationTarget = parent.setup.target();
 		setEditDomain(new DefaultEditDomain(this));
 		if (calculationTarget != null) {
@@ -143,13 +143,13 @@ public class SankeyDiagram extends GraphicalEditor {
 			return;
 		Object initial = null;
 		if (result.hasImpacts()) {
-			initial = result.getImpacts()
+			initial = items.impacts()
 					.stream()
 					.min((i1, i2) -> Strings.compare(i1.name, i2.name))
 					.orElse(null);
 		}
 		if (initial == null) {
-			initial = result.getFlows()
+			initial = items.enviFlows()
 					.stream()
 					.min((f1, f2) -> {
 						if (f1.flow() == null || f2.flow() == null)

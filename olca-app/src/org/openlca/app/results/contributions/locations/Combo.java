@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
@@ -19,8 +20,6 @@ import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.IResult;
-import org.openlca.core.results.SimpleResult;
 
 import gnu.trove.set.hash.TLongHashSet;
 
@@ -43,11 +42,12 @@ class Combo {
 	private ImpactCategoryViewer impactCombo;
 	private CostResultViewer costCombo;
 
-	public static Builder on(IResult r) {
+	public static Builder on(ResultEditor<?> editor) {
 		Combo c = new Combo();
 		c.flows = new ArrayList<>();
-		TLongHashSet flowIDs = new TLongHashSet();
-		for (var f : r.getFlows()) {
+		var items = editor.items;
+		var flowIDs = new TLongHashSet();
+		for (var f : items.enviFlows()) {
 			if (f.flow() == null || flowIDs.contains(f.flow().id))
 				continue;
 			flowIDs.add(f.flow().id);
@@ -55,20 +55,19 @@ class Combo {
 		}
 
 		// add LCIA categories
-		if (r.hasImpacts()) {
-			c.impacts = r.getImpacts();
+		if (items.hasImpacts()) {
+			c.impacts = items.impacts();
 		}
 
 		// add cost / added value selection
-		if (r.hasCosts() && (r instanceof SimpleResult)) {
-			SimpleResult sr = (SimpleResult) r;
-			CostResultDescriptor d1 = new CostResultDescriptor();
+		if (editor.result.hasCosts()) {
+			var d1 = new CostResultDescriptor();
 			d1.forAddedValue = false;
 			d1.name = M.Netcosts;
-			CostResultDescriptor d2 = new CostResultDescriptor();
+			var d2 = new CostResultDescriptor();
 			d2.forAddedValue = true;
 			d2.name = M.AddedValue;
-			c.costs = sr.totalCosts() >= 0
+			c.costs = editor.result.totalCosts() >= 0
 					? Arrays.asList(d1, d2)
 					: Arrays.asList(d2, d1);
 		}
@@ -109,46 +108,13 @@ class Combo {
 		}
 	}
 
-	/**
-	 * Selects the first element (LCIA category, flow, costs) and activates the
-	 * corresponding combo box.
-	 */
-	public void initWithEvent() {
-
-		if (impacts != null) {
-			ImpactDescriptor impact = impacts.stream()
-					.findFirst().orElse(null);
-			if (impact != null) {
-				selectWithEvent(impact);
-				return;
-			}
-		}
-
-		if (flows != null) {
-			FlowDescriptor flow = flows.stream()
-					.findFirst().orElse(null);
-			if (flow != null) {
-				selectWithEvent(flow);
-				return;
-			}
-		}
-
-		if (costs != null && !costs.isEmpty()) {
-			selectWithEvent(costs.iterator().hasNext());
-		}
-	}
-
 	public Object getSelection() {
-		switch (selectedType) {
-		case FLOW:
-			return flowCombo.getSelected();
-		case IMPACT_CATEGORY:
-			return impactCombo.getSelected();
-		case CURRENCY:
-			return costCombo.getSelected();
-		default:
-			return null;
-		}
+		return switch (selectedType) {
+			case FLOW -> flowCombo.getSelected();
+			case IMPACT_CATEGORY -> impactCombo.getSelected();
+			case CURRENCY -> costCombo.getSelected();
+			default -> null;
+		};
 	}
 
 	private void render(Composite comp, FormToolkit tk) {
@@ -266,7 +232,7 @@ class Combo {
 	 */
 	public static class Builder {
 
-		private Combo selection;
+		private final Combo selection;
 
 		private Builder(Combo selection) {
 			this.selection = selection;

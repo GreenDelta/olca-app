@@ -131,7 +131,7 @@ public class ContributionChart {
 	}
 
 	private void createBar(String id, double val, Color color, int width) {
-		IBarSeries bars = (IBarSeries) chart.getSeriesSet()
+		var bars = (IBarSeries<?>) chart.getSeriesSet()
 				.createSeries(SeriesType.BAR, id);
 		bars.setYSeries(new double[] { val });
 		bars.setBarColor(color);

@@ -16,7 +16,7 @@ import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.ResultItemView;
+import org.openlca.core.results.ResultItemOrder;
 
 /**
  * Multiple combo boxes that allow to switch between different result types
@@ -45,9 +45,9 @@ public class ResultItemSelector {
 	private ResultItemSelector(Builder builder) {
 		initialSelection = builder.initialSelection;
 		eventHandler = builder.eventHandler;
-		var resultItems = builder.resultItems;
+		var resultItems = builder.items;
 
-		var result = builder.resultItems;
+		var result = builder.items;
 		this.flows = resultItems.hasEnviFlows()
 			? result.enviFlows()
 			: null;
@@ -69,8 +69,8 @@ public class ResultItemSelector {
 		}
 	}
 
-	public static Builder on(ResultItemView resultItems) {
-		return new Builder(resultItems);
+	public static Builder on(ResultItemOrder items) {
+		return new Builder(items);
 	}
 
 	public void selectWithEvent(Object o) {
@@ -224,17 +224,12 @@ public class ResultItemSelector {
 		if (eventHandler == null || selectedType == null)
 			return;
 		switch (selectedType) {
-			case FLOW:
-				eventHandler.onFlowSelected(flowCombo.getSelected());
-				break;
-			case IMPACT_CATEGORY:
+			case FLOW -> eventHandler.onFlowSelected(flowCombo.getSelected());
+			case IMPACT_CATEGORY ->
 				eventHandler.onImpactSelected(impactCombo.getSelected());
-				break;
-			case CURRENCY:
-				eventHandler.onCostsSelected(costCombo.getSelected());
-				break;
-			default:
-				break;
+			case CURRENCY -> eventHandler.onCostsSelected(costCombo.getSelected());
+			default -> {
+			}
 		}
 	}
 
@@ -261,12 +256,12 @@ public class ResultItemSelector {
 
 	public static class Builder {
 
-		private final ResultItemView resultItems;
+		private final ResultItemOrder items;
 		private Object initialSelection;
 		private SelectionHandler eventHandler;
 
-		private Builder(ResultItemView indexView) {
-			this.resultItems = indexView;
+		private Builder(ResultItemOrder indexView) {
+			this.items = indexView;
 		}
 
 		public Builder withSelection(Object object) {

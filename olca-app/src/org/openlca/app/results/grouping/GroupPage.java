@@ -25,15 +25,14 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
@@ -42,12 +41,10 @@ import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.database.ProcessGroupSetDao;
-import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessGroup;
 import org.openlca.core.model.ProcessGroupSet;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.FullResult;
 import org.openlca.core.results.ProcessGrouping;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -58,39 +55,38 @@ import org.slf4j.LoggerFactory;
  */
 public class GroupPage extends FormPage {
 
+	final ResultEditor<?> editor;
+
 	List<ProcessGrouping> groups;
 	ProcessGroupSet groupSet;
-	FullResult result;
 
 	private TableViewer groupViewer;
 	private TableViewer processViewer;
 	private Menu groupMoveMenu;
 	private GroupResultSection resultSection;
 	private Section groupingSection;
-	private final CalculationSetup setup;
 
-	public GroupPage(FormEditor editor, FullResult result, CalculationSetup setup) {
+	public GroupPage(ResultEditor<?> editor) {
 		super(editor, "analysis.GroupPage", M.Grouping);
-		this.result = result;
-		this.setup = setup;
-		initGroups(result);
+		this.editor = editor;
+		initGroups();
 	}
 
-	private void initGroups(FullResult result) {
+	private void initGroups() {
 		groups = new ArrayList<>();
 		ProcessGrouping restGroup = new ProcessGrouping();
 		restGroup.name = M.Other;
 		restGroup.rest = true;
-		restGroup.processes.addAll(result.getProcesses());
+		restGroup.processes.addAll(editor.items.processes());
 		groups.add(restGroup);
 	}
 
 	public void applyGrouping(ProcessGroupSet groupSet) {
-		if (groupSet == null || result == null)
+		if (groupSet == null || editor.result == null)
 			return;
 		this.groupSet = groupSet;
 		List<ProcessGrouping> newGroups = ProcessGrouping.applyOn(
-				result.getProcesses(), groupSet, M.Other);
+				editor.items.processes(), groupSet, M.Other);
 		groups.clear();
 		groups.addAll(newGroups);
 		updateViewers();
@@ -120,13 +116,13 @@ public class GroupPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform,
-				Labels.name(setup.target()),
-				Images.get(result));
-		FormToolkit toolkit = mform.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
+		var form = UI.formHeader(mform,
+				Labels.name(editor.setup.target()),
+				Images.get(editor.result));
+		var toolkit = mform.getToolkit();
+		var body = UI.formBody(form, toolkit);
 		createGroupingSection(toolkit, body);
-		resultSection = new GroupResultSection(groups, result);
+		resultSection = new GroupResultSection(groups, editor);
 		resultSection.render(body, toolkit);
 		form.reflow(true);
 	}

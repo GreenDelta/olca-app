@@ -17,10 +17,11 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.matrix.index.EnviFlow;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.FullResult;
+import org.openlca.core.results.ResultItemOrder;
 
 /**
  * Chart section of the first page in the analysis editor. Can contain flow or
@@ -28,23 +29,24 @@ import org.openlca.core.results.FullResult;
  */
 public class ContributionChartSection {
 
+	private final FullResult result;
+	private final ResultItemOrder items;
 	private final boolean forFlows;
 	private String sectionTitle = "";
 	private String selectionName = "";
 
-	private final FullResult result;
 	private AbstractViewer<?, TableComboViewer> itemViewer;
 	private ContributionChart chart;
 
 	public static ContributionChartSection forFlows(ResultEditor<?> editor) {
-		ContributionChartSection s = new ContributionChartSection(editor, true);
+		var s = new ContributionChartSection(editor, true);
 		s.sectionTitle = M.DirectContributionsFlowResultsOverview;
 		s.selectionName = M.Flow;
 		return s;
 	}
 
 	public static ContributionChartSection forImpacts(ResultEditor<?> editor) {
-		ContributionChartSection s = new ContributionChartSection(editor, false);
+		var s = new ContributionChartSection(editor, false);
 		s.sectionTitle = M.DirectContributionsImpactCategoryResultsOverview;
 		s.selectionName = M.ImpactCategory;
 		return s;
@@ -52,6 +54,7 @@ public class ContributionChartSection {
 
 	private ContributionChartSection(ResultEditor<?> editor, boolean forFlows) {
 		this.result = editor.result;
+		this.items = editor.items;
 		this.forFlows = forFlows;
 	}
 
@@ -70,12 +73,12 @@ public class ContributionChartSection {
 	private void createCombo(FormToolkit tk, Composite comp) {
 		tk.createLabel(comp, selectionName);
 		if (forFlows) {
-			ResultFlowCombo combo = new ResultFlowCombo(comp);
-			combo.setInput(result.getFlows());
+			var combo = new ResultFlowCombo(comp);
+			combo.setInput(items.enviFlows());
 			this.itemViewer = combo;
 		} else {
-			ImpactCategoryViewer combo = new ImpactCategoryViewer(comp);
-			combo.setInput(result.getImpacts());
+			var combo = new ImpactCategoryViewer(comp);
+			combo.setInput(items.impacts());
 			this.itemViewer = combo;
 		}
 		itemViewer.addSelectionChangedListener(_e -> refresh());
@@ -87,13 +90,11 @@ public class ContributionChartSection {
 			return;
 		Object e = itemViewer.getSelected();
 		String unit = null;
-		List<Contribution<RootDescriptor>> cons = null;
-		if (e instanceof EnviFlow) {
-			var flow = (EnviFlow) e;
+		List<Contribution<TechFlow>> cons = null;
+		if (e instanceof EnviFlow flow) {
 			unit = Labels.refUnit(flow);
 			cons = result.getProcessContributions(flow);
-		} else if (e instanceof ImpactDescriptor) {
-			var impact = (ImpactDescriptor) e;
+		} else if (e instanceof ImpactDescriptor impact) {
 			unit = impact.referenceUnit;
 			cons = result.getProcessContributions(impact);
 		}

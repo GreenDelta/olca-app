@@ -236,23 +236,21 @@ class ImpactPage extends ModelPage<Process> {
 
 		@Override
 		public Object[] getChildren(Object obj) {
-			if (!(obj instanceof Contribution))
+			if (!(obj instanceof Contribution<?> c))
 				return null;
-			Contribution<?> c = (Contribution<?>) obj;
 			if (c.childs != null)
 				return c.childs.toArray();
-			if (!(c.item instanceof ImpactDescriptor))
+			if (!(c.item instanceof ImpactDescriptor impact))
 				return null;
 
-			var impact = (ImpactDescriptor) c.item;
 			double total = result.getTotalImpactResult(impact);
 			boolean withoutZeros = zeroCheck.getSelection();
 			List<Contribution<?>> childs = new ArrayList<>();
-			for (var flow : result.getFlows()) {
+			for (var flow : result.enviIndex()) {
 				double value = result.getDirectFlowImpact(flow, impact);
 				if (value == 0 && withoutZeros)
 					continue;
-				Contribution<?> child = Contribution.of(flow, value);
+				var child = Contribution.of(flow, value);
 				child.computeShare(total);
 				child.unit = impact.referenceUnit;
 				childs.add(child);
@@ -271,12 +269,9 @@ class ImpactPage extends ModelPage<Process> {
 
 		@Override
 		public boolean hasChildren(Object elem) {
-			if (!(elem instanceof Contribution))
+			if (!(elem instanceof Contribution<?> c))
 				return false;
-			Contribution<?> c = (Contribution<?>) elem;
-			if (c.childs != null)
-				return true;
-			return c.item instanceof ImpactDescriptor;
+			return c.childs != null || c.item instanceof ImpactDescriptor;
 		}
 	}
 
@@ -293,9 +288,8 @@ class ImpactPage extends ModelPage<Process> {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof Contribution))
+			if (!(obj instanceof Contribution<?> c))
 				return null;
-			Contribution<?> c = (Contribution<?>) obj;
 			if (col == 0) {
 				return c.item instanceof ImpactDescriptor
 						? Images.get(ModelType.IMPACT_CATEGORY)
@@ -308,9 +302,8 @@ class ImpactPage extends ModelPage<Process> {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Contribution))
+			if (!(obj instanceof Contribution<?> c))
 				return null;
-			Contribution<?> c = (Contribution<?>) obj;
 			switch (col) {
 			case 0:
 				if (c.item instanceof EnviFlow)
@@ -323,9 +316,8 @@ class ImpactPage extends ModelPage<Process> {
 					return Labels.category((EnviFlow) c.item);
 				return null;
 			case 2:
-				if (!(c.item instanceof EnviFlow))
+				if (!(c.item instanceof EnviFlow iFlow))
 					return null;
-				EnviFlow iFlow = (EnviFlow) c.item;
 				double a = result.getTotalFlowResult(iFlow);
 				return Numbers.format(a) + " " + Labels.refUnit(iFlow);
 			case 3:

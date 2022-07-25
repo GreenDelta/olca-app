@@ -52,7 +52,7 @@ public class TagResultPage extends FormPage {
 		UI.gridLayout(comp, 1);
 
 		var selector = ResultItemSelector
-			.on(editor.resultItems)
+			.on(editor.items)
 			.withSelectionHandler(new SelectionHandler())
 			.create(comp, tk);
 

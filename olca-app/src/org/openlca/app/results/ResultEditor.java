@@ -13,14 +13,14 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.FullResult;
-import org.openlca.core.results.ResultItemView;
+import org.openlca.core.results.ResultItemOrder;
 
 public abstract class ResultEditor<T extends FullResult> extends FormEditor {
 
 	public T result;
 	public CalculationSetup setup;
 	public DQResult dqResult;
-	public ResultItemView resultItems;
+	public ResultItemOrder items;
 
 	public static void open(CalculationSetup setup, FullResult result) {
 		open(setup, result, null);

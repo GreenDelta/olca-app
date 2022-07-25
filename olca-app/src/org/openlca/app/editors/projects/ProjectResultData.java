@@ -7,7 +7,7 @@ import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.results.ProjectResult;
-import org.openlca.core.results.ResultItemView;
+import org.openlca.core.results.ResultItemOrder;
 import org.openlca.util.Strings;
 
 public class ProjectResultData {
@@ -17,7 +17,7 @@ public class ProjectResultData {
 	private final ProjectResult result;
 	private final Report report;
 	private final ProjectVariant[] variants;
-	private final ResultItemView items;
+	private final ResultItemOrder items;
 	private final NwSetTable nwFactors;
 
 	private ProjectResultData(
@@ -30,7 +30,7 @@ public class ProjectResultData {
 			.stream()
 			.sorted((v1, v2) -> Strings.compare(v1.name, v2.name))
 			.toArray(ProjectVariant[]::new);
-		this.items = ResultItemView.of(result);
+		this.items = ResultItemOrder.of(result);
 		Sort.sort(this.items);
 		var nwFactors = project.nwSet != null
 			? NwSetTable.of(db, project.nwSet)
@@ -69,7 +69,7 @@ public class ProjectResultData {
 		return variants;
 	}
 
-	public ResultItemView items() {
+	public ResultItemOrder items() {
 		return items;
 	}
 
