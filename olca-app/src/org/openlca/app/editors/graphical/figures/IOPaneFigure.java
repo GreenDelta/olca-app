@@ -10,6 +10,7 @@ import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.editors.graphical.themes.Theme;
 
 import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredAmountLabelSize;
+import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredUnitLabelSize;
 import static org.openlca.app.editors.graphical.model.GraphComponent.INPUT_PROP;
 
 public class IOPaneFigure extends Figure {
@@ -101,7 +102,7 @@ public class IOPaneFigure extends Figure {
 	public Dimension getUnitLabelSize() {
 		if (unitLabelSize == null) {
 			for (ExchangeItem item : pane.getExchangesItems()) {
-				var preferredSize = getPreferredAmountLabelSize(item);
+				var preferredSize = getPreferredUnitLabelSize(item);
 				setUnitLabelSize(preferredSize, false);
 			}
 		}

@@ -31,8 +31,11 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
+
+import java.util.Objects;
 
 import static org.openlca.app.editors.graphical.model.GraphComponent.INPUT_PROP;
 import static org.openlca.app.editors.graphical.model.GraphComponent.OUTPUT_PROP;
@@ -100,8 +103,17 @@ public class AddExchangeCommand extends Command {
 		if (flow.flowType == FlowType.ELEMENTARY_FLOW)
 			editor.config.setShowElementaryFlows(true);
 
+		// It is necessary to create an ExchangeItem with the updated exchange.
+		var updatedProcess = db.get(Process.class, node.descriptor.id);
+		var updatedExchange = updatedProcess.exchanges.stream()
+			.filter(e -> e.internalId == exchange.internalId)
+			.findFirst()
+			.orElse(null);
 		var ioPane = forInput ? node.getInputIOPane() : node.getOutputIOPane();
-		ioPane.addChild(new ExchangeItem(editor, exchange));
+		if (updatedExchange != null)
+			ioPane.addChild(new ExchangeItem(editor, updatedExchange));
+
+		editor.setDirty();
 	}
 
 	class Dialog extends FormDialog {

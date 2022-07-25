@@ -32,9 +32,6 @@ public class SetReferenceCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		System.out.println("child.conBeRef: " + child.canBeReferenceFlow());
-		System.out.println("!child.isRefFlow(): " + !child.isRefFlow());
-
 		return child.canBeReferenceFlow()
 			&& !child.isRefFlow()
 			&& node != null
@@ -58,6 +55,7 @@ public class SetReferenceCommand extends Command {
 			return;
 
 		update(child, oldRefExchange);
+		child.editor.setDirty();
 	}
 
 	@Override
@@ -70,11 +68,15 @@ public class SetReferenceCommand extends Command {
 		var oldRefExchangeItem = node.getExchangeItem(oldRefExchange);
 		var oldExchange = getExchange(process, oldRefExchangeItem);
 		update(oldRefExchangeItem, oldExchange);
+
+		child.editor.setDirty();
 	}
 
 	private void update(ExchangeItem newRefExchangeItem, Exchange oldRefExchange) {
 		var process = db.get(Process.class, node.descriptor.id);
 		var newRefExchange = getExchange(process, newRefExchangeItem);
+		if (newRefExchange == null)
+			return;
 		process.quantitativeReference = newRefExchange;
 		db.update(process);
 
@@ -93,7 +95,7 @@ public class SetReferenceCommand extends Command {
 		if (process == null)
 			return null;
 		return process.exchanges.stream()
-			.filter(e -> Objects.equals(e, item.exchange))
+			.filter(e -> Objects.equals(e.id, item.exchange.id))
 			.findFirst()
 			.orElse(null);
 	}

@@ -69,12 +69,16 @@ public class NodeSetConstraintCommand extends Command {
 	public void redo() {
 		node.setSize(newBounds.getSize());
 		node.setLocation(newBounds.getLocation());
+
+		node.editor.setDirty();
 	}
 
 	@Override
 	public void undo() {
 		node.setSize(oldBounds.getSize());
 		node.setLocation(oldBounds.getLocation());
+
+		node.editor.setDirty();
 	}
 
 }
