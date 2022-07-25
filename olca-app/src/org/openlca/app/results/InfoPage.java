@@ -30,7 +30,7 @@ public class InfoPage extends FormPage {
 		var body = UI.formBody(form, tk);
 		InfoSection.create(body, tk, editor.setup);
 		if (editor.dqResult != null) {
-			new DQInfoSection(body, tk, result, editor.dqResult);
+			new DQInfoSection(body, tk, editor);
 		}
 		if (result.hasImpacts()) {
 			ContributionChartSection.forImpacts(editor).render(body, tk);

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 public class ExcelExportAction extends Action {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public ExcelExportAction() {
 		setImageDescriptor(Images.descriptor(FileType.EXCEL));
@@ -36,13 +36,14 @@ public class ExcelExportAction extends Action {
 
 	private void runExport(ResultEditor<?> editor) {
 		String fileName = Labels.name(editor.setup.target())
-				.replaceAll("[^A-Za-z0-9]", "_") + ".xlsx";
+				.replaceAll("[^A-Za-z\\d]", "_") + ".xlsx";
 		var file = FileChooser.forSavingFile(M.Export, fileName);
 		if (file == null)
 			return;
-		ResultExport export = new ResultExport(editor.setup,
-				editor.result, file, Cache.getEntityCache());
-		export.setDQResult(editor.dqResult);
+		var export = new ResultExport(editor.setup,
+				editor.result, file, Cache.getEntityCache())
+				.withDqResult(editor.dqResult)
+				.withOrder(editor.items);
 		App.run(M.Export, export, () -> {
 			if (export.doneWithSuccess()) {
 				Popup.info(M.ExportDone);

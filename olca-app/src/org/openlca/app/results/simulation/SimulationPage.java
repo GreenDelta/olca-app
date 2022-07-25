@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ResultFlowCombo;
+import org.openlca.app.results.Sort;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -26,6 +27,7 @@ import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
+import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.SimulationResult;
 
 class SimulationPage extends FormPage {
@@ -37,6 +39,7 @@ class SimulationPage extends FormPage {
 	private final SimulationEditor editor;
 	private final Simulator simulator;
 	private final SimulationResult result;
+	private final ResultItemOrder items;
 
 	private StatisticsCanvas statisticsCanvas;
 	private ProgressBar progressBar;
@@ -55,6 +58,8 @@ class SimulationPage extends FormPage {
 		this.editor = editor;
 		this.simulator = editor.simulator;
 		this.result = editor.simulator.getResult();
+		this.items = ResultItemOrder.of(result);
+		Sort.sort(this.items);
 	}
 
 	@Override
@@ -143,7 +148,7 @@ class SimulationPage extends FormPage {
 			M.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(section);
 		impactViewer.setEnabled(false);
-		impactViewer.setInput(result.getImpacts());
+		impactViewer.setInput(items.impacts());
 		impactViewer.addSelectionChangedListener((e) -> updateSelection());
 		impactViewer.selectFirst();
 		new ResultTypeCheck<>(impactViewer, impactCheck, IMPACT);
@@ -153,7 +158,7 @@ class SimulationPage extends FormPage {
 		Button flowsCheck = tk.createButton(section, M.Flows, SWT.RADIO);
 		flowsCheck.setSelection(true);
 		flowViewer = new ResultFlowCombo(section);
-		flowViewer.setInput(result.getFlows());
+		flowViewer.setInput(items.enviFlows());
 		flowViewer.selectFirst();
 		flowViewer.addSelectionChangedListener((e) -> updateSelection());
 		new ResultTypeCheck<>(flowViewer, flowsCheck, FLOW);

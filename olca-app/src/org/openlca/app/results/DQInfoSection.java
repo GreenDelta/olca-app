@@ -27,14 +27,14 @@ import org.openlca.core.results.SimpleResult;
 
 public class DQInfoSection {
 
-	private final SimpleResult result;
+	private final ResultEditor<?> editor;
 	private final DQResult dqResult;
 	private final FormToolkit toolkit;
 
 	public DQInfoSection(Composite parent, FormToolkit toolkit,
-			SimpleResult result, DQResult dqResult) {
-		this.result = result;
-		this.dqResult = dqResult;
+			ResultEditor<?> editor) {
+		this.editor = editor;
+		this.dqResult = editor.dqResult;
 		this.toolkit = toolkit;
 		create(parent);
 	}
@@ -62,7 +62,7 @@ public class DQInfoSection {
 		String[] headers = { M.Indicator, M.Coverage };
 		TreeViewer viewer = Trees.createViewer(parent, headers);
 		viewer.setContentProvider(new ContentProvider(forProcesses));
-		viewer.setLabelProvider(new LabelProvider(forProcesses));
+		viewer.setLabelProvider(new LabelProvider());
 		((GridData) viewer.getTree().getLayoutData()).horizontalSpan = 2;
 		viewer.setInput(system.indicators);
 		Trees.bindColumnWidths(viewer.getTree(), 0.6, 0.4);
@@ -78,11 +78,13 @@ public class DQInfoSection {
 
 		@Override
 		public Object[] getChildren(Object parent) {
-			if (!(parent instanceof DQIndicator) && !forProcesses)
+			if (!forProcesses)
+				return null;
+			if (!(parent instanceof DQIndicator dqi))
 				return null;
 			List<Object> children = new ArrayList<>();
-			for (RootDescriptor p : result.getProcesses()) {
-				children.add(new Tuple(p, (DQIndicator) parent));
+			for (var p : editor.items.processes()) {
+				children.add(new Tuple(p,dqi));
 			}
 			return children.toArray();
 		}
@@ -99,13 +101,8 @@ public class DQInfoSection {
 
 	}
 
-	private class LabelProvider extends BaseLabelProvider implements ITableLabelProvider {
-
-		private final boolean forProcesses;
-
-		private LabelProvider(boolean forProcesses) {
-			this.forProcesses = forProcesses;
-		}
+	private static class LabelProvider
+			extends BaseLabelProvider implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {

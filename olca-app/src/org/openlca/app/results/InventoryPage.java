@@ -27,12 +27,9 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
-import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.matrix.index.EnviFlow;
-import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.core.results.FullResult;
 
 /**
  * Shows the inventory result with process contributions.

@@ -43,6 +43,7 @@ import org.openlca.core.results.FullResult;
 
 public class TotalImpactResultPage extends FormPage {
 
+	private final ResultEditor<?> editor;
 	private final CalculationSetup setup;
 	private final FullResult result;
 	private final DQResult dqResult;
@@ -55,6 +56,7 @@ public class TotalImpactResultPage extends FormPage {
 
 	public TotalImpactResultPage(ResultEditor<?> editor) {
 		super(editor, "ImpactTreePage", M.ImpactAnalysis);
+		this.editor = editor;
 		this.result = editor.result;
 		this.setup = editor.setup;
 		this.dqResult = editor.dqResult;
@@ -63,12 +65,12 @@ public class TotalImpactResultPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
-			Labels.name(setup.target()),
-			Images.get(result));
+				Labels.name(setup.target()),
+				Images.get(result));
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.ImpactAnalysis + ": "
-			+ Labels.name(setup.impactMethod()));
+				+ Labels.name(setup.impactMethod()));
 		UI.gridData(section, true, true);
 		Composite client = toolkit.createComposite(section);
 		section.setClient(client);
@@ -83,7 +85,7 @@ public class TotalImpactResultPage extends FormPage {
 		Composite comp = UI.formComposite(parent, toolkit);
 		UI.gridLayout(comp, 3);
 		Button button = UI.formCheckBox(
-			comp, toolkit, M.SubgroupByProcesses);
+				comp, toolkit, M.SubgroupByProcesses);
 		button.setSelection(true);
 		Controls.onSelect(button, (e) -> {
 			subgroupByProcesses = button.getSelection();
@@ -93,18 +95,19 @@ public class TotalImpactResultPage extends FormPage {
 	}
 
 	private void setInput() {
-		List<Item> items = result.getImpacts().stream()
-			.map(Item::new)
-			.collect(Collectors.toList());
+		List<Item> items = editor.items.impacts()
+				.stream()
+				.map(Item::new)
+				.collect(Collectors.toList());
 		viewer.setInput(items);
 	}
 
 	private void createTree(Composite comp) {
 		String[] columns = {M.Name, M.Category, M.InventoryResult,
-			M.ImpactFactor, M.ImpactResult, M.Unit};
+				M.ImpactFactor, M.ImpactResult, M.Unit};
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			columns = DQUI.appendTableHeaders(columns,
-				dqResult.setup.exchangeSystem);
+					dqResult.setup.exchangeSystem);
 		}
 		LabelProvider label = new LabelProvider();
 		viewer = Trees.createViewer(comp, columns, label);
@@ -114,13 +117,13 @@ public class TotalImpactResultPage extends FormPage {
 
 		Action onOpen = Actions.onOpen(this::onOpen);
 		Actions.bind(viewer, onOpen,
-			TreeClipboard.onCopy(viewer, new ClipboardLabel()));
+				TreeClipboard.onCopy(viewer, new ClipboardLabel()));
 		Trees.onDoubleClick(viewer, e -> onOpen.run());
 		createColumnSorters(label);
 		double[] widths = {.35, .2, .10, .10, .15, .05};
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			widths = DQUI.adjustTableWidths(
-				widths, dqResult.setup.exchangeSystem);
+					widths, dqResult.setup.exchangeSystem);
 		}
 		viewer.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		viewer.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
@@ -159,14 +162,14 @@ public class TotalImpactResultPage extends FormPage {
 		private final LabelProvider label = new LabelProvider();
 
 		private final String[] columns = {
-			M.Name,
-			M.Category,
-			M.InventoryResult,
-			M.Unit,
-			M.ImpactFactor,
-			M.Unit,
-			M.ImpactResult,
-			M.Unit
+				M.Name,
+				M.Category,
+				M.InventoryResult,
+				M.Unit,
+				M.ImpactFactor,
+				M.Unit,
+				M.ImpactResult,
+				M.Unit
 		};
 
 		@Override
@@ -221,8 +224,8 @@ public class TotalImpactResultPage extends FormPage {
 
 		LabelProvider() {
 			super(dqResult, dqResult != null
-				? dqResult.setup.exchangeSystem
-				: null, 6);
+					? dqResult.setup.exchangeSystem
+					: null, 6);
 		}
 
 		@Override
@@ -285,7 +288,7 @@ public class TotalImpactResultPage extends FormPage {
 	}
 
 	private class ContentProvider extends ArrayContentProvider
-		implements ITreeContentProvider, CutoffContentProvider {
+			implements ITreeContentProvider, CutoffContentProvider {
 
 		private double cutoff;
 
@@ -297,7 +300,7 @@ public class TotalImpactResultPage extends FormPage {
 
 			double cutoffValue = Math.abs(parent.result() * cutoff);
 			if (parent.type() == ModelType.IMPACT_CATEGORY && subgroupByProcesses) {
-				for (var process : result.getProcesses()) {
+				for (var process : editor.items.processes()) {
 					Item child = new Item(parent.impact, process);
 					double result = child.result();
 					if (result == 0)
@@ -358,7 +361,7 @@ public class TotalImpactResultPage extends FormPage {
 		}
 
 		Item(ImpactDescriptor impact, RootDescriptor process,
-			EnviFlow flow) {
+				EnviFlow flow) {
 			this.impact = impact;
 			this.process = process;
 			this.flow = flow;
@@ -387,8 +390,8 @@ public class TotalImpactResultPage extends FormPage {
 				iUnit = "1";
 			}
 			String fUnit = flow != null
-				? Labels.refUnit(flow)
-				: "?";
+					? Labels.refUnit(flow)
+					: "?";
 			return iUnit + "/" + fUnit;
 		}
 
@@ -427,8 +430,8 @@ public class TotalImpactResultPage extends FormPage {
 					var factor = impactFactor();
 					var amount = flowAmount();
 					yield factor == null || amount == null
-						? 0
-						: factor * amount;
+							? 0
+							: factor * amount;
 				}
 				default -> 0;
 			};
@@ -460,7 +463,7 @@ public class TotalImpactResultPage extends FormPage {
 
 		double contribution() {
 			double total = Math.abs(
-				result.getTotalImpactResult(impact));
+					result.getTotalImpactResult(impact));
 			double r = result();
 			if (r == 0)
 				return 0;

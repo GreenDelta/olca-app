@@ -17,7 +17,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
@@ -32,6 +31,7 @@ import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.FullResult;
+import org.openlca.core.results.ResultItemOrder;
 
 /**
  * Shows flows that are not covered by the LCIA categories of the LCIA method of
@@ -40,17 +40,19 @@ import org.openlca.core.results.FullResult;
 public class ImpactChecksPage extends FormPage {
 
 	private final FullResult result;
+	private final ResultItemOrder items;
 
 	private TreeViewer tree;
 
 	public ImpactChecksPage(ResultEditor<?> editor) {
 		super(editor, "ImpactChecksPage", M.LCIAChecks);
 		this.result = editor.result;
+		this.items = editor.items;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform,
+		var form = UI.formHeader(mform,
 				"Flows that are not covered by the "
 						+ "selected LCIA method",
 				Images.get(result));
@@ -61,12 +63,10 @@ public class ImpactChecksPage extends FormPage {
 		Button group = tk.createButton(body,
 				"Group by LCIA category", SWT.CHECK);
 		group.setSelection(true);
-		Controls.onSelect(group, e -> {
-			tree.setInput(
-					group.getSelection()
-							? groupedNodes()
-							: flatNodes());
-		});
+		Controls.onSelect(group, e -> tree.setInput(
+				group.getSelection()
+						? groupedNodes()
+						: flatNodes()));
 
 		// create the tree
 		tree = Trees.createViewer(body,
@@ -82,11 +82,10 @@ public class ImpactChecksPage extends FormPage {
 			Contribution<?> c = Viewers.getFirstSelected(tree);
 			if (c == null)
 				return;
-			if (c.item instanceof EnviFlow) {
-				var f = (EnviFlow) c.item;
+			if (c.item instanceof EnviFlow f) {
 				App.open(f.flow());
-			} else if (c.item instanceof ImpactDescriptor) {
-				App.open((ImpactDescriptor) c.item);
+			} else if (c.item instanceof ImpactDescriptor i) {
+				App.open(i);
 			}
 		});
 		Actions.bind(tree, onOpen);
@@ -98,7 +97,7 @@ public class ImpactChecksPage extends FormPage {
 	}
 
 	private List<Contribution<?>> groupedNodes() {
-		return result.getImpacts()
+		return items.impacts()
 				.stream()
 				.map(Contribution::of)
 				.collect(Collectors.toList());
@@ -110,9 +109,9 @@ public class ImpactChecksPage extends FormPage {
 	 */
 	private List<Contribution<?>> flatNodes() {
 		List<Contribution<?>> nodes = new ArrayList<>();
-		for (var flow : result.getFlows()) {
+		for (var flow : items.enviFlows()) {
 			boolean allZero = true;
-			for (ImpactDescriptor impact : result.getImpacts()) {
+			for (var impact : items.impacts()) {
 				double f = result.getImpactFactor(impact, flow);
 				if (f != 0) {
 					allZero = false;
@@ -133,16 +132,14 @@ public class ImpactChecksPage extends FormPage {
 
 		@Override
 		public Object[] getChildren(Object obj) {
-			if (!(obj instanceof Contribution))
+			if (!(obj instanceof Contribution<?> c))
 				return null;
-			Contribution<?> c = (Contribution<?>) obj;
 			if (c.childs != null)
 				return c.childs.toArray();
-			if (!(c.item instanceof ImpactDescriptor))
+			if (!(c.item instanceof ImpactDescriptor impact))
 				return null;
-			ImpactDescriptor impact = (ImpactDescriptor) c.item;
 			c.childs = new ArrayList<>();
-			for (var flow : result.getFlows()) {
+			for (var flow : items.enviFlows()) {
 				double f = result.getImpactFactor(impact, flow);
 				if (f != 0)
 					continue;
@@ -160,9 +157,8 @@ public class ImpactChecksPage extends FormPage {
 
 		@Override
 		public boolean hasChildren(Object elem) {
-			if (!(elem instanceof Contribution))
+			if (!(elem instanceof Contribution<?> c))
 				return false;
-			Contribution<?> c = (Contribution<?>) elem;
 			if (c.childs != null)
 				return true;
 			return c.item instanceof ImpactDescriptor;
@@ -174,9 +170,8 @@ public class ImpactChecksPage extends FormPage {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (col != 0 || !(obj instanceof Contribution))
+			if (col != 0 || !(obj instanceof Contribution<?> c))
 				return null;
-			Contribution<?> c = (Contribution<?>) obj;
 			if (c.item instanceof EnviFlow)
 				return Images.get((EnviFlow) c.item);
 			if (c.item instanceof ImpactDescriptor)
@@ -186,12 +181,10 @@ public class ImpactChecksPage extends FormPage {
 
 		@Override
 		public String getColumnText(Object o, int col) {
-			if (!(o instanceof Contribution))
+			if (!(o instanceof Contribution<?> c))
 				return null;
-			Contribution<?> c = (Contribution<?>) o;
 
-			if (c.item instanceof EnviFlow) {
-				var flow = (EnviFlow) c.item;
+			if (c.item instanceof EnviFlow flow) {
 				switch (col) {
 				case 0:
 					return Labels.name(flow);

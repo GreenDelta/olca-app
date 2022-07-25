@@ -33,11 +33,11 @@ public class SimulationEditor extends SimpleFormEditor {
 	 */
 	public static void open(CalculationSetup setup) {
 		try {
-			Simulator sim = Simulator.create(setup, Database.get())
+			var sim = Simulator.create(setup, Database.get())
 					.withSolver(App.getSolver());
-			String setupKey = Cache.getAppCache().put(setup);
-			String simKey = Cache.getAppCache().put(sim);
-			SimulationInput input = new SimulationInput(setupKey, simKey);
+			var setupKey = Cache.getAppCache().put(setup);
+			var simKey = Cache.getAppCache().put(sim);
+			var input = new SimulationInput(setupKey, simKey);
 			Editors.open(input, ID);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(SimulationEditor.class);
@@ -50,11 +50,9 @@ public class SimulationEditor extends SimpleFormEditor {
 			throws PartInitException {
 		super.init(site, editorInput);
 		var input = (SimulationInput) editorInput;
-		setup = Cache.getAppCache().remove(
-				input.setupKey, CalculationSetup.class);
+		setup = Cache.getAppCache().remove(input.setupKey, CalculationSetup.class);
 		setPartName(Strings.cut(Labels.name(setup.target()), 75));
-		simulator = Cache.getAppCache()
-				.remove(input.solverKey, Simulator.class);
+		simulator = Cache.getAppCache().remove(input.solverKey, Simulator.class);
 	}
 
 	@Override
@@ -73,7 +71,7 @@ public class SimulationEditor extends SimpleFormEditor {
 		}
 
 		@Override
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@SuppressWarnings({"rawtypes", "unchecked"})
 		public Object getAdapter(Class adapter) {
 			return null;
 		}
