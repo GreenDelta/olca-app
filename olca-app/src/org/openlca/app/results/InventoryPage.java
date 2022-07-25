@@ -114,7 +114,7 @@ public class InventoryPage extends FormPage {
 				App.open(d);
 			}
 			if (obj instanceof FlowContribution c) {
-				App.open(c.item.item);
+				App.open(c.item.item.provider());
 			}
 		});
 		Trees.onDoubleClick(viewer, e -> onOpen.run());
@@ -194,7 +194,7 @@ public class InventoryPage extends FormPage {
 			if (!(obj instanceof FlowContribution c))
 				return null;
 			return switch (col) {
-				case 0 -> Images.get(c.item.item);
+				case 0 -> Images.get(c.item.item.provider());
 				case 3 -> img.get(c.item.share);
 				default -> null;
 			};
@@ -224,10 +224,10 @@ public class InventoryPage extends FormPage {
 		}
 
 		private String getProcessColumnText(FlowContribution item, int col) {
-			var process = item.item.item;
-			var category = Labels.getCategory(process);
+			var techFlow = item.item.item;
+			var category = Labels.getCategory(techFlow.provider());
 			return switch (col) {
-				case 0 -> Labels.name(process);
+				case 0 -> Labels.name(techFlow.provider());
 				case 1 -> category.getLeft();
 				case 2 -> category.getRight();
 				case 3 -> Numbers.format(getAmount(item));
