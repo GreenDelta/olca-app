@@ -23,7 +23,7 @@ class SimulationProgress implements IRunnableWithProgress {
 			SimulationPage page) {
 		this.display = display;
 		this.solver = editor.simulator;
-		this.numberOfRuns = editor.setup.numberOfRuns();
+		this.numberOfRuns = editor.setup.simulationRuns().orElse(1);
 		this.page = page;
 	}
 

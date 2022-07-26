@@ -62,14 +62,14 @@ public final class Preferences extends AbstractPreferenceInitializer {
 		return store.getString(key);
 	}
 
-	public static int getInt(String key) {
-		String s = get(key);
-		if (Strings.nullOrEmpty(s))
-			return 0;
+	public static int getInt(String key, int defaultValue) {
+		var str = get(key);
+		if (Strings.nullOrEmpty(str))
+			return defaultValue;
 		try {
-			return Integer.parseInt(s);
+			return Integer.parseInt(str);
 		} catch (Exception e) {
-			return 0;
+			return defaultValue;
 		}
 	}
 
@@ -77,9 +77,7 @@ public final class Preferences extends AbstractPreferenceInitializer {
 		if (key == null)
 			return false;
 		var store = getStore();
-		return store == null
-				? false
-				: store.getBoolean(key);
+		return store != null && store.getBoolean(key);
 	}
 
 }

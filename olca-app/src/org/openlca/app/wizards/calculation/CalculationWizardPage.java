@@ -22,7 +22,6 @@ import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
 import org.openlca.core.model.AllocationMethod;
-import org.openlca.core.model.CalculationType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
@@ -52,8 +51,8 @@ class CalculationWizardPage extends WizardPage {
 	public boolean canFlipToNextPage() {
 		if (!isPageComplete())
 			return false;
-		return setup.withDataQuality &&
-			!setup.hasType(CalculationType.MONTE_CARLO_SIMULATION);
+		return setup.withDataQuality
+				&& setup.type != CalculationType.SIMULATION;
 	}
 
 	@Override
@@ -72,8 +71,8 @@ class CalculationWizardPage extends WizardPage {
 		// separator
 		new Label(body, SWT.NONE);
 		UI.gridData(new Label(
-				body, SWT.SEPARATOR | SWT.HORIZONTAL),
-			true, false);
+						body, SWT.SEPARATOR | SWT.HORIZONTAL),
+				true, false);
 		new Label(body, SWT.NONE);
 
 		// options
@@ -92,7 +91,7 @@ class CalculationWizardPage extends WizardPage {
 		if (!setup.calcSetup.hasProductSystem())
 			return;
 		var paramSets = new ArrayList<>(
-			setup.calcSetup.productSystem().parameterSets);
+				setup.calcSetup.productSystem().parameterSets);
 		if (paramSets.size() < 2)
 			return;
 
@@ -106,11 +105,11 @@ class CalculationWizardPage extends WizardPage {
 
 		UI.formLabel(comp, "Parameter set");
 		var combo = new TableCombo(comp,
-			SWT.READ_ONLY | SWT.BORDER);
+				SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
 		for (var paramSet : paramSets) {
 			var item = new TableItem(
-				combo.getTable(), SWT.NONE);
+					combo.getTable(), SWT.NONE);
 			item.setText(paramSet.name);
 		}
 
@@ -125,10 +124,10 @@ class CalculationWizardPage extends WizardPage {
 	private void createAllocationCombo(Composite comp) {
 		UI.formLabel(comp, M.AllocationMethod);
 		var combo = new AllocationCombo(
-			comp, AllocationMethod.values());
+				comp, AllocationMethod.values());
 		combo.setNullable(false);
 		combo.select(Objects.requireNonNullElse(
-			setup.calcSetup.allocation(), AllocationMethod.NONE));
+				setup.calcSetup.allocation(), AllocationMethod.NONE));
 		combo.addSelectionChangedListener(setup.calcSetup::withAllocation);
 	}
 
@@ -163,14 +162,14 @@ class CalculationWizardPage extends WizardPage {
 
 	private void createTypeRadios(Composite parent) {
 		CalculationType[] types = {
-			CalculationType.CONTRIBUTION_ANALYSIS,
-			CalculationType.UPSTREAM_ANALYSIS,
-			CalculationType.MONTE_CARLO_SIMULATION,
+				CalculationType.LAZY,
+				CalculationType.EAGER,
+				CalculationType.SIMULATION,
 		};
 		boolean[] enabled = {
-			true,
-			true,
-			!setup.hasLibraries,
+				true,
+				true,
+				!setup.hasLibraries,
 		};
 
 		UI.formLabel(parent, M.CalculationType);
@@ -181,14 +180,14 @@ class CalculationWizardPage extends WizardPage {
 		for (int i = 0; i < types.length; i++) {
 			var radio = new Button(comp, SWT.RADIO);
 			radio.setText(getLabel(types[i]));
-			radio.setSelection(setup.hasType(types[i]));
+			radio.setSelection(setup.type == types[i]);
 			radio.setEnabled(enabled[i]);
 			radios[i] = radio;
 			Controls.onSelect(radio, e -> {
 				for (int j = 0; j < types.length; j++) {
 					if (radios[j] == radio) {
 						radio.setSelection(true);
-						setup.setType(types[j]);
+						setup.type = types[j];
 					} else {
 						radios[j].setSelection(false);
 					}
@@ -200,10 +199,9 @@ class CalculationWizardPage extends WizardPage {
 
 	private String getLabel(CalculationType type) {
 		return switch (type) {
-			case UPSTREAM_ANALYSIS -> M.Analysis;
-			case MONTE_CARLO_SIMULATION -> M.MonteCarloSimulation;
-			case CONTRIBUTION_ANALYSIS -> M.QuickResults;
-			default -> M.Unknown;
+			case EAGER -> M.Analysis;
+			case SIMULATION -> M.MonteCarloSimulation;
+			case LAZY -> M.QuickResults;
 		};
 	}
 
@@ -230,28 +228,22 @@ class CalculationWizardPage extends WizardPage {
 		addRegioAndCostChecks(monteCarloOptions);
 
 		// number of iterations
-		Composite inner = new Composite(monteCarloOptions, SWT.NONE);
+		var inner = new Composite(monteCarloOptions, SWT.NONE);
 		UI.gridLayout(inner, 2, 10, 0);
-		Label label = UI.formLabel(inner, M.NumberOfIterations);
+		var label = UI.formLabel(inner, M.NumberOfIterations);
 		UI.gridData(label, false, false);
-		Text iterText = new Text(inner, SWT.BORDER);
-		UI.gridData(iterText, false, false).widthHint = 80;
+		var countText = new Text(inner, SWT.BORDER);
+		UI.gridData(countText, false, false).widthHint = 80;
 
-		int itCount = setup.calcSetup.numberOfRuns();
-		if (itCount < 1) {
-			itCount = 100;
-			setup.calcSetup.withNumberOfRuns(itCount);
-		}
-		iterText.setText(Integer.toString(itCount));
-		iterText.addModifyListener(_e -> {
-			String text = iterText.getText();
+		countText.setText(Integer.toString(setup.simulationRuns));
+		countText.addModifyListener(_e -> {
+			var count = countText.getText();
 			try {
-				setup.calcSetup.withNumberOfRuns(Integer.parseInt(text));
+				setup.simulationRuns = Integer.parseInt(count);
 			} catch (Exception e) {
-				MsgBox.error(M.InvalidNumber, text + " " + M.IsNotValidNumber);
+				MsgBox.error(M.InvalidNumber, count + " " + M.IsNotValidNumber);
 			}
 		});
-
 	}
 
 	private void addRegioAndCostChecks(Composite comp) {
@@ -259,25 +251,23 @@ class CalculationWizardPage extends WizardPage {
 		regioCheck.setText("Regionalized calculation");
 		regioCheck.setSelection(setup.calcSetup.hasRegionalization());
 		Controls.onSelect(regioCheck,
-			_e -> setup.calcSetup.withRegionalization(regioCheck.getSelection()));
+				_e -> setup.calcSetup.withRegionalization(regioCheck.getSelection()));
 
 		var costCheck = new Button(comp, SWT.CHECK);
 		costCheck.setText(M.IncludeCostCalculation);
 		costCheck.setSelection(setup.calcSetup.hasCosts());
 		Controls.onSelect(costCheck,
-			_e -> setup.calcSetup.withCosts(costCheck.getSelection()));
+				_e -> setup.calcSetup.withCosts(costCheck.getSelection()));
 		if (setup.hasLibraries) {
 			costCheck.setEnabled(false);
 		}
 	}
 
 	private void updateOptions() {
-		StackLayout layout = (StackLayout) optionStack.getLayout();
-		if (setup.hasType(CalculationType.MONTE_CARLO_SIMULATION)) {
-			layout.topControl = monteCarloOptions;
-		} else {
-			layout.topControl = commonOptions;
-		}
+		var layout = (StackLayout) optionStack.getLayout();
+		layout.topControl = setup.type == CalculationType.SIMULATION
+				? monteCarloOptions
+				: commonOptions;
 		optionStack.layout();
 		getContainer().updateButtons();
 	}

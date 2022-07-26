@@ -79,7 +79,7 @@ public class ProductSystemActions extends EditorActionBarContributor {
 			App.run(M.ImageExport, () -> {
 				try {
 					var db = Database.get();
-					var setup = CalculationSetup.simple(system);
+					var setup = CalculationSetup.of(system);
 					var techIndex = TechIndex.of(db, setup);
 					var data = MatrixData.of(db, techIndex)
 							.withSetup(setup)

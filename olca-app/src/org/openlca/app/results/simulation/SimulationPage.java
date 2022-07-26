@@ -94,7 +94,7 @@ class SimulationPage extends FormPage {
 			systemText.setText(Labels.name(setup.target()));
 			processText.setText(Labels.name(setup.process()));
 			qRefText.setText(getQRefText());
-			simCountText.setText(Integer.toString(setup.numberOfRuns()));
+			simCountText.setText(Integer.toString(setup.simulationRuns().orElse(0)));
 		}
 		systemText.setEditable(false);
 		processText.setEditable(false);
@@ -117,7 +117,7 @@ class SimulationPage extends FormPage {
 		progressSection = UI.section(body, toolkit, M.Progress);
 		Composite composite = UI.sectionClient(progressSection, toolkit);
 		progressBar = new ProgressBar(composite, SWT.SMOOTH);
-		progressBar.setMaximum(editor.setup.numberOfRuns());
+		progressBar.setMaximum(editor.setup.simulationRuns().orElse(1));
 		UI.gridData(progressBar, false, false).widthHint = 470;
 		Button progressButton = toolkit.createButton(composite,
 			M.Start, SWT.NONE);

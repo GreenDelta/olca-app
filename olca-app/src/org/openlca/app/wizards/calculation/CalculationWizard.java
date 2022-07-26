@@ -23,7 +23,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationTarget;
-import org.openlca.core.model.CalculationType;
 import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,7 +118,8 @@ public class CalculationWizard extends Wizard {
 	private void runCalculation() {
 
 		// for MC simulations, just open the simulation editor
-		if (setup.hasType(CalculationType.MONTE_CARLO_SIMULATION)) {
+		if (setup.type == CalculationType.SIMULATION) {
+
 			SimulationEditor.open(setup.calcSetup);
 			return;
 		}
@@ -128,7 +128,7 @@ public class CalculationWizard extends Wizard {
 		log.trace("run calculation");
 		var calc = new SystemCalculator(Database.get())
 			.withLibraryDir(Workspace.getLibraryDir());
-		var result = calc.calculateFull(setup.calcSetup);
+		var result = calc.calculate(setup.calcSetup);
 
 		// check storage and DQ calculation
 		DQResult dqResult = null;
