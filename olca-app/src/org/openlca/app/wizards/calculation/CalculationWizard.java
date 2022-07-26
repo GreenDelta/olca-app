@@ -58,22 +58,22 @@ public class CalculationWizard extends Wizard {
 		if (page == null)
 			return true;
 		var ok = EnumSet.of(
-			ModelType.PROJECT,
-			ModelType.ACTOR,
-			ModelType.SOURCE);
+				ModelType.PROJECT,
+				ModelType.ACTOR,
+				ModelType.SOURCE);
 		var dirtyEditors = Arrays.stream(page.getDirtyEditors())
-			.filter(editor -> {
-				var inp = editor.getEditorInput();
-				if (!(inp instanceof ModelEditorInput))
-					return false;
-				var type = ((ModelEditorInput) inp).getDescriptor().type;
-				return !ok.contains(type);
-			}).toList();
+				.filter(editor -> {
+					var inp = editor.getEditorInput();
+					if (!(inp instanceof ModelEditorInput))
+						return false;
+					var type = ((ModelEditorInput) inp).getDescriptor().type;
+					return !ok.contains(type);
+				}).toList();
 
 		if (dirtyEditors.isEmpty())
 			return true;
 		int answer = Question.askWithCancel(
-			M.UnsavedChanges, M.SomeElementsAreNotSaved);
+				M.UnsavedChanges, M.SomeElementsAreNotSaved);
 		if (answer == IDialogConstants.NO_ID)
 			return true;
 		if (answer == IDialogConstants.CANCEL_ID)
@@ -119,23 +119,25 @@ public class CalculationWizard extends Wizard {
 
 		// for MC simulations, just open the simulation editor
 		if (setup.type == CalculationType.SIMULATION) {
-
-			SimulationEditor.open(setup.calcSetup);
+			var calcSetup = setup.calcSetup.withSimulationRuns(setup.simulationRuns);
+			SimulationEditor.open(calcSetup);
 			return;
 		}
 
 		// run the calculation
 		log.trace("run calculation");
 		var calc = new SystemCalculator(Database.get())
-			.withLibraryDir(Workspace.getLibraryDir());
-		var result = calc.calculate(setup.calcSetup);
+				.withLibraryDir(Workspace.getLibraryDir());
+		var result = setup.type == CalculationType.LAZY
+				? calc.calculateLazy(setup.calcSetup)
+				: calc.calculateEager(setup.calcSetup);
 
 		// check storage and DQ calculation
 		DQResult dqResult = null;
 		if (setup.withDataQuality) {
 			log.trace("calculate data quality result");
 			dqResult = DQResult.of(
-				Database.get(), setup.dqSetup, result);
+					Database.get(), setup.dqSetup, result);
 		}
 
 		// sort and open the editor

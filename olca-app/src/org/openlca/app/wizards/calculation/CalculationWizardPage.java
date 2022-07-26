@@ -199,9 +199,9 @@ class CalculationWizardPage extends WizardPage {
 
 	private String getLabel(CalculationType type) {
 		return switch (type) {
-			case EAGER -> M.Analysis;
+			case EAGER -> "Eager/All";
 			case SIMULATION -> M.MonteCarloSimulation;
-			case LAZY -> M.QuickResults;
+			case LAZY -> "Lazy/On-demand";
 		};
 	}
 
