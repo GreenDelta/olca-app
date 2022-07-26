@@ -18,7 +18,7 @@ import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.results.AnalyzeEditor;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.FileType;
@@ -45,7 +45,7 @@ public class ContributionTreePage extends FormPage {
 	private Object selection;
 
 
-	public ContributionTreePage(AnalyzeEditor editor) {
+	public ContributionTreePage(ResultEditor editor) {
 		super(editor, "analysis.ContributionTreePage", M.ContributionTree);
 		this.result = editor.result;
 		this.setup = editor.setup;

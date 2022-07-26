@@ -215,7 +215,7 @@
 
 		<!-- result views -->
 		<editor
-			class="org.openlca.app.results.AnalyzeEditor"
+			class="org.openlca.app.results.ResultEditor"
 			contributorClass="org.openlca.app.results.ResultEditorActions"
 			default="false"
 			icon="icons/analysis.png"

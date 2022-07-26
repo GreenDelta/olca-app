@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
@@ -34,10 +33,10 @@ public class NwResultPage extends FormPage {
 	private Composite body;
 	private FormToolkit toolkit;
 
-	public NwResultPage(FormEditor editor, LcaResult result, CalculationSetup setup) {
+	public NwResultPage(ResultEditor editor) {
 		super(editor, "NwResultPage", M.NormalizationWeighting);
-		this.result = result;
-		this.setup = setup;
+		this.result = editor.result;
+		this.setup = editor.setup;
 	}
 
 	@Override
