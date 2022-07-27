@@ -82,7 +82,7 @@ public class Labels {
 		return text;
 	}
 
-	public static String of(TechFlow product) {
+	public static String name(TechFlow product) {
 		// currently we just return the process name but
 		// in future versions we could also return
 		// process-flow pairs here. though this could

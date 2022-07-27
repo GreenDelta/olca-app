@@ -75,7 +75,7 @@ class ProviderItem implements Item {
 
 	@Override
 	public String name() {
-		return Labels.of(product);
+		return Labels.name(product);
 	}
 
 	Long categoryID() {

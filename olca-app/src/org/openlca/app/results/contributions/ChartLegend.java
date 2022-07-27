@@ -26,9 +26,9 @@ import org.openlca.core.results.Contribution;
 
 class ChartLegend {
 
-	private ImageRegistry imageRegistry = new ImageRegistry();
-	private Stack<Widget> createdLinks = new Stack<>();
-	private Composite composite;
+	private final ImageRegistry imageRegistry = new ImageRegistry();
+	private final Stack<Widget> createdLinks = new Stack<>();
+	private final Composite composite;
 	ILabelProvider label = new BaseLabelProvider();
 
 	ChartLegend(Composite parent) {
@@ -62,9 +62,9 @@ class ChartLegend {
 			link.setText(text);
 			link.setImage(getImage(colorIndex));
 			Controls.onClick(link, (e) -> {
-				if (model instanceof RootDescriptor) {
-					App.open((RootDescriptor) model);
-				} else if (model instanceof RootEntity) {
+				if (model instanceof RootDescriptor d) {
+					App.open(d);
+				} else {
 					App.open((RootEntity) model);
 				}
 			});

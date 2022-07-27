@@ -3,7 +3,6 @@ package org.openlca.app.results.contributions;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -16,6 +15,7 @@ import org.eclipse.swtchart.Chart;
 import org.eclipse.swtchart.IAxis;
 import org.eclipse.swtchart.IBarSeries;
 import org.eclipse.swtchart.IBarSeries.BarWidthStyle;
+import org.eclipse.swtchart.ISeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.LineStyle;
 import org.eclipse.swtchart.Range;
@@ -82,7 +82,7 @@ public class ContributionChart {
 
 		// delete the old series
 		Arrays.stream(chart.getSeriesSet().getSeries())
-				.map(s -> s.getId())
+				.map(ISeries::getId)
 				.forEach(id -> chart.getSeriesSet().deleteSeries(id));
 
 		// select the top 6 items; if there are more than 6 items
@@ -90,12 +90,12 @@ public class ContributionChart {
 		// note that we first rank the items by absolute values to
 		// get the top contributers but then sort them by their
 		// real values to have a nice order in the chart.
-		Collections.sort(items, (i1, i2) -> -Double.compare(
+		items.sort((i1, i2) -> -Double.compare(
 				Math.abs(i1.amount), Math.abs(i2.amount)));
 		List<Contribution<?>> top = items.size() <= 6
 				? items
 				: items.subList(0, 5);
-		Collections.sort(top, (i1, i2) -> -Double.compare(
+		top.sort((i1, i2) -> -Double.compare(
 				i1.amount, i2.amount));
 		double rest = 0;
 		if (items.size() > 6) {

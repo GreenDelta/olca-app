@@ -35,7 +35,9 @@ public class InfoPage extends FormPage {
 		if (result.hasImpacts()) {
 			ContributionChartSection.forImpacts(editor).render(body, tk);
 		}
-		ContributionChartSection.forFlows(editor).render(body, tk);
+		if (result.hasEnviFlows()) {
+			ContributionChartSection.forFlows(editor).render(body, tk);
+		}
 		form.reflow(true);
 	}
 }
