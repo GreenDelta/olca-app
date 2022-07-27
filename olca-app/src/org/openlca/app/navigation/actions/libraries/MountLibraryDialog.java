@@ -99,7 +99,7 @@ class MountLibraryDialog extends FormDialog {
 				continue;
 			Daos.root(Database.get(), type).getDescriptors().forEach(d -> {
 				if (!Strings.nullOrEmpty(d.library) && !previousTags.contains(type, d.refId)) {
-					Repository.get().workspaceIds.remove(pathBuilder, d);
+					Repository.get().workspaceIds.invalidate(pathBuilder, d);
 				}
 			});
 		}
