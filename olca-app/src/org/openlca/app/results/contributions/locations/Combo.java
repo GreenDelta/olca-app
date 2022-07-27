@@ -25,7 +25,7 @@ import gnu.trove.set.hash.TLongHashSet;
 
 /**
  * This is in principle the same as the ResultTypeCombo but with plain flow
- * descriptors instead of index flows (because index flows may are regionalized
+ * descriptors instead of index flows (because index flows may are regionalized,
  * but we want to see the contributions of the regions in this page).
  */
 class Combo {

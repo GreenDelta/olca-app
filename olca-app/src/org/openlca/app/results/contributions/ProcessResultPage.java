@@ -111,11 +111,15 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	private void setInputs() {
+		if (!result.hasEnviFlows())
+			return;
+
 		fillFlows(inputTable);
 		fillFlows(outputTable);
 		long refProcessId = result.demand().techFlow().providerId();
 		ProcessDescriptor p = processes.get(refProcessId);
 		flowProcessViewer.select(p);
+
 		if (result.hasImpacts()) {
 			impactProcessCombo.select(p);
 			impactTable.setInput(items.impacts());
