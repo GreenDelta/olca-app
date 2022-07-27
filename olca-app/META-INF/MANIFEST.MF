@@ -123,4 +123,4 @@ Bundle-ClassPath: .,
  libs/trove4j-3.0.3.jar,
  libs/util.concurrent.blockingMap-0.91.jar,
  libs/xmlbeans-3.1.0.jar,
- libs/zt-zip-1.8.jar
+ libs/zt-zip-1.15.jar
