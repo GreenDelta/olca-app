@@ -332,8 +332,13 @@ class NativeLib:
 
     @staticmethod
     def fetch(osa: OsArch, repo: str) -> Path:
-        ext = 'zip' if repo == NativeLib.REPO_GITHUB else 'jar'
-        jar = f'{NativeLib.base_name(osa)}-{NATIVE_LIB_VERSION}.{ext}'
+
+        base_name = NativeLib.base_name(osa)
+        if repo == NativeLib.REPO_GITHUB:
+            jar = f'{base_name}.zip'
+        else:
+            jar = f'{base_name}-{NATIVE_LIB_VERSION}.jar'
+
         cached = NativeLib.cache_dir() / jar
         if cached.exists():
             return cached
@@ -343,9 +348,8 @@ class NativeLib:
             url = 'https://github.com/GreenDelta/olca-native/releases/' \
                 f'download/v{NATIVE_LIB_VERSION}/{jar}'
         else:
-            base = NativeLib.base_name(osa)
             url = f'https://repo1.maven.org/maven2/org/openlca/' \
-              f'{base}/{NATIVE_LIB_VERSION}/{jar}'
+              f'{base_name}/{NATIVE_LIB_VERSION}/{jar}'
 
         print(f'  download native libraries from {url}')
         urllib.request.urlretrieve(url, cached)
@@ -506,7 +510,7 @@ def main():
 def delete(path: Path):
     if path is None or not path.exists():
         return
-    if path.isdir():
+    if path.is_dir():
         shutil.rmtree(path, ignore_errors=True)
     else:
         path.unlink(missing_ok=True)
