@@ -202,7 +202,7 @@ class BuildDir:
 
         # JRE and native libraries
         JRE.extract_to(self)
-        NativeLib.extract_to(self)
+        NativeLib.extract_to(self, repo=NativeLib.REPO_GITHUB)
 
         # copy licenses
         print('  copy licenses')
@@ -301,6 +301,9 @@ class JRE:
 
 class NativeLib:
 
+    REPO_GITHUB = 'Github'
+    REPO_MAVEN = 'Maven'
+
     @staticmethod
     def base_name(osa: OsArch) -> str:
         if osa == OsArch.MACOS_ARM:
@@ -316,11 +319,6 @@ class NativeLib:
         return f'olca-native-blas-{arch}'
 
     @staticmethod
-    def jar_name(osa: OsArch) -> str:
-        base = NativeLib.base_name(osa)
-        return f'{base}-{NATIVE_LIB_VERSION}.jar'
-
-    @staticmethod
     def cache_dir() -> Path:
         d = PROJECT_DIR / f'runtime/blas'
         if not os.path.exists(d):
@@ -328,14 +326,22 @@ class NativeLib:
         return d
 
     @staticmethod
-    def fetch(osa: OsArch) -> Path:
-        jar = NativeLib.jar_name(osa)
+    def fetch(osa: OsArch, repo: str) -> Path:
+        ext = 'zip' if repo == NativeLib.REPO_GITHUB else 'jar'
+        jar = f'{NativeLib.base_name(osa)}-{NATIVE_LIB_VERSION}.{ext}'
         cached = NativeLib.cache_dir() / jar
         if cached.exists():
             return cached
-        base = NativeLib.base_name(osa)
-        url = f'https://repo1.maven.org/maven2/org/openlca/' \
+        print(f'  fetch native lib from {repo} repository')
+        
+        if repo == NativeLib.REPO_GITHUB:
+            url = 'https://github.com/GreenDelta/olca-native/releases/' \
+                f'download/v{NATIVE_LIB_VERSION}/{jar}'
+        else:
+            base = NativeLib.base_name(osa)
+            url = f'https://repo1.maven.org/maven2/org/openlca/' \
               f'{base}/{NATIVE_LIB_VERSION}/{jar}'
+
         print(f'  download native libraries from {url}')
         urllib.request.urlretrieve(url, cached)
         if not os.path.exists(cached):
@@ -343,12 +349,13 @@ class NativeLib:
         return cached
 
     @staticmethod
-    def extract_to(build_dir: BuildDir):
+    def extract_to(build_dir: BuildDir, repo=REPO_GITHUB):
         print('  copy native libraries')
         target = build_dir.native_lib_dir
         if not target.exists():
             target.mkdir(parents=True, exist_ok=True)
-        jar = NativeLib.fetch(build_dir.osa)
+
+        jar = NativeLib.fetch(build_dir.osa, repo)
 
         with zipfile.ZipFile(jar.as_posix(), 'r') as z:
             for e in z.filelist:
@@ -382,7 +389,8 @@ class MacDir:
             (app_root / 'Resources', app_dir / 'Contents'),
             (app_root / 'MacOS/openLCA', macos_dir / 'eclipse')]
         for (source, target) in moves:
-            shutil.move(source, target)
+            if source.exists():
+                shutil.move(str(source), str(target))
 
         shutil.copyfile(
             PROJECT_DIR / 'templates/Info.plist',
