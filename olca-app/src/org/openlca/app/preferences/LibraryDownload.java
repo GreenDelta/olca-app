@@ -3,6 +3,7 @@ package org.openlca.app.preferences;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.openlca.app.App;
+import org.openlca.app.preferences.LibDownload.Repo;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
@@ -30,7 +31,7 @@ public class LibraryDownload {
 		var success = new AtomicBoolean(false);
 		App.runWithProgress("Download native libraries", () -> {
 			try {
-				NativeLib.download(Workspace.root(), Module.UMFPACK);
+				LibDownload.fetch(Repo.GITHUB, Module.UMFPACK, Workspace.root());
 				NativeLib.reloadFrom(Workspace.root());
 				success.set(true);
 			} catch (Exception e) {
