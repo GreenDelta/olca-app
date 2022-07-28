@@ -1,4 +1,5 @@
 import datetime
+from genericpath import isdir
 import os
 import platform
 import re
@@ -104,15 +105,16 @@ class Zip:
         return Zip.__zip
 
     @staticmethod
-    def unzip(zip_file: Path, target: Path):
+    def unzip(zip_file: Path, target_folder: Path):
         """Extracts the content of the given zip file under the given path."""
-        if not os.path.exists(target):
-            target.mkdir(parents=True, exist_ok=True)
+        if not target_folder.exists():
+            target_folder.mkdir(parents=True, exist_ok=True)
+        if not os.path.exists(target_folder):
+            target_folder.mkdir(parents=True, exist_ok=True)
         if Zip.get().is_z7:
-            subprocess.call([
-                Zip.z7(), 'x', zip_file, f'-o{target}'])
+            subprocess.call([Zip.z7(), 'x', zip_file, f'-o{target_folder}'])
         else:
-            shutil.unpack_archive(zip_file, target)
+            shutil.unpack_archive(zip_file, target_folder)
 
     @staticmethod
     def targz(folder: Path, target: Path):
@@ -282,6 +284,8 @@ class JRE:
         print('  copy JRE')
         # fetch and extract the JRE
         zf = JRE.fetch(build_dir.osa)
+        Zip.unzip(zf, build_dir.app_dir)
+        """
         if zf.name.endswith('.zip'):
             Zip.unzip(zf, build_dir.app_dir)
         else:
@@ -291,6 +295,7 @@ class JRE:
                 if not tar.exists():
                     raise AssertionError(f'could not find JRE tar {tar}')
             Zip.unzip(tar, build_dir.app_dir)
+        """
 
         # rename the JRE folder if required
         if build_dir.jre_dir.exists():
@@ -407,9 +412,9 @@ class MacDir:
             launcher_lib=launcher_lib)
 
         # clean up
-        shutil.rmtree(app_root / 'MacOS')
-        os.remove(app_root / 'Info.plist')
-        os.remove(macos_dir / 'openLCA.ini')
+        delete(app_root / 'MacOS')
+        delete(app_root / 'Info.plist')
+        delete(macos_dir / 'openLCA.ini')
 
 
 class Nsis:
@@ -496,6 +501,15 @@ def main():
             continue
         print(f'package build: {osa}')
         build_dir.package(version)
+
+
+def delete(path: Path):
+    if path is None or not path.exists():
+        return
+    if path.isdir():
+        shutil.rmtree(path, ignore_errors=True)
+    else:
+        path.unlink(missing_ok=True)
 
 
 if __name__ == '__main__':
