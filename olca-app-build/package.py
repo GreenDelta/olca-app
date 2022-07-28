@@ -195,7 +195,11 @@ class BuildDir:
     @property
     def native_lib_dir(self) -> Path:
         arch = 'arm64' if self.osa == OsArch.MACOS_ARM else 'x64'
-        return self.app_dir / f'olca-native/{NATIVE_LIB_VERSION}/{arch}'
+        if self.osa.is_mac():
+            target_dir = self.app_dir / 'Contents/Eclipse'
+        else:
+            target_dir = self.app_dir
+        return target_dir / f'olca-native/{NATIVE_LIB_VERSION}/{arch}'
 
     def package(self, version: Version):
 
