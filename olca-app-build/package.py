@@ -305,6 +305,11 @@ class JRE:
         jre_dir = next(build_dir.app_dir.glob('*jre*'))
         os.rename(jre_dir, build_dir.jre_dir)
 
+        # delete a possible client VM (the server VM is much faster)
+        client_dir = build_dir.jre_dir / 'bin/client'
+        if client_dir.exists():
+            delete(client_dir)
+
 
 class NativeLib:
 
