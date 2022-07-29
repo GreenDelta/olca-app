@@ -109,8 +109,6 @@ class Zip:
         """Extracts the content of the given zip file under the given path."""
         if not target_folder.exists():
             target_folder.mkdir(parents=True, exist_ok=True)
-        if not os.path.exists(target_folder):
-            target_folder.mkdir(parents=True, exist_ok=True)
         if Zip.get().is_z7:
             subprocess.call([Zip.z7(), 'x', zip_file, f'-o{target_folder}'])
         else:
@@ -286,11 +284,12 @@ class JRE:
         if build_dir.jre_dir.exists():
             return
         print('  copy JRE')
+
         # fetch and extract the JRE
         zf = JRE.fetch(build_dir.osa)
-        Zip.unzip(zf, build_dir.app_dir)
-        """
-        if zf.name.endswith('.zip'):
+
+        ziptool = Zip.get()
+        if not ziptool.is_z7 or zf.name.endswith('.zip'):
             Zip.unzip(zf, build_dir.app_dir)
         else:
             tar = zf.parent / zf.name[0:-3]
@@ -299,7 +298,6 @@ class JRE:
                 if not tar.exists():
                     raise AssertionError(f'could not find JRE tar {tar}')
             Zip.unzip(tar, build_dir.app_dir)
-        """
 
         # rename the JRE folder if required
         if build_dir.jre_dir.exists():
