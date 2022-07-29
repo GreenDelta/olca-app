@@ -34,9 +34,7 @@ project and other open source software.
 
    <splash
       location="olca-app"
-      startupProgressRect="0,412,594,5"
-      startupMessageRect="7,525,445,20"
-      startupForegroundColor="000000" />
+      startupProgressRect="0,437,586,5" />
    <launcher name="openLCA">
       <macosx icon="/olca-app/icons/logo/logo.icns"/>
       <win useIco="false">
