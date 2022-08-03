@@ -10,7 +10,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.actions.ActionIds;
 import org.openlca.app.rcp.images.Icon;
 
-public class GraphContextMenuProvider  extends ContextMenuProvider {
+public class GraphContextMenuProvider extends ContextMenuProvider {
 
 	private final ActionRegistry actionRegistry;
 
