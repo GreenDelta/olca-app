@@ -15,14 +15,15 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.actions.*;
-import org.openlca.app.editors.graphical.actions.ZoomInAction;
-import org.openlca.app.editors.graphical.actions.ZoomOutAction;
+import org.openlca.app.tools.graphics.KeyHandler;
+import org.openlca.app.tools.graphics.actions.ZoomInAction;
+import org.openlca.app.tools.graphics.actions.ZoomOutAction;
 import org.openlca.app.editors.graphical.edit.GraphEditPartFactory;
-import org.openlca.app.editors.graphical.edit.GraphRoot;
+import org.openlca.app.tools.graphics.edit.RootEditPart;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
-import org.openlca.app.editors.graphical.zoom.GraphMouseWheelZoomHandler;
-import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
+import org.openlca.app.tools.graphics.zoom.MouseWheelZoomHandler;
+import org.openlca.app.tools.graphics.zoom.ZoomManager;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
@@ -50,7 +51,7 @@ public class GraphEditor extends GraphicalEditor {
 
 	public static final String ID = "GraphicalEditor";
 
-	private KeyHandler sharedKeyHandler;
+	private org.eclipse.gef.KeyHandler sharedKeyHandler;
 	private final ProductSystemEditor systemEditor;
 	private Graph graph;
 
@@ -103,7 +104,7 @@ public class GraphEditor extends GraphicalEditor {
 		super.configureGraphicalViewer();
 		var viewer = getGraphicalViewer();
 
-		var root = new GraphRoot(viewer);
+		var root = new RootEditPart(viewer);
 
 		// set clipping strategy for connection layer
 		ConnectionLayer connectionLayer = (ConnectionLayer) root
@@ -115,11 +116,11 @@ public class GraphEditor extends GraphicalEditor {
 		var zoom = root.getZoomManager();
 		zoom.setZoomLevels(ZOOM_LEVELS);
 		var zoomLevels = new ArrayList<String>(3);
-		zoomLevels.add(GraphZoomManager.FIT_ALL);
-		zoomLevels.add(GraphZoomManager.FIT_WIDTH);
-		zoomLevels.add(GraphZoomManager.FIT_HEIGHT);
+		zoomLevels.add(ZoomManager.FIT_ALL);
+		zoomLevels.add(ZoomManager.FIT_WIDTH);
+		zoomLevels.add(ZoomManager.FIT_HEIGHT);
 		root.getZoomManager().setZoomLevelContributions(zoomLevels);
-		zoom.setZoomAnimationStyle(GraphZoomManager.ANIMATE_ZOOM_IN_OUT);
+		zoom.setZoomAnimationStyle(ZoomManager.ANIMATE_ZOOM_IN_OUT);
 		var zoomIn = new ZoomInAction(root.getZoomManager());
 		var zoomOut = new ZoomOutAction(root.getZoomManager());
 		getActionRegistry().registerAction(zoomIn);
@@ -253,9 +254,9 @@ public class GraphEditor extends GraphicalEditor {
 	 * Returns the KeyHandler with common bindings for both the Outline (if it
 	 * exists) and Graphical Views. For example, delete is a common action.
 	 */
-	protected KeyHandler getCommonKeyHandler() {
+	protected org.eclipse.gef.KeyHandler getCommonKeyHandler() {
 		if (sharedKeyHandler == null) {
-			sharedKeyHandler = new KeyHandler();
+			sharedKeyHandler = new org.eclipse.gef.KeyHandler();
 			var registry = getActionRegistry();
 			sharedKeyHandler.put(
 				KeyStroke.getPressed(SWT.DEL, 127, 0),
@@ -264,8 +265,8 @@ public class GraphEditor extends GraphicalEditor {
 		return sharedKeyHandler;
 	}
 
-	protected KeyHandler createGraphKeyHandler() {
-		var keyHandler = new GraphKeyHandler(getGraphicalViewer());
+	protected org.eclipse.gef.KeyHandler createGraphKeyHandler() {
+		var keyHandler = new KeyHandler(getGraphicalViewer());
 		keyHandler.setParent(getCommonKeyHandler());
 
 		var registry = getActionRegistry();
@@ -291,7 +292,7 @@ public class GraphEditor extends GraphicalEditor {
 			manager.setZoom(getModel().getZoom());
 		getGraphicalViewer().setProperty(
 			MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
-			GraphMouseWheelZoomHandler.SINGLETON);
+			MouseWheelZoomHandler.SINGLETON);
 	}
 
 	protected void loadConfig() {
@@ -354,12 +355,12 @@ public class GraphEditor extends GraphicalEditor {
 		return graphFactory;
 	}
 
-	public GraphZoomManager getZoomManager() {
+	public ZoomManager getZoomManager() {
 		return getRootEditPart().getZoomManager();
 	}
 
-	public GraphRoot getRootEditPart() {
-		return (GraphRoot) getGraphicalViewer().getRootEditPart();
+	public RootEditPart getRootEditPart() {
+		return (RootEditPart) getGraphicalViewer().getRootEditPart();
 	}
 
 	@Override
@@ -386,7 +387,7 @@ public class GraphEditor extends GraphicalEditor {
 	}
 
 	public Object getAdapter(Class type) {
-		if (type == GraphZoomManager.class)
+		if (type == ZoomManager.class)
 			return getZoomManager();
 
 		return super.getAdapter(type);

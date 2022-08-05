@@ -8,7 +8,7 @@ public class MinimizedNodeFigure extends NodeFigure {
 
 	public MinimizedNodeFigure(Node node) {
 		super(node);
-		var theme = node.getConfig().getTheme();
+		var theme = node.getGraph().getConfig().getTheme();
 		var box = Theme.Box.of(node);
 
 		var layout = new GridLayout(1, false);

@@ -12,6 +12,11 @@ import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graphical.model.*;
 import org.openlca.app.editors.graphical.model.commands.CreateLinkCommand;
+import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.tools.graphics.model.Link;
+
+import static org.openlca.app.tools.graphics.model.Component.SOURCE_CONNECTIONS_PROP;
+import static org.openlca.app.tools.graphics.model.Component.TARGET_CONNECTIONS_PROP;
 
 /**
  * This class abstract the creation of a graph component that can be linked with
@@ -20,15 +25,15 @@ import org.openlca.app.editors.graphical.model.commands.CreateLinkCommand;
  *
  * @param <N> The type of the model element.
  */
-public abstract class AbstractVertexEditPart<N extends GraphComponent> extends
+public abstract class AbstractVertexEditPart<N extends Component> extends
 	AbstractComponentEditPart<N> implements NodeEditPart {
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
-		if (GraphComponent.TARGET_CONNECTIONS_PROP.equals(prop))
+		if (TARGET_CONNECTIONS_PROP.equals(prop))
 			refreshTargetConnections();
-		else if (GraphComponent.SOURCE_CONNECTIONS_PROP.equals(prop))
+		else if (SOURCE_CONNECTIONS_PROP.equals(prop))
 			refreshSourceConnections();
 		else super.propertyChange(evt);
 	}
@@ -72,7 +77,7 @@ public abstract class AbstractVertexEditPart<N extends GraphComponent> extends
 	}
 
 	private ConnectionAnchor sourceAnchor(ReconnectRequest req) {
-		Link link = (Link) req.getConnectionEditPart().getModel();
+		GraphLink link = (GraphLink) req.getConnectionEditPart().getModel();
 		Node node = ((ExchangeEditPart) req.getTarget()).getModel().getNode();
 		var output = node.getOutput(link.processLink);
 		var input = link.getTargetNode().getInput(link.processLink);
@@ -108,7 +113,7 @@ public abstract class AbstractVertexEditPart<N extends GraphComponent> extends
 	}
 
 	private ConnectionAnchor targetAnchor(ReconnectRequest req) {
-		Link link = (Link) req.getConnectionEditPart().getModel();
+		GraphLink link = (GraphLink) req.getConnectionEditPart().getModel();
 		var input = ((ExchangeEditPart) req.getTarget()).getModel();
 		var output = link.getSourceNode().getInput(link.processLink);
 		if (output == null || !output.matches(input))

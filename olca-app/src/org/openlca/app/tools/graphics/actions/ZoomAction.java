@@ -8,13 +8,13 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.openlca.app.editors.graphical.actions;
+package org.openlca.app.tools.graphics.actions;
 
 import org.eclipse.gef.Disposable;
 import org.eclipse.gef.editparts.ZoomListener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
+import org.openlca.app.tools.graphics.zoom.ZoomManager;
 
 /**
  * Base zoom action. Sub-classes can perform zoom in or zoom out.
@@ -28,7 +28,7 @@ abstract class ZoomAction extends Action implements ZoomListener, Disposable {
 	/**
 	 * The ZoomManager used to zoom in or out
 	 */
-	protected GraphZoomManager zoomManager;
+	protected ZoomManager zoomManager;
 
 	/**
 	 * Constructor
@@ -41,7 +41,7 @@ abstract class ZoomAction extends Action implements ZoomListener, Disposable {
 	 *            the ZoomManager used to zoom in or out
 	 */
 	public ZoomAction(String text, ImageDescriptor image,
-										GraphZoomManager zoomManager) {
+										ZoomManager zoomManager) {
 		super(text, image);
 		this.zoomManager = zoomManager;
 		zoomManager.addZoomListener(this);

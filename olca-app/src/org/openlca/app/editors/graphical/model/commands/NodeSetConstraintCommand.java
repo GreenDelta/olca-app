@@ -70,7 +70,7 @@ public class NodeSetConstraintCommand extends Command {
 		node.setSize(newBounds.getSize());
 		node.setLocation(newBounds.getLocation());
 
-		node.editor.setDirty();
+		node.getGraph().getEditor().setDirty();
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class NodeSetConstraintCommand extends Command {
 		node.setSize(oldBounds.getSize());
 		node.setLocation(oldBounds.getLocation());
 
-		node.editor.setDirty();
+		node.getGraph().getEditor().setDirty();
 	}
 
 }

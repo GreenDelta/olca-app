@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.model;
 
+import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.tools.graphics.model.Link;
 import org.openlca.core.model.ProcessLink;
 
 /**
@@ -7,27 +9,17 @@ import org.openlca.core.model.ProcessLink;
  * can be defined by a Node, an IOPane or a ExchangeItem depending on the status
  * of the connection owner (minimized or maximized).
  */
-public class Link extends GraphElement {
+public class GraphLink extends Link {
 
 	public ProcessLink processLink;
-	/**
-	 * The source and the target can be a Node, an IOPane or a ExchangeItem.
-	 */
-	protected GraphComponent source, target;
-	/** True, if the connection is attached to its endpoints. */
-	private boolean isConnected;
 
-	public Link(ProcessLink pLink, GraphComponent source, GraphComponent target) {
+	public GraphLink(ProcessLink pLink, Component source, Component target) {
 		processLink = pLink;
 		reconnect(source, target);
 	}
 
-	/**
-	 * Reconnect to a different input and/or output GraphComponent. The link will
-	 * disconnect from its current attachments and reconnect to the new input and
-	 * output.
-	 */
-	public void reconnect(GraphComponent newSource, GraphComponent newTarget) {
+	@Override
+	public void reconnect(Component newSource, Component newTarget) {
 		disconnect();
 
 		source = adaptComponent(newSource, true);
@@ -39,8 +31,8 @@ public class Link extends GraphElement {
 	/**
 	 * Getting the deepest representation (in the model tree) of the component.
 	 */
-	private GraphComponent adaptComponent(GraphComponent component,
-		boolean isSource) {
+	private Component adaptComponent(Component component,
+																	 boolean isSource) {
 		if (component instanceof Node node) {
 			if (!node.isMinimized()) {
 				ExchangeItem newComponent = isSource
@@ -54,29 +46,6 @@ public class Link extends GraphElement {
 			if (item.getNode().isMinimized())
 				return item.getNode();
 		return component;
-	}
-
-	/**
-	 * Disconnect this link from the component it is attached to.
-	 */
-	public void disconnect() {
-		if (isConnected) {
-			target.removeConnection(this);
-			source.removeConnection(this);
-			isConnected = false;
-		}
-	}
-
-	/**
-	 * Reconnect this Link. The connection will reconnect with the Nodes it was
-	 * previously attached to.
-	 */
-	public void reconnect() {
-		if (!isConnected) {
-			target.addConnection(this);
-			source.addConnection(this);
-			isConnected = true;
-		}
 	}
 
 	/**
@@ -129,11 +98,11 @@ public class Link extends GraphElement {
 		return processLink;
 	}
 
-	public GraphComponent getTarget() {
+	public Component getTarget() {
 		return target;
 	}
 
-	public GraphComponent getSource() {
+	public Component getSource() {
 		return source;
 	}
 

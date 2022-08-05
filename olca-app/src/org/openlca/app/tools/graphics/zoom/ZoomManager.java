@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.zoom;
+package org.openlca.app.tools.graphics.zoom;
 
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.NumberFormat;
@@ -44,7 +44,7 @@ import java.util.List;
  * @author Dan Lee
  * @author Eric Bordeau
  */
-public class GraphZoomManager {
+public class ZoomManager {
 
 	/** Style bit meaning don't animate any zooms */
 	public static final int ANIMATE_NEVER = 0;
@@ -82,15 +82,15 @@ public class GraphZoomManager {
 	DecimalFormat format = new DecimalFormat("####%"); //$NON-NLS-1$
 
 	/**
-	 * Creates a new GraphZoomManager.
+	 * Creates a new ZoomManager.
 	 *
 	 * @param pane
-	 *            The ScalableFigure associated with this GraphZoomManager
+	 *            The ScalableFigure associated with this ZoomManager
 	 * @param viewport
-	 *            The Viewport associated with this GraphZoomManager
+	 *            The Viewport associated with this ZoomManager
 	 */
-	public GraphZoomManager(EditPartViewer viewer, ScalableFigure pane,
-													Viewport viewport) {
+	public ZoomManager(EditPartViewer viewer, ScalableFigure pane,
+										 Viewport viewport) {
 		this.viewer = viewer;
 		this.pane = pane;
 		this.viewport = viewport;

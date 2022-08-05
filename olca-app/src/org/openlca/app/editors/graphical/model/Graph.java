@@ -5,8 +5,10 @@ import java.util.List;
 
 import gnu.trove.set.hash.TLongHashSet;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.search.LinkSearchMap;
+import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.core.matrix.cache.FlowTable;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
@@ -18,17 +20,18 @@ import org.openlca.core.model.ProductSystem;
  * processes, results and/or product systems (represented by a
  * {@link Node}).
  */
-public class Graph extends GraphComponent {
+public class Graph extends Component {
 
 	private double zoom = 1.0;
 
+	public final GraphEditor editor;
 	public final LinkSearchMap linkSearch;
 	public final FlowTable flows = FlowTable.create(Database.get());
 	private final TLongHashSet wasteProcesses;
 	private final Process referenceProcess;
 
 	public Graph(GraphEditor editor) {
-		super(editor);
+		this.editor = editor;
 		var system = editor.getProductSystem();
 		this.linkSearch = new LinkSearchMap(system.processLinks);
 		referenceProcess = system.referenceProcess;
@@ -60,6 +63,14 @@ public class Graph extends GraphComponent {
 
 	public double getZoom() {
 		return zoom;
+	}
+
+	public GraphEditor getEditor() {
+		return editor;
+	}
+
+	public GraphConfig getConfig() {
+		return editor.config;
 	}
 
 	public void setZoom(double zoom) {

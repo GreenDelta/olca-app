@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.openlca.app.editors.graphical.actions;
+package org.openlca.app.tools.graphics.actions;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.editparts.ZoomListener;
@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IWorkbenchPart;
-import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
+import org.openlca.app.tools.graphics.zoom.ZoomManager;
 
 /**
  * A ControlContribution that uses a {@link Combo} as
@@ -39,7 +39,7 @@ public class ZoomComboContributionItem extends ContributionItem implements
 	private Combo combo;
 	private final String[] initStrings;
 	private ToolItem toolitem;
-	private GraphZoomManager zoomManager;
+	private ZoomManager zoomManager;
 	private final IPartService service;
 	private IPartListener partListener;
 
@@ -81,7 +81,7 @@ public class ZoomComboContributionItem extends ContributionItem implements
 		Assert.isNotNull(partService);
 		partService.addPartListener(partListener = new IPartListener() {
 			public void partActivated(IWorkbenchPart part) {
-				setZoomManager(part.getAdapter(GraphZoomManager.class));
+				setZoomManager(part.getAdapter(ZoomManager.class));
 			}
 
 			public void partBroughtToTop(IWorkbenchPart p) {
@@ -234,7 +234,7 @@ public class ZoomComboContributionItem extends ContributionItem implements
 	 *
 	 * @return ZoomManager
 	 */
-	public GraphZoomManager getZoomManager() {
+	public ZoomManager getZoomManager() {
 		return zoomManager;
 	}
 
@@ -244,7 +244,7 @@ public class ZoomComboContributionItem extends ContributionItem implements
 	 * @param zm
 	 *            The ZoomManager
 	 */
-	public void setZoomManager(GraphZoomManager zm) {
+	public void setZoomManager(ZoomManager zm) {
 		if (zoomManager == zm)
 			return;
 		if (zoomManager != null)

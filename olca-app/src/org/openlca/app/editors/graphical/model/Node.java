@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical.model;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -25,9 +24,12 @@ import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
  * or a product system with its list of input or output flows (see
  * {@link IOPane}).
  */
-public class Node extends MinMaxGraphComponent {
+public class Node extends MinMaxComponent {
 
-	public static final String EXPANDED_PROP = "expanded";
+	public static final String
+			EXPANDED_PROP = "expanded",
+			INPUT_PROP = "input",
+			OUTPUT_PROP = "output";
 
 	public static final Dimension DEFAULT_SIZE =
 		new Dimension(250, SWT.DEFAULT);
@@ -43,8 +45,7 @@ public class Node extends MinMaxGraphComponent {
 	/** Helper variable when exploring graph in isChainingReferenceNode */
 	public boolean wasExplored;
 
-	public Node(RootDescriptor descriptor, GraphEditor editor) {
-		super(editor);
+	public Node(RootDescriptor descriptor) {
 		this.descriptor = descriptor;
 		setLocation(DEFAULT_LOCATION);
 		setSize(DEFAULT_SIZE);
@@ -116,13 +117,10 @@ public class Node extends MinMaxGraphComponent {
 	public void addChildren() {
 		if (descriptor == null || descriptor.type == null)
 			return;
+		var editor = getGraph().getEditor();
 		var panes = editor.getGraphFactory().createIOPanes(descriptor);
 		addChild(panes.get(INPUT_PROP), 0);
 		addChild(panes.get(OUTPUT_PROP), 1);
-	}
-
-	public Graph getGraph() {
-		return (Graph) getParent();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -150,10 +148,11 @@ public class Node extends MinMaxGraphComponent {
 		return list;
 	}
 
-	public Link getLink(ProcessLink link) {
+	public GraphLink getLink(ProcessLink link) {
 		for (var l : getAllLinks())
-			if (l.processLink.equals(link))
-				return l;
+			if (l instanceof GraphLink graphLink)
+				if (graphLink.processLink.equals(link))
+					return graphLink;
 		return null;
 	}
 
@@ -161,7 +160,7 @@ public class Node extends MinMaxGraphComponent {
 		if (descriptor instanceof ProcessDescriptor p) {
 			return !p.isFromLibrary()
 				&& p.processType == ProcessType.UNIT_PROCESS
-				&& editor.config.isNodeEditingEnabled();
+				&& getGraph().getConfig().isNodeEditingEnabled();
 		}
 		return false;
 	}
@@ -189,11 +188,13 @@ public class Node extends MinMaxGraphComponent {
 	 */
 	public void updateIsExpanded(int side) {
 		var sourceNodeIds = getAllTargetConnections().stream()
-			.map(c -> c.getSourceNode().descriptor.id)
+				.map(GraphLink.class::cast)
+				.map(c -> c.getSourceNode().descriptor.id)
 			.toList();
 		var targetNodeIds = getAllSourceConnections().stream()
-			.map(c -> c.getTargetNode().descriptor.id)
-			.toList();
+				.map(GraphLink.class::cast)
+				.map(c -> c.getTargetNode().descriptor.id)
+				.toList();
 
 		for (var pLink : getGraph().linkSearch.getLinks(descriptor.id)) {
 			FlowType type = getGraph().flows.type(pLink.flowId);
@@ -285,15 +286,17 @@ public class Node extends MinMaxGraphComponent {
 		}
 
 		var isOnlyChainingReferenceNode = true;
-		for (var link : links) {
-			if (link.isCloseLoop())
-				continue;
-			var otherNode = side == INPUT
-				? link.getSourceNode()
-				: link.getTargetNode();
-			if (otherNode != getGraph().getReferenceNode()
-			&& !otherNode.isOnlyChainingReferenceNode(side))
-				isOnlyChainingReferenceNode = false;
+		for (var l : links) {
+			if (l instanceof GraphLink link) {
+				if (link.isCloseLoop())
+					continue;
+				var otherNode = side == INPUT
+						? link.getSourceNode()
+						: link.getTargetNode();
+				if (otherNode != getGraph().getReferenceNode()
+						&& !otherNode.isOnlyChainingReferenceNode(side))
+					isOnlyChainingReferenceNode = false;
+			}
 		}
 		wasExplored = false;
 		return isOnlyChainingReferenceNode;
@@ -321,16 +324,18 @@ public class Node extends MinMaxGraphComponent {
 			return false;
 		}
 
-		for (var link : links) {
-			if (link.isCloseLoop())
-				continue;
-			var otherNode = side == INPUT
-				? link.getSourceNode()
-				: link.getTargetNode();
-			if (otherNode == getGraph().getReferenceNode()
-				|| otherNode.isChainingReferenceNode(side)) {
-				wasExplored = false;
-				return true;
+		for (var l : links) {
+			if (l instanceof GraphLink link) {
+				if (link.isCloseLoop())
+					continue;
+				var otherNode = side == INPUT
+						? link.getSourceNode()
+						: link.getTargetNode();
+				if (otherNode == getGraph().getReferenceNode()
+						|| otherNode.isChainingReferenceNode(side)) {
+					wasExplored = false;
+					return true;
+				}
 			}
 		}
 		wasExplored = false;

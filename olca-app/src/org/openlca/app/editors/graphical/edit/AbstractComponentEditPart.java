@@ -2,15 +2,15 @@ package org.openlca.app.editors.graphical.edit;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
-import org.openlca.app.editors.graphical.model.GraphComponent;
+import org.openlca.app.tools.graphics.model.Component;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import static org.openlca.app.editors.graphical.model.GraphComponent.CHILDREN_PROP;
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 
-public abstract class AbstractComponentEditPart<N extends GraphComponent> extends
+public abstract class AbstractComponentEditPart<N extends Component> extends
 	AbstractGraphicalEditPart implements PropertyChangeListener {
 
 	/**
@@ -52,7 +52,7 @@ public abstract class AbstractComponentEditPart<N extends GraphComponent> extend
 	}
 
 	@Override
-	protected List<? extends GraphComponent> getModelChildren() {
+	protected List<? extends Component> getModelChildren() {
 		return getModel().getChildren();
 	}
 

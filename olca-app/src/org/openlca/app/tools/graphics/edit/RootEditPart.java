@@ -1,41 +1,40 @@
-package org.openlca.app.editors.graphical.edit;
+package org.openlca.app.tools.graphics.edit;
 
 import org.eclipse.draw2d.*;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.editparts.FreeformGraphicalRootEditPart;
 import org.eclipse.gef.editparts.GuideLayer;
-import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
+import org.openlca.app.tools.graphics.zoom.ZoomManager;
 
 /**
  * <i>This class is a copy of
  * {@link org.eclipse.gef.editparts.ScalableFreeformRootEditPart} to have the
- * ability to use our own GraphZoomManager.</i>
+ * ability to use our own ZoomManager.</i>
  */
-public class GraphRoot extends
-	FreeformGraphicalRootEditPart {
+public class RootEditPart extends FreeformGraphicalRootEditPart {
 
 	private ScalableFreeformLayeredPane scaledLayers;
-	private final GraphZoomManager zoomManager;
+	private final ZoomManager zoomManager;
 
 	/**
-	 * Constructor for GraphScalableFreeformRootEditPart
+	 * Constructor for the RootEditPart
 	 */
-	public GraphRoot(EditPartViewer viewer) {
+	public RootEditPart(EditPartViewer viewer) {
 		zoomManager = createZoomManager(viewer,
 			(ScalableFigure) getScaledLayers(), ((Viewport) getFigure()));
 	}
 
 	/**
-	 * Responsible for creating a {@link GraphZoomManager} to be used by this
-	 * {@link GraphRoot}.
+	 * Responsible for creating a {@link ZoomManager} to be used by this
+	 * {@link RootEditPart}.
 	 *
-	 * @return A new {@link GraphZoomManager} bound to the given
+	 * @return A new {@link ZoomManager} bound to the given
 	 *         {@link ScalableFigure} and {@link Viewport}.
 	 * @since 3.10
 	 */
-	protected GraphZoomManager createZoomManager(EditPartViewer viewer,
-	  ScalableFigure scalableFigure, Viewport viewport) {
-		return new GraphZoomManager(viewer, scalableFigure, viewport);
+	protected ZoomManager createZoomManager(EditPartViewer viewer,
+																					ScalableFigure scalableFigure, Viewport viewport) {
+		return new ZoomManager(viewer, scalableFigure, viewport);
 	}
 
 	@Override
@@ -93,23 +92,23 @@ public class GraphRoot extends
 	/**
 	 * Returns the zoomManager.
 	 *
-	 * @return GraphZoomManager
+	 * @return ZoomManager
 	 */
-	public GraphZoomManager getZoomManager() {
+	public ZoomManager getZoomManager() {
 		return zoomManager;
 	}
 
 	@Override
 	protected void register() {
 		super.register();
-		getViewer().setProperty(GraphZoomManager.class.toString(),
+		getViewer().setProperty(ZoomManager.class.toString(),
 			getZoomManager());
 	}
 
 	@Override
 	protected void unregister() {
 		super.unregister();
-		getViewer().setProperty(GraphZoomManager.class.toString(), null);
+		getViewer().setProperty(ZoomManager.class.toString(), null);
 	}
 
 	static class FeedbackLayer extends FreeformLayer {

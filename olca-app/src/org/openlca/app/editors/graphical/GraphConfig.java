@@ -1,13 +1,13 @@
 package org.openlca.app.editors.graphical;
 
 import com.google.gson.JsonObject;
-import org.openlca.app.editors.graphical.model.GraphElement;
+import org.openlca.app.tools.graphics.model.Element;
 import org.openlca.app.editors.graphical.themes.Theme;
 import org.openlca.app.editors.graphical.themes.Themes;
 import org.openlca.core.model.Copyable;
 import org.openlca.jsonld.Json;
 
-public class GraphConfig extends GraphElement implements Copyable<GraphConfig> {
+public class GraphConfig extends Element implements Copyable<GraphConfig> {
 
 	public static final String CONFIG_PROP = "config";
 

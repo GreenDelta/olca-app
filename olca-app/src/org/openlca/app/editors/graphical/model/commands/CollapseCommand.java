@@ -2,7 +2,7 @@ package org.openlca.app.editors.graphical.model.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.model.Link;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 
 import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
@@ -40,7 +40,7 @@ public class CollapseCommand extends Command {
 	public void redo() {
 		collapse(host, side);
 		host.setExpanded(side, false);
-		host.editor.setDirty();
+		host.getGraph().getEditor().setDirty();
 	}
 
 	/**
@@ -58,8 +58,8 @@ public class CollapseCommand extends Command {
 		// It is needed to copy the links otherwise we get a concurrent modification
 		// exception
 		var links = side == INPUT
-			? node.getAllTargetConnections().toArray(new Link[0])
-			: node.getAllSourceConnections().toArray(new Link[0]);
+			? node.getAllTargetConnections().toArray(new GraphLink[0])
+			: node.getAllSourceConnections().toArray(new GraphLink[0]);
 
 		for (var link : links) {
 			var thisNode = side == INPUT
@@ -86,7 +86,8 @@ public class CollapseCommand extends Command {
 				host.setExpanded(side == INPUT ? OUTPUT : INPUT, false);
 			}
 
-			var linkStream = otherNode.getAllLinks().stream();
+			var linkStream = otherNode.getAllLinks().stream()
+					.map(GraphLink.class::cast);
 			if (!linkStream.filter(l -> !l.isCloseLoop()).toList().isEmpty())
 				continue;
 

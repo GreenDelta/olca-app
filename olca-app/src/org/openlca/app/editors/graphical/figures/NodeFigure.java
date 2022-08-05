@@ -31,7 +31,7 @@ public class NodeFigure extends Figure {
 	class NodeHeader extends Figure {
 
 		NodeHeader() {
-			var theme = node.getConfig().getTheme();
+			var theme = node.getGraph().getConfig().getTheme();
 			var box = Theme.Box.of(node);
 
 			GridLayout layout = new GridLayout(4, false);

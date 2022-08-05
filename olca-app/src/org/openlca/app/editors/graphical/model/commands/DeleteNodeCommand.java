@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.Link;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 
 public class DeleteNodeCommand extends Command {
@@ -14,7 +14,7 @@ public class DeleteNodeCommand extends Command {
 	private final Graph parent;
 
 	/** Holds a copy of all the links of the child and sub-child. */
-	private List<Link> links;
+	private List<GraphLink> links;
 	/** True, if child was removed from its parent. */
 	private boolean wasRemoved;
 
@@ -53,7 +53,7 @@ public class DeleteNodeCommand extends Command {
 	@Override
 	public void execute() {
 		// store a copy of incoming & outgoing links before proceeding
-		links = child.getAllLinks();
+		links = child.getAllLinks().stream().map(GraphLink.class::cast).toList();
 		redo();
 	}
 
@@ -75,14 +75,14 @@ public class DeleteNodeCommand extends Command {
 	 * @param links
 	 *            a non-null List of links
 	 */
-	private void addConnections(List<Link> links) {
-		for (Link link : links) {
+	private void addConnections(List<GraphLink> links) {
+		for (GraphLink link : links) {
 			link.reconnect();
 		}
 	}
 
-	private void removeConnections(List<Link> links) {
-		for (Link link : links) {
+	private void removeConnections(List<GraphLink> links) {
+		for (GraphLink link : links) {
 			link.disconnect();
 		}
 	}

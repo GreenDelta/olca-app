@@ -12,7 +12,7 @@ public class MaximizedNodeFigure extends NodeFigure {
 
 	public MaximizedNodeFigure(Node node) {
 		super(node);
-		var theme = node.getConfig().getTheme();
+		var theme = node.getGraph().getConfig().getTheme();
 		var box = Theme.Box.of(node);
 
 		var layout = new GridLayout(1, false);

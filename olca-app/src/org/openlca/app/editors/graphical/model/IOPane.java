@@ -1,20 +1,19 @@
 package org.openlca.app.editors.graphical.model;
 
-import java.util.List;
+import org.openlca.app.tools.graphics.model.Component;
 
-import org.openlca.app.editors.graphical.GraphEditor;
+import java.util.List;
 
 
 /**
  * An {@link IOPane} represents a list of exchanges to be displayed. Each
  * exchange is represented by a {@link ExchangeItem}.
  */
-public class IOPane extends GraphComponent {
+public class IOPane extends Component {
 
 	private final boolean forInputs;
 
-	public IOPane(GraphEditor editor, boolean forInputs) {
-		super(editor);
+	public IOPane(boolean forInputs) {
 		this.forInputs = forInputs;
 	}
 

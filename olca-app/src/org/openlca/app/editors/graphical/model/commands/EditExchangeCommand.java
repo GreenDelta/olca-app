@@ -55,7 +55,7 @@ public class EditExchangeCommand extends Command {
 
 		if (!EditExchangeDialog.open(exchange))
 			return;
-		newExchangeItem = new ExchangeItem(node.getGraph().editor, exchange);
+		newExchangeItem = new ExchangeItem(exchange);
 		redo();
 	}
 
@@ -66,7 +66,7 @@ public class EditExchangeCommand extends Command {
 		var descriptor = Descriptor.of(process);
 		updateExchangeItem(node, descriptor, oldExchangeItem, newExchangeItem);
 
-		node.editor.setDirty();
+		node.getGraph().getEditor().setDirty();
 	}
 
 	@Override

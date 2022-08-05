@@ -11,7 +11,7 @@ import org.openlca.app.editors.graphical.themes.Theme;
 
 import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredAmountLabelSize;
 import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredUnitLabelSize;
-import static org.openlca.app.editors.graphical.model.GraphComponent.INPUT_PROP;
+import static org.openlca.app.editors.graphical.model.Node.INPUT_PROP;
 
 public class IOPaneFigure extends Figure {
 
@@ -23,7 +23,7 @@ public class IOPaneFigure extends Figure {
 
 	public IOPaneFigure(IOPane pane) {
 		this.pane = pane;
-		var theme = pane.getConfig().getTheme();
+		var theme = pane.getGraph().getConfig().getTheme();
 		var box = Theme.Box.of(pane.getNode());
 
 		var layout = new GridLayout(1, false);
@@ -134,7 +134,7 @@ public class IOPaneFigure extends Figure {
 			layout.marginWidth = 2;
 			setLayoutManager(layout);
 
-			var theme = pane.getConfig().getTheme();
+			var theme = pane.getGraph().getConfig().getTheme();
 			Label label = new Label(
 				pane.isForInputs() ? ">> input flows" : "output flows >>");
 			label.setForegroundColor(theme.infoLabelColor());
@@ -147,7 +147,7 @@ public class IOPaneFigure extends Figure {
 			if (!pane.isForInputs()) {
 				var inputIOPane = pane.getNode().getIOPanes().get(INPUT_PROP);
 				if (!inputIOPane.getExchangesItems().isEmpty()) {
-					var theme = pane.getConfig().getTheme();
+					var theme = pane.getGraph().getConfig().getTheme();
 					var box = Theme.Box.of(pane.getNode());
 					var location = getLocation();
 					var size = getNodeFigure().getSize();

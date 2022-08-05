@@ -103,7 +103,8 @@ public class BuildNextTierAction extends Action implements IBuildAction {
 
 	private List<ExchangeItem> getLinkCandidates(Node node) {
 		List<ExchangeItem> nodes = new ArrayList<>();
-		var ioPanes = node.editor.getGraphFactory().createIOPanes(node.descriptor);
+		var editor = node.getGraph().getEditor();
+		var ioPanes = editor.getGraphFactory().createIOPanes(node.descriptor);
 		for (var pane : ioPanes.values()) {
 			for (var exchangeItem : pane.getExchangesItems()) {
 				if (exchangeItem.exchange == null || exchangeItem.isConnected())

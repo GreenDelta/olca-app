@@ -1,18 +1,17 @@
-package org.openlca.app.editors.graphical;
+package org.openlca.app.tools.graphics;
 
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.GraphicalViewer;
-import org.eclipse.gef.KeyHandler;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 
-public class GraphKeyHandler extends KeyHandler {
+public class KeyHandler extends org.eclipse.gef.KeyHandler {
 
 	private final GraphicalViewer viewer;
 
-	public GraphKeyHandler(GraphicalViewer viewer) {
+	public KeyHandler(GraphicalViewer viewer) {
 		this.viewer = viewer;
 	}
 

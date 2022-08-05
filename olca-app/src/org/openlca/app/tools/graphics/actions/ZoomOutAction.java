@@ -8,44 +8,44 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.openlca.app.editors.graphical.actions;
+package org.openlca.app.tools.graphics.actions;
 
 import org.eclipse.gef.internal.GEFMessages;
 import org.eclipse.gef.internal.InternalImages;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
-import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
+import org.openlca.app.tools.graphics.zoom.ZoomManager;
 
 /**
  * @author danlee
  */
-public class ZoomInAction extends ZoomAction {
+public class ZoomOutAction extends ZoomAction {
 
 	/**
-	 * Constructor for ZoomInAction.
+	 * Constructor for ZoomOutAction.
 	 *
 	 * @param zoomManager
 	 *            the zoom manager
 	 */
-	public ZoomInAction(GraphZoomManager zoomManager) {
-		super(GEFMessages.ZoomIn_Label, InternalImages.DESC_ZOOM_IN,
+	public ZoomOutAction(ZoomManager zoomManager) {
+		super(GEFMessages.ZoomOut_Label, InternalImages.DESC_ZOOM_OUT,
 				zoomManager);
-		setToolTipText(GEFMessages.ZoomIn_Tooltip);
-		setId(GEFActionConstants.ZOOM_IN);
-		setActionDefinitionId(GEFActionConstants.ZOOM_IN);
+		setId(GEFActionConstants.ZOOM_OUT);
+		setToolTipText(GEFMessages.ZoomOut_Tooltip);
+		setActionDefinitionId(GEFActionConstants.ZOOM_OUT);
 	}
 
 	/**
 	 * @see org.eclipse.jface.action.IAction#run()
 	 */
 	public void run() {
-		zoomManager.zoomIn();
+		zoomManager.zoomOut();
 	}
 
 	/**
 	 * @see org.eclipse.gef.editparts.ZoomListener#zoomChanged(double)
 	 */
 	public void zoomChanged(double zoom) {
-		setEnabled(zoomManager.canZoomIn());
+		setEnabled(zoomManager.canZoomOut());
 	}
 
 }
